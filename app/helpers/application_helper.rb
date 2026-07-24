@@ -8,6 +8,11 @@ module ApplicationHelper
     "#{canonical_base_url}#{path}"
   end
 
+  # Fresh share URL so WhatsApp re-scrapes OG preview (it caches the bare homepage).
+  def share_landing_url
+    absolute_url("/?s=lp")
+  end
+
   def page_meta_title
     content_for?(:title) ? content_for(:title) : "LifePoints"
   end
@@ -88,11 +93,11 @@ module ApplicationHelper
   end
 
   def share_message_for(tracker)
-    ShareMessageBuilder.new(tracker, landing_url: absolute_url(root_path)).call
+    ShareMessageBuilder.new(tracker, landing_url: share_landing_url).call
   end
 
   def share_message_body_for(tracker)
-    ShareMessageBuilder.new(tracker, landing_url: absolute_url(root_path)).body
+    ShareMessageBuilder.new(tracker, landing_url: share_landing_url).body
   end
 
   def format_amount(amount)

@@ -9,7 +9,7 @@
      data-save-pop-saved-value="<%= saved %>"
      data-save-pop-won-value="<%= won %>"
      data-share-text-value="<%= share_message_body_for(@habit) %>"
-     data-share-url-value="<%= absolute_url(root_path) %>"
+     data-share-url-value="<%= share_landing_url %>"
      data-share-title-value="<%= @habit.name %> · LifePoints">
   <%= link_to "← Today", dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
 

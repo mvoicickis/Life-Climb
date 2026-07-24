@@ -2,7 +2,7 @@
 
 <div class="mx-auto flex max-w-5xl flex-col" style="min-height: calc(100dvh - 6rem);"
      data-controller="share"
-     data-share-url-value="<%= absolute_url(root_path) %>"
+     data-share-url-value="<%= share_landing_url %>"
      data-share-title-value="LifePoints">
   <header class="mb-5 flex flex-wrap items-end justify-between gap-3">
     <div>
@@ -51,7 +51,7 @@
           <button type="button"
                   data-action="click->share#open"
                   data-share-text-param="<%= share_message_body_for(tracker) %>"
-                  data-share-url-param="<%= absolute_url(root_path) %>"
+                  data-share-url-param="<%= share_landing_url %>"
                   data-share-title-param="<%= tracker.name %> · LifePoints"
                   class="mt-3 w-full rounded-xl border border-current/15 bg-white/65 px-2 py-2 text-xs font-black uppercase tracking-wide opacity-90 transition hover:bg-white">
             Share
