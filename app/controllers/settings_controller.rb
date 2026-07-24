@@ -6,7 +6,7 @@ class SettingsController < ApplicationController
 
   def update
     if current_user.update(settings_params)
-      redirect_to settings_path, notice: "Home updated."
+      redirect_to settings_path, notice: "Today board updated."
     else
       @home_habits = current_user.home_board_habits
       @all_habits = current_user.habits.active.ordered
@@ -33,7 +33,7 @@ class SettingsController < ApplicationController
   def update_habit
     habit = current_user.habits.find(params[:id])
     habit.update!(show_on_home: ActiveModel::Type::Boolean.new.cast(params[:show_on_home]))
-    redirect_to settings_path, notice: "Home list updated."
+    redirect_to settings_path, notice: "Today list updated."
   end
 
   private

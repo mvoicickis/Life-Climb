@@ -3,11 +3,11 @@
 <div class="mx-auto max-w-lg space-y-8">
   <header>
     <h1 class="text-4xl font-black tracking-tight text-slate-900">Settings</h1>
-    <p class="mt-2 text-base font-semibold text-slate-600">Shape Home so it stays simple and motivating.</p>
+    <p class="mt-2 text-base font-semibold text-slate-600">Shape Today so it stays simple and motivating.</p>
   </header>
 
   <section class="rounded-3xl border-2 border-slate-200/80 bg-white/90 p-6 shadow-sm">
-    <h2 class="text-lg font-black text-slate-900">How many on Home</h2>
+    <h2 class="text-lg font-black text-slate-900">How many on Today</h2>
     <p class="mt-1 text-sm font-semibold text-slate-500">Fewer cards = clearer focus.</p>
 
     <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do |form| %>
@@ -20,7 +20,7 @@
   </section>
 
   <section>
-    <h2 class="text-lg font-black text-slate-900">What appears on Home</h2>
+    <h2 class="text-lg font-black text-slate-900">What appears on Today</h2>
     <p class="mt-1 text-sm font-semibold text-slate-500">Turn items on or off. Drag to change order.</p>
 
     <% if @all_habits.any? %>
@@ -31,7 +31,7 @@
               <p class="truncate font-black text-slate-900"><%= habit.name %></p>
               <p class="text-xs font-bold text-slate-500"><%= habit.unit %> · <%= habit.evaluation_label %></p>
             </div>
-            <%= button_to (habit.show_on_home? ? "On Home" : "Hidden"),
+            <%= button_to (habit.show_on_home? ? "On Today" : "Hidden"),
                 settings_habit_path(habit),
                 method: :patch,
                 params: { show_on_home: !habit.show_on_home? },
@@ -41,13 +41,13 @@
       </ul>
     <% else %>
       <p class="mt-4 rounded-2xl border-2 border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">
-        Nothing to show yet. <%= link_to "Add something", new_habit_path, class: "font-bold text-emerald-700" %>.
+        Nothing to show yet. <%= link_to "Add something that matters", new_habit_path, class: "font-bold text-emerald-700" %>.
       </p>
     <% end %>
   </section>
 
   <section>
-    <h2 class="text-lg font-black text-slate-900">Order on Home</h2>
+    <h2 class="text-lg font-black text-slate-900">Order on Today</h2>
     <p class="mt-1 text-sm font-semibold text-slate-500">Top ones show first.</p>
 
     <% if @home_habits.any? %>
@@ -70,7 +70,7 @@
       </ul>
     <% else %>
       <p class="mt-4 rounded-2xl border-2 border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">
-        Nothing marked for Home yet.
+        Nothing marked for Today yet.
       </p>
     <% end %>
   </section>
@@ -94,6 +94,6 @@
   </section>
 
   <p>
-    <%= link_to "← Home", dashboard_path, class: "font-bold text-emerald-700" %>
+    <%= link_to "← Today", dashboard_path, class: "font-bold text-emerald-700" %>
   </p>
 </div>

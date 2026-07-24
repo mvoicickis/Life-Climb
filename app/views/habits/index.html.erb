@@ -24,7 +24,7 @@
             </div>
             <p class="mt-1 text-sm font-semibold text-slate-500">
               <%= habit.unit %> · <%= habit.evaluation_label %>
-              <% if habit.show_on_home? %> · On Home<% end %>
+              <% if habit.show_on_home? %> · On Today<% end %>
             </p>
             <p class="mt-2 text-sm font-bold <%= status_tone(status) == :good ? 'text-emerald-700' : status_tone(status) == :same ? 'text-amber-700' : 'text-rose-700' %>">
               <%= status_full_text(status) %>
@@ -46,7 +46,7 @@
       <p class="mx-auto mt-3 max-w-sm text-base font-semibold text-slate-600">
         Add something that matters — then see if today beats yesterday, or stays in a healthy range.
       </p>
-      <%= link_to "Add your first habit", new_habit_path, class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white" %>
+      <%= link_to "Add your first thing", new_habit_path, class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white" %>
     </div>
   <% end %>
 </div>
