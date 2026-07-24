@@ -1,9 +1,29 @@
-#!/bin/bash -e
+#!/bin/bash
+set -euo pipefail
 
-# Always prepare DB on boot (create/migrate). Safe if already up to date.
-if [ -n "$DATABASE_URL" ] || [ "$RAILS_ENV" = "production" ]; then
-  echo "Preparing database..."
-  ./bin/rails db:prepare
+echo "==> Bootstrapping LifePoints"
+
+if [ -z "${RAILS_ENV:-}" ]; then
+  export RAILS_ENV=production
 fi
 
+if [ -z "${DATABASE_URL:-}" ]; then
+  echo "ERROR: DATABASE_URL is missing."
+  echo "On Render: link a Postgres database to this service (Environment → DATABASE_URL)."
+  exit 1
+fi
+
+if [ -z "${RAILS_MASTER_KEY:-}" ] && [ ! -f config/master.key ]; then
+  echo "ERROR: RAILS_MASTER_KEY is missing."
+  echo "On Render: add env var RAILS_MASTER_KEY from config/master.key"
+  exit 1
+fi
+
+echo "==> Preparing database..."
+if ! ./bin/rails db:prepare; then
+  echo "WARNING: db:prepare failed; trying db:migrate..."
+  ./bin/rails db:migrate
+fi
+
+echo "==> Database ready. Starting app..."
 exec "${@}"

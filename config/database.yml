@@ -1,22 +1,21 @@
-# SQLite for local; Postgres for production (DATABASE_URL on Render/Fly/etc.)
+# SQLite locally; Postgres in production via DATABASE_URL (Render/Fly/etc.)
 
-default: &default
+development:
+  adapter: sqlite3
+  database: storage/development.sqlite3
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
-development:
-  <<: *default
-  adapter: sqlite3
-  database: storage/development.sqlite3
-
 test:
-  <<: *default
   adapter: sqlite3
   database: storage/test.sqlite3
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
 
+# IMPORTANT: keep this flat (not nested under primary:) so db:prepare
+# works on simple single-database hosts like Render.
 production:
-  primary:
-    adapter: postgresql
-    encoding: unicode
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-    url: <%= ENV["DATABASE_URL"] %>
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV.fetch("DATABASE_URL") %>
