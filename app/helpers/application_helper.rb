@@ -13,28 +13,63 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Track what matters. See if today is better than yesterday. Green means up. Red means not up."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Track what matters. See if today is better than yesterday. Green = Up, amber = Level, red = Down."
   end
 
   def vs_yesterday_classes(status)
     case status
     when :up
       "border-emerald-400 bg-emerald-50 text-emerald-950"
+    when :level
+      "border-amber-300 bg-amber-50 text-amber-950"
     else
       "border-rose-400 bg-rose-50 text-rose-950"
     end
   end
 
   def vs_yesterday_bar_class(status)
-    status == :up ? "bg-emerald-500" : "bg-rose-500"
+    case status
+    when :up then "bg-emerald-500"
+    when :level then "bg-amber-400"
+    else "bg-rose-500"
+    end
   end
 
   def vs_yesterday_badge_class(status)
-    status == :up ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
+    case status
+    when :up then "bg-emerald-500 text-white"
+    when :level then "bg-amber-400 text-amber-950"
+    else "bg-rose-500 text-white"
+    end
   end
 
   def vs_yesterday_short(status)
-    status == :up ? "UP" : "NOT UP"
+    case status
+    when :up then "UP"
+    when :level then "LEVEL"
+    else "DOWN"
+    end
+  end
+
+  def vs_yesterday_share_word(status)
+    case status
+    when :up then "Up"
+    when :level then "Level"
+    else "Down"
+    end
+  end
+
+  def vs_yesterday_share_emoji(status)
+    case status
+    when :up then "🟢"
+    when :level then "⚪"
+    else "🔴"
+    end
+  end
+
+  def share_message_for(tracker)
+    status = tracker.vs_yesterday
+    "I went #{vs_yesterday_share_word(status)} today on LifePoints #{vs_yesterday_share_emoji(status)} — #{format_amount(tracker.today_amount)} #{tracker.unit}"
   end
 
   def format_amount(amount)

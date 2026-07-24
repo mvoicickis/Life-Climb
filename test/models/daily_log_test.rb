@@ -9,12 +9,12 @@ class DailyLogTest < ActiveSupport::TestCase
     assert_equal 1, Habit.goal_from_yesterday(nil)
   end
 
-  test "empty day counts as zero and same is not up" do
+  test "empty day counts as zero and same is level" do
     habit = habits(:one)
 
     assert_equal BigDecimal("0"), habit.today_amount
     assert_equal BigDecimal("0"), habit.yesterday_amount
-    assert_equal :not_up, habit.vs_yesterday
+    assert_equal :level, habit.vs_yesterday
     assert_equal "Same as yesterday", habit.vs_yesterday_label
   end
 
@@ -27,12 +27,21 @@ class DailyLogTest < ActiveSupport::TestCase
     assert_equal "More than yesterday", habit.vs_yesterday_label
   end
 
-  test "vs yesterday is not up when same or lower" do
+  test "vs yesterday is level when same" do
     habit = habits(:one)
     habit.daily_logs.create!(user: users(:one), logged_on: Date.yesterday, amount: 6, goal: 6)
     habit.daily_logs.create!(user: users(:one), logged_on: Date.current, amount: 6, goal: 7)
 
-    assert_equal :not_up, habit.vs_yesterday
+    assert_equal :level, habit.vs_yesterday
     assert_equal "Same as yesterday", habit.vs_yesterday_label
+  end
+
+  test "vs yesterday is down when lower" do
+    habit = habits(:one)
+    habit.daily_logs.create!(user: users(:one), logged_on: Date.yesterday, amount: 6, goal: 6)
+    habit.daily_logs.create!(user: users(:one), logged_on: Date.current, amount: 4, goal: 7)
+
+    assert_equal :down, habit.vs_yesterday
+    assert_equal "Less than yesterday", habit.vs_yesterday_label
   end
 end

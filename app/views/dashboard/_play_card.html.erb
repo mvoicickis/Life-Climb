@@ -11,7 +11,7 @@
         <h2 class="text-2xl font-black tracking-tight"><%= tracker.name %></h2>
         <p class="text-sm font-medium opacity-70"><%= tracker.unit %></p>
       </div>
-      <div class="rounded-2xl px-3 py-2 text-center <%= status == :up ? 'bg-emerald-500 text-white' : status == :not_up ? 'bg-rose-500 text-white' : 'bg-sky-500 text-white' %>">
+      <div class="rounded-2xl px-3 py-2 text-center <%= vs_yesterday_badge_class(status) %>">
         <p class="text-xs font-bold uppercase tracking-wide"><%= vs_yesterday_short(status) %></p>
       </div>
     </div>

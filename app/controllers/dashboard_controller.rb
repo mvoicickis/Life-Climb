@@ -1,8 +1,9 @@
 class DashboardController < ApplicationController
   def show
     @trackers = current_user.home_trackers
-    @wins = @trackers.count { |tracker| tracker.vs_yesterday == :up }
-    @needs_work = @trackers.count { |tracker| tracker.vs_yesterday == :not_up }
+    @ups = @trackers.count { |tracker| tracker.vs_yesterday == :up }
+    @levels = @trackers.count { |tracker| tracker.vs_yesterday == :level }
+    @downs = @trackers.count { |tracker| tracker.vs_yesterday == :down }
     @grid_count = [ @trackers.size, 1 ].max
   end
 end

@@ -60,18 +60,22 @@ class Habit < ApplicationRecord
     self.class.goal_from_yesterday(yesterday_amount)
   end
 
-  # Only two states: green (up) or red (same or less)
+  # Three states vs yesterday: :up, :level (same), :down
   def vs_yesterday
-    today_amount > yesterday_amount ? :up : :not_up
+    if today_amount > yesterday_amount
+      :up
+    elsif today_amount == yesterday_amount
+      :level
+    else
+      :down
+    end
   end
 
   def vs_yesterday_label
-    if today_amount > yesterday_amount
-      "More than yesterday"
-    elsif today_amount == yesterday_amount
-      "Same as yesterday"
-    else
-      "Less than yesterday"
+    case vs_yesterday
+    when :up then "More than yesterday"
+    when :level then "Same as yesterday"
+    else "Less than yesterday"
     end
   end
 

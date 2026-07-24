@@ -1,5 +1,5 @@
 <% content_for :title, "LifePoints — Grow a little every day" %>
-<% content_for :meta_description, "Track what matters. See if today is better than yesterday. Green means up. Red means not up." %>
+<% content_for :meta_description, "Track what matters. See if today is better than yesterday. Green = Up, amber = Level, red = Down." %>
 
 <div data-controller="landing">
   <section class="landing-hero relative min-h-[100dvh] overflow-hidden">
@@ -67,9 +67,9 @@
         </div>
         <div data-landing-target="fade">
           <p class="text-sm font-black uppercase tracking-widest text-orange-500">3</p>
-          <h3 class="mt-3 text-2xl font-black text-slate-900">See green or red</h3>
+          <h3 class="mt-3 text-2xl font-black text-slate-900">See Up, Level, or Down</h3>
           <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600">
-            Green means more than yesterday. Red means same or less.
+            Green means up. Amber means the same. Red means down.
           </p>
         </div>
       </div>
@@ -88,21 +88,29 @@
         Home shows your stats as bright cards. Tap one to add today's number.
       </p>
 
-      <div class="mt-10 grid max-w-lg grid-cols-2 gap-3" aria-hidden="true">
+      <div class="mt-10 grid max-w-2xl grid-cols-3 gap-3" aria-hidden="true">
         <div class="rounded-3xl border-2 border-emerald-400 bg-emerald-50 p-4 shadow-lg">
-          <div class="flex items-start justify-between">
+          <div class="flex items-start justify-between gap-1">
             <p class="font-black text-emerald-950">Move</p>
             <span class="rounded-lg bg-emerald-500 px-2 py-1 text-[10px] font-black text-white">UP</span>
           </div>
-          <p class="mt-4 text-4xl font-black text-emerald-950">8,420</p>
+          <p class="mt-4 text-3xl font-black text-emerald-950 md:text-4xl">8,420</p>
           <p class="mt-1 text-xs font-bold text-emerald-800/70">steps</p>
         </div>
-        <div class="rounded-3xl border-2 border-rose-400 bg-rose-50 p-4 shadow-lg">
-          <div class="flex items-start justify-between">
-            <p class="font-black text-rose-950">Water</p>
-            <span class="rounded-lg bg-rose-500 px-2 py-1 text-[10px] font-black text-white">NOT UP</span>
+        <div class="rounded-3xl border-2 border-amber-300 bg-amber-50 p-4 shadow-lg">
+          <div class="flex items-start justify-between gap-1">
+            <p class="font-black text-amber-950">Sleep</p>
+            <span class="rounded-lg bg-amber-400 px-2 py-1 text-[10px] font-black text-amber-950">LEVEL</span>
           </div>
-          <p class="mt-4 text-4xl font-black text-rose-950">5</p>
+          <p class="mt-4 text-3xl font-black text-amber-950 md:text-4xl">7</p>
+          <p class="mt-1 text-xs font-bold text-amber-800/70">hours</p>
+        </div>
+        <div class="rounded-3xl border-2 border-rose-400 bg-rose-50 p-4 shadow-lg">
+          <div class="flex items-start justify-between gap-1">
+            <p class="font-black text-rose-950">Water</p>
+            <span class="rounded-lg bg-rose-500 px-2 py-1 text-[10px] font-black text-white">DOWN</span>
+          </div>
+          <p class="mt-4 text-3xl font-black text-rose-950 md:text-4xl">5</p>
           <p class="mt-1 text-xs font-bold text-rose-800/70">glasses</p>
         </div>
       </div>
