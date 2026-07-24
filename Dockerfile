@@ -72,6 +72,7 @@ COPY --chown=rails:rails --from=build /rails /rails
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Render (and most PaaS) set PORT and expect the process to listen on it.
+# Bind to 0.0.0.0 so the proxy can reach the app.
+EXPOSE 3000
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

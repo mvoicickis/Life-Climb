@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+# Always prepare DB on boot (create/migrate). Safe if already up to date.
+if [ -n "$DATABASE_URL" ] || [ "$RAILS_ENV" = "production" ]; then
+  echo "Preparing database..."
   ./bin/rails db:prepare
 fi
 

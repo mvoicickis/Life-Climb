@@ -80,11 +80,9 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Allow the Render/custom host. Set APP_HOST=your-app.onrender.com in env.
-  if ENV["APP_HOST"].present?
-    config.hosts << ENV["APP_HOST"]
-    config.hosts << /.*\.onrender\.com/
-  end
+  # Allow Render hosts by default. Also allow APP_HOST if set.
+  config.hosts << /.*\.onrender\.com/
+  config.hosts << ENV["APP_HOST"] if ENV["APP_HOST"].present?
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
