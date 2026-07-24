@@ -1,37 +1,36 @@
 require "test_helper"
 
 class FeedbacksControllerTest < ActionDispatch::IntegrationTest
-  include ActionMailer::TestHelper
+  test "feedback page shows email contact" do
+    sign_in_as users(:one)
 
-  test "signed in user can send feedback" do
-    user = users(:one)
-    sign_in_as user
-
-    assert_emails 1 do
-      assert_difference "Feedback.count", 1 do
-        post feedbacks_path, params: { feedback: { body: "Love the Today board." } }
-      end
-    end
-
-    assert_redirected_to dashboard_path
-    feedback = Feedback.last
-    assert_equal user, feedback.user
-    assert_equal "Love the Today board.", feedback.body
-
-    email = ActionMailer::Base.deliveries.last
-    assert_equal [ "mvoicickis@gmail.com" ], email.to
-    assert_equal user.email_address, email.reply_to.first
-    assert_match "Love the Today board.", email.body.encoded
+    get new_feedback_path
+    assert_response :success
+    assert_match(/mvoicickis@gmail\.com/, response.body)
+    assert_match(/mailto:mvoicickis@gmail\.com/, response.body)
   end
 
-  test "rejects blank feedback" do
+  test "feedback page shows whatsapp when configured" do
+    ENV["CONTACT_WHATSAPP"] = "+371 2000 0000"
+
     sign_in_as users(:one)
+    get new_feedback_path
+
+    assert_response :success
+    assert_match(%r{https://wa\.me/37120000000}, response.body)
+    assert_match(/WhatsApp/, response.body)
+  ensure
+    ENV.delete("CONTACT_WHATSAPP")
+  end
+
+  test "create redirects to contact options" do
+    sign_in_as users(:one)
+
     assert_no_difference "Feedback.count" do
-      assert_no_emails do
-        post feedbacks_path, params: { feedback: { body: "" } }
-      end
+      post feedbacks_path, params: { feedback: { body: "ignored" } }
     end
-    assert_response :unprocessable_entity
+
+    assert_redirected_to new_feedback_path
   end
 end
 

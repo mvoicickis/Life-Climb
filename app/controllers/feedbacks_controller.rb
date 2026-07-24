@@ -1,28 +1,9 @@
 class FeedbacksController < ApplicationController
   def new
-    @feedback = current_user.feedbacks.build
   end
 
+  # Kept for older clients / bookmarks; direct users to contact options.
   def create
-    @feedback = current_user.feedbacks.build(feedback_params)
-
-    if @feedback.save
-      deliver_feedback_email(@feedback)
-      redirect_to dashboard_path, notice: "Thanks — your feedback was sent."
-    else
-      render :new, status: :unprocessable_entity
-    end
-  end
-
-  private
-
-  def feedback_params
-    params.require(:feedback).permit(:body)
-  end
-
-  def deliver_feedback_email(feedback)
-    FeedbackMailer.submission(feedback).deliver_now
-  rescue StandardError => error
-    Rails.logger.error("[FeedbackMailer] #{error.class}: #{error.message}")
+    redirect_to new_feedback_path, notice: "Message me on WhatsApp or email — pick a contact below."
   end
 end

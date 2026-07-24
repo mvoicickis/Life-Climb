@@ -1,30 +1,50 @@
-<% content_for :title, "Send feedback" %>
+<% content_for :title, "Feedback" %>
 
 <div class="mx-auto max-w-lg">
-  <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Send feedback</h1>
+  <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Feedback</h1>
   <p class="mt-2 text-base font-semibold text-slate-600">
-    Ideas, bugs, or how LifePoints feels — it lands in the founder’s inbox.
+    Message me directly — ideas, bugs, or how LifePoints feels.
   </p>
 
-  <%= form_with model: @feedback, url: feedbacks_path, class: "mt-8 space-y-4", data: { turbo: false } do |form| %>
-    <% if @feedback.errors.any? %>
-      <div class="rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 font-bold text-rose-900">
-        <%= @feedback.errors.full_messages.to_sentence %>
+  <div class="mt-8 space-y-3">
+    <% if contact_whatsapp? %>
+      <a href="<%= contact_whatsapp_url %>"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="flex items-center gap-4 rounded-3xl border-2 border-emerald-200 bg-white p-4 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50">
+        <span class="grid h-14 w-14 place-items-center rounded-2xl bg-[#25D366] text-white shadow-sm" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.3-1.4A9.9 9.9 0 1 0 12 2zm5.8 14.1c-.2.7-1.2 1.2-1.9 1.4-.5.1-1.1.2-3.5-.7-3-1.2-4.9-4.3-5.1-4.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.3.7-.4 1-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2 0 .4-.1.6l-.4.6c-.2.2-.3.4-.1.7.2.3.7 1.2 1.6 1.9 1.1.9 2 1.2 2.3 1.3.3.1.5.1.7-.1l.9-1.1c.2-.2.4-.2.7-.1l2.1 1c.3.1.5.2.6.3.1.3 0 .9-.2 1.6z"/></svg>
+        </span>
+        <span class="min-w-0 flex-1 text-left">
+          <span class="block text-lg font-black text-slate-900">WhatsApp</span>
+          <span class="mt-0.5 block text-sm font-semibold text-slate-500">Message me on WhatsApp</span>
+        </span>
+        <span class="text-sm font-black text-emerald-700">Open →</span>
+      </a>
+    <% else %>
+      <div class="rounded-3xl border-2 border-dashed border-slate-300 bg-white/80 p-4 text-sm font-semibold text-slate-600">
+        WhatsApp is almost ready — set <code class="font-bold text-slate-800">CONTACT_WHATSAPP</code> in Render (digits with country code).
       </div>
     <% end %>
 
-    <div>
-      <%= form.label :body, "Your message", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
-      <%= form.text_area :body, rows: 6,
-          placeholder: "What's working? What's confusing? What would help you become better than yesterday?",
-          class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold focus:border-emerald-500 focus:outline-none" %>
-    </div>
+    <a href="<%= contact_mailto_url %>"
+       class="flex items-center gap-4 rounded-3xl border-2 border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50">
+      <span class="grid h-14 w-14 place-items-center rounded-2xl bg-slate-800 text-white shadow-sm" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>
+      </span>
+      <span class="min-w-0 flex-1 text-left">
+        <span class="block text-lg font-black text-slate-900">Email</span>
+        <span class="mt-0.5 block truncate text-sm font-semibold text-slate-500"><%= contact_email %></span>
+      </span>
+      <span class="text-sm font-black text-emerald-700">Write →</span>
+    </a>
+  </div>
 
-    <%= form.submit "Send feedback",
-        class: "w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3.5 font-black text-white hover:bg-emerald-600" %>
-  <% end %>
+  <p class="mt-6 text-sm font-semibold leading-relaxed text-slate-500">
+    Opens your WhatsApp or email app with a short starter message. Send whenever you’re ready.
+  </p>
 
-  <p class="mt-6">
+  <p class="mt-8">
     <%= link_to "← Today", dashboard_path, class: "font-bold text-emerald-700" %>
   </p>
 </div>
