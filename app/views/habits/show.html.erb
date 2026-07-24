@@ -1,6 +1,5 @@
 <% content_for :title, @habit.name %>
 <% status = @habit.status %>
-<% goal = @habit.todays_goal_value %>
 <% progress = @habit.goal_progress_percent %>
 <% saved = params[:saved].present? %>
 <% won = params[:won] == "1" %>
@@ -9,10 +8,10 @@
      data-controller="save-pop"
      data-save-pop-saved-value="<%= saved %>"
      data-save-pop-won-value="<%= won %>">
-  <%= link_to "← Home", dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
+  <%= link_to "← Today", dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
 
   <article id="detail-card"
-           class="overflow-hidden rounded-3xl border-2 p-6 shadow-sm <%= vs_yesterday_classes(status) %> <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
+           class="overflow-hidden rounded-[1.75rem] border-2 p-6 shadow-sm <%= vs_yesterday_classes(status) %> <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
     <div class="flex items-start justify-between gap-3">
       <div>
         <h1 class="text-3xl font-black tracking-tight"><%= @habit.name %></h1>
@@ -20,12 +19,10 @@
           <%= @habit.unit %> · <%= @habit.evaluation_label %>
         </p>
       </div>
-      <span class="rounded-2xl px-3 py-2 text-xs font-black <%= vs_yesterday_badge_class(status) %>">
-        <%= vs_yesterday_short(status) %>
-      </span>
+      <%= render "shared/status_badge", status: status %>
     </div>
 
-    <p class="mt-4 text-base font-black leading-snug">
+    <p class="mt-5 text-lg font-black leading-snug">
       <%= status_full_text(status) %>
     </p>
 
@@ -54,13 +51,13 @@
           <span>Toward goal</span>
           <span><%= progress %>%</span>
         </div>
-        <div class="h-3.5 overflow-hidden rounded-full bg-black/10">
+        <div class="h-3 overflow-hidden rounded-full bg-black/10">
           <div class="bar-fill h-full rounded-full <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
         </div>
       </div>
     <% end %>
 
-    <p class="mt-3 text-xs font-semibold opacity-60">No number today? It counts as 0.</p>
+    <p class="mt-3 text-xs font-semibold opacity-55">No number today? It counts as 0.</p>
 
     <% if @habit.show_goal_raise_prompt? %>
       <div class="mt-5 rounded-2xl border-2 border-emerald-300 bg-white/85 p-4">
@@ -84,7 +81,7 @@
             value: @habit.today_log&.amount || 0,
             min: 0,
             step: :any,
-            class: "w-full rounded-2xl border-2 border-black/10 bg-white px-4 py-3 text-xl font-black focus:border-emerald-500 focus:outline-none" %>
+            class: "w-full rounded-2xl border-2 border-black/10 bg-white px-4 py-3.5 text-xl font-black focus:border-emerald-500 focus:outline-none" %>
       </div>
 
       <%= form.submit "Save",

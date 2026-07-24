@@ -17,8 +17,8 @@ class HabitsCreateTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    assert_redirected_to habits_path
+    assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match(/Saved/, response.body)
+    assert_match(/Added/, response.body)
   end
 end

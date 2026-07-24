@@ -5,9 +5,18 @@ one:
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6
+  admin: false
 
 two:
   email_address: two@example.com
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6
+  admin: false
+
+admin:
+  email_address: admin@example.com
+  password_digest: <%= password_digest %>
+  total_points: 0
+  home_stat_count: 6
+  admin: true

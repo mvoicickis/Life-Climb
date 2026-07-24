@@ -31,9 +31,13 @@
         <div class="container mx-auto flex items-center justify-between px-4 py-3">
           <%= link_to "LifePoints", dashboard_path, class: "text-xl font-black text-emerald-600 md:text-2xl" %>
           <div class="flex items-center gap-1 text-sm font-bold md:gap-2">
-            <%= link_to "Home", dashboard_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
+            <%= link_to "Today", dashboard_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
             <%= link_to "Stats", habits_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
+            <%= link_to "Feedback", new_feedback_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
             <%= link_to "Settings", settings_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
+            <% if current_user.admin? %>
+              <%= link_to "Admin", admin_root_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
+            <% end %>
             <%= button_to "Out", session_path, method: :delete, class: "rounded-xl px-2 py-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 md:px-3" %>
           </div>
         </div>

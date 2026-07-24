@@ -25,6 +25,24 @@
     transform: scale(0.985);
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .home-card,
+    .landing-in,
+    .landing-pre,
+    .landing-hero img,
+    .bar-fill,
+    .pop-save,
+    .glow-win {
+      transition: none !important;
+      animation: none !important;
+      transform: none !important;
+    }
+
+    .landing-pre {
+      opacity: 1;
+    }
+  }
+
   .home-card-name {
     font-size: clamp(0.75rem, 2.4vw, 1.15rem);
     line-height: 1.15;

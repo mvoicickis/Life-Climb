@@ -1,0 +1,30 @@
+<% content_for :title, "Send feedback" %>
+
+<div class="mx-auto max-w-lg">
+  <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Send feedback</h1>
+  <p class="mt-2 text-base font-semibold text-slate-600">
+    Ideas, bugs, or how LifePoints feels — it goes straight to the admin.
+  </p>
+
+  <%= form_with model: @feedback, url: feedbacks_path, class: "mt-8 space-y-4", data: { turbo: false } do |form| %>
+    <% if @feedback.errors.any? %>
+      <div class="rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 font-bold text-rose-900">
+        <%= @feedback.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :body, "Your message", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+      <%= form.text_area :body, rows: 6,
+          placeholder: "What's working? What's confusing? What would help you become better than yesterday?",
+          class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold focus:border-emerald-500 focus:outline-none" %>
+    </div>
+
+    <%= form.submit "Send feedback",
+        class: "w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3.5 font-black text-white hover:bg-emerald-600" %>
+  <% end %>
+
+  <p class="mt-6">
+    <%= link_to "← Today", dashboard_path, class: "font-bold text-emerald-700" %>
+  </p>
+</div>

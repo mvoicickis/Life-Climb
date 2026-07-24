@@ -1,5 +1,5 @@
 <% content_for :title, "LifePoints — Become better than yesterday" %>
-<% content_for :meta_description, "Your only competition is the person you were yesterday. LifePoints helps you track the habits that matter most and see whether you're improving every day." %>
+<% content_for :meta_description, "Your only competition is the person you were yesterday. LifePoints helps you measure the daily actions that matter most so you can see whether you're improving every day." %>
 
 <div data-controller="landing">
   <section class="landing-hero relative min-h-[100dvh] overflow-hidden">
@@ -9,8 +9,8 @@
         alt=""
         class="h-full w-full object-cover"
         data-landing-target="heroImage">
-      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/50 to-transparent"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-slate-900/25"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/82 via-slate-900/55 to-slate-900/20"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-slate-900/30"></div>
     </div>
 
     <header class="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 md:px-8 md:py-6">
@@ -28,17 +28,26 @@
         <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-300/90 md:text-base">
           Your only competition is yesterday
         </p>
-        <h1 class="mt-4 text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 class="mt-4 text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[4.25rem]">
           Become a better version of yourself every day.
         </h1>
         <p class="mt-5 max-w-xl text-lg font-semibold leading-relaxed text-white/85 md:text-xl">
-          LifePoints helps you track the habits that matter most so you can see whether you’re improving every day.
+          LifePoints helps you measure the daily actions that matter most, so you can clearly see whether you’re improving, staying consistent, or moving backwards.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <%= link_to "Start free", new_registration_path,
               class: "inline-flex rounded-2xl bg-emerald-500 px-6 py-4 text-base font-black text-white shadow-xl shadow-emerald-950/30 hover:bg-emerald-400 md:text-lg" %>
-          <%= link_to "I have an account", new_session_path,
+          <%= link_to "Sign in", new_session_path,
               class: "inline-flex rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-4 text-base font-bold text-white backdrop-blur hover:bg-white/20 md:text-lg" %>
+        </div>
+
+        <div class="mt-12 hidden max-w-xs sm:block" aria-hidden="true">
+          <svg viewBox="0 0 200 80" class="w-full text-emerald-300/90">
+            <rect x="20" y="48" width="28" height="24" rx="8" fill="currentColor" opacity="0.45"/>
+            <rect x="64" y="32" width="28" height="40" rx="8" fill="currentColor" opacity="0.7"/>
+            <rect x="108" y="16" width="28" height="56" rx="8" fill="currentColor"/>
+            <circle cx="158" cy="14" r="10" fill="#a7f3d0"/>
+          </svg>
         </div>
       </div>
     </div>
@@ -52,11 +61,9 @@
       </h2>
       <div class="mt-8 space-y-5 text-lg font-semibold leading-relaxed text-slate-600 md:text-xl">
         <p>Every day we’re either becoming a little better or a little worse through the choices we make.</p>
-        <p>LifePoints helps you focus on the habits that matter most and answers one simple question:</p>
+        <p>LifePoints isn’t about competing with other people.</p>
+        <p>It’s about becoming a better version of yourself.</p>
       </div>
-      <p class="mt-8 text-2xl font-black leading-snug tracking-tight text-slate-900 md:text-4xl">
-        “Am I a better version of myself than I was yesterday?”
-      </p>
     </div>
   </section>
 
@@ -71,18 +78,20 @@
         </p>
       </div>
 
-      <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-landing-target="fade">
+      <ul class="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-landing-target="fade">
         <% [
           ["📚", "Pages Read"],
           ["💪", "Push-ups"],
           ["🇩🇪", "Minutes Learning German"],
           ["💬", "New Words Learned"],
           ["🚶", "Steps Walked"],
-          ["💰", "Money Saved"]
+          ["💰", "Money Saved"],
+          ["😴", "Sleep"],
+          ["💧", "Water"]
         ].each do |icon, label| %>
-          <li class="flex items-center gap-4 rounded-3xl border border-slate-200/80 bg-[#f7faf8] px-5 py-4">
-            <span class="text-2xl" aria-hidden="true"><%= icon %></span>
-            <span class="text-lg font-black text-slate-900"><%= label %></span>
+          <li class="flex items-center gap-3 rounded-3xl border border-slate-200/80 bg-[#f7faf8] px-4 py-4">
+            <span class="text-xl" aria-hidden="true"><%= icon %></span>
+            <span class="text-base font-black text-slate-900"><%= label %></span>
           </li>
         <% end %>
       </ul>
@@ -94,30 +103,27 @@
       <h2 class="max-w-2xl text-3xl font-black tracking-tight text-slate-900 md:text-5xl" data-landing-target="fade">
         Three simple steps.
       </h2>
-      <p class="mt-4 max-w-xl text-lg font-semibold text-slate-600" data-landing-target="fade">
-        Clear. Honest. Built for daily progress.
-      </p>
 
       <div class="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
         <div data-landing-target="fade">
           <p class="text-sm font-black uppercase tracking-widest text-emerald-600">1</p>
           <h3 class="mt-3 text-2xl font-black text-slate-900">Choose what matters</h3>
           <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600 md:text-lg">
-            Pick the habits and activities that make your life better.
+            Create the things you want to improve.
           </p>
         </div>
         <div data-landing-target="fade">
           <p class="text-sm font-black uppercase tracking-widest text-sky-600">2</p>
           <h3 class="mt-3 text-2xl font-black text-slate-900">Record today’s progress</h3>
           <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600 md:text-lg">
-            Enter what you’ve done today.
+            It only takes a few seconds.
           </p>
         </div>
         <div data-landing-target="fade">
           <p class="text-sm font-black uppercase tracking-widest text-orange-500">3</p>
-          <h3 class="mt-3 text-2xl font-black text-slate-900">Compare with yesterday</h3>
+          <h3 class="mt-3 text-2xl font-black text-slate-900">See yourself improve</h3>
           <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600 md:text-lg">
-            See whether you’re improving, staying consistent, or falling behind.
+            Know whether you’re moving forward every single day.
           </p>
         </div>
       </div>
@@ -134,19 +140,19 @@
           Your progress, at a glance.
         </h2>
         <p class="mt-4 max-w-xl text-lg font-semibold text-white/75">
-          Home shows bright cards for the habits you choose. One look tells the story of today.
+          Clear words — not just colors — so you always know where you stand.
         </p>
       </div>
 
       <div class="mt-10 flex flex-wrap gap-3" data-landing-target="fade">
         <span class="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-200 ring-1 ring-emerald-400/30">
-          <span aria-hidden="true">🟢</span> Better than yesterday
+          🟢 Better than yesterday
         </span>
         <span class="inline-flex items-center gap-2 rounded-2xl bg-amber-400/15 px-4 py-2 text-sm font-bold text-amber-100 ring-1 ring-amber-300/30">
-          <span aria-hidden="true">🟡</span> Same as yesterday
+          🟡 Same as yesterday
         </span>
         <span class="inline-flex items-center gap-2 rounded-2xl bg-rose-500/15 px-4 py-2 text-sm font-bold text-rose-100 ring-1 ring-rose-400/30">
-          <span aria-hidden="true">🔴</span> Worse than yesterday
+          🔴 Worse than yesterday
         </span>
       </div>
 
@@ -154,42 +160,40 @@
         <div class="rounded-3xl border-2 border-emerald-400 bg-emerald-50 p-5 shadow-lg">
           <div class="flex items-start justify-between gap-2">
             <p class="font-black text-emerald-950">Pages Read</p>
-            <span class="rounded-lg bg-emerald-500 px-2 py-1 text-[10px] font-black text-white">UP</span>
+            <span class="rounded-lg bg-emerald-500 px-2 py-1 text-[10px] font-black text-white">🟢 Better</span>
           </div>
           <p class="mt-5 text-4xl font-black text-emerald-950">42</p>
-          <p class="mt-1 text-xs font-bold text-emerald-800/70">pages</p>
+          <p class="mt-2 text-xs font-bold text-emerald-800/80">Better than yesterday</p>
         </div>
         <div class="rounded-3xl border-2 border-amber-300 bg-amber-50 p-5 shadow-lg">
           <div class="flex items-start justify-between gap-2">
             <p class="font-black text-amber-950">Push-ups</p>
-            <span class="rounded-lg bg-amber-400 px-2 py-1 text-[10px] font-black text-amber-950">LEVEL</span>
+            <span class="rounded-lg bg-amber-400 px-2 py-1 text-[10px] font-black text-amber-950">🟡 Same</span>
           </div>
           <p class="mt-5 text-4xl font-black text-amber-950">30</p>
-          <p class="mt-1 text-xs font-bold text-amber-800/70">reps</p>
+          <p class="mt-2 text-xs font-bold text-amber-800/80">Same as yesterday</p>
         </div>
-        <div class="rounded-3xl border-2 border-rose-400 bg-rose-50 p-5 shadow-lg">
+        <div class="rounded-3xl border-2 border-emerald-400 bg-emerald-50 p-5 shadow-lg">
           <div class="flex items-start justify-between gap-2">
-            <p class="font-black text-rose-950">German</p>
-            <span class="rounded-lg bg-rose-500 px-2 py-1 text-[10px] font-black text-white">DOWN</span>
+            <p class="font-black text-emerald-950">Sleep</p>
+            <span class="rounded-lg bg-emerald-500 px-2 py-1 text-[10px] font-black text-white">🟢 In range</span>
           </div>
-          <p class="mt-5 text-4xl font-black text-rose-950">12</p>
-          <p class="mt-1 text-xs font-bold text-rose-800/70">minutes</p>
+          <p class="mt-5 text-4xl font-black text-emerald-950">8.5</p>
+          <p class="mt-2 text-xs font-bold text-emerald-800/80">Within healthy range</p>
         </div>
       </div>
     </div>
   </section>
 
   <section class="relative overflow-hidden bg-[#ecfdf5] px-5 py-24 md:px-8 md:py-36">
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300 to-transparent"></div>
     <div class="mx-auto max-w-3xl text-center" data-landing-target="fade">
       <p class="text-sm font-black uppercase tracking-[0.22em] text-emerald-700">The LifePoints Philosophy</p>
       <blockquote class="mt-8">
         <p class="text-3xl font-black leading-snug tracking-tight text-slate-900 md:text-5xl">
-          Your only competition is the person you were yesterday.
+          Small improvements repeated every day create extraordinary results.
         </p>
       </blockquote>
       <div class="mx-auto mt-10 max-w-xl space-y-4 text-lg font-semibold leading-relaxed text-slate-600 md:text-xl">
-        <p>Small improvements repeated every day create extraordinary results.</p>
         <p>You don’t compete with other people.</p>
         <p>You compete with yesterday’s version of yourself.</p>
       </div>
@@ -203,8 +207,8 @@
         Ready to become a better version of yourself?
       </h2>
       <div class="mx-auto mt-6 max-w-md space-y-2 text-lg font-semibold text-slate-600">
-        <p>Track what matters.</p>
-        <p>Measure your progress.</p>
+        <p>Start measuring what matters.</p>
+        <p>Build better habits.</p>
         <p>Improve one day at a time.</p>
       </div>
       <div class="mt-10 flex flex-wrap justify-center gap-3">

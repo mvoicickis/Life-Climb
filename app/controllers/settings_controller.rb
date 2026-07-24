@@ -1,13 +1,15 @@
 class SettingsController < ApplicationController
   def show
     @home_habits = current_user.home_board_habits
+    @all_habits = current_user.habits.active.ordered
   end
 
   def update
     if current_user.update(settings_params)
-      redirect_to settings_path, notice: "Saved."
+      redirect_to settings_path, notice: "Home updated."
     else
       @home_habits = current_user.home_board_habits
+      @all_habits = current_user.habits.active.ordered
       render :show, status: :unprocessable_entity
     end
   end
@@ -26,6 +28,12 @@ class SettingsController < ApplicationController
     end
 
     head :ok
+  end
+
+  def update_habit
+    habit = current_user.habits.find(params[:id])
+    habit.update!(show_on_home: ActiveModel::Type::Boolean.new.cast(params[:show_on_home]))
+    redirect_to settings_path, notice: "Home list updated."
   end
 
   private

@@ -13,7 +13,7 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Your only competition is yesterday. Track what matters with Better Than Yesterday or Healthy Range goals."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Your only competition is the person you were yesterday. LifePoints helps you become a better version of yourself every day."
   end
 
   def status_tone(status)
@@ -59,13 +59,12 @@ module ApplicationHelper
     end
   end
 
-  # Short badge text always includes meaning (not color alone).
   def status_badge_text(status)
     case status
     when :better then "Better"
     when :same then "Same"
     when :worse then "Worse"
-    when :perfect then "Perfect"
+    when :perfect then "In range"
     when :too_low then "Too low"
     when :too_high then "Too high"
     else status.to_s.humanize
@@ -82,15 +81,24 @@ module ApplicationHelper
     when :same then "🟡 Same as yesterday"
     when :worse then "🔴 Worse than yesterday"
     when :perfect then "🟢 Within healthy range"
-    when :too_low then "🔴 Below range"
-    when :too_high then "🔴 Above range"
+    when :too_low then "🔴 Below healthy range"
+    when :too_high then "🔴 Above healthy range"
     else status.to_s.humanize
     end
   end
 
   def share_message_for(tracker)
-    status = tracker.status
-    "#{status_full_text(status)} on LifePoints — #{format_amount(tracker.today_amount)} #{tracker.unit}"
+    amount = format_amount(tracker.today_amount)
+    unit = tracker.unit
+    name = tracker.name
+    status_line = HabitStatusEvaluator.new(tracker).label
+
+    [
+      "Today I logged #{amount} #{unit} for #{name}.",
+      "#{status_line}.",
+      "Small improvements every day make a big difference.",
+      "I'm using LifePoints to become a better version of myself."
+    ].join("\n")
   end
 
   def format_amount(amount)

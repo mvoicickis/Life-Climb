@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_190000) do
   create_table "completions", force: :cascade do |t|
     t.date "completed_on", null: false
     t.datetime "created_at", null: false
@@ -34,6 +34,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_180000) do
     t.index ["habit_id", "logged_on"], name: "index_daily_logs_on_habit_id_and_logged_on", unique: true
     t.index ["habit_id"], name: "index_daily_logs_on_habit_id"
     t.index ["user_id"], name: "index_daily_logs_on_user_id"
+  end
+
+  create_table "feedbacks", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
   create_table "habits", force: :cascade do |t|
@@ -67,6 +75,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_180000) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.integer "home_stat_count", default: 6, null: false
@@ -80,6 +89,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_180000) do
   add_foreign_key "completions", "users"
   add_foreign_key "daily_logs", "habits"
   add_foreign_key "daily_logs", "users"
+  add_foreign_key "feedbacks", "users"
   add_foreign_key "habits", "users"
   add_foreign_key "sessions", "users"
 end

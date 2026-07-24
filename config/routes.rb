@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resource :dashboard, only: :show, controller: "dashboard"
   resource :settings, only: %i[ show update ]
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
+  patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
 
   resources :habits do
     member do
@@ -14,8 +15,13 @@ Rails.application.routes.draw do
       patch :decline_goal_raise
     end
   end
+  resources :feedbacks, only: %i[ new create ]
   resources :completions, only: :create
   resources :daily_logs, only: :create
+
+  namespace :admin do
+    root to: "dashboard#show"
+  end
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

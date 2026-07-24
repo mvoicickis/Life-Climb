@@ -2,7 +2,15 @@ demo = User.find_or_initialize_by(email_address: "demo@lifepoints.test")
 demo.password = "password"
 demo.password_confirmation = "password"
 demo.home_stat_count = 6
+demo.admin = false
 demo.save!
+
+admin = User.find_or_initialize_by(email_address: ENV.fetch("ADMIN_EMAIL", "admin@lifepoints.test"))
+admin.password = ENV.fetch("ADMIN_PASSWORD", "password")
+admin.password_confirmation = admin.password
+admin.home_stat_count = 6
+admin.admin = true
+admin.save!
 
 demo.habits.where(name: [ "Morning run", "Read 30 minutes", "Meditate" ]).update_all(active: false, show_on_home: false)
 
@@ -48,4 +56,5 @@ end
 end
 
 puts "Seeded demo user: demo@lifepoints.test / password"
+puts "Seeded admin: #{admin.email_address} / #{ENV.fetch('ADMIN_PASSWORD', 'password')} → /admin"
 puts "On Home: #{demo.habits.active.on_home.ordered.pluck(:name).join(', ')}"

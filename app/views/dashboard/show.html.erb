@@ -1,74 +1,75 @@
-<% content_for :title, "Home" %>
+<% content_for :title, "Today" %>
 
 <div class="mx-auto flex max-w-5xl flex-col" style="min-height: calc(100dvh - 6rem);">
-  <header class="mb-4 flex flex-wrap items-end justify-between gap-3">
+  <header class="mb-5 flex flex-wrap items-end justify-between gap-3">
     <div>
-      <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Home</h1>
-      <p class="mt-1 max-w-xl text-sm font-semibold text-slate-600 md:text-base">
+      <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Today</h1>
+      <p class="mt-1 max-w-md text-sm font-semibold text-slate-600 md:text-base">
         Am I becoming a better version of myself?
       </p>
     </div>
-    <div class="flex gap-2">
-      <%= link_to "Settings", settings_path, class: "rounded-xl bg-white/80 px-3 py-2 text-sm font-bold text-slate-700 shadow-sm hover:bg-white" %>
-      <%= link_to "+ Add", new_habit_path, class: "rounded-xl bg-emerald-500 px-3 py-2 text-sm font-black text-white shadow-sm hover:bg-emerald-600" %>
-    </div>
+    <%= link_to "+ Add", new_habit_path,
+        class: "rounded-2xl bg-emerald-500 px-4 py-2.5 text-sm font-black text-white shadow-sm hover:bg-emerald-600" %>
   </header>
 
   <% if @trackers.any? %>
     <div class="mb-4 grid grid-cols-3 gap-2">
-      <div class="rounded-2xl bg-emerald-500 px-3 py-2.5 text-center text-white shadow-sm">
+      <div class="rounded-2xl bg-emerald-500/95 px-3 py-3 text-center text-white shadow-sm">
         <p class="text-2xl font-black leading-none"><%= @good %></p>
-        <p class="mt-1 text-[10px] font-bold uppercase tracking-wide text-emerald-50">On track</p>
+        <p class="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-50">Better</p>
       </div>
-      <div class="rounded-2xl bg-amber-400 px-3 py-2.5 text-center text-amber-950 shadow-sm">
+      <div class="rounded-2xl bg-amber-400 px-3 py-3 text-center text-amber-950 shadow-sm">
         <p class="text-2xl font-black leading-none"><%= @same %></p>
-        <p class="mt-1 text-[10px] font-bold uppercase tracking-wide text-amber-900/80">Same</p>
+        <p class="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-900/80">Same</p>
       </div>
-      <div class="rounded-2xl bg-rose-500 px-3 py-2.5 text-center text-white shadow-sm">
+      <div class="rounded-2xl bg-rose-500 px-3 py-3 text-center text-white shadow-sm">
         <p class="text-2xl font-black leading-none"><%= @off %></p>
-        <p class="mt-1 text-[10px] font-bold uppercase tracking-wide text-rose-50">Off track</p>
+        <p class="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-rose-50">Needs work</p>
       </div>
     </div>
 
     <section class="home-board flex-1" style="<%= home_grid_style(@grid_count) %>">
       <% @trackers.each do |tracker| %>
         <% status = tracker.status %>
-        <div class="home-card rounded-3xl border-2 p-3.5 shadow-sm <%= vs_yesterday_classes(status) %>"
+        <div class="home-card rounded-[1.35rem] border-2 p-4 shadow-sm <%= vs_yesterday_classes(status) %>"
              data-controller="share"
              data-share-text-value="<%= share_message_for(tracker) %>"
              data-share-url-value="<%= absolute_url(root_path) %>">
           <%= link_to habit_path(tracker), class: "flex min-h-0 flex-1 flex-col justify-between outline-none" do %>
             <div class="flex items-start justify-between gap-2">
               <p class="home-card-name font-black"><%= tracker.name %></p>
-              <span class="home-card-trend shrink-0 rounded-lg px-2 py-1 font-black <%= vs_yesterday_badge_class(status) %>">
-                <%= vs_yesterday_short(status) %>
-              </span>
+              <%= render "shared/status_badge", status: status %>
             </div>
-            <div class="mt-2">
+            <div class="mt-3">
               <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
-              <p class="home-card-trend mt-1 font-bold opacity-70"><%= tracker.unit %></p>
-              <p class="mt-2 text-[11px] font-bold leading-snug opacity-80 md:text-xs">
-                <%= status_full_text(status) %>
-              </p>
+              <p class="home-card-trend mt-1 font-bold opacity-65"><%= tracker.unit %></p>
+              <div class="mt-2.5">
+                <%= render "shared/status_line", status: status %>
+              </div>
             </div>
           <% end %>
           <button type="button"
                   data-action="click->share#share"
-                  class="mt-2.5 w-full rounded-xl border border-current/15 bg-white/60 px-2 py-1.5 text-xs font-black uppercase tracking-wide opacity-90 transition hover:bg-white/90">
+                  class="mt-3 w-full rounded-xl border border-current/15 bg-white/65 px-2 py-2 text-xs font-black uppercase tracking-wide opacity-90 transition hover:bg-white">
             Share
           </button>
+          <div data-share-target="fallback" hidden class="mt-2 space-y-2 rounded-xl bg-white/90 p-3 text-left text-slate-800">
+            <p class="text-xs font-bold text-slate-500">Copy and share</p>
+            <button type="button" data-action="click->share#copyMessage" class="w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-black text-white">Copy message</button>
+            <button type="button" data-action="click->share#copyLink" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-black">Copy link</button>
+          </div>
         </div>
       <% end %>
     </section>
   <% else %>
-    <div class="flex flex-1 items-center justify-center rounded-3xl border-2 border-dashed border-slate-300 bg-white/80 p-10 text-center shadow-sm">
+    <div class="flex flex-1 items-center justify-center rounded-[1.75rem] border-2 border-dashed border-slate-300 bg-white/85 p-10 text-center shadow-sm">
       <div class="max-w-sm">
-        <p class="text-2xl font-black text-slate-900">Start with what matters</p>
-        <p class="mt-3 text-base font-semibold text-slate-600">
-          Add a habit. Choose Better Than Yesterday or Healthy Range. See if you’re improving.
+        <p class="text-2xl font-black tracking-tight text-slate-900">Start with what matters</p>
+        <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600">
+          Add one thing you care about. Tomorrow you’ll see if you’re moving forward.
         </p>
-        <%= link_to "Add your first habit", new_habit_path,
-            class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white shadow-sm hover:bg-emerald-600" %>
+        <%= link_to "Add your first thing", new_habit_path,
+            class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3.5 font-black text-white shadow-sm hover:bg-emerald-600" %>
       </div>
     </div>
   <% end %>

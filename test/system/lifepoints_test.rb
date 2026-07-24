@@ -11,7 +11,7 @@ class LifepointsTest < ApplicationSystemTestCase
     fill_in "Password", with: "password"
     click_button "Sign in"
 
-    assert_text "Home"
+    assert_text "Today"
     assert_text "Drink water"
 
     visit habit_path(habit)

@@ -21,9 +21,13 @@ class HabitsController < ApplicationController
 
   def create
     @habit = current_user.habits.build(habit_params)
+    @habit.show_on_home = true if @habit.show_on_home.nil?
+    @habit.active = true if @habit.active.nil?
+    @habit.stat_type = "growth" if @habit.stat_type.blank?
+    clear_targets_unless_configured!
 
     if @habit.save
-      redirect_to habits_path, notice: "Saved."
+      redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
     else
       render :new, status: :unprocessable_entity
     end
@@ -33,7 +37,10 @@ class HabitsController < ApplicationController
   end
 
   def update
-    if @habit.update(habit_params)
+    @habit.assign_attributes(habit_params)
+    clear_targets_unless_configured!
+
+    if @habit.save
       redirect_to habits_path, notice: "Saved."
     else
       render :edit, status: :unprocessable_entity
@@ -47,7 +54,7 @@ class HabitsController < ApplicationController
 
   def raise_goal
     if @habit.raise_goal!
-      redirect_to habit_path(@habit), notice: "Goal raised to #{@habit.goal.to_i == @habit.goal ? @habit.goal.to_i : @habit.goal}."
+      redirect_to habit_path(@habit), notice: "Goal raised. Keep going."
     else
       redirect_to habit_path(@habit), alert: "Set a goal first."
     end
@@ -69,5 +76,24 @@ class HabitsController < ApplicationController
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
       :stat_type, :goal, :min_value, :max_value
     )
+  end
+
+  # When "Enable a target" is off, the form still may post empty type fields —
+  # force Better Than Yesterday with no stretch / range targets.
+  def clear_targets_unless_configured!
+    has_stretch = @habit.goal.present?
+    has_range = @habit.min_value.present? || @habit.max_value.present?
+
+    if @habit.standard?
+      @habit.goal = nil
+      return if has_range
+
+      @habit.stat_type = "growth"
+    elsif !has_stretch
+      @habit.goal = nil
+      @habit.min_value = nil
+      @habit.max_value = nil
+      @habit.stat_type = "growth"
+    end
   end
 end

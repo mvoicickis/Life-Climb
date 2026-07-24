@@ -17,8 +17,8 @@ class HabitStatusEvaluator
     when :same then "Same as yesterday"
     when :worse then "Worse than yesterday"
     when :perfect then "Within healthy range"
-    when :too_low then "Below range"
-    when :too_high then "Above range"
+    when :too_low then "Below healthy range"
+    when :too_high then "Above healthy range"
     else "—"
     end
   end

@@ -1,7 +1,7 @@
 require "test_helper"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
-  setup { @user = User.take }
+  setup { @user = users(:one) }
 
   test "new" do
     get new_session_path
@@ -23,11 +23,17 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy" do
-    sign_in_as(User.take)
+    sign_in_as(users(:one))
 
     delete session_path
 
     assert_redirected_to new_session_path
     assert_empty cookies[:session_id]
+  end
+
+  test "admin signs in to admin dashboard" do
+    admin = users(:admin)
+    post session_path, params: { email_address: admin.email_address, password: "password" }
+    assert_redirected_to admin_root_url
   end
 end

@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :habits, dependent: :destroy
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
+  has_many :feedbacks, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -13,6 +14,10 @@ class User < ApplicationRecord
     greater_than_or_equal_to: 1,
     less_than_or_equal_to: 20
   }
+
+  def admin?
+    admin
+  end
 
   def points_today
     completions.where(completed_on: Date.current).sum(:points_awarded)

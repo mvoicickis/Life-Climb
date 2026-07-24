@@ -35,7 +35,11 @@ module Authentication
     end
 
     def after_authentication_url
-      session.delete(:return_to_after_authenticating) || dashboard_url
+      stored = session.delete(:return_to_after_authenticating)
+      return stored if stored.present?
+      return admin_root_url if Current.user&.admin?
+
+      dashboard_url
     end
 
     def start_new_session_for(user)

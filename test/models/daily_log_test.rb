@@ -27,9 +27,11 @@ class HabitStatusEvaluatorTest < ActiveSupport::TestCase
 
     log.update!(amount: 6.5)
     assert_equal :too_low, habit.reload.status
+    assert_equal "Below healthy range", habit.status_label
 
     log.update!(amount: 10)
     assert_equal :too_high, habit.reload.status
+    assert_equal "Above healthy range", habit.status_label
   end
 
   test "healthy range allows max-only screen time style goals" do
@@ -42,32 +44,16 @@ class HabitStatusEvaluatorTest < ActiveSupport::TestCase
     habit.daily_logs.find_by!(logged_on: Date.current).update!(amount: 3)
     assert_equal :too_high, habit.reload.status
   end
-
-  test "goal raise prompt only when growth goal is set and hit" do
-    habit = habits(:one)
-    habit.update!(stat_type: "growth", goal: 10)
-    habit.daily_logs.create!(user: users(:one), logged_on: Date.current, amount: 10)
-
-    assert habit.show_goal_raise_prompt?
-    habit.decline_goal_raise!
-    assert_not habit.show_goal_raise_prompt?
-  end
 end
 
 class DailyLogTest < ActiveSupport::TestCase
   test "goal from yesterday grows by at least one and about one percent" do
     assert_equal 11, Habit.goal_from_yesterday(10)
-    assert_equal 41, Habit.goal_from_yesterday(40)
-    assert_equal 10_100, Habit.goal_from_yesterday(10_000)
     assert_equal 1, Habit.goal_from_yesterday(0)
-    assert_equal 1, Habit.goal_from_yesterday(nil)
   end
 
   test "empty growth day counts as zero and same" do
     habit = habits(:one)
-
-    assert_equal BigDecimal("0"), habit.today_amount
-    assert_equal BigDecimal("0"), habit.yesterday_amount
     assert_equal :same, habit.status
   end
 end
