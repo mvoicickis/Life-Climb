@@ -49,35 +49,35 @@
 
   .landing-pre {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(22px);
   }
 
   .landing-in {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 700ms ease, transform 700ms ease;
+    transition: opacity 800ms cubic-bezier(0.22, 1, 0.36, 1), transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .landing-hero [data-landing-target="brand"],
   .landing-hero [data-landing-target="heroCopy"] {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
   }
 
   .landing-hero [data-landing-target="brand"].landing-in,
   .landing-hero [data-landing-target="heroCopy"].landing-in {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 800ms ease, transform 800ms ease;
+    transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .landing-hero [data-landing-target="heroCopy"].landing-in {
-    transition-delay: 120ms;
+    transition-delay: 140ms;
   }
 
   .landing-hero img {
-    transform: scale(1.06);
-    transition: transform 4.5s ease-out;
+    transform: scale(1.08);
+    transition: transform 5.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .landing-hero img.landing-zoom {
