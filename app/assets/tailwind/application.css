@@ -1,1 +1,67 @@
 @import "tailwindcss";
+
+@layer utilities {
+  .home-board {
+    display: grid;
+    gap: 0.75rem;
+    height: calc(100dvh - 13.5rem);
+    min-height: 16rem;
+    align-content: stretch;
+  }
+
+  .home-card {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .home-card:active {
+    transform: scale(0.98);
+  }
+
+  .home-card-name {
+    font-size: clamp(0.75rem, 2.4vw, 1.15rem);
+    line-height: 1.15;
+  }
+
+  .home-card-value {
+    font-size: clamp(1.4rem, 6vw, 2.75rem);
+    line-height: 1;
+  }
+
+  .home-card-trend {
+    font-size: clamp(0.65rem, 1.8vw, 0.8rem);
+  }
+
+  .bar-fill {
+    transition: width 500ms ease;
+  }
+
+  .pop-save {
+    animation: pop-save 450ms ease;
+  }
+
+  .glow-win {
+    animation: glow-win 700ms ease;
+  }
+
+  @keyframes pop-save {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes glow-win {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.0); }
+    40% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.25); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.0); }
+  }
+}
+
+@media (min-width: 768px) {
+  .home-board {
+    height: calc(100dvh - 12rem);
+  }
+}

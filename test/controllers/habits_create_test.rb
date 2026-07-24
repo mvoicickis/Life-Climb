@@ -5,10 +5,20 @@ class HabitsCreateTest < ActionDispatch::IntegrationTest
     user = users(:one)
     sign_in_as user
     assert_difference "Habit.count", 1 do
-      post habits_path, params: { habit: { name: "Evening walk", description: "Walk", points: 8, frequency: "daily", active: true } }
+      post habits_path, params: {
+        habit: {
+          name: "Evening walk",
+          description: "Walk",
+          points: 8,
+          frequency: "daily",
+          active: true,
+          unit: "steps",
+          show_on_home: true
+        }
+      }
     end
     assert_redirected_to habits_path
     follow_redirect!
-    assert_match /Habit created/, response.body
+    assert_match(/Saved/, response.body)
   end
 end

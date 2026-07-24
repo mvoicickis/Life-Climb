@@ -4,8 +4,10 @@ one:
   email_address: one@example.com
   password_digest: <%= password_digest %>
   total_points: 0
+  home_stat_count: 6
 
 two:
   email_address: two@example.com
   password_digest: <%= password_digest %>
   total_points: 0
+  home_stat_count: 6

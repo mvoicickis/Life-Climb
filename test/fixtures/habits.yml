@@ -1,15 +1,21 @@
 one:
   user: one
   name: Drink water
-  description: Drink 8 glasses of water
+  description: Drink water every day
   points: 5
   frequency: daily
   active: true
+  unit: glasses
+  show_on_home: true
+  position: 1
 
 two:
   user: two
   name: Stretch
-  description: 10 minute stretch
+  description: Stretch every day
   points: 3
   frequency: daily
   active: true
+  unit: minutes
+  show_on_home: true
+  position: 1

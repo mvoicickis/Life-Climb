@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_102035) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_131808) do
   create_table "completions", force: :cascade do |t|
     t.date "completed_on", null: false
     t.datetime "created_at", null: false
@@ -23,6 +23,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_102035) do
     t.index ["user_id"], name: "index_completions_on_user_id"
   end
 
+  create_table "daily_logs", force: :cascade do |t|
+    t.decimal "amount", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.decimal "goal", precision: 12, scale: 2
+    t.integer "habit_id", null: false
+    t.date "logged_on", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["habit_id", "logged_on"], name: "index_daily_logs_on_habit_id_and_logged_on", unique: true
+    t.index ["habit_id"], name: "index_daily_logs_on_habit_id"
+    t.index ["user_id"], name: "index_daily_logs_on_user_id"
+  end
+
   create_table "habits", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -30,8 +43,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_102035) do
     t.string "frequency", default: "daily", null: false
     t.string "name", null: false
     t.integer "points", default: 5, null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "show_on_home", default: true, null: false
+    t.string "unit", default: "times", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["user_id", "position"], name: "index_habits_on_user_id_and_position"
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
 
@@ -47,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_102035) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
+    t.integer "home_stat_count", default: 6, null: false
     t.string "password_digest", null: false
     t.integer "total_points", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -55,6 +73,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_102035) do
 
   add_foreign_key "completions", "habits"
   add_foreign_key "completions", "users"
+  add_foreign_key "daily_logs", "habits"
+  add_foreign_key "daily_logs", "users"
   add_foreign_key "habits", "users"
   add_foreign_key "sessions", "users"
 end

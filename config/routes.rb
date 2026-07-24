@@ -5,11 +5,12 @@ Rails.application.routes.draw do
 
   root "dashboard#show"
   resource :dashboard, only: :show, controller: "dashboard"
+  resource :settings, only: %i[ show update ]
+  patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
+
   resources :habits
   resources :completions, only: :create
+  resources :daily_logs, only: :create
 
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 end
