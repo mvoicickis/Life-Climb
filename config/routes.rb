@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resource :registration, only: %i[ new create ]
 
-  root "dashboard#show"
+  root "pages#home"
   resource :dashboard, only: :show, controller: "dashboard"
   resource :settings, only: %i[ show update ]
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings

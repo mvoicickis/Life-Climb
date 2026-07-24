@@ -13,9 +13,10 @@ class LifepointsTest < ApplicationSystemTestCase
 
     assert_text "Home"
     assert_text "Drink water"
-    click_link "Drink water"
 
+    visit habit_path(habit)
     assert_text "How many today?"
+
     page.execute_script(<<~JS)
       document.getElementById("daily_log_amount").value = "8";
       document.querySelector("form[action*='daily_logs']").submit();

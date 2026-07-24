@@ -9,7 +9,7 @@
      data-controller="save-pop"
      data-save-pop-saved-value="<%= saved %>"
      data-save-pop-won-value="<%= won %>">
-  <%= link_to "← Home", root_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
+  <%= link_to "← Home", dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
 
   <article id="detail-card"
            class="overflow-hidden rounded-3xl border-2 p-5 shadow-sm <%= vs_yesterday_classes(status) %> <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">

@@ -6,10 +6,10 @@ class CompletionsController < ApplicationController
     if @completion.save
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to root_path, notice: "+#{@habit.points} points!" }
+        format.html { redirect_to dashboard_path, notice: "+#{@habit.points} points!" }
       end
     else
-      redirect_to root_path, alert: @completion.errors.full_messages.to_sentence
+      redirect_to dashboard_path, alert: @completion.errors.full_messages.to_sentence
     end
   end
 end

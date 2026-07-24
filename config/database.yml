@@ -1,26 +1,22 @@
+# SQLite for local; Postgres for production (DATABASE_URL on Render/Fly/etc.)
+
 default: &default
-  adapter: postgresql
-  encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
 
 development:
   <<: *default
-  database: lifepoints_development
+  adapter: sqlite3
+  database: storage/development.sqlite3
 
 test:
   <<: *default
-  database: lifepoints_test
+  adapter: sqlite3
+  database: storage/test.sqlite3
 
 production:
   primary:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
-  cache:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
-  queue:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
-  cable:
-    <<: *default
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     url: <%= ENV["DATABASE_URL"] %>
