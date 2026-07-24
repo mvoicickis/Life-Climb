@@ -1,5 +1,5 @@
 class HabitsController < ApplicationController
-  before_action :set_habit, only: %i[ show edit update destroy ]
+  before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
 
   def index
     @habits = current_user.habits.ordered
@@ -14,7 +14,8 @@ class HabitsController < ApplicationController
       frequency: "daily",
       active: true,
       unit: "times",
-      show_on_home: true
+      show_on_home: true,
+      stat_type: "growth"
     )
   end
 
@@ -44,6 +45,19 @@ class HabitsController < ApplicationController
     redirect_to habits_path, notice: "Removed.", status: :see_other
   end
 
+  def raise_goal
+    if @habit.raise_goal!
+      redirect_to habit_path(@habit), notice: "Goal raised to #{@habit.goal.to_i == @habit.goal ? @habit.goal.to_i : @habit.goal}."
+    else
+      redirect_to habit_path(@habit), alert: "Set a growth goal first."
+    end
+  end
+
+  def decline_goal_raise
+    @habit.decline_goal_raise!
+    redirect_to habit_path(@habit), notice: "Okay — keeping this goal for today."
+  end
+
   private
 
   def set_habit
@@ -52,7 +66,8 @@ class HabitsController < ApplicationController
 
   def habit_params
     params.require(:habit).permit(
-      :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position
+      :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
+      :stat_type, :goal, :min_value, :max_value
     )
   end
 end

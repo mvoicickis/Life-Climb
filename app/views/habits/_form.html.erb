@@ -1,4 +1,4 @@
-<%= form_with model: habit, class: "space-y-4", data: { turbo: false } do |form| %>
+<%= form_with model: habit, class: "space-y-4", data: { turbo: false, controller: "stat-type", stat_type_type_value: habit.stat_type.presence || "growth" } do |form| %>
   <% if habit.errors.any? %>
     <div class="rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 font-bold text-rose-900">
       <ul class="list-inside list-disc">
@@ -28,6 +28,60 @@
       <% end %>
     </datalist>
     <p class="mt-1 text-xs font-semibold text-slate-500">Pick an idea or type your own word.</p>
+  </div>
+
+  <fieldset>
+    <legend class="mb-2 block text-sm font-bold">What kind of stat?</legend>
+    <div class="grid gap-2 sm:grid-cols-2">
+      <label class="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+        <%= form.radio_button :stat_type, "growth",
+            class: "mt-1 h-4 w-4 text-emerald-600",
+            data: { action: "change->stat-type#change" } %>
+        <span>
+          <span class="block font-black text-slate-900">Growth</span>
+          <span class="mt-1 block text-xs font-semibold text-slate-600">Beat yesterday. Optional goal.</span>
+        </span>
+      </label>
+      <label class="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+        <%= form.radio_button :stat_type, "standard",
+            class: "mt-1 h-4 w-4 text-emerald-600",
+            data: { action: "change->stat-type#change" } %>
+        <span>
+          <span class="block font-black text-slate-900">Standard</span>
+          <span class="mt-1 block text-xs font-semibold text-slate-600">Stay in a min / max range.</span>
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div data-stat-type-target="growthFields" class="space-y-3 rounded-2xl border-2 border-emerald-100 bg-emerald-50/50 p-4">
+    <%= form.label :goal, "Goal (optional)", class: "mb-1 block text-sm font-bold" %>
+    <%= form.number_field :goal,
+        min: 0,
+        step: :any,
+        placeholder: "e.g. 20",
+        class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
+    <p class="text-xs font-semibold text-slate-600">
+      Leave blank to only track Up / Level / Down. When you hit a goal, we can ask if you want to raise it.
+    </p>
+  </div>
+
+  <div data-stat-type-target="standardFields" class="space-y-3 rounded-2xl border-2 border-sky-100 bg-sky-50/50 p-4" hidden>
+    <div>
+      <%= form.label :min_value, "Minimum (required)", class: "mb-1 block text-sm font-bold" %>
+      <%= form.number_field :min_value,
+          step: :any,
+          placeholder: "e.g. 8000",
+          class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
+      <p class="mt-1 text-xs font-semibold text-slate-600">Green when today’s number is at least this.</p>
+    </div>
+    <div>
+      <%= form.label :max_value, "Maximum (optional — leave blank if more is always fine)", class: "mb-1 block text-sm font-bold" %>
+      <%= form.number_field :max_value,
+          step: :any,
+          placeholder: "e.g. 9 for sleep hours",
+          class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
+    </div>
   </div>
 
   <div>

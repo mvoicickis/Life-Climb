@@ -7,11 +7,11 @@ demo.save!
 demo.habits.where(name: [ "Morning run", "Read 30 minutes", "Meditate" ]).update_all(active: false, show_on_home: false)
 
 trackers = [
-  { name: "Move", unit: "steps", description: "Walk every day", points: 5 },
-  { name: "Sleep", unit: "hours", description: "Rest well", points: 5 },
-  { name: "Water", unit: "glasses", description: "Drink water", points: 5 },
-  { name: "Learn", unit: "pages", description: "Read pages", points: 5 },
-  { name: "Income", unit: "money", description: "Money in today", points: 5 }
+  { name: "Move", unit: "steps", description: "Walk every day", points: 5, stat_type: "standard", min_value: 8000, max_value: nil, goal: nil },
+  { name: "Sleep", unit: "hours", description: "Rest well", points: 5, stat_type: "standard", min_value: 7, max_value: 9, goal: nil },
+  { name: "Water", unit: "glasses", description: "Drink water", points: 5, stat_type: "growth", goal: 8, min_value: nil, max_value: nil },
+  { name: "Learn", unit: "pages", description: "Read pages", points: 5, stat_type: "growth", goal: 20, min_value: nil, max_value: nil },
+  { name: "Income", unit: "money", description: "Money in today", points: 5, stat_type: "growth", goal: 50, min_value: nil, max_value: nil }
 ]
 
 trackers.each_with_index do |attrs, index|
@@ -23,6 +23,10 @@ trackers.each_with_index do |attrs, index|
   habit.active = true
   habit.show_on_home = true
   habit.position = index + 1
+  habit.stat_type = attrs[:stat_type]
+  habit.goal = attrs[:goal]
+  habit.min_value = attrs[:min_value]
+  habit.max_value = attrs[:max_value]
   habit.save!
 end
 

@@ -1,7 +1,7 @@
 <% log = tracker.today_log %>
 <% suggested = tracker.suggested_goal_for_today %>
 <% goal = tracker.todays_goal_value %>
-<% status = tracker.vs_yesterday %>
+<% status = tracker.status %>
 <% progress = tracker.goal_progress_percent %>
 
 <article class="overflow-hidden rounded-3xl border-2 <%= vs_yesterday_classes(status) %> shadow-sm">
@@ -36,7 +36,7 @@
       <div class="h-4 overflow-hidden rounded-full bg-black/10">
         <div class="h-full rounded-full transition-all <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
       </div>
-      <p class="mt-2 text-sm font-semibold"><%= tracker.vs_yesterday_label %></p>
+      <p class="mt-2 text-sm font-semibold"><%= tracker.status_label %></p>
     </div>
 
     <%= form_with url: daily_logs_path(habit_id: tracker.id), scope: :daily_log, class: "mt-5 space-y-3", data: { turbo: false } do |form| %>

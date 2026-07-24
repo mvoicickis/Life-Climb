@@ -13,12 +13,12 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Track what matters. See if today is better than yesterday. Green = Up, amber = Level, red = Down."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Track what matters. Growth stats use Up/Level/Down. Standard stats use in-range or out."
   end
 
   def vs_yesterday_classes(status)
     case status
-    when :up
+    when :up, :ok
       "border-emerald-400 bg-emerald-50 text-emerald-950"
     when :level
       "border-amber-300 bg-amber-50 text-amber-950"
@@ -29,7 +29,7 @@ module ApplicationHelper
 
   def vs_yesterday_bar_class(status)
     case status
-    when :up then "bg-emerald-500"
+    when :up, :ok then "bg-emerald-500"
     when :level then "bg-amber-400"
     else "bg-rose-500"
     end
@@ -37,7 +37,7 @@ module ApplicationHelper
 
   def vs_yesterday_badge_class(status)
     case status
-    when :up then "bg-emerald-500 text-white"
+    when :up, :ok then "bg-emerald-500 text-white"
     when :level then "bg-amber-400 text-amber-950"
     else "bg-rose-500 text-white"
     end
@@ -47,7 +47,10 @@ module ApplicationHelper
     case status
     when :up then "UP"
     when :level then "LEVEL"
-    else "DOWN"
+    when :down then "DOWN"
+    when :ok then "OK"
+    when :off then "OUT"
+    else status.to_s.upcase
     end
   end
 
@@ -55,20 +58,23 @@ module ApplicationHelper
     case status
     when :up then "Up"
     when :level then "Level"
-    else "Down"
+    when :down then "Down"
+    when :ok then "in range"
+    when :off then "out of range"
+    else status.to_s
     end
   end
 
   def vs_yesterday_share_emoji(status)
     case status
-    when :up then "🟢"
+    when :up, :ok then "🟢"
     when :level then "⚪"
     else "🔴"
     end
   end
 
   def share_message_for(tracker)
-    status = tracker.vs_yesterday
+    status = tracker.status
     "I went #{vs_yesterday_share_word(status)} today on LifePoints #{vs_yesterday_share_emoji(status)} — #{format_amount(tracker.today_amount)} #{tracker.unit}"
   end
 
@@ -87,7 +93,18 @@ module ApplicationHelper
     else 4
     end
 
-    # Fit board in one screen: use remaining viewport under nav/header/score
     "grid-template-columns: repeat(#{cols}, minmax(0, 1fr));"
+  end
+
+  def good_status?(status)
+    status == :up || status == :ok
+  end
+
+  def warn_status?(status)
+    status == :level
+  end
+
+  def bad_status?(status)
+    status == :down || status == :off
   end
 end

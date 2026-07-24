@@ -4,7 +4,7 @@
   <header class="mb-3 flex flex-wrap items-end justify-between gap-2">
     <div>
       <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Home</h1>
-      <p class="text-sm font-semibold text-slate-600 md:text-base">Green = Up. Amber = Level. Red = Down.</p>
+      <p class="text-sm font-semibold text-slate-600 md:text-base">Green = good. Amber = Level. Red = needs work.</p>
     </div>
     <div class="flex gap-2">
       <%= link_to "Settings", settings_path, class: "rounded-xl bg-white/80 px-3 py-2 text-sm font-bold text-slate-700 shadow-sm hover:bg-white" %>
@@ -30,7 +30,7 @@
 
     <section class="home-board flex-1" style="<%= home_grid_style(@grid_count) %>">
       <% @trackers.each do |tracker| %>
-        <% status = tracker.vs_yesterday %>
+        <% status = tracker.status %>
         <div class="home-card rounded-3xl border-2 p-3 shadow-sm <%= vs_yesterday_classes(status) %>"
              data-controller="share"
              data-share-text-value="<%= share_message_for(tracker) %>"

@@ -8,6 +8,7 @@ one:
   unit: glasses
   show_on_home: true
   position: 1
+  stat_type: growth
 
 two:
   user: two
@@ -19,3 +20,4 @@ two:
   unit: minutes
   show_on_home: true
   position: 1
+  stat_type: growth

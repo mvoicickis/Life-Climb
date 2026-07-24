@@ -8,7 +8,12 @@ Rails.application.routes.draw do
   resource :settings, only: %i[ show update ]
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
 
-  resources :habits
+  resources :habits do
+    member do
+      patch :raise_goal
+      patch :decline_goal_raise
+    end
+  end
   resources :completions, only: :create
   resources :daily_logs, only: :create
 

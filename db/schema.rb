@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_131808) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_180000) do
   create_table "completions", force: :cascade do |t|
     t.date "completed_on", null: false
     t.datetime "created_at", null: false
@@ -41,10 +41,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_131808) do
     t.datetime "created_at", null: false
     t.text "description"
     t.string "frequency", default: "daily", null: false
+    t.decimal "goal", precision: 12, scale: 2
+    t.date "goal_raise_declined_on"
+    t.decimal "max_value", precision: 12, scale: 2
+    t.decimal "min_value", precision: 12, scale: 2
     t.string "name", null: false
     t.integer "points", default: 5, null: false
     t.integer "position", default: 0, null: false
     t.boolean "show_on_home", default: true, null: false
+    t.string "stat_type", default: "growth", null: false
     t.string "unit", default: "times", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
