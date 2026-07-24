@@ -1,13 +1,16 @@
 module ContactHelper
-  # Direct founder contact for Feedback. Override with Render env vars (no shell needed).
+  # Direct founder contact for Feedback. Override with Render env vars if needed.
+  DEFAULT_CONTACT_EMAIL = "mvoicickis@gmail.com"
+  DEFAULT_CONTACT_WHATSAPP = "353872346580" # +353 87 234 6580
+
   def contact_email
-    ENV.fetch("CONTACT_EMAIL", ENV.fetch("FEEDBACK_TO_EMAIL", "mvoicickis@gmail.com"))
+    ENV.fetch("CONTACT_EMAIL", ENV.fetch("FEEDBACK_TO_EMAIL", DEFAULT_CONTACT_EMAIL))
   end
 
-  # WhatsApp number with country code, digits only (example: 37120000000).
-  # Set CONTACT_WHATSAPP in Render Environment to show the WhatsApp button.
+  # WhatsApp number with country code, digits only.
   def contact_whatsapp_number
-    ENV["CONTACT_WHATSAPP"].to_s.gsub(/\D/, "").presence
+    raw = ENV.fetch("CONTACT_WHATSAPP", DEFAULT_CONTACT_WHATSAPP)
+    raw.to_s.gsub(/\D/, "").presence
   end
 
   def contact_whatsapp?

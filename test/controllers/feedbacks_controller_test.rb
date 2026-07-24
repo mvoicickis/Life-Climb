@@ -1,16 +1,18 @@
 require "test_helper"
 
 class FeedbacksControllerTest < ActionDispatch::IntegrationTest
-  test "feedback page shows email contact" do
+  test "feedback page shows email and whatsapp contact" do
     sign_in_as users(:one)
 
     get new_feedback_path
     assert_response :success
     assert_match(/mvoicickis@gmail\.com/, response.body)
     assert_match(/mailto:mvoicickis@gmail\.com/, response.body)
+    assert_match(%r{https://wa\.me/353872346580}, response.body)
+    assert_match(/\+353 87 234 6580/, response.body)
   end
 
-  test "feedback page shows whatsapp when configured" do
+  test "whatsapp number can be overridden by env" do
     ENV["CONTACT_WHATSAPP"] = "+371 2000 0000"
 
     sign_in_as users(:one)
@@ -18,7 +20,6 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match(%r{https://wa\.me/37120000000}, response.body)
-    assert_match(/WhatsApp/, response.body)
   ensure
     ENV.delete("CONTACT_WHATSAPP")
   end
