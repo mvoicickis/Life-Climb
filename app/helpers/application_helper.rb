@@ -88,17 +88,11 @@ module ApplicationHelper
   end
 
   def share_message_for(tracker)
-    amount = format_amount(tracker.today_amount)
-    unit = tracker.unit
-    name = tracker.name
-    status_line = HabitStatusEvaluator.new(tracker).label
+    ShareMessageBuilder.new(tracker, landing_url: absolute_url(root_path)).call
+  end
 
-    [
-      "Today I logged #{amount} #{unit} for #{name}.",
-      "#{status_line}.",
-      "Small improvements every day make a big difference.",
-      "I'm using LifePoints to become a better version of myself."
-    ].join("\n")
+  def share_message_body_for(tracker)
+    ShareMessageBuilder.new(tracker, landing_url: absolute_url(root_path)).body
   end
 
   def format_amount(amount)

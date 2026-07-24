@@ -5,9 +5,12 @@
 <% won = params[:won] == "1" %>
 
 <div class="mx-auto max-w-lg"
-     data-controller="save-pop"
+     data-controller="save-pop share"
      data-save-pop-saved-value="<%= saved %>"
-     data-save-pop-won-value="<%= won %>">
+     data-save-pop-won-value="<%= won %>"
+     data-share-text-value="<%= share_message_body_for(@habit) %>"
+     data-share-url-value="<%= absolute_url(root_path) %>"
+     data-share-title-value="<%= @habit.name %> · LifePoints">
   <%= link_to "← Today", dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
 
   <article id="detail-card"
@@ -88,8 +91,15 @@
           class: "w-full cursor-pointer rounded-2xl bg-slate-900 px-4 py-4 text-lg font-black text-white hover:bg-slate-800" %>
     <% end %>
 
-    <div class="mt-5 flex gap-2">
+    <div class="mt-5 flex flex-wrap gap-2">
+      <button type="button"
+              data-action="click->share#open"
+              class="rounded-xl border-2 border-black/10 bg-white/70 px-3 py-2 text-sm font-bold">
+        Share
+      </button>
       <%= link_to "Edit", edit_habit_path(@habit), class: "rounded-xl border-2 border-black/10 bg-white/70 px-3 py-2 text-sm font-bold" %>
     </div>
   </article>
+
+  <%= render "shared/share_sheet" %>
 </div>

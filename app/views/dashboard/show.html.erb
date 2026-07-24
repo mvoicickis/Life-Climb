@@ -1,6 +1,9 @@
 <% content_for :title, "Today" %>
 
-<div class="mx-auto flex max-w-5xl flex-col" style="min-height: calc(100dvh - 6rem);">
+<div class="mx-auto flex max-w-5xl flex-col" style="min-height: calc(100dvh - 6rem);"
+     data-controller="share"
+     data-share-url-value="<%= absolute_url(root_path) %>"
+     data-share-title-value="LifePoints">
   <header class="mb-5 flex flex-wrap items-end justify-between gap-3">
     <div>
       <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Today</h1>
@@ -31,10 +34,7 @@
     <section class="home-board flex-1" style="<%= home_grid_style(@grid_count) %>">
       <% @trackers.each do |tracker| %>
         <% status = tracker.status %>
-        <div class="home-card rounded-[1.35rem] border-2 p-4 shadow-sm <%= vs_yesterday_classes(status) %>"
-             data-controller="share"
-             data-share-text-value="<%= share_message_for(tracker) %>"
-             data-share-url-value="<%= absolute_url(root_path) %>">
+        <div class="home-card rounded-[1.35rem] border-2 p-4 shadow-sm <%= vs_yesterday_classes(status) %>">
           <%= link_to habit_path(tracker), class: "flex min-h-0 flex-1 flex-col justify-between outline-none" do %>
             <div class="flex items-start justify-between gap-2">
               <p class="home-card-name font-black"><%= tracker.name %></p>
@@ -49,15 +49,13 @@
             </div>
           <% end %>
           <button type="button"
-                  data-action="click->share#share"
+                  data-action="click->share#open"
+                  data-share-text-param="<%= share_message_body_for(tracker) %>"
+                  data-share-url-param="<%= absolute_url(root_path) %>"
+                  data-share-title-param="<%= tracker.name %> · LifePoints"
                   class="mt-3 w-full rounded-xl border border-current/15 bg-white/65 px-2 py-2 text-xs font-black uppercase tracking-wide opacity-90 transition hover:bg-white">
             Share
           </button>
-          <div data-share-target="fallback" hidden class="mt-2 space-y-2 rounded-xl bg-white/90 p-3 text-left text-slate-800">
-            <p class="text-xs font-bold text-slate-500">Copy and share</p>
-            <button type="button" data-action="click->share#copyMessage" class="w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-black text-white">Copy message</button>
-            <button type="button" data-action="click->share#copyLink" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-black">Copy link</button>
-          </div>
         </div>
       <% end %>
     </section>
@@ -73,4 +71,6 @@
       </div>
     </div>
   <% end %>
+
+  <%= render "shared/share_sheet" %>
 </div>
