@@ -1,0 +1,6 @@
+New LifePoints feedback
+
+From: <%= @user.email_address %>
+Sent: <%= @feedback.created_at.utc.strftime("%Y-%m-%d %H:%M UTC") %>
+
+<%= @feedback.body %>

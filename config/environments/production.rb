@@ -51,9 +51,9 @@ Rails.application.configure do
   config.cache_store = :memory_store
   config.active_job.queue_adapter = :async
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Raise delivery errors in logs when SMTP is configured; still soft-fail in controllers.
+  config.action_mailer.raise_delivery_errors = ENV["SMTP_ADDRESS"].present?
+  config.action_mailer.perform_caching = false
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = {
@@ -61,14 +61,25 @@ Rails.application.configure do
     protocol: "https"
   }
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  # Optional SMTP (Render dashboard env vars — no shell needed).
+  # Gmail example:
+  #   SMTP_ADDRESS=smtp.gmail.com
+  #   SMTP_PORT=587
+  #   SMTP_USERNAME=you@gmail.com
+  #   SMTP_PASSWORD=<gmail app password>
+  #   MAIL_FROM=you@gmail.com
+  #   FEEDBACK_TO_EMAIL=you@gmail.com
+  if ENV["SMTP_ADDRESS"].present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: ENV["SMTP_ADDRESS"],
+      port: ENV.fetch("SMTP_PORT", "587").to_i,
+      user_name: ENV["SMTP_USERNAME"],
+      password: ENV["SMTP_PASSWORD"],
+      authentication: :plain,
+      enable_starttls_auto: true
+    }
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

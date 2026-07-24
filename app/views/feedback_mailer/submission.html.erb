@@ -1,0 +1,6 @@
+<p style="margin:0 0 12px;font-family:system-ui,sans-serif;font-size:14px;color:#334155;">
+  <strong>From:</strong> <%= @user.email_address %><br>
+  <strong>Sent:</strong> <%= @feedback.created_at.utc.strftime("%Y-%m-%d %H:%M UTC") %>
+</p>
+
+<p style="margin:0;font-family:system-ui,sans-serif;font-size:16px;line-height:1.5;color:#0f172a;white-space:pre-wrap;"><%= @feedback.body %></p>

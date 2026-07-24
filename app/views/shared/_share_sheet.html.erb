@@ -1,0 +1,100 @@
+<%# Shared LifePoints share sheet — platforms + native More. %>
+<div data-share-target="dialog"
+     class="share-sheet"
+     hidden
+     aria-hidden="true"
+     role="presentation">
+  <div data-share-target="backdrop"
+       class="share-sheet__backdrop"
+       data-action="click->share#closeOnBackdrop"></div>
+
+  <div data-share-target="panel"
+       class="share-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="share-sheet-title"
+       tabindex="-1">
+    <div class="share-sheet__handle" aria-hidden="true"></div>
+
+    <div class="share-sheet__header">
+      <div>
+        <h2 id="share-sheet-title" class="share-sheet__title">Share your progress</h2>
+        <p class="share-sheet__subtitle">One tap to inspire someone else.</p>
+      </div>
+      <button type="button"
+              class="share-sheet__close"
+              data-action="click->share#close"
+              aria-label="Close share dialog">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <p data-share-target="preview" class="share-sheet__preview"></p>
+
+    <div class="share-sheet__grid" role="list">
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#facebook">
+        <span class="share-sheet__icon share-sheet__icon--facebook" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg>
+        </span>
+        <span class="share-sheet__label">Facebook</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#messenger">
+        <span class="share-sheet__icon share-sheet__icon--messenger" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 2C6.5 2 2 6.1 2 11.2c0 2.9 1.4 5.4 3.7 7.1V22l3.4-1.9c.9.2 1.9.4 2.9.4 5.5 0 10-4.1 10-9.3S17.5 2 12 2zm1 12.5-2.5-2.7-4.9 2.7L12.9 9l2.6 2.7L20.3 9l-7.3 5.5z"/></svg>
+        </span>
+        <span class="share-sheet__label">Messenger</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#whatsapp">
+        <span class="share-sheet__icon share-sheet__icon--whatsapp" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.3-1.4A9.9 9.9 0 1 0 12 2zm5.8 14.1c-.2.7-1.2 1.2-1.9 1.4-.5.1-1.1.2-3.5-.7-3-1.2-4.9-4.3-5.1-4.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.3.7-.4 1-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2 0 .4-.1.6l-.4.6c-.2.2-.3.4-.1.7.2.3.7 1.2 1.6 1.9 1.1.9 2 1.2 2.3 1.3.3.1.5.1.7-.1l.9-1.1c.2-.2.4-.2.7-.1l2.1 1c.3.1.5.2.6.3.1.3 0 .9-.2 1.6z"/></svg>
+        </span>
+        <span class="share-sheet__label">WhatsApp</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#telegram">
+        <span class="share-sheet__icon share-sheet__icon--telegram" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M21.5 3.6 2.9 10.8c-1.3.5-1.2 1.3-.2 1.6l4.8 1.5 1.8 5.6c.2.7.4.9 1 .9.6 0 .9-.3 1.2-.6l2.5-2.4 5.2 3.8c1 .5 1.6.2 1.9-.9l3.4-15.9c.3-1.3-.5-1.9-1.5-1.4zM9.7 14.5l-.3 3.2-1.3-4.4 11.2-7.1-9.6 8.3z"/></svg>
+        </span>
+        <span class="share-sheet__label">Telegram</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#twitter">
+        <span class="share-sheet__icon share-sheet__icon--x" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M18.2 2H21l-6.5 7.4L22 22h-6.8l-4.5-6.1L5.3 22H2.5l7-8L2 2h7l4 5.5L18.2 2zm-1.2 18h1.9L7.1 3.9H5.1L17 20z"/></svg>
+        </span>
+        <span class="share-sheet__label">X</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#email">
+        <span class="share-sheet__icon share-sheet__icon--email" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>
+        </span>
+        <span class="share-sheet__label">Email</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#copyLink">
+        <span class="share-sheet__icon share-sheet__icon--link" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M3.9 12a5 5 0 0 1 5-5h3v2h-3a3 3 0 1 0 0 6h3v2h-3a5 5 0 0 1-5-5zm5 1h6v-2h-6v2zm6.1-6h-3v2h3a3 3 0 1 1 0 6h-3v2h3a5 5 0 0 0 0-10z"/></svg>
+        </span>
+        <span class="share-sheet__label">Copy Link</span>
+      </button>
+
+      <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#more">
+        <span class="share-sheet__icon share-sheet__icon--more" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+        </span>
+        <span class="share-sheet__label">More…</span>
+      </button>
+    </div>
+
+    <button type="button"
+            class="share-sheet__copy-message"
+            data-action="click->share#copyMessage">
+      Copy full message
+    </button>
+
+    <div data-share-target="toast" class="share-sheet__toast" hidden role="status" aria-live="polite"></div>
+  </div>
+</div>
