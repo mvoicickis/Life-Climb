@@ -4,10 +4,27 @@
       <stop stop-color="#059669"/>
       <stop offset="1" stop-color="#0F766E"/>
     </linearGradient>
+    <linearGradient id="line" x1="96" y1="360" x2="416" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ECFDF5"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect x="118" y="292" width="70" height="108" rx="22" fill="#ECFDF5" opacity="0.92"/>
-  <rect x="221" y="220" width="70" height="180" rx="22" fill="#FFFFFF"/>
-  <rect x="324" y="132" width="70" height="268" rx="22" fill="#FFFFFF"/>
-  <circle cx="359" cy="96" r="28" fill="#A7F3D0"/>
+  <!-- faint grid -->
+  <g stroke="#ECFDF5" stroke-opacity="0.18" stroke-width="3">
+    <path d="M96 128h320M96 192h320M96 256h320M96 320h320M96 384h320"/>
+    <path d="M128 112v288M192 112v288M256 112v288M320 112v288M384 112v288"/>
+  </g>
+  <!-- rising chart line -->
+  <polyline
+    fill="none"
+    stroke="url(#line)"
+    stroke-width="28"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    points="108,360 168,300 220,332 278,236 330,268 404,128"/>
+  <circle cx="108" cy="360" r="16" fill="#A7F3D0"/>
+  <circle cx="220" cy="332" r="14" fill="#A7F3D0"/>
+  <circle cx="330" cy="268" r="14" fill="#FFFFFF"/>
+  <circle cx="404" cy="128" r="20" fill="#FFFFFF"/>
 </svg>
