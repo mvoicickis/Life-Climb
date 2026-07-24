@@ -1,8 +1,12 @@
 class Habit < ApplicationRecord
   FREQUENCIES = %w[daily weekly].freeze
-  UNIT_IDEAS = %w[times steps minutes pages words glasses hours money km].freeze
+  UNIT_IDEAS = %w[times steps minutes pages words glasses hours money km litres liters].freeze
+  # Stored keys; UI labels are "Better Than Yesterday" / "Healthy Range"
   STAT_TYPES = %w[growth standard].freeze
-  LEVEL_DECAY_DAYS = 3
+  EVALUATION_LABELS = {
+    "growth" => "Better Than Yesterday",
+    "standard" => "Healthy Range"
+  }.freeze
 
   belongs_to :user
   has_many :completions, dependent: :destroy
@@ -17,7 +21,7 @@ class Habit < ApplicationRecord
   validates :goal, numericality: { greater_than: 0 }, allow_nil: true
   validates :min_value, numericality: true, allow_nil: true
   validates :max_value, numericality: true, allow_nil: true
-  validate :standard_range_values
+  validate :healthy_range_bounds
   validate :max_not_below_min
 
   before_validation :normalize_unit
@@ -34,6 +38,18 @@ class Habit < ApplicationRecord
 
   def standard?
     stat_type == "standard"
+  end
+
+  def better_than_yesterday?
+    growth?
+  end
+
+  def healthy_range?
+    standard?
+  end
+
+  def evaluation_label
+    EVALUATION_LABELS.fetch(stat_type, "Better Than Yesterday")
   end
 
   def completed_today?
@@ -79,27 +95,27 @@ class Habit < ApplicationRecord
     self.class.goal_from_yesterday(yesterday_amount)
   end
 
-  # Single entry point for card color/state (type-aware).
   def status
-    growth? ? growth_status : standard_status
+    HabitStatusEvaluator.new(self).call
   end
   alias vs_yesterday status
 
   def status_label
-    if growth? && status == :down && raw_growth_comparison(Date.current) == :level
-      return "Same for #{LEVEL_DECAY_DAYS}+ days — counts as Down"
-    end
-
-    case status
-    when :up then "More than yesterday"
-    when :level then "Same as yesterday"
-    when :down then "Less than yesterday"
-    when :ok then "In your range"
-    when :off then "Outside your range"
-    else "—"
-    end
+    HabitStatusEvaluator.new(self).label
   end
   alias vs_yesterday_label status_label
+
+  def range_summary
+    return nil unless healthy_range?
+
+    if min_value.present? && max_value.present?
+      "#{format_bound(min_value)}–#{format_bound(max_value)}"
+    elsif min_value.present?
+      "#{format_bound(min_value)}+"
+    elsif max_value.present?
+      "up to #{format_bound(max_value)}"
+    end
+  end
 
   def todays_goal_value
     return goal if growth? && goal.present?
@@ -145,54 +161,8 @@ class Habit < ApplicationRecord
 
   private
 
-  def growth_status
-    raw = raw_growth_comparison(Date.current)
-    if raw == :level && consecutive_raw_level_days(Date.current) >= LEVEL_DECAY_DAYS
-      :down
-    else
-      raw
-    end
-  end
-
-  def standard_status
-    amount = today_amount
-    return :off if min_value.blank?
-    return :off if amount < min_value
-    return :off if max_value.present? && amount > max_value
-
-    :ok
-  end
-
-  def raw_growth_comparison(date)
-    today = amount_or_zero(date)
-    yesterday = amount_or_zero(date - 1)
-
-    if today > yesterday
-      :up
-    elsif today == yesterday
-      :level
-    else
-      :down
-    end
-  end
-
-  # Counts consecutive days ending on `date` whose raw vs-yesterday is Level.
-  # Stops at unlogged empty stretches so new stats don't instantly decay.
-  def consecutive_raw_level_days(date)
-    count = 0
-    cursor = date
-
-    while raw_growth_comparison(cursor) == :level
-      if count.positive? && log_for(cursor).blank? && log_for(cursor - 1).blank?
-        break
-      end
-
-      count += 1
-      cursor -= 1
-      break if count > 60
-    end
-
-    count
+  def format_bound(value)
+    value == value.to_i ? value.to_i.to_s : value.to_s("F")
   end
 
   def normalize_unit
@@ -214,10 +184,11 @@ class Habit < ApplicationRecord
     end
   end
 
-  def standard_range_values
+  def healthy_range_bounds
     return unless standard?
+    return if min_value.present? || max_value.present?
 
-    errors.add(:min_value, "is required for standard stats") if min_value.blank?
+    errors.add(:base, "Healthy Range needs a minimum, a maximum, or both")
   end
 
   def max_not_below_min

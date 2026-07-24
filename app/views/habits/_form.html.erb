@@ -1,4 +1,4 @@
-<%= form_with model: habit, class: "space-y-4", data: { turbo: false, controller: "stat-type", stat_type_type_value: habit.stat_type.presence || "growth" } do |form| %>
+<%= form_with model: habit, class: "space-y-5", data: { turbo: false, controller: "stat-type", stat_type_type_value: habit.stat_type.presence || "growth" } do |form| %>
   <% if habit.errors.any? %>
     <div class="rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 font-bold text-rose-900">
       <ul class="list-inside list-disc">
@@ -10,82 +10,94 @@
   <% end %>
 
   <div>
-    <%= form.label :name, "What is it called?", class: "mb-1 block text-sm font-bold" %>
+    <%= form.label :name, "What is it called?", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.text_field :name,
-        placeholder: "Move, Sleep, Water, Income...",
+        placeholder: "Push-ups, Sleep, Pages read...",
         class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
   </div>
 
   <div>
-    <%= form.label :unit, "What are you counting?", class: "mb-1 block text-sm font-bold" %>
+    <%= form.label :unit, "What are you counting?", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.text_field :unit,
         list: "count-ideas",
-        placeholder: "steps, pages, money...",
+        placeholder: "reps, hours, pages, steps...",
         class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
     <datalist id="count-ideas">
       <% Habit::UNIT_IDEAS.each do |idea| %>
         <option value="<%= idea %>"></option>
       <% end %>
     </datalist>
-    <p class="mt-1 text-xs font-semibold text-slate-500">Pick an idea or type your own word.</p>
   </div>
 
-  <fieldset>
-    <legend class="mb-2 block text-sm font-bold">What kind of stat?</legend>
-    <div class="grid gap-2 sm:grid-cols-2">
-      <label class="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+  <fieldset class="space-y-3">
+    <legend class="text-sm font-bold text-slate-800">Evaluation method</legend>
+    <p class="text-sm font-semibold text-slate-500">How should LifePoints judge today’s number?</p>
+
+    <div class="grid gap-3">
+      <label class="flex cursor-pointer items-start gap-3 rounded-3xl border-2 border-slate-200 bg-white p-4 transition has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
         <%= form.radio_button :stat_type, "growth",
             class: "mt-1 h-4 w-4 text-emerald-600",
             data: { action: "change->stat-type#change" } %>
         <span>
-          <span class="block font-black text-slate-900">Growth</span>
-          <span class="mt-1 block text-xs font-semibold text-slate-600">Beat yesterday. Optional goal.</span>
+          <span class="block text-lg font-black text-slate-900">Better Than Yesterday</span>
+          <span class="mt-1 block text-sm font-semibold leading-relaxed text-slate-600">
+            Higher than yesterday = better. Same = same. Lower = worse.
+            Great for push-ups, pages, words, study minutes, steps, money saved.
+          </span>
         </span>
       </label>
-      <label class="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+
+      <label class="flex cursor-pointer items-start gap-3 rounded-3xl border-2 border-slate-200 bg-white p-4 transition has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
         <%= form.radio_button :stat_type, "standard",
-            class: "mt-1 h-4 w-4 text-emerald-600",
+            class: "mt-1 h-4 w-4 text-sky-600",
             data: { action: "change->stat-type#change" } %>
         <span>
-          <span class="block font-black text-slate-900">Standard</span>
-          <span class="mt-1 block text-xs font-semibold text-slate-600">Stay in a min / max range.</span>
+          <span class="block text-lg font-black text-slate-900">Healthy Range</span>
+          <span class="mt-1 block text-sm font-semibold leading-relaxed text-slate-600">
+            Stay inside your ideal range. Perfect if you’re in range, too low or too high if you’re not.
+            Great for sleep, water, weight, screen time, blood pressure.
+          </span>
         </span>
       </label>
     </div>
   </fieldset>
 
-  <div data-stat-type-target="growthFields" class="space-y-3 rounded-2xl border-2 border-emerald-100 bg-emerald-50/50 p-4">
-    <%= form.label :goal, "Goal (optional)", class: "mb-1 block text-sm font-bold" %>
+  <div data-stat-type-target="growthFields" class="space-y-3 rounded-3xl border-2 border-emerald-100 bg-emerald-50/60 p-5">
+    <p class="text-sm font-black text-emerald-900">Optional stretch goal</p>
+    <%= form.label :goal, "Goal number (optional)", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.number_field :goal,
         min: 0,
         step: :any,
-        placeholder: "e.g. 20",
+        placeholder: "e.g. 50 push-ups",
         class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
     <p class="text-xs font-semibold text-slate-600">
-      Leave blank to only track Up / Level / Down. When you hit a goal, we can ask if you want to raise it.
+      Leave blank to only compare with yesterday. If you set a goal and hit it, we can ask whether to raise it.
     </p>
   </div>
 
-  <div data-stat-type-target="standardFields" class="space-y-3 rounded-2xl border-2 border-sky-100 bg-sky-50/50 p-4" hidden>
+  <div data-stat-type-target="standardFields" class="space-y-4 rounded-3xl border-2 border-sky-100 bg-sky-50/60 p-5" hidden>
+    <p class="text-sm font-black text-sky-950">Your healthy range</p>
+    <p class="text-xs font-semibold text-slate-600">
+      Set a minimum, a maximum, or both. Example: sleep 8–9 hours, or screen time max only.
+    </p>
     <div>
-      <%= form.label :min_value, "Minimum (required)", class: "mb-1 block text-sm font-bold" %>
+      <%= form.label :min_value, "Minimum (optional)", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
       <%= form.number_field :min_value,
           step: :any,
-          placeholder: "e.g. 8000",
-          class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
-      <p class="mt-1 text-xs font-semibold text-slate-600">Green when today’s number is at least this.</p>
+          placeholder: "e.g. 8",
+          class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-sky-500 focus:outline-none" %>
     </div>
     <div>
-      <%= form.label :max_value, "Maximum (optional — leave blank if more is always fine)", class: "mb-1 block text-sm font-bold" %>
+      <%= form.label :max_value, "Maximum (optional)", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
       <%= form.number_field :max_value,
           step: :any,
-          placeholder: "e.g. 9 for sleep hours",
-          class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
+          placeholder: "e.g. 9",
+          class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-sky-500 focus:outline-none" %>
     </div>
   </div>
 
   <div>
-    <%= form.label :description, "Note (optional)", class: "mb-1 block text-sm font-bold" %>
+    <%= form.label :description, "Note (optional)", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.text_area :description, rows: 2,
         class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold focus:border-emerald-500 focus:outline-none" %>
   </div>
@@ -93,17 +105,18 @@
   <%= form.hidden_field :points, value: habit.points.presence || 5 %>
   <%= form.hidden_field :frequency, value: "daily" %>
 
-  <div class="flex items-center gap-2">
-    <%= form.check_box :show_on_home, class: "h-5 w-5 rounded border-slate-300 text-emerald-600" %>
-    <%= form.label :show_on_home, "Show on Home", class: "text-sm font-bold" %>
+  <div class="flex flex-wrap gap-4">
+    <label class="inline-flex items-center gap-2">
+      <%= form.check_box :show_on_home, class: "h-5 w-5 rounded border-slate-300 text-emerald-600" %>
+      <span class="text-sm font-bold text-slate-800">Show on Home</span>
+    </label>
+    <label class="inline-flex items-center gap-2">
+      <%= form.check_box :active, class: "h-5 w-5 rounded border-slate-300 text-emerald-600" %>
+      <span class="text-sm font-bold text-slate-800">On</span>
+    </label>
   </div>
 
-  <div class="flex items-center gap-2">
-    <%= form.check_box :active, class: "h-5 w-5 rounded border-slate-300 text-emerald-600" %>
-    <%= form.label :active, "On", class: "text-sm font-bold" %>
-  </div>
-
-  <div class="flex gap-3 pt-2">
+  <div class="flex gap-3 pt-1">
     <%= form.submit "Save",
         class: "cursor-pointer rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white hover:bg-emerald-600" %>
     <%= link_to "Cancel", habits_path, class: "rounded-2xl border-2 border-slate-200 px-5 py-3 font-bold text-slate-700" %>

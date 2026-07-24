@@ -49,7 +49,7 @@ class HabitsController < ApplicationController
     if @habit.raise_goal!
       redirect_to habit_path(@habit), notice: "Goal raised to #{@habit.goal.to_i == @habit.goal ? @habit.goal.to_i : @habit.goal}."
     else
-      redirect_to habit_path(@habit), alert: "Set a growth goal first."
+      redirect_to habit_path(@habit), alert: "Set a goal first."
     end
   end
 

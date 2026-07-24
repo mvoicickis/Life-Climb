@@ -40,7 +40,7 @@ class DailyLogsController < ApplicationController
     parts << "#{habit.status_label}."
     if habit.met_habit_goal?
       parts << "You hit your goal!"
-    elsif log.goal.present?
+    elsif log.goal.present? && habit.better_than_yesterday?
       parts << (log.met_goal? ? "You hit today's goal!" : "Keep going.")
     end
     parts.join(" ")

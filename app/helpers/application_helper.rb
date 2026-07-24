@@ -13,69 +13,84 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Track what matters. Growth stats use Up/Level/Down. Standard stats use in-range or out."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Your only competition is yesterday. Track what matters with Better Than Yesterday or Healthy Range goals."
+  end
+
+  def status_tone(status)
+    case status
+    when :better, :perfect then :good
+    when :same then :same
+    else :bad
+    end
   end
 
   def vs_yesterday_classes(status)
-    case status
-    when :up, :ok
-      "border-emerald-400 bg-emerald-50 text-emerald-950"
-    when :level
-      "border-amber-300 bg-amber-50 text-amber-950"
+    case status_tone(status)
+    when :good
+      "border-emerald-400/80 bg-emerald-50 text-emerald-950"
+    when :same
+      "border-amber-300/80 bg-amber-50 text-amber-950"
     else
-      "border-rose-400 bg-rose-50 text-rose-950"
+      "border-rose-400/80 bg-rose-50 text-rose-950"
     end
   end
 
   def vs_yesterday_bar_class(status)
-    case status
-    when :up, :ok then "bg-emerald-500"
-    when :level then "bg-amber-400"
+    case status_tone(status)
+    when :good then "bg-emerald-500"
+    when :same then "bg-amber-400"
     else "bg-rose-500"
     end
   end
 
   def vs_yesterday_badge_class(status)
-    case status
-    when :up, :ok then "bg-emerald-500 text-white"
-    when :level then "bg-amber-400 text-amber-950"
+    case status_tone(status)
+    when :good then "bg-emerald-500 text-white"
+    when :same then "bg-amber-400 text-amber-950"
     else "bg-rose-500 text-white"
     end
   end
 
-  def vs_yesterday_short(status)
-    case status
-    when :up then "UP"
-    when :level then "LEVEL"
-    when :down then "DOWN"
-    when :ok then "OK"
-    when :off then "OUT"
-    else status.to_s.upcase
-    end
-  end
-
-  def vs_yesterday_share_word(status)
-    case status
-    when :up then "Up"
-    when :level then "Level"
-    when :down then "Down"
-    when :ok then "in range"
-    when :off then "out of range"
-    else status.to_s
-    end
-  end
-
-  def vs_yesterday_share_emoji(status)
-    case status
-    when :up, :ok then "🟢"
-    when :level then "⚪"
+  def status_emoji(status)
+    case status_tone(status)
+    when :good then "🟢"
+    when :same then "🟡"
     else "🔴"
+    end
+  end
+
+  # Short badge text always includes meaning (not color alone).
+  def status_badge_text(status)
+    case status
+    when :better then "Better"
+    when :same then "Same"
+    when :worse then "Worse"
+    when :perfect then "Perfect"
+    when :too_low then "Too low"
+    when :too_high then "Too high"
+    else status.to_s.humanize
+    end
+  end
+
+  def vs_yesterday_short(status)
+    "#{status_emoji(status)} #{status_badge_text(status)}"
+  end
+
+  def status_full_text(status)
+    case status
+    when :better then "🟢 Better than yesterday"
+    when :same then "🟡 Same as yesterday"
+    when :worse then "🔴 Worse than yesterday"
+    when :perfect then "🟢 Within healthy range"
+    when :too_low then "🔴 Below range"
+    when :too_high then "🔴 Above range"
+    else status.to_s.humanize
     end
   end
 
   def share_message_for(tracker)
     status = tracker.status
-    "I went #{vs_yesterday_share_word(status)} today on LifePoints #{vs_yesterday_share_emoji(status)} — #{format_amount(tracker.today_amount)} #{tracker.unit}"
+    "#{status_full_text(status)} on LifePoints — #{format_amount(tracker.today_amount)} #{tracker.unit}"
   end
 
   def format_amount(amount)
@@ -94,17 +109,5 @@ module ApplicationHelper
     end
 
     "grid-template-columns: repeat(#{cols}, minmax(0, 1fr));"
-  end
-
-  def good_status?(status)
-    status == :up || status == :ok
-  end
-
-  def warn_status?(status)
-    status == :level
-  end
-
-  def bad_status?(status)
-    status == :down || status == :off
   end
 end

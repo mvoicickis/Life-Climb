@@ -12,13 +12,12 @@
   <%= link_to "← Home", dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-600 hover:text-emerald-700" %>
 
   <article id="detail-card"
-           class="overflow-hidden rounded-3xl border-2 p-5 shadow-sm <%= vs_yesterday_classes(status) %> <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
+           class="overflow-hidden rounded-3xl border-2 p-6 shadow-sm <%= vs_yesterday_classes(status) %> <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
     <div class="flex items-start justify-between gap-3">
       <div>
         <h1 class="text-3xl font-black tracking-tight"><%= @habit.name %></h1>
-        <p class="text-sm font-bold opacity-70">
-          <%= @habit.unit %>
-          · <%= @habit.growth? ? "Growth" : "Standard" %>
+        <p class="mt-1 text-sm font-bold opacity-70">
+          <%= @habit.unit %> · <%= @habit.evaluation_label %>
         </p>
       </div>
       <span class="rounded-2xl px-3 py-2 text-xs font-black <%= vs_yesterday_badge_class(status) %>">
@@ -26,42 +25,45 @@
       </span>
     </div>
 
+    <p class="mt-4 text-base font-black leading-snug">
+      <%= status_full_text(status) %>
+    </p>
+
     <div class="mt-6 flex items-end justify-between gap-4">
       <div>
         <p class="text-xs font-bold uppercase tracking-wide opacity-60">Today</p>
         <p class="text-5xl font-black leading-none"><%= format_amount(@habit.today_amount) %></p>
       </div>
       <div class="text-right">
-        <% if @habit.growth? %>
-          <p class="text-xs font-bold uppercase tracking-wide opacity-60">Goal</p>
-          <p class="text-2xl font-black"><%= @habit.goal.present? ? format_amount(@habit.goal) : "—" %></p>
-          <p class="text-xs font-bold opacity-70">Yesterday <%= format_amount(@habit.yesterday_amount) %></p>
+        <% if @habit.better_than_yesterday? %>
+          <p class="text-xs font-bold uppercase tracking-wide opacity-60">Yesterday</p>
+          <p class="text-2xl font-black"><%= format_amount(@habit.yesterday_amount) %></p>
+          <% if @habit.goal.present? %>
+            <p class="mt-1 text-xs font-bold opacity-70">Goal <%= format_amount(@habit.goal) %></p>
+          <% end %>
         <% else %>
-          <p class="text-xs font-bold uppercase tracking-wide opacity-60">Range</p>
-          <p class="text-2xl font-black">
-            <%= format_amount(@habit.min_value) %><% if @habit.max_value.present? %>–<%= format_amount(@habit.max_value) %><% else %>+<% end %>
-          </p>
+          <p class="text-xs font-bold uppercase tracking-wide opacity-60">Healthy range</p>
+          <p class="text-2xl font-black"><%= @habit.range_summary %></p>
         <% end %>
       </div>
     </div>
 
-    <% if @habit.growth? && @habit.goal.present? %>
+    <% if @habit.better_than_yesterday? && @habit.goal.present? %>
       <div class="mt-5">
         <div class="mb-2 flex justify-between text-xs font-bold uppercase tracking-wide opacity-70">
-          <span>Goal bar</span>
+          <span>Toward goal</span>
           <span><%= progress %>%</span>
         </div>
-        <div class="h-4 overflow-hidden rounded-full bg-black/10">
+        <div class="h-3.5 overflow-hidden rounded-full bg-black/10">
           <div class="bar-fill h-full rounded-full <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
         </div>
       </div>
     <% end %>
 
-    <p class="mt-3 text-sm font-bold"><%= @habit.status_label %></p>
-    <p class="mt-1 text-xs font-semibold opacity-60">No number today? It counts as 0.</p>
+    <p class="mt-3 text-xs font-semibold opacity-60">No number today? It counts as 0.</p>
 
     <% if @habit.show_goal_raise_prompt? %>
-      <div class="mt-5 rounded-2xl border-2 border-emerald-300 bg-white/80 p-4">
+      <div class="mt-5 rounded-2xl border-2 border-emerald-300 bg-white/85 p-4">
         <p class="text-base font-black text-emerald-950">Nice! Want to raise your goal?</p>
         <p class="mt-1 text-sm font-semibold text-emerald-900/80">
           You hit <%= format_amount(@habit.goal) %> <%= @habit.unit %>.
@@ -77,25 +79,13 @@
 
     <%= form_with url: daily_logs_path(habit_id: @habit.id), scope: :daily_log, class: "mt-6 space-y-3", data: { turbo: false } do |form| %>
       <div>
-        <%= form.label :amount, "How many today?", class: "mb-1 block text-sm font-bold" %>
+        <%= form.label :amount, "How many today?", class: "mb-1.5 block text-sm font-bold" %>
         <%= form.number_field :amount,
             value: @habit.today_log&.amount || 0,
             min: 0,
             step: :any,
             class: "w-full rounded-2xl border-2 border-black/10 bg-white px-4 py-3 text-xl font-black focus:border-emerald-500 focus:outline-none" %>
       </div>
-
-      <% if @habit.growth? && @habit.goal.blank? %>
-        <div>
-          <%= form.label :goal, "Today's goal (optional)", class: "mb-1 block text-sm font-bold" %>
-          <%= form.number_field :goal,
-              value: goal,
-              min: 0,
-              step: :any,
-              class: "w-full rounded-2xl border-2 border-black/10 bg-white px-4 py-3 text-xl font-black focus:border-emerald-500 focus:outline-none" %>
-          <p class="mt-1 text-xs font-semibold opacity-60">Tip: set a lasting goal on Edit for raise prompts.</p>
-        </div>
-      <% end %>
 
       <%= form.submit "Save",
           class: "w-full cursor-pointer rounded-2xl bg-slate-900 px-4 py-4 text-lg font-black text-white hover:bg-slate-800" %>

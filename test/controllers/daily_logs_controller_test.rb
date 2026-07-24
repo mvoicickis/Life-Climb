@@ -14,7 +14,7 @@ class DailyLogsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to habit_path(habit, saved: 1, won: 1)
     follow_redirect!
-    assert_match(/More than yesterday/, response.body)
+    assert_match(/Better than yesterday/, response.body)
     assert_equal BigDecimal("8"), habit.reload.today_amount
   end
 

@@ -22,7 +22,7 @@ class LifepointsTest < ApplicationSystemTestCase
       document.querySelector("form[action*='daily_logs']").submit();
     JS
 
-    assert_text "More than yesterday"
-    assert_text "UP"
+    assert_text "Better than yesterday"
+    assert_text "Better"
   end
 end
