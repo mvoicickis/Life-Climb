@@ -1,0 +1,16 @@
+<div id="recent-activity" class="rounded-xl border border-slate-200 bg-white p-6">
+  <h2 class="mb-4 text-lg font-semibold text-slate-900">Recent activity</h2>
+
+  <% if recent_completions.any? %>
+    <ul class="space-y-3">
+      <% recent_completions.each do |completion| %>
+        <li id="<%= dom_id(completion) %>" class="flex items-center justify-between text-sm">
+          <span class="text-slate-700"><%= completion.habit.name %></span>
+          <span class="font-medium text-emerald-600">+<%= completion.points_awarded %> pts</span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-sm text-slate-500">No completions yet. Complete a habit to see activity here!</p>
+  <% end %>
+</div>

@@ -1,0 +1,8 @@
+<% content_for :title, "New habit" %>
+
+<div class="mx-auto max-w-lg">
+  <h1 class="mb-2 text-3xl font-bold text-slate-900">New habit</h1>
+  <p class="mb-8 text-slate-600">What do you want to track?</p>
+
+  <%= render "form", habit: @habit %>
+</div>

@@ -1,0 +1,12 @@
+<%= turbo_stream.replace "dashboard-stats" do %>
+  <%= render "dashboard/stats" %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@habit) do %>
+  <%= render "dashboard/habit_row", habit: @habit.reload %>
+<% end %>
+
+<%= turbo_stream.replace "recent-activity" do %>
+  <%= render "dashboard/recent_activity",
+      recent_completions: current_user.completions.includes(:habit).order(completed_on: :desc, created_at: :desc).limit(10) %>
+<% end %>

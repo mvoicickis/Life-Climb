@@ -1,0 +1,46 @@
+<%= form_with model: habit, class: "space-y-4", data: { turbo: false } do |form| %>
+  <% if habit.errors.any? %>
+    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+      <ul class="list-inside list-disc">
+        <% habit.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "mb-1 block text-sm font-medium" %>
+    <%= form.text_field :name,
+        class: "w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" %>
+  </div>
+
+  <div>
+    <%= form.label :description, class: "mb-1 block text-sm font-medium" %>
+    <%= form.text_area :description, rows: 3,
+        class: "w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" %>
+  </div>
+
+  <div>
+    <%= form.label :points, class: "mb-1 block text-sm font-medium" %>
+    <%= form.number_field :points, min: 1,
+        class: "w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" %>
+  </div>
+
+  <div>
+    <%= form.label :frequency, class: "mb-1 block text-sm font-medium" %>
+    <%= form.select :frequency, Habit::FREQUENCIES, {},
+        class: "w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" %>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= form.check_box :active, class: "h-4 w-4 rounded border-slate-300 text-emerald-600" %>
+    <%= form.label :active, "Active (show on dashboard)", class: "text-sm font-medium" %>
+  </div>
+
+  <div class="flex gap-3 pt-2">
+    <%= form.submit(habit.persisted? ? "Update habit" : "Create habit",
+        class: "cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700") %>
+    <%= link_to "Cancel", habits_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50" %>
+  </div>
+<% end %>

@@ -1,0 +1,32 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="mx-auto max-w-3xl">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+      <p class="mt-1 text-slate-600">Track your habits and earn points today.</p>
+    </div>
+    <%= link_to "Add habit", new_habit_path,
+        class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700" %>
+  </div>
+
+  <%= render "stats" %>
+
+  <section class="mb-8">
+    <h2 class="mb-4 text-lg font-semibold text-slate-900">Today's habits</h2>
+
+    <% if @habits.any? %>
+      <div id="habits-list" class="space-y-3">
+        <%= render partial: "habit_row", collection: @habits, as: :habit %>
+      </div>
+    <% else %>
+      <div class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
+        <p class="text-slate-600">You don't have any habits yet.</p>
+        <%= link_to "Create your first habit", new_habit_path,
+            class: "mt-4 inline-block font-medium text-emerald-600 hover:text-emerald-700" %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render "recent_activity", recent_completions: @recent_completions %>
+</div>

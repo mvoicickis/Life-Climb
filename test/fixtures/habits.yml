@@ -1,17 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   user: one
-  name: MyString
-  description: MyText
-  points: 1
-  frequency: MyString
-  active: false
+  name: Drink water
+  description: Drink 8 glasses of water
+  points: 5
+  frequency: daily
+  active: true
 
 two:
   user: two
-  name: MyString
-  description: MyText
-  points: 1
-  frequency: MyString
-  active: false
+  name: Stretch
+  description: 10 minute stretch
+  points: 3
+  frequency: daily
+  active: true
