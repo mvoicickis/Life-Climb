@@ -18,7 +18,12 @@ services:
           property: connectionString
       - key: APP_HOST
         sync: false
-      # Feedback emails (set in Render dashboard — Gmail app password works)
+      # Direct Feedback contact (WhatsApp digits with country code, e.g. 3712XXXXXXX)
+      - key: CONTACT_EMAIL
+        sync: false
+      - key: CONTACT_WHATSAPP
+        sync: false
+      # Optional legacy SMTP email delivery
       - key: FEEDBACK_TO_EMAIL
         sync: false
       - key: MAIL_FROM
