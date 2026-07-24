@@ -1,4 +1,21 @@
 module ApplicationHelper
+  def canonical_base_url
+    host = ENV["APP_HOST"].presence || (respond_to?(:request) ? request.host : "example.com")
+    "https://#{host}"
+  end
+
+  def absolute_url(path)
+    "#{canonical_base_url}#{path}"
+  end
+
+  def page_meta_title
+    content_for?(:title) ? content_for(:title) : "LifePoints"
+  end
+
+  def page_meta_description
+    content_for?(:meta_description) ? content_for(:meta_description) : "Track what matters. See if today is better than yesterday. Green means up. Red means not up."
+  end
+
   def vs_yesterday_classes(status)
     case status
     when :up
