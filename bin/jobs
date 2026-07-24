@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
-
-require_relative "../config/environment"
-require "solid_queue/cli"
-
-SolidQueue::Cli.start(ARGV)
+# Solid Queue was removed for simple single-database deploys (e.g. Render).
+# Jobs use Active Job's :async adapter in production.
+abort "bin/jobs requires solid_queue, which is not installed. Use Active Job :async instead."
