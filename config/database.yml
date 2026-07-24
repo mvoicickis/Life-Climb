@@ -14,8 +14,9 @@ test:
 
 # IMPORTANT: keep this flat (not nested under primary:) so db:prepare
 # works on simple single-database hosts like Render.
+# DATABASE_URL default is empty so Docker assets:precompile can boot without a DB.
 production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  url: <%= ENV.fetch("DATABASE_URL") %>
+  url: <%= ENV.fetch("DATABASE_URL", "") %>
