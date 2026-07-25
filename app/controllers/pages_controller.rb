@@ -3,6 +3,7 @@ class PagesController < ApplicationController
   layout "landing"
 
   def home
-    redirect_to dashboard_path if authenticated?
+    return unless authenticated?
+    redirect_to(current_user.needs_onboarding? ? onboarding_path : dashboard_path)
   end
 end

@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  title: Work with skill and freedom
+  active: true
+
+two:
+  user: two
+  title: A healthy creative life
+  active: true

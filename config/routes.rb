@@ -9,6 +9,27 @@ Rails.application.routes.draw do
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
 
+  resource :onboarding, only: %i[ show update ], controller: "onboarding"
+  resource :building, only: :show, controller: "buildings"
+  resources :buildings, only: [] do
+    member do
+      post :focus
+      post :ship
+    end
+  end
+  resources :today_actions, only: :create do
+    member do
+      post :complete
+    end
+  end
+  resources :finished_products, only: %i[ index show ]
+  resource :life_points, only: :show, controller: "life_points"
+  resources :dreams, only: :update
+  resources :goals, only: :create
+  resource :support, only: :show, controller: "supports"
+  post "support/dismiss", to: "supports#dismiss_moment", as: :dismiss_support_moment
+  resource :about, only: :show, controller: "abouts"
+
   resources :habits do
     member do
       patch :raise_goal

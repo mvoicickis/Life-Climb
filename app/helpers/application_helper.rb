@@ -18,7 +18,7 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Your only competition is the person you were yesterday. LifePoints helps you become a better version of yourself every day."
+    content_for?(:meta_description) ? content_for(:meta_description) : "The more LifePoints you earn, the more alive you become. Build toward your dream and ship Finished Products that create real value."
   end
 
   def status_tone(status)
@@ -119,8 +119,17 @@ module ApplicationHelper
   end
 
   def nav_link_class(active)
-    base = "rounded-xl px-2 py-2 md:px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
-    active ? "#{base} text-emerald-300 bg-white/5" : "#{base} text-slate-300 hover:bg-white/5 hover:text-white"
+    studio_nav_class(active)
+  end
+
+  def studio_nav_class(active)
+    base = "studio-nav-link"
+    active ? "#{base} is-active" : base
+  end
+
+  def studio_tab_class(active)
+    base = "studio-tab"
+    active ? "#{base} is-active" : base
   end
 
   def locale_options

@@ -1,0 +1,10 @@
+<div class="studio-coach">
+  <p class="studio-label"><%= t("studio.coach_line") %></p>
+  <p class="studio-muted text-sm mt-1"><%= t("coach.subtitle") %></p>
+  <div class="studio-coach__actions">
+    <% if contact_whatsapp? %>
+      <a href="<%= coach_whatsapp_url(current_user) %>" target="_blank" rel="noopener noreferrer" class="studio-link"><%= t("coach.open") %> WhatsApp</a>
+    <% end %>
+    <a href="<%= coach_mailto_url(current_user) %>" class="studio-link"><%= t("coach.write") %> <%= t("studio.coach_name") %></a>
+  </div>
+</div>

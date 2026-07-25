@@ -1,4 +1,4 @@
-<% password_digest = BCrypt::Password.create("password") %>
+<% password_digest = BCrypt::Password.create("password12345") %>
 
 one:
   email_address: one@example.com
@@ -6,6 +6,8 @@ one:
   total_points: 0
   home_stat_count: 6
   admin: false
+  onboarding_completed_at: <%= Time.current %>
+  focus_building: one
 
 two:
   email_address: two@example.com
@@ -13,6 +15,8 @@ two:
   total_points: 0
   home_stat_count: 6
   admin: false
+  onboarding_completed_at: <%= Time.current %>
+  focus_building: two
 
 admin:
   email_address: admin@example.com
@@ -20,3 +24,4 @@ admin:
   total_points: 0
   home_stat_count: 6
   admin: true
+  onboarding_completed_at: <%= Time.current %>

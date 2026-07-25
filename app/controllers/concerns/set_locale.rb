@@ -11,7 +11,12 @@ module SetLocale
     locale = requested_locale
     I18n.locale = locale
     session[:locale] = locale
-    cookies.permanent[:locale] = locale
+    cookies.permanent[:locale] = {
+      value: locale,
+      httponly: true,
+      same_site: :lax,
+      secure: Rails.env.production?
+    }
   end
 
   def requested_locale

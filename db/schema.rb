@@ -10,7 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_180000) do
+  create_table "buildings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "shipped_at"
+    t.string "status", default: "active", null: false
+    t.integer "step_id", null: false
+    t.text "summary"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["step_id"], name: "index_buildings_on_step_id"
+    t.index ["user_id", "status"], name: "index_buildings_on_user_id_and_status"
+    t.index ["user_id"], name: "index_buildings_on_user_id"
+  end
+
   create_table "completions", force: :cascade do |t|
     t.date "completed_on", null: false
     t.datetime "created_at", null: false
@@ -36,12 +50,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_190000) do
     t.index ["user_id"], name: "index_daily_logs_on_user_id"
   end
 
+  create_table "dreams", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_dreams_on_user_id"
+  end
+
   create_table "feedbacks", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_feedbacks_on_user_id"
+  end
+
+  create_table "finished_products", force: :cascade do |t|
+    t.integer "building_id"
+    t.datetime "created_at", null: false
+    t.integer "goal_id"
+    t.date "shipped_on", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.text "value_summary"
+    t.index ["building_id"], name: "index_finished_products_on_building_id"
+    t.index ["goal_id"], name: "index_finished_products_on_goal_id"
+    t.index ["user_id"], name: "index_finished_products_on_user_id"
+  end
+
+  create_table "goals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "dream_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "status", default: "active", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["dream_id"], name: "index_goals_on_dream_id"
+    t.index ["user_id", "position"], name: "index_goals_on_user_id_and_position"
+    t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
   create_table "habits", force: :cascade do |t|
@@ -65,6 +115,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_190000) do
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
 
+  create_table "life_point_ledgers", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.string "reason", null: false
+    t.integer "source_id"
+    t.string "source_type"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["source_type", "source_id"], name: "index_life_point_ledgers_on_source_type_and_source_id"
+    t.index ["user_id"], name: "index_life_point_ledgers_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -74,22 +136,69 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_190000) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "steps", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "goal_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "status", default: "pending", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["goal_id", "position"], name: "index_steps_on_goal_id_and_position"
+    t.index ["goal_id"], name: "index_steps_on_goal_id"
+    t.index ["user_id"], name: "index_steps_on_user_id"
+  end
+
+  create_table "today_actions", force: :cascade do |t|
+    t.integer "building_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.date "scheduled_on", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["building_id", "scheduled_on"], name: "index_today_actions_on_building_id_and_scheduled_on"
+    t.index ["building_id"], name: "index_today_actions_on_building_id"
+    t.index ["user_id", "scheduled_on"], name: "index_today_actions_on_user_id_and_scheduled_on"
+    t.index ["user_id"], name: "index_today_actions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
     t.string "email_address", null: false
+    t.integer "focus_building_id"
     t.integer "home_stat_count", default: 6, null: false
+    t.datetime "onboarding_completed_at"
     t.string "password_digest", null: false
+    t.json "support_milestones_shown", default: [], null: false
+    t.boolean "support_prompts_muted", default: false, null: false
     t.integer "total_points", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
   end
 
+  add_foreign_key "buildings", "steps"
+  add_foreign_key "buildings", "users"
   add_foreign_key "completions", "habits"
   add_foreign_key "completions", "users"
   add_foreign_key "daily_logs", "habits"
   add_foreign_key "daily_logs", "users"
+  add_foreign_key "dreams", "users"
   add_foreign_key "feedbacks", "users"
+  add_foreign_key "finished_products", "buildings"
+  add_foreign_key "finished_products", "goals"
+  add_foreign_key "finished_products", "users"
+  add_foreign_key "goals", "dreams"
+  add_foreign_key "goals", "users"
   add_foreign_key "habits", "users"
+  add_foreign_key "life_point_ledgers", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "steps", "goals"
+  add_foreign_key "steps", "users"
+  add_foreign_key "today_actions", "buildings"
+  add_foreign_key "today_actions", "users"
+  add_foreign_key "users", "buildings", column: "focus_building_id"
 end

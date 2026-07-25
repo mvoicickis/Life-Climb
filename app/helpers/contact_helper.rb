@@ -24,9 +24,25 @@ module ContactHelper
     "https://wa.me/#{contact_whatsapp_number}?text=#{ERB::Util.url_encode(text)}"
   end
 
-  def contact_mailto_url
-    subject = ERB::Util.url_encode("LifePoints feedback")
-    body = ERB::Util.url_encode("Hi Mareks,\n\nI'm using LifePoints and wanted to share:\n\n")
+  def contact_mailto_url(prefill: nil)
+    subject = ERB::Util.url_encode("LifePoints — Talk to Coach")
+    body = ERB::Util.url_encode(prefill.presence || "Hi Mareks,\n\nI'm using LifePoints and wanted to share:\n\n")
     "mailto:#{contact_email}?subject=#{subject}&body=#{body}"
+  end
+
+  def coach_prefill_for(user)
+    building = user.focus_building
+    dream = building&.dream&.title || user.active_dream&.title || "—"
+    goal = building&.goal&.title || user.primary_goal&.title || "—"
+    building_title = building&.title || "—"
+    I18n.t("coach.prefill", dream: dream, goal: goal, building: building_title)
+  end
+
+  def coach_whatsapp_url(user)
+    contact_whatsapp_url(prefill: coach_prefill_for(user))
+  end
+
+  def coach_mailto_url(user)
+    contact_mailto_url(prefill: coach_prefill_for(user))
   end
 end

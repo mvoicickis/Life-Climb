@@ -47,6 +47,6 @@ class AdminDashboardTest < ActionDispatch::IntegrationTest
   test "non admin cannot open admin dashboard" do
     sign_in_as users(:one)
     get admin_root_path
-    assert_redirected_to dashboard_path
+    assert_response :not_found
   end
 end

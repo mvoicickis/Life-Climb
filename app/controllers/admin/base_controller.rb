@@ -8,7 +8,7 @@ module Admin
     def require_admin
       return if current_user&.admin?
 
-      redirect_to dashboard_path, alert: "Admin only."
+      head :not_found
     end
   end
 end

@@ -67,3 +67,5 @@ end
 gem "tailwindcss-rails", "~> 4.6"
 
 gem "pagy", "~> 43.6"
+
+gem "rack-attack", "~> 6.7"

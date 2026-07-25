@@ -1,0 +1,66 @@
+<% content_for :title, t("buildings.title") %>
+
+<% if @building %>
+  <div class="studio-building">
+    <div class="studio-building__main">
+      <p class="studio-kicker"><%= t("studio.building") %></p>
+      <h1 class="studio-dream"><%= @building.title %></h1>
+      <% if @building.summary.present? %>
+        <p class="studio-muted mt-2"><%= @building.summary %></p>
+      <% end %>
+
+      <p class="studio-thread-inline mt-4">
+        <%= @dream.title %> → <%= @goal.title %> → <%= @step.title %>
+      </p>
+
+      <section class="mt-8">
+        <h2 class="studio-section-title"><%= t("studio.today_actions") %></h2>
+        <ul class="studio-action-list mt-3">
+          <% @actions_today.each do |action| %>
+            <li class="studio-action-row <%= 'is-done' if action.completed? %>">
+              <% if action.completed? %>
+                <span class="studio-action-check" aria-hidden="true">✓</span>
+                <span class="studio-action-title"><%= action.title %></span>
+              <% else %>
+                <%= button_to complete_today_action_path(action), method: :post, class: "studio-action-complete" do %>
+                  <span class="studio-action-check" aria-hidden="true"></span>
+                  <span class="studio-action-title"><%= action.title %></span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+
+      <% if @building.status == "active" %>
+        <div class="studio-ship mt-10">
+          <h2 class="studio-section-title"><%= t("buildings.ship") %></h2>
+          <%= form_with url: ship_building_path(@building), method: :post, class: "studio-ship-form" do %>
+            <label class="studio-label"><%= t("buildings.ship_title") %></label>
+            <input type="text" name="title" value="<%= @building.title %>" class="studio-input" required>
+            <label class="studio-label mt-3"><%= t("buildings.ship_value") %></label>
+            <textarea name="value_summary" rows="2" class="studio-input" placeholder="People can use it to…"></textarea>
+            <button type="submit" class="studio-btn studio-btn--strong mt-4"><%= t("studio.ship_cta") %></button>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <aside class="studio-building__rail">
+      <div class="studio-rail-card">
+        <p class="studio-label"><%= t("buildings.other") %></p>
+        <ul class="mt-2 space-y-2">
+          <% @all_buildings.each do |b| %>
+            <li class="flex items-center justify-between gap-2">
+              <span class="<%= 'font-bold' if b.id == @building.id %>"><%= b.title %></span>
+              <% unless b.focus? %>
+                <%= button_to t("buildings.work_today"), focus_building_path(b), method: :post, class: "studio-link text-sm" %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <%= render "shared/coach_line" %>
+    </aside>
+  </div>
+<% end %>

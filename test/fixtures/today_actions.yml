@@ -1,0 +1,13 @@
+one:
+  user: one
+  building: one
+  title: Finish authentication
+  scheduled_on: <%= Date.current %>
+  position: 0
+
+two:
+  user: one
+  building: one
+  title: Push code to GitHub
+  scheduled_on: <%= Date.current %>
+  position: 1

@@ -8,10 +8,11 @@ class Habit < ApplicationRecord
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
 
-  validates :name, presence: true
-  validates :points, numericality: { only_integer: true, greater_than: 0 }
+  validates :name, presence: true, length: { maximum: 120 }
+  validates :points, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 100 }
+  validates :description, length: { maximum: 2_000 }, allow_nil: true
   validates :frequency, inclusion: { in: FREQUENCIES }
-  validates :unit, presence: true
+  validates :unit, presence: true, length: { maximum: 40 }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :stat_type, inclusion: { in: STAT_TYPES }
   validates :goal, numericality: { greater_than: 0 }, allow_nil: true

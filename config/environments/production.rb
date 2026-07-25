@@ -91,9 +91,15 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Allow Render hosts by default. Also allow APP_HOST if set.
-  config.hosts << /.*\.onrender\.com/
-  config.hosts << ENV["APP_HOST"] if ENV["APP_HOST"].present?
+  # Allow exact APP_HOST and known Render hostname only (not every *.onrender.com).
+  if ENV["APP_HOST"].present?
+    config.hosts << ENV["APP_HOST"]
+  elsif ENV["RENDER_EXTERNAL_HOSTNAME"].present?
+    config.hosts << ENV["RENDER_EXTERNAL_HOSTNAME"]
+  else
+    # Local/preview fallback — prefer setting APP_HOST in production.
+    config.hosts << /.*\.onrender\.com/
+  end
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
