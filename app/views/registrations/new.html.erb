@@ -1,10 +1,10 @@
-<% content_for :title, t("landing.start_free") %>
+<% content_for :title, t("auth.register_title") %>
 
 <div class="mx-auto max-w-md">
   <%= render "shared/auth_topbar" %>
 
-  <h1 class="mb-2 mt-8 text-4xl font-black tracking-tight text-slate-900">Make an account</h1>
-  <p class="mb-8 font-semibold text-slate-600">Start counting what matters.</p>
+  <h1 class="mb-2 mt-8 text-4xl font-black tracking-tight text-slate-900"><%= t("auth.register_title") %></h1>
+  <p class="mb-8 font-semibold text-slate-600"><%= t("auth.register_subtitle") %></p>
 
   <%= form_with model: @user, url: registration_path, class: "space-y-4", data: { turbo: false } do |form| %>
     <% if @user.errors.any? %>
@@ -18,28 +18,28 @@
     <% end %>
 
     <div>
-      <%= form.label :email_address, "Email", class: "mb-1 block text-sm font-bold text-slate-800" %>
+      <%= form.label :email_address, t("auth.email"), class: "mb-1 block text-sm font-bold text-slate-800" %>
       <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
           class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 font-semibold text-slate-900 focus:border-emerald-500 focus:outline-none" %>
     </div>
 
     <div>
-      <%= form.label :password, "Password", class: "mb-1 block text-sm font-bold text-slate-800" %>
+      <%= form.label :password, t("auth.password"), class: "mb-1 block text-sm font-bold text-slate-800" %>
       <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72,
           class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 font-semibold text-slate-900 focus:border-emerald-500 focus:outline-none" %>
     </div>
 
     <div>
-      <%= form.label :password_confirmation, "Type password again", class: "mb-1 block text-sm font-bold text-slate-800" %>
+      <%= form.label :password_confirmation, t("auth.password_confirmation"), class: "mb-1 block text-sm font-bold text-slate-800" %>
       <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72,
           class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 font-semibold text-slate-900 focus:border-emerald-500 focus:outline-none" %>
     </div>
 
-    <%= form.submit "Make account", class: "w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3 font-black text-white hover:bg-emerald-600" %>
+    <%= form.submit t("auth.register_submit"), class: "w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3 font-black text-white hover:bg-emerald-600" %>
   <% end %>
 
   <p class="mt-6 text-center text-sm font-semibold text-slate-600">
-    Already have an account?
-    <%= link_to t("landing.sign_in"), new_session_path, class: "font-bold text-emerald-700 hover:text-emerald-600" %>
+    <%= t("auth.already_have_account") %>
+    <%= link_to t("auth.sign_in_submit"), new_session_path, class: "font-bold text-emerald-700 hover:text-emerald-600" %>
   </p>
 </div>
