@@ -329,14 +329,255 @@
     padding: 0;
   }
 
+  .today-unique {
+    margin-top: 0.65rem;
+    max-width: 28rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #6ee7b7;
+  }
+
+  .today-card-unit {
+    margin-top: 0.15rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  .today-card-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .today-card-link:focus-visible {
+    outline: 2px solid #34d399;
+    outline-offset: 3px;
+  }
+
+  .today-fade {
+    animation: today-fade 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes today-fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .today-celebrate {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .today-celebrate-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-radius: 1.15rem;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(15, 23, 42, 0.9));
+    padding: 0.9rem 1rem;
+  }
+
+  .today-celebrate-kicker {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6ee7b7;
+  }
+
+  .today-celebrate-label {
+    margin-top: 0.2rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ecfdf5;
+  }
+
+  .today-celebrate-btn {
+    border-radius: 0.85rem;
+    background: #10b981;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 900;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+    border: 0;
+  }
+
+  .today-celebrate-btn:hover {
+    background: #059669;
+  }
+
+  .week-line-wrap {
+    position: relative;
+    margin-top: 0.85rem;
+    height: 11rem;
+    border-radius: 1rem;
+    background:
+      linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px) 0 0 / 100% 25%,
+      rgba(2, 6, 23, 0.35);
+  }
+
+  .week-line-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  .week-line-path {
+    stroke: #34d399;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.35));
+  }
+
+  .week-line-dot {
+    fill: #0b1220;
+    stroke: #34d399;
+    stroke-width: 2.5;
+    cursor: pointer;
+    transition: r 140ms ease, fill 140ms ease;
+  }
+
+  .week-line-dot.is-current,
+  .week-line-dot:hover,
+  .week-line-dot:focus {
+    fill: #34d399;
+  }
+
+  .week-line-tooltip {
+    position: absolute;
+    transform: translate(-50%, -120%);
+    pointer-events: none;
+    border-radius: 0.75rem;
+    background: #020617;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    padding: 0.45rem 0.65rem;
+    min-width: 5.5rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .week-line-tooltip-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+
+  .week-line-tooltip-value {
+    margin-top: 0.1rem;
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #6ee7b7;
+  }
+
+  .week-line-legend {
+    margin-top: 0.65rem;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+    text-align: center;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #64748b;
+  }
+
+  .week-line-legend .is-current {
+    color: #6ee7b7;
+  }
+
+  .app-avatar {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+    font-size: 0.85rem;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .app-avatar:focus-visible {
+    outline: 2px solid #34d399;
+    outline-offset: 2px;
+  }
+
+  .app-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.45rem);
+    z-index: 40;
+    width: 15.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: #0f172a;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    padding: 0.45rem;
+  }
+
+  .app-menu-email {
+    padding: 0.55rem 0.7rem 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    word-break: break-all;
+  }
+
+  .app-menu-label {
+    padding: 0.35rem 0.7rem 0.15rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .app-menu-item {
+    display: block;
+    border-radius: 0.7rem;
+    padding: 0.55rem 0.7rem;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .app-menu-item:hover,
+  .app-menu-item:focus-visible {
+    background: rgba(255, 255, 255, 0.06);
+    outline: none;
+  }
+
+  .app-menu-item--danger {
+    color: #fda4af;
+  }
+
+  .app-menu-divider {
+    height: 1px;
+    margin: 0.35rem 0.4rem;
+    background: rgba(148, 163, 184, 0.2);
+  }
+
   .today-banner-veil {
     position: absolute;
     inset: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 1.1rem;
-    background: linear-gradient(180deg, rgba(11, 18, 32, 0.15), rgba(11, 18, 32, 0.88));
+    padding: 1.15rem;
+    background: linear-gradient(180deg, rgba(11, 18, 32, 0.05), rgba(11, 18, 32, 0.82) 55%, rgba(11, 18, 32, 0.95));
   }
 
   .today-banner-kicker {

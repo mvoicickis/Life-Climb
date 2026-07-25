@@ -12,5 +12,6 @@ class DashboardController < ApplicationController
     @week_series = insights.week_series
     @week_percent = insights.week_percent
     @focus_tips = insights.focus_tips
+    @celebrations = insights.celebrations
   end
 end

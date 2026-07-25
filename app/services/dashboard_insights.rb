@@ -1,13 +1,13 @@
-# Computes Today-board extras: streak, weekly score series, and focus tips.
+# Computes Today-board extras: streak, weekly score series, focus tips, milestones.
 class DashboardInsights
   GOOD = %i[better perfect].freeze
+  STREAK_MILESTONES = [ 7, 30, 100 ].freeze
 
   def initialize(user, trackers:)
     @user = user
     @trackers = Array(trackers)
   end
 
-  # Consecutive calendar days with at least one log, ending today or yesterday.
   def streak_days
     return 0 if @user.daily_logs.none?
 
@@ -22,24 +22,23 @@ class DashboardInsights
     count
   end
 
-  # Mon–Sun of the current week: percent of home trackers in a "good" state that day.
+  # Rolling last 7 days (including today): overall daily score 0–100.
   def week_series
-    week_start = Date.current.beginning_of_week(:monday)
-
-    (0..6).map do |offset|
-      day = week_start + offset
+    (6.downto(0)).map do |ago|
+      day = Date.current - ago
       {
         date: day,
-        label: day.strftime("%a")[0, 2],
+        label: I18n.l(day, format: :chart_day, default: day.strftime("%a")),
+        full_label: I18n.l(day, format: :long, default: day.strftime("%b %-d")),
         percent: day_score(day),
         current: day == Date.current,
-        future: day > Date.current
+        future: false
       }
     end
   end
 
   def week_percent
-    days = week_series.reject { |point| point[:future] }
+    days = week_series
     return 0 if days.empty?
 
     (days.sum { |point| point[:percent] } / days.size.to_f).round
@@ -50,6 +49,47 @@ class DashboardInsights
     tips.first(3).presence || default_tips
   end
 
+  def celebrations
+    items = []
+
+    if STREAK_MILESTONES.include?(streak_days)
+      items << {
+        kind: :streak,
+        label: I18n.t("habits.milestone_streak", count: streak_days),
+        tracker: nil
+      }
+    end
+
+    @trackers.each do |tracker|
+      if personal_record?(tracker)
+        items << { kind: :record, label: I18n.t("habits.milestone_record"), tracker: tracker }
+      elsif big_boost?(tracker)
+        items << { kind: :boost, label: I18n.t("habits.milestone_boost"), tracker: tracker }
+      end
+    end
+
+    items.first(2)
+  end
+
+  def personal_record?(habit)
+    today = habit.today_amount
+    return false if today <= 0
+
+    prior_max = habit.daily_logs.where("logged_on < ?", Date.current).maximum(:amount)
+    prior_max = BigDecimal("0") if prior_max.blank?
+    today > prior_max
+  end
+
+  def big_boost?(habit)
+    return false unless habit.status == :better
+
+    delta = habit.today_amount - habit.yesterday_amount
+    return false if delta <= 0
+
+    threshold = [ habit.yesterday_amount * BigDecimal("0.25"), BigDecimal("1") ].max
+    delta >= threshold
+  end
+
   private
 
   def logged_on?(date)
@@ -58,7 +98,6 @@ class DashboardInsights
 
   def day_score(date)
     return 0 if @trackers.empty?
-    return 0 if date > Date.current
 
     good = @trackers.count { |tracker| GOOD.include?(HabitStatusEvaluator.new(tracker, on: date).call) }
     ((good / @trackers.size.to_f) * 100).round
@@ -66,25 +105,36 @@ class DashboardInsights
 
   def tip_for(tracker)
     status = tracker.status
-    return nil if GOOD.include?(status) || status == :same
+    name = tracker.name
+    unit = tracker.unit
+    key = "#{name} #{unit}".downcase
 
     case status
     when :worse
-      "Lift #{tracker.name} above yesterday’s #{format_amount(tracker.yesterday_amount)} #{tracker.unit}."
+      needed = tracker.yesterday_amount - tracker.today_amount
+      needed = needed.ceil
+      needed = 1 if needed < 1
+      amount = format_amount(needed)
+
+      if key.match?(/walk|step/)
+        I18n.t("focus_tips.walk_more", amount: amount)
+      elsif key.match?(/read|page|book/)
+        I18n.t("focus_tips.read_more", amount: amount, unit: unit)
+      else
+        I18n.t("focus_tips.do_more", amount: amount, unit: unit, name: name)
+      end
     when :too_low
-      min = tracker.min_value
-      "Bring #{tracker.name} up toward #{format_amount(min)} #{tracker.unit}."
+      I18n.t("focus_tips.lift_low", name: name, amount: format_amount(tracker.min_value), unit: unit)
     when :too_high
-      max = tracker.max_value
-      "Ease #{tracker.name} back under #{format_amount(max)} #{tracker.unit}."
+      I18n.t("focus_tips.ease_high", name: name, amount: format_amount(tracker.max_value), unit: unit)
     end
   end
 
   def default_tips
     [
-      "Log what matters today — even a small number counts.",
-      "Pick one thing to beat yesterday.",
-      "Keep Tomorrow simple: one clear win."
+      I18n.t("focus_tips.default_one"),
+      I18n.t("focus_tips.default_two"),
+      I18n.t("focus_tips.default_three")
     ]
   end
 

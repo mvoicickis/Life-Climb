@@ -66,12 +66,12 @@ module ApplicationHelper
 
   def status_badge_text(status)
     case status
-    when :better then "Better"
-    when :same then "Same"
-    when :worse then "Worse"
-    when :perfect then "In range"
-    when :too_low then "Too low"
-    when :too_high then "Too high"
+    when :better then t("status.better")
+    when :same then t("status.same")
+    when :worse then t("status.worse")
+    when :perfect then t("status.perfect")
+    when :too_low then t("status.too_low")
+    when :too_high then t("status.too_high")
     else status.to_s.humanize
     end
   end
@@ -82,12 +82,12 @@ module ApplicationHelper
 
   def status_full_text(status)
     case status
-    when :better then "🟢 Better than yesterday"
-    when :same then "🟡 Same as yesterday"
-    when :worse then "🔴 Worse than yesterday"
-    when :perfect then "🟢 Within healthy range"
-    when :too_low then "🔴 Below healthy range"
-    when :too_high then "🔴 Above healthy range"
+    when :better then "🟢 #{t('status.better_full')}"
+    when :same then "🟡 #{t('status.same_full')}"
+    when :worse then "🔴 #{t('status.worse_full')}"
+    when :perfect then "🟢 #{t('status.perfect_full')}"
+    when :too_low then "🔴 #{t('status.too_low_full')}"
+    when :too_high then "🔴 #{t('status.too_high_full')}"
     else status.to_s.humanize
     end
   end
@@ -116,5 +116,10 @@ module ApplicationHelper
     end
 
     "grid-template-columns: repeat(#{cols}, minmax(0, 1fr));"
+  end
+
+  def nav_link_class(active)
+    base = "rounded-xl px-2 py-2 md:px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+    active ? "#{base} text-emerald-300 bg-white/5" : "#{base} text-slate-300 hover:bg-white/5 hover:text-white"
   end
 end

@@ -1,0 +1,46 @@
+<nav class="app-nav border-b border-white/10 bg-[#0b1220]/80 backdrop-blur" aria-label="Main">
+  <div class="container mx-auto flex items-center justify-between gap-3 px-4 py-3">
+    <%= link_to dashboard_path, class: "flex items-center gap-2 text-xl font-black text-emerald-400 md:text-2xl" do %>
+      <span class="grid h-8 w-8 place-items-center rounded-xl bg-emerald-500/20 text-base" aria-hidden="true">🌿</span>
+      <span><%= t("app_name") %></span>
+    <% end %>
+
+    <div class="flex items-center gap-0.5 text-sm font-bold md:gap-1">
+      <%= link_to t("nav.home"), root_path, class: nav_link_class(current_page?(root_path) && !request.path.start_with?("/dashboard")) %>
+      <%= link_to t("nav.dashboard"), dashboard_path, class: nav_link_class(current_page?(dashboard_path)) %>
+      <%= link_to t("nav.stats"), habits_path, class: nav_link_class(current_page?(habits_path) || request.path.start_with?("/habits")) %>
+      <%= link_to t("nav.feedback"), new_feedback_path, class: nav_link_class(current_page?(new_feedback_path)) %>
+
+      <div class="relative ml-1" data-controller="dropdown">
+        <button type="button"
+                class="app-avatar"
+                data-dropdown-target="button"
+                data-action="click->dropdown#toggle"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-label="<%= t('nav.account') %>">
+          <span aria-hidden="true"><%= current_user.email_address.to_s.first.upcase %></span>
+        </button>
+
+        <div data-dropdown-target="menu"
+             class="app-menu"
+             role="menu"
+             hidden>
+          <p class="app-menu-email"><%= current_user.email_address %></p>
+          <%= link_to t("nav.settings"), settings_path, class: "app-menu-item", role: "menuitem" %>
+          <% if current_user.admin? %>
+            <%= link_to t("nav.admin"), admin_root_path, class: "app-menu-item", role: "menuitem" %>
+          <% end %>
+
+          <div class="app-menu-divider" role="separator"></div>
+          <p class="app-menu-label"><%= t("nav.language") %></p>
+          <%= button_to "🇬🇧 #{t('languages.en')}", locale_path(locale: :en), method: :patch, class: "app-menu-item w-full text-left", role: "menuitem" %>
+          <%= button_to "🇱🇻 #{t('languages.lv')}", locale_path(locale: :lv), method: :patch, class: "app-menu-item w-full text-left", role: "menuitem" %>
+
+          <div class="app-menu-divider" role="separator"></div>
+          <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "app-menu-item app-menu-item--danger w-full text-left", role: "menuitem" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
