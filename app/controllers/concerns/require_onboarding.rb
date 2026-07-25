@@ -15,7 +15,7 @@ module RequireOnboarding
 
   def redirect_to_onboarding_if_needed
     return unless authenticated?
-    return if %w[onboarding sessions registrations passwords v2_onboardings life_area_selections].include?(controller_name)
+    return if %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains].include?(controller_name)
     return unless current_user&.needs_onboarding?
 
     if current_user.planning_v2? || current_user.dreams.none?

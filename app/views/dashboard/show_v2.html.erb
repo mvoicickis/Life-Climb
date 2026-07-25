@@ -73,6 +73,19 @@
     <% end %>
   </section>
 
+  <% if @journey.status != "completed" %>
+    <section class="lp-glass p-4">
+      <% if @gap.to_i <= 25 %>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.suggest_complete") %></p>
+      <% end %>
+      <%= button_to t("dashboard_v2.reach_journey"),
+            life_journey_completion_path(@journey),
+            method: :post,
+            form: { data: { turbo_confirm: t("journeys.confirm_complete") } },
+            class: "mt-2 w-full rounded-full border border-[var(--lp-border)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)]" %>
+    </section>
+  <% end %>
+
   <%= render "dashboard/life_tree",
         life_areas: @life_areas,
         focus_id: @journey.life_area_id,

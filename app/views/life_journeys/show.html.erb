@@ -22,7 +22,17 @@
     <p class="text-3xl font-semibold text-[var(--lp-ink)]"><%= @journey.gap_percent.to_i %>%</p>
   </section>
 
-  <%= link_to t("focus.title"), focus_path, class: "lp-cta inline-flex" %>
+  <% if @journey.status != "completed" %>
+    <%= button_to t("journeys.reached_this"),
+          life_journey_completion_path(@journey),
+          method: :post,
+          form: { data: { turbo_confirm: t("journeys.confirm_complete") } },
+          class: "lp-cta w-full" %>
+  <% else %>
+    <%= link_to t("next_mountain.title"), next_mountain_path, class: "lp-cta inline-flex" %>
+  <% end %>
+
+  <%= link_to t("focus.title"), focus_path, class: "mt-3 inline-flex text-sm font-bold text-[var(--lp-lime)]" %>
 </div>
 
 <%= render "shared/lp_bottom_nav", active: :life %>

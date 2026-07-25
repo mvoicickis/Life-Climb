@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module Onboarding
-  # One mountain: single Area → Journey → Focus(1) → first Mission → Home.
-  class Run
+module Journeys
+  # Start a new climb (after completion or from Life Map). Keeps prior Areas; Focus = this Journey only.
+  class BeginClimb
     class Error < StandardError; end
 
     def self.call(user:, area_key:, title:, ideal_scene:, current_reality:, closer_percent: 30)
@@ -26,15 +26,17 @@ module Onboarding
     end
 
     def call
-      raise Error, "Pick one life area" unless LifeArea::CATALOG_KEYS.include?(@area_key)
+      raise Error, "Pick a life area" unless LifeArea::CATALOG_KEYS.include?(@area_key)
 
       ActiveRecord::Base.transaction do
-        areas = LifeAreas::Select.call(user: @user, keys: [ @area_key ])
-        primary_area = areas.find { |a| a.key == @area_key } || areas.first
+        keys = (@user.life_areas.v2_selected.pluck(:key) + [ @area_key ]).uniq
+        areas = LifeAreas::Select.call(user: @user, keys: keys)
+        area = areas.find { |a| a.key == @area_key }
+        raise Error, "Could not open that life area" unless area
 
         journey = Journeys::Create.call(
           user: @user,
-          life_area: primary_area,
+          life_area: area,
           title: @title,
           ideal_scene: @ideal_scene,
           current_reality: @current_reality,
@@ -42,7 +44,6 @@ module Onboarding
         )
         Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
         Missions::EnsureDaily.call(user: @user)
-        @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
         journey
       end
     end

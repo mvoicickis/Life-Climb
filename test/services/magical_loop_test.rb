@@ -1,7 +1,7 @@
 require "test_helper"
 
 class MagicalLoopTest < ActiveSupport::TestCase
-  test "v2 loop: select areas, journey, focus, mission, complete moves LP and gap" do
+  test "one-mountain loop: area, journey, mission, complete moves LP and gap" do
     user = User.create!(
       email_address: "loop@example.com",
       password: "password12345",
@@ -11,7 +11,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
 
     Onboarding::Run.call(
       user: user,
-      area_keys: %w[career learning],
+      area_key: "career",
       title: "Senior Rails developer",
       ideal_scene: "I ship products people love as a senior Rails engineer.",
       current_reality: "I am learning Rails and building small apps.",
@@ -23,11 +23,11 @@ class MagicalLoopTest < ActiveSupport::TestCase
     assert user.onboarding_completed?
     journey = user.primary_focused_journey
     assert journey
+    assert_equal "career", journey.life_area.key
     assert_in_delta 70.0, journey.gap_percent.to_f, 0.01
 
     mission = user.missions.for_day(Date.current).primary.first
     assert mission
-    assert mission.is_primary?
 
     points_before = user.life_points
     gap_before = journey.gap_percent.to_f
@@ -41,35 +41,55 @@ class MagicalLoopTest < ActiveSupport::TestCase
     assert journey.gap_percent.to_f < gap_before
   end
 
-  test "focus switch never deletes journey progress" do
+  test "completing a journey awards LP and clears focus" do
     user = users(:one)
-    LifeAreas::Select.call(user: user, keys: %w[career purpose])
-    areas = user.life_areas.v2_selected
-    j1 = Journeys::Create.call(
+    LifeAreas::Select.call(user: user, keys: %w[career])
+    area = user.life_areas.v2_selected.first
+    journey = Journeys::Create.call(
       user: user,
-      life_area: areas.first,
+      life_area: area,
       title: "Career journey",
       ideal_scene: "Ideal career",
       current_reality: "Present career",
       closer_percent: 20
     )
-    j2 = Journeys::Create.call(
+    Focus::SetJourneys.call(user: user, journey_ids: [ journey.id ])
+    before = user.life_points
+
+    Journeys::Complete.call(user: user, journey: journey)
+    journey.reload
+    user.reload
+
+    assert_equal "completed", journey.status
+    assert_nil journey.focus_position
+    assert_equal before + Journeys::Complete::COMPLETION_LP, user.life_points
+  end
+
+  test "begin climb on a new area keeps prior areas and focuses the new journey" do
+    user = users(:two)
+    Onboarding::Run.call(
       user: user,
-      life_area: areas.second,
-      title: "Purpose journey",
-      ideal_scene: "Ideal purpose",
-      current_reality: "Present purpose",
+      area_key: "career",
+      title: "First",
+      ideal_scene: "Ideal A",
+      current_reality: "Present A",
       closer_percent: 40
     )
+    first = user.primary_focused_journey
+    Journeys::Complete.call(user: user, journey: first)
 
-    Focus::SetJourneys.call(user: user, journey_ids: [ j1.id ])
-    j1.update!(gap_percent: 55)
-    Focus::SetJourneys.call(user: user, journey_ids: [ j2.id ])
+    second = Journeys::BeginClimb.call(
+      user: user,
+      area_key: "purpose",
+      title: "Purpose climb",
+      ideal_scene: "Clear purpose",
+      current_reality: "Searching",
+      closer_percent: 25
+    )
 
-    assert_nil j1.reload.focus_position
-    assert_equal 1, j2.reload.focus_position
-    assert_in_delta 55.0, j1.gap_percent.to_f, 0.01
-    assert j1.ideal_scene.present?
+    assert_equal %w[career purpose].sort, user.life_areas.v2_selected.pluck(:key).sort
+    assert_equal second.id, user.primary_focused_journey.id
+    assert_nil first.reload.focus_position
   end
 
   test "v2 habit completion does not award LP" do

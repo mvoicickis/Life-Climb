@@ -25,7 +25,12 @@ Ease and motivation beat clever architecture.
 Life Area  →  Life Journey  →  Daily Mission
 ```
 
-User-facing MVP naming uses **Life Journey** (not Dream/Goal rename).
+## One mountain at a time
+
+- Onboarding picks **exactly one** Life Area, then a short Ideal / Present / closer interview (area-flavored copy).
+- Default Focus is **one** Journey.
+- Completing a Journey is **user-declared** → LP + next mountain (same Area or new Area).
+- Areas accumulate over years; Journeys come and go.
 
 ## MVP schema (lean)
 

@@ -1,0 +1,87 @@
+<% content_for :title, t("next_mountain.title") %>
+<% content_for :lp_game, true %>
+
+<%
+  step = @step.to_s
+  area_key = @area_key.to_s
+%>
+
+<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+  <% if step == "choose" %>
+    <header>
+      <p class="text-sm font-semibold text-[var(--lp-lime)]"><%= t("next_mountain.congrats") %></p>
+      <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("next_mountain.title") %></h1>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]">
+        <%= t("next_mountain.subtitle", title: @completed.title, area: @same_area.label) %>
+      </p>
+    </header>
+
+    <div class="space-y-3">
+      <%= button_to t("next_mountain.same_area", area: @same_area.label),
+            next_mountain_path(step: "choose"),
+            method: :patch,
+            params: { choice: "same" },
+            class: "lp-cta w-full" %>
+      <%= button_to t("next_mountain.other_area"),
+            next_mountain_path(step: "choose"),
+            method: :patch,
+            params: { choice: "other" },
+            class: "w-full rounded-full border border-[var(--lp-border)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)]" %>
+    </div>
+  <% elsif step == "pick_area" %>
+    <header>
+      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("next_mountain.pick_area_title") %></h1>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("next_mountain.pick_area_subtitle") %></p>
+    </header>
+
+    <%= form_with url: next_mountain_path(step: "pick_area"), method: :patch, class: "space-y-4" do %>
+      <div class="grid gap-3">
+        <% @catalog.each do |entry| %>
+          <% key = entry[:key] %>
+          <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
+            <%= radio_button_tag "climb[area_key]", key, key == @same_area.key, id: "nm_area_#{key}", class: "mt-1" %>
+            <span>
+              <span class="block font-semibold text-[var(--lp-ink)]">
+                <span aria-hidden="true"><%= entry[:emoji] %></span>
+                <%= t("life_area_catalog.#{key}.name") %>
+              </span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+      <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+    <% end %>
+  <% else %>
+    <% key = LifeArea::CATALOG_KEYS.include?(area_key) ? area_key : @same_area.key %>
+    <header>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{key}.name") %></p>
+      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.title", default: t("next_mountain.interview_title")) %></h1>
+    </header>
+
+    <%= form_with url: next_mountain_path(step: "interview"), method: :patch, class: "space-y-4" do %>
+      <%= hidden_field_tag "climb[area_key]", key %>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.ideal", default: t("journeys.ideal")) %></label>
+        <textarea name="climb[ideal_scene]" rows="3" required class="lp-input w-full"
+          placeholder="<%= t("area_interview.#{key}.ideal_placeholder", default: t('journeys.ideal_placeholder')) %>"></textarea>
+      </div>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.present", default: t("journeys.present")) %></label>
+        <textarea name="climb[current_reality]" rows="3" required class="lp-input w-full"
+          placeholder="<%= t("area_interview.#{key}.present_placeholder", default: t('journeys.present_placeholder')) %>"></textarea>
+      </div>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.title_label", default: t("journeys.title_label")) %></label>
+        <input type="text" name="climb[title]" class="lp-input w-full"
+          placeholder="<%= t("area_interview.#{key}.title_placeholder", default: t('journeys.title_placeholder')) %>" />
+      </div>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.closer", default: t("journeys.closer")) %></label>
+        <input type="number" name="climb[closer_percent]" min="0" max="100" value="30" class="lp-input w-full" />
+      </div>
+      <%= submit_tag t("next_mountain.start"), class: "lp-cta w-full" %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= render "shared/lp_bottom_nav", active: :life %>
