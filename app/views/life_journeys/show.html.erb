@@ -1,6 +1,10 @@
 <% content_for :title, @journey.title %>
 <% content_for :lp_game, true %>
 
+<%
+  today_mission = @journey.missions.for_day(Date.current).primary.order(:id).first
+%>
+
 <div class="lp-home mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5">
   <header>
     <p class="text-sm text-[var(--lp-muted)]"><%= @journey.life_area.label %></p>
@@ -8,13 +12,34 @@
   </header>
 
   <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("journeys.ideal") %></h2>
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.want_label") %></h2>
     <p class="text-[var(--lp-ink)]"><%= @journey.ideal_scene %></p>
   </section>
 
   <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("journeys.present") %></h2>
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.now_label") %></h2>
     <p class="text-[var(--lp-ink)]"><%= @journey.current_reality %></p>
+  </section>
+
+  <% if @journey.next_win.present? %>
+    <section class="lp-glass space-y-2 p-4">
+      <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.next_label") %></h2>
+      <p class="text-[var(--lp-ink)]"><%= @journey.next_win %></p>
+    </section>
+  <% end %>
+
+  <section class="lp-glass space-y-2 p-4">
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today") %></h2>
+    <% if today_mission %>
+      <p class="text-[var(--lp-ink)]"><%= today_mission.title %></p>
+      <% if today_mission.completed? %>
+        <p class="mt-2 text-sm text-[var(--lp-lime)]"><%= t("dashboard_v2.done_today") %></p>
+      <% else %>
+        <%= link_to t("coach.open_home"), dashboard_path, class: "mt-3 inline-flex text-sm font-bold text-[var(--lp-lime)]" %>
+      <% end %>
+    <% else %>
+      <%= link_to t("coach.begin_today"), dashboard_path, class: "lp-cta mt-2 inline-flex" %>
+    <% end %>
   </section>
 
   <section class="lp-glass p-4">
@@ -31,8 +56,6 @@
   <% else %>
     <%= link_to t("next_mountain.title"), next_mountain_path, class: "lp-cta inline-flex" %>
   <% end %>
-
-  <%= link_to t("focus.title"), focus_path, class: "mt-3 inline-flex text-sm font-bold text-[var(--lp-lime)]" %>
 </div>
 
 <%= render "shared/lp_bottom_nav", active: :life %>

@@ -1,0 +1,41 @@
+<%#
+  One question · one answer · one CTA.
+  locals: form_url, scope (onboarding|climb), field, value, label, hint, placeholder,
+          cta, hidden (hash), input (:text|:textarea), rows
+%>
+<%
+  scope = local_assigns.fetch(:scope, "onboarding")
+  field = local_assigns.fetch(:field)
+  input = local_assigns.fetch(:input, :textarea)
+  rows = local_assigns.fetch(:rows, 4)
+  value = local_assigns[:value].to_s
+  hidden = local_assigns.fetch(:hidden, {})
+%>
+
+<header>
+  <% if local_assigns[:eyebrow].present? %>
+    <p class="text-sm text-[var(--lp-muted)]"><%= local_assigns[:eyebrow] %></p>
+  <% end %>
+  <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= label %></h1>
+  <% if local_assigns[:hint].present? %>
+    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= hint %></p>
+  <% end %>
+</header>
+
+<%= form_with url: form_url, method: :patch, class: "space-y-4" do %>
+  <% hidden.each do |name, val| %>
+    <%= hidden_field_tag "#{scope}[#{name}]", val %>
+  <% end %>
+
+  <div class="lp-glass space-y-2 p-4">
+    <% if input == :text %>
+      <input type="text" name="<%= scope %>[<%= field %>]" value="<%= value %>" required
+        class="lp-input w-full" placeholder="<%= placeholder %>" autocomplete="off" />
+    <% else %>
+      <textarea name="<%= scope %>[<%= field %>]" rows="<%= rows %>" required
+        class="lp-input w-full" placeholder="<%= placeholder %>"><%= value %></textarea>
+    <% end %>
+  </div>
+
+  <%= submit_tag cta, class: "lp-cta w-full" %>
+<% end %>

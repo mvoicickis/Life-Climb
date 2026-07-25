@@ -2,7 +2,11 @@ class MissionsController < ApplicationController
   def show
     if current_user.planning_v2?
       @journey = current_user.primary_focused_journey
-      @missions = current_user.missions.for_day(Date.current).ordered
+      @missions = if @journey
+        @journey.missions.for_day(Date.current).ordered
+      else
+        Mission.none
+      end
       @life_points = current_user.life_points
       render "missions/show_v2" and return
     end

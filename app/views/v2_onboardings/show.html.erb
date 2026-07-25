@@ -1,6 +1,11 @@
 <% content_for :title, t("v2_onboarding.title") %>
 <% content_for :lp_game, true %>
 
+<%
+  key = @area_key.to_s
+  eyebrow = key.present? ? t("life_area_catalog.#{key}.name") : nil
+%>
+
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
   <% if @step == "area" %>
     <header>
@@ -12,67 +17,70 @@
     <%= form_with url: v2_onboarding_path(step: "area"), method: :patch, class: "space-y-4" do %>
       <div class="grid gap-3" role="radiogroup" aria-label="<%= t('v2_onboarding.one_area_title') %>">
         <% @catalog.each do |entry| %>
-          <% key = entry[:key] %>
+          <% area_key = entry[:key] %>
           <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
-            <%= radio_button_tag "onboarding[area_key]", key, @area_key == key, id: "ob_area_#{key}", class: "mt-1" %>
+            <%= radio_button_tag "onboarding[area_key]", area_key, @area_key == area_key, id: "ob_area_#{area_key}", class: "mt-1" %>
             <span>
               <span class="block text-lg font-semibold text-[var(--lp-ink)]">
                 <span aria-hidden="true"><%= entry[:emoji] %></span>
-                <%= t("life_area_catalog.#{key}.name") %>
+                <%= t("life_area_catalog.#{area_key}.name") %>
               </span>
-              <span class="mt-1 block text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{key}.hint") %></span>
+              <span class="mt-1 block text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{area_key}.hint") %></span>
             </span>
           </label>
         <% end %>
       </div>
       <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
     <% end %>
+  <% elsif @step == "want" %>
+    <%= render "shared/coach_beat",
+          form_url: v2_onboarding_path(step: "want"),
+          scope: "onboarding",
+          field: "ideal_scene",
+          value: @draft["ideal_scene"],
+          eyebrow: eyebrow,
+          label: t("area_interview.#{key}.ideal", default: t("coach.want")),
+          hint: t("area_interview.#{key}.ideal_hint", default: t("coach.want_hint")),
+          placeholder: t("area_interview.#{key}.ideal_placeholder", default: t("journeys.ideal_placeholder")),
+          cta: t("coach.continue"),
+          hidden: { area_key: key } %>
+  <% elsif @step == "now" %>
+    <%= render "shared/coach_beat",
+          form_url: v2_onboarding_path(step: "now"),
+          scope: "onboarding",
+          field: "current_reality",
+          value: @draft["current_reality"],
+          eyebrow: eyebrow,
+          label: t("area_interview.#{key}.present", default: t("coach.now")),
+          hint: t("area_interview.#{key}.present_hint", default: t("coach.now_hint")),
+          placeholder: t("area_interview.#{key}.present_placeholder", default: t("journeys.present_placeholder")),
+          cta: t("coach.continue"),
+          hidden: { area_key: key } %>
+  <% elsif @step == "next" %>
+    <%= render "shared/coach_beat",
+          form_url: v2_onboarding_path(step: "next"),
+          scope: "onboarding",
+          field: "next_win",
+          value: @draft["next_win"],
+          eyebrow: eyebrow,
+          label: t("coach.next"),
+          hint: t("coach.next_hint"),
+          placeholder: t("area_interview.#{key}.next_placeholder", default: t("coach.next_placeholder")),
+          cta: t("coach.continue"),
+          input: :text,
+          hidden: { area_key: key } %>
   <% else %>
-    <% key = @area_key %>
-    <header>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{key}.name") %></p>
-      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.title", default: t("v2_onboarding.journey_title")) %></h1>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("area_interview.#{key}.subtitle", default: t("v2_onboarding.journey_subtitle")) %></p>
-    </header>
-
-    <%= form_with url: v2_onboarding_path(step: "interview"), method: :patch, class: "space-y-4" do %>
-      <%= hidden_field_tag "onboarding[area_key]", key %>
-
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]">
-          <%= t("area_interview.#{key}.ideal", default: t("journeys.ideal")) %>
-        </label>
-        <p class="text-sm text-[var(--lp-muted)]"><%= t("area_interview.#{key}.ideal_hint", default: t("journeys.ideal_hint")) %></p>
-        <textarea name="onboarding[ideal_scene]" rows="3" required class="lp-input w-full"
-          placeholder="<%= t("area_interview.#{key}.ideal_placeholder", default: t('journeys.ideal_placeholder')) %>"></textarea>
-      </div>
-
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]">
-          <%= t("area_interview.#{key}.present", default: t("journeys.present")) %>
-        </label>
-        <p class="text-sm text-[var(--lp-muted)]"><%= t("area_interview.#{key}.present_hint", default: t("journeys.present_hint")) %></p>
-        <textarea name="onboarding[current_reality]" rows="3" required class="lp-input w-full"
-          placeholder="<%= t("area_interview.#{key}.present_placeholder", default: t('journeys.present_placeholder')) %>"></textarea>
-      </div>
-
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]">
-          <%= t("area_interview.#{key}.title_label", default: t("journeys.title_label")) %>
-        </label>
-        <input type="text" name="onboarding[title]" class="lp-input w-full"
-          placeholder="<%= t("area_interview.#{key}.title_placeholder", default: t('journeys.title_placeholder')) %>" />
-      </div>
-
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]">
-          <%= t("area_interview.#{key}.closer", default: t("journeys.closer")) %>
-        </label>
-        <p class="text-sm text-[var(--lp-muted)]"><%= t("area_interview.#{key}.closer_hint", default: t("journeys.closer_hint")) %></p>
-        <input type="number" name="onboarding[closer_percent]" min="0" max="100" value="30" class="lp-input w-full" />
-      </div>
-
-      <%= submit_tag t("v2_onboarding.start"), class: "lp-cta w-full" %>
-    <% end %>
+    <%= render "shared/coach_beat",
+          form_url: v2_onboarding_path(step: "today"),
+          scope: "onboarding",
+          field: "today_mission",
+          value: @draft["today_mission"],
+          eyebrow: eyebrow,
+          label: t("coach.today"),
+          hint: t("coach.today_hint"),
+          placeholder: t("area_interview.#{key}.today_placeholder", default: t("coach.today_placeholder")),
+          cta: t("coach.begin_today"),
+          input: :text,
+          hidden: { area_key: key } %>
   <% end %>
 </div>

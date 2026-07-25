@@ -6,23 +6,25 @@ module Journeys
 
     DEFAULT_GAP = 70.0
 
-    def self.call(user:, life_area:, title:, ideal_scene:, current_reality:, closer_percent: nil)
+    def self.call(user:, life_area:, title:, ideal_scene:, current_reality:, next_win: nil, closer_percent: nil)
       new(
         user:,
         life_area:,
         title:,
         ideal_scene:,
         current_reality:,
+        next_win:,
         closer_percent:
       ).call
     end
 
-    def initialize(user:, life_area:, title:, ideal_scene:, current_reality:, closer_percent:)
+    def initialize(user:, life_area:, title:, ideal_scene:, current_reality:, next_win:, closer_percent:)
       @user = user
       @life_area = life_area
       @title = title.to_s.strip
       @ideal_scene = ideal_scene.to_s.strip
       @current_reality = current_reality.to_s.strip
+      @next_win = next_win.to_s.strip
       @closer_percent = closer_percent
     end
 
@@ -31,6 +33,7 @@ module Journeys
       raise Error, "This area is not yours" unless @life_area.user_id == @user.id
       raise Error, "Describe the life you want" if @ideal_scene.blank?
       raise Error, "Describe where you are today" if @current_reality.blank?
+      raise Error, "Name the next big win" if @next_win.blank?
 
       title = @title.presence || @ideal_scene.truncate(80)
       gap = baseline_gap
@@ -41,6 +44,7 @@ module Journeys
           title: title,
           ideal_scene: @ideal_scene,
           current_reality: @current_reality,
+          next_win: @next_win,
           status: "active",
           gap_percent: gap,
           activated_at: Time.current,

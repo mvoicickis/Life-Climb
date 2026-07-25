@@ -10,16 +10,25 @@ class LifeJourneysController < ApplicationController
 
   def create
     area = current_user.life_areas.v2_selected.find(params.require(:life_journey)[:life_area_id])
+    attrs = params.require(:life_journey).permit(
+      :title, :ideal_scene, :current_reality, :next_win, :today_mission, :closer_percent
+    )
     journey = Journeys::Create.call(
       user: current_user,
       life_area: area,
-      title: params[:life_journey][:title],
-      ideal_scene: params[:life_journey][:ideal_scene],
-      current_reality: params[:life_journey][:current_reality],
-      closer_percent: params[:life_journey][:closer_percent]
+      title: attrs[:title].presence || attrs[:ideal_scene].to_s.truncate(80),
+      ideal_scene: attrs[:ideal_scene],
+      current_reality: attrs[:current_reality],
+      next_win: attrs[:next_win],
+      closer_percent: attrs[:closer_percent].presence || 30
     )
-    redirect_to focus_path, notice: t("journeys.created")
-  rescue Journeys::Create::Error, ActiveRecord::RecordNotFound => e
+    Focus::SetJourneys.call(user: current_user, journey_ids: [ journey.id ])
+    Missions::EnsureDaily.call(
+      user: current_user,
+      mission_title: attrs[:today_mission].presence
+    )
+    redirect_to dashboard_path, notice: t("journeys.created")
+  rescue Journeys::Create::Error, Focus::SetJourneys::Error, ActiveRecord::RecordNotFound => e
     redirect_to new_life_journey_path, alert: e.message
   end
 

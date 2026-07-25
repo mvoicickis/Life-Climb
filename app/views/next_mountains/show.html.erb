@@ -4,6 +4,9 @@
 <%
   step = @step.to_s
   area_key = @area_key.to_s
+  key = LifeArea::CATALOG_KEYS.include?(area_key) ? area_key : @same_area.key
+  eyebrow = t("life_area_catalog.#{key}.name")
+  draft = @draft || {}
 %>
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
@@ -37,13 +40,13 @@
     <%= form_with url: next_mountain_path(step: "pick_area"), method: :patch, class: "space-y-4" do %>
       <div class="grid gap-3">
         <% @catalog.each do |entry| %>
-          <% key = entry[:key] %>
+          <% catalog_key = entry[:key] %>
           <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
-            <%= radio_button_tag "climb[area_key]", key, key == @same_area.key, id: "nm_area_#{key}", class: "mt-1" %>
+            <%= radio_button_tag "climb[area_key]", catalog_key, catalog_key == @same_area.key, id: "nm_area_#{catalog_key}", class: "mt-1" %>
             <span>
               <span class="block font-semibold text-[var(--lp-ink)]">
                 <span aria-hidden="true"><%= entry[:emoji] %></span>
-                <%= t("life_area_catalog.#{key}.name") %>
+                <%= t("life_area_catalog.#{catalog_key}.name") %>
               </span>
             </span>
           </label>
@@ -51,37 +54,57 @@
       </div>
       <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
     <% end %>
+  <% elsif step == "want" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "want"),
+          scope: "climb",
+          field: "ideal_scene",
+          value: draft["ideal_scene"],
+          eyebrow: eyebrow,
+          label: t("area_interview.#{key}.ideal", default: t("coach.want")),
+          hint: t("area_interview.#{key}.ideal_hint", default: t("coach.want_hint")),
+          placeholder: t("area_interview.#{key}.ideal_placeholder", default: t("journeys.ideal_placeholder")),
+          cta: t("coach.continue"),
+          hidden: { area_key: key } %>
+  <% elsif step == "now" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "now"),
+          scope: "climb",
+          field: "current_reality",
+          value: draft["current_reality"],
+          eyebrow: eyebrow,
+          label: t("area_interview.#{key}.present", default: t("coach.now")),
+          hint: t("area_interview.#{key}.present_hint", default: t("coach.now_hint")),
+          placeholder: t("area_interview.#{key}.present_placeholder", default: t("journeys.present_placeholder")),
+          cta: t("coach.continue"),
+          hidden: { area_key: key } %>
+  <% elsif step == "next" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "next"),
+          scope: "climb",
+          field: "next_win",
+          value: draft["next_win"],
+          eyebrow: eyebrow,
+          label: t("coach.next"),
+          hint: t("coach.next_hint"),
+          placeholder: t("area_interview.#{key}.next_placeholder", default: t("coach.next_placeholder")),
+          cta: t("coach.continue"),
+          input: :text,
+          hidden: { area_key: key } %>
   <% else %>
-    <% key = LifeArea::CATALOG_KEYS.include?(area_key) ? area_key : @same_area.key %>
-    <header>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{key}.name") %></p>
-      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.title", default: t("next_mountain.interview_title")) %></h1>
-    </header>
-
-    <%= form_with url: next_mountain_path(step: "interview"), method: :patch, class: "space-y-4" do %>
-      <%= hidden_field_tag "climb[area_key]", key %>
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.ideal", default: t("journeys.ideal")) %></label>
-        <textarea name="climb[ideal_scene]" rows="3" required class="lp-input w-full"
-          placeholder="<%= t("area_interview.#{key}.ideal_placeholder", default: t('journeys.ideal_placeholder')) %>"></textarea>
-      </div>
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.present", default: t("journeys.present")) %></label>
-        <textarea name="climb[current_reality]" rows="3" required class="lp-input w-full"
-          placeholder="<%= t("area_interview.#{key}.present_placeholder", default: t('journeys.present_placeholder')) %>"></textarea>
-      </div>
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.title_label", default: t("journeys.title_label")) %></label>
-        <input type="text" name="climb[title]" class="lp-input w-full"
-          placeholder="<%= t("area_interview.#{key}.title_placeholder", default: t('journeys.title_placeholder')) %>" />
-      </div>
-      <div class="lp-glass space-y-2 p-4">
-        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("area_interview.#{key}.closer", default: t("journeys.closer")) %></label>
-        <input type="number" name="climb[closer_percent]" min="0" max="100" value="30" class="lp-input w-full" />
-      </div>
-      <%= submit_tag t("next_mountain.start"), class: "lp-cta w-full" %>
-    <% end %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "today"),
+          scope: "climb",
+          field: "today_mission",
+          value: draft["today_mission"],
+          eyebrow: eyebrow,
+          label: t("coach.today"),
+          hint: t("coach.today_hint"),
+          placeholder: t("area_interview.#{key}.today_placeholder", default: t("coach.today_placeholder")),
+          cta: t("coach.begin_today"),
+          input: :text,
+          hidden: { area_key: key } %>
   <% end %>
 </div>
 
-<%= render "shared/lp_bottom_nav", active: :life %>
+<%= render "shared/lp_bottom_nav", active: :home %>

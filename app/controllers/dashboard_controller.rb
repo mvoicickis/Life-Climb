@@ -12,12 +12,14 @@ class DashboardController < ApplicationController
   def show_v2
     @journey = current_user.primary_focused_journey
     unless @journey
-      redirect_to(current_user.life_journeys.any? ? focus_path : new_life_journey_path) and return
+      if current_user.life_journeys.where(status: "completed").exists?
+        redirect_to next_mountain_path and return
+      end
+      redirect_to(current_user.life_journeys.active.any? ? life_journey_path(current_user.life_journeys.active.order(:id).first) : new_life_journey_path) and return
     end
 
-    @mission = current_user.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
-               current_user.missions.for_day(Date.current).primary.order(:id).first
-    @life_areas = current_user.selected_life_areas
+    @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
+               @journey.missions.for_day(Date.current).primary.order(:id).first
     @life_points = current_user.life_points
     @lp_today = current_user.ledger_points_today
     @alive_level = current_user.alive_level

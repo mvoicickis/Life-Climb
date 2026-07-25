@@ -15,6 +15,8 @@ class MagicalLoopTest < ActiveSupport::TestCase
       title: "Senior Rails developer",
       ideal_scene: "I ship products people love as a senior Rails engineer.",
       current_reality: "I am learning Rails and building small apps.",
+      next_win: "Finish Rails Fundamentals",
+      today_mission: "Read chapter 5",
       closer_percent: 30
     )
 
@@ -24,10 +26,12 @@ class MagicalLoopTest < ActiveSupport::TestCase
     journey = user.primary_focused_journey
     assert journey
     assert_equal "career", journey.life_area.key
+    assert_equal "Finish Rails Fundamentals", journey.next_win
     assert_in_delta 70.0, journey.gap_percent.to_f, 0.01
 
     mission = user.missions.for_day(Date.current).primary.first
     assert mission
+    assert_equal "Read chapter 5", mission.title
 
     points_before = user.life_points
     gap_before = journey.gap_percent.to_f
@@ -51,6 +55,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
       title: "Career journey",
       ideal_scene: "Ideal career",
       current_reality: "Present career",
+      next_win: "Land first interview",
       closer_percent: 20
     )
     Focus::SetJourneys.call(user: user, journey_ids: [ journey.id ])
@@ -73,6 +78,8 @@ class MagicalLoopTest < ActiveSupport::TestCase
       title: "First",
       ideal_scene: "Ideal A",
       current_reality: "Present A",
+      next_win: "Next A",
+      today_mission: "Do A today",
       closer_percent: 40
     )
     first = user.primary_focused_journey
@@ -84,11 +91,15 @@ class MagicalLoopTest < ActiveSupport::TestCase
       title: "Purpose climb",
       ideal_scene: "Clear purpose",
       current_reality: "Searching",
+      next_win: "Write purpose statement",
+      today_mission: "Journal for 20 minutes",
       closer_percent: 25
     )
 
     assert_equal %w[career purpose].sort, user.life_areas.v2_selected.pluck(:key).sort
     assert_equal second.id, user.primary_focused_journey.id
+    assert_equal "Write purpose statement", second.next_win
+    assert_equal "Journal for 20 minutes", second.missions.for_day(Date.current).primary.first.title
     assert_nil first.reload.focus_position
   end
 

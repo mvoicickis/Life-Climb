@@ -16,31 +16,34 @@
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.ideal") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.ideal_hint") %></p>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.want") %></label>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.want_hint") %></p>
       <%= f.text_area :ideal_scene, rows: 3, required: true, class: "lp-input w-full",
             placeholder: t("journeys.ideal_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.present") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.present_hint") %></p>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.now") %></label>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.now_hint") %></p>
       <%= f.text_area :current_reality, rows: 3, required: true, class: "lp-input w-full",
             placeholder: t("journeys.present_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.title_label") %></label>
-      <%= f.text_field :title, class: "lp-input w-full", placeholder: t("journeys.title_placeholder") %>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.next") %></label>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.next_hint") %></p>
+      <%= f.text_field :next_win, required: true, class: "lp-input w-full",
+            placeholder: t("coach.next_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.closer") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.closer_hint") %></p>
-      <%= f.number_field :closer_percent, min: 0, max: 100, value: 30, class: "lp-input w-full" %>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.today") %></label>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.today_hint") %></p>
+      <%= text_field_tag "life_journey[today_mission]", nil, required: true, class: "lp-input w-full",
+            placeholder: t("coach.today_placeholder") %>
     </div>
 
-    <%= f.submit t("journeys.save"), class: "lp-cta w-full" %>
+    <%= f.submit t("coach.begin_today"), class: "lp-cta w-full" %>
   <% end %>
 </div>
 

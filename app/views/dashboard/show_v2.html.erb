@@ -32,6 +32,12 @@
     <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.working_on") %></p>
     <h2 class="mt-1 text-lg font-semibold text-[var(--lp-ink)]"><%= @journey.title %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= @journey.life_area.label %></p>
+    <% if @journey.next_win.present? %>
+      <p class="mt-3 text-sm text-[var(--lp-ink)]">
+        <span class="text-[var(--lp-muted)]"><%= t("dashboard_v2.next_win") %></span>
+        <%= @journey.next_win %>
+      </p>
+    <% end %>
   </section>
 
   <section class="lp-glass p-4">
@@ -54,22 +60,24 @@
 
   <section class="lp-glass p-4">
     <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today") %></p>
-    <% if @mission %>
+    <% if @mission && !@mission.completed? %>
       <h2 class="mt-2 text-xl font-semibold text-[var(--lp-ink)]"><%= @mission.title %></h2>
-      <% unless @mission.completed? %>
-        <p class="mt-2 text-sm text-[var(--lp-muted)]">
-          <%= t("dashboard_v2.reward_preview", lp: @mission.lp_reward, gap: @mission.gap_delta_percent) %>
-        </p>
-        <%= button_to t("dashboard_v2.complete"),
-              mission_completion_path(@mission),
-              method: :post,
-              class: "lp-cta mt-4 w-full" %>
-      <% else %>
-        <p class="mt-3 font-semibold text-[var(--lp-lime)]"><%= t("dashboard_v2.done_today") %></p>
-      <% end %>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]">
+        <%= t("dashboard_v2.reward_preview", lp: @mission.lp_reward, gap: @mission.gap_delta_percent) %>
+      </p>
+      <%= button_to t("dashboard_v2.complete"),
+            mission_completion_path(@mission),
+            method: :post,
+            class: "lp-cta mt-4 w-full" %>
+    <% elsif @mission&.completed? %>
+      <p class="mt-3 font-semibold text-[var(--lp-lime)]"><%= t("dashboard_v2.done_today") %></p>
     <% else %>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.no_mission") %></p>
-      <%= button_to t("dashboard_v2.get_mission"), focus_path, method: :patch, params: { journey_ids: [ @journey.id ] }, class: "lp-cta mt-4 w-full" %>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("coach.today_hint") %></p>
+      <%= form_with url: today_mission_path, method: :post, class: "mt-3 space-y-3" do %>
+        <input type="text" name="title" required class="lp-input w-full"
+          placeholder="<%= t('coach.today_placeholder') %>" autocomplete="off" />
+        <%= submit_tag t("coach.begin_today"), class: "lp-cta w-full" %>
+      <% end %>
     <% end %>
   </section>
 
@@ -85,12 +93,6 @@
             class: "mt-2 w-full rounded-full border border-[var(--lp-border)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)]" %>
     </section>
   <% end %>
-
-  <%= render "dashboard/life_tree",
-        life_areas: @life_areas,
-        focus_id: @journey.life_area_id,
-        closer_percent: current_user.overall_closer_percent,
-        compact: true %>
 </div>
 
 <%= render "shared/lp_bottom_nav", active: :home %>

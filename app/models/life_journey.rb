@@ -13,6 +13,7 @@ class LifeJourney < ApplicationRecord
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :ideal_scene, presence: true, length: { maximum: SUMMARY_MAX }
   validates :current_reality, presence: true, length: { maximum: SUMMARY_MAX }
+  validates :next_win, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :status, inclusion: { in: STATUSES }
   validates :focus_position, inclusion: { in: 1..3 }, allow_nil: true
   validates :gap_percent, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }

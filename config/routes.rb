@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
   resource :next_mountain, only: %i[ show update ], controller: "next_mountains"
   resource :focus, only: %i[ show update ], controller: "focus"
+  resource :today_mission, only: :create, controller: "today_missions"
   post "missions/:mission_id/complete", to: "mission_completions#create", as: :mission_completion
 
   resource :onboarding, only: %i[ show update ], controller: "onboarding"
