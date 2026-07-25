@@ -1,0 +1,16 @@
+<%# Locals: gap_percent (remaining) %>
+<% gap = local_assigns.fetch(:gap_percent, 0).to_i.clamp(0, 100) %>
+<% progress = 100 - gap %>
+
+<section class="lp-gap-card mt-4" aria-label="<%= t('game_ui.overall_gap') %>"
+         style="--gap-bg: url('<%= asset_path('game/gap-mountains.png') %>')">
+  <div class="lp-gap-card__veil">
+    <p class="lp-gap-card__kicker"><%= t("game_ui.your_progress") %></p>
+    <p class="lp-gap-card__label"><%= t("game_ui.overall_gap") %></p>
+    <p class="lp-gap-card__value"><%= gap %>%</p>
+    <p class="lp-gap-card__remaining"><%= t("game_ui.remaining", percent: gap) %></p>
+    <div class="lp-gap-track mt-4" role="img" aria-label="<%= gap %>%">
+      <div class="lp-gap-fill" style="width: <%= progress %>%"></div>
+    </div>
+  </div>
+</section>

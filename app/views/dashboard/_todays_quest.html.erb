@@ -1,36 +1,36 @@
-<%# Locals: action (TodayAction or nil), reward (Integer) %>
+<%# Locals: action, reward %>
 <% action = local_assigns[:action] %>
 <% reward = local_assigns.fetch(:reward, LifePointsAward::ACTION) %>
 
-<section id="todays-quest" class="lp-glass lp-quest mt-6 p-6" aria-labelledby="quest-heading">
-  <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--lp-lime)]/80">
-    <%= t("game_ui.todays_quest") %>
-  </p>
-
-  <% if action %>
-    <h2 id="quest-heading" class="mt-3 text-2xl font-semibold leading-snug text-[var(--lp-ink)]">
-      <%= action.title %>
-    </h2>
-
-    <div class="mt-4 space-y-1 text-sm text-[var(--lp-muted)]">
-      <p><%= t("game_ui.reward") %>: <span class="font-bold text-[var(--lp-gold)]">+<%= reward %> <%= t("game_ui.life_points_short") %></span></p>
-      <p><%= t("game_ui.gap_shrinks") %></p>
+<section id="todays-quest" class="lp-glass lp-mission mt-4 p-4" aria-labelledby="mission-heading">
+  <div class="lp-mission__row">
+    <div class="lp-mission__copy min-w-0 flex-1">
+      <p class="lp-mission__kicker">🎯 <%= t("game_ui.todays_mission") %></p>
+      <% if action %>
+        <h2 id="mission-heading" class="lp-mission__title"><%= action.title %></h2>
+        <p class="lp-mission__meta">
+          <span class="text-[var(--lp-gold)] font-bold">+<%= reward %> LP</span>
+          <span aria-hidden="true"> · </span>
+          <span><%= t("game_ui.gap_shrinks") %></span>
+        </p>
+      <% else %>
+        <h2 id="mission-heading" class="lp-mission__title"><%= t("game_ui.no_quest") %></h2>
+        <p class="lp-mission__meta"><%= t("game_ui.no_quest_hint") %></p>
+      <% end %>
     </div>
 
-    <% if action.completed? %>
-      <p class="lp-cta mt-6 w-full opacity-70"><%= t("game_ui.quest_done") %></p>
-    <% else %>
-      <%= button_to t("game_ui.complete_quest"),
-            complete_today_action_path(action),
-            method: :post,
-            class: "lp-cta lp-quest__btn mt-6 w-full",
-            data: { turbo: true } %>
-    <% end %>
-  <% else %>
-    <h2 id="quest-heading" class="mt-3 text-2xl font-semibold text-[var(--lp-ink)]">
-      <%= t("game_ui.no_quest") %>
-    </h2>
-    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("game_ui.no_quest_hint") %></p>
-    <%= link_to t("game_ui.add_quest"), dashboard_path(anchor: "add-quest"), class: "lp-cta mt-6 inline-flex w-full justify-center" %>
-  <% end %>
+    <div class="lp-mission__cta shrink-0">
+      <% if action&.completed? %>
+        <span class="lp-cta lp-mission__btn opacity-70"><%= t("game_ui.quest_done") %></span>
+      <% elsif action %>
+        <%= button_to t("game_ui.start_mission"),
+              complete_today_action_path(action),
+              method: :post,
+              class: "lp-cta lp-mission__btn",
+              data: { turbo: true } %>
+      <% else %>
+        <%= link_to t("game_ui.add_quest"), dashboard_path(anchor: "add-quest"), class: "lp-cta lp-mission__btn inline-flex" %>
+      <% end %>
+    </div>
+  </div>
 </section>

@@ -80,12 +80,11 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Dream Life/, response.body)
-    assert_match(/Life Points/, response.body)
+    assert_match(/Overall Gap|Life Points/, response.body)
     assert_match(/Finish authentication/, response.body)
-    assert_select ".lp-dream-hero"
-    assert_select ".lp-tree"
-    assert_select ".lp-quest"
+    assert_select ".lp-twin"
+    assert_select ".lp-gap-card"
+    assert_select ".lp-mission"
     refute_match(/Morale/, response.body)
   end
 end

@@ -5,6 +5,7 @@
   incomplete = @actions.reject(&:completed?)
   focus_action = incomplete.first || @actions.first
   closer = current_user.overall_closer_percent(@life_areas)
+  gap = current_user.overall_gap_percent(@life_areas)
   greeting =
     case Time.current.hour
     when 5..11 then t("game_ui.good_morning")
@@ -17,29 +18,40 @@
   <div class="lp-confetti" data-controller="lp-celebrate" aria-hidden="true"></div>
 <% end %>
 
-<div class="lp-home mx-auto max-w-md px-5 pb-8 pt-8">
-  <header class="space-y-2">
-    <h1 class="text-3xl font-semibold tracking-tight text-[var(--lp-ink)]">
-      <%= greeting %>, <%= current_user.display_name %>
-    </h1>
-    <p class="text-lg text-[var(--lp-ink)]">
-      ❤️ <%= number_with_delimiter(@life_points) %> <%= t("game_ui.life_points_label") %>
-    </p>
-    <p class="text-sm font-semibold text-[var(--lp-muted)]">
-      <%= t("game_ui.level", number: @alive_level.number) %>
-    </p>
+<div class="lp-home mx-auto max-w-md px-4 pb-8 pt-5">
+  <header class="flex items-start justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-3">
+      <%= image_tag current_user.character_image,
+            alt: current_user.character_key.capitalize,
+            class: "lp-avatar-ring h-14 w-14 object-cover" %>
+      <div class="min-w-0">
+        <h1 class="truncate text-xl font-semibold text-[var(--lp-ink)]">
+          <%= greeting %>, <span class="text-[var(--lp-lime)]"><%= current_user.display_name %></span>!
+        </h1>
+        <p class="mt-0.5 text-sm text-[var(--lp-muted)]"><%= t("game_ui.closer_line") %></p>
+      </div>
+    </div>
+    <%= link_to settings_path, class: "mt-1 text-[var(--lp-muted)]", aria: { label: t("nav.settings") } do %>
+      <span aria-hidden="true">🔔</span>
+    <% end %>
   </header>
 
-  <%= render "dashboard/dream_hero", closer_percent: closer %>
+  <%= render "dashboard/status_twin",
+        life_points: @life_points,
+        lp_today: @lp_today,
+        alive_level: @alive_level %>
+
+  <%= render "dashboard/gap_progress", gap_percent: gap %>
 
   <%= render "dashboard/life_tree",
         life_areas: @life_areas,
         focus_id: @life_area&.id,
+        closer_percent: closer,
         compact: true %>
 
   <%= render "dashboard/todays_quest", action: focus_action %>
 
-  <section id="add-quest" class="lp-add-quest lp-glass mt-6 p-4">
+  <section id="add-quest" class="lp-add-quest lp-glass mt-4 p-4">
     <p class="text-sm font-semibold text-[var(--lp-muted)]"><%= t("game_ui.add_quest") %></p>
     <%= form_with url: today_actions_path, scope: :today_action, class: "mt-3 flex flex-col gap-3" do |f| %>
       <%= f.text_field :title,

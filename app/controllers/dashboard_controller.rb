@@ -17,6 +17,7 @@ class DashboardController < ApplicationController
     @step = @building.step
     @actions = @building.today_actions.for_day(Date.current).ordered
     @life_points = current_user.life_points
+    @lp_today = current_user.ledger_points_today
     @alive_level = current_user.alive_level
   end
 end

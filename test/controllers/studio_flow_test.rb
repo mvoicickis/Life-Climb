@@ -7,12 +7,12 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get dashboard_path
     assert_response :success
-    assert_match(/Dream Life/, response.body)
+    assert_match(/Overall Gap/, response.body)
     assert_match(/Life Points/, response.body)
     assert_match(/Finish authentication/, response.body)
-    assert_select ".lp-dream-hero"
-    assert_select ".lp-tree"
-    assert_select ".lp-quest"
+    assert_select ".lp-twin"
+    assert_select ".lp-map-card"
+    assert_select ".lp-mission"
   end
 
   test "completing today action earns life points" do

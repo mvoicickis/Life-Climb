@@ -1,0 +1,24 @@
+<%# Locals: life_points, lp_today, alive_level %>
+<section class="lp-twin mt-5" aria-label="<%= t('nav.life_points') %>">
+  <div class="lp-glass lp-twin__card">
+    <p class="lp-twin__label">❤️ <%= t("game_ui.life_points_label") %></p>
+    <p class="lp-twin__value"><%= number_with_delimiter(life_points) %> <span>LP</span></p>
+    <p class="lp-twin__chip"><%= t("game_ui.lp_today", points: number_with_delimiter(lp_today)) %></p>
+  </div>
+
+  <div class="lp-glass lp-twin__card lp-twin__card--level">
+    <div class="lp-twin__level-copy">
+      <p class="lp-twin__label"><%= t("game_ui.level_label") %></p>
+      <p class="lp-twin__value lp-twin__value--sm">
+        <span aria-hidden="true">🍃</span> <%= alive_level.number %>
+      </p>
+      <p class="lp-twin__sub"><%= alive_level.title %></p>
+      <% if alive_level.next_min %>
+        <p class="lp-twin__next"><%= t("game_ui.next_lp", points: number_with_delimiter(alive_level.next_min)) %></p>
+      <% end %>
+    </div>
+    <div class="lp-level-ring" style="--level-pct: <%= alive_level.percent %>" aria-hidden="true">
+      <%= image_tag "game/seedling.png", alt: "", class: "lp-level-ring__seed" %>
+    </div>
+  </div>
+</section>

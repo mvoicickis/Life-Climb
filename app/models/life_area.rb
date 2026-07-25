@@ -2,6 +2,7 @@ class LifeArea < ApplicationRecord
   include TextLimits
 
   KEYS = %w[
+    self
     love
     family
     community
@@ -12,6 +13,7 @@ class LifeArea < ApplicationRecord
   ].freeze
 
   EMOJI = {
+    "self" => "🧠",
     "love" => "❤️",
     "family" => "👨‍👩‍👧",
     "community" => "👥",
@@ -22,6 +24,7 @@ class LifeArea < ApplicationRecord
   }.freeze
 
   SIMPLE_LABEL_KEYS = {
+    "self" => "self",
     "love" => "love",
     "family" => "family",
     "community" => "community",
@@ -36,7 +39,7 @@ class LifeArea < ApplicationRecord
   has_many :goals, dependent: :nullify
 
   validates :key, presence: true, inclusion: { in: KEYS }
-  validates :number, presence: true, inclusion: { in: 1..7 }
+  validates :number, presence: true, inclusion: { in: 1..8 }
   validates :ambition, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :present_scene, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :closer_score, numericality: { only_integer: true, in: 1..5 }
@@ -82,7 +85,6 @@ class LifeArea < ApplicationRecord
     EMOJI.fetch(key, "🌳")
   end
 
-  # 1 quiet … 5 thriving — drives Life Tree glow CSS
   def vitality
     closer_score.to_i.clamp(1, 5)
   end

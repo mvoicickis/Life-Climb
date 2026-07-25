@@ -99,7 +99,7 @@ class OnboardingController < ApplicationController
 
     if key == "physical_world" && !enough_parts_filled?(parts)
       session[:onboarding_draft] = @draft
-      redirect_to onboarding_path(step: "part_love"), alert: t("onboarding.need_more_parts")
+      redirect_to onboarding_path(step: "part_self"), alert: t("onboarding.need_more_parts")
       return
     end
 
@@ -112,6 +112,8 @@ class OnboardingController < ApplicationController
 
   def enough_parts_filled?(parts)
     filled = parts.select { |_k, v| v.is_a?(Hash) && v["ambition"].to_s.strip.present? }
+    return false unless filled.key?("self")
+
     (filled.keys & %w[love family community humanity]).size >= 1
   end
 
@@ -168,7 +170,7 @@ class OnboardingController < ApplicationController
         )
       end
 
-      focus_key = draft["focus_key"].presence || areas.find(&:filled?)&.key || "love"
+      focus_key = draft["focus_key"].presence || areas.find(&:filled?)&.key || "self"
       focus_area = areas.find { |a| a.key == focus_key } || areas.first
 
       goal = current_user.goals.create!(
