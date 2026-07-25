@@ -1,0 +1,62 @@
+<%# Locals: life_area (required) %>
+<section id="area-progress"
+         class="rounded-2xl bg-zinc-950 text-zinc-100 border border-teal-500/20 p-4 sm:p-5 <%= 'border-amber-300/40' if life_area.goal_reached? %>">
+  <div class="flex items-center justify-between gap-3">
+    <h2 class="text-lg font-semibold tracking-tight"><%= life_area.short_label %></h2>
+    <span class="text-xs font-bold uppercase tracking-wide <%= life_area.goal_reached? ? 'text-amber-200' : 'text-teal-300/80' %>">
+      <%= life_area.goal_reached? ? t("studio.goal_reached") : t("studio.closer") %>
+    </span>
+  </div>
+
+  <%# Dual-marker gap bar: Present = closer_percent, Ideal = 100% %>
+  <div id="closer-meter"
+       class="relative mt-4 h-3 rounded-full bg-zinc-800"
+       role="img"
+       aria-label="<%= t('studio.closer') %>: <%= life_area.closer_percent %>%">
+    <div id="closer-fill"
+         class="absolute inset-y-0 left-0 rounded-full transition-all duration-500 <%= life_area.goal_reached? ? 'bg-gradient-to-r from-teal-400 to-amber-300' : 'bg-teal-400' %>"
+         style="width: <%= life_area.closer_percent %>%"></div>
+
+    <span id="present-marker"
+          class="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-zinc-950 transition-all duration-500 <%= life_area.goal_reached? ? 'bg-amber-300' : 'bg-teal-300' %>"
+          style="left: <%= life_area.closer_percent %>%"
+          title="<%= t('studio.present') %>"></span>
+
+    <span id="ideal-marker"
+          class="absolute top-1/2 right-0 h-4 w-4 translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 ring-2 ring-teal-400"
+          title="<%= t('studio.ideal') %>"></span>
+  </div>
+
+  <div class="mt-2 flex justify-between text-xs text-zinc-400">
+    <span><%= t("studio.present") %> · <%= life_area.closer_label %></span>
+    <span><%= t("studio.ideal") %></span>
+  </div>
+
+  <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+    <div>
+      <p class="text-[0.7rem] font-bold uppercase tracking-wider text-teal-300/70"><%= t("studio.ideal") %></p>
+      <p class="mt-1 text-zinc-200 line-clamp-3">
+        <%= life_area.ideal.presence || t("life_compare.ideal_placeholder") %>
+      </p>
+    </div>
+    <div>
+      <p class="text-[0.7rem] font-bold uppercase tracking-wider text-teal-300/70"><%= t("studio.present") %></p>
+      <p class="mt-1 text-zinc-200 line-clamp-3">
+        <%= life_area.present.presence || t("life_compare.present_placeholder") %>
+      </p>
+    </div>
+  </div>
+
+  <% if life_area.goal_reached? %>
+    <p class="mt-4 w-full rounded-xl border border-amber-300/40 bg-amber-400/15 py-3 text-center text-sm font-bold text-amber-100"
+       aria-disabled="true">
+      <%= t("studio.goal_reached") %>
+    </p>
+  <% else %>
+    <%= button_to t("studio.got_closer"),
+          closer_life_area_path(life_area),
+          method: :post,
+          class: "mt-4 w-full rounded-xl bg-teal-500 py-3 font-bold text-zinc-950 transition hover:bg-teal-400",
+          data: { turbo: true } %>
+  <% end %>
+</section>

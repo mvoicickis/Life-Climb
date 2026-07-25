@@ -57,6 +57,10 @@ class LifeArea < ApplicationRecord
     ((closer_score.to_i.clamp(1, 5) - 1) / 4.0 * 100).round
   end
 
+  def goal_reached?
+    closer_percent >= 100
+  end
+
   def closer_label
     I18n.t("closer_labels.#{closer_score.to_i.clamp(1, 5)}")
   end
