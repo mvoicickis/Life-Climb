@@ -1,8 +1,9 @@
-<%# Locals: life_areas, focus_id, closer_percent, compact %>
+<%# Locals: life_areas, focus_id, closer_percent, compact, journey_scoped %>
 <% areas = Array(local_assigns.fetch(:life_areas)) %>
 <% focus_id = local_assigns[:focus_id] %>
 <% closer = local_assigns.fetch(:closer_percent, 0).to_i %>
 <% compact = local_assigns.fetch(:compact, false) %>
+<% journey_scoped = local_assigns.fetch(:journey_scoped, false) %>
 
 <section class="lp-map-card mt-4 overflow-hidden <%= 'lp-map-card--compact' if compact %>"
          aria-label="<%= t('game_ui.life_map') %>"
@@ -20,20 +21,37 @@
         </svg>
 
         <% areas.each_with_index do |area, index| %>
-          <% angle = (360.0 / areas.size) * index - 90 %>
+          <% angle = (360.0 / [areas.size, 1].max) * index - 90 %>
+          <% node_closer = area.closer_percent %>
+          <% aria = if journey_scoped && area.journey_gap_percent
+               t("game_ui.tree_node_aria", area: area.label, closer: node_closer, gap: area.journey_gap_percent.round)
+             else
+               "#{area.label} #{node_closer}%"
+             end %>
           <%= link_to life_area_path(area),
                 class: "lp-tree-node lp-tree-node--v#{area.vitality} #{'is-focus' if focus_id == area.id}",
                 style: "--lp-angle: #{angle}deg",
-                role: "listitem" do %>
+                role: "listitem",
+                aria: { label: aria } do %>
             <span class="lp-tree-node__emoji" aria-hidden="true"><%= area.emoji %></span>
             <span class="lp-tree-node__label"><%= area.short_label %></span>
-            <span class="lp-tree-node__pct"><%= area.closer_percent %>%</span>
+            <% if journey_scoped %>
+              <span class="lp-tree-node__pct"><%= node_closer %>%</span>
+            <% else %>
+              <span class="lp-tree-node__pct"><%= node_closer %>%</span>
+            <% end %>
           <% end %>
         <% end %>
 
         <div class="lp-tree-center">
           <span class="lp-tree-center__you" aria-hidden="true">😊</span>
-          <span class="lp-tree-center__label"><%= t("game_ui.you") %> <%= closer %>%</span>
+          <span class="lp-tree-center__label">
+            <% if journey_scoped %>
+              <%= t("game_ui.you") %>
+            <% else %>
+              <%= t("game_ui.you") %> <%= closer %>%
+            <% end %>
+          </span>
         </div>
       </div>
     </div>

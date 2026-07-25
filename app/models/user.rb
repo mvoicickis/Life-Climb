@@ -57,6 +57,14 @@ class User < ApplicationRecord
     life_journeys.primary_focus.first
   end
 
+  # Quiet "needs attention" signal: worst gap among focused journeys (not the Home hero).
+  def attention_journey
+    focused = focused_journeys.to_a
+    return nil if focused.size < 2
+
+    focused.max_by { |j| j.gap_percent.to_f }
+  end
+
   def needs_onboarding?
     return !onboarding_completed? if planning_v2?
 

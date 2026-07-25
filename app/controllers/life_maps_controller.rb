@@ -6,7 +6,17 @@ class LifeMapsController < ApplicationController
       @focus_area_id = @journey&.life_area_id
       @life_points = current_user.life_points
       @alive_level = current_user.alive_level
-      @gap = current_user.overall_gap_percent
+      @gap = @journey&.gap_percent&.to_f&.round || current_user.overall_gap_percent
+      @mission = if @journey
+        current_user.missions.for_day(Date.current).where(life_journey_id: @journey.id).primary.order(:id).first
+      end
+      @area_summaries = @life_areas.filter_map do |area|
+        next if area.id == @focus_area_id
+        journey = area.representative_journey
+        next unless journey
+
+        { area: area, title: journey.title, gap: journey.gap_percent.to_i }
+      end
       render "life_maps/show_v2" and return
     end
 

@@ -25,6 +25,17 @@ Ease and motivation beat clever architecture.
 Life Area  →  Life Journey  →  Daily Mission
 ```
 
+**Each Life Journey owns its own world** (not a global Ideal/Present/Gap):
+
+- `ideal_scene` / `current_reality` — columns on the journey
+- `gap_percent` + `gap_snapshots` — per journey
+- `missions` — belong to the journey
+- Progress is journey-scoped; User LP/Level stay player-wide
+
+Life Area is the permanent category and **tree branch**. Branch vitality is **derived** from that area’s focused or latest active Journey gap (no extra tables).
+
+Home shows the **primary Focus** journey’s gap (e.g. “Career gap”), not “overall life.” A quiet attention line may point at another focused journey with a worse gap.
+
 User-facing MVP naming uses **Life Journey** (not Dream/Goal rename).
 
 ## MVP schema (lean)

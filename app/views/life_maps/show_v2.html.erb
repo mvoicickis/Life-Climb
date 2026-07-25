@@ -7,13 +7,82 @@
     <p class="text-sm text-[var(--lp-muted)]"><%= t("game_ui.life_subtitle_v2") %></p>
   </header>
 
-  <%= render "dashboard/gap_progress", gap_percent: @gap %>
+  <% if @journey %>
+    <section class="lp-glass p-4">
+      <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]">
+        <%= t("dashboard_v2.journey_gap", area: @journey.life_area.label) %>
+      </p>
+      <p class="mt-1 text-3xl font-semibold text-[var(--lp-ink)]"><%= @journey.gap_percent.to_i %>%</p>
+      <div class="lp-gap-track mt-3">
+        <div class="lp-gap-fill" style="width: <%= @journey.gap_percent.to_i %>%"></div>
+      </div>
+    </section>
+  <% end %>
 
   <%= render "dashboard/life_tree",
         life_areas: @life_areas,
         focus_id: @focus_area_id,
-        closer_percent: current_user.overall_closer_percent,
-        compact: false %>
+        closer_percent: @journey&.closer_percent&.round || 0,
+        compact: false,
+        journey_scoped: true %>
+
+  <% if @journey %>
+    <section class="lp-glass space-y-4 p-4" aria-label="<%= t('life_map_v2.sheet_label') %>">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= @journey.life_area.label %></p>
+        <h2 class="mt-1 text-xl font-semibold text-[var(--lp-ink)]"><%= @journey.title %></h2>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.ideal") %></h3>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= @journey.ideal_scene %></p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.present") %></h3>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= @journey.current_reality %></p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("dashboard_v2.journey_gap", area: @journey.life_area.label) %></h3>
+        <p class="mt-1 text-2xl font-semibold text-[var(--lp-ink)]"><%= @journey.gap_percent.to_i %>%</p>
+      </div>
+
+      <% if @mission %>
+        <div>
+          <h3 class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("dashboard_v2.today") %></h3>
+          <p class="mt-1 font-semibold text-[var(--lp-ink)]"><%= @mission.title %></p>
+          <% unless @mission.completed? %>
+            <%= button_to t("dashboard_v2.complete"),
+                  mission_completion_path(@mission),
+                  method: :post,
+                  class: "lp-cta mt-3 w-full" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= link_to t("life_map_v2.open_journey"), life_journey_path(@journey), class: "font-bold text-[var(--lp-lime)]" %>
+    </section>
+  <% end %>
+
+  <% if @area_summaries&.any? %>
+    <section class="space-y-2">
+      <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("life_map_v2.other_areas") %></h2>
+      <ul class="space-y-2">
+        <% @area_summaries.each do |summary| %>
+          <li class="lp-glass flex items-center justify-between gap-3 p-3">
+            <div class="min-w-0">
+              <p class="truncate font-semibold text-[var(--lp-ink)]"><%= summary[:area].label %></p>
+              <p class="truncate text-sm text-[var(--lp-muted)]"><%= summary[:title] %></p>
+            </div>
+            <p class="shrink-0 text-sm font-semibold text-[var(--lp-ink)]">
+              <%= t("life_map_v2.gap_short", gap: summary[:gap]) %>
+            </p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
 
   <div class="flex flex-wrap gap-3">
     <%= link_to t("journeys.add_another"), new_life_journey_path, class: "lp-cta inline-flex" %>

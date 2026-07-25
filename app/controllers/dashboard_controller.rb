@@ -23,6 +23,7 @@ class DashboardController < ApplicationController
     @alive_level = current_user.alive_level
     @gap = @journey.gap_percent.to_f.round
     @gap_delta = @journey.gap_delta_vs_yesterday
+    @attention_journey = current_user.attention_journey
     render "dashboard/show_v2"
   end
 

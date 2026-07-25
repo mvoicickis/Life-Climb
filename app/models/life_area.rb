@@ -111,6 +111,8 @@ class LifeArea < ApplicationRecord
   end
 
   def closer_percent
+    return journey_closer_percent if v2_selected?
+
     ((closer_score.to_i.clamp(1, 5) - 1) / 4.0 * 100).round
   end
 
@@ -127,8 +129,43 @@ class LifeArea < ApplicationRecord
     catalog&.fetch(:emoji) || EMOJI.fetch(key, "🌳")
   end
 
+  # Tree branch health: 1 (far/neglected) … 5 (gap nearly closed / blooming).
   def vitality
+    return journey_vitality if v2_selected?
+
     closer_score.to_i.clamp(1, 5)
+  end
+
+  def representative_journey
+    return nil unless v2_selected?
+
+    life_journeys.focused.order(:focus_position).first ||
+      life_journeys.active.order(updated_at: :desc).first ||
+      life_journeys.order(updated_at: :desc).first
+  end
+
+  def journey_gap_percent
+    representative_journey&.gap_percent&.to_f
+  end
+
+  def journey_closer_percent
+    gap = journey_gap_percent
+    return 0 if gap.nil?
+
+    (100.0 - gap).clamp(0, 100).round
+  end
+
+  def journey_vitality
+    gap = journey_gap_percent
+    return 1 if gap.nil?
+
+    case gap
+    when 0...20 then 5
+    when 20...40 then 4
+    when 40...60 then 3
+    when 60...80 then 2
+    else 1
+    end
   end
 
   def v2_selected?
