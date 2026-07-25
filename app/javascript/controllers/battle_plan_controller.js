@@ -1,13 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Filters Daily Battle Plan by life-aspect tag and surfaces open counts elsewhere.
+// Filters Daily Battle Plan by life-aspect tag. Mission CTA stays independent.
 export default class extends Controller {
-  static targets = ["tag", "item", "aspectField", "empty", "badge", "waiting", "waitingList"]
-  static values = { aspect: String }
+  static targets = ["tag", "item", "aspectField", "empty", "badge", "focusLabel", "addForm"]
+  static values = {
+    aspect: String,
+    focusTemplate: { type: String, default: "Focus list · %{area}" }
+  }
 
   connect() {
     this.filter()
-    this.refreshWaiting()
+    this.refreshBadges()
   }
 
   select(event) {
@@ -22,8 +25,21 @@ export default class extends Controller {
     this.aspectFieldTargets.forEach((field) => {
       field.value = key
     })
+    if (this.hasFocusLabelTarget) {
+      const label = event.currentTarget.dataset.label || key
+      this.focusLabelTarget.textContent = this.focusTemplateValue.replace("%{area}", label)
+    }
     this.filter()
-    this.refreshWaiting()
+    this.refreshBadges()
+  }
+
+  toggleAdd() {
+    if (!this.hasAddFormTarget) return
+    this.addFormTarget.hidden = !this.addFormTarget.hidden
+    if (!this.addFormTarget.hidden) {
+      const input = this.addFormTarget.querySelector("input[type='text']")
+      input?.focus()
+    }
   }
 
   filter() {
@@ -39,19 +55,13 @@ export default class extends Controller {
     }
   }
 
-  openCounts() {
+  refreshBadges() {
     const counts = {}
     this.itemTargets.forEach((el) => {
       if (el.dataset.open !== "true") return
       const key = el.dataset.aspect
       counts[key] = (counts[key] || 0) + 1
     })
-    return counts
-  }
-
-  refreshWaiting() {
-    const counts = this.openCounts()
-    const selected = this.aspectValue
 
     this.tagTargets.forEach((tag) => {
       const key = tag.dataset.aspect
@@ -63,34 +73,5 @@ export default class extends Controller {
         badge.hidden = count === 0
       }
     })
-
-    if (!this.hasWaitingTarget || !this.hasWaitingListTarget) return
-
-    const others = Object.entries(counts).filter(([key, count]) => key !== selected && count > 0)
-    this.waitingListTarget.innerHTML = ""
-
-    if (others.length === 0) {
-      this.waitingTarget.hidden = true
-      return
-    }
-
-    this.waitingTarget.hidden = false
-    others.forEach(([key, count]) => {
-      const source = this.tagTargets.find((t) => t.dataset.aspect === key)
-      if (!source) return
-      const btn = document.createElement("button")
-      btn.type = "button"
-      btn.className = "lp-aspect-tag has-open"
-      btn.dataset.aspect = key
-      btn.dataset.action = "battle-plan#select"
-      btn.innerHTML = `${source.querySelector("span[aria-hidden]")?.outerHTML || ""} ${this.tagLabel(source)} <span class="lp-aspect-badge">${count}</span>`
-      this.waitingListTarget.appendChild(btn)
-    })
-  }
-
-  tagLabel(tagEl) {
-    const clone = tagEl.cloneNode(true)
-    clone.querySelectorAll(".lp-aspect-badge, span[aria-hidden]").forEach((n) => n.remove())
-    return clone.textContent.trim()
   }
 }

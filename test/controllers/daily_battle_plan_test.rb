@@ -20,7 +20,8 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     get dashboard_path(aspect: "money")
     assert_response :success
     assert_match(/Daily Battle Plan/i, response.body)
-    assert_match(/This improves/i, response.body)
+    assert_match(/I did it/i, response.body)
+    assert_match(/Focus list/i, response.body)
   end
 
   test "can add and complete a money todo" do
@@ -39,7 +40,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Cancel unused subscription/i, response.body)
   end
 
-  test "career todo does not show under money filter by default markup" do
+  test "career todo shows badge while viewing money list" do
     @user.daily_todos.create!(
       title: "Apply to one job",
       aspect_key: "career",
@@ -53,8 +54,10 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     get dashboard_path(aspect: "money")
     assert_match(/Track spending/i, response.body)
-    assert_match(/Also waiting today/i, response.body)
+    assert_match(/I did it|Review my budget/i, response.body)
+    assert_match(/Focus list/i, response.body)
     assert_match(/lp-aspect-badge/i, response.body)
-    assert_match(/Apply to one job/i, response.body)
+    assert_no_match(/Also waiting today/i, response.body)
+    assert_match(/\+ Add a point/i, response.body)
   end
 end

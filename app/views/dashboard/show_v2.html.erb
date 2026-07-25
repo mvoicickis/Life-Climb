@@ -6,15 +6,14 @@
   selected_aspect = @selected_aspect
   aspect_options = LifeArea::HOME_ASPECTS
   open_counts = @open_todo_counts || {}
-  waiting_elsewhere = aspect_options
-    .map { |e| e[:key] }
-    .reject { |k| k == selected_aspect }
-    .select { |k| open_counts[k].to_i.positive? }
+  selected_label = t("life_area_catalog.#{selected_aspect}.short", default: t("life_area_catalog.#{selected_aspect}.name"))
+  mission_aspect = @mission&.aspect_key.presence || @journey.life_area.key
 %>
 
-<div class="lp-home mx-auto max-w-md space-y-6 px-4 pb-10 pt-6"
+<div class="lp-home mx-auto max-w-md space-y-8 px-4 pb-10 pt-6"
      data-controller="battle-plan"
-     data-battle-plan-aspect-value="<%= selected_aspect %>">
+     data-battle-plan-aspect-value="<%= selected_aspect %>"
+     data-battle-plan-focus-template-value="<%= t('battle_plan.focus_list', area: '%{area}') %>">
   <header>
     <p class="truncate text-sm text-[var(--lp-muted)]">
       <%= current_user.display_name %>
@@ -22,86 +21,64 @@
     </p>
   </header>
 
+  <%# —— Hero: one quest, one CTA —— %>
   <section class="space-y-4">
     <p class="text-sm font-semibold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today") %></p>
 
     <% if @mission && !@mission.completed? %>
       <h1 class="text-3xl font-semibold leading-tight text-[var(--lp-ink)]"><%= @mission.title %></h1>
+      <%= form_with url: mission_completion_path(@mission), method: :post do %>
+        <input type="hidden" name="aspect_key" value="<%= mission_aspect %>" />
+        <%= submit_tag t("dashboard_v2.complete"), class: "lp-cta mt-1 w-full" %>
+      <% end %>
     <% elsif @mission&.completed? %>
       <h1 class="text-3xl font-semibold leading-tight text-[var(--lp-lime)]">✓ <%= @mission.title %></h1>
-      <% if @mission.aspect_key.present? %>
-        <p class="text-sm text-[var(--lp-muted)]">
-          <%= t("dashboard_v2.helped", area: t("life_area_catalog.#{@mission.aspect_key}.name", default: @mission.aspect_key)) %>
-        </p>
-      <% end %>
       <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.done_today") %></p>
     <% else %>
       <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.ask_today") %></p>
       <%= form_with url: today_mission_path, method: :post, class: "space-y-3" do %>
-        <input type="hidden" name="aspect_key" value="<%= selected_aspect %>" data-battle-plan-target="aspectField" />
+        <input type="hidden" name="aspect_key" value="<%= mission_aspect %>" />
         <input type="text" name="title" required class="lp-input w-full text-lg"
           placeholder="<%= t('coach.today_placeholder') %>" autocomplete="off" />
         <%= submit_tag t("coach.begin_today"), class: "lp-cta w-full" %>
       <% end %>
     <% end %>
 
-    <div>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.helps") %></p>
-      <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="<%= t('dashboard_v2.helps') %>">
-        <% aspect_options.each do |entry| %>
-          <% key = entry[:key] %>
-          <% open_count = open_counts[key].to_i %>
-          <button type="button"
-                  data-battle-plan-target="tag"
-                  data-aspect="<%= key %>"
-                  data-open-count="<%= open_count %>"
-                  data-action="battle-plan#select"
-                  aria-checked="<%= key == selected_aspect %>"
-                  class="lp-aspect-tag <%= 'is-active' if key == selected_aspect %> <%= 'has-open' if open_count.positive? %>">
-            <span aria-hidden="true"><%= entry[:emoji] %></span>
-            <%= t("life_area_catalog.#{key}.short", default: t("life_area_catalog.#{key}.name")) %>
-            <span data-battle-plan-target="badge"
-                  data-aspect="<%= key %>"
-                  class="lp-aspect-badge"
-                  <%= "hidden" unless open_count.positive? %>>
-              <%= open_count %>
-            </span>
-          </button>
-        <% end %>
-      </div>
+    <div class="lp-gap-track">
+      <div class="lp-gap-fill" style="width: <%= closer %>%"></div>
     </div>
-
-    <div data-battle-plan-target="waiting"
-         class="rounded-2xl border border-[var(--lp-border)] px-3 py-2.5"
-         <%= "hidden" if waiting_elsewhere.empty? %>>
-      <p class="text-xs font-semibold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("battle_plan.waiting_title") %></p>
-      <div class="mt-2 flex flex-wrap gap-2" data-battle-plan-target="waitingList">
-        <% waiting_elsewhere.each do |key| %>
-          <% entry = aspect_options.find { |e| e[:key] == key } %>
-          <button type="button"
-                  data-aspect="<%= key %>"
-                  data-action="battle-plan#select"
-                  class="lp-aspect-tag has-open">
-            <span aria-hidden="true"><%= entry[:emoji] %></span>
-            <%= t("life_area_catalog.#{key}.short", default: t("life_area_catalog.#{key}.name")) %>
-            <span class="lp-aspect-badge"><%= open_counts[key] %></span>
-          </button>
-        <% end %>
-      </div>
-    </div>
-
-    <% if @mission && !@mission.completed? %>
-      <%= form_with url: mission_completion_path(@mission), method: :post do %>
-        <input type="hidden" name="aspect_key" value="<%= selected_aspect %>" data-battle-plan-target="aspectField" />
-        <%= submit_tag t("dashboard_v2.complete"), class: "lp-cta mt-2 w-full" %>
-      <% end %>
-    <% end %>
   </section>
 
-  <section class="space-y-3">
-    <div>
+  <%# —— Secondary: battle plan for one life aspect —— %>
+  <section class="space-y-3 border-t border-[var(--lp-border)] pt-6">
+    <div class="flex items-baseline justify-between gap-3">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("battle_plan.title") %></h2>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("battle_plan.subtitle") %></p>
+      <p class="text-sm text-[var(--lp-ink)]" data-battle-plan-target="focusLabel">
+        <%= t("battle_plan.focus_list", area: selected_label) %>
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="<%= t('battle_plan.focus_picker') %>">
+      <% aspect_options.each do |entry| %>
+        <% key = entry[:key] %>
+        <% open_count = open_counts[key].to_i %>
+        <button type="button"
+                data-battle-plan-target="tag"
+                data-aspect="<%= key %>"
+                data-label="<%= t("life_area_catalog.#{key}.short", default: t("life_area_catalog.#{key}.name")) %>"
+                data-action="battle-plan#select"
+                aria-checked="<%= key == selected_aspect %>"
+                class="lp-aspect-tag <%= 'is-active' if key == selected_aspect %> <%= 'has-open' if open_count.positive? %>">
+          <span aria-hidden="true"><%= entry[:emoji] %></span>
+          <%= t("life_area_catalog.#{key}.short", default: t("life_area_catalog.#{key}.name")) %>
+          <span data-battle-plan-target="badge"
+                data-aspect="<%= key %>"
+                class="lp-aspect-badge"
+                <%= "hidden" unless open_count.positive? %>>
+            <%= open_count %>
+          </span>
+        </button>
+      <% end %>
     </div>
 
     <ul class="space-y-2">
@@ -135,20 +112,24 @@
       <%= t("battle_plan.empty") %>
     </p>
 
-    <%= form_with model: DailyTodo.new, url: daily_todos_path, class: "flex gap-2" do |f| %>
-      <%= f.hidden_field :aspect_key, value: selected_aspect, data: { battle_plan_target: "aspectField" } %>
-      <%= f.text_field :title,
-            required: true,
-            class: "lp-input min-w-0 flex-1",
-            placeholder: t("battle_plan.placeholder"),
-            autocomplete: "off" %>
-      <%= f.submit t("battle_plan.add"), class: "shrink-0 rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
-    <% end %>
-  </section>
+    <div>
+      <button type="button"
+              data-action="battle-plan#toggleAdd"
+              class="text-sm font-bold text-[var(--lp-lime)]">
+        <%= t("battle_plan.add_toggle") %>
+      </button>
 
-  <% if @mission %>
-    <div class="lp-gap-track">
-      <div class="lp-gap-fill" style="width: <%= closer %>%"></div>
+      <div data-battle-plan-target="addForm" hidden class="mt-2">
+        <%= form_with model: DailyTodo.new, url: daily_todos_path, class: "flex gap-2" do |f| %>
+          <%= f.hidden_field :aspect_key, value: selected_aspect, data: { battle_plan_target: "aspectField" } %>
+          <%= f.text_field :title,
+                required: true,
+                class: "lp-input min-w-0 flex-1",
+                placeholder: t("battle_plan.placeholder"),
+                autocomplete: "off" %>
+          <%= f.submit t("battle_plan.add"), class: "shrink-0 rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
+        <% end %>
+      </div>
     </div>
-  <% end %>
+  </section>
 </div>

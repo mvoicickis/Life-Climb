@@ -27,13 +27,15 @@ en:
     reach_journey: "I reached this journey"
   battle_plan:
     title: "Daily Battle Plan"
-    subtitle: "Small wins for the tag you selected above."
-    empty: "No points yet for this area. Add one."
+    subtitle: "Small wins for one life area."
+    focus_list: "Focus list · %{area}"
+    focus_picker: "Which life area list?"
+    empty: "No points yet for this area."
     placeholder: "Add a todo for this area"
     add: "Add"
+    add_toggle: "+ Add a point"
     added: "Added to today's battle plan."
     remove_confirm: "Remove this todo?"
-    waiting_title: "Also waiting today"
   coach:
     journey: "What do you want to achieve?"
     journey_hint: "Name the journey in a short line."
