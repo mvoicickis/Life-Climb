@@ -89,6 +89,14 @@
   </section>
 
   <section class="lp-glass p-5">
+    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("life_area_selections.title") %></h2>
+    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("life_area_selections.subtitle") %></p>
+    <div class="mt-4">
+      <%= link_to t("life_area_selections.link"), life_area_selections_path, class: "lp-cta inline-flex" %>
+    </div>
+  </section>
+
+  <section class="lp-glass p-5">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("support.title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.support_body") %></p>
     <div class="mt-4 flex flex-wrap gap-3">

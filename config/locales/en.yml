@@ -4,6 +4,66 @@ en:
       chart_day: "%a"
       long: "%b %-d"
   app_name: "LifePoints"
+  life_area_catalog:
+    self:
+      name: "Self"
+      short: "Self"
+      hint: "Your health, habits, mindset and personal growth."
+    relationships:
+      name: "Relationships"
+      short: "Love"
+      hint: "Partner, dating and close romantic bonds."
+    family:
+      name: "Family"
+      short: "Family"
+      hint: "Family trust, care and home relationships."
+    career:
+      name: "Career"
+      short: "Career"
+      hint: "Work, craft and professional growth."
+    money:
+      name: "Money"
+      short: "Money"
+      hint: "Income, savings and financial freedom."
+    home:
+      name: "Home"
+      short: "Home"
+      hint: "Your home, space and living environment."
+    community:
+      name: "Community"
+      short: "Community"
+      hint: "Friends, teams and local groups."
+    humanity:
+      name: "Humanity"
+      short: "Humanity"
+      hint: "Helping people beyond your inner circle."
+    nature:
+      name: "Nature"
+      short: "Nature"
+      hint: "Land, gardens and the living world."
+    animals:
+      name: "Animals"
+      short: "Animals"
+      hint: "Pets and animals you care for."
+    learning:
+      name: "Learning"
+      short: "Learn"
+      hint: "Skills, study and curious growth."
+    creativity:
+      name: "Creativity"
+      short: "Create"
+      hint: "Art, making and original expression."
+    purpose:
+      name: "Purpose"
+      short: "Purpose"
+      hint: "Meaning, values and inner direction."
+  life_area_selections:
+    title: "Your life areas"
+    subtitle: "Choose the parts of life that matter to you."
+    soft_default: "Start with a few. You can add more anytime."
+    save: "Save areas"
+    saved: "Life areas saved."
+    link: "Choose life areas"
   game_ui:
     home_title: "Home"
     dashboard_title: "Home"

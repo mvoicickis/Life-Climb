@@ -31,11 +31,20 @@ class User < ApplicationRecord
     less_than_or_equal_to: 20
   }
   validates :character, inclusion: { in: %w[man woman] }, allow_nil: true
+  validates :planning_version, inclusion: { in: [ 1, 2 ] }
 
   CHARACTERS = %w[man woman].freeze
 
   def admin?
     admin
+  end
+
+  def planning_v2?
+    planning_version.to_i >= 2
+  end
+
+  def selected_life_areas
+    planning_v2? ? life_areas.v2_selected : (active_dream&.life_areas&.tree || life_areas.none)
   end
 
   def life_points

@@ -1,0 +1,39 @@
+# LifePoints Architecture (source of truth)
+
+LifePoints is a **Life Operating System**, not a habit tracker. It helps people close the gap between **Current Reality** and **Ideal Scene**.
+
+## Product rules (locked)
+
+- Dashboard answers only: What am I working on? What should I do today? Am I making progress?
+- Complexity stays inside the system.
+- **Focus** ≤ 3 Life Journeys; changing focus never deletes progress.
+- **Daily Missions** are the core gameplay loop; Life Points come from completing missions.
+- Rails conventions first; one feature at a time; MVP before optimization.
+- Decision filter: closer to Ideal Scene? reduces complexity? improves motivation?
+
+## Domain ownership
+
+```text
+Life Area  →  Life Journey  →  Daily Mission
+```
+
+User-facing MVP naming uses **Life Journey** (not Dream/Goal rename).
+
+## MVP schema (lean)
+
+Persisted now: `users` (+ `planning_version`), selected `life_areas`, `life_journeys` (Ideal/Present columns), Focus via `focus_position`, `missions`, LP ledger, `gap_snapshots`.
+
+**Not** in MVP: Plan/Program/Project/Purpose/Policy/Statistic/WeeklyReview/tree_progress tables, IdealScene 1:1 tables, generate-on-GET, habit LP for `planning_version = 2`.
+
+## Strangler
+
+- `planning_version = 1` — legacy Dream → Goal → Building → TodayAction
+- `planning_version = 2` — Area → Journey → Mission loop; sole LP writer is the mission award path
+
+## Extension points (post-MVP)
+
+- `Missions::EnsureDaily` may later prefer a Project step
+- Gap/LP services remain the only writers of those invariants
+- Planning spine tables added when a generator writes rows
+
+See also: design system under `docs/design/`.

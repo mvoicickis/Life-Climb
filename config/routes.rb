@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resource :settings, only: %i[ show update ]
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
+  resource :life_area_selections, only: %i[ show update ], controller: "life_area_selections"
 
   resource :onboarding, only: %i[ show update ], controller: "onboarding"
   resources :life_areas, only: %i[ show update ] do
