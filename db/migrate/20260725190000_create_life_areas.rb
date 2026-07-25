@@ -12,8 +12,8 @@ class CreateLifeAreas < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :life_areas, [:dream_id, :key], unique: true
-    add_index :life_areas, [:user_id, :number]
+    add_index :life_areas, [ :dream_id, :key ], unique: true
+    add_index :life_areas, [ :user_id, :number ]
 
     add_reference :goals, :life_area, foreign_key: true, null: true
   end

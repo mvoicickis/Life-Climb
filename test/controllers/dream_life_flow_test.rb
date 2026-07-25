@@ -74,7 +74,7 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
 
     patch onboarding_path, params: {
       step: "steps",
-      onboarding: { steps: ["Train", "Eat well", "Sleep"] }
+      onboarding: { steps: [ "Train", "Eat well", "Sleep" ] }
     }
     assert_redirected_to onboarding_path(step: "building")
 
@@ -84,7 +84,7 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
     assert_difference -> { user.dreams.count }, 1 do
       patch onboarding_path, params: {
         step: "today",
-        onboarding: { actions: ["Walk 30 min", "Drink water"] }
+        onboarding: { actions: [ "Walk 30 min", "Drink water" ] }
       }
     end
     assert_redirected_to dashboard_path

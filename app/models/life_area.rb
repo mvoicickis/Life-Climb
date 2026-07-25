@@ -29,7 +29,7 @@ class LifeArea < ApplicationRecord
   validates :key, uniqueness: { scope: :dream_id }
 
   scope :ordered, -> { order(:position, :number, :id) }
-  scope :filled, -> { where.not(ambition: [nil, ""]) }
+  scope :filled, -> { where.not(ambition: [ nil, "" ]) }
 
   def filled?
     ambition.to_s.strip.present?

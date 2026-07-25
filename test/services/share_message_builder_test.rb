@@ -116,4 +116,3 @@ class ShareMessageBuilderTest < ActiveSupport::TestCase
     refute_includes body, @url
   end
 end
-
