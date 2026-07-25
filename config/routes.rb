@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   root "pages#home"
   resource :dashboard, only: :show, controller: "dashboard"
+  resource :life_map, only: :show, controller: "life_maps"
+  resource :missions, only: :show, controller: "missions"
   resource :settings, only: %i[ show update ]
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit

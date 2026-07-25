@@ -1,0 +1,18 @@
+<% content_for :title, t("game_ui.life_title") %>
+<% content_for :lp_game, true %>
+
+<div class="lp-home mx-auto max-w-md px-5 pb-8 pt-8">
+  <header class="space-y-1">
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("game_ui.life_title") %></h1>
+    <p class="text-sm text-[var(--lp-muted)]"><%= t("game_ui.life_subtitle") %></p>
+  </header>
+
+  <%= render "dashboard/dream_hero", closer_percent: current_user.overall_closer_percent(@life_areas) %>
+
+  <%= render "dashboard/life_tree",
+        life_areas: @life_areas,
+        focus_id: @life_area&.id,
+        compact: false %>
+</div>
+
+<%= render "shared/lp_bottom_nav", active: :life %>

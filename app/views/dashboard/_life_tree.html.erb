@@ -1,0 +1,46 @@
+<%# Locals: life_areas, focus_id (optional), compact (optional boolean) %>
+<% areas = Array(local_assigns.fetch(:life_areas)) %>
+<% focus_id = local_assigns[:focus_id] %>
+<% compact = local_assigns.fetch(:compact, false) %>
+
+<section class="lp-glass lp-tree-card mt-6 overflow-hidden <%= 'lp-tree-card--compact' if compact %>"
+         aria-label="<%= t('game_ui.life_tree') %>">
+  <div class="px-4 pt-5">
+    <p class="text-center text-sm font-semibold text-[var(--lp-muted)]">🌳 <%= t("game_ui.life_tree") %></p>
+  </div>
+
+  <div class="lp-tree-stage">
+    <div class="lp-tree" role="list">
+      <svg class="lp-tree__lines" viewBox="0 0 100 100" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+        <% areas.each_with_index do |_area, index| %>
+          <% angle = ((360.0 / [areas.size, 1].max) * index - 90) * Math::PI / 180.0 %>
+          <% x = 50 + Math.cos(angle) * 34 %>
+          <% y = 50 + Math.sin(angle) * 34 %>
+          <line x1="50" y1="50" x2="<%= x.round(2) %>" y2="<%= y.round(2) %>" class="lp-tree__line" />
+        <% end %>
+      </svg>
+
+      <% areas.each_with_index do |area, index| %>
+        <% angle = (360.0 / areas.size) * index - 90 %>
+        <%= link_to life_area_path(area),
+              class: "lp-tree-node lp-tree-node--v#{area.vitality} #{'is-focus' if focus_id == area.id}",
+              style: "--lp-angle: #{angle}deg",
+              role: "listitem" do %>
+          <span class="lp-tree-node__emoji" aria-hidden="true"><%= area.emoji %></span>
+          <span class="lp-tree-node__label"><%= area.short_label %></span>
+        <% end %>
+      <% end %>
+
+      <div class="lp-tree-center" aria-hidden="true">
+        <span class="lp-tree-center__you">😊</span>
+        <span class="lp-tree-center__label"><%= t("game_ui.you") %></span>
+      </div>
+    </div>
+  </div>
+
+  <% if compact %>
+    <div class="px-4 pb-4 text-center">
+      <%= link_to t("game_ui.open_life"), life_map_path, class: "text-sm font-bold text-[var(--lp-mint)]" %>
+    </div>
+  <% end %>
+</section>

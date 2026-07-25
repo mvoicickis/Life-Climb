@@ -63,23 +63,14 @@ class User < ApplicationRecord
   end
 
   def overall_gap_percent(areas = nil)
-    areas = Array(areas.presence || active_dream&.life_areas&.ordered)
-    return 100 if areas.empty?
-
-    closer_avg = areas.sum { |a| a.closer_percent } / areas.size.to_f
-    (100 - closer_avg).round
+    (100 - overall_closer_percent(areas)).clamp(0, 100)
   end
 
-  def morale_score(actions: [])
-    actions = Array(actions)
-    if actions.any?
-      ((actions.count(&:completed?).to_f / actions.size) * 100).round
-    else
-      areas = active_dream&.life_areas
-      return 40 if areas.blank?
+  def overall_closer_percent(areas = nil)
+    areas = Array(areas.presence || active_dream&.life_areas&.tree)
+    return 0 if areas.empty?
 
-      (areas.map(&:closer_percent).sum / areas.size.to_f).round
-    end
+    (areas.sum { |a| a.closer_percent } / areas.size.to_f).round
   end
 
   def onboarding_completed?

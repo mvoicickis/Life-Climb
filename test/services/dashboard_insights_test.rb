@@ -80,14 +80,13 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Are you going the right way|Your dream life/, response.body)
-    assert_match(/Become a Ruby on Rails developer/, response.body)
-    assert_match(/Today’s moves|Finish authentication/, response.body)
-    assert_match(/Talk to Coach|Stuck\?/, response.body)
-    assert_match(/studio-today/, response.body)
-    assert_select ".person-map"
-    refute_match(/today-fab/, response.body)
-    refute_match(/today-summary-strip/, response.body)
+    assert_match(/Dream Life/, response.body)
+    assert_match(/Life Points/, response.body)
+    assert_match(/Finish authentication/, response.body)
+    assert_select ".lp-dream-hero"
+    assert_select ".lp-tree"
+    assert_select ".lp-quest"
+    refute_match(/Morale/, response.body)
   end
 end
 
@@ -97,8 +96,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :lv)
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match(/Šodien|Today/, response.body)
-    refute_match(/studio-nav-link[^>]*>\s*(Home|Sākums|Dashboard|Panelis)\s*</, response.body)
+    assert_match(/Iestatījumi|Settings|Dream Life|Life Points/, response.body)
   end
 
   test "can switch locale to german" do
@@ -106,8 +104,8 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :de)
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match(/Heute/, response.body)
-    assert_match(/Building|Bauen|Are you going the right way|Your dream life/, response.body)
+    assert_match(/Einstellungen/, response.body)
+    assert_match(/Dream Life|Life Points|Building|Bauen/, response.body)
   end
 
   test "can switch locale to spanish" do
@@ -115,7 +113,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :es)
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match(/Hoy/, response.body)
-    assert_match(/Building|Proyecto|Are you going the right way|Your dream life/, response.body)
+    assert_match(/Ajustes/, response.body)
+    assert_match(/Dream Life|Life Points|Building|Proyecto/, response.body)
   end
 end

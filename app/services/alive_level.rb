@@ -50,4 +50,8 @@ class AliveLevel
   def percent
     (progress * 100).round
   end
+
+  def number
+    LEVELS.index { |level| level[:key] == key }.to_i + 1
+  end
 end

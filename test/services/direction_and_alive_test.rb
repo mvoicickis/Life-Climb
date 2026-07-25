@@ -17,7 +17,7 @@ class DirectionSignalTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
     @building = buildings(:one)
-    @area = life_areas(:one_group)
+    @area = life_areas(:one_community)
   end
 
   test "getting started when actions exist but none done" do

@@ -1,32 +1,32 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one_self:
+one_love:
   user: one
   dream: one
-  key: self
+  key: love
   number: 1
   position: 0
-  ambition: Strong body and clear mind
-  present_scene: Tired most evenings
-  closer_score: 2
-  meta: {}
-
-one_creativity:
-  user: one
-  dream: one
-  key: creativity
-  number: 2
-  position: 1
-  ambition: A warm family life
+  ambition: A warm loving relationship
   present_scene: Good days and rough days
   closer_score: 3
   meta:
     has_partner: true
 
-one_group:
+one_family:
   user: one
   dream: one
-  key: group
+  key: family
+  number: 2
+  position: 1
+  ambition: Strong family trust
+  present_scene: Busy weeks, few calls
+  closer_score: 2
+  meta: {}
+
+one_community:
+  user: one
+  dream: one
+  key: community
   number: 3
   position: 2
   ambition: Build LifePoints with a great team
@@ -34,10 +34,10 @@ one_group:
   closer_score: 2
   meta: {}
 
-one_species:
+one_humanity:
   user: one
   dream: one
-  key: species
+  key: humanity
   number: 4
   position: 3
   ambition:
@@ -45,12 +45,23 @@ one_species:
   closer_score: 1
   meta: {}
 
-one_life_forms:
+one_animals:
   user: one
   dream: one
-  key: life_forms
+  key: animals
   number: 5
   position: 4
+  ambition:
+  present_scene:
+  closer_score: 1
+  meta: {}
+
+one_nature:
+  user: one
+  dream: one
+  key: nature
+  number: 6
+  position: 5
   ambition:
   present_scene:
   closer_score: 1
@@ -59,40 +70,40 @@ one_life_forms:
 one_physical:
   user: one
   dream: one
-  key: physical_universe
-  number: 6
-  position: 5
+  key: physical_world
+  number: 7
+  position: 6
   ambition:
   present_scene:
   closer_score: 1
   meta: {}
 
-two_self:
+two_love:
   user: two
   dream: two
-  key: self
+  key: love
   number: 1
   position: 0
-  ambition: Healthy creative energy
+  ambition:
+  present_scene:
+  closer_score: 1
+  meta: {}
+
+two_family:
+  user: two
+  dream: two
+  key: family
+  number: 2
+  position: 1
+  ambition: Healthy creative energy at home
   present_scene: Low energy after work
   closer_score: 2
   meta: {}
 
-two_creativity:
+two_community:
   user: two
   dream: two
-  key: creativity
-  number: 2
-  position: 1
-  ambition:
-  present_scene:
-  closer_score: 1
-  meta: {}
-
-two_group:
-  user: two
-  dream: two
-  key: group
+  key: community
   number: 3
   position: 2
   ambition: Share my work with a circle of makers
@@ -100,10 +111,10 @@ two_group:
   closer_score: 2
   meta: {}
 
-two_species:
+two_humanity:
   user: two
   dream: two
-  key: species
+  key: humanity
   number: 4
   position: 3
   ambition:
@@ -111,12 +122,23 @@ two_species:
   closer_score: 1
   meta: {}
 
-two_life_forms:
+two_animals:
   user: two
   dream: two
-  key: life_forms
+  key: animals
   number: 5
   position: 4
+  ambition:
+  present_scene:
+  closer_score: 1
+  meta: {}
+
+two_nature:
+  user: two
+  dream: two
+  key: nature
+  number: 6
+  position: 5
   ambition:
   present_scene:
   closer_score: 1
@@ -125,9 +147,9 @@ two_life_forms:
 two_physical:
   user: two
   dream: two
-  key: physical_universe
-  number: 6
-  position: 5
+  key: physical_world
+  number: 7
+  position: 6
   ambition:
   present_scene:
   closer_score: 1

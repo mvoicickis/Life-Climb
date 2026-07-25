@@ -27,6 +27,7 @@ class TodayActionsController < ApplicationController
 
     action.update!(completed_at: Time.current)
     LifePointsAward.new(current_user).for_action!(action)
+    flash[:celebrate] = true
     redirect_to dashboard_path, notice: t("today.action_done", points: LifePointsAward::ACTION)
   end
 end
