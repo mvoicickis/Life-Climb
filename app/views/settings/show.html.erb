@@ -8,12 +8,6 @@
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.subtitle") %></p>
   </header>
 
-  <section class="lp-glass p-4">
-    <%= form_with model: current_user, url: settings_path, method: :patch do %>
-      <%= render "shared/character_picker", selected: current_user.character %>
-    <% end %>
-  </section>
-
   <section class="lp-glass p-6">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.count_title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.count_hint") %></p>
