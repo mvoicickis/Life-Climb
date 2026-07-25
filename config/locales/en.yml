@@ -289,25 +289,62 @@ en:
     welcome: "Your story is ready. Make today count."
     welcome_short: "Welcome — let’s set your dream."
     required: "Please fill this in to continue."
+    guide: "Tap an example if you want ideas — or write your own."
+    examples_label: "Ideas you can tap"
+    for_dream: "For your dream: %{dream}"
     dream_title: "What kind of life do you want?"
-    dream_hint: "One short line is enough."
-    dream_placeholder: "Work from anywhere with skill and freedom"
+    dream_hint: "Think of a happy life you want — keep it simple."
+    dream_placeholder: "e.g. Feel free with money and time"
     goal_title: "What are you aiming for?"
-    goal_hint: "Make it concrete."
-    goal_placeholder: "Become a Ruby on Rails developer"
+    goal_hint: "A clear goal that moves you toward that life."
+    goal_placeholder: "e.g. Save my first emergency fund"
     steps_title: "What big things must you finish?"
-    steps_hint: "A few milestones. One per line."
+    steps_hint: "A few big steps. Tap a set for ideas, then edit."
+    step_placeholder: "Big step %{n}"
     building_title: "What are you building right now?"
-    building_hint: "This becomes your Focus Building."
-    building_placeholder: "LifePoints"
+    building_hint: "The project you’re working on this week."
+    building_placeholder: "e.g. My simple money plan"
     today_title: "What will you do today?"
-    today_hint: "Two or three meaningful actions."
+    today_hint: "Two or three small moves. Tap ideas if you like."
+    action_placeholder: "Move %{n}"
     continue: "Continue"
     finish: "Start Today"
     default_steps:
-      one: "Learn the craft"
-      two: "Build something real"
-      three: "Share it with people"
+      one: "Learn the basics"
+      two: "Make a simple plan"
+      three: "Take the first real action"
+    examples:
+      dreams:
+        - "Feel free with money"
+        - "A healthy, strong body"
+        - "More time with family"
+        - "A calm, peaceful mind"
+        - "Work I enjoy"
+        - "Create things I’m proud of"
+      goals:
+        - "Save 3 months of living costs"
+        - "Run for 30 minutes without stopping"
+        - "Cook dinner at home 4 nights a week"
+        - "Sleep 8 hours most nights"
+        - "Start a small side income"
+        - "Finish and share one creative project"
+      step_sets:
+        - ["Track where money goes", "Cut one unused cost", "Open a savings pot", "Automate a weekly save"]
+        - ["Walk 20 minutes", "Add short strength sessions", "Join a local class", "Run a first 5K"]
+        - ["Pick 7 easy meals", "Shop once a week", "Cook together once", "Make it a habit"]
+        - ["Learn the basics", "Make a simple plan", "Build the first version", "Share it with someone"]
+      buildings:
+        - "My money plan"
+        - "Morning fitness"
+        - "Family meal nights"
+        - "Better sleep routine"
+        - "Small online shop"
+        - "My first short book"
+      today_sets:
+        - ["List last week’s spending", "Cancel one unused subscription", "Move €20 to savings"]
+        - ["Put on shoes and walk 15 minutes", "Stretch for 5 minutes", "Drink a full glass of water"]
+        - ["Choose tonight’s meal", "Write a tiny shopping list", "Prep one ingredient"]
+        - ["Write for 20 minutes", "Outline the next section", "Tell a friend your goal"]
   buildings:
     title: "Building"
     empty: "Add a building to get started."
