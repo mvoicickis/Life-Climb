@@ -35,10 +35,18 @@
             <span><%= t("app_name") %></span>
           <% end %>
           <div class="lp-top-nav__links">
-            <%= link_to t("nav.building"), building_path %>
-            <%= link_to t("nav.finished"), finished_products_path %>
-            <%= link_to t("nav.life_points"), life_points_path %>
-            <%= link_to t("nav.settings"), settings_path %>
+            <% if current_user.planning_v2? %>
+              <% journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first %>
+              <% if journey %>
+                <%= link_to t("game_ui.nav.journey"), life_journey_path(journey) %>
+              <% end %>
+              <%= link_to t("game_ui.nav.you"), settings_path %>
+            <% else %>
+              <%= link_to t("nav.building"), building_path %>
+              <%= link_to t("nav.finished"), finished_products_path %>
+              <%= link_to t("nav.life_points"), life_points_path %>
+              <%= link_to t("nav.settings"), settings_path %>
+            <% end %>
           </div>
         </div>
       </nav>

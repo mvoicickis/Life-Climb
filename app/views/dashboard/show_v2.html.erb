@@ -7,7 +7,7 @@
   aspect_options = LifeArea::HOME_ASPECTS
 %>
 
-<div class="lp-home mx-auto max-w-md space-y-6 px-4 pb-24 pt-6">
+<div class="lp-home mx-auto max-w-md space-y-6 px-4 pb-10 pt-6">
   <header>
     <p class="truncate text-sm text-[var(--lp-muted)]">
       <%= current_user.display_name %>
@@ -87,4 +87,3 @@
   <% end %>
 </div>
 
-<%= render "shared/lp_bottom_nav", active: :home %>
