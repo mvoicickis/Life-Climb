@@ -26,20 +26,24 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen font-['Nunito',sans-serif] text-slate-900" style="background: linear-gradient(180deg, #ecfdf5 0%, #f0f9ff 45%, #fff7ed 100%);">
+  <body class="min-h-screen font-['Nunito',sans-serif] antialiased <%= authenticated? ? 'app-dark text-slate-100' : 'text-slate-900' %>"
+        style="<%= authenticated? ? 'background: radial-gradient(1200px 600px at 10% -10%, rgba(16,185,129,0.18), transparent 55%), radial-gradient(900px 500px at 100% 0%, rgba(245,158,11,0.10), transparent 45%), #0b1220;' : 'background: linear-gradient(180deg, #ecfdf5 0%, #f0f9ff 45%, #fff7ed 100%);' %>">
     <% if authenticated? %>
-      <nav class="border-b border-white/60 bg-white/80 backdrop-blur">
-        <div class="container mx-auto flex items-center justify-between px-4 py-3">
-          <%= link_to "LifePoints", dashboard_path, class: "text-xl font-black text-emerald-600 md:text-2xl" %>
+      <nav class="app-nav border-b border-white/10 bg-[#0b1220]/80 backdrop-blur">
+        <div class="container mx-auto flex items-center justify-between gap-3 px-4 py-3">
+          <%= link_to dashboard_path, class: "flex items-center gap-2 text-xl font-black text-emerald-400 md:text-2xl" do %>
+            <span class="grid h-8 w-8 place-items-center rounded-xl bg-emerald-500/20 text-base" aria-hidden="true">🌿</span>
+            <span>LifePoints</span>
+          <% end %>
           <div class="flex items-center gap-1 text-sm font-bold md:gap-2">
-            <%= link_to "Today", dashboard_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
-            <%= link_to "Stats", habits_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
-            <%= link_to "Feedback", new_feedback_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
-            <%= link_to "Settings", settings_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
+            <%= link_to "Today", dashboard_path, class: "rounded-xl px-2 py-2 text-emerald-300 hover:bg-white/5 md:px-3" %>
+            <%= link_to "Stats", habits_path, class: "rounded-xl px-2 py-2 text-slate-300 hover:bg-white/5 hover:text-white md:px-3" %>
+            <%= link_to "Feedback", new_feedback_path, class: "rounded-xl px-2 py-2 text-slate-300 hover:bg-white/5 hover:text-white md:px-3" %>
+            <%= link_to "Settings", settings_path, class: "rounded-xl px-2 py-2 text-slate-300 hover:bg-white/5 hover:text-white md:px-3" %>
             <% if current_user.admin? %>
-              <%= link_to "Admin", admin_root_path, class: "rounded-xl px-2 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 md:px-3" %>
+              <%= link_to "Admin", admin_root_path, class: "rounded-xl px-2 py-2 text-slate-300 hover:bg-white/5 hover:text-white md:px-3" %>
             <% end %>
-            <%= button_to "Out", session_path, method: :delete, class: "rounded-xl px-2 py-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 md:px-3" %>
+            <%= button_to "Out", session_path, method: :delete, class: "rounded-xl px-2 py-2 text-slate-500 hover:bg-rose-500/10 hover:text-rose-300 md:px-3" %>
           </div>
         </div>
       </nav>
@@ -47,13 +51,13 @@
 
     <main class="container mx-auto px-4 py-4 md:px-5 md:py-6">
       <% if flash[:notice] %>
-        <div class="mb-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900 md:text-base">
+        <div class="mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-200 md:text-base">
           <%= flash[:notice] %>
         </div>
       <% end %>
 
       <% if flash[:alert] %>
-        <div class="mb-4 rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-900 md:text-base">
+        <div class="mb-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm font-bold text-rose-200 md:text-base">
           <%= flash[:alert] %>
         </div>
       <% end %>

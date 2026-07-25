@@ -1,74 +1,136 @@
 <% content_for :title, "Today" %>
 
-<div class="mx-auto flex max-w-5xl flex-col" style="min-height: calc(100dvh - 6rem);"
+<div class="today-page mx-auto flex max-w-6xl flex-col gap-5"
      data-controller="share"
      data-share-url-value="<%= share_landing_url %>"
      data-share-title-value="LifePoints">
-  <header class="mb-5 flex flex-wrap items-end justify-between gap-3">
+
+  <header class="today-hero flex flex-wrap items-start justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Today</h1>
-      <p class="mt-1 max-w-md text-sm font-semibold text-slate-600 md:text-base">
-        Am I becoming a better version of myself?
-      </p>
+      <p class="today-kicker">Your growth board</p>
+      <h1 class="today-title">
+        Today
+        <span class="today-sun" aria-hidden="true">☀</span>
+      </h1>
+      <p class="today-subtitle">Am I becoming a better version of myself?</p>
     </div>
-    <%= link_to "+ Add", new_habit_path,
-        class: "rounded-2xl bg-emerald-500 px-4 py-2.5 text-sm font-black text-white shadow-sm hover:bg-emerald-600" %>
+    <div class="flex flex-wrap items-center gap-3">
+      <aside class="today-quote">
+        <span aria-hidden="true">🌿</span>
+        <p>Small daily improvements lead to stunning results.</p>
+      </aside>
+      <%= link_to "+ Add", new_habit_path, class: "today-add" %>
+    </div>
   </header>
 
   <% if @trackers.any? %>
-    <div class="mb-4 grid grid-cols-3 gap-2">
-      <div class="rounded-2xl bg-emerald-500/95 px-3 py-3 text-center text-white shadow-sm">
-        <p class="text-2xl font-black leading-none"><%= @good %></p>
-        <p class="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-50">Better</p>
+    <div class="today-summary">
+      <div class="today-chip today-chip--good">
+        <p class="today-chip-value"><%= @good %></p>
+        <p class="today-chip-label">Better</p>
+        <p class="today-chip-note">You nailed it</p>
       </div>
-      <div class="rounded-2xl bg-amber-400 px-3 py-3 text-center text-amber-950 shadow-sm">
-        <p class="text-2xl font-black leading-none"><%= @same %></p>
-        <p class="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-900/80">Same</p>
+      <div class="today-chip today-chip--same">
+        <p class="today-chip-value"><%= @same %></p>
+        <p class="today-chip-label">Same</p>
+        <p class="today-chip-note">Keep it steady</p>
       </div>
-      <div class="rounded-2xl bg-rose-500 px-3 py-3 text-center text-white shadow-sm">
-        <p class="text-2xl font-black leading-none"><%= @off %></p>
-        <p class="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-rose-50">Needs work</p>
+      <div class="today-chip today-chip--off">
+        <p class="today-chip-value"><%= @off %></p>
+        <p class="today-chip-label">Needs work</p>
+        <p class="today-chip-note">Focus here</p>
+      </div>
+      <div class="today-chip today-chip--streak">
+        <p class="today-chip-value"><%= @streak %></p>
+        <p class="today-chip-label">Day streak</p>
+        <p class="today-chip-note"><%= @streak.positive? ? "Keep the fire going" : "Log today to start" %></p>
       </div>
     </div>
 
-    <section class="home-board flex-1" style="<%= home_grid_style(@grid_count) %>">
+    <section class="home-board" style="<%= home_grid_style(@grid_count) %>">
       <% @trackers.each do |tracker| %>
         <% status = tracker.status %>
-        <div class="home-card rounded-[1.35rem] border-2 p-4 shadow-sm <%= vs_yesterday_classes(status) %>">
-          <%= link_to habit_path(tracker), class: "flex min-h-0 flex-1 flex-col justify-between outline-none" do %>
+        <% progress = tracker.goal_progress_percent %>
+        <div class="home-card <%= vs_yesterday_classes(status) %>">
+          <%= link_to habit_path(tracker), class: "flex min-h-0 flex-1 flex-col outline-none" do %>
             <div class="flex items-start justify-between gap-2">
-              <p class="home-card-name font-black"><%= tracker.name %></p>
+              <div class="flex min-w-0 items-center gap-2.5">
+                <span class="today-card-icon" aria-hidden="true"><%= stat_icon_for(tracker) %></span>
+                <p class="home-card-name truncate font-black"><%= tracker.name %></p>
+              </div>
               <%= render "shared/status_badge", status: status %>
             </div>
-            <div class="mt-3">
+
+            <div class="mt-auto pt-4">
               <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
-              <p class="home-card-trend mt-1 font-bold opacity-65"><%= tracker.unit %></p>
-              <div class="mt-2.5">
-                <%= render "shared/status_line", status: status %>
-              </div>
+              <p class="home-card-trend mt-1 font-bold"><%= tracker.unit %></p>
+              <p class="today-delta mt-2"><%= amount_delta_label(tracker) %></p>
+
+              <% if tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
+                <div class="today-mini-bar mt-3">
+                  <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
+                </div>
+              <% end %>
             </div>
           <% end %>
+
           <button type="button"
                   data-action="click->share#open"
                   data-share-text-param="<%= share_message_body_for(tracker) %>"
                   data-share-url-param="<%= share_landing_url %>"
                   data-share-title-param="<%= tracker.name %> · LifePoints"
-                  class="mt-3 w-full rounded-xl border border-current/15 bg-white/65 px-2 py-2 text-xs font-black uppercase tracking-wide opacity-90 transition hover:bg-white">
+                  class="today-share">
             Share
           </button>
         </div>
       <% end %>
     </section>
-  <% else %>
-    <div class="flex flex-1 items-center justify-center rounded-[1.75rem] border-2 border-dashed border-slate-300 bg-white/85 p-10 text-center shadow-sm">
-      <div class="max-w-sm">
-        <p class="text-2xl font-black tracking-tight text-slate-900">Start with what matters</p>
-        <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600">
-          Add one thing you care about. Tomorrow you’ll see if you’re moving forward.
-        </p>
-        <%= link_to "Add your first thing", new_habit_path,
-            class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3.5 font-black text-white shadow-sm hover:bg-emerald-600" %>
+
+    <section class="today-lower">
+      <div class="today-panel today-week">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="today-panel-title">Weekly progress</h2>
+          <span class="today-week-score"><%= @week_percent %>%</span>
+        </div>
+        <div class="today-week-chart" role="img" aria-label="Weekly progress chart">
+          <% max = [ @week_series.map { |p| p[:percent] }.max, 1 ].max %>
+          <% @week_series.each do |point| %>
+            <div class="today-week-col <%= 'is-current' if point[:current] %> <%= 'is-future' if point[:future] %>">
+              <div class="today-week-bar-wrap">
+                <div class="today-week-bar" style="height: <%= point[:future] ? 8 : [ (point[:percent] / max.to_f * 100).round, point[:percent].positive? ? 12 : 8 ].max %>%"></div>
+              </div>
+              <span><%= point[:label] %></span>
+            </div>
+          <% end %>
+        </div>
       </div>
+
+      <div class="today-panel today-focus">
+        <h2 class="today-panel-title">Focus for tomorrow</h2>
+        <ul class="today-focus-list">
+          <% @focus_tips.each do |tip| %>
+            <li>
+              <span aria-hidden="true">➜</span>
+              <p><%= tip %></p>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="today-panel today-banner" style="background-image: url('/lifepoints-landing-hero.jpg');">
+        <div class="today-banner-veil">
+          <p class="today-banner-kicker">Keep going</p>
+          <p class="today-banner-copy">Your only competition is who you were yesterday.</p>
+        </div>
+      </div>
+    </section>
+  <% else %>
+    <div class="today-empty">
+      <p class="text-2xl font-black tracking-tight text-white">Start with what matters</p>
+      <p class="mt-3 text-base font-semibold leading-relaxed text-slate-300">
+        Add one thing you care about. Tomorrow you’ll see if you’re moving forward.
+      </p>
+      <%= link_to "Add your first thing", new_habit_path, class: "today-add mt-6" %>
     </div>
   <% end %>
 

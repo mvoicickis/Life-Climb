@@ -32,27 +32,27 @@ module ApplicationHelper
   def vs_yesterday_classes(status)
     case status_tone(status)
     when :good
-      "border-emerald-400/80 bg-emerald-50 text-emerald-950"
+      "today-card today-card--good"
     when :same
-      "border-amber-300/80 bg-amber-50 text-amber-950"
+      "today-card today-card--same"
     else
-      "border-rose-400/80 bg-rose-50 text-rose-950"
+      "today-card today-card--off"
     end
   end
 
   def vs_yesterday_bar_class(status)
     case status_tone(status)
-    when :good then "bg-emerald-500"
-    when :same then "bg-amber-400"
-    else "bg-rose-500"
+    when :good then "bg-emerald-400"
+    when :same then "bg-amber-300"
+    else "bg-rose-400"
     end
   end
 
   def vs_yesterday_badge_class(status)
     case status_tone(status)
-    when :good then "bg-emerald-500 text-white"
-    when :same then "bg-amber-400 text-amber-950"
-    else "bg-rose-500 text-white"
+    when :good then "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/30"
+    when :same then "bg-amber-400/15 text-amber-200 ring-1 ring-amber-300/30"
+    else "bg-rose-500/20 text-rose-300 ring-1 ring-rose-400/30"
     end
   end
 
