@@ -11,23 +11,41 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Are you going the right way/, response.body)
     assert_select ".person-map"
     assert_select ".studio-direction"
+    assert_select ".life-compare"
+    assert_match(/Ideal/, response.body)
+    assert_match(/Present/, response.body)
     assert_match(/Friends/, response.body)
+    assert_match(/Numbers|For:/, response.body)
   end
 
-  test "life area page lets you edit dream and goal" do
+  test "life area page lets you edit ideal present and goal" do
     sign_in_as @user
     area = life_areas(:one_self)
     get life_area_path(area)
     assert_response :success
     assert_match(/You/, response.body)
+    assert_match(/Ideal/, response.body)
+    assert_match(/Present/, response.body)
 
     patch life_area_path(area), params: {
-      life_area: { ambition: "Run a marathon" },
+      life_area: { ambition: "Run a marathon", present_scene: "Can jog 2km", closer_score: 3 },
       goal_title: "Finish a marathon"
     }
     assert_redirected_to life_area_path(area)
-    assert_equal "Run a marathon", area.reload.ambition
+    area.reload
+    assert_equal "Run a marathon", area.ambition
+    assert_equal "Can jog 2km", area.present_scene
+    assert_equal 3, area.closer_score
     assert_equal "Finish a marathon", area.active_goal.title
+  end
+
+  test "bumping closer raises score" do
+    sign_in_as @user
+    area = life_areas(:one_group)
+    assert_difference -> { area.reload.closer_score }, 1 do
+      post closer_life_area_path(area)
+    end
+    assert_redirected_to dashboard_path
   end
 
   test "onboarding interview creates six parts and focus building" do
@@ -48,13 +66,13 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
 
     patch onboarding_path, params: {
       step: "part_self",
-      onboarding: { ambition: "Strong body" }
+      onboarding: { ambition: "Strong body", present_scene: "Out of shape" }
     }
     assert_redirected_to onboarding_path(step: "part_creativity")
 
     patch onboarding_path, params: {
       step: "part_creativity",
-      onboarding: { ambition: "Find a partner", has_partner: "false" }
+      onboarding: { ambition: "Find a partner", present_scene: "Single", has_partner: "false" }
     }
     assert_redirected_to onboarding_path(step: "part_group")
 
@@ -93,5 +111,6 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
     assert_equal 6, user.life_areas.count
     assert_equal "self", user.focus_life_area.key
     assert_equal "Strong body", user.life_areas.find_by(key: "self").ambition
+    assert_equal "Out of shape", user.life_areas.find_by(key: "self").present_scene
   end
 end

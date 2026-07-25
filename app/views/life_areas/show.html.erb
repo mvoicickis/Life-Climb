@@ -10,8 +10,32 @@
   <% end %>
 
   <%= form_with model: @life_area, url: life_area_path(@life_area), method: :patch, class: "studio-onboarding__form mt-6" do |f| %>
-    <p class="studio-label"><%= t("life_parts.your_dream") %></p>
-    <%= f.text_area :ambition, rows: 3, class: "studio-input studio-input--lg", placeholder: t("life_parts.dream_placeholder") %>
+    <div class="life-compare">
+      <div class="life-compare__col">
+        <p class="studio-label"><%= t("life_compare.ideal_label") %></p>
+        <%= f.text_area :ambition, rows: 4, class: "studio-input studio-input--lg", placeholder: t("life_compare.ideal_placeholder") %>
+      </div>
+      <div class="life-compare__col">
+        <p class="studio-label"><%= t("life_compare.present_label") %></p>
+        <%= f.text_area :present_scene, rows: 4, class: "studio-input studio-input--lg", placeholder: t("life_compare.present_placeholder") %>
+      </div>
+    </div>
+
+    <p class="studio-muted text-sm mt-3"><%= t("life_compare.gap_hint") %></p>
+
+    <p class="studio-label mt-5"><%= t("life_compare.closer_label") %></p>
+    <div class="closer-picks" role="radiogroup" aria-label="<%= t('life_compare.closer_label') %>">
+      <% (1..5).each do |score| %>
+        <label class="closer-pick <%= 'is-active' if @life_area.closer_score == score %>">
+          <%= f.radio_button :closer_score, score, class: "sr-only" %>
+          <span class="closer-pick__n"><%= score %></span>
+          <span class="closer-pick__label"><%= t("closer_labels.#{score}") %></span>
+        </label>
+      <% end %>
+    </div>
+    <div class="closer-bar mt-3" style="--closer-pct: <%= @life_area.closer_percent %>" aria-hidden="true">
+      <span class="closer-bar__fill"></span>
+    </div>
 
     <p class="studio-label mt-5"><%= t("life_parts.your_goal") %></p>
     <input type="text" name="goal_title" value="<%= @goal&.title %>" class="studio-input studio-input--lg" placeholder="<%= t('life_parts.goal_placeholder') %>">
@@ -21,9 +45,9 @@
 
   <% if @building %>
     <div class="studio-rail-card mt-8">
-      <p class="studio-label"><%= t("studio.building") %></p>
+      <p class="studio-label"><%= t("studio.plan") %></p>
       <p class="studio-rail-dream"><%= @building.title %></p>
-      <%= link_to t("studio.open_building"), building_path, class: "studio-link text-sm mt-2 inline-block" %>
+      <%= link_to t("studio.open_plan"), building_path, class: "studio-link text-sm mt-2 inline-block" %>
     </div>
   <% end %>
 

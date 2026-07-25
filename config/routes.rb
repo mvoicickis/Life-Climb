@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :life_areas, only: %i[ show update ] do
     member do
       post :focus
+      post :closer
     end
   end
   resource :building, only: :show, controller: "buildings"

@@ -40,6 +40,14 @@ class LifeAreasController < ApplicationController
     redirect_to dashboard_path, notice: t("life_parts.focus_set", part: @life_area.short_label)
   end
 
+  def closer
+    if @life_area.bump_closer!
+      redirect_to dashboard_path, notice: t("today.closer_bumped")
+    else
+      redirect_to dashboard_path, notice: t("today.closer_max")
+    end
+  end
+
   private
 
   def set_life_area
@@ -47,7 +55,7 @@ class LifeAreasController < ApplicationController
   end
 
   def life_area_params
-    params.require(:life_area).permit(:ambition)
+    params.require(:life_area).permit(:ambition, :present_scene, :closer_score)
   end
 
   def ensure_goal!

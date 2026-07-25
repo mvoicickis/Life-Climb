@@ -26,6 +26,8 @@ class LifeArea < ApplicationRecord
   validates :key, presence: true, inclusion: { in: KEYS }
   validates :number, presence: true, inclusion: { in: 1..6 }
   validates :ambition, length: { maximum: SUMMARY_MAX }, allow_blank: true
+  validates :present_scene, length: { maximum: SUMMARY_MAX }, allow_blank: true
+  validates :closer_score, numericality: { only_integer: true, in: 1..5 }
   validates :key, uniqueness: { scope: :dream_id }
 
   scope :ordered, -> { order(:position, :number, :id) }
@@ -33,6 +35,37 @@ class LifeArea < ApplicationRecord
 
   def filled?
     ambition.to_s.strip.present?
+  end
+
+  def present_filled?
+    present_scene.to_s.strip.present?
+  end
+
+  def compare_ready?
+    filled? && present_filled?
+  end
+
+  def ideal
+    ambition.to_s.strip
+  end
+
+  def present
+    present_scene.to_s.strip
+  end
+
+  def closer_percent
+    ((closer_score.to_i.clamp(1, 5) - 1) / 4.0 * 100).round
+  end
+
+  def closer_label
+    I18n.t("closer_labels.#{closer_score.to_i.clamp(1, 5)}")
+  end
+
+  def bump_closer!
+    return false if closer_score >= 5
+
+    update!(closer_score: closer_score + 1)
+    true
   end
 
   def label
@@ -68,6 +101,7 @@ class LifeArea < ApplicationRecord
         area.user = dream.user
         area.number = index + 1
         area.position = index
+        area.closer_score = 1
       end
     end
     dream.life_areas.ordered

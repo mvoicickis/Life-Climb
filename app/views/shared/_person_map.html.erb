@@ -5,6 +5,7 @@
         <%
           state = []
           state << "is-filled" if area.filled?
+          state << "is-compare" if area.compare_ready?
           state << "is-goal" if area.active_goal
           state << "is-focus" if focus_id.present? && area.id == focus_id
         %>

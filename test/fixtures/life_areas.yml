@@ -7,6 +7,8 @@ one_self:
   number: 1
   position: 0
   ambition: Strong body and clear mind
+  present_scene: Tired most evenings
+  closer_score: 2
   meta: {}
 
 one_creativity:
@@ -16,6 +18,8 @@ one_creativity:
   number: 2
   position: 1
   ambition: A warm family life
+  present_scene: Good days and rough days
+  closer_score: 3
   meta:
     has_partner: true
 
@@ -26,6 +30,8 @@ one_group:
   number: 3
   position: 2
   ambition: Build LifePoints with a great team
+  present_scene: Building alone most days
+  closer_score: 2
   meta: {}
 
 one_species:
@@ -35,6 +41,8 @@ one_species:
   number: 4
   position: 3
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}
 
 one_life_forms:
@@ -44,6 +52,8 @@ one_life_forms:
   number: 5
   position: 4
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}
 
 one_physical:
@@ -53,6 +63,8 @@ one_physical:
   number: 6
   position: 5
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}
 
 two_self:
@@ -62,6 +74,8 @@ two_self:
   number: 1
   position: 0
   ambition: Healthy creative energy
+  present_scene: Low energy after work
+  closer_score: 2
   meta: {}
 
 two_creativity:
@@ -71,6 +85,8 @@ two_creativity:
   number: 2
   position: 1
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}
 
 two_group:
@@ -80,6 +96,8 @@ two_group:
   number: 3
   position: 2
   ambition: Share my work with a circle of makers
+  present_scene: Few people see my work
+  closer_score: 2
   meta: {}
 
 two_species:
@@ -89,6 +107,8 @@ two_species:
   number: 4
   position: 3
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}
 
 two_life_forms:
@@ -98,6 +118,8 @@ two_life_forms:
   number: 5
   position: 4
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}
 
 two_physical:
@@ -107,4 +129,6 @@ two_physical:
   number: 6
   position: 5
   ambition:
+  present_scene:
+  closer_score: 1
   meta: {}

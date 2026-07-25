@@ -20,12 +20,28 @@ class AliveLevel
     I18n.t("alive_levels.#{key}")
   end
 
+  def current_min
+    LEVELS.reverse.find { |level| @points >= level[:min] }.fetch(:min)
+  end
+
+  def next_min
+    LEVELS.find { |level| level[:min] > @points }&.fetch(:min)
+  end
+
+  def next_level_hint
+    if next_min
+      I18n.t("studio.next_level", points: next_min)
+    else
+      I18n.t("studio.max_level")
+    end
+  end
+
   def progress
     current = LEVELS.reverse.find { |level| @points >= level[:min] }
-    next_level = LEVELS.find { |level| level[:min] > @points }
-    return 1.0 unless next_level
+    nxt = LEVELS.find { |level| level[:min] > @points }
+    return 1.0 unless nxt
 
-    span = next_level[:min] - current[:min]
+    span = nxt[:min] - current[:min]
     return 1.0 if span <= 0
 
     ((@points - current[:min]).to_f / span).clamp(0.0, 1.0)
