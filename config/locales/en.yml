@@ -302,6 +302,7 @@ en:
     closer: "Closer"
     closer_hint: "The gap shows what to change."
     got_closer: "I got closer"
+    goal_reached: "Goal reached"
     plan: "Plan"
     plan_power: "Plan power"
     next_level: "Next level at %{points} LP"
