@@ -14,7 +14,19 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-gap-card"
     assert_select ".lp-map-card"
     assert_select ".lp-mission"
+    assert_select ".lp-tree-node__pct", count: 0
     assert_no_match(/Morale/, response.body)
+  end
+
+  test "life area sheet returns dream and present details" do
+    sign_in_as @user
+    area = life_areas(:one_love)
+    get life_area_path(area, sheet: 1), headers: { "Turbo-Frame" => "life_area_sheet" }
+    assert_response :success
+    assert_match(/Dream/, response.body)
+    assert_match(/Present/, response.body)
+    assert_match(/Progress/, response.body)
+    assert_match(area.short_label, response.body)
   end
 
   test "life area page lets you edit ideal present and goal" do

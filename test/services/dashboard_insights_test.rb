@@ -83,9 +83,10 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Overall Gap|Life Points/, response.body)
     assert_match(/Finish authentication/, response.body)
     assert_select ".lp-twin"
-    assert_select ".lp-gap-card"
+    assert_select ".lp-map-card"
     assert_select ".lp-mission"
-    refute_match(/Morale/, response.body)
+    assert_select ".lp-tree-node__ring"
+    assert_select ".lp-tree-node__pct", count: 0
   end
 end
 

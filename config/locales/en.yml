@@ -53,6 +53,15 @@ en:
       missions: "Missions"
       profile: "Profile"
       quick_add: "Add quest"
+    sheet:
+      dream: "Dream"
+      present: "Present"
+      gap: "Gap"
+      mission: "Current mission"
+      no_mission: "No mission yet"
+      progress: "Progress"
+      edit: "Edit"
+      close: "Close"
   nav:
     home: "Home"
     today: "Today"

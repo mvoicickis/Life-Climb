@@ -1,0 +1,59 @@
+<%# Locals: life_area, goal, building, mission %>
+<% gap = (100 - life_area.closer_percent).clamp(0, 100) %>
+
+<%= turbo_frame_tag "life_area_sheet" do %>
+  <div class="lp-sheet__panel">
+    <div class="lp-sheet__grab" aria-hidden="true"></div>
+    <div class="lp-sheet__head">
+      <div>
+        <p class="lp-sheet__emoji" aria-hidden="true"><%= life_area.emoji %></p>
+        <h2 class="lp-sheet__title"><%= life_area.short_label %></h2>
+      </div>
+      <button type="button"
+              class="lp-sheet__close"
+              data-action="lp-sheet#close"
+              aria-label="<%= t('game_ui.sheet.close') %>">×</button>
+    </div>
+
+    <dl class="lp-sheet__list">
+      <div>
+        <dt><%= t("game_ui.sheet.dream") %></dt>
+        <dd><%= life_area.ideal.presence || t("life_compare.ideal_placeholder") %></dd>
+      </div>
+      <div>
+        <dt><%= t("game_ui.sheet.present") %></dt>
+        <dd><%= life_area.present.presence || t("life_compare.present_placeholder") %></dd>
+      </div>
+      <div>
+        <dt><%= t("game_ui.sheet.gap") %></dt>
+        <dd><%= t("game_ui.remaining", percent: gap) %></dd>
+      </div>
+      <div>
+        <dt><%= t("game_ui.sheet.mission") %></dt>
+        <dd>
+          <% if mission %>
+            <%= mission.title %>
+          <% else %>
+            <%= t("game_ui.sheet.no_mission") %>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+
+    <div class="lp-sheet__progress">
+      <div class="flex items-center justify-between text-xs font-bold text-[var(--lp-muted)]">
+        <span><%= t("game_ui.sheet.progress") %></span>
+        <span class="text-[var(--lp-lime)]"><%= life_area.closer_percent %>%</span>
+      </div>
+      <div class="lp-gap-track mt-2" role="img" aria-label="<%= life_area.closer_percent %>%">
+        <div class="lp-gap-fill" style="width: <%= life_area.closer_percent %>%"></div>
+      </div>
+      <p class="mt-2 text-xs text-[var(--lp-muted)]"><%= life_area.closer_label %></p>
+    </div>
+
+    <%= link_to t("game_ui.sheet.edit"),
+          life_area_path(life_area),
+          class: "lp-cta mt-5 w-full",
+          data: { turbo_frame: "_top" } %>
+  </div>
+<% end %>

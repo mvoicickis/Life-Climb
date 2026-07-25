@@ -1,0 +1,7 @@
+<div data-controller="lp-sheet" class="lp-sheet-root">
+  <dialog class="lp-sheet"
+          data-lp-sheet-target="dialog"
+          data-action="click->lp-sheet#backdrop">
+    <%= turbo_frame_tag "life_area_sheet", data: { lp_sheet_target: "frame" } %>
+  </dialog>
+</div>

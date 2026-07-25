@@ -13,6 +13,7 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-twin"
     assert_select ".lp-map-card"
     assert_select ".lp-mission"
+    assert_select ".lp-tree-node__pct", count: 0
   end
 
   test "completing today action earns life points" do

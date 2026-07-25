@@ -5,6 +5,17 @@ class LifeAreasController < ApplicationController
     @dream = @life_area.dream
     @goal = @life_area.active_goal
     @building = @life_area.active_building
+    @mission = current_mission_for(@building)
+
+    if sheet_request?
+      render partial: "life_areas/sheet",
+             locals: {
+               life_area: @life_area,
+               goal: @goal,
+               building: @building,
+               mission: @mission
+             } and return
+    end
   end
 
   def update
@@ -52,6 +63,18 @@ class LifeAreasController < ApplicationController
 
   def set_life_area
     @life_area = current_user.life_areas.find(params[:id])
+  end
+
+  def sheet_request?
+    ActiveModel::Type::Boolean.new.cast(params[:sheet]) ||
+      request.headers["Turbo-Frame"] == "life_area_sheet"
+  end
+
+  def current_mission_for(building)
+    return unless building
+
+    building.today_actions.for_day(Date.current).incomplete.ordered.first ||
+      building.today_actions.for_day(Date.current).ordered.first
   end
 
   def life_area_params

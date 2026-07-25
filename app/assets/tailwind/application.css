@@ -2625,14 +2625,19 @@
 }
 
 .lp-tree-stage {
-  padding: 0.5rem 0.75rem 1rem;
+  padding: 1rem 0.5rem 1.25rem;
 }
 
 .lp-tree {
+  --lp-radius: 46%;
   position: relative;
-  width: min(100%, 19rem);
+  width: min(100%, 22.5rem);
   aspect-ratio: 1;
   margin: 0 auto;
+}
+
+.lp-map-card:not(.lp-map-card--compact) .lp-tree {
+  width: min(100%, 24rem);
 }
 
 .lp-tree__lines {
@@ -2644,8 +2649,9 @@
 }
 
 .lp-tree__line {
-  stroke: rgba(52, 211, 153, 0.35);
-  stroke-width: 0.7;
+  stroke: rgba(52, 211, 153, 0.45);
+  stroke-width: 0.55;
+  filter: drop-shadow(0 0 2px rgba(163, 230, 53, 0.35));
 }
 
 .lp-tree-center {
@@ -2656,33 +2662,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
+  gap: 0.2rem;
+  pointer-events: none;
 }
 
 .lp-tree-center__you {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 4.75rem;
+  height: 4.75rem;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  font-size: 1.6rem;
-  background: var(--lp-elevated);
+  font-size: 1.85rem;
+  background: rgba(14, 22, 18, 0.92);
   box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(163, 230, 53, 0.35);
   animation: lp-breathe 4.2s ease-in-out infinite;
 }
 
 .lp-tree-center__label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--lp-ink);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
 }
 
 .lp-tree-node {
-  --lp-radius: 40%;
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 4.2rem;
+  width: 3.75rem;
   transform:
     translate(-50%, -50%)
     rotate(var(--lp-angle))
@@ -2691,48 +2698,82 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.28rem;
   text-align: center;
   color: var(--lp-ink);
   z-index: 1;
+  text-decoration: none;
 }
 
-.lp-tree-node__emoji {
-  width: 2.5rem;
-  height: 2.5rem;
+.lp-tree-node__ring {
+  --node-pct: 0;
+  width: 3.75rem;
+  height: 3.75rem;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  font-size: 1.05rem;
-  background: rgba(21, 32, 26, 0.9);
-  border: 1px solid rgba(163, 230, 53, 0.25);
-  transition: box-shadow 0.35s ease, border-color 0.35s ease, filter 0.35s ease;
+  background:
+    radial-gradient(circle at center, rgba(14, 22, 18, 0.96) 62%, transparent 63%),
+    conic-gradient(var(--lp-lime) calc(var(--node-pct) * 1%), rgba(39, 39, 42, 0.85) 0);
+  box-shadow: 0 0 14px rgba(163, 230, 53, 0.2);
+  transition: box-shadow 0.35s ease, filter 0.35s ease;
+}
+
+.lp-tree-node__emoji {
+  width: 2.55rem;
+  height: 2.55rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  background: rgba(21, 32, 26, 0.95);
+  border: 1px solid rgba(163, 230, 53, 0.2);
 }
 
 .lp-tree-node__label {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.1;
-  max-width: 4.5rem;
+  max-width: 4.6rem;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
 }
 
-.lp-tree-node--v1 .lp-tree-node__emoji { filter: grayscale(0.7) brightness(0.7); opacity: 0.7; }
-.lp-tree-node--v2 .lp-tree-node__emoji { box-shadow: 0 0 10px rgba(16, 185, 129, 0.15); }
-.lp-tree-node--v3 .lp-tree-node__emoji {
-  border-color: rgba(163, 230, 53, 0.45);
-  box-shadow: 0 0 14px rgba(163, 230, 53, 0.28);
-}
-.lp-tree-node--v4 .lp-tree-node__emoji {
-  border-color: rgba(163, 230, 53, 0.7);
-  box-shadow: 0 0 18px rgba(163, 230, 53, 0.4);
-}
-.lp-tree-node--v5 .lp-tree-node__emoji {
-  border-color: var(--lp-lime);
-  box-shadow: 0 0 22px rgba(163, 230, 53, 0.55);
-}
+.lp-tree-node--v1 .lp-tree-node__ring { filter: grayscale(0.55) brightness(0.78); opacity: 0.82; }
+.lp-tree-node--v2 .lp-tree-node__ring { box-shadow: 0 0 10px rgba(16, 185, 129, 0.18); }
+.lp-tree-node--v3 .lp-tree-node__ring { box-shadow: 0 0 14px rgba(163, 230, 53, 0.28); }
+.lp-tree-node--v4 .lp-tree-node__ring { box-shadow: 0 0 18px rgba(163, 230, 53, 0.4); }
+.lp-tree-node--v5 .lp-tree-node__ring { box-shadow: 0 0 22px rgba(163, 230, 53, 0.55); }
 
-.lp-tree-node.is-focus .lp-tree-node__emoji {
+.lp-tree-node.is-focus .lp-tree-node__ring,
+.lp-tree-node.is-selected .lp-tree-node__ring {
   box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 4px var(--lp-gold), 0 0 20px rgba(232, 196, 104, 0.45);
+}
+
+@media (max-width: 380px) {
+  .lp-tree {
+    --lp-radius: 48%;
+    width: min(100%, 21rem);
+  }
+
+  .lp-tree-node__label {
+    display: none;
+    font-size: 0.62rem;
+  }
+
+  .lp-tree-node.is-selected .lp-tree-node__label,
+  .lp-tree-node.is-focus .lp-tree-node__label {
+    display: block;
+  }
+
+  .lp-tree-node__ring {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .lp-tree-center__you {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
 }
 
 .lp-quest {
@@ -2928,6 +2969,100 @@
 .lp-tree-center__label {
   max-width: 4.8rem;
   text-align: center;
+}
+
+.lp-sheet-root {
+  position: relative;
+  z-index: 70;
+}
+
+.lp-sheet {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: min(100vw, 28rem);
+  max-width: 100%;
+  margin-inline: auto;
+  margin-top: auto;
+  margin-bottom: 0;
+  background: transparent;
+  color: var(--lp-ink);
+}
+
+.lp-sheet::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.lp-sheet__panel {
+  border-radius: 1.5rem 1.5rem 0 0;
+  border: 1px solid var(--lp-border);
+  border-bottom: 0;
+  background: linear-gradient(180deg, rgba(21, 32, 26, 0.98), rgba(7, 11, 9, 0.98));
+  padding: 0.75rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.lp-sheet__grab {
+  width: 2.5rem;
+  height: 0.28rem;
+  margin: 0.15rem auto 0.85rem;
+  border-radius: 999px;
+  background: rgba(143, 163, 153, 0.45);
+}
+
+.lp-sheet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lp-sheet__emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.lp-sheet__title {
+  margin-top: 0.25rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.lp-sheet__close {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.lp-sheet__list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.lp-sheet__list dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-sheet__list dd {
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--lp-ink);
+}
+
+.lp-sheet__progress {
+  margin-top: 1.15rem;
 }
 
 .lp-mission__row {

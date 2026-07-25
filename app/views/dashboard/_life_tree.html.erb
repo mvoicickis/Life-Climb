@@ -3,37 +3,49 @@
 <% focus_id = local_assigns[:focus_id] %>
 <% closer = local_assigns.fetch(:closer_percent, 0).to_i %>
 <% compact = local_assigns.fetch(:compact, false) %>
+<% count = [ areas.size, 1 ].max %>
+<% orbit_pct = 46 %>
 
 <section class="lp-map-card mt-4 overflow-hidden <%= 'lp-map-card--compact' if compact %>"
          aria-label="<%= t('game_ui.life_map') %>"
-         style="--map-bg: url('<%= asset_path('game/life-tree.png') %>')">
+         style="--map-bg: url('<%= asset_path('game/life-tree.png') %>')"
+         data-controller="life-tree">
   <div class="lp-map-card__veil">
     <div class="lp-tree-stage">
-      <div class="lp-tree" role="list">
+      <div class="lp-tree" role="list" style="--lp-count: <%= count %>; --lp-radius: <%= orbit_pct %>%">
         <svg class="lp-tree__lines" viewBox="0 0 100 100" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
           <% areas.each_with_index do |_area, index| %>
-            <% angle = ((360.0 / [areas.size, 1].max) * index - 90) * Math::PI / 180.0 %>
-            <% x = 50 + Math.cos(angle) * 34 %>
-            <% y = 50 + Math.sin(angle) * 34 %>
+            <% angle = ((360.0 / count) * index - 90) * Math::PI / 180.0 %>
+            <% x = 50 + Math.cos(angle) * orbit_pct %>
+            <% y = 50 + Math.sin(angle) * orbit_pct %>
             <line x1="50" y1="50" x2="<%= x.round(2) %>" y2="<%= y.round(2) %>" class="lp-tree__line" />
           <% end %>
         </svg>
 
         <% areas.each_with_index do |area, index| %>
-          <% angle = (360.0 / areas.size) * index - 90 %>
-          <%= link_to life_area_path(area),
+          <% angle = (360.0 / count) * index - 90 %>
+          <%= link_to life_area_path(area, sheet: 1),
                 class: "lp-tree-node lp-tree-node--v#{area.vitality} #{'is-focus' if focus_id == area.id}",
-                style: "--lp-angle: #{angle}deg",
-                role: "listitem" do %>
-            <span class="lp-tree-node__emoji" aria-hidden="true"><%= area.emoji %></span>
+                style: "--lp-angle: #{angle}deg; --node-pct: #{area.closer_percent}",
+                role: "listitem",
+                data: {
+                  turbo_frame: "life_area_sheet",
+                  action: "click->life-tree#select",
+                  life_tree_target: "node"
+                },
+                aria: {
+                  label: "#{area.short_label}, #{area.closer_percent}%"
+                } do %>
+            <span class="lp-tree-node__ring" aria-hidden="true">
+              <span class="lp-tree-node__emoji"><%= area.emoji %></span>
+            </span>
             <span class="lp-tree-node__label"><%= area.short_label %></span>
-            <span class="lp-tree-node__pct"><%= area.closer_percent %>%</span>
           <% end %>
         <% end %>
 
         <div class="lp-tree-center">
           <span class="lp-tree-center__you" aria-hidden="true">😊</span>
-          <span class="lp-tree-center__label"><%= t("game_ui.you") %> <%= closer %>%</span>
+          <span class="lp-tree-center__label"><%= t("game_ui.you") %></span>
         </div>
       </div>
     </div>
