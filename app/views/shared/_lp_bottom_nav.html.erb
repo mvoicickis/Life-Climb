@@ -3,27 +3,27 @@
 <% active = local_assigns.fetch(:active, :dashboard).to_s %>
 
 <nav class="lp-bottom-nav" aria-label="Primary">
-  <%= link_to (defined?(dashboard_path) ? dashboard_path : "#"), class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'dashboard' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
-    <span aria-hidden="true">⌂</span>
-    <span>Dashboard</span>
+  <%= link_to dashboard_path, class: "lp-bottom-nav__link #{'is-active' if active == 'dashboard'}" do %>
+    <span class="lp-bottom-nav__icon" aria-hidden="true">⌂</span>
+    <span><%= t("game_ui.nav.dashboard") %></span>
   <% end %>
 
-  <%= link_to "#life-map", class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'life_map' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
-    <span aria-hidden="true">◎</span>
-    <span>Life Map</span>
+  <%= link_to dashboard_path(anchor: "life-map"), class: "lp-bottom-nav__link #{'is-active' if active == 'life_map'}" do %>
+    <span class="lp-bottom-nav__icon" aria-hidden="true">◎</span>
+    <span><%= t("game_ui.nav.life_map") %></span>
   <% end %>
 
-  <%= link_to "#", class: "lp-fab", aria: { label: "Quick add" } do %>
+  <%= link_to dashboard_path(anchor: "add-mission"), class: "lp-fab", aria: { label: t("game_ui.nav.quick_add") } do %>
     <span aria-hidden="true">+</span>
   <% end %>
 
-  <%= link_to "#missions", class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'missions' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
-    <span aria-hidden="true">◎</span>
-    <span>Missions</span>
+  <%= link_to dashboard_path(anchor: "todays-mission"), class: "lp-bottom-nav__link #{'is-active' if active == 'missions'}" do %>
+    <span class="lp-bottom-nav__icon" aria-hidden="true">◉</span>
+    <span><%= t("game_ui.nav.missions") %></span>
   <% end %>
 
-  <%= link_to "#profile", class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'profile' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
-    <span aria-hidden="true">☺</span>
-    <span>Profile</span>
+  <%= link_to settings_path, class: "lp-bottom-nav__link #{'is-active' if active == 'profile'}" do %>
+    <span class="lp-bottom-nav__icon" aria-hidden="true">☺</span>
+    <span><%= t("game_ui.nav.profile") %></span>
   <% end %>
 </nav>

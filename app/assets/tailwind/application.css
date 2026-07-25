@@ -2359,6 +2359,7 @@
 .lp-avatar-ring {
   border-radius: 999px;
   box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(163, 230, 53, 0.45);
+  animation: lp-breathe 4.2s ease-in-out infinite;
 }
 
 .lp-gap-track {
@@ -2404,3 +2405,206 @@
   place-items: center;
   box-shadow: 0 0 28px rgba(163, 230, 53, 0.4);
 }
+
+.lp-main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-bottom: 1rem;
+}
+
+.lp-top-nav {
+  border-bottom: 1px solid rgba(163, 230, 53, 0.12);
+  background: rgba(7, 11, 9, 0.88);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.lp-top-nav__inner {
+  max-width: 42rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.lp-top-nav__brand {
+  font-weight: 700;
+  color: var(--lp-ink);
+  letter-spacing: -0.02em;
+}
+
+.lp-top-nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
+.lp-top-nav__links a:hover {
+  color: var(--lp-lime);
+}
+
+.lp-bottom-nav__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-bottom-nav__link.is-active {
+  color: var(--lp-lime);
+}
+
+.lp-bottom-nav__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lp-input {
+  border-radius: 999px;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+.lp-input::placeholder {
+  color: var(--lp-muted);
+}
+
+.lp-flash {
+  margin: 0.75rem 1rem 0;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.lp-flash--notice {
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  background: rgba(163, 230, 53, 0.12);
+  color: var(--lp-lime);
+}
+
+.lp-flash--alert {
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  background: rgba(251, 113, 133, 0.12);
+  color: var(--lp-rose);
+}
+
+.lp-map-card {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(232, 196, 104, 0.18), transparent 45%),
+    radial-gradient(circle at 50% 70%, rgba(16, 185, 129, 0.12), transparent 50%),
+    var(--lp-glass);
+}
+
+.lp-map-stage {
+  padding: 1.25rem 0.5rem 0.5rem;
+}
+
+.lp-map-ring {
+  position: relative;
+  width: min(100%, 20rem);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.lp-map-center {
+  position: absolute;
+  inset: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.lp-map-node {
+  --lp-radius: 42%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3.6rem;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--lp-angle))
+    translateY(calc(var(--lp-radius) * -1))
+    rotate(calc(var(--lp-angle) * -1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  text-align: center;
+  color: var(--lp-ink);
+  z-index: 1;
+}
+
+.lp-map-node__dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--lp-void);
+  background: linear-gradient(145deg, var(--lp-emerald), var(--lp-lime));
+  box-shadow: 0 0 16px rgba(163, 230, 53, 0.35);
+}
+
+.lp-map-node.is-focus .lp-map-node__dot {
+  box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 4px var(--lp-gold), 0 0 22px rgba(232, 196, 104, 0.55);
+}
+
+.lp-map-node__label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  max-width: 4.2rem;
+  line-height: 1.1;
+}
+
+.lp-map-node__pct {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--lp-mint);
+}
+
+.lp-morale {
+  height: 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fb7185, #fbbf24, #a3e635);
+  position: relative;
+  overflow: visible;
+}
+
+.lp-morale__fill {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--morale) * 1%);
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: var(--lp-ink);
+  border: 2px solid var(--lp-void);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(243, 247, 244, 0.5);
+}
+
+@keyframes lp-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+.lp-map-node__dot {
+  animation: lp-breathe 3.6s ease-in-out infinite;
+}
+

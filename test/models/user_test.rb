@@ -5,4 +5,21 @@ class UserTest < ActiveSupport::TestCase
     user = User.new(email_address: " DOWNCASED@EXAMPLE.COM ")
     assert_equal("downcased@example.com", user.email_address)
   end
+
+  test "character defaults to man until chosen" do
+    user = users(:one)
+    assert_nil user.character
+    assert_equal "man", user.character_key
+    assert_equal "characters/character-man.png", user.character_image
+    refute user.character_chosen?
+  end
+
+  test "overall gap is inverse of average closer percent" do
+    user = users(:one)
+    areas = user.active_dream.life_areas.to_a
+    skip "needs life areas" if areas.empty?
+
+    areas.each { |a| a.update!(closer_score: 3) } # 50% closer
+    assert_equal 50, user.overall_gap_percent(areas)
+  end
 end

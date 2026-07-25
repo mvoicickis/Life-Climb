@@ -30,6 +30,9 @@ class User < ApplicationRecord
     greater_than_or_equal_to: 1,
     less_than_or_equal_to: 20
   }
+  validates :character, inclusion: { in: %w[man woman] }, allow_nil: true
+
+  CHARACTERS = %w[man woman].freeze
 
   def admin?
     admin
@@ -37,6 +40,46 @@ class User < ApplicationRecord
 
   def life_points
     total_points
+  end
+
+  def character_key
+    character.presence_in(CHARACTERS) || "man"
+  end
+
+  def character_chosen?
+    character.present?
+  end
+
+  def character_image
+    "characters/character-#{character_key}.png"
+  end
+
+  def display_name
+    email_address.to_s.split("@").first.to_s.titleize.presence || "there"
+  end
+
+  def ledger_points_today
+    life_point_ledgers.where(created_at: Time.current.all_day).sum(:amount)
+  end
+
+  def overall_gap_percent(areas = nil)
+    areas = Array(areas.presence || active_dream&.life_areas&.ordered)
+    return 100 if areas.empty?
+
+    closer_avg = areas.sum { |a| a.closer_percent } / areas.size.to_f
+    (100 - closer_avg).round
+  end
+
+  def morale_score(actions: [])
+    actions = Array(actions)
+    if actions.any?
+      ((actions.count(&:completed?).to_f / actions.size) * 100).round
+    else
+      areas = active_dream&.life_areas
+      return 40 if areas.blank?
+
+      (areas.map(&:closer_percent).sum / areas.size.to_f).round
+    end
   end
 
   def onboarding_completed?
