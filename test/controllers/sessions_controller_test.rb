@@ -6,6 +6,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "new" do
     get new_session_path
     assert_response :success
+    assert_match(/Back to Home|Atpakaļ uz sākumu/, response.body)
+    assert_match(/LifePoints/, response.body)
   end
 
   test "create with valid credentials" do

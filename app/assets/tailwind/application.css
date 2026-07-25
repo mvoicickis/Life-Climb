@@ -606,6 +606,77 @@
     outline-offset: 2px;
   }
 
+  .landing-lang--light {
+    border-color: rgba(15, 23, 42, 0.12);
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .landing-lang--light .landing-lang-btn {
+    color: #475569;
+  }
+
+  .landing-lang--light .landing-lang-btn.is-active {
+    background: #059669;
+    color: #fff;
+  }
+
+  .auth-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .auth-topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .auth-topbar-mark {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.7rem;
+    background: rgba(16, 185, 129, 0.15);
+  }
+
+  .auth-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .auth-back-btn {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0.9rem;
+    border: 1.5px solid rgba(15, 23, 42, 0.12);
+    background: #fff;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #0f172a;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  }
+
+  .auth-back-btn:hover {
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #047857;
+  }
+
+  .auth-back-btn:focus-visible {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+  }
+
   .today-banner-veil {
     position: absolute;
     inset: 0;
