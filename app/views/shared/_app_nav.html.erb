@@ -21,6 +21,12 @@
           <span aria-hidden="true"><%= current_user.email_address.to_s.first.upcase %></span>
         </button>
 
+        <div data-dropdown-target="backdrop"
+             class="app-menu-backdrop"
+             hidden
+             aria-hidden="true"
+             data-action="click->dropdown#close"></div>
+
         <div data-dropdown-target="menu"
              class="app-menu"
              role="menu"

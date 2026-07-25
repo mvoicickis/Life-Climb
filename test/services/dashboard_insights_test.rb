@@ -87,6 +87,8 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match(/week-chart/, response.body)
     assert_match(/today-fab/, response.body)
     assert_match(/today-summary-strip/, response.body)
+    assert_match(/app-menu-backdrop/, response.body)
+    assert_match(/data-controller="dropdown"/, response.body)
     refute_match(/>\s*Share\s*</, response.body)
   end
 end
