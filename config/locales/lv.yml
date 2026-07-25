@@ -133,6 +133,7 @@ lv:
     write: "Rakstīt →"
     footnote: "Atver WhatsApp vai e-pastu ar īsu sākuma ziņu. Nosūti, kad esi gatavs."
   share:
+    invite: "Es katru dienu kļūstu labāks ar LifePoints. Pievienojies un sāc veidot labākus ieradumus."
     title: "Dalies ar progresu"
     subtitle: "Viens pieskāriens, lai iedvesmotu kādu citu."
     close: "Aizvērt dalīšanās dialogu"
@@ -195,9 +196,14 @@ lv:
     default_one: "Ieraksti to, kas svarīgi — pat mazs skaitlis skaitās."
     default_two: "Izvēlies vienu lietu, kurā pārspēt vakardienu."
     default_three: "Turi rītdienu vienkāršu: viena skaidra uzvara."
+  social:
+    title: "LifePoints — Kļūsti labāks nekā vakar"
+    description: "Veido labākus ieradumus, pelni punktus un seko savam progresam katru dienu."
+    image_alt: "LifePoints — Kļūsti labāks nekā vakar"
+    invite: "Es katru dienu kļūstu labāks ar LifePoints. Pievienojies un sāc veidot labākus ieradumus."
   landing:
     meta_title: "LifePoints — Kļūsti labāks nekā vakar"
-    meta_description: "Tavs vienīgais konkurents esi tu pats vakar. LifePoints palīdz izmērīt ikdienas darbības, kas ir svarīgākās, lai redzētu, vai tu katru dienu uzlabojies."
+    meta_description: "Veido labākus ieradumus, pelni punktus un seko savam progresam katru dienu."
     sign_in: "Ienākt"
     start_free: "Sākt bez maksas"
     back_home: "← Atpakaļ uz sākumu"

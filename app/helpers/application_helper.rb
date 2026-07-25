@@ -1,4 +1,11 @@
 module ApplicationHelper
+  SOCIAL_OG_LOCALES = {
+    en: "en_US",
+    lv: "lv_LV",
+    de: "de_DE",
+    es: "es_ES"
+  }.freeze
+
   def canonical_base_url
     host = ENV["APP_HOST"].presence || (respond_to?(:request) ? request.host : "example.com")
     "https://#{host}"
@@ -9,16 +16,48 @@ module ApplicationHelper
   end
 
   # Fresh share URL so WhatsApp re-scrapes OG preview (it caches the bare homepage).
-  def share_landing_url
-    absolute_url("/?s=lp")
+  # Include locale so crawlers receive the matching OG title/image.
+  def share_landing_url(locale: I18n.locale)
+    absolute_url("/?s=lp&locale=#{locale}&v=og3")
+  end
+
+  def social_title
+    I18n.t("social.title", default: I18n.t("landing.meta_title"))
+  end
+
+  def social_description
+    I18n.t("social.description", default: I18n.t("landing.meta_description"))
+  end
+
+  def social_image_alt
+    I18n.t("social.image_alt", default: social_title)
+  end
+
+  def social_og_locale(locale = I18n.locale)
+    SOCIAL_OG_LOCALES.fetch(locale.to_sym, "en_US")
+  end
+
+  def social_og_image_path(locale = I18n.locale)
+    candidate = "/og-lifepoints-#{locale}.png"
+    return candidate if Rails.public_path.join("og-lifepoints-#{locale}.png").exist?
+
+    "/og-lifepoints-en.png"
+  end
+
+  def social_og_image_url(locale = I18n.locale)
+    absolute_url(social_og_image_path(locale))
+  end
+
+  def locale_alternate_url(locale)
+    absolute_url("/?locale=#{locale}")
   end
 
   def page_meta_title
-    content_for?(:title) ? content_for(:title) : "LifePoints"
+    content_for?(:title) ? content_for(:title) : social_title
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Your only competition is the person you were yesterday. LifePoints helps you become a better version of yourself every day."
+    content_for?(:meta_description) ? content_for(:meta_description) : social_description
   end
 
   def status_tone(status)

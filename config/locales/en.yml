@@ -133,6 +133,7 @@ en:
     write: "Write →"
     footnote: "Opens your WhatsApp or email app with a short starter message. Send whenever you’re ready."
   share:
+    invite: "I'm improving every day with LifePoints. Join me and start building better habits."
     title: "Share your progress"
     subtitle: "One tap to inspire someone else."
     close: "Close share dialog"
@@ -195,9 +196,14 @@ en:
     default_one: "Log what matters today — even a small number counts."
     default_two: "Pick one thing to beat yesterday."
     default_three: "Keep tomorrow simple: one clear win."
+  social:
+    title: "LifePoints — Become better than yesterday"
+    description: "Build better habits, earn points, and watch your life improve every day."
+    image_alt: "LifePoints — Become better than yesterday"
+    invite: "I'm improving every day with LifePoints. Join me and start building better habits."
   landing:
     meta_title: "LifePoints — Become better than yesterday"
-    meta_description: "Your only competition is the person you were yesterday. LifePoints helps you measure the daily actions that matter most so you can see whether you're improving every day."
+    meta_description: "Build better habits, earn points, and watch your life improve every day."
     sign_in: "Sign in"
     start_free: "Start free"
     back_home: "← Back to Home"
