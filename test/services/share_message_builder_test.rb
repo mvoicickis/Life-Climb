@@ -110,6 +110,29 @@ class ShareMessageBuilderTest < ActiveSupport::TestCase
     end
   end
 
+  test "closer uses localized invite message" do
+    habit = habits(:one)
+    habit.daily_logs.create!(logged_on: Date.current, amount: 3) unless habit.today_log
+
+    I18n.with_locale(:lv) do
+      body = ShareMessageBuilder.new(habit, landing_url: @url).body
+      assert_match(/Es katru dienu kļūstu labāks ar LifePoints/, body)
+    end
+
+    I18n.with_locale(:de) do
+      body = ShareMessageBuilder.new(habit, landing_url: @url).body
+      assert_match(/Ich werde jeden Tag besser mit LifePoints/, body)
+    end
+  end
+
+  test "invite message helper is fully localized" do
+    I18n.with_locale(:en) do
+      message = ShareMessageBuilder.invite_message(landing_url: @url)
+      assert_match(/I'm improving every day with LifePoints/, message)
+      assert_includes message, @url
+    end
+  end
+
   test "body excludes landing url so platforms can attach it separately" do
     habit = habits(:one)
     body = ShareMessageBuilder.new(habit, landing_url: @url).body

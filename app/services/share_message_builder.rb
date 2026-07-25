@@ -31,7 +31,11 @@ class ShareMessageBuilder
   end
 
   def closer
-    pick(I18n.t("share.closers"))
+    I18n.t("share.invite")
+  end
+
+  def self.invite_message(landing_url:)
+    [ I18n.t("share.invite"), "", I18n.t("share.try_it"), landing_url ].join("\n")
   end
 
   private

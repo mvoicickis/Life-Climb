@@ -133,6 +133,7 @@ de:
     write: "Schreiben →"
     footnote: "Öffnet WhatsApp oder dein E-Mail-Programm mit einer kurzen Startnachricht. Sende, wann du bereit bist."
   share:
+    invite: "Ich werde jeden Tag besser mit LifePoints. Mach mit und baue bessere Gewohnheiten auf."
     title: "Teile deinen Fortschritt"
     subtitle: "Ein Tipp, und du inspirierst jemand anderen."
     close: "Teilen-Dialog schließen"
@@ -195,9 +196,14 @@ de:
     default_one: "Trag ein, was zählt — selbst eine kleine Zahl zählt."
     default_two: "Wähle eine Sache, bei der du gestern übertreffen willst."
     default_three: "Halte morgen einfach: ein klarer Erfolg."
+  social:
+    title: "LifePoints — Werde jeden Tag ein bisschen besser"
+    description: "Baue Gewohnheiten auf, sammle Punkte und verfolge deinen Fortschritt."
+    image_alt: "LifePoints — Werde jeden Tag ein bisschen besser"
+    invite: "Ich werde jeden Tag besser mit LifePoints. Mach mit und baue bessere Gewohnheiten auf."
   landing:
-    meta_title: "LifePoints — Werde besser als gestern"
-    meta_description: "Dein einziger Wettbewerb bist du von gestern. LifePoints hilft dir, die täglichen Handlungen zu messen, die am wichtigsten sind — damit du siehst, ob du dich jeden Tag verbesserst."
+    meta_title: "LifePoints — Werde jeden Tag ein bisschen besser"
+    meta_description: "Baue Gewohnheiten auf, sammle Punkte und verfolge deinen Fortschritt."
     sign_in: "Anmelden"
     start_free: "Kostenlos starten"
     back_home: "← Zurück zur Startseite"

@@ -4,7 +4,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "landing page is public" do
     get root_path
     assert_response :success
-    assert_match(/Grow a little/, response.body)
+    assert_match(/Become better than yesterday/, response.body)
     assert_match(/Start free/, response.body)
   end
 
