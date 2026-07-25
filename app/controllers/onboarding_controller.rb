@@ -60,7 +60,7 @@ class OnboardingController < ApplicationController
   def draft_params
     params.fetch(:onboarding, {}).permit(
       :dream, :goal, :building, :focus_key, :skip,
-      :ambition, :has_partner,
+      :ambition, :present_scene, :has_partner,
       steps: [], actions: []
     )
   end
@@ -71,27 +71,29 @@ class OnboardingController < ApplicationController
     skipped = ActiveModel::Type::Boolean.new.cast(@draft["skip"])
 
     if key == "physical_universe" && skipped
-      parts[key] = { "ambition" => "", "meta" => {} }
+      parts[key] = { "ambition" => "", "present_scene" => "", "meta" => {} }
     else
       ambition = @draft["ambition"].to_s.strip
+      present = @draft["present_scene"].to_s.strip
       if ambition.blank?
         if key == "physical_universe"
-          parts[key] = { "ambition" => "", "meta" => {} }
+          parts[key] = { "ambition" => "", "present_scene" => "", "meta" => {} }
         else
           return fail_step(@step) unless optional_part?(key)
-          parts[key] = { "ambition" => "", "meta" => {} }
+          parts[key] = { "ambition" => "", "present_scene" => "", "meta" => {} }
         end
       else
         meta = {}
         if key == "creativity" && !@draft["has_partner"].nil?
           meta["has_partner"] = ActiveModel::Type::Boolean.new.cast(@draft["has_partner"])
         end
-        parts[key] = { "ambition" => ambition, "meta" => meta }
+        parts[key] = { "ambition" => ambition, "present_scene" => present, "meta" => meta }
       end
     end
 
     @draft["parts"] = parts
     @draft.delete("ambition")
+    @draft.delete("present_scene")
     @draft.delete("has_partner")
     @draft.delete("skip")
 
@@ -163,6 +165,7 @@ class OnboardingController < ApplicationController
 
         area.update!(
           ambition: data["ambition"].to_s.strip.presence,
+          present_scene: data["present_scene"].to_s.strip.presence,
           meta: data["meta"].is_a?(Hash) ? data["meta"] : {}
         )
       end

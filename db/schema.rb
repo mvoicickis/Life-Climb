@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_195000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -119,12 +119,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_190000) do
 
   create_table "life_areas", force: :cascade do |t|
     t.text "ambition"
+    t.integer "closer_score", default: 1, null: false
     t.datetime "created_at", null: false
     t.integer "dream_id", null: false
     t.string "key", null: false
     t.json "meta", default: {}, null: false
     t.integer "number", null: false
     t.integer "position", default: 0, null: false
+    t.text "present_scene"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["dream_id", "key"], name: "index_life_areas_on_dream_id_and_key", unique: true

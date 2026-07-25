@@ -42,6 +42,12 @@ class BuildingsController < ApplicationController
     @dream = @building.dream
     @goal = @building.goal
     @step = @building.step
+    @life_area = @goal.life_area
     @all_buildings = current_user.buildings.active.includes(step: { goal: :dream }).order(:id)
+    @alive_level = current_user.alive_level
+    goal_steps = @goal.steps.ordered.to_a
+    @steps_total = goal_steps.size
+    @steps_done = goal_steps.count { |s| s.status == "done" }
+    @plan_progress = @steps_total.zero? ? 0 : ((@steps_done.to_f / @steps_total) * 100).round
   end
 end

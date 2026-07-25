@@ -3,28 +3,71 @@
 <% if @building %>
   <div class="studio-building">
     <div class="studio-building__main">
-      <p class="studio-kicker"><%= t("studio.building") %></p>
+      <p class="studio-kicker"><%= t("studio.plan") %></p>
       <h1 class="studio-dream"><%= @building.title %></h1>
       <% if @building.summary.present? %>
         <p class="studio-muted mt-2"><%= @building.summary %></p>
       <% end %>
 
       <p class="studio-thread-inline mt-4">
-        <%= @dream.title %> → <%= @goal.title %> → <%= @step.title %>
+        <% if @life_area %><%= @life_area.short_label %> → <% end %>
+        <%= @goal.title %> → <%= @step.title %>
       </p>
 
+      <div class="plan-board mt-6">
+        <div class="plan-board__row">
+          <p class="studio-label"><%= t("buildings.progress") %></p>
+          <p class="studio-muted text-sm"><%= t("buildings.steps_done", done: @steps_done, total: @steps_total) %></p>
+        </div>
+        <div class="closer-bar" style="--closer-pct: <%= @plan_progress %>" aria-hidden="true">
+          <span class="closer-bar__fill"></span>
+        </div>
+
+        <div class="studio-alive mt-5">
+          <div class="studio-alive__meta">
+            <p class="studio-label"><%= t("studio.plan_power") %></p>
+            <p class="studio-alive__title"><%= @alive_level.title %></p>
+            <p class="studio-muted text-sm"><%= @alive_level.next_level_hint %></p>
+          </div>
+          <div class="studio-alive__ring" style="--alive-pct: <%= @alive_level.percent %>" aria-hidden="true">
+            <span class="studio-lp-chip"><%= number_with_delimiter(current_user.life_points) %> LP</span>
+          </div>
+        </div>
+      </div>
+
+      <% if @life_area&.compare_ready? %>
+        <section class="life-compare mt-8">
+          <div class="life-compare__col">
+            <p class="studio-label"><%= t("studio.ideal") %></p>
+            <p class="life-compare__text"><%= @life_area.ideal %></p>
+          </div>
+          <div class="life-compare__col">
+            <p class="studio-label"><%= t("studio.present") %></p>
+            <p class="life-compare__text"><%= @life_area.present %></p>
+          </div>
+        </section>
+      <% end %>
+
       <section class="mt-8">
-        <h2 class="studio-section-title"><%= t("studio.today_actions") %></h2>
-        <ul class="studio-action-list mt-3">
+        <h2 class="studio-section-title"><%= t("studio.today_moves") %></h2>
+        <ul class="studio-action-list mt-3" data-controller="quest-complete">
           <% @actions_today.each do |action| %>
-            <li class="studio-action-row <%= 'is-done' if action.completed? %>">
+            <li class="studio-quest <%= 'is-done' if action.completed? %>">
               <% if action.completed? %>
-                <span class="studio-action-check" aria-hidden="true">✓</span>
-                <span class="studio-action-title"><%= action.title %></span>
+                <span class="studio-quest__check" aria-hidden="true">✓</span>
+                <div class="studio-quest__body">
+                  <span class="studio-quest__title"><%= action.title %></span>
+                  <span class="studio-quest__for"><%= t("studio.for_goal", goal: @goal.title) %></span>
+                </div>
+                <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
               <% else %>
-                <%= button_to complete_today_action_path(action), method: :post, class: "studio-action-complete" do %>
-                  <span class="studio-action-check" aria-hidden="true"></span>
-                  <span class="studio-action-title"><%= action.title %></span>
+                <%= button_to complete_today_action_path(action), method: :post, class: "studio-quest__btn", data: { action: "quest-complete#pop", lp: LifePointsAward::ACTION } do %>
+                  <span class="studio-quest__check" aria-hidden="true"></span>
+                  <div class="studio-quest__body">
+                    <span class="studio-quest__title"><%= action.title %></span>
+                    <span class="studio-quest__for"><%= t("studio.for_goal", goal: @goal.title) %></span>
+                  </div>
+                  <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
                 <% end %>
               <% end %>
             </li>

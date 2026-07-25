@@ -1,4 +1,4 @@
-# Simple status: are you going the right way on today's focus?
+# Are today's moves helping close Ideal vs Present for the focus part?
 class DirectionSignal
   STATUSES = %w[on_track getting_started off_track].freeze
 
@@ -34,6 +34,14 @@ class DirectionSignal
   def body
     part = @life_area&.short_label || @building&.goal&.title
     I18n.t("direction.#{status}.body", part: part)
+  end
+
+  def gap_hint
+    return if @life_area.blank?
+    return unless @life_area.compare_ready?
+    return if @life_area.closer_score >= 5
+
+    I18n.t("direction.gap")
   end
 
   def harmony_hint

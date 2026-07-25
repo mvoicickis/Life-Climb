@@ -8,28 +8,57 @@
 
     <%= render "shared/person_map", life_areas: @life_areas, focus_id: @life_area&.id %>
 
+    <% if @life_area %>
+      <section class="life-compare life-compare--today" aria-label="<%= t('studio.ideal') %> vs <%= t('studio.present') %>">
+        <div class="life-compare__col">
+          <p class="studio-label"><%= t("studio.ideal") %></p>
+          <p class="life-compare__text"><%= @life_area.ideal.presence || t("life_compare.ideal_placeholder") %></p>
+        </div>
+        <div class="life-compare__col">
+          <p class="studio-label"><%= t("studio.present") %></p>
+          <p class="life-compare__text"><%= @life_area.present.presence || t("life_compare.present_placeholder") %></p>
+        </div>
+      </section>
+
+      <div class="closer-today">
+        <div class="closer-today__meta">
+          <p class="studio-label"><%= t("studio.closer") %></p>
+          <p class="closer-today__label"><%= @life_area.closer_label %></p>
+        </div>
+        <div class="closer-bar" style="--closer-pct: <%= @life_area.closer_percent %>" aria-hidden="true">
+          <span class="closer-bar__fill"></span>
+        </div>
+        <%= button_to t("studio.got_closer"), closer_life_area_path(@life_area), method: :post, class: "studio-btn mt-3" %>
+        <p class="studio-muted text-sm mt-2"><%= t("studio.closer_hint") %></p>
+      </div>
+    <% end %>
+
     <div class="studio-direction studio-direction--<%= @direction.status %>" data-studio-thread-target="story">
       <p class="studio-direction__title"><%= @direction.title %></p>
       <p class="studio-direction__body"><%= @direction.body %></p>
+      <% if @direction.gap_hint.present? %>
+        <p class="studio-direction__hint"><%= @direction.gap_hint %></p>
+      <% end %>
       <% if @direction.harmony_hint.present? %>
         <p class="studio-direction__hint"><%= @direction.harmony_hint %></p>
       <% end %>
     </div>
 
-    <div class="studio-alive">
+    <div class="studio-alive studio-alive--hero">
       <div class="studio-alive__meta">
         <p class="studio-label"><%= t("alive_levels.label") %></p>
         <p class="studio-alive__title"><%= @alive_level.title %></p>
+        <p class="studio-muted text-sm mt-1"><%= @alive_level.next_level_hint %></p>
       </div>
       <div class="studio-alive__ring" style="--alive-pct: <%= @alive_level.percent %>" aria-hidden="true">
-        <span class="studio-lp-chip"><%= number_with_delimiter(@life_points) %> LP</span>
+        <span class="studio-lp-chip studio-lp-chip--lg"><%= number_with_delimiter(@life_points) %> LP</span>
       </div>
     </div>
 
     <% if @day_clear %>
       <div class="studio-day-clear is-shown" data-controller="studio-celebrate">
         <p class="studio-day-clear__title"><%= t("studio.day_clear_title") %></p>
-        <p class="studio-day-clear__body"><%= t("studio.day_clear_body", part: @life_area&.short_label || @goal.title) %></p>
+        <p class="studio-day-clear__body"><%= t("studio.day_clear_body") %></p>
       </div>
     <% end %>
 
@@ -47,12 +76,18 @@
             <li class="studio-quest <%= 'is-done' if action.completed? %>">
               <% if action.completed? %>
                 <span class="studio-quest__check" aria-hidden="true">✓</span>
-                <span class="studio-quest__title"><%= action.title %></span>
+                <div class="studio-quest__body">
+                  <span class="studio-quest__title"><%= action.title %></span>
+                  <span class="studio-quest__for"><%= t("studio.for_goal", goal: @goal.title) %></span>
+                </div>
                 <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
               <% else %>
-                <%= button_to complete_today_action_path(action), method: :post, class: "studio-quest__btn", data: { action: "quest-complete#pop" } do %>
+                <%= button_to complete_today_action_path(action), method: :post, class: "studio-quest__btn", data: { action: "quest-complete#pop", lp: LifePointsAward::ACTION } do %>
                   <span class="studio-quest__check" aria-hidden="true"></span>
-                  <span class="studio-quest__title"><%= action.title %></span>
+                  <div class="studio-quest__body">
+                    <span class="studio-quest__title"><%= action.title %></span>
+                    <span class="studio-quest__for"><%= t("studio.for_goal", goal: @goal.title) %></span>
+                  </div>
                   <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
                 <% end %>
               <% end %>
@@ -75,13 +110,10 @@
       <p class="studio-label"><%= t("studio.now") %></p>
       <% if @life_area %>
         <p class="studio-rail-dream"><%= @life_area.label %></p>
-        <% if @life_area.ambition.present? %>
-          <p class="studio-rail-text mt-2"><%= @life_area.ambition %></p>
-        <% end %>
       <% end %>
       <p class="studio-label mt-4"><%= t("studio.goal") %></p>
       <p class="studio-rail-text"><%= @goal.title %></p>
-      <p class="studio-label mt-4"><%= t("studio.building") %></p>
+      <p class="studio-label mt-4"><%= t("studio.plan") %></p>
       <p class="studio-rail-text"><%= @building.title %></p>
     </div>
 
@@ -96,8 +128,8 @@
 
     <% if @rhythms.any? %>
       <div class="studio-rail-card studio-rail-card--muted">
-        <p class="studio-label"><%= t("studio.rhythms") %></p>
-        <p class="studio-muted text-sm"><%= t("studio.rhythms_hint") %></p>
+        <p class="studio-label"><%= t("studio.numbers") %></p>
+        <p class="studio-muted text-sm"><%= t("studio.numbers_hint") %></p>
         <ul class="mt-2 space-y-1">
           <% @rhythms.each do |rhythm| %>
             <li><%= link_to rhythm.name, habits_path, class: "studio-link text-sm" %></li>

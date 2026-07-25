@@ -9,7 +9,8 @@
   <% if @products.any? %>
     <div class="studio-finished__grid">
       <% @products.each do |product| %>
-        <%= link_to finished_product_path(product), class: "studio-trophy" do %>
+        <%= link_to finished_product_path(product), class: "studio-trophy studio-trophy--rich" do %>
+          <p class="studio-trophy__badge" aria-hidden="true">★</p>
           <p class="studio-trophy__title"><%= product.title %></p>
           <% if product.value_summary.present? %>
             <p class="studio-trophy__body"><%= product.value_summary %></p>
