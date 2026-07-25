@@ -1,5 +1,5 @@
 class BuildingsController < ApplicationController
-  before_action :set_building, only: %i[show focus ship]
+  before_action :set_building, only: %i[focus ship]
 
   def show
     @building = current_user.focus_building || current_user.buildings.active.order(:id).first

@@ -13,33 +13,56 @@
         <%= @dream.title %> → <%= @goal.title %> → <%= @step.title %>
       </p>
 
+      <% done = @actions_today.count(&:completed?) %>
+      <% total = @actions_today.size %>
+      <% pct = total.zero? ? 0 : ((done.to_f / total) * 100).round %>
+      <div class="studio-progress mt-6" aria-label="<%= t('buildings.progress', done: done, total: total) %>">
+        <div class="studio-progress__meta">
+          <span><%= t("buildings.progress", done: done, total: total) %></span>
+          <span><%= pct %>%</span>
+        </div>
+        <div class="studio-progress__track">
+          <div class="studio-progress__fill" style="width: <%= pct %>%"></div>
+        </div>
+      </div>
+
       <section class="mt-8">
         <h2 class="studio-section-title"><%= t("studio.today_actions") %></h2>
-        <ul class="studio-action-list mt-3">
-          <% @actions_today.each do |action| %>
-            <li class="studio-action-row <%= 'is-done' if action.completed? %>">
-              <% if action.completed? %>
-                <span class="studio-action-check" aria-hidden="true">✓</span>
-                <span class="studio-action-title"><%= action.title %></span>
-              <% else %>
-                <%= button_to complete_today_action_path(action), method: :post, class: "studio-action-complete" do %>
-                  <span class="studio-action-check" aria-hidden="true"></span>
+        <% if @actions_today.any? %>
+          <ul class="studio-action-list mt-3">
+            <% @actions_today.each do |action| %>
+              <li class="studio-action-row <%= 'is-done' if action.completed? %>">
+                <% if action.completed? %>
+                  <span class="studio-action-check" aria-hidden="true">✓</span>
                   <span class="studio-action-title"><%= action.title %></span>
+                <% else %>
+                  <%= button_to complete_today_action_path(action), method: :post, class: "studio-action-complete" do %>
+                    <span class="studio-action-check" aria-hidden="true"></span>
+                    <span class="studio-action-title"><%= action.title %></span>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="studio-muted mt-3"><%= t("buildings.no_actions") %></p>
+        <% end %>
+
+        <%= form_with url: today_actions_path, scope: :today_action, class: "studio-add-form" do |f| %>
+          <%= f.text_field :title, placeholder: t("studio.action_placeholder"), class: "studio-input", required: true, autocomplete: "off" %>
+          <%= f.submit t("studio.add_action"), class: "studio-btn" %>
+        <% end %>
       </section>
 
       <% if @building.status == "active" %>
         <div class="studio-ship mt-10">
           <h2 class="studio-section-title"><%= t("buildings.ship") %></h2>
+          <p class="studio-muted text-sm mt-1"><%= t("buildings.ship_hint") %></p>
           <%= form_with url: ship_building_path(@building), method: :post, class: "studio-ship-form" do %>
             <label class="studio-label"><%= t("buildings.ship_title") %></label>
             <input type="text" name="title" value="<%= @building.title %>" class="studio-input" required>
             <label class="studio-label mt-3"><%= t("buildings.ship_value") %></label>
-            <textarea name="value_summary" rows="2" class="studio-input" placeholder="People can use it to…"></textarea>
+            <textarea name="value_summary" rows="2" class="studio-input" placeholder="<%= t('buildings.ship_placeholder') %>"></textarea>
             <button type="submit" class="studio-btn studio-btn--strong mt-4"><%= t("studio.ship_cta") %></button>
           <% end %>
         </div>
@@ -47,6 +70,12 @@
     </div>
 
     <aside class="studio-building__rail">
+      <div class="studio-rail-card studio-rail-card--glow">
+        <p class="studio-label"><%= t("buildings.alive_meter") %></p>
+        <p class="studio-life__total studio-life__total--sm"><%= number_with_delimiter(current_user.life_points) %></p>
+        <p class="studio-muted text-sm mt-1"><%= t("life_points.tagline") %></p>
+      </div>
+
       <div class="studio-rail-card">
         <p class="studio-label"><%= t("buildings.other") %></p>
         <ul class="mt-2 space-y-2">

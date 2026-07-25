@@ -1887,3 +1887,46 @@
   gap: 0.85rem 1rem;
   margin-top: 1rem;
 }
+
+/* Game-feel (alive, not serious dashboard) */
+.studio-progress {
+  display: grid;
+  gap: 0.45rem;
+}
+.studio-progress__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--studio-muted);
+}
+.studio-progress__track {
+  height: 0.65rem;
+  border-radius: 999px;
+  background: rgba(28, 36, 33, 0.08);
+  overflow: hidden;
+}
+.studio-progress__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--studio-accent), #2bb673);
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.studio-life__total--sm {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin-top: 0.15rem;
+}
+.studio-rail-card--glow {
+  background: linear-gradient(160deg, rgba(15, 107, 92, 0.12), rgba(255,255,255,0.7));
+  border-color: rgba(15, 107, 92, 0.18);
+}
+.studio-action-row.is-done {
+  background: rgba(15, 107, 92, 0.08);
+}
+.studio-action-complete:hover .studio-action-check {
+  background: var(--studio-accent-soft);
+  transform: scale(1.06);
+}
+.studio-action-check {
+  transition: transform 180ms ease, background 180ms ease;
+}

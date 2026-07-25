@@ -13,7 +13,8 @@ class TodayActionsController < ApplicationController
     )
 
     if action.save
-      redirect_to dashboard_path, notice: t("today.action_added")
+      destination = safe_post_action_redirect
+      redirect_to destination, notice: t("today.action_added")
     else
       redirect_to dashboard_path, alert: action.errors.full_messages.to_sentence
     end
@@ -27,6 +28,17 @@ class TodayActionsController < ApplicationController
 
     action.update!(completed_at: Time.current)
     LifePointsAward.new(current_user).for_action!(action)
-    redirect_to dashboard_path, notice: t("today.action_done", points: LifePointsAward::ACTION)
+    redirect_to (safe_post_action_redirect || dashboard_path), notice: t("today.action_done", points: LifePointsAward::ACTION)
+  end
+
+  private
+
+  def safe_post_action_redirect
+    path = request.referer.to_s
+    uri = URI.parse(path) rescue nil
+    return building_path if uri && uri.path == building_path
+    return dashboard_path if uri && uri.path == dashboard_path
+
+    dashboard_path
   end
 end

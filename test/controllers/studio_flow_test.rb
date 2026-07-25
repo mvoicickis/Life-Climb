@@ -31,6 +31,14 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_match(/more alive you are/, response.body)
   end
 
+  test "building page loads focus building" do
+    sign_in_as @user
+    get building_path
+    assert_response :success
+    assert_match(/LifePoints/, response.body)
+    assert_match(/Alive meter|Build portfolio/, response.body)
+  end
+
   test "nav includes building finished and life points" do
     sign_in_as @user
     get dashboard_path
