@@ -1,0 +1,15 @@
+<% content_for :title, @product.title %>
+
+<div class="studio-celebrate" data-controller="studio-celebrate">
+  <p class="studio-kicker"><%= t("finished.celebration") %></p>
+  <h1 class="studio-dream studio-dream--celebrate"><%= @product.title %></h1>
+  <% if @product.value_summary.present? %>
+    <p class="studio-muted mt-4 text-lg"><%= @product.value_summary %></p>
+  <% end %>
+  <p class="mt-6 studio-lp-chip studio-lp-chip--lg">+<%= LifePointsAward::FINISHED_PRODUCT + LifePointsAward::BUILDING_SHIP %> LifePoints</p>
+  <p class="studio-muted mt-8"><%= t("finished.shipped_on", date: l(@product.shipped_on, format: :long)) %></p>
+  <div class="mt-10 flex flex-wrap gap-3">
+    <%= link_to t("finished.title"), finished_products_path, class: "studio-btn" %>
+    <%= link_to t("nav.today"), dashboard_path, class: "studio-link" %>
+  </div>
+</div>

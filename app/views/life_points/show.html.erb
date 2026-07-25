@@ -1,0 +1,97 @@
+<% content_for :title, t("life_points.title") %>
+
+<div class="studio-life">
+  <header class="studio-life__hero">
+    <p class="studio-kicker"><%= t("life_points.title") %></p>
+    <p class="studio-life__total"><%= number_with_delimiter(@total) %></p>
+    <p class="studio-life__tagline"><%= t("life_points.tagline") %></p>
+    <p class="studio-muted mt-3">
+      <% if @years.to_f <= 0 %>
+        <%= t("life_points.built_over.zero") %>
+      <% else %>
+        <%= t("life_points.built_over.other", count: @years) %>
+      <% end %>
+    </p>
+  </header>
+
+  <section class="studio-life__created">
+    <h2 class="studio-section-title"><%= t("life_points.created") %></h2>
+    <dl class="studio-stats">
+      <div>
+        <dt><%= t("life_points.finished_count") %></dt>
+        <dd><%= @products_count %></dd>
+      </div>
+      <div>
+        <dt><%= t("life_points.buildings_count") %></dt>
+        <dd><%= @buildings_shipped %></dd>
+      </div>
+      <div>
+        <dt><%= t("life_points.days_invested") %></dt>
+        <dd><%= @days_invested %></dd>
+      </div>
+      <div>
+        <dt><%= t("life_points.learning_hours") %></dt>
+        <dd><%= @learning_hours %></dd>
+      </div>
+    </dl>
+    <p class="studio-muted mt-6 max-w-xl"><%= t("life_points.evidence") %></p>
+  </section>
+
+  <section class="studio-life__structure mt-12">
+    <h2 class="studio-section-title"><%= t("life_points.structure") %></h2>
+    <% if @dream %>
+      <%= form_with model: @dream, class: "studio-inline-form mt-4" do |f| %>
+        <label class="studio-label"><%= t("life_points.edit_dream") %></label>
+        <div class="flex gap-2">
+          <%= f.text_field :title, class: "studio-input" %>
+          <%= f.submit t("studio.add_action"), class: "studio-btn" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <ul class="mt-6 space-y-4">
+      <% @goals.each do |goal| %>
+        <li class="studio-rail-card">
+          <p class="studio-label"><%= t("studio.goal") %></p>
+          <p class="font-bold text-lg"><%= goal.title %></p>
+          <ol class="mt-2 list-decimal pl-5 text-sm studio-muted">
+            <% goal.steps.ordered.each do |step| %>
+              <li><%= step.title %></li>
+            <% end %>
+          </ol>
+        </li>
+      <% end %>
+    </ul>
+
+    <%= form_with url: goals_path, scope: :goal, class: "studio-inline-form mt-4" do |f| %>
+      <label class="studio-label"><%= t("life_points.add_goal") %></label>
+      <div class="flex gap-2">
+        <%= f.text_field :title, class: "studio-input", required: true %>
+        <%= f.submit t("studio.add_action"), class: "studio-btn" %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="studio-section-title"><%= t("life_points.timeline") %></h2>
+    <% if @ledger.any? %>
+      <ul class="studio-ledger mt-4">
+        <% @ledger.each do |entry| %>
+          <li>
+            <span><%= entry.reason %></span>
+            <strong>+<%= entry.amount %></strong>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="studio-muted mt-3"><%= t("life_points.empty") %></p>
+    <% end %>
+  </section>
+
+  <section class="mt-12">
+    <%= render "shared/coach_line" %>
+    <p class="mt-4">
+      <%= link_to t("life_points.rhythms_link"), habits_path, class: "studio-link" %>
+    </p>
+  </section>
+</div>

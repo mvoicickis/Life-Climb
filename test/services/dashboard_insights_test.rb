@@ -74,20 +74,19 @@ class DashboardInsightsTest < ActiveSupport::TestCase
 end
 
 class DashboardControllerTest < ActionDispatch::IntegrationTest
-  test "today board shows compact mobile-first sections" do
+  test "today board shows dream story and actions" do
     user = users(:one)
     sign_in_as user
 
     get dashboard_path
     assert_response :success
-    assert_match(/Streak|Sērija|Serie|Racha/, response.body)
-    assert_match(/Weekly progress|Nedēļas progress|Wochenfortschritt|Progreso semanal/, response.body)
-    assert_match(/Focus for tomorrow|Fokuss rītdienai|Fokus für morgen|Enfoque para mañana/, response.body)
-    assert_match(/Needs attention|Nepieciešama uzmanība|Braucht Aufmerksamkeit|Necesita atención/, response.body)
-    assert_match(/week-chart/, response.body)
-    assert_match(/today-fab/, response.body)
-    assert_match(/today-summary-strip/, response.body)
-    refute_match(/>\s*Share\s*</, response.body)
+    assert_match(/Why today matters|Work with skill and freedom/, response.body)
+    assert_match(/Become a Ruby on Rails developer/, response.body)
+    assert_match(/Today’s actions|Finish authentication/, response.body)
+    assert_match(/Talk to Coach|Stuck\?/, response.body)
+    assert_match(/studio-today/, response.body)
+    refute_match(/today-fab/, response.body)
+    refute_match(/today-summary-strip/, response.body)
   end
 end
 
@@ -107,7 +106,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Heute/, response.body)
-    assert_match(/Fokus für morgen/, response.body)
+    assert_match(/Building|Bauen|Why today matters/, response.body)
   end
 
   test "can switch locale to spanish" do
@@ -116,6 +115,6 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Hoy/, response.body)
-    assert_match(/Enfoque para mañana/, response.body)
+    assert_match(/Building|Proyecto|Why today matters/, response.body)
   end
 end

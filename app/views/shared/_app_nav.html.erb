@@ -1,18 +1,19 @@
-<nav class="app-nav border-b border-white/10 bg-[#0b1220]/80 backdrop-blur" aria-label="Main">
-  <div class="container mx-auto flex items-center justify-between gap-3 px-4 py-3">
-    <%= link_to dashboard_path, class: "flex items-center gap-2 text-xl font-black text-emerald-400 md:text-2xl" do %>
-      <span class="grid h-8 w-8 place-items-center rounded-xl bg-emerald-500/20 text-base" aria-hidden="true">🌿</span>
+<nav class="studio-nav" aria-label="Main">
+  <div class="studio-nav__inner">
+    <%= link_to dashboard_path, class: "studio-brand" do %>
+      <span class="studio-brand__mark" aria-hidden="true"></span>
       <span><%= t("app_name") %></span>
     <% end %>
 
-    <div class="flex items-center gap-0.5 text-sm font-bold md:gap-1">
-      <%= link_to t("nav.today"), dashboard_path, class: nav_link_class(current_page?(dashboard_path) || current_page?(root_path)) %>
-      <%= link_to t("nav.stats"), habits_path, class: nav_link_class(current_page?(habits_path) || request.path.start_with?("/habits")) %>
-      <%= link_to t("nav.feedback"), new_feedback_path, class: nav_link_class(current_page?(new_feedback_path)) %>
+    <div class="studio-nav__links">
+      <%= link_to t("nav.today"), dashboard_path, class: studio_nav_class(current_page?(dashboard_path)) %>
+      <%= link_to t("nav.building"), building_path, class: studio_nav_class(current_page?(building_path) || request.path.start_with?("/buildings")) %>
+      <%= link_to t("nav.finished"), finished_products_path, class: studio_nav_class(current_page?(finished_products_path) || request.path.start_with?("/finished_products")) %>
+      <%= link_to t("nav.life_points"), life_points_path, class: studio_nav_class(current_page?(life_points_path)) %>
 
-      <div class="relative ml-1" data-controller="dropdown">
+      <div class="relative" data-controller="dropdown">
         <button type="button"
-                class="app-avatar"
+                class="studio-avatar"
                 data-dropdown-target="button"
                 data-action="click->dropdown#toggle"
                 aria-haspopup="menu"
@@ -21,24 +22,36 @@
           <span aria-hidden="true"><%= current_user.email_address.to_s.first.upcase %></span>
         </button>
 
-        <div data-dropdown-target="menu"
-             class="app-menu"
-             role="menu"
-             hidden>
+        <div data-dropdown-target="menu" class="app-menu studio-menu" role="menu" hidden>
           <p class="app-menu-email"><%= current_user.email_address %></p>
           <%= link_to t("nav.settings"), settings_path, class: "app-menu-item", role: "menuitem" %>
+          <%= link_to t("nav.stats"), habits_path, class: "app-menu-item", role: "menuitem" %>
+          <%= link_to t("nav.feedback"), new_feedback_path, class: "app-menu-item", role: "menuitem" %>
           <% if current_user.admin? %>
             <%= link_to t("nav.admin"), admin_root_path, class: "app-menu-item", role: "menuitem" %>
           <% end %>
-
           <div class="app-menu-divider" role="separator"></div>
           <p class="app-menu-label"><%= t("nav.language") %></p>
           <%= render "shared/locale_switcher", variant: :menu %>
-
           <div class="app-menu-divider" role="separator"></div>
           <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "app-menu-item app-menu-item--danger w-full text-left", role: "menuitem" %>
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="studio-tabbar" role="navigation" aria-label="Primary">
+    <%= link_to dashboard_path, class: studio_tab_class(current_page?(dashboard_path)) do %>
+      <span><%= t("nav.today") %></span>
+    <% end %>
+    <%= link_to building_path, class: studio_tab_class(current_page?(building_path)) do %>
+      <span><%= t("nav.building") %></span>
+    <% end %>
+    <%= link_to finished_products_path, class: studio_tab_class(current_page?(finished_products_path) || request.path.start_with?("/finished_products")) do %>
+      <span><%= t("nav.finished") %></span>
+    <% end %>
+    <%= link_to life_points_path, class: studio_tab_class(current_page?(life_points_path)) do %>
+      <span><%= t("nav.life_points") %></span>
+    <% end %>
   </div>
 </nav>

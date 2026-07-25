@@ -4,7 +4,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
   test "landing page is available in english by default" do
     get root_path
     assert_response :success
-    assert_match(/Become a better version of yourself every day/, response.body)
+    assert_match(/The more LifePoints you earn, the more alive you become/, response.body)
     assert_match(/Start free/, response.body)
   end
 

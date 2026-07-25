@@ -1,0 +1,28 @@
+<% content_for :title, t("finished.title") %>
+
+<div class="studio-finished">
+  <header class="studio-finished__head">
+    <p class="studio-kicker"><%= t("finished.legacy") %></p>
+    <h1 class="studio-dream"><%= t("finished.title") %></h1>
+  </header>
+
+  <% if @products.any? %>
+    <div class="studio-finished__grid">
+      <% @products.each do |product| %>
+        <%= link_to finished_product_path(product), class: "studio-trophy" do %>
+          <p class="studio-trophy__title"><%= product.title %></p>
+          <% if product.value_summary.present? %>
+            <p class="studio-trophy__body"><%= product.value_summary %></p>
+          <% end %>
+          <p class="studio-trophy__meta"><%= t("finished.shipped_on", date: l(product.shipped_on, format: :long)) %></p>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="studio-empty">
+      <h2 class="studio-rail-dream"><%= t("finished.empty_title") %></h2>
+      <p class="studio-muted mt-2"><%= t("finished.empty_body") %></p>
+      <%= link_to t("nav.building"), building_path, class: "studio-btn mt-6 inline-flex" %>
+    </div>
+  <% end %>
+</div>

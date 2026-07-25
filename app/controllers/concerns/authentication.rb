@@ -38,6 +38,7 @@ module Authentication
       stored = session.delete(:return_to_after_authenticating)
       return stored if stored.present?
       return admin_root_url if Current.user&.admin?
+      return onboarding_url if Current.user&.needs_onboarding?
 
       dashboard_url
     end

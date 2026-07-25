@@ -1,172 +1,79 @@
 <% content_for :title, t("dashboard.title") %>
 
-<div class="today-page today-fade mx-auto flex max-w-6xl flex-col"
-     data-controller="share reveal"
-     data-share-url-value="<%= share_landing_url %>"
-     data-share-title-value="LifePoints"
-     data-reveal-more-value="<%= t('dashboard.view_all_habits', count: @more_trackers.size) %>"
-     data-reveal-less-value="<%= t('dashboard.show_fewer_habits') %>">
+<div class="studio-today" data-controller="studio-thread">
+  <div class="studio-today__main">
+    <p class="studio-kicker" data-studio-thread-target="line"><%= t("studio.why_today") %></p>
 
-  <header class="today-hero">
-    <div class="min-w-0">
-      <p class="today-kicker"><%= t("dashboard.kicker") %></p>
-      <h1 class="today-title">
-        <%= t("dashboard.title") %>
-        <span class="today-sun" aria-hidden="true">☀</span>
-      </h1>
-      <p class="today-subtitle today-desktop-only"><%= t("dashboard.subtitle") %></p>
-      <p class="today-unique today-desktop-only"><%= t("dashboard.unique_note") %></p>
-    </div>
-    <aside class="today-quote today-desktop-only" aria-label="<%= @daily_quote %>">
-      <span aria-hidden="true">🌿</span>
-      <p><%= @daily_quote %></p>
-    </aside>
-  </header>
-
-  <% if @trackers.any? %>
-    <div class="today-summary-strip" role="group" aria-label="<%= t('dashboard.title') %> summary">
-      <div class="today-stat today-stat--good">
-        <span aria-hidden="true">🟢</span>
-        <span class="today-stat-label"><%= t("dashboard.summary.better") %></span>
-        <strong class="today-stat-value"><%= @good %></strong>
-      </div>
-      <div class="today-stat today-stat--same">
-        <span aria-hidden="true">🟡</span>
-        <span class="today-stat-label"><%= t("dashboard.summary.same") %></span>
-        <strong class="today-stat-value"><%= @same %></strong>
-      </div>
-      <div class="today-stat today-stat--off">
-        <span aria-hidden="true">🔴</span>
-        <span class="today-stat-label"><%= t("dashboard.summary.needs_work") %></span>
-        <strong class="today-stat-value"><%= @off %></strong>
-      </div>
-      <div class="today-stat today-stat--streak">
-        <span aria-hidden="true">🔥</span>
-        <span class="today-stat-label"><%= t("dashboard.summary.streak") %></span>
-        <strong class="today-stat-value"><%= @streak %></strong>
-      </div>
+    <div class="studio-story" data-studio-thread-target="story">
+      <p class="studio-dream"><%= @dream.title %></p>
+      <p class="studio-goal"><span class="studio-label"><%= t("studio.goal") %></span> <%= @goal.title %></p>
+      <p class="studio-building-line"><span class="studio-label"><%= t("studio.building") %></span> <%= @building.title %></p>
     </div>
 
-    <section class="today-panel today-focus" aria-label="<%= t('dashboard.focus.title') %>">
-      <h2 class="today-panel-title"><%= t("dashboard.focus.title") %></h2>
-      <ul class="today-focus-list">
-        <% @focus_tips.each do |tip| %>
-          <li>
-            <span aria-hidden="true">➜</span>
-            <p><%= tip %></p>
-          </li>
-        <% end %>
-      </ul>
-    </section>
-
-    <% if @celebrations.any? %>
-      <section class="today-celebrate" aria-live="polite">
-        <% @celebrations.each do |item| %>
-          <div class="today-celebrate-card">
-            <div>
-              <p class="today-celebrate-kicker"><%= t("dashboard.celebrate.title") %></p>
-              <p class="today-celebrate-label">
-                <%= item[:label] %>
-                <% if item[:tracker] %> · <%= item[:tracker].name %><% end %>
-              </p>
-            </div>
-            <% if item[:tracker] %>
-              <button type="button"
-                      class="today-celebrate-btn"
-                      data-action="click->share#open"
-                      data-share-text-param="<%= share_message_body_for(item[:tracker]) %>"
-                      data-share-url-param="<%= share_landing_url %>"
-                      data-share-title-param="<%= item[:tracker].name %> · LifePoints">
-                <%= t("dashboard.celebrate.cta") %>
-              </button>
-            <% end %>
-          </div>
-        <% end %>
-      </section>
-    <% end %>
-
-    <section class="today-habits" aria-label="<%= t('dashboard.priority_habits') %>">
-      <div class="today-habits-head">
-        <h2 class="today-panel-title"><%= t("dashboard.priority_habits") %></h2>
-        <span class="today-habits-count"><%= @priority_trackers.size %>/<%= @trackers.size %></span>
+    <section class="studio-actions" aria-labelledby="today-actions-heading">
+      <div class="studio-section-head">
+        <h2 id="today-actions-heading" class="studio-section-title"><%= t("studio.today_actions") %></h2>
+        <p class="studio-lp-chip"><%= number_with_delimiter(@life_points) %> LP</p>
       </div>
 
-      <div class="home-board home-board--priority">
-        <%= render partial: "dashboard/habit_card", collection: @priority_trackers, as: :tracker %>
-      </div>
+      <% if @actions.any? %>
+        <ul class="studio-action-list">
+          <% @actions.each do |action| %>
+            <li class="studio-action-row <%= 'is-done' if action.completed? %>">
+              <% if action.completed? %>
+                <span class="studio-action-check" aria-hidden="true">✓</span>
+                <span class="studio-action-title"><%= action.title %></span>
+              <% else %>
+                <%= button_to complete_today_action_path(action), method: :post, class: "studio-action-complete" do %>
+                  <span class="studio-action-check" aria-hidden="true"></span>
+                  <span class="studio-action-title"><%= action.title %></span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="studio-muted"><%= t("studio.empty_actions") %></p>
+      <% end %>
 
-      <% if @more_trackers.any? %>
-        <div data-reveal-target="extra" class="today-habits-extra" hidden>
-          <div class="home-board home-board--priority home-board--extra">
-            <%= render partial: "dashboard/habit_card", collection: @more_trackers, as: :tracker %>
-          </div>
-        </div>
-
-        <button type="button"
-                class="today-reveal-btn"
-                data-reveal-target="button"
-                data-action="click->reveal#toggle"
-                aria-expanded="false">
-          <%= t("dashboard.view_all_habits", count: @more_trackers.size) %>
-        </button>
+      <%= form_with url: today_actions_path, scope: :today_action, class: "studio-add-form" do |f| %>
+        <%= f.text_field :title, placeholder: t("studio.action_placeholder"), class: "studio-input", required: true, autocomplete: "off" %>
+        <%= f.submit t("studio.add_action"), class: "studio-btn" %>
       <% end %>
     </section>
+  </div>
 
-    <section class="today-lower">
-      <div class="today-panel today-week"
-           data-controller="week-chart"
-           data-week-chart-points-value="<%= @week_series.to_json %>">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="today-panel-title"><%= t("dashboard.weekly.title") %></h2>
-          <span class="today-week-score"><%= @week_percent %>%</span>
-        </div>
-
-        <div class="week-line-wrap">
-          <svg data-week-chart-target="svg" class="week-line-svg" role="img" aria-label="<%= t('dashboard.weekly.aria') %>">
-            <defs>
-              <linearGradient id="weekArea" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path data-week-chart-target="area" class="week-line-area" fill="url(#weekArea)"></path>
-            <path data-week-chart-target="line" class="week-line-path" fill="none"></path>
-            <g data-week-chart-target="points"></g>
-          </svg>
-          <div data-week-chart-target="tooltip" class="week-line-tooltip" hidden>
-            <p data-week-chart-target="tooltipLabel" class="week-line-tooltip-label"></p>
-            <p data-week-chart-target="tooltipValue" class="week-line-tooltip-value"></p>
-          </div>
-        </div>
-
-        <div class="week-line-legend" aria-hidden="true">
-          <% @week_series.each do |point| %>
-            <span class="<%= 'is-current' if point[:current] %>"><%= point[:label] %></span>
-          <% end %>
-        </div>
-      </div>
-    </section>
-
-    <div class="today-panel today-banner" style="background-image: url('/lifepoints-landing-hero.jpg');">
-      <div class="today-banner-veil">
-        <p class="today-banner-kicker"><%= t("dashboard.banner.kicker") %></p>
-        <p class="today-banner-copy"><%= @daily_quote %></p>
-      </div>
+  <aside class="studio-today__rail">
+    <div class="studio-rail-card" data-studio-thread-target="rail">
+      <p class="studio-label"><%= t("studio.dream") %></p>
+      <p class="studio-rail-dream"><%= @dream.title %></p>
+      <p class="studio-label mt-4"><%= t("studio.goal") %></p>
+      <p class="studio-rail-text"><%= @goal.title %></p>
+      <p class="studio-label mt-4"><%= t("studio.step") %></p>
+      <p class="studio-rail-text"><%= @step.title %></p>
+      <p class="studio-label mt-4"><%= t("studio.building") %></p>
+      <p class="studio-rail-text"><%= @building.title %></p>
     </div>
 
-    <%= link_to new_habit_path, class: "today-fab", aria: { label: t("dashboard.add") } do %>
-      <span aria-hidden="true">+</span>
+    <%= render "shared/coach_line" %>
+
+    <% if @latest_finished %>
+      <div class="studio-rail-card">
+        <p class="studio-label"><%= t("studio.finished_teaser") %></p>
+        <%= link_to @latest_finished.title, finished_product_path(@latest_finished), class: "studio-rail-dream" %>
+      </div>
     <% end %>
-  <% else %>
-    <div class="today-empty">
-      <p class="text-2xl font-black tracking-tight text-white"><%= t("dashboard.empty_title") %></p>
-      <p class="mt-3 text-base font-semibold leading-relaxed text-slate-300">
-        <%= t("dashboard.empty_body") %>
-      </p>
-      <p class="mt-2 text-sm font-semibold text-emerald-300/90"><%= t("dashboard.unique_note") %></p>
-      <%= link_to t("dashboard.empty_cta"), new_habit_path, class: "today-add mt-6" %>
-    </div>
-  <% end %>
 
-  <%= render "shared/share_sheet" %>
+    <% if @rhythms.any? %>
+      <div class="studio-rail-card studio-rail-card--muted">
+        <p class="studio-label"><%= t("studio.rhythms") %></p>
+        <p class="studio-muted text-sm"><%= t("studio.rhythms_hint") %></p>
+        <ul class="mt-2 space-y-1">
+          <% @rhythms.each do |rhythm| %>
+            <li><%= link_to rhythm.name, habits_path, class: "studio-link text-sm" %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </aside>
 </div>

@@ -7,6 +7,7 @@ class DailyLogsController < ApplicationController
     @daily_log.goal = goal_for_log
 
     if @daily_log.save
+      award_rhythm_points_if_won!
       redirect_to habit_path(@habit, saved: 1, won: (won? ? 1 : 0)), notice: notice_for(@daily_log)
     else
       redirect_to habit_path(@habit), alert: @daily_log.errors.full_messages.to_sentence
@@ -14,6 +15,14 @@ class DailyLogsController < ApplicationController
   end
 
   private
+
+  def award_rhythm_points_if_won!
+    return unless won?
+    already = current_user.life_point_ledgers.where(source: @habit).where("date(created_at) = ?", Date.current).exists?
+    return if already
+
+    LifePointsAward.new(current_user).for_rhythm!(@habit)
+  end
 
   def set_habit
     @habit = current_user.habits.find(params[:habit_id])

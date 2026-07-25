@@ -1,0 +1,23 @@
+class Building < ApplicationRecord
+  belongs_to :user
+  belongs_to :step
+  has_many :today_actions, -> { order(:position, :id) }, dependent: :destroy
+  has_one :finished_product, dependent: :nullify
+
+  validates :title, presence: true
+
+  scope :active, -> { where(status: "active") }
+  scope :shipped, -> { where(status: "shipped") }
+
+  def goal
+    step.goal
+  end
+
+  def dream
+    goal.dream
+  end
+
+  def focus?
+    user.focus_building_id == id
+  end
+end

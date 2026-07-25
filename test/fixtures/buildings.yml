@@ -1,0 +1,12 @@
+one:
+  user: one
+  step: one
+  title: LifePoints
+  summary: Building a more alive life app
+  status: active
+
+two:
+  user: two
+  step: two
+  title: Personal site
+  status: active

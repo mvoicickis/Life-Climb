@@ -6,6 +6,16 @@ class User < ApplicationRecord
   has_many :daily_logs, dependent: :destroy
   has_many :feedbacks, dependent: :destroy
 
+  has_many :dreams, dependent: :destroy
+  has_many :goals, dependent: :destroy
+  has_many :steps, dependent: :destroy
+  has_many :buildings, dependent: :destroy
+  has_many :today_actions, dependent: :destroy
+  has_many :finished_products, dependent: :destroy
+  has_many :life_point_ledgers, dependent: :destroy
+
+  belongs_to :focus_building, class_name: "Building", optional: true
+
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   validates :email_address, presence: true, uniqueness: true
@@ -19,6 +29,26 @@ class User < ApplicationRecord
     admin
   end
 
+  def life_points
+    total_points
+  end
+
+  def onboarding_completed?
+    onboarding_completed_at.present?
+  end
+
+  def needs_onboarding?
+    !onboarding_completed? && dreams.none?
+  end
+
+  def active_dream
+    dreams.active.order(:id).first || dreams.order(:id).first
+  end
+
+  def primary_goal
+    active_dream&.goals&.active&.ordered&.first || goals.active.ordered.first
+  end
+
   def points_today
     completions.where(completed_on: Date.current).sum(:points_awarded)
   end
@@ -29,5 +59,9 @@ class User < ApplicationRecord
 
   def home_board_habits
     habits.active.on_home.ordered
+  end
+
+  def days_invested
+    today_actions.complete.select(:scheduled_on).distinct.count
   end
 end

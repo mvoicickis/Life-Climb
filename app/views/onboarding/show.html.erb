@@ -1,0 +1,57 @@
+<% content_for :title, t("onboarding.dream_title") %>
+
+<div class="studio-onboarding">
+  <p class="studio-kicker"><%= t("app_name") %></p>
+
+  <% case @step %>
+  <% when "dream" %>
+    <h1 class="studio-dream"><%= t("onboarding.dream_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.dream_hint") %></p>
+    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+      <input type="hidden" name="step" value="dream">
+      <input type="text" name="onboarding[dream]" value="<%= @draft['dream'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.dream_placeholder') %>" required autofocus>
+      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+    <% end %>
+
+  <% when "goal" %>
+    <h1 class="studio-dream"><%= t("onboarding.goal_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.goal_hint") %></p>
+    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+      <input type="hidden" name="step" value="goal">
+      <input type="text" name="onboarding[goal]" value="<%= @draft['goal'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.goal_placeholder') %>" required autofocus>
+      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+    <% end %>
+
+  <% when "steps" %>
+    <h1 class="studio-dream"><%= t("onboarding.steps_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.steps_hint") %></p>
+    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+      <input type="hidden" name="step" value="steps">
+      <% defaults = @draft['steps'].presence || [t('onboarding.default_steps.one'), t('onboarding.default_steps.two'), t('onboarding.default_steps.three')] %>
+      <% 5.times do |i| %>
+        <input type="text" name="onboarding[steps][]" value="<%= defaults[i] %>" class="studio-input mt-2">
+      <% end %>
+      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+    <% end %>
+
+  <% when "building" %>
+    <h1 class="studio-dream"><%= t("onboarding.building_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.building_hint") %></p>
+    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+      <input type="hidden" name="step" value="building">
+      <input type="text" name="onboarding[building]" value="<%= @draft['building'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.building_placeholder') %>" required autofocus>
+      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+    <% end %>
+
+  <% when "today" %>
+    <h1 class="studio-dream"><%= t("onboarding.today_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.today_hint") %></p>
+    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+      <input type="hidden" name="step" value="today">
+      <% 3.times do |i| %>
+        <input type="text" name="onboarding[actions][]" value="<%= Array(@draft['actions'])[i] %>" class="studio-input mt-2" <%= "required" if i.zero? %>>
+      <% end %>
+      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.finish") %></button>
+    <% end %>
+  <% end %>
+</div>
