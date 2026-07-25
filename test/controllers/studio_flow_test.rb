@@ -3,15 +3,16 @@ require "test_helper"
 class StudioFlowTest < ActionDispatch::IntegrationTest
   setup { @user = users(:one) }
 
-  test "today shows dream goal building story" do
+  test "today shows calm home with quest" do
     sign_in_as @user
     get dashboard_path
     assert_response :success
-    assert_match(/Your dream life/, response.body)
-    assert_match(/Become a Ruby on Rails developer/, response.body)
-    assert_match(/LifePoints/, response.body)
+    assert_match(/Overall Gap/, response.body)
+    assert_match(/Life Points/, response.body)
     assert_match(/Finish authentication/, response.body)
-    assert_select ".person-map"
+    assert_select ".lp-twin"
+    assert_select ".lp-map-card"
+    assert_select ".lp-mission"
   end
 
   test "completing today action earns life points" do
@@ -32,10 +33,10 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_match(/more alive you are/, response.body)
   end
 
-  test "nav includes building finished and life points" do
+  test "nav includes plan finished and life points" do
     sign_in_as @user
     get dashboard_path
-    assert_match(/Building/, response.body)
+    assert_match(/Plan/, response.body)
     assert_match(/Finished/, response.body)
     assert_select "a[href=?]", finished_products_path
     assert_select "a[href=?]", life_points_path

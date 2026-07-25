@@ -15,6 +15,11 @@ class LifePointsAward
     return if amount.zero?
 
     ActiveRecord::Base.transaction do
+      if amount.negative?
+        amount = -[ amount.abs, @user.total_points ].min
+        return if amount.zero?
+      end
+
       attrs = {
         amount: amount,
         reason: reason
@@ -27,7 +32,7 @@ class LifePointsAward
       end
 
       entry = @user.life_point_ledgers.create!(attrs)
-      @user.increment!(:total_points, amount)
+      @user.update!(total_points: @user.total_points + amount)
       entry
     end
   end

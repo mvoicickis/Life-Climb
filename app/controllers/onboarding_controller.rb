@@ -70,13 +70,13 @@ class OnboardingController < ApplicationController
     parts = (@draft["parts"] || {}).stringify_keys
     skipped = ActiveModel::Type::Boolean.new.cast(@draft["skip"])
 
-    if key == "physical_universe" && skipped
+    if key == "physical_world" && skipped
       parts[key] = { "ambition" => "", "present_scene" => "", "meta" => {} }
     else
       ambition = @draft["ambition"].to_s.strip
       present = @draft["present_scene"].to_s.strip
       if ambition.blank?
-        if key == "physical_universe"
+        if key == "physical_world"
           parts[key] = { "ambition" => "", "present_scene" => "", "meta" => {} }
         else
           return fail_step(@step) unless optional_part?(key)
@@ -84,7 +84,7 @@ class OnboardingController < ApplicationController
         end
       else
         meta = {}
-        if key == "creativity" && !@draft["has_partner"].nil?
+        if key == "love" && !@draft["has_partner"].nil?
           meta["has_partner"] = ActiveModel::Type::Boolean.new.cast(@draft["has_partner"])
         end
         parts[key] = { "ambition" => ambition, "present_scene" => present, "meta" => meta }
@@ -97,7 +97,7 @@ class OnboardingController < ApplicationController
     @draft.delete("has_partner")
     @draft.delete("skip")
 
-    if key == "physical_universe" && !enough_parts_filled?(parts)
+    if key == "physical_world" && !enough_parts_filled?(parts)
       session[:onboarding_draft] = @draft
       redirect_to onboarding_path(step: "part_self"), alert: t("onboarding.need_more_parts")
       return
@@ -107,14 +107,14 @@ class OnboardingController < ApplicationController
   end
 
   def optional_part?(key)
-    key == "physical_universe"
+    %w[physical_world nature animals].include?(key)
   end
 
   def enough_parts_filled?(parts)
     filled = parts.select { |_k, v| v.is_a?(Hash) && v["ambition"].to_s.strip.present? }
     return false unless filled.key?("self")
 
-    (filled.keys & %w[creativity group species life_forms]).any?
+    (filled.keys & %w[love family community humanity]).size >= 1
   end
 
   def part_filled?(key)

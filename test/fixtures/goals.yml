@@ -1,7 +1,7 @@
 one:
   user: one
   dream: one
-  life_area: one_group
+  life_area: one_community
   title: Become a Ruby on Rails developer
   status: active
   position: 0
@@ -9,7 +9,7 @@ one:
 two:
   user: two
   dream: two
-  life_area: two_group
+  life_area: two_community
   title: Ship a personal brand site
   status: active
   position: 0

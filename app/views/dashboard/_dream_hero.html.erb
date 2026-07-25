@@ -1,0 +1,16 @@
+<%# Locals: closer_percent (Integer) %>
+<% closer = local_assigns.fetch(:closer_percent, 0).to_i.clamp(0, 100) %>
+
+<section class="lp-glass lp-dream-hero mt-8 p-6" aria-label="<%= t('game_ui.dream_life') %>">
+  <p class="text-center text-sm font-semibold text-[var(--lp-muted)]">🌳 <%= t("game_ui.dream_life") %></p>
+  <p class="mt-3 text-center text-xs font-bold uppercase tracking-[0.2em] text-[var(--lp-lime)]/80">
+    <%= t("game_ui.overall_gap") %>
+  </p>
+  <p class="mt-2 text-center text-6xl font-semibold tracking-tight text-[var(--lp-lime)]"><%= closer %>%</p>
+  <p class="mt-3 text-center text-base text-[var(--lp-ink)]">
+    <%= t("game_ui.closer_to_dream", percent: closer) %>
+  </p>
+  <div class="lp-gap-track mt-6" role="img" aria-label="<%= closer %>%">
+    <div class="lp-gap-fill" style="width: <%= closer %>%"></div>
+  </div>
+</section>

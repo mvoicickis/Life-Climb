@@ -3,20 +3,35 @@ class LifeArea < ApplicationRecord
 
   KEYS = %w[
     self
-    creativity
-    group
-    species
-    life_forms
-    physical_universe
+    love
+    family
+    community
+    humanity
+    animals
+    nature
+    physical_world
   ].freeze
 
+  EMOJI = {
+    "self" => "🧠",
+    "love" => "❤️",
+    "family" => "👨‍👩‍👧",
+    "community" => "👥",
+    "humanity" => "🌍",
+    "animals" => "🐾",
+    "nature" => "🌿",
+    "physical_world" => "🏠"
+  }.freeze
+
   SIMPLE_LABEL_KEYS = {
-    "self" => "you",
-    "creativity" => "love",
-    "group" => "friends_work",
-    "species" => "people",
-    "life_forms" => "animals",
-    "physical_universe" => "home"
+    "self" => "self",
+    "love" => "love",
+    "family" => "family",
+    "community" => "community",
+    "humanity" => "humanity",
+    "animals" => "animals",
+    "nature" => "nature",
+    "physical_world" => "physical_world"
   }.freeze
 
   belongs_to :user
@@ -24,7 +39,7 @@ class LifeArea < ApplicationRecord
   has_many :goals, dependent: :nullify
 
   validates :key, presence: true, inclusion: { in: KEYS }
-  validates :number, presence: true, inclusion: { in: 1..6 }
+  validates :number, presence: true, inclusion: { in: 1..8 }
   validates :ambition, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :present_scene, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :closer_score, numericality: { only_integer: true, in: 1..5 }
@@ -32,6 +47,7 @@ class LifeArea < ApplicationRecord
 
   scope :ordered, -> { order(:position, :number, :id) }
   scope :filled, -> { where.not(ambition: [ nil, "" ]) }
+  scope :tree, -> { where(key: KEYS).ordered }
 
   def filled?
     ambition.to_s.strip.present?
@@ -63,6 +79,14 @@ class LifeArea < ApplicationRecord
 
   def closer_label
     I18n.t("closer_labels.#{closer_score.to_i.clamp(1, 5)}")
+  end
+
+  def emoji
+    EMOJI.fetch(key, "🌳")
+  end
+
+  def vitality
+    closer_score.to_i.clamp(1, 5)
   end
 
   def bump_closer!
@@ -108,6 +132,6 @@ class LifeArea < ApplicationRecord
         area.closer_score = 1
       end
     end
-    dream.life_areas.ordered
+    dream.life_areas.tree
   end
 end

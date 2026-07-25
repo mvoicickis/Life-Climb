@@ -20,17 +20,17 @@
     <h1 class="studio-dream"><%= t("onboarding.parts.#{part}.title") %></h1>
     <p class="studio-muted mt-2"><%= t("onboarding.parts.#{part}.hint") %></p>
 
-    <% if part == "creativity" %>
+    <% if part == "love" %>
       <div class="studio-branch mt-4" data-controller="onboarding-examples">
-        <p class="studio-label"><%= t("onboarding.parts.creativity.partner_q") %></p>
+        <p class="studio-label"><%= t("onboarding.parts.love.partner_q") %></p>
         <div class="studio-examples" role="list">
           <label class="studio-example-chip">
-            <input type="radio" name="onboarding[has_partner]" value="true" form="part-form" <%= "checked" if @draft.dig("parts", "creativity", "meta", "has_partner") == true %>>
-            <%= t("onboarding.parts.creativity.partner_yes") %>
+            <input type="radio" name="onboarding[has_partner]" value="true" form="part-form" <%= "checked" if @draft.dig("parts", "love", "meta", "has_partner") == true %>>
+            <%= t("onboarding.parts.love.partner_yes") %>
           </label>
           <label class="studio-example-chip">
-            <input type="radio" name="onboarding[has_partner]" value="false" form="part-form" <%= "checked" if @draft.dig("parts", "creativity", "meta", "has_partner") == false %>>
-            <%= t("onboarding.parts.creativity.partner_no") %>
+            <input type="radio" name="onboarding[has_partner]" value="false" form="part-form" <%= "checked" if @draft.dig("parts", "love", "meta", "has_partner") == false %>>
+            <%= t("onboarding.parts.love.partner_no") %>
           </label>
         </div>
       </div>
@@ -47,13 +47,13 @@
       <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form", html: { id: "part-form" } do %>
         <input type="hidden" name="step" value="<%= @step %>">
         <p class="studio-label"><%= t("life_compare.ideal_label") %></p>
-        <textarea name="onboarding[ambition]" rows="3" class="studio-input studio-input--lg" placeholder="<%= t("onboarding.parts.#{part}.placeholder") %>" <%= "required" unless part == "physical_universe" %> autofocus data-onboarding-examples-target="input"><%= @draft.dig("parts", part, "ambition") || @draft["ambition"] %></textarea>
+        <textarea name="onboarding[ambition]" rows="3" class="studio-input studio-input--lg" placeholder="<%= t("onboarding.parts.#{part}.placeholder") %>" <%= "required" unless part == "physical_world" %> autofocus data-onboarding-examples-target="input"><%= @draft.dig("parts", part, "ambition") || @draft["ambition"] %></textarea>
         <p class="studio-label mt-4"><%= t("onboarding.present_title") %></p>
         <p class="studio-muted text-sm"><%= t("onboarding.present_hint") %></p>
         <textarea name="onboarding[present_scene]" rows="2" class="studio-input studio-input--lg mt-2" placeholder="<%= t('onboarding.present_placeholder') %>"><%= @draft.dig("parts", part, "present_scene") || @draft["present_scene"] %></textarea>
         <div class="studio-onboarding__actions mt-6">
           <button class="studio-btn studio-btn--strong"><%= t("onboarding.continue") %></button>
-          <% if part == "physical_universe" %>
+          <% if part == "physical_world" %>
             <button class="studio-btn" name="onboarding[skip]" value="true"><%= t("onboarding.skip") %></button>
           <% end %>
         </div>

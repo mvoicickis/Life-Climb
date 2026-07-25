@@ -11,46 +11,68 @@ one_self:
   closer_score: 2
   meta: {}
 
-one_creativity:
+one_love:
   user: one
   dream: one
-  key: creativity
+  key: love
   number: 2
   position: 1
-  ambition: A warm family life
+  ambition: A warm loving relationship
   present_scene: Good days and rough days
   closer_score: 3
   meta:
     has_partner: true
 
-one_group:
+one_family:
   user: one
   dream: one
-  key: group
+  key: family
   number: 3
   position: 2
+  ambition: Strong family trust
+  present_scene: Busy weeks, few calls
+  closer_score: 2
+  meta: {}
+
+one_community:
+  user: one
+  dream: one
+  key: community
+  number: 4
+  position: 3
   ambition: Build LifePoints with a great team
   present_scene: Building alone most days
   closer_score: 2
   meta: {}
 
-one_species:
+one_humanity:
   user: one
   dream: one
-  key: species
-  number: 4
-  position: 3
+  key: humanity
+  number: 5
+  position: 4
   ambition:
   present_scene:
   closer_score: 1
   meta: {}
 
-one_life_forms:
+one_animals:
   user: one
   dream: one
-  key: life_forms
-  number: 5
-  position: 4
+  key: animals
+  number: 6
+  position: 5
+  ambition:
+  present_scene:
+  closer_score: 1
+  meta: {}
+
+one_nature:
+  user: one
+  dream: one
+  key: nature
+  number: 7
+  position: 6
   ambition:
   present_scene:
   closer_score: 1
@@ -59,9 +81,9 @@ one_life_forms:
 one_physical:
   user: one
   dream: one
-  key: physical_universe
-  number: 6
-  position: 5
+  key: physical_world
+  number: 8
+  position: 7
   ambition:
   present_scene:
   closer_score: 1
@@ -78,10 +100,10 @@ two_self:
   closer_score: 2
   meta: {}
 
-two_creativity:
+two_love:
   user: two
   dream: two
-  key: creativity
+  key: love
   number: 2
   position: 1
   ambition:
@@ -89,34 +111,56 @@ two_creativity:
   closer_score: 1
   meta: {}
 
-two_group:
+two_family:
   user: two
   dream: two
-  key: group
+  key: family
   number: 3
   position: 2
-  ambition: Share my work with a circle of makers
-  present_scene: Few people see my work
-  closer_score: 2
-  meta: {}
-
-two_species:
-  user: two
-  dream: two
-  key: species
-  number: 4
-  position: 3
   ambition:
   present_scene:
   closer_score: 1
   meta: {}
 
-two_life_forms:
+two_community:
   user: two
   dream: two
-  key: life_forms
+  key: community
+  number: 4
+  position: 3
+  ambition: Share my work with a circle of makers
+  present_scene: Few people see my work
+  closer_score: 2
+  meta: {}
+
+two_humanity:
+  user: two
+  dream: two
+  key: humanity
   number: 5
   position: 4
+  ambition:
+  present_scene:
+  closer_score: 1
+  meta: {}
+
+two_animals:
+  user: two
+  dream: two
+  key: animals
+  number: 6
+  position: 5
+  ambition:
+  present_scene:
+  closer_score: 1
+  meta: {}
+
+two_nature:
+  user: two
+  dream: two
+  key: nature
+  number: 7
+  position: 6
   ambition:
   present_scene:
   closer_score: 1
@@ -125,9 +169,9 @@ two_life_forms:
 two_physical:
   user: two
   dream: two
-  key: physical_universe
-  number: 6
-  position: 5
+  key: physical_world
+  number: 8
+  position: 7
   ambition:
   present_scene:
   closer_score: 1

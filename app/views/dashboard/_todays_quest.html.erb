@@ -1,0 +1,36 @@
+<%# Locals: action, reward %>
+<% action = local_assigns[:action] %>
+<% reward = local_assigns.fetch(:reward, LifePointsAward::ACTION) %>
+
+<section id="todays-quest" class="lp-glass lp-mission mt-4 p-4" aria-labelledby="mission-heading">
+  <div class="lp-mission__row">
+    <div class="lp-mission__copy min-w-0 flex-1">
+      <p class="lp-mission__kicker">🎯 <%= t("game_ui.todays_mission") %></p>
+      <% if action %>
+        <h2 id="mission-heading" class="lp-mission__title"><%= action.title %></h2>
+        <p class="lp-mission__meta">
+          <span class="text-[var(--lp-gold)] font-bold">+<%= reward %> LP</span>
+          <span aria-hidden="true"> · </span>
+          <span><%= t("game_ui.gap_shrinks") %></span>
+        </p>
+      <% else %>
+        <h2 id="mission-heading" class="lp-mission__title"><%= t("game_ui.no_quest") %></h2>
+        <p class="lp-mission__meta"><%= t("game_ui.no_quest_hint") %></p>
+      <% end %>
+    </div>
+
+    <div class="lp-mission__cta shrink-0">
+      <% if action&.completed? %>
+        <span class="lp-cta lp-mission__btn opacity-70"><%= t("game_ui.quest_done") %></span>
+      <% elsif action %>
+        <%= button_to t("game_ui.start_mission"),
+              complete_today_action_path(action),
+              method: :post,
+              class: "lp-cta lp-mission__btn",
+              data: { turbo: true } %>
+      <% else %>
+        <%= link_to t("game_ui.add_quest"), dashboard_path(anchor: "add-quest"), class: "lp-cta lp-mission__btn inline-flex" %>
+      <% end %>
+    </div>
+  </div>
+</section>
