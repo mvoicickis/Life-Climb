@@ -570,6 +570,42 @@
     background: rgba(148, 163, 184, 0.2);
   }
 
+  .landing-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(15, 23, 42, 0.35);
+    padding: 0.18rem;
+  }
+
+  .landing-lang-btn {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    padding: 0.35rem 0.55rem;
+    cursor: pointer;
+  }
+
+  .landing-lang-btn.is-active {
+    background: rgba(16, 185, 129, 0.95);
+    color: #fff;
+  }
+
+  .landing-lang-btn:hover {
+    color: #fff;
+  }
+
+  .landing-lang-btn:focus-visible {
+    outline: 2px solid #6ee7b7;
+    outline-offset: 2px;
+  }
+
   .today-banner-veil {
     position: absolute;
     inset: 0;
