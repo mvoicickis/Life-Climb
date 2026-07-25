@@ -16,14 +16,7 @@
     <header class="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-5 md:px-8 md:py-6">
       <p class="text-2xl font-black tracking-tight text-white md:text-3xl" data-landing-target="brand"><%= t("app_name") %></p>
       <div class="flex items-center gap-2 md:gap-3">
-        <div class="landing-lang" role="group" aria-label="<%= t('nav.language') %>">
-          <%= button_to "EN", locale_path(locale: :en), method: :patch,
-              class: "landing-lang-btn #{I18n.locale == :en ? 'is-active' : ''}",
-              form: { class: "inline" } %>
-          <%= button_to "LV", locale_path(locale: :lv), method: :patch,
-              class: "landing-lang-btn #{I18n.locale == :lv ? 'is-active' : ''}",
-              form: { class: "inline" } %>
-        </div>
+        <%= render "shared/locale_switcher", variant: :compact %>
         <%= link_to t("landing.sign_in"), new_session_path,
             class: "rounded-2xl px-3 py-2 text-sm font-bold text-white/90 hover:bg-white/10 md:px-4 md:text-base" %>
         <%= link_to t("landing.start_free"), new_registration_path,

@@ -45,8 +45,13 @@ class DashboardInsights
   end
 
   def focus_tips
-    tips = @trackers.filter_map { |tracker| tip_for(tracker) }
+    tips = prioritized_trackers.filter_map { |tracker| tip_for(tracker) }
     tips.first(3).presence || default_tips
+  end
+
+  # Needs-work first, then same, then good — largest gap wins within a status.
+  def prioritized_trackers
+    @trackers.sort_by { |tracker| [ status_rank(tracker.status), -attention_gap(tracker), tracker.position ] }
   end
 
   def celebrations
@@ -92,6 +97,33 @@ class DashboardInsights
 
   private
 
+  def status_rank(status)
+    case status
+    when :worse then 0
+    when :too_low, :too_high then 1
+    when :same then 2
+    when :better, :perfect then 3
+    else 4
+    end
+  end
+
+  def attention_gap(tracker)
+    case tracker.status
+    when :worse
+      [ tracker.yesterday_amount - tracker.today_amount, 0 ].max.to_f
+    when :too_low
+      return 0 if tracker.min_value.blank?
+
+      [ tracker.min_value - tracker.today_amount, 0 ].max.to_f
+    when :too_high
+      return 0 if tracker.max_value.blank?
+
+      [ tracker.today_amount - tracker.max_value, 0 ].max.to_f
+    else
+      0
+    end
+  end
+
   def logged_on?(date)
     @user.daily_logs.exists?(logged_on: date)
   end
@@ -105,9 +137,8 @@ class DashboardInsights
 
   def tip_for(tracker)
     status = tracker.status
-    name = tracker.name
-    unit = tracker.unit
-    key = "#{name} #{unit}".downcase
+    name = tracker.name.to_s.strip
+    key = "#{name} #{tracker.unit}".downcase
 
     case status
     when :worse
@@ -116,17 +147,17 @@ class DashboardInsights
       needed = 1 if needed < 1
       amount = format_amount(needed)
 
-      if key.match?(/walk|step/)
+      if key.match?(/walk|step|soļ|soli|schritt|paso/)
         I18n.t("focus_tips.walk_more", amount: amount)
-      elsif key.match?(/read|page|book/)
-        I18n.t("focus_tips.read_more", amount: amount, unit: unit)
+      elsif key.match?(/read|page|book|lappus|grāmat|seite|página|pagina|libro/)
+        I18n.t("focus_tips.read_more", amount: amount)
       else
-        I18n.t("focus_tips.do_more", amount: amount, unit: unit, name: name)
+        I18n.t("focus_tips.do_more", amount: amount, name: name)
       end
     when :too_low
-      I18n.t("focus_tips.lift_low", name: name, amount: format_amount(tracker.min_value), unit: unit)
+      I18n.t("focus_tips.lift_low", name: name, amount: format_amount(tracker.min_value))
     when :too_high
-      I18n.t("focus_tips.ease_high", name: name, amount: format_amount(tracker.max_value), unit: unit)
+      I18n.t("focus_tips.ease_high", name: name, amount: format_amount(tracker.max_value))
     end
   end
 

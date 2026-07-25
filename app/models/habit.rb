@@ -1,12 +1,8 @@
 class Habit < ApplicationRecord
   FREQUENCIES = %w[daily weekly].freeze
   UNIT_IDEAS = %w[times steps minutes pages words glasses hours money km litres liters].freeze
-  # Stored keys; UI labels are "Better Than Yesterday" / "Healthy Range"
+  # Stored keys; UI labels come from I18n (habits.growth_title / habits.range_title)
   STAT_TYPES = %w[growth standard].freeze
-  EVALUATION_LABELS = {
-    "growth" => "Better Than Yesterday",
-    "standard" => "Healthy Range"
-  }.freeze
 
   belongs_to :user
   has_many :completions, dependent: :destroy
@@ -49,7 +45,7 @@ class Habit < ApplicationRecord
   end
 
   def evaluation_label
-    EVALUATION_LABELS.fetch(stat_type, "Better Than Yesterday")
+    healthy_range? ? I18n.t("habits.range_title") : I18n.t("habits.growth_title")
   end
 
   def completed_today?

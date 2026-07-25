@@ -3,25 +3,10 @@ require "zlib"
 # Builds personalized LifePoints share copy from a habit's latest day.
 # Keep platform URLs out of this class — UI/JS owns how each network receives the text.
 class ShareMessageBuilder
-  ENCOURAGEMENTS = [
-    "Small improvements every day make a big difference.",
-    "Every step gets me closer to a better version of myself.",
-    "Small actions repeated every day create big results.",
-    "Learning something every day adds up over time.",
-    "Consistency beats intensity — one day at a time."
-  ].freeze
-
-  CLOSERS = [
-    "I'm using LifePoints to become a better version of myself.",
-    "I'm tracking my progress with LifePoints.",
-    "I'm using LifePoints to stay consistent.",
-    "I'm becoming better than yesterday with LifePoints."
-  ].freeze
-
   LANGUAGE_HINTS = /
     german|spanish|french|italian|portuguese|japanese|chinese|korean|
     dutch|swedish|norwegian|polish|latvian|lithuanian|russian|arabic|hebrew|
-    language|vocab
+    deutsch|español|espanol|language|vocab|sprache|idioma
   /xi
 
   def initialize(habit, landing_url:)
@@ -30,7 +15,7 @@ class ShareMessageBuilder
   end
 
   def call
-    [ body, "", "Try it:", @landing_url ].join("\n")
+    [ body, "", I18n.t("share.try_it"), @landing_url ].join("\n")
   end
 
   def body
@@ -38,15 +23,15 @@ class ShareMessageBuilder
   end
 
   def headline
-    "#{emoji} Today I #{activity_phrase}."
+    I18n.t("share.headline", emoji: emoji, activity: activity_phrase)
   end
 
   def encouragement
-    pick(ENCOURAGEMENTS)
+    pick(I18n.t("share.encouragements"))
   end
 
   def closer
-    pick(CLOSERS)
+    pick(I18n.t("share.closers"))
   end
 
   private
@@ -93,73 +78,84 @@ class ShareMessageBuilder
 
   def activity_phrase
     if walking?
-      "walked #{amount} #{unit.presence || "steps"}"
+      I18n.t("share.walked", amount: amount, unit: unit.presence || I18n.t("share.default_unit_steps"))
     elsif reading?
-      "read #{amount} #{unit.presence || "pages"}#{reading_subject}"
+      I18n.t(
+        "share.read",
+        amount: amount,
+        unit: unit.presence || I18n.t("share.default_unit_pages"),
+        subject: reading_subject
+      )
     elsif strength?
-      "completed #{amount} #{unit.presence || "reps"}"
+      I18n.t("share.completed", amount: amount, unit: unit.presence || I18n.t("share.default_unit_reps"))
     elsif studying?
-      "studied #{study_subject} for #{amount} #{unit.presence || "minutes"}"
+      I18n.t(
+        "share.studied",
+        subject: study_subject,
+        amount: amount,
+        unit: unit.presence || I18n.t("share.default_unit_minutes")
+      )
     elsif hydration?
-      "drank #{amount} #{unit.presence || "glasses"}"
+      I18n.t("share.drank", amount: amount, unit: unit.presence || I18n.t("share.default_unit_glasses"))
     elsif sleep?
-      "slept #{amount} #{unit.presence || "hours"}"
+      I18n.t("share.slept", amount: amount, unit: unit.presence || I18n.t("share.default_unit_hours"))
     else
-      "logged #{amount} #{unit} for #{name}"
+      I18n.t("share.logged", amount: amount, unit: unit, name: name)
     end
   end
 
   def reading_subject
     subject = name
-      .gsub(/\b(pages?|reading|read|books?)\b/i, "")
+      .gsub(/\b(pages?|reading|read|books?|seiten?|páginas?|paginas?|lappus.+|grāmat.+)\b/i, "")
       .gsub(/\A[[:space:][:punct:]]+|[[:space:][:punct:]]+\z/, "")
       .presence
-    subject ? " of #{subject}" : ""
+    subject ? I18n.t("share.read_subject", subject: subject) : ""
   end
 
   def study_subject
     cleaned = name
-      .gsub(/\b(study|studied|learning|practice|minutes?|mins?)\b/i, "")
+      .gsub(/\b(study|studied|learning|practice|minutes?|mins?|lernen|estudiar)\b/i, "")
       .gsub(/\A[[:space:][:punct:]]+|[[:space:][:punct:]]+\z/, "")
       .presence
     cleaned || name
   end
 
   def walking?
-    unit_key.match?(/step/) || name_key.match?(/walk|step|run|jog/)
+    unit_key.match?(/step|schritt|paso|soļ/) || name_key.match?(/walk|step|run|jog|gehen|caminar/)
   end
 
   def reading?
-    unit_key.match?(/page|chapter|book/) || name_key.match?(/read|page|book/)
+    unit_key.match?(/page|chapter|book|seite|página|pagina|lappus/) || name_key.match?(/read|page|book|lesen|leer/)
   end
 
   def strength?
-    unit_key.match?(/rep|push|pull|squat/) || name_key.match?(/push.?up|pull.?up|squat|workout|gym|lift/)
+    unit_key.match?(/rep|push|pull|squat|wiederholung/) || name_key.match?(/push.?up|pull.?up|squat|workout|gym|lift|liegestütz|flexiones/)
   end
 
   def german?
-    name_key.include?("german")
+    name_key.match?(/german|deutsch|vācu/)
   end
 
   def studying?
     return true if LANGUAGE_HINTS.match?(name_key)
 
-    unit_key.match?(/min|hour/) && name_key.match?(/study|learn|lesson/)
+    unit_key.match?(/min|hour|stunde|hora/) && name_key.match?(/study|learn|lesson|lernen|estudiar/)
   end
 
   def hydration?
-    unit_key.match?(/glass|liter|litre|ml|oz/) || name_key.match?(/water|hydrat/)
+    unit_key.match?(/glass|liter|litre|ml|oz|glas|vaso/) || name_key.match?(/water|hydrat|wasser|agua|ūdens/)
   end
 
   def sleep?
-    name_key.match?(/sleep/) || (unit_key.match?(/hour/) && name_key.match?(/sleep|rest|bed/))
+    name_key.match?(/sleep|schlaf|sueño|sueno|miegs/) || (unit_key.match?(/hour|stunde|hora/) && name_key.match?(/sleep|rest|bed|schlaf|sueño/))
   end
 
   def nutrition?
-    name_key.match?(/calorie|meal|nutrition|veg|fruit/)
+    name_key.match?(/calorie|meal|nutrition|veg|fruit|kalorien|comida/)
   end
 
   def pick(list)
+    list = Array(list)
     list[stable_index % list.length]
   end
 

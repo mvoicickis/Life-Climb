@@ -1,0 +1,21 @@
+<%# locals: variant: :compact | :menu | :auth %>
+<% variant ||= :compact %>
+<% if variant == :menu %>
+  <% locale_options.each do |locale| %>
+    <%= button_to "#{locale[:flag]} #{t("languages.#{locale[:code]}")}",
+        locale_path(locale: locale[:code]),
+        method: :patch,
+        class: "app-menu-item w-full text-left",
+        role: "menuitem" %>
+  <% end %>
+<% else %>
+  <div class="landing-lang <%= 'landing-lang--light' if variant == :auth %>" role="group" aria-label="<%= t('nav.language') %>">
+    <% locale_options.each do |locale| %>
+      <%= button_to locale[:short],
+          locale_path(locale: locale[:code]),
+          method: :patch,
+          class: "landing-lang-btn #{I18n.locale == locale[:code] ? 'is-active' : ''}",
+          form: { class: "inline" } %>
+    <% end %>
+  </div>
+<% end %>

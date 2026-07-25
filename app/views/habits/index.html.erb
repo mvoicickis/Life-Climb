@@ -1,12 +1,12 @@
-<% content_for :title, "My stats" %>
+<% content_for :title, t("habits.index_title") %>
 
 <div class="mx-auto max-w-3xl">
   <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
     <div>
-      <h1 class="text-4xl font-black tracking-tight text-slate-900">My stats</h1>
-      <p class="mt-2 text-lg font-semibold text-slate-600">The daily actions that shape who you become.</p>
+      <h1 class="text-4xl font-black tracking-tight text-slate-900"><%= t("habits.index_title") %></h1>
+      <p class="mt-2 text-lg font-semibold text-slate-600"><%= t("habits.index_subtitle") %></p>
     </div>
-    <%= link_to "+ Add", new_habit_path,
+    <%= link_to t("dashboard.add"), new_habit_path,
         class: "rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-black text-white shadow-sm hover:bg-emerald-600" %>
   </div>
 
@@ -19,22 +19,22 @@
             <div class="flex flex-wrap items-center gap-2">
               <%= link_to habit.name, habit_path(habit), class: "truncate text-xl font-black text-slate-900 hover:text-emerald-700" %>
               <% unless habit.active? %>
-                <span class="rounded-xl bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">Off</span>
+                <span class="rounded-xl bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600"><%= t("habits.off") %></span>
               <% end %>
             </div>
             <p class="mt-1 text-sm font-semibold text-slate-500">
               <%= habit.unit %> · <%= habit.evaluation_label %>
-              <% if habit.show_on_home? %> · On Today<% end %>
+              <% if habit.show_on_home? %> · <%= t("habits.on_today") %><% end %>
             </p>
             <p class="mt-2 text-sm font-bold <%= status_tone(status) == :good ? 'text-emerald-700' : status_tone(status) == :same ? 'text-amber-700' : 'text-rose-700' %>">
               <%= status_full_text(status) %>
             </p>
           </div>
           <div class="flex shrink-0 gap-2">
-            <%= link_to "Edit", edit_habit_path(habit),
+            <%= link_to t("habits.edit"), edit_habit_path(habit),
                 class: "rounded-xl border-2 border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50" %>
-            <%= button_to "Delete", habit_path(habit), method: :delete,
-                data: { turbo_confirm: "Remove this?" },
+            <%= button_to t("habits.delete"), habit_path(habit), method: :delete,
+                data: { turbo_confirm: t("habits.delete_confirm") },
                 class: "cursor-pointer rounded-xl border-2 border-rose-200 px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50" %>
           </div>
         </div>
@@ -42,11 +42,11 @@
     </div>
   <% else %>
     <div class="rounded-3xl border-2 border-dashed border-slate-300 bg-white/90 p-12 text-center">
-      <p class="text-2xl font-black text-slate-900">Nothing yet</p>
+      <p class="text-2xl font-black text-slate-900"><%= t("habits.empty_title") %></p>
       <p class="mx-auto mt-3 max-w-sm text-base font-semibold text-slate-600">
-        Add something that matters — then see if today beats yesterday, or stays in a healthy range.
+        <%= t("habits.empty_body") %>
       </p>
-      <%= link_to "Add your first thing", new_habit_path, class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white" %>
+      <%= link_to t("habits.empty_cta"), new_habit_path, class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white" %>
     </div>
   <% end %>
 </div>
