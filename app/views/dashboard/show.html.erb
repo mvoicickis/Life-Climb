@@ -1,52 +1,63 @@
 <% content_for :title, t("dashboard.title") %>
 
-<div class="today-page today-fade mx-auto flex max-w-6xl flex-col gap-6"
-     data-controller="share"
+<div class="today-page today-fade mx-auto flex max-w-6xl flex-col"
+     data-controller="share reveal"
      data-share-url-value="<%= share_landing_url %>"
-     data-share-title-value="LifePoints">
+     data-share-title-value="LifePoints"
+     data-reveal-more-value="<%= t('dashboard.view_all_habits', count: @more_trackers.size) %>"
+     data-reveal-less-value="<%= t('dashboard.show_fewer_habits') %>">
 
-  <header class="today-hero flex flex-wrap items-start justify-between gap-4">
+  <header class="today-hero">
     <div class="min-w-0">
       <p class="today-kicker"><%= t("dashboard.kicker") %></p>
       <h1 class="today-title">
         <%= t("dashboard.title") %>
         <span class="today-sun" aria-hidden="true">☀</span>
       </h1>
-      <p class="today-subtitle"><%= t("dashboard.subtitle") %></p>
-      <p class="today-unique"><%= t("dashboard.unique_note") %></p>
+      <p class="today-subtitle today-desktop-only"><%= t("dashboard.subtitle") %></p>
+      <p class="today-unique today-desktop-only"><%= t("dashboard.unique_note") %></p>
     </div>
-    <div class="flex flex-wrap items-center gap-3">
-      <aside class="today-quote" aria-label="<%= t('dashboard.quote') %>">
-        <span aria-hidden="true">🌿</span>
-        <p><%= t("dashboard.quote") %></p>
-      </aside>
-      <%= link_to t("dashboard.add"), new_habit_path, class: "today-add" %>
-    </div>
+    <aside class="today-quote today-desktop-only" aria-label="<%= @daily_quote %>">
+      <span aria-hidden="true">🌿</span>
+      <p><%= @daily_quote %></p>
+    </aside>
   </header>
 
   <% if @trackers.any? %>
-    <div class="today-summary" role="group" aria-label="<%= t('dashboard.title') %> summary">
-      <div class="today-chip today-chip--good">
-        <p class="today-chip-value"><%= @good %></p>
-        <p class="today-chip-label"><%= t("dashboard.summary.better") %></p>
-        <p class="today-chip-note"><%= t("dashboard.summary.better_note") %></p>
+    <div class="today-summary-strip" role="group" aria-label="<%= t('dashboard.title') %> summary">
+      <div class="today-stat today-stat--good">
+        <span aria-hidden="true">🟢</span>
+        <span class="today-stat-label"><%= t("dashboard.summary.better") %></span>
+        <strong class="today-stat-value"><%= @good %></strong>
       </div>
-      <div class="today-chip today-chip--same">
-        <p class="today-chip-value"><%= @same %></p>
-        <p class="today-chip-label"><%= t("dashboard.summary.same") %></p>
-        <p class="today-chip-note"><%= t("dashboard.summary.same_note") %></p>
+      <div class="today-stat today-stat--same">
+        <span aria-hidden="true">🟡</span>
+        <span class="today-stat-label"><%= t("dashboard.summary.same") %></span>
+        <strong class="today-stat-value"><%= @same %></strong>
       </div>
-      <div class="today-chip today-chip--off">
-        <p class="today-chip-value"><%= @off %></p>
-        <p class="today-chip-label"><%= t("dashboard.summary.needs_work") %></p>
-        <p class="today-chip-note"><%= t("dashboard.summary.needs_work_note") %></p>
+      <div class="today-stat today-stat--off">
+        <span aria-hidden="true">🔴</span>
+        <span class="today-stat-label"><%= t("dashboard.summary.needs_work") %></span>
+        <strong class="today-stat-value"><%= @off %></strong>
       </div>
-      <div class="today-chip today-chip--streak">
-        <p class="today-chip-value"><%= @streak %></p>
-        <p class="today-chip-label"><%= t("dashboard.summary.streak") %></p>
-        <p class="today-chip-note"><%= @streak.positive? ? t("dashboard.summary.streak_hot") : t("dashboard.summary.streak_start") %></p>
+      <div class="today-stat today-stat--streak">
+        <span aria-hidden="true">🔥</span>
+        <span class="today-stat-label"><%= t("dashboard.summary.streak") %></span>
+        <strong class="today-stat-value"><%= @streak %></strong>
       </div>
     </div>
+
+    <section class="today-panel today-focus" aria-label="<%= t('dashboard.focus.title') %>">
+      <h2 class="today-panel-title"><%= t("dashboard.focus.title") %></h2>
+      <ul class="today-focus-list">
+        <% @focus_tips.each do |tip| %>
+          <li>
+            <span aria-hidden="true">➜</span>
+            <p><%= tip %></p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
 
     <% if @celebrations.any? %>
       <section class="today-celebrate" aria-live="polite">
@@ -74,33 +85,30 @@
       </section>
     <% end %>
 
-    <section class="home-board" style="<%= home_grid_style(@grid_count) %>" aria-label="<%= t('dashboard.title') %>">
-      <% @trackers.each do |tracker| %>
-        <% status = tracker.status %>
-        <% progress = tracker.goal_progress_percent %>
-        <%= link_to habit_path(tracker), class: "home-card #{vs_yesterday_classes(status)} today-card-link", aria: { label: "#{tracker.name}, #{status_full_text(status)}" } do %>
-          <div class="flex items-start justify-between gap-2">
-            <div class="flex min-w-0 items-center gap-2.5">
-              <span class="today-card-icon" aria-hidden="true"><%= stat_icon_for(tracker) %></span>
-              <div class="min-w-0">
-                <p class="home-card-name truncate font-black"><%= tracker.name %></p>
-                <p class="today-card-unit"><%= tracker.unit %></p>
-              </div>
-            </div>
-            <%= render "shared/status_badge", status: status %>
-          </div>
+    <section class="today-habits" aria-label="<%= t('dashboard.priority_habits') %>">
+      <div class="today-habits-head">
+        <h2 class="today-panel-title"><%= t("dashboard.priority_habits") %></h2>
+        <span class="today-habits-count"><%= @priority_trackers.size %>/<%= @trackers.size %></span>
+      </div>
 
-          <div class="mt-auto pt-5">
-            <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
-            <p class="today-delta mt-2"><%= amount_delta_label(tracker) %></p>
+      <div class="home-board home-board--priority">
+        <%= render partial: "dashboard/habit_card", collection: @priority_trackers, as: :tracker %>
+      </div>
 
-            <% if tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
-              <div class="today-mini-bar mt-3" aria-hidden="true">
-                <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
-              </div>
-            <% end %>
+      <% if @more_trackers.any? %>
+        <div data-reveal-target="extra" class="today-habits-extra" hidden>
+          <div class="home-board home-board--priority home-board--extra">
+            <%= render partial: "dashboard/habit_card", collection: @more_trackers, as: :tracker %>
           </div>
-        <% end %>
+        </div>
+
+        <button type="button"
+                class="today-reveal-btn"
+                data-reveal-target="button"
+                data-action="click->reveal#toggle"
+                aria-expanded="false">
+          <%= t("dashboard.view_all_habits", count: @more_trackers.size) %>
+        </button>
       <% end %>
     </section>
 
@@ -114,7 +122,7 @@
         </div>
 
         <div class="week-line-wrap">
-            <svg data-week-chart-target="svg" class="week-line-svg" role="img" aria-label="<%= t('dashboard.weekly.aria') %>">
+          <svg data-week-chart-target="svg" class="week-line-svg" role="img" aria-label="<%= t('dashboard.weekly.aria') %>">
             <defs>
               <linearGradient id="weekArea" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
@@ -137,26 +145,18 @@
           <% end %>
         </div>
       </div>
-
-      <div class="today-panel today-focus">
-        <h2 class="today-panel-title"><%= t("dashboard.focus.title") %></h2>
-        <ul class="today-focus-list">
-          <% @focus_tips.each do |tip| %>
-            <li>
-              <span aria-hidden="true">➜</span>
-              <p><%= tip %></p>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-
-      <div class="today-panel today-banner" style="background-image: url('/lifepoints-landing-hero.jpg');">
-        <div class="today-banner-veil">
-          <p class="today-banner-kicker"><%= t("dashboard.banner.kicker") %></p>
-          <p class="today-banner-copy"><%= t("dashboard.banner.copy") %></p>
-        </div>
-      </div>
     </section>
+
+    <div class="today-panel today-banner" style="background-image: url('/lifepoints-landing-hero.jpg');">
+      <div class="today-banner-veil">
+        <p class="today-banner-kicker"><%= t("dashboard.banner.kicker") %></p>
+        <p class="today-banner-copy"><%= @daily_quote %></p>
+      </div>
+    </div>
+
+    <%= link_to new_habit_path, class: "today-fab", aria: { label: t("dashboard.add") } do %>
+      <span aria-hidden="true">+</span>
+    <% end %>
   <% else %>
     <div class="today-empty">
       <p class="text-2xl font-black tracking-tight text-white"><%= t("dashboard.empty_title") %></p>

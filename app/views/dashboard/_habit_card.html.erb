@@ -1,0 +1,25 @@
+<% status = tracker.status %>
+<% progress = tracker.goal_progress_percent %>
+<%= link_to habit_path(tracker), class: "home-card home-card--compact #{vs_yesterday_classes(status)} today-card-link", aria: { label: "#{tracker.name}, #{status_full_text(status)}" } do %>
+  <div class="flex items-start justify-between gap-2">
+    <div class="flex min-w-0 items-center gap-2.5">
+      <span class="today-card-icon" aria-hidden="true"><%= stat_icon_for(tracker) %></span>
+      <div class="min-w-0">
+        <p class="home-card-name truncate font-black"><%= tracker.name %></p>
+        <p class="today-card-unit truncate"><%= tracker.unit %></p>
+      </div>
+    </div>
+    <%= render "shared/status_badge", status: status %>
+  </div>
+
+  <div class="today-card-metrics">
+    <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
+    <p class="today-delta"><%= amount_delta_label(tracker) %></p>
+
+    <% if tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
+      <div class="today-mini-bar" aria-hidden="true">
+        <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

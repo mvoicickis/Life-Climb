@@ -45,8 +45,13 @@ class DashboardInsights
   end
 
   def focus_tips
-    tips = @trackers.filter_map { |tracker| tip_for(tracker) }
+    tips = prioritized_trackers.filter_map { |tracker| tip_for(tracker) }
     tips.first(3).presence || default_tips
+  end
+
+  # Needs-work first, then same, then good — largest gap wins within a status.
+  def prioritized_trackers
+    @trackers.sort_by { |tracker| [ status_rank(tracker.status), -attention_gap(tracker), tracker.position ] }
   end
 
   def celebrations
@@ -91,6 +96,33 @@ class DashboardInsights
   end
 
   private
+
+  def status_rank(status)
+    case status
+    when :worse then 0
+    when :too_low, :too_high then 1
+    when :same then 2
+    when :better, :perfect then 3
+    else 4
+    end
+  end
+
+  def attention_gap(tracker)
+    case tracker.status
+    when :worse
+      [ tracker.yesterday_amount - tracker.today_amount, 0 ].max.to_f
+    when :too_low
+      return 0 if tracker.min_value.blank?
+
+      [ tracker.min_value - tracker.today_amount, 0 ].max.to_f
+    when :too_high
+      return 0 if tracker.max_value.blank?
+
+      [ tracker.today_amount - tracker.max_value, 0 ].max.to_f
+    else
+      0
+    end
+  end
 
   def logged_on?(date)
     @user.daily_logs.exists?(logged_on: date)
