@@ -10,6 +10,11 @@ Rails.application.routes.draw do
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
 
   resource :onboarding, only: %i[ show update ], controller: "onboarding"
+  resources :life_areas, only: %i[ show update ] do
+    member do
+      post :focus
+    end
+  end
   resource :building, only: :show, controller: "buildings"
   resources :buildings, only: [] do
     member do

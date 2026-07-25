@@ -7,11 +7,22 @@ class DashboardController < ApplicationController
     end
 
     @dream = @building.dream
+    @dream.ensure_life_areas!
+    @life_areas = @dream.life_areas.ordered
+    @life_area = @building.goal.life_area || current_user.focus_life_area
     @goal = @building.goal
     @step = @building.step
     @actions = @building.today_actions.for_day(Date.current).ordered
     @rhythms = current_user.habits.active.on_home.ordered.limit(3)
     @latest_finished = current_user.finished_products.newest_first.first
     @life_points = current_user.life_points
+    @alive_level = current_user.alive_level
+    @direction = DirectionSignal.new(
+      user: current_user,
+      building: @building,
+      actions: @actions,
+      life_area: @life_area
+    )
+    @day_clear = @actions.any? && @actions.all?(&:completed?)
   end
 end

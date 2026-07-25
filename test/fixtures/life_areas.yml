@@ -1,0 +1,110 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one_self:
+  user: one
+  dream: one
+  key: self
+  number: 1
+  position: 0
+  ambition: Strong body and clear mind
+  meta: {}
+
+one_creativity:
+  user: one
+  dream: one
+  key: creativity
+  number: 2
+  position: 1
+  ambition: A warm family life
+  meta:
+    has_partner: true
+
+one_group:
+  user: one
+  dream: one
+  key: group
+  number: 3
+  position: 2
+  ambition: Build LifePoints with a great team
+  meta: {}
+
+one_species:
+  user: one
+  dream: one
+  key: species
+  number: 4
+  position: 3
+  ambition:
+  meta: {}
+
+one_life_forms:
+  user: one
+  dream: one
+  key: life_forms
+  number: 5
+  position: 4
+  ambition:
+  meta: {}
+
+one_physical:
+  user: one
+  dream: one
+  key: physical_universe
+  number: 6
+  position: 5
+  ambition:
+  meta: {}
+
+two_self:
+  user: two
+  dream: two
+  key: self
+  number: 1
+  position: 0
+  ambition: Healthy creative energy
+  meta: {}
+
+two_creativity:
+  user: two
+  dream: two
+  key: creativity
+  number: 2
+  position: 1
+  ambition:
+  meta: {}
+
+two_group:
+  user: two
+  dream: two
+  key: group
+  number: 3
+  position: 2
+  ambition: Share my work with a circle of makers
+  meta: {}
+
+two_species:
+  user: two
+  dream: two
+  key: species
+  number: 4
+  position: 3
+  ambition:
+  meta: {}
+
+two_life_forms:
+  user: two
+  dream: two
+  key: life_forms
+  number: 5
+  position: 4
+  ambition:
+  meta: {}
+
+two_physical:
+  user: two
+  dream: two
+  key: physical_universe
+  number: 6
+  position: 5
+  ambition:
+  meta: {}

@@ -80,11 +80,12 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Why today matters|Work with skill and freedom/, response.body)
+    assert_match(/Are you going the right way|Your dream life/, response.body)
     assert_match(/Become a Ruby on Rails developer/, response.body)
-    assert_match(/Today’s actions|Finish authentication/, response.body)
+    assert_match(/Today’s moves|Finish authentication/, response.body)
     assert_match(/Talk to Coach|Stuck\?/, response.body)
     assert_match(/studio-today/, response.body)
+    assert_select ".person-map"
     refute_match(/today-fab/, response.body)
     refute_match(/today-summary-strip/, response.body)
   end
@@ -97,7 +98,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Šodien|Today/, response.body)
-    refute_match(/>\s*(Home|Sākums|Dashboard|Panelis)\s*</, response.body)
+    refute_match(/studio-nav-link[^>]*>\s*(Home|Sākums|Dashboard|Panelis)\s*</, response.body)
   end
 
   test "can switch locale to german" do
@@ -106,7 +107,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Heute/, response.body)
-    assert_match(/Building|Bauen|Why today matters/, response.body)
+    assert_match(/Building|Bauen|Are you going the right way|Your dream life/, response.body)
   end
 
   test "can switch locale to spanish" do
@@ -115,6 +116,6 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Hoy/, response.body)
-    assert_match(/Building|Proyecto|Why today matters/, response.body)
+    assert_match(/Building|Proyecto|Are you going the right way|Your dream life/, response.body)
   end
 end

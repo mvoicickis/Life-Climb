@@ -7,10 +7,11 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get dashboard_path
     assert_response :success
-    assert_match(/Work with skill and freedom/, response.body)
+    assert_match(/Your dream life/, response.body)
     assert_match(/Become a Ruby on Rails developer/, response.body)
     assert_match(/LifePoints/, response.body)
     assert_match(/Finish authentication/, response.body)
+    assert_select ".person-map"
   end
 
   test "completing today action earns life points" do

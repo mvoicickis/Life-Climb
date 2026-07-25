@@ -1,0 +1,20 @@
+<nav class="person-map" aria-label="<%= t('life_parts.map_label') %>">
+  <div class="person-map__figure" aria-hidden="true">
+    <div class="person-map__body">
+      <% life_areas.each do |area| %>
+        <%
+          state = []
+          state << "is-filled" if area.filled?
+          state << "is-goal" if area.active_goal
+          state << "is-focus" if focus_id.present? && area.id == focus_id
+        %>
+        <%= link_to life_area_path(area),
+              class: "person-map__part person-map__part--#{area.key} #{state.join(' ')}",
+              title: area.label do %>
+          <span class="person-map__dot"></span>
+          <span class="person-map__name"><%= area.short_label %></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</nav>
