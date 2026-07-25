@@ -16,29 +16,37 @@
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.want") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.want_hint") %></p>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.journey") %></label>
+      <%= f.text_field :title, required: true, class: "lp-input w-full",
+            placeholder: t("coach.journey_placeholder") %>
+    </div>
+
+    <div class="lp-glass space-y-3 p-4">
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.vision") %></label>
       <%= f.text_area :ideal_scene, rows: 3, required: true, class: "lp-input w-full",
             placeholder: t("journeys.ideal_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.now") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.now_hint") %></p>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.reality") %></label>
       <%= f.text_area :current_reality, rows: 3, required: true, class: "lp-input w-full",
             placeholder: t("journeys.present_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.next") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.next_hint") %></p>
-      <%= f.text_field :next_win, required: true, class: "lp-input w-full",
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.progress") %></label>
+      <%= f.number_field :closer_percent, min: 0, max: 100, value: 5, class: "lp-input w-full" %>
+    </div>
+
+    <div class="lp-glass space-y-3 p-4">
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.milestone") %></label>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.milestone_hint") %></p>
+      <%= f.text_field :next_win, class: "lp-input w-full",
             placeholder: t("coach.next_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.today") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.today_hint") %></p>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.mission") %></label>
       <%= text_field_tag "life_journey[today_mission]", nil, required: true, class: "lp-input w-full",
             placeholder: t("coach.today_placeholder") %>
     </div>

@@ -12,12 +12,12 @@
   </header>
 
   <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.want_label") %></h2>
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.vision") %></h2>
     <p class="text-[var(--lp-ink)]"><%= @journey.ideal_scene %></p>
   </section>
 
   <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.now_label") %></h2>
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.reality") %></h2>
     <p class="text-[var(--lp-ink)]"><%= @journey.current_reality %></p>
   </section>
 
@@ -29,7 +29,7 @@
   <% end %>
 
   <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today") %></h2>
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today_mission") %></h2>
     <% if today_mission %>
       <p class="text-[var(--lp-ink)]"><%= today_mission.title %></p>
       <% if today_mission.completed? %>

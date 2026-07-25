@@ -20,10 +20,12 @@ class DashboardController < ApplicationController
 
     @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                @journey.missions.for_day(Date.current).primary.order(:id).first
+    @life_areas = current_user.selected_life_areas
     @life_points = current_user.life_points
     @lp_today = current_user.ledger_points_today
     @alive_level = current_user.alive_level
     @gap = @journey.gap_percent.to_f.round
+    @closer = @journey.closer_percent.round
     @gap_delta = @journey.gap_delta_vs_yesterday
     render "dashboard/show_v2"
   end

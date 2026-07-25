@@ -1,7 +1,8 @@
 <%#
   One question · one answer · one CTA.
-  locals: form_url, scope (onboarding|climb), field, value, label, hint, placeholder,
-          cta, hidden (hash), input (:text|:textarea), rows
+  locals: form_url, scope, field, value, label, hint, placeholder, cta, hidden,
+          input (:text|:textarea|:range), rows, required (default true),
+          skip_url (optional), skip_label, min, max, range_suffix
 %>
 <%
   scope = local_assigns.fetch(:scope, "onboarding")
@@ -10,6 +11,9 @@
   rows = local_assigns.fetch(:rows, 4)
   value = local_assigns[:value].to_s
   hidden = local_assigns.fetch(:hidden, {})
+  required = local_assigns.fetch(:required, true)
+  min = local_assigns.fetch(:min, 0)
+  max = local_assigns.fetch(:max, 100)
 %>
 
 <header>
@@ -29,13 +33,32 @@
 
   <div class="lp-glass space-y-2 p-4">
     <% if input == :text %>
-      <input type="text" name="<%= scope %>[<%= field %>]" value="<%= value %>" required
+      <input type="text" name="<%= scope %>[<%= field %>]" value="<%= value %>"
+        <%= "required" if required %>
         class="lp-input w-full" placeholder="<%= placeholder %>" autocomplete="off" />
+    <% elsif input == :range %>
+      <% range_value = value.presence || "5" %>
+      <div class="flex items-center justify-between gap-3">
+        <span class="text-sm text-[var(--lp-muted)]"><%= min %>%</span>
+        <output id="<%= scope %>_<%= field %>_out" class="text-3xl font-semibold text-[var(--lp-ink)]"><%= range_value %>%</output>
+        <span class="text-sm text-[var(--lp-muted)]"><%= max %>%</span>
+      </div>
+      <input type="range" name="<%= scope %>[<%= field %>]" min="<%= min %>" max="<%= max %>" step="1"
+        value="<%= range_value %>" class="mt-3 w-full"
+        oninput="document.getElementById('<%= scope %>_<%= field %>_out').textContent = this.value + '%'" />
     <% else %>
-      <textarea name="<%= scope %>[<%= field %>]" rows="<%= rows %>" required
+      <textarea name="<%= scope %>[<%= field %>]" rows="<%= rows %>" <%= "required" if required %>
         class="lp-input w-full" placeholder="<%= placeholder %>"><%= value %></textarea>
     <% end %>
   </div>
 
   <%= submit_tag cta, class: "lp-cta w-full" %>
+<% end %>
+
+<% if local_assigns[:skip_url].present? %>
+  <%= button_to local_assigns.fetch(:skip_label, t("coach.skip")),
+        skip_url,
+        method: :patch,
+        params: { skip: 1 },
+        class: "mt-3 w-full text-center text-sm font-bold text-[var(--lp-muted)]" %>
 <% end %>

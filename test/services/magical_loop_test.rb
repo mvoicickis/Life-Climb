@@ -12,12 +12,12 @@ class MagicalLoopTest < ActiveSupport::TestCase
     Onboarding::Run.call(
       user: user,
       area_key: "career",
-      title: "Senior Rails developer",
-      ideal_scene: "I ship products people love as a senior Rails engineer.",
-      current_reality: "I am learning Rails and building small apps.",
+      title: "Become a Senior Rails Developer",
+      ideal_scene: "Working as a Rails developer building products I love.",
+      current_reality: "Learning Rails and building personal projects.",
       next_win: "Finish Rails Fundamentals",
-      today_mission: "Read chapter 5",
-      closer_percent: 30
+      today_mission: "Read 20 pages",
+      closer_percent: 5
     )
 
     user.reload
@@ -26,12 +26,14 @@ class MagicalLoopTest < ActiveSupport::TestCase
     journey = user.primary_focused_journey
     assert journey
     assert_equal "career", journey.life_area.key
+    assert_equal "Become a Senior Rails Developer", journey.title
     assert_equal "Finish Rails Fundamentals", journey.next_win
-    assert_in_delta 70.0, journey.gap_percent.to_f, 0.01
+    assert_in_delta 95.0, journey.gap_percent.to_f, 0.01
+    assert_in_delta 5.0, journey.closer_percent, 0.01
 
     mission = user.missions.for_day(Date.current).primary.first
     assert mission
-    assert_equal "Read chapter 5", mission.title
+    assert_equal "Read 20 pages", mission.title
 
     points_before = user.life_points
     gap_before = journey.gap_percent.to_f
@@ -43,6 +45,23 @@ class MagicalLoopTest < ActiveSupport::TestCase
     assert mission.reload.completed?
     assert_equal points_before + mission.lp_reward, user.life_points
     assert journey.gap_percent.to_f < gap_before
+  end
+
+  test "journey create allows blank milestone" do
+    user = users(:one)
+    LifeAreas::Select.call(user: user, keys: %w[career])
+    area = user.life_areas.v2_selected.first
+    journey = Journeys::Create.call(
+      user: user,
+      life_area: area,
+      title: "Career journey",
+      ideal_scene: "Ideal career",
+      current_reality: "Present career",
+      next_win: nil,
+      closer_percent: 5
+    )
+    assert_nil journey.next_win.presence
+    assert_in_delta 95.0, journey.gap_percent.to_f, 0.01
   end
 
   test "completing a journey awards LP and clears focus" do

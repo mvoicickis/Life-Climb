@@ -17,52 +17,44 @@ Ease and motivation beat clever architecture.
 - Complexity stays inside the system.
 - **One mountain** Focus by default (Focus UI is not on the happy path).
 - **Daily Missions** are one-sitting actions; Life Points come from completing missions.
-- **Next win** (Milestone language) is a multi-day destination on the Journey — never called Project.
-- **Statistics are never configured in planning.** They may emerge later from typed mission templates, not free-text magic.
+- **Milestone** (`next_win`) is optional multi-day step — never called Project.
+- **Statistics are never configured in planning.**
 - Rails conventions first; one feature at a time; MVP before optimization.
-- Decision filter: closer to Ideal Scene? reduces complexity? improves motivation?
 
 ## Domain ownership
 
 ```text
-Life Area  →  Life Journey (+ next_win)  →  Daily Mission
+Life Area  →  Life Journey (+ optional next_win)  →  Daily Mission
 ```
 
-Users feel: Area · Journey · Next win · Today. Hierarchy is invisible on Home.
+## MVP coach flow
 
-## Coach planning (want → now → next → today)
+1. Focus — which area first? (exactly one)
+2. Journey — what do you want to achieve? → `title`
+3. Vision — what does success look like? → `ideal_scene`
+4. Reality — where are you today? → `current_reality`
+5. Progress — how close? (default 5%) → `gap_percent = 100 - closer`
+6. Milestone — next major step? (**optional**) → `next_win`
+7. Mission — one thing today → Mission title
+8. Dashboard — Area · Journey · Today’s Mission · Progress % · Life Tree
 
-1. Pick one Life Area
-2. What do you want? → Journey Ideal / title
-3. Where are you now? → Present
-4. What's the next big win? → `life_journeys.next_win`
-5. What can you finish in one sitting? → today's Mission title
-6. Home shows that Mission + Done
-
-No blocker question required. No Project/Plan models. No stats wizard.
+No Project/Plan models. No stats wizard.
 
 ## One mountain at a time
 
-- Onboarding picks **exactly one** Life Area, then the four coach beats.
+- Onboarding picks **exactly one** Life Area, then the coach beats above.
 - Default Focus is **one** Journey (set automatically).
 - Completing a Journey is **user-declared** → LP + next mountain (same Area or new Area).
-- Areas accumulate over years; Journeys come and go.
 
 ## MVP schema (lean)
 
 Persisted now: `users` (+ `planning_version`), selected `life_areas`, `life_journeys` (Ideal/Present/`next_win`), Focus via `focus_position`, `missions`, LP ledger, `gap_snapshots`.
 
-**Not** in MVP: Plan/Program/Project/Purpose/Policy/Statistic/WeeklyReview/tree_progress tables, IdealScene 1:1 tables, generate-on-GET, habit LP for `planning_version = 2`, Focus/Life Map on the planning happy path.
+**Not** in MVP: Plan/Program/Project/Purpose/Policy/Statistic tables, generate-on-GET, habit LP for `planning_version = 2`.
 
 ## Strangler
 
 - `planning_version = 1` — legacy Dream → Goal → Building → TodayAction
 - `planning_version = 2` — Area → Journey → Mission loop; sole LP writer is the mission award path
-
-## Extension points (post-MVP)
-
-- Thin `milestones` table if multiple open next-wins need history (still labeled Milestone / next win in UI)
-- Mission templates / tags → emergent statistics (never a planning form)
-- Gap/LP services remain the only writers of those invariants
 
 See also: design system under `docs/design/`.

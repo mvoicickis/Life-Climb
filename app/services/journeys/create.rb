@@ -31,9 +31,9 @@ module Journeys
     def call
       raise Error, "Choose a life area first" unless @life_area
       raise Error, "This area is not yours" unless @life_area.user_id == @user.id
-      raise Error, "Describe the life you want" if @ideal_scene.blank?
+      raise Error, "Name what you want to achieve" if @title.blank? && @ideal_scene.blank?
+      raise Error, "Describe what success looks like" if @ideal_scene.blank?
       raise Error, "Describe where you are today" if @current_reality.blank?
-      raise Error, "Name the next big win" if @next_win.blank?
 
       title = @title.presence || @ideal_scene.truncate(80)
       gap = baseline_gap
@@ -44,7 +44,7 @@ module Journeys
           title: title,
           ideal_scene: @ideal_scene,
           current_reality: @current_reality,
-          next_win: @next_win,
+          next_win: @next_win.presence,
           status: "active",
           gap_percent: gap,
           activated_at: Time.current,
