@@ -1,0 +1,24 @@
+<% content_for :title, t("game_ui.life_title") %>
+<% content_for :lp_game, true %>
+
+<div class="lp-home mx-auto max-w-md space-y-5 px-4 pb-24 pt-5">
+  <header class="space-y-1">
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("game_ui.life_title") %></h1>
+    <p class="text-sm text-[var(--lp-muted)]"><%= t("game_ui.life_subtitle_v2") %></p>
+  </header>
+
+  <%= render "dashboard/gap_progress", gap_percent: @gap %>
+
+  <%= render "dashboard/life_tree",
+        life_areas: @life_areas,
+        focus_id: @focus_area_id,
+        closer_percent: current_user.overall_closer_percent,
+        compact: false %>
+
+  <div class="flex flex-wrap gap-3">
+    <%= link_to t("journeys.add_another"), new_life_journey_path, class: "lp-cta inline-flex" %>
+    <%= link_to t("focus.title"), focus_path, class: "rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
+  </div>
+</div>
+
+<%= render "shared/lp_bottom_nav", active: :life %>

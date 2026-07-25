@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_230000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -81,6 +81,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_210000) do
     t.index ["user_id"], name: "index_finished_products_on_user_id"
   end
 
+  create_table "gap_snapshots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "gap_percent", precision: 5, scale: 2, null: false
+    t.integer "life_journey_id", null: false
+    t.date "recorded_on", null: false
+    t.datetime "updated_at", null: false
+    t.index ["life_journey_id", "recorded_on"], name: "index_gap_snapshots_on_life_journey_id_and_recorded_on", unique: true
+    t.index ["life_journey_id"], name: "index_gap_snapshots_on_life_journey_id"
+  end
+
   create_table "goals", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "dream_id", null: false
@@ -121,18 +131,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_210000) do
     t.text "ambition"
     t.integer "closer_score", default: 1, null: false
     t.datetime "created_at", null: false
-    t.integer "dream_id", null: false
+    t.integer "dream_id"
     t.string "key", null: false
     t.json "meta", default: {}, null: false
     t.integer "number", null: false
     t.integer "position", default: 0, null: false
     t.text "present_scene"
+    t.datetime "selected_at"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["dream_id", "key"], name: "index_life_areas_on_dream_id_and_key", unique: true
     t.index ["dream_id"], name: "index_life_areas_on_dream_id"
+    t.index ["user_id", "key"], name: "index_life_areas_v2_on_user_id_and_key", unique: true, where: "dream_id IS NULL"
     t.index ["user_id", "number"], name: "index_life_areas_on_user_id_and_number"
     t.index ["user_id"], name: "index_life_areas_on_user_id"
+  end
+
+  create_table "life_journeys", force: :cascade do |t|
+    t.datetime "activated_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "current_reality", null: false
+    t.integer "focus_position"
+    t.decimal "gap_percent", precision: 5, scale: 2, default: "70.0", null: false
+    t.text "ideal_scene", null: false
+    t.integer "life_area_id", null: false
+    t.datetime "scenes_revised_at"
+    t.string "status", default: "active", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["life_area_id", "status"], name: "index_life_journeys_on_life_area_id_and_status"
+    t.index ["life_area_id"], name: "index_life_journeys_on_life_area_id"
+    t.index ["user_id", "focus_position"], name: "index_life_journeys_on_user_focus_position", unique: true, where: "focus_position IS NOT NULL"
+    t.index ["user_id", "status"], name: "index_life_journeys_on_user_id_and_status"
+    t.index ["user_id"], name: "index_life_journeys_on_user_id"
   end
 
   create_table "life_point_ledgers", force: :cascade do |t|
@@ -145,6 +178,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_210000) do
     t.integer "user_id", null: false
     t.index ["source_type", "source_id"], name: "index_life_point_ledgers_on_source_type_and_source_id"
     t.index ["user_id"], name: "index_life_point_ledgers_on_user_id"
+  end
+
+  create_table "missions", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "gap_delta_basis_points", default: 80, null: false
+    t.boolean "is_primary", default: false, null: false
+    t.integer "life_journey_id", null: false
+    t.integer "lp_reward", default: 50, null: false
+    t.integer "position", default: 0, null: false
+    t.date "scheduled_on", null: false
+    t.string "source", default: "system", null: false
+    t.string "status", default: "pending", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["life_journey_id", "scheduled_on"], name: "index_missions_on_life_journey_id_and_scheduled_on"
+    t.index ["life_journey_id"], name: "index_missions_on_life_journey_id"
+    t.index ["user_id", "life_journey_id", "scheduled_on", "is_primary"], name: "index_missions_one_primary_per_journey_day", unique: true, where: "is_primary = TRUE AND status != 'replaced'"
+    t.index ["user_id", "scheduled_on"], name: "index_missions_on_user_id_and_scheduled_on"
+    t.index ["user_id"], name: "index_missions_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -193,6 +247,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_210000) do
     t.integer "home_stat_count", default: 6, null: false
     t.datetime "onboarding_completed_at"
     t.string "password_digest", null: false
+    t.integer "planning_version", default: 1, null: false
     t.json "support_milestones_shown", default: [], null: false
     t.boolean "support_prompts_muted", default: false, null: false
     t.integer "total_points", default: 0, null: false
@@ -212,13 +267,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_210000) do
   add_foreign_key "finished_products", "buildings"
   add_foreign_key "finished_products", "goals"
   add_foreign_key "finished_products", "users"
+  add_foreign_key "gap_snapshots", "life_journeys"
   add_foreign_key "goals", "dreams"
   add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
   add_foreign_key "habits", "users"
   add_foreign_key "life_areas", "dreams"
   add_foreign_key "life_areas", "users"
+  add_foreign_key "life_journeys", "life_areas"
+  add_foreign_key "life_journeys", "users"
   add_foreign_key "life_point_ledgers", "users"
+  add_foreign_key "missions", "life_journeys"
+  add_foreign_key "missions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"
   add_foreign_key "steps", "users"

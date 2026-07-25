@@ -1,0 +1,62 @@
+<% content_for :title, t("v2_onboarding.title") %>
+<% content_for :lp_game, true %>
+
+<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+  <% if @step == "areas" %>
+    <header>
+      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("v2_onboarding.areas_title") %></h1>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("v2_onboarding.areas_subtitle") %></p>
+      <p class="mt-1 text-sm text-[var(--lp-lime)]"><%= t("v2_onboarding.areas_soft") %></p>
+    </header>
+
+    <%= form_with url: v2_onboarding_path(step: "areas"), method: :patch, class: "space-y-4" do %>
+      <div class="grid gap-3">
+        <% @catalog.each do |entry| %>
+          <% key = entry[:key] %>
+          <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
+            <%= check_box_tag "onboarding[area_keys][]", key, @selected.include?(key), id: "ob_#{key}", class: "mt-1" %>
+            <span>
+              <span class="block text-lg font-semibold text-[var(--lp-ink)]">
+                <span aria-hidden="true"><%= entry[:emoji] %></span>
+                <%= t("life_area_catalog.#{key}.name") %>
+              </span>
+              <span class="mt-1 block text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{key}.hint") %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+      <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+    <% end %>
+  <% else %>
+    <header>
+      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("v2_onboarding.journey_title") %></h1>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("v2_onboarding.journey_subtitle") %></p>
+    </header>
+
+    <%= form_with url: v2_onboarding_path(step: "journey"), method: :patch, class: "space-y-4" do |f| %>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.ideal") %></label>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.ideal_hint") %></p>
+        <textarea name="onboarding[ideal_scene]" rows="3" required class="lp-input w-full"
+          placeholder="<%= t('journeys.ideal_placeholder') %>"></textarea>
+      </div>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.present") %></label>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.present_hint") %></p>
+        <textarea name="onboarding[current_reality]" rows="3" required class="lp-input w-full"
+          placeholder="<%= t('journeys.present_placeholder') %>"></textarea>
+      </div>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.title_label") %></label>
+        <input type="text" name="onboarding[title]" class="lp-input w-full"
+          placeholder="<%= t('journeys.title_placeholder') %>" />
+      </div>
+      <div class="lp-glass space-y-2 p-4">
+        <label class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.closer") %></label>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.closer_hint") %></p>
+        <input type="number" name="onboarding[closer_percent]" min="0" max="100" value="30" class="lp-input w-full" />
+      </div>
+      <%= submit_tag t("v2_onboarding.start"), class: "lp-cta w-full" %>
+    <% end %>
+  <% end %>
+</div>

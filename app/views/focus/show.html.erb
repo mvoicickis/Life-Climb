@@ -1,0 +1,34 @@
+<% content_for :title, t("focus.title") %>
+<% content_for :lp_game, true %>
+
+<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+  <header>
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("focus.title") %></h1>
+    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("focus.subtitle") %></p>
+  </header>
+
+  <%= form_with url: focus_path, method: :patch, class: "space-y-4" do %>
+    <div class="space-y-3">
+      <% @journeys.each_with_index do |journey, index| %>
+        <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
+          <%= check_box_tag "journey_ids[]", journey.id, @selected_ids.include?(journey.id),
+                id: "journey_#{journey.id}", class: "mt-1" %>
+          <span>
+            <span class="block font-semibold text-[var(--lp-ink)]"><%= journey.title %></span>
+            <span class="mt-1 block text-sm text-[var(--lp-muted)]">
+              <%= journey.life_area.label %> · <%= t("focus.gap_now", gap: journey.gap_percent.to_i) %>
+            </span>
+          </span>
+        </label>
+      <% end %>
+    </div>
+    <p class="text-sm text-[var(--lp-muted)]"><%= t("focus.limit_hint") %></p>
+    <%= submit_tag t("focus.save"), class: "lp-cta w-full" %>
+  <% end %>
+
+  <p class="text-center text-sm">
+    <%= link_to t("journeys.add_another"), new_life_journey_path, class: "font-bold text-[var(--lp-lime)]" %>
+  </p>
+</div>
+
+<%= render "shared/lp_bottom_nav", active: :life %>

@@ -15,9 +15,12 @@ module RequireOnboarding
 
   def redirect_to_onboarding_if_needed
     return unless authenticated?
-    return if %w[onboarding sessions registrations passwords].include?(controller_name)
+    return if %w[onboarding sessions registrations passwords v2_onboardings life_area_selections].include?(controller_name)
     return unless current_user&.needs_onboarding?
 
-    redirect_to onboarding_path
+    if current_user.planning_v2? || current_user.dreams.none?
+      # New users without dreams go to calm v2 onboarding; legacy mid-flow keeps old path.
+      redirect_to(current_user.dreams.any? && !current_user.planning_v2? ? onboarding_path : v2_onboarding_path)
+    end
   end
 end

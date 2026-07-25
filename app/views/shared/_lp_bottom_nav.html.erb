@@ -12,7 +12,9 @@
     <span><%= t("game_ui.nav.life") %></span>
   <% end %>
 
-  <%= link_to dashboard_path(anchor: "add-quest"), class: "lp-fab", aria: { label: t("game_ui.nav.quick_add") } do %>
+  <%= link_to (current_user&.planning_v2? ? focus_path : dashboard_path(anchor: "add-quest")),
+        class: "lp-fab",
+        aria: { label: t("game_ui.nav.quick_add") } do %>
     <span aria-hidden="true">+</span>
   <% end %>
 

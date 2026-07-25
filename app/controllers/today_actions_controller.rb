@@ -20,6 +20,10 @@ class TodayActionsController < ApplicationController
   end
 
   def complete
+    if current_user.planning_v2?
+      redirect_to dashboard_path, alert: t("missions.use_v2_complete") and return
+    end
+
     action = current_user.today_actions.find(params[:id])
     if action.completed?
       redirect_to dashboard_path and return
