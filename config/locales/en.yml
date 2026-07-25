@@ -33,6 +33,7 @@ en:
     add: "Add"
     added: "Added to today's battle plan."
     remove_confirm: "Remove this todo?"
+    waiting_title: "Also waiting today"
   coach:
     journey: "What do you want to achieve?"
     journey_hint: "Name the journey in a short line."

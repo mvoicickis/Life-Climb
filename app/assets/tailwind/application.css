@@ -2416,6 +2416,24 @@
   color: var(--lp-ink);
 }
 
+.lp-aspect-tag.has-open:not(.is-active) {
+  border-color: color-mix(in srgb, var(--lp-lime) 45%, var(--lp-border));
+}
+
+.lp-aspect-badge {
+  display: inline-flex;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--lp-void);
+  background: var(--lp-lime);
+}
+
 .lp-fab {
   width: 3.25rem;
   height: 3.25rem;

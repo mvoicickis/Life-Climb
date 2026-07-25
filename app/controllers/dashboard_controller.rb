@@ -26,6 +26,7 @@ class DashboardController < ApplicationController
                      @journey.life_area.key
     @selected_aspect = LifeArea::HOME_ASPECT_KEYS.include?(default_aspect) ? default_aspect : LifeArea::HOME_ASPECT_KEYS.first
     @daily_todos = current_user.daily_todos.for_day(Date.current).ordered
+    @open_todo_counts = @daily_todos.incomplete.group(:aspect_key).count
     render "dashboard/show_v2"
   end
 

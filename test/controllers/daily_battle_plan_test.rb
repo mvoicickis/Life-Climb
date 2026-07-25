@@ -53,8 +53,8 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     get dashboard_path(aspect: "money")
     assert_match(/Track spending/i, response.body)
-    # Career item is in the DOM but hidden until Career tag is selected
-    assert_match(/data-aspect="career"/, response.body)
+    assert_match(/Also waiting today/i, response.body)
+    assert_match(/lp-aspect-badge/i, response.body)
     assert_match(/Apply to one job/i, response.body)
   end
 end
