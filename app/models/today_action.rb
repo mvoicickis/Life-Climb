@@ -1,8 +1,10 @@
 class TodayAction < ApplicationRecord
+  include TextLimits
+
   belongs_to :user
   belongs_to :building
 
-  validates :title, presence: true
+  validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :scheduled_on, presence: true
 
   scope :for_day, ->(day) { where(scheduled_on: day) }

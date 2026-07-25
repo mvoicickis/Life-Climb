@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include TextLimits
+
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :habits, dependent: :destroy
@@ -18,7 +20,10 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
-  validates :email_address, presence: true, uniqueness: true
+  validates :email_address, presence: true, uniqueness: true,
+            length: { maximum: EMAIL_MAX },
+            format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :password, length: { minimum: PASSWORD_MIN, maximum: PASSWORD_MAX }, if: -> { password.present? }
   validates :home_stat_count, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 1,

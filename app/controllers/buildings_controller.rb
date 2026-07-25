@@ -19,14 +19,18 @@ class BuildingsController < ApplicationController
   def ship
     product = ShipBuilding.new(
       building: @building,
-      title: params[:title].presence,
-      value_summary: params[:value_summary].presence
+      title: ship_params[:title].presence,
+      value_summary: ship_params[:value_summary].presence
     ).call
 
     redirect_to finished_product_path(product), notice: t("buildings.shipped")
   end
 
   private
+
+  def ship_params
+    params.permit(:title, :value_summary)
+  end
 
   def set_building
     @building = current_user.buildings.find(params[:id])

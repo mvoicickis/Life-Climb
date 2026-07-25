@@ -1,29 +1,25 @@
-# Be sure to restart your server when you modify this file.
+# frozen_string_literal: true
 
-# Define an application-wide content security policy.
-# See the Securing Rails Applications Guide for more information:
-# https://guides.rubyonrails.org/security.html#content-security-policy-header
+# Content Security Policy — tighten as needed when adding third-party widgets.
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    policy.default_src :self
+    policy.font_src    :self, :https, :data, "https://fonts.gstatic.com"
+    policy.img_src     :self, :https, :data, :blob
+    policy.object_src  :none
+    policy.script_src  :self, :https
+    policy.style_src   :self, :https, :unsafe_inline, "https://fonts.googleapis.com"
+    policy.connect_src :self, :https
+    policy.frame_ancestors :none
+    policy.base_uri    :self
+    policy.form_action :self, "https://wa.me", "mailto:"
+  end
 
-# Rails.application.configure do
-#   config.content_security_policy do |policy|
-#     policy.default_src :self, :https
-#     policy.font_src    :self, :https, :data
-#     policy.img_src     :self, :https, :data
-#     policy.object_src  :none
-#     policy.script_src  :self, :https
-#     policy.style_src   :self, :https
-#     # Specify URI for violation reports
-#     # policy.report_uri "/csp-violation-report-endpoint"
-#   end
-#
-#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
-#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-#   config.content_security_policy_nonce_directives = %w(script-src style-src)
-#
-#   # Automatically add `nonce` to `javascript_tag`, `javascript_include_tag`, and `stylesheet_link_tag`
-#   # if the corresponding directives are specified in `content_security_policy_nonce_directives`.
-#   # config.content_security_policy_nonce_auto = true
-#
-#   # Report violations without enforcing the policy.
-#   # config.content_security_policy_report_only = true
-# end
+  config.content_security_policy_nonce_generator = ->(request) {
+    request.session.id.to_s.presence || SecureRandom.base64(16)
+  }
+  config.content_security_policy_nonce_directives = %w[script-src]
+
+  # Enforce (not report-only) once importmap/Turbo work with nonces.
+  # Inline styles from Tailwind/utilities still need style-src unsafe_inline for now.
+end

@@ -1,13 +1,21 @@
+if Rails.env.production?
+  raise "Refusing to seed in production without ADMIN_EMAIL and ADMIN_PASSWORD" unless ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
+  raise "ADMIN_PASSWORD must be at least 12 characters" if ENV["ADMIN_PASSWORD"].to_s.length < 12
+end
+
+demo_password = ENV.fetch("DEMO_PASSWORD", "password12345")
+admin_password = ENV.fetch("ADMIN_PASSWORD", "password12345")
+
 demo = User.find_or_initialize_by(email_address: "demo@lifepoints.test")
-demo.password = "password"
-demo.password_confirmation = "password"
+demo.password = demo_password
+demo.password_confirmation = demo_password
 demo.home_stat_count = 6
 demo.admin = false
 demo.save!
 
 admin = User.find_or_initialize_by(email_address: ENV.fetch("ADMIN_EMAIL", "admin@lifepoints.test"))
-admin.password = ENV.fetch("ADMIN_PASSWORD", "password")
-admin.password_confirmation = admin.password
+admin.password = admin_password
+admin.password_confirmation = admin_password
 admin.home_stat_count = 6
 admin.admin = true
 admin.save!
@@ -55,6 +63,7 @@ end
   log.save!
 end
 
-puts "Seeded demo user: demo@lifepoints.test / password"
-puts "Seeded admin: #{admin.email_address} / #{ENV.fetch('ADMIN_PASSWORD', 'password')} → /admin"
+puts "Seeded demo user: demo@lifepoints.test"
+puts "Seeded admin: #{admin.email_address} → /admin"
 puts "On Home: #{demo.habits.active.on_home.ordered.pluck(:name).join(', ')}"
+puts "(Passwords are not printed. Set DEMO_PASSWORD / ADMIN_PASSWORD via env.)"
