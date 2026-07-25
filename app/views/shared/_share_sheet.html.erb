@@ -18,13 +18,13 @@
 
     <div class="share-sheet__header">
       <div>
-        <h2 id="share-sheet-title" class="share-sheet__title">Share your progress</h2>
-        <p class="share-sheet__subtitle">One tap to inspire someone else.</p>
+        <h2 id="share-sheet-title" class="share-sheet__title"><%= t("share.title") %></h2>
+        <p class="share-sheet__subtitle"><%= t("share.subtitle") %></p>
       </div>
       <button type="button"
               class="share-sheet__close"
               data-action="click->share#close"
-              aria-label="Close share dialog">
+              aria-label="<%= t('share.close') %>">
         <span aria-hidden="true">×</span>
       </button>
     </div>
@@ -71,28 +71,28 @@
         <span class="share-sheet__icon share-sheet__icon--email" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>
         </span>
-        <span class="share-sheet__label">Email</span>
+        <span class="share-sheet__label"><%= t("share.email") %></span>
       </button>
 
       <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#copyLink">
         <span class="share-sheet__icon share-sheet__icon--link" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M3.9 12a5 5 0 0 1 5-5h3v2h-3a3 3 0 1 0 0 6h3v2h-3a5 5 0 0 1-5-5zm5 1h6v-2h-6v2zm6.1-6h-3v2h3a3 3 0 1 1 0 6h-3v2h3a5 5 0 0 0 0-10z"/></svg>
         </span>
-        <span class="share-sheet__label">Copy Link</span>
+        <span class="share-sheet__label"><%= t("share.copy_link") %></span>
       </button>
 
       <button type="button" class="share-sheet__item" role="listitem" data-action="click->share#more">
         <span class="share-sheet__icon share-sheet__icon--more" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
         </span>
-        <span class="share-sheet__label">More…</span>
+        <span class="share-sheet__label"><%= t("share.more") %></span>
       </button>
     </div>
 
     <button type="button"
             class="share-sheet__copy-message"
             data-action="click->share#copyMessage">
-      Copy full message
+      <%= t("share.copy_message") %>
     </button>
 
     <div data-share-target="toast" class="share-sheet__toast" hidden role="status" aria-live="polite"></div>

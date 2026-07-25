@@ -585,10 +585,10 @@
     border-radius: 999px;
     background: transparent;
     color: rgba(255, 255, 255, 0.78);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 900;
-    letter-spacing: 0.04em;
-    padding: 0.35rem 0.55rem;
+    letter-spacing: 0.03em;
+    padding: 0.32rem 0.42rem;
     cursor: pointer;
   }
 

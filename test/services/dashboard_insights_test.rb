@@ -33,7 +33,7 @@ class DashboardInsightsTest < ActiveSupport::TestCase
     insights = DashboardInsights.new(@user.reload, trackers: [ @habit ])
     tip = insights.focus_tips.first
     assert_match(/375/, tip)
-    assert_match(/Walk|Noej/i, tip)
+    assert_match(/Walk|Noej|Geh|Camina/i, tip)
   end
 end
 
@@ -44,10 +44,10 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Day streak|Dienu sērija/, response.body)
-    assert_match(/Weekly progress|Nedēļas progress/, response.body)
-    assert_match(/Focus for tomorrow|Fokuss rītdienai/, response.body)
-    assert_match(/Track what matters most|Seko tam, kas tev/, response.body)
+    assert_match(/Day streak|Dienu sērija|Tages-Serie|Racha de días/, response.body)
+    assert_match(/Weekly progress|Nedēļas progress|Wochenfortschritt|Progreso semanal/, response.body)
+    assert_match(/Focus for tomorrow|Fokuss rītdienai|Fokus für morgen|Enfoque para mañana/, response.body)
+    assert_match(/Track what matters most|Seko tam, kas tev|Verfolge, was dir|Sigue lo que más/, response.body)
     assert_match(/week-chart/, response.body)
     refute_match(/>\s*Share\s*</, response.body)
   end
@@ -61,5 +61,23 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/Šodien|Today/, response.body)
     refute_match(/>\s*(Home|Sākums|Dashboard|Panelis)\s*</, response.body)
+  end
+
+  test "can switch locale to german" do
+    sign_in_as users(:one)
+    patch locale_path(locale: :de)
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_match(/Heute/, response.body)
+    assert_match(/Fokus für morgen/, response.body)
+  end
+
+  test "can switch locale to spanish" do
+    sign_in_as users(:one)
+    patch locale_path(locale: :es)
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_match(/Hoy/, response.body)
+    assert_match(/Enfoque para mañana/, response.body)
   end
 end

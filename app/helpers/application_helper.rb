@@ -122,4 +122,13 @@ module ApplicationHelper
     base = "rounded-xl px-2 py-2 md:px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
     active ? "#{base} text-emerald-300 bg-white/5" : "#{base} text-slate-300 hover:bg-white/5 hover:text-white"
   end
+
+  def locale_options
+    [
+      { code: :en, short: "EN", flag: "🇬🇧" },
+      { code: :de, short: "DE", flag: "🇩🇪" },
+      { code: :es, short: "ES", flag: "🇪🇸" },
+      { code: :lv, short: "LV", flag: "🇱🇻" }
+    ]
+  end
 end

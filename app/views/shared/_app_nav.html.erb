@@ -33,8 +33,7 @@
 
           <div class="app-menu-divider" role="separator"></div>
           <p class="app-menu-label"><%= t("nav.language") %></p>
-          <%= button_to "🇬🇧 #{t('languages.en')}", locale_path(locale: :en), method: :patch, class: "app-menu-item w-full text-left", role: "menuitem" %>
-          <%= button_to "🇱🇻 #{t('languages.lv')}", locale_path(locale: :lv), method: :patch, class: "app-menu-item w-full text-left", role: "menuitem" %>
+          <%= render "shared/locale_switcher", variant: :menu %>
 
           <div class="app-menu-divider" role="separator"></div>
           <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "app-menu-item app-menu-item--danger w-full text-left", role: "menuitem" %>

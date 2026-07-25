@@ -1,27 +1,27 @@
-<% content_for :title, "Settings" %>
+<% content_for :title, t("settings.title") %>
 
 <div class="mx-auto max-w-lg space-y-8">
   <header>
-    <h1 class="text-4xl font-black tracking-tight text-slate-900">Settings</h1>
-    <p class="mt-2 text-base font-semibold text-slate-600">Shape Today so it stays simple and motivating.</p>
+    <h1 class="text-4xl font-black tracking-tight text-slate-900"><%= t("settings.title") %></h1>
+    <p class="mt-2 text-base font-semibold text-slate-600"><%= t("settings.subtitle") %></p>
   </header>
 
   <section class="rounded-3xl border-2 border-slate-200/80 bg-white/90 p-6 shadow-sm">
-    <h2 class="text-lg font-black text-slate-900">How many on Today</h2>
-    <p class="mt-1 text-sm font-semibold text-slate-500">Fewer cards = clearer focus.</p>
+    <h2 class="text-lg font-black text-slate-900"><%= t("settings.count_title") %></h2>
+    <p class="mt-1 text-sm font-semibold text-slate-500"><%= t("settings.count_hint") %></p>
 
     <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do |form| %>
       <%= form.number_field :home_stat_count,
           min: 1,
           max: 20,
           class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 text-xl font-black focus:border-emerald-500 focus:outline-none" %>
-      <%= form.submit "Save", class: "mt-4 w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3 font-black text-white hover:bg-emerald-600" %>
+      <%= form.submit t("settings.save"), class: "mt-4 w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3 font-black text-white hover:bg-emerald-600" %>
     <% end %>
   </section>
 
   <section>
-    <h2 class="text-lg font-black text-slate-900">What appears on Today</h2>
-    <p class="mt-1 text-sm font-semibold text-slate-500">Turn items on or off. Drag to change order.</p>
+    <h2 class="text-lg font-black text-slate-900"><%= t("settings.visibility_title") %></h2>
+    <p class="mt-1 text-sm font-semibold text-slate-500"><%= t("settings.visibility_hint") %></p>
 
     <% if @all_habits.any? %>
       <ul class="mt-4 space-y-2">
@@ -31,7 +31,7 @@
               <p class="truncate font-black text-slate-900"><%= habit.name %></p>
               <p class="text-xs font-bold text-slate-500"><%= habit.unit %> · <%= habit.evaluation_label %></p>
             </div>
-            <%= button_to (habit.show_on_home? ? "On Today" : "Hidden"),
+            <%= button_to (habit.show_on_home? ? t("settings.on_today") : t("settings.hidden")),
                 settings_habit_path(habit),
                 method: :patch,
                 params: { show_on_home: !habit.show_on_home? },
@@ -41,14 +41,14 @@
       </ul>
     <% else %>
       <p class="mt-4 rounded-2xl border-2 border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">
-        Nothing to show yet. <%= link_to "Add something that matters", new_habit_path, class: "font-bold text-emerald-700" %>.
+        <%= t("settings.empty") %> <%= link_to t("settings.empty_cta"), new_habit_path, class: "font-bold text-emerald-700" %>.
       </p>
     <% end %>
   </section>
 
   <section>
-    <h2 class="text-lg font-black text-slate-900">Order on Today</h2>
-    <p class="mt-1 text-sm font-semibold text-slate-500">Top ones show first.</p>
+    <h2 class="text-lg font-black text-slate-900"><%= t("settings.order_title") %></h2>
+    <p class="mt-1 text-sm font-semibold text-slate-500"><%= t("settings.order_hint") %></p>
 
     <% if @home_habits.any? %>
       <ul id="home-order-list"
@@ -64,36 +64,36 @@
               <p class="font-black text-slate-900"><%= habit.name %></p>
               <p class="text-xs font-bold text-slate-500"><%= habit.unit %></p>
             </div>
-            <span class="text-xs font-black text-slate-400">DRAG</span>
+            <span class="text-xs font-black text-slate-400"><%= t("settings.drag") %></span>
           </li>
         <% end %>
       </ul>
     <% else %>
       <p class="mt-4 rounded-2xl border-2 border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">
-        Nothing marked for Today yet.
+        <%= t("settings.order_empty") %>
       </p>
     <% end %>
   </section>
 
   <section class="rounded-3xl border-2 border-emerald-100 bg-emerald-50/50 p-5">
-    <h2 class="text-lg font-black text-slate-900">Feedback</h2>
-    <p class="mt-1 text-sm font-semibold text-slate-600">Message me on WhatsApp or email.</p>
-    <%= link_to "Contact me", new_feedback_path,
+    <h2 class="text-lg font-black text-slate-900"><%= t("settings.feedback_title") %></h2>
+    <p class="mt-1 text-sm font-semibold text-slate-600"><%= t("settings.feedback_body") %></p>
+    <%= link_to t("settings.contact_me"), new_feedback_path,
         class: "mt-4 inline-flex rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-black text-white hover:bg-emerald-600" %>
   </section>
 
   <section class="rounded-3xl border-2 border-slate-100 bg-slate-50/80 p-5">
-    <h2 class="text-sm font-black uppercase tracking-wide text-slate-500">Account</h2>
+    <h2 class="text-sm font-black uppercase tracking-wide text-slate-500"><%= t("settings.account") %></h2>
     <div class="mt-3 flex flex-wrap gap-3">
-      <%= link_to "Change password", new_password_path, class: "rounded-xl border-2 border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700" %>
+      <%= link_to t("settings.change_password"), new_password_path, class: "rounded-xl border-2 border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700" %>
       <% if current_user.admin? %>
-        <%= link_to "Admin", admin_root_path, class: "rounded-xl border-2 border-slate-900 bg-slate-900 px-4 py-2 text-sm font-bold text-white" %>
+        <%= link_to t("nav.admin"), admin_root_path, class: "rounded-xl border-2 border-slate-900 bg-slate-900 px-4 py-2 text-sm font-bold text-white" %>
       <% end %>
-      <%= button_to "Sign out", session_path, method: :delete, class: "cursor-pointer rounded-xl border-2 border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-700" %>
+      <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "cursor-pointer rounded-xl border-2 border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-700" %>
     </div>
   </section>
 
   <p>
-    <%= link_to "← Today", dashboard_path, class: "font-bold text-emerald-700" %>
+    <%= link_to t("habits.back_today"), dashboard_path, class: "font-bold text-emerald-700" %>
   </p>
 </div>

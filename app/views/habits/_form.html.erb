@@ -21,17 +21,17 @@
   <% end %>
 
   <div>
-    <%= form.label :name, "What matters to you?", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+    <%= form.label :name, t("habits.name_label"), class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.text_field :name,
-        placeholder: "Push-ups, Sleep, Pages read...",
+        placeholder: t("habits.name_placeholder"),
         class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3.5 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
   </div>
 
   <div>
-    <%= form.label :unit, "What are you counting?", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+    <%= form.label :unit, t("habits.unit_label"), class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.text_field :unit,
         list: "count-ideas",
-        placeholder: "reps, hours, pages, steps...",
+        placeholder: t("habits.unit_placeholder"),
         class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3.5 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
     <datalist id="count-ideas">
       <% Habit::UNIT_IDEAS.each do |idea| %>
@@ -41,16 +41,16 @@
   </div>
 
   <div>
-    <%= form.label :description, "Note (optional)", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+    <%= form.label :description, t("habits.note_label"), class: "mb-1.5 block text-sm font-bold text-slate-800" %>
     <%= form.text_area :description, rows: 2,
         class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold focus:border-emerald-500 focus:outline-none" %>
   </div>
 
   <label class="flex cursor-pointer items-center justify-between gap-4 rounded-3xl border-2 border-slate-200 bg-white px-5 py-4">
     <span>
-      <span class="block font-black text-slate-900">Enable a target</span>
+      <span class="block font-black text-slate-900"><%= t("habits.enable_target") %></span>
       <span class="mt-1 block text-sm font-semibold text-slate-500">
-        Off = just log numbers and compare with yesterday.
+        <%= t("habits.enable_target_hint") %>
       </span>
     </span>
     <input type="checkbox"
@@ -62,16 +62,16 @@
 
   <div data-stat-type-target="targetPanel" class="space-y-4" <%= "hidden" unless target_enabled %>>
     <fieldset class="space-y-3">
-      <legend class="text-sm font-bold text-slate-800">How should we judge today?</legend>
+      <legend class="text-sm font-bold text-slate-800"><%= t("habits.judge_legend") %></legend>
 
       <label class="flex cursor-pointer items-start gap-3 rounded-3xl border-2 border-slate-200 bg-white p-4 transition has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
         <%= form.radio_button :stat_type, "growth",
             class: "mt-1 h-4 w-4 text-emerald-600",
             data: { stat_type_target: "typeInput", action: "change->stat-type#changeType" } %>
         <span>
-          <span class="block text-base font-black text-slate-900">Better Than Yesterday</span>
+          <span class="block text-base font-black text-slate-900"><%= t("habits.growth_title") %></span>
           <span class="mt-1 block text-sm font-semibold text-slate-600">
-            Higher is better. Same is same. Lower is worse.
+            <%= t("habits.growth_body") %>
           </span>
         </span>
       </label>
@@ -81,36 +81,36 @@
             class: "mt-1 h-4 w-4 text-sky-600",
             data: { stat_type_target: "typeInput", action: "change->stat-type#changeType" } %>
         <span>
-          <span class="block text-base font-black text-slate-900">Healthy Range</span>
+          <span class="block text-base font-black text-slate-900"><%= t("habits.range_title") %></span>
           <span class="mt-1 block text-sm font-semibold text-slate-600">
-            Stay inside your ideal min / max (sleep, water, screen time…).
+            <%= t("habits.range_body") %>
           </span>
         </span>
       </label>
     </fieldset>
 
     <div data-stat-type-target="growthFields" class="space-y-3 rounded-3xl border-2 border-emerald-100 bg-emerald-50/60 p-5">
-      <%= form.label :goal, "Stretch goal (optional)", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+      <%= form.label :goal, t("habits.stretch_goal"), class: "mb-1.5 block text-sm font-bold text-slate-800" %>
       <%= form.number_field :goal,
           min: 0,
           step: :any,
           placeholder: "e.g. 50",
           class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-emerald-500 focus:outline-none" %>
-      <p class="text-xs font-semibold text-slate-600">Leave blank to only compare with yesterday.</p>
+      <p class="text-xs font-semibold text-slate-600"><%= t("habits.stretch_hint") %></p>
     </div>
 
     <div data-stat-type-target="standardFields" class="space-y-4 rounded-3xl border-2 border-sky-100 bg-sky-50/60 p-5" hidden>
-      <p class="text-sm font-black text-sky-950">Your healthy range</p>
-      <p class="text-xs font-semibold text-slate-600">Set a minimum, a maximum, or both.</p>
+      <p class="text-sm font-black text-sky-950"><%= t("habits.range_heading") %></p>
+      <p class="text-xs font-semibold text-slate-600"><%= t("habits.range_hint") %></p>
       <div>
-        <%= form.label :min_value, "Minimum", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+        <%= form.label :min_value, t("habits.minimum"), class: "mb-1.5 block text-sm font-bold text-slate-800" %>
         <%= form.number_field :min_value,
             step: :any,
             placeholder: "e.g. 8",
             class: "w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-lg font-bold focus:border-sky-500 focus:outline-none" %>
       </div>
       <div>
-        <%= form.label :max_value, "Maximum", class: "mb-1.5 block text-sm font-bold text-slate-800" %>
+        <%= form.label :max_value, t("habits.maximum"), class: "mb-1.5 block text-sm font-bold text-slate-800" %>
         <%= form.number_field :max_value,
             step: :any,
             placeholder: "e.g. 9",
@@ -130,19 +130,19 @@
     <div class="flex flex-wrap gap-4 rounded-3xl border-2 border-slate-100 bg-slate-50/80 px-5 py-4">
       <label class="inline-flex items-center gap-2">
         <%= form.check_box :show_on_home, class: "h-5 w-5 rounded border-slate-300 text-emerald-600" %>
-        <span class="text-sm font-bold text-slate-800">Show on Today</span>
+        <span class="text-sm font-bold text-slate-800"><%= t("habits.show_on_today") %></span>
       </label>
       <label class="inline-flex items-center gap-2">
         <%= form.check_box :active, class: "h-5 w-5 rounded border-slate-300 text-emerald-600" %>
-        <span class="text-sm font-bold text-slate-800">On</span>
+        <span class="text-sm font-bold text-slate-800"><%= t("habits.active") %></span>
       </label>
     </div>
   <% end %>
 
   <div class="flex gap-3 pt-1">
-    <%= form.submit "Save",
+    <%= form.submit t("habits.save"),
         class: "cursor-pointer rounded-2xl bg-emerald-500 px-5 py-3.5 font-black text-white hover:bg-emerald-600" %>
-    <%= link_to "Cancel", habit.persisted? ? habits_path : dashboard_path,
+    <%= link_to t("habits.cancel"), habit.persisted? ? habits_path : dashboard_path,
         class: "rounded-2xl border-2 border-slate-200 px-5 py-3.5 font-bold text-slate-700" %>
   </div>
 <% end %>

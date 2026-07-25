@@ -1,9 +1,9 @@
-<% content_for :title, "Feedback" %>
+<% content_for :title, t("feedback.title") %>
 
 <div class="mx-auto max-w-lg">
-  <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Feedback</h1>
+  <h1 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl"><%= t("feedback.title") %></h1>
   <p class="mt-2 text-base font-semibold text-slate-600">
-    Message me directly — ideas, bugs, or how LifePoints feels.
+    <%= t("feedback.subtitle") %>
   </p>
 
   <div class="mt-8 space-y-3">
@@ -18,7 +18,7 @@
         <span class="block text-lg font-black text-slate-900">WhatsApp</span>
         <span class="mt-0.5 block text-sm font-semibold text-slate-500">+353 87 234 6580</span>
       </span>
-      <span class="text-sm font-black text-emerald-700">Open →</span>
+      <span class="text-sm font-black text-emerald-700"><%= t("feedback.open") %></span>
     </a>
 
     <a href="<%= contact_mailto_url %>"
@@ -27,18 +27,18 @@
         <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>
       </span>
       <span class="min-w-0 flex-1 text-left">
-        <span class="block text-lg font-black text-slate-900">Email</span>
+        <span class="block text-lg font-black text-slate-900"><%= t("share.email") %></span>
         <span class="mt-0.5 block truncate text-sm font-semibold text-slate-500"><%= contact_email %></span>
       </span>
-      <span class="text-sm font-black text-emerald-700">Write →</span>
+      <span class="text-sm font-black text-emerald-700"><%= t("feedback.write") %></span>
     </a>
   </div>
 
   <p class="mt-6 text-sm font-semibold leading-relaxed text-slate-500">
-    Opens your WhatsApp or email app with a short starter message. Send whenever you’re ready.
+    <%= t("feedback.footnote") %>
   </p>
 
   <p class="mt-8">
-    <%= link_to "← Today", dashboard_path, class: "font-bold text-emerald-700" %>
+    <%= link_to t("habits.back_today"), dashboard_path, class: "font-bold text-emerald-700" %>
   </p>
 </div>

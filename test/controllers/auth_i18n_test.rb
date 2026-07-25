@@ -22,4 +22,24 @@ class AuthI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Laipni lūgts atpakaļ/, response.body)
     assert_match(/Ienākt/, response.body)
   end
+
+  test "sign in page translates to german" do
+    patch locale_path(locale: :de)
+    follow_redirect!
+
+    get new_session_path
+    assert_response :success
+    assert_match(/Willkommen zurück/, response.body)
+    assert_match(/Anmelden/, response.body)
+  end
+
+  test "sign in page translates to spanish" do
+    patch locale_path(locale: :es)
+    follow_redirect!
+
+    get new_session_path
+    assert_response :success
+    assert_match(/Bienvenido de nuevo/, response.body)
+    assert_match(/Iniciar sesión/, response.body)
+  end
 end
