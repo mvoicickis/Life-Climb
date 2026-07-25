@@ -53,10 +53,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Read 20 pages/i, response.body)
-    assert_match(/Become a Senior Rails Developer/i, response.body)
-    assert_match(/Finish Rails Fundamentals|Milestone/i, response.body)
-    assert_match(/\b5%|\bProgress\b/i, response.body)
+    assert_match(/I did it|Today/i, response.body)
+    assert_match(/This improves|Career|Self/i, response.body)
     assert_no_match(/\bProject\b/, response.body)
+    assert_no_match(/Life Tree|Open Life/i, response.body)
   end
 
   test "milestone can be skipped" do

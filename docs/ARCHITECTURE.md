@@ -36,7 +36,7 @@ Life Area  →  Life Journey (+ optional next_win)  →  Daily Mission
 5. Progress — how close? (default 5%) → `gap_percent = 100 - closer`
 6. Milestone — next major step? (**optional**) → `next_win`
 7. Mission — one thing today → Mission title
-8. Dashboard — Area · Journey · Today’s Mission · Progress % · Life Tree
+8. Dashboard — **Today** (mission) + I did it + optional life-aspect tags + slim progress. No tree, no card stack.
 
 No Project/Plan models. No stats wizard.
 

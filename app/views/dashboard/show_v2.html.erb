@@ -2,108 +2,91 @@
 <% content_for :lp_game, true %>
 
 <%
-  greeting =
-    case Time.current.hour
-    when 5..11 then t("game_ui.good_morning")
-    when 12..17 then t("game_ui.good_afternoon")
-    else t("game_ui.good_evening")
-    end
   closer = @closer
+  selected_aspect = @mission&.aspect_key.presence || @journey.life_area.key
+  aspect_options = LifeArea::HOME_ASPECTS
 %>
 
-<div class="lp-home mx-auto max-w-md space-y-5 px-4 pb-24 pt-5">
+<div class="lp-home mx-auto max-w-md space-y-6 px-4 pb-24 pt-6">
   <header class="flex items-center gap-3">
     <%= image_tag current_user.character_image,
           alt: current_user.character_key.capitalize,
-          class: "lp-avatar-ring h-14 w-14 object-cover" %>
-    <div class="min-w-0">
-      <h1 class="truncate text-xl font-semibold text-[var(--lp-ink)]">
-        <%= greeting %>, <span class="text-[var(--lp-lime)]"><%= current_user.display_name %></span>
-      </h1>
-      <p class="mt-0.5 text-sm text-[var(--lp-muted)]"><%= t("game_ui.ux_promise") %></p>
-    </div>
+          class: "h-10 w-10 rounded-full object-cover ring-2 ring-[var(--lp-lime)]" %>
+    <p class="min-w-0 truncate text-sm text-[var(--lp-muted)]">
+      <%= current_user.display_name %>
+      <span class="text-[var(--lp-ink)]">· <%= closer %>%</span>
+    </p>
   </header>
 
-  <%= render "dashboard/status_twin",
-        life_points: @life_points,
-        lp_today: @lp_today,
-        alive_level: @alive_level %>
+  <section class="space-y-4">
+    <p class="text-sm font-semibold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today") %></p>
 
-  <section class="lp-glass p-4">
-    <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.area") %></p>
-    <h2 class="mt-1 text-lg font-semibold text-[var(--lp-ink)]"><%= @journey.life_area.label %></h2>
-  </section>
-
-  <section class="lp-glass p-4">
-    <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.journey") %></p>
-    <h2 class="mt-1 text-lg font-semibold text-[var(--lp-ink)]"><%= @journey.title %></h2>
-    <% if @journey.next_win.present? %>
-      <p class="mt-3 text-sm text-[var(--lp-ink)]">
-        <span class="text-[var(--lp-muted)]"><%= t("dashboard_v2.next_win") %></span>
-        <%= @journey.next_win %>
-      </p>
-    <% end %>
-  </section>
-
-  <section class="lp-glass p-4">
-    <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today_mission") %></p>
     <% if @mission && !@mission.completed? %>
-      <h2 class="mt-2 text-xl font-semibold text-[var(--lp-ink)]"><%= @mission.title %></h2>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]">
-        <%= t("dashboard_v2.reward_preview", lp: @mission.lp_reward, gap: @mission.gap_delta_percent) %>
-      </p>
-      <%= button_to t("dashboard_v2.complete"),
-            mission_completion_path(@mission),
-            method: :post,
-            class: "lp-cta mt-4 w-full" %>
+      <h1 class="text-3xl font-semibold leading-tight text-[var(--lp-ink)]"><%= @mission.title %></h1>
+
+      <%= form_with url: mission_completion_path(@mission), method: :post, class: "space-y-4" do %>
+        <div>
+          <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.helps") %></p>
+          <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="<%= t('dashboard_v2.helps') %>">
+            <% aspect_options.each do |entry| %>
+              <% key = entry[:key] %>
+              <label class="cursor-pointer">
+                <input type="radio" name="aspect_key" value="<%= key %>" class="peer sr-only"
+                  <%= "checked" if key == selected_aspect %> />
+                <span class="inline-flex items-center gap-1 rounded-full border border-[var(--lp-border)] px-3 py-1.5 text-sm text-[var(--lp-muted)] peer-checked:border-[var(--lp-lime)] peer-checked:bg-[var(--lp-lime)]/15 peer-checked:text-[var(--lp-ink)]">
+                  <span aria-hidden="true"><%= entry[:emoji] %></span>
+                  <%= t("life_area_catalog.#{key}.short", default: t("life_area_catalog.#{key}.name")) %>
+                </span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%= submit_tag t("dashboard_v2.complete"), class: "lp-cta w-full" %>
+      <% end %>
     <% elsif @mission&.completed? %>
-      <p class="mt-3 font-semibold text-[var(--lp-lime)]">✓ <%= @mission.title %></p>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.done_today") %></p>
+      <h1 class="text-3xl font-semibold leading-tight text-[var(--lp-lime)]">✓ <%= @mission.title %></h1>
+      <% if @mission.aspect_key.present? %>
+        <p class="text-sm text-[var(--lp-muted)]">
+          <%= t("dashboard_v2.helped", area: t("life_area_catalog.#{@mission.aspect_key}.name", default: @mission.aspect_key)) %>
+        </p>
+      <% end %>
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.done_today") %></p>
+      <div class="lp-gap-track mt-2">
+        <div class="lp-gap-fill" style="width: <%= closer %>%"></div>
+      </div>
     <% else %>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("coach.mission_hint") %></p>
-      <%= form_with url: today_mission_path, method: :post, class: "mt-3 space-y-3" do %>
-        <input type="text" name="title" required class="lp-input w-full"
+      <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.ask_today") %></p>
+      <%= form_with url: today_mission_path, method: :post, class: "space-y-4" do %>
+        <input type="text" name="title" required class="lp-input w-full text-lg"
           placeholder="<%= t('coach.today_placeholder') %>" autocomplete="off" />
+
+        <div>
+          <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.helps") %></p>
+          <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="<%= t('dashboard_v2.helps') %>">
+            <% aspect_options.each do |entry| %>
+              <% key = entry[:key] %>
+              <label class="cursor-pointer">
+                <input type="radio" name="aspect_key" value="<%= key %>" class="peer sr-only"
+                  <%= "checked" if key == selected_aspect %> />
+                <span class="inline-flex items-center gap-1 rounded-full border border-[var(--lp-border)] px-3 py-1.5 text-sm text-[var(--lp-muted)] peer-checked:border-[var(--lp-lime)] peer-checked:bg-[var(--lp-lime)]/15 peer-checked:text-[var(--lp-ink)]">
+                  <span aria-hidden="true"><%= entry[:emoji] %></span>
+                  <%= t("life_area_catalog.#{key}.short", default: t("life_area_catalog.#{key}.name")) %>
+                </span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
         <%= submit_tag t("coach.begin_today"), class: "lp-cta w-full" %>
       <% end %>
     <% end %>
   </section>
 
-  <section class="lp-glass p-4">
-    <div class="flex items-end justify-between gap-3">
-      <div>
-        <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.progress") %></p>
-        <p class="mt-1 text-3xl font-semibold text-[var(--lp-ink)]"><%= closer %>%</p>
-      </div>
-      <% if @gap_delta %>
-        <p class="text-sm font-semibold <%= @gap_delta.negative? ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]' %>">
-          <%= t("dashboard_v2.vs_yesterday", delta: format("%+.1f", -@gap_delta)) %>
-        </p>
-      <% end %>
-    </div>
-    <div class="lp-gap-track mt-3">
+  <% if @mission && !@mission.completed? %>
+    <div class="lp-gap-track">
       <div class="lp-gap-fill" style="width: <%= closer %>%"></div>
     </div>
-    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.progress_hint") %></p>
-  </section>
-
-  <%= render "dashboard/life_tree",
-        life_areas: @life_areas,
-        focus_id: @journey.life_area_id,
-        closer_percent: current_user.overall_closer_percent,
-        compact: true %>
-
-  <% if @journey.status != "completed" %>
-    <section class="lp-glass p-4">
-      <% if closer.to_i >= 75 %>
-        <p class="text-sm text-[var(--lp-muted)]"><%= t("journeys.suggest_complete") %></p>
-      <% end %>
-      <%= button_to t("dashboard_v2.reach_journey"),
-            life_journey_completion_path(@journey),
-            method: :post,
-            form: { data: { turbo_confirm: t("journeys.confirm_complete") } },
-            class: "mt-2 w-full rounded-full border border-[var(--lp-border)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)]" %>
-    </section>
   <% end %>
 </div>
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_230001) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_240000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -182,6 +182,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_230001) do
   end
 
   create_table "missions", force: :cascade do |t|
+    t.string "aspect_key"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.integer "gap_delta_basis_points", default: 80, null: false

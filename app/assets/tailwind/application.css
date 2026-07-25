@@ -2394,6 +2394,10 @@
   backdrop-filter: blur(14px);
 }
 
+.lp-bottom-nav--calm {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .lp-fab {
   width: 3.25rem;
   height: 3.25rem;

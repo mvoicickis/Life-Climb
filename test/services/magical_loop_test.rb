@@ -34,6 +34,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
     mission = user.missions.for_day(Date.current).primary.first
     assert mission
     assert_equal "Read 20 pages", mission.title
+    assert_equal "career", mission.aspect_key
 
     points_before = user.life_points
     gap_before = journey.gap_percent.to_f

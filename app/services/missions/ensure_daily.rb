@@ -50,7 +50,8 @@ module Missions
         status: "pending",
         source: "system",
         is_primary: true,
-        position: 0
+        position: 0,
+        aspect_key: journey.life_area&.key
       )
     end
 

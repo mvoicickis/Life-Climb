@@ -13,7 +13,12 @@ class TodayMissionsController < ApplicationController
       redirect_to dashboard_path, alert: t("coach.need_today") and return
     end
 
-    Missions::EnsureDaily.call(user: current_user, mission_title: title)
+    missions = Missions::EnsureDaily.call(user: current_user, mission_title: title)
+    mission = Array(missions).first
+    aspect = params[:aspect_key].to_s
+    if mission && aspect.present? && LifeArea::CATALOG_KEYS.include?(aspect)
+      mission.update!(aspect_key: aspect)
+    end
     redirect_to dashboard_path, notice: t("coach.today_set")
   end
 end

@@ -30,6 +30,10 @@ class LifeArea < ApplicationRecord
     { key: "purpose", emoji: "✨" }
   ].freeze
 
+  # Short tag list on Home — bigger aspects of life, not the full catalog.
+  HOME_ASPECT_KEYS = %w[self relationships career money home learning].freeze
+  HOME_ASPECTS = CATALOG.select { |entry| HOME_ASPECT_KEYS.include?(entry[:key]) }.freeze
+
   CATALOG_KEYS = CATALOG.map { |entry| entry[:key] }.freeze
 
   EMOJI = {
