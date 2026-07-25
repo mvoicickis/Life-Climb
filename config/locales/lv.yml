@@ -83,13 +83,13 @@ lv:
     vs_yesterday: "%{signed} %{unit} pret vakardienu"
   focus_tips:
     walk_more: "Noej %{amount} soļus vairāk nekā vakar."
-    read_more: "Izlasi %{amount} %{unit} vairāk šodien."
-    do_more: "Izdari %{amount} %{unit} vairāk (%{name}) nekā vakar."
-    lift_low: "Pavirzi %{name} tuvāk %{amount} %{unit}."
-    ease_high: "Maigi turi %{name} zem %{amount} %{unit}."
+    read_more: "Izlasi %{amount} lappuses vairāk nekā vakar."
+    do_more: "Uzlabo „%{name}” par %{amount} pret vakardienu."
+    lift_low: "Pacel „%{name}” līdz vismaz %{amount}."
+    ease_high: "Turi „%{name}” zem %{amount}."
     default_one: "Ieraksti to, kas svarīgi — pat mazs skaitlis skaitās."
     default_two: "Izvēlies vienu lietu, kurā pārspēt vakardienu."
-    default_three: "Tur rītdienu vienkāršu: viena skaidra uzvara."
+    default_three: "Turi rītdienu vienkāršu: viena skaidra uzvara."
   landing:
     meta_title: "LifePoints — Kļūsti labāks nekā vakar"
     meta_description: "Tavs vienīgais konkurents esi tu pats vakar. LifePoints palīdz izmērīt ikdienas darbības, kas ir svarīgākās, lai redzētu, vai tu katru dienu uzlabojies."

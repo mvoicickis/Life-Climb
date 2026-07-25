@@ -35,6 +35,35 @@ class DashboardInsightsTest < ActiveSupport::TestCase
     assert_match(/375/, tip)
     assert_match(/Walk|Noej/i, tip)
   end
+
+  test "latvian focus tips avoid dumping english units into the sentence" do
+    @user.daily_logs.delete_all
+    @habit.update!(name: "People in Comm", unit: "how much emails , dms", stat_type: "growth")
+    @habit.daily_logs.create!(logged_on: Date.yesterday, amount: 10)
+    @habit.daily_logs.create!(logged_on: Date.current, amount: 7)
+
+    I18n.with_locale(:lv) do
+      tip = DashboardInsights.new(@user.reload, trackers: [ @habit ]).focus_tips.first
+      assert_match(/People in Comm/, tip)
+      assert_match(/3/, tip)
+      refute_match(/how much emails/i, tip)
+      refute_match(/Izdari/i, tip)
+      assert_match(/Uzlabo/i, tip)
+    end
+  end
+
+  test "latvian reading tips use lappuses not english pages" do
+    @user.daily_logs.delete_all
+    @habit.update!(name: "PDC Study", unit: "pages", stat_type: "growth")
+    @habit.daily_logs.create!(logged_on: Date.yesterday, amount: 5)
+    @habit.daily_logs.create!(logged_on: Date.current, amount: 4)
+
+    I18n.with_locale(:lv) do
+      tip = DashboardInsights.new(@user.reload, trackers: [ @habit ]).focus_tips.first
+      assert_match(/lappuses/, tip)
+      refute_match(/pages/i, tip)
+    end
+  end
 end
 
 class DashboardControllerTest < ActionDispatch::IntegrationTest
