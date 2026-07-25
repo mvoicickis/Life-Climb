@@ -1,0 +1,19 @@
+<%# Shared header for sign-in / register / password pages %>
+<header class="auth-topbar">
+  <%= link_to root_path, class: "auth-topbar-brand", aria: { label: t("app_name") } do %>
+    <span class="auth-topbar-mark" aria-hidden="true">🌿</span>
+    <span><%= t("app_name") %></span>
+  <% end %>
+
+  <div class="auth-topbar-actions">
+    <div class="landing-lang landing-lang--light" role="group" aria-label="<%= t('nav.language') %>">
+      <%= button_to "EN", locale_path(locale: :en), method: :patch,
+          class: "landing-lang-btn #{I18n.locale == :en ? 'is-active' : ''}",
+          form: { class: "inline" } %>
+      <%= button_to "LV", locale_path(locale: :lv), method: :patch,
+          class: "landing-lang-btn #{I18n.locale == :lv ? 'is-active' : ''}",
+          form: { class: "inline" } %>
+    </div>
+    <%= link_to t("landing.back_home"), root_path, class: "auth-back-btn" %>
+  </div>
+</header>
