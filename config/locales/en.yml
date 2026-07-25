@@ -8,7 +8,8 @@ en:
   app_name: "LifePoints"
   nav:
     home: "Home"
-    dashboard: "Dashboard"
+    today: "Today"
+    dashboard: "Today"
     stats: "Stats"
     feedback: "Feedback"
     settings: "Settings"

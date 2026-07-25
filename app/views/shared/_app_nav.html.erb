@@ -6,8 +6,7 @@
     <% end %>
 
     <div class="flex items-center gap-0.5 text-sm font-bold md:gap-1">
-      <%= link_to t("nav.home"), root_path, class: nav_link_class(current_page?(root_path) && !request.path.start_with?("/dashboard")) %>
-      <%= link_to t("nav.dashboard"), dashboard_path, class: nav_link_class(current_page?(dashboard_path)) %>
+      <%= link_to t("nav.today"), dashboard_path, class: nav_link_class(current_page?(dashboard_path) || current_page?(root_path)) %>
       <%= link_to t("nav.stats"), habits_path, class: nav_link_class(current_page?(habits_path) || request.path.start_with?("/habits")) %>
       <%= link_to t("nav.feedback"), new_feedback_path, class: nav_link_class(current_page?(new_feedback_path)) %>
 

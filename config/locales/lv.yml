@@ -6,7 +6,8 @@ lv:
   app_name: "LifePoints"
   nav:
     home: "Sākums"
-    dashboard: "Panelis"
+    today: "Šodien"
+    dashboard: "Šodien"
     stats: "Statistika"
     feedback: "Atsauksmes"
     settings: "Iestatījumi"

@@ -59,6 +59,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :lv)
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match(/Panelis|Šodien/, response.body)
+    assert_match(/Šodien|Today/, response.body)
+    refute_match(/>\s*(Home|Sākums|Dashboard|Panelis)\s*</, response.body)
   end
 end
