@@ -55,8 +55,18 @@ Locked visual language for the Close-the-Gap redesign. Use these tokens for all 
 
 Self · Love · Family · Community · Humanity · Animals · Nature · Home  
 
+Do **not** merge labels (no “Self Love”) or substitute “Personal Growth”. Overall Gap is a summary meter / chip — never a ninth ring node.
+
 Stages: Seed → Plant → Tree → Forest → Legendary  
+
+## Hard product rules (UI)
+
+- **No streaks.** Gap % and Life Energy / Morale drive emotion — never flame counters or Mon–Sun streak rows.
+- **Bottom nav (locked):** Dashboard · Life Map · **+** FAB · Missions · Profile.
+- **Copy tone:** warm, game-like; gap = distance to dream life, not habit guilt.
+- **Character v1:** Man | Woman only; illustrated portraits (not photos).
 
 ## Screens inventory
 
 See mockups in `docs/design/mockups/` and `docs/design/RAILS_IMPLEMENTATION.md`.
+ Canonical Home: `02-home-dashboard.png`. Map variants: `03-life-map.png` (Man), `03b-life-map-woman.png` (Woman).

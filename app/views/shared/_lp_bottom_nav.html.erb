@@ -1,0 +1,29 @@
+<%# LifePoints game bottom nav — Dashboard · Life Map · FAB · Missions · Profile
+    Locals: active (optional) one of: dashboard, life_map, missions, profile %>
+<% active = local_assigns.fetch(:active, :dashboard).to_s %>
+
+<nav class="lp-bottom-nav" aria-label="Primary">
+  <%= link_to (defined?(dashboard_path) ? dashboard_path : "#"), class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'dashboard' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
+    <span aria-hidden="true">⌂</span>
+    <span>Dashboard</span>
+  <% end %>
+
+  <%= link_to "#life-map", class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'life_map' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
+    <span aria-hidden="true">◎</span>
+    <span>Life Map</span>
+  <% end %>
+
+  <%= link_to "#", class: "lp-fab", aria: { label: "Quick add" } do %>
+    <span aria-hidden="true">+</span>
+  <% end %>
+
+  <%= link_to "#missions", class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'missions' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
+    <span aria-hidden="true">◎</span>
+    <span>Missions</span>
+  <% end %>
+
+  <%= link_to "#profile", class: "flex flex-col items-center gap-0.5 text-[10px] font-semibold #{active == 'profile' ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]'}" do %>
+    <span aria-hidden="true">☺</span>
+    <span>Profile</span>
+  <% end %>
+</nav>
