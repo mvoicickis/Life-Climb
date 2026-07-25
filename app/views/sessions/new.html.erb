@@ -1,6 +1,10 @@
-<% content_for :title, "Sign in" %>
+<% content_for :title, t("landing.sign_in") %>
 
 <div class="mx-auto max-w-md">
+  <p class="mb-6">
+    <%= link_to t("landing.back_home"), root_path, class: "text-sm font-bold text-emerald-600 hover:text-emerald-500" %>
+  </p>
+
   <h1 class="mb-2 text-4xl font-black">Welcome back</h1>
   <p class="mb-8 text-slate-600">Sign in to keep going up.</p>
 
@@ -18,7 +22,7 @@
           class: "w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold focus:border-emerald-500 focus:outline-none" %>
     </div>
 
-    <%= form.submit "Sign in", class: "w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3 font-black text-white hover:bg-emerald-600" %>
+    <%= form.submit t("landing.sign_in"), class: "w-full cursor-pointer rounded-2xl bg-emerald-500 px-4 py-3 font-black text-white hover:bg-emerald-600" %>
   <% end %>
 
   <p class="mt-4 text-center text-sm font-semibold">

@@ -95,6 +95,7 @@ lv:
     meta_description: "Tavs vienīgais konkurents esi tu pats vakar. LifePoints palīdz izmērīt ikdienas darbības, kas ir svarīgākās, lai redzētu, vai tu katru dienu uzlabojies."
     sign_in: "Ienākt"
     start_free: "Sākt bez maksas"
+    back_home: "← Atpakaļ uz sākumu"
     hero_eyebrow: "Tavs vienīgais konkurents ir vakardiena"
     hero_title: "Kļūsti par labāku sevi katru dienu."
     hero_body: "LifePoints palīdz izmērīt ikdienas darbības, kas tev ir svarīgākās, lai skaidri redzētu, vai tu uzlabojies, esi konsekvents vai atkāpies."

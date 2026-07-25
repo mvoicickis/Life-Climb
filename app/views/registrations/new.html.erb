@@ -1,6 +1,10 @@
-<% content_for :title, "Make an account" %>
+<% content_for :title, t("landing.start_free") %>
 
 <div class="mx-auto max-w-md">
+  <p class="mb-6">
+    <%= link_to t("landing.back_home"), root_path, class: "text-sm font-bold text-emerald-600 hover:text-emerald-500" %>
+  </p>
+
   <h1 class="mb-2 text-4xl font-black">Make an account</h1>
   <p class="mb-8 text-slate-600">Start counting what matters.</p>
 
@@ -38,6 +42,6 @@
 
   <p class="mt-6 text-center text-sm text-slate-600">
     Already have an account?
-    <%= link_to "Sign in", new_session_path, class: "font-bold text-emerald-700" %>
+    <%= link_to t("landing.sign_in"), new_session_path, class: "font-bold text-emerald-700" %>
   </p>
 </div>
