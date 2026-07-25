@@ -1,0 +1,24 @@
+<% content_for :title, t("about.title") %>
+
+<div class="studio-support">
+  <header>
+    <p class="studio-kicker"><%= t("app_name") %></p>
+    <h1 class="studio-dream"><%= t("about.title") %></h1>
+    <p class="studio-support__subtitle mt-4"><%= t("about.subtitle") %></p>
+  </header>
+
+  <div class="studio-muted mt-6 max-w-xl space-y-4 text-base font-semibold leading-relaxed">
+    <p><%= t("about.p1") %></p>
+    <p><%= t("about.p2") %></p>
+    <p><%= t("about.tagline") %></p>
+  </div>
+
+  <div class="mt-10 flex flex-wrap gap-3">
+    <%= link_to t("support.title"), support_path, class: "studio-btn studio-btn--strong" %>
+    <%= link_to t("coach.title"), new_feedback_path, class: "studio-btn" %>
+  </div>
+
+  <p class="mt-8">
+    <%= link_to t("nav.settings"), settings_path, class: "studio-link" %>
+  </p>
+</div>

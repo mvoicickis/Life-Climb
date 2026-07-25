@@ -9,9 +9,17 @@ class LifePointsController < ApplicationController
     @dream = current_user.active_dream
     @goals = current_user.goals.includes(:dream, :steps).ordered
     @learning_hours = learning_hours_estimate
+    @support_moment = offer_support_moment!
   end
 
   private
+
+  def offer_support_moment!
+    moment = SupportMoment.new(current_user)
+    key = moment.eligible
+    moment.mark_shown!(key) if key
+    key
+  end
 
   def years_building
     start = current_user.created_at.to_date

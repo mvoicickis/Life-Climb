@@ -64,4 +64,8 @@ class User < ApplicationRecord
   def days_invested
     today_actions.complete.select(:scheduled_on).distinct.count
   end
+
+  def support_prompts_muted?
+    support_prompts_muted
+  end
 end

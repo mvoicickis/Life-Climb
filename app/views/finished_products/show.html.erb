@@ -12,4 +12,8 @@
     <%= link_to t("finished.title"), finished_products_path, class: "studio-btn" %>
     <%= link_to t("nav.today"), dashboard_path, class: "studio-link" %>
   </div>
+
+  <div class="mt-10">
+    <%= render "shared/support_thanks", moment: @support_moment %>
+  </div>
 </div>

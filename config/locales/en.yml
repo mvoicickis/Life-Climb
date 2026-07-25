@@ -124,6 +124,7 @@ en:
     order_hint: "Top ones show first."
     drag: "DRAG"
     order_empty: "Nothing marked for Today yet."
+    support_body: "If LifePoints has helped you, you can help it keep helping others."
     feedback_title: "Feedback"
     feedback_body: "Message me on WhatsApp or email."
     contact_me: "Contact me"
@@ -361,3 +362,42 @@ en:
     footnote: "I read messages as I can — not 24/7, but I care."
     open: "Open"
     write: "Write"
+
+  support:
+    title: "Support LifePoints"
+    kicker: "Give back"
+    cta_short: "Support the project"
+    learn_more: "Learn more"
+    subtitle: "If LifePoints has helped you build a better life, you can help us build a better LifePoints."
+    body: "Every contribution helps us improve the app, build new features, fix bugs, and keep creating something meaningful for everyone."
+    footnote: "Supporting is optional — never required. Thank you for being here."
+    coming_soon: "More ways to support — soon"
+    providers:
+      buy_me_a_coffee: "Buy the developer a coffee"
+      become_supporter: "Become a Supporter"
+      sponsor_development: "Sponsor Development"
+      make_contribution: "Make a Contribution"
+    moment:
+      title: "Congratulations"
+      invite: "If you’d like to help us continue building LifePoints for everyone, you can support development."
+      not_now: "Not now"
+      dont_ask: "Don’t ask again"
+      dismissed: "Got it — thank you."
+      first_finished_product:
+        headline: "You finished your first Finished Product."
+        body: "We’re honored that LifePoints was part of your journey."
+      life_points_100:
+        headline: "You’ve earned 100 LifePoints."
+        body: "That’s real time invested in becoming who you want to be."
+      days_invested_30:
+        headline: "30 days invested."
+        body: "Showing up compounds. We’re glad you’re building here."
+      year_with_lifepoints:
+        headline: "One year with LifePoints."
+        body: "Thank you for building your life with us this long."
+  about:
+    title: "About"
+    subtitle: "LifePoints helps people build meaningful lives — one day, one building, one Finished Product at a time."
+    p1: "This is not a habit tracker. It’s a calm workshop for connecting today’s work to your dream."
+    p2: "The more LifePoints you earn, the more alive you become — through growth, creation, and real value."
+    tagline: "Built with care by Mareks."

@@ -90,8 +90,14 @@
 
   <section class="mt-12">
     <%= render "shared/coach_line" %>
-    <p class="mt-4">
+    <p class="mt-4 flex flex-wrap gap-4">
       <%= link_to t("life_points.rhythms_link"), habits_path, class: "studio-link" %>
+      <%= link_to t("support.title"), support_path, class: "studio-link" %>
+      <%= link_to t("about.title"), about_path, class: "studio-link" %>
     </p>
   </section>
+
+  <div class="mt-10">
+    <%= render "shared/support_thanks", moment: @support_moment %>
+  </div>
 </div>

@@ -1,0 +1,82 @@
+require "test_helper"
+
+class SupportFeatureTest < ActionDispatch::IntegrationTest
+  setup { @user = users(:one) }
+
+  test "support page is calm and shows coffee option" do
+    sign_in_as @user
+    get support_path
+    assert_response :success
+    assert_match(/Support LifePoints/, response.body)
+    assert_match(/Buy the developer a coffee/, response.body)
+    assert_match(/Become a Supporter|Sponsor Development|Make a Contribution/, response.body)
+  end
+
+  test "about page links to support" do
+    sign_in_as @user
+    get about_path
+    assert_response :success
+    assert_match(/About/, response.body)
+    assert_select "a[href=?]", support_path
+  end
+
+  test "settings links to support" do
+    sign_in_as @user
+    get settings_path
+    assert_response :success
+    assert_select "a[href=?]", support_path
+  end
+
+  test "first finished product offers thank-you once" do
+    sign_in_as @user
+    product = @user.finished_products.create!(
+      title: "Portfolio site",
+      shipped_on: Date.current,
+      value_summary: "People can hire me"
+    )
+
+    get finished_product_path(product)
+    assert_response :success
+    assert_match(/first Finished Product|honored/i, response.body)
+
+    get finished_product_path(product)
+    assert_response :success
+    refute_match(/Don’t ask again|Don't ask again/, response.body)
+  end
+
+  test "mute permanently stops moments" do
+    sign_in_as @user
+    @user.finished_products.create!(title: "App", shipped_on: Date.current)
+    post dismiss_support_moment_path, params: { mute: 1 }
+    assert @user.reload.support_prompts_muted?
+
+    get life_points_path
+    refute_match(/We’re honored|We're honored|Congratulations/, response.body)
+  end
+end
+
+class SupportMomentTest < ActiveSupport::TestCase
+  test "creation weights stay higher than coffee guilt" do
+    user = users(:one)
+    moment = SupportMoment.new(user)
+    assert_nil moment.eligible
+
+    user.finished_products.create!(title: "Book", shipped_on: Date.current)
+    assert_equal :first_finished_product, moment.eligible
+  end
+end
+
+class SupportProvidersTest < ActiveSupport::TestCase
+  test "primary coffee provider is enabled with mailto fallback" do
+    primary = SupportProviders.primary
+    assert primary
+    assert_equal :buy_me_a_coffee, primary[:id]
+    assert primary[:url].present?
+  end
+
+  test "future providers listed as coming soon when disabled" do
+    soon = SupportProviders.coming_soon.map { |p| p[:id] }
+    assert_includes soon, :become_supporter
+    assert_includes soon, :sponsor_development
+  end
+end

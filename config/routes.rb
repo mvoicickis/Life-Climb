@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   resource :life_points, only: :show, controller: "life_points"
   resources :dreams, only: :update
   resources :goals, only: :create
+  resource :support, only: :show, controller: "supports"
+  post "support/dismiss", to: "supports#dismiss_moment", as: :dismiss_support_moment
+  resource :about, only: :show, controller: "abouts"
 
   resources :habits do
     member do

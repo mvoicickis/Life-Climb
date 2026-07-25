@@ -1,0 +1,31 @@
+<%# Soft thank-you after milestones — never on Today. Optional & permanently dismissible. %>
+<% if local_assigns[:moment].present? %>
+  <aside class="studio-thanks" role="complementary" aria-label="<%= t('support.moment.title') %>">
+    <p class="studio-kicker"><%= t("support.moment.title") %></p>
+    <h2 class="studio-rail-dream mt-2"><%= t("support.moment.#{moment}.headline") %></h2>
+    <p class="studio-muted mt-3"><%= t("support.moment.#{moment}.body") %></p>
+    <p class="studio-muted mt-2 text-sm"><%= t("support.moment.invite") %></p>
+    <div class="studio-thanks__actions">
+      <% primary = SupportProviders.primary %>
+      <% if primary %>
+        <a href="<%= primary[:url] %>"
+           class="studio-btn studio-btn--strong"
+           target="<%= primary[:url].to_s.start_with?('mailto:') ? nil : '_blank' %>"
+           rel="<%= primary[:url].to_s.start_with?('mailto:') ? nil : 'noopener noreferrer' %>">
+          <%= t(primary[:i18n_key]) %>
+        </a>
+      <% end %>
+      <%= link_to t("support.learn_more"), support_path, class: "studio-btn" %>
+      <%= button_to t("support.moment.not_now"),
+            dismiss_support_moment_path(milestone: moment),
+            method: :post,
+            form: { class: "inline" },
+            class: "studio-link text-sm bg-transparent border-0 cursor-pointer p-0 font-semibold" %>
+      <%= button_to t("support.moment.dont_ask"),
+            dismiss_support_moment_path(mute: 1),
+            method: :post,
+            form: { class: "inline" },
+            class: "studio-link text-sm bg-transparent border-0 cursor-pointer p-0 font-semibold" %>
+    </div>
+  </aside>
+<% end %>
