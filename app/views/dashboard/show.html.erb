@@ -3,30 +3,57 @@
 <div class="studio-today" data-controller="studio-thread">
   <div class="studio-today__main">
     <p class="studio-kicker" data-studio-thread-target="line"><%= t("studio.why_today") %></p>
+    <h1 class="studio-dream"><%= t("studio.dream_life") %></h1>
+    <p class="studio-muted mt-2"><%= t("studio.right_way") %></p>
 
-    <div class="studio-story" data-studio-thread-target="story">
-      <p class="studio-dream"><%= @dream.title %></p>
-      <p class="studio-goal"><span class="studio-label"><%= t("studio.goal") %></span> <%= @goal.title %></p>
-      <p class="studio-building-line"><span class="studio-label"><%= t("studio.building") %></span> <%= @building.title %></p>
+    <%= render "shared/person_map", life_areas: @life_areas, focus_id: @life_area&.id %>
+
+    <div class="studio-direction studio-direction--<%= @direction.status %>" data-studio-thread-target="story">
+      <p class="studio-direction__title"><%= @direction.title %></p>
+      <p class="studio-direction__body"><%= @direction.body %></p>
+      <% if @direction.harmony_hint.present? %>
+        <p class="studio-direction__hint"><%= @direction.harmony_hint %></p>
+      <% end %>
     </div>
+
+    <div class="studio-alive">
+      <div class="studio-alive__meta">
+        <p class="studio-label"><%= t("alive_levels.label") %></p>
+        <p class="studio-alive__title"><%= @alive_level.title %></p>
+      </div>
+      <div class="studio-alive__ring" style="--alive-pct: <%= @alive_level.percent %>" aria-hidden="true">
+        <span class="studio-lp-chip"><%= number_with_delimiter(@life_points) %> LP</span>
+      </div>
+    </div>
+
+    <% if @day_clear %>
+      <div class="studio-day-clear is-shown" data-controller="studio-celebrate">
+        <p class="studio-day-clear__title"><%= t("studio.day_clear_title") %></p>
+        <p class="studio-day-clear__body"><%= t("studio.day_clear_body", part: @life_area&.short_label || @goal.title) %></p>
+      </div>
+    <% end %>
 
     <section class="studio-actions" aria-labelledby="today-actions-heading">
       <div class="studio-section-head">
-        <h2 id="today-actions-heading" class="studio-section-title"><%= t("studio.today_actions") %></h2>
-        <p class="studio-lp-chip"><%= number_with_delimiter(@life_points) %> LP</p>
+        <h2 id="today-actions-heading" class="studio-section-title"><%= t("studio.today_moves") %></h2>
+        <% if @life_area %>
+          <p class="studio-muted text-sm"><%= @life_area.short_label %></p>
+        <% end %>
       </div>
 
       <% if @actions.any? %>
-        <ul class="studio-action-list">
+        <ul class="studio-action-list" data-controller="quest-complete">
           <% @actions.each do |action| %>
-            <li class="studio-action-row <%= 'is-done' if action.completed? %>">
+            <li class="studio-quest <%= 'is-done' if action.completed? %>">
               <% if action.completed? %>
-                <span class="studio-action-check" aria-hidden="true">✓</span>
-                <span class="studio-action-title"><%= action.title %></span>
+                <span class="studio-quest__check" aria-hidden="true">✓</span>
+                <span class="studio-quest__title"><%= action.title %></span>
+                <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
               <% else %>
-                <%= button_to complete_today_action_path(action), method: :post, class: "studio-action-complete" do %>
-                  <span class="studio-action-check" aria-hidden="true"></span>
-                  <span class="studio-action-title"><%= action.title %></span>
+                <%= button_to complete_today_action_path(action), method: :post, class: "studio-quest__btn", data: { action: "quest-complete#pop" } do %>
+                  <span class="studio-quest__check" aria-hidden="true"></span>
+                  <span class="studio-quest__title"><%= action.title %></span>
+                  <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
                 <% end %>
               <% end %>
             </li>
@@ -45,12 +72,15 @@
 
   <aside class="studio-today__rail">
     <div class="studio-rail-card" data-studio-thread-target="rail">
-      <p class="studio-label"><%= t("studio.dream") %></p>
-      <p class="studio-rail-dream"><%= @dream.title %></p>
+      <p class="studio-label"><%= t("studio.now") %></p>
+      <% if @life_area %>
+        <p class="studio-rail-dream"><%= @life_area.label %></p>
+        <% if @life_area.ambition.present? %>
+          <p class="studio-rail-text mt-2"><%= @life_area.ambition %></p>
+        <% end %>
+      <% end %>
       <p class="studio-label mt-4"><%= t("studio.goal") %></p>
       <p class="studio-rail-text"><%= @goal.title %></p>
-      <p class="studio-label mt-4"><%= t("studio.step") %></p>
-      <p class="studio-rail-text"><%= @step.title %></p>
       <p class="studio-label mt-4"><%= t("studio.building") %></p>
       <p class="studio-rail-text"><%= @building.title %></p>
     </div>

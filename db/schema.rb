@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_190000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -84,12 +84,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_180000) do
   create_table "goals", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "dream_id", null: false
+    t.integer "life_area_id"
     t.integer "position", default: 0, null: false
     t.string "status", default: "active", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["dream_id"], name: "index_goals_on_dream_id"
+    t.index ["life_area_id"], name: "index_goals_on_life_area_id"
     t.index ["user_id", "position"], name: "index_goals_on_user_id_and_position"
     t.index ["user_id"], name: "index_goals_on_user_id"
   end
@@ -113,6 +115,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_180000) do
     t.integer "user_id", null: false
     t.index ["user_id", "position"], name: "index_habits_on_user_id_and_position"
     t.index ["user_id"], name: "index_habits_on_user_id"
+  end
+
+  create_table "life_areas", force: :cascade do |t|
+    t.text "ambition"
+    t.datetime "created_at", null: false
+    t.integer "dream_id", null: false
+    t.string "key", null: false
+    t.json "meta", default: {}, null: false
+    t.integer "number", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["dream_id", "key"], name: "index_life_areas_on_dream_id_and_key", unique: true
+    t.index ["dream_id"], name: "index_life_areas_on_dream_id"
+    t.index ["user_id", "number"], name: "index_life_areas_on_user_id_and_number"
+    t.index ["user_id"], name: "index_life_areas_on_user_id"
   end
 
   create_table "life_point_ledgers", force: :cascade do |t|
@@ -192,8 +210,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_180000) do
   add_foreign_key "finished_products", "goals"
   add_foreign_key "finished_products", "users"
   add_foreign_key "goals", "dreams"
+  add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
   add_foreign_key "habits", "users"
+  add_foreign_key "life_areas", "dreams"
+  add_foreign_key "life_areas", "users"
   add_foreign_key "life_point_ledgers", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"

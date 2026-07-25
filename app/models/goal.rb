@@ -3,6 +3,7 @@ class Goal < ApplicationRecord
 
   belongs_to :user
   belongs_to :dream
+  belongs_to :life_area, optional: true
   has_many :steps, -> { order(:position, :id) }, dependent: :destroy
   has_many :finished_products, dependent: :nullify
 

@@ -1,0 +1,35 @@
+<% content_for :title, @life_area.label %>
+
+<div class="studio-part">
+  <p class="studio-kicker"><%= link_to t("studio.back_today"), dashboard_path, class: "studio-link" %></p>
+  <h1 class="studio-dream mt-2"><%= @life_area.label %></h1>
+  <p class="studio-muted mt-2"><%= t("life_parts.#{LifeArea::SIMPLE_LABEL_KEYS.fetch(@life_area.key)}.hint") %></p>
+
+  <% if @life_area.focus? %>
+    <p class="studio-lp-chip mt-4"><%= t("life_parts.working_today") %></p>
+  <% end %>
+
+  <%= form_with model: @life_area, url: life_area_path(@life_area), method: :patch, class: "studio-onboarding__form mt-6" do |f| %>
+    <p class="studio-label"><%= t("life_parts.your_dream") %></p>
+    <%= f.text_area :ambition, rows: 3, class: "studio-input studio-input--lg", placeholder: t("life_parts.dream_placeholder") %>
+
+    <p class="studio-label mt-5"><%= t("life_parts.your_goal") %></p>
+    <input type="text" name="goal_title" value="<%= @goal&.title %>" class="studio-input studio-input--lg" placeholder="<%= t('life_parts.goal_placeholder') %>">
+
+    <button class="studio-btn studio-btn--strong mt-6"><%= t("life_parts.save") %></button>
+  <% end %>
+
+  <% if @building %>
+    <div class="studio-rail-card mt-8">
+      <p class="studio-label"><%= t("studio.building") %></p>
+      <p class="studio-rail-dream"><%= @building.title %></p>
+      <%= link_to t("studio.open_building"), building_path, class: "studio-link text-sm mt-2 inline-block" %>
+    </div>
+  <% end %>
+
+  <% if @goal %>
+    <%= button_to t("life_parts.build_next"), focus_life_area_path(@life_area), method: :post, class: "studio-btn studio-btn--strong mt-6" %>
+  <% else %>
+    <p class="studio-muted mt-6"><%= t("life_parts.need_goal") %></p>
+  <% end %>
+</div>

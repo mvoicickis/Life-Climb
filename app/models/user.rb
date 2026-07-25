@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :feedbacks, dependent: :destroy
 
   has_many :dreams, dependent: :destroy
+  has_many :life_areas, dependent: :destroy
   has_many :goals, dependent: :destroy
   has_many :steps, dependent: :destroy
   has_many :buildings, dependent: :destroy
@@ -72,5 +73,15 @@ class User < ApplicationRecord
 
   def support_prompts_muted?
     support_prompts_muted
+  end
+
+  def alive_level
+    AliveLevel.new(life_points)
+  end
+
+  def focus_life_area
+    focus_building&.goal&.life_area ||
+      primary_goal&.life_area ||
+      active_dream&.life_areas&.filled&.ordered&.first
   end
 end

@@ -1,13 +1,15 @@
 class LifePointsController < ApplicationController
   def show
     @total = current_user.life_points
+    @alive_level = current_user.alive_level
     @products_count = current_user.finished_products.count
     @buildings_shipped = current_user.buildings.shipped.count
     @days_invested = current_user.days_invested
     @years = years_building
     @ledger = current_user.life_point_ledgers.newest_first.limit(20)
     @dream = current_user.active_dream
-    @goals = current_user.goals.includes(:dream, :steps).ordered
+    @life_areas = @dream&.ensure_life_areas!
+    @goals = current_user.goals.includes(:dream, :steps, :life_area).ordered
     @learning_hours = learning_hours_estimate
     @support_moment = offer_support_moment!
   end

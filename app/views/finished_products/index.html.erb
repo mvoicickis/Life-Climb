@@ -19,7 +19,8 @@
       <% end %>
     </div>
   <% else %>
-    <div class="studio-empty">
+    <div class="studio-empty studio-empty--shelf">
+      <p class="studio-label"><%= t("finished.empty_shelf") %></p>
       <h2 class="studio-rail-dream"><%= t("finished.empty_title") %></h2>
       <p class="studio-muted mt-2"><%= t("finished.empty_body") %></p>
       <%= link_to t("nav.building"), building_path, class: "studio-btn mt-6 inline-flex" %>

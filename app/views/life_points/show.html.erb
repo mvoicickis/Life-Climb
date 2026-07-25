@@ -4,7 +4,9 @@
   <header class="studio-life__hero">
     <p class="studio-kicker"><%= t("life_points.title") %></p>
     <p class="studio-life__total"><%= number_with_delimiter(@total) %></p>
+    <p class="studio-alive__title mt-2"><%= @alive_level.title %></p>
     <p class="studio-life__tagline"><%= t("life_points.tagline") %></p>
+    <div class="studio-alive__ring mt-4 mx-auto" style="--alive-pct: <%= @alive_level.percent %>" aria-hidden="true"></div>
     <p class="studio-muted mt-3">
       <% if @years.to_f <= 0 %>
         <%= t("life_points.built_over.zero") %>
@@ -13,6 +15,13 @@
       <% end %>
     </p>
   </header>
+
+  <% if @life_areas.present? %>
+    <section class="mt-8">
+      <h2 class="studio-section-title"><%= t("studio.dream_life") %></h2>
+      <%= render "shared/person_map", life_areas: @life_areas, focus_id: current_user.focus_life_area&.id %>
+    </section>
+  <% end %>
 
   <section class="studio-life__created">
     <h2 class="studio-section-title"><%= t("life_points.created") %></h2>

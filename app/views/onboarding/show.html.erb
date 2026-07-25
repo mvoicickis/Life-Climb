@@ -1,57 +1,149 @@
-<% content_for :title, t("onboarding.dream_title") %>
+<% content_for :title, t("onboarding.intro_title") %>
 
 <div class="studio-onboarding">
   <p class="studio-kicker"><%= t("app_name") %></p>
 
   <% case @step %>
-  <% when "dream" %>
-    <h1 class="studio-dream"><%= t("onboarding.dream_title") %></h1>
-    <p class="studio-muted mt-2"><%= t("onboarding.dream_hint") %></p>
+  <% when "intro" %>
+    <h1 class="studio-dream mt-4"><%= t("onboarding.intro_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.intro_hint") %></p>
     <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
-      <input type="hidden" name="step" value="dream">
-      <input type="text" name="onboarding[dream]" value="<%= @draft['dream'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.dream_placeholder') %>" required autofocus>
+      <input type="hidden" name="step" value="intro">
+      <input type="text" name="onboarding[dream]" value="<%= @draft['dream'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.intro_placeholder') %>" autofocus>
+      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+    <% end %>
+
+  <% when *OnboardingController::PART_STEPS %>
+    <% part = @part_key %>
+    <% label_key = LifeArea::SIMPLE_LABEL_KEYS.fetch(part) %>
+    <p class="studio-label mt-4"><%= t("life_parts.#{label_key}.name") %></p>
+    <h1 class="studio-dream"><%= t("onboarding.parts.#{part}.title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.parts.#{part}.hint") %></p>
+
+    <% if part == "creativity" %>
+      <div class="studio-branch mt-4" data-controller="onboarding-examples">
+        <p class="studio-label"><%= t("onboarding.parts.creativity.partner_q") %></p>
+        <div class="studio-examples" role="list">
+          <label class="studio-example-chip">
+            <input type="radio" name="onboarding[has_partner]" value="true" form="part-form" <%= "checked" if @draft.dig("parts", "creativity", "meta", "has_partner") == true %>>
+            <%= t("onboarding.parts.creativity.partner_yes") %>
+          </label>
+          <label class="studio-example-chip">
+            <input type="radio" name="onboarding[has_partner]" value="false" form="part-form" <%= "checked" if @draft.dig("parts", "creativity", "meta", "has_partner") == false %>>
+            <%= t("onboarding.parts.creativity.partner_no") %>
+          </label>
+        </div>
+      </div>
+    <% end %>
+
+    <div data-controller="onboarding-examples">
+      <p class="studio-label mt-5"><%= t("onboarding.examples_label") %></p>
+      <div class="studio-examples" role="list">
+        <% t("onboarding.parts.#{part}.examples").each do |example| %>
+          <button type="button" class="studio-example-chip" data-action="onboarding-examples#fill" data-value="<%= example %>" role="listitem"><%= example %></button>
+        <% end %>
+      </div>
+
+      <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form", html: { id: "part-form" } do %>
+        <input type="hidden" name="step" value="<%= @step %>">
+        <textarea name="onboarding[ambition]" rows="3" class="studio-input studio-input--lg" placeholder="<%= t("onboarding.parts.#{part}.placeholder") %>" <%= "required" unless part == "physical_universe" %> autofocus data-onboarding-examples-target="input"><%= @draft.dig("parts", part, "ambition") || @draft["ambition"] %></textarea>
+        <div class="studio-onboarding__actions mt-6">
+          <button class="studio-btn studio-btn--strong"><%= t("onboarding.continue") %></button>
+          <% if part == "physical_universe" %>
+            <button class="studio-btn" name="onboarding[skip]" value="true"><%= t("onboarding.skip") %></button>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+  <% when "focus" %>
+    <h1 class="studio-dream mt-4"><%= t("onboarding.focus_title") %></h1>
+    <p class="studio-muted mt-2"><%= t("onboarding.focus_hint") %></p>
+    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+      <input type="hidden" name="step" value="focus">
+      <div class="studio-focus-list">
+        <% LifeArea::KEYS.each do |key| %>
+          <% ambition = @draft.dig("parts", key, "ambition").to_s.strip %>
+          <% next if ambition.blank? %>
+          <% label_key = LifeArea::SIMPLE_LABEL_KEYS.fetch(key) %>
+          <label class="studio-focus-option">
+            <input type="radio" name="onboarding[focus_key]" value="<%= key %>" required <%= "checked" if @draft["focus_key"] == key %>>
+            <span class="studio-focus-option__name"><%= t("life_parts.#{label_key}.name") %></span>
+            <span class="studio-focus-option__dream"><%= ambition %></span>
+          </label>
+        <% end %>
+      </div>
       <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
     <% end %>
 
   <% when "goal" %>
-    <h1 class="studio-dream"><%= t("onboarding.goal_title") %></h1>
+    <% focus = @draft["focus_key"] %>
+    <% label_key = LifeArea::SIMPLE_LABEL_KEYS[focus] %>
+    <h1 class="studio-dream mt-4"><%= t("onboarding.goal_title") %></h1>
     <p class="studio-muted mt-2"><%= t("onboarding.goal_hint") %></p>
-    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
-      <input type="hidden" name="step" value="goal">
-      <input type="text" name="onboarding[goal]" value="<%= @draft['goal'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.goal_placeholder') %>" required autofocus>
-      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+    <% if label_key %>
+      <p class="studio-thread-inline mt-3"><%= t("onboarding.for_part", part: t("life_parts.#{label_key}.short")) %></p>
     <% end %>
+    <div data-controller="onboarding-examples">
+      <p class="studio-label mt-5"><%= t("onboarding.examples_label") %></p>
+      <div class="studio-examples" role="list">
+        <% t("onboarding.goal_examples").each do |example| %>
+          <button type="button" class="studio-example-chip" data-action="onboarding-examples#fill" data-value="<%= example %>" role="listitem"><%= example %></button>
+        <% end %>
+      </div>
+      <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+        <input type="hidden" name="step" value="goal">
+        <input type="text" name="onboarding[goal]" value="<%= @draft['goal'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.goal_placeholder') %>" required autofocus data-onboarding-examples-target="input">
+        <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+      <% end %>
+    </div>
 
   <% when "steps" %>
-    <h1 class="studio-dream"><%= t("onboarding.steps_title") %></h1>
+    <h1 class="studio-dream mt-4"><%= t("onboarding.steps_title") %></h1>
     <p class="studio-muted mt-2"><%= t("onboarding.steps_hint") %></p>
     <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
       <input type="hidden" name="step" value="steps">
       <% defaults = @draft['steps'].presence || [t('onboarding.default_steps.one'), t('onboarding.default_steps.two'), t('onboarding.default_steps.three')] %>
       <% 5.times do |i| %>
-        <input type="text" name="onboarding[steps][]" value="<%= defaults[i] %>" class="studio-input mt-2">
+        <input type="text" name="onboarding[steps][]" value="<%= defaults[i] %>" class="studio-input mt-2" placeholder="<%= t('onboarding.step_placeholder', n: i + 1) %>">
       <% end %>
       <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
     <% end %>
 
   <% when "building" %>
-    <h1 class="studio-dream"><%= t("onboarding.building_title") %></h1>
+    <h1 class="studio-dream mt-4"><%= t("onboarding.building_title") %></h1>
     <p class="studio-muted mt-2"><%= t("onboarding.building_hint") %></p>
-    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
-      <input type="hidden" name="step" value="building">
-      <input type="text" name="onboarding[building]" value="<%= @draft['building'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.building_placeholder') %>" required autofocus>
-      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
-    <% end %>
+    <div data-controller="onboarding-examples">
+      <p class="studio-label mt-5"><%= t("onboarding.examples_label") %></p>
+      <div class="studio-examples" role="list">
+        <% t("onboarding.building_examples").each do |example| %>
+          <button type="button" class="studio-example-chip" data-action="onboarding-examples#fill" data-value="<%= example %>" role="listitem"><%= example %></button>
+        <% end %>
+      </div>
+      <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+        <input type="hidden" name="step" value="building">
+        <input type="text" name="onboarding[building]" value="<%= @draft['building'] %>" class="studio-input studio-input--lg" placeholder="<%= t('onboarding.building_placeholder') %>" required autofocus data-onboarding-examples-target="input">
+        <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.continue") %></button>
+      <% end %>
+    </div>
 
   <% when "today" %>
-    <h1 class="studio-dream"><%= t("onboarding.today_title") %></h1>
+    <h1 class="studio-dream mt-4"><%= t("onboarding.today_title") %></h1>
     <p class="studio-muted mt-2"><%= t("onboarding.today_hint") %></p>
-    <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
-      <input type="hidden" name="step" value="today">
-      <% 3.times do |i| %>
-        <input type="text" name="onboarding[actions][]" value="<%= Array(@draft['actions'])[i] %>" class="studio-input mt-2" <%= "required" if i.zero? %>>
+    <div data-controller="onboarding-examples">
+      <p class="studio-label mt-5"><%= t("onboarding.examples_label") %></p>
+      <div class="studio-examples" role="list">
+        <% t("onboarding.today_examples").each do |example| %>
+          <button type="button" class="studio-example-chip" data-action="onboarding-examples#fill" data-value="<%= example %>" role="listitem"><%= example %></button>
+        <% end %>
+      </div>
+      <%= form_with url: onboarding_path, method: :patch, class: "studio-onboarding__form" do %>
+        <input type="hidden" name="step" value="today">
+        <% 3.times do |i| %>
+          <input type="text" name="onboarding[actions][]" value="<%= Array(@draft['actions'])[i] %>" class="studio-input mt-2" placeholder="<%= t('onboarding.action_placeholder', n: i + 1) %>" <%= "required" if i.zero? %> <%= "data-onboarding-examples-target=field" if i < 3 %>>
+        <% end %>
+        <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.finish") %></button>
       <% end %>
-      <button class="studio-btn studio-btn--strong mt-6"><%= t("onboarding.finish") %></button>
-    <% end %>
+    </div>
   <% end %>
 </div>
