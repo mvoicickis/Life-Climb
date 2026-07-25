@@ -1,0 +1,27 @@
+<%# Production-ready character picker markup (wire to users.character later).
+    Locals: selected (optional "man" | "woman") %>
+<% selected = local_assigns.fetch(:selected, nil) %>
+
+<section class="lp-game px-4 py-8" aria-labelledby="character-pick-title">
+  <p class="text-center text-xs font-bold uppercase tracking-[0.2em] text-[var(--lp-lime)]/80">LifePoints</p>
+  <h1 id="character-pick-title" class="mt-3 text-center text-3xl font-semibold text-[var(--lp-ink)]">
+    Choose your character
+  </h1>
+  <p class="mt-2 text-center text-sm text-[var(--lp-muted)]">Who stands at the center of your Life Map?</p>
+
+  <div class="mx-auto mt-8 grid max-w-md grid-cols-2 gap-4">
+    <% %w[man woman].each do |key| %>
+      <label class="lp-glass cursor-pointer p-3 transition <%= 'ring-2 ring-[var(--lp-lime)]' if selected == key %>">
+        <input type="radio" name="character" value="<%= key %>" class="sr-only" <%= "checked" if selected == key %>>
+        <%= image_tag "characters/character-#{key}.png",
+              alt: key.capitalize,
+              class: "lp-avatar-ring aspect-square w-full rounded-2xl object-cover" %>
+        <p class="mt-3 text-center text-sm font-bold text-[var(--lp-ink)]"><%= key.capitalize %></p>
+      </label>
+    <% end %>
+  </div>
+
+  <div class="mx-auto mt-8 max-w-md">
+    <button type="submit" class="lp-cta w-full">Continue</button>
+  </div>
+</section>
