@@ -21,12 +21,14 @@ class DashboardController < ApplicationController
     @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                @journey.missions.for_day(Date.current).primary.order(:id).first
     @closer = @journey.closer_percent.round
-    default_aspect = params[:aspect].presence ||
-                     @mission&.aspect_key.presence ||
-                     @journey.life_area.key
-    @selected_aspect = LifeArea::HOME_ASPECT_KEYS.include?(default_aspect) ? default_aspect : LifeArea::HOME_ASPECT_KEYS.first
+    @life_points = current_user.life_points
     @daily_todos = current_user.daily_todos.for_day(Date.current).ordered
-    @open_todo_counts = @daily_todos.incomplete.group(:aspect_key).count
+    @include_mission_in_battle = @mission.present? && !@mission.completed?
+    @battle_reward = @daily_todos.incomplete.sum { |t| t.lp_reward.to_i }
+    @battle_reward += @mission.lp_reward if @include_mission_in_battle
+    @battle_open_count = @daily_todos.incomplete.count + (@include_mission_in_battle ? 1 : 0)
+    @project_title = @journey.next_win.presence || @journey.title
+    @project_progress = [ @closer, 95 ].min
     render "dashboard/show_v2"
   end
 

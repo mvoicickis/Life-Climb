@@ -10,54 +10,61 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
       title: "Financial freedom",
       ideal_scene: "Calm savings and no money stress.",
       current_reality: "Building a budget habit.",
-      next_win: nil,
+      next_win: "Launch Beta",
       today_mission: "Review my budget",
-      closer_percent: 6
+      closer_percent: 36
     )
   end
 
-  test "home shows battle plan and filters by aspect tag" do
-    get dashboard_path(aspect: "money")
+  test "home shows premium battle hierarchy" do
+    get dashboard_path
     assert_response :success
-    assert_match(/Daily Battle Plan/i, response.body)
-    assert_match(/I did it/i, response.body)
-    assert_match(/Focus list/i, response.body)
+    assert_match(/Today/i, response.body)
+    assert_match(/Battle/i, response.body)
+    assert_match(/Goal/i, response.body)
+    assert_match(/Current Project/i, response.body)
+    assert_match(/Why this matters/i, response.body)
+    assert_match(/Complete Battle/i, response.body)
+    assert_match(/Review my budget/i, response.body)
+    assert_match(/Financial freedom/i, response.body)
+    assert_match(/lp-dash-nav/i, response.body)
+    assert_no_match(/Life Tree|Open Life/i, response.body)
+    assert_no_match(/Daily Battle Plan/i, response.body)
   end
 
   test "can add and complete a money todo" do
     post daily_todos_url, params: {
       daily_todo: { title: "Cancel unused subscription", aspect_key: "money" }
     }
-    assert_redirected_to dashboard_path(aspect: "money")
+    assert_redirected_to dashboard_path
     todo = @user.daily_todos.for_day.last
     assert_equal "Cancel unused subscription", todo.title
     assert_equal "money", todo.aspect_key
+    assert_equal GameRules::BATTLE_TODO_LP, todo.lp_reward
 
     post complete_daily_todo_url(todo)
     assert todo.reload.completed?
 
-    get dashboard_path(aspect: "money")
+    get dashboard_path
     assert_match(/Cancel unused subscription/i, response.body)
   end
 
-  test "career todo shows badge while viewing money list" do
-    @user.daily_todos.create!(
-      title: "Apply to one job",
-      aspect_key: "career",
-      scheduled_on: Date.current
-    )
+  test "complete battle finishes open mission and todos" do
     @user.daily_todos.create!(
       title: "Track spending",
       aspect_key: "money",
       scheduled_on: Date.current
     )
 
-    get dashboard_path(aspect: "money")
-    assert_match(/Track spending/i, response.body)
-    assert_match(/I did it|Review my budget/i, response.body)
-    assert_match(/Focus list/i, response.body)
-    assert_match(/lp-aspect-badge/i, response.body)
-    assert_no_match(/Also waiting today/i, response.body)
-    assert_match(/\+ Add a point/i, response.body)
+    before = @user.reload.total_points
+    post battle_completion_url
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_match(/Battle complete/i, flash[:notice].to_s + response.body)
+
+    assert @user.daily_todos.for_day.incomplete.none?
+    mission = @user.missions.for_day.primary.order(:id).last
+    assert mission.completed?
+    assert_operator @user.reload.total_points, :>, before
   end
 end

@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       post :complete
     end
   end
+  resource :battle_completion, only: :create, controller: "battle_completions"
   post "missions/:mission_id/complete", to: "mission_completions#create", as: :mission_completion
 
   resource :onboarding, only: %i[ show update ], controller: "onboarding"

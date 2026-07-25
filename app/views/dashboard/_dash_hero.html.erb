@@ -1,0 +1,19 @@
+<%# locals: journey, closer %>
+<section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
+  <div class="lp-dash-hero__copy">
+    <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
+    <h2 class="lp-dash-hero__title"><%= journey.title %></h2>
+    <p class="lp-dash-hero__pct">
+      <span data-battle-day-target="goalPct"><%= closer %></span>%
+    </p>
+    <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">
+      <div class="lp-dash-bar__fill" data-battle-day-target="goalBar" style="width: <%= closer %>%"></div>
+    </div>
+    <p class="lp-dash-hero__hint"><%= t("dash.goal_hint") %></p>
+  </div>
+  <div class="lp-dash-hero__art" aria-hidden="true">
+    <%= image_tag "game/gap-mountains.png", alt: "", class: "lp-dash-hero__img" %>
+    <div class="lp-dash-hero__glow" style="--closer: <%= closer %>"></div>
+    <div class="lp-dash-hero__flag" style="--closer: <%= closer %>"></div>
+  </div>
+</section>

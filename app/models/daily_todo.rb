@@ -9,6 +9,9 @@ class DailyTodo < ApplicationRecord
   validates :aspect_key, presence: true, inclusion: { in: LifeArea::HOME_ASPECT_KEYS }
   validates :scheduled_on, presence: true
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :lp_reward, numericality: { only_integer: true, greater_than: 0 }
+
+  before_validation :assign_default_lp, on: :create
 
   scope :for_day, ->(date = Date.current) { where(scheduled_on: date) }
   scope :for_aspect, ->(key) { where(aspect_key: key) }
@@ -17,5 +20,11 @@ class DailyTodo < ApplicationRecord
 
   def completed?
     completed_at.present?
+  end
+
+  private
+
+  def assign_default_lp
+    self.lp_reward = GameRules::BATTLE_TODO_LP if lp_reward.blank? || lp_reward.to_i <= 0
   end
 end

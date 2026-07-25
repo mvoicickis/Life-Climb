@@ -53,9 +53,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_match(/Read 20 pages/i, response.body)
-    assert_match(/I did it|Today/i, response.body)
-    assert_match(/This improves|Career|Self/i, response.body)
-    assert_no_match(/\bProject\b/, response.body)
+    assert_match(/Today'?s Battle|Complete Battle/i, response.body)
+    assert_match(/Current Project|Today'?s Goal/i, response.body)
     assert_no_match(/Life Tree|Open Life/i, response.body)
   end
 

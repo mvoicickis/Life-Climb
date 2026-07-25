@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_250000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_250000) do
     t.string "aspect_key", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.integer "lp_reward", default: 30, null: false
     t.integer "position", default: 0, null: false
     t.date "scheduled_on", null: false
     t.string "title", null: false

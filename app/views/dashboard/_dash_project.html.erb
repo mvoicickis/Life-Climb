@@ -1,0 +1,20 @@
+<%# locals: journey, project_title, progress %>
+<section class="lp-dash-card lp-dash-project" aria-label="<%= t('dash.project_label') %>">
+  <div class="lp-dash-project__row">
+    <div class="lp-dash-project__icon" aria-hidden="true">🚀</div>
+    <div class="lp-dash-project__body">
+      <p class="lp-dash-kicker"><%= t("dash.project_label") %></p>
+      <h2 class="lp-dash-project__title"><%= project_title %></h2>
+      <div class="lp-dash-bar lp-dash-bar--sm" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= progress %>">
+        <div class="lp-dash-bar__fill" style="width: <%= progress %>%"></div>
+      </div>
+      <p class="lp-dash-project__meta">
+        <span><%= progress %>%</span>
+        <% if journey.next_win.present? %>
+          <span>· <%= t("dash.milestone", name: journey.next_win) %></span>
+        <% end %>
+      </p>
+    </div>
+  </div>
+  <%= link_to t("dash.view_project"), life_journey_path(journey), class: "lp-dash-project__link" %>
+</section>

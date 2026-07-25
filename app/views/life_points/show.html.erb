@@ -110,3 +110,7 @@
     <%= render "shared/support_thanks", moment: @support_moment %>
   </div>
 </div>
+
+<% if current_user.planning_v2? %>
+  <%= render "shared/lp_dash_nav", active: :progress %>
+<% end %>

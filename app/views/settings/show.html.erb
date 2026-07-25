@@ -1,5 +1,6 @@
 <% content_for :title, t("settings.title") %>
 <% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
   <header>
@@ -120,4 +121,6 @@
     <%= link_to t("habits.back_today"), dashboard_path, class: "font-bold text-[var(--lp-lime)]" %>
   </p>
 </div>
+
+<%= render "shared/lp_dash_nav", active: :you %>
 
