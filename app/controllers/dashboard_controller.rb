@@ -16,6 +16,7 @@ class DashboardController < ApplicationController
     @rhythms = current_user.habits.active.on_home.ordered.limit(3)
     @latest_finished = current_user.finished_products.newest_first.first
     @life_points = current_user.life_points
+    @lp_today = current_user.ledger_points_today
     @alive_level = current_user.alive_level
     @direction = DirectionSignal.new(
       user: current_user,

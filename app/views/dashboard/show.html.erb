@@ -1,141 +1,185 @@
-<% content_for :title, t("dashboard.title") %>
+<% content_for :title, t("game_ui.dashboard_title") %>
+<% content_for :lp_game, true %>
 
-<div class="studio-today" data-controller="studio-thread">
-  <div class="studio-today__main">
-    <p class="studio-kicker" data-studio-thread-target="line"><%= t("studio.why_today") %></p>
-    <h1 class="studio-dream"><%= t("studio.dream_life") %></h1>
-    <p class="studio-muted mt-2"><%= t("studio.right_way") %></p>
+<%
+  incomplete = @actions.reject(&:completed?)
+  focus_action = incomplete.first || @actions.first
+  gap = current_user.overall_gap_percent(@life_areas)
+  morale = current_user.morale_score(actions: @actions)
+  greeting =
+    case Time.current.hour
+    when 5..11 then t("game_ui.good_morning")
+    when 12..17 then t("game_ui.good_afternoon")
+    else t("game_ui.good_evening")
+    end
+%>
 
-    <%= render "shared/person_map", life_areas: @life_areas, focus_id: @life_area&.id %>
-
-    <% if @life_area %>
-      <section class="life-compare life-compare--today" aria-label="<%= t('studio.ideal') %> vs <%= t('studio.present') %>">
-        <div class="life-compare__col">
-          <p class="studio-label"><%= t("studio.ideal") %></p>
-          <p class="life-compare__text"><%= @life_area.ideal.presence || t("life_compare.ideal_placeholder") %></p>
-        </div>
-        <div class="life-compare__col">
-          <p class="studio-label"><%= t("studio.present") %></p>
-          <p class="life-compare__text"><%= @life_area.present.presence || t("life_compare.present_placeholder") %></p>
-        </div>
-      </section>
-
-      <div class="closer-today">
-        <div class="closer-today__meta">
-          <p class="studio-label"><%= t("studio.closer") %></p>
-          <p class="closer-today__label"><%= @life_area.closer_label %></p>
-        </div>
-        <div class="closer-bar" style="--closer-pct: <%= @life_area.closer_percent %>" aria-hidden="true">
-          <span class="closer-bar__fill"></span>
-        </div>
-        <%= button_to t("studio.got_closer"), closer_life_area_path(@life_area), method: :post, class: "studio-btn mt-3" %>
-        <p class="studio-muted text-sm mt-2"><%= t("studio.closer_hint") %></p>
-      </div>
-    <% end %>
-
-    <div class="studio-direction studio-direction--<%= @direction.status %>" data-studio-thread-target="story">
-      <p class="studio-direction__title"><%= @direction.title %></p>
-      <p class="studio-direction__body"><%= @direction.body %></p>
-      <% if @direction.gap_hint.present? %>
-        <p class="studio-direction__hint"><%= @direction.gap_hint %></p>
-      <% end %>
-      <% if @direction.harmony_hint.present? %>
-        <p class="studio-direction__hint"><%= @direction.harmony_hint %></p>
-      <% end %>
-    </div>
-
-    <div class="studio-alive studio-alive--hero">
-      <div class="studio-alive__meta">
-        <p class="studio-label"><%= t("alive_levels.label") %></p>
-        <p class="studio-alive__title"><%= @alive_level.title %></p>
-        <p class="studio-muted text-sm mt-1"><%= @alive_level.next_level_hint %></p>
-      </div>
-      <div class="studio-alive__ring" style="--alive-pct: <%= @alive_level.percent %>" aria-hidden="true">
-        <span class="studio-lp-chip studio-lp-chip--lg"><%= number_with_delimiter(@life_points) %> LP</span>
+<div class="lp-home mx-auto max-w-lg px-4 pb-4 pt-5">
+  <header class="flex items-start justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-3">
+      <%= image_tag current_user.character_image,
+            alt: current_user.character_key.capitalize,
+            class: "lp-avatar-ring h-14 w-14 object-cover" %>
+      <div class="min-w-0">
+        <h1 class="truncate text-xl font-semibold text-[var(--lp-ink)]">
+          <%= greeting %>, <span class="text-[var(--lp-lime)]"><%= current_user.display_name %></span>!
+        </h1>
+        <p class="mt-0.5 text-sm text-[var(--lp-muted)]"><%= t("game_ui.closer_line") %></p>
       </div>
     </div>
-
-    <% if @day_clear %>
-      <div class="studio-day-clear is-shown" data-controller="studio-celebrate">
-        <p class="studio-day-clear__title"><%= t("studio.day_clear_title") %></p>
-        <p class="studio-day-clear__body"><%= t("studio.day_clear_body") %></p>
-      </div>
+    <%= link_to settings_path, class: "mt-1 text-[var(--lp-gold)]", aria: { label: t("nav.settings") } do %>
+      <span aria-hidden="true">🔔</span>
     <% end %>
+  </header>
 
-    <section class="studio-actions" aria-labelledby="today-actions-heading">
-      <div class="studio-section-head">
-        <h2 id="today-actions-heading" class="studio-section-title"><%= t("studio.today_moves") %></h2>
+  <section class="lp-glass mt-5 p-4" aria-label="<%= t('nav.life_points') %>">
+    <div class="flex items-end justify-between gap-3">
+      <div>
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--lp-gold)]">✦ <%= t("nav.life_points") %></p>
+        <p class="mt-1 text-4xl font-bold tracking-tight text-[var(--lp-lime)]">
+          <%= number_with_delimiter(@life_points) %> <span class="text-2xl">LP</span>
+        </p>
+        <p class="mt-2 inline-flex rounded-full bg-[var(--lp-elevated)] px-3 py-1 text-xs font-bold text-[var(--lp-gold)]">
+          +<%= number_with_delimiter(@lp_today) %> LP <%= t("game_ui.today") %>
+        </p>
+      </div>
+      <div class="text-right">
+        <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= @alive_level.title %></p>
+        <div class="lp-sparkline mt-2" aria-hidden="true">
+          <svg viewBox="0 0 120 40" class="h-10 w-28">
+            <path d="M2 32 C20 28, 28 18, 40 20 S60 8, 78 12 S100 4, 118 6" fill="none" stroke="var(--lp-lime)" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="118" cy="6" r="4" fill="var(--lp-gold)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="life-map" class="lp-glass lp-map-card mt-4 overflow-hidden" aria-label="<%= t('game_ui.life_map') %>">
+    <div class="lp-map-stage">
+      <div class="lp-map-ring" role="list">
+        <% @life_areas.each_with_index do |area, index| %>
+          <% angle = (360.0 / @life_areas.size) * index - 90 %>
+          <%= link_to life_area_path(area),
+                class: "lp-map-node #{'is-focus' if @life_area&.id == area.id}",
+                style: "--lp-angle: #{angle}deg",
+                role: "listitem" do %>
+            <span class="lp-map-node__dot" aria-hidden="true"><%= area.number %></span>
+            <span class="lp-map-node__label"><%= area.short_label %></span>
+            <span class="lp-map-node__pct"><%= area.closer_percent %>%</span>
+          <% end %>
+        <% end %>
+        <div class="lp-map-center">
+          <%= image_tag current_user.character_image, alt: "", class: "lp-avatar-ring h-16 w-16 object-cover" %>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-[var(--lp-border)] px-4 py-3">
+      <p class="text-sm font-semibold text-[var(--lp-ink)]">
+        <%= t("game_ui.overall_gap") %>:
+        <span class="text-[var(--lp-lime)]"><%= gap %>%</span>
+      </p>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("game_ui.gap_away", percent: gap) %></p>
+      <% if @life_area %>
+        <%= link_to t("game_ui.view_progress"), life_area_path(@life_area), class: "mt-2 inline-flex text-sm font-bold text-[var(--lp-mint)]" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section id="todays-mission" class="lp-glass mt-4 overflow-hidden" aria-labelledby="mission-heading">
+    <div class="px-4 pt-4">
+      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--lp-lime)]/80"><%= t("game_ui.todays_mission") %></p>
+    </div>
+
+    <% if focus_action %>
+      <div class="px-4 pb-4 pt-2">
+        <h2 id="mission-heading" class="text-xl font-semibold text-[var(--lp-ink)]"><%= focus_action.title %></h2>
         <% if @life_area %>
-          <p class="studio-muted text-sm"><%= @life_area.short_label %></p>
+          <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= @life_area.short_label %> · <%= @goal.title %></p>
+        <% end %>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span class="rounded-full bg-[var(--lp-elevated)] px-3 py-1 text-xs font-bold text-[var(--lp-gold)]">
+            +<%= LifePointsAward::ACTION %> LP
+          </span>
+          <span class="rounded-full bg-[var(--lp-elevated)] px-3 py-1 text-xs font-bold text-[var(--lp-mint)]">
+            +<%= t("game_ui.morale_chip") %>
+          </span>
+        </div>
+
+        <% if focus_action.completed? %>
+          <p class="lp-cta mt-4 w-full opacity-70"><%= t("game_ui.mission_done") %></p>
+        <% else %>
+          <%= button_to t("game_ui.start_mission"),
+                complete_today_action_path(focus_action),
+                method: :post,
+                class: "lp-cta mt-4 w-full",
+                data: { turbo: true } %>
         <% end %>
       </div>
 
-      <% if @actions.any? %>
-        <ul class="studio-action-list" data-controller="quest-complete">
-          <% @actions.each do |action| %>
-            <li class="studio-quest <%= 'is-done' if action.completed? %>">
-              <% if action.completed? %>
-                <span class="studio-quest__check" aria-hidden="true">✓</span>
-                <div class="studio-quest__body">
-                  <span class="studio-quest__title"><%= action.title %></span>
-                  <span class="studio-quest__for"><%= t("studio.for_goal", goal: @goal.title) %></span>
-                </div>
-                <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
-              <% else %>
-                <%= button_to complete_today_action_path(action), method: :post, class: "studio-quest__btn", data: { action: "quest-complete#pop", lp: LifePointsAward::ACTION } do %>
-                  <span class="studio-quest__check" aria-hidden="true"></span>
-                  <div class="studio-quest__body">
-                    <span class="studio-quest__title"><%= action.title %></span>
-                    <span class="studio-quest__for"><%= t("studio.for_goal", goal: @goal.title) %></span>
-                  </div>
-                  <span class="studio-quest__lp">+<%= LifePointsAward::ACTION %> LP</span>
-                <% end %>
+      <% if @actions.size > 1 %>
+        <ul class="space-y-2 border-t border-[var(--lp-border)] px-4 py-3">
+          <% @actions.reject { |a| a.id == focus_action.id }.each do |action| %>
+            <li class="flex items-center justify-between gap-2 text-sm <%= 'opacity-50' if action.completed? %>">
+              <span class="text-[var(--lp-ink)]"><%= action.completed? ? "✓" : "○" %> <%= action.title %></span>
+              <% unless action.completed? %>
+                <%= button_to "+#{LifePointsAward::ACTION}",
+                      complete_today_action_path(action),
+                      method: :post,
+                      class: "rounded-full bg-[var(--lp-elevated)] px-2 py-1 text-xs font-bold text-[var(--lp-lime)]" %>
               <% end %>
             </li>
           <% end %>
         </ul>
-      <% else %>
-        <p class="studio-muted"><%= t("studio.empty_actions") %></p>
       <% end %>
+    <% else %>
+      <div class="px-4 pb-4 pt-2">
+        <h2 id="mission-heading" class="text-xl font-semibold text-[var(--lp-ink)]"><%= t("game_ui.no_mission") %></h2>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("game_ui.no_mission_hint") %></p>
+      </div>
+    <% end %>
+  </section>
 
-      <%= form_with url: today_actions_path, scope: :today_action, class: "studio-add-form" do |f| %>
-        <%= f.text_field :title, placeholder: t("studio.action_placeholder"), class: "studio-input", required: true, autocomplete: "off" %>
-        <%= f.submit t("studio.add_action"), class: "studio-btn" %>
-      <% end %>
+  <div class="mt-4 grid grid-cols-2 gap-3">
+    <section class="lp-glass p-4">
+      <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--lp-muted)]"><%= t("game_ui.lp_trend") %></p>
+      <p class="mt-2 text-lg font-bold text-[var(--lp-lime)]">+<%= number_with_delimiter(@lp_today) %> LP</p>
+      <p class="text-xs text-[var(--lp-muted)]"><%= t("game_ui.today") %></p>
+    </section>
+    <section class="lp-glass p-4">
+      <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--lp-muted)]"><%= t("game_ui.morale") %></p>
+      <div class="lp-morale mt-3" style="--morale: <%= morale %>" aria-label="<%= morale %>%">
+        <span class="lp-morale__fill"></span>
+      </div>
+      <p class="mt-2 text-xs text-[var(--lp-muted)]"><%= t("game_ui.morale_hint") %></p>
     </section>
   </div>
 
-  <aside class="studio-today__rail">
-    <div class="studio-rail-card" data-studio-thread-target="rail">
-      <p class="studio-label"><%= t("studio.now") %></p>
-      <% if @life_area %>
-        <p class="studio-rail-dream"><%= @life_area.label %></p>
-      <% end %>
-      <p class="studio-label mt-4"><%= t("studio.goal") %></p>
-      <p class="studio-rail-text"><%= @goal.title %></p>
-      <p class="studio-label mt-4"><%= t("studio.plan") %></p>
-      <p class="studio-rail-text"><%= @building.title %></p>
+  <% if @life_area %>
+    <div class="mt-4">
+      <%= render "dashboard/area_progress", life_area: @life_area %>
     </div>
+  <% end %>
 
-    <%= render "shared/coach_line" %>
-
-    <% if @latest_finished %>
-      <div class="studio-rail-card">
-        <p class="studio-label"><%= t("studio.finished_teaser") %></p>
-        <%= link_to @latest_finished.title, finished_product_path(@latest_finished), class: "studio-rail-dream" %>
-      </div>
+  <section id="add-mission" class="lp-glass mt-4 p-4">
+    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--lp-muted)]"><%= t("game_ui.add_mission") %></p>
+    <%= form_with url: today_actions_path, scope: :today_action, class: "mt-3 flex gap-2" do |f| %>
+      <%= f.text_field :title,
+            placeholder: t("studio.action_placeholder"),
+            class: "lp-input flex-1",
+            required: true,
+            autocomplete: "off" %>
+      <%= f.submit t("studio.add_action"), class: "lp-cta shrink-0 !px-4 !py-2 text-sm" %>
     <% end %>
+  </section>
 
-    <% if @rhythms.any? %>
-      <div class="studio-rail-card studio-rail-card--muted">
-        <p class="studio-label"><%= t("studio.numbers") %></p>
-        <p class="studio-muted text-sm"><%= t("studio.numbers_hint") %></p>
-        <ul class="mt-2 space-y-1">
-          <% @rhythms.each do |rhythm| %>
-            <li><%= link_to rhythm.name, habits_path, class: "studio-link text-sm" %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-  </aside>
+  <% unless current_user.character_chosen? %>
+    <div class="lp-glass mt-4 p-4">
+      <%= form_with model: current_user, url: settings_path, method: :patch do %>
+        <%= render "shared/character_picker", selected: current_user.character %>
+      <% end %>
+    </div>
+  <% end %>
 </div>
+
+<%= render "shared/lp_bottom_nav", active: :dashboard %>

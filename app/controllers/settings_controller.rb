@@ -39,6 +39,6 @@ class SettingsController < ApplicationController
   private
 
   def settings_params
-    params.require(:user).permit(:home_stat_count)
+    params.require(:user).permit(:home_stat_count, :character)
   end
 end
