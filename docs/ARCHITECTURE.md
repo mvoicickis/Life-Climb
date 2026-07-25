@@ -2,6 +2,14 @@
 
 LifePoints is a **Life Operating System**, not a habit tracker. It helps people close the gap between **Current Reality** and **Ideal Scene**.
 
+## UX first (highest priority)
+
+Ease and motivation beat clever architecture.
+
+- A new user should always know: what I'm working on, what to do today, whether I'm progressing.
+- Prefer one clear CTA. Prefer plain language. Prefer automation over forms.
+- If a screen needs explaining, simplify the screen.
+
 ## Product rules (locked)
 
 - Dashboard answers only: What am I working on? What should I do today? Am I making progress?

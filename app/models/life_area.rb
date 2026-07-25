@@ -71,6 +71,7 @@ class LifeArea < ApplicationRecord
   belongs_to :user
   belongs_to :dream, optional: true
   has_many :goals, dependent: :nullify
+  has_many :life_journeys, dependent: :restrict_with_error
 
   validates :key, presence: true
   validate :key_must_be_known

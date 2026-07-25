@@ -1,0 +1,42 @@
+<% content_for :title, t("game_ui.missions_title") %>
+<% content_for :lp_game, true %>
+
+<div class="lp-home mx-auto max-w-md space-y-5 px-4 pb-24 pt-5">
+  <header>
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("game_ui.missions_title") %></h1>
+    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("missions.v2_subtitle") %></p>
+  </header>
+
+  <% if @journey %>
+    <section class="lp-glass p-4">
+      <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.working_on") %></p>
+      <p class="mt-1 font-semibold text-[var(--lp-ink)]"><%= @journey.title %></p>
+    </section>
+  <% end %>
+
+  <% if @missions.any? %>
+    <ul class="space-y-3">
+      <% @missions.each do |mission| %>
+        <li class="lp-glass p-4">
+          <p class="font-semibold text-[var(--lp-ink)]"><%= mission.title %></p>
+          <% if mission.completed? %>
+            <p class="mt-2 text-sm text-[var(--lp-lime)]"><%= t("dashboard_v2.done_today") %></p>
+          <% else %>
+            <p class="mt-2 text-sm text-[var(--lp-muted)]">
+              <%= t("dashboard_v2.reward_preview", lp: mission.lp_reward, gap: mission.gap_delta_percent) %>
+            </p>
+            <%= button_to t("dashboard_v2.complete"),
+                  mission_completion_path(mission),
+                  method: :post,
+                  class: "lp-cta mt-3 w-full" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.no_mission") %></p>
+    <%= link_to t("focus.title"), focus_path, class: "lp-cta mt-4 inline-flex" %>
+  <% end %>
+</div>
+
+<%= render "shared/lp_bottom_nav", active: :missions %>

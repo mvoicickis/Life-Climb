@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
   resource :life_area_selections, only: %i[ show update ], controller: "life_area_selections"
+  resource :v2_onboarding, only: %i[ show update ], controller: "v2_onboardings"
+  resources :life_journeys, only: %i[ new create show ]
+  resource :focus, only: %i[ show update ], controller: "focus"
+  post "missions/:mission_id/complete", to: "mission_completions#create", as: :mission_completion
 
   resource :onboarding, only: %i[ show update ], controller: "onboarding"
   resources :life_areas, only: %i[ show update ] do

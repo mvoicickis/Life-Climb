@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :today_actions, dependent: :destroy
   has_many :finished_products, dependent: :destroy
   has_many :life_point_ledgers, dependent: :destroy
+  has_many :life_journeys, dependent: :destroy
+  has_many :missions, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
 
@@ -47,6 +49,20 @@ class User < ApplicationRecord
     planning_v2? ? life_areas.v2_selected : (active_dream&.life_areas&.tree || life_areas.none)
   end
 
+  def focused_journeys
+    life_journeys.focused
+  end
+
+  def primary_focused_journey
+    life_journeys.primary_focus.first
+  end
+
+  def needs_onboarding?
+    return !onboarding_completed? if planning_v2?
+
+    !onboarding_completed? && dreams.none?
+  end
+
   def life_points
     total_points
   end
@@ -72,10 +88,21 @@ class User < ApplicationRecord
   end
 
   def overall_gap_percent(areas = nil)
+    if planning_v2?
+      journeys = focused_journeys.presence || life_journeys.active
+      return 0 if journeys.empty?
+
+      return (journeys.sum { |j| j.gap_percent.to_f } / journeys.size).round
+    end
+
     (100 - overall_closer_percent(areas)).clamp(0, 100)
   end
 
   def overall_closer_percent(areas = nil)
+    if planning_v2?
+      return (100 - overall_gap_percent).clamp(0, 100)
+    end
+
     areas = Array(areas.presence || active_dream&.life_areas&.tree)
     return 0 if areas.empty?
 
@@ -84,10 +111,6 @@ class User < ApplicationRecord
 
   def onboarding_completed?
     onboarding_completed_at.present?
-  end
-
-  def needs_onboarding?
-    !onboarding_completed? && dreams.none?
   end
 
   def active_dream

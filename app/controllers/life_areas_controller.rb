@@ -2,6 +2,11 @@ class LifeAreasController < ApplicationController
   before_action :set_life_area
 
   def show
+    if @life_area.v2_selected?
+      journey = current_user.life_journeys.where(life_area: @life_area).order(updated_at: :desc).first
+      redirect_to(journey ? life_journey_path(journey) : new_life_journey_path(life_area_id: @life_area.id)) and return
+    end
+
     @dream = @life_area.dream
     @goal = @life_area.active_goal
     @building = @life_area.active_building

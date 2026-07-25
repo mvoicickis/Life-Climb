@@ -9,6 +9,7 @@ class LifePointsDecay
   end
 
   def call
+    return if @user.planning_v2?
     return if @user.total_points <= 0
     return unless idle_long_enough?
     return if decayed_today?

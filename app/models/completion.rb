@@ -8,13 +8,17 @@ class Completion < ApplicationRecord
 
   before_validation :set_points_awarded, on: :create
 
-  after_create :increment_user_points
-  after_destroy :decrement_user_points
+  after_create :increment_user_points, unless: :skip_points_for_v2?
+  after_destroy :decrement_user_points, unless: :skip_points_for_v2?
 
   private
 
   def set_points_awarded
     self.points_awarded ||= habit.points
+  end
+
+  def skip_points_for_v2?
+    user.planning_v2?
   end
 
   def increment_user_points

@@ -1,0 +1,28 @@
+<% content_for :title, @journey.title %>
+<% content_for :lp_game, true %>
+
+<div class="lp-home mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5">
+  <header>
+    <p class="text-sm text-[var(--lp-muted)]"><%= @journey.life_area.label %></p>
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= @journey.title %></h1>
+  </header>
+
+  <section class="lp-glass space-y-2 p-4">
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("journeys.ideal") %></h2>
+    <p class="text-[var(--lp-ink)]"><%= @journey.ideal_scene %></p>
+  </section>
+
+  <section class="lp-glass space-y-2 p-4">
+    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("journeys.present") %></h2>
+    <p class="text-[var(--lp-ink)]"><%= @journey.current_reality %></p>
+  </section>
+
+  <section class="lp-glass p-4">
+    <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.gap") %></p>
+    <p class="text-3xl font-semibold text-[var(--lp-ink)]"><%= @journey.gap_percent.to_i %>%</p>
+  </section>
+
+  <%= link_to t("focus.title"), focus_path, class: "lp-cta inline-flex" %>
+</div>
+
+<%= render "shared/lp_bottom_nav", active: :life %>
