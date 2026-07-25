@@ -2398,6 +2398,24 @@
   grid-template-columns: 1fr 1fr 1fr;
 }
 
+.lp-aspect-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--lp-muted);
+  background: transparent;
+}
+
+.lp-aspect-tag.is-active {
+  border-color: var(--lp-lime);
+  background: color-mix(in srgb, var(--lp-lime) 15%, transparent);
+  color: var(--lp-ink);
+}
+
 .lp-fab {
   width: 3.25rem;
   height: 3.25rem;

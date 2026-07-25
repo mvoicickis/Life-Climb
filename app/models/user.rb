@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :life_point_ledgers, dependent: :destroy
   has_many :life_journeys, dependent: :destroy
   has_many :missions, dependent: :destroy
+  has_many :daily_todos, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
 

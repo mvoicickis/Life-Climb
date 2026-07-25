@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_240000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_250000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -48,6 +48,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_240000) do
     t.index ["habit_id", "logged_on"], name: "index_daily_logs_on_habit_id_and_logged_on", unique: true
     t.index ["habit_id"], name: "index_daily_logs_on_habit_id"
     t.index ["user_id"], name: "index_daily_logs_on_user_id"
+  end
+
+  create_table "daily_todos", force: :cascade do |t|
+    t.string "aspect_key", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.date "scheduled_on", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "scheduled_on", "aspect_key"], name: "index_daily_todos_on_user_id_and_scheduled_on_and_aspect_key"
+    t.index ["user_id"], name: "index_daily_todos_on_user_id"
   end
 
   create_table "dreams", force: :cascade do |t|
@@ -264,6 +277,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_240000) do
   add_foreign_key "completions", "users"
   add_foreign_key "daily_logs", "habits"
   add_foreign_key "daily_logs", "users"
+  add_foreign_key "daily_todos", "users"
   add_foreign_key "dreams", "users"
   add_foreign_key "feedbacks", "users"
   add_foreign_key "finished_products", "buildings"

@@ -21,6 +21,11 @@ class DashboardController < ApplicationController
     @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                @journey.missions.for_day(Date.current).primary.order(:id).first
     @closer = @journey.closer_percent.round
+    default_aspect = params[:aspect].presence ||
+                     @mission&.aspect_key.presence ||
+                     @journey.life_area.key
+    @selected_aspect = LifeArea::HOME_ASPECT_KEYS.include?(default_aspect) ? default_aspect : LifeArea::HOME_ASPECT_KEYS.first
+    @daily_todos = current_user.daily_todos.for_day(Date.current).ordered
     render "dashboard/show_v2"
   end
 

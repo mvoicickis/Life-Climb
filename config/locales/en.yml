@@ -25,6 +25,14 @@ en:
     no_mission: "No mission yet. Say one thing you can finish in one sitting."
     get_mission: "Set today's mission"
     reach_journey: "I reached this journey"
+  battle_plan:
+    title: "Daily Battle Plan"
+    subtitle: "Small wins for the tag you selected above."
+    empty: "No points yet for this area. Add one."
+    placeholder: "Add a todo for this area"
+    add: "Add"
+    added: "Added to today's battle plan."
+    remove_confirm: "Remove this todo?"
   coach:
     journey: "What do you want to achieve?"
     journey_hint: "Name the journey in a short line."
