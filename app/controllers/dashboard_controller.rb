@@ -19,7 +19,6 @@ class DashboardController < ApplicationController
     prioritized = insights.prioritized_trackers
     @priority_trackers = prioritized.first(PRIORITY_LIMIT)
     @more_trackers = prioritized.drop(PRIORITY_LIMIT)
-    @grid_count = [ @priority_trackers.size, 1 ].max
   end
 
   private
