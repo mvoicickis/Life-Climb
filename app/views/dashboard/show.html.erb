@@ -1,112 +1,145 @@
-<% content_for :title, "Today" %>
+<% content_for :title, t("dashboard.title") %>
 
-<div class="today-page mx-auto flex max-w-6xl flex-col gap-5"
+<div class="today-page today-fade mx-auto flex max-w-6xl flex-col gap-6"
      data-controller="share"
      data-share-url-value="<%= share_landing_url %>"
      data-share-title-value="LifePoints">
 
   <header class="today-hero flex flex-wrap items-start justify-between gap-4">
-    <div>
-      <p class="today-kicker">Your growth board</p>
+    <div class="min-w-0">
+      <p class="today-kicker"><%= t("dashboard.kicker") %></p>
       <h1 class="today-title">
-        Today
+        <%= t("dashboard.title") %>
         <span class="today-sun" aria-hidden="true">☀</span>
       </h1>
-      <p class="today-subtitle">Am I becoming a better version of myself?</p>
+      <p class="today-subtitle"><%= t("dashboard.subtitle") %></p>
+      <p class="today-unique"><%= t("dashboard.unique_note") %></p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
-      <aside class="today-quote">
+      <aside class="today-quote" aria-label="<%= t('dashboard.quote') %>">
         <span aria-hidden="true">🌿</span>
-        <p>Small daily improvements lead to stunning results.</p>
+        <p><%= t("dashboard.quote") %></p>
       </aside>
-      <%= link_to "+ Add", new_habit_path, class: "today-add" %>
+      <%= link_to t("dashboard.add"), new_habit_path, class: "today-add" %>
     </div>
   </header>
 
   <% if @trackers.any? %>
-    <div class="today-summary">
+    <div class="today-summary" role="group" aria-label="<%= t('dashboard.title') %> summary">
       <div class="today-chip today-chip--good">
         <p class="today-chip-value"><%= @good %></p>
-        <p class="today-chip-label">Better</p>
-        <p class="today-chip-note">You nailed it</p>
+        <p class="today-chip-label"><%= t("dashboard.summary.better") %></p>
+        <p class="today-chip-note"><%= t("dashboard.summary.better_note") %></p>
       </div>
       <div class="today-chip today-chip--same">
         <p class="today-chip-value"><%= @same %></p>
-        <p class="today-chip-label">Same</p>
-        <p class="today-chip-note">Keep it steady</p>
+        <p class="today-chip-label"><%= t("dashboard.summary.same") %></p>
+        <p class="today-chip-note"><%= t("dashboard.summary.same_note") %></p>
       </div>
       <div class="today-chip today-chip--off">
         <p class="today-chip-value"><%= @off %></p>
-        <p class="today-chip-label">Needs work</p>
-        <p class="today-chip-note">Focus here</p>
+        <p class="today-chip-label"><%= t("dashboard.summary.needs_work") %></p>
+        <p class="today-chip-note"><%= t("dashboard.summary.needs_work_note") %></p>
       </div>
       <div class="today-chip today-chip--streak">
         <p class="today-chip-value"><%= @streak %></p>
-        <p class="today-chip-label">Day streak</p>
-        <p class="today-chip-note"><%= @streak.positive? ? "Keep the fire going" : "Log today to start" %></p>
+        <p class="today-chip-label"><%= t("dashboard.summary.streak") %></p>
+        <p class="today-chip-note"><%= @streak.positive? ? t("dashboard.summary.streak_hot") : t("dashboard.summary.streak_start") %></p>
       </div>
     </div>
 
-    <section class="home-board" style="<%= home_grid_style(@grid_count) %>">
+    <% if @celebrations.any? %>
+      <section class="today-celebrate" aria-live="polite">
+        <% @celebrations.each do |item| %>
+          <div class="today-celebrate-card">
+            <div>
+              <p class="today-celebrate-kicker"><%= t("dashboard.celebrate.title") %></p>
+              <p class="today-celebrate-label">
+                <%= item[:label] %>
+                <% if item[:tracker] %> · <%= item[:tracker].name %><% end %>
+              </p>
+            </div>
+            <% if item[:tracker] %>
+              <button type="button"
+                      class="today-celebrate-btn"
+                      data-action="click->share#open"
+                      data-share-text-param="<%= share_message_body_for(item[:tracker]) %>"
+                      data-share-url-param="<%= share_landing_url %>"
+                      data-share-title-param="<%= item[:tracker].name %> · LifePoints">
+                <%= t("dashboard.celebrate.cta") %>
+              </button>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <section class="home-board" style="<%= home_grid_style(@grid_count) %>" aria-label="<%= t('dashboard.title') %>">
       <% @trackers.each do |tracker| %>
         <% status = tracker.status %>
         <% progress = tracker.goal_progress_percent %>
-        <div class="home-card <%= vs_yesterday_classes(status) %>">
-          <%= link_to habit_path(tracker), class: "flex min-h-0 flex-1 flex-col outline-none" do %>
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex min-w-0 items-center gap-2.5">
-                <span class="today-card-icon" aria-hidden="true"><%= stat_icon_for(tracker) %></span>
+        <%= link_to habit_path(tracker), class: "home-card #{vs_yesterday_classes(status)} today-card-link", aria: { label: "#{tracker.name}, #{status_full_text(status)}" } do %>
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex min-w-0 items-center gap-2.5">
+              <span class="today-card-icon" aria-hidden="true"><%= stat_icon_for(tracker) %></span>
+              <div class="min-w-0">
                 <p class="home-card-name truncate font-black"><%= tracker.name %></p>
+                <p class="today-card-unit"><%= tracker.unit %></p>
               </div>
-              <%= render "shared/status_badge", status: status %>
             </div>
+            <%= render "shared/status_badge", status: status %>
+          </div>
 
-            <div class="mt-auto pt-4">
-              <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
-              <p class="home-card-trend mt-1 font-bold"><%= tracker.unit %></p>
-              <p class="today-delta mt-2"><%= amount_delta_label(tracker) %></p>
+          <div class="mt-auto pt-5">
+            <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
+            <p class="today-delta mt-2"><%= amount_delta_label(tracker) %></p>
 
-              <% if tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
-                <div class="today-mini-bar mt-3">
-                  <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-
-          <button type="button"
-                  data-action="click->share#open"
-                  data-share-text-param="<%= share_message_body_for(tracker) %>"
-                  data-share-url-param="<%= share_landing_url %>"
-                  data-share-title-param="<%= tracker.name %> · LifePoints"
-                  class="today-share">
-            Share
-          </button>
-        </div>
+            <% if tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
+              <div class="today-mini-bar mt-3" aria-hidden="true">
+                <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
     </section>
 
     <section class="today-lower">
-      <div class="today-panel today-week">
+      <div class="today-panel today-week"
+           data-controller="week-chart"
+           data-week-chart-points-value="<%= @week_series.to_json %>">
         <div class="flex items-center justify-between gap-3">
-          <h2 class="today-panel-title">Weekly progress</h2>
+          <h2 class="today-panel-title"><%= t("dashboard.weekly.title") %></h2>
           <span class="today-week-score"><%= @week_percent %>%</span>
         </div>
-        <div class="today-week-chart" role="img" aria-label="Weekly progress chart">
-          <% max = [ @week_series.map { |p| p[:percent] }.max, 1 ].max %>
+
+        <div class="week-line-wrap">
+            <svg data-week-chart-target="svg" class="week-line-svg" role="img" aria-label="<%= t('dashboard.weekly.aria') %>">
+            <defs>
+              <linearGradient id="weekArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path data-week-chart-target="area" class="week-line-area" fill="url(#weekArea)"></path>
+            <path data-week-chart-target="line" class="week-line-path" fill="none"></path>
+            <g data-week-chart-target="points"></g>
+          </svg>
+          <div data-week-chart-target="tooltip" class="week-line-tooltip" hidden>
+            <p data-week-chart-target="tooltipLabel" class="week-line-tooltip-label"></p>
+            <p data-week-chart-target="tooltipValue" class="week-line-tooltip-value"></p>
+          </div>
+        </div>
+
+        <div class="week-line-legend" aria-hidden="true">
           <% @week_series.each do |point| %>
-            <div class="today-week-col <%= 'is-current' if point[:current] %> <%= 'is-future' if point[:future] %>">
-              <div class="today-week-bar-wrap">
-                <div class="today-week-bar" style="height: <%= point[:future] ? 8 : [ (point[:percent] / max.to_f * 100).round, point[:percent].positive? ? 12 : 8 ].max %>%"></div>
-              </div>
-              <span><%= point[:label] %></span>
-            </div>
+            <span class="<%= 'is-current' if point[:current] %>"><%= point[:label] %></span>
           <% end %>
         </div>
       </div>
 
       <div class="today-panel today-focus">
-        <h2 class="today-panel-title">Focus for tomorrow</h2>
+        <h2 class="today-panel-title"><%= t("dashboard.focus.title") %></h2>
         <ul class="today-focus-list">
           <% @focus_tips.each do |tip| %>
             <li>
@@ -119,18 +152,19 @@
 
       <div class="today-panel today-banner" style="background-image: url('/lifepoints-landing-hero.jpg');">
         <div class="today-banner-veil">
-          <p class="today-banner-kicker">Keep going</p>
-          <p class="today-banner-copy">Your only competition is who you were yesterday.</p>
+          <p class="today-banner-kicker"><%= t("dashboard.banner.kicker") %></p>
+          <p class="today-banner-copy"><%= t("dashboard.banner.copy") %></p>
         </div>
       </div>
     </section>
   <% else %>
     <div class="today-empty">
-      <p class="text-2xl font-black tracking-tight text-white">Start with what matters</p>
+      <p class="text-2xl font-black tracking-tight text-white"><%= t("dashboard.empty_title") %></p>
       <p class="mt-3 text-base font-semibold leading-relaxed text-slate-300">
-        Add one thing you care about. Tomorrow you’ll see if you’re moving forward.
+        <%= t("dashboard.empty_body") %>
       </p>
-      <%= link_to "Add your first thing", new_habit_path, class: "today-add mt-6" %>
+      <p class="mt-2 text-sm font-semibold text-emerald-300/90"><%= t("dashboard.unique_note") %></p>
+      <%= link_to t("dashboard.empty_cta"), new_habit_path, class: "today-add mt-6" %>
     </div>
   <% end %>
 

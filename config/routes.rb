@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   resources :completions, only: :create
   resources :daily_logs, only: :create
 
+  resource :locale, only: :update, controller: "locales"
+
   namespace :admin do
     root to: "dashboard#show"
   end
