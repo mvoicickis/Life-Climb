@@ -40,4 +40,11 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", finished_products_path
     assert_select "a[href=?]", life_points_path
   end
+
+  test "building page loads focus building" do
+    sign_in_as @user
+    get building_path
+    assert_response :success
+    assert_match(/LifePoints/, response.body)
+  end
 end
