@@ -8,14 +8,24 @@ class LifeJourney < ApplicationRecord
   # Unlock-the-climb layers (Progress meter is always available, not gated).
   CLIMB_LAYERS = %w[goal purpose policy approach program milestone scenes finished today].freeze
   SKIPPABLE_LAYERS = %w[purpose policy approach program finished].freeze
+  LIST_LAYERS = {
+    "approach" => :approaches,
+    "program" => :programs,
+    "milestone" => :milestones
+  }.freeze
+  LEGACY_LIST_FIELDS = {
+    approaches: :approach,
+    programs: :program,
+    milestones: :next_win
+  }.freeze
 
   LAYER_FIELDS = {
     "goal" => %i[title],
     "purpose" => %i[purpose],
     "policy" => %i[policy],
-    "approach" => %i[approach],
-    "program" => %i[program],
-    "milestone" => %i[next_win],
+    "approach" => %i[approaches],
+    "program" => %i[programs],
+    "milestone" => %i[milestones],
     "scenes" => %i[ideal_scene current_reality],
     "finished" => %i[finished_result],
     "today" => %i[today_mission]
@@ -25,6 +35,7 @@ class LifeJourney < ApplicationRecord
   belongs_to :life_area
   has_many :missions, dependent: :destroy
   has_many :gap_snapshots, dependent: :destroy
+  has_many :journey_targets, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :ideal_scene, presence: true, length: { maximum: SUMMARY_MAX }
@@ -39,7 +50,7 @@ class LifeJourney < ApplicationRecord
 
   before_validation :sync_user_from_area, on: :create
   before_validation :touch_scenes_revised, if: :scenes_changed?
-  after_initialize :ensure_setup_flags
+  after_initialize :ensure_json_defaults
 
   scope :active, -> { where(status: "active") }
   scope :focused, -> { where.not(focus_position: nil).order(:focus_position) }
@@ -65,7 +76,7 @@ class LifeJourney < ApplicationRecord
   end
 
   def setup_flag(layer)
-    ensure_setup_flags
+    ensure_json_defaults
     setup_flags[layer.to_s]
   end
 
@@ -124,23 +135,75 @@ class LifeJourney < ApplicationRecord
       CLIMB_LAYERS.first
   end
 
-  def layer_summary(layer, today_mission: nil)
+  def approaches_list
+    climb_list_for(:approaches)
+  end
+
+  def programs_list
+    climb_list_for(:programs)
+  end
+
+  def milestones_list
+    climb_list_for(:milestones)
+  end
+
+  def approaches_items
+    climb_items_for(:approaches)
+  end
+
+  def programs_items
+    climb_items_for(:programs)
+  end
+
+  def milestones_items
+    climb_items_for(:milestones)
+  end
+
+  def primary_milestone
+    milestones_list.first
+  end
+
+  def climb_card_title
+    primary_milestone.presence || title
+  end
+
+  def list_present?(kind)
+    climb_list_for(kind).any?
+  end
+
+  def replace_list!(kind, entries)
+    kind = kind.to_sym
+    raise ArgumentError, "Unknown list" unless LEGACY_LIST_FIELDS.key?(kind)
+
+    items = normalize_climb_entries(entries)
+    legacy = LEGACY_LIST_FIELDS.fetch(kind)
+    update!(
+      kind => items,
+      legacy => items.first&.fetch("title")
+    )
+  end
+
+  def layer_summary(layer, today_mission: nil, today_todos: nil)
     case layer.to_s
     when "goal" then title
     when "purpose" then purpose
     when "policy" then policy
-    when "approach" then approach
-    when "program" then program
-    when "milestone" then next_win
+    when "approach" then approaches_list.first(3).join(" · ")
+    when "program" then programs_list.first(3).join(" · ")
+    when "milestone" then milestones_list.first(3).join(" · ")
     when "scenes" then [ ideal_scene, current_reality ].compact_blank.join(" · ")
     when "finished" then finished_result
-    when "today" then today_mission&.title
+    when "today"
+      titles = Array(today_todos).map(&:title).compact_blank
+      titles = [ today_mission&.title ].compact_blank if titles.empty?
+      titles.first(3).join(" · ")
     end
   end
 
-  def bootstrap_setup_flags_from_content!(today_mission: nil)
+  def bootstrap_setup_flags_from_content!(today_mission: nil, today_todos: nil)
     flags = (setup_flags.presence || {}).stringify_keys
     changed = false
+    todos = Array(today_todos)
 
     CLIMB_LAYERS.each do |layer|
       next if %w[done skipped].include?(flags[layer])
@@ -150,12 +213,12 @@ class LifeJourney < ApplicationRecord
         when "goal" then title.present?
         when "purpose" then purpose.present?
         when "policy" then policy.present?
-        when "approach" then approach.present?
-        when "program" then program.present?
-        when "milestone" then next_win.present?
+        when "approach" then list_present?(:approaches)
+        when "program" then list_present?(:programs)
+        when "milestone" then list_present?(:milestones)
         when "scenes" then ideal_scene.present? && current_reality.present?
         when "finished" then finished_result.present?
-        when "today" then today_mission&.title.present?
+        when "today" then today_mission&.title.present? || todos.any? { |t| t.title.present? }
         else false
         end
       next unless has_content
@@ -180,8 +243,54 @@ class LifeJourney < ApplicationRecord
 
   private
 
-  def ensure_setup_flags
+  def climb_list_for(kind)
+    climb_items_for(kind).map { |item| item["title"] }
+  end
+
+  def climb_items_for(kind)
+    kind = kind.to_sym
+    raw = Array(public_send(kind))
+    items = raw.filter_map { |entry| normalize_climb_entry(entry) }
+    return items if items.any?
+
+    legacy = LEGACY_LIST_FIELDS[kind]
+    return [] unless legacy
+
+    value = public_send(legacy).to_s.strip
+    value.present? ? [ { "title" => value, "tags" => [] } ] : []
+  end
+
+  def normalize_climb_entries(entries)
+    Array(entries).filter_map { |entry| normalize_climb_entry(entry) }
+  end
+
+  def normalize_climb_entry(entry)
+    if entry.respond_to?(:permit)
+      entry = entry.permit(:title, :tags, :tag, tags: []).to_h
+    end
+
+    case entry
+    when Hash
+      h = entry.with_indifferent_access
+      title = h[:title].to_s.strip
+      return nil if title.blank?
+
+      tags = Array(h[:tags]).flat_map { |t| t.to_s.split(/[,\s]+/) }.map { |t| t.strip.downcase }.compact_blank.uniq
+      tags = h[:tag].to_s.split(/[,\s]+/).map { |t| t.strip.downcase }.compact_blank.uniq if tags.empty? && h[:tag].present?
+      { "title" => title.truncate(SUMMARY_MAX), "tags" => tags }
+    else
+      title = entry.to_s.strip
+      return nil if title.blank?
+
+      { "title" => title.truncate(SUMMARY_MAX), "tags" => [] }
+    end
+  end
+
+  def ensure_json_defaults
     self.setup_flags = {} if read_attribute(:setup_flags).nil?
+    self.approaches = [] if has_attribute?(:approaches) && read_attribute(:approaches).nil?
+    self.programs = [] if has_attribute?(:programs) && read_attribute(:programs).nil?
+    self.milestones = [] if has_attribute?(:milestones) && read_attribute(:milestones).nil?
   end
 
   def sync_user_from_area

@@ -31,7 +31,8 @@ class LifeJourneysController < ApplicationController
       mission_title: attrs[:today_mission].presence
     )
     journey.bootstrap_setup_flags_from_content!(
-      today_mission: journey.missions.for_day.primary.order(:id).first
+      today_mission: journey.missions.for_day.primary.order(:id).first,
+      today_todos: current_user.daily_todos.for_day.ordered
     )
     redirect_to dashboard_path, notice: t("journeys.created")
   rescue Journeys::Create::Error, Focus::SetJourneys::Error, ActiveRecord::RecordNotFound => e
@@ -73,7 +74,12 @@ class LifeJourneysController < ApplicationController
 
   def prepare_climb!
     @today_mission = @journey.missions.for_day(Date.current).primary.order(:id).first
-    @journey.bootstrap_setup_flags_from_content!(today_mission: @today_mission)
+    @today_todos = current_user.daily_todos.for_day(Date.current).ordered.to_a
+    @targets = @journey.journey_targets.ordered.to_a
+    @journey.bootstrap_setup_flags_from_content!(
+      today_mission: @today_mission,
+      today_todos: @today_todos
+    )
     @journey.reload
     @focus_layer = params[:edit].presence || @journey.first_open_layer
     @unlocked_layer = flash[:unlocked_layer]
@@ -108,8 +114,17 @@ class LifeJourneysController < ApplicationController
   end
 
   def save_layer!(layer)
+    if LifeJourney::LIST_LAYERS.key?(layer)
+      save_list_layer!(layer)
+      return
+    end
+
+    if layer == "today"
+      save_today_layer!
+      return
+    end
+
     attrs = layer_params(layer)
-    today_title = attrs.delete(:today_mission)
 
     if layer == "goal" && attrs[:title].to_s.strip.blank?
       climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_goal")) and return
@@ -121,29 +136,85 @@ class LifeJourneysController < ApplicationController
       end
     end
 
-    if %w[purpose policy approach program milestone finished].include?(layer)
+    if %w[purpose policy finished].include?(layer)
       field = LifeJourney::LAYER_FIELDS.fetch(layer).first
       if attrs[field].to_s.strip.blank?
         climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_layer")) and return
       end
     end
 
-    if layer == "today"
-      if today_title.to_s.strip.blank?
-        climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_today")) and return
+    @journey.assign_attributes(attrs)
+    unless @journey.save
+      prepare_climb!
+      flash.now[:alert] = @journey.errors.full_messages.to_sentence
+      render :show, status: :unprocessable_entity and return
+    end
+    @journey.mark_layer!(layer, "done")
+
+    finish_layer!(layer)
+  end
+
+  def save_list_layer!(layer)
+    attr = LifeJourney::LIST_LAYERS.fetch(layer)
+    raw = params.dig(:life_journey, attr)
+    entries =
+      if raw.is_a?(Array) && raw.first.is_a?(ActionController::Parameters)
+        raw
+      elsif raw.is_a?(Array)
+        # Parallel title + tags arrays from climb list UI
+        titles = Array(params.dig(:life_journey, attr))
+        tags = Array(params.dig(:life_journey, :"#{attr}_tags"))
+        titles.each_with_index.map { |title, i| { title: title, tags: tags[i] } }
+      else
+        Array(raw)
       end
-      sync_today_mission_title!(today_title)
-      @journey.mark_layer!(layer, "done")
-    else
-      @journey.assign_attributes(attrs)
-      unless @journey.save
-        prepare_climb!
-        flash.now[:alert] = @journey.errors.full_messages.to_sentence
-        render :show, status: :unprocessable_entity and return
-      end
-      @journey.mark_layer!(layer, "done")
+
+    items = entries
+    if items.empty? || items.all? { |e| e.is_a?(String) ? e.blank? : e[:title].to_s.strip.blank? && e["title"].to_s.strip.blank? }
+      # try structured
     end
 
+    cleaned_preview = items.filter_map do |e|
+      if e.is_a?(String)
+        e.to_s.strip.presence
+      else
+        h = e.respond_to?(:to_unsafe_h) ? e.to_unsafe_h : e
+        (h["title"] || h[:title]).to_s.strip.presence
+      end
+    end
+    if cleaned_preview.empty?
+      climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_one_item")) and return
+    end
+
+    @journey.replace_list!(attr, items)
+    @journey.mark_layer!(layer, "done")
+    finish_layer!(layer)
+  end
+
+  def save_today_layer!
+    mission_title = params.dig(:life_journey, :today_mission).to_s.strip
+    titles = Array(params[:daily_todo_titles]).map { |t| t.to_s.strip }.compact_blank
+
+    if titles.empty? && mission_title.blank?
+      climb_redirect(to: life_journey_path(@journey, edit: "today"), alert: t("journeys.climb.need_today")) and return
+    end
+
+    if titles.size > GameRules::MAX_DAILY_TODOS
+      climb_redirect(
+        to: life_journey_path(@journey, edit: "today"),
+        alert: t("dash.battle_day_full", max: GameRules::MAX_DAILY_TODOS)
+      ) and return
+    end
+
+    sync_today_mission_title!(mission_title) if mission_title.present?
+    replace_today_todos!(titles)
+    @journey.mark_layer!("today", "done")
+    finish_layer!("today")
+  rescue ActiveRecord::RecordInvalid => e
+    climb_redirect(to: life_journey_path(@journey, edit: "today"), alert: e.record.errors.full_messages.to_sentence)
+  end
+
+  def finish_layer!(layer)
     next_layer = next_after(layer)
     flash[:unlocked_layer] = next_layer
     climb_redirect(
@@ -154,12 +225,8 @@ class LifeJourneysController < ApplicationController
 
   def layer_params(layer)
     allowed = LifeJourney::LAYER_FIELDS.fetch(layer).dup
-    allowed -= [ :today_mission ] if layer != "today"
-    if layer == "today"
-      { today_mission: params.dig(:life_journey, :today_mission) }
-    else
-      params.fetch(:life_journey, {}).permit(*allowed)
-    end
+    allowed -= [ :today_mission ]
+    params.fetch(:life_journey, {}).permit(*allowed)
   end
 
   def next_after(layer)
@@ -191,6 +258,40 @@ class LifeJourneysController < ApplicationController
     elsif mission.nil?
       Missions::EnsureDaily.call(user: current_user, mission_title: title)
     end
+  end
+
+  def replace_today_todos!(titles)
+    day = Date.current
+    aspect = battle_aspect_key
+    tags = Array(params[:daily_todo_tags])
+    existing = current_user.daily_todos.for_day(day).ordered.to_a
+
+    ActiveRecord::Base.transaction do
+      titles.each_with_index do |title, index|
+        tag = tags[index].to_s.split(/[,\s]+/).map { |t| t.strip.downcase }.compact_blank.first
+        if (todo = existing[index])
+          todo.update!(title: title, position: index, aspect_key: aspect, tag: tag)
+        else
+          current_user.daily_todos.create!(
+            title: title,
+            aspect_key: aspect,
+            scheduled_on: day,
+            position: index,
+            lp_reward: GameRules::BATTLE_TODO_LP,
+            tag: tag
+          )
+        end
+      end
+
+      existing.drop(titles.size).each(&:destroy!)
+    end
+  end
+
+  def battle_aspect_key
+    key = @journey.life_area.key.to_s
+    return key if LifeArea::HOME_ASPECT_KEYS.include?(key)
+
+    "career"
   end
 
   def require_planning_v2

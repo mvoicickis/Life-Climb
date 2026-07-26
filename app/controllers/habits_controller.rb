@@ -7,13 +7,10 @@ class HabitsController < ApplicationController
 
   def show
     insights = DashboardInsights.new(current_user, trackers: [ @habit ])
-    @streak = insights.streak_days
-    @share_worthy = insights.personal_record?(@habit) || insights.big_boost?(@habit) || DashboardInsights::STREAK_MILESTONES.include?(@streak)
+    @share_worthy = insights.personal_record?(@habit) || insights.big_boost?(@habit)
     @milestone_label =
       if insights.personal_record?(@habit)
         I18n.t("habits.milestone_record")
-      elsif DashboardInsights::STREAK_MILESTONES.include?(@streak)
-        I18n.t("habits.milestone_streak", count: @streak)
       elsif insights.big_boost?(@habit)
         I18n.t("habits.milestone_boost")
       end
