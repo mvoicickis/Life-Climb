@@ -1,0 +1,36 @@
+<%# locals: summary, journey %>
+<section class="lp-journey-summary" aria-label="<%= t('progress.mountain_summary_title') %>">
+  <header class="lp-journey-section__head">
+    <h2><%= t("progress.mountain_summary_title") %></h2>
+    <p><%= t("progress.mountain_summary_hint") %></p>
+  </header>
+
+  <% if summary&.dig(:present) %>
+    <dl class="lp-journey-summary__stats">
+      <div>
+        <dt><%= t("progress.plans_completed") %></dt>
+        <dd><%= summary[:plans_done] %> / <%= summary[:plans_total] %></dd>
+      </div>
+      <div>
+        <dt><%= t("progress.projects_completed") %></dt>
+        <dd><%= summary[:projects_done] %> / <%= summary[:projects_total] %></dd>
+      </div>
+    </dl>
+    <% if summary[:current_expedition].present? %>
+      <p class="lp-journey-summary__expedition-label"><%= t("progress.current_expedition") %></p>
+      <p class="lp-journey-summary__expedition"><%= summary[:current_expedition] %></p>
+    <% end %>
+    <% if journey %>
+      <p class="lp-journey-summary__link">
+        <%= link_to t("progress.open_strategy"), life_journey_path(journey) %>
+      </p>
+    <% end %>
+  <% else %>
+    <p class="lp-progress-empty"><%= t("progress.lock_goal") %></p>
+    <% if journey %>
+      <p class="lp-journey-summary__link">
+        <%= link_to t("progress.open_strategy"), life_journey_path(journey) %>
+      </p>
+    <% end %>
+  <% end %>
+</section>

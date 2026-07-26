@@ -10,7 +10,7 @@
       <% total_completed = categories.sum { |c| c[:amount] } %>
       <div class="lp-progress-donut__center" aria-hidden="true">
         <strong><%= number_with_delimiter(total_completed) %></strong>
-        <span>LP</span>
+        <span><%= t("progress.kpi.life_points") %></span>
       </div>
       <p class="lp-progress-empty" data-progress-charts-target="donutEmpty" hidden><%= t("progress.empty_categories") %></p>
     </div>

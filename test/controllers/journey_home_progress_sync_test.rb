@@ -88,7 +88,8 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_response :success
     assert_match(/55%/, response.body)
-    assert_match(/Clarity/i, response.body)
+    assert_match(/Mountain Summary/i, response.body)
+    assert_match(/Action Points/i, response.body)
   end
 
   test "countable target logs from home and updates journey closer" do

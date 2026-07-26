@@ -51,11 +51,14 @@ module Progress
         period: @period,
         periods: PERIODS,
         total_lp: @user.life_points,
+        action_points: @user.action_points,
+        strategy_points: @user.strategy_points,
         kpis: kpis,
         growth: growth_series,
         categories: category_distribution,
         heatmap: heatmap_grid,
-        projects: projects,
+        mountain_summary: mountain_summary,
+        projects: [],
         achievements: achievements,
         insights: insights
       }
@@ -125,10 +128,10 @@ module Progress
       [
         {
           key: :life_points,
-          icon: "🌿",
+          icon: "⚡",
           label: I18n.t("progress.kpi.life_points"),
-          value: @user.life_points,
-          suffix: "LP",
+          value: @user.action_points,
+          suffix: nil,
           delta: percent_delta(lp_now, lp_prev),
           delta_label: I18n.t("progress.kpi.vs_prior"),
           sparkline: daily_lp_sparkline
@@ -345,40 +348,76 @@ module Progress
       4
     end
 
+    def mountain_summary
+      journey = @user.primary_focused_journey
+      return empty_mountain_summary(journey) unless journey
+
+      goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      return empty_mountain_summary(journey) unless goal
+
+      plans = goal.children.select(&:plan?)
+      projects = plans.flat_map { |plan| plan.children.select(&:project?) }
+      plans_done = plans.count(&:completed?)
+      projects_done = projects.count(&:completed?)
+      current = plans.find { |plan| Strategy::Progress.percent(plan) < 100 } || plans.first
+
+      {
+        present: true,
+        journey_id: journey.id,
+        goal_title: goal.title,
+        mountain_percent: Strategy::Progress.percent(goal),
+        plans_done: plans_done,
+        plans_total: plans.size,
+        projects_done: projects_done,
+        projects_total: projects.size,
+        current_expedition: current&.title,
+        strategy_href: true
+      }
+    end
+
+    def empty_mountain_summary(journey)
+      {
+        present: false,
+        journey_id: journey&.id,
+        goal_title: nil,
+        mountain_percent: 0,
+        plans_done: 0,
+        plans_total: 0,
+        projects_done: 0,
+        projects_total: 0,
+        current_expedition: nil,
+        strategy_href: journey.present?
+      }
+    end
+
     def projects
-      @user.life_journeys.active.includes(:life_area, :journey_targets).order(:focus_position, :id).map do |journey|
-        milestones = journey.milestones_list
-        {
-          id: journey.id,
-          title: journey.climb_card_title,
-          goal: journey.title,
-          milestone: milestones.first,
-          milestones: milestones,
-          progress: journey.closer_percent.round,
-          clarity_count: journey.clarity_count,
-          clarity_total: journey.clarity_total,
-          targets: journey.journey_targets.active.ordered.limit(3).map { |t|
-            { title: t.title, progress: t.progress_percent, summary: t.progress_label }
-          },
-          icon: ASPECT_ICONS.fetch(journey.life_area&.key.to_s, "🚀"),
-          color: ASPECT_COLORS.fetch(journey.life_area&.key.to_s, "#22C55E")
-        }
-      end
+      []
+    end
+
+    def strategy_mountain_percent
+      journey = @user.primary_focused_journey
+      return 0 unless journey
+
+      goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      return 0 unless goal
+
+      Strategy::Progress.percent(goal)
     end
 
     def achievements
-      total = @user.life_points
+      total = @user.action_points
       battles = @user.missions.where.not(completed_at: nil).count +
                 @user.daily_todos.where.not(completed_at: nil).count
-      closer = @user.life_journeys.map(&:closer_percent).max.to_f
+      mountain = strategy_mountain_percent
 
       catalog = [
         { key: "first_battle", icon: "⚔", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
-        { key: "lp_100", icon: "🌿", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
-        { key: "closer_25", icon: "⛰", title: I18n.t("progress.achievements.closer_25"), hint: I18n.t("progress.achievements.closer_25_hint"), unlocked: closer >= 25 },
+        { key: "lp_100", icon: "⚡", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
+        { key: "closer_25", icon: "⛰", title: I18n.t("progress.achievements.closer_25"), hint: I18n.t("progress.achievements.closer_25_hint"), unlocked: mountain >= 25 },
         { key: "lp_1000", icon: "⚡", title: I18n.t("progress.achievements.lp_1000"), hint: I18n.t("progress.achievements.lp_1000_hint"), unlocked: total >= 1000 },
         { key: "battles_100", icon: "🏆", title: I18n.t("progress.achievements.battles_100"), hint: I18n.t("progress.achievements.battles_100_hint"), unlocked: battles >= 100 },
-        { key: "closer_50", icon: "🌄", title: I18n.t("progress.achievements.closer_50"), hint: I18n.t("progress.achievements.closer_50_hint"), unlocked: closer >= 50 }
+        { key: "closer_50", icon: "🌄", title: I18n.t("progress.achievements.closer_50"), hint: I18n.t("progress.achievements.closer_50_hint"), unlocked: mountain >= 50 },
+        { key: "closer_100", icon: "🏔", title: I18n.t("progress.achievements.closer_100"), hint: I18n.t("progress.achievements.closer_100_hint"), unlocked: mountain >= 100 }
       ]
 
       unlocked = catalog.select { |a| a[:unlocked] }

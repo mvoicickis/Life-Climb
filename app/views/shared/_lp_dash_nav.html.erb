@@ -1,7 +1,7 @@
-<%# Calm premium bottom nav — Today · Journey · Progress · You %>
+<%# Calm premium bottom nav — Today · Strategy · Journey · You %>
 <% active = local_assigns.fetch(:active, :today).to_s %>
 <%
-  journey = current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first
+  strategy_journey = current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first
 %>
 
 <nav class="lp-dash-nav" aria-label="Primary">
@@ -10,21 +10,21 @@
     <span><%= t("dash.nav.today") %></span>
   <% end %>
 
-  <% if journey %>
-    <%= link_to life_journey_path(journey), class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
+  <% if strategy_journey %>
+    <%= link_to life_journey_path(strategy_journey), class: "lp-dash-nav__link #{'is-active' if active == 'strategy'}" do %>
       <span aria-hidden="true">🗺</span>
-      <span><%= t("dash.nav.journey") %></span>
+      <span><%= t("dash.nav.strategy") %></span>
     <% end %>
   <% else %>
-    <%= link_to new_life_journey_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
+    <%= link_to new_life_journey_path, class: "lp-dash-nav__link #{'is-active' if active == 'strategy'}" do %>
       <span aria-hidden="true">🗺</span>
-      <span><%= t("dash.nav.journey") %></span>
+      <span><%= t("dash.nav.strategy") %></span>
     <% end %>
   <% end %>
 
-  <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'progress'}" do %>
+  <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
     <span aria-hidden="true">📈</span>
-    <span><%= t("dash.nav.progress") %></span>
+    <span><%= t("dash.nav.journey") %></span>
   <% end %>
 
   <%= link_to settings_path, class: "lp-dash-nav__link #{'is-active' if active == 'you'}" do %>
