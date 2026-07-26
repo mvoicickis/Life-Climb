@@ -26,6 +26,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Your year plan/i, response.body)
     assert_match(/Your year runs until/i, response.body)
     assert_match(/December 29/i, response.body)
+    assert_match(/Strategy Points/i, response.body)
     assert_match(/Plan it together/i, response.body)
     assert_match(/Message me anytime/i, response.body)
     assert_select ".lp-strategy__horizon", minimum: 5

@@ -5440,10 +5440,11 @@ button.lp-progress-heat__cell {
 
 .lp-strategy__sp {
   flex-shrink: 0;
+  max-width: 6.5rem;
   text-align: center;
   border: 1px solid var(--lp-border);
   border-radius: 1rem;
-  padding: 0.55rem 0.75rem;
+  padding: 0.55rem 0.65rem;
   background: var(--lp-elevated);
 }
 
@@ -5452,12 +5453,15 @@ button.lp-progress-heat__cell {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--lp-lime);
+  line-height: 1.1;
 }
 
 .lp-strategy__sp-label {
-  font-size: 0.7rem;
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  line-height: 1.2;
   color: var(--lp-muted);
 }
 
