@@ -28,7 +28,7 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Pick any part of your life you want to grow. Build a real plan. Fight one small battle a day — and become more alive."
+    content_for?(:meta_description) ? content_for(:meta_description) : I18n.t("landing.meta_description")
   end
 
   def status_tone(status)

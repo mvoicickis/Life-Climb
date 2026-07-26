@@ -1,0 +1,28 @@
+<%# JSON-LD for landing — Organization + SoftwareApplication %>
+<script type="application/ld+json">
+<%= raw({
+  "@context" => "https://schema.org",
+  "@graph" => [
+    {
+      "@type" => "Organization",
+      "name" => "LifePoints",
+      "url" => absolute_url("/"),
+      "logo" => absolute_url("/branding/lifepoints-mark.png"),
+      "slogan" => "One mountain. Today’s battle."
+    },
+    {
+      "@type" => "SoftwareApplication",
+      "name" => "LifePoints",
+      "applicationCategory" => "LifestyleApplication",
+      "operatingSystem" => "Web",
+      "url" => absolute_url("/"),
+      "description" => page_meta_description,
+      "offers" => {
+        "@type" => "Offer",
+        "price" => "0",
+        "priceCurrency" => "USD"
+      }
+    }
+  ]
+}.to_json) %>
+</script>

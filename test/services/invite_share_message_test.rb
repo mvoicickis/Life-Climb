@@ -9,6 +9,8 @@ class InviteShareMessageTest < ActiveSupport::TestCase
     full = InviteShareMessage.call(landing_url: url)
 
     assert_includes body, "climb one mountain"
+    assert_includes body, "Action Points"
+    assert_includes body, "Finish projects to climb"
     assert_includes body, "Become more alive"
     refute_includes body, url
 

@@ -1,1 +1,18 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# See https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Authenticated / admin surfaces — no marketing value for crawlers
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /life_points
+Disallow: /life_journeys
+Disallow: /missions
+Disallow: /daily_todos
+Disallow: /strategy_goals
+Disallow: /v2_onboarding
+Disallow: /password
+
+# Canonical host is APP_HOST in production (see docs/SECURITY.md).
+Sitemap: https://lifepoints.onrender.com/sitemap.xml
