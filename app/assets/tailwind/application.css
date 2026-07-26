@@ -3788,36 +3788,44 @@
   position: relative;
   min-height: 8.5rem;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  color: var(--lp-forest);
 }
 
-.lp-dash-hero__mountains {
+.lp-dash-hero__area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   width: 100%;
-  height: 8.5rem;
+  min-height: 8.5rem;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(22, 101, 52, 0.14);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(22, 101, 52, 0.1), transparent 60%),
+    var(--lp-paper-soft, #eef1ec);
+  padding: 1rem 0.85rem;
+  text-align: center;
 }
 
-.lp-dash-hero__peak {
-  stroke: var(--lp-forest);
+.lp-dash-hero__emoji {
+  font-size: clamp(2.6rem, 7vw, 3.4rem);
+  line-height: 1;
 }
 
-.lp-dash-hero__img,
-.lp-dash-hero__glow {
-  display: none;
+.lp-dash-hero__area-name {
+  font-family: var(--lp-font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lp-ink);
 }
 
-.lp-dash-hero__flag {
-  position: absolute;
-  left: 62%;
-  bottom: calc(22% + (var(--closer, 40) * 0.35%));
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 999px;
-  background: var(--lp-forest);
-  box-shadow: 0 0 12px rgba(22, 101, 52, 0.45);
-  transform: translateX(-50%);
-  pointer-events: none;
+.lp-dash-hero__area-closer {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-forest);
 }
 
 @keyframes lp-dash-glow {
