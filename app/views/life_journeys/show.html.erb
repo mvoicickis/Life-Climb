@@ -50,6 +50,8 @@
     <%= link_to t("journeys.open_today"), dashboard_path, class: "lp-journey-setup__today" %>
   </header>
 
+  <%= render "life_journeys/strategy_board" %>
+
   <section class="lp-climb-card lp-climb-card--progress">
     <p class="lp-climb-card__kicker"><%= t("journeys.sections.progress") %></p>
     <p class="lp-climb-card__hint"><%= t("journeys.sections.progress_hint") %></p>

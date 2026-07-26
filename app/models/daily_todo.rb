@@ -4,6 +4,7 @@ class DailyTodo < ApplicationRecord
   include TextLimits
 
   belongs_to :user
+  belongs_to :strategy_goal, optional: true
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :aspect_key, presence: true, inclusion: { in: LifeArea::HOME_ASPECT_KEYS }

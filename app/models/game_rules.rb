@@ -8,6 +8,11 @@ module GameRules
   DEFAULT_NEW_JOURNEY_GAP = 95.0
   JOURNEY_COMPLETE_GAP_CLAMP = 5.0
 
+  # Strategy Points — earned for planning / breaking goals down.
+  STRATEGY_LOCK_SP = 15
+  STRATEGY_CHILD_SP = 5
+  STRATEGY_WEEK_BREAKDOWN_SP = 25
+
   # Alignment-stack progress weights (basis points = percent * 100 of remaining gap).
   # todo << mission — small daily actions must not chew the mountain.
   TODO_GAP_BP = 15

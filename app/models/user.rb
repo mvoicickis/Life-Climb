@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :today_actions, dependent: :destroy
   has_many :finished_products, dependent: :destroy
   has_many :life_point_ledgers, dependent: :destroy
+  has_many :strategy_point_ledgers, dependent: :destroy
+  has_many :strategy_goals, dependent: :destroy
   has_many :life_journeys, dependent: :destroy
   has_many :missions, dependent: :destroy
   has_many :journey_targets, dependent: :destroy
@@ -69,6 +71,10 @@ class User < ApplicationRecord
   end
 
   def life_points
+    total_points
+  end
+
+  def action_points
     total_points
   end
 

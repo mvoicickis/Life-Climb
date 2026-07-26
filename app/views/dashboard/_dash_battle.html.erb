@@ -21,6 +21,11 @@
 
   <% if battle_empty %>
     <p class="lp-dash-empty"><%= t("dash.battle_empty") %></p>
+    <p class="mt-3">
+      <%= link_to t("dash.battle_empty_cta"),
+            (@journey ? life_journey_path(@journey, horizon: "week") : new_life_journey_path),
+            class: "lp-cta inline-flex" %>
+    </p>
   <% else %>
     <ul class="lp-dash-battle__list">
       <% if include_mission && mission %>
@@ -37,7 +42,7 @@
           <% end %>
           <span class="lp-dash-battle__icon" aria-hidden="true">🎯</span>
           <span class="lp-dash-battle__name"><%= mission.title %></span>
-          <span class="lp-dash-battle__lp">+<%= mission.lp_reward %> LP</span>
+          <span class="lp-dash-battle__lp">+<%= mission.lp_reward %> <%= t("dash.action_points_short") %></span>
         </li>
       <% end %>
 
@@ -54,7 +59,7 @@
           <% end %>
           <span class="lp-dash-battle__icon" aria-hidden="true"><%= aspect_icons.fetch(todo.aspect_key, "✨") %></span>
           <span class="lp-dash-battle__name"><%= todo.title %></span>
-          <span class="lp-dash-battle__lp">+<%= todo.lp_reward %> LP</span>
+          <span class="lp-dash-battle__lp">+<%= todo.lp_reward %> <%= t("dash.action_points_short") %></span>
         </li>
       <% end %>
     </ul>
@@ -68,7 +73,7 @@
               data: { battle_day_target: "completeBtn", action: "click->battle-day#celebrate" } %>
         <p class="lp-dash-battle__reward" aria-live="polite">
           <span data-battle-day-target="reward">+<%= reward %></span>
-          <span>LP Reward</span>
+          <span><%= t("dash.action_points_short") %> Reward</span>
         </p>
       <% else %>
         <p class="lp-dash-battle__won"><%= t("dash.battle_won") %></p>

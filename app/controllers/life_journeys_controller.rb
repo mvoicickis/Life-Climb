@@ -40,7 +40,13 @@ class LifeJourneysController < ApplicationController
   end
 
   def show
+    if params[:area].present? && params[:area] != @journey.life_area.key
+      switch_universe_area!(params[:area])
+      return if performed?
+    end
+
     prepare_climb!
+    prepare_strategy!
   end
 
   def update
@@ -83,6 +89,68 @@ class LifeJourneysController < ApplicationController
     @journey.reload
     @focus_layer = params[:edit].presence || @journey.first_open_layer
     @unlocked_layer = flash[:unlocked_layer]
+  end
+
+  def prepare_strategy!
+    area = @journey.life_area
+    goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:children)
+    @year_goals = goals.for_horizon("year").roots.to_a
+    @month_goals = goals.for_horizon("month").to_a
+    @week_goals = goals.for_horizon("week").to_a
+    @day_goals = goals.for_horizon("day").to_a
+    @strategy_parent =
+      case params[:horizon].to_s
+      when "month" then @year_goals.find { |g| g.id == params[:parent_id].to_i } || @year_goals.first
+      when "week" then @month_goals.find { |g| g.id == params[:parent_id].to_i } || @month_goals.first
+      when "day" then @week_goals.find { |g| g.id == params[:parent_id].to_i } || @week_goals.first
+      else
+        nil
+      end
+    @active_horizon = params[:horizon].presence_in(%w[year month week day]) || default_strategy_horizon
+    @week_dates = (Date.current.beginning_of_week..Date.current.end_of_week).to_a
+    @universe_parts = LifeArea::HOME_ASPECTS.map do |entry|
+      part_area = current_user.life_areas.find_by(key: entry[:key], dream_id: nil)
+      part_journey = part_area && current_user.life_journeys.active.find_by(life_area_id: part_area.id)
+      {
+        key: entry[:key],
+        emoji: entry[:emoji],
+        area: part_area,
+        journey: part_journey,
+        active: part_area&.id == area.id,
+        clarity: part_journey&.clarity_count,
+        total: part_journey&.clarity_total
+      }
+    end
+  end
+
+  def default_strategy_horizon
+    return "year" if @year_goals.empty?
+    return "month" if @month_goals.empty?
+    return "week" if @week_goals.empty?
+    return "day" if @day_goals.empty?
+
+    "week"
+  end
+
+  def switch_universe_area!(key)
+    unless LifeArea::HOME_ASPECT_KEYS.include?(key.to_s)
+      climb_redirect(alert: t("strategy.bad_area")) and return
+    end
+
+    area = current_user.life_areas.find_by(key: key, dream_id: nil)
+    unless area&.v2_selected?
+      LifeAreas::Select.call(user: current_user, keys: [ key ])
+      area = current_user.life_areas.v2_selected.find_by!(key: key)
+    end
+
+    journey = current_user.life_journeys.active.find_by(life_area_id: area.id)
+    if journey
+      redirect_to life_journey_path(journey, area: key), status: :see_other
+    else
+      redirect_to new_life_journey_path(life_area_id: area.id), notice: t("strategy.start_section"), status: :see_other
+    end
+  rescue LifeAreas::Select::Error => e
+    redirect_to life_area_selections_path, alert: e.message, status: :see_other
   end
 
   # 303 so Turbo Drive follows PATCH/POST with a real HTML GET (not a stuck TURBO_STREAM paint).

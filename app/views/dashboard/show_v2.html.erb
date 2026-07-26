@@ -21,7 +21,11 @@
       <span class="lp-dash__stat">
         <span aria-hidden="true">🌿</span>
         <span data-battle-day-target="lpTotal"><%= number_with_delimiter(@life_points) %></span>
-        <span>LP</span>
+        <span><%= t("dash.action_points_short") %></span>
+      </span>
+      <span class="lp-dash__stat">
+        <span><%= number_with_delimiter(current_user.strategy_points) %></span>
+        <span><%= t("strategy.sp_short") %></span>
       </span>
     </div>
   </header>

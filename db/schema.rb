@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_070000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -57,10 +57,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
     t.integer "lp_reward", default: 30, null: false
     t.integer "position", default: 0, null: false
     t.date "scheduled_on", null: false
+    t.integer "strategy_goal_id"
     t.string "tag"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["strategy_goal_id"], name: "index_daily_todos_on_strategy_goal_id"
     t.index ["user_id", "scheduled_on", "aspect_key"], name: "index_daily_todos_on_user_id_and_scheduled_on_and_aspect_key"
     t.index ["user_id"], name: "index_daily_todos_on_user_id"
   end
@@ -267,6 +269,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
     t.index ["user_id"], name: "index_steps_on_user_id"
   end
 
+  create_table "strategy_goals", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "horizon", null: false
+    t.integer "life_area_id", null: false
+    t.integer "life_journey_id"
+    t.integer "parent_id"
+    t.integer "position", default: 0, null: false
+    t.date "scheduled_on"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
+    t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
+    t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
+    t.index ["parent_id"], name: "index_strategy_goals_on_parent_id"
+    t.index ["user_id", "life_area_id", "horizon"], name: "index_strategy_goals_on_user_id_and_life_area_id_and_horizon"
+    t.index ["user_id", "scheduled_on"], name: "index_strategy_goals_on_user_id_and_scheduled_on"
+    t.index ["user_id"], name: "index_strategy_goals_on_user_id"
+  end
+
+  create_table "strategy_point_ledgers", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.string "reason", null: false
+    t.integer "source_id"
+    t.string "source_type"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["source_type", "source_id"], name: "index_strategy_point_ledgers_on_source_type_and_source_id"
+    t.index ["user_id"], name: "index_strategy_point_ledgers_on_user_id"
+  end
+
   create_table "today_actions", force: :cascade do |t|
     t.integer "building_id", null: false
     t.datetime "completed_at"
@@ -293,6 +328,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
     t.datetime "onboarding_completed_at"
     t.string "password_digest", null: false
     t.integer "planning_version", default: 2, null: false
+    t.integer "strategy_points", default: 0, null: false
     t.json "support_milestones_shown", default: [], null: false
     t.boolean "support_prompts_muted", default: false, null: false
     t.integer "total_points", default: 0, null: false
@@ -307,6 +343,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
   add_foreign_key "completions", "users"
   add_foreign_key "daily_logs", "habits"
   add_foreign_key "daily_logs", "users"
+  add_foreign_key "daily_todos", "strategy_goals"
   add_foreign_key "daily_todos", "users"
   add_foreign_key "dreams", "users"
   add_foreign_key "feedbacks", "users"
@@ -330,6 +367,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"
   add_foreign_key "steps", "users"
+  add_foreign_key "strategy_goals", "life_areas"
+  add_foreign_key "strategy_goals", "life_journeys"
+  add_foreign_key "strategy_goals", "strategy_goals", column: "parent_id"
+  add_foreign_key "strategy_goals", "users"
+  add_foreign_key "strategy_point_ledgers", "users"
   add_foreign_key "today_actions", "buildings"
   add_foreign_key "today_actions", "users"
   add_foreign_key "users", "buildings", column: "focus_building_id"
