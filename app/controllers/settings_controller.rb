@@ -2,7 +2,6 @@ class SettingsController < ApplicationController
   def show
     @home_habits = current_user.home_board_habits
     @all_habits = current_user.habits.active.ordered
-    @focus_life_area = current_user.focus_life_area
   end
 
   def edit_name
@@ -73,7 +72,6 @@ class SettingsController < ApplicationController
     else
       @home_habits = current_user.home_board_habits
       @all_habits = current_user.habits.active.ordered
-      @focus_life_area = current_user.focus_life_area
       :show
     end
   end
