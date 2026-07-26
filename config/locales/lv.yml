@@ -4,6 +4,19 @@ lv:
       chart_day: "%a"
       long: "%-d. %b"
   app_name: "LifePoints"
+  strategy:
+    add_another_plan: "Pievienot vēl vienu plānu"
+    add_another_project: "Pievienot vēl vienu projektu"
+    add_another_battle: "Pievienot vēl vienu kauju"
+    add_link:
+      plan: "+ Pievienot plānu"
+      project: "+ Pievienot projektu"
+      battle: "+ Pievienot kauju"
+    next_up:
+      add_battle_cta: "Pievienot šodienas kauju"
+      fight_battle_cta: "Pievienot šodienas kauju"
+      add_another_battle_cta: "Pievienot vēl vienu kauju"
+      fight_today_cta: "Cīnīties šodienas kaujā"
   life_area_catalog:
     self:
       name: "Es"

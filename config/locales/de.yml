@@ -4,6 +4,19 @@ de:
       chart_day: "%a"
       long: "%-d. %b"
   app_name: "LifePoints"
+  strategy:
+    add_another_plan: "Weiteren Plan hinzufügen"
+    add_another_project: "Weiteres Projekt hinzufügen"
+    add_another_battle: "Weitere Schlacht hinzufügen"
+    add_link:
+      plan: "+ Plan"
+      project: "+ Projekt"
+      battle: "+ Schlacht"
+    next_up:
+      add_battle_cta: "Heutige Schlacht hinzufügen"
+      fight_battle_cta: "Heutige Schlacht hinzufügen"
+      add_another_battle_cta: "Weitere Schlacht hinzufügen"
+      fight_today_cta: "Heutige Schlacht kämpfen"
   life_area_catalog:
     self:
       name: "Selbst"

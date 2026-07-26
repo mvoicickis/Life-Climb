@@ -47,7 +47,10 @@
       <% elsif @level == "plans" %>
         <% plans = @children.select(&:plan?) %>
         <% if plans.any? %>
-          <h2 class="lp-strategy__board-title"><%= t("strategy.questions.plan") %></h2>
+          <div class="lp-strategy__board-head">
+            <h2 class="lp-strategy__board-title"><%= t("strategy.questions.plan") %></h2>
+            <a href="#strategy-add-plan" class="lp-strategy__board-add-link"><%= t("strategy.add_link.plan") %></a>
+          </div>
           <div class="lp-strategy-quests">
             <% plans.each do |plan| %>
               <%= render "life_journeys/strategy_quest_card", node: plan, journey: @journey %>
@@ -56,25 +59,28 @@
         <% end %>
 
         <% unless focus_create %>
-          <details class="lp-strategy__optional <%= 'is-open-default' if plans.empty? %>" <%= "open" if plans.empty? %>>
-            <summary><%= plans.empty? ? t("strategy.next_up.add_plan_cta") : t("strategy.add_another_plan") %></summary>
-            <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
-              <%= hidden_field_tag :life_area_id, area.id %>
-              <%= hidden_field_tag :life_journey_id, @journey.id %>
-              <%= hidden_field_tag :parent_id, @goal.id %>
-              <%= hidden_field_tag :horizon, "plan" %>
-              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.plan_placeholder") %>
-              <%= submit_tag t("strategy.add_plan"), class: "lp-cta w-full" %>
-            <% end %>
-          </details>
+          <%= render "life_journeys/strategy_add_card",
+                kind: "plan",
+                title: (plans.empty? ? t("strategy.next_up.add_plan_cta") : t("strategy.add_another_plan")),
+                area: area,
+                journey: @journey,
+                parent_id: @goal.id,
+                horizon: "plan",
+                placeholder: t("strategy.plan_placeholder"),
+                submit: t("strategy.add_plan") %>
         <% end %>
 
       <% elsif @level == "projects" %>
-        <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
+        <% projects = @children.select(&:project?) %>
+        <div class="lp-strategy__board-head">
+          <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
+          <% unless focus_create %>
+            <a href="#strategy-add-project" class="lp-strategy__board-add-link"><%= t("strategy.add_link.project") %></a>
+          <% end %>
+        </div>
         <p class="lp-strategy__board-hint"><%= t("strategy.questions.project") %></p>
         <div class="lp-strategy__bar" style="--lp-level: var(--lp-level-project)"><span style="width: <%= @focus.progress_percent %>%"></span></div>
 
-        <% projects = @children.select(&:project?) %>
         <% if projects.any? %>
           <div class="lp-strategy-quests">
             <% projects.each do |project| %>
@@ -84,22 +90,25 @@
         <% end %>
 
         <% unless focus_create %>
-          <details class="lp-strategy__optional <%= 'is-open-default' if projects.empty? %>" <%= "open" if projects.empty? %>>
-            <summary><%= projects.empty? ? t("strategy.next_up.add_project_cta") : t("strategy.add_another_project") %></summary>
-            <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
-              <%= hidden_field_tag :life_area_id, area.id %>
-              <%= hidden_field_tag :life_journey_id, @journey.id %>
-              <%= hidden_field_tag :parent_id, @focus.id %>
-              <%= hidden_field_tag :horizon, "project" %>
-              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.project_placeholder") %>
-              <%= submit_tag t("strategy.add_project"), class: "lp-cta w-full" %>
-            <% end %>
-          </details>
+          <%= render "life_journeys/strategy_add_card",
+                kind: "project",
+                title: (projects.empty? ? t("strategy.next_up.add_project_cta") : t("strategy.add_another_project")),
+                area: area,
+                journey: @journey,
+                parent_id: @focus.id,
+                horizon: "project",
+                placeholder: t("strategy.project_placeholder"),
+                submit: t("strategy.add_project") %>
         <% end %>
 
       <% else %>
         <% battles = @children.select(&:day?) %>
-        <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
+        <div class="lp-strategy__board-head">
+          <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
+          <% unless focus_create %>
+            <a href="#strategy-add-battle" class="lp-strategy__board-add-link"><%= t("strategy.add_link.battle") %></a>
+          <% end %>
+        </div>
         <p class="lp-strategy__board-hint"><%= t("strategy.questions.battle") %></p>
         <div class="lp-strategy__bar" style="--lp-level: var(--lp-level-battle)"><span style="width: <%= @focus.progress_percent %>%"></span></div>
 
@@ -130,32 +139,19 @@
           </ul>
         <% end %>
 
-        <%# Always allow more battles on a project; primary add lives in Next Up when ready. %>
-        <% if focus_create %>
-          <%# First battle is created in Next Up %>
-        <% elsif battles.any? %>
-          <div class="lp-strategy__add-battle" id="board-add-battle">
-            <p class="lp-strategy__add-battle-label"><%= t("strategy.add_another_battle") %></p>
-            <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-3", data: { turbo: false } do %>
-              <%= hidden_field_tag :life_area_id, area.id %>
-              <%= hidden_field_tag :life_journey_id, @journey.id %>
-              <%= hidden_field_tag :parent_id, @focus.id %>
-              <%= hidden_field_tag :horizon, "day" %>
-              <%= hidden_field_tag :scheduled_on, Date.current %>
-              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.battle_placeholder") %>
-              <%= submit_tag t("strategy.add_battle"), class: "lp-cta w-full" %>
-            <% end %>
-          </div>
-        <% else %>
-          <%= form_with url: strategy_goals_path, method: :post, class: "space-y-3", data: { turbo: false } do %>
-            <%= hidden_field_tag :life_area_id, area.id %>
-            <%= hidden_field_tag :life_journey_id, @journey.id %>
-            <%= hidden_field_tag :parent_id, @focus.id %>
-            <%= hidden_field_tag :horizon, "day" %>
-            <%= hidden_field_tag :scheduled_on, Date.current %>
-            <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.battle_placeholder") %>
-            <%= submit_tag t("strategy.add_battle"), class: "lp-cta w-full" %>
-          <% end %>
+        <%# Always allow more battles on a project; primary first create lives in Next Up when ready. %>
+        <% unless focus_create %>
+          <%= render "life_journeys/strategy_add_card",
+                kind: "battle",
+                title: (battles.empty? ? t("strategy.next_up.add_battle_title") : t("strategy.add_another_battle")),
+                area: area,
+                journey: @journey,
+                parent_id: @focus.id,
+                horizon: "day",
+                scheduled_on: Date.current,
+                placeholder: t("strategy.battle_placeholder"),
+                submit: t("strategy.add_battle"),
+                input_id: "board-add-battle-title" %>
         <% end %>
       <% end %>
 

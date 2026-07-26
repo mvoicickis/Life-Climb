@@ -6479,6 +6479,105 @@ button.lp-progress-heat__cell {
   color: var(--lp-ink);
 }
 
+.lp-strategy__board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lp-strategy__board-head .lp-strategy__board-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-strategy__board-add-link {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 45%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-green) 10%, var(--lp-paper));
+  color: var(--lp-green-deep);
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lp-strategy__board-add-link:hover {
+  background: color-mix(in srgb, var(--lp-green) 18%, var(--lp-paper));
+}
+
+.lp-strategy-add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.05rem 1.1rem;
+  border-radius: 1rem;
+  border: 2px dashed color-mix(in srgb, var(--lp-green) 55%, var(--lp-border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--lp-green) 8%, var(--lp-paper)) 0%,
+      var(--lp-paper) 100%
+    );
+  scroll-margin-top: 5.5rem;
+}
+
+.lp-strategy-add__head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.lp-strategy-add__plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--lp-green);
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.lp-strategy-add__title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-strategy-add__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.lp-strategy-add__input:focus {
+  outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+  outline-offset: 1px;
+  border-color: var(--lp-green);
+}
+
+.lp-strategy-add.is-plan {
+  border-color: color-mix(in srgb, var(--lp-level-plan, #0f766e) 50%, var(--lp-border));
+}
+
+.lp-strategy-add.is-project {
+  border-color: color-mix(in srgb, var(--lp-level-project, #d97706) 50%, var(--lp-border));
+}
+
+.lp-strategy-add.is-battle {
+  border-color: color-mix(in srgb, var(--lp-level-battle, #16a34a) 50%, var(--lp-border));
+}
+
 .lp-strategy__board-hint {
   margin: 0;
   font-size: 0.85rem;
