@@ -41,7 +41,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get root_path
     assert_response :success
     assert_match(/name="theme-color" content="#FFFFFF"/, response.body)
-    assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-logo\.png"}, response.body)
+    assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-brand\.png"}, response.body)
     assert_match(/og:image:alt" content="LifePoints — One mountain\. Today’s battle\."/, response.body)
     assert_match(%r{og:url" content="https://[^"]+/"}, response.body)
     assert_match(/application\/ld\+json/, response.body)
