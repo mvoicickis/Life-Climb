@@ -970,6 +970,7 @@ en:
     drag: "DRAG"
     order_empty: "Nothing marked for Today yet."
     support_body: "If LifePoints has helped you, you can help it keep helping others."
+    share_body: "Invite someone to climb with LifePoints."
     feedback_title: "Feedback"
     feedback_body: "Message me on WhatsApp or email."
     contact_me: "Contact me"
@@ -1016,6 +1017,15 @@ en:
       - "I'm tracking my progress with LifePoints."
       - "I'm using LifePoints to stay consistent."
       - "I'm becoming better than yesterday with LifePoints."
+    invite:
+      cta: "Share LifePoints"
+      cta_short: "Invite a friend"
+      section_title: "Invite a friend"
+      section_body: "Share LifePoints with someone who wants to climb one mountain — one small battle a day."
+      title: "Share LifePoints"
+      subtitle: "Send the climb to someone you care about."
+      body: "I'm using LifePoints to climb one mountain — one small battle a day."
+      closer: "Pick any part of life you want to grow. Build a real plan. Become more alive."
   status:
     better: "Better"
     same: "Same"

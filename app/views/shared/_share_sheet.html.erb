@@ -1,4 +1,8 @@
 <%# Shared LifePoints share sheet — platforms + native More. %>
+<%
+  sheet_title = local_assigns.fetch(:title) { t("share.title") }
+  sheet_subtitle = local_assigns.fetch(:subtitle) { t("share.subtitle") }
+%>
 <div data-share-target="dialog"
      class="share-sheet"
      hidden
@@ -18,8 +22,8 @@
 
     <div class="share-sheet__header">
       <div>
-        <h2 id="share-sheet-title" class="share-sheet__title"><%= t("share.title") %></h2>
-        <p class="share-sheet__subtitle"><%= t("share.subtitle") %></p>
+        <h2 id="share-sheet-title" class="share-sheet__title"><%= sheet_title %></h2>
+        <p class="share-sheet__subtitle"><%= sheet_subtitle %></p>
       </div>
       <button type="button"
               class="share-sheet__close"
