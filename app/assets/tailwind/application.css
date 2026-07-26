@@ -5507,6 +5507,202 @@ button.lp-progress-heat__cell {
   color: var(--lp-muted);
 }
 
+.lp-strategy-path {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  overflow-x: auto;
+  padding: 0.35rem 0.15rem 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lp-strategy-path__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 3.4rem;
+}
+
+.lp-strategy-path__dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  border: 2px solid var(--lp-border);
+  background: var(--lp-elevated);
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.lp-strategy-path__label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  letter-spacing: 0.02em;
+}
+
+.lp-strategy-path__connector {
+  flex: 1 1 0.6rem;
+  height: 2px;
+  min-width: 0.5rem;
+  margin-bottom: 1.1rem;
+  background: var(--lp-border);
+}
+
+.lp-strategy-path__connector.is-done {
+  background: var(--lp-lime);
+}
+
+.lp-strategy-path__stage.is-done .lp-strategy-path__dot {
+  background: var(--lp-lime);
+  border-color: var(--lp-lime);
+}
+
+.lp-strategy-path__stage.is-current .lp-strategy-path__dot {
+  background: var(--lp-lime);
+  border-color: var(--lp-lime);
+  transform: scale(1.25);
+  animation: lp-strategy-pulse 1.8s ease-in-out infinite;
+}
+
+.lp-strategy-path__stage.is-current .lp-strategy-path__label {
+  color: var(--lp-ink);
+}
+
+.lp-strategy-next {
+  border: 1px solid color-mix(in srgb, var(--lp-lime) 45%, var(--lp-border));
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--lp-lime) 12%, transparent), transparent 55%),
+    var(--lp-elevated);
+  animation: lp-strategy-next-in 320ms ease-out;
+}
+
+.lp-strategy-next__kicker {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-lime);
+}
+
+.lp-strategy-next__title {
+  margin-top: 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+  line-height: 1.25;
+}
+
+.lp-strategy-next__hint {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-next__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.85rem;
+  width: 100%;
+  border: 0;
+  border-radius: 0.85rem;
+  padding: 0.75rem 1rem;
+  background: var(--lp-lime);
+  color: #0b1f12;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+
+.lp-strategy-next__cta:active {
+  transform: scale(0.98);
+}
+
+.lp-strategy-quests {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.lp-strategy-quest-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.lp-strategy-quest {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  background: var(--lp-elevated);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 140ms ease, transform 120ms ease;
+}
+
+.lp-strategy-quest:active {
+  transform: scale(0.99);
+}
+
+.lp-strategy-quest:hover {
+  border-color: color-mix(in srgb, var(--lp-lime) 50%, var(--lp-border));
+}
+
+.lp-strategy-quest__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-strategy-quest__title {
+  font-weight: 700;
+  color: var(--lp-ink);
+}
+
+.lp-strategy-quest__meta {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-quest__chevron {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--lp-lime);
+  line-height: 1;
+}
+
+.lp-strategy-month-spotlight {
+  border: 1px solid color-mix(in srgb, var(--lp-lime) 30%, var(--lp-border));
+  border-radius: 0.9rem;
+  padding: 0.85rem;
+  background: color-mix(in srgb, var(--lp-lime) 6%, var(--lp-elevated));
+}
+
+@keyframes lp-strategy-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lp-lime) 35%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-lime) 0%, transparent); }
+}
+
+@keyframes lp-strategy-next-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-strategy-path__stage.is-current .lp-strategy-path__dot,
+  .lp-strategy-next {
+    animation: none;
+  }
+}
+
 .lp-strategy__optional {
   border: 1px dashed var(--lp-border);
   border-radius: 0.75rem;

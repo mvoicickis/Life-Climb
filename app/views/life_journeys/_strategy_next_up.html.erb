@@ -1,0 +1,21 @@
+<% next_up = @next_up %>
+<% if next_up.present? %>
+  <div class="lp-strategy-next" id="strategy-next-up">
+    <p class="lp-strategy-next__kicker"><%= t("strategy.next_up.kicker") %></p>
+    <h2 class="lp-strategy-next__title"><%= next_up[:title] %></h2>
+    <p class="lp-strategy-next__hint"><%= next_up[:hint] %></p>
+
+    <% if next_up[:href].present? %>
+      <%= link_to next_up[:cta], next_up[:href], class: "lp-strategy-next__cta" %>
+    <% elsif next_up[:sync_today] %>
+      <%= form_with url: life_journey_path(@journey), method: :patch, data: { turbo: false } do %>
+        <%= hidden_field_tag :sync_today, "1" %>
+        <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
+      <% end %>
+    <% elsif next_up[:anchor].present? && next_up[:form].blank? %>
+      <a href="#<%= next_up[:anchor] %>" class="lp-strategy-next__cta"><%= next_up[:cta] %></a>
+    <% elsif next_up[:form].present? %>
+      <a href="#strategy-next-form" class="lp-strategy-next__cta"><%= next_up[:cta] %> →</a>
+    <% end %>
+  </div>
+<% end %>
