@@ -56,7 +56,9 @@
            data-share-text-value="<%= invite_share_message_body %>"
            data-share-url-value="<%= share_landing_url %>"
            data-share-title-value="<%= t('share.invite.title') %>">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("support.title") %></h2>
+    <h2 class="text-lg font-semibold">
+      <%= link_to t("support.title"), support_path, class: "text-[var(--lp-lime)] hover:underline" %>
+    </h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.support_body") %></p>
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.share_body") %></p>
     <div class="mt-4 flex flex-wrap gap-3">
