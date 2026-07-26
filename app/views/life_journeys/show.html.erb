@@ -63,7 +63,7 @@
         editing = focus == layer
         prev = index.positive? ? LifeJourney::CLIMB_LAYERS[index - 1] : nil
         unlock_hint = prev ? t("journeys.climb.unlock_hint", prev: t("journeys.sections.#{section_keys.fetch(prev)}")) : nil
-        summary = @journey.layer_summary(layer, today_mission: today_mission)
+        summary = @journey.layer_summary(layer, today_mission: today_mission, today_todos: @today_todos)
         skipped = @journey.layer_skipped?(layer)
         section_key = section_keys.fetch(layer)
         hint_key = hint_keys.fetch(layer)
@@ -101,6 +101,8 @@
           <p class="lp-climb-card__hint">
             <% if layer == "policy" %>
               <%= t("journeys.climb.oaths_hint") %>
+            <% elsif layer == "today" %>
+              <%= t("journeys.climb.today_battle_hint") %>
             <% else %>
               <%= t("journeys.sections.#{hint_key}") %>
             <% end %>
@@ -117,11 +119,22 @@
             <% when "policy" %>
               <%= text_area_tag "life_journey[policy]", @journey.policy, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.policy_placeholder") %>
             <% when "approach" %>
-              <%= text_area_tag "life_journey[approach]", @journey.approach, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.approach_placeholder") %>
+              <%= render "life_journeys/climb_list_fields",
+                    items: @journey.approaches_list,
+                    name: "life_journey[approaches][]",
+                    placeholder: t("journeys.sections.approach_placeholder"),
+                    input: :text_area %>
             <% when "program" %>
-              <%= text_area_tag "life_journey[program]", @journey.program, rows: 4, class: "lp-input", required: true, placeholder: t("journeys.sections.program_placeholder") %>
+              <%= render "life_journeys/climb_list_fields",
+                    items: @journey.programs_list,
+                    name: "life_journey[programs][]",
+                    placeholder: t("journeys.sections.program_placeholder"),
+                    input: :text_area %>
             <% when "milestone" %>
-              <%= text_field_tag "life_journey[next_win]", @journey.next_win, class: "lp-input", required: true, autocomplete: "off" %>
+              <%= render "life_journeys/climb_list_fields",
+                    items: @journey.milestones_list,
+                    name: "life_journey[milestones][]",
+                    placeholder: t("journeys.sections.milestone_hint") %>
             <% when "scenes" %>
               <label class="lp-climb-mini-label" for="life_journey_ideal_scene"><%= t("journeys.sections.ideal") %></label>
               <%= text_area_tag "life_journey[ideal_scene]", @journey.ideal_scene, rows: 2, class: "lp-input", id: "life_journey_ideal_scene", required: true %>
@@ -130,7 +143,13 @@
             <% when "finished" %>
               <%= text_area_tag "life_journey[finished_result]", @journey.finished_result, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.finished_placeholder") %>
             <% when "today" %>
-              <%= text_field_tag "life_journey[today_mission]", today_mission&.title, class: "lp-input", required: true, autocomplete: "off" %>
+              <label class="lp-climb-mini-label" for="life_journey_today_mission"><%= t("journeys.climb.today_mission_label") %></label>
+              <%= text_field_tag "life_journey[today_mission]", today_mission&.title, class: "lp-input", id: "life_journey_today_mission", autocomplete: "off", placeholder: t("journeys.climb.today_mission_placeholder") %>
+              <p class="lp-climb-mini-label"><%= t("journeys.climb.today_todos_label") %></p>
+              <%= render "life_journeys/climb_list_fields",
+                    items: @today_todos.map(&:title),
+                    name: "daily_todo_titles[]",
+                    placeholder: t("journeys.climb.today_todo_placeholder") %>
             <% end %>
 
             <div class="lp-climb-card__actions">

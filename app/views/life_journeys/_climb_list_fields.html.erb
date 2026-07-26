@@ -1,0 +1,32 @@
+<%# locals: items:, name:, placeholder: nil, input: :text_field %>
+<%
+  rows = Array(items).map { |t| t.to_s.strip }.compact_blank
+  rows = [""] if rows.empty?
+%>
+<div class="lp-climb-list" data-controller="journey-climb-list">
+  <div class="lp-climb-list__rows" data-journey-climb-list-target="list">
+    <% rows.each do |item| %>
+      <div class="lp-climb-list__row">
+        <% if input == :text_area %>
+          <%= text_area_tag name, item.presence, rows: 2, class: "lp-input", placeholder: placeholder %>
+        <% else %>
+          <%= text_field_tag name, item.presence, class: "lp-input", autocomplete: "off", placeholder: placeholder %>
+        <% end %>
+        <button type="button" class="lp-climb-list__remove" data-action="journey-climb-list#remove" aria-label="<%= t('journeys.climb.remove_item') %>"><%= t("journeys.climb.remove_item") %></button>
+      </div>
+    <% end %>
+  </div>
+
+  <template data-journey-climb-list-target="template">
+    <div class="lp-climb-list__row">
+      <% if input == :text_area %>
+        <%= text_area_tag name, nil, rows: 2, class: "lp-input", placeholder: placeholder %>
+      <% else %>
+        <%= text_field_tag name, nil, class: "lp-input", autocomplete: "off", placeholder: placeholder %>
+      <% end %>
+      <button type="button" class="lp-climb-list__remove" data-action="journey-climb-list#remove" aria-label="<%= t('journeys.climb.remove_item') %>"><%= t("journeys.climb.remove_item") %></button>
+    </div>
+  </template>
+
+  <button type="button" class="lp-climb-list__add" data-action="journey-climb-list#add"><%= t("journeys.climb.add_item") %></button>
+</div>

@@ -146,10 +146,132 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
     patch life_journey_path(@journey), params: {
       layer: "milestone",
       skip: "1",
-      life_journey: { next_win: "" }
+      life_journey: { milestones: [ "" ] }
     }
     assert_redirected_to life_journey_path(@journey)
     @journey.reload
     assert_not @journey.layer_skipped?("milestone")
+  end
+
+  test "saving multiple approaches unlocks program and syncs legacy field" do
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done", "purpose" => "done", "policy" => "done"
+      },
+      approach: nil, approaches: [], program: nil, programs: []
+    )
+
+    patch life_journey_path(@journey), params: {
+      layer: "approach",
+      life_journey: { approaches: [ "Build in public", "Coach + drills", "  " ] }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "program")
+    @journey.reload
+    assert_equal [ "Build in public", "Coach + drills" ], @journey.approaches_list
+    assert_equal "Build in public", @journey.approach
+    assert @journey.layer_done?("approach")
+    assert @journey.layer_unlocked?("program")
+  end
+
+  test "blank approaches list is rejected" do
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done", "purpose" => "done", "policy" => "done"
+      },
+      approaches: [], approach: nil
+    )
+
+    patch life_journey_path(@journey), params: {
+      layer: "approach",
+      life_journey: { approaches: [ " ", "" ] }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "approach")
+    @journey.reload
+    assert_not @journey.layer_done?("approach")
+  end
+
+  test "skip approach still unlocks program" do
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done", "purpose" => "done", "policy" => "done"
+      }
+    )
+
+    patch life_journey_path(@journey), params: {
+      layer: "approach",
+      skip: "1",
+      life_journey: { approaches: [] }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "program")
+    @journey.reload
+    assert @journey.layer_skipped?("approach")
+    assert @journey.layer_unlocked?("program")
+  end
+
+  test "saving multiple milestones syncs next_win to first" do
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done", "purpose" => "done", "policy" => "done",
+        "approach" => "done", "program" => "done"
+      },
+      milestones: [], next_win: nil
+    )
+
+    patch life_journey_path(@journey), params: {
+      layer: "milestone",
+      life_journey: { milestones: [ "Launch Beta", "First 10 users" ] }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "scenes")
+    @journey.reload
+    assert_equal [ "Launch Beta", "First 10 users" ], @journey.milestones_list
+    assert_equal "Launch Beta", @journey.next_win
+    assert @journey.layer_done?("milestone")
+  end
+
+  test "today layer creates multiple daily todos" do
+    unlock_through_finished!
+    @user.daily_todos.for_day.destroy_all
+
+    patch life_journey_path(@journey), params: {
+      layer: "today",
+      life_journey: { today_mission: "Deep work block" },
+      daily_todo_titles: [ "Write tests", "Ship UI polish", "  " ]
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "today")
+    @journey.reload
+    assert @journey.layer_done?("today")
+
+    titles = @user.daily_todos.for_day.ordered.pluck(:title)
+    assert_equal [ "Write tests", "Ship UI polish" ], titles
+    mission = @journey.missions.for_day.primary.order(:id).first
+    assert_equal "Deep work block", mission.title
+  end
+
+  test "today layer rejects more than daily todo cap" do
+    unlock_through_finished!
+    @user.daily_todos.for_day.destroy_all
+    too_many = Array.new(GameRules::MAX_DAILY_TODOS + 1) { |i| "Task #{i}" }
+
+    patch life_journey_path(@journey), params: {
+      layer: "today",
+      daily_todo_titles: too_many
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "today")
+    assert_equal 0, @user.daily_todos.for_day.count
+    @journey.reload
+    assert_not @journey.layer_done?("today")
+  end
+
+  private
+
+  def unlock_through_finished!
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done", "purpose" => "done", "policy" => "done",
+        "approach" => "done", "program" => "done", "milestone" => "done",
+        "scenes" => "done", "finished" => "done"
+      },
+      finished_result: "A live product"
+    )
   end
 end

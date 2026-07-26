@@ -4530,3 +4530,56 @@ button.lp-progress-heat__cell {
     animation: none;
   }
 }
+
+.lp-climb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.lp-climb-list__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lp-climb-list__row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+}
+
+.lp-climb-list__row .lp-input {
+  flex: 1;
+}
+
+.lp-climb-list__remove {
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+  font-weight: 650;
+  padding: 0.55rem 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lp-climb-list__remove:hover {
+  color: var(--lp-ink);
+}
+
+.lp-climb-list__add {
+  align-self: flex-start;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--lp-muted);
+  font-weight: 700;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+
+.lp-climb-list__add:hover {
+  color: var(--lp-ink);
+  border-color: rgba(132, 242, 58, 0.35);
+}
