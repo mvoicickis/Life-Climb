@@ -34,7 +34,7 @@ module Battles
             reason: I18n.t("battle.lp_reason", title: todo.title),
             source: todo
           )
-          GameRules.apply_todo_gap!(journey)
+          Gap::ApplyProgress.call(journey: journey, tier: :todo)
           awarded += todo.lp_reward.to_i
         end
 

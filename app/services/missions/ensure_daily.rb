@@ -4,7 +4,7 @@ module Missions
   # Ensures today's primary mission for the focused journey. Never call from GET.
   class EnsureDaily
     DEFAULT_LP = 50
-    DEFAULT_GAP_BP = 80
+    DEFAULT_GAP_BP = GameRules::MISSION_DEFAULT_GAP_BP
 
     def self.call(user:, date: Date.current, mission_title: nil)
       new(user:, date:, mission_title:).call

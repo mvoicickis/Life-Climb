@@ -422,6 +422,17 @@ module Progress
         weekday_counts[t.completed_at.wday] += 1
       end
 
+      task_delta = percent_delta(tasks_now, tasks_prev)
+      lp_delta = (lp_now.positive? || lp_prev.positive?) ? percent_delta(lp_now, lp_prev) : 0
+
+      # When trends dip, lead with a concrete next action — win today's battle.
+      if tasks_prev.positive? && task_delta.negative?
+        items << { icon: "📉", text: I18n.t("progress.insights.consistency_down", percent: task_delta.abs) }
+        items << { icon: "⚔", text: I18n.t("progress.insights.battle_turnaround") }
+      elsif lp_prev.positive? && lp_delta.negative?
+        items << { icon: "🌿", text: I18n.t("progress.insights.lp_down_nudge", percent: lp_delta.abs) }
+      end
+
       if weekday_counts.any?
         best_wday = weekday_counts.max_by { |_, v| v }&.first
         if best_wday
@@ -434,14 +445,11 @@ module Progress
         items << { icon: top[:icon], text: I18n.t("progress.insights.top_category", category: top[:label], percent: top[:percent]) }
       end
 
-      delta = percent_delta(tasks_now, tasks_prev)
-      if tasks_prev.positive? && delta != 0
-        key = delta.positive? ? "progress.insights.consistency_up" : "progress.insights.consistency_down"
-        items << { icon: delta.positive? ? "📈" : "📉", text: I18n.t(key, percent: delta.abs) }
+      if tasks_prev.positive? && task_delta.positive?
+        items << { icon: "📈", text: I18n.t("progress.insights.consistency_up", percent: task_delta.abs) }
       end
 
-      if lp_now.positive? && lp_prev.positive?
-        lp_delta = percent_delta(lp_now, lp_prev)
+      if lp_now.positive? && lp_prev.positive? && !lp_delta.negative?
         items << {
           icon: "🌿",
           text: I18n.t("progress.insights.lp_change", percent: lp_delta.abs, direction: lp_delta >= 0 ? "more" : "less")

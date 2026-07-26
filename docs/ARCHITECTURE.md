@@ -21,10 +21,28 @@ Ease and motivation beat clever architecture.
 - **Statistics are never configured in planning.**
 - Rails conventions first; one feature at a time; MVP before optimization.
 
+## LifePoints Alignment Stack
+
+The whole app is organized around aligned layers (LifePoints language only — no third-party admin/product labels in UI or docs copy):
+
+```text
+Goal (LifeJourney)
+  → Ideal / Now (ideal_scene / current_reality)
+  → Milestone (next_win, optional)
+  → Mission (one-sitting)
+  → Daily action (DailyTodo)
+```
+
+**Progress weight:** todo << mission << milestone << journey complete.
+
+Day-to-day gap changes go through `Gap::ApplyProgress` (`:todo` / `:mission`) with absolute caps so small checkboxes cannot chew the mountain.
+
+Inspired by the *idea* of visibility + daily battle lists; **not** a copy of any proprietary management system (no condition formulas, org boards, staff quotas, or trademarked product names).
+
 ## Domain ownership
 
 ```text
-Life Area  →  Life Journey (+ optional next_win)  →  Daily Mission
+Life Area  →  Life Journey (+ optional next_win)  →  Daily Mission (+ DailyTodos)
 ```
 
 ## MVP coach flow
@@ -36,7 +54,7 @@ Life Area  →  Life Journey (+ optional next_win)  →  Daily Mission
 5. Progress — how close? (default 5%) → `gap_percent = 100 - closer`
 6. Milestone — next major step? (**optional**) → `next_win`
 7. Mission — one thing today → Mission title
-8. Dashboard — **Today** (mission) + I did it + optional life-aspect tags + slim progress. No tree, no card stack.
+8. Dashboard — **Today** (mission + battle todos) + slim progress. No tree, no card stack.
 
 No Project/Plan models. No stats wizard.
 
@@ -48,13 +66,13 @@ No Project/Plan models. No stats wizard.
 
 ## MVP schema (lean)
 
-Persisted now: `users` (+ `planning_version`), selected `life_areas`, `life_journeys` (Ideal/Present/`next_win`), Focus via `focus_position`, `missions`, LP ledger, `gap_snapshots`.
+Persisted now: `users` (+ `planning_version`), selected `life_areas`, `life_journeys` (Ideal/Present/`next_win`), Focus via `focus_position`, `missions`, `daily_todos`, LP ledger, `gap_snapshots`.
 
-**Not** in MVP: Plan/Program/Project/Purpose/Policy/Statistic tables, generate-on-GET, habit LP for `planning_version = 2`.
+**Not** in MVP: Plan/Program/Project/Purpose/Policy/Statistic tables, generate-on-GET, habit LP for `planning_version = 2`, employee/org-board features.
 
 ## Strangler
 
 - `planning_version = 1` — legacy Dream → Goal → Building → TodayAction
-- `planning_version = 2` — Area → Journey → Mission loop; sole LP writer is the mission award path
+- `planning_version = 2` — Area → Journey → Mission loop; sole LP writer is the mission/todo award path
 
 See also: design system under `docs/design/`.

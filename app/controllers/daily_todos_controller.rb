@@ -26,7 +26,7 @@ class DailyTodosController < ApplicationController
           reason: I18n.t("battle.lp_reason", title: todo.title),
           source: todo
         )
-        GameRules.apply_todo_gap!(current_user.primary_focused_journey)
+        Gap::ApplyProgress.call(journey: current_user.primary_focused_journey, tier: :todo)
       end
     end
     redirect_to dashboard_path
