@@ -5190,6 +5190,176 @@
   content: "✓";
 }
 
+.lp-adventure__how {
+  gap: 0.9rem;
+}
+
+.lp-adventure__how-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__how-steps li {
+  text-align: center;
+  padding: 0.35rem 0.2rem;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, var(--lp-green) 6%, var(--lp-paper));
+}
+
+.lp-adventure__how-panel {
+  display: none;
+  gap: 0.75rem;
+}
+
+.lp-adventure__how-panel.is-on {
+  display: grid;
+  animation: lp-adventure-beat-in 420ms ease-out both;
+}
+
+.lp-adventure__how-panel-title {
+  margin: 0;
+  font-family: var(--lp-font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__how-stack {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-adventure__how-node {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--lp-level, var(--lp-green)) 24%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-level, var(--lp-green)) 8%, var(--lp-paper));
+}
+
+.lp-adventure__how-node.is-goal { --lp-level: var(--lp-level-goal, #166534); }
+.lp-adventure__how-node.is-plan { --lp-level: var(--lp-level-plan, #0f766e); }
+.lp-adventure__how-node.is-project { --lp-level: var(--lp-level-project, #1d4ed8); }
+.lp-adventure__how-node.is-battles { --lp-level: var(--lp-level-battle, #b45309); }
+
+.lp-adventure__how-node-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-level, var(--lp-green));
+}
+
+.lp-adventure__how-node strong {
+  font-size: 1rem;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__how-battles {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-adventure__how-battles li {
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, #fff 70%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--lp-level-battle, #b45309) 28%, var(--lp-border));
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.lp-adventure__how-battles li.is-done {
+  border-style: solid;
+  opacity: 0.72;
+  text-decoration: line-through;
+}
+
+.lp-adventure__how-battles.is-remaining li {
+  border-color: color-mix(in srgb, var(--lp-level-battle, #b45309) 40%, var(--lp-border));
+}
+
+.lp-adventure__how-progress {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--lp-level-project, #1d4ed8) 8%, var(--lp-paper));
+  border: 1px solid color-mix(in srgb, var(--lp-level-project, #1d4ed8) 22%, var(--lp-border));
+}
+
+.lp-adventure__how-progress-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__how-win.is-won {
+  opacity: 0.7;
+}
+
+.lp-adventure__how-won {
+  margin: 0;
+  font-weight: 750;
+  color: var(--lp-green-deep, #166534);
+}
+
+.lp-adventure__how-remaining-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__how-map {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lp-adventure__how-map li {
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 20%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-green) 7%, var(--lp-paper));
+  font-weight: 650;
+  color: var(--lp-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-adventure__how-panel.is-on {
+    animation: none;
+  }
+
+  .lp-dash-bar__fill {
+    transition: none;
+  }
+}
+
 @keyframes lp-adventure-atmosphere-in {
   from {
     opacity: 0;

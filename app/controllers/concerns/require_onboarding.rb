@@ -18,8 +18,12 @@ module RequireOnboarding
     return if %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains].include?(controller_name)
 
     current_user.update!(planning_version: 2) if current_user && !current_user.planning_v2?
-    return unless current_user&.needs_onboarding?
+    if current_user&.needs_onboarding?
+      redirect_to v2_onboarding_path and return
+    end
 
-    redirect_to v2_onboarding_path
+    return unless current_user&.needs_adventure_guide?
+
+    redirect_to v2_onboarding_path(step: "how")
   end
 end

@@ -4,7 +4,7 @@ class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
   # Simplified MVP adventure start — no life-area picker, no long coach funnel.
-  STEPS = %w[welcome mountain deadline forge].freeze
+  STEPS = %w[welcome mountain deadline forge how].freeze
   DEFAULT_AREA_KEY = "self".freeze
 
   def show
@@ -13,8 +13,14 @@ class V2OnboardingsController < ApplicationController
     @step = "welcome" unless STEPS.include?(@step)
     @adventure_year = Strategy::YearCycle.target_dec29.year
 
-    if current_user.onboarding_completed? && current_user.planning_v2? && @step != "forge"
-      redirect_to dashboard_path and return
+    if current_user.onboarding_completed? && current_user.planning_v2?
+      if current_user.needs_adventure_guide?
+        redirect_to v2_onboarding_path(step: "how") and return unless @step.in?(%w[forge how])
+      elsif !@step.in?(%w[forge how])
+        redirect_to dashboard_path and return
+      elsif @step == "how"
+        redirect_to dashboard_path and return
+      end
     end
 
     redirect_to v2_onboarding_path(step: missing_step) and return if step_incomplete?
@@ -48,6 +54,12 @@ class V2OnboardingsController < ApplicationController
       rescue Onboarding::Run::Error, LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error => e
         redirect_to v2_onboarding_path(step: "mountain"), alert: e.message
       end
+    when "how"
+      unless current_user.onboarding_completed?
+        redirect_to v2_onboarding_path(step: "welcome") and return
+      end
+      current_user.mark_adventure_guide_done!
+      redirect_to dashboard_path
     else
       redirect_to v2_onboarding_path(step: "welcome")
     end
@@ -64,12 +76,16 @@ class V2OnboardingsController < ApplicationController
     when "welcome", "mountain" then false
     when "deadline" then @draft["title"].blank?
     when "forge" then !current_user.onboarding_completed?
+    when "how" then !current_user.onboarding_completed?
     else false
     end
   end
 
   def missing_step
-    return "forge" if current_user.onboarding_completed?
+    if current_user.onboarding_completed?
+      return "how" if current_user.needs_adventure_guide?
+      return "forge"
+    end
     return "mountain" if @draft["title"].blank? && @step == "deadline"
     return "welcome" if @draft["title"].blank? && !@step.in?(%w[welcome mountain])
 

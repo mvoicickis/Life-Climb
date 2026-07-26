@@ -152,6 +152,23 @@ class User < ApplicationRecord
     support_prompts_muted
   end
 
+  ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
+
+  def adventure_guide_done?
+    Array(support_milestones_shown).map(&:to_s).include?(ADVENTURE_GUIDE_KEY)
+  end
+
+  def needs_adventure_guide?
+    planning_v2? && onboarding_completed? && !adventure_guide_done?
+  end
+
+  def mark_adventure_guide_done!
+    shown = Array(support_milestones_shown).map(&:to_s)
+    return if shown.include?(ADVENTURE_GUIDE_KEY)
+
+    update!(support_milestones_shown: shown + [ ADVENTURE_GUIDE_KEY ])
+  end
+
   def alive_level
     AliveLevel.new(life_points)
   end

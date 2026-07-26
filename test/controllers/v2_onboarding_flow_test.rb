@@ -49,9 +49,11 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/Forging Your Adventure/i, response.body)
     assert_match(/Raising your mountain/i, response.body)
+    assert_match(/How the Game Works/i, response.body)
 
     user = User.find_by!(email_address: "fresh@example.com")
     assert user.onboarding_completed?
+    assert user.needs_adventure_guide?
     assert_equal "self", user.life_areas.v2_selected.first.key
     journey = user.primary_focused_journey
     assert_equal "Become a Ruby Developer", journey.title
@@ -65,12 +67,36 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_operator user.strategy_points, :>=, 100
 
     get dashboard_path
+    assert_redirected_to v2_onboarding_path(step: "how")
+
+    get v2_onboarding_path(step: "how")
+    assert_response :success
+    assert_match(/How the game works/i, response.body)
+    assert_match(/Find a job/i, response.body)
+    assert_match(/Polish resume/i, response.body)
+    assert_match(/Write 5 strong bullets/i, response.body)
+    assert_match(/Claim Trail Guide badge/i, response.body)
+    assert_select "[data-controller='adventure-guide']"
+
+    patch v2_onboarding_url(step: "how")
+    assert_redirected_to dashboard_path
+    user.reload
+    assert user.adventure_guide_done?
+    assert_not user.needs_adventure_guide?
+
+    get dashboard_path
     assert_response :success
     assert_match(/Become a Ruby Developer/i, response.body)
     assert_match(/Plan Your Route/i, response.body)
     assert_match(/Build Strategy/i, response.body)
     assert_match(/Year Adventure/i, response.body)
     assert_no_match(/Complete Today.?s Battle/i, response.body)
+
+    achievements = Progress::Dashboard.call(user: user, period: "7d")[:achievements]
+    guide = achievements.find { |a| a[:key] == "adventure_guide" }
+    assert guide
+    assert guide[:unlocked]
+    assert_match(/Trail Guide/i, guide[:title])
   end
 
   test "plan route mission retires after first strategy battle exists" do
@@ -85,6 +111,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "welcome")
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "deadline")
+    patch v2_onboarding_url(step: "how")
 
     user = User.find_by!(email_address: "route@example.com")
     journey = user.primary_focused_journey

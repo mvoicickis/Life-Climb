@@ -77,11 +77,11 @@
             form: { data: { turbo: false } } %>
     </section>
 
-  <% else %>
+  <% elsif @step == "forge" %>
     <section class="lp-adventure__card lp-adventure__forge"
              aria-labelledby="adventure-forge-title"
              data-controller="adventure-forge"
-             data-adventure-forge-url-value="<%= dashboard_path %>"
+             data-adventure-forge-url-value="<%= v2_onboarding_path(step: 'how') %>"
              data-adventure-forge-delay-value="3200">
       <h1 id="adventure-forge-title" class="lp-adventure__title"><%= t("v2_onboarding.forge_title") %></h1>
       <ul class="lp-adventure__forge-list" aria-live="polite">
@@ -91,7 +91,10 @@
         <li class="lp-adventure__forge-item" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_ready") %></li>
       </ul>
       <p class="lp-adventure__forge-wait"><%= t("v2_onboarding.forge_wait") %></p>
-      <%= link_to t("v2_onboarding.enter_today"), dashboard_path, class: "lp-cta w-full inline-flex justify-center" %>
+      <%= link_to t("v2_onboarding.enter_how"), v2_onboarding_path(step: "how"), class: "lp-cta w-full inline-flex justify-center" %>
     </section>
+
+  <% else %>
+    <%= render "v2_onboardings/how_guide" %>
   <% end %>
 </div>
