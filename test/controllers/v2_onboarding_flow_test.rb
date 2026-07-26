@@ -16,6 +16,11 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Welcome to LifePoints/i, response.body)
     assert_match(/Start My Journey/i, response.body)
+    assert_match(/Every day becomes a Battle/i, response.body)
+    assert_match(/Ready to begin your journey/i, response.body)
+    assert_select ".lp-adventure.is-welcome"
+    assert_select ".lp-adventure__welcome"
+    assert_select ".lp-adventure__cta"
     assert_no_match(/Which area|improve first/i, response.body)
 
     patch v2_onboarding_url(step: "welcome")
