@@ -4299,6 +4299,7 @@
 /* ——— Progress analytics page ——— */
 .lp-main:has(.lp-progress) {
   max-width: 42rem;
+  width: 100%;
   margin-inline: auto;
   padding: 0.7rem 0.75rem calc(6.75rem + env(safe-area-inset-bottom));
   overflow-x: clip;
@@ -4314,6 +4315,7 @@
 .lp-progress {
   display: grid;
   gap: 0.75rem;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
 }
@@ -4651,14 +4653,23 @@
   font-size: 0.88rem;
 }
 
+.lp-progress-heatmap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .lp-progress-heatboard {
   --cell: 11px;
   --gap: 3px;
   --day-col: 1.7rem;
   --months-h: 1rem;
   margin-top: 0.75rem;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  overflow: hidden;
 }
 
 @media (min-width: 640px) {
@@ -4674,6 +4685,7 @@
   grid-template-columns: var(--day-col) minmax(0, 1fr);
   gap: 0.3rem;
   align-items: start;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
 }
@@ -4697,6 +4709,8 @@
 }
 
 .lp-progress-heatboard__scroll {
+  display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
@@ -4722,14 +4736,14 @@
 .lp-progress-heatboard__track {
   direction: ltr;
   width: max-content;
-  min-width: 100%;
+  max-width: none;
 }
 
 .lp-progress-heatboard__months {
   position: relative;
   height: var(--months-h);
   margin: 0 0 0.3rem;
-  width: calc(var(--weeks, 53) * var(--cell) + (var(--weeks, 53) - 1) * var(--gap));
+  width: calc(var(--weeks, 26) * var(--cell) + (var(--weeks, 26) - 1) * var(--gap));
 }
 
 .lp-progress-heatboard__month {
@@ -4750,6 +4764,7 @@
   grid-auto-columns: var(--cell);
   gap: var(--gap);
   width: max-content;
+  max-width: none;
   margin: 0;
   overflow: visible;
   padding: 0;

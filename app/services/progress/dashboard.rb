@@ -270,7 +270,7 @@ module Progress
     end
 
     def heatmap_grid
-      weeks = 53
+      weeks = 26
       start = Date.current.beginning_of_week(:monday) - ((weeks - 1) * 7)
       finish = Date.current.end_of_week(:monday)
       cells = (start..finish).map do |day|
