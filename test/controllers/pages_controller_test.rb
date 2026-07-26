@@ -6,7 +6,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/One mountain\. Today’s battle/, response.body)
     assert_match(/Start free/, response.body)
-    assert_match(/Win today’s battle/, response.body)
+    assert_match(/How it works/, response.body)
+    assert_match(/Run my first 10K/, response.body)
     assert_no_match(/status\.better_full|landing\.sample_better|today-card--good/, response.body)
   end
 
