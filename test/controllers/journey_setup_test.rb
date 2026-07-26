@@ -19,20 +19,13 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
     @journey = @user.reload.primary_focused_journey
   end
 
-  test "journey climb shows clarity ring and locks next layer" do
-    @journey.update!(
-      purpose: nil, policy: nil, approach: nil, program: nil, finished_result: nil,
-      setup_flags: { "goal" => "done" }
-    )
-
+  test "journey show is year planner not climb stack" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/Climb clarity/i, response.body)
-    assert_match(/Why it matters/i, response.body)
-    assert_match(/Rules/i, response.body)
-    assert_match(/Fill Why it matters to unlock/i, response.body)
-    assert_select "#climb-purpose.lp-climb-card--open"
-    assert_select "#climb-policy.lp-climb-card--locked"
+    assert_match(/Your year plan/i, response.body)
+    assert_match(/Scale/i, response.body)
+    assert_no_match(/Climb clarity/i, response.body)
+    assert_select "#climb-purpose", count: 0
   end
 
   test "saving goal unlocks purpose and raises clarity" do
@@ -46,8 +39,6 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
       life_journey: { title: "Ship LifePoints" }
     }
     assert_redirected_to life_journey_path(@journey, edit: "purpose")
-    follow_redirect!
-    assert_response :success
 
     @journey.reload
     assert @journey.layer_done?("goal")
@@ -55,7 +46,6 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
     assert_equal :open, @journey.layer_state("purpose")
     assert_equal :locked, @journey.layer_state("policy")
     assert_equal 1, @journey.clarity_count
-    assert_select "#climb-purpose.lp-climb-card--open"
   end
 
   test "skip purpose unlocks rules and counts toward clarity" do

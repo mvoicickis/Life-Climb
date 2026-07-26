@@ -49,7 +49,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_match(/First 10 users/, response.body)
   end
 
-  test "home add todo appears on journey today and marks layer done" do
+  test "home add todo marks journey today layer done" do
     @user.daily_todos.for_day.destroy_all
     @journey.update_column(:setup_flags, @journey.setup_flags.merge("today" => nil))
 
@@ -61,10 +61,6 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     @journey.reload
     assert @journey.layer_done?("today")
     assert_includes @user.daily_todos.for_day.pluck(:title), "Call a customer"
-
-    get life_journey_path(@journey, edit: "today")
-    assert_response :success
-    assert_match(/Call a customer/, response.body)
   end
 
   test "journey closer percent matches home and progress" do

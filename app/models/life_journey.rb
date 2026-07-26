@@ -5,6 +5,8 @@ class LifeJourney < ApplicationRecord
 
   STATUSES = %w[draft active completed archived].freeze
 
+  STRATEGY_BRIEF_KEYS = %w[why rules how path done_vs_now to_show].freeze
+
   # Unlock-the-climb layers (Progress meter is always available, not gated).
   CLIMB_LAYERS = %w[goal purpose policy approach program milestone scenes finished today].freeze
   SKIPPABLE_LAYERS = %w[purpose policy approach program finished].freeze
@@ -171,6 +173,24 @@ class LifeJourney < ApplicationRecord
     climb_list_for(kind).any?
   end
 
+  def strategy_brief_hash
+    (strategy_brief.presence || {}).stringify_keys
+  end
+
+  def strategy_brief_value(key)
+    strategy_brief_hash[key.to_s].to_s
+  end
+
+  def update_strategy_brief!(attrs)
+    merged = strategy_brief_hash
+    STRATEGY_BRIEF_KEYS.each do |key|
+      next unless attrs.key?(key) || attrs.key?(key.to_sym)
+
+      merged[key] = attrs[key].presence || attrs[key.to_sym].presence || ""
+    end
+    update!(strategy_brief: merged)
+  end
+
   def replace_list!(kind, entries)
     kind = kind.to_sym
     raise ArgumentError, "Unknown list" unless LEGACY_LIST_FIELDS.key?(kind)
@@ -291,6 +311,7 @@ class LifeJourney < ApplicationRecord
     self.approaches = [] if has_attribute?(:approaches) && read_attribute(:approaches).nil?
     self.programs = [] if has_attribute?(:programs) && read_attribute(:programs).nil?
     self.milestones = [] if has_attribute?(:milestones) && read_attribute(:milestones).nil?
+    self.strategy_brief = {} if has_attribute?(:strategy_brief) && read_attribute(:strategy_brief).nil?
   end
 
   def sync_user_from_area
