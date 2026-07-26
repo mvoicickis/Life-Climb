@@ -6676,6 +6676,19 @@ a.lp-strategy-siblings__chip:hover {
   margin: -0.35rem 0 0;
 }
 
+.lp-strategy-page__goal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.lp-strategy-page__goal-row .lp-strategy-page__goal-title {
+  min-width: 0;
+  flex: 1;
+}
+
 .lp-strategy-page__goal-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -6860,13 +6873,50 @@ a.lp-strategy-siblings__chip:hover {
   position: absolute;
   right: 0;
   top: calc(100% + 0.25rem);
-  min-width: 7.5rem;
+  min-width: 12.5rem;
   border: 1px solid var(--lp-border);
   border-radius: 0.75rem;
   background: var(--lp-elevated);
   box-shadow: 0 8px 24px color-mix(in srgb, var(--lp-ink) 8%, transparent);
-  padding: 0.35rem;
+  padding: 0.45rem;
   z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lp-strategy-overflow__rename {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.2rem 0.15rem 0.35rem;
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.lp-strategy-overflow__rename-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-overflow__rename-input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--lp-border);
+  border-radius: 0.55rem;
+  background: var(--lp-paper);
+  color: var(--lp-ink);
+  padding: 0.45rem 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.lp-strategy-overflow__rename-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+  outline-offset: 1px;
+  border-color: var(--lp-green);
 }
 
 .lp-strategy-overflow__action {
@@ -6879,11 +6929,25 @@ a.lp-strategy-siblings__chip:hover {
   border-radius: 0.55rem;
   font-size: 0.85rem;
   font-weight: 650;
-  color: #b91c1c;
+  color: var(--lp-ink);
   cursor: pointer;
 }
 
-.lp-strategy-overflow__action:hover {
+.lp-strategy-overflow__action.is-save {
+  color: var(--lp-green-deep, #166534);
+  font-weight: 750;
+  background: color-mix(in srgb, var(--lp-green) 10%, transparent);
+}
+
+.lp-strategy-overflow__action.is-save:hover {
+  background: color-mix(in srgb, var(--lp-green) 18%, transparent);
+}
+
+.lp-strategy-overflow__action.is-remove {
+  color: #b91c1c;
+}
+
+.lp-strategy-overflow__action.is-remove:hover {
   background: color-mix(in srgb, #b91c1c 8%, transparent);
 }
 

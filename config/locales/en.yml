@@ -391,6 +391,9 @@ en:
     week_breakdown_bonus: "Week breakdown complete"
     created: "Saved · +%{sp} Strategy Points"
     removed: "Removed."
+    renamed: "Renamed."
+    rename: "Rename"
+    save_name: "Save name"
     brief_saved: "Scale notes saved."
     synced:
       one: "Synced %{count} battle to Today."
