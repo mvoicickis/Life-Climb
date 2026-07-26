@@ -19,16 +19,15 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-    <%# Inter is the primary typeface for the premium game dashboard. %>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : "font-['Nunito',sans-serif] text-slate-900" %>"
-        style="<%= authenticated? ? nil : 'background: linear-gradient(180deg, #ecfdf5 0%, #f0f9ff 45%, #fff7ed 100%);' %>">
+  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? "lp-game#{content_for?(:lp_navy) ? ' lp-game--navy' : ''} text-[var(--lp-ink)]" : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink-dark,#14201a)]' %>"
+        style="<%= authenticated? ? nil : 'background: #0B1220;' %>">
     <% if authenticated? && content_for?(:lp_game) %>
       <% unless content_for?(:lp_hide_top_nav) %>
       <nav class="lp-top-nav" aria-label="Main">

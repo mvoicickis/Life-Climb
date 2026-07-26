@@ -27,6 +27,12 @@
      data-journey-climb-focus-value="<%= focus %>"
      data-journey-climb-unlocked-value="<%= @unlocked_layer.to_s %>">
   <header class="lp-climb__head">
+    <div class="lp-climb__mountains" aria-hidden="true">
+      <svg viewBox="0 0 640 120" preserveAspectRatio="xMidYMax meet">
+        <path d="M0 95 L80 50 L140 78 L220 28 L320 70 L400 40 L500 78 L640 45" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.35"/>
+        <path d="M0 110 L100 70 L180 95 L280 48 L380 90 L480 55 L640 85" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+      </svg>
+    </div>
     <p class="lp-dash-kicker"><%= area.label %></p>
     <h1><%= area_copy(area_key, "title", default: t("journeys.climb.title")) %></h1>
     <p><%= area_copy(area_key, "climb_subtitle", default: t("journeys.climb.subtitle")) %></p>

@@ -12,8 +12,11 @@
     <p class="lp-dash-hero__hint"><%= t("dash.goal_hint") %></p>
   </div>
   <div class="lp-dash-hero__art" aria-hidden="true">
-    <%= image_tag "game/gap-mountains.png", alt: "", class: "lp-dash-hero__img" %>
-    <div class="lp-dash-hero__glow" style="--closer: <%= closer %>"></div>
+    <svg class="lp-dash-hero__mountains" viewBox="0 0 320 200" preserveAspectRatio="xMidYMax meet">
+      <path d="M8 160 L70 95 L110 130 L170 55 L230 125 L280 85 L312 140" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35"/>
+      <path d="M20 175 L90 115 L140 150 L200 80 L260 145 L312 110" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
+      <path d="M170 55 L200 20 L230 125" fill="none" stroke="currentColor" stroke-width="2.4" class="lp-dash-hero__peak"/>
+    </svg>
     <div class="lp-dash-hero__flag" style="--closer: <%= closer %>"></div>
   </div>
 </section>
