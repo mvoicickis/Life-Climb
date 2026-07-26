@@ -9,8 +9,13 @@ module GameRules
   JOURNEY_COMPLETE_GAP_CLAMP = 5.0
 
   # Strategy Points — earned for planning / breaking goals down.
-  STRATEGY_LOCK_SP = 15
+  STRATEGY_GOAL_SP = 100
+  STRATEGY_FIRST_PLAN_SP = 50
+  STRATEGY_FIRST_PROJECT_SP = 75
+  STRATEGY_COMPLETE_SP = 500
   STRATEGY_CHILD_SP = 5
+  # Legacy aliases
+  STRATEGY_LOCK_SP = STRATEGY_GOAL_SP
   STRATEGY_WEEK_BREAKDOWN_SP = 25
 
   # Alignment-stack progress weights (basis points = percent * 100 of remaining gap).

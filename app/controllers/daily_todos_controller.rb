@@ -17,10 +17,14 @@ class DailyTodosController < ApplicationController
   def complete
     todo = current_user.daily_todos.find(params[:id])
     if todo.completed?
-      todo.update!(completed_at: nil)
+      ActiveRecord::Base.transaction do
+        todo.update!(completed_at: nil)
+        todo.strategy_goal&.reopen!
+      end
     else
       ActiveRecord::Base.transaction do
         todo.update!(completed_at: Time.current)
+        todo.strategy_goal&.complete!
         LifePoints::Award.call(
           user: current_user,
           amount: todo.lp_reward,

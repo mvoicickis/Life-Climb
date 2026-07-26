@@ -88,33 +88,68 @@ class LifeJourneysController < ApplicationController
 
   def prepare_strategy!
     area = @journey.life_area
-    goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:children)
-    @year_goal = goals.for_horizon("year").roots.first
-    @month_goals = goals.for_horizon("month").to_a
-    @week_goals = goals.for_horizon("week").to_a
-    @day_goals = goals.for_horizon("day").to_a
+    @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:children, :parent)
+    @goal = @goals.for_kind("goal").roots.first
     @year_due = Strategy::YearCycle.target_dec29
-    @month_slots = Strategy::YearCycle.remaining_month_slots(target: @year_goal&.due_on || @year_due)
-    @strategy_parent =
-      case params[:horizon].to_s
-      when "month" then @year_goal
-      when "week" then @month_goals.find { |g| g.id == params[:parent_id].to_i } || @month_goals.first
-      when "day" then @week_goals.find { |g| g.id == params[:parent_id].to_i } || @week_goals.first
+
+    @focus =
+      if params[:focus_id].present?
+        @goals.find { |g| g.id == params[:focus_id].to_i }
       else
-        nil
+        @goal
       end
-    @active_horizon = params[:horizon].presence_in(%w[year brief month week day]) || default_strategy_horizon
-    @week_dates = (Date.current.beginning_of_week..Date.current.end_of_week).to_a
+
+    @focus ||= @goal
+    @level = strategy_level_for(@focus)
+    @children = @focus ? @focus.children.ordered.to_a : []
+    @month_slots =
+      if @focus&.project?
+        Strategy::YearCycle.remaining_month_slots(target: @goal&.due_on || @year_due)
+      else
+        []
+      end
+    @today_battles = today_battles_for(@focus || @goal)
+    @crumbs = strategy_crumbs(@focus)
+    @guided_step = guided_step
   end
 
-  def default_strategy_horizon
-    return "year" if @year_goal.blank?
-    return "brief" if LifeJourney::STRATEGY_BRIEF_KEYS.any? { |k| @journey.strategy_brief_value(k).blank? }
-    return "month" if @month_goals.empty?
-    return "week" if @week_goals.empty?
-    return "day" if @day_goals.empty?
+  def strategy_level_for(node)
+    return "goal" if node.blank?
 
-    "month"
+    case node.kind
+    when "goal" then "plans"
+    when "plan" then "projects"
+    when "project" then "months"
+    when "month" then "month_detail"
+    when "week" then "battles"
+    else "battles"
+    end
+  end
+
+  def guided_step
+    return 1 if @goal.blank?
+    return 2 if @goal.children.for_kind("plan").none?
+    return 3 if StrategyGoal.where(parent_id: @goal.children.for_kind("plan").select(:id)).for_kind("project").none?
+    return 4 if StrategyGoal.where(horizon: "month", user_id: current_user.id, life_area_id: @journey.life_area_id).none?
+
+    5
+  end
+
+  def today_battles_for(node)
+    return [] if node.blank?
+
+    root = node.goal? ? node : node.root_goal
+    return [] if root.blank?
+
+    Strategy::Progress.battles_under(root).select { |b| b.scheduled_on == Date.current }
+  end
+
+  def strategy_crumbs(node)
+    return [] if node.blank?
+
+    ([ node ] + node.ancestor_chain.reverse).reverse.map do |n|
+      { id: n.id, title: n.title, kind: n.kind }
+    end
   end
 
   def prepare_climb!

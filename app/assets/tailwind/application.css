@@ -5465,6 +5465,61 @@ button.lp-progress-heat__cell {
   color: var(--lp-muted);
 }
 
+.lp-strategy__bar {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-border) 80%, transparent);
+  overflow: hidden;
+}
+
+.lp-strategy__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lp-lime);
+}
+
+.lp-strategy__crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.lp-strategy__crumb {
+  color: var(--lp-muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.lp-strategy__crumb:hover {
+  color: var(--lp-lime);
+}
+
+.lp-strategy__crumb-sep {
+  color: var(--lp-border);
+}
+
+.lp-strategy__step {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
+.lp-strategy__optional {
+  border: 1px dashed var(--lp-border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.lp-strategy__optional > summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
 .lp-strategy__universe {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
