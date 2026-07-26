@@ -6,12 +6,17 @@
   <% if @step == "welcome" %>
     <section class="lp-adventure__card lp-adventure__welcome" aria-labelledby="adventure-welcome-title">
       <div class="lp-adventure__sky" aria-hidden="true">
+        <span class="lp-adventure__spark is-a"></span>
+        <span class="lp-adventure__spark is-b"></span>
+        <span class="lp-adventure__spark is-c"></span>
         <%= render "v2_onboardings/mountain_art", prefix: "lp-welcome-mtn" %>
       </div>
 
       <%= render "shared/lp_brand_mark", size: 64, class_name: "lp-adventure__mark" %>
-      <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.welcome_lead") %></p>
+      <div class="lp-adventure__intro">
+        <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
+        <p class="lp-adventure__lead"><%= t("v2_onboarding.welcome_lead") %></p>
+      </div>
 
       <ul class="lp-adventure__beats">
         <li class="lp-adventure__beat is-mountain">

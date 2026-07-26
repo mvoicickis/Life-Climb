@@ -21,8 +21,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-adventure.is-welcome"
     assert_select ".lp-adventure__welcome"
     assert_select ".lp-adventure__sky"
+    assert_select ".lp-adventure__spark", 3
     assert_select ".lp-adventure__mountain.is-trail"
     assert_select ".lp-adventure__mountain-art"
+    assert_select ".lp-adventure__intro"
     assert_select ".lp-adventure__cta"
     assert_no_match(/lp-adventure__silhouette/, response.body)
     assert_no_match(/Which area|improve first/i, response.body)
