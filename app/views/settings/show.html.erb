@@ -12,19 +12,6 @@
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.subtitle") %></p>
   </header>
 
-  <section class="lp-glass p-6">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.count_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.count_hint") %></p>
-
-    <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do |form| %>
-      <%= form.number_field :home_stat_count,
-          min: 1,
-          max: 20,
-          class: "lp-input w-full" %>
-      <%= form.submit t("settings.save"), class: "lp-cta mt-4 w-full" %>
-    <% end %>
-  </section>
-
   <section class="lp-glass p-5">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.feedback_title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.feedback_body") %></p>
@@ -59,6 +46,19 @@
     <%= render "shared/share_sheet",
           title: t("share.invite.title"),
           subtitle: t("share.invite.subtitle") %>
+  </section>
+
+  <section class="lp-glass p-6">
+    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.count_title") %></h2>
+    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.count_hint") %></p>
+
+    <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do |form| %>
+      <%= form.number_field :home_stat_count,
+          min: 1,
+          max: 20,
+          class: "lp-input w-full" %>
+      <%= form.submit t("settings.save"), class: "lp-cta mt-4 w-full" %>
+    <% end %>
   </section>
 
   <section class="lp-glass p-6">
