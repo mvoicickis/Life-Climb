@@ -23,15 +23,52 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
   test "journey show is guided strategy without climb chrome" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/Your year plan/i, response.body)
+    assert_match(/This season.?s mountain|Your year plan/i, response.body)
     assert_match(/Next up/i, response.body)
     assert_match(/Quest path|Goal/i, response.body)
     assert_match(/Strategy Points/i, response.body)
-    assert_match(/Today.?s Battle/i, response.body)
     assert_select ".lp-strategy-path"
+    assert_select ".lp-strategy-path__checkpoint"
     assert_select ".lp-strategy-next"
+    assert_select "#next-up-title"
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)
+  end
+
+  test "goal create celebrates with sp_gained flash and awards goal SP" do
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      horizon: "goal",
+      title: "Become a Rails developer"
+    }
+    goal = @user.strategy_goals.for_kind("goal").last
+    assert Strategy::YearCycle.dec29?(goal.due_on)
+    assert_equal 100, @user.reload.strategy_points
+    assert_match(/Goal created/i, flash[:notice].to_s)
+    assert_equal 100, flash[:sp_gained].to_i
+  end
+
+  test "next up inlines the create form instead of scrolling to board" do
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select "#strategy-next-up form[action=?]", strategy_goals_path
+    assert_select "#strategy-next-up #next-up-title"
+    assert_select ".lp-strategy-next__chip"
+  end
+
+  test "remove lives behind overflow menu on quest cards" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Find a job", position: 0
+    )
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select ".lp-strategy-overflow"
+    assert_select ".lp-strategy-quest__marker"
+    assert_select ".lp-strategy-quest__xp"
   end
 
   test "goal locks due_on to December 29 and awards goal SP" do

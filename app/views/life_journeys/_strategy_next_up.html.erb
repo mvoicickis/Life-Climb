@@ -1,21 +1,77 @@
 <% next_up = @next_up %>
 <% if next_up.present? %>
-  <div class="lp-strategy-next" id="strategy-next-up">
+  <% area = @journey.life_area %>
+  <% form = next_up[:form] %>
+  <% examples = Array(next_up[:examples]) %>
+  <div class="lp-strategy-next <%= 'is-inline-form' if form.present? %> <%= 'is-handoff' if next_up[:key] == :go_today %>" id="strategy-next-up">
     <p class="lp-strategy-next__kicker"><%= t("strategy.next_up.kicker") %></p>
     <h2 class="lp-strategy-next__title"><%= next_up[:title] %></h2>
     <p class="lp-strategy-next__hint"><%= next_up[:hint] %></p>
 
-    <% if next_up[:href].present? %>
+    <% if next_up[:key] == :go_today && @today_battles.any? %>
+      <ul class="lp-strategy-next__battles" aria-label="<%= t('strategy.battles_heading') %>">
+        <% @today_battles.first(4).each do |battle| %>
+          <li>
+            <span aria-hidden="true"><%= battle.completed? ? "✓" : "⚔" %></span>
+            <%= battle.title %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% if form.present? %>
+      <%= form_with url: strategy_goals_path, method: :post, class: "lp-strategy-next__form", data: { turbo: false } do %>
+        <%= hidden_field_tag :life_area_id, area.id %>
+        <%= hidden_field_tag :life_journey_id, @journey.id %>
+        <%= hidden_field_tag :horizon, form[:horizon] %>
+        <% if form[:parent_id].present? %>
+          <%= hidden_field_tag :parent_id, form[:parent_id] %>
+        <% end %>
+        <% if form[:due_on].present? %>
+          <%= hidden_field_tag :due_on, form[:due_on] %>
+        <% end %>
+        <% if form[:scheduled_on].present? %>
+          <%= hidden_field_tag :scheduled_on, form[:scheduled_on] %>
+        <% end %>
+
+        <%= text_field_tag :title,
+              (form[:horizon] == "goal" ? @journey.title : nil),
+              required: true,
+              maxlength: 120,
+              id: "next-up-title",
+              class: "lp-input w-full lp-strategy-next__input",
+              placeholder: next_up[:placeholder] || t("strategy.goal_placeholder"),
+              autofocus: true %>
+
+        <% if examples.any? %>
+          <div class="lp-strategy-next__examples" role="group" aria-label="<%= t('strategy.next_up.examples_label') %>">
+            <% examples.each do |example| %>
+              <button type="button"
+                      class="lp-strategy-next__chip"
+                      data-action="strategy-celebrate#fillExample"
+                      data-title="<%= example %>"><%= example %></button>
+            <% end %>
+          </div>
+        <% end %>
+
+        <% if form[:horizon] == "goal" %>
+          <p class="lp-strategy-next__meta"><%= t("strategy.fixed_due", date: l(@year_due, format: :long)) %></p>
+        <% end %>
+
+        <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
+      <% end %>
+
+    <% elsif next_up[:href].present? %>
       <%= link_to next_up[:cta], next_up[:href], class: "lp-strategy-next__cta" %>
+
     <% elsif next_up[:sync_today] %>
       <%= form_with url: life_journey_path(@journey), method: :patch, data: { turbo: false } do %>
         <%= hidden_field_tag :sync_today, "1" %>
         <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
       <% end %>
-    <% elsif next_up[:anchor].present? && next_up[:form].blank? %>
+
+    <% elsif next_up[:anchor].present? %>
       <a href="#<%= next_up[:anchor] %>" class="lp-strategy-next__cta"><%= next_up[:cta] %></a>
-    <% elsif next_up[:form].present? %>
-      <a href="#strategy-next-form" class="lp-strategy-next__cta"><%= next_up[:cta] %> →</a>
     <% end %>
   </div>
 <% end %>

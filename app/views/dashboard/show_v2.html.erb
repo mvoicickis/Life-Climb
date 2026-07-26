@@ -8,10 +8,17 @@
     when 5..11 then t("game_ui.good_morning")
     when 12..17 then t("game_ui.good_afternoon")
     else t("game_ui.good_evening")
-    end
+  end
+  mountain_from = flash[:mountain_from]
+  mountain_to = flash[:mountain_to]
 %>
 
-<div class="lp-dash" data-controller="battle-day" data-battle-day-closer-value="<%= @closer %>">
+<div class="lp-dash"
+     data-controller="battle-day"
+     data-battle-day-closer-value="<%= @closer %>"
+     data-battle-day-mountain-from-value="<%= mountain_from %>"
+     data-battle-day-mountain-to-value="<%= mountain_to %>"
+     data-battle-day-mountain-label-value="<%= t('dash.mountain_tick', from: mountain_from.to_i, to: mountain_to.to_i) %>">
   <header class="lp-dash__top">
     <%= link_to dashboard_path, class: "lp-dash__brand" do %>
       <%= render "shared/lp_brand_mark", size: 30, class_name: "lp-dash__brand-mark" %>

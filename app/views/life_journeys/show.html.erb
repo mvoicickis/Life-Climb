@@ -2,7 +2,11 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<div class="lp-home mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5">
+<% sp_gained = flash[:sp_gained].to_i %>
+
+<div class="lp-home mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5"
+     data-controller="strategy-celebrate"
+     data-strategy-celebrate-gained-value="<%= sp_gained %>">
   <header class="flex items-start justify-between gap-4">
     <div class="min-w-0">
       <p class="lp-brand-kicker">
@@ -12,9 +16,14 @@
       <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("strategy.page_title") %></h1>
       <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("strategy.intro_short", date: l(@year_due, format: :long)) %></p>
     </div>
-    <div class="lp-strategy__sp shrink-0" aria-label="<%= t('strategy.sp_label') %>">
-      <span class="lp-strategy__sp-value"><%= current_user.strategy_points %></span>
+    <div class="lp-strategy__sp shrink-0"
+         data-strategy-celebrate-target="spBadge"
+         aria-label="<%= t('strategy.sp_label') %>">
+      <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
       <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
+      <% if sp_gained.positive? %>
+        <span class="lp-strategy__sp-pop" aria-hidden="true">+<%= sp_gained %></span>
+      <% end %>
     </div>
   </header>
 
@@ -24,7 +33,7 @@
         <p class="font-semibold text-[var(--lp-ink)] truncate"><%= @goal.title %></p>
         <span class="text-sm font-bold text-[var(--lp-lime)]"><%= @goal.progress_percent %>%</span>
       </div>
-      <div class="lp-strategy__bar mt-2" aria-hidden="true">
+      <div class="lp-strategy__bar mt-2" aria-hidden="true" data-strategy-celebrate-target="progressBar">
         <span style="width: <%= @goal.progress_percent %>%"></span>
       </div>
       <p class="mt-2 text-xs text-[var(--lp-muted)]"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></p>

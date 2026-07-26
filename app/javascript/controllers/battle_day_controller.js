@@ -1,9 +1,20 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Subtle juice for Complete Battle — confetti, CTA pulse, reward nudge.
+// Subtle juice for Complete Battle — confetti, CTA pulse, reward nudge, mountain tick.
 export default class extends Controller {
   static targets = ["completeBtn", "reward", "goalPct", "goalBar", "item", "lpTotal"]
-  static values = { closer: Number }
+  static values = {
+    closer: Number,
+    mountainFrom: Number,
+    mountainTo: Number,
+    mountainLabel: String
+  }
+
+  connect() {
+    if (this.hasMountainToValue && this.mountainToValue > this.mountainFromValue) {
+      this.showMountainTick()
+    }
+  }
 
   celebrate() {
     this.element.classList.add("is-celebrating")
@@ -23,6 +34,30 @@ export default class extends Controller {
     if (!this.hasGoalBarTarget) return
     this.goalBarTarget.classList.add("is-glow")
     window.setTimeout(() => this.goalBarTarget.classList.remove("is-glow"), 900)
+  }
+
+  showMountainTick() {
+    const toast = document.createElement("div")
+    toast.className = "lp-dash-mountain-tick"
+    toast.setAttribute("role", "status")
+    toast.textContent = this.mountainLabelValue || `Goal ${this.mountainFromValue}% → ${this.mountainToValue}%`
+    this.element.appendChild(toast)
+
+    if (this.hasGoalPctTarget) {
+      this.goalPctTarget.textContent = String(this.mountainToValue)
+      this.goalPctTarget.classList.add("is-tick")
+    }
+    if (this.hasGoalBarTarget) {
+      this.goalBarTarget.style.width = `${this.mountainToValue}%`
+      this.goalBarTarget.classList.add("is-glow", "is-surge")
+    }
+
+    window.setTimeout(() => {
+      toast.classList.add("is-out")
+      this.goalPctTarget?.classList.remove("is-tick")
+      this.goalBarTarget?.classList.remove("is-glow", "is-surge")
+    }, 1600)
+    window.setTimeout(() => toast.remove(), 2000)
   }
 
   burst() {

@@ -1,11 +1,21 @@
 <%# locals: node, journey %>
-<%= link_to life_journey_path(journey, focus_id: node.id), class: "lp-strategy-quest" do %>
-  <div class="lp-strategy-quest__body">
-    <p class="lp-strategy-quest__title"><%= node.title %></p>
-    <div class="lp-strategy__bar mt-2" aria-hidden="true">
-      <span style="width: <%= node.progress_percent %>%"></span>
+<div class="lp-strategy-quest-row">
+  <%= link_to life_journey_path(journey, focus_id: node.id), class: "lp-strategy-quest" do %>
+    <span class="lp-strategy-quest__marker" aria-hidden="true"></span>
+    <div class="lp-strategy-quest__body">
+      <div class="lp-strategy-quest__top">
+        <p class="lp-strategy-quest__title"><%= node.title %></p>
+        <span class="lp-strategy-quest__xp"><%= node.progress_percent %>%</span>
+      </div>
+      <div class="lp-strategy__bar mt-2" aria-hidden="true">
+        <span style="width: <%= node.progress_percent %>%"></span>
+      </div>
+      <p class="lp-strategy-quest__meta"><%= t("strategy.next_up.tap_continue") %></p>
     </div>
-    <p class="lp-strategy-quest__meta"><%= node.progress_percent %>% · <%= t("strategy.next_up.tap_continue") %></p>
-  </div>
-  <span class="lp-strategy-quest__chevron" aria-hidden="true">›</span>
-<% end %>
+    <span class="lp-strategy-quest__chevron" aria-hidden="true">›</span>
+  <% end %>
+  <details class="lp-strategy-overflow">
+    <summary aria-label="<%= t('strategy.more_actions') %>">···</summary>
+    <%= button_to t("strategy.remove"), strategy_goal_path(node), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
+  </details>
+</div>

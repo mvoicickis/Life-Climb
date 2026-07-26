@@ -1,10 +1,12 @@
 <nav class="lp-strategy-path" aria-label="<%= t('strategy.path.label') %>">
   <% @path_stages.each_with_index do |stage, index| %>
     <% if index.positive? %>
-      <span class="lp-strategy-path__connector <%= 'is-done' if stage[:state] != :upcoming %>" aria-hidden="true"></span>
+      <span class="lp-strategy-path__trail <%= 'is-done' if stage[:state] != :upcoming %>" aria-hidden="true"></span>
     <% end %>
-    <div class="lp-strategy-path__stage is-<%= stage[:state] %>">
-      <span class="lp-strategy-path__dot" aria-hidden="true"></span>
+    <div class="lp-strategy-path__checkpoint is-<%= stage[:state] %>">
+      <span class="lp-strategy-path__node" aria-hidden="true">
+        <span class="lp-strategy-path__ring"></span>
+      </span>
       <span class="lp-strategy-path__label"><%= stage[:label] %></span>
     </div>
   <% end %>

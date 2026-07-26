@@ -28,6 +28,7 @@ module Battles
       ApplicationRecord.transaction do
         todos.each do |todo|
           todo.update!(completed_at: Time.current)
+          todo.strategy_goal&.complete!
           LifePoints::Award.call(
             user: @user,
             amount: todo.lp_reward,

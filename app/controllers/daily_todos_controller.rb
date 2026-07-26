@@ -16,6 +16,10 @@ class DailyTodosController < ApplicationController
 
   def complete
     todo = current_user.daily_todos.find(params[:id])
+    goal = todo.strategy_goal&.root_goal
+    before = goal&.progress_percent.to_i
+    completing = !todo.completed?
+
     if todo.completed?
       ActiveRecord::Base.transaction do
         todo.update!(completed_at: nil)
@@ -35,6 +39,15 @@ class DailyTodosController < ApplicationController
       end
     end
     Journeys::SyncClimbFromToday.call(user: current_user)
+
+    if completing && goal
+      after = goal.reload.progress_percent.to_i
+      if after > before
+        flash[:mountain_from] = before
+        flash[:mountain_to] = after
+      end
+    end
+
     redirect_to dashboard_path
   end
 

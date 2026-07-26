@@ -153,6 +153,11 @@ class LifeJourneysController < ApplicationController
         title: I18n.t("strategy.next_up.create_goal_title"),
         hint: I18n.t("strategy.next_up.create_goal_hint"),
         cta: I18n.t("strategy.next_up.create_goal_cta"),
+        placeholder: I18n.t("strategy.goal_placeholder"),
+        examples: [
+          I18n.t("strategy.next_up.example_goal_1"),
+          I18n.t("strategy.next_up.example_goal_2")
+        ],
         form: { horizon: "goal", parent_id: nil }
       }
     end
@@ -165,8 +170,9 @@ class LifeJourneysController < ApplicationController
           title: I18n.t("strategy.next_up.add_plan_title"),
           hint: I18n.t("strategy.next_up.add_plan_hint"),
           cta: I18n.t("strategy.next_up.add_plan_cta"),
-          form: { horizon: "plan", parent_id: @goal.id },
-          anchor: "strategy-next-form"
+          placeholder: I18n.t("strategy.plan_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_plan") ],
+          form: { horizon: "plan", parent_id: @goal.id }
         }
       end
 
@@ -189,8 +195,9 @@ class LifeJourneysController < ApplicationController
           title: I18n.t("strategy.next_up.add_month_title", month: @current_month_slot[:label]),
           hint: I18n.t("strategy.next_up.add_month_hint"),
           cta: I18n.t("strategy.next_up.add_month_cta"),
-          form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot[:due_on] },
-          anchor: "strategy-next-form"
+          placeholder: I18n.t("strategy.month_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_month") ],
+          form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot[:due_on] }
         }
       end
 
@@ -210,8 +217,9 @@ class LifeJourneysController < ApplicationController
         title: I18n.t("strategy.next_up.add_month_title", month: @current_month_slot&.dig(:label) || ""),
         hint: I18n.t("strategy.next_up.add_month_hint"),
         cta: I18n.t("strategy.next_up.add_month_cta"),
-        form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot&.dig(:due_on) },
-        anchor: "strategy-next-form"
+        placeholder: I18n.t("strategy.month_placeholder"),
+        examples: [ I18n.t("strategy.next_up.example_month") ],
+        form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot&.dig(:due_on) }
       }
     end
 
@@ -225,8 +233,9 @@ class LifeJourneysController < ApplicationController
           title: I18n.t("strategy.next_up.add_month_title", month: slot[:label]),
           hint: I18n.t("strategy.next_up.add_month_hint"),
           cta: I18n.t("strategy.next_up.add_month_cta"),
-          form: { horizon: "month", parent_id: @focus.id, due_on: slot[:due_on] },
-          anchor: "strategy-next-form"
+          placeholder: I18n.t("strategy.month_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_month") ],
+          form: { horizon: "month", parent_id: @focus.id, due_on: slot[:due_on] }
         }
       end
 
@@ -250,8 +259,9 @@ class LifeJourneysController < ApplicationController
           title: I18n.t("strategy.next_up.add_battle_title"),
           hint: I18n.t("strategy.next_up.add_battle_hint"),
           cta: I18n.t("strategy.next_up.add_battle_cta"),
-          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current },
-          anchor: "strategy-next-form"
+          placeholder: I18n.t("strategy.battle_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_battle") ],
+          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current }
         }
       end
 
@@ -259,7 +269,7 @@ class LifeJourneysController < ApplicationController
         key: :go_today,
         title: I18n.t("strategy.next_up.go_today_title"),
         hint: I18n.t("strategy.next_up.go_today_hint"),
-        cta: I18n.t("strategy.go_today"),
+        cta: I18n.t("strategy.next_up.fight_today_cta"),
         sync_today: true
       }
     end
@@ -269,7 +279,7 @@ class LifeJourneysController < ApplicationController
         key: :go_today,
         title: I18n.t("strategy.next_up.go_today_title"),
         hint: I18n.t("strategy.next_up.go_today_hint"),
-        cta: I18n.t("strategy.go_today"),
+        cta: I18n.t("strategy.next_up.fight_today_cta"),
         sync_today: true
       }
     else
@@ -278,7 +288,7 @@ class LifeJourneysController < ApplicationController
         title: I18n.t("strategy.next_up.keep_building_title"),
         hint: I18n.t("strategy.next_up.keep_building_hint"),
         cta: I18n.t("strategy.next_up.keep_building_cta"),
-        anchor: "strategy-board"
+        anchor: "strategy-quests"
       }
     end
   end
