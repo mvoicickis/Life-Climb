@@ -1,4 +1,14 @@
 module ApplicationHelper
+  def area_copy(area_or_key, key, **options)
+    area_key =
+      case area_or_key
+      when LifeArea then area_or_key.key
+      when String, Symbol then area_or_key
+      else area_or_key.to_s
+      end
+    AreaCopy.for(area_key, key, **options)
+  end
+
   def canonical_base_url
     host = ENV["APP_HOST"].presence || (respond_to?(:request) ? request.host : "example.com")
     "https://#{host}"
@@ -18,7 +28,7 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "The more LifePoints you earn, the more alive you become. Build toward your dream and ship Finished Products that create real value."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Pick any part of your life you want to grow. Build a real plan. Fight one small battle a day — and become more alive."
   end
 
   def status_tone(status)

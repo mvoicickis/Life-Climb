@@ -34,8 +34,7 @@ module Journeys
       raise Error, "Say one thing you can finish in one sitting" if @today_mission.blank?
 
       ActiveRecord::Base.transaction do
-        keys = (@user.life_areas.v2_selected.pluck(:key) + [ @area_key ]).uniq
-        areas = LifeAreas::Select.call(user: @user, keys: keys)
+        areas = LifeAreas::Select.call(user: @user, keys: [ @area_key ])
         area = areas.find { |a| a.key == @area_key }
         raise Error, "Could not open that life area" unless area
 

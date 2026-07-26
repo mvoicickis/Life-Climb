@@ -12,8 +12,14 @@ Rails.application.routes.draw do
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
   resource :life_area_selections, only: %i[ show update ], controller: "life_area_selections"
   resource :v2_onboarding, only: %i[ show update ], controller: "v2_onboardings"
-  resources :life_journeys, only: %i[ new create show ] do
+  resources :life_journeys, only: %i[ new create show update ] do
     resource :completion, only: :create, controller: "journey_completions"
+    resources :journey_targets, only: %i[ create ]
+  end
+  resources :journey_targets, only: %i[ destroy ] do
+    member do
+      post :log
+    end
   end
   resource :next_mountain, only: %i[ show update ], controller: "next_mountains"
   resource :focus, only: %i[ show update ], controller: "focus"

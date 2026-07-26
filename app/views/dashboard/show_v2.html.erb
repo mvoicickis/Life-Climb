@@ -41,10 +41,15 @@
         open_count: @battle_open_count,
         aspect_key: @journey.life_area.key %>
 
+  <% if @targets.any? %>
+    <%= render "dashboard/dash_targets", targets: @targets %>
+  <% end %>
+
   <%= render "dashboard/dash_project",
         journey: @journey,
         project_title: @project_title,
-        progress: @project_progress %>
+        progress: @project_progress,
+        milestones: @milestones %>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :today %>

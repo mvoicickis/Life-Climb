@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_025646) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -57,6 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
     t.integer "lp_reward", default: 30, null: false
     t.integer "position", default: 0, null: false
     t.date "scheduled_on", null: false
+    t.string "tag"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
@@ -141,6 +142,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
 
+  create_table "journey_targets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "current_value", precision: 12, scale: 2, default: "0.0", null: false
+    t.string "kind", default: "oneshot", null: false
+    t.integer "life_journey_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "status", default: "active", null: false
+    t.json "tags", default: [], null: false
+    t.decimal "target_value", precision: 12, scale: 2, default: "1.0", null: false
+    t.string "title", null: false
+    t.string "unit"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["life_journey_id", "status"], name: "index_journey_targets_on_life_journey_id_and_status"
+    t.index ["life_journey_id"], name: "index_journey_targets_on_life_journey_id"
+    t.index ["user_id"], name: "index_journey_targets_on_user_id"
+  end
+
   create_table "life_areas", force: :cascade do |t|
     t.text "ambition"
     t.integer "closer_score", default: 1, null: false
@@ -163,15 +182,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
 
   create_table "life_journeys", force: :cascade do |t|
     t.datetime "activated_at"
+    t.text "approach"
+    t.json "approaches", default: [], null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.text "current_reality", null: false
+    t.text "finished_result"
     t.integer "focus_position"
     t.decimal "gap_percent", precision: 5, scale: 2, default: "70.0", null: false
     t.text "ideal_scene", null: false
     t.integer "life_area_id", null: false
+    t.json "milestones", default: [], null: false
     t.text "next_win"
+    t.text "policy"
+    t.text "program"
+    t.json "programs", default: [], null: false
+    t.text "purpose"
     t.datetime "scenes_revised_at"
+    t.json "setup_flags", default: {}, null: false
     t.string "status", default: "active", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
@@ -261,6 +289,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
     t.string "email_address", null: false
     t.integer "focus_building_id"
     t.integer "home_stat_count", default: 6, null: false
+    t.string "name"
     t.datetime "onboarding_completed_at"
     t.string "password_digest", null: false
     t.integer "planning_version", default: 1, null: false
@@ -289,6 +318,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_260000) do
   add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
   add_foreign_key "habits", "users"
+  add_foreign_key "journey_targets", "life_journeys"
+  add_foreign_key "journey_targets", "users"
   add_foreign_key "life_areas", "dreams"
   add_foreign_key "life_areas", "users"
   add_foreign_key "life_journeys", "life_areas"

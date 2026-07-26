@@ -15,7 +15,7 @@
   <header class="lp-dash-card__head">
     <div>
       <h2 class="lp-dash-card__title">⚔ <%= t("dash.battle_title") %></h2>
-      <p class="lp-dash-card__sub"><%= t("dash.battle_subtitle") %></p>
+      <p class="lp-dash-card__sub"><%= t("dash.battle_subtitle_sync") %></p>
     </div>
   </header>
 
@@ -81,7 +81,7 @@
     <%= f.text_field :title,
           required: true,
           class: "lp-input",
-          placeholder: t("dash.battle_placeholder"),
+          placeholder: area_copy(aspect_key, "today_todo_placeholder", default: t("dash.battle_placeholder")),
           autocomplete: "off",
           autofocus: battle_empty %>
     <%= f.submit t("dash.battle_add"), class: "lp-dash-add__btn" %>

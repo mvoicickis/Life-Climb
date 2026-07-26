@@ -6,6 +6,15 @@ class UserTest < ActiveSupport::TestCase
     assert_equal("downcased@example.com", user.email_address)
   end
 
+  test "display_name prefers name over email" do
+    user = users(:one)
+    user.update!(name: "Mareks")
+    assert_equal "Mareks", user.display_name
+
+    user.update!(name: nil)
+    assert_equal "One", user.display_name
+  end
+
   test "character defaults to man until chosen" do
     user = users(:one)
     assert_nil user.character

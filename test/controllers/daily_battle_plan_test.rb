@@ -22,7 +22,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Today/i, response.body)
     assert_match(/Battle/i, response.body)
     assert_match(/Goal/i, response.body)
-    assert_match(/Current Project/i, response.body)
+    assert_match(/Current climb|Current Project/i, response.body)
     assert_match(/Complete Battle/i, response.body)
     assert_match(/Review my budget/i, response.body)
     assert_match(/Financial freedom/i, response.body)
