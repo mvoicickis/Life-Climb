@@ -79,6 +79,17 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboard#show"
+    resource :statistics, only: :show, controller: "statistics"
+    resource :system, only: :show, controller: "systems"
+    resource :ops, only: %i[ show update ], controller: "ops"
+    resources :feedbacks, only: %i[ index destroy ]
+    resources :users, only: %i[ index show edit update destroy ] do
+      member do
+        patch :promote
+        patch :demote
+      end
+    end
+    resources :impersonations, only: %i[ create destroy ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

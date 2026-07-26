@@ -1,0 +1,33 @@
+<% content_for :title, t("admin.feedbacks.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.feedbacks.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.feedbacks.lead") %></p>
+  </div>
+</header>
+
+<% if @feedbacks.any? %>
+  <ul class="lp-admin__stack">
+    <% @feedbacks.each do |feedback| %>
+      <li class="lp-admin__panel">
+        <div class="lp-admin__panel-head">
+          <div>
+            <strong><%= feedback.user&.email_address || "—" %></strong>
+            <p class="lp-admin__meta"><%= l(feedback.created_at, format: :long) %></p>
+          </div>
+          <div class="lp-admin__btn-row">
+            <% if feedback.user %>
+              <%= link_to t("admin.users.view"), admin_user_path(feedback.user), class: "lp-admin__text-link" %>
+            <% end %>
+            <%= button_to t("admin.feedbacks.delete"), admin_feedback_path(feedback), method: :delete, class: "lp-admin__text-link is-danger", form: { data: { turbo_confirm: t("admin.feedbacks.confirm_delete") } } %>
+          </div>
+        </div>
+        <p class="lp-admin__body"><%= feedback.body %></p>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="lp-admin__empty"><%= t("admin.feedbacks.empty") %></p>
+<% end %>

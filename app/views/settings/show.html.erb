@@ -60,7 +60,7 @@
         <span><%= t("settings.change_password") %></span>
         <%= chevron %>
       <% end %>
-      <% if current_user.admin? %>
+      <% if current_user.admin? && !impersonating? %>
         <%= link_to admin_root_path, class: row_class do %>
           <span><%= t("nav.admin") %></span>
           <%= chevron %>

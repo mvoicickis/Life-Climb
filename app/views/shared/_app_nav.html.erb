@@ -29,7 +29,7 @@
           <%= link_to t("support.title"), support_path, class: "app-menu-item", role: "menuitem" %>
           <%= link_to t("nav.stats"), habits_path, class: "app-menu-item", role: "menuitem" %>
           <%= link_to t("nav.feedback"), new_feedback_path, class: "app-menu-item", role: "menuitem" %>
-          <% if current_user.admin? %>
+          <% if current_user.admin? && !impersonating? %>
             <%= link_to t("nav.admin"), admin_root_path, class: "app-menu-item", role: "menuitem" %>
           <% end %>
           <div class="app-menu-divider" role="separator"></div>

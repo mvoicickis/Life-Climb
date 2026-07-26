@@ -1,10 +1,14 @@
+# frozen_string_literal: true
+
 module Admin
   class DashboardController < BaseController
     def show
-      @users_count = User.count
-      @feedbacks_count = Feedback.count
-      @feedbacks = Feedback.includes(:user).newest_first.limit(100)
-      @recent_users = User.order(created_at: :desc).limit(20)
+      @metrics = Admin::Metrics.call
+      @cards = @metrics[:cards]
+      @charts = @metrics[:charts]
+      @recent_users = @metrics[:recent_users]
+      @recent_feedbacks = @metrics[:recent_feedbacks]
+      @recent_ledgers = @metrics[:recent_ledgers]
     end
   end
 end

@@ -1,0 +1,83 @@
+<% content_for :title, t("admin.users.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.users.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.users.lead") %></p>
+  </div>
+  <%= link_to t("admin.users.export_csv"), admin_users_path(format: :csv, q: @query, sort: @sort), class: "lp-admin__btn" %>
+</header>
+
+<%= form_with url: admin_users_path, method: :get, local: true, class: "lp-admin__toolbar" do %>
+  <label class="lp-admin__search">
+    <span class="sr-only"><%= t("admin.users.search") %></span>
+    <%= text_field_tag :q, @query, placeholder: t("admin.users.search_placeholder"), class: "lp-input" %>
+  </label>
+  <label class="lp-admin__sort">
+    <span class="sr-only"><%= t("admin.users.sort") %></span>
+    <%= select_tag :sort,
+          options_for_select([
+            [ t("admin.users.sort_newest"), "newest" ],
+            [ t("admin.users.sort_oldest"), "oldest" ],
+            [ t("admin.users.sort_points"), "points" ],
+            [ t("admin.users.sort_active"), "active" ],
+            [ t("admin.users.sort_admin"), "admin" ]
+          ], @sort),
+          class: "lp-input" %>
+  </label>
+  <%= submit_tag t("admin.users.search"), class: "lp-admin__btn" %>
+<% end %>
+
+<div class="lp-admin__table-wrap">
+  <table class="lp-admin__table">
+    <thead>
+      <tr>
+        <th><%= t("admin.users.col_user") %></th>
+        <th><%= t("admin.users.col_points") %></th>
+        <th><%= t("admin.users.col_created") %></th>
+        <th><%= t("admin.users.col_last_seen") %></th>
+        <th><%= t("admin.users.col_role") %></th>
+        <th><%= t("admin.users.col_actions") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <div class="lp-admin__person">
+              <span class="lp-admin__avatar" aria-hidden="true"><%= admin_initials(user) %></span>
+              <span>
+                <strong><%= user.display_name %></strong>
+                <small><%= user.email_address %></small>
+              </span>
+            </div>
+          </td>
+          <td><%= user.total_points %></td>
+          <td><%= l(user.created_at.to_date, format: :long) %></td>
+          <td><%= admin_last_seen(user) %></td>
+          <td>
+            <% if user.admin? %>
+              <span class="lp-admin__badge"><%= t("admin.users.admin_badge") %></span>
+            <% else %>
+              <span class="lp-admin__badge is-muted"><%= t("admin.users.member_badge") %></span>
+            <% end %>
+          </td>
+          <td class="lp-admin__row-actions">
+            <%= link_to t("admin.users.view"), admin_user_path(user), class: "lp-admin__text-link" %>
+            <%= link_to t("admin.users.edit"), edit_admin_user_path(user), class: "lp-admin__text-link" %>
+            <% if user.admin? %>
+              <%= button_to t("admin.users.remove_admin"), demote_admin_user_path(user), method: :patch, class: "lp-admin__text-link", form: { data: { turbo_confirm: t("admin.users.confirm_demote") } } unless user == current_user %>
+            <% else %>
+              <%= button_to t("admin.users.make_admin"), promote_admin_user_path(user), method: :patch, class: "lp-admin__text-link", form: { data: { turbo_confirm: t("admin.users.confirm_promote") } } %>
+            <% end %>
+            <%= button_to t("admin.users.delete"), admin_user_path(user), method: :delete, class: "lp-admin__text-link is-danger", form: { data: { turbo_confirm: t("admin.users.confirm_delete") } } unless user == current_user %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @users.blank? %>
+    <p class="lp-admin__empty"><%= t("admin.users.empty") %></p>
+  <% end %>
+</div>
