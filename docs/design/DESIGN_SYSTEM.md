@@ -58,10 +58,10 @@ Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category ma
 
 ## Icons & imagery
 
-- Canonical logo (lockup): `public/branding/lifepoints-logo.png` — mountain circle + LifePoints wordmark (PNG still carries “SMALL STEPS. BIG LIFE.”; prefer **One mountain. Today’s battle.** for new lockups)
+- Canonical logo (lockup): `public/branding/lifepoints-logo.png` — mountain circle + LifePoints wordmark + “SMALL STEPS. BIG LIFE.”
 - Canonical mark (icon crop): `public/branding/lifepoints-mark.png` — circular mountain mark for favicon, app icon, BMC avatar, nav (soft expedition badge; keep — do not swap for battle iconography in this era)
-- App icon: `public/icon.png` (from the mark)
-- **Canonical share / OG only:** `public/og-lifepoints-logo.png` (1200×630). Orphan files `og-lifepoints.png`, `og-lifepoints-neon.png`, `og-share.png` are legacy — do not wire into meta tags
+- App icon / favicon: `public/icon.png`, `public/favicon.ico`, `public/icon.svg` — all derived from the same mark crop (`?v=7` cache bump)
+- **Canonical share / OG only:** `public/og-lifepoints-brand.png` (1200×630). Legacy: `og-lifepoints-logo.png`, `og-lifepoints.png`, `og-lifepoints-neon.png`, `og-share.png` — do not wire into meta tags
 - Landing hero: mountain path + summit flag (`public/branding/landing-hero-mountain.webp`)
 - Thin, single-line icons for steps and UI.
 - Emoji allowed **only** for Life Areas (and Home hero area mark).

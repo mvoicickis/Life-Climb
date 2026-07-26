@@ -1,17 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LifePoints">
+  <!-- Raster-matched mountain mark (same art as icon.png / lifepoints-mark.png) -->
   <rect width="512" height="512" fill="#FFFFFF"/>
-  <circle cx="256" cy="256" r="220" fill="none" stroke="#22C55E" stroke-width="14"/>
+  <circle cx="256" cy="248" r="198" fill="none" stroke="#7CB518" stroke-width="12"/>
   <!-- mountains -->
-  <path d="M96 300 L170 170 L220 240 L270 130 L360 250 L420 300 Z" fill="#166534"/>
-  <path d="M170 170 L190 200 L210 185 L220 240 Z" fill="#F8FAFC"/>
-  <path d="M270 130 L290 165 L310 150 L330 190 L300 210 Z" fill="#F8FAFC"/>
+  <path d="M95 290 L155 175 L205 235 L255 120 L320 230 L380 175 L430 290 Z" fill="#1B5E20"/>
+  <path d="M155 175 L175 205 L195 190 L205 235 Z" fill="#F8FAFC"/>
+  <path d="M255 120 L275 155 L295 140 L320 195 L290 215 Z" fill="#F8FAFC"/>
+  <path d="M380 175 L395 205 L410 195 L430 245 L400 250 Z" fill="#F8FAFC"/>
   <!-- hills -->
-  <path d="M80 320 C140 280, 200 340, 256 300 C320 250, 380 320, 440 300 L440 420 L80 420 Z" fill="#16A34A"/>
-  <path d="M80 360 C150 320, 210 380, 280 340 C340 300, 400 360, 440 340 L440 420 L80 420 Z" fill="#22C55E"/>
+  <path d="M90 310 C150 270 200 330 256 295 C320 250 380 315 430 300 L430 410 L90 410 Z" fill="#2E7D32"/>
+  <path d="M90 350 C155 310 210 370 280 335 C345 295 400 355 430 340 L430 420 L90 420 Z" fill="#8BC34A"/>
   <!-- path -->
-  <path d="M250 400 C240 360, 270 330, 255 290 C240 250, 275 220, 268 190" fill="none" stroke="#ECFDF5" stroke-width="22" stroke-linecap="round"/>
-  <path d="M250 400 C240 360, 270 330, 255 290 C240 250, 275 220, 268 190" fill="none" stroke="#86EFAC" stroke-width="10" stroke-linecap="round"/>
-  <!-- leaf accent -->
-  <path d="M390 300 C470 250, 490 360, 420 420 C400 380, 370 340, 390 300 Z" fill="#22C55E"/>
-  <path d="M405 330 C430 320, 450 360, 425 390" fill="none" stroke="#ECFDF5" stroke-width="6" stroke-linecap="round"/>
+  <path d="M250 405 C235 360 270 330 255 285 C240 245 275 215 268 180" fill="none" stroke="#F1F8E9" stroke-width="26" stroke-linecap="round"/>
+  <path d="M250 405 C235 360 270 330 255 285 C240 245 275 215 268 180" fill="none" stroke="#C5E1A5" stroke-width="10" stroke-linecap="round"/>
+  <!-- leaf accent (bottom-right, breaks the ring) -->
+  <path d="M360 300 C455 250 485 355 410 430 C385 385 350 340 360 300 Z" fill="#8BC34A"/>
+  <path d="M375 330 C410 315 435 360 405 395" fill="none" stroke="#F1F8E9" stroke-width="7" stroke-linecap="round"/>
 </svg>
