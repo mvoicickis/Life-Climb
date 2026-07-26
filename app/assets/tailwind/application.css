@@ -4313,6 +4313,13 @@
   line-height: 1.12;
 }
 
+.lp-dash-hero__year {
+  margin: 0.35rem 0 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
 .lp-dash-hero__progress {
   margin-top: 0.85rem;
 }
@@ -4731,6 +4738,196 @@
   color: var(--lp-green-deep, #166534);
   font-weight: 750;
   text-align: left;
+}
+
+.lp-dash-route {
+  margin-top: 0.35rem;
+  padding: 1.15rem 1.1rem 1.25rem;
+  border-radius: 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 28%, var(--lp-border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--lp-green) 10%, var(--lp-paper)) 0%,
+      var(--lp-paper) 100%
+    );
+}
+
+.lp-dash-route__head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-dash-route__title {
+  margin: 0;
+  font-family: var(--lp-font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lp-ink);
+}
+
+.lp-dash-route__copy {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.lp-dash-route__reward {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0 1.1rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--lp-green) 8%, #fff);
+}
+
+.lp-dash-route__reward-label {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: var(--lp-muted);
+}
+
+.lp-dash-route__reward-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--lp-green-deep, #166534);
+}
+
+.lp-dash-route__cta {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.lp-adventure__card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.35rem 1.2rem 1.4rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 22%, var(--lp-border));
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, #ecfdf5 70%, transparent),
+      var(--lp-paper) 55%
+    );
+}
+
+.lp-adventure__mark {
+  justify-self: center;
+}
+
+.lp-adventure__kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-green-deep, #166534);
+}
+
+.lp-adventure__title {
+  margin: 0;
+  font-family: var(--lp-font-display);
+  font-size: clamp(1.7rem, 5vw, 2.15rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__lead,
+.lp-adventure__body,
+.lp-adventure__example,
+.lp-adventure__forge-wait {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.lp-adventure__beats {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--lp-ink);
+  font-weight: 650;
+}
+
+.lp-adventure__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.84rem;
+  font-weight: 750;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-adventure__mountain-echo {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--lp-green) 8%, #fff);
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__forge-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-adventure__forge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.4rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.8rem;
+  border: 1px dashed color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+  color: var(--lp-muted);
+  font-weight: 700;
+  opacity: 0.55;
+  transform: translateY(4px);
+  transition: opacity 280ms ease, transform 280ms ease, background 280ms ease, border-color 280ms ease;
+}
+
+.lp-adventure__forge-item::before {
+  content: "○";
+  color: var(--lp-green);
+  font-weight: 900;
+}
+
+.lp-adventure__forge-item.is-on {
+  opacity: 1;
+  transform: none;
+  border-style: solid;
+  background: color-mix(in srgb, var(--lp-green) 10%, #fff);
+  color: var(--lp-ink);
+}
+
+.lp-adventure__forge-item.is-on::before {
+  content: "✓";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-adventure__forge-item {
+    transition: none;
+    transform: none;
+  }
 }
 
 .lp-dash-empty {
