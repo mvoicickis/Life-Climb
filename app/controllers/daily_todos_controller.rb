@@ -33,6 +33,10 @@ class DailyTodosController < ApplicationController
         )
         Gap::ApplyProgress.call(journey: current_user.primary_focused_journey, tier: :todo)
       end
+      Strategy::ProjectCheckQueue.enqueue(
+        session: session,
+        project_ids: Strategy::ProjectCheckQueue.from_battles([ todo.strategy_goal ].compact)
+      )
     end
     Journeys::SyncClimbFromToday.call(user: current_user)
     redirect_to dashboard_path

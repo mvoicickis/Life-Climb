@@ -48,6 +48,10 @@
         mountain: @mountain,
         closer: @closer %>
 
+  <% if @project_check %>
+    <%= render "dashboard/dash_project_check", project: @project_check %>
+  <% end %>
+
   <%= render "dashboard/dash_battle",
         todos: @daily_todos,
         open_todos: @open_todos,

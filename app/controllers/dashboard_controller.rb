@@ -50,6 +50,7 @@ class DashboardController < ApplicationController
     @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
     @battle_celebrate = flash[:battle_celebrate].present?
     @battle_total_count = @daily_todos.size + (@mission.present? ? 1 : 0)
+    @project_check = Strategy::ProjectCheckQueue.next_for(user: current_user, session: session)
     render "dashboard/show_v2"
   end
 end

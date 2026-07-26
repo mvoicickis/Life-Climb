@@ -18,7 +18,7 @@ module Strategy
 
       plans = @goal.children.select(&:plan?)
       projects = plans.flat_map { |p| p.children.select(&:project?) }
-      completed_projects = projects.count { |p| p.progress_percent.to_i >= 100 }
+      completed_projects = projects.count(&:completed?)
       progress = @goal.progress_percent.to_i
 
       stage =

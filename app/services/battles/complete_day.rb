@@ -2,9 +2,10 @@
 
 module Battles
   # Completes remaining open battle items for today and awards LP once per item.
-  # Linked Strategy battles are marked complete so the mountain progress rolls up.
+  # Linked Strategy battles are marked complete. Year goal % does not move until
+  # the player confirms the parent project is done.
   class CompleteDay
-    Result = Struct.new(:ok, :awarded, :message, :progress_before, :progress_after, keyword_init: true)
+    Result = Struct.new(:ok, :awarded, :message, :project_check_ids, keyword_init: true)
 
     def self.call(user:)
       new(user: user).call
@@ -24,19 +25,21 @@ module Battles
           ok: false,
           awarded: 0,
           message: I18n.t("dash.battle.empty_cta"),
-          progress_before: current_progress,
-          progress_after: current_progress
+          project_check_ids: []
         )
       end
 
       awarded = 0
       journey = @user.primary_focused_journey
-      progress_before = current_progress
+      completed_battles = []
 
       ApplicationRecord.transaction do
         todos.each do |todo|
           todo.update!(completed_at: Time.current)
-          todo.strategy_goal&.complete!
+          if todo.strategy_goal
+            todo.strategy_goal.complete!
+            completed_battles << todo.strategy_goal
+          end
           LifePoints::Award.call(
             user: @user,
             amount: todo.lp_reward,
@@ -53,13 +56,11 @@ module Battles
         end
       end
 
-      progress_after = current_progress
       Result.new(
         ok: true,
         awarded: awarded,
-        progress_before: progress_before,
-        progress_after: progress_after,
-        message: success_message(awarded: awarded, before: progress_before, after: progress_after)
+        project_check_ids: Strategy::ProjectCheckQueue.from_battles(completed_battles),
+        message: I18n.t("dash.battle.complete_success", lp: awarded)
       )
     end
 
@@ -70,24 +71,6 @@ module Battles
       return unless journey
 
       journey.missions.for_day.primary.incomplete.order(:id).first
-    end
-
-    def current_progress
-      journey = @user.primary_focused_journey
-      return 0 unless journey
-
-      goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
-      return goal.progress_percent.to_i if goal
-
-      journey.closer_percent.round
-    end
-
-    def success_message(awarded:, before:, after:)
-      if after > before
-        I18n.t("dash.battle.complete_success_climb", lp: awarded, percent: after)
-      else
-        I18n.t("dash.battle.complete_success", lp: awarded)
-      end
     end
   end
 end

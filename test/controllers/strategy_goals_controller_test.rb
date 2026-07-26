@@ -133,7 +133,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal project.id, battle.parent_id
   end
 
-  test "progress rolls up when battle completed via today" do
+  test "battle complete does not move goal until project confirmed" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -152,8 +152,15 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal 0, goal.progress_percent
     post complete_daily_todo_path(todo)
-    assert_equal 100, goal.reload.progress_percent
+    assert_equal 0, goal.reload.progress_percent
     assert battle.reload.completed?
+
+    follow_redirect!
+    assert_match(/Is .*Project.* finished/i, response.body)
+
+    post project_completions_path, params: { project_id: project.id, decision: "done" }
+    assert_equal 100, goal.reload.progress_percent
+    assert project.reload.completed?
   end
 
   test "project with battles keeps add-another-battle option" do

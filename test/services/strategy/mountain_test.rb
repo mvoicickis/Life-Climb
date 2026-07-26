@@ -44,7 +44,7 @@ class StrategyMountainTest < ActiveSupport::TestCase
     )
     assert_equal :camp, Strategy::Mountain.for(goal: goal.reload)[:stage]
 
-    battle = @user.strategy_goals.create!(
+    @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: project, horizon: "day",
       title: "Learn 20 words", scheduled_on: Date.current, position: 0
     )
@@ -52,14 +52,17 @@ class StrategyMountainTest < ActiveSupport::TestCase
       life_area: @area, life_journey: @journey, parent: other, horizon: "day",
       title: "Write README", scheduled_on: Date.current, position: 0
     )
-    battle.complete!
+
+    project.complete!
+    Strategy::SyncCompletion.call(project: project)
 
     mountain = Strategy::Mountain.for(goal: goal.reload)
     assert_equal :flags, mountain[:stage]
     assert_equal 1, mountain[:flags]
     assert_operator mountain[:progress], :<, 100
 
-    other.children.first.complete!
+    other.complete!
+    Strategy::SyncCompletion.call(project: other)
     summit = Strategy::Mountain.for(goal: goal.reload)
     assert_equal :summit, summit[:stage]
     assert_equal 100, summit[:progress]

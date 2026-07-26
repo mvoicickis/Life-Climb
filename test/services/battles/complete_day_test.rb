@@ -19,7 +19,7 @@ class BattlesCompleteDayTest < ActiveSupport::TestCase
     @area = @journey.life_area
   end
 
-  test "complete day marks linked strategy battles and raises mountain percent" do
+  test "complete day marks battles but leaves goal percent until project done" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Become debt-free", position: 0
     )
@@ -44,12 +44,12 @@ class BattlesCompleteDayTest < ActiveSupport::TestCase
     result = Battles::CompleteDay.call(user: @user)
     assert result.ok
     assert_operator result.awarded, :>, 0
-    assert_equal 0, result.progress_before
-    assert_equal 100, result.progress_after
-    assert_match(/Mountain now 100%/i, result.message)
+    assert_includes result.project_check_ids, project.id
+    assert_match(/Action Points/i, result.message)
+    assert_no_match(/Mountain now/i, result.message)
 
     assert battle_a.reload.completed?
-    assert_equal 100, goal.reload.progress_percent
+    assert_equal 0, goal.reload.progress_percent
     assert @user.daily_todos.for_day.incomplete.none?
   end
 end

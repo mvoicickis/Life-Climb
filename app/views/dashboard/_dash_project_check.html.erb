@@ -1,0 +1,18 @@
+<%# locals: project %>
+<aside class="lp-dash-project-check" aria-label="<%= t('dash.project_check.title', title: project.title) %>">
+  <p class="lp-dash-project-check__kicker"><%= t("dash.project_check.kicker") %></p>
+  <h2 class="lp-dash-project-check__title"><%= t("dash.project_check.title", title: project.title) %></h2>
+  <p class="lp-dash-project-check__hint"><%= t("dash.project_check.hint") %></p>
+  <div class="lp-dash-project-check__actions">
+    <%= button_to t("dash.project_check.confirm"),
+          project_completions_path,
+          method: :post,
+          params: { project_id: project.id, decision: "done" },
+          class: "lp-dash-project-check__yes" %>
+    <%= button_to t("dash.project_check.not_yet"),
+          project_completions_path,
+          method: :post,
+          params: { project_id: project.id, decision: "not_yet" },
+          class: "lp-dash-project-check__no" %>
+  </div>
+</aside>

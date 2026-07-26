@@ -59,7 +59,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-hero__momentum", text: /Mountain just begun/i
   end
 
-  test "complete battle via today raises strategy mountain percent" do
+  test "complete battle asks project check without moving mountain percent" do
     journey = @user.primary_focused_journey
     area = journey.life_area
     goal = @user.strategy_goals.create!(
@@ -87,10 +87,17 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert battle.reload.completed?
-    assert_equal 50, goal.reload.progress_percent
-    assert_match(/Mountain now 50%/i, flash[:notice].to_s + response.body)
-    assert_match(/Call bank tomorrow/i, response.body)
-    assert_match(/Tomorrow.?s first battle is set/i, response.body)
+    assert_equal 0, goal.reload.progress_percent
+    assert_match(/Is .*Cut spend.* finished/i, response.body)
+    assert_match(/Yes, project done/i, response.body)
+
+    post project_completions_url, params: { project_id: project.id, decision: "done" }
+    assert_redirected_to dashboard_path
+    follow_redirect!
+
+    assert project.reload.completed?
+    assert_equal 100, goal.reload.progress_percent
+    assert_match(/Mountain now 100%/i, flash[:notice].to_s + response.body)
   end
 
   test "can add and complete a money todo" do

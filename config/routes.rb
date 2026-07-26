@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     end
   end
   resource :battle_completion, only: :create, controller: "battle_completions"
+  resources :project_completions, only: :create
   post "missions/:mission_id/complete", to: "mission_completions#create", as: :mission_completion
 
   resource :onboarding, only: %i[ show update ], controller: "onboarding"

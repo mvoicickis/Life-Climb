@@ -10,12 +10,21 @@ en:
   dash:
     promise: "One mountain. Today’s battle."
     goal_label: "Today's Goal"
-    goal_hint: "Every battle you win today moves your mountain forward."
+    goal_hint: "Win battles today. Finish a project to move your mountain."
     mountain_caption: "Your mountain"
     mountain_waiting: "Lock your goal in Strategy"
     open_strategy: "Open Strategy →"
     continue_planning_title: "Continue Planning"
     continue_planning_hint: "Your mountain has room for more battles."
+    project_check:
+      kicker: "Project check"
+      title: "Is “%{title}” finished?"
+      hint: "Battles win the day. Only a finished project moves your year goal."
+      confirm: "Yes, project done"
+      not_yet: "Not yet"
+      done_notice: "Project done — “%{title}”. Mountain now %{percent}%."
+      not_yet_notice: "Battle won. Keep climbing this project."
+      invalid: "That project check isn’t valid."
     momentum:
       begun: "Mountain just begun"
       climbing: "You’re climbing"
@@ -48,7 +57,7 @@ en:
     battle_add_more: "+ Add a point"
     battle_add_hint: "A few small wins — about 5 is a strong day."
     battle_day_full: "Today's battle is full (%{max} tasks). Complete some, then add more."
-    battle_won: "Battle won. Your mountain moved."
+    battle_won: "Battle won. Keep going — finish a project to move the mountain."
     complete_battle: "Complete Today's Battle"
     project_label: "Current Project"
     climb_label: "Current climb"
@@ -74,7 +83,7 @@ en:
     greeting_evening: "Good evening, %{name}"
     hero:
       kicker: "Today's Goal"
-      closer: "Every battle you complete today moves you closer to your goal."
+      closer: "Win battles today. Finish a project to move your mountain."
       mountain_alt: "Mountain path toward your goal"
     battle:
       title: "Today's Battle"
