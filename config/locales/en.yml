@@ -56,6 +56,7 @@ en:
     battle_add: "Add"
     battle_add_more: "+ Add a point"
     battle_add_hint: "A few small wins — about 5 is a strong day."
+    battle_plan_on_strategy: "Plan new battles on Strategy — Today is for fighting."
     battle_day_full: "Today's battle is full (%{max} tasks). Complete some, then add more."
     battle_won: "Battle won. Keep going — finish a project to move the mountain."
     complete_battle: "Complete Today's Battle"

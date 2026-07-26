@@ -100,21 +100,18 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Mountain now 100%/i, flash[:notice].to_s + response.body)
   end
 
-  test "can add and complete a money todo" do
+  test "today does not offer freeform battle creation" do
+    get dashboard_path
+    assert_response :success
+    assert_select "form.lp-dash-add", count: 0
+    assert_no_match(/lp-dash-add/i, response.body)
+
     post daily_todos_url, params: {
       daily_todo: { title: "Cancel unused subscription", aspect_key: "money" }
     }
-    assert_redirected_to dashboard_path
-    todo = @user.daily_todos.for_day.last
-    assert_equal "Cancel unused subscription", todo.title
-    assert_equal "money", todo.aspect_key
-    assert_equal GameRules::BATTLE_TODO_LP, todo.lp_reward
-
-    post complete_daily_todo_url(todo)
-    assert todo.reload.completed?
-
-    get dashboard_path
-    assert_match(/Cancel unused subscription/i, response.body)
+    assert_redirected_to life_journey_path(@user.primary_focused_journey)
+    assert_match(/Plan new battles on Strategy/i, flash[:alert].to_s)
+    assert_nil @user.daily_todos.for_day.find_by(title: "Cancel unused subscription")
   end
 
   test "complete battle finishes open mission and todos" do
@@ -136,7 +133,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_operator @user.reload.total_points, :>, before
   end
 
-  test "home always shows add form and supports five or more todos" do
+  test "today lists strategy-fed battles without an add form" do
     titles = [
       "Finish Dashboard UI",
       "Workout",
@@ -145,11 +142,13 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
       "Plan tomorrow"
     ]
 
-    titles.each do |title|
-      post daily_todos_url, params: {
-        daily_todo: { title: title, aspect_key: "money" }
-      }
-      assert_redirected_to dashboard_path
+    titles.each_with_index do |title, i|
+      @user.daily_todos.create!(
+        title: title,
+        aspect_key: "money",
+        scheduled_on: Date.current,
+        position: i
+      )
     end
 
     assert_equal 5, @user.daily_todos.for_day.count
@@ -157,27 +156,10 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
-    assert_match(/A few small wins/i, response.body)
-    assert_no_match(/lp-dash-add-wrap/i, response.body)
+    assert_select "form.lp-dash-add", count: 0
+    assert_match(/Continue Planning/i, response.body)
 
     expected_reward = (5 * GameRules::BATTLE_TODO_LP) + @user.missions.for_day.primary.incomplete.first.lp_reward
     assert_match(/\+#{expected_reward}/, response.body)
-  end
-
-  test "daily todo soft cap blocks more than twelve" do
-    GameRules::MAX_DAILY_TODOS.times do |i|
-      @user.daily_todos.create!(
-        title: "Task #{i + 1}",
-        aspect_key: "money",
-        scheduled_on: Date.current
-      )
-    end
-
-    post daily_todos_url, params: {
-      daily_todo: { title: "One too many", aspect_key: "money" }
-    }
-    assert_redirected_to dashboard_path
-    assert_match(/battle is full/i, flash[:alert].to_s)
-    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day.count
   end
 end

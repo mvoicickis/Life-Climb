@@ -47,14 +47,26 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_match(/Open Strategy/i, response.body)
   end
 
-  test "home add todo marks journey today layer done" do
+  test "strategy battle sync marks journey today layer done" do
     @user.daily_todos.for_day.destroy_all
     @journey.update_column(:setup_flags, @journey.setup_flags.merge("today" => nil))
 
-    post daily_todos_path, params: {
-      daily_todo: { title: "Call a customer", aspect_key: "career" }
-    }
-    assert_redirected_to dashboard_path
+    area = @journey.life_area
+    goal = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, horizon: "goal", title: "Ship", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Call a customer", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: area)
+    Journeys::SyncClimbFromToday.call(user: @user)
 
     @journey.reload
     assert @journey.layer_done?("today")

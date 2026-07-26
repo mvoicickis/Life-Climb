@@ -1,16 +1,7 @@
-<%# locals: todos, open_todos, done_todos, mission, include_mission, reward, open_count, total_count, day_full, aspect_key, upcoming %>
+<%# locals: todos, open_todos, done_todos, mission, include_mission, reward, open_count, total_count, aspect_key, upcoming %>
 <%
-  aspect_icons = {
-    "self" => "💪",
-    "relationships" => "❤️",
-    "career" => "💻",
-    "money" => "💰",
-    "home" => "🏠",
-    "learning" => "📚"
-  }
   open_todos = local_assigns.fetch(:open_todos) { todos.reject(&:completed?) }
   done_todos = local_assigns.fetch(:done_todos) { todos.select(&:completed?) }
-  day_full = local_assigns.fetch(:day_full, false)
   total_count = local_assigns.fetch(:total_count) { todos.size + (include_mission ? 1 : 0) }
   upcoming = local_assigns[:upcoming]
   battle_empty = open_todos.empty? && done_todos.empty? && !include_mission
@@ -126,21 +117,5 @@
         <% end %>
       <% end %>
     </div>
-  <% end %>
-
-  <% if day_full %>
-    <p class="lp-dash-add-hint"><%= t("dash.battle_day_full", max: GameRules::MAX_DAILY_TODOS) %></p>
-  <% else %>
-    <%= form_with model: DailyTodo.new, url: daily_todos_path, class: "lp-dash-add" do |f| %>
-      <%= f.hidden_field :aspect_key, value: aspect_key %>
-      <%= f.text_field :title,
-            required: true,
-            class: "lp-input",
-            placeholder: area_copy(aspect_key, "today_todo_placeholder", default: t("dash.battle_placeholder")),
-            autocomplete: "off",
-            autofocus: battle_empty %>
-      <%= f.submit t("dash.battle_add"), class: "lp-dash-add__btn" %>
-    <% end %>
-    <p class="lp-dash-add-hint"><%= t("dash.battle_add_hint") %></p>
   <% end %>
 </section>
