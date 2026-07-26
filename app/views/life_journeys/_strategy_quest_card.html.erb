@@ -1,12 +1,45 @@
 <%# locals: node, journey %>
-<%= link_to life_journey_path(journey, focus_id: node.id), class: "lp-strategy-quest is-#{node.kind}" do %>
-  <span class="lp-strategy-quest__marker" aria-hidden="true"></span>
-  <div class="lp-strategy-quest__body">
-    <p class="lp-strategy-quest__title"><%= node.title %></p>
-    <div class="lp-strategy__bar mt-2" aria-hidden="true">
-      <span style="width: <%= node.progress_percent %>%"></span>
+<%
+  status =
+    if node.progress_percent.to_i >= 100
+      t("strategy.quest.status.complete")
+    elsif node.children.any?
+      t("strategy.quest.status.in_progress")
+    else
+      t("strategy.quest.status.ready")
+    end
+  verb =
+    case node.kind
+    when "plan" then t("strategy.next_up.enter_plan_cta")
+    when "project" then t("strategy.next_up.open_project_cta")
+    else t("strategy.next_up.fight_battle_cta")
+    end
+%>
+<div class="lp-strategy-quest-row" data-controller="strategy-zoom">
+  <%= link_to life_journey_path(journey, focus_id: node.id),
+        class: "lp-strategy-quest is-#{node.kind}",
+        data: { action: "click->strategy-zoom#enter" } do %>
+    <span class="lp-strategy-quest__marker" aria-hidden="true"></span>
+    <div class="lp-strategy-quest__body">
+      <p class="lp-strategy-quest__title"><%= node.title %></p>
+      <div class="lp-strategy__bar mt-2" aria-hidden="true">
+        <span style="width: <%= node.progress_percent %>%"></span>
+      </div>
+      <p class="lp-strategy-quest__meta">
+        <%= node.progress_percent %>% · <%= status %> · <%= verb %>
+      </p>
     </div>
-    <p class="lp-strategy-quest__meta"><%= node.progress_percent %>% · <%= t("strategy.next_up.tap_continue") %></p>
-  </div>
-  <span class="lp-strategy-quest__chevron" aria-hidden="true">›</span>
-<% end %>
+    <span class="lp-strategy-quest__chevron" aria-hidden="true">›</span>
+  <% end %>
+
+  <details class="lp-strategy-overflow">
+    <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
+    <div class="lp-strategy-overflow__menu">
+      <%= button_to t("strategy.remove"),
+            strategy_goal_path(node),
+            method: :delete,
+            class: "lp-strategy-overflow__action",
+            form: { data: { turbo: false } } %>
+    </div>
+  </details>
+</div>

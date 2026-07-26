@@ -24,9 +24,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_match(/This season.?s mountain/i, response.body)
+    assert_match(/One mountain\. Today.?s battle/i, response.body)
     assert_match(/What do I ultimately want to achieve/i, response.body)
     assert_match(/Next up/i, response.body)
-    assert_match(/Strategy Points/i, response.body)
+    assert_match(/Begin Journey/i, response.body)
+    assert_match(/Your mountain is waiting/i, response.body)
+    assert_select ".lp-strategy-mountain.is-empty"
+    assert_select "[data-controller='strategy-celebrate']"
     assert_select ".lp-strategy-path__stage.is-goal"
     assert_select ".lp-strategy-path__stage.is-plans"
     assert_select ".lp-strategy-path__stage.is-projects"
@@ -49,6 +53,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert Strategy::YearCycle.dec29?(goal.due_on)
     assert_equal 100, @user.reload.strategy_points
     assert_match(/Goal created/i, flash[:notice].to_s)
+    assert_equal 100, flash[:sp_gained].to_i
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select ".lp-strategy-mountain.is-foothill"
+    assert_match(/Trailhead/i, response.body)
   end
 
   test "guided tree goal plan project battle awards and syncs today" do
@@ -82,7 +92,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_match(/What can I do next to move this project forward/i, response.body)
+    assert_match(/Your mountain is ready/i, response.body)
+    assert_select ".lp-strategy-next.is-handoff input[type=submit][value=?]", "Fight Today's Battle"
+    assert_match(/What is the very next action I can take/i, response.body)
+    assert_select ".lp-strategy-overflow"
     assert_no_match(/Monthly Goals/i, response.body)
   end
 

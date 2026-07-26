@@ -21,7 +21,7 @@
   %>
   <div class="lp-strategy-next is-<%= level %> <%= 'is-inline-form' if form.present? %> <%= 'is-handoff' if next_up[:key] == :go_today %>"
        id="strategy-next-up"
-       data-controller="strategy-next">
+       data-controller="strategy-next<%= ' strategy-zoom' if next_up[:zoom] %>">
     <p class="lp-strategy-next__kicker"><%= t("strategy.next_up.kicker") %></p>
     <h2 class="lp-strategy-next__title"><%= next_up[:title] %></h2>
     <p class="lp-strategy-next__hint"><%= next_up[:hint] %></p>
@@ -77,7 +77,10 @@
       <% end %>
 
     <% elsif next_up[:href].present? %>
-      <%= link_to next_up[:cta], next_up[:href], class: "lp-strategy-next__cta" %>
+      <%= link_to next_up[:cta],
+            next_up[:href],
+            class: "lp-strategy-next__cta",
+            data: (next_up[:zoom] ? { action: "click->strategy-zoom#enter" } : {}) %>
 
     <% elsif next_up[:sync_today] %>
       <%= form_with url: life_journey_path(@journey), method: :patch, data: { turbo: false } do %>

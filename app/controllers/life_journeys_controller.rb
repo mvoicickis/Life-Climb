@@ -111,7 +111,21 @@ class LifeJourneysController < ApplicationController
     @crumbs = strategy_crumbs(@focus)
     @guided_step = guided_step
     @path_stages = strategy_path_stages
+    @mountain = Strategy::Mountain.for(goal: @goal)
+    @mountain_ready = strategy_mountain_ready?
     @next_up = strategy_next_up
+  end
+
+  def strategy_mountain_ready?
+    return false if @goal.blank?
+
+    plan_ids = @goal.children.for_kind("plan").pluck(:id)
+    return false if plan_ids.empty?
+
+    project_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("project").pluck(:id)
+    return false if project_ids.empty?
+
+    Strategy::Progress.battles_under(@goal).any?
   end
 
   def strategy_path_stages
@@ -155,6 +169,10 @@ class LifeJourneysController < ApplicationController
       }
     end
 
+    if @mountain_ready && (@focus&.project? || @today_battles.any? || @level == "plans")
+      return mountain_ready_next_up
+    end
+
     if @level == "plans"
       plans = @children.select(&:plan?)
       if plans.empty?
@@ -174,8 +192,9 @@ class LifeJourneysController < ApplicationController
         key: :open_child,
         title: I18n.t("strategy.next_up.open_plan_title", title: target.title),
         hint: I18n.t("strategy.next_up.open_plan_hint"),
-        cta: I18n.t("strategy.next_up.continue_cta"),
-        href: life_journey_path(@journey, focus_id: target.id)
+        cta: I18n.t("strategy.next_up.enter_plan_cta"),
+        href: life_journey_path(@journey, focus_id: target.id),
+        zoom: true
       }
     end
 
@@ -198,8 +217,9 @@ class LifeJourneysController < ApplicationController
         key: :open_child,
         title: I18n.t("strategy.next_up.open_child_title", title: target.title),
         hint: I18n.t("strategy.next_up.open_child_hint"),
-        cta: I18n.t("strategy.next_up.continue_cta"),
-        href: life_journey_path(@journey, focus_id: target.id)
+        cta: I18n.t("strategy.next_up.open_project_cta"),
+        href: life_journey_path(@journey, focus_id: target.id),
+        zoom: true
       }
     end
 
@@ -217,23 +237,11 @@ class LifeJourneysController < ApplicationController
         }
       end
 
-      return {
-        key: :go_today,
-        title: I18n.t("strategy.next_up.go_today_title"),
-        hint: I18n.t("strategy.next_up.go_today_hint"),
-        cta: I18n.t("strategy.next_up.fight_today_cta"),
-        sync_today: true
-      }
+      return mountain_ready_next_up
     end
 
     if @today_battles.any?
-      {
-        key: :go_today,
-        title: I18n.t("strategy.next_up.go_today_title"),
-        hint: I18n.t("strategy.next_up.go_today_hint"),
-        cta: I18n.t("strategy.next_up.fight_today_cta"),
-        sync_today: true
-      }
+      mountain_ready_next_up
     else
       {
         key: :keep_building,
@@ -243,6 +251,16 @@ class LifeJourneysController < ApplicationController
         anchor: "strategy-quests"
       }
     end
+  end
+
+  def mountain_ready_next_up
+    {
+      key: :go_today,
+      title: I18n.t("strategy.next_up.mountain_ready_title"),
+      hint: I18n.t("strategy.next_up.mountain_ready_hint"),
+      cta: I18n.t("strategy.next_up.fight_today_cta"),
+      sync_today: true
+    }
   end
 
   def strategy_level_for(node)

@@ -33,11 +33,12 @@ class StrategyGoalsController < ApplicationController
     )
 
     if goal.save
-      notice = Strategy::Celebrate.call(user: current_user, goal: goal)
+      celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
+      flash[:sp_gained] = celebration[:amount] if celebration[:amount].to_i.positive?
 
       redirect_to strategy_redirect_path(focus_id: redirect_focus_id(goal)),
-                  notice: notice, status: :see_other
+                  notice: celebration[:notice], status: :see_other
     else
       redirect_to strategy_redirect_path(focus_id: parent&.id),
                   alert: goal.errors.full_messages.to_sentence, status: :see_other

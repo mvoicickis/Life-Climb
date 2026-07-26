@@ -5836,11 +5836,298 @@ button.lp-progress-heat__cell {
 .lp-strategy__board.is-goal,
 .lp-strategy__board-inner.is-goal { --lp-level: var(--lp-level-goal); }
 
+.lp-strategy__board,
+.lp-strategy__board-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lp-strategy__board-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-strategy__board-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-page__goal-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: -0.35rem 0 0;
+}
+
+.lp-strategy-page__goal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--lp-level-goal, #166534);
+}
+
+.lp-strategy-page__goal-due {
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-mountain {
+  --lp-level: var(--lp-level-goal, #166534);
+  margin: 0;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--lp-level) 22%, var(--lp-border));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #ecfdf5 70%, transparent), transparent 70%),
+    var(--lp-elevated);
+  padding: 0.65rem 0.85rem 0.85rem;
+  transition: transform 420ms ease, filter 420ms ease;
+}
+
+.lp-strategy-mountain.is-empty {
+  opacity: 0.55;
+}
+
+.lp-strategy-mountain.is-react {
+  transform: translateY(-2px) scale(1.01);
+  filter: saturate(1.08);
+}
+
+.lp-strategy-mountain__art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lp-strategy-mountain__trail,
+.lp-strategy-mountain__camp,
+.lp-strategy-mountain__flags,
+.lp-strategy-mountain__glow,
+.lp-strategy-mountain__snow {
+  opacity: 0;
+  transition: opacity 480ms ease;
+}
+
+.lp-strategy-mountain.is-foothill .lp-strategy-mountain__snow { opacity: 0.55; }
+.lp-strategy-mountain.is-trail .lp-strategy-mountain__snow,
+.lp-strategy-mountain.is-camp .lp-strategy-mountain__snow,
+.lp-strategy-mountain.is-flags .lp-strategy-mountain__snow,
+.lp-strategy-mountain.is-summit .lp-strategy-mountain__snow { opacity: 0.9; }
+
+.lp-strategy-mountain.is-trail .lp-strategy-mountain__trail,
+.lp-strategy-mountain.is-camp .lp-strategy-mountain__trail,
+.lp-strategy-mountain.is-flags .lp-strategy-mountain__trail,
+.lp-strategy-mountain.is-summit .lp-strategy-mountain__trail { opacity: 1; }
+
+.lp-strategy-mountain.is-camp .lp-strategy-mountain__camp,
+.lp-strategy-mountain.is-flags .lp-strategy-mountain__camp,
+.lp-strategy-mountain.is-summit .lp-strategy-mountain__camp { opacity: 1; }
+
+.lp-strategy-mountain.is-flags .lp-strategy-mountain__flags,
+.lp-strategy-mountain.is-summit .lp-strategy-mountain__flags { opacity: 1; }
+
+.lp-strategy-mountain.is-summit .lp-strategy-mountain__glow {
+  opacity: 0.7;
+  animation: lp-strategy-summit-glow 2.8s ease-in-out infinite;
+}
+
+.lp-strategy-mountain__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.lp-strategy-mountain__stage {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--lp-level);
+}
+
+.lp-strategy-mountain__pct {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+}
+
+.lp-strategy-mountain__bar {
+  margin-top: 0.45rem;
+}
+
+.lp-strategy-mountain__bar.is-surge > span,
+.lp-strategy__bar.is-surge > span {
+  animation: lp-strategy-bar-surge 780ms ease;
+}
+
+.lp-strategy__sp {
+  position: relative;
+}
+
+.lp-strategy__sp.is-sp-pop {
+  animation: lp-strategy-sp-pop 680ms ease;
+  border-color: color-mix(in srgb, var(--lp-lime) 55%, var(--lp-border));
+}
+
+.lp-strategy__sp-float {
+  position: absolute;
+  left: 50%;
+  top: -0.35rem;
+  transform: translate(-50%, -80%);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--lp-lime);
+  white-space: nowrap;
+  animation: lp-strategy-sp-float 1s ease forwards;
+  pointer-events: none;
+}
+
+.lp-strategy-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.lp-strategy-page {
+  position: relative;
+}
+
+.lp-strategy-confetti span {
+  position: absolute;
+  left: 50%;
+  top: 7.5rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--lp-lime) 70%, #fef08a);
+  opacity: 0.85;
+  animation: lp-strategy-confetti var(--d, 700ms) ease-out forwards;
+  transform: translateX(var(--x, 0));
+}
+
+.lp-strategy-overflow {
+  position: relative;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.lp-strategy-overflow__trigger {
+  list-style: none;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--lp-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  background: transparent;
+}
+
+.lp-strategy-overflow__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.lp-strategy-overflow[open] .lp-strategy-overflow__trigger,
+.lp-strategy-overflow__trigger:hover {
+  border-color: var(--lp-border);
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+}
+
+.lp-strategy-overflow__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  min-width: 7.5rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 0.75rem;
+  background: var(--lp-elevated);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--lp-ink) 8%, transparent);
+  padding: 0.35rem;
+  z-index: 8;
+}
+
+.lp-strategy-overflow__action {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.lp-strategy-overflow__action:hover {
+  background: color-mix(in srgb, #b91c1c 8%, transparent);
+}
+
+.lp-strategy-quest.is-lifting {
+  transform: translateY(-4px) scale(1.015);
+  border-color: color-mix(in srgb, var(--lp-level) 65%, var(--lp-border));
+  z-index: 2;
+}
+
+.lp-strategy-quest.is-expanding {
+  transform: scale(1.05);
+  opacity: 0.35;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.lp-strategy-next__cta.is-lifting {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.lp-strategy-next__cta.is-expanding {
+  transform: scale(1.04);
+  opacity: 0.5;
+}
+
 .lp-strategy-month-spotlight {
   border: 1px solid color-mix(in srgb, var(--lp-lime) 30%, var(--lp-border));
   border-radius: 0.9rem;
   padding: 0.85rem;
   background: color-mix(in srgb, var(--lp-lime) 6%, var(--lp-elevated));
+}
+
+@keyframes lp-strategy-summit-glow {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes lp-strategy-sp-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lp-strategy-sp-float {
+  0% { opacity: 0; transform: translate(-50%, 0); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -1.4rem); }
+}
+
+@keyframes lp-strategy-bar-surge {
+  0% { filter: brightness(1); }
+  40% { filter: brightness(1.25); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes lp-strategy-confetti {
+  0% { opacity: 0.9; transform: translate(0, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--x), 4.5rem) rotate(160deg); }
 }
 
 @keyframes lp-strategy-pulse {
@@ -5855,8 +6142,19 @@ button.lp-progress-heat__cell {
 
 @media (prefers-reduced-motion: reduce) {
   .lp-strategy-path__stage.is-current .lp-strategy-path__dot,
-  .lp-strategy-next {
+  .lp-strategy-next,
+  .lp-strategy-mountain.is-summit .lp-strategy-mountain__glow,
+  .lp-strategy__sp.is-sp-pop,
+  .lp-strategy-confetti span {
     animation: none;
+  }
+
+  .lp-strategy-quest.is-lifting,
+  .lp-strategy-quest.is-expanding,
+  .lp-strategy-mountain.is-react {
+    transform: none;
+    opacity: 1;
+    filter: none;
   }
 }
 
