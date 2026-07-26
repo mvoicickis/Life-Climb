@@ -28,7 +28,7 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "Pick the goal that matters. Fight for it one day at a time. See how close you are to your mountain — and your next step."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Pick any part of your life you want to grow. Build a real plan. Fight one small battle a day — and become more alive."
   end
 
   def status_tone(status)
