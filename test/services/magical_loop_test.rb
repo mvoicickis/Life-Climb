@@ -91,7 +91,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
     assert_equal before + Journeys::Complete::COMPLETION_LP, user.life_points
   end
 
-  test "begin climb on a new area keeps prior areas and focuses the new journey" do
+  test "begin climb on a new area focuses the new journey" do
     user = users(:two)
     Onboarding::Run.call(
       user: user,
