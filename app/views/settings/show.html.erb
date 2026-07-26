@@ -64,35 +64,6 @@
     <% end %>
   </section>
 
-  <section class="lp-glass p-6">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.order_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.order_hint") %></p>
-
-    <% if @home_habits.any? %>
-      <ul id="home-order-list"
-          class="mt-4 space-y-2"
-          data-controller="sortable"
-          data-sortable-url-value="<%= reorder_settings_path %>">
-        <% @home_habits.each do |habit| %>
-          <li class="flex cursor-grab items-center justify-between rounded-2xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-3 active:cursor-grabbing"
-              data-id="<%= habit.id %>"
-              draggable="true"
-              data-sortable-target="item">
-            <div>
-              <p class="font-semibold text-[var(--lp-ink)]"><%= habit.name %></p>
-              <p class="text-xs text-[var(--lp-muted)]"><%= habit.unit %></p>
-            </div>
-            <span class="text-xs font-bold text-[var(--lp-muted)]"><%= t("settings.drag") %></span>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="mt-4 rounded-2xl border border-dashed border-[var(--lp-border)] p-6 text-center text-[var(--lp-muted)]">
-        <%= t("settings.order_empty") %>
-      </p>
-    <% end %>
-  </section>
-
   <section class="lp-glass p-5">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.feedback_title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.feedback_body") %></p>
