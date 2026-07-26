@@ -10,8 +10,8 @@
         <span><%= t("strategy.mode") %></span>
       </p>
       <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("strategy.page_title") %></h1>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("strategy.year_runs_until", date: l(@year_due, format: :long)) %></p>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("strategy.plan_hint") %></p>
+      <p class="mt-2 text-sm font-medium text-[var(--lp-ink)]"><%= t("strategy.intro_lead") %></p>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("strategy.intro_body", date: l(@year_due, format: :long)) %></p>
     </div>
     <div class="lp-strategy__sp shrink-0" aria-label="<%= t('strategy.sp_label') %>">
       <span class="lp-strategy__sp-value"><%= current_user.strategy_points %></span>
