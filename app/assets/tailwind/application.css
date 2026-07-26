@@ -53,8 +53,8 @@
   }
 
   .today-card--good {
-    background: linear-gradient(180deg, rgba(22, 101, 52, 0.16), rgba(15, 23, 42, 0.92));
-    border-color: rgba(21, 128, 61, 0.35);
+    background: linear-gradient(180deg, rgba(15, 118, 110, 0.16), rgba(15, 23, 42, 0.92));
+    border-color: rgba(15, 118, 110, 0.35);
     color: #ecfdf5;
   }
 
@@ -143,7 +143,7 @@
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #15803d;
+    color: #0f766e;
   }
 
   .today-title {
@@ -193,8 +193,8 @@
     gap: 0.55rem;
     max-width: 18rem;
     border-radius: 1rem;
-    border: 1px solid rgba(21, 128, 61, 0.25);
-    background: rgba(22, 101, 52, 0.1);
+    border: 1px solid rgba(15, 118, 110, 0.25);
+    background: rgba(15, 118, 110, 0.1);
     padding: 0.75rem 0.9rem;
     color: #a7f3d0;
     font-size: 0.82rem;
@@ -207,16 +207,16 @@
     align-items: center;
     justify-content: center;
     border-radius: 1rem;
-    background: #166534;
+    background: #0f766e;
     padding: 0.7rem 1.1rem;
     font-size: 0.9rem;
     font-weight: 900;
     color: #fff;
-    box-shadow: 0 8px 24px rgba(22, 101, 52, 0.25);
+    box-shadow: 0 8px 24px rgba(15, 118, 110, 0.25);
   }
 
   .today-add:hover {
-    background: #166534;
+    background: #0f766e;
   }
 
   .today-fab {
@@ -229,18 +229,18 @@
     width: 3.35rem;
     height: 3.35rem;
     border-radius: 999px;
-    background: linear-gradient(180deg, #15803d, #166534);
+    background: linear-gradient(180deg, #0f766e, #0f766e);
     color: #fff;
     font-size: 1.75rem;
     font-weight: 900;
     line-height: 1;
-    box-shadow: 0 12px 28px rgba(22, 101, 52, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+    box-shadow: 0 12px 28px rgba(15, 118, 110, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
     transition: transform 160ms ease, box-shadow 160ms ease;
   }
 
   .today-fab:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 16px 34px rgba(22, 101, 52, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
+    box-shadow: 0 16px 34px rgba(15, 118, 110, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
   }
 
   .today-fab:focus-visible {
@@ -290,8 +290,8 @@
   }
 
   .today-stat--good {
-    background: rgba(22, 101, 52, 0.18);
-    border-color: rgba(21, 128, 61, 0.3);
+    background: rgba(15, 118, 110, 0.18);
+    border-color: rgba(15, 118, 110, 0.3);
     color: #ecfdf5;
   }
 
@@ -349,12 +349,12 @@
 
   .today-reveal-btn:hover {
     background: rgba(30, 41, 59, 0.9);
-    border-color: rgba(21, 128, 61, 0.35);
+    border-color: rgba(15, 118, 110, 0.35);
     color: #ecfdf5;
   }
 
   .today-reveal-btn:focus-visible {
-    outline: 2px solid #15803d;
+    outline: 2px solid #0f766e;
     outline-offset: 2px;
   }
 
@@ -378,7 +378,7 @@
 
   .today-week-score {
     border-radius: 999px;
-    background: rgba(22, 101, 52, 0.18);
+    background: rgba(15, 118, 110, 0.18);
     color: #6ee7b7;
     padding: 0.2rem 0.55rem;
     font-size: 0.72rem;
@@ -424,7 +424,7 @@
     width: 70%;
     max-width: 1.6rem;
     border-radius: 0.55rem 0.55rem 0.35rem 0.35rem;
-    background: linear-gradient(180deg, #15803d, #166534);
+    background: linear-gradient(180deg, #0f766e, #0f766e);
     min-height: 0.45rem;
   }
 
@@ -449,7 +449,7 @@
   }
 
   .today-focus-list li span {
-    color: #15803d;
+    color: #0f766e;
     font-weight: 900;
     flex-shrink: 0;
   }
@@ -492,7 +492,7 @@
   }
 
   .today-card-link:focus-visible {
-    outline: 2px solid #15803d;
+    outline: 2px solid #0f766e;
     outline-offset: 3px;
   }
 
@@ -517,8 +517,8 @@
     justify-content: space-between;
     gap: 0.65rem;
     border-radius: 1rem;
-    border: 1px solid rgba(21, 128, 61, 0.35);
-    background: linear-gradient(135deg, rgba(22, 101, 52, 0.18), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(15, 118, 110, 0.35);
+    background: linear-gradient(135deg, rgba(15, 118, 110, 0.18), rgba(15, 23, 42, 0.9));
     padding: 0.7rem 0.85rem;
   }
 
@@ -539,7 +539,7 @@
 
   .today-celebrate-btn {
     border-radius: 0.8rem;
-    background: #166534;
+    background: #0f766e;
     color: #fff;
     padding: 0.5rem 0.75rem;
     font-size: 0.72rem;
@@ -549,7 +549,7 @@
   }
 
   .today-celebrate-btn:hover {
-    background: #166534;
+    background: #0f766e;
   }
 
   .week-line-wrap {
@@ -576,16 +576,16 @@
   }
 
   .week-line-path {
-    stroke: #15803d;
+    stroke: #0f766e;
     stroke-width: 3;
     stroke-linecap: round;
     stroke-linejoin: round;
-    filter: drop-shadow(0 0 8px rgba(21, 128, 61, 0.35));
+    filter: drop-shadow(0 0 8px rgba(15, 118, 110, 0.35));
   }
 
   .week-line-dot {
     fill: #0b1220;
-    stroke: #15803d;
+    stroke: #0f766e;
     stroke-width: 2.25;
     cursor: pointer;
     transition: r 140ms ease, fill 140ms ease;
@@ -594,7 +594,7 @@
   .week-line-dot.is-current,
   .week-line-dot:hover,
   .week-line-dot:focus {
-    fill: #15803d;
+    fill: #0f766e;
   }
 
   .week-line-tooltip {
@@ -603,7 +603,7 @@
     pointer-events: none;
     border-radius: 0.75rem;
     background: #020617;
-    border: 1px solid rgba(21, 128, 61, 0.35);
+    border: 1px solid rgba(15, 118, 110, 0.35);
     padding: 0.45rem 0.65rem;
     min-width: 5.5rem;
     text-align: center;
@@ -644,8 +644,8 @@
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 999px;
-    border: 1px solid rgba(21, 128, 61, 0.35);
-    background: rgba(22, 101, 52, 0.15);
+    border: 1px solid rgba(15, 118, 110, 0.35);
+    background: rgba(15, 118, 110, 0.15);
     color: #6ee7b7;
     font-size: 0.85rem;
     font-weight: 900;
@@ -653,7 +653,7 @@
   }
 
   .app-avatar:focus-visible {
-    outline: 2px solid #15803d;
+    outline: 2px solid #0f766e;
     outline-offset: 2px;
   }
 
@@ -721,8 +721,8 @@
     align-items: center;
     gap: 0.2rem;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(11, 18, 32, 0.55);
+    border: 1px solid rgba(18, 24, 22, 0.12);
+    background: rgba(255, 255, 255, 0.8);
     padding: 0.18rem;
   }
 
@@ -730,7 +730,7 @@
     border: 0;
     border-radius: 999px;
     background: transparent;
-    color: rgba(243, 247, 244, 0.78);
+    color: #5c6b64;
     font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.03em;
@@ -739,7 +739,7 @@
   }
 
   .landing-lang-btn.is-active {
-    background: #166534;
+    background: #0f766e;
     color: #fff;
   }
 
@@ -762,7 +762,7 @@
   }
 
   .landing-lang--light .landing-lang-btn.is-active {
-    background: #166534;
+    background: #0f766e;
     color: #fff;
   }
 
@@ -781,7 +781,7 @@
     font-size: 1.15rem;
     font-weight: 800;
     font-family: "Fraunces", Georgia, serif;
-    color: #f3f7f4;
+    color: #121816;
     text-decoration: none;
   }
 
@@ -791,7 +791,7 @@
     width: 2rem;
     height: 2rem;
     border-radius: 0.7rem;
-    background: rgba(22, 101, 52, 0.28);
+    background: rgba(15, 118, 110, 0.12);
   }
 
   .auth-topbar-actions {
@@ -804,28 +804,29 @@
     display: inline-flex;
     align-items: center;
     border-radius: 0.9rem;
-    border: 1.5px solid rgba(243, 247, 244, 0.22);
-    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid rgba(18, 24, 22, 0.12);
+    background: #fff;
     padding: 0.5rem 0.85rem;
     font-size: 0.82rem;
     font-weight: 800;
-    color: #f3f7f4;
+    color: #121816;
     text-decoration: none;
   }
 
   .auth-back-btn:hover {
-    border-color: rgba(22, 101, 52, 0.55);
-    color: #bbf7d0;
+    border-color: rgba(15, 118, 110, 0.45);
+    color: #0f766e;
   }
 
   .auth-back-btn:focus-visible {
-    outline: 2px solid #166534;
+    outline: 2px solid #0f766e;
     outline-offset: 2px;
   }
 
   .lp-auth {
     font-family: "Source Sans 3", "Segoe UI", sans-serif;
-    color: #f3f7f4;
+    color: #121816;
+    background: linear-gradient(180deg, #e8f4f1 0%, #fafbfa 45%, #fff 100%);
   }
 
   .lp-auth-card {
@@ -838,13 +839,13 @@
     font-size: clamp(2rem, 5vw, 2.6rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #f3f7f4;
+    color: #121816;
   }
 
   .lp-auth-sub {
     margin: 0.65rem 0 1.75rem;
     font-weight: 600;
-    color: #9aa8a0;
+    color: #5c6b64;
   }
 
   .lp-auth-label {
@@ -852,22 +853,22 @@
     margin-bottom: 0.35rem;
     font-size: 0.85rem;
     font-weight: 700;
-    color: rgba(243, 247, 244, 0.88);
+    color: #121816;
   }
 
   .lp-auth-input {
     width: 100%;
     border-radius: 1rem;
-    border: 1.5px solid rgba(243, 247, 244, 0.16);
-    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid rgba(18, 24, 22, 0.12);
+    background: #fff;
     padding: 0.85rem 1rem;
     font-weight: 600;
-    color: #f3f7f4;
+    color: #121816;
   }
 
   .lp-auth-input:focus {
     outline: none;
-    border-color: #166534;
+    border-color: #0f766e;
   }
 
   .lp-auth-submit {
@@ -875,24 +876,24 @@
     cursor: pointer;
     border: 0;
     border-radius: 1rem;
-    background: #166534;
+    background: #0f766e;
     padding: 0.9rem 1rem;
     font-weight: 800;
     color: #fff;
   }
 
   .lp-auth-submit:hover {
-    background: #14532d;
+    background: #0d5f59;
   }
 
   .lp-auth-link {
     font-weight: 800;
-    color: #86efac;
+    color: #0f766e;
     text-decoration: none;
   }
 
   .lp-auth-link:hover {
-    color: #bbf7d0;
+    color: #0d5f59;
   }
 
   .today-banner-veil {
@@ -986,36 +987,39 @@
     }
   }
 
-  /* —— Landing brand (navy + forest + off-white) —— */
+  /* —— Landing brand (Clear Day dawn) —— */
   .lp-landing-body {
-    --lp-navy: #0b1220;
-    --lp-forest: #166534;
-    --lp-forest-deep: #14532d;
-    --lp-paper: #f5f6f3;
-    --lp-paper-soft: #eef1ec;
-    --lp-ink-dark: #14201a;
-    --lp-muted-dark: #5b6b62;
-    --lp-ink: #f3f7f4;
-    --lp-muted: #9aa8a0;
-    --lp-gold: #e0a82e;
+    --lp-paper: #fafbfa;
+    --lp-paper-soft: #f0f4f2;
+    --lp-ink: #121816;
+    --lp-ink-dark: #121816;
+    --lp-muted: #5c6b64;
+    --lp-muted-dark: #5c6b64;
+    --lp-teal: #0f766e;
+    --lp-teal-deep: #0d5f59;
+    --lp-forest: var(--lp-teal);
+    --lp-forest-deep: var(--lp-teal-deep);
+    --lp-gold: #d4a017;
+    --lp-dawn-from: #e8f4f1;
+    --lp-dawn-to: #fafbfa;
     --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
     --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
     margin: 0;
     background: var(--lp-paper);
-    color: var(--lp-ink-dark);
+    color: var(--lp-ink);
     font-family: var(--lp-font-ui);
   }
 
   .lp-landing {
     background: var(--lp-paper);
-    color: var(--lp-ink-dark);
+    color: var(--lp-ink);
   }
 
   .lp-landing-hero,
   .lp-landing-cta-band {
     position: relative;
     overflow: hidden;
-    background: var(--lp-navy);
+    background: linear-gradient(165deg, var(--lp-dawn-from) 0%, var(--lp-dawn-to) 55%, #fff 100%);
     color: var(--lp-ink);
   }
 
@@ -1036,7 +1040,7 @@
   .lp-landing-mountains {
     width: 100%;
     height: 58%;
-    color: rgba(243, 247, 244, 0.18);
+    color: rgba(15, 118, 110, 0.28);
     opacity: 0.9;
     transform: translateY(12px) scale(1.04);
     transition: transform 5.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 900ms ease;
@@ -1048,7 +1052,7 @@
 
   .lp-landing-mountains__far { opacity: 0.55; }
   .lp-landing-mountains__near { opacity: 0.85; }
-  .lp-landing-mountains__peak { color: rgba(22, 101, 52, 0.55); }
+  .lp-landing-mountains__peak { color: rgba(15, 118, 110, 0.75); }
 
   .lp-landing-nav {
     position: relative;
@@ -1081,7 +1085,7 @@
     width: 2rem;
     height: 2rem;
     border-radius: 0.65rem;
-    background: rgba(22, 101, 52, 0.28);
+    background: rgba(15, 118, 110, 0.28);
     font-size: 1rem;
   }
 
@@ -1108,13 +1112,13 @@
     padding: 0.55rem 0.85rem;
     font-size: 0.92rem;
     font-weight: 700;
-    color: rgba(243, 247, 244, 0.88);
+    color: var(--lp-muted);
     text-decoration: none;
   }
 
   .lp-landing-link:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+    background: rgba(15, 118, 110, 0.08);
+    color: var(--lp-ink);
   }
 
   .lp-landing-hero__copy {
@@ -1152,7 +1156,7 @@
     font-size: clamp(1.05rem, 2.2vw, 1.28rem);
     font-weight: 600;
     line-height: 1.5;
-    color: rgba(243, 247, 244, 0.82);
+    color: var(--lp-muted);
   }
 
   .lp-landing-hero__ctas {
@@ -1187,12 +1191,12 @@
   .lp-landing-cta:not(.lp-landing-cta--ghost):not(.lp-landing-cta--nav) {
     background: var(--lp-forest);
     color: #fff;
-    box-shadow: 0 10px 28px rgba(22, 101, 52, 0.35);
+    box-shadow: 0 10px 28px rgba(15, 118, 110, 0.35);
   }
 
   .lp-landing-cta--ghost {
-    border: 1.5px solid rgba(243, 247, 244, 0.28);
-    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(18, 24, 22, 0.16);
+    background: #fff;
     color: var(--lp-ink);
   }
 
@@ -1206,8 +1210,8 @@
   }
 
   @keyframes lp-landing-cta-pulse {
-    0%, 100% { box-shadow: 0 10px 24px rgba(22, 101, 52, 0.3); }
-    50% { box-shadow: 0 12px 32px rgba(22, 101, 52, 0.5), 0 0 0 6px rgba(22, 101, 52, 0.12); }
+    0%, 100% { box-shadow: 0 10px 24px rgba(15, 118, 110, 0.3); }
+    50% { box-shadow: 0 12px 32px rgba(15, 118, 110, 0.5), 0 0 0 6px rgba(15, 118, 110, 0.12); }
   }
 
   .lp-landing-section {
@@ -1255,7 +1259,7 @@
   }
 
   .lp-landing-lead--on-dark {
-    color: rgba(243, 247, 244, 0.78);
+    color: var(--lp-muted);
   }
 
   .lp-landing-chips {
@@ -1383,7 +1387,7 @@
     font-size: clamp(2.6rem, 6vw, 3.5rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: var(--lp-gold);
+    color: var(--lp-ink);
     line-height: 1;
   }
 
@@ -1444,7 +1448,7 @@
     position: absolute;
     inset: auto 0 0;
     height: 45%;
-    color: rgba(243, 247, 244, 0.14);
+    color: rgba(15, 118, 110, 0.22);
     pointer-events: none;
   }
 
@@ -1567,9 +1571,9 @@
   }
 
   @keyframes glow-win {
-    0% { box-shadow: 0 0 0 0 rgba(22, 101, 52, 0.0); }
-    40% { box-shadow: 0 0 0 8px rgba(22, 101, 52, 0.25); }
-    100% { box-shadow: 0 0 0 0 rgba(22, 101, 52, 0.0); }
+    0% { box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.0); }
+    40% { box-shadow: 0 0 0 8px rgba(15, 118, 110, 0.25); }
+    100% { box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.0); }
   }
 
   /* —— Share sheet —— */
@@ -1668,7 +1672,7 @@
   .share-sheet__close:hover,
   .share-sheet__close:focus-visible {
     background: #e2e8f0;
-    outline: 2px solid #166534;
+    outline: 2px solid #0f766e;
     outline-offset: 2px;
   }
 
@@ -1716,7 +1720,7 @@
   }
 
   .share-sheet__item:focus-visible .share-sheet__icon {
-    outline: 2px solid #166534;
+    outline: 2px solid #0f766e;
     outline-offset: 3px;
   }
 
@@ -1764,7 +1768,7 @@
 
   .share-sheet__copy-message:hover,
   .share-sheet__copy-message:focus-visible {
-    border-color: #166534;
+    border-color: #0f766e;
     outline: none;
   }
 
@@ -1848,10 +1852,10 @@
 :root {
   --studio-ink: #1c2421;
   --studio-muted: #5b6b64;
-  --studio-paper: #f5f6f3;
-  --studio-paper-2: #eef1ec;
-  --studio-accent: #166534;
-  --studio-accent-soft: rgba(22, 101, 52, 0.12);
+  --studio-paper: #fafbfa;
+  --studio-paper-2: #f0f4f2;
+  --studio-accent: #0f766e;
+  --studio-accent-soft: rgba(15, 118, 110, 0.12);
   --studio-serif: "Fraunces", Georgia, serif;
   --studio-sans: "Source Sans 3", "Segoe UI", sans-serif;
 }
@@ -2895,31 +2899,35 @@
   border: 0;
 }
 
-/* ——— LifePoints app surface (brand guidelines) ———
-   Forest primary, paper for daily screens, navy for dusk moments,
-   gold ONLY for LP rewards. */
+/* ——— LifePoints app surface (Clear Day brand) ———
+   Paper daily surfaces, teal CTAs, deep ink for numbers.
+   Gold ONLY for brief +LP reward flashes — never LP chip text. */
 :root {
+  --lp-paper: #fafbfa;
+  --lp-paper-soft: #f0f4f2;
+  --lp-ink: #121816;
+  --lp-muted: #5c6b64;
+  --lp-teal: #0f766e;
+  --lp-teal-deep: #0d5f59;
+  --lp-gold: #d4a017;
+  --lp-dawn-from: #e8f4f1;
+  --lp-dawn-to: #fafbfa;
   --lp-navy: #0b1220;
-  --lp-forest: #166534;
-  --lp-forest-deep: #14532d;
-  --lp-paper: #f5f6f3;
-  --lp-paper-soft: #eef1ec;
-  --lp-void: #0b1220;
+  --lp-forest: var(--lp-teal);
+  --lp-forest-deep: var(--lp-teal-deep);
+  --lp-void: #121816;
   --lp-surface: #ffffff;
   --lp-elevated: #ffffff;
   --lp-glass: rgba(255, 255, 255, 0.92);
-  --lp-border: rgba(22, 101, 52, 0.16);
-  --lp-emerald: #166534;
-  --lp-lime: #166534;
-  --lp-mint: #15803d;
-  --lp-gold: #e0a82e;
+  --lp-border: rgba(15, 118, 110, 0.16);
+  --lp-emerald: #0f766e;
+  --lp-lime: #0f766e;
+  --lp-mint: #0f766e;
   --lp-rose: #fb7185;
-  --lp-ink: #14201a;
-  --lp-muted: #5b6b62;
-  --lp-track: #e2e8e4;
-  --lp-neon: #166534;
-  --lp-neon-soft: rgba(22, 101, 52, 0.12);
-  --lp-neon-glow: rgba(22, 101, 52, 0.22);
+  --lp-track: #e4ebe8;
+  --lp-neon: #0f766e;
+  --lp-neon-soft: rgba(15, 118, 110, 0.12);
+  --lp-neon-glow: rgba(15, 118, 110, 0.22);
   --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
 }
@@ -2933,18 +2941,8 @@
 }
 
 .lp-game--navy {
-  background:
-    radial-gradient(900px 520px at 50% -10%, rgba(22, 101, 52, 0.16), transparent 55%),
-    var(--lp-navy);
-  --lp-ink: #f3f7f4;
-  --lp-muted: #9aa8a0;
-  --lp-glass: rgba(18, 28, 40, 0.78);
-  --lp-surface: #121a28;
-  --lp-elevated: #182233;
-  --lp-border: rgba(22, 101, 52, 0.28);
-  --lp-track: #1f2937;
-  --lp-neon-soft: rgba(22, 101, 52, 0.22);
-  --lp-neon-glow: rgba(22, 101, 52, 0.35);
+  /* Legacy alias — Clear Day keeps onboarding on paper. */
+  background: var(--lp-paper);
   color: var(--lp-ink);
 }
 
@@ -2963,13 +2961,13 @@
   padding: 0.85rem 1.5rem;
   font-weight: 800;
   color: #fff;
-  background: var(--lp-forest);
-  box-shadow: 0 10px 24px rgba(22, 101, 52, 0.28);
+  background: var(--lp-teal);
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.22);
 }
 
 .lp-avatar-ring {
   border-radius: 999px;
-  box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(22, 101, 52, 0.45);
+  box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(15, 118, 110, 0.45);
   animation: lp-breathe 4.2s ease-in-out infinite;
 }
 
@@ -2999,7 +2997,7 @@
   align-items: center;
   padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom));
   background: rgba(245, 246, 243, 0.94);
-  border-top: 1px solid rgba(22, 101, 52, 0.12);
+  border-top: 1px solid rgba(15, 118, 110, 0.12);
   backdrop-filter: blur(12px);
   backdrop-filter: blur(14px);
 }
@@ -3055,7 +3053,7 @@
   font-weight: 700;
   display: grid;
   place-items: center;
-  box-shadow: 0 0 28px rgba(22, 101, 52, 0.4);
+  box-shadow: 0 0 28px rgba(15, 118, 110, 0.4);
 }
 
 .lp-main {
@@ -3065,7 +3063,7 @@
 }
 
 .lp-top-nav {
-  border-bottom: 1px solid rgba(22, 101, 52, 0.12);
+  border-bottom: 1px solid rgba(15, 118, 110, 0.12);
   background: rgba(7, 11, 9, 0.88);
   backdrop-filter: blur(12px);
   position: sticky;
@@ -3143,8 +3141,8 @@
 }
 
 .lp-flash--notice {
-  border: 1px solid rgba(22, 101, 52, 0.35);
-  background: rgba(22, 101, 52, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  background: rgba(15, 118, 110, 0.12);
   color: var(--lp-lime);
 }
 
@@ -3156,8 +3154,8 @@
 
 .lp-map-card {
   background:
-    radial-gradient(circle at 50% 40%, rgba(224, 168, 46, 0.18), transparent 45%),
-    radial-gradient(circle at 50% 70%, rgba(22, 101, 52, 0.12), transparent 50%),
+    radial-gradient(circle at 50% 40%, rgba(212, 160, 23, 0.18), transparent 45%),
+    radial-gradient(circle at 50% 70%, rgba(15, 118, 110, 0.12), transparent 50%),
     var(--lp-glass);
 }
 
@@ -3209,11 +3207,11 @@
   font-weight: 800;
   color: var(--lp-void);
   background: linear-gradient(145deg, var(--lp-emerald), var(--lp-lime));
-  box-shadow: 0 0 16px rgba(22, 101, 52, 0.35);
+  box-shadow: 0 0 16px rgba(15, 118, 110, 0.35);
 }
 
 .lp-map-node.is-focus .lp-map-node__dot {
-  box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 4px var(--lp-gold), 0 0 22px rgba(224, 168, 46, 0.55);
+  box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 4px var(--lp-gold), 0 0 22px rgba(212, 160, 23, 0.55);
 }
 
 .lp-map-node__label {
@@ -3233,7 +3231,7 @@
 .lp-morale {
   height: 0.65rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, #fb7185, #fbbf24, #166534);
+  background: linear-gradient(90deg, #fb7185, #fbbf24, #0f766e);
   position: relative;
   overflow: visible;
 }
@@ -3270,7 +3268,7 @@
 
 .lp-tree-card {
   background:
-    radial-gradient(circle at 50% 45%, rgba(22, 101, 52, 0.14), transparent 55%),
+    radial-gradient(circle at 50% 45%, rgba(15, 118, 110, 0.14), transparent 55%),
     var(--lp-glass);
 }
 
@@ -3294,7 +3292,7 @@
 }
 
 .lp-tree__line {
-  stroke: rgba(21, 128, 61, 0.35);
+  stroke: rgba(15, 118, 110, 0.35);
   stroke-width: 0.7;
 }
 
@@ -3317,7 +3315,7 @@
   place-items: center;
   font-size: 1.6rem;
   background: var(--lp-elevated);
-  box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(22, 101, 52, 0.35);
+  box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(15, 118, 110, 0.35);
   animation: lp-breathe 4.2s ease-in-out infinite;
 }
 
@@ -3355,7 +3353,7 @@
   place-items: center;
   font-size: 1.05rem;
   background: rgba(21, 32, 26, 0.9);
-  border: 1px solid rgba(22, 101, 52, 0.25);
+  border: 1px solid rgba(15, 118, 110, 0.25);
   transition: box-shadow 0.35s ease, border-color 0.35s ease, filter 0.35s ease;
 }
 
@@ -3367,22 +3365,22 @@
 }
 
 .lp-tree-node--v1 .lp-tree-node__emoji { filter: grayscale(0.7) brightness(0.7); opacity: 0.7; }
-.lp-tree-node--v2 .lp-tree-node__emoji { box-shadow: 0 0 10px rgba(22, 101, 52, 0.15); }
+.lp-tree-node--v2 .lp-tree-node__emoji { box-shadow: 0 0 10px rgba(15, 118, 110, 0.15); }
 .lp-tree-node--v3 .lp-tree-node__emoji {
-  border-color: rgba(22, 101, 52, 0.45);
-  box-shadow: 0 0 14px rgba(22, 101, 52, 0.28);
+  border-color: rgba(15, 118, 110, 0.45);
+  box-shadow: 0 0 14px rgba(15, 118, 110, 0.28);
 }
 .lp-tree-node--v4 .lp-tree-node__emoji {
-  border-color: rgba(22, 101, 52, 0.7);
-  box-shadow: 0 0 18px rgba(22, 101, 52, 0.4);
+  border-color: rgba(15, 118, 110, 0.7);
+  box-shadow: 0 0 18px rgba(15, 118, 110, 0.4);
 }
 .lp-tree-node--v5 .lp-tree-node__emoji {
   border-color: var(--lp-lime);
-  box-shadow: 0 0 22px rgba(22, 101, 52, 0.55);
+  box-shadow: 0 0 22px rgba(15, 118, 110, 0.55);
 }
 
 .lp-tree-node.is-focus .lp-tree-node__emoji {
-  box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 4px var(--lp-gold), 0 0 20px rgba(224, 168, 46, 0.45);
+  box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 4px var(--lp-gold), 0 0 20px rgba(212, 160, 23, 0.45);
 }
 
 .lp-quest {
@@ -3472,7 +3470,7 @@
   margin-top: 0.55rem;
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
-  background: rgba(22, 101, 52, 0.15);
+  background: rgba(15, 118, 110, 0.15);
   color: var(--lp-lime);
   font-size: 0.7rem;
   font-weight: 700;
@@ -3501,7 +3499,7 @@
   background:
     radial-gradient(circle at center, var(--lp-elevated) 58%, transparent 59%),
     conic-gradient(var(--lp-lime) calc(var(--level-pct) * 1%), rgba(39, 39, 42, 0.9) 0);
-  box-shadow: 0 0 18px rgba(22, 101, 52, 0.25);
+  box-shadow: 0 0 18px rgba(15, 118, 110, 0.25);
   flex-shrink: 0;
 }
 
@@ -3548,7 +3546,7 @@
   font-weight: 700;
   line-height: 1;
   color: var(--lp-lime);
-  text-shadow: 0 0 24px rgba(22, 101, 52, 0.35);
+  text-shadow: 0 0 24px rgba(15, 118, 110, 0.35);
 }
 
 .lp-gap-card__remaining {
@@ -3616,9 +3614,9 @@
 
 /* ——— Premium dashboard (Home) ——— */
 :root {
-  --lp-neon: #166534;
-  --lp-neon-soft: rgba(22, 101, 52, 0.12);
-  --lp-neon-glow: rgba(22, 101, 52, 0.22);
+  --lp-neon: #0f766e;
+  --lp-neon-soft: rgba(15, 118, 110, 0.12);
+  --lp-neon-glow: rgba(15, 118, 110, 0.22);
 }
 
 .lp-main:has(.lp-dash),
@@ -3672,12 +3670,12 @@
   align-items: center;
   gap: 0.3rem;
   border-radius: 999px;
-  border: 1px solid rgba(224, 168, 46, 0.35);
-  background: rgba(224, 168, 46, 0.1);
+  border: 1px solid rgba(18, 24, 22, 0.12);
+  background: #fff;
   padding: 0.35rem 0.7rem;
   font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--lp-gold);
+  font-weight: 800;
+  color: var(--lp-ink);
 }
 
 .lp-dash__greeting h1 {
@@ -3706,7 +3704,7 @@
 
 .lp-dash-card {
   border-radius: 1.4rem;
-  border: 1px solid rgba(22, 101, 52, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.12);
   background: #fff;
   box-shadow: 0 12px 28px rgba(20, 32, 26, 0.06);
   padding: 1.1rem 1.15rem;
@@ -3715,7 +3713,7 @@
 
 .lp-dash-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(22, 101, 52, 0.22);
+  border-color: rgba(15, 118, 110, 0.22);
   box-shadow: 0 16px 32px rgba(20, 32, 26, 0.1);
 }
 
@@ -3740,9 +3738,9 @@
   display: grid;
   gap: 1rem;
   border-radius: 1.5rem;
-  border: 1px solid rgba(22, 101, 52, 0.14);
+  border: 1px solid rgba(15, 118, 110, 0.14);
   background:
-    linear-gradient(135deg, rgba(22, 101, 52, 0.08), transparent 42%),
+    linear-gradient(135deg, rgba(15, 118, 110, 0.08), transparent 42%),
     #fff;
   padding: 1.15rem 1.2rem 1.25rem;
   box-shadow: 0 12px 28px rgba(20, 32, 26, 0.06);
@@ -3801,10 +3799,10 @@
   width: 100%;
   min-height: 8.5rem;
   border-radius: 1.15rem;
-  border: 1px solid rgba(22, 101, 52, 0.14);
+  border: 1px solid rgba(15, 118, 110, 0.14);
   background:
-    radial-gradient(circle at 50% 30%, rgba(22, 101, 52, 0.1), transparent 60%),
-    var(--lp-paper-soft, #eef1ec);
+    radial-gradient(circle at 50% 30%, rgba(15, 118, 110, 0.1), transparent 60%),
+    var(--lp-paper-soft, #f0f4f2);
   padding: 1rem 0.85rem;
   text-align: center;
 }
@@ -3848,7 +3846,7 @@
 .lp-dash-bar__fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #166534, var(--lp-neon));
+  background: linear-gradient(90deg, #0f766e, var(--lp-neon));
   box-shadow: 0 0 14px var(--lp-neon-glow);
   transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -3880,7 +3878,7 @@
 .lp-dash-battle__item.is-done .lp-dash-battle__name {
   color: var(--lp-muted);
   text-decoration: line-through;
-  text-decoration-color: rgba(22, 101, 52, 0.45);
+  text-decoration-color: rgba(15, 118, 110, 0.45);
 }
 
 .lp-dash-battle__icon {
@@ -3895,7 +3893,7 @@
 .lp-dash-battle__lp {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--lp-gold);
+  color: var(--lp-ink);
   white-space: nowrap;
 }
 
@@ -3903,7 +3901,7 @@
   width: 1.45rem;
   height: 1.45rem;
   border-radius: 0.45rem;
-  border: 1.5px solid rgba(22, 101, 52, 0.45);
+  border: 1.5px solid rgba(15, 118, 110, 0.45);
   background: transparent;
   display: grid;
   place-items: center;
@@ -3963,7 +3961,7 @@
   letter-spacing: -0.01em;
   color: #fff;
   background: var(--lp-forest);
-  box-shadow: 0 10px 24px rgba(22, 101, 52, 0.25);
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.25);
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
 }
@@ -3971,7 +3969,7 @@
 .lp-dash-cta:hover {
   transform: translateY(-1px);
   filter: brightness(1.04);
-  box-shadow: 0 0 0 1px rgba(22, 101, 52, 0.35), 0 16px 36px rgba(22, 101, 52, 0.32);
+  box-shadow: 0 0 0 1px rgba(15, 118, 110, 0.35), 0 16px 36px rgba(15, 118, 110, 0.32);
 }
 
 .lp-dash-cta:active {
@@ -3982,8 +3980,12 @@
   margin: 0;
   text-align: center;
   font-weight: 700;
-  color: var(--lp-gold);
+  color: var(--lp-teal);
   font-size: 0.95rem;
+}
+
+.lp-dash-battle__reward.is-pulse {
+  color: var(--lp-gold);
 }
 
 .lp-dash-battle__reward.is-pulse,
@@ -4037,7 +4039,7 @@
 
 .lp-dash-add .lp-input {
   border-radius: 0.85rem;
-  border: 1px solid rgba(22, 101, 52, 0.18);
+  border: 1px solid rgba(15, 118, 110, 0.18);
   background: rgba(7, 11, 9, 0.55);
   color: var(--lp-ink);
   padding: 0.7rem 0.85rem;
@@ -4067,7 +4069,7 @@
   height: 2.6rem;
   border-radius: 999px;
   background: var(--lp-neon-soft);
-  box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.2);
 }
 
 .lp-dash-project__title {
@@ -4129,8 +4131,8 @@
   width: 2.4rem;
   height: 2.4rem;
   border-radius: 999px;
-  background: rgba(22, 101, 52, 0.1);
-  border: 1px solid rgba(22, 101, 52, 0.18);
+  background: rgba(15, 118, 110, 0.1);
+  border: 1px solid rgba(15, 118, 110, 0.18);
   animation: lp-dash-step 4.5s ease-in-out infinite;
 }
 
@@ -4158,7 +4160,7 @@
 
 @keyframes lp-dash-step {
   0%, 100% { transform: translateY(0); box-shadow: 0 0 0 transparent; }
-  50% { transform: translateY(-2px); box-shadow: 0 0 16px rgba(22, 101, 52, 0.18); }
+  50% { transform: translateY(-2px); box-shadow: 0 0 16px rgba(15, 118, 110, 0.18); }
 }
 
 @keyframes lp-dash-arrow {
@@ -4183,7 +4185,7 @@
   gap: 0.15rem;
   padding: 0.55rem 0.6rem calc(0.55rem + env(safe-area-inset-bottom));
   background: rgba(245, 246, 243, 0.96);
-  border-top: 1px solid rgba(22, 101, 52, 0.12);
+  border-top: 1px solid rgba(15, 118, 110, 0.12);
   backdrop-filter: blur(16px);
 }
 
@@ -4208,7 +4210,7 @@
 
 .lp-dash-nav__link.is-active {
   color: var(--lp-neon);
-  background: rgba(22, 101, 52, 0.1);
+  background: rgba(15, 118, 110, 0.1);
 }
 
 .lp-dash-confetti {
@@ -4236,7 +4238,7 @@
 }
 
 .lp-dash.is-celebrating .lp-dash-cta {
-  box-shadow: 0 0 0 1px rgba(22, 101, 52, 0.45), 0 0 40px rgba(22, 101, 52, 0.45);
+  box-shadow: 0 0 0 1px rgba(15, 118, 110, 0.45), 0 0 40px rgba(15, 118, 110, 0.45);
 }
 
 
@@ -4287,7 +4289,7 @@
 
 .lp-progress-filters__chip {
   border-radius: 999px;
-  border: 1px solid rgba(22, 101, 52, 0.18);
+  border: 1px solid rgba(15, 118, 110, 0.18);
   background: rgba(14, 22, 18, 0.65);
   color: var(--lp-muted);
   padding: 0.45rem 0.85rem;
@@ -4299,7 +4301,7 @@
 
 .lp-progress-filters__chip:hover {
   color: var(--lp-ink);
-  border-color: rgba(22, 101, 52, 0.35);
+  border-color: rgba(15, 118, 110, 0.35);
 }
 
 .lp-progress-filters__chip.is-active {
@@ -4329,7 +4331,7 @@
 
 .lp-progress-card {
   border-radius: 1.4rem;
-  border: 1px solid rgba(22, 101, 52, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.12);
   background: #fff;
   box-shadow: 0 12px 28px rgba(20, 32, 26, 0.06);
   padding: 1.05rem 1.1rem;
@@ -4338,7 +4340,7 @@
 
 .lp-progress-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(22, 101, 52, 0.22);
+  border-color: rgba(15, 118, 110, 0.22);
   box-shadow: 0 16px 32px rgba(20, 32, 26, 0.1);
 }
 
@@ -4537,10 +4539,10 @@ button.lp-progress-heat__cell {
   cursor: help;
 }
 
-.lp-progress-heat__cell.level-1 { background: rgba(22, 101, 52, 0.22); }
-.lp-progress-heat__cell.level-2 { background: rgba(22, 101, 52, 0.4); }
-.lp-progress-heat__cell.level-3 { background: rgba(22, 101, 52, 0.62); }
-.lp-progress-heat__cell.level-4 { background: #166534; box-shadow: 0 0 8px rgba(22, 101, 52, 0.35); }
+.lp-progress-heat__cell.level-1 { background: rgba(15, 118, 110, 0.22); }
+.lp-progress-heat__cell.level-2 { background: rgba(15, 118, 110, 0.4); }
+.lp-progress-heat__cell.level-3 { background: rgba(15, 118, 110, 0.62); }
+.lp-progress-heat__cell.level-4 { background: #0f766e; box-shadow: 0 0 8px rgba(15, 118, 110, 0.35); }
 
 .lp-progress-heat__legend {
   display: flex;
@@ -4614,7 +4616,7 @@ button.lp-progress-heat__cell {
 
 .lp-progress-badge {
   width: 100%;
-  border: 1px solid rgba(22, 101, 52, 0.16);
+  border: 1px solid rgba(15, 118, 110, 0.16);
   border-radius: 1.1rem;
   background: rgba(7, 11, 9, 0.4);
   color: var(--lp-ink);
@@ -4628,11 +4630,11 @@ button.lp-progress-heat__cell {
 
 .lp-progress-badge:hover {
   transform: translateY(-2px);
-  border-color: rgba(22, 101, 52, 0.4);
+  border-color: rgba(15, 118, 110, 0.4);
 }
 
 .lp-progress-badge.is-glow {
-  box-shadow: 0 0 22px rgba(22, 101, 52, 0.18);
+  box-shadow: 0 0 22px rgba(15, 118, 110, 0.18);
   animation: lp-badge-glow 3.2s ease-in-out infinite;
 }
 
@@ -4647,7 +4649,7 @@ button.lp-progress-heat__cell {
   width: 2.8rem;
   height: 2.8rem;
   clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0 50%);
-  background: linear-gradient(145deg, rgba(22, 101, 52, 0.35), rgba(22, 101, 52, 0.25));
+  background: linear-gradient(145deg, rgba(15, 118, 110, 0.35), rgba(15, 118, 110, 0.25));
   font-size: 1.15rem;
 }
 
@@ -4705,7 +4707,7 @@ button.lp-progress-heat__cell {
 
 .lp-progress-dialog__inner {
   border-radius: 1.35rem;
-  border: 1px solid rgba(22, 101, 52, 0.22);
+  border: 1px solid rgba(15, 118, 110, 0.22);
   background: linear-gradient(180deg, #15201a, #0e1612);
   padding: 1.25rem;
   text-align: center;
@@ -4735,8 +4737,8 @@ button.lp-progress-heat__cell {
 }
 
 @keyframes lp-badge-glow {
-  0%, 100% { box-shadow: 0 0 14px rgba(22, 101, 52, 0.12); }
-  50% { box-shadow: 0 0 26px rgba(22, 101, 52, 0.28); }
+  0%, 100% { box-shadow: 0 0 14px rgba(15, 118, 110, 0.12); }
+  50% { box-shadow: 0 0 26px rgba(15, 118, 110, 0.28); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4791,7 +4793,7 @@ button.lp-progress-heat__cell {
 
 .lp-journey-card {
   border-radius: 1.25rem;
-  border: 1px solid rgba(22, 101, 52, 0.14);
+  border: 1px solid rgba(15, 118, 110, 0.14);
   background: linear-gradient(180deg, rgba(21, 32, 26, 0.92), rgba(14, 22, 18, 0.95));
   padding: 1rem 1.05rem;
 }
@@ -4816,7 +4818,7 @@ button.lp-progress-heat__cell {
 .lp-journey-card textarea.lp-input {
   width: 100%;
   border-radius: 0.85rem;
-  border: 1px solid rgba(22, 101, 52, 0.18);
+  border: 1px solid rgba(15, 118, 110, 0.18);
   background: rgba(7, 11, 9, 0.55);
   color: var(--lp-ink);
   padding: 0.7rem 0.85rem;
@@ -4854,7 +4856,7 @@ button.lp-progress-heat__cell {
 
 .lp-journey-setup__complete-btn {
   width: 100%;
-  border: 1px solid rgba(22, 101, 52, 0.25);
+  border: 1px solid rgba(15, 118, 110, 0.25);
   border-radius: 1rem;
   background: transparent;
   color: var(--lp-muted);
@@ -4865,7 +4867,7 @@ button.lp-progress-heat__cell {
 
 .lp-journey-setup__complete-btn:hover {
   color: var(--lp-ink);
-  border-color: rgba(22, 101, 52, 0.45);
+  border-color: rgba(15, 118, 110, 0.45);
 }
 
 /* —— Journey unlock climb —— */
@@ -4967,7 +4969,7 @@ button.lp-progress-heat__cell {
 }
 
 .lp-climb-card {
-  border: 1px solid rgba(22, 101, 52, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.12);
   border-radius: 1.1rem;
   padding: 1rem 1.05rem;
   background: #fff;
@@ -4976,9 +4978,9 @@ button.lp-progress-heat__cell {
 }
 
 .lp-climb-card--goal {
-  border-color: rgba(22, 101, 52, 0.22);
+  border-color: rgba(15, 118, 110, 0.22);
   background:
-    linear-gradient(160deg, rgba(22, 101, 52, 0.08), transparent 55%),
+    linear-gradient(160deg, rgba(15, 118, 110, 0.08), transparent 55%),
     #fff;
 }
 
@@ -4993,12 +4995,12 @@ button.lp-progress-heat__cell {
 }
 
 .lp-climb-card--open {
-  border-color: rgba(22, 101, 52, 0.35);
-  box-shadow: 0 0 0 1px rgba(22, 101, 52, 0.08);
+  border-color: rgba(15, 118, 110, 0.35);
+  box-shadow: 0 0 0 1px rgba(15, 118, 110, 0.08);
 }
 
 .lp-climb-card--complete {
-  border-color: rgba(22, 101, 52, 0.18);
+  border-color: rgba(15, 118, 110, 0.18);
 }
 
 .lp-climb-card.is-celebrating {
@@ -5031,7 +5033,7 @@ button.lp-progress-heat__cell {
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 999px;
-  background: rgba(22, 101, 52, 0.18);
+  background: rgba(15, 118, 110, 0.18);
   color: var(--lp-neon);
   font-size: 0.7rem;
 }
@@ -5042,7 +5044,7 @@ button.lp-progress-heat__cell {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--lp-neon);
-  border: 1px solid rgba(22, 101, 52, 0.35);
+  border: 1px solid rgba(15, 118, 110, 0.35);
   border-radius: 999px;
   padding: 0.12rem 0.45rem;
 }
@@ -5133,16 +5135,16 @@ button.lp-progress-heat__cell {
 
 @keyframes lp-climb-unlock {
   0% {
-    box-shadow: 0 0 0 0 rgba(22, 101, 52, 0.0);
-    border-color: rgba(22, 101, 52, 0.15);
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.0);
+    border-color: rgba(15, 118, 110, 0.15);
   }
   40% {
-    box-shadow: 0 0 0 8px rgba(22, 101, 52, 0.12);
-    border-color: rgba(22, 101, 52, 0.55);
+    box-shadow: 0 0 0 8px rgba(15, 118, 110, 0.12);
+    border-color: rgba(15, 118, 110, 0.55);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(22, 101, 52, 0);
-    border-color: rgba(22, 101, 52, 0.35);
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
+    border-color: rgba(15, 118, 110, 0.35);
   }
 }
 

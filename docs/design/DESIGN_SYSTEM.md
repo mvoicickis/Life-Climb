@@ -4,6 +4,8 @@
 
 LifePoints helps a person turn any life goal into a real plan, and rewards real progress with Life Points — proof that they are becoming more alive.
 
+Feeling: **nothing is impossible** — and this app will help if you give it a chance. Hope + invitation, not night-game intensity.
+
 ## Voice
 
 - Short sentences. Never explain with a long paragraph what one short line can say.
@@ -15,18 +17,22 @@ LifePoints helps a person turn any life goal into a real plan, and rewards real 
 
 **Avoid:** streak · habit · tracker · productivity · grind · hustle  
 
-## Colour (app-wide)
+## Colour — Clear Day (app-wide)
 
 | Role | Token / hex | Use |
 |------|-------------|-----|
-| Primary | `--lp-forest` `#166534` | Buttons, links, progress bars, brand mark |
-| Dark background | `--lp-navy` `#0B1220` | Landing hero/closing, auth, onboarding (`.lp-game--navy`) |
-| Light background | `--lp-paper` `#F5F6F3` | Home, Journey, Progress daily surfaces (`.lp-game`) |
-| Reward accent | `--lp-gold` `#E0A82E` | **Only** LP numbers, `+LP` pop-ups, reward moments |
+| Page / app bg | `--lp-paper` `#FAFBFA` | Landing, Home, Journey, Progress, auth |
+| Soft band | `--lp-paper-soft` `#F0F4F2` | Alternating sections |
+| Ink | `--lp-ink` `#121816` | Body, titles, **LP numbers**, closer % |
+| Muted | `--lp-muted` `#5C6B64` | Supporting lines |
+| Primary / CTA | `--lp-teal` `#0F766E` | Buttons, links, progress fills |
+| Primary deep | `--lp-teal-deep` `#0D5F59` | Hover |
+| Dawn wash | `#E8F4F1 → #FAFBFA` | Landing hero / closing atmosphere |
+| Reward flash only | `--lp-gold` `#D4A017` | `+LP` toast / confetti only |
 
-Gold appears only when the user earns something. If gold is everywhere, it stops feeling special.
+**Hard readability rule:** LP chip and standing LP totals use deep ink on white/soft chips. Gold is never the digit color.
 
-Legacy aliases (`--lp-neon`, `--lp-void`, `--lp-lime`, `--lp-emerald`) resolve to forest / navy so older class names stay on-brand.
+Legacy aliases (`--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to teal so older class names stay on-brand.
 
 ## Typography
 
@@ -37,22 +43,21 @@ Legacy aliases (`--lp-neon`, `--lp-void`, `--lp-lime`, `--lp-emerald`) resolve t
 ## Icons & imagery
 
 - Thin, single-line icons for steps and UI.
-- Emoji allowed **only** for Life Areas (consistent with in-app catalog).
+- Emoji allowed **only** for Life Areas (and Home hero area mark).
 - No stock photos of people.
-- Mountain line-art silhouettes on landing, Home hero, and Journey.
+- Mountain line-art in muted teal on light dawn heroes.
 
 ## Surface map
 
 | Surface | Shell |
 |---------|--------|
-| Landing | `.lp-landing-body` — navy hero/closing, paper mid sections |
-| Auth | navy body + forest CTAs |
-| Onboarding | `.lp-game.lp-game--navy` |
+| Landing | Dawn light hero/closing + paper mid sections |
+| Auth | Light dawn paper + teal CTAs |
+| Onboarding | `.lp-game` paper (same as Home) |
 | Home / Journey / Progress | `.lp-game` paper + white cards |
-| Studio (legacy) | paper + forest accent |
 
 ## Hard product rules (UI)
 
-- **No streaks.** Closer % and next step drive emotion — never flame counters.
+- **No streaks.** Closer % and next step drive emotion.
 - **Copy tone:** warm, meaning-first; gap = distance to the mountain, not guilt.
-- **Motion:** brand fade, mountain drift, CTA pulse, gold LP count-up; respect `prefers-reduced-motion`.
+- **Motion:** brand fade, mountain drift, CTA pulse, gold only on `+LP` flash; respect `prefers-reduced-motion`.

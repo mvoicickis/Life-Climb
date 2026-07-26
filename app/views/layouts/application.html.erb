@@ -26,8 +26,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? "lp-game#{content_for?(:lp_navy) ? ' lp-game--navy' : ''} text-[var(--lp-ink)]" : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink-dark,#14201a)]' %>"
-        style="<%= authenticated? ? nil : 'background: #0B1220;' %>">
+  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>">
     <% if authenticated? && content_for?(:lp_game) %>
       <% unless content_for?(:lp_hide_top_nav) %>
       <nav class="lp-top-nav" aria-label="Main">
