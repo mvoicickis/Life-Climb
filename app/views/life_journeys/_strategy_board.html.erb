@@ -55,8 +55,10 @@
 
     <% elsif @level == "projects" %>
       <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>
-      <p class="lp-strategy__board-hint"><%= t("strategy.guided.ask_projects") %></p>
+      <p class="lp-strategy__board-hint"><%= t("strategy.guided.ask_plan_next") %></p>
       <div class="lp-strategy__bar"><span style="width: <%= @focus.progress_percent %>%"></span></div>
+
+      <h3 class="pt-1 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.levels.project") %></h3>
       <ul class="lp-strategy__list">
         <% @children.select(&:project?).each do |project| %>
           <li class="lp-strategy__item">
@@ -77,6 +79,36 @@
         <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.project_placeholder") %>
         <%= submit_tag t("strategy.add_project"), class: "lp-cta w-full" %>
       <% end %>
+
+      <h3 class="pt-4 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.levels.month") %></h3>
+      <p class="lp-strategy__board-hint"><%= t("strategy.plan_month_hint") %></p>
+      <ul class="lp-strategy__list">
+        <% @month_slots.each do |slot| %>
+          <% existing = @children.find { |g| g.month? && g.due_on == slot[:due_on] } %>
+          <li class="lp-strategy__item">
+            <div class="min-w-0 flex-1">
+              <p class="lp-strategy__item-meta"><%= slot[:label] %></p>
+              <% if existing %>
+                <%= link_to existing.title, life_journey_path(@journey, focus_id: existing.id), class: "lp-strategy__item-title" %>
+                <div class="lp-strategy__bar mt-2"><span style="width: <%= existing.progress_percent %>%"></span></div>
+              <% else %>
+                <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-2", data: { turbo: false } do %>
+                  <%= hidden_field_tag :life_area_id, area.id %>
+                  <%= hidden_field_tag :life_journey_id, @journey.id %>
+                  <%= hidden_field_tag :parent_id, @focus.id %>
+                  <%= hidden_field_tag :horizon, "month" %>
+                  <%= hidden_field_tag :due_on, slot[:due_on] %>
+                  <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.month_placeholder") %>
+                  <%= submit_tag t("strategy.add_month_goal"), class: "lp-cta w-full" %>
+                <% end %>
+              <% end %>
+            </div>
+            <% if existing %>
+              <%= button_to t("strategy.remove"), strategy_goal_path(existing), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
 
     <% elsif @level == "months" %>
       <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>

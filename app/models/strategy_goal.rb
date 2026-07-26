@@ -9,7 +9,7 @@ class StrategyGoal < ApplicationRecord
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
-    "plan" => %w[project],
+    "plan" => %w[project month],
     "project" => %w[month],
     "month" => %w[week day],
     "week" => %w[day]

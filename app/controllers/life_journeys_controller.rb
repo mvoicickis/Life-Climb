@@ -103,7 +103,7 @@ class LifeJourneysController < ApplicationController
     @level = strategy_level_for(@focus)
     @children = @focus ? @focus.children.ordered.to_a : []
     @month_slots =
-      if @focus&.project?
+      if @focus&.project? || @focus&.plan?
         Strategy::YearCycle.remaining_month_slots(target: @goal&.due_on || @year_due)
       else
         []
@@ -129,7 +129,11 @@ class LifeJourneysController < ApplicationController
   def guided_step
     return 1 if @goal.blank?
     return 2 if @goal.children.for_kind("plan").none?
-    return 3 if StrategyGoal.where(parent_id: @goal.children.for_kind("plan").select(:id)).for_kind("project").none?
+
+    plan_ids = @goal.children.for_kind("plan").select(:id)
+    has_project = StrategyGoal.where(parent_id: plan_ids).for_kind("project").exists?
+    has_month_under_plan = StrategyGoal.where(parent_id: plan_ids).for_kind("month").exists?
+    return 3 unless has_project || has_month_under_plan
     return 4 if StrategyGoal.where(horizon: "month", user_id: current_user.id, life_area_id: @journey.life_area_id).none?
 
     5

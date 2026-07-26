@@ -79,7 +79,7 @@ class StrategyGoalsController < ApplicationController
       raw = params[:due_on].presence
       return Date.parse(raw.to_s) if raw
 
-      if parent&.project?
+      if parent&.project? || parent&.plan?
         used = parent.children.for_kind("month").pluck(:due_on)
         slot = Strategy::YearCycle.remaining_month_slots(
           target: parent.root_goal&.due_on || Strategy::YearCycle.target_dec29
