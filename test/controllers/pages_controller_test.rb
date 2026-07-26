@@ -13,11 +13,18 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/status\.better_full|landing\.sample_better|today-card--good|lifepoints-landing-hero\.jpg/, response.body)
   end
 
-  test "landing social meta uses clear day brand" do
+  test "landing page uses mountain brand mark" do
+    get root_path
+    assert_response :success
+    assert_match(%r{/branding/lifepoints-mark\.png}, response.body)
+    assert_no_match(%r{/branding/lifepoints-leaf-mark\.png}, response.body)
+  end
+
+  test "landing social meta uses mountain logo og image" do
     get root_path
     assert_response :success
     assert_match(/name="theme-color" content="#FFFFFF"/, response.body)
-    assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-neon\.png"}, response.body)
+    assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-logo\.png"}, response.body)
     assert_match(/og:image:alt" content="LifePoints — One mountain\. Today’s battle\."/, response.body)
   end
 

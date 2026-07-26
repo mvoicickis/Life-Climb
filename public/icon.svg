@@ -1,30 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LifePoints">
-  <defs>
-    <linearGradient id="bg" x1="64" y1="40" x2="448" y2="472" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#059669"/>
-      <stop offset="1" stop-color="#0F766E"/>
-    </linearGradient>
-    <linearGradient id="line" x1="96" y1="360" x2="416" y2="120" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ECFDF5"/>
-      <stop offset="1" stop-color="#FFFFFF"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <!-- faint grid -->
-  <g stroke="#ECFDF5" stroke-opacity="0.18" stroke-width="3">
-    <path d="M96 128h320M96 192h320M96 256h320M96 320h320M96 384h320"/>
-    <path d="M128 112v288M192 112v288M256 112v288M320 112v288M384 112v288"/>
-  </g>
-  <!-- rising chart line -->
-  <polyline
-    fill="none"
-    stroke="url(#line)"
-    stroke-width="28"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    points="108,360 168,300 220,332 278,236 330,268 404,128"/>
-  <circle cx="108" cy="360" r="16" fill="#A7F3D0"/>
-  <circle cx="220" cy="332" r="14" fill="#A7F3D0"/>
-  <circle cx="330" cy="268" r="14" fill="#FFFFFF"/>
-  <circle cx="404" cy="128" r="20" fill="#FFFFFF"/>
+  <rect width="512" height="512" fill="#FFFFFF"/>
+  <circle cx="256" cy="256" r="220" fill="none" stroke="#22C55E" stroke-width="14"/>
+  <!-- mountains -->
+  <path d="M96 300 L170 170 L220 240 L270 130 L360 250 L420 300 Z" fill="#166534"/>
+  <path d="M170 170 L190 200 L210 185 L220 240 Z" fill="#F8FAFC"/>
+  <path d="M270 130 L290 165 L310 150 L330 190 L300 210 Z" fill="#F8FAFC"/>
+  <!-- hills -->
+  <path d="M80 320 C140 280, 200 340, 256 300 C320 250, 380 320, 440 300 L440 420 L80 420 Z" fill="#16A34A"/>
+  <path d="M80 360 C150 320, 210 380, 280 340 C340 300, 400 360, 440 340 L440 420 L80 420 Z" fill="#22C55E"/>
+  <!-- path -->
+  <path d="M250 400 C240 360, 270 330, 255 290 C240 250, 275 220, 268 190" fill="none" stroke="#ECFDF5" stroke-width="22" stroke-linecap="round"/>
+  <path d="M250 400 C240 360, 270 330, 255 290 C240 250, 275 220, 268 190" fill="none" stroke="#86EFAC" stroke-width="10" stroke-linecap="round"/>
+  <!-- leaf accent -->
+  <path d="M390 300 C470 250, 490 360, 420 420 C400 380, 370 340, 390 300 Z" fill="#22C55E"/>
+  <path d="M405 330 C430 320, 450 360, 425 390" fill="none" stroke="#ECFDF5" stroke-width="6" stroke-linecap="round"/>
 </svg>

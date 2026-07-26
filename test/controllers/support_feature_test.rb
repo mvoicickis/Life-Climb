@@ -9,6 +9,7 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Support LifePoints/, response.body)
     assert_match(/Buy the developer a coffee/, response.body)
+    assert_match(%r{https://buymeacoffee\.com/lifepoints}, response.body)
     assert_match(/Become a Supporter|Sponsor Development|Make a Contribution/, response.body)
   end
 
@@ -67,11 +68,11 @@ class SupportMomentTest < ActiveSupport::TestCase
 end
 
 class SupportProvidersTest < ActiveSupport::TestCase
-  test "primary coffee provider is enabled with mailto fallback" do
+  test "primary coffee provider is enabled with buymeacoffee default" do
     primary = SupportProviders.primary
     assert primary
     assert_equal :buy_me_a_coffee, primary[:id]
-    assert primary[:url].present?
+    assert_equal "https://buymeacoffee.com/lifepoints", primary[:url]
   end
 
   test "future providers listed as coming soon when disabled" do
