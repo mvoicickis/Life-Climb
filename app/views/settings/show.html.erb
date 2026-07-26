@@ -60,9 +60,6 @@
       </button>
       <%= link_to t("settings.contact_me"), new_feedback_path, class: "text-sm font-bold text-[var(--lp-ink)] underline-offset-2 hover:underline" %>
     </div>
-    <p class="mt-3 text-xs text-[var(--lp-muted)]">
-      <%= link_to t("settings.about_link"), about_path, class: "font-semibold hover:text-[var(--lp-ink)]" %>
-    </p>
     <%= render "shared/share_sheet",
           title: t("share.invite.title"),
           subtitle: t("share.invite.subtitle") %>
