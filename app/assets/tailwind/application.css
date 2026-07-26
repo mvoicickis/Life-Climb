@@ -3425,7 +3425,13 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.5rem;
-  margin-top: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.lp-dash-add-hint {
+  margin: 0.45rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.8rem;
 }
 
 .lp-dash-add .lp-input {

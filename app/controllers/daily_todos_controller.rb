@@ -9,7 +9,7 @@ class DailyTodosController < ApplicationController
     if todo.save
       redirect_to dashboard_path, notice: t("battle_plan.added")
     else
-      redirect_to dashboard_path, alert: todo.errors.full_messages.to_sentence
+      redirect_to dashboard_path, alert: todo.errors.full_messages.to_sentence.presence || t("dash.battle_day_full", max: GameRules::MAX_DAILY_TODOS)
     end
   end
 

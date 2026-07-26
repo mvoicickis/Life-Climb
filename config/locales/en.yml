@@ -17,6 +17,8 @@ en:
     battle_placeholder: "Add a battle task"
     battle_add: "Add"
     battle_add_more: "+ Add a point"
+    battle_add_hint: "Add a few small wins — 5 is a strong day."
+    battle_day_full: "Today's battle is full (%{max} tasks). Complete some, then add more."
     battle_won: "Battle won. Rest or dream bigger."
     complete_battle: "Complete Battle"
     project_label: "Current Project"
