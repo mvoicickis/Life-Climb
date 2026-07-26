@@ -6,30 +6,33 @@ module Journeys
 
     DEFAULT_GAP = 70.0
 
-    def self.call(user:, life_area:, title:, ideal_scene:, current_reality:, closer_percent: nil)
+    def self.call(user:, life_area:, title:, ideal_scene:, current_reality:, next_win: nil, closer_percent: nil)
       new(
         user:,
         life_area:,
         title:,
         ideal_scene:,
         current_reality:,
+        next_win:,
         closer_percent:
       ).call
     end
 
-    def initialize(user:, life_area:, title:, ideal_scene:, current_reality:, closer_percent:)
+    def initialize(user:, life_area:, title:, ideal_scene:, current_reality:, next_win:, closer_percent:)
       @user = user
       @life_area = life_area
       @title = title.to_s.strip
       @ideal_scene = ideal_scene.to_s.strip
       @current_reality = current_reality.to_s.strip
+      @next_win = next_win.to_s.strip
       @closer_percent = closer_percent
     end
 
     def call
       raise Error, "Choose a life area first" unless @life_area
       raise Error, "This area is not yours" unless @life_area.user_id == @user.id
-      raise Error, "Describe the life you want" if @ideal_scene.blank?
+      raise Error, "Name what you want to achieve" if @title.blank? && @ideal_scene.blank?
+      raise Error, "Describe what success looks like" if @ideal_scene.blank?
       raise Error, "Describe where you are today" if @current_reality.blank?
 
       title = @title.presence || @ideal_scene.truncate(80)
@@ -41,6 +44,8 @@ module Journeys
           title: title,
           ideal_scene: @ideal_scene,
           current_reality: @current_reality,
+          next_win: @next_win.presence,
+          milestones: (@next_win.present? ? [ { "title" => @next_win, "tags" => [] } ] : []),
           status: "active",
           gap_percent: gap,
           activated_at: Time.current,

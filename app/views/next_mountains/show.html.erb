@@ -1,0 +1,138 @@
+<% content_for :title, t("next_mountain.title") %>
+<% content_for :lp_game, true %>
+
+<%
+  step = @step.to_s
+  area_key = @area_key.to_s
+  key = LifeArea::CATALOG_KEYS.include?(area_key) ? area_key : @same_area.key
+  eyebrow = t("life_area_catalog.#{key}.name")
+  draft = @draft || {}
+%>
+
+<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+  <% if step == "choose" %>
+    <header>
+      <p class="text-sm font-semibold text-[var(--lp-lime)]"><%= t("next_mountain.congrats") %></p>
+      <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("next_mountain.title") %></h1>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]">
+        <%= t("next_mountain.subtitle", title: @completed.title, area: @same_area.label) %>
+      </p>
+    </header>
+
+    <div class="space-y-3">
+      <%= button_to t("next_mountain.same_area", area: @same_area.label),
+            next_mountain_path(step: "choose"),
+            method: :patch,
+            params: { choice: "same" },
+            class: "lp-cta w-full" %>
+      <%= button_to t("next_mountain.other_area"),
+            next_mountain_path(step: "choose"),
+            method: :patch,
+            params: { choice: "other" },
+            class: "w-full rounded-full border border-[var(--lp-border)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)]" %>
+    </div>
+  <% elsif step == "pick_area" %>
+    <header>
+      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("next_mountain.pick_area_title") %></h1>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("next_mountain.pick_area_subtitle") %></p>
+    </header>
+
+    <%= form_with url: next_mountain_path(step: "pick_area"), method: :patch, class: "space-y-4" do %>
+      <div class="grid gap-3">
+        <% @catalog.each do |entry| %>
+          <% catalog_key = entry[:key] %>
+          <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
+            <%= radio_button_tag "climb[area_key]", catalog_key, catalog_key == @same_area.key, id: "nm_area_#{catalog_key}", class: "mt-1" %>
+            <span>
+              <span class="block font-semibold text-[var(--lp-ink)]">
+                <span aria-hidden="true"><%= entry[:emoji] %></span>
+                <%= t("life_area_catalog.#{catalog_key}.name") %>
+              </span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+      <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+    <% end %>
+  <% elsif step == "journey" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "journey"),
+          scope: "climb",
+          field: "title",
+          value: draft["title"],
+          eyebrow: eyebrow,
+          label: t("coach.journey"),
+          hint: t("coach.journey_hint"),
+          placeholder: t("area_interview.#{key}.title_placeholder", default: t("coach.journey_placeholder")),
+          cta: t("coach.continue"),
+          input: :text,
+          hidden: { area_key: key } %>
+  <% elsif step == "vision" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "vision"),
+          scope: "climb",
+          field: "ideal_scene",
+          value: draft["ideal_scene"],
+          eyebrow: eyebrow,
+          label: t("coach.vision"),
+          hint: t("coach.vision_hint"),
+          placeholder: t("area_interview.#{key}.ideal_placeholder", default: t("journeys.ideal_placeholder")),
+          cta: t("coach.continue"),
+          hidden: { area_key: key } %>
+  <% elsif step == "reality" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "reality"),
+          scope: "climb",
+          field: "current_reality",
+          value: draft["current_reality"],
+          eyebrow: eyebrow,
+          label: t("coach.reality"),
+          hint: t("coach.reality_hint"),
+          placeholder: t("area_interview.#{key}.present_placeholder", default: t("journeys.present_placeholder")),
+          cta: t("coach.continue"),
+          hidden: { area_key: key } %>
+  <% elsif step == "progress" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "progress"),
+          scope: "climb",
+          field: "closer_percent",
+          value: draft["closer_percent"].presence || "5",
+          eyebrow: eyebrow,
+          label: t("coach.progress"),
+          hint: t("coach.progress_hint"),
+          placeholder: "",
+          cta: t("coach.continue"),
+          input: :range,
+          hidden: { area_key: key } %>
+  <% elsif step == "milestone" %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "milestone"),
+          scope: "climb",
+          field: "next_win",
+          value: draft["next_win"],
+          eyebrow: eyebrow,
+          label: t("coach.milestone"),
+          hint: t("coach.milestone_hint"),
+          placeholder: t("area_interview.#{key}.next_placeholder", default: t("coach.next_placeholder")),
+          cta: t("coach.continue"),
+          input: :text,
+          required: false,
+          skip_url: next_mountain_path(step: "milestone"),
+          skip_label: t("coach.skip_milestone"),
+          hidden: { area_key: key } %>
+  <% else %>
+    <%= render "shared/coach_beat",
+          form_url: next_mountain_path(step: "mission"),
+          scope: "climb",
+          field: "today_mission",
+          value: draft["today_mission"],
+          eyebrow: eyebrow,
+          label: t("coach.mission"),
+          hint: t("coach.mission_hint"),
+          placeholder: t("area_interview.#{key}.today_placeholder", default: t("coach.today_placeholder")),
+          cta: t("coach.begin_today"),
+          input: :text,
+          hidden: { area_key: key } %>
+  <% end %>
+</div>
+

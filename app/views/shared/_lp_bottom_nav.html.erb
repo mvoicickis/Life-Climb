@@ -1,30 +1,37 @@
-<%# LifePoints calm MVP bottom nav — Home · Life · + · Missions · Profile %>
+<%# Calm nav — Home · Journey · You %>
 <% active = local_assigns.fetch(:active, :home).to_s %>
+<%
+  journey_path_target =
+    if current_user&.planning_v2?
+      current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+    end
+%>
 
-<nav class="lp-bottom-nav" aria-label="Primary">
-  <%= link_to dashboard_path, class: "lp-bottom-nav__link #{'is-active' if active.in?(%w[home dashboard])}" do %>
+<nav class="lp-bottom-nav lp-bottom-nav--calm" aria-label="Primary">
+  <%= link_to dashboard_path, class: "lp-bottom-nav__link #{'is-active' if active.in?(%w[home dashboard missions])}" do %>
     <span class="lp-bottom-nav__icon" aria-hidden="true">🏠</span>
     <span><%= t("game_ui.nav.home") %></span>
   <% end %>
 
-  <%= link_to life_map_path, class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
-    <span class="lp-bottom-nav__icon" aria-hidden="true">🌳</span>
-    <span><%= t("game_ui.nav.life") %></span>
-  <% end %>
-
-  <%= link_to (current_user&.planning_v2? ? focus_path : dashboard_path(anchor: "add-quest")),
-        class: "lp-fab",
-        aria: { label: t("game_ui.nav.quick_add") } do %>
-    <span aria-hidden="true">+</span>
-  <% end %>
-
-  <%= link_to missions_path, class: "lp-bottom-nav__link #{'is-active' if active == 'missions'}" do %>
-    <span class="lp-bottom-nav__icon" aria-hidden="true">🎯</span>
-    <span><%= t("game_ui.nav.missions") %></span>
+  <% if journey_path_target %>
+    <%= link_to life_journey_path(journey_path_target), class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
+      <span class="lp-bottom-nav__icon" aria-hidden="true">⛰</span>
+      <span><%= t("game_ui.nav.journey") %></span>
+    <% end %>
+  <% elsif current_user&.planning_v2? %>
+    <%= link_to new_life_journey_path, class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
+      <span class="lp-bottom-nav__icon" aria-hidden="true">⛰</span>
+      <span><%= t("game_ui.nav.journey") %></span>
+    <% end %>
+  <% else %>
+    <%= link_to life_map_path, class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
+      <span class="lp-bottom-nav__icon" aria-hidden="true">⛰</span>
+      <span><%= t("game_ui.nav.life") %></span>
+    <% end %>
   <% end %>
 
   <%= link_to settings_path, class: "lp-bottom-nav__link #{'is-active' if active == 'profile'}" do %>
     <span class="lp-bottom-nav__icon" aria-hidden="true">👤</span>
-    <span><%= t("game_ui.nav.profile") %></span>
+    <span><%= t("game_ui.nav.you") %></span>
   <% end %>
 </nav>

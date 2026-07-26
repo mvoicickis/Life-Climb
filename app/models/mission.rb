@@ -15,6 +15,7 @@ class Mission < ApplicationRecord
   validates :gap_delta_basis_points, numericality: { only_integer: true, greater_than: 0 }
   validates :status, inclusion: { in: STATUSES }
   validates :source, inclusion: { in: SOURCES }
+  validates :aspect_key, inclusion: { in: LifeArea::CATALOG_KEYS }, allow_blank: true
   validate :user_matches_journey
 
   before_validation :sync_user_from_journey, on: :create

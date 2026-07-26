@@ -15,10 +15,19 @@
         closer_percent: current_user.overall_closer_percent,
         compact: false %>
 
+  <% if @journey = current_user.primary_focused_journey %>
+    <section class="lp-glass space-y-2 p-4">
+      <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.working_on") %></p>
+      <p class="font-semibold text-[var(--lp-ink)]"><%= @journey.title %></p>
+      <% if @journey.next_win.present? %>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.next_win") %> <%= @journey.next_win %></p>
+      <% end %>
+      <%= link_to t("coach.open_journey"), life_journey_path(@journey), class: "mt-2 inline-flex text-sm font-bold text-[var(--lp-lime)]" %>
+    </section>
+  <% end %>
+
   <div class="flex flex-wrap gap-3">
-    <%= link_to t("journeys.add_another"), new_life_journey_path, class: "lp-cta inline-flex" %>
-    <%= link_to t("focus.title"), focus_path, class: "rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
+    <%= link_to t("dashboard_v2.today"), dashboard_path, class: "lp-cta inline-flex" %>
   </div>
 </div>
 
-<%= render "shared/lp_bottom_nav", active: :life %>

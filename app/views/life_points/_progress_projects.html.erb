@@ -1,0 +1,37 @@
+<%# locals: projects %>
+<section class="lp-progress-card lp-progress-projects" aria-label="<%= t('progress.climbs_title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.climbs_title") %></h2>
+    <p><%= t("progress.climbs_hint") %></p>
+  </header>
+
+  <% if projects.any? %>
+    <ul class="lp-progress-projects__list">
+      <% projects.each do |project| %>
+        <li>
+          <%= link_to life_journey_path(project[:id]), class: "lp-progress-project" do %>
+            <span class="lp-progress-project__icon" aria-hidden="true"><%= project[:icon] %></span>
+            <div class="lp-progress-project__body">
+              <p class="lp-progress-project__title"><%= project[:goal] %></p>
+              <% if project[:milestones].present? %>
+                <p class="lp-progress-project__meta"><%= t("progress.milestones_line", list: project[:milestones].first(3).join(" · ")) %></p>
+              <% else %>
+                <p class="lp-progress-project__meta"><%= project[:goal] %></p>
+              <% end %>
+              <p class="lp-progress-project__clarity"><%= t("progress.clarity_line", count: project[:clarity_count], total: project[:clarity_total]) %></p>
+              <% Array(project[:targets]).each do |target| %>
+                <p class="lp-progress-project__target"><%= target[:title] %> · <%= target[:summary] %></p>
+              <% end %>
+              <div class="lp-dash-bar lp-dash-bar--sm" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= project[:progress] %>">
+                <div class="lp-dash-bar__fill" style="width: <%= project[:progress] %>%; background: linear-gradient(90deg, <%= project[:color] %>, #22C55E)"></div>
+              </div>
+            </div>
+            <span class="lp-progress-project__pct"><%= project[:progress] %>%</span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-progress-empty"><%= t("progress.empty_climbs") %></p>
+  <% end %>
+</section>

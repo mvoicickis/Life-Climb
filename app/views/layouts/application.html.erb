@@ -19,29 +19,38 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : "font-['Nunito',sans-serif] text-slate-900" %>"
-        style="<%= authenticated? ? nil : 'background: linear-gradient(180deg, #ecfdf5 0%, #f0f9ff 45%, #fff7ed 100%);' %>">
+  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>">
     <% if authenticated? && content_for?(:lp_game) %>
+      <% unless content_for?(:lp_hide_top_nav) %>
       <nav class="lp-top-nav" aria-label="Main">
         <div class="lp-top-nav__inner">
           <%= link_to dashboard_path, class: "lp-top-nav__brand" do %>
             <span><%= t("app_name") %></span>
           <% end %>
           <div class="lp-top-nav__links">
-            <%= link_to t("nav.building"), building_path %>
-            <%= link_to t("nav.finished"), finished_products_path %>
-            <%= link_to t("nav.life_points"), life_points_path %>
-            <%= link_to t("nav.settings"), settings_path %>
+            <% if current_user.planning_v2? %>
+              <% journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first %>
+              <% if journey %>
+                <%= link_to t("game_ui.nav.journey"), life_journey_path(journey) %>
+              <% end %>
+              <%= link_to t("game_ui.nav.you"), settings_path %>
+            <% else %>
+              <%= link_to t("nav.building"), building_path %>
+              <%= link_to t("nav.finished"), finished_products_path %>
+              <%= link_to t("nav.life_points"), life_points_path %>
+              <%= link_to t("nav.settings"), settings_path %>
+            <% end %>
           </div>
         </div>
       </nav>
+      <% end %>
     <% elsif authenticated? %>
       <%= render "shared/app_nav" %>
     <% end %>

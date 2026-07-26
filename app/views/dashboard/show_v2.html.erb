@@ -1,5 +1,6 @@
 <% content_for :title, t("game_ui.home_title") %>
 <% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
 <%
   greeting =
@@ -10,74 +11,45 @@
     end
 %>
 
-<div class="lp-home mx-auto max-w-md space-y-5 px-4 pb-24 pt-5">
-  <header class="flex items-center gap-3">
-    <%= image_tag current_user.character_image,
-          alt: current_user.character_key.capitalize,
-          class: "lp-avatar-ring h-14 w-14 object-cover" %>
-    <div class="min-w-0">
-      <h1 class="truncate text-xl font-semibold text-[var(--lp-ink)]">
-        <%= greeting %>, <span class="text-[var(--lp-lime)]"><%= current_user.display_name %></span>
-      </h1>
-      <p class="mt-0.5 text-sm text-[var(--lp-muted)]"><%= t("game_ui.ux_promise") %></p>
+<div class="lp-dash" data-controller="battle-day" data-battle-day-closer-value="<%= @closer %>">
+  <header class="lp-dash__top">
+    <%= link_to dashboard_path, class: "lp-dash__brand" do %>
+      <span class="lp-dash__brand-mark" aria-hidden="true">🌱</span>
+      <span><%= t("app_name") %></span>
+    <% end %>
+    <div class="lp-dash__stats" aria-label="<%= t('game_ui.life_points_label') %>">
+      <span class="lp-dash__stat">
+        <span aria-hidden="true">🌿</span>
+        <span data-battle-day-target="lpTotal"><%= number_with_delimiter(@life_points) %></span>
+        <span>LP</span>
+      </span>
     </div>
   </header>
 
-  <%= render "dashboard/status_twin",
-        life_points: @life_points,
-        lp_today: @lp_today,
-        alive_level: @alive_level %>
+  <div class="lp-dash__greeting">
+    <h1><%= greeting %>, <%= current_user.display_name %></h1>
+    <p><%= t("dash.promise") %></p>
+  </div>
 
-  <section class="lp-glass p-4">
-    <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.working_on") %></p>
-    <h2 class="mt-1 text-lg font-semibold text-[var(--lp-ink)]"><%= @journey.title %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= @journey.life_area.label %></p>
-  </section>
+  <%= render "dashboard/dash_hero", journey: @journey, closer: @closer %>
 
-  <section class="lp-glass p-4">
-    <div class="flex items-end justify-between gap-3">
-      <div>
-        <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.gap") %></p>
-        <p class="mt-1 text-3xl font-semibold text-[var(--lp-ink)]"><%= @gap %>%</p>
-      </div>
-      <% if @gap_delta %>
-        <p class="text-sm font-semibold <%= @gap_delta.negative? ? 'text-[var(--lp-lime)]' : 'text-[var(--lp-muted)]' %>">
-          <%= t("dashboard_v2.vs_yesterday", delta: format("%+.1f", @gap_delta)) %>
-        </p>
-      <% end %>
-    </div>
-    <div class="lp-gap-track mt-3">
-      <div class="lp-gap-fill" style="width: <%= @gap %>%"></div>
-    </div>
-    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.gap_hint") %></p>
-  </section>
+  <%= render "dashboard/dash_battle",
+        todos: @daily_todos,
+        mission: @mission,
+        include_mission: @include_mission_in_battle,
+        reward: @battle_reward,
+        open_count: @battle_open_count,
+        aspect_key: @journey.life_area.key %>
 
-  <section class="lp-glass p-4">
-    <p class="text-xs font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today") %></p>
-    <% if @mission %>
-      <h2 class="mt-2 text-xl font-semibold text-[var(--lp-ink)]"><%= @mission.title %></h2>
-      <% unless @mission.completed? %>
-        <p class="mt-2 text-sm text-[var(--lp-muted)]">
-          <%= t("dashboard_v2.reward_preview", lp: @mission.lp_reward, gap: @mission.gap_delta_percent) %>
-        </p>
-        <%= button_to t("dashboard_v2.complete"),
-              mission_completion_path(@mission),
-              method: :post,
-              class: "lp-cta mt-4 w-full" %>
-      <% else %>
-        <p class="mt-3 font-semibold text-[var(--lp-lime)]"><%= t("dashboard_v2.done_today") %></p>
-      <% end %>
-    <% else %>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.no_mission") %></p>
-      <%= button_to t("dashboard_v2.get_mission"), focus_path, method: :patch, params: { journey_ids: [ @journey.id ] }, class: "lp-cta mt-4 w-full" %>
-    <% end %>
-  </section>
+  <% if @targets.any? %>
+    <%= render "dashboard/dash_targets", targets: @targets %>
+  <% end %>
 
-  <%= render "dashboard/life_tree",
-        life_areas: @life_areas,
-        focus_id: @journey.life_area_id,
-        closer_percent: current_user.overall_closer_percent,
-        compact: true %>
+  <%= render "dashboard/dash_project",
+        journey: @journey,
+        project_title: @project_title,
+        progress: @project_progress,
+        milestones: @milestones %>
 </div>
 
-<%= render "shared/lp_bottom_nav", active: :home %>
+<%= render "shared/lp_dash_nav", active: :today %>

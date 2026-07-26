@@ -1,0 +1,24 @@
+<%# locals: heatmap %>
+<section class="lp-progress-card lp-progress-heatmap" aria-label="<%= t('progress.heatmap_title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.heatmap_title") %></h2>
+    <p><%= t("progress.heatmap_hint") %></p>
+  </header>
+  <div class="lp-progress-heat" role="img" aria-label="<%= t('progress.heatmap_title') %>">
+    <% heatmap[:cells].each do |cell| %>
+      <button type="button"
+              class="lp-progress-heat__cell level-<%= cell[:level] %>"
+              title="<%= t('progress.heatmap_tooltip', date: cell[:label], tasks: cell[:tasks], lp: cell[:lp]) %>"
+              aria-label="<%= t('progress.heatmap_tooltip', date: cell[:label], tasks: cell[:tasks], lp: cell[:lp]) %>"></button>
+    <% end %>
+  </div>
+  <div class="lp-progress-heat__legend" aria-hidden="true">
+    <span><%= t("progress.heatmap_less") %></span>
+    <span class="lp-progress-heat__cell level-0"></span>
+    <span class="lp-progress-heat__cell level-1"></span>
+    <span class="lp-progress-heat__cell level-2"></span>
+    <span class="lp-progress-heat__cell level-3"></span>
+    <span class="lp-progress-heat__cell level-4"></span>
+    <span><%= t("progress.heatmap_more") %></span>
+  </div>
+</section>

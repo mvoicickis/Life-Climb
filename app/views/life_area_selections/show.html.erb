@@ -5,15 +5,15 @@
   <header>
     <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("life_area_selections.title") %></h1>
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("life_area_selections.subtitle") %></p>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("life_area_selections.soft_default") %></p>
+    <p class="mt-1 text-sm text-[var(--lp-lime)]"><%= t("life_area_selections.one_only") %></p>
   </header>
 
-  <%= form_with url: life_area_selections_path, method: :patch, class: "space-y-4" do %>
-    <div class="grid gap-3">
+  <%= form_with url: life_area_selections_path, method: :patch, class: "space-y-4", data: { turbo: false } do %>
+    <div class="grid gap-3" role="radiogroup" aria-label="<%= t('life_area_selections.title') %>">
       <% @catalog.each do |entry| %>
         <% key = entry[:key] %>
         <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
-          <%= check_box_tag "keys[]", key, @selected_keys.include?(key), id: "life_area_#{key}", class: "mt-1" %>
+          <%= radio_button_tag "key", key, @selected_keys.include?(key), id: "life_area_#{key}", class: "mt-1", required: true %>
           <span>
             <span class="block text-lg font-semibold text-[var(--lp-ink)]">
               <span aria-hidden="true"><%= entry[:emoji] %></span>
