@@ -47,7 +47,9 @@ class ProgressDashboardTest < ActiveSupport::TestCase
     assert data[:achievements].any?
     assert data[:insights].any?
     assert data[:heatmap][:cells].any?
-    assert_equal 12 * 7, data[:heatmap][:cells].size
+    assert_equal 53 * 7, data[:heatmap][:cells].size
+    assert data[:heatmap][:month_labels].any?
+    assert_equal 3, data[:heatmap][:day_labels].size
   end
 
   test "period filter accepts all time" do
