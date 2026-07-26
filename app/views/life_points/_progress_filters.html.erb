@@ -1,0 +1,9 @@
+<%# locals: progress %>
+<nav class="lp-progress-filters" aria-label="<%= t('progress.period_label') %>">
+  <% progress[:periods].each do |period| %>
+    <%= link_to t(period.label_key),
+          life_points_path(period: period.key),
+          class: "lp-progress-filters__chip #{'is-active' if period.key == progress[:period].key}",
+          data: { turbo_action: "advance" } %>
+  <% end %>
+</nav>

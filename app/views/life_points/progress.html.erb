@@ -1,0 +1,49 @@
+<% content_for :title, t("progress.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<%= tag.div class: "lp-progress",
+      data: {
+        controller: "progress-charts progress-achievements",
+        progress_charts_growth_value: @progress[:growth],
+        progress_charts_categories_value: @progress[:categories]
+      } do %>
+
+  <header class="lp-progress__top">
+    <div>
+      <p class="lp-dash-kicker"><%= t("app_name") %></p>
+      <h1 class="lp-progress__title"><%= t("progress.title") %></h1>
+      <p class="lp-progress__subtitle"><%= t("progress.subtitle") %></p>
+    </div>
+    <div class="lp-progress__stats">
+      <span class="lp-dash__stat">
+        <span aria-hidden="true">🌿</span>
+        <%= number_with_delimiter(@progress[:total_lp]) %> LP
+      </span>
+      <span class="lp-dash__stat">
+        <span aria-hidden="true">🔥</span>
+        <%= t("progress.streak_chip", count: @progress[:streak]) %>
+      </span>
+    </div>
+  </header>
+
+  <%= render "life_points/progress_filters", progress: @progress %>
+  <%= render "life_points/progress_kpis", kpis: @progress[:kpis] %>
+
+  <div class="lp-progress__grid lp-progress__grid--charts">
+    <%= render "life_points/progress_growth" %>
+    <%= render "life_points/progress_categories", categories: @progress[:categories] %>
+  </div>
+
+  <div class="lp-progress__grid">
+    <%= render "life_points/progress_heatmap", heatmap: @progress[:heatmap] %>
+    <%= render "life_points/progress_projects", projects: @progress[:projects] %>
+  </div>
+
+  <div class="lp-progress__grid">
+    <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
+    <%= render "life_points/progress_insights", insights: @progress[:insights] %>
+  </div>
+<% end %>
+
+<%= render "shared/lp_dash_nav", active: :progress %>

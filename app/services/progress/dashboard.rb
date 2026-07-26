@@ -1,0 +1,458 @@
+# frozen_string_literal: true
+
+require "set"
+
+module Progress
+  # Aggregates Progress page analytics for a selected time window.
+  class Dashboard
+    Period = Struct.new(:key, :label_key, :days, keyword_init: true)
+
+    PERIODS = [
+      Period.new(key: "7d", label_key: "progress.periods.d7", days: 7),
+      Period.new(key: "30d", label_key: "progress.periods.d30", days: 30),
+      Period.new(key: "90d", label_key: "progress.periods.d90", days: 90),
+      Period.new(key: "365d", label_key: "progress.periods.d365", days: 365),
+      Period.new(key: "all", label_key: "progress.periods.all", days: nil)
+    ].freeze
+
+    ASPECT_COLORS = {
+      "self" => "#84F23A",
+      "relationships" => "#FB7185",
+      "career" => "#60A5FA",
+      "money" => "#FBBF24",
+      "home" => "#A78BFA",
+      "learning" => "#34D399"
+    }.freeze
+
+    ASPECT_ICONS = {
+      "self" => "💪",
+      "relationships" => "❤️",
+      "career" => "💼",
+      "money" => "💰",
+      "home" => "🏠",
+      "learning" => "📚"
+    }.freeze
+
+    def self.periods
+      PERIODS
+    end
+
+    def self.call(user:, period: "7d")
+      new(user: user, period: period).call
+    end
+
+    def initialize(user:, period: "7d")
+      @user = user
+      @period = normalize_period(period)
+    end
+
+    def call
+      {
+        period: @period,
+        periods: PERIODS,
+        total_lp: @user.life_points,
+        streak: streak_days,
+        best_streak: best_streak_days,
+        kpis: kpis,
+        growth: growth_series,
+        categories: category_distribution,
+        heatmap: heatmap_grid,
+        projects: projects,
+        achievements: achievements,
+        insights: insights
+      }
+    end
+
+    private
+
+    def normalize_period(key)
+      PERIODS.find { |p| p.key == key.to_s } || PERIODS.first
+    end
+
+    def range
+      @range ||= begin
+        if @period.days.nil?
+          earliest_activity_on..Date.current
+        else
+          (Date.current - (@period.days - 1))..Date.current
+        end
+      end
+    end
+
+    def previous_range
+      days = range.count
+      (range.begin - days)..(range.begin - 1)
+    end
+
+    def earliest_activity_on
+      dates = [
+        @user.life_point_ledgers.minimum(:created_at)&.to_date,
+        @user.missions.minimum(:completed_at)&.to_date,
+        @user.daily_todos.where.not(completed_at: nil).minimum(:completed_at)&.to_date,
+        @user.created_at.to_date
+      ]
+      dates.compact.min || Date.current
+    end
+
+    def range_time(r)
+      r.begin.beginning_of_day..r.end.end_of_day
+    end
+
+    def ledgers_in(r)
+      @user.life_point_ledgers.where(created_at: range_time(r))
+    end
+
+    def positive_lp_in(r)
+      ledgers_in(r).where("amount > 0").sum(:amount)
+    end
+
+    def completed_tasks_in(r)
+      @user.missions.where(completed_at: range_time(r)).count +
+        @user.daily_todos.where(completed_at: range_time(r)).count
+    end
+
+    def scheduled_tasks_in(r)
+      @user.missions.where(scheduled_on: r).count +
+        @user.daily_todos.where(scheduled_on: r).count
+    end
+
+    def kpis
+      lp_now = positive_lp_in(range)
+      lp_prev = positive_lp_in(previous_range)
+      tasks_now = completed_tasks_in(range)
+      tasks_prev = completed_tasks_in(previous_range)
+      rate_now = completion_rate(tasks_now, scheduled_tasks_in(range))
+      rate_prev = completion_rate(tasks_prev, scheduled_tasks_in(previous_range))
+
+      [
+        {
+          key: :life_points,
+          icon: "🌿",
+          label: I18n.t("progress.kpi.life_points"),
+          value: @user.life_points,
+          suffix: "LP",
+          delta: percent_delta(lp_now, lp_prev),
+          delta_label: I18n.t("progress.kpi.vs_prior"),
+          sparkline: daily_lp_sparkline
+        },
+        {
+          key: :tasks,
+          icon: "✅",
+          label: I18n.t("progress.kpi.tasks"),
+          value: tasks_now,
+          suffix: nil,
+          delta: percent_delta(tasks_now, tasks_prev),
+          delta_label: I18n.t("progress.kpi.vs_prior"),
+          sparkline: daily_tasks_sparkline
+        },
+        {
+          key: :rate,
+          icon: "🎯",
+          label: I18n.t("progress.kpi.rate"),
+          value: rate_now,
+          suffix: "%",
+          delta: (rate_now - rate_prev).round,
+          delta_label: I18n.t("progress.kpi.vs_prior_pts"),
+          sparkline: daily_rate_sparkline
+        },
+        {
+          key: :streak,
+          icon: "🔥",
+          label: I18n.t("progress.kpi.streak"),
+          value: streak_days,
+          suffix: I18n.t("progress.kpi.days"),
+          delta: nil,
+          delta_label: I18n.t("progress.kpi.best", count: best_streak_days),
+          sparkline: streak_sparkline
+        }
+      ]
+    end
+
+    def completion_rate(done, scheduled)
+      return 0 if scheduled <= 0
+
+      ((done.to_f / scheduled) * 100).round
+    end
+
+    def percent_delta(current, previous)
+      return 0 if previous.to_f <= 0 && current.to_f <= 0
+      return 100 if previous.to_f <= 0 && current.to_f.positive?
+
+      (((current - previous) / previous.to_f) * 100).round
+    end
+
+    def days_in_range
+      @days_in_range ||= range.to_a
+    end
+
+    def daily_lp_map
+      @daily_lp_map ||= begin
+        map = Hash.new(0)
+        ledgers_in(range).where("amount > 0").find_each do |entry|
+          map[entry.created_at.to_date] += entry.amount
+        end
+        map
+      end
+    end
+
+    def daily_tasks_map
+      @daily_tasks_map ||= begin
+        map = Hash.new(0)
+        @user.missions.where(completed_at: range_time(range)).find_each do |mission|
+          map[mission.completed_at.to_date] += 1
+        end
+        @user.daily_todos.where(completed_at: range_time(range)).find_each do |todo|
+          map[todo.completed_at.to_date] += 1
+        end
+        map
+      end
+    end
+
+    def growth_series
+      days_in_range.map do |day|
+        {
+          date: day.iso8601,
+          label: day.strftime("%b %-d"),
+          short: day.strftime("%-d"),
+          lp: daily_lp_map[day]
+        }
+      end
+    end
+
+    def daily_lp_sparkline
+      sample_days(growth_series.map { |d| d[:lp] })
+    end
+
+    def daily_tasks_sparkline
+      sample_days(days_in_range.map { |d| daily_tasks_map[d] })
+    end
+
+    def daily_rate_sparkline
+      sample_days(
+        days_in_range.map do |day|
+          done = daily_tasks_map[day]
+          scheduled = @user.missions.where(scheduled_on: day).count +
+                      @user.daily_todos.where(scheduled_on: day).count
+          completion_rate(done, scheduled)
+        end
+      )
+    end
+
+    def streak_sparkline
+      Array.new(7) { |i| streak_days > (6 - i) ? 1 : 0 }
+    end
+
+    def sample_days(values)
+      return values if values.size <= 14
+
+      step = (values.size / 14.0).ceil
+      values.each_slice(step).map { |chunk| (chunk.sum / chunk.size.to_f).round }
+    end
+
+    def category_distribution
+      totals = Hash.new(0)
+
+      @user.missions.where(completed_at: range_time(range)).includes(life_journey: :life_area).find_each do |mission|
+        key = mission.aspect_key.presence || mission.life_journey&.life_area&.key || "self"
+        key = "self" unless LifeArea::HOME_ASPECT_KEYS.include?(key)
+        totals[key] += mission.lp_reward.to_i
+      end
+
+      @user.daily_todos.where(completed_at: range_time(range)).find_each do |todo|
+        totals[todo.aspect_key] += todo.lp_reward.to_i
+      end
+
+      if totals.values.sum.zero?
+        ledger_lp = positive_lp_in(range)
+        totals["self"] = ledger_lp if ledger_lp.positive?
+      end
+
+      grand = totals.values.sum
+      return [] if grand <= 0
+
+      LifeArea::HOME_ASPECT_KEYS.filter_map do |key|
+        amount = totals[key].to_i
+        next if amount <= 0
+
+        {
+          key: key,
+          label: I18n.t("life_area_catalog.#{key}.name", default: key.humanize),
+          icon: ASPECT_ICONS.fetch(key, "✨"),
+          color: ASPECT_COLORS.fetch(key, "#84F23A"),
+          amount: amount,
+          percent: ((amount.to_f / grand) * 100).round
+        }
+      end.sort_by { |row| -row[:amount] }
+    end
+
+    def heatmap_grid
+      weeks = 12
+      start = Date.current.beginning_of_week(:monday) - ((weeks - 1) * 7)
+      cells = (start..Date.current).map do |day|
+        tasks = day_task_count(day)
+        lp = day_lp(day)
+        {
+          date: day.iso8601,
+          label: day.strftime("%b %-d, %Y"),
+          tasks: tasks,
+          lp: lp,
+          level: intensity(tasks, lp)
+        }
+      end
+
+      { weeks: weeks, start: start.iso8601, cells: cells }
+    end
+
+    def day_task_count(day)
+      @day_task_counts ||= begin
+        map = Hash.new(0)
+        @user.missions.where.not(completed_at: nil).find_each { |m| map[m.completed_at.to_date] += 1 }
+        @user.daily_todos.where.not(completed_at: nil).find_each { |t| map[t.completed_at.to_date] += 1 }
+        map
+      end
+      @day_task_counts[day]
+    end
+
+    def day_lp(day)
+      @day_lp_counts ||= begin
+        map = Hash.new(0)
+        @user.life_point_ledgers.where("amount > 0").find_each { |e| map[e.created_at.to_date] += e.amount }
+        map
+      end
+      @day_lp_counts[day]
+    end
+
+    def intensity(tasks, lp)
+      score = tasks + (lp / 50.0)
+      return 0 if score <= 0
+      return 1 if score < 1.5
+      return 2 if score < 3
+      return 3 if score < 5
+
+      4
+    end
+
+    def projects
+      @user.life_journeys.active.includes(:life_area).order(:focus_position, :id).map do |journey|
+        {
+          id: journey.id,
+          title: journey.next_win.presence || journey.title,
+          goal: journey.title,
+          milestone: journey.next_win,
+          progress: journey.closer_percent.round,
+          icon: ASPECT_ICONS.fetch(journey.life_area&.key.to_s, "🚀"),
+          color: ASPECT_COLORS.fetch(journey.life_area&.key.to_s, "#84F23A")
+        }
+      end
+    end
+
+    def active_days
+      @active_days ||= begin
+        days = []
+        @user.missions.where.not(completed_at: nil).find_each { |m| days << m.completed_at.to_date }
+        @user.daily_todos.where.not(completed_at: nil).find_each { |t| days << t.completed_at.to_date }
+        days.concat(@user.daily_logs.pluck(:logged_on))
+        days.uniq.sort
+      end
+    end
+
+    def streak_days
+      return 0 if active_days.empty?
+
+      set = active_days.to_set
+      cursor = set.include?(Date.current) ? Date.current : Date.yesterday
+      count = 0
+      while set.include?(cursor)
+        count += 1
+        cursor -= 1
+      end
+      count
+    end
+
+    def best_streak_days
+      return 0 if active_days.empty?
+
+      best = 1
+      run = 1
+      active_days.each_cons(2) do |a, b|
+        if b == a + 1
+          run += 1
+          best = [ best, run ].max
+        else
+          run = 1
+        end
+      end
+      [ best, streak_days ].max
+    end
+
+    def achievements
+      total = @user.life_points
+      battles = @user.missions.where.not(completed_at: nil).count +
+                @user.daily_todos.where.not(completed_at: nil).count
+      best = best_streak_days
+      streak = streak_days
+
+      catalog = [
+        { key: "first_battle", icon: "⚔", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
+        { key: "lp_100", icon: "🌿", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
+        { key: "streak_7", icon: "🔥", title: I18n.t("progress.achievements.streak_7"), hint: I18n.t("progress.achievements.streak_7_hint"), unlocked: best >= 7 || streak >= 7 },
+        { key: "lp_1000", icon: "⚡", title: I18n.t("progress.achievements.lp_1000"), hint: I18n.t("progress.achievements.lp_1000_hint"), unlocked: total >= 1000 },
+        { key: "battles_100", icon: "🏆", title: I18n.t("progress.achievements.battles_100"), hint: I18n.t("progress.achievements.battles_100_hint"), unlocked: battles >= 100 },
+        { key: "discipline", icon: "🥇", title: I18n.t("progress.achievements.discipline"), hint: I18n.t("progress.achievements.discipline_hint"), unlocked: best >= 30 }
+      ]
+
+      unlocked = catalog.select { |a| a[:unlocked] }
+      unlocked.presence || catalog.first(2)
+    end
+
+    def insights
+      items = []
+      tasks_now = completed_tasks_in(range)
+      tasks_prev = completed_tasks_in(previous_range)
+      lp_now = positive_lp_in(range)
+      lp_prev = positive_lp_in(previous_range)
+      cats = category_distribution
+      top = cats.first
+      weekday_counts = Hash.new(0)
+
+      @user.missions.where(completed_at: range_time(range)).find_each do |m|
+        weekday_counts[m.completed_at.wday] += 1
+      end
+      @user.daily_todos.where(completed_at: range_time(range)).find_each do |t|
+        weekday_counts[t.completed_at.wday] += 1
+      end
+
+      if weekday_counts.any?
+        best_wday = weekday_counts.max_by { |_, v| v }&.first
+        if best_wday
+          day_name = I18n.t("date.day_names")[best_wday]
+          items << { icon: "📅", text: I18n.t("progress.insights.best_day", day: day_name) }
+        end
+      end
+
+      if top
+        items << { icon: top[:icon], text: I18n.t("progress.insights.top_category", category: top[:label], percent: top[:percent]) }
+      end
+
+      delta = percent_delta(tasks_now, tasks_prev)
+      if tasks_prev.positive? && delta != 0
+        key = delta.positive? ? "progress.insights.consistency_up" : "progress.insights.consistency_down"
+        items << { icon: delta.positive? ? "📈" : "📉", text: I18n.t(key, percent: delta.abs) }
+      end
+
+      if lp_now.positive? && lp_prev.positive?
+        lp_delta = percent_delta(lp_now, lp_prev)
+        items << {
+          icon: "🌿",
+          text: I18n.t("progress.insights.lp_change", percent: lp_delta.abs, direction: lp_delta >= 0 ? "more" : "less")
+        }
+      end
+
+      if streak_days >= 3
+        items << { icon: "🔥", text: I18n.t("progress.insights.streak", count: streak_days) }
+      end
+
+      items.first(4).presence || [ { icon: "✨", text: I18n.t("progress.insights.empty") } ]
+    end
+  end
+end

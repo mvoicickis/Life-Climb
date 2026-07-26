@@ -1,0 +1,32 @@
+<%# locals: achievements %>
+<section class="lp-progress-card lp-progress-achievements" aria-label="<%= t('progress.achievements_title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.achievements_title") %></h2>
+    <p><%= t("progress.achievements_hint") %></p>
+  </header>
+
+  <ul class="lp-progress-badges">
+    <% achievements.each do |badge| %>
+      <li>
+        <button type="button"
+                class="lp-progress-badge <%= 'is-locked' unless badge[:unlocked] %> <%= 'is-glow' if badge[:unlocked] %>"
+                data-action="progress-achievements#open"
+                data-icon="<%= badge[:icon] %>"
+                data-title="<%= badge[:title] %>"
+                data-hint="<%= badge[:hint] %>">
+          <span class="lp-progress-badge__hex" aria-hidden="true"><%= badge[:icon] %></span>
+          <span class="lp-progress-badge__title"><%= badge[:title] %></span>
+        </button>
+      </li>
+    <% end %>
+  </ul>
+
+  <dialog class="lp-progress-dialog" data-progress-achievements-target="dialog">
+    <div class="lp-progress-dialog__inner">
+      <p class="lp-progress-dialog__icon" data-progress-achievements-target="icon" aria-hidden="true"></p>
+      <h3 data-progress-achievements-target="title"></h3>
+      <p data-progress-achievements-target="hint"></p>
+      <button type="button" class="lp-dash-cta" data-action="progress-achievements#close"><%= t("progress.close") %></button>
+    </div>
+  </dialog>
+</section>
