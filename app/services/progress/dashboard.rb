@@ -272,15 +272,18 @@ module Progress
     def heatmap_grid
       weeks = 12
       start = Date.current.beginning_of_week(:monday) - ((weeks - 1) * 7)
-      cells = (start..Date.current).map do |day|
-        tasks = day_task_count(day)
-        lp = day_lp(day)
+      finish = Date.current.end_of_week(:monday)
+      cells = (start..finish).map do |day|
+        future = day > Date.current
+        tasks = future ? 0 : day_task_count(day)
+        lp = future ? 0 : day_lp(day)
         {
           date: day.iso8601,
           label: day.strftime("%b %-d, %Y"),
           tasks: tasks,
           lp: lp,
-          level: intensity(tasks, lp)
+          level: future ? 0 : intensity(tasks, lp),
+          future: future
         }
       end
 
