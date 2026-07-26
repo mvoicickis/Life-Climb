@@ -1,0 +1,46 @@
+<% content_for :title, t("admin.statistics.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.statistics.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.statistics.lead") %></p>
+  </div>
+  <div class="lp-admin__btn-row">
+    <%= link_to t("admin.statistics.export_csv"), admin_statistics_path(format: :csv), class: "lp-admin__btn" %>
+    <%= link_to t("admin.statistics.export_json"), admin_statistics_path(format: :json), class: "lp-admin__ghost" %>
+  </div>
+</header>
+
+<section class="lp-admin__cards is-compact" aria-label="<%= t('admin.dashboard.metrics') %>">
+  <% [
+    [ @cards[:users_total], t("admin.metrics.users_total") ],
+    [ @cards[:life_points_total], t("admin.metrics.life_points") ],
+    [ @cards[:battles_completed], t("admin.metrics.battles") ],
+    [ @cards[:journeys], t("admin.metrics.journeys") ]
+  ].each do |value, label| %>
+    <article class="lp-admin__card">
+      <p class="lp-admin__card-label"><%= label %></p>
+      <p class="lp-admin__card-value"><%= value %></p>
+    </article>
+  <% end %>
+</section>
+
+<section class="lp-admin__charts"
+         data-controller="admin-charts"
+         data-admin-charts-users-value="<%= @charts[:users_per_day].to_json %>"
+         data-admin-charts-points-value="<%= @charts[:life_points_per_day].to_json %>"
+         data-admin-charts-battles-value="<%= @charts[:battles_per_day].to_json %>">
+  <article class="lp-admin__panel">
+    <header class="lp-admin__panel-head"><h2><%= t("admin.charts.users_growth") %></h2></header>
+    <div class="lp-admin__chart is-tall"><canvas data-admin-charts-target="users"></canvas></div>
+  </article>
+  <article class="lp-admin__panel">
+    <header class="lp-admin__panel-head"><h2><%= t("admin.charts.life_points") %></h2></header>
+    <div class="lp-admin__chart is-tall"><canvas data-admin-charts-target="points"></canvas></div>
+  </article>
+  <article class="lp-admin__panel">
+    <header class="lp-admin__panel-head"><h2><%= t("admin.charts.battles") %></h2></header>
+    <div class="lp-admin__chart is-tall"><canvas data-admin-charts-target="battles"></canvas></div>
+  </article>
+</section>

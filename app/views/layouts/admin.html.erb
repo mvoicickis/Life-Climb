@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= I18n.locale %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Admin — LifePoints" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for?(:title) ? "#{yield(:title)} · Admin · LifePoints" : "Admin · LifePoints" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,28 +12,42 @@
     <link rel="icon" href="/icon.svg?v=7" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="min-h-screen bg-slate-100 font-['Nunito',sans-serif] text-slate-900">
-    <nav class="border-b border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <p class="text-lg font-black text-slate-900">LifePoints Admin</p>
-        <div class="flex items-center gap-3 text-sm font-bold">
-          <%= link_to "App", dashboard_path, class: "text-slate-600 hover:text-emerald-700" %>
-          <%= button_to "Sign out", session_path, method: :delete, class: "cursor-pointer text-rose-600" %>
+  <body class="min-h-screen antialiased lp-game lp-admin text-[var(--lp-ink)]">
+    <header class="lp-admin__top">
+      <div class="lp-admin__top-inner">
+        <div class="lp-admin__brand">
+          <%= render "shared/lp_brand_mark", size: 28, class_name: "lp-admin__mark" %>
+          <div>
+            <p class="lp-admin__brand-kicker">LifePoints</p>
+            <p class="lp-admin__brand-title"><%= t("admin.brand") %></p>
+          </div>
+        </div>
+        <nav class="lp-admin__nav" aria-label="Admin">
+          <%= link_to t("admin.nav.dashboard"), admin_root_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "dashboard"}" %>
+          <%= link_to t("admin.nav.users"), admin_users_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "users"}" %>
+          <%= link_to t("admin.nav.statistics"), admin_statistics_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "statistics"}" %>
+          <%= link_to t("admin.nav.feedback"), admin_feedbacks_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "feedbacks"}" %>
+          <%= link_to t("admin.nav.system"), admin_system_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "systems"}" %>
+          <%= link_to t("admin.nav.ops"), admin_ops_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "ops"}" %>
+        </nav>
+        <div class="lp-admin__actions">
+          <%= link_to t("admin.nav.app"), dashboard_path, class: "lp-admin__ghost" %>
+          <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "lp-admin__ghost is-danger" %>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <main class="mx-auto max-w-5xl px-4 py-6">
-      <% if flash[:notice] %>
-        <div class="mb-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900"><%= flash[:notice] %></div>
+    <main class="lp-admin__main">
+      <% if flash[:notice].present? %>
+        <div class="lp-admin__flash is-notice"><%= flash[:notice] %></div>
       <% end %>
-      <% if flash[:alert] %>
-        <div class="mb-4 rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-900"><%= flash[:alert] %></div>
+      <% if flash[:alert].present? %>
+        <div class="lp-admin__flash is-alert"><%= flash[:alert] %></div>
       <% end %>
       <%= yield %>
     </main>

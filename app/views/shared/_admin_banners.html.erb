@@ -1,0 +1,12 @@
+<% if impersonating? %>
+  <div class="lp-admin-impersonation" role="status">
+    <p><%= t("admin.impersonation.banner", name: current_user.display_name) %></p>
+    <%= button_to t("admin.impersonation.stop"), admin_impersonation_path(session[:admin_impersonator_id]), method: :delete, class: "lp-admin__btn is-compact" %>
+  </div>
+<% end %>
+
+<% if announcement_banner.present? && !content_for?(:lp_hide_announcement) %>
+  <div class="lp-admin-announcement" role="status">
+    <p><%= announcement_banner %></p>
+  </div>
+<% end %>

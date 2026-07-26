@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_210000) do
+  create_table "app_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.text "value"
+    t.index ["key"], name: "index_app_settings_on_key", unique: true
+  end
+
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"

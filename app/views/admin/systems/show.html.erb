@@ -1,0 +1,48 @@
+<% content_for :title, t("admin.system.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.system.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.system.lead") %></p>
+  </div>
+</header>
+
+<section class="lp-admin__cards is-compact">
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.system.rails") %></p>
+    <p class="lp-admin__card-value is-text"><%= @rails_version %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.system.ruby") %></p>
+    <p class="lp-admin__card-value is-text"><%= @ruby_version %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.system.environment") %></p>
+    <p class="lp-admin__card-value is-text"><%= @environment %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.system.database") %></p>
+    <p class="lp-admin__card-value is-text"><%= @database %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.system.commit") %></p>
+    <p class="lp-admin__card-value is-text"><%= @git_sha.presence || t("admin.system.unknown") %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.system.uptime") %></p>
+    <p class="lp-admin__card-value is-text"><%= @uptime_hint.presence || t("admin.system.unknown") %></p>
+  </article>
+</section>
+
+<section class="lp-admin__panel">
+  <header class="lp-admin__panel-head"><h2><%= t("admin.system.records") %></h2></header>
+  <dl class="lp-admin__dl is-grid">
+    <% @record_counts.each do |key, count| %>
+      <div>
+        <dt><%= t("admin.system.count_#{key}") %></dt>
+        <dd><%= count %></dd>
+      </div>
+    <% end %>
+  </dl>
+</section>

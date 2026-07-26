@@ -1,0 +1,43 @@
+<% content_for :title, t("admin.ops.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.ops.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.ops.lead") %></p>
+  </div>
+</header>
+
+<%= form_with url: admin_ops_path, method: :patch, local: true, class: "lp-admin__panel lp-admin__form" do %>
+  <fieldset class="lp-admin__fieldset">
+    <legend><%= t("admin.ops.maintenance") %></legend>
+    <label class="lp-admin__check">
+      <%= check_box_tag :maintenance_mode, "1", @maintenance_mode %>
+      <span><%= t("admin.ops.maintenance_hint") %></span>
+    </label>
+  </fieldset>
+
+  <fieldset class="lp-admin__fieldset">
+    <legend><%= t("admin.ops.announcement") %></legend>
+    <label class="lp-admin__field">
+      <span><%= t("admin.ops.announcement_hint") %></span>
+      <%= text_area_tag :announcement_banner, @announcement_banner, rows: 3, class: "lp-input", maxlength: 500 %>
+    </label>
+  </fieldset>
+
+  <fieldset class="lp-admin__fieldset">
+    <legend><%= t("admin.ops.feature_flags") %></legend>
+    <label class="lp-admin__check">
+      <%= check_box_tag :feature_feedback_inbox, "1", @feature_feedback_inbox %>
+      <span><%= t("admin.ops.flag_feedback") %></span>
+    </label>
+    <label class="lp-admin__check">
+      <%= check_box_tag :feature_export_stats, "1", @feature_export_stats %>
+      <span><%= t("admin.ops.flag_export") %></span>
+    </label>
+  </fieldset>
+
+  <div class="lp-admin__btn-row">
+    <%= submit_tag t("admin.ops.save"), class: "lp-admin__btn" %>
+  </div>
+<% end %>

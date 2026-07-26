@@ -29,6 +29,7 @@
   </head>
 
   <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>">
+    <%= render "shared/admin_banners" %>
     <% if authenticated? && content_for?(:lp_game) %>
       <% unless content_for?(:lp_hide_top_nav) %>
       <nav class="lp-top-nav" aria-label="Main">
@@ -44,11 +45,17 @@
                 <%= link_to t("game_ui.nav.journey"), life_journey_path(journey) %>
               <% end %>
               <%= link_to t("game_ui.nav.you"), settings_path %>
+              <% if current_user.admin? && !impersonating? %>
+                <%= link_to t("nav.admin"), admin_root_path %>
+              <% end %>
             <% else %>
               <%= link_to t("nav.building"), building_path %>
               <%= link_to t("nav.finished"), finished_products_path %>
               <%= link_to t("nav.life_points"), life_points_path %>
               <%= link_to t("nav.settings"), settings_path %>
+              <% if current_user.admin? && !impersonating? %>
+                <%= link_to t("nav.admin"), admin_root_path %>
+              <% end %>
             <% end %>
           </div>
         </div>

@@ -1,0 +1,35 @@
+<% content_for :title, t("admin.users.edit") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= @user.email_address %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.users.edit") %></h1>
+  </div>
+  <%= link_to t("admin.users.back"), admin_user_path(@user), class: "lp-admin__ghost" %>
+</header>
+
+<%= form_with model: @user, url: admin_user_path(@user), class: "lp-admin__panel lp-admin__form" do |f| %>
+  <% if @user.errors.any? %>
+    <div class="lp-admin__flash is-alert">
+      <%= @user.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.users.name") %></span>
+    <%= f.text_field :name, class: "lp-input" %>
+  </label>
+  <label class="lp-admin__field">
+    <span><%= t("admin.users.email") %></span>
+    <%= f.email_field :email_address, class: "lp-input", required: true %>
+  </label>
+  <label class="lp-admin__field">
+    <span><%= t("admin.users.home_stat_count") %></span>
+    <%= f.number_field :home_stat_count, class: "lp-input", min: 1, max: 20 %>
+  </label>
+
+  <div class="lp-admin__btn-row">
+    <%= f.submit t("admin.users.save"), class: "lp-admin__btn" %>
+    <%= link_to t("admin.users.cancel"), admin_user_path(@user), class: "lp-admin__ghost" %>
+  </div>
+<% end %>

@@ -1,53 +1,103 @@
-<% content_for :title, "Admin" %>
+<% content_for :title, t("admin.dashboard.title") %>
 
-<header class="mb-8">
-  <h1 class="text-3xl font-black tracking-tight text-slate-900">Dashboard</h1>
-  <p class="mt-1 text-sm font-semibold text-slate-600">Users and feedback from the app.</p>
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.dashboard.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.dashboard.lead") %></p>
+  </div>
+  <%= link_to t("admin.users.export_csv"), admin_users_path(format: :csv), class: "lp-admin__btn" %>
 </header>
 
-<div class="mb-8 grid gap-3 sm:grid-cols-2">
-  <div class="rounded-3xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-    <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Users</p>
-    <p class="mt-2 text-4xl font-black text-slate-900"><%= @users_count %></p>
-  </div>
-  <div class="rounded-3xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-    <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Feedbacks</p>
-    <p class="mt-2 text-4xl font-black text-slate-900"><%= @feedbacks_count %></p>
-  </div>
-</div>
-
-<section class="mb-10">
-  <h2 class="text-xl font-black text-slate-900">Feedback</h2>
-  <% if @feedbacks.any? %>
-    <ul class="mt-4 space-y-3">
-      <% @feedbacks.each do |feedback| %>
-        <li class="rounded-3xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-          <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <p class="font-black text-slate-900"><%= feedback.user.email_address %></p>
-            <p class="text-xs font-bold text-slate-500"><%= feedback.created_at.strftime("%b %-d, %Y · %H:%M") %></p>
-          </div>
-          <p class="mt-3 whitespace-pre-wrap text-sm font-semibold leading-relaxed text-slate-700"><%= feedback.body %></p>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <p class="mt-4 rounded-2xl border-2 border-dashed border-slate-300 bg-white p-6 text-center text-slate-600">No feedback yet.</p>
+<section class="lp-admin__cards" aria-label="<%= t('admin.dashboard.metrics') %>">
+  <% [
+    [ @cards[:users_total], t("admin.metrics.users_total") ],
+    [ @cards[:users_today], t("admin.metrics.users_today") ],
+    [ @cards[:users_week], t("admin.metrics.users_week") ],
+    [ @cards[:users_month], t("admin.metrics.users_month") ],
+    [ @cards[:battles_completed], t("admin.metrics.battles") ],
+    [ @cards[:projects_completed], t("admin.metrics.projects") ],
+    [ @cards[:plans], t("admin.metrics.plans") ],
+    [ @cards[:goals], t("admin.metrics.goals") ],
+    [ @cards[:journeys], t("admin.metrics.journeys") ],
+    [ @cards[:life_points_total], t("admin.metrics.life_points") ],
+    [ @cards[:life_points_avg], t("admin.metrics.life_points_avg") ],
+    [ @cards[:battles_avg], t("admin.metrics.battles_avg") ],
+    [ @cards[:onboarding_done], t("admin.metrics.onboarding_done") ],
+    [ @cards[:onboarding_pending], t("admin.metrics.onboarding_pending") ]
+  ].each do |value, label| %>
+    <article class="lp-admin__card">
+      <p class="lp-admin__card-label"><%= label %></p>
+      <p class="lp-admin__card-value"><%= value %></p>
+    </article>
   <% end %>
 </section>
 
-<section>
-  <h2 class="text-xl font-black text-slate-900">Recent users</h2>
-  <ul class="mt-4 divide-y divide-slate-200 overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-sm">
-    <% @recent_users.each do |user| %>
-      <li class="flex flex-wrap items-center justify-between gap-2 px-5 py-3">
-        <div>
-          <p class="font-bold text-slate-900"><%= user.email_address %></p>
-          <p class="text-xs font-semibold text-slate-500">Joined <%= user.created_at.strftime("%b %-d, %Y") %></p>
-        </div>
-        <% if user.admin? %>
-          <span class="rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-white">Admin</span>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
+<section class="lp-admin__charts"
+         data-controller="admin-charts"
+         data-admin-charts-users-value="<%= @charts[:users_per_day].to_json %>"
+         data-admin-charts-points-value="<%= @charts[:life_points_per_day].to_json %>"
+         data-admin-charts-battles-value="<%= @charts[:battles_per_day].to_json %>">
+  <article class="lp-admin__panel">
+    <header class="lp-admin__panel-head">
+      <h2><%= t("admin.charts.users") %></h2>
+    </header>
+    <div class="lp-admin__chart"><canvas data-admin-charts-target="users"></canvas></div>
+  </article>
+  <article class="lp-admin__panel">
+    <header class="lp-admin__panel-head">
+      <h2><%= t("admin.charts.life_points") %></h2>
+    </header>
+    <div class="lp-admin__chart"><canvas data-admin-charts-target="points"></canvas></div>
+  </article>
+  <article class="lp-admin__panel">
+    <header class="lp-admin__panel-head">
+      <h2><%= t("admin.charts.battles") %></h2>
+    </header>
+    <div class="lp-admin__chart"><canvas data-admin-charts-target="battles"></canvas></div>
+  </article>
 </section>
+
+<div class="lp-admin__split">
+  <section class="lp-admin__panel">
+    <header class="lp-admin__panel-head">
+      <h2><%= t("admin.dashboard.latest_users") %></h2>
+      <%= link_to t("admin.nav.users"), admin_users_path, class: "lp-admin__text-link" %>
+    </header>
+    <ul class="lp-admin__list">
+      <% @recent_users.each do |user| %>
+        <li>
+          <%= link_to admin_user_path(user), class: "lp-admin__list-row" do %>
+            <span class="lp-admin__avatar" aria-hidden="true"><%= admin_initials(user) %></span>
+            <span>
+              <strong><%= user.display_name %></strong>
+              <small><%= user.email_address %></small>
+            </span>
+            <span class="lp-admin__meta"><%= l(user.created_at.to_date, format: :long) %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <section class="lp-admin__panel">
+    <header class="lp-admin__panel-head">
+      <h2><%= t("admin.dashboard.newest_activity") %></h2>
+    </header>
+    <ul class="lp-admin__list">
+      <% @recent_ledgers.each do |ledger| %>
+        <li class="lp-admin__list-static">
+          <span class="lp-admin__avatar is-points" aria-hidden="true">⚡</span>
+          <span>
+            <strong><%= ledger.user&.display_name || "—" %></strong>
+            <small><%= ledger.reason %></small>
+          </span>
+          <span class="lp-admin__meta"><%= ledger.amount.positive? ? "+#{ledger.amount}" : ledger.amount %></span>
+        </li>
+      <% end %>
+      <% if @recent_ledgers.blank? %>
+        <li class="lp-admin__empty"><%= t("admin.dashboard.no_activity") %></li>
+      <% end %>
+    </ul>
+  </section>
+</div>

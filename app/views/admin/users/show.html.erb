@@ -1,0 +1,100 @@
+<% content_for :title, @user.display_name %>
+
+<header class="lp-admin__page-head">
+  <div class="lp-admin__person is-hero">
+    <span class="lp-admin__avatar is-lg" aria-hidden="true"><%= admin_initials(@user) %></span>
+    <div>
+      <p class="lp-admin__eyebrow"><%= t("admin.users.profile") %></p>
+      <h1 class="lp-admin__h1"><%= @user.display_name %></h1>
+      <p class="lp-admin__lead"><%= @user.email_address %></p>
+    </div>
+  </div>
+  <div class="lp-admin__btn-row">
+    <%= link_to t("admin.users.edit"), edit_admin_user_path(@user), class: "lp-admin__btn" %>
+    <%= button_to t("admin.impersonation.start"), admin_impersonations_path(user_id: @user.id), method: :post, class: "lp-admin__btn is-secondary", form: { data: { turbo_confirm: t("admin.impersonation.confirm") } } unless @user.admin? && @user != current_user %>
+    <%= link_to t("admin.users.back"), admin_users_path, class: "lp-admin__ghost" %>
+  </div>
+</header>
+
+<section class="lp-admin__cards is-compact">
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.users.col_points") %></p>
+    <p class="lp-admin__card-value"><%= @user.total_points %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.metrics.strategy_points") %></p>
+    <p class="lp-admin__card-value"><%= @user.strategy_points %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.users.onboarding") %></p>
+    <p class="lp-admin__card-value is-text"><%= admin_onboarding_label(@user) %></p>
+  </article>
+  <article class="lp-admin__card">
+    <p class="lp-admin__card-label"><%= t("admin.users.col_last_seen") %></p>
+    <p class="lp-admin__card-value is-text"><%= @last_seen_at ? l(@last_seen_at, format: :short) : t("admin.users.never_seen") %></p>
+  </article>
+</section>
+
+<div class="lp-admin__split">
+  <section class="lp-admin__panel">
+    <header class="lp-admin__panel-head"><h2><%= t("admin.users.profile") %></h2></header>
+    <dl class="lp-admin__dl">
+      <div><dt><%= t("admin.users.name") %></dt><dd><%= @user.name.presence || "—" %></dd></div>
+      <div><dt><%= t("admin.users.email") %></dt><dd><%= @user.email_address %></dd></div>
+      <div><dt><%= t("admin.users.role") %></dt><dd><%= @user.admin? ? t("admin.users.admin_badge") : t("admin.users.member_badge") %></dd></div>
+      <div><dt><%= t("admin.users.created") %></dt><dd><%= l(@user.created_at, format: :long) %></dd></div>
+      <div><dt><%= t("admin.users.support") %></dt><dd><%= @user.support_prompts_muted? ? t("admin.users.support_muted") : t("admin.users.support_open") %></dd></div>
+      <div><dt><%= t("admin.users.adventure_guide") %></dt><dd><%= @user.adventure_guide_done? ? t("admin.users.guide_done") : t("admin.users.guide_pending") %></dd></div>
+    </dl>
+    <div class="lp-admin__btn-row" style="margin-top:1rem">
+      <% if @user.admin? %>
+        <%= button_to t("admin.users.remove_admin"), demote_admin_user_path(@user), method: :patch, class: "lp-admin__btn is-secondary", form: { data: { turbo_confirm: t("admin.users.confirm_demote") } } unless @user == current_user %>
+      <% else %>
+        <%= button_to t("admin.users.make_admin"), promote_admin_user_path(@user), method: :patch, class: "lp-admin__btn is-secondary", form: { data: { turbo_confirm: t("admin.users.confirm_promote") } } %>
+      <% end %>
+      <%= button_to t("admin.users.delete"), admin_user_path(@user), method: :delete, class: "lp-admin__btn is-danger", form: { data: { turbo_confirm: t("admin.users.confirm_delete") } } unless @user == current_user %>
+    </div>
+  </section>
+
+  <section class="lp-admin__panel">
+    <header class="lp-admin__panel-head"><h2><%= t("admin.users.sessions") %></h2></header>
+    <ul class="lp-admin__list">
+      <% @sessions.each do |sess| %>
+        <li class="lp-admin__list-static">
+          <span>
+            <strong><%= l(sess.updated_at, format: :short) %></strong>
+            <small><%= truncate(sess.user_agent.to_s, length: 64) %></small>
+          </span>
+          <span class="lp-admin__meta"><%= sess.ip_address %></span>
+        </li>
+      <% end %>
+      <% if @sessions.blank? %>
+        <li class="lp-admin__empty"><%= t("admin.users.no_sessions") %></li>
+      <% end %>
+    </ul>
+  </section>
+</div>
+
+<% [
+  [ t("admin.users.journeys"), @journeys, ->(j) { j.title } ],
+  [ t("admin.users.goals"), @goals, ->(g) { g.title } ],
+  [ t("admin.users.plans"), @plans, ->(p) { p.title } ],
+  [ t("admin.users.projects"), @projects, ->(p) { p.title } ],
+  [ t("admin.users.battles"), @battles, ->(b) { b.title } ],
+  [ t("admin.users.life_points_ledger"), @ledgers, ->(l) { "#{l.amount} · #{l.reason}" } ]
+].each do |title, rows, labeler| %>
+  <section class="lp-admin__panel" style="margin-top:1rem">
+    <header class="lp-admin__panel-head"><h2><%= title %></h2><span class="lp-admin__meta"><%= rows.size %></span></header>
+    <ul class="lp-admin__list">
+      <% rows.each do |row| %>
+        <li class="lp-admin__list-static">
+          <span><strong><%= labeler.call(row) %></strong></span>
+          <span class="lp-admin__meta"><%= l(row.created_at.to_date, format: :long) %></span>
+        </li>
+      <% end %>
+      <% if rows.blank? %>
+        <li class="lp-admin__empty"><%= t("admin.users.empty_section") %></li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
