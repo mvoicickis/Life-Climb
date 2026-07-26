@@ -172,6 +172,15 @@ es:
       - "Sigo mi progreso con LifePoints."
       - "Uso LifePoints para mantenerme constante."
       - "Con LifePoints me estoy volviendo mejor que ayer."
+    invite:
+      cta: "Compartir LifePoints"
+      cta_short: "Invitar a un amigo"
+      section_title: "Invitar a un amigo"
+      section_body: "Comparte LifePoints con alguien que quiera subir una montaña — una pequeña batalla al día."
+      title: "Compartir LifePoints"
+      subtitle: "Envía la subida a alguien que te importe."
+      body: "Estoy usando LifePoints para subir una montaña — una pequeña batalla al día."
+      closer: "Elige cualquier parte de tu vida que quieras crecer. Haz un plan real. Vuelve más vivo."
   status:
     better: "Mejor"
     same: "Igual"

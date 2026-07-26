@@ -172,6 +172,15 @@ lv:
       - "Es sekoju savam progresam ar LifePoints."
       - "Es izmantoju LifePoints, lai paliktu konsekvents."
       - "Ar LifePoints es kļūstu labāks nekā vakar."
+    invite:
+      cta: "Dalīties ar LifePoints"
+      cta_short: "Uzaicināt draugu"
+      section_title: "Uzaicināt draugu"
+      section_body: "Dalies ar LifePoints ar kādu, kurš vēlas kāpt vienā kalnā — viena maza cīņa dienā."
+      title: "Dalīties ar LifePoints"
+      subtitle: "Nosūti kāpšanu kādam, kurš tev rūp."
+      body: "Es izmantoju LifePoints, lai kāptu vienā kalnā — viena maza cīņa dienā."
+      closer: "Izvēlies jebkuru dzīves daļu, kuru vēlies audzēt. Uztaisi īstu plānu. Kļūsti dzīvāks."
   status:
     better: "Labāk"
     same: "Tādi paši"

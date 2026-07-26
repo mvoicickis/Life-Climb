@@ -110,6 +110,14 @@ module ApplicationHelper
     ShareMessageBuilder.new(tracker, landing_url: share_landing_url).body
   end
 
+  def invite_share_message
+    InviteShareMessage.call(landing_url: share_landing_url)
+  end
+
+  def invite_share_message_body
+    InviteShareMessage.body(landing_url: share_landing_url)
+  end
+
   def format_amount(amount)
     amount = 0 if amount.blank?
     amount == amount.to_i ? amount.to_i.to_s : amount.to_s("F")

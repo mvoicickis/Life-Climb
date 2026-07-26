@@ -12,6 +12,18 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     assert_match(/Become a Supporter|Sponsor Development|Make a Contribution/, response.body)
   end
 
+  test "support page includes invite share sheet" do
+    sign_in_as @user
+    get support_path
+    assert_response :success
+    assert_match(/Share LifePoints/, response.body)
+    assert_match(/Invite a friend/, response.body)
+    assert_match(/data-controller="share"/, response.body)
+    assert_match(/data-action="click-&gt;share#open"|data-action="click->share#open"/, response.body)
+    assert_match(/share-sheet/, response.body)
+    assert_match(%r{/\?s=lp}, response.body)
+  end
+
   test "about page links to support" do
     sign_in_as @user
     get about_path
@@ -20,11 +32,14 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", support_path
   end
 
-  test "settings links to support" do
+  test "settings links to support and offers invite share" do
     sign_in_as @user
     get settings_path
     assert_response :success
     assert_select "a[href=?]", support_path
+    assert_match(/Share LifePoints/, response.body)
+    assert_match(/data-controller="share"/, response.body)
+    assert_match(/share-sheet/, response.body)
   end
 
   test "first finished product offers thank-you once" do
