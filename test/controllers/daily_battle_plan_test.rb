@@ -25,10 +25,10 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/i, response.body)
     assert_match(/Strategy Points/i, response.body)
     assert_match(/One mountain\. Today.?s battle/i, response.body)
-    assert_match(/Complete Today.?s Battle/i, response.body)
+    assert_select ".lp-dash-cta", text: /Complete Today/i
     assert_match(/battles ready/i, response.body)
     assert_match(/Continue Planning/i, response.body)
-    assert_match(/Mountain just begun|You.?re climbing|Halfway|summit/i, response.body)
+    assert_select ".lp-dash-hero__momentum", text: /climbing|begun|Halfway|summit/i
     assert_match(/Review my budget/i, response.body)
     assert_match(/Financial freedom/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
