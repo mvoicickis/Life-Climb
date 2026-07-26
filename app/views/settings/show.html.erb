@@ -4,6 +4,10 @@
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
   <header>
+    <p class="lp-brand-kicker">
+      <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
+      <span><%= t("app_name") %></span>
+    </p>
     <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("settings.title") %></h1>
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.subtitle") %></p>
   </header>

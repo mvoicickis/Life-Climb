@@ -11,7 +11,10 @@
 
   <header class="lp-progress__top">
     <div>
-      <p class="lp-dash-kicker"><%= t("app_name") %></p>
+      <p class="lp-brand-kicker">
+        <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
+        <span><%= t("app_name") %></span>
+      </p>
       <h1 class="lp-progress__title"><%= t("progress.title") %></h1>
       <p class="lp-progress__subtitle"><%= t("progress.subtitle") %></p>
     </div>

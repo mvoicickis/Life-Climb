@@ -8,6 +8,10 @@
         share_title_value: t("share.invite.title")
       } do %>
   <header class="studio-support__hero">
+    <p class="lp-brand-kicker">
+      <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
+      <span><%= t("app_name") %></span>
+    </p>
     <p class="studio-kicker"><%= t("support.kicker") %></p>
     <h1 class="studio-dream"><%= t("support.title") %></h1>
     <p class="studio-support__subtitle"><%= t("support.subtitle") %></p>

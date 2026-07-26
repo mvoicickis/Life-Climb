@@ -1,7 +1,10 @@
 <% content_for :title, t("onboarding.intro_title") %>
 
 <div class="studio-onboarding">
-  <p class="studio-kicker"><%= t("app_name") %></p>
+  <p class="lp-brand-kicker">
+    <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
+    <span><%= t("app_name") %></span>
+  </p>
 
   <% case @step %>
   <% when "intro" %>

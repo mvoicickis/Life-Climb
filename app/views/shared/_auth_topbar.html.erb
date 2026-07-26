@@ -1,7 +1,7 @@
 <%# Shared header for sign-in / register / password pages %>
 <header class="auth-topbar">
   <%= link_to root_path, class: "auth-topbar-brand", aria: { label: t("app_name") } do %>
-    <span class="auth-topbar-mark" aria-hidden="true">🌿</span>
+    <%= render "shared/lp_brand_mark", size: 32, class_name: "auth-topbar-mark" %>
     <span><%= t("app_name") %></span>
   <% end %>
 

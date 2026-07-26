@@ -13,6 +13,17 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/status\.better_full|landing\.sample_better|today-card--good|lifepoints-landing-hero\.jpg/, response.body)
   end
 
+  test "auth pages use mountain brand mark" do
+    get new_session_path
+    assert_response :success
+    assert_match(%r{/branding/lifepoints-mark\.png}, response.body)
+    assert_no_match(/auth-topbar-mark">🌿/, response.body)
+
+    get new_registration_path
+    assert_response :success
+    assert_match(%r{/branding/lifepoints-mark\.png}, response.body)
+  end
+
   test "landing page uses mountain brand mark" do
     get root_path
     assert_response :success

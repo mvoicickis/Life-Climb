@@ -798,12 +798,13 @@
   }
 
   .auth-topbar-mark {
-    display: grid;
-    place-items: center;
+    display: block;
     width: 2rem;
     height: 2rem;
-    border-radius: 0.7rem;
-    background: rgba(34, 197, 94, 0.12);
+    border-radius: 999px;
+    object-fit: cover;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.18);
   }
 
   .auth-topbar-actions {
@@ -1107,16 +1108,10 @@
   .lp-landing-brand--centered { justify-content: center; }
 
   .lp-landing-brand__mark {
-<<<<<<< HEAD
-    width: 2.35rem;
-    height: 2.35rem;
-    border-radius: 999px;
-=======
     width: 1.85rem;
     height: 1.85rem;
     flex: 0 0 auto;
-    border-radius: 0.75rem;
->>>>>>> origin/cursor/landing-phone-hero-97b6
+    border-radius: 999px;
     object-fit: cover;
     background: #fff;
     box-shadow: 0 8px 20px rgba(34, 197, 94, 0.18);
@@ -1653,9 +1648,21 @@
 
   .lp-landing-footer__brand {
     margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     font-family: var(--lp-font-display);
     font-weight: 800;
     color: var(--lp-forest);
+  }
+
+  .lp-landing-footer__mark {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    object-fit: cover;
+    background: #fff;
   }
 
   .lp-landing-footer__tag {
@@ -2076,10 +2083,13 @@
 }
 
 .studio-brand__mark {
-  width: 0.7rem;
-  height: 0.7rem;
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 999px;
-  background: var(--studio-accent);
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.16);
 }
 
 .studio-nav__links {
@@ -3315,9 +3325,23 @@
 }
 
 .lp-top-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-weight: 700;
   color: var(--lp-ink);
   letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.lp-top-nav__brand-mark {
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.16);
 }
 
 .lp-top-nav__links {
@@ -3884,13 +3908,13 @@
 }
 
 .lp-dash__brand-mark {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 1.85rem;
   height: 1.85rem;
-  border-radius: 0.65rem;
-  background: var(--lp-neon-soft);
-  box-shadow: 0 0 18px var(--lp-neon-glow);
+  border-radius: 999px;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.18);
 }
 
 .lp-dash__stats {
@@ -3933,6 +3957,28 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--lp-green-deep);
+}
+
+.lp-brand-kicker {
+  margin: 0 0 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-green-deep, #16a34a);
+}
+
+.lp-brand-kicker__mark {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.16);
 }
 
 .lp-dash-card {
