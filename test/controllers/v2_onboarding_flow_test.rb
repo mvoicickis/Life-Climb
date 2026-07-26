@@ -1,7 +1,7 @@
 require "test_helper"
 
 class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
-  test "mvp coach flow: area journey vision reality progress milestone mission" do
+  test "mvp adventure flow: welcome mountain deadline forge today plan route" do
     post registration_url, params: {
       user: {
         name: "Alex",
@@ -14,76 +14,87 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_match(/improve first|Which area/i, response.body)
+    assert_match(/Welcome to LifePoints/i, response.body)
+    assert_match(/Start My Journey/i, response.body)
+    assert_no_match(/Which area|improve first/i, response.body)
 
-    patch v2_onboarding_url(step: "area"), params: {
-      onboarding: { area_key: "career" }
-    }
-    assert_redirected_to v2_onboarding_path(step: "journey")
+    patch v2_onboarding_url(step: "welcome")
+    assert_redirected_to v2_onboarding_path(step: "mountain")
     follow_redirect!
-    assert_match(/want to achieve/i, response.body)
+    assert_match(/one mountain you want to conquer/i, response.body)
 
-    patch v2_onboarding_url(step: "journey"), params: {
-      onboarding: { title: "Become a Senior Rails Developer" }
+    patch v2_onboarding_url(step: "mountain"), params: {
+      onboarding: { title: "Become a Ruby Developer" }
     }
-    assert_redirected_to v2_onboarding_path(step: "vision")
-
-    patch v2_onboarding_url(step: "vision"), params: {
-      onboarding: { ideal_scene: "Working as a Rails developer building products I love." }
-    }
-    assert_redirected_to v2_onboarding_path(step: "reality")
-
-    patch v2_onboarding_url(step: "reality"), params: {
-      onboarding: { current_reality: "Learning Rails and building personal projects." }
-    }
-    assert_redirected_to v2_onboarding_path(step: "progress")
-
-    patch v2_onboarding_url(step: "progress"), params: {
-      onboarding: { closer_percent: 5 }
-    }
-    assert_redirected_to v2_onboarding_path(step: "milestone")
-
-    patch v2_onboarding_url(step: "milestone"), params: {
-      onboarding: { next_win: "Finish Rails Fundamentals" }
-    }
-    assert_redirected_to v2_onboarding_path(step: "mission")
-
-    patch v2_onboarding_url(step: "mission"), params: {
-      onboarding: { today_mission: "Read 20 pages" }
-    }
-    assert_redirected_to dashboard_path
+    assert_redirected_to v2_onboarding_path(step: "deadline")
     follow_redirect!
-    assert_match(/Alex/i, response.body)
-    assert_match(/Read 20 pages/i, response.body)
-    assert_match(/Today.?s Battle|Complete Today.?s Battle|Complete Battle/i, response.body)
-    assert_match(/Today.?s Goal|Today.?s Battle|Complete Today.?s Battle|Complete Battle/i, response.body)
-    assert_no_match(/Life Tree|Open Life/i, response.body)
+    assert_match(/December 29/i, response.body)
+    assert_match(/Become a Ruby Developer/i, response.body)
+
+    patch v2_onboarding_url(step: "deadline")
+    assert_redirected_to v2_onboarding_path(step: "forge")
+    follow_redirect!
+    assert_match(/Forging Your Adventure/i, response.body)
+    assert_match(/Raising your mountain/i, response.body)
+
+    user = User.find_by!(email_address: "fresh@example.com")
+    assert user.onboarding_completed?
+    assert_equal "self", user.life_areas.v2_selected.first.key
+    journey = user.primary_focused_journey
+    assert_equal "Become a Ruby Developer", journey.title
+    assert_equal "pending", journey.setup_flag("route")
+    goal = user.strategy_goals.for_kind("goal").roots.first
+    assert_equal "Become a Ruby Developer", goal.title
+    assert Strategy::YearCycle.dec29?(goal.due_on)
+    mission = user.missions.for_day(Date.current).primary.first
+    assert_equal "Plan Your Route", mission.title
+    assert_equal 25, mission.lp_reward
+    assert_operator user.strategy_points, :>=, 100
+
+    get dashboard_path
+    assert_response :success
+    assert_match(/Become a Ruby Developer/i, response.body)
+    assert_match(/Plan Your Route/i, response.body)
+    assert_match(/Build Strategy/i, response.body)
+    assert_match(/Year Adventure/i, response.body)
+    assert_no_match(/Complete Today.?s Battle/i, response.body)
   end
 
-  test "milestone can be skipped" do
+  test "plan route mission retires after first strategy battle exists" do
     post registration_url, params: {
       user: {
         name: "Sam",
-        email_address: "skipmile@example.com",
+        email_address: "route@example.com",
         password: "password12345",
         password_confirmation: "password12345"
       }
     }
-    follow_redirect!
+    patch v2_onboarding_url(step: "welcome")
+    patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Ship LifePoints" } }
+    patch v2_onboarding_url(step: "deadline")
 
-    patch v2_onboarding_url(step: "area"), params: { onboarding: { area_key: "career" } }
-    patch v2_onboarding_url(step: "journey"), params: { onboarding: { title: "Ship my app" } }
-    patch v2_onboarding_url(step: "vision"), params: { onboarding: { ideal_scene: "App in production" } }
-    patch v2_onboarding_url(step: "reality"), params: { onboarding: { current_reality: "Still building" } }
-    patch v2_onboarding_url(step: "progress"), params: { onboarding: { closer_percent: 10 } }
-    patch v2_onboarding_url(step: "milestone"), params: { skip: 1 }
-    assert_redirected_to v2_onboarding_path(step: "mission")
+    user = User.find_by!(email_address: "route@example.com")
+    journey = user.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.for_kind("goal").roots.first
+    plan = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Build", position: 0
+    )
+    project = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Launch", position: 0
+    )
+    user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: project, horizon: "day",
+      title: "Write one test", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: user, life_area: area)
 
-    patch v2_onboarding_url(step: "mission"), params: { onboarding: { today_mission: "Write one test" } }
-    assert_redirected_to dashboard_path
-    user = User.find_by!(email_address: "skipmile@example.com")
-    assert_nil user.life_journeys.last.next_win.presence
-    assert_equal "Write one test", user.missions.last.title
+    get dashboard_path
+    assert_response :success
+    assert_no_match(/Plan Your Route/i, response.body)
+    assert_no_match(/Build Strategy/i, response.body)
+    assert_match(/Write one test/i, response.body)
+    assert_equal "done", journey.reload.setup_flag("route")
   end
 
   test "completing a journey opens next mountain choice" do

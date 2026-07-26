@@ -2,115 +2,74 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<%
-  key = @area_key.to_s
-  eyebrow = key.present? ? t("life_area_catalog.#{key}.name") : nil
-%>
+<div class="lp-adventure mx-auto max-w-lg space-y-6 px-4 pb-24 pt-8">
+  <% if @step == "welcome" %>
+    <section class="lp-adventure__card" aria-labelledby="adventure-welcome-title">
+      <%= render "shared/lp_brand_mark", size: 56, class_name: "lp-adventure__mark" %>
+      <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.welcome_lead") %></p>
+      <ul class="lp-adventure__beats">
+        <li><%= t("v2_onboarding.welcome_beat_mountain") %></li>
+        <li><%= t("v2_onboarding.welcome_beat_battle") %></li>
+        <li><%= t("v2_onboarding.welcome_beat_points") %></li>
+      </ul>
+      <%= button_to t("v2_onboarding.start_journey"),
+            v2_onboarding_path(step: "welcome"),
+            method: :patch,
+            class: "lp-cta w-full",
+            form: { data: { turbo: false } } %>
+    </section>
 
-<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
-  <% if @step == "area" %>
-    <header>
-      <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("v2_onboarding.one_area_title") %></h1>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("v2_onboarding.one_area_subtitle") %></p>
-      <p class="mt-1 text-sm text-[var(--lp-lime)]"><%= t("v2_onboarding.one_area_soft") %></p>
-    </header>
+  <% elsif @step == "mountain" %>
+    <section class="lp-adventure__card" aria-labelledby="adventure-mountain-title">
+      <p class="lp-adventure__kicker"><%= t("v2_onboarding.mountain_kicker") %></p>
+      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title") %></h1>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.mountain_lead") %></p>
 
-    <%= form_with url: v2_onboarding_path(step: "area"), method: :patch, class: "space-y-4" do %>
-      <div class="grid gap-3" role="radiogroup" aria-label="<%= t('v2_onboarding.one_area_title') %>">
-        <% @catalog.each do |entry| %>
-          <% area_key = entry[:key] %>
-          <label class="lp-glass flex cursor-pointer items-start gap-3 p-4">
-            <%= radio_button_tag "onboarding[area_key]", area_key, @area_key == area_key, id: "ob_area_#{area_key}", class: "mt-1" %>
-            <span>
-              <span class="block text-lg font-semibold text-[var(--lp-ink)]">
-                <span aria-hidden="true"><%= entry[:emoji] %></span>
-                <%= t("life_area_catalog.#{area_key}.name") %>
-              </span>
-              <span class="mt-1 block text-sm text-[var(--lp-muted)]"><%= t("life_area_catalog.#{area_key}.hint") %></span>
-            </span>
-          </label>
-        <% end %>
-      </div>
-      <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
-    <% end %>
-  <% elsif @step == "journey" %>
-    <%= render "shared/coach_beat",
-          form_url: v2_onboarding_path(step: "journey"),
-          scope: "onboarding",
-          field: "title",
-          value: @draft["title"],
-          eyebrow: eyebrow,
-          label: t("coach.journey"),
-          hint: t("coach.journey_hint"),
-          placeholder: t("area_interview.#{key}.title_placeholder", default: t("coach.journey_placeholder")),
-          cta: t("coach.continue"),
-          input: :text,
-          hidden: { area_key: key } %>
-  <% elsif @step == "vision" %>
-    <%= render "shared/coach_beat",
-          form_url: v2_onboarding_path(step: "vision"),
-          scope: "onboarding",
-          field: "ideal_scene",
-          value: @draft["ideal_scene"],
-          eyebrow: eyebrow,
-          label: t("coach.vision"),
-          hint: t("coach.vision_hint"),
-          placeholder: t("area_interview.#{key}.ideal_placeholder", default: t("journeys.ideal_placeholder")),
-          cta: t("coach.continue"),
-          hidden: { area_key: key } %>
-  <% elsif @step == "reality" %>
-    <%= render "shared/coach_beat",
-          form_url: v2_onboarding_path(step: "reality"),
-          scope: "onboarding",
-          field: "current_reality",
-          value: @draft["current_reality"],
-          eyebrow: eyebrow,
-          label: t("coach.reality"),
-          hint: t("coach.reality_hint"),
-          placeholder: t("area_interview.#{key}.present_placeholder", default: t("journeys.present_placeholder")),
-          cta: t("coach.continue"),
-          hidden: { area_key: key } %>
-  <% elsif @step == "progress" %>
-    <%= render "shared/coach_beat",
-          form_url: v2_onboarding_path(step: "progress"),
-          scope: "onboarding",
-          field: "closer_percent",
-          value: @draft["closer_percent"].presence || "5",
-          eyebrow: eyebrow,
-          label: t("coach.progress"),
-          hint: t("coach.progress_hint"),
-          placeholder: "",
-          cta: t("coach.continue"),
-          input: :range,
-          hidden: { area_key: key } %>
-  <% elsif @step == "milestone" %>
-    <%= render "shared/coach_beat",
-          form_url: v2_onboarding_path(step: "milestone"),
-          scope: "onboarding",
-          field: "next_win",
-          value: @draft["next_win"],
-          eyebrow: eyebrow,
-          label: t("coach.milestone"),
-          hint: t("coach.milestone_hint"),
-          placeholder: t("area_interview.#{key}.next_placeholder", default: t("coach.next_placeholder")),
-          cta: t("coach.continue"),
-          input: :text,
-          required: false,
-          skip_url: v2_onboarding_path(step: "milestone"),
-          skip_label: t("coach.skip_milestone"),
-          hidden: { area_key: key } %>
+      <%= form_with url: v2_onboarding_path(step: "mountain"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
+        <label class="lp-adventure__label" for="onboarding_title"><%= t("v2_onboarding.mountain_field_label") %></label>
+        <%= text_field_tag "onboarding[title]", @draft["title"],
+              id: "onboarding_title",
+              required: true,
+              maxlength: 120,
+              class: "lp-input w-full",
+              placeholder: t("v2_onboarding.mountain_placeholder"),
+              autocomplete: "off",
+              autofocus: true %>
+        <p class="lp-adventure__example"><%= t("v2_onboarding.mountain_example") %></p>
+        <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+      <% end %>
+    </section>
+
+  <% elsif @step == "deadline" %>
+    <section class="lp-adventure__card" aria-labelledby="adventure-deadline-title">
+      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker") %></p>
+      <h1 id="adventure-deadline-title" class="lp-adventure__title"><%= t("v2_onboarding.deadline_title") %></h1>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead") %></p>
+      <p class="lp-adventure__body"><%= t("v2_onboarding.deadline_body") %></p>
+      <p class="lp-adventure__mountain-echo"><%= @draft["title"] %></p>
+      <%= button_to t("v2_onboarding.forge_cta"),
+            v2_onboarding_path(step: "deadline"),
+            method: :patch,
+            class: "lp-cta w-full",
+            form: { data: { turbo: false } } %>
+    </section>
+
   <% else %>
-    <%= render "shared/coach_beat",
-          form_url: v2_onboarding_path(step: "mission"),
-          scope: "onboarding",
-          field: "today_mission",
-          value: @draft["today_mission"],
-          eyebrow: eyebrow,
-          label: t("coach.mission"),
-          hint: t("coach.mission_hint"),
-          placeholder: t("area_interview.#{key}.today_placeholder", default: t("coach.today_placeholder")),
-          cta: t("coach.begin_today"),
-          input: :text,
-          hidden: { area_key: key } %>
+    <section class="lp-adventure__card lp-adventure__forge"
+             aria-labelledby="adventure-forge-title"
+             data-controller="adventure-forge"
+             data-adventure-forge-url-value="<%= dashboard_path %>"
+             data-adventure-forge-delay-value="3200">
+      <h1 id="adventure-forge-title" class="lp-adventure__title"><%= t("v2_onboarding.forge_title") %></h1>
+      <ul class="lp-adventure__forge-list" aria-live="polite">
+        <li class="lp-adventure__forge-item is-on" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_mountain") %></li>
+        <li class="lp-adventure__forge-item" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_journey") %></li>
+        <li class="lp-adventure__forge-item" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_camp") %></li>
+        <li class="lp-adventure__forge-item" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_ready") %></li>
+      </ul>
+      <p class="lp-adventure__forge-wait"><%= t("v2_onboarding.forge_wait") %></p>
+      <%= link_to t("v2_onboarding.enter_today"), dashboard_path, class: "lp-cta w-full inline-flex justify-center" %>
+    </section>
   <% end %>
 </div>

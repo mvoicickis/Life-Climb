@@ -1,0 +1,18 @@
+<%# locals: journey, mission, adventure_year %>
+<% reward = mission&.lp_reward.presence || GameRules::ROUTE_MISSION_LP %>
+<section class="lp-dash-route" aria-label="<%= t('dash.route_mission_label') %>">
+  <header class="lp-dash-route__head">
+    <p class="lp-dash-kicker"><%= t("dash.route_mission_label") %></p>
+    <h2 class="lp-dash-route__title"><%= t("v2_onboarding.route_mission_title") %></h2>
+    <p class="lp-dash-route__copy"><%= t("v2_onboarding.route_mission_hint") %></p>
+  </header>
+
+  <div class="lp-dash-route__reward">
+    <span class="lp-dash-route__reward-label"><%= t("dash.route_reward_label") %></span>
+    <span class="lp-dash-route__reward-value">+<%= reward %> <%= t("dash.action_points_short") %></span>
+  </div>
+
+  <%= link_to t("dash.build_strategy"),
+        life_journey_path(journey),
+        class: "lp-dash-cta lp-dash-route__cta" %>
+</section>

@@ -1,10 +1,12 @@
-<%# locals: journey, strategy_goal, mountain, closer %>
+<%# locals: journey, strategy_goal, mountain, closer, adventure_year: nil %>
 <% goal_title = strategy_goal&.title.presence || journey.title %>
 <% stage_label = mountain.present? ? mountain[:label] : t("dash.mountain_waiting") %>
+<% year = local_assigns[:adventure_year].presence || Strategy::YearCycle.target_dec29.year %>
 <section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-hero__copy">
-    <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
+    <p class="lp-dash-kicker"><%= t("dash.mountain_label") %></p>
     <h2 class="lp-dash-hero__title"><%= goal_title %></h2>
+    <p class="lp-dash-hero__year"><%= t("dash.year_adventure", year: year) %></p>
     <div class="lp-dash-hero__progress">
       <p class="lp-dash-hero__pct">
         <span data-battle-day-target="goalPct"><%= closer %></span>%
