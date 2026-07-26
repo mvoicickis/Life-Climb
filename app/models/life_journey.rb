@@ -35,6 +35,7 @@ class LifeJourney < ApplicationRecord
   belongs_to :life_area
   has_many :missions, dependent: :destroy
   has_many :gap_snapshots, dependent: :destroy
+  has_many :journey_targets, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :ideal_scene, presence: true, length: { maximum: SUMMARY_MAX }
@@ -146,20 +147,39 @@ class LifeJourney < ApplicationRecord
     climb_list_for(:milestones)
   end
 
+  def approaches_items
+    climb_items_for(:approaches)
+  end
+
+  def programs_items
+    climb_items_for(:programs)
+  end
+
+  def milestones_items
+    climb_items_for(:milestones)
+  end
+
+  def primary_milestone
+    milestones_list.first
+  end
+
+  def climb_card_title
+    primary_milestone.presence || title
+  end
+
   def list_present?(kind)
     climb_list_for(kind).any?
   end
 
-  def replace_list!(kind, titles)
+  def replace_list!(kind, entries)
     kind = kind.to_sym
     raise ArgumentError, "Unknown list" unless LEGACY_LIST_FIELDS.key?(kind)
 
-    cleaned = Array(titles).map { |t| t.to_s.strip }.compact_blank
-    cleaned = cleaned.map { |t| t.truncate(SUMMARY_MAX) }
+    items = normalize_climb_entries(entries)
     legacy = LEGACY_LIST_FIELDS.fetch(kind)
     update!(
-      kind => cleaned,
-      legacy => cleaned.first
+      kind => items,
+      legacy => items.first&.fetch("title")
     )
   end
 
@@ -224,15 +244,46 @@ class LifeJourney < ApplicationRecord
   private
 
   def climb_list_for(kind)
+    climb_items_for(kind).map { |item| item["title"] }
+  end
+
+  def climb_items_for(kind)
     kind = kind.to_sym
-    raw = Array(public_send(kind)).map { |t| t.to_s.strip }.compact_blank
-    return raw if raw.any?
+    raw = Array(public_send(kind))
+    items = raw.filter_map { |entry| normalize_climb_entry(entry) }
+    return items if items.any?
 
     legacy = LEGACY_LIST_FIELDS[kind]
     return [] unless legacy
 
     value = public_send(legacy).to_s.strip
-    value.present? ? [ value ] : []
+    value.present? ? [ { "title" => value, "tags" => [] } ] : []
+  end
+
+  def normalize_climb_entries(entries)
+    Array(entries).filter_map { |entry| normalize_climb_entry(entry) }
+  end
+
+  def normalize_climb_entry(entry)
+    if entry.respond_to?(:permit)
+      entry = entry.permit(:title, :tags, :tag, tags: []).to_h
+    end
+
+    case entry
+    when Hash
+      h = entry.with_indifferent_access
+      title = h[:title].to_s.strip
+      return nil if title.blank?
+
+      tags = Array(h[:tags]).flat_map { |t| t.to_s.split(/[,\s]+/) }.map { |t| t.strip.downcase }.compact_blank.uniq
+      tags = h[:tag].to_s.split(/[,\s]+/).map { |t| t.strip.downcase }.compact_blank.uniq if tags.empty? && h[:tag].present?
+      { "title" => title.truncate(SUMMARY_MAX), "tags" => tags }
+    else
+      title = entry.to_s.strip
+      return nil if title.blank?
+
+      { "title" => title.truncate(SUMMARY_MAX), "tags" => [] }
+    end
   end
 
   def ensure_json_defaults

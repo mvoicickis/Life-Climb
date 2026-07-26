@@ -40,7 +40,7 @@ class ProgressDashboardTest < ActiveSupport::TestCase
     data = Progress::Dashboard.call(user: @user.reload, period: "7d")
 
     assert_equal "7d", data[:period].key
-    assert_equal 4, data[:kpis].size
+    assert_equal 3, data[:kpis].size
     assert data[:growth].any?
     assert data[:projects].any?
     assert_equal "Launch Beta", data[:projects].first[:title]

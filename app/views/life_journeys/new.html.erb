@@ -1,57 +1,61 @@
 <% content_for :title, t("journeys.new_title") %>
 <% content_for :lp_game, true %>
+<%
+  area = @journey.life_area || @life_areas.first
+  area_key = area&.key.presence || "self"
+%>
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
   <header>
-    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("journeys.new_title") %></h1>
-    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("journeys.new_subtitle") %></p>
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "title", default: t("journeys.new_title")) %></h1>
+    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "subtitle", default: t("journeys.new_subtitle")) %></p>
   </header>
 
   <%= form_with url: life_journeys_path, scope: :life_journey, class: "space-y-4" do |f| %>
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.area") %></label>
       <%= f.collection_select :life_area_id, @life_areas, :id, :label,
-            { selected: @journey.life_area_id },
+            { selected: @journey.life_area_id || area&.id },
             class: "lp-input w-full" %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.journey") %></label>
       <%= f.text_field :title, required: true, class: "lp-input w-full",
-            placeholder: t("coach.journey_placeholder") %>
+            placeholder: area_copy(area_key, "goal_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.vision") %></label>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "ideal") %></label>
       <%= f.text_area :ideal_scene, rows: 3, required: true, class: "lp-input w-full",
-            placeholder: t("journeys.ideal_placeholder") %>
+            placeholder: area_copy(area_key, "ideal_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.reality") %></label>
+      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "reality") %></label>
       <%= f.text_area :current_reality, rows: 3, required: true, class: "lp-input w-full",
-            placeholder: t("journeys.present_placeholder") %>
+            placeholder: area_copy(area_key, "present_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.progress") %></label>
+      <p class="text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "closer", default: t("coach.progress_hint")) %></p>
       <%= f.number_field :closer_percent, min: 0, max: 100, value: 5, class: "lp-input w-full" %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.milestone") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("coach.milestone_hint") %></p>
+      <p class="text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "milestone_hint") %></p>
       <%= f.text_field :next_win, class: "lp-input w-full",
-            placeholder: t("coach.next_placeholder") %>
+            placeholder: area_copy(area_key, "milestone_hint") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.mission") %></label>
       <%= text_field_tag "life_journey[today_mission]", nil, required: true, class: "lp-input w-full",
-            placeholder: t("coach.today_placeholder") %>
+            placeholder: area_copy(area_key, "today_mission_placeholder") %>
     </div>
 
     <%= f.submit t("coach.begin_today"), class: "lp-cta w-full" %>
   <% end %>
 </div>
-

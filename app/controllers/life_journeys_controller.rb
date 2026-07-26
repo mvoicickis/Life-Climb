@@ -75,6 +75,7 @@ class LifeJourneysController < ApplicationController
   def prepare_climb!
     @today_mission = @journey.missions.for_day(Date.current).primary.order(:id).first
     @today_todos = current_user.daily_todos.for_day(Date.current).ordered.to_a
+    @targets = @journey.journey_targets.ordered.to_a
     @journey.bootstrap_setup_flags_from_content!(
       today_mission: @today_mission,
       today_todos: @today_todos
@@ -155,12 +156,37 @@ class LifeJourneysController < ApplicationController
 
   def save_list_layer!(layer)
     attr = LifeJourney::LIST_LAYERS.fetch(layer)
-    titles = Array(params.dig(:life_journey, attr)).map { |t| t.to_s.strip }.compact_blank
-    if titles.empty?
+    raw = params.dig(:life_journey, attr)
+    entries =
+      if raw.is_a?(Array) && raw.first.is_a?(ActionController::Parameters)
+        raw
+      elsif raw.is_a?(Array)
+        # Parallel title + tags arrays from climb list UI
+        titles = Array(params.dig(:life_journey, attr))
+        tags = Array(params.dig(:life_journey, :"#{attr}_tags"))
+        titles.each_with_index.map { |title, i| { title: title, tags: tags[i] } }
+      else
+        Array(raw)
+      end
+
+    items = entries
+    if items.empty? || items.all? { |e| e.is_a?(String) ? e.blank? : e[:title].to_s.strip.blank? && e["title"].to_s.strip.blank? }
+      # try structured
+    end
+
+    cleaned_preview = items.filter_map do |e|
+      if e.is_a?(String)
+        e.to_s.strip.presence
+      else
+        h = e.respond_to?(:to_unsafe_h) ? e.to_unsafe_h : e
+        (h["title"] || h[:title]).to_s.strip.presence
+      end
+    end
+    if cleaned_preview.empty?
       climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_one_item")) and return
     end
 
-    @journey.replace_list!(attr, titles)
+    @journey.replace_list!(attr, items)
     @journey.mark_layer!(layer, "done")
     finish_layer!(layer)
   end
@@ -237,19 +263,22 @@ class LifeJourneysController < ApplicationController
   def replace_today_todos!(titles)
     day = Date.current
     aspect = battle_aspect_key
+    tags = Array(params[:daily_todo_tags])
     existing = current_user.daily_todos.for_day(day).ordered.to_a
 
     ActiveRecord::Base.transaction do
       titles.each_with_index do |title, index|
+        tag = tags[index].to_s.split(/[,\s]+/).map { |t| t.strip.downcase }.compact_blank.first
         if (todo = existing[index])
-          todo.update!(title: title, position: index, aspect_key: aspect)
+          todo.update!(title: title, position: index, aspect_key: aspect, tag: tag)
         else
           current_user.daily_todos.create!(
             title: title,
             aspect_key: aspect,
             scheduled_on: day,
             position: index,
-            lp_reward: GameRules::BATTLE_TODO_LP
+            lp_reward: GameRules::BATTLE_TODO_LP,
+            tag: tag
           )
         end
       end

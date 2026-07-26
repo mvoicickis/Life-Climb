@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module LifeAreas
-  # Upserts the user's selected Life Areas from the v2 catalog.
-  # Soft UX default is 1–3 areas; the data model allows any non-empty subset.
+  # Upserts the user's single selected Life Area from the v2 catalog (one mountain).
   class Select
     class Error < StandardError; end
 
@@ -12,39 +11,50 @@ module LifeAreas
 
     def initialize(user:, keys:)
       @user = user
-      @keys = Array(keys).map(&:to_s)
+      @keys = Array(keys).map(&:to_s).compact_blank
     end
 
     def call
       raise Error, "user required" unless @user
-      raise Error, "select at least one life area" if wanted.empty?
+      raise Error, I18n.t("life_area_selections.need_one") if wanted.empty?
+      raise Error, I18n.t("life_area_selections.only_one") if wanted.size > 1
       unknown = @keys - LifeArea::CATALOG_KEYS
       raise Error, "unknown life area keys: #{unknown.join(', ')}" if unknown.any?
+
+      key = wanted.first
 
       ActiveRecord::Base.transaction do
         @user.update!(planning_version: 2) unless @user.planning_v2?
 
-        existing = @user.life_areas.v2_selected.index_by(&:key)
+        existing = @user.life_areas.where(dream_id: nil).index_by(&:key)
 
-        wanted.each_with_index do |key, index|
-          area = existing.delete(key)
-          attrs = {
-            number: LifeArea.catalog_number(key),
-            position: index,
-            selected_at: Time.current,
-            dream_id: nil,
-            closer_score: area&.closer_score || 1
-          }
+        # Deselect previous v2 areas without destroying journeys (restrict_with_error).
+        existing.each do |area_key, area|
+          next if area_key == key
+          next if area.selected_at.nil?
 
-          if area
-            area.update!(attrs)
-          else
-            @user.life_areas.create!(attrs.merge(key: key, meta: {}))
-          end
+          area.update!(selected_at: nil)
         end
 
-        # Deselect removes v2 rows only; never touches dream-backed legacy areas.
-        existing.each_value(&:destroy!)
+        area = existing[key]
+        attrs = {
+          number: LifeArea.catalog_number(key),
+          position: 0,
+          selected_at: Time.current,
+          dream_id: nil,
+          closer_score: area&.closer_score || 1
+        }
+
+        if area
+          area.update!(attrs)
+        else
+          area = @user.life_areas.create!(attrs.merge(key: key, meta: {}))
+        end
+
+        # One mountain: drop focus on journeys outside the selected area.
+        @user.life_journeys.where.not(life_area_id: area.id).where.not(focus_position: nil).find_each do |journey|
+          journey.update!(focus_position: nil)
+        end
       end
 
       @user.life_areas.v2_selected.ordered.reload

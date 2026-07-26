@@ -14,6 +14,12 @@ Rails.application.routes.draw do
   resource :v2_onboarding, only: %i[ show update ], controller: "v2_onboardings"
   resources :life_journeys, only: %i[ new create show update ] do
     resource :completion, only: :create, controller: "journey_completions"
+    resources :journey_targets, only: %i[ create ]
+  end
+  resources :journey_targets, only: %i[ destroy ] do
+    member do
+      post :log
+    end
   end
   resource :next_mountain, only: %i[ show update ], controller: "next_mountains"
   resource :focus, only: %i[ show update ], controller: "focus"

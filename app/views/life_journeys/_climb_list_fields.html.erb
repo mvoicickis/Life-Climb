@@ -1,32 +1,46 @@
-<%# locals: items:, name:, placeholder: nil, input: :text_field %>
+<%# locals: items:, name:, tags_name:, placeholder: nil, input: :text_field %>
 <%
-  rows = Array(items).map { |t| t.to_s.strip }.compact_blank
-  rows = [""] if rows.empty?
+  input_kind = local_assigns.fetch(:input, :text_field)
+  tags_field = local_assigns.fetch(:tags_name)
+  ph = local_assigns[:placeholder]
+  rows = Array(items)
+  rows = [ { "title" => "", "tags" => [] } ] if rows.empty?
 %>
 <div class="lp-climb-list" data-controller="journey-climb-list">
   <div class="lp-climb-list__rows" data-journey-climb-list-target="list">
     <% rows.each do |item| %>
-      <div class="lp-climb-list__row">
-        <% if input == :text_area %>
-          <%= text_area_tag name, item.presence, rows: 2, class: "lp-input", placeholder: placeholder %>
-        <% else %>
-          <%= text_field_tag name, item.presence, class: "lp-input", autocomplete: "off", placeholder: placeholder %>
-        <% end %>
+      <%
+        title = item.is_a?(Hash) ? item["title"] : item.to_s
+        tags = item.is_a?(Hash) ? Array(item["tags"]).join(", ") : ""
+      %>
+      <div class="lp-climb-list__row lp-climb-list__row--tagged">
+        <div class="lp-climb-list__fields">
+          <% if input_kind == :text_area %>
+            <%= text_area_tag name, title.presence, rows: 2, class: "lp-input", placeholder: ph %>
+          <% else %>
+            <%= text_field_tag name, title.presence, class: "lp-input", autocomplete: "off", placeholder: ph %>
+          <% end %>
+          <%= text_field_tag tags_field, tags.presence, class: "lp-input lp-input--tag", autocomplete: "off", placeholder: t("journeys.climb.tag_placeholder") %>
+        </div>
         <button type="button" class="lp-climb-list__remove" data-action="journey-climb-list#remove" aria-label="<%= t('journeys.climb.remove_item') %>"><%= t("journeys.climb.remove_item") %></button>
       </div>
     <% end %>
   </div>
 
   <template data-journey-climb-list-target="template">
-    <div class="lp-climb-list__row">
-      <% if input == :text_area %>
-        <%= text_area_tag name, nil, rows: 2, class: "lp-input", placeholder: placeholder %>
-      <% else %>
-        <%= text_field_tag name, nil, class: "lp-input", autocomplete: "off", placeholder: placeholder %>
-      <% end %>
+    <div class="lp-climb-list__row lp-climb-list__row--tagged">
+      <div class="lp-climb-list__fields">
+        <% if input_kind == :text_area %>
+          <%= text_area_tag name, nil, rows: 2, class: "lp-input", placeholder: ph %>
+        <% else %>
+          <%= text_field_tag name, nil, class: "lp-input", autocomplete: "off", placeholder: ph %>
+        <% end %>
+        <%= text_field_tag tags_field, nil, class: "lp-input lp-input--tag", autocomplete: "off", placeholder: t("journeys.climb.tag_placeholder") %>
+      </div>
       <button type="button" class="lp-climb-list__remove" data-action="journey-climb-list#remove" aria-label="<%= t('journeys.climb.remove_item') %>"><%= t("journeys.climb.remove_item") %></button>
     </div>
   </template>
 
   <button type="button" class="lp-climb-list__add" data-action="journey-climb-list#add"><%= t("journeys.climb.add_item") %></button>
+  <p class="lp-climb-list__hint"><%= t("journeys.climb.tag_hint") %></p>
 </div>

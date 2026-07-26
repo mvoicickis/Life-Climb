@@ -7,14 +7,15 @@ class DashboardInsightsTest < ActiveSupport::TestCase
     @habit.update!(show_on_home: true, active: true, stat_type: "growth", name: "Walking", unit: "steps")
   end
 
-  test "streak counts consecutive logged days ending today" do
+  test "celebrations ignore streaks and reward real progress" do
     @user.daily_logs.delete_all
     @habit.daily_logs.create!(logged_on: Date.current - 2, amount: 1)
     @habit.daily_logs.create!(logged_on: Date.current - 1, amount: 2)
     @habit.daily_logs.create!(logged_on: Date.current, amount: 3)
 
     insights = DashboardInsights.new(@user.reload, trackers: [ @habit ])
-    assert_equal 3, insights.streak_days
+    kinds = insights.celebrations.map { |item| item[:kind] }
+    refute_includes kinds, :streak
   end
 
   test "week series returns seven rolling days" do

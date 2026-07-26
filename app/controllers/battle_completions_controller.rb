@@ -3,6 +3,7 @@
 class BattleCompletionsController < ApplicationController
   def create
     result = Battles::CompleteDay.call(user: current_user)
+    Journeys::SyncClimbFromToday.call(user: current_user)
     if result.ok
       redirect_to dashboard_path, notice: result.message
     else

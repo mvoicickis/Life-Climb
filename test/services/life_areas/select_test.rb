@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class LifeAreas::SelectTest < ActiveSupport::TestCase
@@ -18,23 +20,23 @@ class LifeAreas::SelectTest < ActiveSupport::TestCase
     assert_equal 2, @user.planning_version
   end
 
-  test "selecting all catalog keys works" do
-    areas = LifeAreas::Select.call(user: @user, keys: LifeArea::CATALOG_KEYS)
-
-    assert_equal LifeArea::CATALOG_KEYS.size, areas.size
-    assert_equal LifeArea::CATALOG_KEYS, areas.map(&:key)
+  test "rejects selecting more than one area" do
+    assert_raises LifeAreas::Select::Error do
+      LifeAreas::Select.call(user: @user, keys: LifeArea::CATALOG_KEYS)
+    end
   end
 
   test "reselecting replaces previous v2 selection without touching legacy dream areas" do
     legacy_count = @user.life_areas.where.not(dream_id: nil).count
     assert legacy_count.positive?
 
-    LifeAreas::Select.call(user: @user, keys: %w[self career])
+    LifeAreas::Select.call(user: @user, keys: %w[self])
     LifeAreas::Select.call(user: @user, keys: %w[purpose])
 
     selected = @user.life_areas.v2_selected
     assert_equal [ "purpose" ], selected.map(&:key)
     assert_equal legacy_count, @user.life_areas.where.not(dream_id: nil).count
+    assert_nil @user.life_areas.find_by(key: "self", dream_id: nil).selected_at
   end
 
   test "rejects empty selection" do
