@@ -81,7 +81,7 @@
     <%= f.text_field :title,
           required: true,
           class: "lp-input",
-          placeholder: t("dash.battle_placeholder"),
+          placeholder: area_copy(aspect_key, "today_todo_placeholder", default: t("dash.battle_placeholder")),
           autocomplete: "off",
           autofocus: battle_empty %>
     <%= f.submit t("dash.battle_add"), class: "lp-dash-add__btn" %>

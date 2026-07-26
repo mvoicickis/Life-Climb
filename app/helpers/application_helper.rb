@@ -1,4 +1,14 @@
 module ApplicationHelper
+  def area_copy(area_or_key, key, **options)
+    area_key =
+      case area_or_key
+      when LifeArea then area_or_key.key
+      when String, Symbol then area_or_key
+      else area_or_key.to_s
+      end
+    AreaCopy.for(area_key, key, **options)
+  end
+
   def canonical_base_url
     host = ENV["APP_HOST"].presence || (respond_to?(:request) ? request.host : "example.com")
     "https://#{host}"

@@ -4579,10 +4579,9 @@ button.lp-progress-heat__cell {
   cursor: pointer;
 }
 
-.lp-climb-list__hint {
-  margin: 0;
-  color: var(--lp-muted);
-  font-size: 0.8rem;
+.lp-climb-card__hint-extra {
+  display: block;
+  margin-top: 0.35rem;
 }
 
 .lp-climb-list__row--tagged .lp-climb-list__fields {
