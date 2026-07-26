@@ -29,18 +29,6 @@
           <%= chevron %>
         </span>
       <% end %>
-
-      <%= link_to edit_today_count_settings_path,
-            id: "you-row-today-count",
-            class: [row_class, ("lp-you-row--flash" if highlight == "today_count")] do %>
-        <span><%= t("settings.change_today_count") %></span>
-        <span class="flex min-w-0 items-center gap-2">
-          <span class="shrink-0 font-semibold text-[var(--lp-muted)]">
-            <%= t("settings.cards_count", count: current_user.home_stat_count) %>
-          </span>
-          <%= chevron %>
-        </span>
-      <% end %>
     </div>
   </section>
 

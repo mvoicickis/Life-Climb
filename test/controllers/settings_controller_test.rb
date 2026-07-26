@@ -17,7 +17,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get settings_path
     assert_response :success
     assert_select "h1", text: "You"
-    assert_select "a[href=?]", edit_today_count_settings_path
+    assert_select "a[href=?]", edit_today_count_settings_path, count: 0
+    assert_select "a#you-row-today-count", count: 0
     assert_select "a[href=?]", edit_name_settings_path
     assert_select "a#you-row-life-area", count: 0
     assert_select "a[href=?]", support_path
