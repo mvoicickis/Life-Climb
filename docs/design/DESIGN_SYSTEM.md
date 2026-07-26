@@ -1,72 +1,77 @@
-# LifePoints Game Design System
+# LifePoints Brand & Design System
 
-Locked visual language for the Close-the-Gap redesign. Use these tokens for all new game surfaces. Do not revert new screens to light `--studio-paper`.
+## Canonical visual guide
 
-## Colour
+Use this board as the source of truth for colour, type, mountain art, and UI chrome:
 
-| Token | Hex | Role |
-|-------|-----|------|
-| `--lp-void` | `#070B09` | App background |
-| `--lp-surface` | `#0E1612` | Base panels |
-| `--lp-elevated` | `#15201A` | Cards / elevated glass base |
-| `--lp-glass` | `rgba(21, 32, 26, 0.72)` | Frosted cards |
-| `--lp-border` | `rgba(16, 185, 129, 0.2)` | Card borders |
-| `--lp-emerald` | `#10B981` | Primary actions / healthy |
-| `--lp-lime` | `#A3E635` | Neon energy / avatar ring (Home mockup) |
-| `--lp-mint` | `#34D399` | Secondary glow |
-| `--lp-gold` | `#E8C468` | XP, trophies, legendary |
-| `--lp-rose` | `#FB7185` | Far gap / neglect |
-| `--lp-ink` | `#F3F7F4` | Primary text |
-| `--lp-muted` | `#8FA399` | Secondary text |
-| `--lp-track` | `#27272A` | Meter recess (`zinc-800`) |
+- [`docs/design/BRAND_GUIDE_LIFE_GREEN.jpg`](BRAND_GUIDE_LIFE_GREEN.jpg) (also `.webp`)
+
+Landing hero / scene assets live in `public/branding/`.
+
+## Brand idea
+
+LifePoints helps a person turn any life goal into a real plan, and rewards real progress with Life Points — proof that they are becoming more alive.
+
+Feeling: **small steps, big life** — one mountain, today’s battle. Hope + invitation on a clean light shell, with Life Green as the action color.
+
+## Voice
+
+- Short sentences. Never explain with a long paragraph what one short line can say.
+- Human, not corporate. Say “Pick your mountain,” not “Select your primary objective.”
+- Show, don’t list. One real example (“Run for 15 minutes”) beats five abstract words.
+- No fake urgency. Never use countdown timers, scarcity copy, or streak-shame language.
+
+**Use often:** mountain · climb · battle · plan · alive · closer  
+
+**Avoid:** streak · habit · tracker · productivity · grind · hustle  
+
+## Colour — Life Green (app-wide)
+
+| Role | Token / hex | Use |
+|------|-------------|-----|
+| Page / app bg | `--lp-paper` `#FFFFFF` | Landing, Home, Journey, Progress, auth |
+| Soft band / mist | `--lp-mist` `#F1F5F9` | Alternating sections, tracks, soft chips |
+| Ink | `--lp-ink` `#0F172A` | Body, titles, **LP numbers**, closer % |
+| Charcoal | `--lp-charcoal` `#334155` | Secondary headings |
+| Muted / slate | `--lp-muted` `#64748B` | Supporting lines |
+| Primary / CTA | `--lp-green` `#22C55E` | Buttons, links, progress fills |
+| Primary deep | `--lp-green-deep` `#16A34A` | Hover / Emerald |
+| Soft green | `--lp-green-soft` `#86EFAC` | Light washes, soft fills |
+| Dawn wash | `#ECFDF5 → #FFFFFF` | Landing hero veil / closing atmosphere |
+| Reward flash only | `--lp-gold` `#F59E0B` | `+LP` toast / confetti only |
+
+**Hard readability rule:** LP chip and standing LP totals use deep ink on white/mist chips. Amber/gold is never the digit color.
+
+Legacy aliases (`--lp-teal`, `--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to Life Green so older class names stay on-brand.
+
+Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category marks only — not page chrome.
 
 ## Typography
 
-- **Display / game titles:** Fraunces or Sora — bold, tight tracking for “TODAY’S MISSION”, “LEVEL UP”
-- **UI body:** Source Sans 3 / Manrope — medium weight, readable on dark
-- **Labels:** 11–12px uppercase, wide tracking, lime/teal muted
+- **Display (serif):** Fraunces — big headlines, mountain / journey names.
+- **UI (sans):** Source Sans 3 — body and buttons.
+- Keep only these two fonts across landing and app.
 
-## Components
+## Icons & imagery
 
-| Component | Spec |
-|-----------|------|
-| `GlassCard` | `rounded-3xl`, glass bg, `border` emerald/20, soft shadow |
-| `GapMeter` | `h-3` track zinc-800, fill lime→teal gradient, optional markers |
-| `MissionCard` | Photo backdrop, LP + Morale chips, pill CTA |
-| `AreaNode` | Circle icon + % label; selected = scale + glow ring |
-| `PlayerAvatar` | Circular Man/Woman art, lime glow ring |
-| `CharacterPicker` | Two large portrait cards |
-| `PrimaryCTA` | Full-width or pill, teal/lime gradient, dark label |
-| `BottomNav` | Dashboard · Life Map · + FAB · Missions · Profile |
-| `RewardToast` / `LevelUpModal` | Gold particles, centered glass card |
+- Leaf mark: `public/branding/lifepoints-leaf-mark.png`
+- Landing hero: mountain path + summit flag (`public/branding/landing-hero-mountain.webp`)
+- Thin, single-line icons for steps and UI.
+- Emoji allowed **only** for Life Areas (and Home hero area mark).
+- No stock photos of people.
+- Full-bleed mountain path art on light paper heroes — never a navy void marketing shell.
 
-## Motion
+## Surface map
 
-- Mission done: gap ease, `+LP` float, energy pulse
-- Level up: gold wash + soft particles (no spam confetti storms)
-- Map nodes: gentle breathe; neglected desaturate
-- Transitions: fade + slight scale
-
-## Character (v1)
-
-`man` | `woman` — illustrated portraits only. Used on Home header, Life Map center/path, Profile. Changeable in Settings.
-
-## Life Map nodes (8)
-
-Self · Love · Family · Community · Humanity · Animals · Nature · Home  
-
-Do **not** merge labels (no “Self Love”) or substitute “Personal Growth”. Overall Gap is a summary meter / chip — never a ninth ring node.
-
-Stages: Seed → Plant → Tree → Forest → Legendary  
+| Surface | Shell |
+|---------|--------|
+| Landing | Soft green dawn hero/closing + white/mist mid sections |
+| Auth | Light dawn paper + Life Green CTAs |
+| Onboarding | `.lp-game` paper (same as Home) |
+| Home / Journey / Progress | `.lp-game` paper + white cards |
 
 ## Hard product rules (UI)
 
-- **No streaks.** Gap % and Life Energy / Morale drive emotion — never flame counters or Mon–Sun streak rows.
-- **Bottom nav (locked):** Dashboard · Life Map · **+** FAB · Missions · Profile.
-- **Copy tone:** warm, game-like; gap = distance to dream life, not habit guilt.
-- **Character v1:** Man | Woman only; illustrated portraits (not photos).
-
-## Screens inventory
-
-See mockups in `docs/design/mockups/` and `docs/design/RAILS_IMPLEMENTATION.md`.
- Canonical Home: `02-home-dashboard.png`. Map variants: `03-life-map.png` (Man), `03b-life-map-woman.png` (Woman).
+- **No streaks.** Closer % and next step drive emotion.
+- **Copy tone:** warm, meaning-first; gap = distance to the mountain, not guilt.
+- **Motion:** brand fade, mountain drift, CTA pulse, amber only on `+LP` flash; respect `prefers-reduced-motion`.

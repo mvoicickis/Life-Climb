@@ -1,0 +1,34 @@
+<%# locals: targets %>
+<section class="lp-dash-card lp-dash-targets" aria-label="<%= t('dash.targets_title') %>">
+  <header class="lp-dash-card__head">
+    <div>
+      <h2 class="lp-dash-card__title"><%= t("dash.targets_title") %></h2>
+      <p class="lp-dash-card__sub"><%= t("dash.targets_hint") %></p>
+    </div>
+  </header>
+
+  <ul class="lp-dash-targets__list">
+    <% targets.each do |target| %>
+      <li class="lp-dash-targets__item <%= 'is-done' if target.completed? %>">
+        <div class="lp-dash-targets__body">
+          <p class="lp-dash-targets__title"><%= target.title %></p>
+          <p class="lp-dash-targets__meta">
+            <%= target.progress_label %>
+            <% if target.tags.any? %> · <%= target.tags.join(", ") %><% end %>
+          </p>
+          <div class="lp-dash-bar lp-dash-bar--sm" role="progressbar" aria-valuenow="<%= target.progress_percent %>">
+            <div class="lp-dash-bar__fill" style="width: <%= target.progress_percent %>%"></div>
+          </div>
+        </div>
+        <% unless target.completed? %>
+          <%= form_with url: log_journey_target_path(target), method: :post, class: "lp-dash-targets__log", data: { turbo: false } do %>
+            <% if target.count? %>
+              <%= number_field_tag :amount, 1, min: 0.01, step: :any, class: "lp-input", placeholder: t("dash.target_amount_placeholder") %>
+            <% end %>
+            <%= submit_tag (target.oneshot? ? t("dash.target_complete") : t("dash.target_log")), class: "lp-dash-add__btn" %>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>
