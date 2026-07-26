@@ -4844,24 +4844,64 @@
   position: relative;
   overflow: hidden;
   gap: 0.95rem;
-  padding-top: 1.55rem;
+  padding-top: 9.1rem;
 }
 
 .lp-adventure__sky {
   position: absolute;
   inset: 0 0 auto;
-  height: 7.5rem;
+  height: 10rem;
   pointer-events: none;
-  color: color-mix(in srgb, var(--lp-green) 18%, transparent);
+  overflow: hidden;
+  border-radius: 1.25rem 1.25rem 0 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 18%, color-mix(in srgb, #86efac 28%, transparent), transparent 72%),
+    linear-gradient(180deg, #ecfdf5 0%, color-mix(in srgb, #ecfdf5 35%, transparent) 70%, transparent);
 }
 
-.lp-adventure__silhouette {
+.lp-adventure__mountain {
   position: absolute;
   left: 50%;
-  bottom: -0.15rem;
-  width: min(120%, 24rem);
+  bottom: -0.55rem;
+  width: min(112%, 23.5rem);
   transform: translateX(-50%);
+  animation: lp-adventure-mountain-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lp-adventure__mountain-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 14px 22px rgba(15, 118, 110, 0.16));
+}
+
+.lp-adventure__mountain-trail,
+.lp-adventure__mountain-camp,
+.lp-adventure__mountain-flags,
+.lp-adventure__mountain-glow,
+.lp-adventure__mountain-snow {
+  opacity: 0.35;
+}
+
+.lp-adventure__mountain.is-trail .lp-adventure__mountain-snow,
+.lp-adventure__mountain.is-trail .lp-adventure__mountain-trail {
+  opacity: 1;
+}
+
+.lp-adventure__mountain.is-trail .lp-adventure__mountain-camp {
   opacity: 0.9;
+}
+
+.lp-adventure__mountain.is-trail .lp-adventure__mountain-flags {
+  opacity: 0.95;
+}
+
+.lp-adventure__mountain.is-trail .lp-adventure__mountain-glow {
+  opacity: 0.55;
+}
+
+.lp-adventure__mountain.is-trail .lp-adventure__mountain-trail {
+  animation: lp-adventure-trail-draw 1.4s ease-out 0.35s both;
 }
 
 .lp-adventure__mark {
@@ -5039,6 +5079,28 @@
   }
 }
 
+@keyframes lp-adventure-mountain-rise {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes lp-adventure-trail-draw {
+  from {
+    stroke-dashoffset: 48;
+    opacity: 0.2;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
 @keyframes lp-adventure-beat-in {
   from {
     opacity: 0;
@@ -5064,12 +5126,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lp-adventure__mark,
+  .lp-adventure__mountain,
+  .lp-adventure__mountain-trail,
   .lp-adventure__beat,
   .lp-adventure__ready,
   .lp-adventure__cta {
     animation: none !important;
     opacity: 1;
     transform: none;
+  }
+
+  .lp-adventure__mountain {
+    transform: translateX(-50%);
   }
 
   .lp-adventure__forge-item {

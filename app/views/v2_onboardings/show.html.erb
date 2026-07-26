@@ -6,9 +6,7 @@
   <% if @step == "welcome" %>
     <section class="lp-adventure__card lp-adventure__welcome" aria-labelledby="adventure-welcome-title">
       <div class="lp-adventure__sky" aria-hidden="true">
-        <svg class="lp-adventure__silhouette" viewBox="0 0 320 120" role="presentation">
-          <path d="M0 120 L55 68 L95 92 L150 28 L210 78 L255 52 L320 120 Z" fill="currentColor"/>
-        </svg>
+        <%= render "v2_onboardings/mountain_art", prefix: "lp-welcome-mtn" %>
       </div>
 
       <%= render "shared/lp_brand_mark", size: 64, class_name: "lp-adventure__mark" %>

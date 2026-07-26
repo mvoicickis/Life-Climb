@@ -1,0 +1,36 @@
+<%# Welcome sky: same mountain art as Strategy / Today (the in-game peak). %>
+<% prefix = local_assigns.fetch(:prefix, "lp-welcome-mtn") %>
+<div class="lp-adventure__mountain is-trail">
+  <svg class="lp-adventure__mountain-art" viewBox="0 0 320 180" role="presentation" focusable="false">
+    <defs>
+      <linearGradient id="<%= prefix %>-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ecfdf5"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="<%= prefix %>-face" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#166534"/>
+        <stop offset="55%" stop-color="#15803d"/>
+        <stop offset="100%" stop-color="#0f766e"/>
+      </linearGradient>
+      <linearGradient id="<%= prefix %>-shade" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#14532d" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#14532d" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect class="lp-adventure__mountain-sky" width="320" height="180" fill="url(#<%= prefix %>-sky)"/>
+    <path class="lp-adventure__mountain-far" d="M0 150 L70 95 L120 130 L180 70 L250 120 L320 90 L320 180 L0 180 Z" fill="#bbf7d0" opacity="0.55"/>
+    <path class="lp-adventure__mountain-peak" d="M40 180 L160 38 L280 180 Z" fill="url(#<%= prefix %>-face)"/>
+    <path class="lp-adventure__mountain-shade" d="M40 180 L160 38 L160 180 Z" fill="url(#<%= prefix %>-shade)"/>
+    <path class="lp-adventure__mountain-snow" d="M130 78 L160 38 L190 78 L175 72 L160 92 L145 72 Z" fill="#f8fafc" opacity="0.95"/>
+    <path class="lp-adventure__mountain-trail" d="M92 168 C118 148, 128 136, 148 118 C168 100, 176 90, 188 78" fill="none" stroke="#fef3c7" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 6"/>
+    <g class="lp-adventure__mountain-camp">
+      <path d="M118 148 L132 128 L146 148 Z" fill="#d97706"/>
+      <rect x="128" y="140" width="4" height="8" fill="#92400e"/>
+    </g>
+    <g class="lp-adventure__mountain-flags">
+      <path d="M168 112 L168 88" stroke="#166534" stroke-width="2"/>
+      <path d="M168 88 L186 94 L168 100 Z" fill="#84cc16"/>
+    </g>
+    <circle class="lp-adventure__mountain-glow" cx="160" cy="38" r="18" fill="#fef08a" opacity="0.45"/>
+  </svg>
+</div>
