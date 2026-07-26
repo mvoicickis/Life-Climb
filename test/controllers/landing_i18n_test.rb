@@ -8,7 +8,10 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Start free/, response.body)
     assert_match(/Action Points/, response.body)
     assert_match(/Finish projects to climb/, response.body)
+    assert_match(/Run my first 10 km/, response.body)
+    assert_match(/Run a full 10 km/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
+    assert_no_match(/Run my first 10K[^m]/, response.body)
   end
 
   test "landing page switches to latvian with product-true copy" do
@@ -19,6 +22,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Sākt bez maksas/, response.body)
     assert_match(/Action Points/, response.body)
     assert_match(/Pabeidz projektus, lai kāptu/i, response.body)
+    assert_match(/10 km/, response.body)
     assert_no_match(/tuvojies virsotnei/i, response.body)
     assert_select ".lp-landing-chip", text: /Es/
     assert_select ".lp-landing-chip", text: /Karjera/
@@ -37,6 +41,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Kostenlos starten/, response.body)
     assert_match(/Action Points/, response.body)
     assert_match(/Beende Projekte, um deinen Berg/i, response.body)
+    assert_match(/10 km/, response.body)
     assert_no_match(/kommst dem Gipfel näher/i, response.body)
     assert_select ".lp-landing-chip", text: /Selbst/
     assert_select ".lp-landing-chip", text: /Karriere/
@@ -55,6 +60,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Empezar gratis/, response.body)
     assert_match(/Action Points/, response.body)
     assert_match(/Termina proyectos para subir/i, response.body)
+    assert_match(/10 km/, response.body)
     assert_no_match(/te acercas a la cima/i, response.body)
     assert_select ".lp-landing-chip", text: /Yo/
     assert_select ".lp-landing-chip", text: /Carrera/

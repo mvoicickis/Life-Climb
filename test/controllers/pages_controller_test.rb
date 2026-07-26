@@ -9,7 +9,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/How it works/, response.body)
     assert_match(/Your life, one area at a time/, response.body)
     assert_match(/Every point makes you more alive/, response.body)
-    assert_match(/Run my first 10K/, response.body)
+    assert_match(/Run my first 10 km/, response.body)
     assert_match(/goal, plans, and projects/i, response.body)
     assert_match(/Action Points/i, response.body)
     assert_match(/Finish projects to climb/i, response.body)
