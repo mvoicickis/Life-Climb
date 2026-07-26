@@ -951,6 +951,8 @@ en:
   settings:
     title: "Settings"
     subtitle: "Shape Today so it stays simple and motivating."
+    profile_title: "Your name"
+    profile_hint: "Shown on Home in your daily greeting."
     count_title: "How many on Today"
     count_hint: "Fewer cards = clearer focus."
     save: "Save"
@@ -1067,6 +1069,8 @@ en:
     cta_body: "Pick your mountain. Start today’s battle."
     footer_tagline: "Become more alive."
   auth:
+    name: "Your name"
+    name_placeholder: "What should we call you?"
     email: "Email"
     password: "Password"
     password_confirmation: "Type password again"

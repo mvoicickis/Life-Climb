@@ -45,6 +45,7 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
 
   test "onboarding interview creates eight tree parts and focus building" do
     user = User.create!(
+      name: "Dreamer",
       email_address: "newdream@example.com",
       password: "password12345",
       password_confirmation: "password12345",

@@ -111,6 +111,8 @@ es:
   settings:
     title: "Ajustes"
     subtitle: "Da forma a Hoy para que sea simple y motivador."
+    profile_title: "Tu nombre"
+    profile_hint: "Se muestra en el saludo de Inicio."
     count_title: "Cuántos en Hoy"
     count_hint: "Menos tarjetas = foco más claro."
     save: "Guardar"
@@ -226,6 +228,8 @@ es:
     cta_body: "Elige tu montaña. Empieza la batalla de hoy."
     footer_tagline: "Vuelve más vivo."
   auth:
+    name: "Tu nombre"
+    name_placeholder: "¿Cómo te llamamos?"
     email: "Correo"
     password: "Contraseña"
     password_confirmation: "Repite la contraseña"

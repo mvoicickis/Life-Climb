@@ -3,6 +3,7 @@ require "test_helper"
 class MagicalLoopTest < ActiveSupport::TestCase
   test "one-mountain loop: area, journey, mission, complete moves LP and gap" do
     user = User.create!(
+      name: "Loop",
       email_address: "loop@example.com",
       password: "password12345",
       password_confirmation: "password12345",
