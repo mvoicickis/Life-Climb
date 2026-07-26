@@ -13,9 +13,9 @@
       <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("strategy.year_runs_until", date: l(@year_due, format: :long)) %></p>
       <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("strategy.plan_hint") %></p>
     </div>
-    <div class="lp-strategy__sp shrink-0" title="<%= t('strategy.sp_label') %>">
+    <div class="lp-strategy__sp shrink-0" aria-label="<%= t('strategy.sp_label') %>">
       <span class="lp-strategy__sp-value"><%= current_user.strategy_points %></span>
-      <span class="lp-strategy__sp-label"><%= t("strategy.sp_short") %></span>
+      <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
     </div>
   </header>
 
