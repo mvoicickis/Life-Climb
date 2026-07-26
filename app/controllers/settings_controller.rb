@@ -13,7 +13,7 @@ class SettingsController < ApplicationController
 
   def update
     if current_user.update(settings_params)
-      redirect_to settings_path, notice: update_notice
+      redirect_to settings_path(highlight: highlight_key), notice: update_notice
     else
       render update_error_template, status: :unprocessable_entity
     end
@@ -54,6 +54,14 @@ class SettingsController < ApplicationController
       t("settings.today_count_updated")
     else
       "Today board updated."
+    end
+  end
+
+  def highlight_key
+    if updating?(:name)
+      "name"
+    elsif updating?(:home_stat_count)
+      "today_count"
     end
   end
 

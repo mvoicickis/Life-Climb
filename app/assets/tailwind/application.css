@@ -3196,6 +3196,22 @@
   border-radius: 1.5rem;
 }
 
+.lp-you-row--flash {
+  border-color: var(--lp-lime);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-lime) 35%, transparent);
+  animation: lp-you-row-flash 1.6s ease-out;
+}
+
+.lp-you-row--choose {
+  border-color: var(--lp-lime);
+  background: color-mix(in srgb, var(--lp-lime) 12%, var(--lp-elevated));
+}
+
+@keyframes lp-you-row-flash {
+  0% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-lime) 45%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
 .lp-cta {
   display: inline-flex;
   align-items: center;

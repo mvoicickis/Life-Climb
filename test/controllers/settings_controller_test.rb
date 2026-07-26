@@ -6,7 +6,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     patch settings_path, params: { user: { home_stat_count: 3 } }
-    assert_redirected_to settings_path
+    assert_redirected_to settings_path(highlight: "today_count")
     assert_equal 3, user.reload.home_stat_count
   end
 
@@ -16,11 +16,14 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
+    assert_select "h1", text: "You"
     assert_select "a[href=?]", edit_today_count_settings_path
     assert_select "a[href=?]", edit_name_settings_path
     assert_select "a[href=?]", life_area_selections_path
     assert_select "a[href=?]", support_path
     assert_select "a[href=?]", new_password_path
+    assert_select "a[href=?]", about_path
+    assert_select "a[href=?]", new_feedback_path
   end
 
   test "edit name page and update" do
@@ -31,7 +34,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     patch settings_path, params: { user: { name: "Alex" } }
-    assert_redirected_to settings_path
+    assert_redirected_to settings_path(highlight: "name")
     assert_equal "Alex", user.reload.name
   end
 
@@ -41,6 +44,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     get edit_today_count_settings_path
     assert_response :success
+    assert_select "[data-controller='number-stepper']"
   end
 
   test "reorder home habits for current user only" do
