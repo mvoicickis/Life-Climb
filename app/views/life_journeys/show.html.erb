@@ -3,96 +3,147 @@
 <% content_for :lp_hide_top_nav, true %>
 
 <%
-  today_mission = @today_mission || @journey.missions.for_day(Date.current).primary.order(:id).first
-  closer_value = params.dig(:life_journey, :closer_percent).presence || @journey.closer_percent.round
+  today_mission = @today_mission
+  clarity = @journey.clarity_count
+  total = @journey.clarity_total
+  pct = total.zero? ? 0 : ((clarity.to_f / total) * 100).round
+  focus = @focus_layer.to_s
+  section_keys = {
+    "goal" => "goal", "purpose" => "purpose", "policy" => "policy", "approach" => "approach",
+    "program" => "program", "milestone" => "milestone", "scenes" => "scenes",
+    "finished" => "finished", "today" => "today"
+  }
+  hint_keys = {
+    "goal" => "goal_hint", "purpose" => "purpose_hint", "policy" => "policy_hint",
+    "approach" => "approach_hint", "program" => "program_hint", "milestone" => "milestone_hint",
+    "scenes" => "scenes_hint", "finished" => "finished_hint", "today" => "today_hint"
+  }
 %>
 
-<div class="lp-journey-setup">
-  <header class="lp-journey-setup__head">
+<div class="lp-climb"
+     data-controller="journey-climb"
+     data-journey-climb-focus-value="<%= focus %>"
+     data-journey-climb-unlocked-value="<%= @unlocked_layer.to_s %>">
+  <header class="lp-climb__head">
     <p class="lp-dash-kicker"><%= @journey.life_area.label %></p>
-    <h1><%= t("journeys.setup_title") %></h1>
-    <p><%= t("journeys.setup_subtitle") %></p>
+    <h1><%= t("journeys.climb.title") %></h1>
+    <p><%= t("journeys.climb.subtitle") %></p>
+
+    <div class="lp-climb-clarity" data-journey-climb-target="clarity" aria-label="<%= t('journeys.climb.clarity', count: clarity, total: total) %>">
+      <div class="lp-climb-clarity__ring" style="--clarity: <%= pct %>">
+        <span><%= clarity %>/<%= total %></span>
+      </div>
+      <div>
+        <p class="lp-climb-clarity__label"><%= t("journeys.climb.clarity_label") %></p>
+        <p class="lp-climb-clarity__meta"><%= t("journeys.climb.clarity", count: clarity, total: total) %></p>
+      </div>
+    </div>
+
     <%= link_to t("journeys.open_today"), dashboard_path, class: "lp-journey-setup__today" %>
   </header>
 
-  <%= form_with model: @journey, url: life_journey_path(@journey), method: :patch, class: "lp-journey-setup__form" do |f| %>
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_title"><%= t("journeys.sections.goal") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.goal_hint") %></p>
-      <%= f.text_field :title, class: "lp-input", required: true, autocomplete: "off" %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_purpose"><%= t("journeys.sections.purpose") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.purpose_hint") %></p>
-      <%= f.text_area :purpose, rows: 3, class: "lp-input", placeholder: t("journeys.sections.purpose_placeholder") %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_policy"><%= t("journeys.sections.policy") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.policy_hint") %></p>
-      <%= f.text_area :policy, rows: 3, class: "lp-input", placeholder: t("journeys.sections.policy_placeholder") %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_approach"><%= t("journeys.sections.approach") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.approach_hint") %></p>
-      <%= f.text_area :approach, rows: 3, class: "lp-input", placeholder: t("journeys.sections.approach_placeholder") %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_program"><%= t("journeys.sections.program") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.program_hint") %></p>
-      <%= f.text_area :program, rows: 4, class: "lp-input", placeholder: t("journeys.sections.program_placeholder") %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_next_win"><%= t("journeys.sections.milestone") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.milestone_hint") %></p>
-      <%= f.text_field :next_win, class: "lp-input", autocomplete: "off" %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_ideal_scene"><%= t("journeys.sections.ideal") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.ideal_hint") %></p>
-      <%= f.text_area :ideal_scene, rows: 3, class: "lp-input", required: true %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_current_reality"><%= t("journeys.sections.reality") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.reality_hint") %></p>
-      <%= f.text_area :current_reality, rows: 3, class: "lp-input", required: true %>
-    </section>
-
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_closer_percent"><%= t("journeys.sections.progress") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.progress_hint") %></p>
+  <section class="lp-climb-card lp-climb-card--progress">
+    <p class="lp-climb-card__kicker"><%= t("journeys.sections.progress") %></p>
+    <p class="lp-climb-card__hint"><%= t("journeys.sections.progress_hint") %></p>
+    <%= form_with url: life_journey_path(@journey), method: :patch, class: "lp-climb-progress-form" do %>
+      <input type="hidden" name="closer_only" value="1">
       <div class="lp-journey-progress">
-        <%= number_field_tag "life_journey[closer_percent]", closer_value,
+        <%= number_field_tag "life_journey[closer_percent]", @journey.closer_percent.round,
               min: 0, max: 100, step: 1, class: "lp-input", id: "life_journey_closer_percent" %>
         <span>% closer</span>
+        <%= submit_tag t("journeys.climb.save_progress"), class: "lp-climb-card__save lp-climb-card__save--small" %>
       </div>
-      <p class="lp-journey-card__meta"><%= t("dashboard_v2.gap") %>: <%= @journey.gap_percent.to_i %>%</p>
-    </section>
+    <% end %>
+  </section>
 
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_finished_result"><%= t("journeys.sections.finished") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.finished_hint") %></p>
-      <%= f.text_area :finished_result, rows: 3, class: "lp-input", placeholder: t("journeys.sections.finished_placeholder") %>
-    </section>
+  <div class="lp-climb__stack">
+    <% LifeJourney::CLIMB_LAYERS.each_with_index do |layer, index| %>
+      <%
+        state = @journey.layer_state(layer)
+        editing = focus == layer
+        prev = index.positive? ? LifeJourney::CLIMB_LAYERS[index - 1] : nil
+        unlock_hint = prev ? t("journeys.climb.unlock_hint", prev: t("journeys.sections.#{section_keys.fetch(prev)}")) : nil
+        summary = @journey.layer_summary(layer, today_mission: today_mission)
+        skipped = @journey.layer_skipped?(layer)
+        section_key = section_keys.fetch(layer)
+        hint_key = hint_keys.fetch(layer)
+      %>
+      <section id="climb-<%= layer %>"
+               class="lp-climb-card lp-climb-card--<%= state %> <%= 'lp-climb-card--goal' if layer == 'goal' %> <%= 'is-focus' if editing %> <%= 'is-just-unlocked' if @unlocked_layer.to_s == layer %>"
+               data-journey-climb-target="card"
+               data-layer="<%= layer %>">
+        <div class="lp-climb-card__top">
+          <p class="lp-climb-card__kicker">
+            <% if state == :complete %>
+              <span class="lp-climb-card__check" aria-hidden="true">✓</span>
+            <% end %>
+            <%= t("journeys.sections.#{section_key}") %>
+            <% if layer == "policy" %>
+              <span class="lp-climb-card__badge"><%= t("journeys.climb.oaths_badge") %></span>
+            <% end %>
+          </p>
+          <% if state == :complete && !editing %>
+            <%= link_to t("journeys.climb.reedit"), life_journey_path(@journey, edit: layer), class: "lp-climb-card__edit" %>
+          <% end %>
+        </div>
 
-    <section class="lp-journey-card">
-      <label class="lp-journey-card__label" for="life_journey_today_mission"><%= t("journeys.sections.today") %></label>
-      <p class="lp-journey-card__hint"><%= t("journeys.sections.today_hint") %></p>
-      <%= text_field_tag "life_journey[today_mission]", today_mission&.title,
-            class: "lp-input", id: "life_journey_today_mission", autocomplete: "off" %>
-      <% if today_mission&.completed? %>
-        <p class="lp-journey-card__meta lp-journey-card__meta--ok"><%= t("dashboard_v2.done_today") %></p>
-      <% end %>
-    </section>
+        <% if state == :locked %>
+          <p class="lp-climb-card__locked"><%= unlock_hint %></p>
+        <% elsif state == :complete && !editing %>
+          <p class="lp-climb-card__summary">
+            <% if skipped %>
+              <em><%= t("journeys.climb.skipped_summary") %></em>
+            <% else %>
+              <%= truncate(summary.to_s, length: 140) %>
+            <% end %>
+          </p>
+        <% else %>
+          <p class="lp-climb-card__hint">
+            <% if layer == "policy" %>
+              <%= t("journeys.climb.oaths_hint") %>
+            <% else %>
+              <%= t("journeys.sections.#{hint_key}") %>
+            <% end %>
+          </p>
 
-    <%= f.submit t("journeys.save_setup"), class: "lp-dash-cta" %>
-  <% end %>
+          <%= form_with url: life_journey_path(@journey), method: :patch, class: "lp-climb-card__form" do %>
+            <input type="hidden" name="layer" value="<%= layer %>">
+
+            <% case layer %>
+            <% when "goal" %>
+              <%= text_field_tag "life_journey[title]", @journey.title, class: "lp-input", required: true, autocomplete: "off" %>
+            <% when "purpose" %>
+              <%= text_area_tag "life_journey[purpose]", @journey.purpose, rows: 3, class: "lp-input", placeholder: t("journeys.sections.purpose_placeholder") %>
+            <% when "policy" %>
+              <%= text_area_tag "life_journey[policy]", @journey.policy, rows: 3, class: "lp-input", placeholder: t("journeys.sections.policy_placeholder") %>
+            <% when "approach" %>
+              <%= text_area_tag "life_journey[approach]", @journey.approach, rows: 3, class: "lp-input", placeholder: t("journeys.sections.approach_placeholder") %>
+            <% when "program" %>
+              <%= text_area_tag "life_journey[program]", @journey.program, rows: 4, class: "lp-input", placeholder: t("journeys.sections.program_placeholder") %>
+            <% when "milestone" %>
+              <%= text_field_tag "life_journey[next_win]", @journey.next_win, class: "lp-input", autocomplete: "off" %>
+            <% when "scenes" %>
+              <label class="lp-climb-mini-label" for="life_journey_ideal_scene"><%= t("journeys.sections.ideal") %></label>
+              <%= text_area_tag "life_journey[ideal_scene]", @journey.ideal_scene, rows: 2, class: "lp-input", id: "life_journey_ideal_scene", required: true %>
+              <label class="lp-climb-mini-label" for="life_journey_current_reality"><%= t("journeys.sections.reality") %></label>
+              <%= text_area_tag "life_journey[current_reality]", @journey.current_reality, rows: 2, class: "lp-input", id: "life_journey_current_reality", required: true %>
+            <% when "finished" %>
+              <%= text_area_tag "life_journey[finished_result]", @journey.finished_result, rows: 3, class: "lp-input", placeholder: t("journeys.sections.finished_placeholder") %>
+            <% when "today" %>
+              <%= text_field_tag "life_journey[today_mission]", today_mission&.title, class: "lp-input", autocomplete: "off" %>
+            <% end %>
+
+            <div class="lp-climb-card__actions">
+              <%= submit_tag (layer == "policy" ? t("journeys.climb.swear_rules") : t("journeys.climb.save_layer")), class: "lp-climb-card__save" %>
+              <% if LifeJourney::SKIPPABLE_LAYERS.include?(layer) %>
+                <button type="submit" name="skip" value="1" class="lp-climb-card__skip" data-turbo-confirm="<%= t('journeys.climb.skip_confirm') %>"><%= t("journeys.climb.skip") %></button>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
 
   <% if @journey.status != "completed" %>
     <%= button_to t("journeys.reached_this"),

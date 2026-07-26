@@ -19,43 +19,124 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
     @journey = @user.reload.primary_focused_journey
   end
 
-  test "journey page shows editable alignment sections" do
+  test "journey climb shows clarity ring and locks next layer" do
+    @journey.update!(
+      purpose: nil, policy: nil, approach: nil, program: nil, finished_result: nil,
+      setup_flags: { "goal" => "done" }
+    )
+
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/Set up this journey/i, response.body)
+    assert_match(/Climb clarity/i, response.body)
     assert_match(/Why it matters/i, response.body)
     assert_match(/Rules/i, response.body)
-    assert_match(/Approach/i, response.body)
-    assert_match(/Program/i, response.body)
-    assert_match(/Finished result/i, response.body)
-    assert_match(/Today'?s action|Today/i, response.body)
+    assert_match(/Fill Why it matters to unlock/i, response.body)
+    assert_select "#climb-purpose.lp-climb-card--open"
+    assert_select "#climb-policy.lp-climb-card--locked"
   end
 
-  test "can save alignment fields from journey page" do
+  test "saving goal unlocks purpose and raises clarity" do
+    @journey.update!(
+      purpose: nil, policy: nil, approach: nil, program: nil, finished_result: nil,
+      next_win: nil, setup_flags: {}
+    )
+
     patch life_journey_path(@journey), params: {
-      life_journey: {
-        title: "Ship LifePoints",
-        purpose: "Freedom and mastery",
-        policy: "Ship weekly",
-        approach: "Build in public",
-        program: "1) MVP 2) Beta 3) Launch",
-        next_win: "Launch Beta",
-        ideal_scene: "App in production",
-        current_reality: "Still building",
-        finished_result: "A live product people pay for",
-        closer_percent: 35,
-        today_mission: "Polish journey setup"
-      }
+      layer: "goal",
+      life_journey: { title: "Ship LifePoints" }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "purpose")
+    follow_redirect!
+    assert_response :success
+
+    @journey.reload
+    assert @journey.layer_done?("goal")
+    assert @journey.layer_unlocked?("purpose")
+    assert_equal :open, @journey.layer_state("purpose")
+    assert_equal :locked, @journey.layer_state("policy")
+    assert_equal 1, @journey.clarity_count
+    assert_select "#climb-purpose.lp-climb-card--open"
+  end
+
+  test "skip purpose unlocks rules and counts toward clarity" do
+    @journey.update!(setup_flags: { "goal" => "done" })
+
+    patch life_journey_path(@journey), params: {
+      layer: "purpose",
+      skip: "1",
+      life_journey: { purpose: "" }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "policy")
+
+    @journey.reload
+    assert @journey.layer_skipped?("purpose")
+    assert @journey.layer_unlocked?("policy")
+    assert_equal 2, @journey.clarity_count
+  end
+
+  test "cannot save purpose while goal flag incomplete" do
+    @journey.update_column(:setup_flags, {})
+
+    patch life_journey_path(@journey), params: {
+      layer: "purpose",
+      life_journey: { purpose: "Freedom" }
     }
     assert_redirected_to life_journey_path(@journey)
     @journey.reload
-    assert_equal "Freedom and mastery", @journey.purpose
-    assert_equal "Ship weekly", @journey.policy
-    assert_equal "Build in public", @journey.approach
-    assert_equal "1) MVP 2) Beta 3) Launch", @journey.program
-    assert_equal "A live product people pay for", @journey.finished_result
-    assert_in_delta 65.0, @journey.gap_percent.to_f, 0.01
-    mission = @journey.missions.for_day.primary.order(:id).first
-    assert_equal "Polish journey setup", mission.title
+    assert_nil @journey.purpose.presence
+    assert_not @journey.layer_done?("purpose")
+  end
+
+  test "cannot jump to rules before purpose filled or skipped" do
+    @journey.update!(setup_flags: { "goal" => "done" })
+
+    patch life_journey_path(@journey), params: {
+      layer: "policy",
+      life_journey: { policy: "Ship weekly" }
+    }
+    assert_redirected_to life_journey_path(@journey)
+    @journey.reload
+    assert_not @journey.layer_done?("policy")
+    assert_equal :locked, @journey.layer_state("policy")
+  end
+
+  test "clarity count matches done plus skipped layers" do
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done",
+        "purpose" => "skipped",
+        "policy" => "done"
+      }
+    )
+    assert_equal 3, @journey.clarity_count
+    assert_equal LifeJourney::CLIMB_LAYERS.size, @journey.clarity_total
+  end
+
+  test "progress meter updates without climbing" do
+    patch life_journey_path(@journey), params: {
+      closer_only: "1",
+      life_journey: { closer_percent: 40 }
+    }
+    assert_redirected_to life_journey_path(@journey)
+    @journey.reload
+    assert_in_delta 60.0, @journey.gap_percent.to_f, 0.01
+  end
+
+  test "milestone cannot be skipped" do
+    @journey.update!(
+      setup_flags: {
+        "goal" => "done", "purpose" => "done", "policy" => "done",
+        "approach" => "done", "program" => "done"
+      }
+    )
+
+    patch life_journey_path(@journey), params: {
+      layer: "milestone",
+      skip: "1",
+      life_journey: { next_win: "" }
+    }
+    assert_redirected_to life_journey_path(@journey)
+    @journey.reload
+    assert_not @journey.layer_skipped?("milestone")
   end
 end
