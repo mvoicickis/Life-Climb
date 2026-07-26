@@ -1,24 +1,24 @@
 <%# locals: heatmap %>
 <section class="lp-progress-card lp-progress-heatmap" aria-label="<%= t('progress.heatmap_title') %>">
   <header class="lp-progress-card__head">
-    <h2><%= t("progress.heatmap_title") %></h2>
+    <h2><%= t("progress.heatmap_summary", count: heatmap[:active_days].to_i) %></h2>
     <p><%= t("progress.heatmap_hint") %></p>
   </header>
 
   <div class="lp-progress-heatboard" style="--weeks: <%= heatmap[:weeks] %>">
-    <div class="lp-progress-heatboard__scroll">
-      <div class="lp-progress-heatboard__track">
-        <div class="lp-progress-heatboard__months" aria-hidden="true">
-          <% heatmap[:month_labels].each do |month| %>
-            <span class="lp-progress-heatboard__month" style="--week: <%= month[:index] %>"><%= month[:label] %></span>
-          <% end %>
-        </div>
+    <div class="lp-progress-heatboard__frame">
+      <div class="lp-progress-heatboard__days" aria-hidden="true">
+        <% 7.times do |row| %>
+          <% label = heatmap[:day_labels].find { |d| d[:row] == row }&.dig(:label) %>
+          <span><%= label %></span>
+        <% end %>
+      </div>
 
-        <div class="lp-progress-heatboard__body">
-          <div class="lp-progress-heatboard__days" aria-hidden="true">
-            <% 7.times do |row| %>
-              <% label = heatmap[:day_labels].find { |d| d[:row] == row }&.dig(:label) %>
-              <span><%= label %></span>
+      <div class="lp-progress-heatboard__scroll">
+        <div class="lp-progress-heatboard__track">
+          <div class="lp-progress-heatboard__months" aria-hidden="true">
+            <% heatmap[:month_labels].each do |month| %>
+              <span class="lp-progress-heatboard__month" style="--week: <%= month[:index] %>"><%= month[:label] %></span>
             <% end %>
           </div>
 
