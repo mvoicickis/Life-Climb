@@ -54,12 +54,16 @@ Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category ma
 
 ## Icons & imagery
 
-- Leaf mark: `public/branding/lifepoints-leaf-mark.png`
+- Canonical logo (lockup): `public/branding/lifepoints-logo.png` — mountain circle + LifePoints wordmark + “SMALL STEPS. BIG LIFE.”
+- Canonical mark (icon crop): `public/branding/lifepoints-mark.png` — circular mountain mark for favicon, app icon, BMC avatar, nav
+- App icon: `public/icon.png` (from the mark)
+- Share / OG: `public/og-lifepoints-logo.png`
 - Landing hero: mountain path + summit flag (`public/branding/landing-hero-mountain.webp`)
 - Thin, single-line icons for steps and UI.
 - Emoji allowed **only** for Life Areas (and Home hero area mark).
 - No stock photos of people.
 - Full-bleed mountain path art on light paper heroes — never a navy void marketing shell.
+- Retired: leaf sprout mark (`lifepoints-leaf-mark.png`) — do not use for new UI.
 
 ## Surface map
 

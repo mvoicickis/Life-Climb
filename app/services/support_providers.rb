@@ -11,7 +11,7 @@ module SupportProviders
       kind: :primary,
       i18n_key: "support.providers.buy_me_a_coffee",
       url_env: "BUY_ME_A_COFFEE_URL",
-      default_url: nil,
+      default_url: "https://buymeacoffee.com/lifepoints",
       enabled: true
     },
     {
