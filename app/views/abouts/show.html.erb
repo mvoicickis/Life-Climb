@@ -2,7 +2,10 @@
 
 <div class="studio-support">
   <header>
-    <p class="studio-kicker"><%= t("app_name") %></p>
+    <p class="lp-brand-kicker">
+      <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
+      <span><%= t("app_name") %></span>
+    </p>
     <h1 class="studio-dream"><%= t("about.title") %></h1>
     <p class="studio-support__subtitle mt-4"><%= t("about.subtitle") %></p>
   </header>

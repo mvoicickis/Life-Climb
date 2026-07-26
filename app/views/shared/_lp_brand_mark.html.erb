@@ -1,0 +1,12 @@
+<%# Shared LifePoints mountain mark — keep brand uniform across app surfaces. %>
+<%
+  size = local_assigns.fetch(:size, 32)
+  css_class = local_assigns.fetch(:class_name, "lp-brand-mark")
+%>
+<img class="<%= css_class %>"
+     src="/branding/lifepoints-mark.png"
+     width="<%= size %>"
+     height="<%= size %>"
+     alt=""
+     aria-hidden="true"
+     decoding="async">

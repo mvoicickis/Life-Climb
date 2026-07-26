@@ -1,7 +1,7 @@
 <nav class="studio-nav" aria-label="Main">
   <div class="studio-nav__inner">
     <%= link_to dashboard_path, class: "studio-brand" do %>
-      <span class="studio-brand__mark" aria-hidden="true"></span>
+      <%= render "shared/lp_brand_mark", size: 28, class_name: "studio-brand__mark" %>
       <span><%= t("app_name") %></span>
     <% end %>
 

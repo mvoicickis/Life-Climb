@@ -14,7 +14,7 @@
 <div class="lp-dash" data-controller="battle-day" data-battle-day-closer-value="<%= @closer %>">
   <header class="lp-dash__top">
     <%= link_to dashboard_path, class: "lp-dash__brand" do %>
-      <span class="lp-dash__brand-mark" aria-hidden="true">🌱</span>
+      <%= render "shared/lp_brand_mark", size: 30, class_name: "lp-dash__brand-mark" %>
       <span><%= t("app_name") %></span>
     <% end %>
     <div class="lp-dash__stats" aria-label="<%= t('game_ui.life_points_label') %>">

@@ -15,9 +15,9 @@
     <%= yield :head %>
 
     <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" href="/icon.svg?v=5" type="image/svg+xml">
-    <link rel="icon" href="/icon.png?v=5" type="image/png" sizes="512x512">
-    <link rel="apple-touch-icon" href="/icon.png?v=5">
+    <link rel="icon" href="/icon.svg?v=6" type="image/svg+xml">
+    <link rel="icon" href="/icon.png?v=6" type="image/png" sizes="512x512">
+    <link rel="apple-touch-icon" href="/icon.png?v=6">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +34,7 @@
       <nav class="lp-top-nav" aria-label="Main">
         <div class="lp-top-nav__inner">
           <%= link_to dashboard_path, class: "lp-top-nav__brand" do %>
+            <%= render "shared/lp_brand_mark", size: 28, class_name: "lp-top-nav__brand-mark" %>
             <span><%= t("app_name") %></span>
           <% end %>
           <div class="lp-top-nav__links">
