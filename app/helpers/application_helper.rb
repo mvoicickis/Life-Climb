@@ -1,4 +1,16 @@
 module ApplicationHelper
+  def dash_momentum_line(percent)
+    p = percent.to_i
+    key =
+      if p >= 100 then "summit"
+      elsif p >= 70 then "close"
+      elsif p >= 40 then "halfway"
+      elsif p >= 10 then "climbing"
+      else "begun"
+      end
+    I18n.t("dash.momentum.#{key}")
+  end
+
   def area_copy(area_or_key, key, **options)
     area_key =
       case area_or_key

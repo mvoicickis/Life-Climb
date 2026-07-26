@@ -25,11 +25,16 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/i, response.body)
     assert_match(/Strategy Points/i, response.body)
     assert_match(/One mountain\. Today.?s battle/i, response.body)
-    assert_match(/Complete Battle/i, response.body)
+    assert_match(/Complete Today.?s Battle/i, response.body)
+    assert_match(/battles ready/i, response.body)
+    assert_match(/Continue Planning/i, response.body)
+    assert_match(/Mountain just begun|You.?re climbing|Halfway|summit/i, response.body)
     assert_match(/Review my budget/i, response.body)
     assert_match(/Financial freedom/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
     assert_select ".lp-dash-hero__mountain"
+    assert_select ".lp-dash-hero__momentum"
+    assert_select ".lp-dash-plan"
     assert_select ".lp-dash-project", count: 0
     assert_no_match(/Life Tree|Open Life/i, response.body)
     assert_no_match(/Daily Battle Plan/i, response.body)
@@ -49,9 +54,43 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Become debt-free/i, response.body)
     assert_select ".lp-dash-hero__mountain-caption"
-    # Progress appears once in hero pct — art has no closer duplicate
     assert_select ".lp-dash-hero__pct", count: 1
     assert_select ".lp-dash-hero__area-closer", count: 0
+    assert_select ".lp-dash-hero__momentum", text: /Mountain just begun/i
+  end
+
+  test "complete battle via today raises strategy mountain percent" do
+    journey = @user.primary_focused_journey
+    area = journey.life_area
+    goal = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Become debt-free", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Kill debt", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Cut spend", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: project, horizon: "day",
+      title: "Cancel subscription", scheduled_on: Date.current, position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: project, horizon: "day",
+      title: "Call bank tomorrow", scheduled_on: Date.current + 1.day, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: area)
+
+    assert_equal 0, goal.progress_percent
+    post battle_completion_url
+    assert_redirected_to dashboard_path
+    follow_redirect!
+
+    assert battle.reload.completed?
+    assert_equal 50, goal.reload.progress_percent
+    assert_match(/Mountain now 50%/i, flash[:notice].to_s + response.body)
+    assert_match(/Call bank tomorrow/i, response.body)
+    assert_match(/Tomorrow.?s first battle is set/i, response.body)
   end
 
   test "can add and complete a money todo" do

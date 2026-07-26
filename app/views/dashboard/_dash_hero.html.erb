@@ -5,11 +5,14 @@
   <div class="lp-dash-hero__copy">
     <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
     <h2 class="lp-dash-hero__title"><%= goal_title %></h2>
-    <p class="lp-dash-hero__pct">
-      <span data-battle-day-target="goalPct"><%= closer %></span>%
-    </p>
-    <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">
-      <div class="lp-dash-bar__fill" data-battle-day-target="goalBar" style="width: <%= closer %>%"></div>
+    <div class="lp-dash-hero__progress">
+      <p class="lp-dash-hero__pct">
+        <span data-battle-day-target="goalPct"><%= closer %></span>%
+      </p>
+      <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">
+        <div class="lp-dash-bar__fill" data-battle-day-target="goalBar" style="width: <%= closer %>%"></div>
+      </div>
+      <p class="lp-dash-hero__momentum" data-battle-day-target="momentum"><%= dash_momentum_line(closer) %></p>
     </div>
     <p class="lp-dash-hero__hint"><%= t("dash.goal_hint") %></p>
   </div>
@@ -35,7 +38,6 @@
         <circle class="lp-dash-hero__glow" cx="100" cy="28" r="10" fill="#fef08a" opacity="0.5"/>
       </svg>
       <p class="lp-dash-hero__mountain-caption"><%= stage_label %></p>
-      <p class="lp-dash-hero__mountain-kicker"><%= t("dash.mountain_caption") %></p>
     </div>
   </div>
 </section>

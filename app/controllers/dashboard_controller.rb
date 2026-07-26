@@ -47,6 +47,9 @@ class DashboardController < ApplicationController
       end
     @mountain = Strategy::Mountain.for(goal: @strategy_goal)
     @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
+    @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
+    @battle_celebrate = flash[:battle_celebrate].present?
+    @battle_total_count = @daily_todos.size + (@mission.present? ? 1 : 0)
     render "dashboard/show_v2"
   end
 end

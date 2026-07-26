@@ -11,12 +11,23 @@
     end
 %>
 
-<div class="lp-dash" data-controller="battle-day" data-battle-day-closer-value="<%= @closer %>">
+<div
+  class="lp-dash<%= ' is-battle-won' if @battle_open_count.to_i.zero? && (@daily_todos.any? || @mission.present?) %>"
+  data-controller="battle-day"
+  data-battle-day-closer-value="<%= @closer %>"
+  data-battle-day-celebrate-value="<%= @battle_celebrate %>"
+>
   <header class="lp-dash__top">
-    <%= link_to dashboard_path, class: "lp-dash__brand" do %>
-      <%= render "shared/lp_brand_mark", size: 30, class_name: "lp-dash__brand-mark" %>
-      <span><%= t("app_name") %></span>
-    <% end %>
+    <div class="lp-dash__identity">
+      <%= link_to dashboard_path, class: "lp-dash__brand" do %>
+        <%= render "shared/lp_brand_mark", size: 30, class_name: "lp-dash__brand-mark" %>
+        <span><%= t("app_name") %></span>
+      <% end %>
+      <div class="lp-dash__greeting">
+        <h1><%= greeting %>, <%= current_user.display_name %></h1>
+        <p><%= t("dash.promise") %></p>
+      </div>
+    </div>
     <div class="lp-dash__stats">
       <div class="lp-dash__stat-chip" aria-label="<%= t('dash.action_points_label') %>">
         <span class="lp-dash__stat-value" data-battle-day-target="lpTotal"><%= number_with_delimiter(@life_points) %></span>
@@ -30,11 +41,6 @@
       </div>
     </div>
   </header>
-
-  <div class="lp-dash__greeting">
-    <h1><%= greeting %>, <%= current_user.display_name %></h1>
-    <p><%= t("dash.promise") %></p>
-  </div>
 
   <%= render "dashboard/dash_hero",
         journey: @journey,
@@ -50,16 +56,22 @@
         include_mission: @include_mission_in_battle,
         reward: @battle_reward,
         open_count: @battle_open_count,
+        total_count: @battle_total_count,
         day_full: @battle_day_full,
-        aspect_key: @journey.life_area.key %>
+        aspect_key: @journey.life_area.key,
+        upcoming: @upcoming_battle %>
 
   <% if @targets.any? %>
     <%= render "dashboard/dash_targets", targets: @targets %>
   <% end %>
 
-  <p class="lp-dash__strategy-link">
-    <%= link_to t("dash.open_strategy"), life_journey_path(@journey) %>
-  </p>
+  <aside class="lp-dash-plan" aria-label="<%= t('dash.continue_planning_title') %>">
+    <p class="lp-dash-plan__kicker"><%= t("dash.continue_planning_title") %></p>
+    <p class="lp-dash-plan__copy"><%= t("dash.continue_planning_hint") %></p>
+    <p class="lp-dash-plan__link">
+      <%= link_to t("dash.open_strategy"), life_journey_path(@journey) %>
+    </p>
+  </aside>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :today %>

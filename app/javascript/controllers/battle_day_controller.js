@@ -1,9 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Subtle juice for Complete Battle — confetti, CTA pulse, reward nudge.
+// Subtle juice for Complete Battle — confetti, CTA pulse, reward nudge, mountain surge.
 export default class extends Controller {
-  static targets = ["completeBtn", "reward", "goalPct", "goalBar", "item", "lpTotal"]
-  static values = { closer: Number }
+  static targets = ["completeBtn", "reward", "goalPct", "goalBar", "item", "lpTotal", "momentum"]
+  static values = { closer: Number, celebrate: Boolean }
+
+  connect() {
+    if (this.celebrateValue) {
+      window.requestAnimationFrame(() => this.celebrate())
+    }
+  }
 
   celebrate() {
     this.element.classList.add("is-celebrating")
@@ -23,9 +29,11 @@ export default class extends Controller {
     if (!this.hasGoalBarTarget) return
     this.goalBarTarget.classList.add("is-glow")
     if (this.hasGoalPctTarget) this.goalPctTarget.classList.add("is-glow")
+    if (this.hasMomentumTarget) this.momentumTarget.classList.add("is-glow")
     window.setTimeout(() => {
       this.goalBarTarget.classList.remove("is-glow")
       this.goalPctTarget?.classList.remove("is-glow")
+      this.momentumTarget?.classList.remove("is-glow")
     }, 900)
   }
 
@@ -33,7 +41,7 @@ export default class extends Controller {
     const root = document.createElement("div")
     root.className = "lp-dash-confetti"
     root.setAttribute("aria-hidden", "true")
-    for (let i = 0; i < 22; i += 1) {
+    for (let i = 0; i < 18; i += 1) {
       const bit = document.createElement("span")
       bit.style.setProperty("--x", `${(Math.random() * 180) - 90}px`)
       bit.style.setProperty("--d", `${420 + Math.random() * 780}ms`)
