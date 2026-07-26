@@ -126,16 +126,7 @@
                   </p>
                   <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
                 </div>
-                <details class="lp-strategy-overflow">
-                  <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
-                  <div class="lp-strategy-overflow__menu">
-                    <%= button_to t("strategy.remove"),
-                          strategy_goal_path(battle),
-                          method: :delete,
-                          class: "lp-strategy-overflow__action",
-                          form: { data: { turbo: false } } %>
-                  </div>
-                </details>
+                <%= render "life_journeys/strategy_overflow", node: battle %>
               </li>
             <% end %>
           </ul>

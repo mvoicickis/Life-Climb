@@ -32,14 +32,5 @@
     <span class="lp-strategy-quest__chevron" aria-hidden="true">›</span>
   <% end %>
 
-  <details class="lp-strategy-overflow">
-    <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
-    <div class="lp-strategy-overflow__menu">
-      <%= button_to t("strategy.remove"),
-            strategy_goal_path(node),
-            method: :delete,
-            class: "lp-strategy-overflow__action",
-            form: { data: { turbo: false } } %>
-    </div>
-  </details>
+  <%= render "life_journeys/strategy_overflow", node: node %>
 </div>

@@ -269,6 +269,70 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy-siblings", count: 0
   end
 
+  test "strategy overflow shows rename and remove for goals plans projects and battles" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Battle", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: goal.id)
+    assert_response :success
+    assert_select "#strategy-rename-#{goal.id}[value=?]", "Goal"
+    assert_select "#strategy-rename-#{plan.id}[value=?]", "Plan"
+    assert_select ".lp-strategy-overflow__action.is-save", minimum: 1
+    assert_select ".lp-strategy-overflow__action.is-remove", minimum: 1
+
+    get life_journey_path(@journey, focus_id: project.id)
+    assert_response :success
+    assert_select "#strategy-rename-#{battle.id}[value=?]", "Battle"
+  end
+
+  test "update renames strategy goals and syncs battle titles to today" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Old Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Old Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Old Project", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Old Battle", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    assert @user.daily_todos.for_day(Date.current).exists?(title: "Old Battle", strategy_goal_id: battle.id)
+
+    patch strategy_goal_path(goal), params: { title: "New Goal" }
+    assert_redirected_to life_journey_path(@journey, focus_id: goal.id)
+    assert_equal "New Goal", goal.reload.title
+    assert_match(/Renamed/i, flash[:notice].to_s)
+
+    patch strategy_goal_path(plan), params: { title: "New Plan" }
+    assert_equal "New Plan", plan.reload.title
+
+    patch strategy_goal_path(project), params: { title: "New Project" }
+    assert_equal "New Project", project.reload.title
+
+    patch strategy_goal_path(battle), params: { title: "New Battle" }
+    assert_equal "New Battle", battle.reload.title
+    assert @user.daily_todos.for_day(Date.current).exists?(title: "New Battle", strategy_goal_id: battle.id)
+
+    patch strategy_goal_path(plan), params: { title: "   " }
+    assert_equal "New Plan", plan.reload.title
+    assert_match(/blank|can't be blank|Title/i, flash[:alert].to_s)
+  end
+
   test "dashboard shows action points and strategy points" do
     get dashboard_path
     assert_response :success

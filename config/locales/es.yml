@@ -15,6 +15,9 @@ es:
     siblings:
       plans: "Cambiar de plan"
       projects: "Cambiar de proyecto"
+    rename: "Renombrar"
+    save_name: "Guardar nombre"
+    renamed: "Renombrado."
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"
       fight_battle_cta: "Añadir la batalla de hoy"

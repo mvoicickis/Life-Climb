@@ -15,6 +15,9 @@ lv:
     siblings:
       plans: "Mainīt plānu"
       projects: "Mainīt projektu"
+    rename: "Pārdēvēt"
+    save_name: "Saglabāt nosaukumu"
+    renamed: "Pārdēvēts."
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
       fight_battle_cta: "Pievienot šodienas kauju"

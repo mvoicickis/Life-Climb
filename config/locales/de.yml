@@ -15,6 +15,9 @@ de:
     siblings:
       plans: "Plan wechseln"
       projects: "Projekt wechseln"
+    rename: "Umbenennen"
+    save_name: "Name speichern"
+    renamed: "Umbenannt."
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"
       fight_battle_cta: "Heutige Schlacht hinzufügen"

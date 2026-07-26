@@ -27,10 +27,13 @@
   <%= render "life_journeys/strategy_mountain", mountain: @mountain %>
 
   <% if @goal %>
-    <p class="lp-strategy-page__goal-line">
-      <span class="lp-strategy-page__goal-title"><%= @goal.title %></span>
+    <div class="lp-strategy-page__goal-line">
+      <div class="lp-strategy-page__goal-row">
+        <span class="lp-strategy-page__goal-title"><%= @goal.title %></span>
+        <%= render "life_journeys/strategy_overflow", node: @goal %>
+      </div>
       <span class="lp-strategy-page__goal-due"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></span>
-    </p>
+    </div>
   <% end %>
 
   <%= render "life_journeys/strategy_board" %>

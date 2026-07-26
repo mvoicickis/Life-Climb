@@ -54,6 +54,21 @@ class StrategyGoalsController < ApplicationController
                 notice: t("strategy.removed"), status: :see_other
   end
 
+  def update
+    goal = current_user.strategy_goals.find(params[:id])
+    goal.title = params[:title].to_s.strip
+    focus_id = goal.goal? ? goal.id : goal.parent_id
+
+    if goal.save
+      Strategy::CascadeToDaily.call(user: current_user, life_area: goal.life_area) if goal.day?
+      redirect_to strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id),
+                  notice: t("strategy.renamed"), status: :see_other
+    else
+      redirect_to strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id),
+                  alert: goal.errors.full_messages.to_sentence, status: :see_other
+    end
+  end
+
   private
 
   def require_planning_v2
