@@ -24,10 +24,13 @@ class User < ApplicationRecord
   belongs_to :focus_building, class_name: "Building", optional: true
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+  normalizes :name, with: ->(n) { n.to_s.strip.squeeze(" ").presence }
 
   validates :email_address, presence: true, uniqueness: true,
             length: { maximum: EMAIL_MAX },
             format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :name, presence: true, length: { maximum: NAME_MAX }, on: :create
+  validates :name, length: { maximum: NAME_MAX }, allow_blank: true
   validates :password, length: { minimum: PASSWORD_MIN, maximum: PASSWORD_MAX }, if: -> { password.present? }
   validates :home_stat_count, numericality: {
     only_integer: true,
@@ -82,7 +85,7 @@ class User < ApplicationRecord
   end
 
   def display_name
-    email_address.to_s.split("@").first.to_s.titleize.presence || "there"
+    name.to_s.strip.presence || email_address.to_s.split("@").first.to_s.titleize.presence || "there"
   end
 
   def ledger_points_today
