@@ -4147,3 +4147,122 @@ button.lp-progress-heat__cell {
     transition: none !important;
   }
 }
+
+
+/* ——— Journey setup (editable alignment stack) ——— */
+.lp-main:has(.lp-journey-setup) {
+  max-width: 42rem;
+  margin-inline: auto;
+  padding: 1rem 1rem 6.5rem;
+}
+
+.lp-journey-setup {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.lp-journey-setup__head h1 {
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.lp-journey-setup__head p {
+  margin: 0.35rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.92rem;
+}
+
+.lp-journey-setup__today {
+  display: inline-flex;
+  margin-top: 0.65rem;
+  font-weight: 700;
+  color: var(--lp-neon);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.lp-journey-setup__form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-journey-card {
+  border-radius: 1.25rem;
+  border: 1px solid rgba(132, 242, 58, 0.14);
+  background: linear-gradient(180deg, rgba(21, 32, 26, 0.92), rgba(14, 22, 18, 0.95));
+  padding: 1rem 1.05rem;
+}
+
+.lp-journey-card__label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lp-neon);
+}
+
+.lp-journey-card__hint {
+  margin: 0.3rem 0 0.65rem;
+  color: var(--lp-muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.lp-journey-card .lp-input,
+.lp-journey-card textarea.lp-input {
+  width: 100%;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(132, 242, 58, 0.18);
+  background: rgba(7, 11, 9, 0.55);
+  color: var(--lp-ink);
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+}
+
+.lp-journey-card textarea.lp-input {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.lp-journey-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.lp-journey-progress .lp-input {
+  max-width: 7rem;
+}
+
+.lp-journey-card__meta {
+  margin: 0.5rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+}
+
+.lp-journey-card__meta--ok {
+  color: var(--lp-neon);
+}
+
+.lp-journey-setup__complete {
+  margin-top: 0.25rem;
+}
+
+.lp-journey-setup__complete-btn {
+  width: 100%;
+  border: 1px solid rgba(132, 242, 58, 0.25);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--lp-muted);
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lp-journey-setup__complete-btn:hover {
+  color: var(--lp-ink);
+  border-color: rgba(132, 242, 58, 0.45);
+}

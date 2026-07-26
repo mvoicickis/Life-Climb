@@ -3,61 +3,106 @@
 <% content_for :lp_hide_top_nav, true %>
 
 <%
-  today_mission = @journey.missions.for_day(Date.current).primary.order(:id).first
+  today_mission = @today_mission || @journey.missions.for_day(Date.current).primary.order(:id).first
+  closer_value = params.dig(:life_journey, :closer_percent).presence || @journey.closer_percent.round
 %>
 
-<div class="lp-home mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5">
-  <header>
-    <p class="text-sm text-[var(--lp-muted)]"><%= @journey.life_area.label %></p>
-    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= @journey.title %></h1>
+<div class="lp-journey-setup">
+  <header class="lp-journey-setup__head">
+    <p class="lp-dash-kicker"><%= @journey.life_area.label %></p>
+    <h1><%= t("journeys.setup_title") %></h1>
+    <p><%= t("journeys.setup_subtitle") %></p>
+    <%= link_to t("journeys.open_today"), dashboard_path, class: "lp-journey-setup__today" %>
   </header>
 
-  <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.vision") %></h2>
-    <p class="text-[var(--lp-ink)]"><%= @journey.ideal_scene %></p>
-  </section>
-
-  <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.reality") %></h2>
-    <p class="text-[var(--lp-ink)]"><%= @journey.current_reality %></p>
-  </section>
-
-  <% if @journey.next_win.present? %>
-    <section class="lp-glass space-y-2 p-4">
-      <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("coach.next_label") %></h2>
-      <p class="text-[var(--lp-ink)]"><%= @journey.next_win %></p>
+  <%= form_with model: @journey, url: life_journey_path(@journey), method: :patch, class: "lp-journey-setup__form" do |f| %>
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_title"><%= t("journeys.sections.goal") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.goal_hint") %></p>
+      <%= f.text_field :title, class: "lp-input", required: true, autocomplete: "off" %>
     </section>
-  <% end %>
 
-  <section class="lp-glass space-y-2 p-4">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("dashboard_v2.today_mission") %></h2>
-    <% if today_mission %>
-      <p class="text-[var(--lp-ink)]"><%= today_mission.title %></p>
-      <% if today_mission.completed? %>
-        <p class="mt-2 text-sm text-[var(--lp-lime)]"><%= t("dashboard_v2.done_today") %></p>
-      <% else %>
-        <%= link_to t("coach.open_home"), dashboard_path, class: "mt-3 inline-flex text-sm font-bold text-[var(--lp-lime)]" %>
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_purpose"><%= t("journeys.sections.purpose") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.purpose_hint") %></p>
+      <%= f.text_area :purpose, rows: 3, class: "lp-input", placeholder: t("journeys.sections.purpose_placeholder") %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_policy"><%= t("journeys.sections.policy") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.policy_hint") %></p>
+      <%= f.text_area :policy, rows: 3, class: "lp-input", placeholder: t("journeys.sections.policy_placeholder") %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_approach"><%= t("journeys.sections.approach") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.approach_hint") %></p>
+      <%= f.text_area :approach, rows: 3, class: "lp-input", placeholder: t("journeys.sections.approach_placeholder") %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_program"><%= t("journeys.sections.program") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.program_hint") %></p>
+      <%= f.text_area :program, rows: 4, class: "lp-input", placeholder: t("journeys.sections.program_placeholder") %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_next_win"><%= t("journeys.sections.milestone") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.milestone_hint") %></p>
+      <%= f.text_field :next_win, class: "lp-input", autocomplete: "off" %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_ideal_scene"><%= t("journeys.sections.ideal") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.ideal_hint") %></p>
+      <%= f.text_area :ideal_scene, rows: 3, class: "lp-input", required: true %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_current_reality"><%= t("journeys.sections.reality") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.reality_hint") %></p>
+      <%= f.text_area :current_reality, rows: 3, class: "lp-input", required: true %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_closer_percent"><%= t("journeys.sections.progress") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.progress_hint") %></p>
+      <div class="lp-journey-progress">
+        <%= number_field_tag "life_journey[closer_percent]", closer_value,
+              min: 0, max: 100, step: 1, class: "lp-input", id: "life_journey_closer_percent" %>
+        <span>% closer</span>
+      </div>
+      <p class="lp-journey-card__meta"><%= t("dashboard_v2.gap") %>: <%= @journey.gap_percent.to_i %>%</p>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_finished_result"><%= t("journeys.sections.finished") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.finished_hint") %></p>
+      <%= f.text_area :finished_result, rows: 3, class: "lp-input", placeholder: t("journeys.sections.finished_placeholder") %>
+    </section>
+
+    <section class="lp-journey-card">
+      <label class="lp-journey-card__label" for="life_journey_today_mission"><%= t("journeys.sections.today") %></label>
+      <p class="lp-journey-card__hint"><%= t("journeys.sections.today_hint") %></p>
+      <%= text_field_tag "life_journey[today_mission]", today_mission&.title,
+            class: "lp-input", id: "life_journey_today_mission", autocomplete: "off" %>
+      <% if today_mission&.completed? %>
+        <p class="lp-journey-card__meta lp-journey-card__meta--ok"><%= t("dashboard_v2.done_today") %></p>
       <% end %>
-    <% else %>
-      <%= link_to t("coach.begin_today"), dashboard_path, class: "lp-cta mt-2 inline-flex" %>
-    <% end %>
-  </section>
+    </section>
 
-  <section class="lp-glass p-4">
-    <p class="text-sm text-[var(--lp-muted)]"><%= t("dashboard_v2.gap") %></p>
-    <p class="text-3xl font-semibold text-[var(--lp-ink)]"><%= @journey.gap_percent.to_i %>%</p>
-  </section>
+    <%= f.submit t("journeys.save_setup"), class: "lp-dash-cta" %>
+  <% end %>
 
   <% if @journey.status != "completed" %>
     <%= button_to t("journeys.reached_this"),
           life_journey_completion_path(@journey),
           method: :post,
-          form: { data: { turbo_confirm: t("journeys.confirm_complete") } },
-          class: "lp-cta w-full" %>
+          form: { data: { turbo_confirm: t("journeys.confirm_complete") }, class: "lp-journey-setup__complete" },
+          class: "lp-journey-setup__complete-btn" %>
   <% else %>
-    <%= link_to t("next_mountain.title"), next_mountain_path, class: "lp-cta inline-flex" %>
+    <%= link_to t("next_mountain.title"), next_mountain_path, class: "lp-dash-cta" %>
   <% end %>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :journey %>
-

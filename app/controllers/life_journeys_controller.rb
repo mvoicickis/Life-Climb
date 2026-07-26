@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LifeJourneysController < ApplicationController
   before_action :require_planning_v2
 
@@ -34,9 +36,58 @@ class LifeJourneysController < ApplicationController
 
   def show
     @journey = current_user.life_journeys.find(params[:id])
+    @today_mission = @journey.missions.for_day(Date.current).primary.order(:id).first
+  end
+
+  def update
+    @journey = current_user.life_journeys.find(params[:id])
+    attrs = journey_setup_params
+
+    closer = attrs.delete(:closer_percent)
+    attrs.delete(:today_mission)
+    if closer.present?
+      @journey.gap_percent = (100.0 - closer.to_f).clamp(0, 100).round(2)
+    end
+
+    if @journey.update(attrs)
+      sync_today_mission_title!
+      redirect_to life_journey_path(@journey), notice: t("journeys.setup_saved")
+    else
+      @today_mission = @journey.missions.for_day(Date.current).primary.order(:id).first
+      flash.now[:alert] = @journey.errors.full_messages.to_sentence
+      render :show, status: :unprocessable_entity
+    end
   end
 
   private
+
+  def journey_setup_params
+    params.require(:life_journey).permit(
+      :title,
+      :purpose,
+      :policy,
+      :approach,
+      :program,
+      :next_win,
+      :ideal_scene,
+      :current_reality,
+      :finished_result,
+      :closer_percent,
+      :today_mission
+    )
+  end
+
+  def sync_today_mission_title!
+    title = params.dig(:life_journey, :today_mission).to_s.strip
+    return if title.blank?
+
+    mission = @journey.missions.for_day(Date.current).primary.order(:id).first
+    if mission && !mission.completed?
+      mission.update!(title: title)
+    elsif mission.nil?
+      Missions::EnsureDaily.call(user: current_user, mission_title: title)
+    end
+  end
 
   def require_planning_v2
     return if current_user.planning_v2?

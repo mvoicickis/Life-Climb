@@ -39,6 +39,14 @@ Day-to-day gap changes go through `Gap::ApplyProgress` (`:todo` / `:mission`) wi
 
 Inspired by the *idea* of visibility + daily battle lists; **not** a copy of any proprietary management system (no condition formulas, org boards, staff quotas, or trademarked product names).
 
+## Journey self-setup
+
+On the Journey page, users can fill an **editable alignment stack** themselves (plain LifePoints language):
+
+Goal · Why it matters · Rules · Approach · Program · Milestone · Ideal / Now · Progress · Finished result · Today’s action
+
+Optional text fields live on `life_journeys` (`purpose`, `policy`, `approach`, `program`, `finished_result`). No separate Plan/Program tables. No third-party admin product labels in the UI.
+
 ## Domain ownership
 
 ```text
