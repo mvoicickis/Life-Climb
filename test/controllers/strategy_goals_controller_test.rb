@@ -156,6 +156,37 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert battle.reload.completed?
   end
 
+  test "project with battles keeps add-another-battle option" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "First battle", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: project.id)
+    assert_response :success
+    assert_match(/Your mountain is ready/i, response.body)
+    assert_select "a.lp-strategy-next__secondary", text: /Add another battle/i
+    assert_select "#add-another-battle summary", text: /Add another battle/i
+    assert_select "#add-another-battle input[name=horizon][value=day]"
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: project.id, horizon: "day", scheduled_on: Date.current.to_s,
+      title: "Second battle"
+    }
+    assert_equal 2, project.children.for_kind("day").count
+    assert @user.daily_todos.for_day(Date.current).exists?(title: "Second battle")
+  end
+
   test "dashboard shows action points and strategy points" do
     get dashboard_path
     assert_response :success

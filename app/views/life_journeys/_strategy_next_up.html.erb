@@ -87,6 +87,9 @@
         <%= hidden_field_tag :sync_today, "1" %>
         <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
       <% end %>
+      <% if @focus&.project? %>
+        <a href="#add-another-battle" class="lp-strategy-next__secondary"><%= t("strategy.add_another_battle") %></a>
+      <% end %>
 
     <% elsif next_up[:anchor].present? %>
       <a href="#<%= next_up[:anchor] %>" class="lp-strategy-next__cta"><%= next_up[:cta] %></a>

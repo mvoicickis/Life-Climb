@@ -169,7 +169,35 @@ class LifeJourneysController < ApplicationController
       }
     end
 
-    if @mountain_ready && (@focus&.project? || @today_battles.any? || @level == "plans")
+    # Inside a project: always plan battles here first. Handoff only after this project has at least one.
+    if @focus&.project?
+      battles = @children.select(&:day?)
+      if battles.empty?
+        return {
+          key: :add_battle,
+          title: I18n.t("strategy.questions.battle"),
+          hint: I18n.t("strategy.next_up.add_battle_hint"),
+          cta: I18n.t("strategy.next_up.add_battle_cta"),
+          placeholder: I18n.t("strategy.battle_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_battle") ],
+          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current }
+        }
+      end
+
+      return mountain_ready_next_up if @mountain_ready
+
+      return {
+        key: :add_battle,
+        title: I18n.t("strategy.questions.battle"),
+        hint: I18n.t("strategy.next_up.add_another_battle_hint"),
+        cta: I18n.t("strategy.next_up.add_another_battle_cta"),
+        placeholder: I18n.t("strategy.battle_placeholder"),
+        examples: [ I18n.t("strategy.next_up.example_battle") ],
+        form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current }
+      }
+    end
+
+    if @mountain_ready && (@today_battles.any? || @level == "plans")
       return mountain_ready_next_up
     end
 
@@ -221,23 +249,6 @@ class LifeJourneysController < ApplicationController
         href: life_journey_path(@journey, focus_id: target.id),
         zoom: true
       }
-    end
-
-    if @focus&.project?
-      battles = @children.select(&:day?)
-      if battles.empty?
-        return {
-          key: :add_battle,
-          title: I18n.t("strategy.questions.battle"),
-          hint: I18n.t("strategy.next_up.add_battle_hint"),
-          cta: I18n.t("strategy.next_up.add_battle_cta"),
-          placeholder: I18n.t("strategy.battle_placeholder"),
-          examples: [ I18n.t("strategy.next_up.example_battle") ],
-          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current }
-        }
-      end
-
-      return mountain_ready_next_up
     end
 
     if @today_battles.any?

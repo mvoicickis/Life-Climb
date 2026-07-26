@@ -98,35 +98,55 @@
         <% end %>
 
       <% else %>
+        <% battles = @children.select(&:day?) %>
         <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
         <p class="lp-strategy__board-hint"><%= t("strategy.questions.battle") %></p>
         <div class="lp-strategy__bar" style="--lp-level: var(--lp-level-battle)"><span style="width: <%= @focus.progress_percent %>%"></span></div>
 
-        <h3 class="pt-2 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.battles_heading") %></h3>
-        <ul class="lp-strategy__list">
-          <% @children.select(&:day?).each do |battle| %>
-            <li class="lp-strategy__item is-battle <%= 'is-done' if battle.completed? %>">
-              <div class="min-w-0 flex-1">
-                <p class="lp-strategy__item-title">
-                  <span class="lp-strategy__item-marker" aria-hidden="true"><%= battle.completed? ? "✓" : "⚔" %></span>
-                  <%= battle.title %>
-                </p>
-                <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
-              </div>
-              <details class="lp-strategy-overflow">
-                <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
-                <div class="lp-strategy-overflow__menu">
-                  <%= button_to t("strategy.remove"),
-                        strategy_goal_path(battle),
-                        method: :delete,
-                        class: "lp-strategy-overflow__action",
-                        form: { data: { turbo: false } } %>
+        <% if battles.any? %>
+          <h3 class="pt-2 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.battles_heading") %></h3>
+          <ul class="lp-strategy__list">
+            <% battles.each do |battle| %>
+              <li class="lp-strategy__item is-battle <%= 'is-done' if battle.completed? %>">
+                <div class="min-w-0 flex-1">
+                  <p class="lp-strategy__item-title">
+                    <span class="lp-strategy__item-marker" aria-hidden="true"><%= battle.completed? ? "✓" : "⚔" %></span>
+                    <%= battle.title %>
+                  </p>
+                  <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
                 </div>
-              </details>
-            </li>
-          <% end %>
-        </ul>
-        <% unless focus_create %>
+                <details class="lp-strategy-overflow">
+                  <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
+                  <div class="lp-strategy-overflow__menu">
+                    <%= button_to t("strategy.remove"),
+                          strategy_goal_path(battle),
+                          method: :delete,
+                          class: "lp-strategy-overflow__action",
+                          form: { data: { turbo: false } } %>
+                  </div>
+                </details>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <%# Always allow more battles on a project; keep primary Next Up as Fight Today when ready. %>
+        <% if focus_create %>
+          <%# First battle is created in Next Up %>
+        <% elsif battles.any? %>
+          <details class="lp-strategy__optional" id="add-another-battle">
+            <summary><%= t("strategy.add_another_battle") %></summary>
+            <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
+              <%= hidden_field_tag :life_area_id, area.id %>
+              <%= hidden_field_tag :life_journey_id, @journey.id %>
+              <%= hidden_field_tag :parent_id, @focus.id %>
+              <%= hidden_field_tag :horizon, "day" %>
+              <%= hidden_field_tag :scheduled_on, Date.current %>
+              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.battle_placeholder") %>
+              <%= submit_tag t("strategy.add_battle"), class: "lp-cta w-full" %>
+            <% end %>
+          </details>
+        <% else %>
           <%= form_with url: strategy_goals_path, method: :post, class: "space-y-3", data: { turbo: false } do %>
             <%= hidden_field_tag :life_area_id, area.id %>
             <%= hidden_field_tag :life_journey_id, @journey.id %>

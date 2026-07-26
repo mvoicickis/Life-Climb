@@ -5665,6 +5665,22 @@ button.lp-progress-heat__cell {
   transform: scale(0.98);
 }
 
+.lp-strategy-next__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.55rem;
+  width: 100%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--lp-level);
+  text-decoration: none;
+}
+
+.lp-strategy-next__secondary:hover {
+  text-decoration: underline;
+}
+
 .lp-strategy-next.is-handoff {
   border-color: color-mix(in srgb, var(--lp-level) 65%, var(--lp-border));
 }
