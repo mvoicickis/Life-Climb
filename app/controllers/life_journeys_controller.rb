@@ -113,6 +113,7 @@ class LifeJourneysController < ApplicationController
     @focus ||= @goal
     @level = strategy_level_for(@focus)
     @children = @focus ? @focus.children.ordered.to_a : []
+    @siblings = strategy_siblings(@focus)
     @today_battles = today_battles_for(@focus || @goal)
     @crumbs = strategy_crumbs(@focus)
     @guided_step = guided_step
@@ -317,6 +318,14 @@ class LifeJourneysController < ApplicationController
     ([ node ] + node.ancestor_chain.reverse).reverse.map do |n|
       { id: n.id, title: n.title, kind: n.kind }
     end
+  end
+
+  # Peer plans under the same goal, or peer projects under the same plan.
+  def strategy_siblings(focus)
+    return [] unless focus&.plan? || focus&.project?
+    return [] if focus.parent_id.blank?
+
+    @goals.select { |g| g.parent_id == focus.parent_id && g.kind == focus.kind }
   end
 
   def prepare_climb!

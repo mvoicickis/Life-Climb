@@ -12,6 +12,9 @@ lv:
       plan: "+ Pievienot plānu"
       project: "+ Pievienot projektu"
       battle: "+ Pievienot kauju"
+    siblings:
+      plans: "Mainīt plānu"
+      projects: "Mainīt projektu"
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
       fight_battle_cta: "Pievienot šodienas kauju"

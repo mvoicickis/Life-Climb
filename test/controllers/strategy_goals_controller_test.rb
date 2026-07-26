@@ -228,6 +228,47 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Add today.?s battle/i, response.body)
   end
 
+  test "strategy board shows sibling switcher when multiple plans or projects exist" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan Alpha", position: 0
+    )
+    plan_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan Beta", position: 1
+    )
+    project_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project One", position: 0
+    )
+    project_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project Two", position: 1
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project_a, horizon: "day",
+      title: "Battle One", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: plan_a.id)
+    assert_response :success
+    assert_select ".lp-strategy-siblings.is-plan", text: /Switch plan/i
+    assert_select ".lp-strategy-siblings__chip.is-current", text: /Plan Alpha/i
+    assert_select "a.lp-strategy-siblings__chip[href=?]", life_journey_path(@journey, focus_id: plan_b.id), text: /Plan Beta/i
+
+    get life_journey_path(@journey, focus_id: project_a.id)
+    assert_response :success
+    assert_select ".lp-strategy-siblings.is-project", text: /Switch project/i
+    assert_select ".lp-strategy-siblings__chip.is-current", text: /Project One/i
+    assert_select "a.lp-strategy-siblings__chip[href=?]", life_journey_path(@journey, focus_id: project_b.id), text: /Project Two/i
+
+    solo_project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan_b, horizon: "project", title: "Lone Project", position: 0
+    )
+    get life_journey_path(@journey, focus_id: solo_project.id)
+    assert_response :success
+    assert_select ".lp-strategy-siblings", count: 0
+  end
+
   test "dashboard shows action points and strategy points" do
     get dashboard_path
     assert_response :success

@@ -12,6 +12,9 @@ de:
       plan: "+ Plan"
       project: "+ Projekt"
       battle: "+ Schlacht"
+    siblings:
+      plans: "Plan wechseln"
+      projects: "Projekt wechseln"
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"
       fight_battle_cta: "Heutige Schlacht hinzufügen"
