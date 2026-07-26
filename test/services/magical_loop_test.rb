@@ -117,7 +117,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
       closer_percent: 25
     )
 
-    assert_equal %w[career purpose].sort, user.life_areas.v2_selected.pluck(:key).sort
+    assert_equal %w[purpose], user.life_areas.v2_selected.pluck(:key)
     assert_equal second.id, user.primary_focused_journey.id
     assert_equal "Write purpose statement", second.next_win
     assert_equal "Journal for 20 minutes", second.missions.for_day(Date.current).primary.first.title
