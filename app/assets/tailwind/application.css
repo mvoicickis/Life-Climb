@@ -3917,6 +3917,22 @@
   gap: 0.75rem;
 }
 
+@media (max-width: 430px) {
+  .lp-dash__top {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .lp-dash__stats {
+    width: 100%;
+  }
+
+  .lp-dash__stat-chip {
+    flex: 1 1 0;
+    max-width: none;
+  }
+}
+
 .lp-dash__brand {
   display: inline-flex;
   align-items: center;
@@ -3939,7 +3955,8 @@
 
 .lp-dash__stats {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  align-items: stretch;
 }
 
 .lp-dash__stat {
@@ -3953,6 +3970,56 @@
   font-size: 0.8rem;
   font-weight: 800;
   color: var(--lp-ink);
+}
+
+.lp-dash__stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 7.25rem;
+  max-width: 9.5rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+  padding: 0.45rem 0.65rem;
+  line-height: 1.15;
+}
+
+.lp-dash__stat-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+}
+
+.lp-dash__stat-name {
+  margin-top: 0.12rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  color: var(--lp-green-deep, #166534);
+}
+
+.lp-dash__stat-hint {
+  margin-top: 0.08rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
+.lp-dash__strategy-link {
+  margin: 0.15rem 0 0;
+  text-align: center;
+}
+
+.lp-dash__strategy-link a {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--lp-green-deep, #166534);
+  text-decoration: none;
+}
+
+.lp-dash__strategy-link a:hover {
+  text-decoration: underline;
 }
 
 .lp-dash__greeting h1 {
@@ -4106,6 +4173,68 @@
   text-align: center;
 }
 
+.lp-dash-hero__mountain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-height: 8.5rem;
+  border-radius: 1.15rem;
+  border: 1px solid color-mix(in srgb, #166534 18%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #ecfdf5 75%, transparent), transparent 70%),
+    #fff;
+  padding: 0.65rem 0.75rem 0.8rem;
+  text-align: center;
+}
+
+.lp-dash-hero__mountain-art {
+  width: 100%;
+  max-width: 11rem;
+  height: auto;
+}
+
+.lp-dash-hero__trail,
+.lp-dash-hero__camp,
+.lp-dash-hero__flags,
+.lp-dash-hero__glow {
+  opacity: 0;
+}
+
+.lp-dash-hero__mountain.is-trail .lp-dash-hero__trail,
+.lp-dash-hero__mountain.is-camp .lp-dash-hero__trail,
+.lp-dash-hero__mountain.is-flags .lp-dash-hero__trail,
+.lp-dash-hero__mountain.is-summit .lp-dash-hero__trail { opacity: 1; }
+
+.lp-dash-hero__mountain.is-camp .lp-dash-hero__camp,
+.lp-dash-hero__mountain.is-flags .lp-dash-hero__camp,
+.lp-dash-hero__mountain.is-summit .lp-dash-hero__camp { opacity: 1; }
+
+.lp-dash-hero__mountain.is-flags .lp-dash-hero__flags,
+.lp-dash-hero__mountain.is-summit .lp-dash-hero__flags { opacity: 1; }
+
+.lp-dash-hero__mountain.is-summit .lp-dash-hero__glow { opacity: 0.7; }
+
+.lp-dash-hero__mountain-caption {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: #166534;
+}
+
+.lp-dash-hero__mountain-kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
+.lp-dash-hero__pct span.is-glow {
+  text-shadow: 0 0 12px color-mix(in srgb, var(--lp-neon, #22c55e) 45%, transparent);
+}
+
 .lp-dash-hero__emoji {
   font-size: clamp(2.6rem, 7vw, 3.4rem);
   line-height: 1;
@@ -4123,6 +4252,29 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--lp-forest);
+}
+
+.lp-dash-battle__done {
+  margin-top: 0.75rem;
+  border-top: 1px dashed rgba(15, 23, 42, 0.1);
+  padding-top: 0.55rem;
+}
+
+.lp-dash-battle__done > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-dash-battle__done > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-dash-battle__list--done {
+  margin-top: 0.55rem;
+  opacity: 0.78;
 }
 
 @keyframes lp-dash-glow {
@@ -5449,7 +5601,7 @@ button.lp-progress-heat__cell {
 
 .lp-strategy__sp {
   flex-shrink: 0;
-  max-width: 6.5rem;
+  max-width: 8.5rem;
   text-align: center;
   border: 1px solid var(--lp-border);
   border-radius: 1rem;
@@ -5472,6 +5624,15 @@ button.lp-progress-heat__cell {
   font-weight: 700;
   line-height: 1.2;
   color: var(--lp-muted);
+}
+
+.lp-strategy__sp-hint {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--lp-muted) 85%, transparent);
 }
 
 .lp-strategy__bar {

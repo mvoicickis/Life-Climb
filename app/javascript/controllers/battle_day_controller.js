@@ -22,7 +22,11 @@ export default class extends Controller {
   nudgeGoal() {
     if (!this.hasGoalBarTarget) return
     this.goalBarTarget.classList.add("is-glow")
-    window.setTimeout(() => this.goalBarTarget.classList.remove("is-glow"), 900)
+    if (this.hasGoalPctTarget) this.goalPctTarget.classList.add("is-glow")
+    window.setTimeout(() => {
+      this.goalBarTarget.classList.remove("is-glow")
+      this.goalPctTarget?.classList.remove("is-glow")
+    }, 900)
   }
 
   burst() {

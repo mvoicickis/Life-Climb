@@ -26,7 +26,7 @@ export default class extends Controller {
     if (!this.hasSpBadgeTarget) return
     const chip = document.createElement("span")
     chip.className = "lp-strategy__sp-float"
-    chip.textContent = `+${this.gainedValue} SP`
+    chip.textContent = `+${this.gainedValue} Strategy Points`
     this.spBadgeTarget.appendChild(chip)
     window.setTimeout(() => chip.remove(), 1100)
   }

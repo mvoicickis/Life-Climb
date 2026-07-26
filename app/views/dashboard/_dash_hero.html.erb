@@ -1,9 +1,10 @@
-<%# locals: journey, closer %>
-<% area = journey.life_area %>
+<%# locals: journey, strategy_goal, mountain, closer %>
+<% goal_title = strategy_goal&.title.presence || journey.title %>
+<% stage_label = mountain.present? ? mountain[:label] : t("dash.mountain_waiting") %>
 <section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-hero__copy">
     <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
-    <h2 class="lp-dash-hero__title"><%= journey.title %></h2>
+    <h2 class="lp-dash-hero__title"><%= goal_title %></h2>
     <p class="lp-dash-hero__pct">
       <span data-battle-day-target="goalPct"><%= closer %></span>%
     </p>
@@ -13,10 +14,28 @@
     <p class="lp-dash-hero__hint"><%= t("dash.goal_hint") %></p>
   </div>
   <div class="lp-dash-hero__art" aria-hidden="true">
-    <div class="lp-dash-hero__area">
-      <span class="lp-dash-hero__emoji"><%= area.emoji %></span>
-      <span class="lp-dash-hero__area-name"><%= area.label %></span>
-      <span class="lp-dash-hero__area-closer"><%= closer %>% closer</span>
+    <div class="lp-dash-hero__mountain is-<%= mountain&.dig(:stage) || 'empty' %>">
+      <svg class="lp-dash-hero__mountain-art" viewBox="0 0 200 120" role="img">
+        <defs>
+          <linearGradient id="lp-dash-mtn" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#166534"/>
+            <stop offset="100%" stop-color="#0f766e"/>
+          </linearGradient>
+        </defs>
+        <path d="M10 120 L100 28 L190 120 Z" fill="url(#lp-dash-mtn)"/>
+        <path d="M82 55 L100 28 L118 55 L110 52 L100 68 L90 52 Z" fill="#f8fafc" opacity="0.9"/>
+        <path class="lp-dash-hero__trail" d="M48 112 C68 98, 78 88, 96 72" fill="none" stroke="#fef3c7" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 5"/>
+        <g class="lp-dash-hero__camp">
+          <path d="M70 98 L80 84 L90 98 Z" fill="#d97706"/>
+        </g>
+        <g class="lp-dash-hero__flags">
+          <path d="M112 78 L112 62" stroke="#166534" stroke-width="1.5"/>
+          <path d="M112 62 L124 66 L112 70 Z" fill="#84cc16"/>
+        </g>
+        <circle class="lp-dash-hero__glow" cx="100" cy="28" r="10" fill="#fef08a" opacity="0.5"/>
+      </svg>
+      <p class="lp-dash-hero__mountain-caption"><%= stage_label %></p>
+      <p class="lp-dash-hero__mountain-kicker"><%= t("dash.mountain_caption") %></p>
     </div>
   </div>
 </section>

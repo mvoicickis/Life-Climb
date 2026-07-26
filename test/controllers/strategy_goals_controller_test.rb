@@ -191,7 +191,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
   test "dashboard shows action points and strategy points" do
     get dashboard_path
     assert_response :success
-    assert_match(/\bAP\b/, response.body)
-    assert_match(/\bSP\b/, response.body)
+    assert_match(/Action Points/i, response.body)
+    assert_match(/Strategy Points/i, response.body)
   end
 end

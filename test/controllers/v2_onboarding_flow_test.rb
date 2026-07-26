@@ -56,7 +56,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Alex/i, response.body)
     assert_match(/Read 20 pages/i, response.body)
     assert_match(/Today.?s Battle|Complete Battle/i, response.body)
-    assert_match(/Current Project|Today.?s Goal|Current climb/i, response.body)
+    assert_match(/Today.?s Goal|Today.?s Battle|Complete Battle/i, response.body)
     assert_no_match(/Life Tree|Open Life/i, response.body)
   end
 

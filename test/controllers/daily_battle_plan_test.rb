@@ -22,13 +22,36 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Today/i, response.body)
     assert_match(/Battle/i, response.body)
     assert_match(/Goal/i, response.body)
-    assert_match(/Current climb|Current Project/i, response.body)
+    assert_match(/Action Points/i, response.body)
+    assert_match(/Strategy Points/i, response.body)
+    assert_match(/One mountain\. Today.?s battle/i, response.body)
     assert_match(/Complete Battle/i, response.body)
     assert_match(/Review my budget/i, response.body)
     assert_match(/Financial freedom/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
+    assert_select ".lp-dash-hero__mountain"
+    assert_select ".lp-dash-project", count: 0
     assert_no_match(/Life Tree|Open Life/i, response.body)
     assert_no_match(/Daily Battle Plan/i, response.body)
+    assert_no_match(/\bAP\b/, response.body)
+    assert_no_match(/>\s*SP\s*</, response.body)
+  end
+
+  test "hero uses strategy season goal when present" do
+    journey = @user.primary_focused_journey
+    area = journey.life_area
+    @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal",
+      title: "Become debt-free", position: 0
+    )
+
+    get dashboard_path
+    assert_response :success
+    assert_match(/Become debt-free/i, response.body)
+    assert_select ".lp-dash-hero__mountain-caption"
+    # Progress appears once in hero pct — art has no closer duplicate
+    assert_select ".lp-dash-hero__pct", count: 1
+    assert_select ".lp-dash-hero__area-closer", count: 0
   end
 
   test "can add and complete a money todo" do
@@ -88,7 +111,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
-    assert_match(/Add a few small wins/i, response.body)
+    assert_match(/A few small wins/i, response.body)
     assert_no_match(/lp-dash-add-wrap/i, response.body)
 
     expected_reward = (5 * GameRules::BATTLE_TODO_LP) + @user.missions.for_day.primary.incomplete.first.lp_reward

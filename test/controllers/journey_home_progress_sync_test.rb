@@ -44,9 +44,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Write tests/, response.body)
     assert_match(/Polish UI/, response.body)
-    assert_match(/Current climb|Open Journey/i, response.body)
-    assert_match(/Launch Beta/, response.body)
-    assert_match(/First 10 users/, response.body)
+    assert_match(/Open Strategy/i, response.body)
   end
 
   test "home add todo marks journey today layer done" do

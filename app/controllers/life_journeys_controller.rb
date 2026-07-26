@@ -53,7 +53,13 @@ class LifeJourneysController < ApplicationController
 
     if params[:sync_today].present?
       created = Strategy::CascadeToDaily.call(user: current_user, life_area: @journey.life_area)
-      redirect_to dashboard_path, notice: t("strategy.synced", count: created), status: :see_other
+      notice =
+        if created.positive?
+          t("strategy.synced", count: created)
+        else
+          t("strategy.battle_ready")
+        end
+      redirect_to dashboard_path, notice: notice, status: :see_other
       return
     end
 
