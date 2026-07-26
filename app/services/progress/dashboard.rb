@@ -270,7 +270,7 @@ module Progress
     end
 
     def heatmap_grid
-      weeks = 12
+      weeks = 53
       start = Date.current.beginning_of_week(:monday) - ((weeks - 1) * 7)
       finish = Date.current.end_of_week(:monday)
       cells = (start..finish).map do |day|
@@ -287,7 +287,30 @@ module Progress
         }
       end
 
-      { weeks: weeks, start: start.iso8601, cells: cells }
+      month_labels = []
+      prev_month = nil
+      weeks.times do |index|
+        week_start = start + (index * 7)
+        next if week_start.month == prev_month
+
+        month_labels << {
+          index: index,
+          label: I18n.l(week_start, format: "%b")
+        }
+        prev_month = week_start.month
+      end
+
+      {
+        weeks: weeks,
+        start: start.iso8601,
+        cells: cells,
+        month_labels: month_labels,
+        day_labels: [
+          { row: 0, label: I18n.t("date.abbr_day_names")[1] }, # Mon
+          { row: 2, label: I18n.t("date.abbr_day_names")[3] }, # Wed
+          { row: 4, label: I18n.t("date.abbr_day_names")[5] }  # Fri
+        ]
+      }
     end
 
     def day_task_count(day)

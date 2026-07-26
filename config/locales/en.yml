@@ -94,7 +94,7 @@ en:
     categories_title: "Category distribution"
     categories_hint: "Where your LifePoints went."
     heatmap_title: "Weekly activity"
-    heatmap_hint: "Consistency across the last 12 weeks."
+    heatmap_hint: "Your climb over the past year."
     heatmap_less: "Less"
     heatmap_more: "More"
     heatmap_tooltip: "%{date}: %{tasks} tasks · %{lp} LP"

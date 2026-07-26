@@ -4,25 +4,44 @@
     <h2><%= t("progress.heatmap_title") %></h2>
     <p><%= t("progress.heatmap_hint") %></p>
   </header>
-  <div class="lp-progress-heat" role="img" aria-label="<%= t('progress.heatmap_title') %>">
-    <% heatmap[:cells].each do |cell| %>
-      <% if cell[:future] %>
-        <span class="lp-progress-heat__cell level-0 is-future" aria-hidden="true"></span>
-      <% else %>
-        <button type="button"
-                class="lp-progress-heat__cell level-<%= cell[:level] %>"
-                title="<%= t('progress.heatmap_tooltip', date: cell[:label], tasks: cell[:tasks], lp: cell[:lp]) %>"
-                aria-label="<%= t('progress.heatmap_tooltip', date: cell[:label], tasks: cell[:tasks], lp: cell[:lp]) %>"></button>
+
+  <div class="lp-progress-heatboard" style="--weeks: <%= heatmap[:weeks] %>">
+    <div class="lp-progress-heatboard__months" aria-hidden="true">
+      <% heatmap[:month_labels].each do |month| %>
+        <span class="lp-progress-heatboard__month" style="--week: <%= month[:index] %>"><%= month[:label] %></span>
       <% end %>
-    <% end %>
-  </div>
-  <div class="lp-progress-heat__legend" aria-hidden="true">
-    <span><%= t("progress.heatmap_less") %></span>
-    <span class="lp-progress-heat__cell level-0"></span>
-    <span class="lp-progress-heat__cell level-1"></span>
-    <span class="lp-progress-heat__cell level-2"></span>
-    <span class="lp-progress-heat__cell level-3"></span>
-    <span class="lp-progress-heat__cell level-4"></span>
-    <span><%= t("progress.heatmap_more") %></span>
+    </div>
+
+    <div class="lp-progress-heatboard__body">
+      <div class="lp-progress-heatboard__days" aria-hidden="true">
+        <% 7.times do |row| %>
+          <% label = heatmap[:day_labels].find { |d| d[:row] == row }&.dig(:label) %>
+          <span><%= label %></span>
+        <% end %>
+      </div>
+
+      <div class="lp-progress-heat" role="img" aria-label="<%= t('progress.heatmap_title') %>">
+        <% heatmap[:cells].each do |cell| %>
+          <% if cell[:future] %>
+            <span class="lp-progress-heat__cell level-0 is-future" aria-hidden="true"></span>
+          <% else %>
+            <button type="button"
+                    class="lp-progress-heat__cell level-<%= cell[:level] %>"
+                    title="<%= t('progress.heatmap_tooltip', date: cell[:label], tasks: cell[:tasks], lp: cell[:lp]) %>"
+                    aria-label="<%= t('progress.heatmap_tooltip', date: cell[:label], tasks: cell[:tasks], lp: cell[:lp]) %>"></button>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="lp-progress-heat__legend" aria-hidden="true">
+      <span><%= t("progress.heatmap_less") %></span>
+      <span class="lp-progress-heat__cell level-0"></span>
+      <span class="lp-progress-heat__cell level-1"></span>
+      <span class="lp-progress-heat__cell level-2"></span>
+      <span class="lp-progress-heat__cell level-3"></span>
+      <span class="lp-progress-heat__cell level-4"></span>
+      <span><%= t("progress.heatmap_more") %></span>
+    </div>
   </div>
 </section>
