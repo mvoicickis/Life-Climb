@@ -270,7 +270,7 @@ module Progress
     end
 
     def heatmap_grid
-      weeks = 53
+      weeks = 26
       start = Date.current.beginning_of_week(:monday) - ((weeks - 1) * 7)
       finish = Date.current.end_of_week(:monday)
       cells = (start..finish).map do |day|
@@ -300,10 +300,13 @@ module Progress
         prev_month = week_start.month
       end
 
+      active_days = cells.count { |cell| !cell[:future] && cell[:level].positive? }
+
       {
         weeks: weeks,
         start: start.iso8601,
         cells: cells,
+        active_days: active_days,
         month_labels: month_labels,
         day_labels: [
           { row: 0, label: I18n.t("date.abbr_day_names")[1] }, # Mon

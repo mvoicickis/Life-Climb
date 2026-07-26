@@ -31,8 +31,9 @@
     <%= render "life_points/progress_categories", categories: @progress[:categories] %>
   </div>
 
+  <%= render "life_points/progress_heatmap", heatmap: @progress[:heatmap] %>
+
   <div class="lp-progress__grid">
-    <%= render "life_points/progress_heatmap", heatmap: @progress[:heatmap] %>
     <%= render "life_points/progress_projects", projects: @progress[:projects] %>
   </div>
 
