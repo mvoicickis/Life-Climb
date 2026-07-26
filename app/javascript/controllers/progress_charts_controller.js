@@ -38,7 +38,7 @@ export default class extends Controller {
 
     const labels = points.map((p) => p.label)
     const data = points.map((p) => p.lp)
-    const neon = "#84F23A"
+    const neon = "#22C55E"
 
     const chart = new this.Chart(this.growthTarget, {
       type: "line",
@@ -73,10 +73,10 @@ export default class extends Controller {
           legend: { display: false },
           tooltip: {
             backgroundColor: "rgba(7, 11, 9, 0.92)",
-            borderColor: "rgba(132, 242, 58, 0.35)",
+            borderColor: "rgba(34, 197, 94, 0.35)",
             borderWidth: 1,
-            titleColor: "#f3f7f4",
-            bodyColor: "#84F23A",
+            titleColor: "#f8fafc",
+            bodyColor: "#22C55E",
             padding: 10,
             displayColors: false,
             callbacks: {

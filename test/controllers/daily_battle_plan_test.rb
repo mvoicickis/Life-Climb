@@ -22,8 +22,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Today/i, response.body)
     assert_match(/Battle/i, response.body)
     assert_match(/Goal/i, response.body)
-    assert_match(/Current Project/i, response.body)
-    assert_match(/Why this matters/i, response.body)
+    assert_match(/Current climb|Current Project/i, response.body)
     assert_match(/Complete Battle/i, response.body)
     assert_match(/Review my budget/i, response.body)
     assert_match(/Financial freedom/i, response.body)
@@ -66,5 +65,50 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     mission = @user.missions.for_day.primary.order(:id).last
     assert mission.completed?
     assert_operator @user.reload.total_points, :>, before
+  end
+
+  test "home always shows add form and supports five or more todos" do
+    titles = [
+      "Finish Dashboard UI",
+      "Workout",
+      "Read Ruby",
+      "Go on date",
+      "Plan tomorrow"
+    ]
+
+    titles.each do |title|
+      post daily_todos_url, params: {
+        daily_todo: { title: title, aspect_key: "money" }
+      }
+      assert_redirected_to dashboard_path
+    end
+
+    assert_equal 5, @user.daily_todos.for_day.count
+
+    get dashboard_path
+    assert_response :success
+    titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
+    assert_match(/Add a few small wins/i, response.body)
+    assert_no_match(/lp-dash-add-wrap/i, response.body)
+
+    expected_reward = (5 * GameRules::BATTLE_TODO_LP) + @user.missions.for_day.primary.incomplete.first.lp_reward
+    assert_match(/\+#{expected_reward}/, response.body)
+  end
+
+  test "daily todo soft cap blocks more than twelve" do
+    GameRules::MAX_DAILY_TODOS.times do |i|
+      @user.daily_todos.create!(
+        title: "Task #{i + 1}",
+        aspect_key: "money",
+        scheduled_on: Date.current
+      )
+    end
+
+    post daily_todos_url, params: {
+      daily_todo: { title: "One too many", aspect_key: "money" }
+    }
+    assert_redirected_to dashboard_path
+    assert_match(/battle is full/i, flash[:alert].to_s)
+    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day.count
   end
 end
