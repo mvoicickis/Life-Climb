@@ -77,6 +77,12 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Write 5 strong bullets/i, response.body)
     assert_match(/Claim Trail Guide badge/i, response.body)
     assert_select "[data-controller='adventure-guide']"
+    assert_select ".lp-adventure__how-stage"
+    assert_select ".lp-adventure__how-titlecard"
+    assert_select ".lp-adventure__how-dots li", 4
+    assert_select ".lp-adventure__how-flag", 4
+    assert_select ".lp-adventure__how-map-node", 4
+    assert_select ".lp-adventure__how-badge"
 
     patch v2_onboarding_url(step: "how")
     assert_redirected_to dashboard_path

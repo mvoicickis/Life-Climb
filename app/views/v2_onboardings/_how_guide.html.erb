@@ -1,62 +1,91 @@
-<%# How the Game Works — required post-forge guide with example stack + badge claim. %>
+<%# Cinematic How the Game Works — four short cutscenes on a shared mountain stage. %>
 <section class="lp-adventure__card lp-adventure__how"
          aria-labelledby="adventure-how-title"
-         data-controller="adventure-guide">
-  <p class="lp-adventure__kicker"><%= t("v2_onboarding.how_kicker") %></p>
-  <h1 id="adventure-how-title" class="lp-adventure__title"><%= t("v2_onboarding.how_title") %></h1>
-  <p class="lp-adventure__lead"><%= t("v2_onboarding.how_lead") %></p>
+         data-controller="adventure-guide"
+         data-adventure-guide-target="shell"
+         data-scene="stack"
+         data-scene-stack="<%= t('v2_onboarding.how_scene_stack') %>"
+         data-scene-battle="<%= t('v2_onboarding.how_scene_battle') %>"
+         data-scene-persist="<%= t('v2_onboarding.how_scene_persist') %>"
+         data-scene-map="<%= t('v2_onboarding.how_scene_map') %>">
+  <div class="lp-adventure__how-stage" aria-hidden="true">
+    <%= render "v2_onboardings/mountain_art", prefix: "lp-how-mtn" %>
+    <div class="lp-adventure__how-vignette"></div>
+  </div>
 
-  <ol class="lp-adventure__how-steps" aria-hidden="true">
-    <li><%= t("v2_onboarding.how_step_stack") %></li>
-    <li><%= t("v2_onboarding.how_step_battle") %></li>
-    <li><%= t("v2_onboarding.how_step_persist") %></li>
-    <li><%= t("v2_onboarding.how_step_map") %></li>
+  <header class="lp-adventure__how-titlecard">
+    <p class="lp-adventure__kicker"><%= t("v2_onboarding.how_kicker") %></p>
+    <h1 id="adventure-how-title" class="lp-adventure__title"><%= t("v2_onboarding.how_title") %></h1>
+    <p class="lp-adventure__how-scene-line" data-adventure-guide-target="sceneLine"><%= t("v2_onboarding.how_scene_stack") %></p>
+  </header>
+
+  <ol class="lp-adventure__how-dots" aria-label="<%= t('v2_onboarding.how_kicker') %>">
+    <li class="is-on" data-adventure-guide-target="dot"><span class="sr-only"><%= t("v2_onboarding.how_step_stack") %></span></li>
+    <li data-adventure-guide-target="dot"><span class="sr-only"><%= t("v2_onboarding.how_step_battle") %></span></li>
+    <li data-adventure-guide-target="dot"><span class="sr-only"><%= t("v2_onboarding.how_step_persist") %></span></li>
+    <li data-adventure-guide-target="dot"><span class="sr-only"><%= t("v2_onboarding.how_step_map") %></span></li>
   </ol>
 
-  <div class="lp-adventure__how-panel is-on" data-adventure-guide-target="panel">
-    <h2 class="lp-adventure__how-panel-title"><%= t("v2_onboarding.how_stack_title") %></h2>
-    <p class="lp-adventure__body"><%= t("v2_onboarding.how_stack_body") %></p>
-
-    <ol class="lp-adventure__how-stack">
-      <li class="lp-adventure__how-node is-goal">
-        <span class="lp-adventure__how-node-label"><%= t("v2_onboarding.how_example_goal_label") %></span>
-        <strong><%= t("v2_onboarding.how_example_goal") %></strong>
-      </li>
-      <li class="lp-adventure__how-node is-plan">
-        <span class="lp-adventure__how-node-label"><%= t("v2_onboarding.how_example_plan_label") %></span>
-        <strong><%= t("v2_onboarding.how_example_plan") %></strong>
-      </li>
-      <li class="lp-adventure__how-node is-project">
-        <span class="lp-adventure__how-node-label"><%= t("v2_onboarding.how_example_project_label") %></span>
-        <strong><%= t("v2_onboarding.how_example_project") %></strong>
-      </li>
-      <li class="lp-adventure__how-node is-battles">
-        <span class="lp-adventure__how-node-label"><%= t("v2_onboarding.how_example_battles_label") %></span>
-        <ul class="lp-adventure__how-battles">
-          <li data-adventure-guide-target="battleOne"><%= t("v2_onboarding.how_example_battle_1") %></li>
-          <li><%= t("v2_onboarding.how_example_battle_2") %></li>
-          <li><%= t("v2_onboarding.how_example_battle_3") %></li>
-        </ul>
-      </li>
-    </ol>
+  <%# Cutscene 1 — Stack reveal %>
+  <div class="lp-adventure__how-panel is-on" data-adventure-guide-target="panel" data-scene="stack">
+    <div class="lp-adventure__how-climb" aria-label="<%= t('v2_onboarding.how_stack_title') %>">
+      <svg class="lp-adventure__how-trail" viewBox="0 0 40 220" aria-hidden="true" focusable="false">
+        <path d="M20 210 C18 170, 22 140, 20 110 C18 80, 22 50, 20 20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 7"/>
+      </svg>
+      <ol class="lp-adventure__how-path">
+        <li class="lp-adventure__how-flag is-goal" data-adventure-guide-target="flag">
+          <span class="lp-adventure__how-flag-pin" aria-hidden="true"></span>
+          <span class="lp-adventure__how-flag-label"><%= t("v2_onboarding.how_example_goal_label") %></span>
+          <strong><%= t("v2_onboarding.how_example_goal") %></strong>
+        </li>
+        <li class="lp-adventure__how-flag is-plan" data-adventure-guide-target="flag">
+          <span class="lp-adventure__how-flag-pin" aria-hidden="true"></span>
+          <span class="lp-adventure__how-flag-label"><%= t("v2_onboarding.how_example_plan_label") %></span>
+          <strong><%= t("v2_onboarding.how_example_plan") %></strong>
+        </li>
+        <li class="lp-adventure__how-flag is-project" data-adventure-guide-target="flag">
+          <span class="lp-adventure__how-flag-pin" aria-hidden="true"></span>
+          <span class="lp-adventure__how-flag-label"><%= t("v2_onboarding.how_example_project_label") %></span>
+          <strong><%= t("v2_onboarding.how_example_project") %></strong>
+        </li>
+        <li class="lp-adventure__how-flag is-battles" data-adventure-guide-target="flag">
+          <span class="lp-adventure__how-flag-pin" aria-hidden="true"></span>
+          <span class="lp-adventure__how-flag-label"><%= t("v2_onboarding.how_example_battles_label") %></span>
+          <strong><%= t("v2_onboarding.how_example_battle_1") %></strong>
+        </li>
+      </ol>
+    </div>
 
     <button type="button" class="lp-cta w-full" data-action="adventure-guide#next">
       <%= t("v2_onboarding.how_continue") %>
     </button>
   </div>
 
-  <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" hidden>
-    <h2 class="lp-adventure__how-panel-title"><%= t("v2_onboarding.how_battle_title") %></h2>
-    <p class="lp-adventure__body"><%= t("v2_onboarding.how_battle_body") %></p>
+  <%# Cutscene 2 — Battle strike %>
+  <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" data-scene="battle" hidden>
+    <div class="lp-adventure__how-arena">
+      <button type="button"
+              class="lp-adventure__how-strike-chip"
+              data-adventure-guide-target="battleOne"
+              data-action="adventure-guide#winBattle">
+        <span class="lp-adventure__how-strike-kicker"><%= t("v2_onboarding.how_example_project") %></span>
+        <strong><%= t("v2_onboarding.how_example_battle_1") %></strong>
+      </button>
 
-    <div class="lp-adventure__how-progress" aria-live="polite">
-      <div class="lp-adventure__how-progress-head">
-        <span><%= t("v2_onboarding.how_project_progress_label") %></span>
-        <span data-adventure-guide-target="pct">40%</span>
+      <div class="lp-adventure__how-progress" aria-live="polite">
+        <div class="lp-adventure__how-progress-head">
+          <span><%= t("v2_onboarding.how_project_progress_label") %></span>
+          <span data-adventure-guide-target="pct">40%</span>
+        </div>
+        <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40">
+          <span class="lp-dash-bar__fill" data-adventure-guide-target="bar" style="width: 40%"></span>
+        </div>
       </div>
-      <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40">
-        <span class="lp-dash-bar__fill" data-adventure-guide-target="bar" style="width: 40%"></span>
-      </div>
+
+      <span class="lp-adventure__how-ap-pop" data-adventure-guide-target="apPop" hidden>+25 AP</span>
+      <p class="lp-adventure__how-won" data-adventure-guide-target="wonNote" hidden>
+        <%= t("v2_onboarding.how_battle_won") %>
+      </p>
     </div>
 
     <button type="button"
@@ -65,16 +94,11 @@
             data-action="adventure-guide#winBattle">
       <%= t("v2_onboarding.how_win_battle") %>
     </button>
-    <p class="lp-adventure__how-won" data-adventure-guide-target="wonNote" hidden>
-      <%= t("v2_onboarding.how_battle_won") %>
-    </p>
   </div>
 
-  <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" hidden>
-    <h2 class="lp-adventure__how-panel-title"><%= t("v2_onboarding.how_persist_title") %></h2>
-    <p class="lp-adventure__body"><%= t("v2_onboarding.how_persist_body") %></p>
-
-    <div class="lp-adventure__how-progress" aria-live="polite">
+  <%# Cutscene 3 — Persistence %>
+  <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" data-scene="persist" hidden>
+    <div class="lp-adventure__how-progress is-held" aria-live="polite">
       <div class="lp-adventure__how-progress-head">
         <span><%= t("v2_onboarding.how_project_progress_label") %></span>
         <span>65%</span>
@@ -86,8 +110,8 @@
 
     <p class="lp-adventure__how-remaining-label"><%= t("v2_onboarding.how_persist_remaining") %></p>
     <ul class="lp-adventure__how-battles is-remaining">
-      <li><%= t("v2_onboarding.how_example_battle_2") %></li>
-      <li><%= t("v2_onboarding.how_example_battle_3") %></li>
+      <li data-adventure-guide-target="remain"><%= t("v2_onboarding.how_example_battle_2") %></li>
+      <li data-adventure-guide-target="remain"><%= t("v2_onboarding.how_example_battle_3") %></li>
     </ul>
 
     <button type="button" class="lp-cta w-full" data-action="adventure-guide#next">
@@ -95,19 +119,37 @@
     </button>
   </div>
 
-  <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" hidden>
-    <h2 class="lp-adventure__how-panel-title"><%= t("v2_onboarding.how_map_title") %></h2>
+  <%# Cutscene 4 — Map + badge %>
+  <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" data-scene="map" hidden>
     <ul class="lp-adventure__how-map">
-      <li><%= t("v2_onboarding.how_map_today") %></li>
-      <li><%= t("v2_onboarding.how_map_strategy") %></li>
-      <li><%= t("v2_onboarding.how_map_journey") %></li>
-      <li><%= t("v2_onboarding.how_map_you") %></li>
+      <li class="lp-adventure__how-map-node is-today" data-adventure-guide-target="mapNode">
+        <span class="lp-adventure__how-map-icon" aria-hidden="true">🏠</span>
+        <span><%= t("v2_onboarding.how_map_today") %></span>
+      </li>
+      <li class="lp-adventure__how-map-node is-strategy" data-adventure-guide-target="mapNode">
+        <span class="lp-adventure__how-map-icon" aria-hidden="true">🗺</span>
+        <span><%= t("v2_onboarding.how_map_strategy") %></span>
+      </li>
+      <li class="lp-adventure__how-map-node is-journey" data-adventure-guide-target="mapNode">
+        <span class="lp-adventure__how-map-icon" aria-hidden="true">📈</span>
+        <span><%= t("v2_onboarding.how_map_journey") %></span>
+      </li>
+      <li class="lp-adventure__how-map-node is-you" data-adventure-guide-target="mapNode">
+        <span class="lp-adventure__how-map-icon" aria-hidden="true">👤</span>
+        <span><%= t("v2_onboarding.how_map_you") %></span>
+      </li>
     </ul>
+
+    <div class="lp-adventure__how-badge" data-adventure-guide-target="badge" aria-hidden="true">
+      <span class="lp-adventure__how-badge-hex">🧭</span>
+      <span class="lp-adventure__how-badge-title"><%= t("progress.achievements.adventure_guide") %></span>
+    </div>
 
     <%= button_to t("v2_onboarding.how_claim_badge"),
           v2_onboarding_path(step: "how"),
           method: :patch,
-          class: "lp-cta w-full",
-          form: { data: { turbo: false } } %>
+          class: "lp-cta w-full lp-adventure__how-claim",
+          form: { data: { turbo: false }, class: "lp-adventure__how-claim-form" },
+          data: { action: "adventure-guide#stampBadge" } %>
   </div>
 </section>
