@@ -45,7 +45,7 @@
   <% elsif @step == "mountain" %>
     <section class="lp-adventure__card" aria-labelledby="adventure-mountain-title">
       <p class="lp-adventure__kicker"><%= t("v2_onboarding.mountain_kicker") %></p>
-      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title") %></h1>
+      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title", year: @adventure_year) %></h1>
       <p class="lp-adventure__lead"><%= t("v2_onboarding.mountain_lead") %></p>
 
       <%= form_with url: v2_onboarding_path(step: "mountain"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
@@ -65,9 +65,9 @@
 
   <% elsif @step == "deadline" %>
     <section class="lp-adventure__card" aria-labelledby="adventure-deadline-title">
-      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker") %></p>
+      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker", year: @adventure_year) %></p>
       <h1 id="adventure-deadline-title" class="lp-adventure__title"><%= t("v2_onboarding.deadline_title") %></h1>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead") %></p>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead", year: @adventure_year) %></p>
       <p class="lp-adventure__body"><%= t("v2_onboarding.deadline_body") %></p>
       <p class="lp-adventure__mountain-echo"><%= @draft["title"] %></p>
       <%= button_to t("v2_onboarding.forge_cta"),

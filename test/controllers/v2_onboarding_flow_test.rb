@@ -33,13 +33,15 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to v2_onboarding_path(step: "mountain")
     follow_redirect!
     assert_match(/one mountain you want to conquer/i, response.body)
+    year = Strategy::YearCycle.target_dec29.year
+    assert_match(/December 29, #{year}/i, response.body)
 
     patch v2_onboarding_url(step: "mountain"), params: {
       onboarding: { title: "Become a Ruby Developer" }
     }
     assert_redirected_to v2_onboarding_path(step: "deadline")
     follow_redirect!
-    assert_match(/December 29/i, response.body)
+    assert_match(/December 29, #{year}/i, response.body)
     assert_match(/Become a Ruby Developer/i, response.body)
 
     patch v2_onboarding_url(step: "deadline")

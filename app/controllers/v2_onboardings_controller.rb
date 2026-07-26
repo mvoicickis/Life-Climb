@@ -11,6 +11,7 @@ class V2OnboardingsController < ApplicationController
     @draft = (session[:v2_onboarding] || {}).stringify_keys
     @step = (params[:step].presence || "welcome").to_s
     @step = "welcome" unless STEPS.include?(@step)
+    @adventure_year = Strategy::YearCycle.target_dec29.year
 
     if current_user.onboarding_completed? && current_user.planning_v2? && @step != "forge"
       redirect_to dashboard_path and return
