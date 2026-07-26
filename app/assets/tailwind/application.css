@@ -5671,14 +5671,53 @@ button.lp-progress-heat__cell {
   justify-content: center;
   margin-top: 0.55rem;
   width: 100%;
+  border: 0;
+  background: transparent;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--lp-level);
   text-decoration: none;
+  cursor: pointer;
+  padding: 0.35rem;
 }
 
 .lp-strategy-next__secondary:hover {
   text-decoration: underline;
+}
+
+.lp-strategy-next__add-battle {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed color-mix(in srgb, var(--lp-level) 35%, var(--lp-border));
+}
+
+.lp-strategy-next__add-battle.is-open {
+  animation: lp-strategy-next-in 220ms ease-out;
+}
+
+.lp-strategy-next__add-label {
+  margin: 0 0 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-next__cta.is-secondary-cta {
+  background: color-mix(in srgb, var(--lp-level) 88%, #0b1f12);
+}
+
+.lp-strategy__add-battle {
+  margin-top: 0.35rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px dashed color-mix(in srgb, var(--lp-level-battle, var(--lp-lime)) 40%, var(--lp-border));
+  border-radius: 0.85rem;
+}
+
+.lp-strategy__add-battle-label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--lp-level-battle, var(--lp-lime));
 }
 
 .lp-strategy-next.is-handoff {

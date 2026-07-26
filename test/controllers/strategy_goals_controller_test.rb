@@ -174,9 +174,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_match(/Your mountain is ready/i, response.body)
-    assert_select "a.lp-strategy-next__secondary", text: /Add another battle/i
-    assert_select "#add-another-battle summary", text: /Add another battle/i
+    assert_select "button.lp-strategy-next__secondary", text: /Add another battle/i
     assert_select "#add-another-battle input[name=horizon][value=day]"
+    assert_select "#add-battle-title"
+    assert_select "#board-add-battle input[name=title]"
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,

@@ -130,13 +130,13 @@
           </ul>
         <% end %>
 
-        <%# Always allow more battles on a project; keep primary Next Up as Fight Today when ready. %>
+        <%# Always allow more battles on a project; primary add lives in Next Up when ready. %>
         <% if focus_create %>
           <%# First battle is created in Next Up %>
         <% elsif battles.any? %>
-          <details class="lp-strategy__optional" id="add-another-battle">
-            <summary><%= t("strategy.add_another_battle") %></summary>
-            <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
+          <div class="lp-strategy__add-battle" id="board-add-battle">
+            <p class="lp-strategy__add-battle-label"><%= t("strategy.add_another_battle") %></p>
+            <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-3", data: { turbo: false } do %>
               <%= hidden_field_tag :life_area_id, area.id %>
               <%= hidden_field_tag :life_journey_id, @journey.id %>
               <%= hidden_field_tag :parent_id, @focus.id %>
@@ -145,7 +145,7 @@
               <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.battle_placeholder") %>
               <%= submit_tag t("strategy.add_battle"), class: "lp-cta w-full" %>
             <% end %>
-          </details>
+          </div>
         <% else %>
           <%= form_with url: strategy_goals_path, method: :post, class: "space-y-3", data: { turbo: false } do %>
             <%= hidden_field_tag :life_area_id, area.id %>

@@ -18,6 +18,7 @@
       else
         "goal"
       end
+    show_add_battle = next_up[:key] == :go_today && @focus&.project?
   %>
   <div class="lp-strategy-next is-<%= level %> <%= 'is-inline-form' if form.present? %> <%= 'is-handoff' if next_up[:key] == :go_today %>"
        id="strategy-next-up"
@@ -87,8 +88,33 @@
         <%= hidden_field_tag :sync_today, "1" %>
         <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
       <% end %>
-      <% if @focus&.project? %>
-        <a href="#add-another-battle" class="lp-strategy-next__secondary"><%= t("strategy.add_another_battle") %></a>
+
+      <% if show_add_battle %>
+        <button type="button"
+                class="lp-strategy-next__secondary"
+                data-strategy-next-target="addToggle"
+                data-action="strategy-next#showAddBattle"><%= t("strategy.add_another_battle") %></button>
+
+        <div class="lp-strategy-next__add-battle"
+             id="add-another-battle"
+             hidden
+             data-strategy-next-target="addForm">
+          <p class="lp-strategy-next__add-label"><%= t("strategy.next_up.add_another_battle_hint") %></p>
+          <%= form_with url: strategy_goals_path, method: :post, class: "lp-strategy-next__form", data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, area.id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :parent_id, @focus.id %>
+            <%= hidden_field_tag :horizon, "day" %>
+            <%= hidden_field_tag :scheduled_on, Date.current %>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  id: "add-battle-title",
+                  class: "lp-input w-full lp-strategy-next__input",
+                  placeholder: t("strategy.battle_placeholder") %>
+            <%= submit_tag t("strategy.add_battle"), class: "lp-strategy-next__cta is-secondary-cta" %>
+          <% end %>
+        </div>
       <% end %>
 
     <% elsif next_up[:anchor].present? %>
