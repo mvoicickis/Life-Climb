@@ -9,8 +9,11 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Support LifePoints/, response.body)
     assert_match(/Buy the developer a coffee/, response.body)
-    assert_match(%r{https://buymeacoffee\.com/lifepoints}, response.body)
-    assert_match(/Become a Supporter|Sponsor Development|Make a Contribution/, response.body)
+    assert_match(%r{href="https://buymeacoffee\.com/lifepoints"}, response.body)
+    assert_match(/Become a Supporter/, response.body)
+    assert_match(/Sponsor Development/, response.body)
+    assert_match(/Make a Contribution/, response.body)
+    refute_match(/More ways to support — soon/, response.body)
   end
 
   test "support page includes invite share sheet" do
@@ -83,16 +86,16 @@ class SupportMomentTest < ActiveSupport::TestCase
 end
 
 class SupportProvidersTest < ActiveSupport::TestCase
-  test "primary coffee provider is enabled with buymeacoffee default" do
+  test "primary coffee provider opens buymeacoffee lifepoints page" do
     primary = SupportProviders.primary
     assert primary
     assert_equal :buy_me_a_coffee, primary[:id]
     assert_equal "https://buymeacoffee.com/lifepoints", primary[:url]
   end
 
-  test "future providers listed as coming soon when disabled" do
-    soon = SupportProviders.coming_soon.map { |p| p[:id] }
-    assert_includes soon, :become_supporter
-    assert_includes soon, :sponsor_development
+  test "all support options open the same buymeacoffee page" do
+    urls = SupportProviders.enabled.map { |p| p[:url] }.uniq
+    assert_equal ["https://buymeacoffee.com/lifepoints"], urls
+    assert_empty SupportProviders.coming_soon
   end
 end
