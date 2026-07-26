@@ -2,6 +2,7 @@
 
 one:
   email_address: one@example.com
+  name: One
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6
@@ -11,6 +12,7 @@ one:
 
 two:
   email_address: two@example.com
+  name: Two
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6
@@ -20,6 +22,7 @@ two:
 
 admin:
   email_address: admin@example.com
+  name: Admin
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6

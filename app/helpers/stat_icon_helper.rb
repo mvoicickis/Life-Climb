@@ -42,7 +42,6 @@ module StatIconHelper
 
   def share_worthy?(habit, streak: 0)
     insights = DashboardInsights.new(habit.user, trackers: [ habit ])
-    return true if DashboardInsights::STREAK_MILESTONES.include?(streak)
     return true if insights.personal_record?(habit)
     return true if insights.big_boost?(habit)
 

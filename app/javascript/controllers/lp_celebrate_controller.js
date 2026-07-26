@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Lightweight confetti burst for quest complete (MVP).
 export default class extends Controller {
   connect() {
-    const colors = ["#a3e635", "#34d399", "#e8c468", "#f3f7f4"]
+    const colors = ["#22c55e", "#f59e0b", "#0f172a", "#ffffff"]
     for (let i = 0; i < 18; i += 1) {
       const piece = document.createElement("span")
       piece.className = "lp-confetti__piece"
