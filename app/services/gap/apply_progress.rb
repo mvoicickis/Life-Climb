@@ -12,6 +12,10 @@ module Gap
       mission: {
         basis_points: GameRules::MISSION_DEFAULT_GAP_BP,
         abs_cap: GameRules::MISSION_ABS_CAP
+      },
+      target: {
+        basis_points: GameRules::TARGET_GAP_BP,
+        abs_cap: GameRules::TARGET_ABS_CAP
       }
     }.freeze
 

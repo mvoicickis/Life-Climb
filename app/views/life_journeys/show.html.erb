@@ -120,20 +120,23 @@
               <%= text_area_tag "life_journey[policy]", @journey.policy, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.policy_placeholder") %>
             <% when "approach" %>
               <%= render "life_journeys/climb_list_fields",
-                    items: @journey.approaches_list,
+                    items: @journey.approaches_items,
                     name: "life_journey[approaches][]",
+                    tags_name: "life_journey[approaches_tags][]",
                     placeholder: t("journeys.sections.approach_placeholder"),
                     input: :text_area %>
             <% when "program" %>
               <%= render "life_journeys/climb_list_fields",
-                    items: @journey.programs_list,
+                    items: @journey.programs_items,
                     name: "life_journey[programs][]",
+                    tags_name: "life_journey[programs_tags][]",
                     placeholder: t("journeys.sections.program_placeholder"),
                     input: :text_area %>
             <% when "milestone" %>
               <%= render "life_journeys/climb_list_fields",
-                    items: @journey.milestones_list,
+                    items: @journey.milestones_items,
                     name: "life_journey[milestones][]",
+                    tags_name: "life_journey[milestones_tags][]",
                     placeholder: t("journeys.sections.milestone_hint") %>
             <% when "scenes" %>
               <label class="lp-climb-mini-label" for="life_journey_ideal_scene"><%= t("journeys.sections.ideal") %></label>
@@ -147,8 +150,9 @@
               <%= text_field_tag "life_journey[today_mission]", today_mission&.title, class: "lp-input", id: "life_journey_today_mission", autocomplete: "off", placeholder: t("journeys.climb.today_mission_placeholder") %>
               <p class="lp-climb-mini-label"><%= t("journeys.climb.today_todos_label") %></p>
               <%= render "life_journeys/climb_list_fields",
-                    items: @today_todos.map(&:title),
+                    items: @today_todos.map { |t| { "title" => t.title, "tags" => [ t.tag ].compact } },
                     name: "daily_todo_titles[]",
+                    tags_name: "daily_todo_tags[]",
                     placeholder: t("journeys.climb.today_todo_placeholder") %>
             <% end %>
 
@@ -163,6 +167,35 @@
       </section>
     <% end %>
   </div>
+
+  <section class="lp-climb-card lp-climb-card--targets">
+    <p class="lp-climb-card__kicker"><%= t("journeys.climb.targets_title") %></p>
+    <p class="lp-climb-card__hint"><%= t("journeys.climb.targets_hint") %></p>
+
+    <% Array(@targets).each do |target| %>
+      <div class="lp-climb-target">
+        <div>
+          <strong><%= target.title %></strong>
+          <span class="lp-climb-target__meta"><%= target.progress_label %><% if target.tags.any? %> · <%= target.tags.join(", ") %><% end %></span>
+        </div>
+        <%= button_to t("journeys.climb.remove_item"), journey_target_path(target), method: :delete, class: "lp-climb-list__remove", form: { data: { turbo: false } } %>
+      </div>
+    <% end %>
+
+    <%= form_with url: life_journey_journey_targets_path(@journey), method: :post, class: "lp-climb-target-form", data: { turbo: false } do %>
+      <%= text_field_tag "journey_target[title]", nil, class: "lp-input", placeholder: t("journeys.climb.target_title_placeholder"), required: true %>
+      <div class="lp-climb-target-form__row">
+        <select name="journey_target[kind]" class="lp-input">
+          <option value="oneshot"><%= t("journeys.climb.target_kind_oneshot") %></option>
+          <option value="count"><%= t("journeys.climb.target_kind_count") %></option>
+        </select>
+        <%= number_field_tag "journey_target[target_value]", 1, min: 0.01, step: :any, class: "lp-input", placeholder: t("journeys.climb.target_value_placeholder") %>
+        <%= text_field_tag "journey_target[unit]", nil, class: "lp-input", placeholder: t("journeys.climb.target_unit_placeholder") %>
+        <%= text_field_tag "journey_target[tags]", nil, class: "lp-input", placeholder: t("journeys.climb.tag_placeholder") %>
+      </div>
+      <%= submit_tag t("journeys.climb.target_add"), class: "lp-climb-card__save lp-climb-card__save--small" %>
+    <% end %>
+  </section>
 
   <% if @journey.status != "completed" %>
     <%= button_to t("journeys.reached_this"),

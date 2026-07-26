@@ -45,6 +45,7 @@ module Journeys
           ideal_scene: @ideal_scene,
           current_reality: @current_reality,
           next_win: @next_win.presence,
+          milestones: (@next_win.present? ? [ { "title" => @next_win, "tags" => [] } ] : []),
           status: "active",
           gap_percent: gap,
           activated_at: Time.current,

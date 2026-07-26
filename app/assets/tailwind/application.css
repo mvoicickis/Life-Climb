@@ -4579,7 +4579,109 @@ button.lp-progress-heat__cell {
   cursor: pointer;
 }
 
-.lp-climb-list__add:hover {
-  color: var(--lp-ink);
-  border-color: rgba(132, 242, 58, 0.35);
+.lp-climb-list__hint {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.8rem;
 }
+
+.lp-climb-list__row--tagged .lp-climb-list__fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lp-input--tag {
+  max-width: 12rem;
+}
+
+.lp-climb-card--targets {
+  margin-top: 0.25rem;
+}
+
+.lp-climb-target {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lp-climb-target__meta {
+  display: block;
+  color: var(--lp-muted);
+  font-size: 0.82rem;
+  margin-top: 0.15rem;
+}
+
+.lp-climb-target-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.lp-climb-target-form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 0.45rem;
+}
+
+.lp-dash-targets__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lp-dash-targets__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.lp-dash-targets__body {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.lp-dash-targets__title {
+  margin: 0;
+  font-weight: 800;
+}
+
+.lp-dash-targets__meta {
+  margin: 0.2rem 0 0.45rem;
+  color: var(--lp-muted);
+  font-size: 0.85rem;
+}
+
+.lp-dash-targets__log {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.lp-dash-targets__log .lp-input {
+  max-width: 6.5rem;
+}
+
+.lp-dash-project__clarity {
+  margin: 0.35rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+}
+
+.lp-progress-project__clarity,
+.lp-progress-project__target {
+  margin: 0.2rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.78rem;
+}
+

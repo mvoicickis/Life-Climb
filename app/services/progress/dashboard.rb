@@ -333,13 +333,20 @@ module Progress
     end
 
     def projects
-      @user.life_journeys.active.includes(:life_area).order(:focus_position, :id).map do |journey|
+      @user.life_journeys.active.includes(:life_area, :journey_targets).order(:focus_position, :id).map do |journey|
+        milestones = journey.milestones_list
         {
           id: journey.id,
-          title: journey.next_win.presence || journey.title,
+          title: journey.climb_card_title,
           goal: journey.title,
-          milestone: journey.next_win,
+          milestone: milestones.first,
+          milestones: milestones,
           progress: journey.closer_percent.round,
+          clarity_count: journey.clarity_count,
+          clarity_total: journey.clarity_total,
+          targets: journey.journey_targets.active.ordered.limit(3).map { |t|
+            { title: t.title, progress: t.progress_percent, summary: t.progress_label }
+          },
           icon: ASPECT_ICONS.fetch(journey.life_area&.key.to_s, "🚀"),
           color: ASPECT_COLORS.fetch(journey.life_area&.key.to_s, "#84F23A")
         }
