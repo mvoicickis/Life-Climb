@@ -1,0 +1,15 @@
+<%# locals: insights %>
+<section class="lp-progress-card lp-progress-insights" aria-label="<%= t('progress.insights_title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.insights_title") %></h2>
+    <p><%= t("progress.insights_hint") %></p>
+  </header>
+  <ul class="lp-progress-insights__list">
+    <% insights.each do |insight| %>
+      <li>
+        <span aria-hidden="true"><%= insight[:icon] %></span>
+        <p><%= insight[:text] %></p>
+      </li>
+    <% end %>
+  </ul>
+</section>

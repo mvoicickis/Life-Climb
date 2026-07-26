@@ -10,6 +10,7 @@ class DailyTodo < ApplicationRecord
   validates :scheduled_on, presence: true
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :lp_reward, numericality: { only_integer: true, greater_than: 0 }
+  validate :within_daily_cap, on: :create
 
   before_validation :assign_default_lp, on: :create
 
@@ -26,5 +27,14 @@ class DailyTodo < ApplicationRecord
 
   def assign_default_lp
     self.lp_reward = GameRules::BATTLE_TODO_LP if lp_reward.blank? || lp_reward.to_i <= 0
+  end
+
+  def within_daily_cap
+    return if user.blank? || scheduled_on.blank?
+
+    count = user.daily_todos.for_day(scheduled_on).count
+    return if count < GameRules::MAX_DAILY_TODOS
+
+    errors.add(:base, I18n.t("dash.battle_day_full", max: GameRules::MAX_DAILY_TODOS))
   end
 end

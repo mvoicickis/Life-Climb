@@ -1,0 +1,10 @@
+<section class="lp-progress-card lp-progress-growth" aria-label="<%= t('progress.growth_title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.growth_title") %></h2>
+    <p><%= t("progress.growth_hint") %></p>
+  </header>
+  <div class="lp-progress-chart">
+    <canvas data-progress-charts-target="growth" aria-label="<%= t('progress.growth_title') %>"></canvas>
+    <p class="lp-progress-empty" data-progress-charts-target="growthEmpty" hidden><%= t("progress.empty_chart") %></p>
+  </div>
+</section>

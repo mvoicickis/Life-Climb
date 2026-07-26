@@ -1,0 +1,44 @@
+<%# locals: kpis %>
+<section class="lp-progress-kpis" aria-label="<%= t('progress.kpi_section') %>">
+  <% kpis.each do |kpi| %>
+    <article class="lp-progress-card lp-progress-kpi">
+      <div class="lp-progress-kpi__head">
+        <span class="lp-progress-kpi__icon" aria-hidden="true"><%= kpi[:icon] %></span>
+        <p class="lp-progress-kpi__label"><%= kpi[:label] %></p>
+      </div>
+      <p class="lp-progress-kpi__value">
+        <span data-controller="progress-count" data-progress-count-to-value="<%= kpi[:value] %>"><%= number_with_delimiter(kpi[:value]) %></span>
+        <% if kpi[:suffix].present? %>
+          <span class="lp-progress-kpi__suffix"><%= kpi[:suffix] %></span>
+        <% end %>
+      </p>
+      <p class="lp-progress-kpi__delta <%= kpi[:delta].to_i.positive? ? 'is-up' : (kpi[:delta].to_i.negative? ? 'is-down' : '') %>">
+        <% if !kpi[:delta].nil? %>
+          <span aria-hidden="true"><%= kpi[:delta].to_i.positive? ? "↑" : (kpi[:delta].to_i.negative? ? "↓" : "→") %></span>
+          <% if kpi[:key] == :rate %>
+            <%= kpi[:delta].to_i.abs %>
+          <% else %>
+            <%= kpi[:delta].to_i.abs %>%
+          <% end %>
+          <%= kpi[:delta_label] %>
+        <% else %>
+          <%= kpi[:delta_label] %>
+        <% end %>
+      </p>
+      <svg class="lp-progress-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+        <%
+          values = Array(kpi[:sparkline]).map(&:to_f)
+          max = [values.max.to_f, 1].max
+          min = values.min.to_f
+          span = [max - min, 1].max
+          points = values.each_with_index.map { |v, i|
+            x = values.size <= 1 ? 0 : (i.to_f / (values.size - 1)) * 100
+            y = 26 - (((v - min) / span) * 22)
+            "#{x.round(2)},#{y.round(2)}"
+          }.join(" ")
+        %>
+        <polyline fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="<%= points %>"></polyline>
+      </svg>
+    </article>
+  <% end %>
+</section>

@@ -7,6 +7,7 @@ demo_password = ENV.fetch("DEMO_PASSWORD", "password12345")
 admin_password = ENV.fetch("ADMIN_PASSWORD", "password12345")
 
 demo = User.find_or_initialize_by(email_address: "demo@lifepoints.test")
+demo.name = demo.name.presence || "Demo"
 demo.password = demo_password
 demo.password_confirmation = demo_password
 demo.home_stat_count = 6
@@ -14,6 +15,7 @@ demo.admin = false
 demo.save!
 
 admin = User.find_or_initialize_by(email_address: ENV.fetch("ADMIN_EMAIL", "admin@lifepoints.test"))
+admin.name = admin.name.presence || "Admin"
 admin.password = admin_password
 admin.password_confirmation = admin_password
 admin.home_stat_count = 6

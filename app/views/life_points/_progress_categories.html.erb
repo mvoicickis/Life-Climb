@@ -1,0 +1,30 @@
+<%# locals: categories %>
+<section class="lp-progress-card lp-progress-categories" aria-label="<%= t('progress.categories_title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.categories_title") %></h2>
+    <p><%= t("progress.categories_hint") %></p>
+  </header>
+  <div class="lp-progress-categories__body">
+    <div class="lp-progress-donut">
+      <canvas data-progress-charts-target="donut" aria-label="<%= t('progress.categories_title') %>"></canvas>
+      <% total_completed = categories.sum { |c| c[:amount] } %>
+      <div class="lp-progress-donut__center" aria-hidden="true">
+        <strong><%= number_with_delimiter(total_completed) %></strong>
+        <span>LP</span>
+      </div>
+      <p class="lp-progress-empty" data-progress-charts-target="donutEmpty" hidden><%= t("progress.empty_categories") %></p>
+    </div>
+    <ul class="lp-progress-legend">
+      <% categories.each do |cat| %>
+        <li>
+          <span class="lp-progress-legend__swatch" style="--swatch: <%= cat[:color] %>" aria-hidden="true"><%= cat[:icon] %></span>
+          <span class="lp-progress-legend__name"><%= cat[:label] %></span>
+          <span class="lp-progress-legend__pct"><%= cat[:percent] %>%</span>
+        </li>
+      <% end %>
+      <% if categories.empty? %>
+        <li class="lp-progress-legend__empty"><%= t("progress.empty_categories") %></li>
+      <% end %>
+    </ul>
+  </div>
+</section>

@@ -8,61 +8,57 @@
     "home" => "🏠",
     "learning" => "📚"
   }
+  battle_empty = todos.empty? && !include_mission
 %>
 
 <section class="lp-dash-card lp-dash-battle" aria-label="<%= t('dash.battle_title') %>">
   <header class="lp-dash-card__head">
     <div>
       <h2 class="lp-dash-card__title">⚔ <%= t("dash.battle_title") %></h2>
-      <p class="lp-dash-card__sub"><%= t("dash.battle_subtitle") %></p>
+      <p class="lp-dash-card__sub"><%= t("dash.battle_subtitle_sync") %></p>
     </div>
   </header>
 
-  <ul class="lp-dash-battle__list">
-    <% if include_mission && mission %>
-      <li class="lp-dash-battle__item"
-          data-battle-day-target="item"
-          data-open="true"
-          data-lp="<%= mission.lp_reward %>">
-        <%= button_to mission_completion_path(mission),
-              method: :post,
-              params: { aspect_key: mission.aspect_key.presence || aspect_key },
-              class: "lp-dash-check",
-              aria: { label: "Complete #{mission.title}" } do %>
-          <span aria-hidden="true"></span>
-        <% end %>
-        <span class="lp-dash-battle__icon" aria-hidden="true">🎯</span>
-        <span class="lp-dash-battle__name"><%= mission.title %></span>
-        <span class="lp-dash-battle__lp">+<%= mission.lp_reward %> LP</span>
-      </li>
-    <% end %>
-
-    <% todos.each do |todo| %>
-      <li class="lp-dash-battle__item <%= 'is-done' if todo.completed? %>"
-          data-battle-day-target="item"
-          data-open="<%= todo.completed? ? 'false' : 'true' %>"
-          data-lp="<%= todo.lp_reward %>">
-        <%= button_to complete_daily_todo_path(todo),
-              method: :post,
-              class: "lp-dash-check #{'is-on' if todo.completed?}",
-              aria: { label: "#{todo.completed? ? 'Undo' : 'Complete'} #{todo.title}" } do %>
-          <span aria-hidden="true"></span>
-        <% end %>
-        <span class="lp-dash-battle__icon" aria-hidden="true"><%= aspect_icons.fetch(todo.aspect_key, "✨") %></span>
-        <span class="lp-dash-battle__name"><%= todo.title %></span>
-        <span class="lp-dash-battle__lp">+<%= todo.lp_reward %> LP</span>
-      </li>
-    <% end %>
-  </ul>
-
-  <% if open_count.zero? && todos.empty? && !include_mission %>
+  <% if battle_empty %>
     <p class="lp-dash-empty"><%= t("dash.battle_empty") %></p>
-    <%= form_with model: DailyTodo.new, url: daily_todos_path, class: "lp-dash-add" do |f| %>
-      <%= f.hidden_field :aspect_key, value: aspect_key %>
-      <%= f.text_field :title, required: true, class: "lp-input", placeholder: t("dash.battle_placeholder"), autocomplete: "off" %>
-      <%= f.submit t("dash.battle_add"), class: "lp-dash-add__btn" %>
-    <% end %>
   <% else %>
+    <ul class="lp-dash-battle__list">
+      <% if include_mission && mission %>
+        <li class="lp-dash-battle__item"
+            data-battle-day-target="item"
+            data-open="true"
+            data-lp="<%= mission.lp_reward %>">
+          <%= button_to mission_completion_path(mission),
+                method: :post,
+                params: { aspect_key: mission.aspect_key.presence || aspect_key },
+                class: "lp-dash-check",
+                aria: { label: "Complete #{mission.title}" } do %>
+            <span aria-hidden="true"></span>
+          <% end %>
+          <span class="lp-dash-battle__icon" aria-hidden="true">🎯</span>
+          <span class="lp-dash-battle__name"><%= mission.title %></span>
+          <span class="lp-dash-battle__lp">+<%= mission.lp_reward %> LP</span>
+        </li>
+      <% end %>
+
+      <% todos.each do |todo| %>
+        <li class="lp-dash-battle__item <%= 'is-done' if todo.completed? %>"
+            data-battle-day-target="item"
+            data-open="<%= todo.completed? ? 'false' : 'true' %>"
+            data-lp="<%= todo.lp_reward %>">
+          <%= button_to complete_daily_todo_path(todo),
+                method: :post,
+                class: "lp-dash-check #{'is-on' if todo.completed?}",
+                aria: { label: "#{todo.completed? ? 'Undo' : 'Complete'} #{todo.title}" } do %>
+            <span aria-hidden="true"></span>
+          <% end %>
+          <span class="lp-dash-battle__icon" aria-hidden="true"><%= aspect_icons.fetch(todo.aspect_key, "✨") %></span>
+          <span class="lp-dash-battle__name"><%= todo.title %></span>
+          <span class="lp-dash-battle__lp">+<%= todo.lp_reward %> LP</span>
+        </li>
+      <% end %>
+    </ul>
+
     <div class="lp-dash-battle__footer">
       <% if open_count.positive? %>
         <%= button_to t("dash.complete_battle"),
@@ -78,14 +74,17 @@
         <p class="lp-dash-battle__won"><%= t("dash.battle_won") %></p>
       <% end %>
     </div>
-
-    <details class="lp-dash-add-wrap">
-      <summary><%= t("dash.battle_add_more") %></summary>
-      <%= form_with model: DailyTodo.new, url: daily_todos_path, class: "lp-dash-add" do |f| %>
-        <%= f.hidden_field :aspect_key, value: aspect_key %>
-        <%= f.text_field :title, required: true, class: "lp-input", placeholder: t("dash.battle_placeholder"), autocomplete: "off" %>
-        <%= f.submit t("dash.battle_add"), class: "lp-dash-add__btn" %>
-      <% end %>
-    </details>
   <% end %>
+
+  <%= form_with model: DailyTodo.new, url: daily_todos_path, class: "lp-dash-add" do |f| %>
+    <%= f.hidden_field :aspect_key, value: aspect_key %>
+    <%= f.text_field :title,
+          required: true,
+          class: "lp-input",
+          placeholder: area_copy(aspect_key, "today_todo_placeholder", default: t("dash.battle_placeholder")),
+          autocomplete: "off",
+          autofocus: battle_empty %>
+    <%= f.submit t("dash.battle_add"), class: "lp-dash-add__btn" %>
+  <% end %>
+  <p class="lp-dash-add-hint"><%= t("dash.battle_add_hint") %></p>
 </section>

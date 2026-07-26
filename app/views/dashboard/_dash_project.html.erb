@@ -1,20 +1,22 @@
-<%# locals: journey, project_title, progress %>
-<section class="lp-dash-card lp-dash-project" aria-label="<%= t('dash.project_label') %>">
+<%# locals: journey, project_title, progress, milestones: [] %>
+<% milestones = local_assigns.fetch(:milestones, journey.milestones_list.first(3)) %>
+<section class="lp-dash-card lp-dash-project" aria-label="<%= t('dash.climb_label') %>">
   <div class="lp-dash-project__row">
-    <div class="lp-dash-project__icon" aria-hidden="true">🚀</div>
+    <div class="lp-dash-project__icon" aria-hidden="true">🏔</div>
     <div class="lp-dash-project__body">
-      <p class="lp-dash-kicker"><%= t("dash.project_label") %></p>
-      <h2 class="lp-dash-project__title"><%= project_title %></h2>
+      <p class="lp-dash-kicker"><%= t("dash.climb_label") %></p>
+      <h2 class="lp-dash-project__title"><%= journey.title %></h2>
       <div class="lp-dash-bar lp-dash-bar--sm" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= progress %>">
         <div class="lp-dash-bar__fill" style="width: <%= progress %>%"></div>
       </div>
       <p class="lp-dash-project__meta">
-        <span><%= progress %>%</span>
-        <% if journey.next_win.present? %>
-          <span>· <%= t("dash.milestone", name: journey.next_win) %></span>
+        <span><%= progress %>% <%= t("dash.closer_word") %></span>
+        <% if milestones.any? %>
+          <span>· <%= t("dash.milestones_label") %>: <%= milestones.join(" · ") %></span>
         <% end %>
       </p>
+      <p class="lp-dash-project__clarity"><%= t("dash.clarity_line", count: journey.clarity_count, total: journey.clarity_total) %></p>
     </div>
   </div>
-  <%= link_to t("dash.view_project"), life_journey_path(journey), class: "lp-dash-project__link" %>
+  <%= link_to t("dash.open_journey"), life_journey_path(journey), class: "lp-dash-project__link" %>
 </section>

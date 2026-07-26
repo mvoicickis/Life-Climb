@@ -1,5 +1,23 @@
+# frozen_string_literal: true
+
 class LifePointsController < ApplicationController
   def show
+    if current_user.planning_v2?
+      show_progress
+    else
+      show_legacy
+    end
+  end
+
+  private
+
+  def show_progress
+    period = params[:period].presence || "7d"
+    @progress = Progress::Dashboard.call(user: current_user, period: period)
+    render "life_points/progress"
+  end
+
+  def show_legacy
     @total = current_user.life_points
     @alive_level = current_user.alive_level
     @products_count = current_user.finished_products.count
@@ -12,9 +30,8 @@ class LifePointsController < ApplicationController
     @goals = current_user.goals.includes(:dream, :steps, :life_area).ordered
     @learning_hours = learning_hours_estimate
     @support_moment = offer_support_moment!
+    render "life_points/show"
   end
-
-  private
 
   def offer_support_moment!
     moment = SupportMoment.new(current_user)

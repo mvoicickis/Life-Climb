@@ -27,8 +27,10 @@ class DashboardController < ApplicationController
     @battle_reward = @daily_todos.incomplete.sum { |t| t.lp_reward.to_i }
     @battle_reward += @mission.lp_reward if @include_mission_in_battle
     @battle_open_count = @daily_todos.incomplete.count + (@include_mission_in_battle ? 1 : 0)
-    @project_title = @journey.next_win.presence || @journey.title
+    @project_title = @journey.climb_card_title
     @project_progress = [ @closer, 95 ].min
+    @milestones = @journey.milestones_list.first(3)
+    @targets = @journey.journey_targets.active.ordered.to_a
     render "dashboard/show_v2"
   end
 

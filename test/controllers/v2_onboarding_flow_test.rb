@@ -4,6 +4,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
   test "mvp coach flow: area journey vision reality progress milestone mission" do
     post registration_url, params: {
       user: {
+        name: "Alex",
         email_address: "fresh@example.com",
         password: "password12345",
         password_confirmation: "password12345"
@@ -52,15 +53,17 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     }
     assert_redirected_to dashboard_path
     follow_redirect!
+    assert_match(/Alex/i, response.body)
     assert_match(/Read 20 pages/i, response.body)
-    assert_match(/Today'?s Battle|Complete Battle/i, response.body)
-    assert_match(/Current Project|Today'?s Goal/i, response.body)
+    assert_match(/Today.?s Battle|Complete Battle/i, response.body)
+    assert_match(/Current Project|Today.?s Goal|Current climb/i, response.body)
     assert_no_match(/Life Tree|Open Life/i, response.body)
   end
 
   test "milestone can be skipped" do
     post registration_url, params: {
       user: {
+        name: "Sam",
         email_address: "skipmile@example.com",
         password: "password12345",
         password_confirmation: "password12345"
