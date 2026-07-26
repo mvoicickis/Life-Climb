@@ -22,11 +22,12 @@ class AreaRelevantJourneyCopyTest < ActionDispatch::IntegrationTest
     Focus::SetJourneys.call(user: @user, journey_ids: [ @journey.id ])
   end
 
-  test "journey climb shows relationship questions not career ones" do
-    get life_journey_path(@journey, edit: "purpose")
+  test "journey planner shows plain scale and plan-together note" do
+    get life_journey_path(@journey, horizon: "brief")
     assert_response :success
-    assert_match(/Design the relationship|Relationships climb|relationship/i, response.body)
-    assert_match(/Warm, honest, weekly date nights|Feel safe|date nights|connection/i, response.body)
+    assert_match(/Your year plan|Why it matters|My rules/i, response.body)
+    assert_match(/Plan it together/i, response.body)
+    assert_match(/Message me anytime/i, response.body)
     assert_no_match(/Senior Rails developer shipping products/i, response.body)
   end
 

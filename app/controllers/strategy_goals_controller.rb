@@ -17,6 +17,7 @@ class StrategyGoalsController < ApplicationController
       parent: parent,
       horizon: horizon,
       title: params.require(:title).to_s.strip,
+      due_on: parse_due_on(horizon, parent),
       scheduled_on: parse_scheduled_on(horizon),
       position: next_position(parent, horizon)
     )
@@ -41,17 +42,29 @@ class StrategyGoalsController < ApplicationController
         )
       end
 
-      redirect_to strategy_redirect_path, notice: t("strategy.created", sp: amount), status: :see_other
+      redirect_to strategy_redirect_path(horizon: horizon, parent_id: parent&.id),
+                  notice: t("strategy.created", sp: amount), status: :see_other
     else
-      redirect_to strategy_redirect_path, alert: goal.errors.full_messages.to_sentence, status: :see_other
+      redirect_to strategy_redirect_path(horizon: horizon, parent_id: parent&.id),
+                  alert: goal.errors.full_messages.to_sentence, status: :see_other
     end
   end
 
   def destroy
     goal = current_user.strategy_goals.find(params[:id])
     area_id = goal.life_area_id
+    parent_id = goal.parent_id
+    horizon = goal.horizon == "year" ? "year" : (goal.parent&.horizon || "year")
+    view_horizon =
+      case goal.horizon
+      when "year" then "year"
+      when "month" then "month"
+      when "week" then "week"
+      else "day"
+      end
     goal.destroy!
-    redirect_to strategy_redirect_path(area_id: area_id), notice: t("strategy.removed"), status: :see_other
+    redirect_to strategy_redirect_path(area_id: area_id, horizon: view_horizon, parent_id: parent_id),
+                notice: t("strategy.removed"), status: :see_other
   end
 
   private
@@ -70,6 +83,29 @@ class StrategyGoalsController < ApplicationController
     return if params[:parent_id].blank?
 
     current_user.strategy_goals.find(params[:parent_id])
+  end
+
+  def parse_due_on(horizon, parent)
+    case horizon
+    when "year"
+      Strategy::YearCycle.target_dec29
+    when "month"
+      raw = params[:due_on].presence
+      return Date.parse(raw.to_s) if raw
+
+      if parent&.horizon == "year"
+        used = parent.children.for_horizon("month").pluck(:due_on)
+        slot = Strategy::YearCycle.remaining_month_slots(target: parent.due_on).find { |s| !used.include?(s[:due_on]) }
+        return slot&.fetch(:due_on) || parent.due_on
+      end
+
+      parent&.due_on
+    when "week"
+      raw = params[:due_on].presence
+      raw ? Date.parse(raw.to_s) : parent&.due_on
+    end
+  rescue ArgumentError, TypeError
+    parent&.due_on
   end
 
   def parse_scheduled_on(horizon)
@@ -96,11 +132,15 @@ class StrategyGoalsController < ApplicationController
     current_user.strategy_point_ledgers.where(source: week, reason: "week_breakdown").none?
   end
 
-  def strategy_redirect_path(area_id: @life_area.id)
+  def goal_horizon_after_destroy(parent_horizon)
+    parent_horizon.presence_in(%w[year month week day]) || "year"
+  end
+
+  def strategy_redirect_path(area_id: @life_area.id, horizon: "year", parent_id: nil)
     journey = current_user.life_journeys.active.find_by(life_area_id: area_id) ||
               current_user.primary_focused_journey
     if journey
-      life_journey_path(journey, area: journey.life_area.key)
+      life_journey_path(journey, horizon: horizon, parent_id: parent_id)
     else
       new_life_journey_path(life_area_id: area_id)
     end

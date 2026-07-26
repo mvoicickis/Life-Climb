@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_070000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_080000) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -203,6 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_070000) do
     t.datetime "scenes_revised_at"
     t.json "setup_flags", default: {}, null: false
     t.string "status", default: "active", null: false
+    t.json "strategy_brief", default: {}, null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
@@ -272,6 +273,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_070000) do
   create_table "strategy_goals", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.date "due_on"
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"

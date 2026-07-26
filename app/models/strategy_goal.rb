@@ -21,7 +21,11 @@ class StrategyGoal < ApplicationRecord
   validates :horizon, presence: true, inclusion: { in: HORIZONS }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :scheduled_on_required_for_day
+  validate :due_on_rules
   validate :parent_horizon_matches
+  validate :child_fits_parent_window
+
+  before_validation :assign_year_due_on, if: -> { horizon == "year" }
 
   scope :ordered, -> { order(:position, :id) }
   scope :for_horizon, ->(horizon) { where(horizon: horizon) }
@@ -45,7 +49,21 @@ class StrategyGoal < ApplicationRecord
     "self"
   end
 
+  def overdue?
+    return false if completed?
+    marker = horizon == "day" ? scheduled_on : due_on
+    marker.present? && marker < Date.current
+  end
+
+  def time_marker
+    horizon == "day" ? scheduled_on : due_on
+  end
+
   private
+
+  def assign_year_due_on
+    self.due_on = Strategy::YearCycle.target_dec29
+  end
 
   def scheduled_on_required_for_day
     return unless horizon == "day"
@@ -54,10 +72,31 @@ class StrategyGoal < ApplicationRecord
     errors.add(:scheduled_on, :blank)
   end
 
+  def due_on_rules
+    case horizon
+    when "year"
+      errors.add(:due_on, :blank) if due_on.blank?
+      errors.add(:due_on, :invalid) if due_on.present? && !Strategy::YearCycle.dec29?(due_on)
+    when "month", "week"
+      errors.add(:due_on, :blank) if due_on.blank?
+    end
+  end
+
   def parent_horizon_matches
     return if parent.blank?
     return if CHILD_HORIZON[parent.horizon] == horizon
 
     errors.add(:parent_id, :invalid)
+  end
+
+  def child_fits_parent_window
+    return if parent.blank?
+
+    child_date = horizon == "day" ? scheduled_on : due_on
+    parent_due = parent.due_on
+    return if child_date.blank? || parent_due.blank?
+    return if child_date <= parent_due
+
+    errors.add(:due_on, :invalid)
   end
 end
