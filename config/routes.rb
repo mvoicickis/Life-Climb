@@ -7,7 +7,10 @@ Rails.application.routes.draw do
   resource :dashboard, only: :show, controller: "dashboard"
   resource :life_map, only: :show, controller: "life_maps"
   resource :missions, only: :show, controller: "missions"
-  resource :settings, only: %i[ show update ]
+  resource :settings, only: %i[ show update ] do
+    get "name/edit", to: "settings#edit_name", as: :edit_name, on: :collection
+    get "today_count/edit", to: "settings#edit_today_count", as: :edit_today_count, on: :collection
+  end
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit
   resource :life_area_selections, only: %i[ show update ], controller: "life_area_selections"

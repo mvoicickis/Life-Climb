@@ -2,15 +2,20 @@ class SettingsController < ApplicationController
   def show
     @home_habits = current_user.home_board_habits
     @all_habits = current_user.habits.active.ordered
+    @focus_life_area = current_user.focus_life_area
+  end
+
+  def edit_name
+  end
+
+  def edit_today_count
   end
 
   def update
     if current_user.update(settings_params)
-      redirect_to settings_path, notice: "Today board updated."
+      redirect_to settings_path, notice: update_notice
     else
-      @home_habits = current_user.home_board_habits
-      @all_habits = current_user.habits.active.ordered
-      render :show, status: :unprocessable_entity
+      render update_error_template, status: :unprocessable_entity
     end
   end
 
@@ -40,5 +45,32 @@ class SettingsController < ApplicationController
 
   def settings_params
     params.require(:user).permit(:home_stat_count, :character, :name)
+  end
+
+  def update_notice
+    if updating?(:name)
+      t("settings.name_updated")
+    elsif updating?(:home_stat_count)
+      t("settings.today_count_updated")
+    else
+      "Today board updated."
+    end
+  end
+
+  def update_error_template
+    if updating?(:name)
+      :edit_name
+    elsif updating?(:home_stat_count)
+      :edit_today_count
+    else
+      @home_habits = current_user.home_board_habits
+      @all_habits = current_user.habits.active.ordered
+      @focus_life_area = current_user.focus_life_area
+      :show
+    end
+  end
+
+  def updating?(attribute)
+    params.fetch(:user, {}).key?(attribute)
   end
 end

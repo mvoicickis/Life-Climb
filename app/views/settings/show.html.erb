@@ -1,6 +1,8 @@
 <% content_for :title, t("settings.title") %>
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
+<% focus_area = @focus_life_area || current_user.focus_life_area %>
+<% row_class = "flex items-center justify-between gap-3 rounded-xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)] transition hover:border-[var(--lp-lime)]" %>
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
   <header>
@@ -13,16 +15,26 @@
   </header>
 
   <section class="lp-glass p-5">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.feedback_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.feedback_body") %></p>
-    <%= link_to t("settings.contact_me"), new_feedback_path, class: "lp-cta mt-4 inline-flex" %>
-  </section>
+    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.make_yours_title") %></h2>
+    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.make_yours_hint") %></p>
 
-  <section class="lp-glass p-5">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("life_area_selections.title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("life_area_selections.subtitle") %></p>
-    <div class="mt-4">
-      <%= link_to t("life_area_selections.link"), life_area_selections_path, class: "lp-cta inline-flex" %>
+    <div class="mt-4 space-y-2">
+      <%= link_to edit_today_count_settings_path, class: row_class do %>
+        <span><%= t("settings.change_today_count") %></span>
+        <span class="shrink-0 font-semibold text-[var(--lp-muted)]"><%= current_user.home_stat_count %></span>
+      <% end %>
+
+      <%= link_to edit_name_settings_path, class: row_class do %>
+        <span><%= t("settings.change_name") %></span>
+        <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]"><%= current_user.name.presence || "—" %></span>
+      <% end %>
+
+      <%= link_to life_area_selections_path, class: row_class do %>
+        <span><%= t("settings.life_area_label") %></span>
+        <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]">
+          <%= focus_area&.label.presence || t("settings.choose_life_area") %>
+        </span>
+      <% end %>
     </div>
   </section>
 
@@ -33,44 +45,19 @@
            data-share-title-value="<%= t('share.invite.title') %>">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("support.title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.support_body") %></p>
-    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.share_body") %></p>
     <%= link_to t("support.cta_short"), support_path, class: "lp-cta mt-4 inline-flex" %>
     <div class="mt-4 flex flex-wrap gap-3">
       <button type="button"
-              class="lp-cta inline-flex"
+              class="rounded-xl border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]"
               data-action="click->share#open">
-        <%= t("share.invite.cta") %>
+        <%= t("share.invite.cta_short") %>
       </button>
-      <%= link_to t("about.title"), about_path, class: "rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
+      <%= link_to t("settings.contact_me"), new_feedback_path, class: "rounded-xl border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
+      <%= link_to t("about.title"), about_path, class: "rounded-xl border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
     </div>
     <%= render "shared/share_sheet",
           title: t("share.invite.title"),
           subtitle: t("share.invite.subtitle") %>
-  </section>
-
-  <section class="lp-glass p-6">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.count_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.count_hint") %></p>
-
-    <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do |form| %>
-      <%= form.number_field :home_stat_count,
-          min: 1,
-          max: 20,
-          class: "lp-input w-full" %>
-      <%= form.submit t("settings.save"), class: "lp-cta mt-4 w-full" %>
-    <% end %>
-  </section>
-
-  <section class="lp-glass p-6">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.profile_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.profile_hint") %></p>
-
-    <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4 space-y-3", data: { turbo: false } do |form| %>
-      <%= form.label :name, t("auth.name"), class: "lp-auth-label" %>
-      <%= form.text_field :name, required: true, maxlength: 80, autocomplete: "name",
-          class: "lp-input w-full", placeholder: t("auth.name_placeholder") %>
-      <%= form.submit t("settings.save"), class: "lp-cta mt-2 w-full" %>
-    <% end %>
   </section>
 
   <section class="lp-glass p-5">
