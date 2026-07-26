@@ -20,143 +20,115 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     @area = @journey.life_area
   end
 
-  test "journey show is one-year planner without climb or universe chrome" do
+  test "journey show is guided strategy without climb chrome" do
     get life_journey_path(@journey)
     assert_response :success
     assert_match(/Your year plan/i, response.body)
-    assert_match(/Plan here\. Score Strategy Points/i, response.body)
-    assert_match(/Action Points/i, response.body)
-    assert_match(/Dec(?:ember)? 29/i, response.body)
+    assert_match(/What.?s your goal/i, response.body)
     assert_match(/Strategy Points/i, response.body)
-    assert_match(/Plan it together/i, response.body)
-    assert_match(/Message me anytime/i, response.body)
-    assert_select ".lp-strategy__horizon", minimum: 5
+    assert_match(/Today.?s Battle/i, response.body)
+    assert_match(/Go to Today/i, response.body)
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)
-    assert_select "#climb-purpose", count: 0
   end
 
-  test "year goal locks due_on to December 29" do
+  test "goal locks due_on to December 29 and awards goal SP" do
     post strategy_goals_path, params: {
       life_area_id: @area.id,
       life_journey_id: @journey.id,
-      horizon: "year",
-      title: "Ship studio this year"
+      horizon: "goal",
+      title: "Become a Rails developer"
     }
-    assert_redirected_to life_journey_path(@journey, horizon: "year")
-    year = @user.strategy_goals.for_horizon("year").last
-    assert Strategy::YearCycle.dec29?(year.due_on)
-    assert_equal Strategy::YearCycle.target_dec29, year.due_on
-    assert_equal 15, @user.reload.strategy_points
+    goal = @user.strategy_goals.for_kind("goal").last
+    assert Strategy::YearCycle.dec29?(goal.due_on)
+    assert_equal 100, @user.reload.strategy_points
+    assert_match(/Goal created/i, flash[:notice].to_s)
   end
 
-  test "month slots follow remaining months until Dec 29" do
+  test "guided tree plan project monthly goal battle awards and syncs today" do
     post strategy_goals_path, params: {
-      life_area_id: @area.id,
-      life_journey_id: @journey.id,
-      horizon: "year",
-      title: "Ship studio this year"
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      horizon: "goal", title: "Become debt-free"
     }
-    year = @user.strategy_goals.for_horizon("year").last
-    slots = Strategy::YearCycle.remaining_month_slots(target: year.due_on)
-    assert slots.any?
-    assert_equal Date.new(year.due_on.year, 12, 29), slots.last[:due_on]
+    goal = @user.strategy_goals.for_kind("goal").last
 
-    first = slots.first
     post strategy_goals_path, params: {
-      life_area_id: @area.id,
-      life_journey_id: @journey.id,
-      parent_id: year.id,
-      horizon: "month",
-      due_on: first[:due_on],
-      title: "July chunk"
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: goal.id, horizon: "plan", title: "Increase income"
     }
-    month = @user.strategy_goals.for_horizon("month").last
-    assert_equal first[:due_on], month.due_on
+    plan = @user.strategy_goals.for_kind("plan").last
+    assert_operator @user.reload.strategy_points, :>=, 150
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: plan.id, horizon: "project", title: "Learn German"
+    }
+    project = @user.strategy_goals.for_kind("project").last
+    assert_operator @user.reload.strategy_points, :>=, 225
+
+    slot = Strategy::YearCycle.remaining_month_slots(target: goal.due_on).first
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: project.id, horizon: "month", due_on: slot[:due_on], title: "Finish A1"
+    }
+    month = @user.strategy_goals.for_kind("month").last
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: month.id, horizon: "day", scheduled_on: Date.current.to_s,
+      title: "Learn 20 words"
+    }
+    assert @user.daily_todos.for_day(Date.current).exists?(title: "Learn 20 words")
+    assert_operator @user.reload.strategy_points, :>=, 725 # includes strategy complete 500
   end
 
-  test "year month week day cascade awards SP and fills today feeder" do
-    post strategy_goals_path, params: {
-      life_area_id: @area.id,
-      life_journey_id: @journey.id,
-      horizon: "year",
-      title: "Ship studio this year"
-    }
-    year = @user.strategy_goals.for_horizon("year").last
-    assert_equal 15, @user.reload.strategy_points
-
-    post strategy_goals_path, params: {
-      life_area_id: @area.id,
-      life_journey_id: @journey.id,
-      parent_id: year.id,
-      horizon: "month",
-      title: "Launch offer this month"
-    }
-    month = @user.strategy_goals.for_horizon("month").last
-    assert month.due_on.present?
-    assert_equal 20, @user.reload.strategy_points
-
-    post strategy_goals_path, params: {
-      life_area_id: @area.id,
-      life_journey_id: @journey.id,
-      parent_id: month.id,
-      horizon: "week",
-      due_on: month.due_on,
-      title: "Finish landing page"
-    }
-    week = @user.strategy_goals.for_horizon("week").last
-    assert_equal 25, @user.reload.strategy_points
-
-    today = Date.current
-    3.times do |i|
-      post strategy_goals_path, params: {
-        life_area_id: @area.id,
-        life_journey_id: @journey.id,
-        parent_id: week.id,
-        horizon: "day",
-        scheduled_on: today.to_s,
-        title: "Day action #{i + 1}"
-      }
-    end
-
-    @user.reload
-    assert @user.strategy_points >= 40
-    assert_operator @user.daily_todos.for_day(today).count, :>=, 3
-    assert @user.daily_todos.for_day(today).where.not(strategy_goal_id: nil).exists?
-  end
-
-  test "sync days to today from journey" do
-    year = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, horizon: "year", title: "Year", position: 0
+  test "battles can hang under monthly goal without weeks" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
     )
     month = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: year, horizon: "month",
-      title: "Month", due_on: year.due_on, position: 0
+      life_area: @area, life_journey: @journey, parent: project, horizon: "month",
+      title: "July", due_on: Date.current.end_of_month, position: 0
     )
-    week = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: month, horizon: "week",
-      title: "Week", due_on: month.due_on, position: 0
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: month, horizon: "day",
+      title: "Direct battle", scheduled_on: Date.current, position: 0
     )
-    day = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: week, horizon: "day",
-      title: "Sync me", scheduled_on: Date.current, position: 0
-    )
-    @user.daily_todos.for_day(Date.current).where(strategy_goal_id: day.id).delete_all
-
-    patch life_journey_path(@journey), params: { sync_today: "1" }
-    assert_redirected_to dashboard_path
-    assert @user.daily_todos.for_day(Date.current).exists?(strategy_goal_id: day.id, title: "Sync me")
+    assert battle.persisted?
+    assert_equal 0, month.children.for_kind("week").count
   end
 
-  test "strategy brief saves on journey" do
-    patch life_journey_path(@journey), params: {
-      horizon: "brief",
-      strategy_brief: { why: "Freedom", rules: "Ship weekly" }
-    }
-    assert_redirected_to life_journey_path(@journey, horizon: "brief")
-    @journey.reload
-    assert_equal "Freedom", @journey.strategy_brief_value("why")
-    assert_equal "Ship weekly", @journey.strategy_brief_value("rules")
+  test "progress rolls up when battle completed via today" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
+    )
+    month = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "month",
+      title: "July", due_on: Date.current.end_of_month, position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: month, horizon: "day",
+      title: "Win this", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: battle.id)
+
+    assert_equal 0, goal.progress_percent
+    post complete_daily_todo_path(todo)
+    assert_equal 100, goal.reload.progress_percent
+    assert battle.reload.completed?
   end
 
   test "dashboard shows action points and strategy points" do
@@ -164,14 +136,5 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/\bAP\b/, response.body)
     assert_match(/\bSP\b/, response.body)
-  end
-
-  test "dashboard empty feeder links to strategy when no battle items" do
-    @user.daily_todos.for_day(Date.current).delete_all
-    @journey.missions.for_day(Date.current).delete_all
-
-    get dashboard_path
-    assert_response :success
-    assert_match(/Plan this week in Strategy/i, response.body)
   end
 end

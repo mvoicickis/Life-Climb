@@ -3,11 +3,16 @@
 class StrategyGoal < ApplicationRecord
   include TextLimits
 
-  HORIZONS = %w[year month week day].freeze
-  CHILD_HORIZON = {
-    "year" => "month",
-    "month" => "week",
-    "week" => "day"
+  # V1 guided tree. Legacy "year" is treated as "goal".
+  KINDS = %w[goal plan project month week day].freeze
+  LEGACY_KIND = { "year" => "goal" }.freeze
+
+  ALLOWED_CHILDREN = {
+    "goal" => %w[plan],
+    "plan" => %w[project],
+    "project" => %w[month],
+    "month" => %w[week day],
+    "week" => %w[day]
   }.freeze
 
   belongs_to :user
@@ -18,28 +23,65 @@ class StrategyGoal < ApplicationRecord
   has_many :daily_todos, dependent: :nullify
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
-  validates :horizon, presence: true, inclusion: { in: HORIZONS }
+  validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
+  validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KIND.keys }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :scheduled_on_required_for_day
   validate :due_on_rules
-  validate :parent_horizon_matches
+  validate :parent_kind_matches
   validate :child_fits_parent_window
+  validate :root_must_be_goal
 
-  before_validation :assign_year_due_on, if: -> { horizon == "year" }
+  before_validation :normalize_legacy_kind
+  before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
   scope :for_horizon, ->(horizon) { where(horizon: horizon) }
+  scope :for_kind, ->(kind) {
+    keys = [ kind ]
+    keys << "year" if kind.to_s == "goal"
+    where(horizon: keys)
+  }
   scope :for_area, ->(area_id) { where(life_area_id: area_id) }
   scope :roots, -> { where(parent_id: nil) }
   scope :incomplete, -> { where(completed_at: nil) }
   scope :for_day, ->(date = Date.current) { where(horizon: "day", scheduled_on: date) }
+  scope :battles, -> { where(horizon: "day") }
 
   def completed?
     completed_at.present?
   end
 
-  def child_horizon
-    CHILD_HORIZON[horizon]
+  def kind
+    LEGACY_KIND.fetch(horizon.to_s, horizon.to_s)
+  end
+
+  def goal?
+    kind == "goal"
+  end
+
+  def plan?
+    kind == "plan"
+  end
+
+  def project?
+    kind == "project"
+  end
+
+  def month?
+    kind == "month"
+  end
+
+  def week?
+    kind == "week"
+  end
+
+  def day?
+    kind == "day"
+  end
+
+  def allowed_child_kinds
+    ALLOWED_CHILDREN.fetch(kind, [])
   end
 
   def aspect_key
@@ -51,48 +93,99 @@ class StrategyGoal < ApplicationRecord
 
   def overdue?
     return false if completed?
-    marker = horizon == "day" ? scheduled_on : due_on
+
+    marker = day? ? scheduled_on : due_on
     marker.present? && marker < Date.current
   end
 
   def time_marker
-    horizon == "day" ? scheduled_on : due_on
+    day? ? scheduled_on : due_on
+  end
+
+  def progress_percent
+    Strategy::Progress.percent(self)
+  end
+
+  def ancestor_chain
+    chain = []
+    node = parent
+    while node
+      chain.unshift(node)
+      node = node.parent
+    end
+    chain
+  end
+
+  def root_goal
+    return self if goal?
+
+    ancestor_chain.find(&:goal?) || ancestors_fallback
+  end
+
+  def descendant_battles
+    Strategy::Progress.battles_under(self)
+  end
+
+  def complete!
+    update!(completed_at: Time.current) if completed_at.blank?
+  end
+
+  def reopen!
+    update!(completed_at: nil) if completed_at.present?
   end
 
   private
 
-  def assign_year_due_on
+  def ancestors_fallback
+    node = self
+    node = node.parent while node.parent
+    node
+  end
+
+  def normalize_legacy_kind
+    self.horizon = LEGACY_KIND[horizon] if LEGACY_KIND.key?(horizon.to_s)
+  end
+
+  def assign_goal_due_on
     self.due_on = Strategy::YearCycle.target_dec29
   end
 
   def scheduled_on_required_for_day
-    return unless horizon == "day"
+    return unless day?
     return if scheduled_on.present?
 
     errors.add(:scheduled_on, :blank)
   end
 
   def due_on_rules
-    case horizon
-    when "year"
+    case kind
+    when "goal"
       errors.add(:due_on, :blank) if due_on.blank?
       errors.add(:due_on, :invalid) if due_on.present? && !Strategy::YearCycle.dec29?(due_on)
-    when "month", "week"
-      errors.add(:due_on, :blank) if due_on.blank?
+    when "month", "week", "project", "plan"
+      # plan/project due optional; month/week prefer due
+      errors.add(:due_on, :blank) if %w[month week].include?(kind) && due_on.blank?
     end
   end
 
-  def parent_horizon_matches
+  def parent_kind_matches
     return if parent.blank?
-    return if CHILD_HORIZON[parent.horizon] == horizon
+    return if parent.allowed_child_kinds.include?(kind)
 
     errors.add(:parent_id, :invalid)
+  end
+
+  def root_must_be_goal
+    return if parent.present?
+    return if goal?
+
+    errors.add(:horizon, :invalid)
   end
 
   def child_fits_parent_window
     return if parent.blank?
 
-    child_date = horizon == "day" ? scheduled_on : due_on
+    child_date = day? ? scheduled_on : due_on
     parent_due = parent.due_on
     return if child_date.blank? || parent_due.blank?
     return if child_date <= parent_due
