@@ -6,14 +6,17 @@
   <% if @step == "welcome" %>
     <section class="lp-adventure__card lp-adventure__welcome" aria-labelledby="adventure-welcome-title">
       <div class="lp-adventure__sky" aria-hidden="true">
-        <svg class="lp-adventure__silhouette" viewBox="0 0 320 120" role="presentation">
-          <path d="M0 120 L55 68 L95 92 L150 28 L210 78 L255 52 L320 120 Z" fill="currentColor"/>
-        </svg>
+        <span class="lp-adventure__spark is-a"></span>
+        <span class="lp-adventure__spark is-b"></span>
+        <span class="lp-adventure__spark is-c"></span>
+        <%= render "v2_onboardings/mountain_art", prefix: "lp-welcome-mtn" %>
       </div>
 
       <%= render "shared/lp_brand_mark", size: 64, class_name: "lp-adventure__mark" %>
-      <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.welcome_lead") %></p>
+      <div class="lp-adventure__intro">
+        <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
+        <p class="lp-adventure__lead"><%= t("v2_onboarding.welcome_lead") %></p>
+      </div>
 
       <ul class="lp-adventure__beats">
         <li class="lp-adventure__beat is-mountain">
@@ -42,7 +45,7 @@
   <% elsif @step == "mountain" %>
     <section class="lp-adventure__card" aria-labelledby="adventure-mountain-title">
       <p class="lp-adventure__kicker"><%= t("v2_onboarding.mountain_kicker") %></p>
-      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title") %></h1>
+      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title", year: @adventure_year) %></h1>
       <p class="lp-adventure__lead"><%= t("v2_onboarding.mountain_lead") %></p>
 
       <%= form_with url: v2_onboarding_path(step: "mountain"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
@@ -62,9 +65,9 @@
 
   <% elsif @step == "deadline" %>
     <section class="lp-adventure__card" aria-labelledby="adventure-deadline-title">
-      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker") %></p>
+      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker", year: @adventure_year) %></p>
       <h1 id="adventure-deadline-title" class="lp-adventure__title"><%= t("v2_onboarding.deadline_title") %></h1>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead") %></p>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead", year: @adventure_year) %></p>
       <p class="lp-adventure__body"><%= t("v2_onboarding.deadline_body") %></p>
       <p class="lp-adventure__mountain-echo"><%= @draft["title"] %></p>
       <%= button_to t("v2_onboarding.forge_cta"),
@@ -74,11 +77,11 @@
             form: { data: { turbo: false } } %>
     </section>
 
-  <% else %>
+  <% elsif @step == "forge" %>
     <section class="lp-adventure__card lp-adventure__forge"
              aria-labelledby="adventure-forge-title"
              data-controller="adventure-forge"
-             data-adventure-forge-url-value="<%= dashboard_path %>"
+             data-adventure-forge-url-value="<%= v2_onboarding_path(step: 'how') %>"
              data-adventure-forge-delay-value="3200">
       <h1 id="adventure-forge-title" class="lp-adventure__title"><%= t("v2_onboarding.forge_title") %></h1>
       <ul class="lp-adventure__forge-list" aria-live="polite">
@@ -88,7 +91,10 @@
         <li class="lp-adventure__forge-item" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_ready") %></li>
       </ul>
       <p class="lp-adventure__forge-wait"><%= t("v2_onboarding.forge_wait") %></p>
-      <%= link_to t("v2_onboarding.enter_today"), dashboard_path, class: "lp-cta w-full inline-flex justify-center" %>
+      <%= link_to t("v2_onboarding.enter_how"), v2_onboarding_path(step: "how"), class: "lp-cta w-full inline-flex justify-center" %>
     </section>
+
+  <% else %>
+    <%= render "v2_onboardings/how_guide" %>
   <% end %>
 </div>

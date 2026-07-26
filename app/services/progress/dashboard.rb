@@ -411,6 +411,7 @@ module Progress
       mountain = strategy_mountain_percent
 
       catalog = [
+        { key: "adventure_guide", icon: "🧭", title: I18n.t("progress.achievements.adventure_guide"), hint: I18n.t("progress.achievements.adventure_guide_hint"), unlocked: @user.adventure_guide_done? },
         { key: "first_battle", icon: "⚔", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
         { key: "lp_100", icon: "⚡", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
         { key: "closer_25", icon: "⛰", title: I18n.t("progress.achievements.closer_25"), hint: I18n.t("progress.achievements.closer_25_hint"), unlocked: mountain >= 25 },
