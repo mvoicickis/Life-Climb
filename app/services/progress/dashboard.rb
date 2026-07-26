@@ -51,8 +51,6 @@ module Progress
         period: @period,
         periods: PERIODS,
         total_lp: @user.life_points,
-        streak: streak_days,
-        best_streak: best_streak_days,
         kpis: kpis,
         growth: growth_series,
         categories: category_distribution,
@@ -154,16 +152,6 @@ module Progress
           delta: (rate_now - rate_prev).round,
           delta_label: I18n.t("progress.kpi.vs_prior_pts"),
           sparkline: daily_rate_sparkline
-        },
-        {
-          key: :streak,
-          icon: "🔥",
-          label: I18n.t("progress.kpi.streak"),
-          value: streak_days,
-          suffix: I18n.t("progress.kpi.days"),
-          delta: nil,
-          delta_label: I18n.t("progress.kpi.best", count: best_streak_days),
-          sparkline: streak_sparkline
         }
       ]
     end
@@ -236,10 +224,6 @@ module Progress
           completion_rate(done, scheduled)
         end
       )
-    end
-
-    def streak_sparkline
-      Array.new(7) { |i| streak_days > (6 - i) ? 1 : 0 }
     end
 
     def sample_days(values)
@@ -353,59 +337,19 @@ module Progress
       end
     end
 
-    def active_days
-      @active_days ||= begin
-        days = []
-        @user.missions.where.not(completed_at: nil).find_each { |m| days << m.completed_at.to_date }
-        @user.daily_todos.where.not(completed_at: nil).find_each { |t| days << t.completed_at.to_date }
-        days.concat(@user.daily_logs.pluck(:logged_on))
-        days.uniq.sort
-      end
-    end
-
-    def streak_days
-      return 0 if active_days.empty?
-
-      set = active_days.to_set
-      cursor = set.include?(Date.current) ? Date.current : Date.yesterday
-      count = 0
-      while set.include?(cursor)
-        count += 1
-        cursor -= 1
-      end
-      count
-    end
-
-    def best_streak_days
-      return 0 if active_days.empty?
-
-      best = 1
-      run = 1
-      active_days.each_cons(2) do |a, b|
-        if b == a + 1
-          run += 1
-          best = [ best, run ].max
-        else
-          run = 1
-        end
-      end
-      [ best, streak_days ].max
-    end
-
     def achievements
       total = @user.life_points
       battles = @user.missions.where.not(completed_at: nil).count +
                 @user.daily_todos.where.not(completed_at: nil).count
-      best = best_streak_days
-      streak = streak_days
+      closer = @user.life_journeys.map(&:closer_percent).max.to_f
 
       catalog = [
         { key: "first_battle", icon: "⚔", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
         { key: "lp_100", icon: "🌿", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
-        { key: "streak_7", icon: "🔥", title: I18n.t("progress.achievements.streak_7"), hint: I18n.t("progress.achievements.streak_7_hint"), unlocked: best >= 7 || streak >= 7 },
+        { key: "closer_25", icon: "⛰", title: I18n.t("progress.achievements.closer_25"), hint: I18n.t("progress.achievements.closer_25_hint"), unlocked: closer >= 25 },
         { key: "lp_1000", icon: "⚡", title: I18n.t("progress.achievements.lp_1000"), hint: I18n.t("progress.achievements.lp_1000_hint"), unlocked: total >= 1000 },
         { key: "battles_100", icon: "🏆", title: I18n.t("progress.achievements.battles_100"), hint: I18n.t("progress.achievements.battles_100_hint"), unlocked: battles >= 100 },
-        { key: "discipline", icon: "🥇", title: I18n.t("progress.achievements.discipline"), hint: I18n.t("progress.achievements.discipline_hint"), unlocked: best >= 30 }
+        { key: "closer_50", icon: "🌄", title: I18n.t("progress.achievements.closer_50"), hint: I18n.t("progress.achievements.closer_50_hint"), unlocked: closer >= 50 }
       ]
 
       unlocked = catalog.select { |a| a[:unlocked] }
@@ -461,10 +405,6 @@ module Progress
           icon: "🌿",
           text: I18n.t("progress.insights.lp_change", percent: lp_delta.abs, direction: lp_delta >= 0 ? "more" : "less")
         }
-      end
-
-      if streak_days >= 3
-        items << { icon: "🔥", text: I18n.t("progress.insights.streak", count: streak_days) }
       end
 
       items.first(4).presence || [ { icon: "✨", text: I18n.t("progress.insights.empty") } ]

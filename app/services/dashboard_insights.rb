@@ -1,25 +1,10 @@
-# Computes Today-board extras: streak, weekly score series, focus tips, milestones.
+# Computes Today-board extras: weekly score series, focus tips, milestones.
 class DashboardInsights
   GOOD = %i[better perfect].freeze
-  STREAK_MILESTONES = [ 7, 30, 100 ].freeze
 
   def initialize(user, trackers:)
     @user = user
     @trackers = Array(trackers)
-  end
-
-  def streak_days
-    return 0 if @user.daily_logs.none?
-
-    cursor = @user.daily_logs.exists?(logged_on: Date.current) ? Date.current : Date.yesterday
-    count = 0
-
-    while logged_on?(cursor)
-      count += 1
-      cursor -= 1
-    end
-
-    count
   end
 
   # Rolling last 7 days (including today): overall daily score 0–100.
@@ -56,14 +41,6 @@ class DashboardInsights
 
   def celebrations
     items = []
-
-    if STREAK_MILESTONES.include?(streak_days)
-      items << {
-        kind: :streak,
-        label: I18n.t("habits.milestone_streak", count: streak_days),
-        tracker: nil
-      }
-    end
 
     @trackers.each do |tracker|
       if personal_record?(tracker)
@@ -122,10 +99,6 @@ class DashboardInsights
     else
       0
     end
-  end
-
-  def logged_on?(date)
-    @user.daily_logs.exists?(logged_on: date)
   end
 
   def day_score(date)
