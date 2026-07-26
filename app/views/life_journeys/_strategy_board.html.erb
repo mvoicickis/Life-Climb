@@ -11,12 +11,12 @@
 
   <% if @crumbs.size > 1 %>
     <nav class="lp-strategy__crumbs" aria-label="<%= t('strategy.breadcrumb') %>">
-      <%= link_to t("strategy.levels.goal"), life_journey_path(@journey), class: "lp-strategy__crumb" %>
+      <%= link_to t("strategy.levels.goal"), life_journey_path(@journey), class: "lp-strategy__crumb is-goal" %>
       <% @crumbs.each do |crumb| %>
         <span class="lp-strategy__crumb-sep" aria-hidden="true">/</span>
         <%= link_to crumb[:title].truncate(24),
               life_journey_path(@journey, focus_id: crumb[:id]),
-              class: "lp-strategy__crumb" %>
+              class: "lp-strategy__crumb is-#{crumb[:kind]}" %>
       <% end %>
     </nav>
   <% end %>
@@ -24,12 +24,21 @@
   <%= render "life_journeys/strategy_next_up" %>
 
   <% unless focus_create && !has_quests %>
+    <%
+      board_level =
+        case @level
+        when "plans" then "plan"
+        when "projects" then "project"
+        when "battles" then "battle"
+        else "goal"
+        end
+    %>
     <% board_tag = focus_create ? :details : :div %>
-    <% board_attrs = focus_create ? { class: "lp-strategy__quests-panel lp-glass", id: "strategy-quests" } : { class: "lp-strategy__board lp-glass p-5 space-y-4", id: "strategy-quests" } %>
+    <% board_attrs = focus_create ? { class: "lp-strategy__quests-panel lp-glass", id: "strategy-quests" } : { class: "lp-strategy__board lp-glass p-5 space-y-4 is-#{board_level}", id: "strategy-quests" } %>
     <%= content_tag board_tag, **board_attrs do %>
       <% if focus_create %>
         <summary class="lp-strategy__quests-summary"><%= t("strategy.your_quests") %></summary>
-        <div class="lp-strategy__board-inner p-5 space-y-4">
+        <div class="lp-strategy__board-inner p-5 space-y-4 is-<%= board_level %>">
       <% end %>
 
       <% if @goal.nil? %>
@@ -102,9 +111,12 @@
         <h3 class="pt-2 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.battles_heading") %></h3>
         <ul class="lp-strategy__list">
           <% @children.select(&:day?).each do |battle| %>
-            <li class="lp-strategy__item <%= 'is-done' if battle.completed? %>">
+            <li class="lp-strategy__item is-battle <%= 'is-done' if battle.completed? %>">
               <div class="min-w-0 flex-1">
-                <p class="lp-strategy__item-title"><%= battle.completed? ? "✓" : "□" %> <%= battle.title %></p>
+                <p class="lp-strategy__item-title">
+                  <span class="lp-strategy__item-marker" aria-hidden="true"><%= battle.completed? ? "✓" : "⚔" %></span>
+                  <%= battle.title %>
+                </p>
                 <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
               </div>
               <%= button_to t("strategy.remove"), strategy_goal_path(battle), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>

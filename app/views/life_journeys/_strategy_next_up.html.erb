@@ -3,7 +3,23 @@
   <% area = @journey.life_area %>
   <% form = next_up[:form] %>
   <% examples = Array(next_up[:examples]) %>
-  <div class="lp-strategy-next <%= 'is-inline-form' if form.present? %> <%= 'is-handoff' if next_up[:key] == :go_today %>"
+  <%
+    level =
+      if form.present?
+        { "goal" => "goal", "plan" => "plan", "project" => "project", "day" => "battle" }.fetch(form[:horizon].to_s, "goal")
+      elsif next_up[:key] == :go_today
+        "battle"
+      elsif @level == "plans"
+        "plan"
+      elsif @level == "projects"
+        "project"
+      elsif @level == "battles"
+        "battle"
+      else
+        "goal"
+      end
+  %>
+  <div class="lp-strategy-next is-<%= level %> <%= 'is-inline-form' if form.present? %> <%= 'is-handoff' if next_up[:key] == :go_today %>"
        id="strategy-next-up"
        data-controller="strategy-next">
     <p class="lp-strategy-next__kicker"><%= t("strategy.next_up.kicker") %></p>

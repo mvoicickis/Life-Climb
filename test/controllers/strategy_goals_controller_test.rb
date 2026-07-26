@@ -27,8 +27,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/What do I ultimately want to achieve/i, response.body)
     assert_match(/Next up/i, response.body)
     assert_match(/Strategy Points/i, response.body)
-    assert_select ".lp-strategy-path"
-    assert_select ".lp-strategy-next"
+    assert_select ".lp-strategy-path__stage.is-goal"
+    assert_select ".lp-strategy-path__stage.is-plans"
+    assert_select ".lp-strategy-path__stage.is-projects"
+    assert_select ".lp-strategy-path__stage.is-battle"
+    assert_select ".lp-strategy-next.is-goal"
     assert_select "#next-up-title"
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)

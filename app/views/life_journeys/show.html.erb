@@ -19,12 +19,12 @@
   </header>
 
   <% if @goal %>
-    <div class="lp-strategy__progress-card lp-glass p-4">
+    <div class="lp-strategy__progress-card lp-glass p-4" style="--lp-level: var(--lp-level-goal)">
       <div class="flex items-center justify-between gap-3">
         <p class="font-semibold text-[var(--lp-ink)] truncate"><%= @goal.title %></p>
-        <span class="text-sm font-bold text-[var(--lp-lime)]"><%= @goal.progress_percent %>%</span>
+        <span class="text-sm font-bold" style="color: var(--lp-level-goal)"><%= @goal.progress_percent %>%</span>
       </div>
-      <div class="lp-strategy__bar mt-2" aria-hidden="true">
+      <div class="lp-strategy__bar mt-2" aria-hidden="true" style="--lp-level: var(--lp-level-goal)">
         <span style="width: <%= @goal.progress_percent %>%"></span>
       </div>
       <p class="mt-2 text-xs text-[var(--lp-muted)]"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></p>

@@ -3173,6 +3173,10 @@
 }
 
 .lp-game {
+  --lp-level-goal: #166534;
+  --lp-level-plan: #0f766e;
+  --lp-level-project: #d97706;
+  --lp-level-battle: var(--lp-lime);
   font-family: var(--lp-font-ui);
   background: var(--lp-paper);
   color: var(--lp-ink);
@@ -5410,8 +5414,13 @@ button.lp-progress-heat__cell {
   border-color: rgba(34, 197, 94, 0.45);
 }
 
-/* —— Strategy board (year/month/week → day feeder) —— */
+/* —— Strategy board (Goal → Plans → Projects → Battles) —— */
 .lp-strategy {
+  --lp-level-goal: #166534;
+  --lp-level-plan: #0f766e;
+  --lp-level-project: #d97706;
+  --lp-level-battle: var(--lp-lime);
+  --lp-level: var(--lp-level-goal);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -5476,7 +5485,7 @@ button.lp-progress-heat__cell {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--lp-lime);
+  background: var(--lp-level, var(--lp-lime));
 }
 
 .lp-strategy__crumbs {
@@ -5488,13 +5497,30 @@ button.lp-progress-heat__cell {
 }
 
 .lp-strategy__crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--lp-muted);
   text-decoration: none;
   font-weight: 600;
 }
 
+.lp-strategy__crumb::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--lp-level, var(--lp-muted));
+}
+
+.lp-strategy__crumb.is-goal { --lp-level: var(--lp-level-goal); }
+.lp-strategy__crumb.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy__crumb.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy__crumb.is-day,
+.lp-strategy__crumb.is-battle { --lp-level: var(--lp-level-battle); }
+
 .lp-strategy__crumb:hover {
-  color: var(--lp-lime);
+  color: var(--lp-level, var(--lp-lime));
 }
 
 .lp-strategy__crumb-sep {
@@ -5522,13 +5548,19 @@ button.lp-progress-heat__cell {
   align-items: center;
   gap: 0.3rem;
   min-width: 3.4rem;
+  --lp-level: var(--lp-level-goal);
 }
+
+.lp-strategy-path__stage.is-goal { --lp-level: var(--lp-level-goal); }
+.lp-strategy-path__stage.is-plans { --lp-level: var(--lp-level-plan); }
+.lp-strategy-path__stage.is-projects { --lp-level: var(--lp-level-project); }
+.lp-strategy-path__stage.is-battle { --lp-level: var(--lp-level-battle); }
 
 .lp-strategy-path__dot {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 999px;
-  border: 2px solid var(--lp-border);
+  border: 2px solid color-mix(in srgb, var(--lp-level) 45%, var(--lp-border));
   background: var(--lp-elevated);
   transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
 }
@@ -5549,41 +5581,48 @@ button.lp-progress-heat__cell {
 }
 
 .lp-strategy-path__connector.is-done {
-  background: var(--lp-lime);
+  background: color-mix(in srgb, var(--lp-level-plan) 55%, var(--lp-level-goal));
 }
 
 .lp-strategy-path__stage.is-done .lp-strategy-path__dot {
-  background: var(--lp-lime);
-  border-color: var(--lp-lime);
+  background: var(--lp-level);
+  border-color: var(--lp-level);
 }
 
 .lp-strategy-path__stage.is-current .lp-strategy-path__dot {
-  background: var(--lp-lime);
-  border-color: var(--lp-lime);
+  background: var(--lp-level);
+  border-color: var(--lp-level);
   transform: scale(1.25);
   animation: lp-strategy-pulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--lp-level) 35%, transparent);
 }
 
 .lp-strategy-path__stage.is-current .lp-strategy-path__label {
-  color: var(--lp-ink);
+  color: var(--lp-level);
 }
 
 .lp-strategy-next {
-  border: 1px solid color-mix(in srgb, var(--lp-lime) 45%, var(--lp-border));
+  --lp-level: var(--lp-level-goal);
+  border: 1px solid color-mix(in srgb, var(--lp-level) 45%, var(--lp-border));
   border-radius: 1rem;
   padding: 1rem 1.1rem;
   background:
-    linear-gradient(160deg, color-mix(in srgb, var(--lp-lime) 12%, transparent), transparent 55%),
+    linear-gradient(160deg, color-mix(in srgb, var(--lp-level) 12%, transparent), transparent 55%),
     var(--lp-elevated);
   animation: lp-strategy-next-in 320ms ease-out;
 }
+
+.lp-strategy-next.is-goal { --lp-level: var(--lp-level-goal); }
+.lp-strategy-next.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy-next.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy-next.is-battle { --lp-level: var(--lp-level-battle); }
 
 .lp-strategy-next__kicker {
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--lp-lime);
+  color: var(--lp-level);
 }
 
 .lp-strategy-next__title {
@@ -5609,7 +5648,7 @@ button.lp-progress-heat__cell {
   border: 0;
   border-radius: 0.85rem;
   padding: 0.75rem 1rem;
-  background: var(--lp-lime);
+  background: var(--lp-level);
   color: #0b1f12;
   font-weight: 800;
   text-decoration: none;
@@ -5617,12 +5656,17 @@ button.lp-progress-heat__cell {
   transition: transform 120ms ease;
 }
 
+.lp-strategy-next.is-goal .lp-strategy-next__cta,
+.lp-strategy-next.is-plan .lp-strategy-next__cta {
+  color: #f8fafc;
+}
+
 .lp-strategy-next__cta:active {
   transform: scale(0.98);
 }
 
 .lp-strategy-next.is-handoff {
-  border-color: color-mix(in srgb, var(--lp-lime) 65%, var(--lp-border));
+  border-color: color-mix(in srgb, var(--lp-level) 65%, var(--lp-border));
 }
 
 .lp-strategy-next__form {
@@ -5649,10 +5693,10 @@ button.lp-progress-heat__cell {
 }
 
 .lp-strategy-next__chip {
-  border: 1px solid color-mix(in srgb, var(--lp-lime) 35%, var(--lp-border));
+  border: 1px solid color-mix(in srgb, var(--lp-level) 35%, var(--lp-border));
   border-radius: 0.65rem;
   padding: 0.35rem 0.65rem;
-  background: color-mix(in srgb, var(--lp-lime) 8%, var(--lp-elevated));
+  background: color-mix(in srgb, var(--lp-level) 8%, var(--lp-elevated));
   color: var(--lp-ink);
   font-size: 0.78rem;
   font-weight: 650;
@@ -5708,25 +5752,44 @@ button.lp-progress-heat__cell {
 }
 
 .lp-strategy-quest {
+  --lp-level: var(--lp-level-plan);
   flex: 1;
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid var(--lp-border);
+  border: 1px solid color-mix(in srgb, var(--lp-level) 28%, var(--lp-border));
+  border-left: 3px solid var(--lp-level);
   border-radius: 0.9rem;
   padding: 0.85rem 0.95rem;
-  background: var(--lp-elevated);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--lp-level) 8%, transparent), transparent 42%),
+    var(--lp-elevated);
   text-decoration: none;
   color: inherit;
   transition: border-color 140ms ease, transform 120ms ease;
 }
+
+.lp-strategy-quest.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy-quest.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy-quest.is-goal { --lp-level: var(--lp-level-goal); }
+.lp-strategy-quest.is-day,
+.lp-strategy-quest.is-battle { --lp-level: var(--lp-level-battle); }
 
 .lp-strategy-quest:active {
   transform: scale(0.99);
 }
 
 .lp-strategy-quest:hover {
-  border-color: color-mix(in srgb, var(--lp-lime) 50%, var(--lp-border));
+  border-color: color-mix(in srgb, var(--lp-level) 55%, var(--lp-border));
+}
+
+.lp-strategy-quest__marker {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  border: 2px solid var(--lp-level);
+  background: color-mix(in srgb, var(--lp-level) 35%, transparent);
+  flex-shrink: 0;
 }
 
 .lp-strategy-quest__body {
@@ -5749,9 +5812,29 @@ button.lp-progress-heat__cell {
 .lp-strategy-quest__chevron {
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--lp-lime);
+  color: var(--lp-level);
   line-height: 1;
 }
+
+.lp-strategy__item.is-battle {
+  --lp-level: var(--lp-level-battle);
+  border-left: 3px solid var(--lp-level);
+  padding-left: 0.65rem;
+}
+
+.lp-strategy__item.is-battle .lp-strategy__item-marker {
+  color: var(--lp-level);
+  font-weight: 800;
+}
+
+.lp-strategy__board.is-plan,
+.lp-strategy__board-inner.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy__board.is-project,
+.lp-strategy__board-inner.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy__board.is-battle,
+.lp-strategy__board-inner.is-battle { --lp-level: var(--lp-level-battle); }
+.lp-strategy__board.is-goal,
+.lp-strategy__board-inner.is-goal { --lp-level: var(--lp-level-goal); }
 
 .lp-strategy-month-spotlight {
   border: 1px solid color-mix(in srgb, var(--lp-lime) 30%, var(--lp-border));
@@ -5761,8 +5844,8 @@ button.lp-progress-heat__cell {
 }
 
 @keyframes lp-strategy-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lp-lime) 35%, transparent); }
-  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-lime) 0%, transparent); }
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lp-level, var(--lp-lime)) 35%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-level, var(--lp-lime)) 0%, transparent); }
 }
 
 @keyframes lp-strategy-next-in {

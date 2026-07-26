@@ -1,5 +1,6 @@
 <%# locals: node, journey %>
-<%= link_to life_journey_path(journey, focus_id: node.id), class: "lp-strategy-quest" do %>
+<%= link_to life_journey_path(journey, focus_id: node.id), class: "lp-strategy-quest is-#{node.kind}" do %>
+  <span class="lp-strategy-quest__marker" aria-hidden="true"></span>
   <div class="lp-strategy-quest__body">
     <p class="lp-strategy-quest__title"><%= node.title %></p>
     <div class="lp-strategy__bar mt-2" aria-hidden="true">
