@@ -87,9 +87,8 @@ module Strategy
       return false if plan_ids.empty?
 
       project_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("project").pluck(:id)
-      return false if project_ids.empty?
-
-      month_ids = StrategyGoal.where(parent_id: project_ids).for_kind("month").pluck(:id)
+      month_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("month").pluck(:id)
+      month_ids |= StrategyGoal.where(parent_id: project_ids).for_kind("month").pluck(:id) if project_ids.any?
       return false if month_ids.empty?
 
       Strategy::Progress.battles_under(root).any?
