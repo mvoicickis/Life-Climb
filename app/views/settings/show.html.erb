@@ -37,33 +37,6 @@
     <% end %>
   </section>
 
-  <section class="lp-glass p-6">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.visibility_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.visibility_hint") %></p>
-
-    <% if @all_habits.any? %>
-      <ul class="mt-4 space-y-2">
-        <% @all_habits.each do |habit| %>
-          <li class="flex items-center justify-between gap-3 rounded-2xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-3">
-            <div class="min-w-0">
-              <p class="truncate font-semibold text-[var(--lp-ink)]"><%= habit.name %></p>
-              <p class="text-xs text-[var(--lp-muted)]"><%= habit.unit %> · <%= habit.evaluation_label %></p>
-            </div>
-            <%= button_to (habit.show_on_home? ? t("settings.on_today") : t("settings.hidden")),
-                settings_habit_path(habit),
-                method: :patch,
-                params: { show_on_home: !habit.show_on_home? },
-                class: "shrink-0 cursor-pointer rounded-xl px-3 py-2 text-xs font-bold #{habit.show_on_home? ? 'bg-[var(--lp-lime)] text-[var(--lp-void)]' : 'border border-[var(--lp-border)] text-[var(--lp-muted)]'}" %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="mt-4 rounded-2xl border border-dashed border-[var(--lp-border)] p-6 text-center text-[var(--lp-muted)]">
-        <%= t("settings.empty") %> <%= link_to t("settings.empty_cta"), new_habit_path, class: "font-bold text-[var(--lp-lime)]" %>.
-      </p>
-    <% end %>
-  </section>
-
   <section class="lp-glass p-5">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.feedback_title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.feedback_body") %></p>
