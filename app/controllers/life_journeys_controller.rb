@@ -99,32 +99,28 @@ class LifeJourneysController < ApplicationController
         @goal
       end
 
+    # Legacy month/week focus redirects up to the nearest active parent.
+    if @focus&.month? || @focus&.week?
+      @focus = @focus.ancestor_chain.reverse.find { |n| n.project? || n.plan? || n.goal? } || @goal
+    end
+
     @focus ||= @goal
     @level = strategy_level_for(@focus)
     @children = @focus ? @focus.children.ordered.to_a : []
-    @month_slots =
-      if @focus&.project? || @focus&.plan?
-        Strategy::YearCycle.remaining_month_slots(target: @goal&.due_on || @year_due)
-      else
-        []
-      end
     @today_battles = today_battles_for(@focus || @goal)
     @crumbs = strategy_crumbs(@focus)
     @guided_step = guided_step
     @path_stages = strategy_path_stages
-    @current_month_slot = @month_slots.find { |s| s[:month] == Date.current.month && s[:year] == Date.current.year } || @month_slots.first
-    @later_month_slots = @month_slots.reject { |s| s == @current_month_slot }
     @next_up = strategy_next_up
   end
 
   def strategy_path_stages
-    keys = %w[goal plans build months battle]
+    keys = %w[goal plans projects battle]
     current =
       case @guided_step
       when 1 then "goal"
       when 2 then "plans"
-      when 3 then "build"
-      when 4 then "months"
+      when 3 then "projects"
       else "battle"
       end
 
@@ -150,9 +146,11 @@ class LifeJourneysController < ApplicationController
     if @goal.nil?
       return {
         key: :create_goal,
-        title: I18n.t("strategy.next_up.create_goal_title"),
+        title: I18n.t("strategy.questions.goal"),
         hint: I18n.t("strategy.next_up.create_goal_hint"),
         cta: I18n.t("strategy.next_up.create_goal_cta"),
+        placeholder: I18n.t("strategy.goal_placeholder"),
+        examples: [ I18n.t("strategy.next_up.example_goal") ],
         form: { horizon: "goal", parent_id: nil }
       }
     end
@@ -162,11 +160,12 @@ class LifeJourneysController < ApplicationController
       if plans.empty?
         return {
           key: :add_plan,
-          title: I18n.t("strategy.next_up.add_plan_title"),
+          title: I18n.t("strategy.questions.plan"),
           hint: I18n.t("strategy.next_up.add_plan_hint"),
           cta: I18n.t("strategy.next_up.add_plan_cta"),
-          form: { horizon: "plan", parent_id: @goal.id },
-          anchor: "strategy-next-form"
+          placeholder: I18n.t("strategy.plan_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_plan") ],
+          form: { horizon: "plan", parent_id: @goal.id }
         }
       end
 
@@ -181,77 +180,40 @@ class LifeJourneysController < ApplicationController
     end
 
     if @level == "projects" && @focus&.plan?
-      month_kids = @children.select(&:month?)
-      project_kids = @children.select(&:project?)
-      if @current_month_slot && month_kids.none? { |m| m.due_on == @current_month_slot[:due_on] }
+      projects = @children.select(&:project?)
+      if projects.empty?
         return {
-          key: :add_month,
-          title: I18n.t("strategy.next_up.add_month_title", month: @current_month_slot[:label]),
-          hint: I18n.t("strategy.next_up.add_month_hint"),
-          cta: I18n.t("strategy.next_up.add_month_cta"),
-          form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot[:due_on] },
-          anchor: "strategy-next-form"
+          key: :add_project,
+          title: I18n.t("strategy.questions.project"),
+          hint: I18n.t("strategy.next_up.add_project_hint"),
+          cta: I18n.t("strategy.next_up.add_project_cta"),
+          placeholder: I18n.t("strategy.project_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_project") ],
+          form: { horizon: "project", parent_id: @focus.id }
         }
       end
 
-      openable = (month_kids + project_kids).min_by { |n| n.progress_percent }
-      if openable
-        return {
-          key: :open_child,
-          title: I18n.t("strategy.next_up.open_child_title", title: openable.title),
-          hint: I18n.t("strategy.next_up.open_child_hint"),
-          cta: I18n.t("strategy.next_up.continue_cta"),
-          href: life_journey_path(@journey, focus_id: openable.id)
-        }
-      end
-
+      target = projects.min_by { |p| p.progress_percent }
       return {
-        key: :add_month,
-        title: I18n.t("strategy.next_up.add_month_title", month: @current_month_slot&.dig(:label) || ""),
-        hint: I18n.t("strategy.next_up.add_month_hint"),
-        cta: I18n.t("strategy.next_up.add_month_cta"),
-        form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot&.dig(:due_on) },
-        anchor: "strategy-next-form"
+        key: :open_child,
+        title: I18n.t("strategy.next_up.open_child_title", title: target.title),
+        hint: I18n.t("strategy.next_up.open_child_hint"),
+        cta: I18n.t("strategy.next_up.continue_cta"),
+        href: life_journey_path(@journey, focus_id: target.id)
       }
     end
 
-    if @level == "months" && @focus&.project?
-      filled = @children.select(&:month?)
-      empty_slot = @month_slots.find { |s| filled.none? { |m| m.due_on == s[:due_on] } }
-      if empty_slot && (@current_month_slot.nil? || filled.none? { |m| m.due_on == @current_month_slot[:due_on] })
-        slot = @current_month_slot && filled.none? { |m| m.due_on == @current_month_slot[:due_on] } ? @current_month_slot : empty_slot
-        return {
-          key: :add_month,
-          title: I18n.t("strategy.next_up.add_month_title", month: slot[:label]),
-          hint: I18n.t("strategy.next_up.add_month_hint"),
-          cta: I18n.t("strategy.next_up.add_month_cta"),
-          form: { horizon: "month", parent_id: @focus.id, due_on: slot[:due_on] },
-          anchor: "strategy-next-form"
-        }
-      end
-
-      target = filled.min_by { |m| m.progress_percent }
-      if target
-        return {
-          key: :open_child,
-          title: I18n.t("strategy.next_up.open_child_title", title: target.title),
-          hint: I18n.t("strategy.next_up.open_child_hint"),
-          cta: I18n.t("strategy.next_up.continue_cta"),
-          href: life_journey_path(@journey, focus_id: target.id)
-        }
-      end
-    end
-
-    if @focus&.month? || @focus&.week?
+    if @focus&.project?
       battles = @children.select(&:day?)
       if battles.empty?
         return {
           key: :add_battle,
-          title: I18n.t("strategy.next_up.add_battle_title"),
+          title: I18n.t("strategy.questions.battle"),
           hint: I18n.t("strategy.next_up.add_battle_hint"),
           cta: I18n.t("strategy.next_up.add_battle_cta"),
-          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current },
-          anchor: "strategy-next-form"
+          placeholder: I18n.t("strategy.battle_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_battle") ],
+          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current }
         }
       end
 
@@ -259,7 +221,7 @@ class LifeJourneysController < ApplicationController
         key: :go_today,
         title: I18n.t("strategy.next_up.go_today_title"),
         hint: I18n.t("strategy.next_up.go_today_hint"),
-        cta: I18n.t("strategy.go_today"),
+        cta: I18n.t("strategy.next_up.fight_today_cta"),
         sync_today: true
       }
     end
@@ -269,7 +231,7 @@ class LifeJourneysController < ApplicationController
         key: :go_today,
         title: I18n.t("strategy.next_up.go_today_title"),
         hint: I18n.t("strategy.next_up.go_today_hint"),
-        cta: I18n.t("strategy.go_today"),
+        cta: I18n.t("strategy.next_up.fight_today_cta"),
         sync_today: true
       }
     else
@@ -278,7 +240,7 @@ class LifeJourneysController < ApplicationController
         title: I18n.t("strategy.next_up.keep_building_title"),
         hint: I18n.t("strategy.next_up.keep_building_hint"),
         cta: I18n.t("strategy.next_up.keep_building_cta"),
-        anchor: "strategy-board"
+        anchor: "strategy-quests"
       }
     end
   end
@@ -289,9 +251,7 @@ class LifeJourneysController < ApplicationController
     case node.kind
     when "goal" then "plans"
     when "plan" then "projects"
-    when "project" then "months"
-    when "month" then "month_detail"
-    when "week" then "battles"
+    when "project" then "battles"
     else "battles"
     end
   end
@@ -301,10 +261,8 @@ class LifeJourneysController < ApplicationController
     return 2 if @goal.children.for_kind("plan").none?
 
     plan_ids = @goal.children.for_kind("plan").select(:id)
-    has_project = StrategyGoal.where(parent_id: plan_ids).for_kind("project").exists?
-    has_month_under_plan = StrategyGoal.where(parent_id: plan_ids).for_kind("month").exists?
-    return 3 unless has_project || has_month_under_plan
-    return 4 if StrategyGoal.where(horizon: "month", user_id: current_user.id, life_area_id: @journey.life_area_id).none?
+    return 3 if StrategyGoal.where(parent_id: plan_ids).for_kind("project").none?
+    return 4 if Strategy::Progress.battles_under(@goal).none?
 
     5
   end

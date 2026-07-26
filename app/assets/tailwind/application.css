@@ -5621,6 +5621,80 @@ button.lp-progress-heat__cell {
   transform: scale(0.98);
 }
 
+.lp-strategy-next.is-handoff {
+  border-color: color-mix(in srgb, var(--lp-lime) 65%, var(--lp-border));
+}
+
+.lp-strategy-next__form {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.lp-strategy-next__form .lp-strategy-next__cta {
+  margin-top: 0.15rem;
+}
+
+.lp-strategy-next__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-next__examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.lp-strategy-next__chip {
+  border: 1px solid color-mix(in srgb, var(--lp-lime) 35%, var(--lp-border));
+  border-radius: 0.65rem;
+  padding: 0.35rem 0.65rem;
+  background: color-mix(in srgb, var(--lp-lime) 8%, var(--lp-elevated));
+  color: var(--lp-ink);
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.lp-strategy-next__battles {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lp-strategy-next__battles li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--lp-ink);
+}
+
+.lp-strategy__quests-panel {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.lp-strategy__quests-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-strategy__quests-summary::-webkit-details-marker {
+  display: none;
+}
+
 .lp-strategy-quests {
   display: flex;
   flex-direction: column;

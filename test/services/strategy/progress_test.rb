@@ -13,20 +13,16 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
     assert_equal 0, Strategy::Progress.percent(goal)
   end
 
-  test "percent counts completed descendant battles" do
+  test "percent counts completed descendant battles under projects" do
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
     project = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Pr", position: 0)
-    month = @user.strategy_goals.create!(
-      life_area: @area, parent: project, horizon: "month", title: "M",
-      due_on: Date.current.end_of_month, position: 0
-    )
     a = @user.strategy_goals.create!(
-      life_area: @area, parent: month, horizon: "day", title: "A",
+      life_area: @area, parent: project, horizon: "day", title: "A",
       scheduled_on: Date.current, position: 0
     )
     @user.strategy_goals.create!(
-      life_area: @area, parent: month, horizon: "day", title: "B",
+      life_area: @area, parent: project, horizon: "day", title: "B",
       scheduled_on: Date.current, position: 1
     )
     a.complete!

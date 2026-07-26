@@ -39,6 +39,7 @@ class DashboardController < ApplicationController
     @project_progress = [ @closer, 95 ].min
     @milestones = @journey.milestones_list.first(3)
     @targets = @journey.journey_targets.active.ordered.to_a
+    @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
     render "dashboard/show_v2"
   end
 end

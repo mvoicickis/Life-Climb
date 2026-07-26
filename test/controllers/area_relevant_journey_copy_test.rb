@@ -25,7 +25,7 @@ class AreaRelevantJourneyCopyTest < ActionDispatch::IntegrationTest
   test "journey planner shows guided strategy without plan-together note" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/Your year plan/i, response.body)
+    assert_match(/This season.?s mountain/i, response.body)
     assert_match(/Next up/i, response.body)
     assert_no_match(/Plan it together/i, response.body)
     assert_no_match(/Message me anytime/i, response.body)

@@ -3,16 +3,17 @@
 class StrategyGoal < ApplicationRecord
   include TextLimits
 
-  # V1 guided tree. Legacy "year" is treated as "goal".
-  KINDS = %w[goal plan project month week day].freeze
+  # Guided tree: Goal → Plans → Projects → Battles.
+  # Legacy month/week rows are migrated away; year maps to goal.
+  KINDS = %w[goal plan project day].freeze
+  LEGACY_KINDS = %w[month week].freeze
   LEGACY_KIND = { "year" => "goal" }.freeze
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
-    "plan" => %w[project month],
-    "project" => %w[month],
-    "month" => %w[week day],
-    "week" => %w[day]
+    "plan" => %w[project],
+    "project" => %w[day],
+    "day" => []
   }.freeze
 
   belongs_to :user
@@ -24,13 +25,14 @@ class StrategyGoal < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
-  validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KIND.keys }
+  validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KINDS + LEGACY_KIND.keys }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :scheduled_on_required_for_day
   validate :due_on_rules
   validate :parent_kind_matches
   validate :child_fits_parent_window
   validate :root_must_be_goal
+  validate :legacy_kinds_readonly, on: :create
 
   before_validation :normalize_legacy_kind
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
@@ -162,9 +164,6 @@ class StrategyGoal < ApplicationRecord
     when "goal"
       errors.add(:due_on, :blank) if due_on.blank?
       errors.add(:due_on, :invalid) if due_on.present? && !Strategy::YearCycle.dec29?(due_on)
-    when "month", "week", "project", "plan"
-      # plan/project due optional; month/week prefer due
-      errors.add(:due_on, :blank) if %w[month week].include?(kind) && due_on.blank?
     end
   end
 
@@ -191,5 +190,11 @@ class StrategyGoal < ApplicationRecord
     return if child_date <= parent_due
 
     errors.add(:due_on, :invalid)
+  end
+
+  def legacy_kinds_readonly
+    return unless LEGACY_KINDS.include?(horizon.to_s)
+
+    errors.add(:horizon, :invalid)
   end
 end

@@ -1,4 +1,10 @@
 <% area = @journey.life_area %>
+<% focus_create = @next_up.present? && @next_up[:form].present? %>
+<% has_quests = @goal.present? && (
+     (@level == "plans" && @children.any?(&:plan?)) ||
+     (@level == "projects" && @children.any?(&:project?)) ||
+     (@focus&.project? && @children.any?(&:day?))
+   ) %>
 
 <section class="lp-strategy space-y-4" aria-label="<%= t('strategy.title') %>" id="strategy-board">
   <%= render "life_journeys/strategy_path" %>
@@ -17,257 +23,132 @@
 
   <%= render "life_journeys/strategy_next_up" %>
 
-  <div class="lp-strategy__board lp-glass p-5 space-y-4">
-    <% if @goal.nil? %>
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("strategy.guided.ask_goal") %></h2>
-      <p class="lp-strategy__board-hint"><%= t("strategy.goal_hint") %></p>
-      <%= form_with url: strategy_goals_path, method: :post, class: "space-y-3", id: "strategy-next-form", data: { turbo: false } do %>
-        <%= hidden_field_tag :life_area_id, area.id %>
-        <%= hidden_field_tag :life_journey_id, @journey.id %>
-        <%= hidden_field_tag :horizon, "goal" %>
-        <%= text_field_tag :title, @journey.title, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.goal_placeholder") %>
-        <%= text_area_tag :description, nil, rows: 2, class: "lp-input w-full", placeholder: t("strategy.goal_description_placeholder") %>
-        <p class="text-sm text-[var(--lp-muted)]"><%= t("strategy.fixed_due", date: l(@year_due, format: :long)) %></p>
-        <%= submit_tag t("strategy.add_goal"), class: "lp-cta w-full" %>
+  <% unless focus_create && !has_quests %>
+    <% board_tag = focus_create ? :details : :div %>
+    <% board_attrs = focus_create ? { class: "lp-strategy__quests-panel lp-glass", id: "strategy-quests" } : { class: "lp-strategy__board lp-glass p-5 space-y-4", id: "strategy-quests" } %>
+    <%= content_tag board_tag, **board_attrs do %>
+      <% if focus_create %>
+        <summary class="lp-strategy__quests-summary"><%= t("strategy.your_quests") %></summary>
+        <div class="lp-strategy__board-inner p-5 space-y-4">
       <% end %>
 
-    <% elsif @level == "plans" %>
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("strategy.guided.ask_plans") %></h2>
-      <% plans = @children.select(&:plan?) %>
-      <% if plans.any? %>
-        <div class="lp-strategy-quests">
-          <% plans.each do |plan| %>
-            <div class="lp-strategy-quest-row">
-              <%= render "life_journeys/strategy_quest_card", node: plan, journey: @journey %>
-              <%= button_to t("strategy.remove"), strategy_goal_path(plan), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
+      <% if @goal.nil? %>
+        <%# Primary create lives in Next Up %>
 
-      <details class="lp-strategy__optional <%= 'is-open-default' if plans.empty? %>" <%= "open" if plans.empty? %>>
-        <summary><%= plans.empty? ? t("strategy.next_up.add_plan_cta") : t("strategy.add_another_plan") %></summary>
-        <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", id: ("strategy-next-form" if plans.empty?), data: { turbo: false } do %>
-          <%= hidden_field_tag :life_area_id, area.id %>
-          <%= hidden_field_tag :life_journey_id, @journey.id %>
-          <%= hidden_field_tag :parent_id, @goal.id %>
-          <%= hidden_field_tag :horizon, "plan" %>
-          <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.plan_placeholder") %>
-          <%= submit_tag t("strategy.add_plan"), class: "lp-cta w-full" %>
-        <% end %>
-      </details>
-
-    <% elsif @level == "projects" %>
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>
-      <div class="lp-strategy__bar"><span style="width: <%= @focus.progress_percent %>%"></span></div>
-
-      <% projects = @children.select(&:project?) %>
-      <% if projects.any? %>
-        <h3 class="pt-1 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.levels.project") %></h3>
-        <div class="lp-strategy-quests">
-          <% projects.each do |project| %>
-            <div class="lp-strategy-quest-row">
-              <%= render "life_journeys/strategy_quest_card", node: project, journey: @journey %>
-              <%= button_to t("strategy.remove"), strategy_goal_path(project), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
-
-      <details class="lp-strategy__optional">
-        <summary><%= t("strategy.add_project_optional") %></summary>
-        <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
-          <%= hidden_field_tag :life_area_id, area.id %>
-          <%= hidden_field_tag :life_journey_id, @journey.id %>
-          <%= hidden_field_tag :parent_id, @focus.id %>
-          <%= hidden_field_tag :horizon, "project" %>
-          <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.project_placeholder") %>
-          <%= submit_tag t("strategy.add_project"), class: "lp-cta w-full" %>
-        <% end %>
-      </details>
-
-      <h3 class="pt-3 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.levels.month") %></h3>
-      <% if @current_month_slot %>
-        <% existing = @children.find { |g| g.month? && g.due_on == @current_month_slot[:due_on] } %>
-        <div class="lp-strategy-month-spotlight">
-          <p class="lp-strategy__item-meta"><%= t("strategy.this_month") %> · <%= @current_month_slot[:label] %></p>
-          <% if existing %>
-            <div class="lp-strategy-quest-row mt-2">
-              <%= render "life_journeys/strategy_quest_card", node: existing, journey: @journey %>
-              <%= button_to t("strategy.remove"), strategy_goal_path(existing), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
-            </div>
-          <% else %>
-            <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-2", id: "strategy-next-form", data: { turbo: false } do %>
-              <%= hidden_field_tag :life_area_id, area.id %>
-              <%= hidden_field_tag :life_journey_id, @journey.id %>
-              <%= hidden_field_tag :parent_id, @focus.id %>
-              <%= hidden_field_tag :horizon, "month" %>
-              <%= hidden_field_tag :due_on, @current_month_slot[:due_on] %>
-              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.month_placeholder") %>
-              <%= submit_tag t("strategy.add_month_goal"), class: "lp-cta w-full" %>
-            <% end %>
-          <% end %>
-        </div>
-      <% end %>
-
-      <% if @later_month_slots.any? %>
-        <details class="lp-strategy__optional">
-          <summary><%= t("strategy.later_months") %></summary>
-          <ul class="lp-strategy__list mt-3">
-            <% @later_month_slots.each do |slot| %>
-              <% existing = @children.find { |g| g.month? && g.due_on == slot[:due_on] } %>
-              <li class="lp-strategy__item">
-                <div class="min-w-0 flex-1">
-                  <p class="lp-strategy__item-meta"><%= slot[:label] %></p>
-                  <% if existing %>
-                    <%= render "life_journeys/strategy_quest_card", node: existing, journey: @journey %>
-                  <% else %>
-                    <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-2", data: { turbo: false } do %>
-                      <%= hidden_field_tag :life_area_id, area.id %>
-                      <%= hidden_field_tag :life_journey_id, @journey.id %>
-                      <%= hidden_field_tag :parent_id, @focus.id %>
-                      <%= hidden_field_tag :horizon, "month" %>
-                      <%= hidden_field_tag :due_on, slot[:due_on] %>
-                      <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.month_placeholder") %>
-                      <%= submit_tag t("strategy.add_month_goal"), class: "lp-cta w-full" %>
-                    <% end %>
-                  <% end %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        </details>
-      <% end %>
-
-    <% elsif @level == "months" %>
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>
-      <div class="lp-strategy__bar"><span style="width: <%= @focus.progress_percent %>%"></span></div>
-
-      <% if @current_month_slot %>
-        <% existing = @children.find { |g| g.month? && g.due_on == @current_month_slot[:due_on] } %>
-        <div class="lp-strategy-month-spotlight">
-          <p class="lp-strategy__item-meta"><%= t("strategy.this_month") %> · <%= @current_month_slot[:label] %></p>
-          <% if existing %>
-            <div class="lp-strategy-quest-row mt-2">
-              <%= render "life_journeys/strategy_quest_card", node: existing, journey: @journey %>
-            </div>
-          <% else %>
-            <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-2", id: "strategy-next-form", data: { turbo: false } do %>
-              <%= hidden_field_tag :life_area_id, area.id %>
-              <%= hidden_field_tag :life_journey_id, @journey.id %>
-              <%= hidden_field_tag :parent_id, @focus.id %>
-              <%= hidden_field_tag :horizon, "month" %>
-              <%= hidden_field_tag :due_on, @current_month_slot[:due_on] %>
-              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.month_placeholder") %>
-              <%= submit_tag t("strategy.add_month_goal"), class: "lp-cta w-full" %>
-            <% end %>
-          <% end %>
-        </div>
-      <% end %>
-
-      <% if @later_month_slots.any? %>
-        <details class="lp-strategy__optional">
-          <summary><%= t("strategy.later_months") %></summary>
-          <ul class="lp-strategy__list mt-3">
-            <% @later_month_slots.each do |slot| %>
-              <% existing = @children.find { |g| g.month? && g.due_on == slot[:due_on] } %>
-              <li class="lp-strategy__item">
-                <div class="min-w-0 flex-1">
-                  <p class="lp-strategy__item-meta"><%= slot[:label] %></p>
-                  <% if existing %>
-                    <%= render "life_journeys/strategy_quest_card", node: existing, journey: @journey %>
-                  <% else %>
-                    <%= form_with url: strategy_goals_path, method: :post, class: "mt-2 space-y-2", data: { turbo: false } do %>
-                      <%= hidden_field_tag :life_area_id, area.id %>
-                      <%= hidden_field_tag :life_journey_id, @journey.id %>
-                      <%= hidden_field_tag :parent_id, @focus.id %>
-                      <%= hidden_field_tag :horizon, "month" %>
-                      <%= hidden_field_tag :due_on, slot[:due_on] %>
-                      <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.month_placeholder") %>
-                      <%= submit_tag t("strategy.add_month_goal"), class: "lp-cta w-full" %>
-                    <% end %>
-                  <% end %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        </details>
-      <% end %>
-
-    <% else %>
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>
-      <p class="lp-strategy__board-hint">
-        <%= @focus.month? ? t("strategy.month_detail_hint") : t("strategy.week_hint_v1") %>
-      </p>
-      <div class="lp-strategy__bar"><span style="width: <%= @focus.progress_percent %>%"></span></div>
-
-      <% if @focus.month? %>
-        <% weeks = @children.select(&:week?) %>
-        <% if weeks.any? %>
+      <% elsif @level == "plans" %>
+        <% plans = @children.select(&:plan?) %>
+        <% if plans.any? %>
+          <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("strategy.questions.plan") %></h2>
           <div class="lp-strategy-quests">
-            <% weeks.each do |week| %>
+            <% plans.each do |plan| %>
               <div class="lp-strategy-quest-row">
-                <%= render "life_journeys/strategy_quest_card", node: week, journey: @journey %>
-                <%= button_to t("strategy.remove"), strategy_goal_path(week), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
+                <%= render "life_journeys/strategy_quest_card", node: plan, journey: @journey %>
+                <%= button_to t("strategy.remove"), strategy_goal_path(plan), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
               </div>
             <% end %>
           </div>
         <% end %>
-        <details class="lp-strategy__optional">
-          <summary><%= t("strategy.add_week_optional") %></summary>
-          <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
+
+        <% unless focus_create %>
+          <details class="lp-strategy__optional <%= 'is-open-default' if plans.empty? %>" <%= "open" if plans.empty? %>>
+            <summary><%= plans.empty? ? t("strategy.next_up.add_plan_cta") : t("strategy.add_another_plan") %></summary>
+            <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
+              <%= hidden_field_tag :life_area_id, area.id %>
+              <%= hidden_field_tag :life_journey_id, @journey.id %>
+              <%= hidden_field_tag :parent_id, @goal.id %>
+              <%= hidden_field_tag :horizon, "plan" %>
+              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.plan_placeholder") %>
+              <%= submit_tag t("strategy.add_plan"), class: "lp-cta w-full" %>
+            <% end %>
+          </details>
+        <% end %>
+
+      <% elsif @level == "projects" %>
+        <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>
+        <p class="lp-strategy__board-hint"><%= t("strategy.questions.project") %></p>
+        <div class="lp-strategy__bar"><span style="width: <%= @focus.progress_percent %>%"></span></div>
+
+        <% projects = @children.select(&:project?) %>
+        <% if projects.any? %>
+          <div class="lp-strategy-quests">
+            <% projects.each do |project| %>
+              <div class="lp-strategy-quest-row">
+                <%= render "life_journeys/strategy_quest_card", node: project, journey: @journey %>
+                <%= button_to t("strategy.remove"), strategy_goal_path(project), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <% unless focus_create %>
+          <details class="lp-strategy__optional <%= 'is-open-default' if projects.empty? %>" <%= "open" if projects.empty? %>>
+            <summary><%= projects.empty? ? t("strategy.next_up.add_project_cta") : t("strategy.add_another_project") %></summary>
+            <%= form_with url: strategy_goals_path, method: :post, class: "mt-3 space-y-3", data: { turbo: false } do %>
+              <%= hidden_field_tag :life_area_id, area.id %>
+              <%= hidden_field_tag :life_journey_id, @journey.id %>
+              <%= hidden_field_tag :parent_id, @focus.id %>
+              <%= hidden_field_tag :horizon, "project" %>
+              <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.project_placeholder") %>
+              <%= submit_tag t("strategy.add_project"), class: "lp-cta w-full" %>
+            <% end %>
+          </details>
+        <% end %>
+
+      <% else %>
+        <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= @focus.title %></h2>
+        <p class="lp-strategy__board-hint"><%= t("strategy.questions.battle") %></p>
+        <div class="lp-strategy__bar"><span style="width: <%= @focus.progress_percent %>%"></span></div>
+
+        <h3 class="pt-2 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.battles_heading") %></h3>
+        <ul class="lp-strategy__list">
+          <% @children.select(&:day?).each do |battle| %>
+            <li class="lp-strategy__item <%= 'is-done' if battle.completed? %>">
+              <div class="min-w-0 flex-1">
+                <p class="lp-strategy__item-title"><%= battle.completed? ? "✓" : "□" %> <%= battle.title %></p>
+                <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
+              </div>
+              <%= button_to t("strategy.remove"), strategy_goal_path(battle), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
+            </li>
+          <% end %>
+        </ul>
+        <% unless focus_create %>
+          <%= form_with url: strategy_goals_path, method: :post, class: "space-y-3", data: { turbo: false } do %>
             <%= hidden_field_tag :life_area_id, area.id %>
             <%= hidden_field_tag :life_journey_id, @journey.id %>
             <%= hidden_field_tag :parent_id, @focus.id %>
-            <%= hidden_field_tag :horizon, "week" %>
-            <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.week_placeholder") %>
-            <%= date_field_tag :due_on, @focus.due_on, required: true, class: "lp-input w-full", max: @focus.due_on %>
-            <%= submit_tag t("strategy.add_week"), class: "lp-cta w-full" %>
+            <%= hidden_field_tag :horizon, "day" %>
+            <%= hidden_field_tag :scheduled_on, Date.current %>
+            <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.battle_placeholder") %>
+            <%= submit_tag t("strategy.add_battle"), class: "lp-cta w-full" %>
           <% end %>
-        </details>
+        <% end %>
       <% end %>
 
-      <h3 class="pt-2 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.battles_heading") %></h3>
-      <ul class="lp-strategy__list">
-        <% @children.select(&:day?).each do |battle| %>
-          <li class="lp-strategy__item <%= 'is-done' if battle.completed? %>">
-            <div>
-              <p class="lp-strategy__item-title"><%= battle.completed? ? "✓" : "□" %> <%= battle.title %></p>
-              <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
-            </div>
-            <%= button_to t("strategy.remove"), strategy_goal_path(battle), method: :delete, class: "lp-strategy__remove", form: { data: { turbo: false } } %>
-          </li>
-        <% end %>
-      </ul>
-      <%= form_with url: strategy_goals_path, method: :post, class: "space-y-3", id: "strategy-next-form", data: { turbo: false } do %>
-        <%= hidden_field_tag :life_area_id, area.id %>
-        <%= hidden_field_tag :life_journey_id, @journey.id %>
-        <%= hidden_field_tag :parent_id, @focus.id %>
-        <%= hidden_field_tag :horizon, "day" %>
-        <%= hidden_field_tag :scheduled_on, Date.current %>
-        <%= text_field_tag :title, nil, required: true, maxlength: 120, class: "lp-input w-full", placeholder: t("strategy.battle_placeholder") %>
-        <%= submit_tag t("strategy.add_battle"), class: "lp-cta w-full" %>
+      <% if focus_create %>
+        </div>
       <% end %>
     <% end %>
-  </div>
+  <% end %>
 
-  <aside class="lp-strategy__today lp-glass p-5 space-y-3">
-    <h2 class="text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.today_battle_title") %></h2>
-    <% if @today_battles.any? %>
-      <ul class="space-y-2">
-        <% @today_battles.first(5).each do |battle| %>
-          <li class="text-sm text-[var(--lp-ink)]">
-            <%= battle.completed? ? "✓" : "□" %>
-            <%= battle.title %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("strategy.today_battle_empty") %></p>
-    <% end %>
-    <%= form_with url: life_journey_path(@journey), method: :patch, data: { turbo: false } do %>
-      <%= hidden_field_tag :sync_today, "1" %>
-      <%= submit_tag t("strategy.go_today"), class: "lp-cta w-full" %>
-    <% end %>
-  </aside>
+  <% if !focus_create && (@next_up.blank? || @next_up[:key] != :go_today) %>
+    <aside class="lp-strategy__today lp-glass p-5 space-y-3">
+      <h2 class="text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.today_battle_title") %></h2>
+      <% if @today_battles.any? %>
+        <ul class="space-y-2">
+          <% @today_battles.first(5).each do |battle| %>
+            <li class="text-sm text-[var(--lp-ink)]">
+              <%= battle.completed? ? "✓" : "□" %>
+              <%= battle.title %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("strategy.today_battle_empty") %></p>
+      <% end %>
+      <%= form_with url: life_journey_path(@journey), method: :patch, data: { turbo: false } do %>
+        <%= hidden_field_tag :sync_today, "1" %>
+        <%= submit_tag t("strategy.go_today"), class: "lp-cta w-full" %>
+      <% end %>
+    </aside>
+  <% end %>
 </section>
