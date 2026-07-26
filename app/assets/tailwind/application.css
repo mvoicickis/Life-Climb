@@ -1037,27 +1037,31 @@
   .lp-landing-hero__media {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: flex-end;
     pointer-events: none;
   }
 
-  .lp-landing-mountains {
+  .lp-landing-hero__img {
     width: 100%;
-    height: 58%;
-    color: rgba(34, 197, 94, 0.28);
-    opacity: 0.9;
-    transform: translateY(12px) scale(1.04);
+    height: 100%;
+    object-fit: cover;
+    object-position: center 42%;
+    transform: scale(1.06);
+    opacity: 0.92;
     transition: transform 5.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 900ms ease;
   }
 
-  .lp-landing-mountains.landing-zoom {
-    transform: translateY(0) scale(1);
+  .lp-landing-hero__img.landing-zoom {
+    transform: scale(1);
+    opacity: 1;
   }
 
-  .lp-landing-mountains__far { opacity: 0.55; }
-  .lp-landing-mountains__near { opacity: 0.85; }
-  .lp-landing-mountains__peak { color: rgba(34, 197, 94, 0.75); }
+  .lp-landing-hero__veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(236, 253, 245, 0.55) 38%, rgba(255, 255, 255, 0.18) 62%, rgba(255, 255, 255, 0.72) 100%),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.25) 48%, rgba(255, 255, 255, 0.05) 100%);
+  }
 
   .lp-landing-nav {
     position: relative;
@@ -1085,13 +1089,12 @@
   .lp-landing-brand--centered { justify-content: center; }
 
   .lp-landing-brand__mark {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.65rem;
-    background: rgba(34, 197, 94, 0.28);
-    font-size: 1rem;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.75rem;
+    object-fit: cover;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.18);
   }
 
   .lp-landing-brand__name {
@@ -1208,7 +1211,7 @@
   .lp-landing-cta:hover { transform: translateY(-1px); }
   .lp-landing-cta--pulse:hover,
   .lp-landing-cta--nav:hover { background: var(--lp-forest-deep); }
-  .lp-landing-cta--ghost:hover { background: rgba(255, 255, 255, 0.12); }
+  .lp-landing-cta--ghost:hover { background: var(--lp-mist); }
 
   .lp-landing-cta--pulse.is-ready {
     animation: lp-landing-cta-pulse 2.8s ease-in-out infinite;
@@ -1281,8 +1284,8 @@
     align-items: center;
     gap: 0.4rem;
     border-radius: 999px;
-    border: 1px solid rgba(20, 32, 26, 0.1);
-    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: var(--lp-mist);
     padding: 0.55rem 0.9rem;
     font-size: 0.95rem;
     font-weight: 700;
@@ -1292,17 +1295,53 @@
 
   .lp-landing-chip:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(20, 32, 26, 0.08);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
   }
+
+  .lp-landing-chip--self { background: rgba(16, 184, 145, 0.14); color: #0f766e; }
+  .lp-landing-chip--career { background: rgba(59, 130, 246, 0.14); color: #1d4ed8; }
+  .lp-landing-chip--money { background: rgba(245, 158, 11, 0.16); color: #b45309; }
+  .lp-landing-chip--love { background: rgba(239, 71, 111, 0.14); color: #be123c; }
+  .lp-landing-chip--growth { background: rgba(139, 92, 246, 0.14); color: #6d28d9; }
 
   .lp-landing-chip--more {
     background: transparent;
     color: var(--lp-muted-dark);
   }
 
+  .lp-landing-split {
+    width: min(68rem, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .lp-landing-split {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3.5rem;
+    }
+  }
+
+  .lp-landing-split__art {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
+  }
+
+  .lp-landing-split__art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
   .lp-landing-steps {
     list-style: none;
-    margin: 2.4rem 0 0;
+    margin: 2rem 0 0;
     padding: 0;
     display: grid;
     gap: 1.85rem;
@@ -1320,7 +1359,9 @@
     place-items: center;
     width: 2.6rem;
     height: 2.6rem;
-    color: var(--lp-forest);
+    border-radius: 0.85rem;
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--lp-green-deep);
   }
 
   .lp-landing-step__icon svg {
@@ -1350,7 +1391,7 @@
     font-size: 0.98rem;
     font-weight: 700;
     font-style: italic;
-    color: var(--lp-forest-deep);
+    color: var(--lp-green-deep);
   }
 
   .lp-landing-why {
@@ -1377,13 +1418,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    min-width: 10rem;
+    gap: 0.85rem;
+    min-width: 11rem;
+    padding: 1.6rem 1.4rem;
+    border-radius: 1.5rem;
+    background: linear-gradient(160deg, #ecfdf5, #fff 55%);
+    border: 1px solid rgba(34, 197, 94, 0.16);
   }
 
-  .lp-landing-lp__tree {
-    font-size: 2.6rem;
-    filter: saturate(1.1);
+  .lp-landing-lp__leaf {
+    width: 3.4rem;
+    height: 3.4rem;
+    object-fit: cover;
   }
 
   .lp-landing-lp__count {
@@ -1403,41 +1449,44 @@
     vertical-align: super;
   }
 
+  .lp-landing-lp__chip {
+    margin: 0;
+    border-radius: 999px;
+    background: rgba(134, 239, 172, 0.55);
+    color: var(--lp-ink);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
   .lp-landing-progress {
     margin-top: 2rem;
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 0.75rem;
+    gap: 0.85rem;
     align-items: center;
   }
 
   .lp-landing-progress__track {
     position: relative;
-    height: 0.7rem;
+    height: 0.85rem;
     border-radius: 999px;
-    background: rgba(20, 32, 26, 0.1);
-    overflow: visible;
+    background: #e2e8f0;
+    overflow: hidden;
   }
 
   .lp-landing-progress__fill {
-    width: 62%;
+    width: 64%;
     height: 100%;
     border-radius: inherit;
-    background: var(--lp-forest);
+    background: linear-gradient(90deg, var(--lp-green), var(--lp-green-soft));
   }
 
-  .lp-landing-progress__climber {
-    position: absolute;
-    left: 62%;
-    top: 50%;
-    transform: translate(-50%, -120%);
-    color: var(--lp-forest);
-    font-size: 0.7rem;
-  }
-
-  .lp-landing-progress__peak {
-    font-size: 1.2rem;
-    opacity: 0.75;
+  .lp-landing-progress__pct {
+    font-family: var(--lp-font-display);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--lp-ink);
   }
 
   .lp-landing-cta-band {
@@ -1447,19 +1496,6 @@
 
   @media (min-width: 768px) {
     .lp-landing-cta-band { padding: 7rem 2rem 7.5rem; }
-  }
-
-  .lp-landing-cta-band__mountains {
-    position: absolute;
-    inset: auto 0 0;
-    height: 45%;
-    color: rgba(34, 197, 94, 0.22);
-    pointer-events: none;
-  }
-
-  .lp-landing-cta-band__mountains svg {
-    width: 100%;
-    height: 100%;
   }
 
   .lp-landing-cta-band__inner {

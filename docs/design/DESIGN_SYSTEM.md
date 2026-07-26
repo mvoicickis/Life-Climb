@@ -1,5 +1,13 @@
 # LifePoints Brand & Design System
 
+## Canonical visual guide
+
+Use this board as the source of truth for colour, type, mountain art, and UI chrome:
+
+- [`docs/design/BRAND_GUIDE_LIFE_GREEN.jpg`](BRAND_GUIDE_LIFE_GREEN.jpg) (also `.webp`)
+
+Landing hero / scene assets live in `public/branding/`.
+
 ## Brand idea
 
 LifePoints helps a person turn any life goal into a real plan, and rewards real progress with Life Points — proof that they are becoming more alive.
@@ -29,7 +37,7 @@ Feeling: **small steps, big life** — one mountain, today’s battle. Hope + in
 | Primary / CTA | `--lp-green` `#22C55E` | Buttons, links, progress fills |
 | Primary deep | `--lp-green-deep` `#16A34A` | Hover / Emerald |
 | Soft green | `--lp-green-soft` `#86EFAC` | Light washes, soft fills |
-| Dawn wash | `#ECFDF5 → #FFFFFF` | Landing hero / closing atmosphere |
+| Dawn wash | `#ECFDF5 → #FFFFFF` | Landing hero veil / closing atmosphere |
 | Reward flash only | `--lp-gold` `#F59E0B` | `+LP` toast / confetti only |
 
 **Hard readability rule:** LP chip and standing LP totals use deep ink on white/mist chips. Amber/gold is never the digit color.
@@ -46,10 +54,12 @@ Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category ma
 
 ## Icons & imagery
 
+- Leaf mark: `public/branding/lifepoints-leaf-mark.png`
+- Landing hero: mountain path + summit flag (`public/branding/landing-hero-mountain.webp`)
 - Thin, single-line icons for steps and UI.
 - Emoji allowed **only** for Life Areas (and Home hero area mark).
 - No stock photos of people.
-- Mountain path + summit flag art in Life Green / soft green on light paper heroes.
+- Full-bleed mountain path art on light paper heroes — never a navy void marketing shell.
 
 ## Surface map
 
