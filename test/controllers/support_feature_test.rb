@@ -95,7 +95,7 @@ class SupportProvidersTest < ActiveSupport::TestCase
 
   test "all support options open the same buymeacoffee page" do
     urls = SupportProviders.enabled.map { |p| p[:url] }.uniq
-    assert_equal ["https://buymeacoffee.com/lifepoints"], urls
+    assert_equal [ "https://buymeacoffee.com/lifepoints" ], urls
     assert_empty SupportProviders.coming_soon
   end
 end
