@@ -50,6 +50,11 @@
 
   <% if @project_check %>
     <%= render "dashboard/dash_project_check", project: @project_check %>
+  <% elsif @battle_angle_project && @battle_angles.any? %>
+    <%= render "dashboard/dash_battle_angles",
+          project: @battle_angle_project,
+          angles: @battle_angles,
+          journey: @journey %>
   <% end %>
 
   <%= render "dashboard/dash_battle",

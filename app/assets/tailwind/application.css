@@ -4134,6 +4134,82 @@
   background: transparent;
 }
 
+.lp-dash-battle-angles {
+  border-radius: 1.15rem;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(145deg, rgba(15, 118, 110, 0.08), transparent 55%),
+    rgba(255, 255, 255, 0.92);
+  padding: 1rem 1.05rem 1.05rem;
+}
+
+.lp-dash-battle-angles__kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.lp-dash-battle-angles__title {
+  margin: 0.35rem 0 0;
+  font-family: var(--lp-font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.lp-dash-battle-angles__hint {
+  margin: 0.4rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.lp-dash-battle-angles__list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.lp-dash-battle-angles__chip {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.lp-dash-battle-angles__chip:hover {
+  border-color: rgba(15, 118, 110, 0.4);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.lp-dash-battle-angles__strategy {
+  margin: 0.75rem 0 0;
+}
+
+.lp-dash-battle-angles__strategy a {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lp-green-deep, #166534);
+  text-decoration: none;
+}
+
+.lp-dash-battle-angles__strategy a:hover {
+  text-decoration: underline;
+}
+
 .lp-dash-kicker {
   margin: 0;
   font-size: 0.7rem;

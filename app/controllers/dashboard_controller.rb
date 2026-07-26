@@ -51,6 +51,14 @@ class DashboardController < ApplicationController
     @battle_celebrate = flash[:battle_celebrate].present?
     @battle_total_count = @daily_todos.size + (@mission.present? ? 1 : 0)
     @project_check = Strategy::ProjectCheckQueue.next_for(user: current_user, session: session)
+    @battle_angle_project =
+      if @project_check
+        nil
+      else
+        Strategy::BattleAngleQueue.project_for(user: current_user, session: session)
+      end
+    @battle_angles =
+      @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
     render "dashboard/show_v2"
   end
 end
