@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_025646) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_031911) do
   create_table "buildings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "shipped_at"
@@ -292,7 +292,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_025646) do
     t.string "name"
     t.datetime "onboarding_completed_at"
     t.string "password_digest", null: false
-    t.integer "planning_version", default: 1, null: false
+    t.integer "planning_version", default: 2, null: false
     t.json "support_milestones_shown", default: [], null: false
     t.boolean "support_prompts_muted", default: false, null: false
     t.integer "total_points", default: 0, null: false
