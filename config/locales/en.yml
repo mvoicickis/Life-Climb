@@ -226,6 +226,8 @@ en:
     mode: "Strategy"
     page_title: "Your year plan"
     title: "Break the goal down"
+    intro_lead: "Plan here. Score Strategy Points."
+    intro_body: "This page is planning only — map your year until %{date} (year → months → weeks → days). On Today you execute the steps and earn Action Points."
     plan_hint: "One big goal until December 29. Then months, weeks, and days."
     year_runs_until: "Your year runs until %{date}."
     fixed_due: "Due date locked to %{date}."

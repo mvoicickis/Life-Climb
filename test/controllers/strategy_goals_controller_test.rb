@@ -24,7 +24,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_match(/Your year plan/i, response.body)
-    assert_match(/Your year runs until/i, response.body)
+    assert_match(/Plan here\. Score Strategy Points/i, response.body)
+    assert_match(/Action Points/i, response.body)
     assert_match(/December 29/i, response.body)
     assert_match(/Strategy Points/i, response.body)
     assert_match(/Plan it together/i, response.body)
