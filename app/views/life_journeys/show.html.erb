@@ -45,7 +45,7 @@
   <section class="lp-climb-card lp-climb-card--progress">
     <p class="lp-climb-card__kicker"><%= t("journeys.sections.progress") %></p>
     <p class="lp-climb-card__hint"><%= t("journeys.sections.progress_hint") %></p>
-    <%= form_with url: life_journey_path(@journey), method: :patch, class: "lp-climb-progress-form" do %>
+    <%= form_with url: life_journey_path(@journey), method: :patch, class: "lp-climb-progress-form", data: { turbo: false } do %>
       <input type="hidden" name="closer_only" value="1">
       <div class="lp-journey-progress">
         <%= number_field_tag "life_journey[closer_percent]", @journey.closer_percent.round,
@@ -106,31 +106,31 @@
             <% end %>
           </p>
 
-          <%= form_with url: life_journey_path(@journey), method: :patch, class: "lp-climb-card__form" do %>
+          <%= form_with url: life_journey_path(@journey), method: :patch, class: "lp-climb-card__form", data: { turbo: false } do %>
             <input type="hidden" name="layer" value="<%= layer %>">
 
             <% case layer %>
             <% when "goal" %>
               <%= text_field_tag "life_journey[title]", @journey.title, class: "lp-input", required: true, autocomplete: "off" %>
             <% when "purpose" %>
-              <%= text_area_tag "life_journey[purpose]", @journey.purpose, rows: 3, class: "lp-input", placeholder: t("journeys.sections.purpose_placeholder") %>
+              <%= text_area_tag "life_journey[purpose]", @journey.purpose, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.purpose_placeholder") %>
             <% when "policy" %>
-              <%= text_area_tag "life_journey[policy]", @journey.policy, rows: 3, class: "lp-input", placeholder: t("journeys.sections.policy_placeholder") %>
+              <%= text_area_tag "life_journey[policy]", @journey.policy, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.policy_placeholder") %>
             <% when "approach" %>
-              <%= text_area_tag "life_journey[approach]", @journey.approach, rows: 3, class: "lp-input", placeholder: t("journeys.sections.approach_placeholder") %>
+              <%= text_area_tag "life_journey[approach]", @journey.approach, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.approach_placeholder") %>
             <% when "program" %>
-              <%= text_area_tag "life_journey[program]", @journey.program, rows: 4, class: "lp-input", placeholder: t("journeys.sections.program_placeholder") %>
+              <%= text_area_tag "life_journey[program]", @journey.program, rows: 4, class: "lp-input", required: true, placeholder: t("journeys.sections.program_placeholder") %>
             <% when "milestone" %>
-              <%= text_field_tag "life_journey[next_win]", @journey.next_win, class: "lp-input", autocomplete: "off" %>
+              <%= text_field_tag "life_journey[next_win]", @journey.next_win, class: "lp-input", required: true, autocomplete: "off" %>
             <% when "scenes" %>
               <label class="lp-climb-mini-label" for="life_journey_ideal_scene"><%= t("journeys.sections.ideal") %></label>
               <%= text_area_tag "life_journey[ideal_scene]", @journey.ideal_scene, rows: 2, class: "lp-input", id: "life_journey_ideal_scene", required: true %>
               <label class="lp-climb-mini-label" for="life_journey_current_reality"><%= t("journeys.sections.reality") %></label>
               <%= text_area_tag "life_journey[current_reality]", @journey.current_reality, rows: 2, class: "lp-input", id: "life_journey_current_reality", required: true %>
             <% when "finished" %>
-              <%= text_area_tag "life_journey[finished_result]", @journey.finished_result, rows: 3, class: "lp-input", placeholder: t("journeys.sections.finished_placeholder") %>
+              <%= text_area_tag "life_journey[finished_result]", @journey.finished_result, rows: 3, class: "lp-input", required: true, placeholder: t("journeys.sections.finished_placeholder") %>
             <% when "today" %>
-              <%= text_field_tag "life_journey[today_mission]", today_mission&.title, class: "lp-input", autocomplete: "off" %>
+              <%= text_field_tag "life_journey[today_mission]", today_mission&.title, class: "lp-input", required: true, autocomplete: "off" %>
             <% end %>
 
             <div class="lp-climb-card__actions">

@@ -50,11 +50,11 @@ class LifeJourneysController < ApplicationController
 
     layer = params[:layer].to_s
     unless LifeJourney::CLIMB_LAYERS.include?(layer)
-      redirect_to life_journey_path(@journey), alert: t("journeys.climb.bad_layer") and return
+      climb_redirect(alert: t("journeys.climb.bad_layer")) and return
     end
 
     unless @journey.layer_unlocked?(layer)
-      redirect_to life_journey_path(@journey), alert: t("journeys.climb.locked") and return
+      climb_redirect(alert: t("journeys.climb.locked")) and return
     end
 
     if params[:skip].present?
@@ -79,24 +79,32 @@ class LifeJourneysController < ApplicationController
     @unlocked_layer = flash[:unlocked_layer]
   end
 
+  # 303 so Turbo Drive follows PATCH/POST with a real HTML GET (not a stuck TURBO_STREAM paint).
+  def climb_redirect(options = {})
+    path = options.delete(:to) || life_journey_path(@journey)
+    redirect_to path, **options, status: :see_other
+  end
+
   def update_progress_only
     closer = params.dig(:life_journey, :closer_percent)
     if closer.present?
       @journey.update!(gap_percent: (100.0 - closer.to_f).clamp(0, 100).round(2))
     end
-    redirect_to life_journey_path(@journey), notice: t("journeys.climb.progress_saved")
+    climb_redirect(notice: t("journeys.climb.progress_saved"))
   end
 
   def skip_layer!(layer)
     unless LifeJourney::SKIPPABLE_LAYERS.include?(layer)
-      redirect_to life_journey_path(@journey), alert: t("journeys.climb.cannot_skip") and return
+      climb_redirect(alert: t("journeys.climb.cannot_skip")) and return
     end
 
     @journey.mark_layer!(layer, "skipped")
     next_layer = next_after(layer)
     flash[:unlocked_layer] = next_layer
-    redirect_to life_journey_path(@journey, edit: next_layer),
-                notice: t("journeys.climb.skipped", layer: t("journeys.sections.#{section_key(layer)}"))
+    climb_redirect(
+      to: life_journey_path(@journey, edit: next_layer),
+      notice: t("journeys.climb.skipped", layer: t("journeys.sections.#{section_key(layer)}"))
+    )
   end
 
   def save_layer!(layer)
@@ -104,18 +112,25 @@ class LifeJourneysController < ApplicationController
     today_title = attrs.delete(:today_mission)
 
     if layer == "goal" && attrs[:title].to_s.strip.blank?
-      redirect_to life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_goal") and return
+      climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_goal")) and return
     end
 
     if layer == "scenes"
       if attrs[:ideal_scene].to_s.strip.blank? || attrs[:current_reality].to_s.strip.blank?
-        redirect_to life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_scenes") and return
+        climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_scenes")) and return
+      end
+    end
+
+    if %w[purpose policy approach program milestone finished].include?(layer)
+      field = LifeJourney::LAYER_FIELDS.fetch(layer).first
+      if attrs[field].to_s.strip.blank?
+        climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_layer")) and return
       end
     end
 
     if layer == "today"
       if today_title.to_s.strip.blank?
-        redirect_to life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_today") and return
+        climb_redirect(to: life_journey_path(@journey, edit: layer), alert: t("journeys.climb.need_today")) and return
       end
       sync_today_mission_title!(today_title)
       @journey.mark_layer!(layer, "done")
@@ -131,8 +146,10 @@ class LifeJourneysController < ApplicationController
 
     next_layer = next_after(layer)
     flash[:unlocked_layer] = next_layer
-    redirect_to life_journey_path(@journey, edit: next_layer),
-                notice: t("journeys.climb.layer_saved", layer: t("journeys.sections.#{section_key(layer)}"))
+    climb_redirect(
+      to: life_journey_path(@journey, edit: next_layer),
+      notice: t("journeys.climb.layer_saved", layer: t("journeys.sections.#{section_key(layer)}"))
+    )
   end
 
   def layer_params(layer)
@@ -141,7 +158,7 @@ class LifeJourneysController < ApplicationController
     if layer == "today"
       { today_mission: params.dig(:life_journey, :today_mission) }
     else
-      params.require(:life_journey).permit(*allowed)
+      params.fetch(:life_journey, {}).permit(*allowed)
     end
   end
 

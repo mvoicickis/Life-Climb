@@ -104,9 +104,10 @@ class LifeJourney < ApplicationRecord
     raise ArgumentError, "Bad status" unless %w[done skipped].include?(status.to_s)
     raise ArgumentError, "Cannot skip" if status.to_s == "skipped" && !SKIPPABLE_LAYERS.include?(layer)
 
-    ensure_setup_flags
-    flags = setup_flags.merge(layer => status.to_s)
-    update!(setup_flags: flags)
+    flags = (setup_flags.presence || {}).stringify_keys.merge(layer => status.to_s)
+    # update_columns avoids JSON dirty-tracking misses on SQLite defaults.
+    update_columns(setup_flags: flags, updated_at: Time.current)
+    self.setup_flags = flags
   end
 
   def clarity_count
@@ -138,8 +139,7 @@ class LifeJourney < ApplicationRecord
   end
 
   def bootstrap_setup_flags_from_content!(today_mission: nil)
-    ensure_setup_flags
-    flags = setup_flags.stringify_keys.dup
+    flags = (setup_flags.presence || {}).stringify_keys
     changed = false
 
     CLIMB_LAYERS.each do |layer|
@@ -172,14 +172,16 @@ class LifeJourney < ApplicationRecord
       changed = true
     end
 
-    update!(setup_flags: flags) if changed
+    return unless changed
+
+    update_columns(setup_flags: flags, updated_at: Time.current)
+    self.setup_flags = flags
   end
 
   private
 
   def ensure_setup_flags
-    self.setup_flags = {} if setup_flags.nil?
-    self.setup_flags = setup_flags.stringify_keys if setup_flags.is_a?(Hash)
+    self.setup_flags = {} if read_attribute(:setup_flags).nil?
   end
 
   def sync_user_from_area

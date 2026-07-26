@@ -283,6 +283,7 @@ en:
       save_progress: "Update"
       progress_saved: "Progress updated."
       need_goal: "Name your goal to continue."
+      need_layer: "Write something here, or Skip for now."
       need_scenes: "Fill both Ideal scene and Current reality."
       need_today: "Say one thing you can finish today."
       locked: "That layer is still locked."

@@ -87,6 +87,19 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
     assert_not @journey.layer_done?("purpose")
   end
 
+  test "blank purpose save does not unlock rules" do
+    @journey.update!(setup_flags: { "goal" => "done" }, purpose: nil)
+
+    patch life_journey_path(@journey), params: {
+      layer: "purpose",
+      life_journey: { purpose: "   " }
+    }
+    assert_redirected_to life_journey_path(@journey, edit: "purpose")
+    @journey.reload
+    assert_not @journey.layer_done?("purpose")
+    assert_equal :locked, @journey.layer_state("policy")
+  end
+
   test "cannot jump to rules before purpose filled or skipped" do
     @journey.update!(setup_flags: { "goal" => "done" })
 
