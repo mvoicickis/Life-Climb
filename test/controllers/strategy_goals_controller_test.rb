@@ -184,7 +184,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "button.lp-strategy-next__secondary", text: /Add another battle/i
     assert_select "#add-another-battle input[name=horizon][value=day]"
     assert_select "#add-battle-title"
-    assert_select "#board-add-battle input[name=title]"
+    assert_select "#strategy-add-battle.lp-strategy-add input[name=title]"
+    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-battle']"
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
@@ -193,6 +194,38 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     }
     assert_equal 2, project.children.for_kind("day").count
     assert @user.daily_todos.for_day(Date.current).exists?(title: "Second battle")
+  end
+
+  test "strategy board shows visible add cards for plans projects and battles" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan A", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project A", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Battle A", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: goal.id)
+    assert_response :success
+    assert_select "#strategy-add-plan.lp-strategy-add", text: /Add another plan/i
+    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-plan']", text: /Add plan/i
+    assert_select "details.lp-strategy__optional", count: 0
+
+    get life_journey_path(@journey, focus_id: plan.id)
+    assert_response :success
+    assert_select "#strategy-add-project.lp-strategy-add", text: /Add another project/i
+    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-project']", text: /Add project/i
+
+    get life_journey_path(@journey, focus_id: project.id)
+    assert_response :success
+    assert_select "#strategy-add-battle.lp-strategy-add", text: /Add another battle/i
+    assert_match(/Add today.?s battle/i, response.body)
   end
 
   test "dashboard shows action points and strategy points" do
