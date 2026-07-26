@@ -2,7 +2,7 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+<div class="lp-home mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5">
   <header class="flex items-start justify-between gap-4">
     <div class="min-w-0">
       <p class="lp-brand-kicker">
@@ -10,8 +10,7 @@
         <span><%= t("strategy.mode") %></span>
       </p>
       <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("strategy.page_title") %></h1>
-      <p class="mt-2 text-sm font-medium text-[var(--lp-ink)]"><%= t("strategy.intro_lead") %></p>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("strategy.intro_body", date: l(@year_due, format: :long)) %></p>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("strategy.intro_short", date: l(@year_due, format: :long)) %></p>
     </div>
     <div class="lp-strategy__sp shrink-0" aria-label="<%= t('strategy.sp_label') %>">
       <span class="lp-strategy__sp-value"><%= current_user.strategy_points %></span>

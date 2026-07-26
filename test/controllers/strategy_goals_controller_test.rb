@@ -24,10 +24,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_match(/Your year plan/i, response.body)
-    assert_match(/What.?s your goal/i, response.body)
+    assert_match(/Next up/i, response.body)
+    assert_match(/Quest path|Goal/i, response.body)
     assert_match(/Strategy Points/i, response.body)
     assert_match(/Today.?s Battle/i, response.body)
-    assert_match(/Go to Today/i, response.body)
+    assert_select ".lp-strategy-path"
+    assert_select ".lp-strategy-next"
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)
   end
@@ -164,7 +166,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Monthly Goals/i, response.body)
     assert_match(/Get good German/i, response.body)
-    assert_match(/Break this plan into projects/i, response.body)
+    assert_match(/Next up/i, response.body)
+    assert_match(/This month/i, response.body)
   end
 
   test "progress rolls up from plan monthly goal battles" do

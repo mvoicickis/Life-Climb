@@ -111,6 +111,176 @@ class LifeJourneysController < ApplicationController
     @today_battles = today_battles_for(@focus || @goal)
     @crumbs = strategy_crumbs(@focus)
     @guided_step = guided_step
+    @path_stages = strategy_path_stages
+    @current_month_slot = @month_slots.find { |s| s[:month] == Date.current.month && s[:year] == Date.current.year } || @month_slots.first
+    @later_month_slots = @month_slots.reject { |s| s == @current_month_slot }
+    @next_up = strategy_next_up
+  end
+
+  def strategy_path_stages
+    keys = %w[goal plans build months battle]
+    current =
+      case @guided_step
+      when 1 then "goal"
+      when 2 then "plans"
+      when 3 then "build"
+      when 4 then "months"
+      else "battle"
+      end
+
+    keys.map do |key|
+      {
+        key: key,
+        label: I18n.t("strategy.path.#{key}"),
+        state: path_stage_state(key, current, keys)
+      }
+    end
+  end
+
+  def path_stage_state(key, current, keys)
+    ci = keys.index(current)
+    ki = keys.index(key)
+    return :current if key == current
+    return :done if ki < ci
+
+    :upcoming
+  end
+
+  def strategy_next_up
+    if @goal.nil?
+      return {
+        key: :create_goal,
+        title: I18n.t("strategy.next_up.create_goal_title"),
+        hint: I18n.t("strategy.next_up.create_goal_hint"),
+        cta: I18n.t("strategy.next_up.create_goal_cta"),
+        form: { horizon: "goal", parent_id: nil }
+      }
+    end
+
+    if @level == "plans"
+      plans = @children.select(&:plan?)
+      if plans.empty?
+        return {
+          key: :add_plan,
+          title: I18n.t("strategy.next_up.add_plan_title"),
+          hint: I18n.t("strategy.next_up.add_plan_hint"),
+          cta: I18n.t("strategy.next_up.add_plan_cta"),
+          form: { horizon: "plan", parent_id: @goal.id },
+          anchor: "strategy-next-form"
+        }
+      end
+
+      target = plans.min_by { |p| p.progress_percent }
+      return {
+        key: :open_child,
+        title: I18n.t("strategy.next_up.open_plan_title", title: target.title),
+        hint: I18n.t("strategy.next_up.open_plan_hint"),
+        cta: I18n.t("strategy.next_up.continue_cta"),
+        href: life_journey_path(@journey, focus_id: target.id)
+      }
+    end
+
+    if @level == "projects" && @focus&.plan?
+      month_kids = @children.select(&:month?)
+      project_kids = @children.select(&:project?)
+      if @current_month_slot && month_kids.none? { |m| m.due_on == @current_month_slot[:due_on] }
+        return {
+          key: :add_month,
+          title: I18n.t("strategy.next_up.add_month_title", month: @current_month_slot[:label]),
+          hint: I18n.t("strategy.next_up.add_month_hint"),
+          cta: I18n.t("strategy.next_up.add_month_cta"),
+          form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot[:due_on] },
+          anchor: "strategy-next-form"
+        }
+      end
+
+      openable = (month_kids + project_kids).min_by { |n| n.progress_percent }
+      if openable
+        return {
+          key: :open_child,
+          title: I18n.t("strategy.next_up.open_child_title", title: openable.title),
+          hint: I18n.t("strategy.next_up.open_child_hint"),
+          cta: I18n.t("strategy.next_up.continue_cta"),
+          href: life_journey_path(@journey, focus_id: openable.id)
+        }
+      end
+
+      return {
+        key: :add_month,
+        title: I18n.t("strategy.next_up.add_month_title", month: @current_month_slot&.dig(:label) || ""),
+        hint: I18n.t("strategy.next_up.add_month_hint"),
+        cta: I18n.t("strategy.next_up.add_month_cta"),
+        form: { horizon: "month", parent_id: @focus.id, due_on: @current_month_slot&.dig(:due_on) },
+        anchor: "strategy-next-form"
+      }
+    end
+
+    if @level == "months" && @focus&.project?
+      filled = @children.select(&:month?)
+      empty_slot = @month_slots.find { |s| filled.none? { |m| m.due_on == s[:due_on] } }
+      if empty_slot && (@current_month_slot.nil? || filled.none? { |m| m.due_on == @current_month_slot[:due_on] })
+        slot = @current_month_slot && filled.none? { |m| m.due_on == @current_month_slot[:due_on] } ? @current_month_slot : empty_slot
+        return {
+          key: :add_month,
+          title: I18n.t("strategy.next_up.add_month_title", month: slot[:label]),
+          hint: I18n.t("strategy.next_up.add_month_hint"),
+          cta: I18n.t("strategy.next_up.add_month_cta"),
+          form: { horizon: "month", parent_id: @focus.id, due_on: slot[:due_on] },
+          anchor: "strategy-next-form"
+        }
+      end
+
+      target = filled.min_by { |m| m.progress_percent }
+      if target
+        return {
+          key: :open_child,
+          title: I18n.t("strategy.next_up.open_child_title", title: target.title),
+          hint: I18n.t("strategy.next_up.open_child_hint"),
+          cta: I18n.t("strategy.next_up.continue_cta"),
+          href: life_journey_path(@journey, focus_id: target.id)
+        }
+      end
+    end
+
+    if @focus&.month? || @focus&.week?
+      battles = @children.select(&:day?)
+      if battles.empty?
+        return {
+          key: :add_battle,
+          title: I18n.t("strategy.next_up.add_battle_title"),
+          hint: I18n.t("strategy.next_up.add_battle_hint"),
+          cta: I18n.t("strategy.next_up.add_battle_cta"),
+          form: { horizon: "day", parent_id: @focus.id, scheduled_on: Date.current },
+          anchor: "strategy-next-form"
+        }
+      end
+
+      return {
+        key: :go_today,
+        title: I18n.t("strategy.next_up.go_today_title"),
+        hint: I18n.t("strategy.next_up.go_today_hint"),
+        cta: I18n.t("strategy.go_today"),
+        sync_today: true
+      }
+    end
+
+    if @today_battles.any?
+      {
+        key: :go_today,
+        title: I18n.t("strategy.next_up.go_today_title"),
+        hint: I18n.t("strategy.next_up.go_today_hint"),
+        cta: I18n.t("strategy.go_today"),
+        sync_today: true
+      }
+    else
+      {
+        key: :keep_building,
+        title: I18n.t("strategy.next_up.keep_building_title"),
+        hint: I18n.t("strategy.next_up.keep_building_hint"),
+        cta: I18n.t("strategy.next_up.keep_building_cta"),
+        anchor: "strategy-board"
+      }
+    end
   end
 
   def strategy_level_for(node)
