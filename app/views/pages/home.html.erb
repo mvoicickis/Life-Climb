@@ -1,236 +1,88 @@
 <% content_for :title, t("landing.meta_title") %>
 <% content_for :meta_description, t("landing.meta_description") %>
 
-<div data-controller="landing">
-  <section class="landing-hero relative min-h-[100dvh] overflow-hidden">
-    <div class="absolute inset-0">
+<div class="lp-landing" data-controller="landing">
+  <section class="lp-landing-hero landing-hero">
+    <div class="lp-landing-hero__media" aria-hidden="true">
       <img
         src="/lifepoints-landing-hero.jpg"
         alt=""
-        class="h-full w-full object-cover"
+        class="lp-landing-hero__img"
         data-landing-target="heroImage">
-      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/82 via-slate-900/55 to-slate-900/20"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-slate-900/30"></div>
+      <div class="lp-landing-hero__veil"></div>
+      <div class="lp-landing-hero__noise"></div>
     </div>
 
-    <header class="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-5 md:px-8 md:py-6">
-      <p class="text-2xl font-black tracking-tight text-white md:text-3xl" data-landing-target="brand"><%= t("app_name") %></p>
-      <div class="flex items-center gap-2 md:gap-3">
+    <header class="lp-landing-nav">
+      <p class="lp-landing-brand" data-landing-target="brand">
+        <span class="lp-landing-brand__mark" aria-hidden="true">🌱</span>
+        <span class="lp-landing-brand__name"><%= t("app_name") %></span>
+      </p>
+      <div class="lp-landing-nav__actions">
         <%= render "shared/locale_switcher", variant: :compact %>
-        <%= link_to t("landing.sign_in"), new_session_path,
-            class: "rounded-2xl px-3 py-2 text-sm font-bold text-white/90 hover:bg-white/10 md:px-4 md:text-base" %>
-        <%= link_to t("landing.start_free"), new_registration_path,
-            class: "rounded-2xl bg-emerald-500 px-3 py-2 text-sm font-black text-white shadow-lg shadow-emerald-900/30 hover:bg-emerald-400 md:px-4 md:text-base" %>
+        <%= link_to t("landing.sign_in"), new_session_path, class: "lp-landing-link" %>
+        <%= link_to t("landing.start_free"), new_registration_path, class: "lp-landing-cta lp-landing-cta--nav" %>
       </div>
     </header>
 
-    <div class="relative z-10 mx-auto flex min-h-[calc(100dvh-5.5rem)] w-full max-w-6xl flex-col justify-center px-5 pb-16 pt-8 md:px-8 md:pb-24">
-      <div class="max-w-2xl" data-landing-target="heroCopy">
-        <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-300/90 md:text-base">
-          <%= t("landing.hero_eyebrow") %>
-        </p>
-        <h1 class="mt-4 text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[4.25rem]">
-          <%= t("landing.hero_title") %>
-        </h1>
-        <p class="mt-5 max-w-xl text-lg font-semibold leading-relaxed text-white/85 md:text-xl">
-          <%= t("landing.hero_body") %>
-        </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <%= link_to t("landing.start_free"), new_registration_path,
-              class: "inline-flex rounded-2xl bg-emerald-500 px-6 py-4 text-base font-black text-white shadow-xl shadow-emerald-950/30 hover:bg-emerald-400 md:text-lg" %>
-          <%= link_to t("landing.sign_in"), new_session_path,
-              class: "inline-flex rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-4 text-base font-bold text-white backdrop-blur hover:bg-white/20 md:text-lg" %>
-        </div>
-
-        <div class="mt-12 hidden max-w-xs sm:block" aria-hidden="true">
-          <svg viewBox="0 0 200 80" class="w-full text-emerald-300/90">
-            <rect x="20" y="48" width="28" height="24" rx="8" fill="currentColor" opacity="0.45"/>
-            <rect x="64" y="32" width="28" height="40" rx="8" fill="currentColor" opacity="0.7"/>
-            <rect x="108" y="16" width="28" height="56" rx="8" fill="currentColor"/>
-            <circle cx="158" cy="14" r="10" fill="#a7f3d0"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-[#f4f7f5] px-5 py-24 md:px-8 md:py-32">
-    <div class="mx-auto max-w-3xl" data-landing-target="fade">
-      <p class="text-sm font-black uppercase tracking-[0.2em] text-emerald-700"><%= t("landing.why_kicker") %></p>
-      <h2 class="mt-4 text-3xl font-black tracking-tight text-slate-900 md:text-5xl">
-        <%= t("landing.why_title") %>
-      </h2>
-      <div class="mt-8 space-y-5 text-lg font-semibold leading-relaxed text-slate-600 md:text-xl">
-        <p><%= t("landing.why_p1") %></p>
-        <p><%= t("landing.why_p2") %></p>
-        <p><%= t("landing.why_p3") %></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-white px-5 py-24 md:px-8 md:py-32">
-    <div class="mx-auto max-w-5xl">
-      <div data-landing-target="fade">
-        <h2 class="max-w-2xl text-3xl font-black tracking-tight text-slate-900 md:text-5xl">
-          <%= t("landing.track_title") %>
-        </h2>
-        <p class="mt-4 max-w-xl text-lg font-semibold text-slate-600 md:text-xl">
-          <%= t("landing.track_subtitle") %>
-        </p>
-      </div>
-
-      <ul class="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-landing-target="fade">
-        <% [
-          ["📚", t("landing.examples.pages")],
-          ["💪", t("landing.examples.pushups")],
-          ["🇩🇪", t("landing.examples.german")],
-          ["💬", t("landing.examples.words")],
-          ["🚶", t("landing.examples.steps")],
-          ["💰", t("landing.examples.money")],
-          ["😴", t("landing.examples.sleep")],
-          ["💧", t("landing.examples.water")]
-        ].each do |icon, label| %>
-          <li class="flex items-center gap-3 rounded-3xl border border-slate-200/80 bg-[#f7faf8] px-4 py-4">
-            <span class="text-xl" aria-hidden="true"><%= icon %></span>
-            <span class="text-base font-black text-slate-900"><%= label %></span>
-          </li>
-        <% end %>
-      </ul>
-    </div>
-  </section>
-
-  <section class="bg-[#f7faf8] px-5 py-24 md:px-8 md:py-32">
-    <div class="mx-auto max-w-5xl">
-      <h2 class="max-w-2xl text-3xl font-black tracking-tight text-slate-900 md:text-5xl" data-landing-target="fade">
-        <%= t("landing.steps_title") %>
-      </h2>
-
-      <div class="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
-        <div data-landing-target="fade">
-          <p class="text-sm font-black uppercase tracking-widest text-emerald-600">1</p>
-          <h3 class="mt-3 text-2xl font-black text-slate-900"><%= t("landing.step1_title") %></h3>
-          <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600 md:text-lg">
-            <%= t("landing.step1_body") %>
-          </p>
-        </div>
-        <div data-landing-target="fade">
-          <p class="text-sm font-black uppercase tracking-widest text-sky-600">2</p>
-          <h3 class="mt-3 text-2xl font-black text-slate-900"><%= t("landing.step2_title") %></h3>
-          <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600 md:text-lg">
-            <%= t("landing.step2_body") %>
-          </p>
-        </div>
-        <div data-landing-target="fade">
-          <p class="text-sm font-black uppercase tracking-widest text-orange-500">3</p>
-          <h3 class="mt-3 text-2xl font-black text-slate-900"><%= t("landing.step3_title") %></h3>
-          <p class="mt-3 text-base font-semibold leading-relaxed text-slate-600 md:text-lg">
-            <%= t("landing.step3_body") %>
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="relative overflow-hidden bg-slate-900 px-5 py-24 md:px-8 md:py-32">
-    <div class="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"></div>
-    <div class="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-sky-500/15 blur-3xl"></div>
-
-    <div class="relative mx-auto max-w-5xl">
-      <div data-landing-target="fade">
-        <h2 class="max-w-2xl text-3xl font-black tracking-tight text-white md:text-5xl">
-          <%= t("landing.progress_title") %>
-        </h2>
-        <p class="mt-4 max-w-xl text-lg font-semibold text-white/75">
-          <%= t("landing.progress_subtitle") %>
-        </p>
-      </div>
-
-      <div class="mt-10 flex flex-wrap gap-3" data-landing-target="fade">
-        <span class="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-200 ring-1 ring-emerald-400/30">
-          🟢 <%= t("status.better_full") %>
-        </span>
-        <span class="inline-flex items-center gap-2 rounded-2xl bg-amber-400/15 px-4 py-2 text-sm font-bold text-amber-100 ring-1 ring-amber-300/30">
-          🟡 <%= t("status.same_full") %>
-        </span>
-        <span class="inline-flex items-center gap-2 rounded-2xl bg-rose-500/15 px-4 py-2 text-sm font-bold text-rose-100 ring-1 ring-rose-400/30">
-          🔴 <%= t("status.worse_full") %>
-        </span>
-        <span class="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-200 ring-1 ring-emerald-400/30">
-          🟢 <%= t("status.perfect_full") %>
-        </span>
-        <span class="inline-flex items-center gap-2 rounded-2xl bg-rose-500/15 px-4 py-2 text-sm font-bold text-rose-100 ring-1 ring-rose-400/30">
-          🔴 <%= t("status.too_low_full") %> / <%= t("status.too_high_full").downcase %>
-        </span>
-      </div>
-
-      <div class="mt-10 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3" aria-hidden="true" data-landing-target="fade">
-        <div class="rounded-3xl border-2 border-emerald-400 bg-emerald-50 p-5 shadow-lg">
-          <div class="flex items-start justify-between gap-2">
-            <p class="font-black text-emerald-950"><%= t("landing.examples.pages") %></p>
-            <span class="rounded-lg bg-emerald-500 px-2 py-1 text-[10px] font-black text-white">🟢 <%= t("landing.sample_better") %></span>
-          </div>
-          <p class="mt-5 text-4xl font-black text-emerald-950">42</p>
-          <p class="mt-2 text-xs font-bold text-emerald-800/80"><%= t("status.better_full") %></p>
-        </div>
-        <div class="rounded-3xl border-2 border-amber-300 bg-amber-50 p-5 shadow-lg">
-          <div class="flex items-start justify-between gap-2">
-            <p class="font-black text-amber-950"><%= t("landing.examples.pushups") %></p>
-            <span class="rounded-lg bg-amber-400 px-2 py-1 text-[10px] font-black text-amber-950">🟡 <%= t("landing.sample_same") %></span>
-          </div>
-          <p class="mt-5 text-4xl font-black text-amber-950">30</p>
-          <p class="mt-2 text-xs font-bold text-amber-800/80"><%= t("status.same_full") %></p>
-        </div>
-        <div class="rounded-3xl border-2 border-emerald-400 bg-emerald-50 p-5 shadow-lg">
-          <div class="flex items-start justify-between gap-2">
-            <p class="font-black text-emerald-950"><%= t("landing.examples.sleep") %></p>
-            <span class="rounded-lg bg-emerald-500 px-2 py-1 text-[10px] font-black text-white">🟢 <%= t("landing.sample_range") %></span>
-          </div>
-          <p class="mt-5 text-4xl font-black text-emerald-950">8.5</p>
-          <p class="mt-2 text-xs font-bold text-emerald-800/80"><%= t("status.perfect_full") %></p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="relative overflow-hidden bg-[#ecfdf5] px-5 py-24 md:px-8 md:py-36">
-    <div class="mx-auto max-w-3xl text-center" data-landing-target="fade">
-      <p class="text-sm font-black uppercase tracking-[0.22em] text-emerald-700"><%= t("landing.philosophy_kicker") %></p>
-      <blockquote class="mt-8">
-        <p class="text-3xl font-black leading-snug tracking-tight text-slate-900 md:text-5xl">
-          <%= t("landing.philosophy_quote") %>
-        </p>
-      </blockquote>
-      <div class="mx-auto mt-10 max-w-xl space-y-4 text-lg font-semibold leading-relaxed text-slate-600 md:text-xl">
-        <p><%= t("landing.philosophy_p1") %></p>
-        <p><%= t("landing.philosophy_p2") %></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-[#fff8f1] px-5 py-24 md:px-8 md:py-32">
-    <div class="mx-auto max-w-3xl text-center" data-landing-target="fade">
-      <p class="text-4xl font-black tracking-tight text-emerald-600 md:text-5xl"><%= t("app_name") %></p>
-      <h2 class="mt-5 text-3xl font-black tracking-tight text-slate-900 md:text-5xl">
-        <%= t("landing.cta_title") %>
-      </h2>
-      <div class="mx-auto mt-6 max-w-md space-y-2 text-lg font-semibold text-slate-600">
-        <p><%= t("landing.cta_p1") %></p>
-        <p><%= t("landing.cta_p2") %></p>
-        <p><%= t("landing.cta_p3") %></p>
-      </div>
-      <div class="mt-10 flex flex-wrap justify-center gap-3">
+    <div class="lp-landing-hero__copy" data-landing-target="heroCopy">
+      <h1 class="lp-landing-hero__title"><%= t("landing.hero_title") %></h1>
+      <p class="lp-landing-hero__body"><%= t("landing.hero_body") %></p>
+      <div class="lp-landing-hero__ctas">
         <%= link_to t("landing.start_free"), new_registration_path,
-            class: "inline-flex rounded-2xl bg-emerald-500 px-6 py-4 text-base font-black text-white hover:bg-emerald-400 md:text-lg" %>
-        <%= link_to t("landing.sign_in"), new_session_path,
-            class: "inline-flex rounded-2xl border-2 border-slate-300 bg-white px-6 py-4 text-base font-bold text-slate-800 hover:bg-slate-50 md:text-lg" %>
+            class: "lp-landing-cta lp-landing-cta--pulse",
+            data: { landing_target: "cta" } %>
+        <%= link_to t("landing.sign_in"), new_session_path, class: "lp-landing-cta lp-landing-cta--ghost" %>
       </div>
     </div>
   </section>
 
-  <footer class="border-t border-slate-200 bg-white px-5 py-10 md:px-8">
-    <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
-      <p class="font-black text-emerald-600"><%= t("app_name") %></p>
-      <p class="text-sm font-semibold text-slate-500"><%= t("landing.footer_tagline") %></p>
+  <section class="lp-landing-section">
+    <div class="lp-landing-section__inner" data-landing-target="fade">
+      <p class="lp-landing-kicker"><%= t("landing.mountain_kicker") %></p>
+      <h2 class="lp-landing-heading"><%= t("landing.mountain_title") %></h2>
+      <p class="lp-landing-lead"><%= t("landing.mountain_body") %></p>
+      <ol class="lp-landing-climb" aria-label="<%= t("landing.mountain_title") %>">
+        <li><span><%= t("landing.mountain_layer_goal") %></span></li>
+        <li><span><%= t("landing.mountain_layer_climb") %></span></li>
+        <li><span><%= t("landing.mountain_layer_today") %></span></li>
+      </ol>
     </div>
+  </section>
+
+  <section class="lp-landing-section lp-landing-section--alt">
+    <div class="lp-landing-section__inner" data-landing-target="fade">
+      <p class="lp-landing-kicker"><%= t("landing.today_kicker") %></p>
+      <h2 class="lp-landing-heading"><%= t("landing.today_title") %></h2>
+      <p class="lp-landing-lead"><%= t("landing.today_body") %></p>
+    </div>
+  </section>
+
+  <section class="lp-landing-section">
+    <div class="lp-landing-section__inner" data-landing-target="fade">
+      <p class="lp-landing-kicker"><%= t("landing.progress_kicker") %></p>
+      <h2 class="lp-landing-heading"><%= t("landing.progress_title") %></h2>
+      <p class="lp-landing-lead"><%= t("landing.progress_body") %></p>
+    </div>
+  </section>
+
+  <section class="lp-landing-cta-band">
+    <div class="lp-landing-cta-band__inner" data-landing-target="fade">
+      <p class="lp-landing-brand lp-landing-brand--centered">
+        <span class="lp-landing-brand__mark" aria-hidden="true">🌱</span>
+        <span class="lp-landing-brand__name"><%= t("app_name") %></span>
+      </p>
+      <h2 class="lp-landing-heading"><%= t("landing.cta_title") %></h2>
+      <p class="lp-landing-lead"><%= t("landing.cta_body") %></p>
+      <div class="lp-landing-hero__ctas lp-landing-hero__ctas--center">
+        <%= link_to t("landing.start_free"), new_registration_path, class: "lp-landing-cta lp-landing-cta--pulse" %>
+        <%= link_to t("landing.sign_in"), new_session_path, class: "lp-landing-cta lp-landing-cta--ghost" %>
+      </div>
+    </div>
+  </section>
+
+  <footer class="lp-landing-footer">
+    <p class="lp-landing-footer__brand"><%= t("app_name") %></p>
+    <p class="lp-landing-footer__tag"><%= t("landing.footer_tagline") %></p>
   </footer>
 </div>

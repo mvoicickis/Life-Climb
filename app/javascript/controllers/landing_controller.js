@@ -1,13 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["brand", "heroCopy", "heroImage", "fade"]
+  static targets = ["brand", "heroCopy", "heroImage", "fade", "cta"]
 
   connect() {
     requestAnimationFrame(() => {
       this.brandTarget?.classList.add("landing-in")
       this.heroCopyTarget?.classList.add("landing-in")
       this.heroImageTarget?.classList.add("landing-zoom")
+      this.ctaTargets.forEach((el) => el.classList.add("is-ready"))
     })
 
     if (!("IntersectionObserver" in window)) {

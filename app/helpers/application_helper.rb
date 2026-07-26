@@ -28,7 +28,7 @@ module ApplicationHelper
   end
 
   def page_meta_description
-    content_for?(:meta_description) ? content_for(:meta_description) : "The more LifePoints you earn, the more alive you become. Build toward your dream and ship Finished Products that create real value."
+    content_for?(:meta_description) ? content_for(:meta_description) : "Climb one mountain. Win today’s battle. Watch clarity and progress move you closer to the life you want."
   end
 
   def status_tone(status)

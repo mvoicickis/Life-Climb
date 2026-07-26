@@ -2,6 +2,8 @@
 
 Locked visual language for the Close-the-Gap redesign. Use these tokens for all new game surfaces. Do not revert new screens to light `--studio-paper`.
 
+**Marketing/landing uses the same Neon Mountain tokens as Home; no separate light marketing theme.** Void (`#070B09`), neon (`#84F23A`), Fraunces + Source Sans 3 — Journey / Today / Progress product story only.
+
 ## Colour
 
 | Token | Hex | Role |
@@ -13,6 +15,7 @@ Locked visual language for the Close-the-Gap redesign. Use these tokens for all 
 | `--lp-border` | `rgba(16, 185, 129, 0.2)` | Card borders |
 | `--lp-emerald` | `#10B981` | Primary actions / healthy |
 | `--lp-lime` | `#A3E635` | Neon energy / avatar ring (Home mockup) |
+| `--lp-neon` | `#84F23A` | Brand signal / Home mark / landing CTA |
 | `--lp-mint` | `#34D399` | Secondary glow |
 | `--lp-gold` | `#E8C468` | XP, trophies, legendary |
 | `--lp-rose` | `#FB7185` | Far gap / neglect |
