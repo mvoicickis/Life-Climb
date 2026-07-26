@@ -56,18 +56,16 @@
            data-share-text-value="<%= invite_share_message_body %>"
            data-share-url-value="<%= share_landing_url %>"
            data-share-title-value="<%= t('share.invite.title') %>">
-    <h2 class="text-lg font-semibold">
-      <%= link_to t("support.title"), support_path, class: "text-[var(--lp-lime)] hover:underline" %>
-    </h2>
+    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("support.title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.support_body") %></p>
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.share_body") %></p>
+    <%= link_to t("support.cta_short"), support_path, class: "lp-cta mt-4 inline-flex" %>
     <div class="mt-4 flex flex-wrap gap-3">
       <button type="button"
               class="lp-cta inline-flex"
               data-action="click->share#open">
         <%= t("share.invite.cta") %>
       </button>
-      <%= link_to t("support.cta_short"), support_path, class: "rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
       <%= link_to t("about.title"), about_path, class: "rounded-full border border-[var(--lp-border)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]" %>
     </div>
     <%= render "shared/share_sheet",
