@@ -994,7 +994,7 @@
     --lp-mist: #f1f5f9;
     --lp-ink: #0f172a;
     --lp-ink-dark: #0f172a;
-    --lp-muted: #64748b;
+    --lp-muted: #475569;
     --lp-muted-dark: #64748b;
     --lp-charcoal: #334155;
     --lp-green: #22c55e;
@@ -1164,7 +1164,8 @@
     font-size: clamp(1.05rem, 2.2vw, 1.28rem);
     font-weight: 600;
     line-height: 1.5;
-    color: var(--lp-muted);
+    color: var(--lp-charcoal);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
   }
 
   .lp-landing-hero__ctas {
@@ -2949,7 +2950,7 @@
   --lp-mist: #f1f5f9;
   --lp-ink: #0f172a;
   --lp-charcoal: #334155;
-  --lp-muted: #64748b;
+  --lp-muted: #475569;
   --lp-green: #22c55e;
   --lp-green-deep: #16a34a;
   --lp-green-soft: #86efac;
@@ -3109,8 +3110,8 @@
 }
 
 .lp-top-nav {
-  border-bottom: 1px solid rgba(34, 197, 94, 0.12);
-  background: rgba(7, 11, 9, 0.88);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
@@ -3398,8 +3399,9 @@
   display: grid;
   place-items: center;
   font-size: 1.05rem;
-  background: rgba(21, 32, 26, 0.9);
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: #fff;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
   transition: box-shadow 0.35s ease, border-color 0.35s ease, filter 0.35s ease;
 }
 
@@ -3560,9 +3562,9 @@
   position: relative;
   border-radius: 1.5rem;
   overflow: hidden;
-  border: 1px solid var(--lp-border);
+  border: 1px solid rgba(15, 23, 42, 0.1);
   background:
-    linear-gradient(120deg, rgba(7, 11, 9, 0.55), rgba(7, 11, 9, 0.75)),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.92), rgba(236, 253, 245, 0.88)),
     var(--gap-bg) center/cover no-repeat;
   min-height: 9.5rem;
 }
@@ -3574,38 +3576,37 @@
 .lp-gap-card__kicker {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(243, 247, 244, 0.75);
+  color: var(--lp-muted);
 }
 
 .lp-gap-card__label {
   margin-top: 0.15rem;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--lp-lime);
+  color: var(--lp-green-deep);
 }
 
 .lp-gap-card__value {
   margin-top: 0.25rem;
   font-size: 2.75rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
-  color: var(--lp-lime);
-  text-shadow: 0 0 24px rgba(34, 197, 94, 0.35);
+  color: var(--lp-ink);
 }
 
 .lp-gap-card__remaining {
   margin-top: 0.35rem;
   font-size: 0.85rem;
-  color: rgba(243, 247, 244, 0.8);
+  color: var(--lp-charcoal);
 }
 
 .lp-map-card {
   border-radius: 1.5rem;
-  border: 1px solid var(--lp-border);
+  border: 1px solid rgba(15, 23, 42, 0.1);
   background:
-    radial-gradient(circle at 50% 55%, rgba(7, 11, 9, 0.35), rgba(7, 11, 9, 0.82) 70%),
+    radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.55), rgba(241, 245, 249, 0.92) 70%),
     var(--map-bg) center 40%/cover no-repeat;
 }
 
@@ -3742,10 +3743,10 @@
 .lp-dash-kicker {
   margin: 0;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--lp-neon);
+  color: var(--lp-green-deep);
 }
 
 .lp-dash-card {
@@ -4085,8 +4086,8 @@
 
 .lp-dash-add .lp-input {
   border-radius: 0.85rem;
-  border: 1px solid rgba(34, 197, 94, 0.18);
-  background: rgba(7, 11, 9, 0.55);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
   color: var(--lp-ink);
   padding: 0.7rem 0.85rem;
 }
@@ -4096,8 +4097,8 @@
   border-radius: 0.85rem;
   padding: 0.7rem 0.95rem;
   font-weight: 700;
-  color: #08110b;
-  background: var(--lp-neon);
+  color: #fff;
+  background: var(--lp-green);
   cursor: pointer;
 }
 
@@ -4145,8 +4146,8 @@
 
 .lp-dash-why {
   border-radius: 1.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(14, 22, 18, 0.55);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: var(--lp-mist);
   padding: 1rem 1.1rem 1.15rem;
   text-align: center;
 }
@@ -4663,9 +4664,9 @@ button.lp-progress-heat__cell {
 
 .lp-progress-badge {
   width: 100%;
-  border: 1px solid rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 1.1rem;
-  background: rgba(7, 11, 9, 0.4);
+  background: #fff;
   color: var(--lp-ink);
   padding: 0.85rem 0.6rem;
   display: grid;
@@ -4721,8 +4722,8 @@ button.lp-progress-heat__cell {
   gap: 0.65rem;
   align-items: start;
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(7, 11, 9, 0.35);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #fff;
   padding: 0.75rem 0.85rem;
 }
 
@@ -4840,9 +4841,10 @@ button.lp-progress-heat__cell {
 
 .lp-journey-card {
   border-radius: 1.25rem;
-  border: 1px solid rgba(34, 197, 94, 0.14);
-  background: linear-gradient(180deg, rgba(21, 32, 26, 0.92), rgba(14, 22, 18, 0.95));
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
   padding: 1rem 1.05rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
 }
 
 .lp-journey-card__label {
@@ -4865,8 +4867,8 @@ button.lp-progress-heat__cell {
 .lp-journey-card textarea.lp-input {
   width: 100%;
   border-radius: 0.85rem;
-  border: 1px solid rgba(34, 197, 94, 0.18);
-  background: rgba(7, 11, 9, 0.55);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: var(--lp-mist);
   color: var(--lp-ink);
   padding: 0.7rem 0.85rem;
   font: inherit;
