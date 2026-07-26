@@ -4,6 +4,59 @@ lv:
       chart_day: "%a"
       long: "%-d. %b"
   app_name: "LifePoints"
+  life_area_catalog:
+    self:
+      name: "Es"
+      short: "Es"
+      hint: "Tava veselība, ieradumi, domāšana un personīgā izaugsme."
+    relationships:
+      name: "Attiecības"
+      short: "Mīlestība"
+      hint: "Partneris, iepazīšanās un tuvi romantiski sakari."
+    family:
+      name: "Ģimene"
+      short: "Ģimene"
+      hint: "Ģimenes uzticība, rūpes un mājas attiecības."
+    career:
+      name: "Karjera"
+      short: "Karjera"
+      hint: "Darbs, amats un profesionālā izaugsme."
+    money:
+      name: "Nauda"
+      short: "Nauda"
+      hint: "Ienākumi, uzkrājumi un finansiālā brīvība."
+    home:
+      name: "Mājas"
+      short: "Mājas"
+      hint: "Tavas mājas, telpa un dzīves vide."
+    community:
+      name: "Kopiena"
+      short: "Kopiena"
+      hint: "Draugi, komandas un vietējās grupas."
+    humanity:
+      name: "Cilvēcība"
+      short: "Cilvēcība"
+      hint: "Palīdzēt cilvēkiem ārpus sava tuvā loka."
+    nature:
+      name: "Daba"
+      short: "Daba"
+      hint: "Zeme, dārzi un dzīvā pasaule."
+    animals:
+      name: "Dzīvnieki"
+      short: "Dzīvnieki"
+      hint: "Mājdzīvnieki un dzīvnieki, par kuriem rūpējies."
+    learning:
+      name: "Mācīšanās"
+      short: "Mācīties"
+      hint: "Prasmes, studijas un ziņkārīga izaugsme."
+    creativity:
+      name: "Radošums"
+      short: "Radīt"
+      hint: "Māksla, radīšana un oriģināls izteiksmes veids."
+    purpose:
+      name: "Jēga"
+      short: "Jēga"
+      hint: "Nozīme, vērtības un iekšējais virziens."
   dash:
     journey_hint_climb: "Pabeidz projektus, lai kāptu savā kalnā."
     journey_hint_battles: "Uzvari šodienas kaujas, lai pabeigtu projektus."

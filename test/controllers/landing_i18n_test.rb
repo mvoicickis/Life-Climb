@@ -20,6 +20,13 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/, response.body)
     assert_match(/Pabeidz projektus, lai kāptu/i, response.body)
     assert_no_match(/tuvojies virsotnei/i, response.body)
+    assert_select ".lp-landing-chip", text: /Es/
+    assert_select ".lp-landing-chip", text: /Karjera/
+    assert_select ".lp-landing-chip", text: /Nauda/
+    assert_select ".lp-landing-chip", text: /Attiecības/
+    assert_select ".lp-landing-chip", text: /Jēga/
+    assert_select ".lp-landing-chip--more", text: /\+ 8 vēl/
+    assert_select ".lp-landing-chip", text: /\A\s*Self\s*\z/, count: 0
   end
 
   test "landing page switches to german with product-true copy" do
@@ -31,6 +38,13 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/, response.body)
     assert_match(/Beende Projekte, um deinen Berg/i, response.body)
     assert_no_match(/kommst dem Gipfel näher/i, response.body)
+    assert_select ".lp-landing-chip", text: /Selbst/
+    assert_select ".lp-landing-chip", text: /Karriere/
+    assert_select ".lp-landing-chip", text: /Geld/
+    assert_select ".lp-landing-chip", text: /Beziehungen/
+    assert_select ".lp-landing-chip", text: /Sinn/
+    assert_select ".lp-landing-chip--more", text: /\+ 8 weitere/
+    assert_select ".lp-landing-chip", text: /\A\s*Self\s*\z/, count: 0
   end
 
   test "landing page switches to spanish with product-true copy" do
@@ -42,6 +56,13 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/, response.body)
     assert_match(/Termina proyectos para subir/i, response.body)
     assert_no_match(/te acercas a la cima/i, response.body)
+    assert_select ".lp-landing-chip", text: /Yo/
+    assert_select ".lp-landing-chip", text: /Carrera/
+    assert_select ".lp-landing-chip", text: /Dinero/
+    assert_select ".lp-landing-chip", text: /Relaciones/
+    assert_select ".lp-landing-chip", text: /Propósito/
+    assert_select ".lp-landing-chip--more", text: /\+ 8 más/
+    assert_select ".lp-landing-chip", text: /\A\s*Self\s*\z/, count: 0
   end
 
   test "signed-in german nav uses Today Strategy Journey You labels" do

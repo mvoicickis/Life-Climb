@@ -4,6 +4,59 @@ es:
       chart_day: "%a"
       long: "%-d %b"
   app_name: "LifePoints"
+  life_area_catalog:
+    self:
+      name: "Yo"
+      short: "Yo"
+      hint: "Tu salud, hábitos, mentalidad y crecimiento personal."
+    relationships:
+      name: "Relaciones"
+      short: "Amor"
+      hint: "Pareja, citas y vínculos románticos cercanos."
+    family:
+      name: "Familia"
+      short: "Familia"
+      hint: "Confianza familiar, cuidado y relaciones en casa."
+    career:
+      name: "Carrera"
+      short: "Carrera"
+      hint: "Trabajo, oficio y crecimiento profesional."
+    money:
+      name: "Dinero"
+      short: "Dinero"
+      hint: "Ingresos, ahorro y libertad financiera."
+    home:
+      name: "Hogar"
+      short: "Hogar"
+      hint: "Tu casa, tu espacio y tu entorno."
+    community:
+      name: "Comunidad"
+      short: "Comunidad"
+      hint: "Amigos, equipos y grupos locales."
+    humanity:
+      name: "Humanidad"
+      short: "Humanidad"
+      hint: "Ayudar a personas más allá de tu círculo cercano."
+    nature:
+      name: "Naturaleza"
+      short: "Naturaleza"
+      hint: "Tierra, jardines y el mundo vivo."
+    animals:
+      name: "Animales"
+      short: "Animales"
+      hint: "Mascotas y animales que te importan."
+    learning:
+      name: "Aprendizaje"
+      short: "Aprender"
+      hint: "Habilidades, estudio y crecimiento con curiosidad."
+    creativity:
+      name: "Creatividad"
+      short: "Crear"
+      hint: "Arte, creación y expresión original."
+    purpose:
+      name: "Propósito"
+      short: "Propósito"
+      hint: "Sentido, valores y dirección interior."
   dash:
     journey_hint_climb: "Termina proyectos para subir tu montaña."
     journey_hint_battles: "Gana las batallas de hoy para terminar tus proyectos."

@@ -4,6 +4,59 @@ de:
       chart_day: "%a"
       long: "%-d. %b"
   app_name: "LifePoints"
+  life_area_catalog:
+    self:
+      name: "Selbst"
+      short: "Selbst"
+      hint: "Gesundheit, Gewohnheiten, Mindset und persönliches Wachstum."
+    relationships:
+      name: "Beziehungen"
+      short: "Liebe"
+      hint: "Partner, Dating und enge romantische Bindungen."
+    family:
+      name: "Familie"
+      short: "Familie"
+      hint: "Familiäres Vertrauen, Fürsorge und Beziehungen zu Hause."
+    career:
+      name: "Karriere"
+      short: "Karriere"
+      hint: "Arbeit, Handwerk und berufliches Wachstum."
+    money:
+      name: "Geld"
+      short: "Geld"
+      hint: "Einkommen, Sparen und finanzielle Freiheit."
+    home:
+      name: "Zuhause"
+      short: "Zuhause"
+      hint: "Dein Zuhause, dein Raum und deine Umgebung."
+    community:
+      name: "Gemeinschaft"
+      short: "Gemeinschaft"
+      hint: "Freunde, Teams und lokale Gruppen."
+    humanity:
+      name: "Menschheit"
+      short: "Menschheit"
+      hint: "Menschen über deinen inneren Kreis hinaus helfen."
+    nature:
+      name: "Natur"
+      short: "Natur"
+      hint: "Land, Gärten und die lebendige Welt."
+    animals:
+      name: "Tiere"
+      short: "Tiere"
+      hint: "Haustiere und Tiere, die dir am Herzen liegen."
+    learning:
+      name: "Lernen"
+      short: "Lernen"
+      hint: "Fähigkeiten, Studium und neugieriges Wachstum."
+    creativity:
+      name: "Kreativität"
+      short: "Kreieren"
+      hint: "Kunst, Machen und eigener Ausdruck."
+    purpose:
+      name: "Sinn"
+      short: "Sinn"
+      hint: "Bedeutung, Werte und innere Richtung."
   dash:
     journey_hint_climb: "Beende Projekte, um deinen Berg zu besteigen."
     journey_hint_battles: "Gewinne die Schlachten von heute, um deine Projekte fertigzustellen."
