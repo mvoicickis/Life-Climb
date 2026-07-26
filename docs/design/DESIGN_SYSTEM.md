@@ -1,10 +1,18 @@
 # LifePoints Brand & Design System
 
+## Canonical visual guide
+
+Use this board as the source of truth for colour, type, mountain art, and UI chrome:
+
+- [`docs/design/BRAND_GUIDE_LIFE_GREEN.jpg`](BRAND_GUIDE_LIFE_GREEN.jpg) (also `.webp`)
+
+Landing hero / scene assets live in `public/branding/`.
+
 ## Brand idea
 
 LifePoints helps a person turn any life goal into a real plan, and rewards real progress with Life Points — proof that they are becoming more alive.
 
-Feeling: **nothing is impossible** — and this app will help if you give it a chance. Hope + invitation, not night-game intensity.
+Feeling: **small steps, big life** — one mountain, today’s battle. Hope + invitation on a clean light shell, with Life Green as the action color.
 
 ## Voice
 
@@ -17,22 +25,26 @@ Feeling: **nothing is impossible** — and this app will help if you give it a c
 
 **Avoid:** streak · habit · tracker · productivity · grind · hustle  
 
-## Colour — Clear Day (app-wide)
+## Colour — Life Green (app-wide)
 
 | Role | Token / hex | Use |
 |------|-------------|-----|
-| Page / app bg | `--lp-paper` `#FAFBFA` | Landing, Home, Journey, Progress, auth |
-| Soft band | `--lp-paper-soft` `#F0F4F2` | Alternating sections |
-| Ink | `--lp-ink` `#121816` | Body, titles, **LP numbers**, closer % |
-| Muted | `--lp-muted` `#5C6B64` | Supporting lines |
-| Primary / CTA | `--lp-teal` `#0F766E` | Buttons, links, progress fills |
-| Primary deep | `--lp-teal-deep` `#0D5F59` | Hover |
-| Dawn wash | `#E8F4F1 → #FAFBFA` | Landing hero / closing atmosphere |
-| Reward flash only | `--lp-gold` `#D4A017` | `+LP` toast / confetti only |
+| Page / app bg | `--lp-paper` `#FFFFFF` | Landing, Home, Journey, Progress, auth |
+| Soft band / mist | `--lp-mist` `#F1F5F9` | Alternating sections, tracks, soft chips |
+| Ink | `--lp-ink` `#0F172A` | Body, titles, **LP numbers**, closer % |
+| Charcoal | `--lp-charcoal` `#334155` | Secondary headings |
+| Muted / slate | `--lp-muted` `#64748B` | Supporting lines |
+| Primary / CTA | `--lp-green` `#22C55E` | Buttons, links, progress fills |
+| Primary deep | `--lp-green-deep` `#16A34A` | Hover / Emerald |
+| Soft green | `--lp-green-soft` `#86EFAC` | Light washes, soft fills |
+| Dawn wash | `#ECFDF5 → #FFFFFF` | Landing hero veil / closing atmosphere |
+| Reward flash only | `--lp-gold` `#F59E0B` | `+LP` toast / confetti only |
 
-**Hard readability rule:** LP chip and standing LP totals use deep ink on white/soft chips. Gold is never the digit color.
+**Hard readability rule:** LP chip and standing LP totals use deep ink on white/mist chips. Amber/gold is never the digit color.
 
-Legacy aliases (`--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to teal so older class names stay on-brand.
+Legacy aliases (`--lp-teal`, `--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to Life Green so older class names stay on-brand.
+
+Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category marks only — not page chrome.
 
 ## Typography
 
@@ -42,17 +54,19 @@ Legacy aliases (`--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to teal so o
 
 ## Icons & imagery
 
+- Leaf mark: `public/branding/lifepoints-leaf-mark.png`
+- Landing hero: mountain path + summit flag (`public/branding/landing-hero-mountain.webp`)
 - Thin, single-line icons for steps and UI.
 - Emoji allowed **only** for Life Areas (and Home hero area mark).
 - No stock photos of people.
-- Mountain line-art in muted teal on light dawn heroes.
+- Full-bleed mountain path art on light paper heroes — never a navy void marketing shell.
 
 ## Surface map
 
 | Surface | Shell |
 |---------|--------|
-| Landing | Dawn light hero/closing + paper mid sections |
-| Auth | Light dawn paper + teal CTAs |
+| Landing | Soft green dawn hero/closing + white/mist mid sections |
+| Auth | Light dawn paper + Life Green CTAs |
 | Onboarding | `.lp-game` paper (same as Home) |
 | Home / Journey / Progress | `.lp-game` paper + white cards |
 
@@ -60,4 +74,4 @@ Legacy aliases (`--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to teal so o
 
 - **No streaks.** Closer % and next step drive emotion.
 - **Copy tone:** warm, meaning-first; gap = distance to the mountain, not guilt.
-- **Motion:** brand fade, mountain drift, CTA pulse, gold only on `+LP` flash; respect `prefers-reduced-motion`.
+- **Motion:** brand fade, mountain drift, CTA pulse, amber only on `+LP` flash; respect `prefers-reduced-motion`.

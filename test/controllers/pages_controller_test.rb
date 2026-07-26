@@ -16,7 +16,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "landing social meta uses clear day brand" do
     get root_path
     assert_response :success
-    assert_match(/name="theme-color" content="#FAFBFA"/, response.body)
+    assert_match(/name="theme-color" content="#FFFFFF"/, response.body)
     assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-neon\.png"}, response.body)
     assert_match(/og:image:alt" content="LifePoints — One mountain\. Today’s battle\."/, response.body)
   end

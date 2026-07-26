@@ -16,12 +16,12 @@ module Progress
     ].freeze
 
     ASPECT_COLORS = {
-      "self" => "#84F23A",
-      "relationships" => "#FB7185",
-      "career" => "#60A5FA",
-      "money" => "#FBBF24",
-      "home" => "#A78BFA",
-      "learning" => "#34D399"
+      "self" => "#22C55E",
+      "relationships" => "#EF476F",
+      "career" => "#388CF6",
+      "money" => "#F59E0B",
+      "home" => "#F97316",
+      "learning" => "#885CF6"
     }.freeze
 
     ASPECT_ICONS = {
@@ -262,7 +262,7 @@ module Progress
           key: key,
           label: I18n.t("life_area_catalog.#{key}.name", default: key.humanize),
           icon: ASPECT_ICONS.fetch(key, "✨"),
-          color: ASPECT_COLORS.fetch(key, "#84F23A"),
+          color: ASPECT_COLORS.fetch(key, "#22C55E"),
           amount: amount,
           percent: ((amount.to_f / grand) * 100).round
         }
@@ -332,7 +332,7 @@ module Progress
             { title: t.title, progress: t.progress_percent, summary: t.progress_label }
           },
           icon: ASPECT_ICONS.fetch(journey.life_area&.key.to_s, "🚀"),
-          color: ASPECT_COLORS.fetch(journey.life_area&.key.to_s, "#84F23A")
+          color: ASPECT_COLORS.fetch(journey.life_area&.key.to_s, "#22C55E")
         }
       end
     end

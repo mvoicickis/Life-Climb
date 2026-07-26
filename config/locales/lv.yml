@@ -111,6 +111,8 @@ lv:
   settings:
     title: "Iestatījumi"
     subtitle: "Veido Šodien tā, lai tas paliek vienkāršs un motivējošs."
+    profile_title: "Tavs vārds"
+    profile_hint: "Rādās Sākumā dienas sveicienā."
     count_title: "Cik rādīt uz Šodien"
     count_hint: "Mazāk karšu = skaidrāks fokuss."
     save: "Saglabāt"
@@ -226,6 +228,8 @@ lv:
     cta_body: "Izvēlies savu kalnu. Sāc šodienas kauju."
     footer_tagline: "Kļūsti dzīvāks."
   auth:
+    name: "Tavs vārds"
+    name_placeholder: "Kā tevi saukt?"
     email: "E-pasts"
     password: "Parole"
     password_confirmation: "Atkārto paroli"

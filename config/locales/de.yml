@@ -111,6 +111,8 @@ de:
   settings:
     title: "Einstellungen"
     subtitle: "Gestalte Heute so, dass es einfach und motivierend bleibt."
+    profile_title: "Dein Name"
+    profile_hint: "Erscheint in der Begrüßung auf Home."
     count_title: "Wie viele auf Heute"
     count_hint: "Weniger Karten = klarerer Fokus."
     save: "Speichern"
@@ -226,6 +228,8 @@ de:
     cta_body: "Wähle deinen Berg. Starte die Schlacht von heute."
     footer_tagline: "Werde lebendiger."
   auth:
+    name: "Dein Name"
+    name_placeholder: "Wie sollen wir dich nennen?"
     email: "E-Mail"
     password: "Passwort"
     password_confirmation: "Passwort wiederholen"

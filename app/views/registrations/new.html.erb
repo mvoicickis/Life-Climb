@@ -18,8 +18,14 @@
     <% end %>
 
     <div>
+      <%= form.label :name, t("auth.name"), class: "lp-auth-label" %>
+      <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", maxlength: 80,
+          class: "lp-auth-input", placeholder: t("auth.name_placeholder") %>
+    </div>
+
+    <div>
       <%= form.label :email_address, t("auth.email"), class: "lp-auth-label" %>
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+      <%= form.email_field :email_address, required: true, autocomplete: "username",
           class: "lp-auth-input" %>
     </div>
 
