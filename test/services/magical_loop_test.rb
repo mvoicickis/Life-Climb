@@ -3,6 +3,7 @@ require "test_helper"
 class MagicalLoopTest < ActiveSupport::TestCase
   test "one-mountain loop: area, journey, mission, complete moves LP and gap" do
     user = User.create!(
+      name: "Loop",
       email_address: "loop@example.com",
       password: "password12345",
       password_confirmation: "password12345",
@@ -90,7 +91,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
     assert_equal before + Journeys::Complete::COMPLETION_LP, user.life_points
   end
 
-  test "begin climb on a new area keeps prior areas and focuses the new journey" do
+  test "begin climb on a new area focuses the new journey" do
     user = users(:two)
     Onboarding::Run.call(
       user: user,
@@ -116,7 +117,7 @@ class MagicalLoopTest < ActiveSupport::TestCase
       closer_percent: 25
     )
 
-    assert_equal %w[career purpose].sort, user.life_areas.v2_selected.pluck(:key).sort
+    assert_equal %w[purpose], user.life_areas.v2_selected.pluck(:key)
     assert_equal second.id, user.primary_focused_journey.id
     assert_equal "Write purpose statement", second.next_win
     assert_equal "Journal for 20 minutes", second.missions.for_day(Date.current).primary.first.title

@@ -28,6 +28,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Achievements/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
     assert_match(/progress-charts/i, response.body)
+    assert_no_match(/day streak|Current streak|7 Day Streak|Keep the chain alive/i, response.body)
   end
 
   test "period query updates selected chip" do

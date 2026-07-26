@@ -1,4 +1,5 @@
 <%# locals: journey, closer %>
+<% area = journey.life_area %>
 <section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-hero__copy">
     <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
@@ -12,8 +13,10 @@
     <p class="lp-dash-hero__hint"><%= t("dash.goal_hint") %></p>
   </div>
   <div class="lp-dash-hero__art" aria-hidden="true">
-    <%= image_tag "game/gap-mountains.png", alt: "", class: "lp-dash-hero__img" %>
-    <div class="lp-dash-hero__glow" style="--closer: <%= closer %>"></div>
-    <div class="lp-dash-hero__flag" style="--closer: <%= closer %>"></div>
+    <div class="lp-dash-hero__area">
+      <span class="lp-dash-hero__emoji"><%= area.emoji %></span>
+      <span class="lp-dash-hero__area-name"><%= area.label %></span>
+      <span class="lp-dash-hero__area-closer"><%= closer %>% closer</span>
+    </div>
   </div>
 </section>
