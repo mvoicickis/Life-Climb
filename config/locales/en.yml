@@ -373,6 +373,9 @@ en:
       plan: "+ Add plan"
       project: "+ Add project"
       battle: "+ Add battle"
+    siblings:
+      plans: "Switch plan"
+      projects: "Switch project"
     plan_hint: "One big goal until December 29. Then plans, projects, and battles."
     plan_hint_v1: "What are the biggest parts of this goal?"
     year_runs_until: "Your year runs until %{date}."

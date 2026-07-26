@@ -6511,6 +6511,91 @@ button.lp-progress-heat__cell {
   background: color-mix(in srgb, var(--lp-green) 18%, var(--lp-paper));
 }
 
+.lp-strategy-siblings {
+  --lp-level: var(--lp-level-plan);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lp-strategy-siblings.is-plan {
+  --lp-level: var(--lp-level-plan);
+}
+
+.lp-strategy-siblings.is-project {
+  --lp-level: var(--lp-level-project);
+}
+
+.lp-strategy-siblings__label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-siblings__track {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lp-strategy-siblings__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  max-width: 14rem;
+  flex: 0 0 auto;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--lp-level) 35%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-level) 8%, var(--lp-paper));
+  color: var(--lp-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+a.lp-strategy-siblings__chip:hover {
+  background: color-mix(in srgb, var(--lp-level) 16%, var(--lp-paper));
+  border-color: color-mix(in srgb, var(--lp-level) 55%, var(--lp-border));
+  transform: translateY(-1px);
+}
+
+.lp-strategy-siblings__chip.is-current {
+  border-color: var(--lp-level);
+  background: color-mix(in srgb, var(--lp-level) 18%, var(--lp-paper));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lp-level) 25%, transparent);
+  cursor: default;
+}
+
+.lp-strategy-siblings__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-level) 55%, var(--lp-muted));
+}
+
+.lp-strategy-siblings__chip.is-current .lp-strategy-siblings__dot {
+  background: var(--lp-level);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level) 22%, transparent);
+}
+
+.lp-strategy-siblings__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .lp-strategy-add {
   display: flex;
   flex-direction: column;

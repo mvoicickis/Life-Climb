@@ -1,0 +1,25 @@
+<% siblings = Array(@siblings) %>
+<% if siblings.size > 1 %>
+  <% kind = siblings.first.kind %>
+  <% label = kind == "plan" ? t("strategy.siblings.plans") : t("strategy.siblings.projects") %>
+  <nav class="lp-strategy-siblings is-<%= kind %>" aria-label="<%= label %>">
+    <p class="lp-strategy-siblings__label"><%= label %></p>
+    <div class="lp-strategy-siblings__track" data-controller="strategy-zoom">
+      <% siblings.each do |node| %>
+        <% if node.id == @focus.id %>
+          <span class="lp-strategy-siblings__chip is-current is-<%= kind %>" aria-current="page">
+            <span class="lp-strategy-siblings__dot" aria-hidden="true"></span>
+            <span class="lp-strategy-siblings__title"><%= node.title.truncate(28) %></span>
+          </span>
+        <% else %>
+          <%= link_to life_journey_path(@journey, focus_id: node.id),
+                class: "lp-strategy-siblings__chip is-#{kind}",
+                data: { action: "click->strategy-zoom#enter" } do %>
+            <span class="lp-strategy-siblings__dot" aria-hidden="true"></span>
+            <span class="lp-strategy-siblings__title"><%= node.title.truncate(28) %></span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </nav>
+<% end %>
