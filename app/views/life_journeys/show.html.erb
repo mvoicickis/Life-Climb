@@ -210,13 +210,7 @@
     <% end %>
   </section>
 
-  <% if @journey.status != "completed" %>
-    <%= button_to t("journeys.reached_this"),
-          life_journey_completion_path(@journey),
-          method: :post,
-          form: { data: { turbo_confirm: t("journeys.confirm_complete") }, class: "lp-journey-setup__complete" },
-          class: "lp-journey-setup__complete-btn" %>
-  <% else %>
+  <% if @journey.status == "completed" %>
     <%= link_to t("next_mountain.title"), next_mountain_path, class: "lp-dash-cta" %>
   <% end %>
 </div>
