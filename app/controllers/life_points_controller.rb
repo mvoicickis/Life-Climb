@@ -3,7 +3,7 @@
 class LifePointsController < ApplicationController
   def show
     if current_user.planning_v2?
-      show_progress
+      show_journey
     else
       show_legacy
     end
@@ -11,9 +11,24 @@ class LifePointsController < ApplicationController
 
   private
 
-  def show_progress
+  def show_journey
     period = params[:period].presence || "7d"
     @progress = Progress::Dashboard.call(user: current_user, period: period)
+    @journey = current_user.primary_focused_journey
+    @strategy_goal =
+      if @journey
+        current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+      end
+    @closer =
+      if @strategy_goal
+        @strategy_goal.progress_percent.to_i
+      else
+        @journey&.closer_percent&.round || 0
+      end
+    @mountain = Strategy::Mountain.for(goal: @strategy_goal)
+    @action_points = current_user.action_points
+    @strategy_points = current_user.strategy_points
+    @mountain_summary = @progress[:mountain_summary]
     render "life_points/progress"
   end
 

@@ -41,9 +41,10 @@ class ProgressDashboardTest < ActiveSupport::TestCase
 
     assert_equal "7d", data[:period].key
     assert_equal 3, data[:kpis].size
+    assert_equal "Action Points", data[:kpis].first[:label]
     assert data[:growth].any?
-    assert data[:projects].any?
-    assert_equal "Launch Beta", data[:projects].first[:title]
+    assert data[:mountain_summary].is_a?(Hash)
+    assert_equal [], data[:projects]
     assert data[:achievements].any?
     assert data[:insights].any?
     assert data[:heatmap][:cells].any?
@@ -58,5 +59,38 @@ class ProgressDashboardTest < ActiveSupport::TestCase
   test "period filter accepts all time" do
     data = Progress::Dashboard.call(user: @user, period: "all")
     assert_equal "all", data[:period].key
+  end
+
+  test "mountain summary counts plans projects and current expedition" do
+    journey = @user.primary_focused_journey
+    area = journey.life_area
+    goal = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Season goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Become Job Ready", position: 0
+    )
+    other = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Kill debt", position: 1
+    )
+    project = @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Portfolio", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: other, horizon: "project", title: "Budget", position: 0
+    )
+    project.complete!
+    Strategy::SyncCompletion.call(project: project)
+
+    data = Progress::Dashboard.call(user: @user.reload, period: "7d")
+    summary = data[:mountain_summary]
+
+    assert summary[:present]
+    assert_equal 1, summary[:plans_done]
+    assert_equal 2, summary[:plans_total]
+    assert_equal 1, summary[:projects_done]
+    assert_equal 2, summary[:projects_total]
+    assert_equal "Kill debt", summary[:current_expedition]
+    assert_equal Strategy::Progress.percent(goal.reload), summary[:mountain_percent]
   end
 end

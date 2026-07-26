@@ -1,0 +1,42 @@
+<%# locals: mountain %>
+<% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
+<% stage = mountain[:stage].to_s %>
+<figure class="lp-strategy-mountain is-<%= stage %>"
+        data-strategy-celebrate-target="mountain"
+        aria-label="<%= mountain[:label] %>">
+  <svg class="lp-strategy-mountain__art" viewBox="0 0 320 180" role="img" aria-hidden="true">
+    <defs>
+      <linearGradient id="lp-mtn-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ecfdf5"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="lp-mtn-face" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#166534"/>
+        <stop offset="100%" stop-color="#0f766e"/>
+      </linearGradient>
+    </defs>
+    <rect class="lp-strategy-mountain__sky" width="320" height="180" fill="url(#lp-mtn-sky)"/>
+    <path class="lp-strategy-mountain__far" d="M0 150 L70 95 L120 130 L180 70 L250 120 L320 90 L320 180 L0 180 Z" fill="#bbf7d0" opacity="0.55"/>
+    <path class="lp-strategy-mountain__peak" d="M40 180 L160 38 L280 180 Z" fill="url(#lp-mtn-face)"/>
+    <path class="lp-strategy-mountain__snow" d="M130 78 L160 38 L190 78 L175 72 L160 92 L145 72 Z" fill="#f8fafc" opacity="0.9"/>
+    <path class="lp-strategy-mountain__trail" d="M92 168 C118 148, 128 136, 148 118 C168 100, 176 90, 188 78" fill="none" stroke="#fef3c7" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 6"/>
+    <g class="lp-strategy-mountain__camp">
+      <path d="M118 148 L132 128 L146 148 Z" fill="#d97706"/>
+      <rect x="128" y="140" width="4" height="8" fill="#92400e"/>
+    </g>
+    <g class="lp-strategy-mountain__flags">
+      <path d="M168 112 L168 88" stroke="#166534" stroke-width="2"/>
+      <path d="M168 88 L186 94 L168 100 Z" fill="#84cc16"/>
+    </g>
+    <circle class="lp-strategy-mountain__glow" cx="160" cy="38" r="18" fill="#fef08a" opacity="0.55"/>
+  </svg>
+  <figcaption class="lp-strategy-mountain__caption">
+    <span class="lp-strategy-mountain__stage"><%= mountain[:label] %></span>
+    <% if mountain[:progress].to_i.positive? %>
+      <span class="lp-strategy-mountain__pct"><%= mountain[:progress] %>%</span>
+    <% end %>
+  </figcaption>
+  <div class="lp-strategy__bar lp-strategy-mountain__bar" aria-hidden="true" data-strategy-celebrate-target="progressBar">
+    <span style="width: <%= mountain[:progress] %>%"></span>
+  </div>
+</figure>

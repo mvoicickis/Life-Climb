@@ -5,6 +5,7 @@ class BattleCompletionsController < ApplicationController
     result = Battles::CompleteDay.call(user: current_user)
     Journeys::SyncClimbFromToday.call(user: current_user)
     if result.ok
+      Strategy::ProjectCheckQueue.enqueue(session: session, project_ids: result.project_check_ids)
       redirect_to dashboard_path, notice: result.message
     else
       redirect_to dashboard_path, alert: result.message

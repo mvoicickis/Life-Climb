@@ -28,17 +28,37 @@ class DashboardController < ApplicationController
 
     @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                @journey.missions.for_day(Date.current).primary.order(:id).first
-    @closer = @journey.closer_percent.round
     @life_points = current_user.life_points
     @daily_todos = current_user.daily_todos.for_day(Date.current).ordered
+    @open_todos = @daily_todos.reject(&:completed?)
+    @done_todos = @daily_todos.select(&:completed?)
     @include_mission_in_battle = @mission.present? && !@mission.completed?
-    @battle_reward = @daily_todos.incomplete.sum { |t| t.lp_reward.to_i }
+    @battle_reward = @open_todos.sum { |t| t.lp_reward.to_i }
     @battle_reward += @mission.lp_reward if @include_mission_in_battle
-    @battle_open_count = @daily_todos.incomplete.count + (@include_mission_in_battle ? 1 : 0)
-    @project_title = @journey.climb_card_title
-    @project_progress = [ @closer, 95 ].min
-    @milestones = @journey.milestones_list.first(3)
+    @battle_open_count = @open_todos.size + (@include_mission_in_battle ? 1 : 0)
+    @battle_day_full = @daily_todos.size >= GameRules::MAX_DAILY_TODOS
     @targets = @journey.journey_targets.active.ordered.to_a
+    @strategy_goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+    @closer =
+      if @strategy_goal
+        @strategy_goal.progress_percent.to_i
+      else
+        @journey.closer_percent.round
+      end
+    @mountain = Strategy::Mountain.for(goal: @strategy_goal)
+    @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
+    @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
+    @battle_celebrate = flash[:battle_celebrate].present?
+    @battle_total_count = @daily_todos.size + (@mission.present? ? 1 : 0)
+    @project_check = Strategy::ProjectCheckQueue.next_for(user: current_user, session: session)
+    @battle_angle_project =
+      if @project_check
+        nil
+      else
+        Strategy::BattleAngleQueue.project_for(user: current_user, session: session)
+      end
+    @battle_angles =
+      @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
     render "dashboard/show_v2"
   end
 end

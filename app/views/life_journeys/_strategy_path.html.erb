@@ -3,7 +3,7 @@
     <% if index.positive? %>
       <span class="lp-strategy-path__connector <%= 'is-done' if stage[:state] != :upcoming %>" aria-hidden="true"></span>
     <% end %>
-    <div class="lp-strategy-path__stage is-<%= stage[:state] %>">
+    <div class="lp-strategy-path__stage is-<%= stage[:key] %> is-<%= stage[:state] %>">
       <span class="lp-strategy-path__dot" aria-hidden="true"></span>
       <span class="lp-strategy-path__label"><%= stage[:label] %></span>
     </div>

@@ -19,11 +19,11 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
     @journey = @user.reload.primary_focused_journey
   end
 
-  test "journey show is year planner not climb stack" do
+  test "journey show is strategy mountain not climb stack" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/Your year plan/i, response.body)
-    assert_match(/Scale/i, response.body)
+    assert_match(/This season.?s mountain/i, response.body)
+    assert_match(/What do I ultimately want to achieve/i, response.body)
     assert_no_match(/Climb clarity/i, response.body)
     assert_select "#climb-purpose", count: 0
   end

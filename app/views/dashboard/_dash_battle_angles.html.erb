@@ -1,0 +1,19 @@
+<%# locals: project, angles, journey %>
+<aside class="lp-dash-battle-angles" aria-label="<%= t('dash.battle_angles.title') %>">
+  <p class="lp-dash-battle-angles__kicker"><%= t("dash.battle_angles.kicker") %></p>
+  <h2 class="lp-dash-battle-angles__title"><%= t("dash.battle_angles.title") %></h2>
+  <p class="lp-dash-battle-angles__hint"><%= t("dash.battle_angles.hint", project: project.title) %></p>
+  <div class="lp-dash-battle-angles__list" role="group" aria-label="<%= t('dash.battle_angles.list_label') %>">
+    <% angles.each do |angle| %>
+      <%= button_to angle,
+            battle_angles_path,
+            method: :post,
+            params: { project_id: project.id, title: angle },
+            class: "lp-dash-battle-angles__chip" %>
+    <% end %>
+  </div>
+  <p class="lp-dash-battle-angles__strategy">
+    <%= link_to t("dash.battle_angles.open_strategy"),
+          life_journey_path(journey, focus_id: project.id) %>
+  </p>
+</aside>

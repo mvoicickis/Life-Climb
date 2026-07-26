@@ -18,49 +18,54 @@ module Strategy
     def initialize(user:, goal:)
       @user = user
       @goal = goal
+      @awarded = 0
     end
 
     def call
-      case @goal.kind
-      when "goal"
-        award(GameRules::STRATEGY_GOAL_SP, REASONS[:goal_created], @goal)
-        I18n.t("strategy.celebrate.goal", sp: GameRules::STRATEGY_GOAL_SP)
-      when "plan"
-        if first_of_kind?("plan")
-          award(GameRules::STRATEGY_FIRST_PLAN_SP, REASONS[:first_plan], @goal)
-          I18n.t("strategy.celebrate.first_plan", sp: GameRules::STRATEGY_FIRST_PLAN_SP)
+      notice =
+        case @goal.kind
+        when "goal"
+          award(GameRules::STRATEGY_GOAL_SP, REASONS[:goal_created], @goal)
+          I18n.t("strategy.celebrate.goal", sp: GameRules::STRATEGY_GOAL_SP)
+        when "plan"
+          if first_of_kind?("plan")
+            award(GameRules::STRATEGY_FIRST_PLAN_SP, REASONS[:first_plan], @goal)
+            I18n.t("strategy.celebrate.first_plan", sp: GameRules::STRATEGY_FIRST_PLAN_SP)
+          else
+            award(GameRules::STRATEGY_CHILD_SP, REASONS[:child], @goal)
+            I18n.t("strategy.created", sp: GameRules::STRATEGY_CHILD_SP)
+          end
+        when "project"
+          if first_of_kind?("project")
+            award(GameRules::STRATEGY_FIRST_PROJECT_SP, REASONS[:first_project], @goal)
+            I18n.t("strategy.celebrate.first_project", sp: GameRules::STRATEGY_FIRST_PROJECT_SP)
+          else
+            award(GameRules::STRATEGY_CHILD_SP, REASONS[:child], @goal)
+            I18n.t("strategy.created", sp: GameRules::STRATEGY_CHILD_SP)
+          end
         else
           award(GameRules::STRATEGY_CHILD_SP, REASONS[:child], @goal)
-          I18n.t("strategy.created", sp: GameRules::STRATEGY_CHILD_SP)
+          base = I18n.t("strategy.created", sp: GameRules::STRATEGY_CHILD_SP)
+          bonus = complete_bonus_notice
+          bonus ? "#{base} · #{bonus}" : base
         end
-      when "project"
-        if first_of_kind?("project")
-          award(GameRules::STRATEGY_FIRST_PROJECT_SP, REASONS[:first_project], @goal)
-          I18n.t("strategy.celebrate.first_project", sp: GameRules::STRATEGY_FIRST_PROJECT_SP)
-        else
-          award(GameRules::STRATEGY_CHILD_SP, REASONS[:child], @goal)
-          I18n.t("strategy.created", sp: GameRules::STRATEGY_CHILD_SP)
-        end
-      else
-        award(GameRules::STRATEGY_CHILD_SP, REASONS[:child], @goal)
-        notice = I18n.t("strategy.created", sp: GameRules::STRATEGY_CHILD_SP)
-        notice = "#{notice} · #{complete_bonus_notice}" if complete_bonus_notice
-        notice
-      end
+
+      { notice: notice, amount: @awarded }
     end
 
     private
 
     def award(amount, reason, source)
-      return if amount.to_i.zero?
+      amount = amount.to_i
+      return if amount.zero?
       return if already_awarded?(reason, source)
 
       Strategy::Award.call(user: @user, amount: amount, reason: reason, source: source)
+      @awarded += amount
     end
 
     def already_awarded?(reason, source)
       scope = @user.strategy_point_ledgers.where(reason: reason)
-      # Once-per-user milestones
       if reason.in?([ REASONS[:first_plan], REASONS[:first_project], REASONS[:strategy_complete] ])
         return scope.exists?
       end
@@ -87,9 +92,7 @@ module Strategy
       return false if plan_ids.empty?
 
       project_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("project").pluck(:id)
-      month_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("month").pluck(:id)
-      month_ids |= StrategyGoal.where(parent_id: project_ids).for_kind("month").pluck(:id) if project_ids.any?
-      return false if month_ids.empty?
+      return false if project_ids.empty?
 
       Strategy::Progress.battles_under(root).any?
     end

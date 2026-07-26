@@ -16,24 +16,75 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
       today_mission: "Track spending",
       closer_percent: 25
     )
+    @journey = @user.reload.primary_focused_journey
+    @area = @journey.life_area
   end
 
-  test "progress page renders premium analytics sections" do
+  test "journey page renders mountain points and activity" do
     get life_points_path
     assert_response :success
-    assert_match(/Progress/i, response.body)
-    assert_match(/LifePoints growth|Am I becoming/i, response.body)
+    assert_match(/Journey/i, response.body)
+    assert_match(/How far have you come/i, response.body)
+    assert_match(/Action Points/i, response.body)
+    assert_match(/Strategy Points/i, response.body)
+    assert_match(/Mountain Summary/i, response.body)
+    assert_match(/Activity/i, response.body)
     assert_match(/7 Days/i, response.body)
     assert_match(/Weekly activity/i, response.body)
     assert_match(/Achievements/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
-    assert_match(/progress-charts/i, response.body)
-    assert_no_match(/day streak|Current streak|7 Day Streak|Keep the chain alive/i, response.body)
+    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_no_match(/Climb progress/i, response.body)
+    assert_select ".lp-progress-donut__center span", text: /Action Points|AP/i
+  end
+
+  test "journey mountain percent matches today when strategy goal exists" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Become debt-free", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Become Job Ready", position: 0
+    )
+    other_plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Kill debt", position: 1
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Portfolio", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: other_plan, horizon: "project", title: "Budget", position: 0
+    )
+    project.complete!
+    Strategy::SyncCompletion.call(project: project)
+
+    expected = goal.reload.progress_percent.to_i
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-dash-hero__pct", text: /#{expected}\s*%/
+
+    get life_points_path
+    assert_response :success
+    assert_select ".lp-journey-hero .lp-dash-hero__pct", text: /#{expected}\s*%/
+    assert_match(/Become debt-free/i, response.body)
+    assert_match(/Plans Completed/i, response.body)
+    assert_match(/Current Expedition/i, response.body)
+    assert_match(/Become Job Ready|Kill debt/i, response.body)
+    assert_no_match(/\b#{@journey.closer_percent.round}%\b/, response.body) if @journey.closer_percent.round != expected
   end
 
   test "period query updates selected chip" do
     get life_points_path(period: "30d")
     assert_response :success
     assert_match(/period=30d.*is-active|is-active.*30 Days/i, response.body)
+  end
+
+  test "nav labels are today strategy journey you" do
+    get life_points_path
+    assert_select ".lp-dash-nav__link", text: /Today/i
+    assert_select ".lp-dash-nav__link", text: /Strategy/i
+    assert_select ".lp-dash-nav__link", text: /Journey/i
+    assert_select ".lp-dash-nav__link", text: /You/i
+    assert_select ".lp-dash-nav__link", text: /\A\s*Progress\s*\z/, count: 0
   end
 end

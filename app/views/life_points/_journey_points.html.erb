@@ -1,0 +1,17 @@
+<%# locals: action_points, strategy_points %>
+<section class="lp-journey-points" aria-label="<%= t('progress.points_title') %>">
+  <header class="lp-journey-section__head">
+    <h2><%= t("progress.points_title") %></h2>
+    <p><%= t("progress.points_hint") %></p>
+  </header>
+  <div class="lp-journey-points__grid">
+    <article class="lp-journey-points__card">
+      <p class="lp-journey-points__label"><%= t("progress.action_points") %></p>
+      <p class="lp-journey-points__value"><%= number_with_delimiter(action_points) %></p>
+    </article>
+    <article class="lp-journey-points__card">
+      <p class="lp-journey-points__label"><%= t("progress.strategy_points") %></p>
+      <p class="lp-journey-points__value"><%= number_with_delimiter(strategy_points) %></p>
+    </article>
+  </div>
+</section>

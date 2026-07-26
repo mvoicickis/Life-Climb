@@ -8,29 +8,67 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
     @area = life_areas(:one_self)
   end
 
-  test "percent is zero without battles" do
+  test "percent is zero without plans" do
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     assert_equal 0, Strategy::Progress.percent(goal)
   end
 
-  test "percent counts completed descendant battles" do
+  test "battles alone do not move goal percent" do
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
     project = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Pr", position: 0)
-    month = @user.strategy_goals.create!(
-      life_area: @area, parent: project, horizon: "month", title: "M",
-      due_on: Date.current.end_of_month, position: 0
-    )
-    a = @user.strategy_goals.create!(
-      life_area: @area, parent: month, horizon: "day", title: "A",
+    battle = @user.strategy_goals.create!(
+      life_area: @area, parent: project, horizon: "day", title: "A",
       scheduled_on: Date.current, position: 0
     )
-    @user.strategy_goals.create!(
-      life_area: @area, parent: month, horizon: "day", title: "B",
-      scheduled_on: Date.current, position: 1
-    )
-    a.complete!
-    assert_equal 50, Strategy::Progress.percent(goal)
-    assert_equal 50, Strategy::Progress.percent(project)
+    battle.complete!
+
+    assert_equal 0, Strategy::Progress.percent(goal)
+    assert_equal 0, Strategy::Progress.percent(plan)
+    assert_equal 0, Strategy::Progress.percent(project)
+    assert_equal 100, Strategy::Progress.percent(battle)
+  end
+
+  test "equal plan weight and project shares" do
+    goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
+    plans = 4.times.map do |i|
+      @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "Plan #{i}", position: i)
+    end
+    projects = plans.flat_map do |plan|
+      5.times.map do |i|
+        @user.strategy_goals.create!(
+          life_area: @area, parent: plan, horizon: "project", title: "#{plan.title} P#{i}", position: i
+        )
+      end
+    end
+
+    projects.first.complete!
+    Strategy::SyncCompletion.call(project: projects.first)
+
+    assert_equal 5, Strategy::Progress.percent(goal.reload)
+    assert_equal 20, Strategy::Progress.percent(plans.first.reload)
+    assert_equal 0, Strategy::Progress.percent(plans.second.reload)
+
+    plans.first.children.select(&:project?).each do |project|
+      project.complete!
+      Strategy::SyncCompletion.call(project: project)
+    end
+
+    assert_equal 25, Strategy::Progress.percent(goal.reload)
+    assert plans.first.reload.completed?
+    assert_not goal.reload.completed?
+  end
+
+  test "finishing all projects completes the year goal" do
+    goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
+    plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
+    project = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Pr", position: 0)
+
+    project.complete!
+    Strategy::SyncCompletion.call(project: project)
+
+    assert_equal 100, Strategy::Progress.percent(goal.reload)
+    assert plan.reload.completed?
+    assert goal.reload.completed?
   end
 end
