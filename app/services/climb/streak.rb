@@ -34,15 +34,15 @@ module Climb
     def touch!
       reconcile!
       today = Date.current
-      on = @user.climb_streak_on
-      days = @user.climb_streak_days.to_i
+      on = streak_on
+      days = streak_days
 
       if on == today
         return Result.new(days: days, changed: false, earned_freeze: false, reset: false)
       end
 
       new_days =
-        if on == today - 1 || (@user.climb_streak_frozen_on == today - 1 && days.positive?)
+        if on == today - 1 || (frozen_on == today - 1 && days.positive?)
           days + 1
         elsif on.blank? || days <= 0
           1
@@ -56,8 +56,8 @@ module Climb
         climb_streak_on: today
       }
       earned = false
-      if FREEZE_MILESTONES.include?(new_days)
-        freezes = @user.climb_streak_freezes.to_i
+      if freezes_ready? && FREEZE_MILESTONES.include?(new_days)
+        freezes = streak_freezes
         if freezes < FREEZE_CAP
           attrs[:climb_streak_freezes] = freezes + 1
           earned = true
@@ -71,16 +71,16 @@ module Climb
     # Call on Today / Mountain load before reading status.
     def reconcile!
       today = Date.current
-      on = @user.climb_streak_on
-      days = @user.climb_streak_days.to_i
-      freezes = @user.climb_streak_freezes.to_i
+      on = streak_on
+      days = streak_days
+      freezes = streak_freezes
 
       return ReconcileResult.new(days: days, consumed_freeze: false, reset: false) if on.blank? || days <= 0
       return ReconcileResult.new(days: days, consumed_freeze: false, reset: false) if on >= today - 1
 
       gap_days = (today - on).to_i - 1
       # Only cover a single missed calendar day with one freeze (Duolingo-like).
-      if gap_days == 1 && freezes.positive?
+      if freezes_ready? && gap_days == 1 && freezes.positive?
         @user.update!(
           climb_streak_freezes: freezes - 1,
           climb_streak_on: today - 1,
@@ -89,11 +89,9 @@ module Climb
         return ReconcileResult.new(days: days, consumed_freeze: true, reset: false)
       end
 
-      @user.update!(
-        climb_streak_days: 0,
-        climb_streak_on: nil,
-        climb_streak_frozen_on: nil
-      )
+      attrs = { climb_streak_days: 0, climb_streak_on: nil }
+      attrs[:climb_streak_frozen_on] = nil if freezes_ready?
+      @user.update!(attrs)
       ReconcileResult.new(days: 0, consumed_freeze: false, reset: true)
     end
 
@@ -103,10 +101,10 @@ module Climb
 
     def status
       today = Date.current
-      on = @user.climb_streak_on
-      days = @user.climb_streak_days.to_i
-      freezes = @user.climb_streak_freezes.to_i
-      frozen_on = @user.climb_streak_frozen_on
+      on = streak_on
+      days = streak_days
+      freezes = streak_freezes
+      frozen = frozen_on
 
       if on.blank? || days <= 0 || on < today - 1
         return Status.new(days: 0, freezes: freezes, frozen_recently: false, fresh_start: true)
@@ -115,9 +113,36 @@ module Climb
       Status.new(
         days: days,
         freezes: freezes,
-        frozen_recently: frozen_on.present? && frozen_on >= today - 2,
+        frozen_recently: frozen.present? && frozen >= today - 2,
         fresh_start: false
       )
+    end
+
+    private
+
+    # Survive a deploy where code ships before migrate finishes (or migrate fails).
+    def freezes_ready?
+      @user.has_attribute?(:climb_streak_freezes) && @user.has_attribute?(:climb_streak_frozen_on)
+    end
+
+    def streak_days
+      @user.climb_streak_days.to_i
+    end
+
+    def streak_on
+      @user.climb_streak_on
+    end
+
+    def streak_freezes
+      return 0 unless freezes_ready?
+
+      @user.climb_streak_freezes.to_i
+    end
+
+    def frozen_on
+      return nil unless freezes_ready?
+
+      @user.climb_streak_frozen_on
     end
   end
 end

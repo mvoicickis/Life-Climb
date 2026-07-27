@@ -10,6 +10,8 @@ module Climb
     end
 
     def self.best(user:)
+      return 0 unless user.has_attribute?(:best_day_ap)
+
       user.best_day_ap.to_i
     end
 
@@ -19,10 +21,10 @@ module Climb
 
     def record!(awarded:)
       amount = awarded.to_i
-      return Result.new(best: @user.best_day_ap.to_i, new_record: false) if amount <= 0
+      return Result.new(best: best_day_ap, new_record: false) if amount <= 0 || !best_ready?
 
       today_total = todays_ap_earned
-      previous_best = @user.best_day_ap.to_i
+      previous_best = best_day_ap
       # today_total already includes this award if ledger was written first.
       candidate = [ today_total, amount ].max
 
@@ -35,6 +37,16 @@ module Climb
     end
 
     private
+
+    def best_ready?
+      @user.has_attribute?(:best_day_ap)
+    end
+
+    def best_day_ap
+      return 0 unless best_ready?
+
+      @user.best_day_ap.to_i
+    end
 
     def todays_ap_earned
       @user.life_point_ledgers.where("amount > 0").where(created_at: Time.current.beginning_of_day..).sum(:amount).to_i

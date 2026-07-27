@@ -103,7 +103,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_not user.needs_adventure_guide?
 
     get dashboard_path
-    assert_redirected_to life_journey_path(journey)
+    assert_response :success
+    assert_match(/Plan Your Route|Back to the trail|Battle/i, response.body)
 
     get life_journey_path(journey)
     assert_response :success

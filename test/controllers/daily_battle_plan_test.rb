@@ -27,8 +27,8 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/One mountain\. Today.?s battle/i, response.body)
     assert_select ".lp-dash-cta", text: /Complete Today/i
     assert_match(/battles ready/i, response.body)
-    assert_match(/Continue Planning/i, response.body)
-    assert_select ".lp-dash-hero__momentum", text: /climbing|begun|Halfway|summit/i
+    assert_match(/Back to the trail/i, response.body)
+    assert_select ".lp-dash-hero__momentum", text: /climbing|begun|Halfway|summit|waiting/i
     assert_match(/Review my budget/i, response.body)
     assert_match(/Financial freedom/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
@@ -157,7 +157,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
     assert_select "form.lp-dash-add", count: 0
-    assert_match(/Continue Planning/i, response.body)
+    assert_match(/Back to the trail/i, response.body)
 
     expected_reward = (5 * GameRules::BATTLE_TODO_LP) + @user.missions.for_day.primary.incomplete.first.lp_reward
     assert_match(/\+#{expected_reward}/, response.body)

@@ -22,9 +22,12 @@ class HierarchyGateTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "today redirects to strategy until hierarchy is ready" do
+  test "today stays reachable while hierarchy is still growing" do
+    refute Strategy::HierarchyReady.call(user: @user)
+
     get dashboard_path
-    assert_redirected_to life_journey_path(@journey)
+    assert_response :success
+    assert_match(/Plan Your Route|Back to the trail|Battle/i, response.body)
 
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan", title: "Get interviews", position: 0
@@ -33,13 +36,36 @@ class HierarchyGateTest < ActionDispatch::IntegrationTest
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Improve apps", position: 0
     )
     get dashboard_path
-    assert_redirected_to life_journey_path(@journey)
+    assert_response :success
 
     @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: project, horizon: "day",
       title: "Make 5 emails better", scheduled_on: Date.current, position: 0
     )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+
+    assert Strategy::HierarchyReady.call(user: @user)
     get dashboard_path
     assert_response :success
+    assert_select ".lp-dash-battle"
+  end
+
+  test "fight today reaches dashboard after cascade when spine is ready" do
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan", title: "Get interviews", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Improve apps", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Make 5 emails better", scheduled_on: Date.current, position: 0
+    )
+
+    patch life_journey_path(@journey), params: { sync_today: 1 }
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-dash-battle"
   end
 end
