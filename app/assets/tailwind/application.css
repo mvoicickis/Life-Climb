@@ -8303,11 +8303,26 @@ a.lp-strategy-siblings__chip:hover {
   margin-top: 0.45rem;
 }
 
+
+.lp-strategy-page.is-exact-mockup {
+  position: relative;
+}
+
 .lp-strategy-page__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-strategy-page__header.is-mockup {
+  position: relative;
+  z-index: 2;
+}
+
+.lp-strategy-page__top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .lp-strategy-page__header.is-mockup .lp-brand-kicker {
@@ -8315,26 +8330,40 @@ a.lp-strategy-siblings__chip:hover {
 }
 
 .lp-strategy-page__title {
-  margin-top: 0.35rem;
+  margin: 0.15rem 0 0;
   font-family: var(--lp-font-display);
-  font-size: 1.85rem;
-  font-weight: 650;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--lp-ink);
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .lp-strategy-page__promise {
-  margin-top: 0.35rem;
+  margin: 0.25rem 0 0;
   font-size: 0.92rem;
   color: var(--lp-muted);
 }
 
+.lp-strategy-page__goal-name {
+  margin: 0.15rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+}
+
+.lp-strategy-page__goal-pct {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
 .lp-strategy-page__goal-track {
-  margin-top: 0.45rem;
-  width: min(100%, 14rem);
+  margin-top: 0.4rem;
+  width: min(100%, 13.5rem);
   height: 0.42rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--lp-level-goal) 14%, #e2e8f0);
+  background: color-mix(in srgb, var(--lp-level-goal) 12%, #e2e8f0);
   overflow: hidden;
 }
 
@@ -8348,7 +8377,7 @@ a.lp-strategy-siblings__chip:hover {
 .lp-strategy__sp.is-soft {
   display: grid;
   justify-items: end;
-  gap: 0.1rem;
+  gap: 0.05rem;
   padding: 0.45rem 0.65rem;
   border-radius: 0.85rem;
   border: 1px solid color-mix(in srgb, var(--lp-level-goal) 22%, var(--lp-border));
@@ -8358,59 +8387,69 @@ a.lp-strategy-siblings__chip:hover {
 .lp-strategy__sp.is-soft.is-pill {
   justify-items: center;
   border-radius: 999px;
-  padding: 0.5rem 0.85rem;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  padding: 0.45rem 0.8rem;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
 .lp-strategy__sp.is-soft .lp-strategy__sp-value {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--lp-ink);
 }
 
 .lp-strategy__sp.is-soft .lp-strategy__sp-label {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--lp-muted);
+  letter-spacing: 0;
+  text-transform: none;
 }
 
-.lp-strategy__sp.is-soft.is-pill .lp-strategy__sp-label {
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 0.7rem;
+.lp-strategy-page__dock {
+  position: relative;
+  z-index: 3;
+  margin-top: -0.35rem;
 }
 
 .lp-strategy-mountain.is-living {
   position: relative;
   overflow: hidden;
-  padding: 0.85rem 0.75rem 1.1rem;
-  border-radius: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level-goal) 18%, var(--lp-border));
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  background:
-    radial-gradient(120% 70% at 78% 6%, rgba(251, 146, 60, 0.35), transparent 40%),
-    radial-gradient(90% 55% at 20% 0%, rgba(125, 211, 252, 0.35), transparent 45%),
-    linear-gradient(180deg, #fed7aa 0%, #bae6fd 28%, #bbf7d0 62%, #ecfdf5 100%);
+  margin-top: 0.65rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  min-height: 34rem;
 }
 
-.lp-strategy-mountain.is-scenic {
-  min-height: 30rem;
+.lp-strategy-mountain.is-scenic.is-trailmap {
+  min-height: 36rem;
 }
 
-.lp-strategy-mountain__backdrop {
+.lp-strategy-mountain__photo {
   position: absolute;
   inset: 0;
+  background:
+    var(--lp-scenic) center top / cover no-repeat;
   pointer-events: none;
 }
 
-.lp-strategy-mountain.is-living .lp-strategy-mountain__art {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 30rem;
+.lp-strategy-mountain__scrim.is-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 8.5rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.lp-strategy-mountain__scrim.is-bottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 9rem;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  pointer-events: none;
 }
 
 .lp-strategy-mountain__wires {
@@ -8419,233 +8458,209 @@ a.lp-strategy-siblings__chip:hover {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0.9;
+  z-index: 1;
 }
 
 .lp-strategy-wire {
-  stroke-width: 2.2;
+  stroke-width: 0.45;
   stroke-linecap: round;
-  stroke-dasharray: 2.5 6;
+  stroke-dasharray: 0.9 1.6;
+  opacity: 0.9;
 }
 
 .lp-strategy-wire.is-goal { stroke: #22c55e; }
 .lp-strategy-wire.is-plan { stroke: #3b82f6; }
 .lp-strategy-wire.is-project { stroke: #8b5cf6; }
 .lp-strategy-wire.is-battle { stroke: #f59e0b; }
-
-.lp-strategy-mountain__trail-base {
-  opacity: 0.85;
+.lp-strategy-wire.is-trail {
+  stroke: #d6b48a;
+  stroke-width: 0.7;
+  stroke-dasharray: 0.5 1.8;
+  opacity: 0.55;
 }
 
-.lp-strategy-mountain__trail-lit {
-  opacity: 1;
-  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.65));
-  transition: stroke-dasharray 700ms ease;
-}
-
-.lp-strategy-mountain__climb {
+.lp-strategy-mountain__map {
   position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 1.05rem;
-  min-height: 28rem;
-  padding: 0.35rem 0.15rem 3.4rem;
+  z-index: 2;
+  min-height: 36rem;
+  padding-bottom: 1rem;
 }
 
-.lp-strategy-mountain__zone {
-  display: grid;
-  gap: 0.45rem;
-  justify-items: center;
+.lp-strategy-mountain__slot {
+  position: absolute;
+  left: var(--lp-x);
+  top: var(--lp-y);
+  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
-.lp-strategy-mountain__zone.is-summit { --lp-level: var(--lp-level-goal); }
-.lp-strategy-mountain__zone.is-plans { --lp-level: var(--lp-level-plan); }
-.lp-strategy-mountain__zone.is-projects { --lp-level: var(--lp-level-project); }
-.lp-strategy-mountain__zone.is-battles { --lp-level: var(--lp-level-battle); }
+.lp-strategy-mountain__slot.is-goal { z-index: 4; }
+.lp-strategy-mountain__slot.is-battle { z-index: 3; }
 
-.lp-strategy-mountain__zone.is-summit {
-  padding-top: 0.35rem;
-}
-
-.lp-strategy-mountain__zone.is-plans .lp-strategy-mountain__markers,
-.lp-strategy-mountain__zone.is-projects .lp-strategy-mountain__markers {
-  justify-content: center;
-}
-
-.lp-strategy-mountain__branch-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0.55rem;
-  width: 100%;
-}
-
-.lp-strategy-mountain__branch-row.is-battles {
-  flex-direction: column;
-  align-items: center;
-}
-
-.lp-strategy-mountain__markers {
-  list-style: none;
+.lp-strategy-mountain__whisper.is-map {
+  position: absolute;
+  left: var(--lp-x);
+  top: var(--lp-y);
+  transform: translate(-50%, -50%);
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  width: auto;
-  max-width: 100%;
+  max-width: 12rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.86);
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: rgba(15, 23, 42, 0.72);
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
-.lp-strategy-mountain__markers.is-battles {
-  flex-direction: column;
-  align-items: stretch;
-  width: min(100%, 15.5rem);
-  margin-inline: auto;
+.lp-strategy-mountain__whisper.is-dim {
+  opacity: 0.8;
 }
 
-.lp-strategy-mountain__collapses {
+.lp-strategy-mountain__empty-pin {
   display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  align-items: center;
-  justify-content: center;
-  padding-top: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.85rem;
+  border: 1px dashed color-mix(in srgb, var(--lp-level-goal) 40%, #fff);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--lp-muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
 .lp-strategy-collapse {
   display: inline-grid;
   place-items: center;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 1.9rem;
+  height: 1.9rem;
   border-radius: 999px;
   border: 2px solid #cbd5e1;
-  background: rgba(248, 250, 252, 0.95);
+  background: rgba(248, 250, 252, 0.96);
   color: #64748b;
   text-decoration: none;
   font-size: 0.72rem;
   font-weight: 800;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
-  transition: transform 160ms ease, border-color 160ms ease;
-}
-
-.lp-strategy-collapse:hover {
-  transform: translateY(-1px);
-  border-color: #94a3b8;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
 }
 
 .lp-strategy-collapse.is-plan {
-  border-color: color-mix(in srgb, var(--lp-level-plan) 35%, #cbd5e1);
+  border-color: color-mix(in srgb, var(--lp-level-plan) 40%, #cbd5e1);
 }
 
 .lp-strategy-collapse.is-project {
-  border-color: color-mix(in srgb, var(--lp-level-project) 35%, #cbd5e1);
+  border-color: color-mix(in srgb, var(--lp-level-project) 40%, #cbd5e1);
 }
 
-.lp-strategy-marker.is-card {
+.lp-strategy-marker.is-card.is-frost {
   --lp-level: var(--lp-level-goal);
-  --lp-card-tint: color-mix(in srgb, var(--lp-level) 16%, #fff);
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 0.45rem;
-  min-width: 7.8rem;
+  gap: 0.5rem;
+  min-width: 8.2rem;
   max-width: 11.8rem;
-  padding: 0.48rem 0.6rem 0.52rem 0.5rem;
-  border-radius: 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level) 28%, rgba(255, 255, 255, 0.75));
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--lp-level) 10%, #fff), var(--lp-card-tint));
+  padding: 0.5rem 0.65rem 0.5rem 0.5rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--lp-ink);
   text-decoration: none;
   box-shadow:
-    0 12px 26px rgba(15, 23, 42, 0.14),
-    0 1px 0 rgba(255, 255, 255, 0.85) inset;
-  backdrop-filter: blur(6px);
-  transition: transform 180ms ease, box-shadow 220ms ease, border-color 220ms ease;
-  overflow: hidden;
+    0 14px 28px rgba(15, 23, 42, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  backdrop-filter: blur(10px);
+  transition: transform 180ms ease, box-shadow 220ms ease;
 }
 
-.lp-strategy-marker.is-card.is-goal {
+.lp-strategy-marker.is-card.is-frost.is-goal {
   --lp-level: var(--lp-level-goal);
-  --lp-card-tint: #dcfce7;
-  min-width: 10rem;
-  max-width: 14.5rem;
+  min-width: 10.2rem;
+  max-width: 14rem;
 }
 
-.lp-strategy-marker.is-card.is-plan {
-  --lp-level: var(--lp-level-plan);
-  --lp-card-tint: #dbeafe;
-}
-
-.lp-strategy-marker.is-card.is-project {
-  --lp-level: var(--lp-level-project);
-  --lp-card-tint: #ede9fe;
-}
-
-.lp-strategy-marker.is-card.is-battle {
+.lp-strategy-marker.is-card.is-frost.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy-marker.is-card.is-frost.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy-marker.is-card.is-frost.is-battle {
   --lp-level: var(--lp-level-battle);
-  --lp-card-tint: #ffedd5;
-  max-width: none;
-  width: 100%;
+  max-width: 12.5rem;
+}
+
+.lp-strategy-marker__badge {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.55rem;
+  background: var(--lp-level);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level) 18%, transparent);
+  flex: 0 0 auto;
 }
 
 .lp-strategy-marker__icon {
-  width: 1.55rem;
-  height: 1.55rem;
-  border-radius: 0.55rem;
-  background:
-    radial-gradient(circle at 30% 30%, #fff 0 18%, transparent 19%),
-    var(--lp-level);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level) 18%, transparent);
-  flex: 0 0 auto;
   position: relative;
+  width: 0.95rem;
+  height: 0.95rem;
+  display: block;
 }
 
-.lp-strategy-marker.is-card.is-goal .lp-strategy-marker__icon::after,
-.lp-strategy-marker.is-card.is-plan .lp-strategy-marker__icon::after {
+.lp-strategy-marker.is-goal .lp-strategy-marker__icon::after,
+.lp-strategy-marker.is-plan .lp-strategy-marker__icon::after {
   content: "";
   position: absolute;
-  left: 0.55rem;
-  top: 0.28rem;
+  left: 0.2rem;
+  top: 0.1rem;
   width: 0.55rem;
-  height: 0.4rem;
+  height: 0.42rem;
   background: #fff;
-  clip-path: polygon(0 0, 100% 20%, 100% 80%, 0 100%);
+  clip-path: polygon(0 0, 100% 18%, 100% 82%, 0 100%);
 }
 
-.lp-strategy-marker.is-card.is-project .lp-strategy-marker__icon::after {
+.lp-strategy-marker.is-goal .lp-strategy-marker__icon::before,
+.lp-strategy-marker.is-plan .lp-strategy-marker__icon::before {
   content: "";
   position: absolute;
-  inset: 0.35rem 0.3rem 0.3rem;
-  border-radius: 0.15rem;
+  left: 0.18rem;
+  top: 0.08rem;
+  width: 0.12rem;
+  height: 0.8rem;
+  background: #fff;
+  border-radius: 999px;
+}
+
+.lp-strategy-marker.is-project .lp-strategy-marker__icon::after {
+  content: "";
+  position: absolute;
+  inset: 0.18rem 0.12rem 0.12rem;
+  border-radius: 0.12rem;
   border: 1.5px solid #fff;
   border-top-width: 3px;
 }
 
-.lp-strategy-marker.is-card.is-battle .lp-strategy-marker__icon::before,
-.lp-strategy-marker.is-card.is-battle .lp-strategy-marker__icon::after {
+.lp-strategy-marker.is-battle .lp-strategy-marker__icon::before,
+.lp-strategy-marker.is-battle .lp-strategy-marker__icon::after {
   content: "";
   position: absolute;
   left: 50%;
   top: 50%;
   width: 0.85rem;
-  height: 0.16rem;
+  height: 0.14rem;
   background: #fff;
   border-radius: 999px;
 }
 
-.lp-strategy-marker.is-card.is-battle .lp-strategy-marker__icon::before {
+.lp-strategy-marker.is-battle .lp-strategy-marker__icon::before {
   transform: translate(-50%, -50%) rotate(42deg);
 }
 
-.lp-strategy-marker.is-card.is-battle .lp-strategy-marker__icon::after {
+.lp-strategy-marker.is-battle .lp-strategy-marker__icon::after {
   transform: translate(-50%, -50%) rotate(-42deg);
 }
 
 .lp-strategy-marker__body {
   display: grid;
-  gap: 0.08rem;
+  gap: 0.06rem;
   min-width: 0;
 }
 
@@ -8685,89 +8700,74 @@ a.lp-strategy-siblings__chip:hover {
   color: var(--lp-level-goal);
 }
 
-.lp-strategy-marker.is-card.is-lit {
-  border-color: color-mix(in srgb, var(--lp-level) 55%, #fff);
+.lp-strategy-marker.is-card.is-frost.is-lit {
   box-shadow:
     0 0 0 3px color-mix(in srgb, var(--lp-level) 18%, transparent),
-    0 14px 28px rgba(15, 23, 42, 0.14);
-  transform: translateY(-2px);
+    0 16px 30px rgba(15, 23, 42, 0.16);
+  transform: translateY(-1px);
 }
 
-.lp-strategy-marker.is-card.is-today {
-  border-color: var(--lp-level-battle);
+.lp-strategy-marker.is-card.is-frost.is-today {
+  border-color: color-mix(in srgb, var(--lp-level-battle) 45%, #fff);
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--lp-level-battle) 24%, transparent),
-    0 0 22px color-mix(in srgb, var(--lp-level-battle) 38%, transparent),
-    0 14px 28px rgba(15, 23, 42, 0.14);
+    0 0 0 3px color-mix(in srgb, var(--lp-level-battle) 22%, transparent),
+    0 0 22px color-mix(in srgb, var(--lp-level-battle) 36%, transparent),
+    0 16px 30px rgba(15, 23, 42, 0.16);
   animation: lp-strategy-today-glow 2.2s ease-in-out infinite;
 }
 
-.lp-strategy-marker.is-card.is-done {
+.lp-strategy-marker.is-card.is-frost.is-done {
   opacity: 0.7;
 }
 
-.lp-strategy-mountain__whisper {
-  margin: 0;
-  font-size: 0.78rem;
-  font-weight: 650;
-  color: rgba(15, 23, 42, 0.72);
-  text-align: center;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
-}
-
-.lp-strategy-mountain__whisper.is-dim {
-  opacity: 0.75;
-}
-
-.lp-strategy-mountain__empty-pin {
-  display: inline-flex;
-  padding: 0.5rem 0.85rem;
-  border-radius: 0.75rem;
-  border: 1px dashed color-mix(in srgb, var(--lp-level-goal) 40%, #fff);
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--lp-muted);
-  font-size: 0.82rem;
-  font-weight: 650;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
-}
-
-.lp-strategy-mountain__camp {
+.lp-strategy-mountain__camp.is-pin {
   position: absolute;
-  left: 18%;
-  bottom: 0.85rem;
-  transform: translateY(calc(var(--lp-camp, 0) * -1.55px));
+  left: var(--lp-x);
+  top: var(--lp-y);
+  transform: translate(-50%, -50%);
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid color-mix(in srgb, #f59e0b 40%, var(--lp-border));
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
-  transition: transform 700ms ease;
+  gap: 0.2rem;
   z-index: 2;
+  transition: top 700ms ease;
 }
 
-.lp-strategy-mountain__camp-mark {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 999px;
+.lp-strategy-mountain__camp-pin {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
   background: #f59e0b;
-  box-shadow: 0 0 0 4px color-mix(in srgb, #f59e0b 22%, transparent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, #f59e0b 22%, transparent),
+    0 8px 16px rgba(15, 23, 42, 0.18);
+}
+
+.lp-strategy-mountain__camp-pin::after {
+  content: "";
+  position: absolute;
+  inset: 0.28rem;
+  border-radius: 999px;
+  background: #fff7ed;
 }
 
 .lp-strategy-mountain__camp-label {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #92400e;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 0.15rem 0.45rem;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
 }
 
 .lp-strategy-mountain__bar {
   position: relative;
-  z-index: 1;
-  margin-top: 0.65rem;
+  z-index: 2;
+  margin: 0.35rem 1rem 0.75rem;
 }
 
 .lp-strategy-fight.is-sticky {
@@ -8776,84 +8776,158 @@ a.lp-strategy-siblings__chip:hover {
   z-index: 20;
   display: grid;
   gap: 0.55rem;
-  margin-top: 1rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level-battle) 28%, var(--lp-border));
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
-  backdrop-filter: blur(10px);
 }
 
-.lp-strategy-fight.is-sticky.is-mockup {
+.lp-strategy-fight.is-sticky.is-mockup.is-sheet {
   border: 0;
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
   padding: 0;
-  gap: 0.65rem;
+  gap: 0.7rem;
 }
 
-.lp-strategy-fight__chip-now {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.35rem 0.45rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: 1rem 1rem 0.35rem 0.35rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level-battle) 22%, var(--lp-border));
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+.lp-strategy-fight__cta-form {
+  margin: 0;
+  width: 100%;
 }
 
-.lp-strategy-fight__chip-title {
-  font-size: 0.95rem;
+.lp-strategy-fight__cta {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid #14532d;
+  background: linear-gradient(180deg, #166534, #14532d);
+  padding: 0.95rem 1rem;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #ecfdf5;
+  box-shadow: 0 14px 28px rgba(20, 83, 45, 0.28);
+  min-height: 3.25rem;
+}
+
+.lp-strategy-fight__cta.is-primary {
+  justify-content: flex-start;
+}
+
+.lp-strategy-fight__cta-label {
+  flex: 1;
+  text-align: left;
+}
+
+.lp-strategy-fight__cta-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.lp-strategy-fight__cta-chevron,
+.lp-strategy-fight__sheet-chevron {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2.5px solid currentColor;
+  border-bottom: 2.5px solid currentColor;
+  transform: rotate(-45deg);
+  opacity: 0.85;
+  flex: 0 0 auto;
+}
+
+.lp-strategy-fight__cta.is-quiet {
+  border-style: dashed;
+  border-color: var(--lp-border);
+  background: #fff;
+  color: var(--lp-ink);
+  box-shadow: none;
+  justify-content: center;
+}
+
+.lp-strategy-fight__sheet {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem 0.85rem;
+  border-radius: 1.15rem 1.15rem 0.4rem 0.4rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: rgba(248, 250, 252, 0.97);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+}
+
+.lp-strategy-fight__sheet-handle {
+  justify-self: center;
+  width: 2.4rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.lp-strategy-fight__sheet-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.lp-strategy-fight__sheet-badge {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 999px;
+  background: var(--lp-level-battle);
+  position: relative;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--lp-level-battle) 18%, transparent);
+}
+
+.lp-strategy-fight__sheet-badge::before,
+.lp-strategy-fight__sheet-badge::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1rem;
+  height: 0.16rem;
+  background: #fff;
+  border-radius: 999px;
+}
+
+.lp-strategy-fight__sheet-badge::before {
+  transform: translate(-50%, -50%) rotate(42deg);
+}
+
+.lp-strategy-fight__sheet-badge::after {
+  transform: translate(-50%, -50%) rotate(-42deg);
+}
+
+.lp-strategy-fight__sheet-copy {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.lp-strategy-fight__sheet-title {
+  font-size: 0.98rem;
   font-weight: 800;
   color: var(--lp-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.lp-strategy-fight__chip-sep {
-  color: #cbd5e1;
-  font-weight: 700;
-}
-
-.lp-strategy-fight__chip-meta {
+.lp-strategy-fight__sheet-meta {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--lp-muted);
 }
 
-.lp-strategy-fight__now {
+.lp-strategy-fight__form {
+  padding: 0.75rem 0.85rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--lp-level) 22%, var(--lp-border));
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
   display: grid;
-  gap: 0.15rem;
-}
-
-.lp-strategy-fight__battle {
-  display: flex;
-  align-items: center;
   gap: 0.45rem;
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--lp-ink);
-}
-
-.lp-strategy-fight__sword {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 0.15rem;
-  background: var(--lp-level-battle);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-battle) 20%, transparent);
-  flex: 0 0 auto;
-}
-
-.lp-strategy-fight__meta {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--lp-muted);
 }
 
 .lp-strategy-fight__kicker {
@@ -8900,63 +8974,18 @@ a.lp-strategy-siblings__chip:hover {
 .lp-strategy-fight__form.is-project { --lp-level: var(--lp-level-project); }
 .lp-strategy-fight__form.is-battle { --lp-level: var(--lp-level-battle); }
 
-.lp-strategy-fight__form {
-  padding: 0.75rem 0.85rem;
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level) 22%, var(--lp-border));
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
-  display: grid;
-  gap: 0.45rem;
-}
-
-.lp-strategy-fight__cta {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.45rem;
-  width: 100%;
-  border-radius: 0.95rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level-battle) 45%, var(--lp-border));
-  background: linear-gradient(180deg, color-mix(in srgb, var(--lp-level-goal) 55%, #86efac), color-mix(in srgb, var(--lp-level-goal) 35%, #fff));
-  padding: 0.85rem 1rem;
-  font-size: 1rem;
-  font-weight: 800;
-  color: #052e16;
-}
-
-.lp-strategy-fight__cta.is-primary {
-  border-color: #14532d;
-  background: linear-gradient(180deg, #166534, #14532d);
-  color: #ecfdf5;
-  box-shadow: 0 14px 28px rgba(20, 83, 45, 0.28);
-  min-height: 3.15rem;
-}
-
-.lp-strategy-fight__cta-icon {
-  font-size: 1.05rem;
-  line-height: 1;
-}
-
-.lp-strategy-fight__cta.is-quiet {
-  border-style: dashed;
-  background: #fff;
-  font-weight: 700;
-  color: var(--lp-ink);
-}
-
 @keyframes lp-strategy-today-glow {
   0%, 100% {
     box-shadow:
       0 0 0 3px color-mix(in srgb, var(--lp-level-battle) 18%, transparent),
       0 0 12px color-mix(in srgb, var(--lp-level-battle) 28%, transparent),
-      0 14px 28px rgba(15, 23, 42, 0.12);
+      0 16px 30px rgba(15, 23, 42, 0.14);
   }
   50% {
     box-shadow:
       0 0 0 5px color-mix(in srgb, var(--lp-level-battle) 28%, transparent),
       0 0 24px color-mix(in srgb, var(--lp-level-battle) 48%, transparent),
-      0 14px 28px rgba(15, 23, 42, 0.14);
+      0 16px 30px rgba(15, 23, 42, 0.16);
   }
 }
 

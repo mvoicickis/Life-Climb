@@ -4,40 +4,40 @@
 <% sp_gained = flash[:sp_gained].to_i %>
 <% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 
-<div class="lp-home lp-strategy-page mx-auto max-w-lg px-4 pb-36 pt-5"
+<div class="lp-home lp-strategy-page is-exact-mockup mx-auto max-w-lg pb-40 pt-4"
      data-controller="strategy-celebrate strategy-mountain"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
      data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>">
-  <header class="lp-strategy-page__header is-mockup">
-    <div class="min-w-0">
+  <header class="lp-strategy-page__header is-mockup px-4">
+    <div class="lp-strategy-page__top">
       <p class="lp-brand-kicker">
         <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
         <span>LifePoints</span>
       </p>
-      <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
-      <% if @goal %>
-        <p class="lp-strategy-page__goal-line">
-          <span class="lp-strategy-page__goal-name"><%= @goal.title %></span>
-          <span class="lp-strategy-page__goal-pct"><%= t("strategy.sheet.progress", pct: mountain[:progress].to_i) %></span>
-        </p>
-        <div class="lp-strategy-page__goal-track" aria-hidden="true">
-          <span style="width: <%= mountain[:progress].to_i %>%"></span>
-        </div>
-      <% else %>
-        <p class="lp-strategy-page__promise"><%= t("strategy.promise") %></p>
-      <% end %>
+      <div class="lp-strategy__sp is-soft is-pill shrink-0"
+           data-strategy-celebrate-target="spBadge"
+           aria-label="<%= t('strategy.sp_label') %>">
+        <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
+        <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
+      </div>
     </div>
-    <div class="lp-strategy__sp is-soft is-pill shrink-0"
-         data-strategy-celebrate-target="spBadge"
-         aria-label="<%= t('strategy.sp_label') %>">
-      <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
-      <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
-    </div>
+    <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
+    <% if @goal %>
+      <p class="lp-strategy-page__goal-name"><%= @goal.title %></p>
+      <p class="lp-strategy-page__goal-pct"><%= t("strategy.sheet.progress", pct: mountain[:progress].to_i) %></p>
+      <div class="lp-strategy-page__goal-track" aria-hidden="true">
+        <span style="width: <%= mountain[:progress].to_i %>%"></span>
+      </div>
+    <% else %>
+      <p class="lp-strategy-page__promise"><%= t("strategy.promise") %></p>
+    <% end %>
   </header>
 
   <%= render "life_journeys/strategy_mountain", mountain: mountain %>
 
-  <%= render "life_journeys/strategy_fight_cta" %>
+  <div class="lp-strategy-page__dock px-3">
+    <%= render "life_journeys/strategy_fight_cta" %>
+  </div>
 
   <% if @goal %>
     <%

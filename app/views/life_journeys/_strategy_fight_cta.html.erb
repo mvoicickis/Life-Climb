@@ -1,23 +1,32 @@
-<%# Sticky Fight footer — green CTA + current battle chip. %>
+<%# Sticky Fight CTA + battle bottom sheet matching mockup. %>
 <% next_up = @next_up %>
-<section class="lp-strategy-fight is-sticky is-mockup" aria-label="<%= t('strategy.fight.label') %>">
+<section class="lp-strategy-fight is-sticky is-mockup is-sheet" aria-label="<%= t('strategy.fight.label') %>">
   <% if @today_battle.present? && @mountain_ready %>
     <%= button_to life_journey_path(@journey),
           method: :patch,
           params: { sync_today: 1 },
           class: "lp-strategy-fight__cta is-primary",
-          form: { data: { turbo: false } } do %>
+          form: { data: { turbo: false }, class: "lp-strategy-fight__cta-form" } do %>
       <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
-      <span><%= t("strategy.fight.cta") %></span>
+      <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.cta") %></span>
+      <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
-    <div class="lp-strategy-fight__chip-now" aria-label="<%= t('strategy.fight.current_battle') %>">
-      <span class="lp-strategy-fight__chip-title"><%= @today_battle.title %></span>
-      <span class="lp-strategy-fight__chip-sep" aria-hidden="true">|</span>
-      <span class="lp-strategy-fight__chip-meta">
-        <%= t("strategy.horizons.day") %>
-        · +<%= GameRules::BATTLE_TODO_LP %> <%= t("dash.action_points_short") %>
+    <%= link_to life_journey_path(@journey, focus_id: @today_battle.parent_id, node_id: @today_battle.id, sheet: 1),
+          class: "lp-strategy-fight__sheet",
+          aria: { label: t("strategy.fight.current_battle") } do %>
+      <span class="lp-strategy-fight__sheet-handle" aria-hidden="true"></span>
+      <span class="lp-strategy-fight__sheet-row">
+        <span class="lp-strategy-fight__sheet-badge" aria-hidden="true"></span>
+        <span class="lp-strategy-fight__sheet-copy">
+          <span class="lp-strategy-fight__sheet-title"><%= @today_battle.title %></span>
+          <span class="lp-strategy-fight__sheet-meta">
+            <%= t("strategy.horizons.day") %>
+            · +<%= GameRules::BATTLE_TODO_LP %> <%= t("dash.action_points_short") %>
+          </span>
+        </span>
+        <span class="lp-strategy-fight__sheet-chevron" aria-hidden="true"></span>
       </span>
-    </div>
+    <% end %>
   <% elsif next_up.present? && next_up[:form].present? %>
     <% area = @journey.life_area %>
     <% form = next_up[:form] %>
@@ -58,9 +67,10 @@
           method: :patch,
           params: { sync_today: 1 },
           class: "lp-strategy-fight__cta is-primary",
-          form: { data: { turbo: false } } do %>
+          form: { data: { turbo: false }, class: "lp-strategy-fight__cta-form" } do %>
       <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
-      <span><%= t("strategy.fight.cta") %></span>
+      <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.cta") %></span>
+      <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
   <% elsif @sheet_node.present? && strategy_child_horizon(@sheet_node).present? %>
     <p class="lp-strategy-fight__hint"><%= next_up&.dig(:hint) || t("strategy.fight.keep_building") %></p>
