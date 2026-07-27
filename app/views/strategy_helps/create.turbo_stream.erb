@@ -1,0 +1,10 @@
+<%= turbo_stream.update "strategist-panel" do %>
+  <%= render "strategy_helps/panel",
+        result: @result,
+        error: @error,
+        accept_as: @accept_as,
+        journey_id: @journey_id,
+        parent_id: @parent_id,
+        life_area_id: @life_area_id,
+        goal: @goal %>
+<% end %>

@@ -22,20 +22,32 @@
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.journey") %></label>
       <%= f.text_field :title, required: true, class: "lp-input w-full",
+            id: "life_journey_title",
             placeholder: area_copy(area_key, "goal_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "ideal") %></label>
       <%= f.text_area :ideal_scene, rows: 3, required: true, class: "lp-input w-full",
+            id: "life_journey_ideal_scene",
             placeholder: area_copy(area_key, "ideal_placeholder") %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "reality") %></label>
       <%= f.text_area :current_reality, rows: 3, required: true, class: "lp-input w-full",
-            placeholder: area_copy(area_key, "present_placeholder") %>
+            placeholder: area_copy(area_key, "present_placeholder"),
+            id: "life_journey_current_reality" %>
     </div>
+
+    <%= render "strategy_helps/launch",
+          goal: "",
+          ideal_scene: "",
+          current_reality: "",
+          life_area: area&.label,
+          accept_as: "ideas",
+          source_form: true,
+          button_label: t("strategy.help.cta_new_journey") %>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.progress") %></label>

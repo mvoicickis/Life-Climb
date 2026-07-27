@@ -9421,3 +9421,117 @@ a.lp-strategy-siblings__chip:hover {
     justify-content: flex-start;
   }
 }
+
+/* Strategy AI strategist panel */
+.lp-strategist-launch {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lp-strategist-panel:empty {
+  display: none;
+}
+
+.lp-strategist {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 1.1rem;
+  padding: 0.9rem 1rem;
+}
+
+.lp-strategist__kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #166534;
+}
+
+.lp-strategist__summary,
+.lp-strategist__question,
+.lp-strategist__empty,
+.lp-strategist__note,
+.lp-strategist__error {
+  margin: 0.45rem 0 0;
+  color: var(--lp-ink);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.lp-strategist__question span,
+.lp-strategist__list-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+  margin-bottom: 0.2rem;
+}
+
+.lp-strategist__list-label {
+  margin-top: 0.85rem;
+}
+
+.lp-strategist__list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lp-strategist__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+  align-items: center;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.85rem;
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.lp-strategist__type {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #166534;
+}
+
+.lp-strategist__title {
+  flex: 1 1 8rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.lp-strategist__use {
+  border: 0;
+  background: #166534;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.lp-strategist__meta {
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+  font-weight: 600;
+}
+
+.lp-strategist__note {
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+}
+
+.lp-strategist__error {
+  color: #9f1239;
+  font-weight: 700;
+}

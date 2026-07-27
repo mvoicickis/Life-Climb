@@ -1,0 +1,60 @@
+<% result = local_assigns.fetch(:result, @result) %>
+<% error = local_assigns.fetch(:error, @error) %>
+<% accept_as = local_assigns.fetch(:accept_as, @accept_as || "fill") %>
+<% journey_id = local_assigns.fetch(:journey_id, @journey_id) %>
+<% parent_id = local_assigns.fetch(:parent_id, @parent_id) %>
+<% life_area_id = local_assigns.fetch(:life_area_id, @life_area_id) %>
+
+<div class="lp-strategist" id="strategist-panel-inner" data-controller="strategist">
+  <% if error.present? %>
+    <p class="lp-strategist__error" role="alert"><%= error %></p>
+  <% elsif result.present? %>
+    <p class="lp-strategist__kicker"><%= t("strategy.help.result_kicker") %></p>
+    <p class="lp-strategist__summary"><%= result["summary"] %></p>
+
+    <% if result["question"].present? %>
+      <p class="lp-strategist__question">
+        <span><%= t("strategy.help.question_label") %></span>
+        <%= result["question"] %>
+      </p>
+    <% end %>
+
+    <% suggestions = Array(result["suggestions"]) %>
+    <% if suggestions.any? %>
+      <p class="lp-strategist__list-label"><%= t("strategy.help.suggestions_label") %></p>
+      <ul class="lp-strategist__list">
+        <% suggestions.each do |suggestion| %>
+          <li class="lp-strategist__item">
+            <span class="lp-strategist__type"><%= suggestion["type"] %></span>
+            <span class="lp-strategist__title"><%= suggestion["title"] %></span>
+            <% if accept_as == "plan" && parent_id.present? && life_area_id.present? %>
+              <%= button_to t("strategy.help.use_plan"),
+                    strategy_goals_path,
+                    method: :post,
+                    params: {
+                      title: suggestion["title"],
+                      horizon: "plan",
+                      parent_id: parent_id,
+                      life_area_id: life_area_id,
+                      life_journey_id: journey_id
+                    },
+                    class: "lp-strategist__use",
+                    form: { data: { turbo: false } } %>
+            <% elsif accept_as == "fill" %>
+              <button type="button"
+                      class="lp-strategist__use"
+                      data-action="strategist#fillTitle"
+                      data-title="<%= suggestion["title"] %>"><%= t("strategy.help.use_title") %></button>
+            <% else %>
+              <span class="lp-strategist__meta"><%= t("strategy.help.idea_only") %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% elsif result["question"].present? %>
+      <p class="lp-strategist__empty"><%= t("strategy.help.answer_first") %></p>
+    <% end %>
+
+    <p class="lp-strategist__note"><%= t("strategy.help.disclaimer") %></p>
+  <% end %>
+</div>
