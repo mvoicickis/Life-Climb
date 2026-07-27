@@ -28,7 +28,7 @@ module Ai
     }.freeze
 
     PROVIDER_DEFAULT_MODELS = {
-      "openrouter" => "deepseek/deepseek-r1:free",
+      "openrouter" => "openrouter/free",
       "openai" => "gpt-5.4-mini",
       "groq" => "llama-3.3-70b-versatile",
       "gemini" => "gemini-2.5-flash"
