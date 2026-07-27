@@ -50,6 +50,6 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     refute Strategy::HierarchyReady.call(user: user)
     get dashboard_path
     assert_response :success
-    assert_match(/Plan Your Route|Back to the trail|Battle/i, response.body)
+    assert_match(/Start my climb|Plan Your Route|Back to the trail|Battle/i, response.body)
   end
 end

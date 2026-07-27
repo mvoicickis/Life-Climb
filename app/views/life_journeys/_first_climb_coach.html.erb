@@ -1,0 +1,47 @@
+<%# First-climb coach — one surface: biggest part + today's action. locals: journey, goal %>
+<% journey = local_assigns.fetch(:journey)
+   goal = local_assigns.fetch(:goal)
+   area = journey.life_area %>
+
+<section class="lp-first-climb" id="first-climb-coach" aria-label="<%= t('strategy.first_climb.label') %>">
+  <p class="lp-first-climb__kicker"><%= t("strategy.first_climb.kicker") %></p>
+  <h1 class="lp-first-climb__title"><%= t("strategy.first_climb.title") %></h1>
+  <p class="lp-first-climb__goal" title="<%= goal.title %>">
+    <span aria-hidden="true">🚩</span>
+    <span><%= goal.title %></span>
+  </p>
+  <p class="lp-first-climb__lead"><%= t("strategy.first_climb.lead") %></p>
+
+  <%= form_with url: first_climbs_path, method: :post, class: "lp-first-climb__form", data: { turbo: false } do %>
+    <%= hidden_field_tag :life_journey_id, journey.id %>
+
+    <label class="lp-first-climb__label" for="first-climb-plan">
+      <span class="lp-first-climb__step">1</span>
+      <%= t("strategy.first_climb.plan_label", goal: goal.title.truncate(42)) %>
+    </label>
+    <%= text_field_tag :plan_title, nil,
+          id: "first-climb-plan",
+          required: true,
+          maxlength: 120,
+          autofocus: true,
+          autocomplete: "off",
+          class: "lp-input w-full lp-first-climb__input",
+          placeholder: t("strategy.first_climb.plan_placeholder") %>
+    <p class="lp-first-climb__hint"><%= t("strategy.first_climb.plan_hint") %></p>
+
+    <label class="lp-first-climb__label" for="first-climb-action">
+      <span class="lp-first-climb__step">2</span>
+      <%= t("strategy.first_climb.action_label") %>
+    </label>
+    <%= text_field_tag :today_action, nil,
+          id: "first-climb-action",
+          required: true,
+          maxlength: 120,
+          autocomplete: "off",
+          class: "lp-input w-full lp-first-climb__input",
+          placeholder: t("strategy.first_climb.action_placeholder") %>
+    <p class="lp-first-climb__hint"><%= t("strategy.first_climb.action_hint") %></p>
+
+    <%= submit_tag t("strategy.first_climb.cta"), class: "lp-first-climb__cta" %>
+  <% end %>
+</section>

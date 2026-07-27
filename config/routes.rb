@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     resources :journey_targets, only: %i[ create ]
   end
   resources :strategy_goals, only: %i[ create update destroy ]
+  resources :first_climbs, only: :create
   resources :journey_targets, only: %i[ destroy ] do
     member do
       post :log

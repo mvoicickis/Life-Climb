@@ -27,7 +27,7 @@ class HierarchyGateTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Plan Your Route|Back to the trail|Battle/i, response.body)
+    assert_match(/Start my climb|Plan Your Route|Back to the trail|Battle/i, response.body)
 
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan", title: "Get interviews", position: 0
