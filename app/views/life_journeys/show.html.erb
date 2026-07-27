@@ -7,7 +7,10 @@
 <div class="lp-home lp-strategy-page is-exact-mockup mx-auto max-w-lg pb-40 pt-4"
      data-controller="strategy-celebrate strategy-mountain"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
-     data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>">
+     data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>"
+     <% if @sheet_node.present? %>
+       data-strategy-mountain-focus-sheet-value="strategy-sheet-<%= @sheet_node.id %>"
+     <% end %>>
   <header class="lp-strategy-page__header is-mockup px-4">
     <div class="lp-strategy-page__top">
       <p class="lp-brand-kicker">
