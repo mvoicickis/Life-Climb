@@ -25,5 +25,8 @@ if ! ./bin/rails db:prepare; then
   ./bin/rails db:migrate
 fi
 
+echo "==> Ensuring admin account from ADMIN_EMAIL / ADMIN_PASSWORD..."
+./bin/rails runner 'r = Admin::Bootstrap.ensure!; puts r.inspect; abort(r[:reason].to_s) if r.is_a?(Hash) && r[:ok] == false && ENV["ADMIN_EMAIL"].present? && (ENV["ADMIN_PASSWORD"].present? || ENV["ADMIN_BOOTSTRAP_PASSWORD"].present?)' || true
+
 echo "==> Database ready. Starting app..."
 exec "${@}"
