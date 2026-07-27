@@ -5216,10 +5216,43 @@
 .lp-adventure__how-stage .lp-adventure__mountain {
   bottom: -1.1rem;
   width: min(120%, 24rem);
-  animation: none;
   opacity: 0.92;
   filter: saturate(1.05);
   transition: filter 420ms ease, opacity 420ms ease, transform 520ms ease;
+  animation: lp-how-mountain-breathe 5.5s ease-in-out infinite;
+}
+
+.lp-adventure__how-stage::before,
+.lp-adventure__how-stage::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lp-adventure__how-stage::before {
+  width: 0.45rem;
+  height: 0.45rem;
+  left: 18%;
+  top: 42%;
+  background: color-mix(in srgb, #fde68a 70%, #fff);
+  box-shadow:
+    4.5rem -1.1rem 0 -0.05rem color-mix(in srgb, #bbf7d0 80%, transparent),
+    8rem 0.4rem 0 0 color-mix(in srgb, #fef08a 65%, transparent);
+  animation: lp-how-dust 4.8s ease-in-out infinite;
+}
+
+.lp-adventure__how-stage::after {
+  width: 0.35rem;
+  height: 0.35rem;
+  right: 16%;
+  top: 36%;
+  background: color-mix(in srgb, #86efac 75%, #fff);
+  box-shadow:
+    -3.2rem 0.8rem 0 0 color-mix(in srgb, #fde68a 55%, transparent),
+    -6.5rem -0.5rem 0 -0.04rem color-mix(in srgb, #bbf7d0 70%, transparent);
+  animation: lp-how-dust 5.6s ease-in-out 0.8s infinite reverse;
 }
 
 .lp-adventure__how[data-scene="battle"] .lp-adventure__how-stage .lp-adventure__mountain {
@@ -5326,6 +5359,14 @@
   box-shadow: 0 12px 28px color-mix(in srgb, var(--lp-level-goal, #166534) 14%, transparent);
 }
 
+.lp-adventure__how-flag.is-hero.is-in {
+  animation: lp-how-hero-land 620ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
+.lp-adventure__how-flag.is-hero.is-in .lp-adventure__how-flag-pin {
+  animation: lp-how-pin-pulse 1.8s ease-in-out 0.4s infinite;
+}
+
 .lp-adventure__how-flag.is-hero strong {
   font-size: 1.2rem;
   font-weight: 800;
@@ -5336,12 +5377,25 @@
   grid-template-rows: auto auto auto;
 }
 
+.lp-adventure__how-flag.is-peek.is-in {
+  animation: lp-how-battle-peek 700ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
+.lp-adventure__how-flag.is-peek.is-in .lp-adventure__how-flag-pin {
+  animation: lp-how-pin-pulse 1.4s ease-in-out 0.2s infinite;
+}
+
 .lp-adventure__how-flag.is-peek .lp-adventure__how-battle-cue {
   grid-column: 2;
   margin: 0.15rem 0 0;
   font-size: 0.82rem;
   line-height: 1.35;
   color: var(--lp-muted);
+  opacity: 0;
+}
+
+.lp-adventure__how-flag.is-peek.is-in .lp-adventure__how-battle-cue {
+  animation: lp-how-cue-in 480ms ease 280ms both;
 }
 
 .lp-adventure__how-plans,
@@ -5404,14 +5458,28 @@
   color: var(--lp-ink);
   background: color-mix(in srgb, #fff 70%, transparent);
   border: 1px solid color-mix(in srgb, var(--lp-level-plan, #0f766e) 18%, var(--lp-border));
-  opacity: 0.72;
+  opacity: 0;
+  transform: translateY(8px) scale(0.94);
 }
 
+.lp-adventure__how-plans.is-in .lp-adventure__how-plan-chips li {
+  animation: lp-how-chip-pop-soft 480ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
+.lp-adventure__how-plans.is-in .lp-adventure__how-plan-chips li:nth-child(1) { animation-delay: 80ms; }
+.lp-adventure__how-plans.is-in .lp-adventure__how-plan-chips li:nth-child(2) { animation-delay: 170ms; }
+.lp-adventure__how-plans.is-in .lp-adventure__how-plan-chips li:nth-child(3) { animation-delay: 260ms; }
+
 .lp-adventure__how-plan-chips li.is-focus {
-  opacity: 1;
   border-color: color-mix(in srgb, var(--lp-level-plan, #0f766e) 45%, var(--lp-border));
   background: color-mix(in srgb, var(--lp-level-plan, #0f766e) 14%, #fff);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-plan, #0f766e) 12%, transparent);
+}
+
+.lp-adventure__how-plans.is-in .lp-adventure__how-plan-chips li.is-focus {
+  animation:
+    lp-how-chip-pop 480ms cubic-bezier(0.22, 1.2, 0.36, 1) 80ms both,
+    lp-how-focus-glow 2.2s ease-in-out 0.7s infinite;
 }
 
 .lp-adventure__how-project-list {
@@ -5428,7 +5496,16 @@
   color: var(--lp-ink);
   background: color-mix(in srgb, #fff 72%, transparent);
   border: 1px dashed color-mix(in srgb, var(--lp-level-project, #1d4ed8) 22%, var(--lp-border));
+  opacity: 0;
+  transform: translateX(-8px);
 }
+
+.lp-adventure__how-projects.is-in .lp-adventure__how-project-list li {
+  animation: lp-how-project-slide 520ms cubic-bezier(0.22, 1.15, 0.36, 1) both;
+}
+
+.lp-adventure__how-projects.is-in .lp-adventure__how-project-list li:nth-child(1) { animation-delay: 90ms; }
+.lp-adventure__how-projects.is-in .lp-adventure__how-project-list li:nth-child(2) { animation-delay: 200ms; }
 
 .lp-adventure__how-project-list li.is-focus {
   font-weight: 800;
@@ -5440,9 +5517,20 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-project, #1d4ed8) 14%, transparent);
 }
 
+.lp-adventure__how-projects.is-in .lp-adventure__how-project-list li.is-focus {
+  animation:
+    lp-how-project-slide 520ms cubic-bezier(0.22, 1.15, 0.36, 1) 90ms both,
+    lp-how-focus-glow-blue 2.4s ease-in-out 0.75s infinite;
+}
+
 .lp-adventure__how-plan-counts {
   display: grid;
   gap: 0.25rem;
+  opacity: 0;
+}
+
+.lp-adventure__how-projects.is-in .lp-adventure__how-plan-counts {
+  animation: lp-how-cue-in 500ms ease 320ms both;
 }
 
 .lp-adventure__how-plan-counts li {
@@ -5465,6 +5553,15 @@
   line-height: 1.45;
   color: var(--lp-muted);
   text-wrap: pretty;
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.lp-adventure__how-tree.is-revealed ~ .lp-adventure__how-stack-body,
+.lp-adventure__how-panel.is-on .lp-adventure__how-stack-body.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 480ms ease, transform 480ms ease;
 }
 
 .lp-adventure__how-mountain-hint {
@@ -5473,6 +5570,14 @@
   line-height: 1.4;
   color: var(--lp-muted);
   text-wrap: pretty;
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.lp-adventure__how-mountain-hint.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 480ms ease 180ms, transform 480ms ease 180ms;
 }
 
 .lp-adventure__how-trail {
@@ -5558,6 +5663,7 @@
   box-shadow: 0 10px 24px color-mix(in srgb, #b45309 12%, transparent);
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease;
+  animation: lp-how-strike-invite 1.8s ease-in-out infinite;
 }
 
 .lp-adventure__how-strike-chip:hover {
@@ -5645,8 +5751,25 @@
   color: var(--lp-ink);
 }
 
+.lp-adventure__how-win:not(.is-won) {
+  animation: lp-adventure-cta-pulse 2s ease-in-out 0.6s infinite;
+}
+
 .lp-adventure__how-win.is-won {
   opacity: 0.7;
+  animation: none;
+}
+
+.lp-adventure__how-panel[data-scene="stack"] .lp-cta {
+  opacity: 0.55;
+  transform: translateY(4px);
+  transition: opacity 360ms ease, transform 360ms ease;
+}
+
+.lp-adventure__how-panel[data-scene="stack"].is-ready .lp-cta {
+  opacity: 1;
+  transform: none;
+  animation: lp-adventure-cta-pulse 2.2s ease-in-out infinite;
 }
 
 .lp-adventure__how-won {
@@ -5730,6 +5853,11 @@
   100% { transform: scale(1); }
 }
 
+@keyframes lp-how-strike-invite {
+  0%, 100% { box-shadow: 0 10px 24px color-mix(in srgb, #b45309 12%, transparent); }
+  50% { box-shadow: 0 12px 28px color-mix(in srgb, #b45309 20%, transparent), 0 0 0 5px color-mix(in srgb, #fde68a 22%, transparent); }
+}
+
 @keyframes lp-how-ap-pop {
   0% { opacity: 0; transform: translateY(8px) scale(0.8); }
   25% { opacity: 1; transform: translateY(-4px) scale(1.05); }
@@ -5747,13 +5875,82 @@
   100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
+@keyframes lp-how-mountain-breathe {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+@keyframes lp-how-dust {
+  0%, 100% { opacity: 0.15; transform: translateY(0); }
+  40% { opacity: 0.85; }
+  70% { opacity: 0.45; transform: translateY(-10px); }
+}
+
+@keyframes lp-how-hero-land {
+  0% { opacity: 0; transform: translateY(18px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes lp-how-battle-peek {
+  0% { opacity: 0; transform: translateY(16px) scale(0.9); }
+  55% { opacity: 1; transform: translateY(-4px) scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes lp-how-pin-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--lp-level) 18%, transparent); }
+  50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--lp-level) 28%, transparent); }
+}
+
+@keyframes lp-how-chip-pop {
+  0% { opacity: 0; transform: translateY(8px) scale(0.92); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes lp-how-chip-pop-soft {
+  0% { opacity: 0; transform: translateY(8px) scale(0.92); }
+  100% { opacity: 0.72; transform: none; }
+}
+
+@keyframes lp-how-focus-glow {
+  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-plan, #0f766e) 12%, transparent); }
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--lp-level-plan, #0f766e) 24%, transparent); }
+}
+
+@keyframes lp-how-focus-glow-blue {
+  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-project, #1d4ed8) 14%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-level-project, #1d4ed8) 26%, transparent); }
+}
+
+@keyframes lp-how-project-slide {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes lp-how-cue-in {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-adventure__how-panel.is-on,
   .lp-adventure__how-scene-line.is-in,
+  .lp-adventure__how-strike-chip,
   .lp-adventure__how-strike-chip.is-struck,
   .lp-adventure__how-ap-pop.is-pop,
   .lp-adventure__how-battles.is-remaining li.is-pulse,
-  .lp-adventure__how-badge.is-stamp {
+  .lp-adventure__how-badge.is-stamp,
+  .lp-adventure__how-flag.is-hero.is-in,
+  .lp-adventure__how-flag.is-peek.is-in,
+  .lp-adventure__how-flag.is-in .lp-adventure__how-flag-pin,
+  .lp-adventure__how-plans.is-in .lp-adventure__how-plan-chips li,
+  .lp-adventure__how-projects.is-in .lp-adventure__how-project-list li,
+  .lp-adventure__how-win:not(.is-won),
+  .lp-adventure__how-panel[data-scene="stack"].is-ready .lp-cta,
+  .lp-adventure__how-stage .lp-adventure__mountain,
+  .lp-adventure__how-stage::before,
+  .lp-adventure__how-stage::after {
     animation: none !important;
   }
 
@@ -5761,7 +5958,14 @@
   .lp-adventure__how-plans,
   .lp-adventure__how-projects,
   .lp-adventure__how-map-node,
-  .lp-adventure__how-scene-line {
+  .lp-adventure__how-scene-line,
+  .lp-adventure__how-plan-chips li,
+  .lp-adventure__how-project-list li,
+  .lp-adventure__how-plan-counts,
+  .lp-adventure__how-stack-body,
+  .lp-adventure__how-mountain-hint,
+  .lp-adventure__how-flag.is-peek .lp-adventure__how-battle-cue,
+  .lp-adventure__how-panel[data-scene="stack"] .lp-cta {
     opacity: 1;
     transform: none;
   }
@@ -5769,6 +5973,11 @@
   .lp-adventure__how-stage .lp-adventure__mountain {
     transition: none;
     transform: translateX(-50%);
+  }
+
+  .lp-adventure__how-stage::before,
+  .lp-adventure__how-stage::after {
+    opacity: 0.35;
   }
 
   .lp-dash-bar__fill {
