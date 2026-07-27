@@ -34,8 +34,9 @@
   <% end %>
 
   <% if horizon == "plan" %>
+    <%# parent_id for plan cards is the Goal node — LifeJourney has no strategy_goals assoc. %>
     <%= render "strategy_helps/launch",
-          goal: journey.strategy_goals.for_kind("goal").roots.first&.title || journey.title,
+          goal: StrategyGoal.find_by(id: parent_id)&.title.presence || journey.title,
           ideal_scene: journey.ideal_scene,
           current_reality: journey.current_reality,
           life_area: area&.label,
