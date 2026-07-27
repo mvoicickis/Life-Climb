@@ -77,18 +77,45 @@
         <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
       <% end %>
 
-      <% if form[:horizon].in?(%w[goal plan]) %>
-        <%= render "strategy_helps/launch",
-              goal: (form[:horizon] == "goal" ? @journey.title : (@goal&.title || @journey.title)),
-              ideal_scene: @journey.ideal_scene,
-              current_reality: @journey.current_reality,
-              life_area: area&.label,
-              accept_as: (form[:horizon] == "plan" ? "plan" : "fill"),
-              parent_id: (form[:horizon] == "plan" ? form[:parent_id] : nil),
-              life_area_id: area&.id,
-              journey_id: @journey.id,
-              button_label: t("strategy.help.cta") %>
-      <% end %>
+      <%
+        help_horizon = form[:horizon].to_s
+        help_goal = @goal&.title.presence || @journey.title
+        help_parent = form[:parent_id].present? ? StrategyGoal.find_by(id: form[:parent_id]) : nil
+        help_cta =
+          case help_horizon
+          when "goal" then t("strategy.help.cta_goal")
+          when "project" then t("strategy.help.cta_project")
+          when "day" then t("strategy.help.cta_battle")
+          else t("strategy.help.cta")
+          end
+        help_goal_title = help_goal
+        help_plan_title = nil
+        help_project_title = nil
+        if help_parent&.plan?
+          help_plan_title = help_parent.title
+        elsif help_parent&.project?
+          help_project_title = help_parent.title
+          help_plan_title = help_parent.parent&.title
+        elsif help_horizon == "plan"
+          help_plan_title = nil
+        end
+      %>
+      <%= render "strategy_helps/launch",
+            goal: (help_horizon == "goal" ? @journey.title : help_goal),
+            ideal_scene: @journey.ideal_scene,
+            current_reality: @journey.current_reality,
+            life_area: area&.label,
+            goal_title: help_goal_title,
+            plan_title: help_plan_title,
+            project_title: help_project_title,
+            horizon: help_horizon,
+            accept_as: "fill",
+            parent_id: form[:parent_id],
+            life_area_id: area&.id,
+            journey_id: @journey.id,
+            target_input: "#next-up-title",
+            panel_id: "strategist-panel-next-up",
+            button_label: help_cta %>
 
     <% elsif next_up[:href].present? %>
       <%= link_to next_up[:cta],
@@ -127,6 +154,23 @@
                   placeholder: t("strategy.battle_placeholder") %>
             <%= submit_tag t("strategy.add_battle"), class: "lp-strategy-next__cta is-secondary-cta" %>
           <% end %>
+
+          <%= render "strategy_helps/launch",
+                goal: (@goal&.title.presence || @journey.title),
+                ideal_scene: @journey.ideal_scene,
+                current_reality: @journey.current_reality,
+                life_area: area&.label,
+                goal_title: (@goal&.title.presence || @journey.title),
+                plan_title: @focus&.parent&.title,
+                project_title: @focus&.title,
+                horizon: "day",
+                accept_as: "fill",
+                parent_id: @focus.id,
+                life_area_id: area&.id,
+                journey_id: @journey.id,
+                target_input: "#add-battle-title",
+                panel_id: "strategist-panel-add-battle",
+                button_label: t("strategy.help.cta_battle") %>
         </div>
       <% end %>
 

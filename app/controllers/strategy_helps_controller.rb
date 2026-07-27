@@ -9,9 +9,14 @@ class StrategyHelpsController < ApplicationController
     @ideal_scene = params[:ideal_scene].to_s.strip
     @current_reality = params[:current_reality].to_s.strip
     @life_area = params[:life_area].to_s.strip
+    @goal_title = params[:goal_title].to_s.strip
+    @plan_title = params[:plan_title].to_s.strip
+    @project_title = params[:project_title].to_s.strip
+    @horizon = params[:horizon].to_s.strip.presence_in(Ai::StrategyService::HORIZONS) || Ai::StrategyService::DEFAULT_HORIZON
     @journey_id = params[:life_journey_id].presence
     @parent_id = params[:parent_id].presence
     @life_area_id = params[:life_area_id].presence
+    @target_input = params[:target_input].to_s.strip.presence
     @accept_as = params[:accept_as].presence_in(%w[plan fill ideas]) || "fill"
 
     if @goal.blank?
@@ -21,9 +26,12 @@ class StrategyHelpsController < ApplicationController
       context = {
         ideal_scene: @ideal_scene.presence,
         current_reality: @current_reality.presence,
-        life_area: @life_area.presence
+        life_area: @life_area.presence,
+        goal_title: @goal_title.presence,
+        plan_title: @plan_title.presence,
+        project_title: @project_title.presence
       }.compact
-      @result = Ai::StrategyService.call(goal: @goal, context:)
+      @result = Ai::StrategyService.call(goal: @goal, horizon: @horizon, context:)
       @error = nil
     end
 

@@ -66,6 +66,7 @@
                 journey: @journey,
                 parent_id: @goal.id,
                 horizon: "plan",
+                goal_title: @goal.title,
                 placeholder: t("strategy.plan_placeholder"),
                 submit: t("strategy.add_plan") %>
         <% end %>
@@ -98,6 +99,8 @@
                 journey: @journey,
                 parent_id: @focus.id,
                 horizon: "project",
+                goal_title: @goal&.title,
+                plan_title: @focus.title,
                 placeholder: t("strategy.project_placeholder"),
                 submit: t("strategy.add_project") %>
         <% end %>
@@ -142,6 +145,9 @@
                 parent_id: @focus.id,
                 horizon: "day",
                 scheduled_on: Date.current,
+                goal_title: @goal&.title,
+                plan_title: @focus.parent&.title,
+                project_title: @focus.title,
                 placeholder: t("strategy.battle_placeholder"),
                 submit: t("strategy.add_battle"),
                 input_id: "board-add-battle-title" %>

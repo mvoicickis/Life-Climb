@@ -4,25 +4,37 @@
   ideal_scene = local_assigns[:ideal_scene].to_s
   current_reality = local_assigns[:current_reality].to_s
   life_area = local_assigns[:life_area].to_s
+  goal_title = local_assigns[:goal_title].to_s
+  plan_title = local_assigns[:plan_title].to_s
+  project_title = local_assigns[:project_title].to_s
+  horizon = local_assigns.fetch(:horizon, "plan").to_s
   accept_as = local_assigns.fetch(:accept_as, "fill")
   parent_id = local_assigns[:parent_id]
   life_area_id = local_assigns[:life_area_id]
   journey_id = local_assigns[:journey_id]
+  target_input = local_assigns[:target_input].to_s
   source_form = local_assigns.fetch(:source_form, false)
   button_label = local_assigns.fetch(:button_label, t("strategy.help.cta"))
+  panel_id = local_assigns.fetch(:panel_id, "strategist-panel")
 %>
 
 <div class="lp-strategist-launch"
      data-controller="strategist"
      data-strategist-url-value="<%= strategy_help_path %>"
      data-strategist-accept-as-value="<%= accept_as %>"
+     data-strategist-horizon-value="<%= horizon %>"
      data-strategist-goal-value="<%= goal %>"
      data-strategist-ideal-value="<%= ideal_scene %>"
      data-strategist-reality-value="<%= current_reality %>"
      data-strategist-life-area-value="<%= life_area %>"
+     data-strategist-goal-title-value="<%= goal_title %>"
+     data-strategist-plan-title-value="<%= plan_title %>"
+     data-strategist-project-title-value="<%= project_title %>"
      data-strategist-parent-id-value="<%= parent_id %>"
      data-strategist-life-area-id-value="<%= life_area_id %>"
      data-strategist-journey-id-value="<%= journey_id %>"
+     data-strategist-target-input-value="<%= target_input %>"
+     data-strategist-panel-id-value="<%= panel_id %>"
      data-strategist-source-form-value="<%= source_form %>"
      data-strategist-goal-required-value="<%= t("strategy.help.goal_required") %>">
   <button type="button"
@@ -30,5 +42,5 @@
           data-strategist-target="submit"
           data-action="strategist#requestHelp"><%= button_label %></button>
 
-  <div id="strategist-panel" class="lp-strategist-panel" data-strategist-target="panel" aria-live="polite"></div>
+  <div id="<%= panel_id %>" class="lp-strategist-panel" data-strategist-target="panel" aria-live="polite"></div>
 </div>

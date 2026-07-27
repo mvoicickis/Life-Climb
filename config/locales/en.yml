@@ -374,6 +374,9 @@ en:
       example_battle: "Learn 20 words"
     help:
       cta: "Help me plan"
+      cta_goal: "Help me name this goal"
+      cta_project: "Help me name this project"
+      cta_battle: "Help me name this battle"
       cta_new_journey: "Help me think this through"
       cta_onboarding: "Help me clarify this mountain"
       thinking: "Thinking…"
@@ -384,7 +387,7 @@ en:
       use_plan: "Use as plan"
       use_title: "Use this"
       idea_only: "Suggestion only"
-      answer_first: "Answer the question first — then we can suggest plans."
+      answer_first: "Answer the question first — then we can suggest ideas."
       disclaimer: "AI suggests. You decide. Nothing is saved until you accept."
     add_another_plan: "Add another plan"
     add_another_project: "Add another project"

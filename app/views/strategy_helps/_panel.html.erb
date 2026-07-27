@@ -4,8 +4,11 @@
 <% journey_id = local_assigns.fetch(:journey_id, @journey_id) %>
 <% parent_id = local_assigns.fetch(:parent_id, @parent_id) %>
 <% life_area_id = local_assigns.fetch(:life_area_id, @life_area_id) %>
+<% target_input = local_assigns.fetch(:target_input, @target_input) %>
+<% horizon = local_assigns.fetch(:horizon, @horizon || "plan") %>
 
-<div class="lp-strategist" id="strategist-panel-inner" data-controller="strategist">
+<div class="lp-strategist" id="strategist-panel-inner" data-controller="strategist"
+     data-strategist-target-input-value="<%= target_input %>">
   <% if error.present? %>
     <p class="lp-strategist__error" role="alert"><%= error %></p>
   <% elsif result.present? %>
@@ -44,7 +47,8 @@
               <button type="button"
                       class="lp-strategist__use"
                       data-action="strategist#fillTitle"
-                      data-title="<%= suggestion["title"] %>"><%= t("strategy.help.use_title") %></button>
+                      data-title="<%= suggestion["title"] %>"
+                      data-target-input="<%= target_input %>"><%= t("strategy.help.use_title") %></button>
             <% else %>
               <span class="lp-strategist__meta"><%= t("strategy.help.idea_only") %></span>
             <% end %>
