@@ -14,7 +14,14 @@
       <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">
         <div class="lp-dash-bar__fill" data-battle-day-target="goalBar" style="width: <%= closer %>%"></div>
       </div>
-      <p class="lp-dash-hero__momentum" data-battle-day-target="momentum"><%= dash_momentum_line(closer) %></p>
+      <p class="lp-dash-hero__momentum" data-battle-day-target="momentum"><%= dash_momentum_line(closer, mountain: mountain) %></p>
+      <% streak = strategy_climb_streak %>
+      <% if streak.positive? %>
+        <p class="lp-dash-hero__streak">
+          <span aria-hidden="true">🔥</span>
+          <%= t("climb.streak.title", count: streak) %>
+        </p>
+      <% end %>
     </div>
     <p class="lp-dash-hero__hint"><%= t("dash.journey_hint_climb") %></p>
     <p class="lp-dash-hero__hint lp-dash-hero__hint--secondary"><%= t("dash.journey_hint_battles") %></p>

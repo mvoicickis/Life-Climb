@@ -61,7 +61,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy-mountain.is-living.is-scenic.is-trailmap.is-foothill"
     assert_select ".lp-strategy-marker.is-pin.is-goal", text: /Become a Rails deve/i
     assert_select ".lp-strategy-marker.is-pin.is-goal[title=?]", "Become a Rails developer"
-    assert_match(/Trailhead/i, response.body)
+    assert_match(/Base camp/i, response.body)
   end
 
   test "guided tree goal plan project battle awards and syncs today" do
@@ -195,10 +195,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail"
+    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail.is-fog"
     assert_select ".lp-strategy-wire.is-trail-spine"
+    assert_select ".lp-strategy-mountain__fog"
     assert_select ".lp-strategy-crumb"
     assert_select ".lp-strategy-mountain__camp.is-you"
+    assert_select ".lp-strategy-peek", minimum: 1
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select ".lp-strategy-marker.is-pin.is-plan.is-lit", text: /Plan Alpha/i
     assert_select ".lp-strategy-marker.is-pin.is-plan", text: /Plan Beta/i, count: 0
@@ -213,12 +215,28 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy-fight__sheet", text: /Battle One/i
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_select "#strategy-sheet-#{battle.id}"
+    assert_select "#strategy-peek-#{battle.id}"
     assert_select ".lp-strategy-sheet__btn.is-delete", minimum: 1
     assert_select "#strategy-sheet-rename-#{goal.id}"
     assert_select ".lp-strategy-siblings", count: 0
     assert_select "a.lp-strategy__board-add-link", count: 0
     assert_select ".lp-strategy-crumb__link", text: /Plan Alpha/i
     assert_select ".lp-dash-nav a.lp-dash-nav__link:first-child", text: /Mountain/i
+  end
+
+  test "pin peek opens lightly without full sheet by default" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: plan.id, peek: 1)
+    assert_response :success
+    assert_select "#strategy-peek-#{plan.id}[open]"
+    assert_select "#strategy-sheet-#{plan.id}[open]", count: 0
+    assert_select ".lp-strategy-peek__primary", text: /Add next step/i
   end
 
   test "completed nodes leave permanent conquest flags" do

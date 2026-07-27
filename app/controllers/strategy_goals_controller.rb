@@ -35,12 +35,15 @@ class StrategyGoalsController < ApplicationController
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
-      flash[:sp_gained] = celebration[:amount] if celebration[:amount].to_i.positive?
+      if celebration[:amount].to_i.positive?
+        flash[:sp_gained] = celebration[:amount]
+        flash[:climb_boss] = true if celebration[:amount].to_i >= 50
+      end
 
-      redirect_to strategy_redirect_path(focus_id: redirect_focus_id(goal)),
+      redirect_to strategy_redirect_path(focus_id: redirect_focus_id(goal), peek: 1),
                   notice: celebration[:notice], status: :see_other
     else
-      redirect_to strategy_redirect_path(focus_id: parent&.id),
+      redirect_to strategy_redirect_path(focus_id: parent&.id, peek: 1),
                   alert: goal.errors.full_messages.to_sentence, status: :see_other
     end
   end
@@ -121,11 +124,11 @@ class StrategyGoalsController < ApplicationController
     end
   end
 
-  def strategy_redirect_path(area_id: @life_area.id, focus_id: nil)
+  def strategy_redirect_path(area_id: @life_area.id, focus_id: nil, peek: nil, sheet: nil)
     journey = current_user.life_journeys.active.find_by(life_area_id: area_id) ||
               current_user.primary_focused_journey
     if journey
-      life_journey_path(journey, focus_id: focus_id)
+      life_journey_path(journey, focus_id: focus_id, peek: peek, sheet: sheet)
     else
       new_life_journey_path(life_area_id: area_id)
     end

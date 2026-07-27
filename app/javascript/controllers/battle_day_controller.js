@@ -1,22 +1,42 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Subtle juice for Complete Battle — confetti, CTA pulse, reward nudge, mountain surge.
+// Subtle juice for Complete Battle — confetti, CTA pulse, AP float, reward nudge.
 export default class extends Controller {
   static targets = ["completeBtn", "reward", "goalPct", "goalBar", "item", "lpTotal", "momentum"]
-  static values = { closer: Number, celebrate: Boolean }
+  static values = {
+    closer: Number,
+    celebrate: Boolean,
+    apGained: Number,
+    boss: Boolean
+  }
 
   connect() {
-    if (this.celebrateValue) {
+    if (this.celebrateValue || this.apGainedValue > 0) {
       window.requestAnimationFrame(() => this.celebrate())
     }
   }
 
   celebrate() {
     this.element.classList.add("is-celebrating")
+    if (this.bossValue) this.element.classList.add("is-boss")
     this.burst()
     this.nudgeReward()
     this.nudgeGoal()
-    window.setTimeout(() => this.element.classList.remove("is-celebrating"), 1400)
+    this.floatAp()
+    this.chime()
+    window.setTimeout(() => {
+      this.element.classList.remove("is-celebrating", "is-boss")
+    }, this.bossValue ? 1800 : 1400)
+  }
+
+  floatAp() {
+    if (this.apGainedValue <= 0) return
+    const host = this.hasLpTotalTarget ? this.lpTotalTarget.parentElement : this.element
+    const chip = document.createElement("span")
+    chip.className = "lp-dash__ap-float"
+    chip.textContent = `+${this.apGainedValue} AP`
+    host.appendChild(chip)
+    window.setTimeout(() => chip.remove(), 1200)
   }
 
   nudgeReward() {
@@ -27,11 +47,11 @@ export default class extends Controller {
 
   nudgeGoal() {
     if (!this.hasGoalBarTarget) return
-    this.goalBarTarget.classList.add("is-glow")
+    this.goalBarTarget.classList.add("is-glow", "is-bounce")
     if (this.hasGoalPctTarget) this.goalPctTarget.classList.add("is-glow")
     if (this.hasMomentumTarget) this.momentumTarget.classList.add("is-glow")
     window.setTimeout(() => {
-      this.goalBarTarget.classList.remove("is-glow")
+      this.goalBarTarget.classList.remove("is-glow", "is-bounce")
       this.goalPctTarget?.classList.remove("is-glow")
       this.momentumTarget?.classList.remove("is-glow")
     }, 900)
@@ -39,9 +59,10 @@ export default class extends Controller {
 
   burst() {
     const root = document.createElement("div")
-    root.className = "lp-dash-confetti"
+    root.className = this.bossValue ? "lp-dash-confetti is-boss" : "lp-dash-confetti"
     root.setAttribute("aria-hidden", "true")
-    for (let i = 0; i < 18; i += 1) {
+    const count = this.bossValue ? 28 : 18
+    for (let i = 0; i < count; i += 1) {
       const bit = document.createElement("span")
       bit.style.setProperty("--x", `${(Math.random() * 180) - 90}px`)
       bit.style.setProperty("--d", `${420 + Math.random() * 780}ms`)
@@ -50,5 +71,29 @@ export default class extends Controller {
     }
     this.element.appendChild(root)
     window.setTimeout(() => root.remove(), 1300)
+  }
+
+  chime() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext
+      if (!Ctx) return
+      const ctx = new Ctx()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = "triangle"
+      osc.frequency.value = this.bossValue ? 587.33 : 440
+      gain.gain.value = 0.0001
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      const now = ctx.currentTime
+      gain.gain.exponentialRampToValueAtTime(0.04, now + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25)
+      osc.start(now)
+      osc.stop(now + 0.28)
+      window.setTimeout(() => ctx.close(), 400)
+    } catch (_err) {
+      // optional
+    }
   }
 }

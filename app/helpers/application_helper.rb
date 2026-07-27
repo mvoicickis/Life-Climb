@@ -1,8 +1,13 @@
 module ApplicationHelper
-  def dash_momentum_line(percent)
+  def dash_momentum_line(percent, mountain: nil)
+    if mountain.present? && mountain[:label].present?
+      return mountain[:label]
+    end
+
     p = percent.to_i
     key =
       if p >= 100 then "summit"
+      elsif p >= 85 then "final"
       elsif p >= 70 then "close"
       elsif p >= 40 then "halfway"
       elsif p >= 10 then "climbing"
