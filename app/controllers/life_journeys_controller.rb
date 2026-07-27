@@ -115,12 +115,46 @@ class LifeJourneysController < ApplicationController
     @children = @focus ? @focus.children.ordered.to_a : []
     @siblings = strategy_siblings(@focus)
     @today_battles = today_battles_for(@focus || @goal)
+    @today_battle = @today_battles.find { |b| b.completed_at.blank? } || @today_battles.first
     @crumbs = strategy_crumbs(@focus)
     @guided_step = guided_step
     @path_stages = strategy_path_stages
     @mountain = Strategy::Mountain.for(goal: @goal)
     @mountain_ready = strategy_mountain_ready?
     @next_up = strategy_next_up
+    @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
+    @sheet_node =
+      if params[:node_id].present?
+        @goals.find { |g| g.id == params[:node_id].to_i } || @focus
+      else
+        @focus
+      end
+    @open_sheet = params[:sheet].present? || params[:node_id].present?
+  end
+
+  def strategy_branch_for(focus, today_battle)
+    plan =
+      if focus&.plan?
+        focus
+      elsif focus&.project?
+        focus.parent
+      elsif focus&.day?
+        focus.parent&.parent
+      end
+    project =
+      if focus&.project?
+        focus
+      elsif focus&.day?
+        focus.parent
+      end
+
+    # Light the path to today's battle when still looking at the goal summit.
+    if plan.nil? && today_battle&.parent
+      project ||= today_battle.parent if focus.blank? || focus.goal?
+      plan ||= project&.parent if focus.blank? || focus.goal?
+    end
+
+    [ plan, project ]
   end
 
   def strategy_mountain_ready?

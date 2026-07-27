@@ -1,0 +1,64 @@
+<%# Fight / add CTA under the living mountain — no Focus card. %>
+<% next_up = @next_up %>
+<section class="lp-strategy-fight" aria-label="<%= t('strategy.fight.label') %>">
+  <% if @today_battle.present? && @mountain_ready %>
+    <p class="lp-strategy-fight__hint">
+      <%= t("strategy.fight.today_hint", title: @today_battle.title) %>
+    </p>
+    <%= button_to t("strategy.fight.cta"),
+          life_journey_path(@journey),
+          method: :patch,
+          params: { sync_today: 1 },
+          class: "lp-strategy-fight__cta",
+          form: { data: { turbo: false } } %>
+  <% elsif next_up.present? && next_up[:form].present? %>
+    <% area = @journey.life_area %>
+    <% form = next_up[:form] %>
+    <% level = { "goal" => "goal", "plan" => "plan", "project" => "project", "day" => "battle" }.fetch(form[:horizon].to_s, "goal") %>
+    <div class="lp-strategy-fight__form is-<%= level %>" id="strategy-next-up" data-controller="strategy-next">
+      <p class="lp-strategy-fight__kicker"><%= t("strategy.fight.build_kicker") %></p>
+      <h2 class="lp-strategy-fight__title"><%= next_up[:title] %></h2>
+      <p class="lp-strategy-fight__hint"><%= next_up[:hint] %></p>
+      <%= form_with url: strategy_goals_path, method: :post, class: "lp-strategy-fight__create", data: { turbo: false } do %>
+        <%= hidden_field_tag :life_area_id, area.id %>
+        <%= hidden_field_tag :life_journey_id, @journey.id %>
+        <%= hidden_field_tag :horizon, form[:horizon] %>
+        <% if form[:parent_id].present? %>
+          <%= hidden_field_tag :parent_id, form[:parent_id] %>
+        <% end %>
+        <% if form[:scheduled_on].present? %>
+          <%= hidden_field_tag :scheduled_on, form[:scheduled_on] %>
+        <% end %>
+        <%= text_field_tag :title,
+              (form[:horizon] == "goal" ? @journey.title : nil),
+              required: true,
+              maxlength: 120,
+              id: "next-up-title",
+              class: "lp-input w-full",
+              placeholder: next_up[:placeholder] || t("strategy.goal_placeholder"),
+              autofocus: true %>
+        <% Array(next_up[:examples]).each do |example| %>
+          <button type="button"
+                  class="lp-strategy-fight__chip"
+                  data-action="strategy-next#fillExample"
+                  data-title="<%= example %>"><%= example %></button>
+        <% end %>
+        <%= submit_tag next_up[:cta], class: "lp-strategy-fight__cta" %>
+      <% end %>
+    </div>
+  <% elsif next_up.present? && next_up[:key] == :go_today %>
+    <%= button_to t("strategy.fight.cta"),
+          life_journey_path(@journey),
+          method: :patch,
+          params: { sync_today: 1 },
+          class: "lp-strategy-fight__cta",
+          form: { data: { turbo: false } } %>
+  <% elsif @sheet_node.present? && strategy_child_horizon(@sheet_node).present? %>
+    <p class="lp-strategy-fight__hint"><%= next_up&.dig(:hint) || t("strategy.fight.keep_building") %></p>
+    <button type="button"
+            class="lp-strategy-fight__cta is-quiet"
+            data-action="strategy-mountain#openFocusedAdd">
+      <%= strategy_add_label(@sheet_node) %>
+    </button>
+  <% end %>
+</section>

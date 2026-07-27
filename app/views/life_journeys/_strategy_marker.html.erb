@@ -1,0 +1,34 @@
+<%# locals: node:, lit:, today:, whisper: %>
+<% node = local_assigns.fetch(:node) %>
+<% lit = local_assigns.fetch(:lit, false) %>
+<% today = local_assigns.fetch(:today, false) %>
+<% whisper = local_assigns[:whisper] %>
+<% kind = strategy_kind_css(node) %>
+<%
+  href =
+    if node.day?
+      life_journey_path(@journey, focus_id: node.parent_id, node_id: node.id, sheet: 1)
+    else
+      life_journey_path(@journey, focus_id: node.id, sheet: 1)
+    end
+%>
+
+<%= link_to href,
+      class: "lp-strategy-marker is-#{kind} #{'is-lit' if lit} #{'is-today' if today} #{'is-done' if node.completed?}",
+      data: {
+        action: "pointerdown->strategy-mountain#press pointerup->strategy-mountain#release pointerleave->strategy-mountain#cancel pointercancel->strategy-mountain#cancel contextmenu->strategy-mountain#menu",
+        strategy_mountain_target: "marker",
+        node_id: node.id,
+        node_kind: kind,
+        can_add: strategy_child_horizon(node).present?,
+        sheet_id: "strategy-sheet-#{node.id}"
+      } do %>
+  <span class="lp-strategy-marker__dot" aria-hidden="true"></span>
+  <span class="lp-strategy-marker__title"><%= node.title.truncate(28) %></span>
+  <% if node.progress_percent.positive? && !node.day? %>
+    <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
+  <% end %>
+  <% if whisper.present? %>
+    <span class="lp-strategy-marker__whisper"><%= whisper %></span>
+  <% end %>
+<% end %>

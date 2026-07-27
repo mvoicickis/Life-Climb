@@ -4,53 +4,45 @@
 <% sp_gained = flash[:sp_gained].to_i %>
 
 <div class="lp-home lp-strategy-page mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5"
-     data-controller="strategy-celebrate"
-     data-strategy-celebrate-gained-value="<%= sp_gained %>">
-  <header class="flex items-start justify-between gap-4">
+     data-controller="strategy-celebrate strategy-mountain"
+     data-strategy-celebrate-gained-value="<%= sp_gained %>"
+     data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>">
+  <header class="lp-strategy-page__header">
     <div class="min-w-0">
       <p class="lp-brand-kicker">
         <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
         <span><%= t("strategy.mode") %></span>
       </p>
-      <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("strategy.page_title") %></h1>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("strategy.promise") %></p>
+      <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
+      <p class="lp-strategy-page__promise"><%= t("strategy.promise") %></p>
     </div>
-    <div class="lp-strategy__sp shrink-0"
+    <div class="lp-strategy__sp is-soft shrink-0"
          data-strategy-celebrate-target="spBadge"
          aria-label="<%= t('strategy.sp_label') %>">
       <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
-      <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
-      <span class="lp-strategy__sp-hint"><%= t("strategy.sp_hint") %></span>
+      <span class="lp-strategy__sp-label"><%= t("strategy.sp_short") %></span>
     </div>
   </header>
 
   <%= render "life_journeys/strategy_mountain", mountain: @mountain %>
 
+  <%= render "life_journeys/strategy_fight_cta" %>
+
   <% if @goal %>
-    <div class="lp-strategy-page__goal-line">
-      <div class="lp-strategy-page__goal-row">
-        <span class="lp-strategy-page__goal-title"><%= @goal.title %></span>
-        <%= render "life_journeys/strategy_overflow", node: @goal %>
-      </div>
-      <span class="lp-strategy-page__goal-due"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></span>
-    </div>
-
-    <%= render "strategy_helps/launch",
-          goal: @goal.title,
-          ideal_scene: @journey.ideal_scene,
-          current_reality: @journey.current_reality,
-          life_area: @journey.life_area&.label,
-          goal_title: @goal.title,
-          horizon: "plan",
-          accept_as: "plan",
-          parent_id: @goal.id,
-          life_area_id: @journey.life_area_id,
-          journey_id: @journey.id,
-          panel_id: "strategist-panel-goal",
-          button_label: t("strategy.help.cta") %>
+    <%
+      sheet_nodes = [ @goal ]
+      @goal.children.select(&:plan?).each do |plan|
+        sheet_nodes << plan
+        plan.children.select(&:project?).each do |project|
+          sheet_nodes << project
+          project.children.select(&:day?).each { |battle| sheet_nodes << battle }
+        end
+      end
+    %>
+    <% sheet_nodes.uniq.each do |node| %>
+      <%= render "life_journeys/strategy_node_sheet", node: node %>
+    <% end %>
   <% end %>
-
-  <%= render "life_journeys/strategy_board" %>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :strategy %>
