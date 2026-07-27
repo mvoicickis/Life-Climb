@@ -1,4 +1,4 @@
-<%# Scenic living mountain — tinted cards, trail + dotted wires, collapse nodes. locals: mountain %>
+<%# Exact mockup trail map — frosted cards on scenic photo, parent→child wires. locals: mountain %>
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
@@ -8,176 +8,157 @@
 <% today_id = @today_battle&.id %>
 <% off_plans = plans.reject { |p| p.id == @branch_plan&.id } %>
 <% off_projects = projects.reject { |p| p.id == @branch_project&.id } %>
+<% goal_slot = strategy_trail_slot(:goal) %>
+<% plan_slots = plans.each_with_index.to_h { |plan, i| [plan.id, strategy_trail_slot(:plan, i)] } %>
+<% project_slots = projects.each_with_index.to_h { |project, i| [project.id, strategy_trail_slot(:project, i)] } %>
+<% battle_slots = battles.each_with_index.to_h { |battle, i| [battle.id, strategy_trail_slot(:battle, i)] } %>
+<% camp_slot = strategy_trail_slot(:camp) %>
+<% branch_plan_slot = @branch_plan ? plan_slots[@branch_plan.id] : goal_slot %>
+<% branch_project_slot = @branch_project ? project_slots[@branch_project.id] : branch_plan_slot %>
 
-<figure class="lp-strategy-mountain is-living is-scenic is-<%= stage %>"
+<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-<%= stage %>"
         data-strategy-celebrate-target="mountain"
-        style="--lp-camp: <%= camp %>"
+        style="--lp-camp: <%= camp %>; --lp-scenic: url('/images/strategy-mountain-scenic.jpg')"
         aria-label="<%= mountain[:label] %>">
-  <div class="lp-strategy-mountain__backdrop" aria-hidden="true">
-    <svg class="lp-strategy-mountain__art" viewBox="0 0 360 520" role="img" preserveAspectRatio="xMidYMax slice">
-      <defs>
-        <linearGradient id="lp-mtn-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f97316"/>
-          <stop offset="18%" stop-color="#fb923c"/>
-          <stop offset="42%" stop-color="#7dd3fc"/>
-          <stop offset="72%" stop-color="#bbf7d0"/>
-          <stop offset="100%" stop-color="#dcfce7"/>
-        </linearGradient>
-        <linearGradient id="lp-mtn-far" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#86efac"/>
-          <stop offset="100%" stop-color="#4ade80"/>
-        </linearGradient>
-        <linearGradient id="lp-mtn-face" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#15803d"/>
-          <stop offset="55%" stop-color="#166534"/>
-          <stop offset="100%" stop-color="#14532d"/>
-        </linearGradient>
-        <linearGradient id="lp-mtn-sun" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#fef08a"/>
-          <stop offset="100%" stop-color="#f59e0b"/>
-        </linearGradient>
-        <linearGradient id="lp-mtn-dirt" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#d6b48a"/>
-          <stop offset="100%" stop-color="#b08968"/>
-        </linearGradient>
-      </defs>
-      <rect class="lp-strategy-mountain__sky" width="360" height="520" fill="url(#lp-mtn-sky)"/>
-      <circle cx="292" cy="72" r="34" fill="url(#lp-mtn-sun)" opacity="0.9"/>
-      <circle cx="292" cy="72" r="48" fill="#fde68a" opacity="0.22"/>
-      <path class="lp-strategy-mountain__far" d="M0 230 L55 165 L110 205 L170 135 L240 190 L300 150 L360 180 L360 520 L0 520 Z" fill="url(#lp-mtn-far)" opacity="0.42"/>
-      <path class="lp-strategy-mountain__mid" d="M-20 300 L80 205 L140 255 L200 175 L280 245 L360 195 L380 520 L-20 520 Z" fill="#22c55e" opacity="0.32"/>
-      <path class="lp-strategy-mountain__peak" d="M40 520 L180 78 L320 520 Z" fill="url(#lp-mtn-face)"/>
-      <path class="lp-strategy-mountain__snow" d="M145 155 L180 78 L215 155 L200 148 L180 188 L160 148 Z" fill="#f8fafc" opacity="0.92"/>
-      <path d="M180 78 L180 58" stroke="#166534" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M180 58 L208 68 L180 78 Z" fill="#22c55e"/>
-      <path class="lp-strategy-mountain__trail-base"
-            d="M118 455 C140 400, 148 360, 168 310 C188 255, 198 215, 208 175 C214 150, 220 128, 228 112"
-            fill="none" stroke="url(#lp-mtn-dirt)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 9" opacity="0.85"/>
-      <path class="lp-strategy-mountain__trail-lit"
-            d="M118 455 C140 400, 148 360, 168 310 C188 255, 198 215, 208 175 C214 150, 220 128, 228 112"
-            fill="none" stroke="#fbbf24" stroke-width="5.5" stroke-linecap="round"
-            pathLength="100" stroke-dasharray="<%= camp %> 100"/>
-      <ellipse cx="180" cy="492" rx="130" ry="20" fill="#86efac" opacity="0.45"/>
-      <g class="lp-strategy-mountain__camp-art" transform="translate(96 448)">
-        <ellipse cx="28" cy="28" rx="34" ry="8" fill="#166534" opacity="0.35"/>
-        <path d="M8 28 L28 4 L48 28 Z" fill="#f59e0b"/>
-        <path d="M12 28 H44 V34 H12 Z" fill="#b45309"/>
-        <circle cx="54" cy="30" r="3.5" fill="#fb923c"/>
-        <circle cx="58" cy="26" r="2.2" fill="#fde68a" opacity="0.9"/>
-      </g>
-    </svg>
-    <svg class="lp-strategy-mountain__wires" viewBox="0 0 360 520" preserveAspectRatio="none" aria-hidden="true">
-      <path class="lp-strategy-wire is-goal" d="M180 95 C180 120, 180 135, 180 150" fill="none"/>
-      <path class="lp-strategy-wire is-plan" d="M180 170 C120 200, 95 220, 95 245" fill="none"/>
-      <path class="lp-strategy-wire is-plan" d="M180 170 C240 200, 265 220, 265 245" fill="none"/>
-      <path class="lp-strategy-wire is-project" d="M180 275 C120 305, 90 330, 90 360" fill="none"/>
-      <path class="lp-strategy-wire is-project" d="M180 275 C240 305, 270 330, 270 360" fill="none"/>
-      <path class="lp-strategy-wire is-battle" d="M180 385 C150 410, 135 430, 130 455" fill="none"/>
-      <path class="lp-strategy-wire is-battle" d="M180 385 C210 410, 225 430, 230 455" fill="none"/>
-    </svg>
-  </div>
+  <div class="lp-strategy-mountain__photo" aria-hidden="true"></div>
+  <div class="lp-strategy-mountain__scrim is-top" aria-hidden="true"></div>
+  <div class="lp-strategy-mountain__scrim is-bottom" aria-hidden="true"></div>
 
-  <div class="lp-strategy-mountain__climb">
-    <div class="lp-strategy-mountain__zone is-summit" data-zone="goal">
-      <% if @goal %>
+  <svg class="lp-strategy-mountain__wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <% if @goal && plans.any? %>
+      <% plans.each do |plan| %>
+        <path class="lp-strategy-wire is-plan"
+              d="<%= strategy_trail_wire(goal_slot, plan_slots[plan.id]) %>"
+              fill="none"/>
+      <% end %>
+    <% end %>
+    <% if @branch_plan && projects.any? %>
+      <% projects.each do |project| %>
+        <path class="lp-strategy-wire is-project"
+              d="<%= strategy_trail_wire(branch_plan_slot, project_slots[project.id]) %>"
+              fill="none"/>
+      <% end %>
+    <% end %>
+    <% if @branch_project && battles.any? %>
+      <% battles.each do |battle| %>
+        <path class="lp-strategy-wire is-battle"
+              d="<%= strategy_trail_wire(branch_project_slot, battle_slots[battle.id]) %>"
+              fill="none"/>
+      <% end %>
+    <% end %>
+    <% if @goal %>
+      <path class="lp-strategy-wire is-goal is-trail"
+            d="<%= strategy_trail_wire(goal_slot, camp_slot) %>"
+            fill="none"/>
+    <% end %>
+  </svg>
+
+  <div class="lp-strategy-mountain__map">
+    <% if @goal %>
+      <div class="lp-strategy-mountain__slot is-goal"
+           style="--lp-x: <%= goal_slot[:left] %>%; --lp-y: <%= goal_slot[:top] %>%">
         <%= render "life_journeys/strategy_marker",
               node: @goal,
               lit: true,
               today: false,
               whisper: nil %>
-      <% else %>
+      </div>
+    <% else %>
+      <div class="lp-strategy-mountain__slot is-goal"
+           style="--lp-x: <%= goal_slot[:left] %>%; --lp-y: <%= goal_slot[:top] %>%">
         <span class="lp-strategy-mountain__empty-pin"><%= t("strategy.zones.empty_goal") %></span>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
 
-    <div class="lp-strategy-mountain__zone is-plans" data-zone="plans">
-      <% if plans.any? %>
-        <ul class="lp-strategy-mountain__markers">
-          <% plans.each do |plan| %>
-            <% on = @branch_plan&.id == plan.id %>
-            <li>
-              <%= render "life_journeys/strategy_marker",
-                    node: plan,
-                    lit: on,
-                    today: false,
-                    whisper: nil %>
-            </li>
-          <% end %>
-        </ul>
-      <% elsif @goal %>
-        <p class="lp-strategy-mountain__whisper"><%= t("strategy.zones.add_plan_hint") %></p>
-      <% end %>
-    </div>
+    <% plans.each_with_index do |plan, i| %>
+      <% slot = plan_slots[plan.id] %>
+      <div class="lp-strategy-mountain__slot is-plan"
+           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+        <%= render "life_journeys/strategy_marker",
+              node: plan,
+              lit: @branch_plan&.id == plan.id,
+              today: false,
+              whisper: nil %>
+      </div>
+    <% end %>
 
-    <div class="lp-strategy-mountain__zone is-projects <%= 'is-open' if @branch_plan %>" data-zone="projects">
-      <% if projects.any? || off_plans.any? { |p| strategy_projects_count(p).positive? } %>
-        <div class="lp-strategy-mountain__branch-row">
-          <% if projects.any? %>
-            <ul class="lp-strategy-mountain__markers">
-              <% projects.each do |project| %>
-                <% on = @branch_project&.id == project.id %>
-                <li>
-                  <%= render "life_journeys/strategy_marker",
-                        node: project,
-                        lit: on,
-                        today: false,
-                        whisper: nil %>
-                </li>
-              <% end %>
-            </ul>
-          <% end %>
-          <div class="lp-strategy-mountain__collapses">
-            <% off_plans.each do |plan| %>
-              <%= render "life_journeys/strategy_collapse",
-                    count: strategy_projects_count(plan),
-                    href: life_journey_path(@journey, focus_id: plan.id),
-                    kind: "plan",
-                    label: t("strategy.zones.projects_count", count: strategy_projects_count(plan)) %>
-            <% end %>
-          </div>
-        </div>
-      <% elsif @branch_plan %>
-        <p class="lp-strategy-mountain__whisper"><%= t("strategy.zones.add_project_hint") %></p>
-      <% elsif @goal %>
-        <p class="lp-strategy-mountain__whisper is-dim"><%= t("strategy.zones.pick_plan") %></p>
-      <% end %>
-    </div>
+    <% if @goal && plans.empty? %>
+      <p class="lp-strategy-mountain__whisper is-map"
+         style="--lp-x: 50%; --lp-y: 28%"><%= t("strategy.zones.add_plan_hint") %></p>
+    <% end %>
 
-    <div class="lp-strategy-mountain__zone is-battles <%= 'is-open' if @branch_project %>" data-zone="battles">
-      <% if battles.any? || off_projects.any? { |p| strategy_battles_count(p).positive? } %>
-        <div class="lp-strategy-mountain__branch-row is-battles">
-          <% if battles.any? %>
-            <ul class="lp-strategy-mountain__markers is-battles">
-              <% battles.each do |battle| %>
-                <li>
-                  <%= render "life_journeys/strategy_marker",
-                        node: battle,
-                        lit: battle.id == @focus&.id || battle.id == today_id,
-                        today: battle.id == today_id,
-                        whisper: nil %>
-                </li>
-              <% end %>
-            </ul>
-          <% end %>
-          <div class="lp-strategy-mountain__collapses">
-            <% off_projects.each do |project| %>
-              <%= render "life_journeys/strategy_collapse",
-                    count: strategy_battles_count(project),
-                    href: life_journey_path(@journey, focus_id: project.id),
-                    kind: "project",
-                    label: t("strategy.zones.battles_count", count: strategy_battles_count(project)) %>
-            <% end %>
-          </div>
-        </div>
-      <% elsif @branch_project %>
-        <p class="lp-strategy-mountain__whisper"><%= t("strategy.zones.add_battle_hint") %></p>
-      <% elsif @goal %>
-        <p class="lp-strategy-mountain__whisper is-dim"><%= t("strategy.zones.pick_project") %></p>
-      <% end %>
-    </div>
+    <% projects.each do |project| %>
+      <% slot = project_slots[project.id] %>
+      <div class="lp-strategy-mountain__slot is-project"
+           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+        <%= render "life_journeys/strategy_marker",
+              node: project,
+              lit: @branch_project&.id == project.id,
+              today: false,
+              whisper: nil %>
+      </div>
+    <% end %>
 
-    <div class="lp-strategy-mountain__camp" aria-label="<%= t('strategy.zones.camp') %>">
-      <span class="lp-strategy-mountain__camp-mark" aria-hidden="true"></span>
+    <% off_plans.each_with_index do |plan, i| %>
+      <% count = strategy_projects_count(plan) %>
+      <% next unless count.positive? %>
+      <% base = strategy_trail_slot(:project, projects.size + i) %>
+      <div class="lp-strategy-mountain__slot is-collapse"
+           style="--lp-x: <%= base[:left] %>%; --lp-y: <%= base[:top] %>%">
+        <%= render "life_journeys/strategy_collapse",
+              count: count,
+              href: life_journey_path(@journey, focus_id: plan.id),
+              kind: "plan",
+              label: t("strategy.zones.projects_count", count: count) %>
+      </div>
+    <% end %>
+
+    <% if @branch_plan && projects.empty? && off_plans.none? { |p| strategy_projects_count(p).positive? } %>
+      <p class="lp-strategy-mountain__whisper is-map"
+         style="--lp-x: 50%; --lp-y: 48%"><%= t("strategy.zones.add_project_hint") %></p>
+    <% elsif @goal && @branch_plan.nil? && plans.any? %>
+      <p class="lp-strategy-mountain__whisper is-map is-dim"
+         style="--lp-x: 50%; --lp-y: 48%"><%= t("strategy.zones.pick_plan") %></p>
+    <% end %>
+
+    <% battles.each do |battle| %>
+      <% slot = battle_slots[battle.id] %>
+      <div class="lp-strategy-mountain__slot is-battle"
+           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+        <%= render "life_journeys/strategy_marker",
+              node: battle,
+              lit: battle.id == @focus&.id || battle.id == today_id,
+              today: battle.id == today_id,
+              whisper: nil %>
+      </div>
+    <% end %>
+
+    <% off_projects.each_with_index do |project, i| %>
+      <% count = strategy_battles_count(project) %>
+      <% next unless count.positive? %>
+      <% base = strategy_trail_slot(:battle, battles.size + i) %>
+      <div class="lp-strategy-mountain__slot is-collapse"
+           style="--lp-x: <%= base[:left] %>%; --lp-y: <%= base[:top] %>%">
+        <%= render "life_journeys/strategy_collapse",
+              count: count,
+              href: life_journey_path(@journey, focus_id: project.id),
+              kind: "project",
+              label: t("strategy.zones.battles_count", count: count) %>
+      </div>
+    <% end %>
+
+    <% if @branch_project && battles.empty? && off_projects.none? { |p| strategy_battles_count(p).positive? } %>
+      <p class="lp-strategy-mountain__whisper is-map"
+         style="--lp-x: 50%; --lp-y: 70%"><%= t("strategy.zones.add_battle_hint") %></p>
+    <% elsif @goal && @branch_project.nil? && @branch_plan.present? %>
+      <p class="lp-strategy-mountain__whisper is-map is-dim"
+         style="--lp-x: 50%; --lp-y: 70%"><%= t("strategy.zones.pick_project") %></p>
+    <% end %>
+
+    <div class="lp-strategy-mountain__camp is-pin"
+         style="--lp-x: <%= camp_slot[:left] %>%; --lp-y: calc(<%= camp_slot[:top] %>% - <%= camp * 0.12 %>px)"
+         aria-label="<%= t('strategy.zones.camp') %>">
+      <span class="lp-strategy-mountain__camp-pin" aria-hidden="true"></span>
       <span class="lp-strategy-mountain__camp-label"><%= t("strategy.zones.you") %></span>
     </div>
   </div>
