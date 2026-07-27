@@ -1,0 +1,12 @@
+<%= turbo_stream.replace "strategy-world-map" do %>
+  <%= render "life_journeys/strategy_mountain", mountain: @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
+<% end %>
+
+<% if @updated %>
+  <%= turbo_stream.replace "strategy-menu-#{@updated.id}" do %>
+    <%= render "life_journeys/strategy_pin_menu", node: @updated %>
+  <% end %>
+  <%= turbo_stream.replace "strategy-sheet-#{@updated.id}" do %>
+    <%= render "life_journeys/strategy_node_sheet", node: @updated %>
+  <% end %>
+<% end %>

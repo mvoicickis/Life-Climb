@@ -5,54 +5,82 @@
 <% ap_gained = flash[:ap_gained].to_i %>
 <% boss = flash[:climb_boss].present? %>
 <% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
-<% crumb_nodes = strategy_breadcrumb_nodes(
-     goal: @goal,
-     plan: @branch_plan,
-     project: @branch_project,
-     battle: @today_battle
-   ) %>
 <% climb_reward = flash[:climb_reward] %>
+<% camera_level =
+     if @branch_project.present? then 3
+     elsif @branch_plan.present? then 2
+     else 1
+     end %>
+<% camera_focus =
+     if @branch_project.present? then @branch_project.id
+     elsif @branch_plan.present? then @branch_plan.id
+     else @goal&.id
+     end %>
 
-<div class="lp-home lp-strategy-page is-exact-mockup is-lit-trail is-gamefeel mx-auto max-w-lg pb-40 pt-4"
-     data-controller="strategy-celebrate strategy-mountain"
+<div class="lp-world lp-strategy-page is-living-world is-lit-trail is-gamefeel"
+     id="strategy-world"
+     data-controller="strategy-celebrate strategy-mountain strategy-camera"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
      data-strategy-celebrate-ap-gained-value="<%= ap_gained %>"
      data-strategy-celebrate-boss-value="<%= boss %>"
      data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>"
-     data-strategy-mountain-open-peek-value="<%= @open_peek ? 'true' : 'false' %>"
+     data-strategy-mountain-open-menu-value="<%= @open_peek ? 'true' : 'false' %>"
+     data-strategy-camera-level-value="<%= camera_level %>"
+     data-strategy-camera-focus-id-value="<%= camera_focus %>"
+     data-strategy-camera-journey-url-value="<%= life_journey_path(@journey) %>"
      <% if @sheet_node.present? %>
        data-strategy-mountain-focus-sheet-value="strategy-sheet-<%= @sheet_node.id %>"
-       data-strategy-mountain-focus-peek-value="strategy-peek-<%= @sheet_node.id %>"
+       data-strategy-mountain-focus-menu-value="strategy-menu-<%= @sheet_node.id %>"
      <% end %>>
-  <header class="lp-strategy-page__header is-mockup px-4">
-    <div class="lp-strategy-page__top">
-      <p class="lp-brand-kicker">
-        <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
-        <span>LifePoints</span>
-      </p>
-      <div class="lp-strategy__sp is-soft is-pill shrink-0"
+
+  <header class="lp-world-hud" aria-label="<%= t('strategy.page_title') %>">
+    <div class="lp-world-hud__left">
+      <div class="lp-world-hud__chip is-ap" aria-label="<%= t('dash.action_points_label') %>">
+        <span class="lp-world-hud__chip-value" data-strategy-celebrate-target="apValue"><%= number_with_delimiter(current_user.life_points) %></span>
+        <span class="lp-world-hud__chip-name"><%= t("dash.action_points_short") %></span>
+      </div>
+      <div class="lp-world-hud__chip is-sp"
            data-strategy-celebrate-target="spBadge"
            aria-label="<%= t('strategy.sp_label') %>">
-        <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
-        <span class="lp-strategy__sp-label"><%= t("strategy.sp_hint_short") %></span>
+        <span class="lp-world-hud__chip-value" data-strategy-celebrate-target="spValue"><%= number_with_delimiter(current_user.strategy_points) %></span>
+        <span class="lp-world-hud__chip-name"><%= t("strategy.sp_hint_short") %></span>
       </div>
     </div>
-    <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
-    <% if @goal %>
-      <p class="lp-strategy-page__stage"><%= mountain[:label] %></p>
-      <%= render "life_journeys/strategy_breadcrumb", nodes: crumb_nodes %>
-      <p class="lp-strategy-page__goal-pct"><%= t("strategy.sheet.progress", pct: mountain[:progress].to_i) %></p>
-      <div class="lp-strategy-page__goal-track" aria-hidden="true">
-        <span style="width: <%= mountain[:progress].to_i %>%"></span>
-      </div>
-    <% else %>
-      <p class="lp-strategy-page__promise"><%= t("strategy.promise") %></p>
-    <% end %>
+    <div class="lp-world-hud__right">
+      <%= link_to settings_path, class: "lp-world-hud__gear", aria: { label: t("nav.settings") } do %>
+        <span aria-hidden="true">⚙</span>
+      <% end %>
+    </div>
+    <div class="lp-world-hud__meta">
+      <% if @goal %>
+        <p class="lp-world-hud__goal" title="<%= @goal.title %>">
+          <span aria-hidden="true">🎯</span>
+          <span><%= @goal.title.truncate(28) %></span>
+        </p>
+        <p class="lp-world-hud__camp">
+          <span aria-hidden="true">🏕</span>
+          <span><%= mountain[:label] %></span>
+          <span class="lp-world-hud__pct"><%= mountain[:progress].to_i %>%</span>
+        </p>
+      <% else %>
+        <p class="lp-world-hud__goal"><%= t("strategy.promise") %></p>
+      <% end %>
+      <%= render "shared/climb_streak_chip", status: (@climb_streak || strategy_climb_streak_status), compact: true %>
+    </div>
+    <button type="button"
+            class="lp-world-hud__zoomout"
+            data-strategy-camera-target="zoomOut"
+            data-action="strategy-camera#zoomOut"
+            hidden>
+      <%= t("strategy.camera.zoom_out") %>
+    </button>
   </header>
 
-  <%= render "life_journeys/strategy_mountain", mountain: mountain %>
+  <div class="lp-world__stage" id="strategy-world-map">
+    <%= render "life_journeys/strategy_mountain", mountain: mountain %>
+  </div>
 
-  <div class="lp-strategy-page__dock px-3">
+  <div class="lp-world__dock">
     <%= render "life_journeys/strategy_fight_cta" %>
   </div>
 
@@ -68,7 +96,7 @@
       end
     %>
     <% sheet_nodes.uniq.each do |node| %>
-      <%= render "life_journeys/strategy_pin_card", node: node %>
+      <%= render "life_journeys/strategy_pin_menu", node: node %>
       <%= render "life_journeys/strategy_node_sheet", node: node %>
     <% end %>
   <% end %>

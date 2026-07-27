@@ -8,7 +8,7 @@
           class: "lp-strategy-fight__cta is-primary",
           form: { data: { turbo: false }, class: "lp-strategy-fight__cta-form" } do %>
       <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
-      <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.cta") %></span>
+      <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.trail_cta") %></span>
       <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
     <%= link_to life_journey_path(@journey, focus_id: @today_battle.parent_id, node_id: @today_battle.id, sheet: 1),
@@ -69,7 +69,7 @@
           class: "lp-strategy-fight__cta is-primary",
           form: { data: { turbo: false }, class: "lp-strategy-fight__cta-form" } do %>
       <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
-      <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.cta") %></span>
+      <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.trail_cta") %></span>
       <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
   <% elsif @sheet_node.present? && strategy_child_horizon(@sheet_node).present? %>

@@ -1,20 +1,20 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Living mountain: peek cards by default, long-press radial for power tools.
+// Living mountain: tiny pin menus, long-press radial, sheet for deep edit.
 export default class extends Controller {
-  static targets = ["marker", "sheet", "peek", "radial"]
+  static targets = ["marker", "sheet", "menu", "radial"]
   static values = {
     open: Boolean,
-    openPeek: Boolean,
+    openMenu: Boolean,
     focusSheet: String,
-    focusPeek: String
+    focusMenu: String
   }
 
   connect() {
     this.pressTimer = null
     this.pressNodeId = null
     this.longPressed = false
-    if (this.openPeekValue) this.openFocusedPeek()
+    if (this.openMenuValue) this.openFocusedMenu()
     else if (this.openValue) this.openFocusedSheet({ add: true })
   }
 
@@ -22,14 +22,31 @@ export default class extends Controller {
     this.clearPress()
   }
 
-  peek(event) {
+  selectPin(event) {
     if (this.longPressed) {
       event.preventDefault()
       return
     }
     event.preventDefault()
-    const peekId = event.currentTarget.dataset.peekId
-    if (peekId) this.openPeekById(peekId)
+    const marker = event.currentTarget
+    const menuId = marker.dataset.menuId
+    const canZoom = marker.dataset.canZoom === "true"
+    const kind = marker.dataset.nodeKind
+    const nodeId = marker.dataset.nodeId
+
+    // Double-path: open tiny menu; plan/project also nudge camera if already zoomed deeper isn't needed.
+    if (menuId) this.openMenuById(menuId)
+
+    if (canZoom && (kind === "plan" || kind === "project")) {
+      this.camera()?.zoomTo({ id: nodeId, kind, push: true })
+    }
+  }
+
+  menuZoom(event) {
+    event.preventDefault()
+    const btn = event.currentTarget
+    this.closeOpenMenus()
+    this.camera()?.zoomTo({ id: btn.dataset.nodeId, kind: btn.dataset.nodeKind, push: true })
   }
 
   press(event) {
@@ -119,23 +136,54 @@ export default class extends Controller {
     sheet?.close()
   }
 
-  closePeek(event) {
-    const peek = event.currentTarget.closest("dialog")
-    peek?.close()
+  closeMenu(event) {
+    const menu = event.currentTarget.closest("dialog")
+    menu?.close()
   }
 
-  peekAdd(event) {
+  closeOpenMenus() {
+    this.menuTargets?.forEach((menu) => {
+      if (menu.open) menu.close()
+    })
+    document.querySelectorAll("dialog.lp-strategy-menu[open]").forEach((menu) => menu.close())
+  }
+
+  menuAdd(event) {
     event.preventDefault()
     const sheetId = event.currentTarget.dataset.sheetId
     event.currentTarget.closest("dialog")?.close()
     this.openSheetById(sheetId, { add: true })
   }
 
-  peekMore(event) {
+  menuEdit(event) {
     event.preventDefault()
     const sheetId = event.currentTarget.dataset.sheetId
     event.currentTarget.closest("dialog")?.close()
     this.openSheetById(sheetId, { edit: true })
+  }
+
+  menuMore(event) {
+    event.preventDefault()
+    const sheetId = event.currentTarget.dataset.sheetId
+    event.currentTarget.closest("dialog")?.close()
+    this.openSheetById(sheetId, { edit: true })
+  }
+
+  // Back-compat aliases used by older templates
+  peek(event) {
+    this.selectPin(event)
+  }
+
+  closePeek(event) {
+    this.closeMenu(event)
+  }
+
+  peekAdd(event) {
+    this.menuAdd(event)
+  }
+
+  peekMore(event) {
+    this.menuMore(event)
   }
 
   focusedSheetId() {
@@ -144,15 +192,19 @@ export default class extends Controller {
     return preferred?.dataset?.sheetId
   }
 
-  focusedPeekId() {
-    if (this.hasFocusPeekValue && this.focusPeekValue) return this.focusPeekValue
+  focusedMenuId() {
+    if (this.hasFocusMenuValue && this.focusMenuValue) return this.focusMenuValue
     const preferred = this.element.querySelector(".lp-strategy-marker.is-today, .lp-strategy-marker.is-lit")
-    return preferred?.dataset?.peekId
+    return preferred?.dataset?.menuId
+  }
+
+  openFocusedMenu() {
+    const id = this.focusedMenuId()
+    if (id) this.openMenuById(id)
   }
 
   openFocusedPeek() {
-    const id = this.focusedPeekId()
-    if (id) this.openPeekById(id)
+    this.openFocusedMenu()
   }
 
   openFocusedSheet(opts = {}) {
@@ -177,12 +229,19 @@ export default class extends Controller {
     this.openSheetById(marker.dataset.sheetId, { add: true })
   }
 
+  openMenuById(menuId) {
+    if (!menuId) return
+    this.closeOpenMenus()
+    const menu = document.getElementById(menuId)
+    if (!menu) return
+    if (typeof menu.showModal === "function" && !menu.open) menu.showModal()
+    else menu.setAttribute("open", "")
+  }
+
   openPeekById(peekId) {
-    if (!peekId) return
-    const peek = document.getElementById(peekId)
-    if (!peek) return
-    if (typeof peek.showModal === "function" && !peek.open) peek.showModal()
-    else peek.setAttribute("open", "")
+    // Legacy peeks renamed to menus with strategy-menu- ids
+    const id = peekId?.replace("strategy-peek-", "strategy-menu-") || peekId
+    this.openMenuById(id)
   }
 
   openSheetById(sheetId, opts = {}) {
@@ -198,5 +257,9 @@ export default class extends Controller {
 
   findSheet(sheetId) {
     return document.getElementById(sheetId)
+  }
+
+  camera() {
+    return this.application.getControllerForElementAndIdentifier(this.element, "strategy-camera")
   }
 }
