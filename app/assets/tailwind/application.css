@@ -5316,6 +5316,165 @@
   min-height: 14rem;
 }
 
+.lp-adventure__how-tree {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-adventure__how-flag.is-hero {
+  padding: 0.85rem 0.95rem;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--lp-level-goal, #166534) 14%, transparent);
+}
+
+.lp-adventure__how-flag.is-hero strong {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.lp-adventure__how-flag.is-peek {
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+}
+
+.lp-adventure__how-flag.is-peek .lp-adventure__how-battle-cue {
+  grid-column: 2;
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__how-plans,
+.lp-adventure__how-projects {
+  --lp-level: var(--lp-level-plan, #0f766e);
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--lp-level) 22%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-level) 8%, var(--lp-paper));
+}
+
+.lp-adventure__how-projects {
+  --lp-level: var(--lp-level-project, #1d4ed8);
+}
+
+.lp-adventure__how-plans.is-in,
+.lp-adventure__how-projects.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 420ms ease, transform 420ms cubic-bezier(0.22, 1.15, 0.36, 1);
+}
+
+.lp-adventure__how-tree-kicker {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-level);
+}
+
+.lp-adventure__how-tree-kicker span {
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__how-plan-chips,
+.lp-adventure__how-project-list,
+.lp-adventure__how-plan-counts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lp-adventure__how-plan-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.lp-adventure__how-plan-chips li {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  background: color-mix(in srgb, #fff 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lp-level-plan, #0f766e) 18%, var(--lp-border));
+  opacity: 0.72;
+}
+
+.lp-adventure__how-plan-chips li.is-focus {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--lp-level-plan, #0f766e) 45%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-level-plan, #0f766e) 14%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-plan, #0f766e) 12%, transparent);
+}
+
+.lp-adventure__how-project-list {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+}
+
+.lp-adventure__how-project-list li {
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--lp-ink);
+  background: color-mix(in srgb, #fff 72%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--lp-level-project, #1d4ed8) 22%, var(--lp-border));
+}
+
+.lp-adventure__how-project-list li.is-focus {
+  font-weight: 800;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--lp-level-project, #1d4ed8) 48%, var(--lp-border));
+  background:
+    linear-gradient(160deg, color-mix(in srgb, #bfdbfe 40%, transparent), transparent 60%),
+    color-mix(in srgb, var(--lp-level-project, #1d4ed8) 10%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-project, #1d4ed8) 14%, transparent);
+}
+
+.lp-adventure__how-plan-counts {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.lp-adventure__how-plan-counts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__how-plan-counts em {
+  font-style: normal;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--lp-muted) 70%, var(--lp-ink));
+}
+
+.lp-adventure__how-stack-body {
+  margin: 0.55rem 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--lp-muted);
+  text-wrap: pretty;
+}
+
+.lp-adventure__how-mountain-hint {
+  margin: 0.35rem 0 0.85rem;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--lp-muted);
+  text-wrap: pretty;
+}
+
 .lp-adventure__how-trail {
   width: 2rem;
   height: 100%;
@@ -5599,6 +5758,8 @@
   }
 
   .lp-adventure__how-flag,
+  .lp-adventure__how-plans,
+  .lp-adventure__how-projects,
   .lp-adventure__how-map-node,
   .lp-adventure__how-scene-line {
     opacity: 1;

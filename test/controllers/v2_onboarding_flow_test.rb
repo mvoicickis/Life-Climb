@@ -72,17 +72,29 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     get v2_onboarding_path(step: "how")
     assert_response :success
     assert_match(/How the game works/i, response.body)
-    assert_match(/Find a job/i, response.body)
-    assert_match(/Send applications/i, response.body)
-    assert_match(/Apply to 3 jobs today/i, response.body)
+    assert_match(/Get healthier/i, response.body)
+    assert_match(/Move every day/i, response.body)
+    assert_match(/Eat better/i, response.body)
+    assert_match(/Sleep well/i, response.body)
+    assert_match(/Start a walking habit/i, response.body)
+    assert_match(/Put on walking shoes/i, response.body)
+    assert_match(/Walk for 20 minutes/i, response.body)
+    assert_match(/Log today.?s walk/i, response.body)
+    assert_match(/Five other projects still sleep/i, response.body)
     assert_match(/Claim Trail Guide badge/i, response.body)
     assert_select "[data-controller='adventure-guide']"
     assert_select ".lp-adventure__how-stage"
     assert_select ".lp-adventure__how-titlecard"
     assert_select ".lp-adventure__how-dots li", 4
-    assert_select ".lp-adventure__how-flag", 4
+    assert_select ".lp-adventure__how-tree"
+    assert_select ".lp-adventure__how-plan-chips li", 3
+    assert_select ".lp-adventure__how-project-list li", 2
+    assert_select "[data-adventure-guide-target='flag']", 4
     assert_select ".lp-adventure__how-map-node", 4
     assert_select ".lp-adventure__how-badge"
+    assert_no_match(/Find a job/i, response.body)
+    assert_no_match(/Send applications/i, response.body)
+    assert_no_match(/Apply to 3 jobs today/i, response.body)
 
     patch v2_onboarding_url(step: "how")
     assert_redirected_to life_journey_path(journey)

@@ -107,8 +107,12 @@ export default class extends Controller {
       this.flagTargets.forEach((flag) => flag.classList.add("is-in"))
       return
     }
+
+    // Staged beats: Goal → Plans → Projects → Battle peek (data-stack-beat 0..3)
     this.flagTargets.forEach((flag, i) => {
-      this.queue(() => flag.classList.add("is-in"), 120 + i * 180)
+      const beat = Number(flag.dataset.stackBeat)
+      const delay = Number.isFinite(beat) ? 160 + beat * 420 : 120 + i * 180
+      this.queue(() => flag.classList.add("is-in"), delay)
     })
   }
 
