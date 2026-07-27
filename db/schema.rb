@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_203000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -330,8 +330,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_203000) do
 
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
+    t.integer "best_day_ap", default: 0, null: false
     t.string "character"
     t.integer "climb_streak_days", default: 0, null: false
+    t.integer "climb_streak_freezes", default: 0, null: false
+    t.date "climb_streak_frozen_on"
     t.date "climb_streak_on"
     t.datetime "created_at", null: false
     t.boolean "developer", default: false, null: false

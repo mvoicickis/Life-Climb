@@ -4,6 +4,9 @@
 <% boss = reward[:kind].to_s == "boss" || reward["kind"].to_s == "boss" %>
 <% ap = (reward[:ap] || reward["ap"]).to_i %>
 <% streak = (reward[:streak] || reward["streak"]).to_i %>
+<% freezes = (reward[:freezes] || reward["freezes"]).to_i %>
+<% personal_best = reward[:personal_best] || reward["personal_best"] %>
+<% earned_freeze = reward[:earned_freeze] || reward["earned_freeze"] %>
 <% percent = (reward[:percent] || reward["percent"]).to_i %>
 <% stage_label = reward[:stage_label] || reward["stage_label"] %>
 <% title = reward[:title] || reward["title"] %>
@@ -17,6 +20,9 @@
   <div class="lp-climb-reward__panel">
     <p class="lp-climb-reward__eyebrow"><%= boss ? t("climb.reward.boss_eyebrow") : t("climb.reward.eyebrow") %></p>
     <h2 class="lp-climb-reward__title"><%= title %></h2>
+    <% if personal_best %>
+      <p class="lp-climb-reward__pb"><%= t("climb.reward.personal_best") %></p>
+    <% end %>
     <% if ap.positive? %>
       <p class="lp-climb-reward__ap">+<%= ap %> <%= t("dash.action_points_short") %></p>
       <p class="lp-climb-reward__hint"><%= t("climb.reward.ap_meaning") %></p>
@@ -30,6 +36,11 @@
         <span aria-hidden="true">🔥</span>
         <%= t("climb.streak.title", count: streak) %>
       </p>
+    <% end %>
+    <% if earned_freeze %>
+      <p class="lp-climb-reward__token"><%= t("climb.streak.freeze_earned") %></p>
+    <% elsif freezes.positive? %>
+      <p class="lp-climb-reward__token"><%= t("climb.streak.freeze_chip", count: freezes) %></p>
     <% end %>
     <div class="lp-climb-reward__actions">
       <%= link_to (reward[:cta] || reward["cta"] || t("climb.reward.keep_fighting")),

@@ -88,6 +88,23 @@ de:
       mountain: "Berg"
       journey: "Reise"
       you: "Du"
+  climb:
+    streak:
+      chip: "%{count} Tage"
+      title:
+        one: "%{count}-Tage-Aufstieg"
+        other: "%{count}-Tage-Aufstieg"
+      aria: "Serie %{count} Tage, Basecamp-Token %{freezes}"
+      frozen_note: "Durch Basecamp geschützt"
+      freeze_chip:
+        one: "Basecamp ×%{count}"
+        other: "Basecamp ×%{count}"
+      freeze_hint: "Deckt einen ruhigen Aussetzer — automatisch."
+      freeze_earned: "Basecamp-Token verdient"
+      fresh_start: "Neuer Aufstieg beginnt"
+    reward:
+      personal_best: "Bisher größter Aufstieg"
+      back_to_trail: "Zurück zum Pfad"
   progress:
     title: "Reise"
     subtitle: "Wie weit bist du auf deinem Berg gekommen?"

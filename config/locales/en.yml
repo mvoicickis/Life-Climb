@@ -690,6 +690,14 @@ en:
       title:
         one: "%{count}-day climb"
         other: "%{count}-day climb"
+      aria: "Climb streak %{count} days, Base Camp tokens %{freezes}"
+      frozen_note: "Protected by Base Camp"
+      freeze_chip:
+        one: "Base Camp ×%{count}"
+        other: "Base Camp ×%{count}"
+      freeze_hint: "Covers one quiet miss — applied automatically."
+      freeze_earned: "Base Camp token earned"
+      fresh_start: "New climb starting"
     peek:
       open_trail: "Open trail"
       add_next: "Add next step"
@@ -704,6 +712,7 @@ en:
       boss_title: "Boss beaten"
       mountain_pct: "Mountain %{pct}%"
       ap_meaning: "Battle strength"
+      personal_best: "Biggest climb yet"
       keep_fighting: "Keep fighting"
       back_to_trail: "Back to the trail"
   focus:

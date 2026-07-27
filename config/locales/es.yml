@@ -88,6 +88,23 @@ es:
       mountain: "Montaña"
       journey: "Viaje"
       you: "Tú"
+  climb:
+    streak:
+      chip: "%{count} días"
+      title:
+        one: "Subida de %{count} día"
+        other: "Subida de %{count} días"
+      aria: "Racha %{count} días, tokens Base Camp %{freezes}"
+      frozen_note: "Protegido por Base Camp"
+      freeze_chip:
+        one: "Base Camp ×%{count}"
+        other: "Base Camp ×%{count}"
+      freeze_hint: "Cubre un día perdido en calma — automático."
+      freeze_earned: "Token Base Camp ganado"
+      fresh_start: "Nueva subida empezando"
+    reward:
+      personal_best: "Tu mayor subida hasta ahora"
+      back_to_trail: "Volver al sendero"
   progress:
     title: "Viaje"
     subtitle: "¿Cuánto has avanzado en tu montaña?"

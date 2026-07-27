@@ -1,0 +1,23 @@
+<%# Quiet climb streak + Base Camp freeze chip. locals: status: (optional) %>
+<% status = local_assigns[:status] || strategy_climb_streak_status %>
+<% compact = local_assigns.fetch(:compact, false) %>
+
+<% if status.days.positive? || status.freezes.positive? %>
+  <div class="lp-climb-streak<%= ' is-compact' if compact %><%= ' is-frozen' if status.frozen_recently %>"
+       aria-label="<%= t('climb.streak.aria', count: status.days, freezes: status.freezes) %>">
+    <% if status.days.positive? %>
+      <span class="lp-climb-streak__days">
+        <span aria-hidden="true"><%= status.frozen_recently ? "❄️" : "🔥" %></span>
+        <%= t("climb.streak.chip", count: status.days) %>
+      </span>
+      <% if status.frozen_recently %>
+        <span class="lp-climb-streak__note"><%= t("climb.streak.frozen_note") %></span>
+      <% end %>
+    <% end %>
+    <% if status.freezes.positive? %>
+      <span class="lp-climb-streak__token" title="<%= t('climb.streak.freeze_hint') %>">
+        <%= t("climb.streak.freeze_chip", count: status.freezes) %>
+      </span>
+    <% end %>
+  </div>
+<% end %>

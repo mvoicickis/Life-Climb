@@ -4490,6 +4490,54 @@
   margin-bottom: 0.95rem;
 }
 
+.lp-dash-battle__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lp-dash-battle__ring {
+  --lp-ring: 0;
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+}
+
+.lp-dash-battle__ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.lp-dash-battle__ring-track {
+  stroke: #e2e8f0;
+  stroke-width: 3.2;
+}
+
+.lp-dash-battle__ring-fill {
+  stroke: #16a34a;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-dash-battle__ring.is-closing .lp-dash-battle__ring-fill {
+  stroke: #ca8a04;
+  filter: drop-shadow(0 0 6px rgba(202, 138, 4, 0.45));
+}
+
+.lp-dash-battle__ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #334155;
+}
+
 .lp-dash-battle__title {
   margin: 0;
   font-size: 1.15rem;
@@ -9582,6 +9630,64 @@ a.lp-strategy-siblings__chip:hover {
   font-size: 0.85rem;
   font-weight: 800;
   color: #9a3412;
+}
+
+.lp-climb-streak {
+  margin-top: 0.45rem;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.lp-climb-streak__days,
+.lp-climb-streak__token,
+.lp-climb-streak__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 247, 237, 0.95);
+  color: #9a3412;
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+}
+
+.lp-climb-streak.is-frozen .lp-climb-streak__days,
+.lp-climb-streak.is-frozen .lp-climb-streak__note {
+  background: rgba(239, 246, 255, 0.96);
+  color: #334155;
+}
+
+.lp-climb-streak__token {
+  background: rgba(236, 253, 245, 0.96);
+  color: #166534;
+}
+
+.lp-climb-streak.is-compact .lp-climb-streak__note { display: none; }
+
+.lp-dash-hero__mountain.is-nudge .lp-dash-hero__camp {
+  animation: lp-camp-nudge 0.7s ease;
+}
+
+.lp-climb-reward__pb {
+  margin: 0.45rem 0 0;
+  display: inline-flex;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.lp-climb-reward__token {
+  margin: 0.35rem 0 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #166534;
 }
 
 .lp-next-mountain__hero {
