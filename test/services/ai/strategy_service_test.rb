@@ -124,6 +124,7 @@ class AiStrategyServiceTest < ActiveSupport::TestCase
     assert_match(/Requested horizon: project/, user_content)
     assert_match(/Parent Plan title: Get interviews/, user_content)
     assert_match(/Suggest titles ONLY for the requested horizon/i, system_content)
+    assert_match(/terminable step that completes/i, system_content)
     assert_equal [ { "type" => "project", "title" => "Build a portfolio site" } ], result["suggestions"]
   end
 
@@ -180,6 +181,10 @@ class AiStrategyServiceTest < ActiveSupport::TestCase
     assert_match(/Never create or modify user data/i, system_content)
     assert_match(/Minimum information/i, system_content)
     assert_match(/Goal → Plans → Projects → Battles/, system_content)
+    assert_match(/terminable operating action/i, system_content)
+    assert_match(/Prefer near-term, concrete actions/i, system_content)
+    assert_match(/Do not suggest busywork that blocks the active path/i, system_content)
+    assert_match(/If the approach is unclear, ask one clarifying question/i, system_content)
     assert_match(/Requested horizon: plan/, user_content)
     assert_equal "json_object", body.dig("response_format", "type")
     assert_equal "https://openrouter.ai/api/v1/chat/completions", http.last_uri.to_s

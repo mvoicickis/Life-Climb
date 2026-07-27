@@ -75,6 +75,9 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Find a job/i, response.body)
     assert_match(/Send applications/i, response.body)
     assert_match(/Apply to 3 jobs today/i, response.body)
+    assert_match(/Send follow-ups on 2 applications/i, response.body)
+    assert_match(/Fix my resume contact section/i, response.body)
+    assert_match(/finishable steps that complete a project/i, response.body)
     assert_match(/Claim Trail Guide badge/i, response.body)
     assert_select "[data-controller='adventure-guide']"
     assert_select ".lp-adventure__how-stage"
