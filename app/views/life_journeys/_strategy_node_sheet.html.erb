@@ -1,0 +1,106 @@
+<%# Identical node sheet for every Strategy kind. locals: node: %>
+<% node = local_assigns[:node] || @sheet_node %>
+<% return if node.blank? %>
+<% kind = strategy_kind_css(node) %>
+<% child_horizon = strategy_child_horizon(node) %>
+<% titles = strategy_parent_titles(node) %>
+<% area = @journey.life_area %>
+<% open = @open_sheet && (@sheet_node&.id == node.id) %>
+
+<dialog class="lp-strategy-sheet is-<%= kind %>"
+        id="strategy-sheet-<%= node.id %>"
+        data-strategy-mountain-target="sheet"
+        data-node-id="<%= node.id %>"
+        <%= "open" if open %>>
+  <div class="lp-strategy-sheet__panel">
+    <header class="lp-strategy-sheet__head">
+      <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.#{node.day? ? 'day' : node.kind}") %></p>
+      <h2 class="lp-strategy-sheet__title"><%= node.title %></h2>
+      <% unless node.day? %>
+        <p class="lp-strategy-sheet__progress"><%= t("strategy.sheet.progress", pct: node.progress_percent) %></p>
+      <% end %>
+      <button type="button" class="lp-strategy-sheet__close" data-action="strategy-mountain#closeSheet" aria-label="<%= t('strategy.sheet.close') %>">×</button>
+    </header>
+
+    <div class="lp-strategy-sheet__actions">
+      <details class="lp-strategy-sheet__edit">
+        <summary><%= t("strategy.sheet.edit") %></summary>
+        <%= form_with url: strategy_goal_path(node), method: :patch, class: "lp-strategy-sheet__form", data: { turbo: false } do %>
+          <%= text_field_tag :title, node.title,
+                required: true,
+                maxlength: 120,
+                id: "strategy-sheet-rename-#{node.id}",
+                class: "lp-input w-full",
+                autocomplete: "off" %>
+          <%= submit_tag t("strategy.save_name"), class: "lp-strategy-sheet__btn is-save" %>
+        <% end %>
+      </details>
+
+      <% if child_horizon.present? %>
+        <details class="lp-strategy-sheet__add" id="strategy-sheet-add-<%= node.id %>">
+          <summary><%= strategy_add_label(node) %></summary>
+          <%= form_with url: strategy_goals_path, method: :post, class: "lp-strategy-sheet__form", data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, area.id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :horizon, child_horizon %>
+            <%= hidden_field_tag :parent_id, node.id %>
+            <% if child_horizon == "day" %>
+              <%= hidden_field_tag :scheduled_on, Date.current %>
+            <% end %>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  id: "strategy-sheet-add-title-#{node.id}",
+                  class: "lp-input w-full",
+                  placeholder: t("strategy.#{child_horizon == 'day' ? 'battle' : child_horizon}_placeholder"),
+                  autocomplete: "off" %>
+            <%= submit_tag strategy_add_label(node), class: "lp-strategy-sheet__btn is-add" %>
+          <% end %>
+
+          <%= render "strategy_helps/launch",
+                goal: (@goal || node).title,
+                ideal_scene: @journey.ideal_scene,
+                current_reality: @journey.current_reality,
+                life_area: area&.label,
+                goal_title: titles[:goal_title],
+                plan_title: titles[:plan_title],
+                project_title: titles[:project_title],
+                horizon: child_horizon,
+                accept_as: "fill",
+                parent_id: node.id,
+                life_area_id: area.id,
+                journey_id: @journey.id,
+                target_input: "#strategy-sheet-add-title-#{node.id}",
+                panel_id: "strategist-panel-sheet-#{node.id}",
+                button_label: strategy_help_label(node) %>
+        </details>
+      <% else %>
+        <%= render "strategy_helps/launch",
+              goal: (@goal || node).title,
+              ideal_scene: @journey.ideal_scene,
+              current_reality: @journey.current_reality,
+              life_area: area&.label,
+              goal_title: titles[:goal_title],
+              plan_title: titles[:plan_title],
+              project_title: titles[:project_title],
+              horizon: "day",
+              accept_as: "ideas",
+              parent_id: node.parent_id,
+              life_area_id: area.id,
+              journey_id: @journey.id,
+              panel_id: "strategist-panel-sheet-#{node.id}",
+              button_label: t("strategy.help.cta") %>
+      <% end %>
+
+      <%= button_to t("strategy.sheet.delete"),
+            strategy_goal_path(node),
+            method: :delete,
+            class: "lp-strategy-sheet__btn is-delete",
+            form: {
+              data: {
+                turbo_confirm: strategy_delete_confirm(node)
+              }
+            } %>
+    </div>
+  </div>
+</dialog>

@@ -311,6 +311,52 @@ en:
     intro_short: "One decision at a time. Season ends %{date}."
     your_quests: "Your path so far"
     more_actions: "More actions"
+    zones:
+      summit: "Summit"
+      plans: "Plans"
+      projects: "Projects"
+      battles: "Battles"
+      camp: "Camp"
+      you: "You"
+      empty_goal: "Name your mountain"
+      add_plan_hint: "Add a plan to open a trail"
+      add_project_hint: "Add a project under this plan"
+      add_battle_hint: "Add a battle under this project"
+      pick_plan: "Tap a plan to reveal its projects"
+      pick_project: "Tap a project to reveal its battles"
+      projects_count:
+        one: "%{count} project"
+        other: "%{count} projects"
+      battles_count:
+        one: "%{count} battle"
+        other: "%{count} battles"
+    sheet:
+      edit: "Edit"
+      add_child: "Add child"
+      add_plan: "Add plan"
+      add_project: "Add project"
+      add_battle: "Add battle"
+      delete: "Delete"
+      close: "Close"
+      progress: "%{pct}% complete"
+    fight:
+      label: "Today’s climb"
+      cta: "Fight this battle"
+      today_hint: "Glowing on your mountain: %{title}"
+      build_kicker: "Next on the climb"
+      keep_building: "Keep climbing — add the next marker."
+    delete_confirm:
+      simple: "Delete “%{title}”?"
+      with_children: "Delete “%{title}”?\n\nThis will also delete:\n%{list}"
+      plans:
+        one: "• %{count} plan"
+        other: "• %{count} plans"
+      projects:
+        one: "• %{count} project"
+        other: "• %{count} projects"
+      battles:
+        one: "• %{count} battle"
+        other: "• %{count} battles"
     mountain:
       stages:
         empty: "Your mountain is waiting"
@@ -375,12 +421,15 @@ en:
       example_project: "Learn German"
       example_battle: "Learn 20 words"
     help:
-      cta: "Help me plan"
+      cta: "Help me"
       cta_goal: "Help me define this goal"
       cta_project: "Help me define this project"
       cta_battle: "Help me choose the next battle"
       cta_new_journey: "Help me think this through"
       cta_onboarding: "Help me clarify this mountain"
+      suggest_plan: "Suggest a plan"
+      suggest_project: "Suggest a project"
+      suggest_battle: "Suggest a battle"
       thinking: "Thinking…"
       goal_required: "Add your goal title first."
       result_kicker: "Strategist"

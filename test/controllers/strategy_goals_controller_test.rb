@@ -20,23 +20,23 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     @area = @journey.life_area
   end
 
-  test "journey show asks the goal question and inlines next up" do
+  test "journey show is a living mountain with create-goal climb" do
     get life_journey_path(@journey)
     assert_response :success
     assert_match(/This season.?s mountain/i, response.body)
     assert_match(/One mountain\. Today.?s battle/i, response.body)
     assert_match(/What do I ultimately want to achieve/i, response.body)
-    assert_match(/Next up/i, response.body)
     assert_match(/Begin Journey/i, response.body)
     assert_match(/Your mountain is waiting/i, response.body)
-    assert_select ".lp-strategy-mountain.is-empty"
-    assert_select "[data-controller='strategy-celebrate']"
-    assert_select ".lp-strategy-path__stage.is-goal"
-    assert_select ".lp-strategy-path__stage.is-plans"
-    assert_select ".lp-strategy-path__stage.is-projects"
-    assert_select ".lp-strategy-path__stage.is-battle"
-    assert_select ".lp-strategy-next.is-goal"
+    assert_select ".lp-strategy-mountain.is-living.is-empty"
+    assert_select ".lp-strategy-mountain__zone.is-summit"
+    assert_select ".lp-strategy-fight"
     assert_select "#next-up-title"
+    assert_select "[data-controller*='strategy-celebrate']"
+    assert_select "[data-controller*='strategy-mountain']"
+    assert_select ".lp-strategy-path", count: 0
+    assert_select ".lp-strategy__board", count: 0
+    assert_select ".lp-strategy-quests", count: 0
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)
     assert_no_match(/This month/i, response.body)
@@ -57,7 +57,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-strategy-mountain.is-foothill"
+    assert_select ".lp-strategy-mountain.is-living.is-foothill"
+    assert_select ".lp-strategy-marker.is-goal", text: /Become a Rails developer/i
     assert_match(/Trailhead/i, response.body)
   end
 
@@ -92,10 +93,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_match(/Your mountain is ready/i, response.body)
-    assert_select ".lp-strategy-next.is-handoff input[type=submit][value=?]", "Fight Today's Battle"
-    assert_match(/What is the very next action I can take/i, response.body)
-    assert_select ".lp-strategy-overflow"
+    assert_select ".lp-strategy-marker.is-battle.is-today", text: /Learn 20 words/i
+    assert_select ".lp-strategy-fight__cta", text: /Fight this battle/i
+    assert_select ".lp-strategy-sheet.is-project"
+    assert_select ".lp-strategy__board", count: 0
     assert_no_match(/Monthly Goals/i, response.body)
   end
 
@@ -163,72 +164,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert project.reload.completed?
   end
 
-  test "project with battles keeps add-another-battle option" do
-    goal = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
-    )
-    plan = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
-    )
-    project = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
-    )
-    @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
-      title: "First battle", scheduled_on: Date.current, position: 0
-    )
-
-    get life_journey_path(@journey, focus_id: project.id)
-    assert_response :success
-    assert_match(/Your mountain is ready/i, response.body)
-    assert_select "button.lp-strategy-next__secondary", text: /Add another battle/i
-    assert_select "#add-another-battle input[name=horizon][value=day]"
-    assert_select "#add-battle-title"
-    assert_select "#strategy-add-battle.lp-strategy-add input[name=title]"
-    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-battle']"
-
-    post strategy_goals_path, params: {
-      life_area_id: @area.id, life_journey_id: @journey.id,
-      parent_id: project.id, horizon: "day", scheduled_on: Date.current.to_s,
-      title: "Second battle"
-    }
-    assert_equal 2, project.children.for_kind("day").count
-    assert @user.daily_todos.for_day(Date.current).exists?(title: "Second battle")
-  end
-
-  test "strategy board shows visible add cards for plans projects and battles" do
-    goal = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
-    )
-    plan = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan A", position: 0
-    )
-    project = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project A", position: 0
-    )
-    @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
-      title: "Battle A", scheduled_on: Date.current, position: 0
-    )
-
-    get life_journey_path(@journey, focus_id: goal.id)
-    assert_response :success
-    assert_select "#strategy-add-plan.lp-strategy-add", text: /Add another plan/i
-    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-plan']", text: /Add plan/i
-    assert_select "details.lp-strategy__optional", count: 0
-
-    get life_journey_path(@journey, focus_id: plan.id)
-    assert_response :success
-    assert_select "#strategy-add-project.lp-strategy-add", text: /Add another project/i
-    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-project']", text: /Add project/i
-
-    get life_journey_path(@journey, focus_id: project.id)
-    assert_response :success
-    assert_select "#strategy-add-battle.lp-strategy-add", text: /Add another battle/i
-    assert_match(/Add today.?s battle/i, response.body)
-  end
-
-  test "strategy board shows sibling switcher when multiple plans or projects exist" do
+  test "living mountain expands one branch and keeps other projects compact" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -244,32 +180,31 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project_b = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project Two", position: 1
     )
-    @user.strategy_goals.create!(
+    battle = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: project_a, horizon: "day",
       title: "Battle One", scheduled_on: Date.current, position: 0
     )
-
-    get life_journey_path(@journey, focus_id: plan_a.id)
-    assert_response :success
-    assert_select ".lp-strategy-siblings.is-plan", text: /Switch plan/i
-    assert_select ".lp-strategy-siblings__chip.is-current", text: /Plan Alpha/i
-    assert_select "a.lp-strategy-siblings__chip[href=?]", life_journey_path(@journey, focus_id: plan_b.id), text: /Plan Beta/i
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan_b, horizon: "project", title: "Lone Project", position: 0
+    )
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-siblings.is-project", text: /Switch project/i
-    assert_select ".lp-strategy-siblings__chip.is-current", text: /Project One/i
-    assert_select "a.lp-strategy-siblings__chip[href=?]", life_journey_path(@journey, focus_id: project_b.id), text: /Project Two/i
-
-    solo_project = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: plan_b, horizon: "project", title: "Lone Project", position: 0
-    )
-    get life_journey_path(@journey, focus_id: solo_project.id)
-    assert_response :success
+    assert_select ".lp-strategy-marker.is-plan", text: /Plan Alpha/i
+    assert_select ".lp-strategy-marker.is-plan", text: /Plan Beta/i
+    assert_select ".lp-strategy-marker.is-project.is-lit", text: /Project One/i
+    assert_select ".lp-strategy-marker.is-project", text: /Project Two/i
+    assert_select ".lp-strategy-marker.is-battle.is-today", text: /Battle One/i
+    assert_match(/1 battle/i, response.body)
+    assert_select ".lp-strategy-marker", text: /Lone Project/i, count: 0
+    assert_select "#strategy-sheet-#{battle.id}"
+    assert_select ".lp-strategy-sheet__btn.is-delete", minimum: 1
+    assert_select "#strategy-sheet-rename-#{goal.id}"
     assert_select ".lp-strategy-siblings", count: 0
+    assert_select "a.lp-strategy__board-add-link", count: 0
   end
 
-  test "strategy overflow shows rename and remove for goals plans projects and battles" do
+  test "node sheet exposes edit add help and delete for every level" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -284,16 +219,17 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
       title: "Battle", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: goal.id)
+    get life_journey_path(@journey, focus_id: goal.id, sheet: 1)
     assert_response :success
-    assert_select "#strategy-rename-#{goal.id}[value=?]", "Goal"
-    assert_select "#strategy-rename-#{plan.id}[value=?]", "Plan"
-    assert_select ".lp-strategy-overflow__action.is-save", minimum: 1
-    assert_select ".lp-strategy-overflow__action.is-remove", minimum: 1
+    assert_select "#strategy-sheet-#{goal.id}[open]"
+    assert_select "#strategy-sheet-rename-#{goal.id}[value=?]", "Goal"
+    assert_select "#strategy-sheet-add-title-#{goal.id}"
+    assert_select "#strategy-sheet-#{goal.id} .lp-strategy-sheet__btn.is-delete"
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: project.id, node_id: battle.id)
     assert_response :success
-    assert_select "#strategy-rename-#{battle.id}[value=?]", "Battle"
+    assert_select "#strategy-sheet-#{battle.id}"
+    assert_select "#strategy-sheet-rename-#{battle.id}[value=?]", "Battle"
   end
 
   test "update renames strategy goals and syncs battle titles to today" do
