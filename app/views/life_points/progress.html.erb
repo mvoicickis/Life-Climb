@@ -2,7 +2,7 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<%= tag.div class: "lp-progress",
+<%= tag.div class: "lp-progress is-calm",
       data: {
         controller: "progress-charts progress-achievements",
         progress_charts_growth_value: @progress[:growth],
@@ -34,27 +34,37 @@
         summary: @mountain_summary,
         journey: @journey %>
 
-  <section class="lp-journey-activity" aria-label="<%= t('progress.activity_title') %>">
-    <header class="lp-journey-section__head">
-      <h2><%= t("progress.activity_title") %></h2>
-      <p><%= t("progress.activity_hint") %></p>
-    </header>
-
-    <%= render "life_points/progress_filters", progress: @progress %>
-    <%= render "life_points/progress_kpis", kpis: @progress[:kpis] %>
-
-    <div class="lp-progress__grid lp-progress__grid--charts">
-      <%= render "life_points/progress_growth" %>
-      <%= render "life_points/progress_categories", categories: @progress[:categories] %>
-    </div>
-
-    <%= render "life_points/progress_heatmap", heatmap: @progress[:heatmap] %>
-  </section>
-
   <div class="lp-progress__grid">
     <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
-    <%= render "life_points/progress_insights", insights: @progress[:insights] %>
   </div>
+
+  <details class="lp-journey-details">
+    <summary class="lp-journey-details__summary">
+      <span class="lp-journey-details__title"><%= t("progress.details_summary") %></span>
+      <span class="lp-journey-details__hint"><%= t("progress.details_hint") %></span>
+    </summary>
+
+    <section class="lp-journey-activity" aria-label="<%= t('progress.activity_title') %>">
+      <header class="lp-journey-section__head">
+        <h2><%= t("progress.activity_title") %></h2>
+        <p><%= t("progress.activity_hint") %></p>
+      </header>
+
+      <%= render "life_points/progress_filters", progress: @progress %>
+      <%= render "life_points/progress_kpis", kpis: @progress[:kpis] %>
+
+      <div class="lp-progress__grid lp-progress__grid--charts">
+        <%= render "life_points/progress_growth" %>
+        <%= render "life_points/progress_categories", categories: @progress[:categories] %>
+      </div>
+
+      <%= render "life_points/progress_heatmap", heatmap: @progress[:heatmap] %>
+    </section>
+
+    <div class="lp-progress__grid">
+      <%= render "life_points/progress_insights", insights: @progress[:insights] %>
+    </div>
+  </details>
 <% end %>
 
 <%= render "shared/lp_dash_nav", active: :journey %>

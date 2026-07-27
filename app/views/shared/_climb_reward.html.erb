@@ -48,7 +48,7 @@
             data: { action: "climb-reward#dismiss" } %>
       <%= link_to (reward[:trail_cta] || reward["trail_cta"] || t("climb.reward.back_to_trail")),
             trail,
-            class: "lp-climb-reward__secondary",
+            class: "lp-climb-reward__link",
             data: { action: "climb-reward#dismiss" } %>
     </div>
     <button type="button" class="lp-climb-reward__close" data-action="climb-reward#dismiss" aria-label="<%= t('strategy.sheet.close') %>">×</button>

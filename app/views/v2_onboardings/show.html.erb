@@ -91,11 +91,16 @@
     </section>
 
   <% elsif @step == "forge" %>
+    <% forge_continue =
+         begin
+           j = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+           j ? life_journey_path(j) : dashboard_path
+         end %>
     <section class="lp-adventure__card lp-adventure__forge"
              aria-labelledby="adventure-forge-title"
              data-controller="adventure-forge"
-             data-adventure-forge-url-value="<%= v2_onboarding_path(step: 'how') %>"
-             data-adventure-forge-delay-value="3200">
+             data-adventure-forge-url-value="<%= forge_continue %>"
+             data-adventure-forge-delay-value="2800">
       <h1 id="adventure-forge-title" class="lp-adventure__title"><%= t("v2_onboarding.forge_title") %></h1>
       <ul class="lp-adventure__forge-list" aria-live="polite">
         <li class="lp-adventure__forge-item is-on" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_mountain") %></li>
@@ -104,7 +109,10 @@
         <li class="lp-adventure__forge-item" data-adventure-forge-target="step"><%= t("v2_onboarding.forge_step_ready") %></li>
       </ul>
       <p class="lp-adventure__forge-wait"><%= t("v2_onboarding.forge_wait") %></p>
-      <%= link_to t("v2_onboarding.enter_how"), v2_onboarding_path(step: "how"), class: "lp-cta w-full inline-flex justify-center" %>
+      <%= link_to t("v2_onboarding.enter_how"), forge_continue, class: "lp-cta w-full inline-flex justify-center" %>
+      <p class="lp-adventure__forge-optional">
+        <%= link_to t("v2_onboarding.how_optional"), v2_onboarding_path(step: "how"), class: "lp-adventure__forge-optional-link" %>
+      </p>
     </section>
 
   <% else %>

@@ -24,10 +24,7 @@ module RequireOnboarding
       redirect_to v2_onboarding_path and return
     end
 
-    if current_user&.needs_adventure_guide?
-      redirect_to v2_onboarding_path(step: "how") and return
-    end
-
+    # How-guide is optional after forge — never block Today / Mountain / Journey.
     redirect_to_strategy_if_hierarchy_incomplete
   end
 
@@ -72,6 +69,7 @@ module RequireOnboarding
       life_points
       progress
       focus
+      pages
     ].include?(controller_name)
   end
 end

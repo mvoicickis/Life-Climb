@@ -31,15 +31,10 @@
       </div>
     </div>
     <div class="lp-dash__stats">
-      <div class="lp-dash__stat-chip" aria-label="<%= t('dash.action_points_label') %>">
+      <div class="lp-dash__stat-chip is-primary" aria-label="<%= t('dash.action_points_label') %>">
         <span class="lp-dash__stat-value" data-battle-day-target="lpTotal"><%= number_with_delimiter(@life_points) %></span>
         <span class="lp-dash__stat-name"><%= t("dash.action_points_label") %></span>
         <span class="lp-dash__stat-hint"><%= t("dash.action_points_hint") %></span>
-      </div>
-      <div class="lp-dash__stat-chip" aria-label="<%= t('strategy.sp_label') %>">
-        <span class="lp-dash__stat-value"><%= number_with_delimiter(current_user.strategy_points) %></span>
-        <span class="lp-dash__stat-name"><%= t("strategy.sp_label") %></span>
-        <span class="lp-dash__stat-hint"><%= t("strategy.sp_hint") %></span>
       </div>
     </div>
   </header>
@@ -54,19 +49,9 @@
 
   <% if flash[:human_win].present? %>
     <div class="lp-dash-human-win" role="status">
-      <p class="lp-dash-human-win__kicker"><%= t("strategy.first_climb.human_kicker") %></p>
       <p class="lp-dash-human-win__body"><%= flash[:human_win] %></p>
       <p class="lp-dash-human-win__next"><%= t("strategy.first_climb.human_next") %></p>
     </div>
-  <% end %>
-
-  <% if @project_check %>
-    <%= render "dashboard/dash_project_check", project: @project_check %>
-  <% elsif @battle_angle_project && @battle_angles.any? %>
-    <%= render "dashboard/dash_battle_angles",
-          project: @battle_angle_project,
-          angles: @battle_angles,
-          journey: @journey %>
   <% end %>
 
   <% if @show_plan_route %>
@@ -89,6 +74,16 @@
           day_full: @battle_day_full,
           aspect_key: @journey.life_area.key,
           upcoming: @upcoming_battle %>
+  <% end %>
+
+  <%# Secondary coaching only after the fight is clear — never above the battle. %>
+  <% if !@show_plan_route && @project_check %>
+    <%= render "dashboard/dash_project_check", project: @project_check %>
+  <% elsif !@show_plan_route && @battle_angle_project && @battle_angles.any? %>
+    <%= render "dashboard/dash_battle_angles",
+          project: @battle_angle_project,
+          angles: @battle_angles,
+          journey: @journey %>
   <% end %>
 
   <% if @targets.any? %>
