@@ -7,6 +7,7 @@ one:
   total_points: 0
   home_stat_count: 6
   admin: false
+  developer: false
   onboarding_completed_at: <%= Time.current %>
   support_milestones_shown: <%= [ "adventure_guide" ].to_json %>
   focus_building: one
@@ -18,6 +19,7 @@ two:
   total_points: 0
   home_stat_count: 6
   admin: false
+  developer: false
   onboarding_completed_at: <%= Time.current %>
   support_milestones_shown: <%= [ "adventure_guide" ].to_json %>
   focus_building: two
@@ -29,5 +31,6 @@ admin:
   total_points: 0
   home_stat_count: 6
   admin: true
+  developer: false
   onboarding_completed_at: <%= Time.current %>
   support_milestones_shown: <%= [ "adventure_guide" ].to_json %>

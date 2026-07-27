@@ -43,12 +43,17 @@ class V2OnboardingsController < ApplicationController
       redirect_to v2_onboarding_path(step: "deadline")
     when "deadline"
       begin
-        Onboarding::Run.call(
-          user: current_user,
-          area_key: DEFAULT_AREA_KEY,
-          title: draft["title"],
-          route_mission: true
-        )
+        # Replaying New Player Experience must not duplicate Goals/Journeys.
+        if current_user.life_journeys.exists?
+          current_user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+        else
+          Onboarding::Run.call(
+            user: current_user,
+            area_key: DEFAULT_AREA_KEY,
+            title: draft["title"],
+            route_mission: true
+          )
+        end
         session.delete(:v2_onboarding)
         redirect_to v2_onboarding_path(step: "forge")
       rescue Onboarding::Run::Error, LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error => e

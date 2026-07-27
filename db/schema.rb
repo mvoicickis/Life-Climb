@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_123000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_125837) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -332,6 +332,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_123000) do
     t.boolean "admin", default: false, null: false
     t.string "character"
     t.datetime "created_at", null: false
+    t.boolean "developer", default: false, null: false
     t.string "email_address", null: false
     t.integer "focus_building_id"
     t.integer "home_stat_count", default: 6, null: false

@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :impersonating?, :announcement_banner
+  helper_method :current_user, :impersonating?, :announcement_banner, :developer?
 
   before_action :enforce_maintenance_mode
 
@@ -14,6 +14,10 @@ class ApplicationController < ActionController::Base
 
   def current_user
     Current.user
+  end
+
+  def developer?
+    current_user&.developer?
   end
 
   def impersonating?
