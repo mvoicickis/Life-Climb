@@ -34,6 +34,7 @@
           <%= link_to t("admin.nav.feedback"), admin_feedbacks_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "feedbacks"}" %>
           <%= link_to t("admin.nav.system"), admin_system_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "systems"}" %>
           <%= link_to t("admin.nav.ops"), admin_ops_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "ops"}" %>
+          <%= link_to t("admin.nav.strategy"), admin_strategy_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "strategy"}" %>
         </nav>
         <div class="lp-admin__actions">
           <%= link_to t("admin.nav.app"), dashboard_path, class: "lp-admin__ghost" %>
