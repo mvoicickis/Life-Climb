@@ -110,7 +110,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
       daily_todo: { title: "Cancel unused subscription", aspect_key: "money" }
     }
     assert_redirected_to life_journey_path(@user.primary_focused_journey)
-    assert_match(/Plan new battles on Strategy/i, flash[:alert].to_s)
+    assert_match(/Plan new battles on Mountain/i, flash[:alert].to_s)
     assert_nil @user.daily_todos.for_day.find_by(title: "Cancel unused subscription")
   end
 

@@ -84,7 +84,8 @@ lv:
     action_points_hint: "Uzvari šodienas kaujas"
     nav:
       today: "Šodien"
-      strategy: "Stratēģija"
+      strategy: "Kalns"
+      mountain: "Kalns"
       journey: "Ceļojums"
       you: "Tu"
   progress:
@@ -99,7 +100,7 @@ lv:
     plans_completed: "Pabeigtie plāni"
     projects_completed: "Pabeigtie projekti"
     current_expedition: "Pašreizējā ekspedīcija"
-    open_strategy: "Atvērt Stratēģiju →"
+    open_strategy: "Atvērt Kalnu →"
     lock_goal: "Noformulē sezonas mērķi Stratēģijā, lai sāktu kāpšanu."
     activity_title: "Aktivitāte"
     activity_hint: "Papildu detaļas šim periodam."

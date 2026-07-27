@@ -44,7 +44,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Write tests/, response.body)
     assert_match(/Polish UI/, response.body)
-    assert_match(/Open Strategy/i, response.body)
+    assert_match(/Open Mountain/i, response.body)
   end
 
   test "strategy battle sync marks journey today layer done" do

@@ -84,7 +84,8 @@ es:
     action_points_hint: "Gana las batallas de hoy"
     nav:
       today: "Hoy"
-      strategy: "Estrategia"
+      strategy: "Montaña"
+      mountain: "Montaña"
       journey: "Viaje"
       you: "Tú"
   progress:
@@ -99,7 +100,7 @@ es:
     plans_completed: "Planes completados"
     projects_completed: "Proyectos completados"
     current_expedition: "Expedición actual"
-    open_strategy: "Abrir Estrategia →"
+    open_strategy: "Abrir Montaña →"
     lock_goal: "Fija tu meta de temporada en Estrategia para empezar el ascenso."
     activity_title: "Actividad"
     activity_hint: "Detalle de apoyo para este período."

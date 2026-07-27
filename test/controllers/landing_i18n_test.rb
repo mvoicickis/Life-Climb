@@ -71,7 +71,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_select ".lp-landing-chip", text: /\A\s*Self\s*\z/, count: 0
   end
 
-  test "signed-in german nav uses Today Strategy Journey You labels" do
+  test "signed-in german nav uses Mountain Today Journey You labels" do
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(
@@ -86,15 +86,13 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     )
     patch locale_path(locale: :de)
     follow_redirect!
-    get dashboard_path
-    assert_response :success
-    assert_select ".lp-dash-nav__link", text: /Heute/i
-    assert_select ".lp-dash-nav__link", text: /Strategie/i
-    assert_select ".lp-dash-nav__link", text: /Reise/i
-    assert_select ".lp-dash-nav__link", text: /Du/i
-
+    # Journey page is hierarchy-gate exempt and always shows primary nav.
     get life_points_path
     assert_response :success
+    assert_select ".lp-dash-nav__link", text: /Heute/i
+    assert_select ".lp-dash-nav__link", text: /Berg/i
+    assert_select ".lp-dash-nav__link", text: /Reise/i
+    assert_select ".lp-dash-nav__link", text: /Du/i
     assert_match(/Reise/, response.body)
     assert_match(/Berg-Zusammenfassung/, response.body)
     assert_match(/Action Points/, response.body)
