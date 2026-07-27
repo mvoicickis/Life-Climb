@@ -1,0 +1,55 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class TodayPageTest < ActionDispatch::IntegrationTest
+  test "today renders for hierarchy-ready user with closing ring" do
+    user = users(:one)
+    sign_in_as user
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Write tests",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.create!(life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0)
+    plan = user.strategy_goals.create!(life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Plan", position: 0)
+    project = user.strategy_goals.create!(life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Project", position: 0)
+    user.strategy_goals.create!(life_area: area, life_journey: journey, parent: project, horizon: "day", title: "Battle", scheduled_on: Date.current, position: 0)
+    Strategy::CascadeToDaily.call(user: user, life_area: area)
+
+    assert Strategy::HierarchyReady.call(user: user)
+    get dashboard_path
+    assert_response :success, -> { "body=#{response.body.to_s[0, 2000]}" }
+    assert_select ".lp-dash-battle"
+    assert_select ".lp-dash-battle__ring"
+  end
+
+  test "today renders while mountain spine is still incomplete" do
+    user = users(:one)
+    sign_in_as user
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Write tests",
+      closer_percent: 20,
+      route_mission: true
+    )
+    user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+
+    refute Strategy::HierarchyReady.call(user: user)
+    get dashboard_path
+    assert_response :success
+    assert_match(/Plan Your Route|Back to the trail|Battle/i, response.body)
+  end
+end

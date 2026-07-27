@@ -50,7 +50,13 @@ module RequireOnboarding
   def hierarchy_gate_exempt?
     return true if controller_path.start_with?("admin", "developer")
 
+    # Today stays reachable: empty / plan-route / handoff states guide players to Mountain.
+    # Completing Today actions must not bounce mid-fight when the spine is still growing.
     %w[
+      dashboard
+      battle_completions
+      daily_todos
+      mission_completions
       life_journeys
       strategy_goals
       strategy_helps

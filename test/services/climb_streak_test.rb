@@ -69,4 +69,17 @@ class ClimbStreakTest < ActiveSupport::TestCase
     assert_not result.earned_freeze
     assert_equal 2, @user.reload.climb_streak_freezes
   end
+
+  test "reconcile survives missing freeze columns" do
+    @user.update!(climb_streak_days: 4, climb_streak_on: Date.current - 2)
+    @user.define_singleton_method(:has_attribute?) do |name|
+      return false if %i[climb_streak_freezes climb_streak_frozen_on].include?(name.to_sym)
+
+      User.instance_method(:has_attribute?).bind_call(self, name)
+    end
+
+    result = Climb::Streak.reconcile!(user: @user)
+    assert result.reset
+    assert_equal 0, @user.reload.climb_streak_days
+  end
 end
