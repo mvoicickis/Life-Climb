@@ -1,17 +1,12 @@
-<%# Frosted glass node card on the trail map. locals: node:, lit:, today:, whisper: %>
+<%# Pin marker on the lit trail. locals: node:, lit:, today:, whisper:, on_spine:, side: %>
 <% node = local_assigns.fetch(:node) %>
 <% lit = local_assigns.fetch(:lit, false) %>
 <% today = local_assigns.fetch(:today, false) %>
 <% whisper = local_assigns[:whisper] %>
+<% on_spine = local_assigns.fetch(:on_spine, false) %>
+<% side = local_assigns.fetch(:side, false) %>
 <% kind = strategy_kind_css(node) %>
 <%
-  kind_label =
-    case kind
-    when "goal" then t("strategy.horizons.goal")
-    when "plan" then t("strategy.horizons.plan")
-    when "project" then t("strategy.horizons.project")
-    else t("strategy.horizons.day")
-    end
   href =
     if node.day?
       life_journey_path(@journey, focus_id: node.parent_id, node_id: node.id, sheet: 1)
@@ -22,7 +17,15 @@
 %>
 
 <%= link_to href,
-      class: "lp-strategy-marker is-card is-frost is-#{kind} #{'is-lit' if lit} #{'is-today' if today} #{'is-done' if node.completed?}",
+      class: [
+        "lp-strategy-marker is-pin is-#{kind}",
+        ("is-spine" if on_spine),
+        ("is-side" if side),
+        ("is-lit" if lit),
+        ("is-today" if today),
+        ("is-done" if node.completed?)
+      ].compact.join(" "),
+      title: node.title,
       data: {
         action: "pointerdown->strategy-mountain#press pointerup->strategy-mountain#release pointerleave->strategy-mountain#cancel pointercancel->strategy-mountain#cancel contextmenu->strategy-mountain#menu",
         strategy_mountain_target: "marker",
@@ -35,15 +38,14 @@
     <span class="lp-strategy-marker__icon"></span>
   </span>
   <span class="lp-strategy-marker__body">
-    <span class="lp-strategy-marker__kind"><%= kind_label %></span>
-    <span class="lp-strategy-marker__title"><%= node.title.truncate(26) %></span>
-    <% if node.progress_percent.positive? && !node.day? %>
+    <span class="lp-strategy-marker__title"><%= node.title.truncate(22) %></span>
+    <% if node.progress_percent.positive? && !node.day? && on_spine %>
       <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
     <% elsif ap.present? && !node.completed? %>
       <span class="lp-strategy-marker__ap">+<%= ap %> <%= t("dash.action_points_short") %></span>
     <% elsif whisper.present? %>
       <span class="lp-strategy-marker__whisper"><%= whisper %></span>
-    <% elsif node.day? && node.completed? %>
+    <% elsif node.completed? %>
       <span class="lp-strategy-marker__check" aria-hidden="true">✓</span>
     <% end %>
   </span>

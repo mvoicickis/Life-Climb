@@ -1,0 +1,22 @@
+<%# Name-only climb breadcrumb. locals: nodes: %>
+<% nodes = Array(local_assigns[:nodes]).compact %>
+
+<% if nodes.any? %>
+  <nav class="lp-strategy-crumb" aria-label="<%= t('strategy.climb.path_label') %>">
+    <ol class="lp-strategy-crumb__list">
+      <% nodes.each do |node| %>
+        <%
+          href =
+            if node.day?
+              life_journey_path(@journey, focus_id: node.parent_id, node_id: node.id, sheet: 1)
+            else
+              life_journey_path(@journey, focus_id: node.id, sheet: 1)
+            end
+        %>
+        <li class="lp-strategy-crumb__item">
+          <%= link_to node.title.truncate(28), href, class: "lp-strategy-crumb__link" %>
+        </li>
+      <% end %>
+    </ol>
+  </nav>
+<% end %>

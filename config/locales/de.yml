@@ -84,7 +84,8 @@ de:
     action_points_hint: "Gewinne die Schlachten von heute"
     nav:
       today: "Heute"
-      strategy: "Strategie"
+      strategy: "Berg"
+      mountain: "Berg"
       journey: "Reise"
       you: "Du"
   progress:
@@ -99,7 +100,7 @@ de:
     plans_completed: "Pläne abgeschlossen"
     projects_completed: "Projekte abgeschlossen"
     current_expedition: "Aktuelle Expedition"
-    open_strategy: "Strategie öffnen →"
+    open_strategy: "Berg öffnen →"
     lock_goal: "Lege dein Saisonziel in Strategie fest, um den Aufstieg zu starten."
     activity_title: "Aktivität"
     activity_hint: "Zusätzliche Details für diesen Zeitraum."

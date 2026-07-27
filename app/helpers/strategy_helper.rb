@@ -7,6 +7,32 @@ module StrategyHelper
     "project" => "day"
   }.freeze
 
+  VISIBLE_PER_LEVEL = 3
+
+  # Center trail slots — focus path reads top → bottom.
+  GOAL_SLOT = [50, 10].freeze
+  SELECTED_PLAN_SLOT = [50, 28].freeze
+  SELECTED_PROJECT_SLOT = [50, 50].freeze
+  SELECTED_BATTLE_SLOT = [50, 72].freeze
+  CAMP_SLOT = [50, 90].freeze
+  PILL_SLOTS = [
+    [14, 18], [86, 18], [10, 28], [90, 28], [12, 38], [88, 38]
+  ].freeze
+  SIBLING_PROJECT_SLOTS = [
+    [28, 48], [72, 48]
+  ].freeze
+  SIBLING_BATTLE_SLOTS = [
+    [28, 70], [72, 70]
+  ].freeze
+  PROJECT_OVERFLOW_SLOT = [88, 52].freeze
+  BATTLE_OVERFLOW_SLOT = [88, 74].freeze
+  FLAG_SLOTS = {
+    "goal" => [58, 8],
+    "plan" => [58, 26],
+    "project" => [58, 48],
+    "battle" => [58, 70]
+  }.freeze
+
   def strategy_kind_css(node)
     node.day? ? "battle" : node.kind
   end
@@ -85,38 +111,32 @@ module StrategyHelper
     mountain[:progress].to_i.clamp(0, 100)
   end
 
-  VISIBLE_PER_LEVEL = 3
-
-  # Percent positions on the trail map (left, top) for absolute card slots.
-  SELECTED_PLAN_SLOT = [50, 26].freeze
-  PILL_SLOTS = [
-    [16, 22], [84, 22], [12, 31], [88, 31], [20, 38], [80, 38], [14, 44], [86, 44]
-  ].freeze
-  PROJECT_SLOTS = [
-    [28, 48], [50, 50], [72, 48]
-  ].freeze
-  BATTLE_SLOTS = [
-    [30, 70], [50, 73], [70, 70]
-  ].freeze
-  PROJECT_OVERFLOW_SLOT = [88, 52].freeze
-  BATTLE_OVERFLOW_SLOT = [88, 74].freeze
-  GOAL_SLOT = [50, 10].freeze
-  CAMP_SLOT = [22, 90].freeze
+  def strategy_camp_you_label(user = current_user)
+    first = user&.display_name.to_s.split(/\s+/).first.presence
+    first.presence || I18n.t("strategy.zones.you")
+  end
 
   def strategy_trail_slot(kind, index = 0)
     slots =
       case kind.to_s
       when "goal" then [GOAL_SLOT]
       when "plan", "selected_plan" then [SELECTED_PLAN_SLOT]
+      when "selected_project" then [SELECTED_PROJECT_SLOT]
+      when "selected_battle" then [SELECTED_BATTLE_SLOT]
       when "pill" then PILL_SLOTS
-      when "project" then PROJECT_SLOTS
-      when "battle", "day" then BATTLE_SLOTS
+      when "project" then SIBLING_PROJECT_SLOTS
+      when "battle", "day" then SIBLING_BATTLE_SLOTS
       when "project_overflow" then [PROJECT_OVERFLOW_SLOT]
       when "battle_overflow" then [BATTLE_OVERFLOW_SLOT]
       when "camp" then [CAMP_SLOT]
       else [[50, 50]]
       end
     left, top = slots[[index, slots.length - 1].min]
+    { left: left, top: top }
+  end
+
+  def strategy_flag_slot(kind)
+    left, top = FLAG_SLOTS.fetch(kind.to_s, [58, 50])
     { left: left, top: top }
   end
 
@@ -139,5 +159,27 @@ module StrategyHelper
       "M%<x1>.1f %<y1>.1f C%<x1>.1f %<m>.1f, %<x2>.1f %<m>.1f, %<x2>.1f %<y2>.1f",
       x1: x1, y1: y1, x2: x2, y2: y2, m: mid_y
     )
+  end
+
+  # Completed conquest markers along the mountain story.
+  def strategy_completed_flags(goal)
+    return [] if goal.blank?
+
+    flags = []
+    flags << { kind: "goal", title: goal.title, node: goal } if goal.completed?
+    goal.children.select(&:plan?).sort_by(&:position).each do |plan|
+      flags << { kind: "plan", title: plan.title, node: plan } if plan.completed?
+      plan.children.select(&:project?).sort_by(&:position).each do |project|
+        flags << { kind: "project", title: project.title, node: project } if project.completed?
+        project.children.select(&:day?).select(&:completed?).sort_by(&:position).each do |battle|
+          flags << { kind: "battle", title: battle.title, node: battle }
+        end
+      end
+    end
+    flags
+  end
+
+  def strategy_breadcrumb_nodes(goal:, plan:, project:, battle:)
+    [goal, plan, project, battle].compact
   end
 end

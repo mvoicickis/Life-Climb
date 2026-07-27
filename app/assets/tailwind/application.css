@@ -8479,6 +8479,190 @@ a.lp-strategy-siblings__chip:hover {
   opacity: 0.55;
 }
 
+.lp-strategy-wire.is-trail-spine {
+  stroke: #b08968;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-dasharray: 0.35 1.35;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.55));
+}
+
+.lp-strategy-wire.is-trail-spine.is-goal { stroke: #86efac; }
+.lp-strategy-wire.is-trail-spine.is-plan { stroke: #93c5fd; }
+.lp-strategy-wire.is-trail-spine.is-project { stroke: #c4b5fd; }
+.lp-strategy-wire.is-trail-spine.is-battle { stroke: #fcd34d; }
+
+.lp-strategy-crumb {
+  margin-top: 0.45rem;
+}
+
+.lp-strategy-crumb__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.55rem;
+}
+
+.lp-strategy-crumb__item {
+  position: relative;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.lp-strategy-crumb__item:not(:last-child)::after {
+  content: "";
+  display: inline-block;
+  width: 0.28rem;
+  height: 0.28rem;
+  margin-left: 0.55rem;
+  border-radius: 999px;
+  background: #cbd5e1;
+  vertical-align: middle;
+}
+
+.lp-strategy-crumb__link {
+  color: var(--lp-ink);
+  text-decoration: none;
+}
+
+.lp-strategy-crumb__link:hover {
+  color: var(--lp-level-goal);
+}
+
+.lp-strategy-mountain__flag {
+  position: absolute;
+  left: var(--lp-x);
+  top: var(--lp-y);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.lp-strategy-mountain__flag-mark {
+  display: block;
+  width: 0.55rem;
+  height: 0.85rem;
+  background: #22c55e;
+  clip-path: polygon(0 0, 100% 18%, 100% 55%, 0 70%, 0 100%, 18% 100%, 18% 0);
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.25));
+}
+
+.lp-strategy-mountain__flag.is-plan .lp-strategy-mountain__flag-mark { background: #3b82f6; }
+.lp-strategy-mountain__flag.is-project .lp-strategy-mountain__flag-mark { background: #8b5cf6; }
+.lp-strategy-mountain__flag.is-battle .lp-strategy-mountain__flag-mark { background: #f59e0b; }
+
+.lp-strategy-marker.is-pin {
+  --lp-level: var(--lp-level-goal);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 9.5rem;
+  padding: 0.28rem 0.5rem 0.28rem 0.28rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--lp-ink);
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(8px);
+}
+
+.lp-strategy-marker.is-pin.is-goal { --lp-level: var(--lp-level-goal); max-width: 11rem; }
+.lp-strategy-marker.is-pin.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy-marker.is-pin.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy-marker.is-pin.is-battle { --lp-level: var(--lp-level-battle); }
+
+.lp-strategy-marker.is-pin .lp-strategy-marker__badge {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+}
+
+.lp-strategy-marker.is-pin .lp-strategy-marker__title {
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.lp-strategy-marker.is-pin .lp-strategy-marker__pct,
+.lp-strategy-marker.is-pin .lp-strategy-marker__ap,
+.lp-strategy-marker.is-pin .lp-strategy-marker__check {
+  font-size: 0.62rem;
+}
+
+.lp-strategy-marker.is-pin.is-side {
+  opacity: 0.78;
+  transform: scale(0.92);
+}
+
+.lp-strategy-marker.is-pin.is-lit {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--lp-level) 22%, transparent),
+    0 10px 20px rgba(15, 23, 42, 0.14);
+}
+
+.lp-strategy-marker.is-pin.is-today {
+  border-color: color-mix(in srgb, var(--lp-level-battle) 50%, #fff);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--lp-level-battle) 28%, transparent),
+    0 0 22px color-mix(in srgb, var(--lp-level-battle) 45%, transparent),
+    0 12px 24px rgba(15, 23, 42, 0.16);
+  animation: lp-strategy-today-glow 2.2s ease-in-out infinite;
+}
+
+.lp-strategy-marker.is-pin.is-done {
+  opacity: 0.65;
+}
+
+.lp-strategy-mountain__camp.is-you {
+  position: absolute;
+  left: var(--lp-x);
+  top: var(--lp-y);
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+}
+
+.lp-strategy-mountain__camp-tent {
+  width: 2.1rem;
+  height: 1.55rem;
+  background:
+    linear-gradient(180deg, #f59e0b 0 62%, #b45309 62% 100%);
+  clip-path: polygon(50% 0, 100% 78%, 100% 100%, 0 100%, 0 78%);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.2);
+  position: relative;
+}
+
+.lp-strategy-mountain__camp-tent::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.15rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #fb923c;
+  transform: translateX(0.55rem);
+  box-shadow: 0 0 8px rgba(251, 146, 60, 0.8);
+}
+
+.lp-strategy-mountain__camp.is-you .lp-strategy-mountain__camp-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #7c2d12;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.14);
+}
+
 .lp-strategy-mountain__map {
   position: relative;
   z-index: 2;

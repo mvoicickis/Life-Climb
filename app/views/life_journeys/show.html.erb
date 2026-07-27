@@ -3,8 +3,14 @@
 <% content_for :lp_hide_top_nav, true %>
 <% sp_gained = flash[:sp_gained].to_i %>
 <% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
+<% crumb_nodes = strategy_breadcrumb_nodes(
+     goal: @goal,
+     plan: @branch_plan,
+     project: @branch_project,
+     battle: @today_battle
+   ) %>
 
-<div class="lp-home lp-strategy-page is-exact-mockup mx-auto max-w-lg pb-40 pt-4"
+<div class="lp-home lp-strategy-page is-exact-mockup is-lit-trail mx-auto max-w-lg pb-40 pt-4"
      data-controller="strategy-celebrate strategy-mountain"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
      data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>"
@@ -26,7 +32,7 @@
     </div>
     <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
     <% if @goal %>
-      <p class="lp-strategy-page__goal-name"><%= @goal.title %></p>
+      <%= render "life_journeys/strategy_breadcrumb", nodes: crumb_nodes %>
       <p class="lp-strategy-page__goal-pct"><%= t("strategy.sheet.progress", pct: mountain[:progress].to_i) %></p>
       <div class="lp-strategy-page__goal-track" aria-hidden="true">
         <span style="width: <%= mountain[:progress].to_i %>%"></span>
@@ -59,4 +65,4 @@
   <% end %>
 </div>
 
-<%= render "shared/lp_dash_nav", active: :strategy %>
+<%= render "shared/lp_dash_nav", active: :mountain %>

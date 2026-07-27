@@ -59,7 +59,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-strategy-mountain.is-living.is-scenic.is-trailmap.is-foothill"
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-goal", text: /Become a Rails developer/i
+    assert_select ".lp-strategy-marker.is-pin.is-goal", text: /Become a Rails deve/i
+    assert_select ".lp-strategy-marker.is-pin.is-goal[title=?]", "Become a Rails developer"
     assert_match(/Trailhead/i, response.body)
   end
 
@@ -94,7 +95,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-battle.is-today", text: /Learn 20 words/i
+    assert_select ".lp-strategy-marker.is-pin.is-battle.is-today", text: /Learn 20 words/i
     assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta.is-primary", text: /Fight this battle/i
     assert_select ".lp-strategy-fight__sheet", text: /Learn 20 words/i
     assert_select ".lp-strategy-fight__sheet", text: /\+30 AP/i
@@ -194,16 +195,20 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-mountain.is-focuspath"
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan.is-lit", text: /Plan Alpha/i
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan", text: /Plan Beta/i, count: 0
+    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail"
+    assert_select ".lp-strategy-wire.is-trail-spine"
+    assert_select ".lp-strategy-crumb"
+    assert_select ".lp-strategy-mountain__camp.is-you"
+    assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
+    assert_select ".lp-strategy-marker.is-pin.is-plan.is-lit", text: /Plan Alpha/i
+    assert_select ".lp-strategy-marker.is-pin.is-plan", text: /Plan Beta/i, count: 0
     assert_select ".lp-strategy-pill.is-plan", text: /Plan Beta/i
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-project.is-lit", text: /Project One/i
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-project", text: /Project Two/i
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-battle.is-today", text: /Battle One/i
+    assert_select ".lp-strategy-marker.is-pin.is-project.is-lit", text: /Project One/i
+    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project Two/i
+    assert_select ".lp-strategy-marker.is-pin.is-battle.is-today", text: /Battle One/i
     assert_select ".lp-strategy-mountain.is-trailmap"
     assert_select ".lp-strategy-mountain__wires"
-    assert_select ".lp-strategy-marker.is-card", text: /Lone Project/i, count: 0
+    assert_select ".lp-strategy-marker.is-pin", text: /Lone Project/i, count: 0
     assert_select ".lp-strategy-fight.is-sticky.is-mockup.is-sheet"
     assert_select ".lp-strategy-fight__sheet", text: /Battle One/i
     assert_no_match(/Today.?s Focus/i, response.body)
@@ -212,6 +217,33 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#strategy-sheet-rename-#{goal.id}"
     assert_select ".lp-strategy-siblings", count: 0
     assert_select "a.lp-strategy__board-add-link", count: 0
+    assert_select ".lp-strategy-crumb__link", text: /Plan Alpha/i
+    assert_select ".lp-dash-nav a.lp-dash-nav__link:first-child", text: /Mountain/i
+  end
+
+  test "completed nodes leave permanent conquest flags" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Done Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Done Project", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Done Battle", scheduled_on: Date.current, position: 0
+    )
+    battle.complete!
+    project.complete!
+    plan.complete!
+
+    get life_journey_path(@journey, focus_id: plan.id)
+    assert_response :success
+    assert_select ".lp-strategy-mountain__flag.is-plan[title=?]", "Done Plan"
+    assert_select ".lp-strategy-mountain__flag.is-project[title=?]", "Done Project"
+    assert_select ".lp-strategy-mountain__flag.is-battle[title=?]", "Done Battle"
   end
 
   test "focus path caps projects and collapses other plans to pills" do
@@ -238,11 +270,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: projects.first.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan", count: 1
+    assert_select ".lp-strategy-marker.is-pin.is-plan", count: 1
     assert_select ".lp-strategy-pill.is-plan", minimum: 3
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-project", count: 3
+    assert_select ".lp-strategy-marker.is-pin.is-project", count: 3
     assert_select ".lp-strategy-overflow.is-project", text: /\+1 more/i
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-project", text: /Project 3/i, count: 0
+    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project 3/i, count: 0
   end
 
   test "node sheet exposes edit add help and delete for every level" do
@@ -292,8 +324,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#strategy-sheet-#{plan.id} input[name=horizon][value=project]"
     assert_select "#strategy-sheet-#{plan.id} input[name=parent_id][value=?]", plan.id.to_s
     assert_select "#strategy-sheet-#{goal.id}[open]", count: 0
-    assert_select ".lp-strategy-marker.is-card.is-plan.is-lit", text: /Find a Job/i
-    assert_select ".lp-strategy-marker.is-card.is-goal.is-lit", count: 0
+    assert_select ".lp-strategy-marker.is-pin.is-plan.is-lit", text: /Find a Job/i
+    assert_select ".lp-strategy-marker.is-pin.is-goal.is-lit", count: 0
 
     post strategy_goals_path, params: {
       life_area_id: @area.id,
