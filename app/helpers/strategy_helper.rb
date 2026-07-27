@@ -85,16 +85,21 @@ module StrategyHelper
     mountain[:progress].to_i.clamp(0, 100)
   end
 
+  VISIBLE_PER_LEVEL = 3
+
   # Percent positions on the trail map (left, top) for absolute card slots.
-  PLAN_SLOTS = [
-    [28, 24], [72, 26], [50, 33], [18, 30], [82, 32]
+  SELECTED_PLAN_SLOT = [50, 26].freeze
+  PILL_SLOTS = [
+    [16, 22], [84, 22], [12, 31], [88, 31], [20, 38], [80, 38], [14, 44], [86, 44]
   ].freeze
   PROJECT_SLOTS = [
-    [22, 46], [50, 48], [78, 50], [35, 54], [65, 55]
+    [28, 48], [50, 50], [72, 48]
   ].freeze
   BATTLE_SLOTS = [
-    [28, 68], [55, 72], [78, 76], [40, 80], [68, 82]
+    [30, 70], [50, 73], [70, 70]
   ].freeze
+  PROJECT_OVERFLOW_SLOT = [88, 52].freeze
+  BATTLE_OVERFLOW_SLOT = [88, 74].freeze
   GOAL_SLOT = [50, 10].freeze
   CAMP_SLOT = [22, 90].freeze
 
@@ -102,14 +107,26 @@ module StrategyHelper
     slots =
       case kind.to_s
       when "goal" then [GOAL_SLOT]
-      when "plan" then PLAN_SLOTS
+      when "plan", "selected_plan" then [SELECTED_PLAN_SLOT]
+      when "pill" then PILL_SLOTS
       when "project" then PROJECT_SLOTS
       when "battle", "day" then BATTLE_SLOTS
+      when "project_overflow" then [PROJECT_OVERFLOW_SLOT]
+      when "battle_overflow" then [BATTLE_OVERFLOW_SLOT]
       when "camp" then [CAMP_SLOT]
       else [[50, 50]]
       end
     left, top = slots[[index, slots.length - 1].min]
     { left: left, top: top }
+  end
+
+  def strategy_visible_nodes(nodes, selected_id = nil, limit: VISIBLE_PER_LEVEL)
+    list = Array(nodes)
+    return list if list.size <= limit
+
+    selected = selected_id.present? ? list.find { |n| n.id == selected_id } : nil
+    rest = selected ? list.reject { |n| n.id == selected.id } : list
+    (selected ? [selected] + rest : rest).first(limit)
   end
 
   def strategy_trail_wire(from_slot, to_slot)

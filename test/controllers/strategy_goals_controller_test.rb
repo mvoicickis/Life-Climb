@@ -194,14 +194,15 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan", text: /Plan Alpha/i
-    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan", text: /Plan Beta/i
+    assert_select ".lp-strategy-mountain.is-focuspath"
+    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan.is-lit", text: /Plan Alpha/i
+    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan", text: /Plan Beta/i, count: 0
+    assert_select ".lp-strategy-pill.is-plan", text: /Plan Beta/i
     assert_select ".lp-strategy-marker.is-card.is-frost.is-project.is-lit", text: /Project One/i
     assert_select ".lp-strategy-marker.is-card.is-frost.is-project", text: /Project Two/i
     assert_select ".lp-strategy-marker.is-card.is-frost.is-battle.is-today", text: /Battle One/i
     assert_select ".lp-strategy-mountain.is-trailmap"
     assert_select ".lp-strategy-mountain__wires"
-    assert_select ".lp-strategy-collapse.is-plan", text: "1"
     assert_select ".lp-strategy-marker.is-card", text: /Lone Project/i, count: 0
     assert_select ".lp-strategy-fight.is-sticky.is-mockup.is-sheet"
     assert_select ".lp-strategy-fight__sheet", text: /Battle One/i
@@ -211,6 +212,37 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#strategy-sheet-rename-#{goal.id}"
     assert_select ".lp-strategy-siblings", count: 0
     assert_select "a.lp-strategy__board-add-link", count: 0
+  end
+
+  test "focus path caps projects and collapses other plans to pills" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Main Plan", position: 0
+    )
+    3.times do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Side Plan #{i}", position: i + 1
+      )
+    end
+    projects = 4.times.map do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project #{i}", position: i
+      )
+    end
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: projects.first, horizon: "day",
+      title: "Battle Focus", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: projects.first.id)
+    assert_response :success
+    assert_select ".lp-strategy-marker.is-card.is-frost.is-plan", count: 1
+    assert_select ".lp-strategy-pill.is-plan", minimum: 3
+    assert_select ".lp-strategy-marker.is-card.is-frost.is-project", count: 3
+    assert_select ".lp-strategy-overflow.is-project", text: /\+1 more/i
+    assert_select ".lp-strategy-marker.is-card.is-frost.is-project", text: /Project 3/i, count: 0
   end
 
   test "node sheet exposes edit add help and delete for every level" do

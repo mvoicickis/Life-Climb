@@ -8553,6 +8553,82 @@ a.lp-strategy-siblings__chip:hover {
   border-color: color-mix(in srgb, var(--lp-level-project) 40%, #cbd5e1);
 }
 
+.lp-strategy-pill {
+  --lp-level: var(--lp-level-plan);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 7.5rem;
+  padding: 0.32rem 0.55rem 0.32rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--lp-ink);
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.lp-strategy-pill.is-plan { --lp-level: var(--lp-level-plan); }
+.lp-strategy-pill.is-project { --lp-level: var(--lp-level-project); }
+
+.lp-strategy-pill__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--lp-level);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level) 20%, transparent);
+  flex: 0 0 auto;
+}
+
+.lp-strategy-pill__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.lp-strategy-pill__count {
+  flex: 0 0 auto;
+  min-width: 1.05rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-level) 14%, #fff);
+  color: var(--lp-level);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.lp-strategy-overflow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px dashed color-mix(in srgb, var(--lp-level) 40%, #cbd5e1);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--lp-muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.1);
+  white-space: nowrap;
+}
+
+.lp-strategy-overflow.is-project { --lp-level: var(--lp-level-project); }
+.lp-strategy-overflow.is-battle { --lp-level: var(--lp-level-battle); }
+
+.lp-strategy-overflow__label {
+  color: var(--lp-level);
+}
+
+.lp-strategy-mountain.is-focuspath .lp-strategy-marker.is-card.is-frost {
+  max-width: 11rem;
+}
+
 .lp-strategy-marker.is-card.is-frost {
   --lp-level: var(--lp-level-goal);
   display: grid;
