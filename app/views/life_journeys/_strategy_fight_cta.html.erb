@@ -1,10 +1,14 @@
-<%# Fight / add CTA under the living mountain — no Focus card. %>
+<%# Sticky slim Fight footer — no hierarchy Focus strip. %>
 <% next_up = @next_up %>
-<section class="lp-strategy-fight" aria-label="<%= t('strategy.fight.label') %>">
+<section class="lp-strategy-fight is-sticky" aria-label="<%= t('strategy.fight.label') %>">
   <% if @today_battle.present? && @mountain_ready %>
-    <p class="lp-strategy-fight__hint">
-      <%= t("strategy.fight.today_hint", title: @today_battle.title) %>
-    </p>
+    <div class="lp-strategy-fight__now">
+      <p class="lp-strategy-fight__battle">
+        <span class="lp-strategy-fight__sword" aria-hidden="true"></span>
+        <span class="lp-strategy-fight__battle-title"><%= @today_battle.title %></span>
+      </p>
+      <p class="lp-strategy-fight__meta"><%= t("strategy.fight.current_battle") %></p>
+    </div>
     <%= button_to t("strategy.fight.cta"),
           life_journey_path(@journey),
           method: :patch,

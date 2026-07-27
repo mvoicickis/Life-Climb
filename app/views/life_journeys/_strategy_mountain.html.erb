@@ -1,4 +1,4 @@
-<%# Living mountain — markers ARE the strategy. locals: mountain %>
+<%# Scenic living mountain — compact white cards on the climb. locals: mountain %>
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
@@ -7,39 +7,51 @@
 <% battles = @branch_project ? @branch_project.children.select(&:day?).sort_by(&:position) : [] %>
 <% today_id = @today_battle&.id %>
 
-<figure class="lp-strategy-mountain is-living is-<%= stage %>"
+<figure class="lp-strategy-mountain is-living is-scenic is-<%= stage %>"
         data-strategy-celebrate-target="mountain"
         style="--lp-camp: <%= camp %>"
         aria-label="<%= mountain[:label] %>">
   <div class="lp-strategy-mountain__backdrop" aria-hidden="true">
-    <svg class="lp-strategy-mountain__art" viewBox="0 0 320 220" role="img">
+    <svg class="lp-strategy-mountain__art" viewBox="0 0 360 480" role="img" preserveAspectRatio="xMidYMax slice">
       <defs>
         <linearGradient id="lp-mtn-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#ecfdf5"/>
-          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#87ceeb"/>
+          <stop offset="45%" stop-color="#c7e8f5"/>
+          <stop offset="100%" stop-color="#e8f5e9"/>
+        </linearGradient>
+        <linearGradient id="lp-mtn-far" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#86efac"/>
+          <stop offset="100%" stop-color="#4ade80"/>
         </linearGradient>
         <linearGradient id="lp-mtn-face" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#166534"/>
-          <stop offset="100%" stop-color="#0f766e"/>
+          <stop offset="0%" stop-color="#15803d"/>
+          <stop offset="55%" stop-color="#166534"/>
+          <stop offset="100%" stop-color="#14532d"/>
+        </linearGradient>
+        <linearGradient id="lp-mtn-sun" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#fef08a"/>
+          <stop offset="100%" stop-color="#fbbf24"/>
         </linearGradient>
       </defs>
-      <rect class="lp-strategy-mountain__sky" width="320" height="220" fill="url(#lp-mtn-sky)"/>
-      <path class="lp-strategy-mountain__far" d="M0 180 L70 115 L120 155 L180 90 L250 145 L320 110 L320 220 L0 220 Z" fill="#bbf7d0" opacity="0.55"/>
-      <path class="lp-strategy-mountain__peak" d="M30 220 L160 28 L290 220 Z" fill="url(#lp-mtn-face)"/>
-      <path class="lp-strategy-mountain__snow" d="M130 72 L160 28 L190 72 L175 66 L160 88 L145 66 Z" fill="#f8fafc" opacity="0.9"/>
+      <rect class="lp-strategy-mountain__sky" width="360" height="480" fill="url(#lp-mtn-sky)"/>
+      <circle cx="300" cy="56" r="28" fill="url(#lp-mtn-sun)" opacity="0.85"/>
+      <path class="lp-strategy-mountain__far" d="M0 210 L55 150 L110 190 L170 120 L240 175 L300 135 L360 165 L360 480 L0 480 Z" fill="url(#lp-mtn-far)" opacity="0.45"/>
+      <path class="lp-strategy-mountain__mid" d="M-20 280 L80 190 L140 240 L200 160 L280 230 L360 180 L380 480 L-20 480 Z" fill="#22c55e" opacity="0.35"/>
+      <path class="lp-strategy-mountain__peak" d="M40 480 L180 70 L320 480 Z" fill="url(#lp-mtn-face)"/>
+      <path class="lp-strategy-mountain__snow" d="M145 145 L180 70 L215 145 L200 138 L180 175 L160 138 Z" fill="#f8fafc" opacity="0.92"/>
       <path class="lp-strategy-mountain__trail-base"
-            d="M96 200 C120 178, 132 160, 148 138 C168 112, 178 96, 188 78"
-            fill="none" stroke="#fef3c7" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 6"/>
+            d="M118 440 C140 390, 148 350, 168 300 C188 250, 198 210, 208 170 C214 145, 220 125, 228 110"
+            fill="none" stroke="#fef3c7" stroke-width="5" stroke-linecap="round" stroke-dasharray="3 8"/>
       <path class="lp-strategy-mountain__trail-lit"
-            d="M96 200 C120 178, 132 160, 148 138 C168 112, 178 96, 188 78"
-            fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"
+            d="M118 440 C140 390, 148 350, 168 300 C188 250, 198 210, 208 170 C214 145, 220 125, 228 110"
+            fill="none" stroke="#fbbf24" stroke-width="5.5" stroke-linecap="round"
             pathLength="100" stroke-dasharray="<%= camp %> 100"/>
+      <ellipse cx="180" cy="460" rx="120" ry="18" fill="#bbf7d0" opacity="0.5"/>
     </svg>
   </div>
 
   <div class="lp-strategy-mountain__climb">
     <div class="lp-strategy-mountain__zone is-summit" data-zone="goal">
-      <span class="lp-strategy-mountain__zone-label"><%= t("strategy.zones.summit") %></span>
       <% if @goal %>
         <%= render "life_journeys/strategy_marker",
               node: @goal,
@@ -52,7 +64,6 @@
     </div>
 
     <div class="lp-strategy-mountain__zone is-plans" data-zone="plans">
-      <span class="lp-strategy-mountain__zone-label"><%= t("strategy.zones.plans") %></span>
       <% if plans.any? %>
         <ul class="lp-strategy-mountain__markers">
           <% plans.each do |plan| %>
@@ -72,7 +83,6 @@
     </div>
 
     <div class="lp-strategy-mountain__zone is-projects <%= 'is-open' if @branch_plan %>" data-zone="projects">
-      <span class="lp-strategy-mountain__zone-label"><%= t("strategy.zones.projects") %></span>
       <% if projects.any? %>
         <ul class="lp-strategy-mountain__markers">
           <% projects.each do |project| %>
@@ -88,13 +98,12 @@
         </ul>
       <% elsif @branch_plan %>
         <p class="lp-strategy-mountain__whisper"><%= t("strategy.zones.add_project_hint") %></p>
-      <% else %>
+      <% elsif @goal %>
         <p class="lp-strategy-mountain__whisper is-dim"><%= t("strategy.zones.pick_plan") %></p>
       <% end %>
     </div>
 
     <div class="lp-strategy-mountain__zone is-battles <%= 'is-open' if @branch_project %>" data-zone="battles">
-      <span class="lp-strategy-mountain__zone-label"><%= t("strategy.zones.battles") %></span>
       <% if battles.any? %>
         <ul class="lp-strategy-mountain__markers is-battles">
           <% battles.each do |battle| %>
@@ -109,23 +118,17 @@
         </ul>
       <% elsif @branch_project %>
         <p class="lp-strategy-mountain__whisper"><%= t("strategy.zones.add_battle_hint") %></p>
-      <% else %>
+      <% elsif @goal %>
         <p class="lp-strategy-mountain__whisper is-dim"><%= t("strategy.zones.pick_project") %></p>
       <% end %>
     </div>
 
     <div class="lp-strategy-mountain__camp" aria-label="<%= t('strategy.zones.camp') %>">
-      <span class="lp-strategy-mountain__camp-pin" aria-hidden="true">⛺</span>
+      <span class="lp-strategy-mountain__camp-mark" aria-hidden="true"></span>
       <span class="lp-strategy-mountain__camp-label"><%= t("strategy.zones.you") %></span>
     </div>
   </div>
 
-  <figcaption class="lp-strategy-mountain__caption">
-    <span class="lp-strategy-mountain__stage"><%= @goal&.title.presence || mountain[:label] %></span>
-    <% if mountain[:progress].to_i.positive? %>
-      <span class="lp-strategy-mountain__pct"><%= mountain[:progress] %>%</span>
-    <% end %>
-  </figcaption>
   <div class="lp-strategy__bar lp-strategy-mountain__bar" aria-hidden="true" data-strategy-celebrate-target="progressBar">
     <span style="width: <%= mountain[:progress] %>%"></span>
   </div>

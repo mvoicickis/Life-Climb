@@ -23,14 +23,14 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
   test "journey show is a living mountain with create-goal climb" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/This season.?s mountain/i, response.body)
+    assert_match(/My Mountain/i, response.body)
     assert_match(/One mountain\. Today.?s battle/i, response.body)
     assert_match(/What do I ultimately want to achieve/i, response.body)
     assert_match(/Begin Journey/i, response.body)
     assert_match(/Your mountain is waiting/i, response.body)
-    assert_select ".lp-strategy-mountain.is-living.is-empty"
+    assert_select ".lp-strategy-mountain.is-living.is-scenic.is-empty"
     assert_select ".lp-strategy-mountain__zone.is-summit"
-    assert_select ".lp-strategy-fight"
+    assert_select ".lp-strategy-fight.is-sticky"
     assert_select "#next-up-title"
     assert_select "[data-controller*='strategy-celebrate']"
     assert_select "[data-controller*='strategy-mountain']"
@@ -38,6 +38,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy__board", count: 0
     assert_select ".lp-strategy-quests", count: 0
     assert_select ".lp-strategy__universe", count: 0
+    assert_no_match(/Today.?s Focus/i, response.body)
     assert_no_match(/Climb clarity/i, response.body)
     assert_no_match(/This month/i, response.body)
   end
@@ -57,8 +58,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-strategy-mountain.is-living.is-foothill"
-    assert_select ".lp-strategy-marker.is-goal", text: /Become a Rails developer/i
+    assert_select ".lp-strategy-mountain.is-living.is-scenic.is-foothill"
+    assert_select ".lp-strategy-marker.is-card.is-goal", text: /Become a Rails developer/i
     assert_match(/Trailhead/i, response.body)
   end
 
@@ -93,10 +94,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-battle.is-today", text: /Learn 20 words/i
-    assert_select ".lp-strategy-fight__cta", text: /Fight this battle/i
+    assert_select ".lp-strategy-marker.is-card.is-battle.is-today", text: /Learn 20 words/i
+    assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta", text: /Fight this battle/i
+    assert_select ".lp-strategy-fight__meta", text: /Current battle/i
     assert_select ".lp-strategy-sheet.is-project"
     assert_select ".lp-strategy__board", count: 0
+    assert_no_match(/Today.?s Focus/i, response.body)
     assert_no_match(/Monthly Goals/i, response.body)
   end
 
@@ -190,13 +193,15 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-plan", text: /Plan Alpha/i
-    assert_select ".lp-strategy-marker.is-plan", text: /Plan Beta/i
-    assert_select ".lp-strategy-marker.is-project.is-lit", text: /Project One/i
-    assert_select ".lp-strategy-marker.is-project", text: /Project Two/i
-    assert_select ".lp-strategy-marker.is-battle.is-today", text: /Battle One/i
+    assert_select ".lp-strategy-marker.is-card.is-plan", text: /Plan Alpha/i
+    assert_select ".lp-strategy-marker.is-card.is-plan", text: /Plan Beta/i
+    assert_select ".lp-strategy-marker.is-card.is-project.is-lit", text: /Project One/i
+    assert_select ".lp-strategy-marker.is-card.is-project", text: /Project Two/i
+    assert_select ".lp-strategy-marker.is-card.is-battle.is-today", text: /Battle One/i
     assert_match(/1 battle/i, response.body)
-    assert_select ".lp-strategy-marker", text: /Lone Project/i, count: 0
+    assert_select ".lp-strategy-marker.is-card", text: /Lone Project/i, count: 0
+    assert_select ".lp-strategy-fight.is-sticky"
+    assert_no_match(/Today.?s Focus/i, response.body)
     assert_select "#strategy-sheet-#{battle.id}"
     assert_select ".lp-strategy-sheet__btn.is-delete", minimum: 1
     assert_select "#strategy-sheet-rename-#{goal.id}"
