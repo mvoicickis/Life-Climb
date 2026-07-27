@@ -29,17 +29,28 @@ export default class extends Controller {
     }
     event.preventDefault()
     const marker = event.currentTarget
-    const menuId = marker.dataset.menuId
-    const canZoom = marker.dataset.canZoom === "true"
     const kind = marker.dataset.nodeKind
     const nodeId = marker.dataset.nodeId
+    const title = marker.getAttribute("title") || ""
 
-    // Double-path: open tiny menu; plan/project also nudge camera if already zoomed deeper isn't needed.
-    if (menuId) this.openMenuById(menuId)
-
-    if (canZoom && (kind === "plan" || kind === "project")) {
-      this.camera()?.zoomTo({ id: nodeId, kind, push: true })
+    // Camp notebook IA: Goal/Plan open the notebook — not tiny menus or L3 zoom.
+    if (kind === "goal") {
+      this.notebook()?.focusGoal()
+      return
     }
+    if (kind === "plan") {
+      this.notebook()?.openPlanById(nodeId, title)
+      return
+    }
+
+    const menuId = marker.dataset.menuId
+    if (menuId) this.openMenuById(menuId)
+  }
+
+  openSheetFromButton(event) {
+    event.preventDefault()
+    const sheetId = event.currentTarget.dataset.sheetId
+    this.openSheetById(sheetId, { edit: true })
   }
 
   menuZoom(event) {
@@ -270,5 +281,9 @@ export default class extends Controller {
 
   camera() {
     return this.application.getControllerForElementAndIdentifier(this.element, "strategy-camera")
+  }
+
+  notebook() {
+    return this.application.getControllerForElementAndIdentifier(this.element, "strategy-notebook")
   }
 }

@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Living mountain camera: L1 whole world → L2 plan branch → L3 project battles.
+// Simplified living mountain camera: L1 whole world; light pan when a Plan is focused.
+// Battles no longer zoom the map — they live in the camp notebook.
 export default class extends Controller {
   static targets = ["stage", "viewport", "zoomOut"]
   static values = {
@@ -32,7 +33,8 @@ export default class extends Controller {
 
   zoomTo({ id, kind, push = true } = {}) {
     if (!id) return
-    const nextLevel = kind === "project" || kind === "battle" ? 3 : kind === "plan" ? 2 : 1
+    // Projects no longer enter L3 map zoom — notebook owns that depth.
+    const nextLevel = kind === "plan" || kind === "project" || kind === "battle" ? 2 : 1
     this.focusIdValue = Number(id)
     this.levelValue = nextLevel
     this.apply()
@@ -41,104 +43,35 @@ export default class extends Controller {
 
   zoomOut(event) {
     event?.preventDefault()
-    if (this.levelValue <= 1) return
-    if (this.levelValue === 3) {
-      const projectSlot = this.element.querySelector(`[data-camera-project-id="${this.focusIdValue}"]`)
-      const planId = projectSlot?.dataset?.cameraPlanId
-      if (planId) {
-        this.focusIdValue = Number(planId)
-        this.levelValue = 2
-      } else {
-        this.levelValue = 1
-        this.focusIdValue = 0
-      }
-    } else {
-      this.levelValue = 1
-      this.focusIdValue = 0
-    }
+    this.levelValue = 1
+    this.focusIdValue = 0
     this.apply()
     this.pushHistory()
   }
 
   levelForFocus(focusId) {
-    if (this.element.querySelector(`[data-camera-project-id="${focusId}"][data-camera-layer="2"]`)) return 2
-    if (this.element.querySelector(`[data-camera-project-id="${focusId}"][data-camera-layer="3"]`)) return 3
-    if (this.element.querySelector(`[data-camera-plan-id="${focusId}"][data-camera-layer="1"]`)) return 2
+    if (this.element.querySelector(`[data-camera-plan-id="${focusId}"]`)) return 2
+    if (this.element.querySelector(`[data-camera-project-id="${focusId}"]`)) return 2
     return 1
-  }
-
-  focusPlanId(focusId) {
-    const fromProject = this.element.querySelector(`[data-camera-project-id="${focusId}"]`)
-    if (fromProject?.dataset?.cameraPlanId) return Number(fromProject.dataset.cameraPlanId)
-    const planSlot = this.element.querySelector(`[data-camera-plan-id="${focusId}"][data-camera-layer="1"]`)
-    if (planSlot) return focusId
-    return 0
   }
 
   apply() {
     const level = this.levelValue
     const focusId = Number(this.focusIdValue || 0)
-    const focusPlanId = this.focusPlanId(focusId)
     this.element.dataset.cameraLevel = String(level)
     this.element.classList.toggle("is-zoomed", level > 1)
     this.element.classList.toggle("is-zoom-plan", level === 2)
-    this.element.classList.toggle("is-zoom-project", level === 3)
+    this.element.classList.remove("is-zoom-project")
 
     this.element.querySelectorAll("[data-camera-layer]").forEach((el) => {
-      const layer = Number(el.dataset.cameraLayer || 1)
-      const planId = Number(el.dataset.cameraPlanId || 0)
-      const projectId = Number(el.dataset.cameraProjectId || 0)
-      const isPill = el.classList.contains("is-pill") || el.classList.contains("is-plan-overflow")
-      let visible = false
+      // Camp notebook map only has layer-1 orientation pins.
+      const visible = true
       let dimmed = false
-
-      if (level === 1) {
-        visible = layer === 1
-      } else if (level === 2) {
-        if (layer === 1) {
-          if (isPill) {
-            // Keep side plans quiet at L2 — only dimmed chips, no competing titles.
-            visible = true
-            dimmed = true
-          } else if (planId > 0 && planId !== focusPlanId) {
-            visible = true
-            dimmed = true
-          } else {
-            visible = true
-            dimmed = planId > 0 && planId !== focusId && planId !== focusPlanId
-          }
-        } else if (layer === 2) {
-          visible = planId === focusPlanId || planId === focusId
-        }
-      } else {
-        // L3: only the climb band — hide noisy side plan pills.
-        if (layer === 1) {
-          if (isPill || el.classList.contains("is-plan-overflow")) {
-            visible = false
-          } else if (el.classList.contains("is-goal") || el.classList.contains("is-you") || !planId) {
-            visible = true
-            dimmed = true
-          } else if (planId === focusPlanId) {
-            visible = true
-            dimmed = true
-          } else {
-            visible = false
-          }
-        } else if (layer === 2) {
-          if (projectId === focusId) {
-            visible = true
-            dimmed = false
-          } else if (planId === focusPlanId) {
-            visible = true
-            dimmed = true
-          } else {
-            visible = false
-          }
-        } else if (layer === 3) {
-          visible = projectId === focusId
-        }
+      if (level === 2) {
+        const planId = Number(el.dataset.cameraPlanId || 0)
+        if (el.classList.contains("is-pill") && planId && planId !== focusId) dimmed = true
+        if (el.classList.contains("is-plan-overflow")) dimmed = true
       }
-
       el.hidden = !visible
       el.classList.toggle("is-camera-visible", visible)
       el.classList.toggle("is-dimmed", dimmed)
@@ -159,17 +92,15 @@ export default class extends Controller {
     }
 
     const focusEl =
-      this.element.querySelector(`[data-camera-project-id="${this.focusIdValue}"].is-focus`) ||
       this.element.querySelector(`[data-camera-plan-id="${this.focusIdValue}"].is-focus`) ||
-      this.element.querySelector(`[data-camera-project-id="${this.focusIdValue}"]`) ||
-      this.element.querySelector(`[data-camera-plan-id="${this.focusIdValue}"]`)
+      this.element.querySelector(`[data-camera-plan-id="${this.focusIdValue}"]`) ||
+      this.element.querySelector(`[data-camera-project-id="${this.focusIdValue}"]`)
 
     const x = focusEl ? Number.parseFloat(getComputedStyle(focusEl).getPropertyValue("--lp-x")) || 50 : 50
     const y = focusEl ? Number.parseFloat(getComputedStyle(focusEl).getPropertyValue("--lp-y")) || 50 : 50
-    const scale = this.levelValue === 3 ? 1.85 : 1.45
     stage.style.setProperty("--lp-cam-x", `${50 - x}%`)
-    stage.style.setProperty("--lp-cam-y", `${48 - y}%`)
-    stage.style.setProperty("--lp-cam-scale", String(scale))
+    stage.style.setProperty("--lp-cam-y", `${46 - y}%`)
+    stage.style.setProperty("--lp-cam-scale", "1.35")
   }
 
   pushHistory() {

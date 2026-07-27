@@ -2,6 +2,12 @@
   <%= render "life_journeys/strategy_mountain", mountain: @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% end %>
 
+<%= turbo_stream.replace "strategy-camp-notebook-root" do %>
+  <div id="strategy-camp-notebook-root">
+    <%= render "life_journeys/strategy_camp_notebook" %>
+  </div>
+<% end %>
+
 <% if @removed_id %>
   <%= turbo_stream.remove "strategy-menu-#{@removed_id}" %>
   <%= turbo_stream.remove "strategy-sheet-#{@removed_id}" %>

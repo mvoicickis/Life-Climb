@@ -6,20 +6,18 @@
 <% boss = flash[:climb_boss].present? %>
 <% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% climb_reward = flash[:climb_reward] %>
-<% camera_level =
-     if @branch_project.present? then 3
-     elsif @branch_plan.present? then 2
-     else 1
-     end %>
+<% camera_level = @branch_plan.present? || @branch_project.present? ? 2 : 1 %>
 <% camera_focus =
      if @branch_project.present? then @branch_project.id
      elsif @branch_plan.present? then @branch_plan.id
      else @goal&.id
      end %>
+<% notebook_plan_id = @branch_plan&.id.to_i %>
+<% notebook_project_id = @branch_project&.id.to_i %>
 
-<div class="lp-world lp-strategy-page is-living-world is-lit-trail is-gamefeel"
+<div class="lp-world lp-strategy-page is-living-world is-lit-trail is-gamefeel is-camp-notebook"
      id="strategy-world"
-     data-controller="strategy-celebrate strategy-mountain strategy-camera"
+     data-controller="strategy-celebrate strategy-mountain strategy-camera strategy-notebook"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
      data-strategy-celebrate-ap-gained-value="<%= ap_gained %>"
      data-strategy-celebrate-boss-value="<%= boss %>"
@@ -28,6 +26,10 @@
      data-strategy-camera-level-value="<%= camera_level %>"
      data-strategy-camera-focus-id-value="<%= camera_focus %>"
      data-strategy-camera-journey-url-value="<%= life_journey_path(@journey) %>"
+     data-strategy-notebook-goal-id-value="<%= @goal&.id.to_i %>"
+     data-strategy-notebook-plan-id-value="<%= notebook_plan_id %>"
+     data-strategy-notebook-project-id-value="<%= notebook_project_id %>"
+     data-strategy-notebook-journey-url-value="<%= life_journey_path(@journey) %>"
      <% if @sheet_node.present? %>
        data-strategy-mountain-focus-sheet-value="strategy-sheet-<%= @sheet_node.id %>"
        data-strategy-mountain-focus-menu-value="strategy-menu-<%= @sheet_node.id %>"
@@ -78,6 +80,10 @@
 
   <div class="lp-world__stage" id="strategy-world-map">
     <%= render "life_journeys/strategy_mountain", mountain: mountain %>
+  </div>
+
+  <div id="strategy-camp-notebook-root">
+    <%= render "life_journeys/strategy_camp_notebook" %>
   </div>
 
   <div class="lp-world__dock">

@@ -164,10 +164,10 @@ class LifeJourneysController < ApplicationController
         focus.parent
       end
 
-    # Light the path to today's battle when still looking at the goal summit.
+    # Keep Goal summit map clean: don't auto-place a Project tent from today's battle.
+    # Plan can still light from today's climb so the trail reads "where am I".
     if plan.nil? && today_battle&.parent
-      project ||= today_battle.parent if focus.blank? || focus.goal?
-      plan ||= project&.parent if focus.blank? || focus.goal?
+      plan ||= today_battle.parent&.parent if focus.blank? || focus.goal?
     end
 
     [ plan, project ]

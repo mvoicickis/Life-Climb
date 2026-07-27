@@ -95,7 +95,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-pin.is-battle.is-today", text: /Learn 20 words/i
+    assert_select "#strategy-camp-notebook.is-open"
+    assert_select ".lp-camp-notebook__battle.is-today", text: /Learn 20 words/i
     assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta.is-primary", text: /Fight on the trail/i
     assert_select ".lp-strategy-fight__sheet", text: /Learn 20 words/i
     assert_select ".lp-strategy-fight__sheet", text: /\+30 AP/i
@@ -195,20 +196,22 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-world.is-living-world"
+    assert_select ".lp-world.is-living-world.is-camp-notebook"
     assert_select ".lp-world-hud"
-    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail.is-fog.is-world"
+    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail.is-fog.is-world.is-camp-notebook"
     assert_select ".lp-strategy-wire.is-trail-spine"
     assert_select ".lp-strategy-mountain__fog"
     assert_select ".lp-strategy-mountain__camp.is-you"
-    assert_select ".lp-strategy-menu", minimum: 1
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select ".lp-strategy-marker.is-pin.is-plan.is-lit", text: /Plan Alpha/i
     assert_select ".lp-strategy-marker.is-pin.is-plan", text: /Plan Beta/i
-    assert_select ".lp-strategy-marker.is-pin.is-project.is-lit", text: /Project One/i
-    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project Two/i
-    assert_select ".lp-strategy-marker.is-pin.is-battle.is-today", text: /Battle One/i
-    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Lone Project/i
+    assert_select ".lp-strategy-marker.is-pin.is-project", count: 0
+    assert_select ".lp-strategy-marker.is-pin.is-battle", count: 0
+    assert_select "#strategy-camp-notebook.is-open"
+    assert_select ".lp-camp-notebook__row.is-project.is-active", text: /Project One/i
+    assert_select ".lp-camp-notebook__row.is-project", text: /Project Two/i
+    assert_select ".lp-camp-notebook__battle.is-today", text: /Battle One/i
+    assert_select ".lp-camp-react-tent.is-glow", text: /Project One/i
     assert_select ".lp-strategy-mountain.is-trailmap"
     assert_select ".lp-strategy-mountain__wires"
     assert_select ".lp-strategy-fight.is-sticky.is-mockup.is-sheet"
@@ -260,8 +263,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-strategy-mountain__flag.is-plan[title=?]", "Done Plan"
-    assert_select ".lp-strategy-mountain__flag.is-project[title=?]", "Done Project"
-    assert_select ".lp-strategy-mountain__flag.is-battle[title=?]", "Done Battle"
+    # Project/battle conquest markers stay off the orientation map (Goal+Plans only).
+    assert_select ".lp-strategy-mountain__flag.is-project", count: 0
+    assert_select ".lp-strategy-mountain__flag.is-battle", count: 0
   end
 
   test "focus path caps projects and collapses other plans to pills" do
@@ -288,13 +292,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: projects.first.id)
     assert_response :success
-    # Living world keeps layers in the DOM for zoom, but caps pins so they never stack.
-    assert_select ".lp-strategy-marker.is-pin.is-plan", minimum: 4
-    assert_select ".lp-strategy-marker.is-pin.is-project", maximum: 3
-    assert_select ".lp-strategy-overflow.is-project", text: "+1 more"
-    assert_select ".lp-world.is-living-world"
-    assert_select "[data-strategy-camera-level-value='3']"
-    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project 0/i
+    # Camp notebook: map keeps Goal+Plans; projects/battles live in the notebook.
+    assert_select ".lp-strategy-marker.is-pin.is-plan", minimum: 1
+    assert_select ".lp-strategy-marker.is-pin.is-project", count: 0
+    assert_select "#strategy-camp-notebook.is-open"
+    assert_select ".lp-camp-notebook__project.is-expanded"
+    assert_select ".lp-world.is-living-world.is-camp-notebook"
+    assert_select ".lp-strategy-marker.is-pin.is-plan", text: /Main Plan/i
   end
 
   test "node sheet exposes edit add help and delete for every level" do
