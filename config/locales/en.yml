@@ -48,10 +48,11 @@ en:
         prep: "Prep tomorrow’s step for %{project}"
         smallest: "Smallest next win on %{project}"
     momentum:
-      begun: "Mountain just begun"
+      begun: "Base camp"
       climbing: "You’re climbing"
-      halfway: "Halfway to the summit"
+      halfway: "Halfway ridge"
       close: "The summit is close"
+      final: "Final ascent"
       summit: "Summit reached"
     battle_title: "Today's Battle"
     battle_subtitle: "Win today. Move your mountain forward."
@@ -72,7 +73,7 @@ en:
       open_strategy: "Continue on Mountain"
     action_points_short: "AP"
     action_points_label: "Action Points"
-    action_points_hint: "Win today’s battles"
+    action_points_hint: "Battle strength"
     action_points_reward: "Action Points reward"
     battle_placeholder: "Add a battle task"
     battle_add: "Add"
@@ -371,6 +372,12 @@ en:
         camp: "Camp set"
         flags: "Flags raised"
         summit: "Summit"
+        base_camp: "Base camp"
+        trail_opening: "Trail opening"
+        camp_set: "Camp set"
+        flags_raised: "Flags raised"
+        halfway_ridge: "Halfway ridge"
+        final_ascent: "Final ascent"
     quest:
       status:
         ready: "Ready"
@@ -467,7 +474,8 @@ en:
     universe: "Your universe"
     sp_label: "Strategy Points"
     sp_short: "SP"
-    sp_hint: "Plan your mountain"
+    sp_hint: "Planning power"
+    sp_hint_short: "Planning power"
     sp_reason: "Planned %{horizon}: %{title}"
     week_breakdown_bonus: "Week breakdown complete"
     created: "Saved · +%{sp} Strategy Points"
@@ -664,6 +672,7 @@ en:
   next_mountain:
     title: "What would you like to do next?"
     congrats: "Congratulations"
+    peak_cleared: "Peak cleared"
     subtitle: "You finished \"%{title}\" in %{area}. One mountain at a time — pick the next climb."
     same_area: "New journey in %{area}"
     other_area: "Focus on another area of life"
@@ -674,6 +683,29 @@ en:
     interview_title: "Design the next climb"
     start: "Begin today"
     started: "New mountain ahead. Here is today's mission."
+
+  climb:
+    streak:
+      chip: "%{count}-day"
+      title:
+        one: "%{count}-day climb"
+        other: "%{count}-day climb"
+    peek:
+      open_trail: "Open trail"
+      add_next: "Add next step"
+      make_battle: "Make today’s battle"
+      fight_today: "Fight today"
+      more: "More"
+    reward:
+      eyebrow: "Climb reward"
+      boss_eyebrow: "Chapter cleared"
+      battle_title: "Battle won"
+      project_title: "Project conquered"
+      boss_title: "Boss beaten"
+      mountain_pct: "Mountain %{pct}%"
+      ap_meaning: "Battle strength"
+      keep_fighting: "Keep fighting"
+      back_to_trail: "Back to the trail"
   focus:
     title: "What do you want to focus on now?"
     subtitle: "One mountain at a time keeps life clear. You can change later."

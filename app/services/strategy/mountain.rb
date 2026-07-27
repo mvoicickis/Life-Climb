@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Strategy
-  # Quiet mountain "save file" stages for the Strategy expedition.
+  # Quiet mountain "save file" stages for the climb expedition.
   class Mountain
     STAGES = %i[empty foothill trail camp flags summit].freeze
 
@@ -44,8 +44,28 @@ module Strategy
         stage: stage,
         progress: progress,
         flags: flags,
-        label: I18n.t("strategy.mountain.stages.#{stage}")
+        label: narrative_label(stage, progress)
       }
+    end
+
+    # Journey words the eye can read — not just structure flags.
+    def narrative_label(stage, progress)
+      key =
+        case stage.to_sym
+        when :empty then "empty"
+        when :foothill then "base_camp"
+        when :trail then "trail_opening"
+        when :camp then "camp_set"
+        when :flags
+          if progress >= 85 then "final_ascent"
+          elsif progress >= 40 then "halfway_ridge"
+          else "flags_raised"
+          end
+        when :summit then "summit"
+        else stage.to_s
+        end
+
+      I18n.t("strategy.mountain.stages.#{key}", default: I18n.t("strategy.mountain.stages.#{stage}"))
     end
   end
 end

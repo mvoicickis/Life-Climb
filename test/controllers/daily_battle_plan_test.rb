@@ -56,7 +56,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-hero__mountain-caption"
     assert_select ".lp-dash-hero__pct", count: 1
     assert_select ".lp-dash-hero__area-closer", count: 0
-    assert_select ".lp-dash-hero__momentum", text: /Mountain just begun/i
+    assert_select ".lp-dash-hero__momentum", text: /Base camp|Mountain just begun/i
   end
 
   test "complete battle asks project check without moving mountain percent" do

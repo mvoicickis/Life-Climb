@@ -1,22 +1,35 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Living mountain: long-press radial + bottom sheet for every marker.
+// Living mountain: peek cards by default, long-press radial for power tools.
 export default class extends Controller {
-  static targets = ["marker", "sheet", "radial"]
+  static targets = ["marker", "sheet", "peek", "radial"]
   static values = {
     open: Boolean,
-    focusSheet: String
+    openPeek: Boolean,
+    focusSheet: String,
+    focusPeek: String
   }
 
   connect() {
     this.pressTimer = null
     this.pressNodeId = null
     this.longPressed = false
-    if (this.openValue) this.openFocusedSheet({ add: true })
+    if (this.openPeekValue) this.openFocusedPeek()
+    else if (this.openValue) this.openFocusedSheet({ add: true })
   }
 
   disconnect() {
     this.clearPress()
+  }
+
+  peek(event) {
+    if (this.longPressed) {
+      event.preventDefault()
+      return
+    }
+    event.preventDefault()
+    const peekId = event.currentTarget.dataset.peekId
+    if (peekId) this.openPeekById(peekId)
   }
 
   press(event) {
@@ -36,10 +49,6 @@ export default class extends Controller {
     if (wasLong) {
       event.preventDefault()
       event.stopPropagation()
-      event.currentTarget?.addEventListener("click", (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-      }, { once: true, capture: true })
     }
   }
 
@@ -110,10 +119,40 @@ export default class extends Controller {
     sheet?.close()
   }
 
+  closePeek(event) {
+    const peek = event.currentTarget.closest("dialog")
+    peek?.close()
+  }
+
+  peekAdd(event) {
+    event.preventDefault()
+    const sheetId = event.currentTarget.dataset.sheetId
+    event.currentTarget.closest("dialog")?.close()
+    this.openSheetById(sheetId, { add: true })
+  }
+
+  peekMore(event) {
+    event.preventDefault()
+    const sheetId = event.currentTarget.dataset.sheetId
+    event.currentTarget.closest("dialog")?.close()
+    this.openSheetById(sheetId, { edit: true })
+  }
+
   focusedSheetId() {
     if (this.hasFocusSheetValue && this.focusSheetValue) return this.focusSheetValue
     const preferred = this.element.querySelector(".lp-strategy-marker.is-today, .lp-strategy-marker.is-lit")
     return preferred?.dataset?.sheetId
+  }
+
+  focusedPeekId() {
+    if (this.hasFocusPeekValue && this.focusPeekValue) return this.focusPeekValue
+    const preferred = this.element.querySelector(".lp-strategy-marker.is-today, .lp-strategy-marker.is-lit")
+    return preferred?.dataset?.peekId
+  }
+
+  openFocusedPeek() {
+    const id = this.focusedPeekId()
+    if (id) this.openPeekById(id)
   }
 
   openFocusedSheet(opts = {}) {
@@ -136,6 +175,14 @@ export default class extends Controller {
       this.element.querySelector(".lp-strategy-marker[data-can-add='true']")
     if (!marker) return
     this.openSheetById(marker.dataset.sheetId, { add: true })
+  }
+
+  openPeekById(peekId) {
+    if (!peekId) return
+    const peek = document.getElementById(peekId)
+    if (!peek) return
+    if (typeof peek.showModal === "function" && !peek.open) peek.showModal()
+    else peek.setAttribute("open", "")
   }
 
   openSheetById(sheetId, opts = {}) {

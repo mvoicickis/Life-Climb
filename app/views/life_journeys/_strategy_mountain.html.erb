@@ -1,4 +1,4 @@
-<%# Lit hiking-trail mountain — focus path only; pins; conquest flags. locals: mountain %>
+<%# Lit hiking-trail mountain — fog of war, progress camp, state-colored pins. locals: mountain %>
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
@@ -20,25 +20,28 @@
 <% plan_slot = strategy_trail_slot(:selected_plan) %>
 <% project_slot = strategy_trail_slot(:selected_project) %>
 <% battle_slot = strategy_trail_slot(:selected_battle) %>
-<% camp_slot = strategy_trail_slot(:camp) %>
+<% camp_slot = strategy_camp_slot(camp) %>
 <% trail_points = [goal_slot] %>
 <% trail_points << plan_slot if selected_plan %>
 <% trail_points << project_slot if selected_project %>
 <% trail_points << battle_slot if spine_battle %>
 <% trail_points << camp_slot %>
 <% completed_flags = strategy_completed_flags(@goal) %>
+<% streak = strategy_climb_streak %>
 
-<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-focuspath is-lit-trail is-<%= stage %>"
+<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-focuspath is-lit-trail is-fog is-<%= stage %>"
         data-strategy-celebrate-target="mountain"
-        style="--lp-camp: <%= camp %>; --lp-scenic: url('/images/strategy-mountain-scenic.jpg')"
+        style="--lp-camp: <%= camp %>; --lp-camp-y: <%= camp_slot[:top] %>%; --lp-scenic: url('/images/strategy-mountain-scenic.jpg')"
         aria-label="<%= mountain[:label] %>">
   <div class="lp-strategy-mountain__photo" aria-hidden="true"></div>
   <div class="lp-strategy-mountain__scrim is-top" aria-hidden="true"></div>
   <div class="lp-strategy-mountain__scrim is-bottom" aria-hidden="true"></div>
+  <div class="lp-strategy-mountain__fog" aria-hidden="true"></div>
 
   <svg class="lp-strategy-mountain__wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
     <% if trail_points.size >= 2 %>
       <% trail_points.each_cons(2).with_index do |(from, to), i| %>
+        <% cleared = strategy_segment_cleared?(to, camp_slot) %>
         <% segment =
              case i
              when 0 then "is-goal"
@@ -46,7 +49,7 @@
              when 2 then "is-project"
              else "is-battle"
              end %>
-        <path class="lp-strategy-wire is-trail-spine <%= segment %>"
+        <path class="lp-strategy-wire is-trail-spine <%= segment %> <%= cleared ? 'is-cleared' : 'is-fogged' %>"
               d="<%= strategy_trail_wire(from, to) %>"
               fill="none"/>
       <% end %>
@@ -138,7 +141,7 @@
            style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
         <%= render "life_journeys/strategy_overflow",
               count: hidden_project_count,
-              href: life_journey_path(@journey, focus_id: selected_plan.id, sheet: 1),
+              href: life_journey_path(@journey, focus_id: selected_plan.id, peek: 1),
               kind: "project",
               label: t("strategy.zones.more_count", count: hidden_project_count) %>
       </div>
@@ -184,7 +187,7 @@
            style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
         <%= render "life_journeys/strategy_overflow",
               count: hidden_battle_count,
-              href: life_journey_path(@journey, focus_id: selected_project.id, sheet: 1),
+              href: life_journey_path(@journey, focus_id: selected_project.id, peek: 1),
               kind: "battle",
               label: t("strategy.zones.more_count", count: hidden_battle_count) %>
       </div>
@@ -200,10 +203,21 @@
 
     <div class="lp-strategy-mountain__camp is-you"
          style="--lp-x: <%= camp_slot[:left] %>%; --lp-y: <%= camp_slot[:top] %>%"
+         data-strategy-celebrate-target="camp"
          aria-label="<%= t('strategy.zones.camp') %>">
       <span class="lp-strategy-mountain__camp-tent" aria-hidden="true"></span>
       <span class="lp-strategy-mountain__camp-label"><%= strategy_camp_you_label %></span>
     </div>
+  </div>
+
+  <div class="lp-strategy-mountain__stage-chip" aria-live="polite">
+    <span class="lp-strategy-mountain__stage-label"><%= mountain[:label] %></span>
+    <% if streak.positive? %>
+      <span class="lp-strategy-mountain__streak" title="<%= t('climb.streak.title', count: streak) %>">
+        <span aria-hidden="true">🔥</span>
+        <%= t("climb.streak.chip", count: streak) %>
+      </span>
+    <% end %>
   </div>
 
   <div class="lp-strategy__bar lp-strategy-mountain__bar" aria-hidden="true" data-strategy-celebrate-target="progressBar">

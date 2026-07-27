@@ -1,0 +1,46 @@
+<%# Short climb reward beat after a win. locals: reward (Hash) %>
+<% reward = local_assigns[:reward] || @climb_reward %>
+<% return if reward.blank? %>
+<% boss = reward[:kind].to_s == "boss" || reward["kind"].to_s == "boss" %>
+<% ap = (reward[:ap] || reward["ap"]).to_i %>
+<% streak = (reward[:streak] || reward["streak"]).to_i %>
+<% percent = (reward[:percent] || reward["percent"]).to_i %>
+<% stage_label = reward[:stage_label] || reward["stage_label"] %>
+<% title = reward[:title] || reward["title"] %>
+<% trail = @journey.present? ? life_journey_path(@journey) : dashboard_path %>
+
+<dialog class="lp-climb-reward<%= ' is-boss' if boss %>"
+        id="climb-reward"
+        data-controller="climb-reward"
+        data-climb-reward-auto-value="true"
+        open>
+  <div class="lp-climb-reward__panel">
+    <p class="lp-climb-reward__eyebrow"><%= boss ? t("climb.reward.boss_eyebrow") : t("climb.reward.eyebrow") %></p>
+    <h2 class="lp-climb-reward__title"><%= title %></h2>
+    <% if ap.positive? %>
+      <p class="lp-climb-reward__ap">+<%= ap %> <%= t("dash.action_points_short") %></p>
+      <p class="lp-climb-reward__hint"><%= t("climb.reward.ap_meaning") %></p>
+    <% end %>
+    <p class="lp-climb-reward__pct"><%= t("climb.reward.mountain_pct", pct: percent) %></p>
+    <% if stage_label.present? %>
+      <p class="lp-climb-reward__stage"><%= stage_label %></p>
+    <% end %>
+    <% if streak.positive? %>
+      <p class="lp-climb-reward__streak">
+        <span aria-hidden="true">🔥</span>
+        <%= t("climb.streak.title", count: streak) %>
+      </p>
+    <% end %>
+    <div class="lp-climb-reward__actions">
+      <%= link_to (reward[:cta] || reward["cta"] || t("climb.reward.keep_fighting")),
+            dashboard_path,
+            class: "lp-climb-reward__primary",
+            data: { action: "climb-reward#dismiss" } %>
+      <%= link_to (reward[:trail_cta] || reward["trail_cta"] || t("climb.reward.back_to_trail")),
+            trail,
+            class: "lp-climb-reward__secondary",
+            data: { action: "climb-reward#dismiss" } %>
+    </div>
+    <button type="button" class="lp-climb-reward__close" data-action="climb-reward#dismiss" aria-label="<%= t('strategy.sheet.close') %>">×</button>
+  </div>
+</dialog>

@@ -16,6 +16,8 @@
   data-controller="battle-day"
   data-battle-day-closer-value="<%= @closer %>"
   data-battle-day-celebrate-value="<%= @battle_celebrate %>"
+  data-battle-day-ap-gained-value="<%= flash[:ap_gained].to_i %>"
+  data-battle-day-boss-value="<%= flash[:climb_boss].present? %>"
 >
   <header class="lp-dash__top">
     <div class="lp-dash__identity">
@@ -92,3 +94,4 @@
 </div>
 
 <%= render "shared/lp_dash_nav", active: :today %>
+<%= render "shared/climb_reward", reward: flash[:climb_reward] if flash[:climb_reward].present? %>

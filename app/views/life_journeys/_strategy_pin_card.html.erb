@@ -1,0 +1,57 @@
+<%# Lightweight pin peek — one primary CTA, forms stay secondary. locals: node: %>
+<% node = local_assigns[:node] %>
+<% return if node.blank? %>
+<% kind = strategy_kind_css(node) %>
+<% primary = strategy_peek_primary(node) %>
+<% open = @open_peek && (@sheet_node&.id == node.id) %>
+<% focus_href =
+     if node.day?
+       life_journey_path(@journey, focus_id: node.parent_id || node.id)
+     else
+       life_journey_path(@journey, focus_id: node.id)
+     end %>
+
+<dialog class="lp-strategy-peek is-<%= kind %>"
+        id="strategy-peek-<%= node.id %>"
+        data-strategy-mountain-target="peek"
+        data-node-id="<%= node.id %>"
+        data-sheet-id="strategy-sheet-<%= node.id %>"
+        <%= "open" if open %>>
+  <div class="lp-strategy-peek__panel">
+    <header class="lp-strategy-peek__head">
+      <p class="lp-strategy-peek__kind"><%= t("strategy.horizons.#{node.day? ? 'day' : node.kind}") %></p>
+      <h2 class="lp-strategy-peek__title"><%= node.title %></h2>
+      <% unless node.day? %>
+        <p class="lp-strategy-peek__progress"><%= t("strategy.sheet.progress", pct: node.progress_percent) %></p>
+      <% end %>
+      <button type="button" class="lp-strategy-peek__close" data-action="strategy-mountain#closePeek" aria-label="<%= t('strategy.sheet.close') %>">×</button>
+    </header>
+
+    <div class="lp-strategy-peek__cta">
+      <% case primary[:action]
+         when "add" %>
+        <button type="button"
+                class="lp-strategy-peek__primary"
+                data-action="strategy-mountain#peekAdd"
+                data-sheet-id="strategy-sheet-<%= node.id %>">
+          <%= primary[:label] %>
+        </button>
+      <% when "fight" %>
+        <%= link_to dashboard_path, class: "lp-strategy-peek__primary" do %>
+          <%= primary[:label] %>
+        <% end %>
+      <% else %>
+        <%= link_to focus_href, class: "lp-strategy-peek__primary" do %>
+          <%= primary[:label] %>
+        <% end %>
+      <% end %>
+
+      <button type="button"
+              class="lp-strategy-peek__more"
+              data-action="strategy-mountain#peekMore"
+              data-sheet-id="strategy-sheet-<%= node.id %>">
+        <%= t("climb.peek.more") %>
+      </button>
+    </div>
+  </div>
+</dialog>

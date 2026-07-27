@@ -30,9 +30,20 @@ class DailyTodosController < ApplicationController
         )
         Gap::ApplyProgress.call(journey: current_user.primary_focused_journey, tier: :todo)
       end
+      streak = Climb::Streak.touch!(user: current_user)
       Strategy::ProjectCheckQueue.enqueue(
         session: session,
         project_ids: Strategy::ProjectCheckQueue.from_battles([ todo.strategy_goal ].compact)
+      )
+      flash[:ap_gained] = todo.lp_reward.to_i
+      flash[:battle_celebrate] = true
+      journey = current_user.primary_focused_journey
+      goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      flash[:climb_reward] = Climb::Reward.for_battle(
+        user: current_user,
+        awarded: todo.lp_reward.to_i,
+        goal: goal,
+        streak_days: streak.days
       )
     end
     Journeys::SyncClimbFromToday.call(user: current_user)

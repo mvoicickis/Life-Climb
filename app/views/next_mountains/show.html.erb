@@ -11,8 +11,9 @@
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
   <% if step == "choose" %>
-    <header>
-      <p class="text-sm font-semibold text-[var(--lp-lime)]"><%= t("next_mountain.congrats") %></p>
+    <header class="lp-next-mountain__hero">
+      <p class="lp-next-mountain__badge"><%= t("next_mountain.congrats") %></p>
+      <p class="text-sm font-semibold text-[var(--lp-lime)]"><%= t("next_mountain.peak_cleared") %></p>
       <h1 class="mt-2 text-3xl font-semibold text-[var(--lp-ink)]"><%= t("next_mountain.title") %></h1>
       <p class="mt-2 text-sm text-[var(--lp-muted)]">
         <%= t("next_mountain.subtitle", title: @completed.title, area: @same_area.label) %>

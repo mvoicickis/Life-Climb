@@ -15,6 +15,8 @@ module StrategyHelper
   SELECTED_PROJECT_SLOT = [50, 50].freeze
   SELECTED_BATTLE_SLOT = [50, 72].freeze
   CAMP_SLOT = [50, 90].freeze
+  CAMP_TOP_AT_ZERO = 88.0
+  CAMP_TOP_AT_SUMMIT = 14.0
   PILL_SLOTS = [
     [14, 18], [86, 18], [10, 28], [90, 28], [12, 38], [88, 38]
   ].freeze
@@ -32,6 +34,8 @@ module StrategyHelper
     "project" => [58, 48],
     "battle" => [58, 70]
   }.freeze
+  # Spine tops for fog/cleared math (goal → camp default).
+  SPINE_TOPS = [10.0, 28.0, 50.0, 72.0, 90.0].freeze
 
   def strategy_kind_css(node)
     node.day? ? "battle" : node.kind
@@ -111,9 +115,52 @@ module StrategyHelper
     mountain[:progress].to_i.clamp(0, 100)
   end
 
+  # Camp climbs the trail as progress rises (bottom → summit).
+  def strategy_camp_slot(progress)
+    pct = progress.to_i.clamp(0, 100) / 100.0
+    top = CAMP_TOP_AT_ZERO - ((CAMP_TOP_AT_ZERO - CAMP_TOP_AT_SUMMIT) * pct)
+    { left: 50, top: top.round(1) }
+  end
+
   def strategy_camp_you_label(user = current_user)
     first = user&.display_name.to_s.split(/\s+/).first.presence
     first.presence || I18n.t("strategy.zones.you")
+  end
+
+  def strategy_climb_streak(user = current_user)
+    Climb::Streak.current(user: user)
+  end
+
+  # Segment is cleared when its lower endpoint sits at/below the camp line.
+  def strategy_segment_cleared?(to_slot, camp_slot)
+    to_slot[:top].to_f >= camp_slot[:top].to_f - 0.5
+  end
+
+  def strategy_pin_state(node:, today: false)
+    return "today" if today
+    return "cleared" if node.completed?
+
+    "ahead"
+  end
+
+  def strategy_peek_primary(node)
+    kind = strategy_kind_css(node)
+    case kind
+    when "goal"
+      { label: I18n.t("climb.peek.open_trail"), action: "focus" }
+    when "plan"
+      { label: I18n.t("climb.peek.add_next"), action: "add" }
+    when "project"
+      { label: I18n.t("climb.peek.make_battle"), action: "add" }
+    when "battle"
+      if node.completed?
+        { label: I18n.t("climb.peek.open_trail"), action: "focus" }
+      else
+        { label: I18n.t("climb.peek.fight_today"), action: "fight" }
+      end
+    else
+      { label: I18n.t("climb.peek.open_trail"), action: "focus" }
+    end
   end
 
   def strategy_trail_slot(kind, index = 0)

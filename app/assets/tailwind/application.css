@@ -8486,12 +8486,88 @@ a.lp-strategy-siblings__chip:hover {
   stroke-dasharray: 0.35 1.35;
   opacity: 0.95;
   filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.55));
+  transition: stroke 0.45s ease, opacity 0.45s ease, filter 0.45s ease;
 }
 
-.lp-strategy-wire.is-trail-spine.is-goal { stroke: #86efac; }
-.lp-strategy-wire.is-trail-spine.is-plan { stroke: #93c5fd; }
-.lp-strategy-wire.is-trail-spine.is-project { stroke: #c4b5fd; }
-.lp-strategy-wire.is-trail-spine.is-battle { stroke: #fcd34d; }
+.lp-strategy-wire.is-trail-spine.is-cleared {
+  stroke: #4ade80;
+  stroke-dasharray: none;
+  opacity: 1;
+  filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.55));
+}
+
+.lp-strategy-wire.is-trail-spine.is-fogged {
+  stroke: #94a3b8;
+  opacity: 0.35;
+  filter: none;
+}
+
+.lp-strategy-mountain.is-fog .lp-strategy-mountain__fog {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(226, 232, 240, 0.72) 0%,
+      rgba(226, 232, 240, 0.45) 35%,
+      rgba(226, 232, 240, 0.08) 70%,
+      transparent 100%
+    );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 calc(var(--lp-camp-y, 88%) - 8%),
+    transparent calc(var(--lp-camp-y, 88%) + 4%),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 calc(var(--lp-camp-y, 88%) - 8%),
+    transparent calc(var(--lp-camp-y, 88%) + 4%),
+    transparent 100%
+  );
+  transition: opacity 0.6s ease;
+}
+
+.lp-strategy-mountain__stage-chip {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 2.6rem;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.lp-strategy-mountain__stage-label,
+.lp-strategy-mountain__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #0f172a;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+.lp-strategy-mountain__streak { color: #9a3412; }
+
+.lp-strategy-page__stage {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--lp-level-goal) 70%, #0f172a);
+}
 
 .lp-strategy-crumb {
   margin-top: 0.45rem;
@@ -8604,17 +8680,33 @@ a.lp-strategy-siblings__chip:hover {
     0 10px 20px rgba(15, 23, 42, 0.14);
 }
 
+.lp-strategy-marker.is-pin.is-state-cleared {
+  border-color: color-mix(in srgb, #22c55e 45%, #fff);
+  background: rgba(240, 253, 244, 0.94);
+}
+
+.lp-strategy-marker.is-pin.is-state-ahead {
+  border-color: rgba(148, 163, 184, 0.55);
+  background: rgba(248, 250, 252, 0.72);
+  color: #64748b;
+  filter: saturate(0.55);
+}
+
+.lp-strategy-marker.is-pin.is-state-today,
 .lp-strategy-marker.is-pin.is-today {
-  border-color: color-mix(in srgb, var(--lp-level-battle) 50%, #fff);
+  border-color: color-mix(in srgb, #f59e0b 55%, #fff);
+  background: rgba(255, 251, 235, 0.96);
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--lp-level-battle) 28%, transparent),
-    0 0 22px color-mix(in srgb, var(--lp-level-battle) 45%, transparent),
+    0 0 0 3px color-mix(in srgb, #f59e0b 28%, transparent),
+    0 0 22px color-mix(in srgb, #f59e0b 45%, transparent),
     0 12px 24px rgba(15, 23, 42, 0.16);
   animation: lp-strategy-today-glow 2.2s ease-in-out infinite;
+  filter: none;
+  color: var(--lp-ink);
 }
 
 .lp-strategy-marker.is-pin.is-done {
-  opacity: 0.65;
+  opacity: 0.9;
 }
 
 .lp-strategy-mountain__camp.is-you {
@@ -8626,6 +8718,11 @@ a.lp-strategy-siblings__chip:hover {
   display: grid;
   justify-items: center;
   gap: 0.3rem;
+  transition: top 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-strategy-mountain__camp.is-you.is-nudge {
+  animation: lp-camp-nudge 0.7s ease;
 }
 
 .lp-strategy-mountain__camp-tent {
@@ -9247,6 +9344,265 @@ a.lp-strategy-siblings__chip:hover {
       0 0 24px color-mix(in srgb, var(--lp-level-battle) 48%, transparent),
       0 16px 30px rgba(15, 23, 42, 0.16);
   }
+}
+
+@keyframes lp-camp-nudge {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  40% { transform: translate(-50%, calc(-50% - 8px)) scale(1.06); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes lp-bar-bounce {
+  0% { transform: scaleY(1); }
+  35% { transform: scaleY(1.18); }
+  70% { transform: scaleY(0.96); }
+  100% { transform: scaleY(1); }
+}
+
+.lp-strategy__bar.is-bounce > span,
+.lp-dash-bar__fill.is-bounce {
+  transform-origin: left center;
+  animation: lp-bar-bounce 0.55s ease;
+}
+
+.lp-strategy__ap-float,
+.lp-dash__ap-float {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  z-index: 8;
+  transform: translateX(-50%);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  pointer-events: none;
+  animation: lp-strategy-sp-float 1.1s ease forwards;
+}
+
+.lp-dash__stat-chip { position: relative; }
+.lp-dash__ap-float { top: -0.4rem; left: auto; right: 0; transform: none; }
+
+.lp-strategy-marker.is-pin {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.lp-strategy-peek {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  max-width: 22rem;
+  width: calc(100% - 1.5rem);
+  margin: auto auto 1rem;
+}
+
+.lp-strategy-peek::backdrop {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.lp-strategy-peek__panel {
+  position: relative;
+  padding: 1rem 1rem 1.1rem;
+  border-radius: 1.1rem 1.1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+}
+
+.lp-strategy-peek__kind {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.lp-strategy-peek__title {
+  margin: 0.2rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.lp-strategy-peek__progress {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: #475569;
+}
+
+.lp-strategy-peek__close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.65rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.lp-strategy-peek__cta {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lp-strategy-peek__primary,
+.lp-strategy-peek__more {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 2.7rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lp-strategy-peek__primary {
+  border: 0;
+  background: #166534;
+  color: #fff;
+}
+
+.lp-strategy-peek__more {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+}
+
+.lp-climb-reward {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  max-width: 22rem;
+  width: calc(100% - 1.5rem);
+}
+
+.lp-climb-reward::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.lp-climb-reward__panel {
+  position: relative;
+  padding: 1.25rem 1.15rem 1.2rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, #ecfdf5 0%, #fff 55%);
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.28);
+  text-align: center;
+}
+
+.lp-climb-reward.is-boss .lp-climb-reward__panel {
+  background: linear-gradient(180deg, #fef3c7 0%, #fff 58%);
+}
+
+.lp-climb-reward__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #166534;
+}
+
+.lp-climb-reward__title {
+  margin: 0.35rem 0 0;
+  font-size: 1.45rem;
+  font-weight: 850;
+  color: #0f172a;
+}
+
+.lp-climb-reward__ap {
+  margin: 0.55rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 850;
+  color: #b45309;
+}
+
+.lp-climb-reward__hint,
+.lp-climb-reward__pct,
+.lp-climb-reward__stage,
+.lp-climb-reward__streak {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: #334155;
+}
+
+.lp-climb-reward__actions {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lp-climb-reward__primary,
+.lp-climb-reward__secondary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.7rem;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.lp-climb-reward__primary {
+  background: #166534;
+  color: #fff;
+}
+
+.lp-climb-reward__secondary {
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  background: #fff;
+}
+
+.lp-climb-reward__close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.7rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.3rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.lp-dash-hero__streak {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #9a3412;
+}
+
+.lp-next-mountain__hero {
+  padding: 1rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, #ecfdf5 0%, transparent 100%);
+}
+
+.lp-next-mountain__badge {
+  display: inline-flex;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: #166534;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.lp-strategy-mountain.is-boss,
+.lp-dash.is-boss.is-celebrating {
+  filter: saturate(1.15);
 }
 
 .lp-strategy-radial {

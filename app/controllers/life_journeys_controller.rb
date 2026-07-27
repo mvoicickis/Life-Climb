@@ -142,7 +142,8 @@ class LifeJourneysController < ApplicationController
       else
         @focus
       end
-    @open_sheet = params[:sheet].present? || params[:node_id].present?
+    @open_sheet = params[:sheet].present?
+    @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
   end
 
   def strategy_branch_for(focus, today_battle)

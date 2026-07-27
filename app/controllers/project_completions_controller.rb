@@ -11,27 +11,30 @@ class ProjectCompletionsController < ApplicationController
     Strategy::ProjectCheckQueue.dequeue(session: session, project_id: project.id)
 
     if params[:decision].to_s == "done"
-      before = root_progress(project)
+      goal = project.root_goal
+      before_mountain = Strategy::Mountain.for(goal: goal)
+      before = before_mountain[:progress].to_i
       ActiveRecord::Base.transaction do
         project.complete!
         Strategy::SyncCompletion.call(project: project)
       end
-      after = root_progress(project)
+      after_mountain = Strategy::Mountain.for(goal: goal.reload)
+      after = after_mountain[:progress].to_i
       Strategy::BattleAngleQueue.clear(session: session)
-      flash[:battle_celebrate] = true if after > before
+      reward = Climb::Reward.for_project(
+        user: current_user,
+        goal: goal,
+        percent_before: before,
+        percent_after: after,
+        stage_before: before_mountain[:stage]
+      )
+      flash[:battle_celebrate] = true
+      flash[:climb_boss] = true if reward[:kind] == "boss"
+      flash[:climb_reward] = reward
       redirect_to dashboard_path, notice: t("dash.project_check.done_notice", title: project.title, percent: after)
     else
       Strategy::BattleAngleQueue.enqueue(session: session, project_id: project.id)
       redirect_to dashboard_path, notice: t("dash.project_check.not_yet_notice")
     end
-  end
-
-  private
-
-  def root_progress(project)
-    goal = project.reload.root_goal
-    return 0 unless goal
-
-    Strategy::Progress.percent(goal.reload)
   end
 end

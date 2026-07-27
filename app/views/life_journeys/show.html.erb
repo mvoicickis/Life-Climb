@@ -2,6 +2,8 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 <% sp_gained = flash[:sp_gained].to_i %>
+<% ap_gained = flash[:ap_gained].to_i %>
+<% boss = flash[:climb_boss].present? %>
 <% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% crumb_nodes = strategy_breadcrumb_nodes(
      goal: @goal,
@@ -9,13 +11,18 @@
      project: @branch_project,
      battle: @today_battle
    ) %>
+<% climb_reward = flash[:climb_reward] %>
 
-<div class="lp-home lp-strategy-page is-exact-mockup is-lit-trail mx-auto max-w-lg pb-40 pt-4"
+<div class="lp-home lp-strategy-page is-exact-mockup is-lit-trail is-gamefeel mx-auto max-w-lg pb-40 pt-4"
      data-controller="strategy-celebrate strategy-mountain"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
+     data-strategy-celebrate-ap-gained-value="<%= ap_gained %>"
+     data-strategy-celebrate-boss-value="<%= boss %>"
      data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>"
+     data-strategy-mountain-open-peek-value="<%= @open_peek ? 'true' : 'false' %>"
      <% if @sheet_node.present? %>
        data-strategy-mountain-focus-sheet-value="strategy-sheet-<%= @sheet_node.id %>"
+       data-strategy-mountain-focus-peek-value="strategy-peek-<%= @sheet_node.id %>"
      <% end %>>
   <header class="lp-strategy-page__header is-mockup px-4">
     <div class="lp-strategy-page__top">
@@ -27,11 +34,12 @@
            data-strategy-celebrate-target="spBadge"
            aria-label="<%= t('strategy.sp_label') %>">
         <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
-        <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
+        <span class="lp-strategy__sp-label"><%= t("strategy.sp_hint_short") %></span>
       </div>
     </div>
     <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
     <% if @goal %>
+      <p class="lp-strategy-page__stage"><%= mountain[:label] %></p>
       <%= render "life_journeys/strategy_breadcrumb", nodes: crumb_nodes %>
       <p class="lp-strategy-page__goal-pct"><%= t("strategy.sheet.progress", pct: mountain[:progress].to_i) %></p>
       <div class="lp-strategy-page__goal-track" aria-hidden="true">
@@ -60,9 +68,12 @@
       end
     %>
     <% sheet_nodes.uniq.each do |node| %>
+      <%= render "life_journeys/strategy_pin_card", node: node %>
       <%= render "life_journeys/strategy_node_sheet", node: node %>
     <% end %>
   <% end %>
+
+  <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :mountain %>
