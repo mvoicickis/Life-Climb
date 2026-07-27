@@ -46,7 +46,7 @@ class AiStrategyServiceTest < ActiveSupport::TestCase
         "question" => "How are you planning to achieve this?",
         "suggestions" => [
           { "type" => "plan", "title" => "Grow my business" },
-          { "type" => "obstacle", "title" => "Should be coerced to plan in phase 1" },
+          { "type" => "obstacle", "title" => "Should be coerced to plan" },
           "Start freelancing"
         ]
       }
@@ -58,9 +58,73 @@ class AiStrategyServiceTest < ActiveSupport::TestCase
     assert_equal "How are you planning to achieve this?", result["question"]
     assert_equal [
       { "type" => "plan", "title" => "Grow my business" },
-      { "type" => "plan", "title" => "Should be coerced to plan in phase 1" },
+      { "type" => "plan", "title" => "Should be coerced to plan" },
       { "type" => "plan", "title" => "Start freelancing" }
     ], result["suggestions"]
+  end
+
+  test "coerces suggestions to the requested horizon" do
+    client = StubClient.new(
+      {
+        "summary" => "Small wins under this project.",
+        "question" => nil,
+        "suggestions" => [
+          { "type" => "plan", "title" => "Learn 20 words" },
+          "Write a short email"
+        ]
+      }
+    )
+
+    result = Ai::StrategyService.call(
+      goal: "Become fluent",
+      horizon: "day",
+      context: { plan_title: "Learn German", project_title: "Daily vocabulary" },
+      client:
+    )
+
+    assert_equal [
+      { "type" => "day", "title" => "Learn 20 words" },
+      { "type" => "day", "title" => "Write a short email" }
+    ], result["suggestions"]
+  end
+
+  test "includes horizon and parent titles in the outbound prompt" do
+    payload = {
+      "choices" => [
+        {
+          "message" => {
+            "content" => {
+              summary: "Projects under this plan.",
+              question: nil,
+              suggestions: [
+                { type: "project", title: "Build a portfolio site" }
+              ]
+            }.to_json
+          }
+        }
+      ]
+    }
+    http = FakeHttp.new(FakeResponse.new(code: 200, body: payload.to_json))
+    client = Ai::Client.new(api_key: "test-key", provider: "openrouter", http:)
+
+    result = Ai::StrategyService.call(
+      goal: "Become a Rails developer",
+      horizon: "project",
+      context: {
+        plan_title: "Get interviews",
+        current_reality: "Learning Rails part-time."
+      },
+      client:
+    )
+
+    body = JSON.parse(http.last_request.body)
+    user_content = body.dig("messages", 1, "content")
+    system_content = body.dig("messages", 0, "content")
+
+    assert_match(/Requested horizon: project/, user_content)
+    assert_match(/Parent Plan title: Get interviews/, user_content)
+    assert_match(/Suggest titles ONLY for the requested horizon/i, system_content)
+    assert_equal [ { "type" => "project", "title" => "Build a portfolio site" } ], result["suggestions"]
   end
 
   test "prefers question-only when suggestions are empty" do
@@ -116,6 +180,7 @@ class AiStrategyServiceTest < ActiveSupport::TestCase
     assert_match(/Never create or modify user data/i, system_content)
     assert_match(/Minimum information/i, system_content)
     assert_match(/Goal → Plans → Projects → Battles/, system_content)
+    assert_match(/Requested horizon: plan/, user_content)
     assert_equal "json_object", body.dig("response_format", "type")
     assert_equal "https://openrouter.ai/api/v1/chat/completions", http.last_uri.to_s
     assert_equal "LifePoints", http.last_request["X-Title"]

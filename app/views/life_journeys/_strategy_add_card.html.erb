@@ -1,4 +1,4 @@
-<%# locals: kind, title, area, journey, parent_id, horizon, placeholder, submit, scheduled_on: nil, input_id: nil %>
+<%# locals: kind, title, area, journey, parent_id, horizon, placeholder, submit, scheduled_on: nil, input_id: nil, goal_title: nil, plan_title: nil, project_title: nil %>
 <% kind = local_assigns.fetch(:kind) %>
 <% title = local_assigns.fetch(:title) %>
 <% area = local_assigns.fetch(:area) %>
@@ -9,6 +9,17 @@
 <% submit = local_assigns.fetch(:submit) %>
 <% scheduled_on = local_assigns[:scheduled_on] %>
 <% input_id = local_assigns[:input_id].presence || "strategy-add-#{kind}-title" %>
+<% goal_title = local_assigns[:goal_title].presence %>
+<% plan_title = local_assigns[:plan_title].presence %>
+<% project_title = local_assigns[:project_title].presence %>
+<% help_goal = goal_title.presence || StrategyGoal.find_by(id: parent_id)&.title.presence || journey.title %>
+<% help_cta =
+     case horizon.to_s
+     when "goal" then t("strategy.help.cta_goal")
+     when "project" then t("strategy.help.cta_project")
+     when "day" then t("strategy.help.cta_battle")
+     else t("strategy.help.cta")
+     end %>
 
 <section class="lp-strategy-add is-<%= kind %>" id="strategy-add-<%= kind %>" aria-label="<%= title %>">
   <div class="lp-strategy-add__head">
@@ -33,17 +44,20 @@
     <%= submit_tag submit, class: "lp-cta w-full" %>
   <% end %>
 
-  <% if horizon == "plan" %>
-    <%# parent_id for plan cards is the Goal node — LifeJourney has no strategy_goals assoc. %>
-    <%= render "strategy_helps/launch",
-          goal: StrategyGoal.find_by(id: parent_id)&.title.presence || journey.title,
-          ideal_scene: journey.ideal_scene,
-          current_reality: journey.current_reality,
-          life_area: area&.label,
-          accept_as: "plan",
-          parent_id: parent_id,
-          life_area_id: area&.id,
-          journey_id: journey.id,
-          button_label: t("strategy.help.cta") %>
-  <% end %>
+  <%= render "strategy_helps/launch",
+        goal: help_goal,
+        ideal_scene: journey.ideal_scene,
+        current_reality: journey.current_reality,
+        life_area: area&.label,
+        goal_title: goal_title || help_goal,
+        plan_title: plan_title,
+        project_title: project_title,
+        horizon: horizon,
+        accept_as: "fill",
+        parent_id: parent_id,
+        life_area_id: area&.id,
+        journey_id: journey.id,
+        target_input: "##{input_id}",
+        panel_id: "strategist-panel-add-#{kind}",
+        button_label: help_cta %>
 </section>

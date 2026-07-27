@@ -6,13 +6,19 @@ export default class extends Controller {
   static values = {
     url: String,
     acceptAs: { type: String, default: "fill" },
+    horizon: { type: String, default: "plan" },
     goal: { type: String, default: "" },
     ideal: { type: String, default: "" },
     reality: { type: String, default: "" },
     lifeArea: { type: String, default: "" },
+    goalTitle: { type: String, default: "" },
+    planTitle: { type: String, default: "" },
+    projectTitle: { type: String, default: "" },
     parentId: { type: String, default: "" },
     lifeAreaId: { type: String, default: "" },
     journeyId: { type: String, default: "" },
+    targetInput: { type: String, default: "" },
+    panelId: { type: String, default: "strategist-panel" },
     sourceForm: { type: Boolean, default: false },
     goalRequired: { type: String, default: "Add your goal title first." }
   }
@@ -52,9 +58,15 @@ export default class extends Controller {
     body.set("current_reality", reality || "")
     body.set("life_area", this.lifeAreaValue || "")
     body.set("accept_as", this.acceptAsValue || "fill")
+    body.set("horizon", this.horizonValue || "plan")
+    if (this.goalTitleValue) body.set("goal_title", this.goalTitleValue)
+    if (this.planTitleValue) body.set("plan_title", this.planTitleValue)
+    if (this.projectTitleValue) body.set("project_title", this.projectTitleValue)
     if (this.parentIdValue) body.set("parent_id", this.parentIdValue)
     if (this.lifeAreaIdValue) body.set("life_area_id", this.lifeAreaIdValue)
     if (this.journeyIdValue) body.set("life_journey_id", this.journeyIdValue)
+    if (this.targetInputValue) body.set("target_input", this.targetInputValue)
+    if (this.panelIdValue) body.set("panel_id", this.panelIdValue)
 
     this.busy(true)
     try {
@@ -88,13 +100,25 @@ export default class extends Controller {
     const title = event.currentTarget.dataset.title
     if (!title) return
 
-    const root = this.element.closest(".lp-strategy-next, .lp-home, .lp-adventure, form, body") || document
-    const input =
-      root.querySelector("#next-up-title") ||
-      root.querySelector("#life_journey_title") ||
-      root.querySelector("#onboarding_title") ||
-      root.querySelector("input[name='life_journey[title]']") ||
-      root.querySelector("input[name='title']")
+    const selector = this.targetInputValue || event.currentTarget.dataset.targetInput
+    let input = null
+
+    if (selector) {
+      input = document.querySelector(selector)
+    }
+
+    if (!input) {
+      const root = this.element.closest(".lp-strategy-next, .lp-strategy-add, .lp-home, .lp-adventure, form, body") || document
+      input =
+        root.querySelector("#next-up-title") ||
+        root.querySelector("#add-battle-title") ||
+        root.querySelector("#board-add-battle-title") ||
+        root.querySelector("#life_journey_title") ||
+        root.querySelector("#onboarding_title") ||
+        root.querySelector("input[name='life_journey[title]']") ||
+        root.querySelector("input[name='title']") ||
+        root.querySelector("input[id^='strategy-add-']")
+    }
 
     if (input) {
       input.value = title

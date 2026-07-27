@@ -40,10 +40,13 @@
           ideal_scene: @journey.ideal_scene,
           current_reality: @journey.current_reality,
           life_area: @journey.life_area&.label,
+          goal_title: @goal.title,
+          horizon: "plan",
           accept_as: "plan",
           parent_id: @goal.id,
           life_area_id: @journey.life_area_id,
           journey_id: @journey.id,
+          panel_id: "strategist-panel-goal",
           button_label: t("strategy.help.cta") %>
   <% end %>
 
