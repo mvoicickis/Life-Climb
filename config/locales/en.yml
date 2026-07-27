@@ -300,7 +300,7 @@ en:
     write: "Write"
   strategy:
     mode: "Strategy"
-    page_title: "This season’s mountain"
+    page_title: "My Mountain"
     title: "Build your mountain"
     promise: "One mountain. Today’s battle."
     hierarchy_gate:
@@ -342,6 +342,7 @@ en:
     fight:
       label: "Today’s climb"
       cta: "Fight this battle"
+      current_battle: "Current battle"
       today_hint: "Glowing on your mountain: %{title}"
       build_kicker: "Next on the climb"
       keep_building: "Keep climbing — add the next marker."

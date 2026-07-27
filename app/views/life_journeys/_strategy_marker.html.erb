@@ -1,20 +1,28 @@
-<%# locals: node:, lit:, today:, whisper: %>
+<%# Soft tinted floating node card on the mountain. locals: node:, lit:, today:, whisper: %>
 <% node = local_assigns.fetch(:node) %>
 <% lit = local_assigns.fetch(:lit, false) %>
 <% today = local_assigns.fetch(:today, false) %>
 <% whisper = local_assigns[:whisper] %>
 <% kind = strategy_kind_css(node) %>
 <%
+  kind_label =
+    case kind
+    when "goal" then t("strategy.horizons.goal")
+    when "plan" then t("strategy.horizons.plan")
+    when "project" then t("strategy.horizons.project")
+    else t("strategy.horizons.day")
+    end
   href =
     if node.day?
       life_journey_path(@journey, focus_id: node.parent_id, node_id: node.id, sheet: 1)
     else
       life_journey_path(@journey, focus_id: node.id, sheet: 1)
     end
+  ap = node.day? ? GameRules::BATTLE_TODO_LP : nil
 %>
 
 <%= link_to href,
-      class: "lp-strategy-marker is-#{kind} #{'is-lit' if lit} #{'is-today' if today} #{'is-done' if node.completed?}",
+      class: "lp-strategy-marker is-card is-#{kind} #{'is-lit' if lit} #{'is-today' if today} #{'is-done' if node.completed?}",
       data: {
         action: "pointerdown->strategy-mountain#press pointerup->strategy-mountain#release pointerleave->strategy-mountain#cancel pointercancel->strategy-mountain#cancel contextmenu->strategy-mountain#menu",
         strategy_mountain_target: "marker",
@@ -23,12 +31,18 @@
         can_add: strategy_child_horizon(node).present?,
         sheet_id: "strategy-sheet-#{node.id}"
       } do %>
-  <span class="lp-strategy-marker__dot" aria-hidden="true"></span>
-  <span class="lp-strategy-marker__title"><%= node.title.truncate(28) %></span>
-  <% if node.progress_percent.positive? && !node.day? %>
-    <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
-  <% end %>
-  <% if whisper.present? %>
-    <span class="lp-strategy-marker__whisper"><%= whisper %></span>
-  <% end %>
+  <span class="lp-strategy-marker__icon" aria-hidden="true"></span>
+  <span class="lp-strategy-marker__body">
+    <span class="lp-strategy-marker__kind"><%= kind_label %></span>
+    <span class="lp-strategy-marker__title"><%= node.title.truncate(26) %></span>
+    <% if node.progress_percent.positive? && !node.day? %>
+      <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
+    <% elsif ap.present? && !node.completed? %>
+      <span class="lp-strategy-marker__ap">+<%= ap %> <%= t("dash.action_points_short") %></span>
+    <% elsif whisper.present? %>
+      <span class="lp-strategy-marker__whisper"><%= whisper %></span>
+    <% elsif node.day? && node.completed? %>
+      <span class="lp-strategy-marker__check" aria-hidden="true">✓</span>
+    <% end %>
+  </span>
 <% end %>

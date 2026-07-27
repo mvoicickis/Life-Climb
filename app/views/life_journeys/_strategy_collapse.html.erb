@@ -1,0 +1,14 @@
+<%# Grey numbered collapse node for off-branch siblings. locals: count:, href:, kind:, label: %>
+<% count = local_assigns.fetch(:count).to_i %>
+<% href = local_assigns.fetch(:href) %>
+<% kind = local_assigns.fetch(:kind) %>
+<% label = local_assigns.fetch(:label) %>
+
+<% if count.positive? %>
+  <%= link_to href,
+        class: "lp-strategy-collapse is-#{kind}",
+        title: label,
+        aria: { label: label } do %>
+    <span class="lp-strategy-collapse__count"><%= count %></span>
+  <% end %>
+<% end %>

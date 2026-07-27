@@ -2,29 +2,40 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 <% sp_gained = flash[:sp_gained].to_i %>
+<% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 
-<div class="lp-home lp-strategy-page mx-auto max-w-lg space-y-5 px-4 pb-24 pt-5"
+<div class="lp-home lp-strategy-page mx-auto max-w-lg px-4 pb-36 pt-5"
      data-controller="strategy-celebrate strategy-mountain"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
      data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>">
-  <header class="lp-strategy-page__header">
+  <header class="lp-strategy-page__header is-mockup">
     <div class="min-w-0">
       <p class="lp-brand-kicker">
         <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
-        <span><%= t("strategy.mode") %></span>
+        <span>LifePoints</span>
       </p>
       <h1 class="lp-strategy-page__title"><%= t("strategy.page_title") %></h1>
-      <p class="lp-strategy-page__promise"><%= t("strategy.promise") %></p>
+      <% if @goal %>
+        <p class="lp-strategy-page__goal-line">
+          <span class="lp-strategy-page__goal-name"><%= @goal.title %></span>
+          <span class="lp-strategy-page__goal-pct"><%= t("strategy.sheet.progress", pct: mountain[:progress].to_i) %></span>
+        </p>
+        <div class="lp-strategy-page__goal-track" aria-hidden="true">
+          <span style="width: <%= mountain[:progress].to_i %>%"></span>
+        </div>
+      <% else %>
+        <p class="lp-strategy-page__promise"><%= t("strategy.promise") %></p>
+      <% end %>
     </div>
-    <div class="lp-strategy__sp is-soft shrink-0"
+    <div class="lp-strategy__sp is-soft is-pill shrink-0"
          data-strategy-celebrate-target="spBadge"
          aria-label="<%= t('strategy.sp_label') %>">
       <span class="lp-strategy__sp-value" data-strategy-celebrate-target="spValue"><%= current_user.strategy_points %></span>
-      <span class="lp-strategy__sp-label"><%= t("strategy.sp_short") %></span>
+      <span class="lp-strategy__sp-label"><%= t("strategy.sp_label") %></span>
     </div>
   </header>
 
-  <%= render "life_journeys/strategy_mountain", mountain: @mountain %>
+  <%= render "life_journeys/strategy_mountain", mountain: mountain %>
 
   <%= render "life_journeys/strategy_fight_cta" %>
 
