@@ -37,9 +37,52 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy-path__stage.is-battle"
     assert_select ".lp-strategy-next.is-goal"
     assert_select "#next-up-title"
+    assert_select "#strategist-panel-next-up"
+    assert_select "[data-strategist-horizon-value='goal']", minimum: 1
+    assert_select "[data-strategist-panel-id-value='strategist-panel-next-up'][data-strategist-horizon-value='goal']"
+    assert_match(/Help me define this goal/i, response.body)
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)
     assert_no_match(/This month/i, response.body)
+  end
+
+  test "help under goal asks for goal ideas not plans" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Become a Rails developer", position: 0
+    )
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select "#strategist-panel-goal"
+    assert_select "[data-strategist-panel-id-value='strategist-panel-goal'][data-strategist-horizon-value='goal']"
+    assert_select "[data-strategist-panel-id-value='strategist-panel-goal'][data-strategist-accept-as-value='ideas']"
+    assert_select "[data-strategist-panel-id-value='strategist-panel-next-up'][data-strategist-horizon-value='plan']"
+    assert_match(/Help me define this goal/i, response.body)
+    assert_match(/Help me plan/i, response.body)
+    assert_equal goal.title, goal.reload.title
+  end
+
+  test "help beside project and battle inputs uses matching horizons" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: plan.id)
+    assert_response :success
+    assert_select "[data-strategist-panel-id-value='strategist-panel-next-up'][data-strategist-horizon-value='project']"
+    assert_match(/Help me define this project/i, response.body)
+
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: project.id)
+    assert_response :success
+    assert_select "[data-strategist-panel-id-value='strategist-panel-next-up'][data-strategist-horizon-value='day']"
+    assert_match(/Help me choose the next battle/i, response.body)
   end
 
   test "goal locks due_on to December 29 and awards goal SP" do

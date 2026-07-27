@@ -35,19 +35,22 @@
       <span class="lp-strategy-page__goal-due"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></span>
     </div>
 
+    <%
+      # Help under the Goal line is for the Goal itself. Plan/Project/Battle help
+      # lives beside those title inputs in next-up and board add cards.
+    %>
     <%= render "strategy_helps/launch",
           goal: @goal.title,
           ideal_scene: @journey.ideal_scene,
           current_reality: @journey.current_reality,
           life_area: @journey.life_area&.label,
           goal_title: @goal.title,
-          horizon: "plan",
-          accept_as: "plan",
-          parent_id: @goal.id,
+          horizon: "goal",
+          accept_as: "ideas",
           life_area_id: @journey.life_area_id,
           journey_id: @journey.id,
           panel_id: "strategist-panel-goal",
-          button_label: t("strategy.help.cta") %>
+          button_label: t("strategy.help.cta_goal") %>
   <% end %>
 
   <%= render "life_journeys/strategy_board" %>

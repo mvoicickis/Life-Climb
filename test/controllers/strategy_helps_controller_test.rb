@@ -73,6 +73,41 @@ class StrategyHelpsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Ship portfolio/, response.body)
   end
 
+  test "passes goal horizon through to the strategist service" do
+    captured = {}
+    fake = {
+      "summary" => "Name the mountain clearly.",
+      "question" => nil,
+      "suggestions" => [ { "type" => "goal", "title" => "Become a Rails developer" } ]
+    }
+
+    singleton = Ai::StrategyService.singleton_class
+    singleton.alias_method :__original_call, :call
+    singleton.define_method(:call) do |**kwargs|
+      captured.replace(kwargs)
+      fake
+    end
+
+    begin
+      post strategy_help_path,
+           params: {
+             goal: "Ship software",
+             horizon: "goal",
+             accept_as: "ideas",
+             panel_id: "strategist-panel-goal"
+           },
+           headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    ensure
+      singleton.alias_method :call, :__original_call
+      singleton.remove_method :__original_call
+    end
+
+    assert_response :success
+    assert_equal "goal", captured[:horizon]
+    assert_match(/Become a Rails developer/, response.body)
+    assert_match(/Suggestion only/i, response.body)
+  end
+
   test "blank goal is rejected" do
     post strategy_help_path, params: { goal: " " }, as: :turbo_stream
     assert_response :success

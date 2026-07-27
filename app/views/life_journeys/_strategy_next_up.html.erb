@@ -101,7 +101,7 @@
         end
       %>
       <%= render "strategy_helps/launch",
-            goal: (help_horizon == "goal" ? @journey.title : help_goal),
+            goal: (help_horizon == "goal" ? (@journey.title.presence || "") : help_goal),
             ideal_scene: @journey.ideal_scene,
             current_reality: @journey.current_reality,
             life_area: area&.label,
@@ -114,6 +114,7 @@
             life_area_id: area&.id,
             journey_id: @journey.id,
             target_input: "#next-up-title",
+            source_form: (help_horizon == "goal"),
             panel_id: "strategist-panel-next-up",
             button_label: help_cta %>
 
