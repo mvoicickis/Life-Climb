@@ -59,7 +59,7 @@
            style="--lp-x: <%= goal_slot[:left] %>%; --lp-y: <%= goal_slot[:top] %>%">
         <%= render "life_journeys/strategy_marker",
               node: @goal,
-              lit: true,
+              lit: @focus&.id == @goal.id,
               today: false,
               whisper: nil %>
       </div>

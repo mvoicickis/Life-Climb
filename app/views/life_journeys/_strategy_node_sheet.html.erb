@@ -37,7 +37,7 @@
       </details>
 
       <% if child_horizon.present? %>
-        <details class="lp-strategy-sheet__add" id="strategy-sheet-add-<%= node.id %>">
+        <details class="lp-strategy-sheet__add" id="strategy-sheet-add-<%= node.id %>" <%= "open" if open %>>
           <summary><%= strategy_add_label(node) %></summary>
           <%= form_with url: strategy_goals_path, method: :post, class: "lp-strategy-sheet__form", data: { turbo: false } do %>
             <%= hidden_field_tag :life_area_id, area.id %>

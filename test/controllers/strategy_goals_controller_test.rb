@@ -241,6 +241,40 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#strategy-sheet-rename-#{battle.id}[value=?]", "Battle"
   end
 
+  test "tapping a plan opens that plan sheet with add project under it" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Find a Job", position: 0
+    )
+    other_plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Build SaaS", position: 1
+    )
+
+    get life_journey_path(@journey, focus_id: plan.id, sheet: 1)
+    assert_response :success
+    assert_select %([data-strategy-mountain-focus-sheet-value="strategy-sheet-#{plan.id}"])
+    assert_select "#strategy-sheet-#{plan.id}[open]"
+    assert_select "#strategy-sheet-add-#{plan.id}[open]"
+    assert_select "#strategy-sheet-#{plan.id} input[name=horizon][value=project]"
+    assert_select "#strategy-sheet-#{plan.id} input[name=parent_id][value=?]", plan.id.to_s
+    assert_select "#strategy-sheet-#{goal.id}[open]", count: 0
+    assert_select ".lp-strategy-marker.is-card.is-plan.is-lit", text: /Find a Job/i
+    assert_select ".lp-strategy-marker.is-card.is-goal.is-lit", count: 0
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: plan.id,
+      horizon: "project",
+      title: "Improve Resume"
+    }
+    project = @user.strategy_goals.for_kind("project").find_by!(title: "Improve Resume")
+    assert_equal plan.id, project.parent_id
+    assert_not_equal other_plan.id, project.parent_id
+  end
+
   test "update renames strategy goals and syncs battle titles to today" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Old Goal", position: 0

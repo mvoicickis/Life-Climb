@@ -3,13 +3,16 @@ import { Controller } from "@hotwired/stimulus"
 // Living mountain: long-press radial + bottom sheet for every marker.
 export default class extends Controller {
   static targets = ["marker", "sheet", "radial"]
-  static values = { open: Boolean }
+  static values = {
+    open: Boolean,
+    focusSheet: String
+  }
 
   connect() {
     this.pressTimer = null
     this.pressNodeId = null
     this.longPressed = false
-    if (this.openValue) this.openFocusedSheet()
+    if (this.openValue) this.openFocusedSheet({ add: true })
   }
 
   disconnect() {
@@ -107,14 +110,27 @@ export default class extends Controller {
     sheet?.close()
   }
 
-  openFocusedSheet() {
+  focusedSheetId() {
+    if (this.hasFocusSheetValue && this.focusSheetValue) return this.focusSheetValue
     const preferred = this.element.querySelector(".lp-strategy-marker.is-today, .lp-strategy-marker.is-lit")
-    const id = preferred?.dataset?.sheetId
-    if (id) this.openSheetById(id)
+    return preferred?.dataset?.sheetId
+  }
+
+  openFocusedSheet(opts = {}) {
+    const id = this.focusedSheetId()
+    if (id) this.openSheetById(id, opts)
   }
 
   openFocusedAdd(event) {
     event?.preventDefault()
+    const focusId = this.hasFocusSheetValue ? this.focusSheetValue : null
+    if (focusId) {
+      const marker = this.element.querySelector(`.lp-strategy-marker[data-sheet-id="${focusId}"]`)
+      if (marker?.dataset?.canAdd === "true") {
+        this.openSheetById(focusId, { add: true })
+        return
+      }
+    }
     const marker =
       this.element.querySelector(".lp-strategy-marker.is-lit[data-can-add='true']") ||
       this.element.querySelector(".lp-strategy-marker[data-can-add='true']")
