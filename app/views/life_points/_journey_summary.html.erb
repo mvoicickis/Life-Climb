@@ -27,10 +27,13 @@
     <% end %>
   <% else %>
     <p class="lp-progress-empty"><%= t("progress.lock_goal") %></p>
-    <% if journey %>
-      <p class="lp-journey-summary__link">
-        <%= link_to t("progress.open_strategy"), life_journey_path(journey) %>
-      </p>
-    <% end %>
+    <% strategy_href = journey || current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first %>
+    <p class="lp-journey-summary__link">
+      <% if strategy_href %>
+        <%= link_to t("progress.open_strategy"), life_journey_path(strategy_href) %>
+      <% else %>
+        <%= link_to t("progress.open_strategy"), new_life_journey_path %>
+      <% end %>
+    </p>
   <% end %>
 </section>

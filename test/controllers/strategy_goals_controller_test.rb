@@ -289,4 +289,21 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/i, response.body)
     assert_match(/Strategy Points/i, response.body)
   end
+
+  test "missing life journey redirects instead of 404" do
+    get life_journey_path(id: 9_999_999)
+    assert_redirected_to life_journey_path(@journey)
+    assert_match(/isn.?t here anymore/i, flash[:alert].to_s)
+
+    @journey.destroy!
+    get life_journey_path(id: 9_999_999)
+    assert_redirected_to new_life_journey_path
+  end
+
+  test "journey tab still renders after strategy mountain ships" do
+    get life_points_path
+    assert_response :success
+    assert_match(/Journey/i, response.body)
+    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+  end
 end
