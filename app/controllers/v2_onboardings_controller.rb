@@ -17,9 +17,9 @@ class V2OnboardingsController < ApplicationController
       if current_user.needs_adventure_guide?
         redirect_to v2_onboarding_path(step: "how") and return unless @step.in?(%w[forge how])
       elsif !@step.in?(%w[forge how])
-        redirect_to dashboard_path and return
+        redirect_to after_adventure_path and return
       elsif @step == "how"
-        redirect_to dashboard_path and return
+        redirect_to after_adventure_path and return
       end
     end
 
@@ -43,17 +43,12 @@ class V2OnboardingsController < ApplicationController
       redirect_to v2_onboarding_path(step: "deadline")
     when "deadline"
       begin
-        # Replaying New Player Experience must not duplicate Goals/Journeys.
-        if current_user.life_journeys.exists?
-          current_user.update!(onboarding_completed_at: Time.current, planning_version: 2)
-        else
-          Onboarding::Run.call(
-            user: current_user,
-            area_key: DEFAULT_AREA_KEY,
-            title: draft["title"],
-            route_mission: true
-          )
-        end
+        Onboarding::Run.call(
+          user: current_user,
+          area_key: DEFAULT_AREA_KEY,
+          title: draft["title"],
+          route_mission: true
+        )
         session.delete(:v2_onboarding)
         redirect_to v2_onboarding_path(step: "forge")
       rescue Onboarding::Run::Error, LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error => e
@@ -64,7 +59,7 @@ class V2OnboardingsController < ApplicationController
         redirect_to v2_onboarding_path(step: "welcome") and return
       end
       current_user.mark_adventure_guide_done!
-      redirect_to dashboard_path
+      redirect_to after_adventure_path
     else
       redirect_to v2_onboarding_path(step: "welcome")
     end
@@ -74,6 +69,14 @@ class V2OnboardingsController < ApplicationController
 
   def onboarding_params
     params.fetch(:onboarding, {}).permit(:title)
+  end
+
+  def after_adventure_path
+    journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+    return new_life_journey_path if journey.blank?
+    return life_journey_path(journey) unless Strategy::HierarchyReady.call(user: current_user, journey:)
+
+    dashboard_path
   end
 
   def step_incomplete?

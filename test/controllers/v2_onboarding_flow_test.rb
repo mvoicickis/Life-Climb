@@ -73,8 +73,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/How the game works/i, response.body)
     assert_match(/Find a job/i, response.body)
-    assert_match(/Polish resume/i, response.body)
-    assert_match(/Write 5 strong bullets/i, response.body)
+    assert_match(/Improve my applications/i, response.body)
+    assert_match(/Make 5 emails better/i, response.body)
     assert_match(/Claim Trail Guide badge/i, response.body)
     assert_select "[data-controller='adventure-guide']"
     assert_select ".lp-adventure__how-stage"
@@ -85,18 +85,17 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-adventure__how-badge"
 
     patch v2_onboarding_url(step: "how")
-    assert_redirected_to dashboard_path
+    assert_redirected_to life_journey_path(journey)
     user.reload
     assert user.adventure_guide_done?
     assert_not user.needs_adventure_guide?
 
     get dashboard_path
+    assert_redirected_to life_journey_path(journey)
+
+    get life_journey_path(journey)
     assert_response :success
     assert_match(/Become a Ruby Developer/i, response.body)
-    assert_match(/Plan Your Route/i, response.body)
-    assert_match(/Build Strategy/i, response.body)
-    assert_match(/Year Adventure/i, response.body)
-    assert_no_match(/Complete Today.?s Battle/i, response.body)
 
     achievements = Progress::Dashboard.call(user: user, period: "7d")[:achievements]
     guide = achievements.find { |a| a[:key] == "adventure_guide" }

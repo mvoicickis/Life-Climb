@@ -7,6 +7,8 @@ module Developer
       Developer::RestartNewPlayerExperience.call(user: current_user)
       session.delete(:v2_onboarding)
       session.delete(:onboarding_draft)
+      session.delete(:project_check_ids)
+      session.delete(:battle_angle_project_id)
 
       redirect_to v2_onboarding_path(step: "welcome"),
                   notice: t("developer.tools.restart_npe_done"),

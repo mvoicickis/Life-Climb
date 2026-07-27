@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RequireOnboarding
   extend ActiveSupport::Concern
 
@@ -15,15 +17,54 @@ module RequireOnboarding
 
   def redirect_to_onboarding_if_needed
     return unless authenticated?
-    return if %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains].include?(controller_name)
+    return if onboarding_flow_controller?
 
     current_user.update!(planning_version: 2) if current_user && !current_user.planning_v2?
     if current_user&.needs_onboarding?
       redirect_to v2_onboarding_path and return
     end
 
-    return unless current_user&.needs_adventure_guide?
+    if current_user&.needs_adventure_guide?
+      redirect_to v2_onboarding_path(step: "how") and return
+    end
 
-    redirect_to v2_onboarding_path(step: "how")
+    redirect_to_strategy_if_hierarchy_incomplete
+  end
+
+  def redirect_to_strategy_if_hierarchy_incomplete
+    return if hierarchy_gate_exempt?
+    return if Strategy::HierarchyReady.call(user: current_user)
+
+    journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+    if journey
+      redirect_to life_journey_path(journey), notice: I18n.t("strategy.hierarchy_gate.notice")
+    else
+      redirect_to new_life_journey_path
+    end
+  end
+
+  def onboarding_flow_controller?
+    %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains].include?(controller_name)
+  end
+
+  def hierarchy_gate_exempt?
+    return true if controller_path.start_with?("admin", "developer")
+
+    %w[
+      life_journeys
+      strategy_goals
+      strategy_helps
+      journey_completions
+      journey_targets
+      project_completions
+      settings
+      locales
+      feedbacks
+      supports
+      abouts
+      life_points
+      progress
+      focus
+    ].include?(controller_name)
   end
 end
