@@ -7992,7 +7992,8 @@ button.lp-progress-heat__cell {
   gap: 0.75rem;
 }
 
-.lp-strategy__board-head .lp-strategy__board-title {
+.lp-strategy__board-head .lp-strategy__board-title,
+.lp-strategy__board-head .lp-strategy-rename {
   flex: 1;
   min-width: 0;
 }
@@ -8180,6 +8181,293 @@ a.lp-strategy-siblings__chip:hover {
   flex-direction: column;
   gap: 0.15rem;
   margin: -0.35rem 0 0;
+}
+
+.lp-strategy-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lp-strategy-page__title {
+  margin-top: 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+}
+
+.lp-strategy-page__promise {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy__sp.is-soft {
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.85rem;
+  min-width: 3.4rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--lp-level-goal, #166534) 8%, var(--lp-paper));
+  border: 1px solid color-mix(in srgb, var(--lp-level-goal, #166534) 18%, var(--lp-border));
+}
+
+.lp-strategy__sp.is-soft .lp-strategy__sp-value {
+  font-size: 1.15rem;
+}
+
+.lp-strategy__sp.is-soft .lp-strategy__sp-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+.lp-strategy-map {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--lp-level-goal, #166534) 20%, var(--lp-border));
+  background:
+    linear-gradient(160deg, color-mix(in srgb, #ecfdf5 55%, transparent), transparent 70%),
+    var(--lp-elevated, var(--lp-paper));
+  animation: lp-strategy-map-in 480ms ease both;
+}
+
+.lp-strategy-map__goal {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 0.2rem 0.55rem;
+  align-items: start;
+}
+
+.lp-strategy-map__goal .lp-strategy-rename {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.lp-strategy-map__goal .lp-strategy-overflow {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.lp-strategy-map__due {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-map__goal-title {
+  font-family: var(--lp-font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lp-level-goal, #166534);
+}
+
+.lp-strategy-map__stage-line {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-map__row {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-strategy-map__row-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-map__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.lp-strategy-map__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--lp-ink);
+  border: 1px solid var(--lp-border);
+  background: color-mix(in srgb, #fff 78%, transparent);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.lp-strategy-map__chip.is-plan {
+  border-color: color-mix(in srgb, var(--lp-level-plan, #0f766e) 28%, var(--lp-border));
+}
+
+.lp-strategy-map__chip.is-project {
+  border-color: color-mix(in srgb, var(--lp-level-project, #1d4ed8) 28%, var(--lp-border));
+}
+
+.lp-strategy-map__chip.is-on {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-plan, #0f766e) 16%, transparent);
+}
+
+.lp-strategy-map__chip.is-project.is-on {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-level-project, #1d4ed8) 16%, transparent);
+  background: color-mix(in srgb, var(--lp-level-project, #1d4ed8) 10%, #fff);
+}
+
+.lp-strategy-map__chip.is-plan.is-on {
+  background: color-mix(in srgb, var(--lp-level-plan, #0f766e) 12%, #fff);
+}
+
+a.lp-strategy-map__chip:hover {
+  transform: translateY(-1px);
+}
+
+.lp-strategy-map__whisper,
+.lp-strategy-map__battles-under {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--lp-muted);
+}
+
+.lp-strategy-map__battles-under {
+  font-weight: 700;
+  color: var(--lp-level-battle, #b45309);
+}
+
+.lp-strategy-rename {
+  min-width: 0;
+}
+
+.lp-strategy-rename__display {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.lp-strategy-rename__edit {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0.15rem;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.lp-strategy-rename__edit:hover {
+  opacity: 1;
+  color: var(--lp-ink);
+}
+
+.lp-strategy-rename__form {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.lp-strategy-rename__input {
+  width: 100%;
+  border-radius: 0.7rem;
+  border: 1px solid var(--lp-border);
+  padding: 0.45rem 0.65rem;
+  font: inherit;
+  font-weight: 700;
+}
+
+.lp-strategy-rename__actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.lp-strategy-rename__save,
+.lp-strategy-rename__cancel {
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-border);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 750;
+  cursor: pointer;
+  background: var(--lp-paper);
+}
+
+.lp-strategy-rename__save {
+  background: color-mix(in srgb, var(--lp-level-goal, #166534) 14%, #fff);
+  border-color: color-mix(in srgb, var(--lp-level-goal, #166534) 30%, var(--lp-border));
+  color: var(--lp-level-goal, #166534);
+}
+
+.lp-strategy-quests.is-battles {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-strategy-quest-row.is-battle .lp-strategy-quest {
+  cursor: default;
+}
+
+.lp-strategy-quest.is-battle {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--lp-level-battle, #b45309) 28%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-level-battle, #b45309) 8%, var(--lp-paper));
+}
+
+.lp-strategy-quest.is-battle.is-done {
+  opacity: 0.72;
+}
+
+.lp-strategy-quest.is-battle .lp-strategy-quest__marker {
+  font-size: 1rem;
+}
+
+.lp-strategist-launch.is-compact {
+  margin-top: 0.15rem;
+  align-items: flex-start;
+}
+
+.lp-strategist-launch__power {
+  border: 1px solid color-mix(in srgb, var(--lp-level-goal, #166534) 28%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-level-goal, #166534) 8%, #fff);
+  color: var(--lp-level-goal, #166534);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lp-strategist-launch__power:hover {
+  background: color-mix(in srgb, var(--lp-level-goal, #166534) 14%, #fff);
+}
+
+@keyframes lp-strategy-map-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-strategy-map {
+    animation: none;
+  }
 }
 
 .lp-strategy-page__goal-row {

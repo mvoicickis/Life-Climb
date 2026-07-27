@@ -24,7 +24,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_match(/This season.?s mountain/i, response.body)
-    assert_match(/One mountain\. Today.?s battle/i, response.body)
+    assert_match(/Plan the war\. Fight today.?s battle/i, response.body)
     assert_match(/What do I ultimately want to achieve/i, response.body)
     assert_match(/Next up/i, response.body)
     assert_match(/Begin Journey/i, response.body)
@@ -40,6 +40,58 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy__universe", count: 0
     assert_no_match(/Climb clarity/i, response.body)
     assert_no_match(/This month/i, response.body)
+  end
+
+  test "strategy map shows plans under goal and inline rename" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Get healthier", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Move every day", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Eat better", position: 1
+    )
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select ".lp-strategy-map"
+    assert_select ".lp-strategy-map__chip.is-plan", minimum: 2
+    assert_match(/Plans are trails under your Goal/i, response.body)
+    assert_select "[data-controller='strategy-rename']", minimum: 1
+    assert_select ".lp-strategist-launch.is-compact"
+    assert_match(/Strategist/i, response.body)
+    assert_select ".lp-strategy__crumbs", count: 0
+    assert_select ".lp-strategy-path", count: 0
+
+    get life_journey_path(@journey, focus_id: plan.id)
+    assert_response :success
+    assert_match(/Projects finish a Plan/i, response.body)
+    assert_select ".lp-strategy-rename", minimum: 1
+  end
+
+  test "project battles render as quest chips with rename" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Start a walking habit", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Put on walking shoes", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, focus_id: project.id)
+    assert_response :success
+    assert_match(/Battles finish this Project/i, response.body)
+    assert_match(/Battles under/i, response.body)
+    assert_select ".lp-strategy-quest.is-battle"
+    assert_select ".lp-strategy-quest-row.is-battle [data-controller='strategy-rename']"
+    assert_match(/Put on walking shoes/i, response.body)
   end
 
   test "goal locks due_on to December 29 and awards goal SP" do
@@ -94,7 +146,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Your mountain is ready/i, response.body)
     assert_select ".lp-strategy-next.is-handoff input[type=submit][value=?]", "Fight Today's Battle"
-    assert_match(/What is the very next action I can take/i, response.body)
+    assert_match(/Battles finish this Project/i, response.body)
     assert_select ".lp-strategy-overflow"
     assert_no_match(/Monthly Goals/i, response.body)
   end
@@ -185,7 +237,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#add-another-battle input[name=horizon][value=day]"
     assert_select "#add-battle-title"
     assert_select "#strategy-add-battle.lp-strategy-add input[name=title]"
-    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-battle']"
+    assert_select "#strategy-add-battle.lp-strategy-add", text: /Add another battle/i
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
@@ -214,13 +266,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: goal.id)
     assert_response :success
     assert_select "#strategy-add-plan.lp-strategy-add", text: /Add another plan/i
-    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-plan']", text: /Add plan/i
+    assert_select ".lp-strategy-map__chip.is-plan", text: /Plan A/i
     assert_select "details.lp-strategy__optional", count: 0
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select "#strategy-add-project.lp-strategy-add", text: /Add another project/i
-    assert_select "a.lp-strategy__board-add-link[href='#strategy-add-project']", text: /Add project/i
+    assert_select ".lp-strategy-map__chip.is-project", text: /Project A/i
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
@@ -251,22 +303,21 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan_a.id)
     assert_response :success
-    assert_select ".lp-strategy-siblings.is-plan", text: /Switch plan/i
-    assert_select ".lp-strategy-siblings__chip.is-current", text: /Plan Alpha/i
-    assert_select "a.lp-strategy-siblings__chip[href=?]", life_journey_path(@journey, focus_id: plan_b.id), text: /Plan Beta/i
+    assert_select ".lp-strategy-map__chip.is-plan.is-on", text: /Plan Alpha/i
+    assert_select "a.lp-strategy-map__chip.is-plan[href=?]", life_journey_path(@journey, focus_id: plan_b.id), text: /Plan Beta/i
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-siblings.is-project", text: /Switch project/i
-    assert_select ".lp-strategy-siblings__chip.is-current", text: /Project One/i
-    assert_select "a.lp-strategy-siblings__chip[href=?]", life_journey_path(@journey, focus_id: project_b.id), text: /Project Two/i
+    assert_select ".lp-strategy-map__chip.is-project.is-on", text: /Project One/i
+    assert_select "a.lp-strategy-map__chip.is-project[href=?]", life_journey_path(@journey, focus_id: project_b.id), text: /Project Two/i
 
     solo_project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan_b, horizon: "project", title: "Lone Project", position: 0
     )
     get life_journey_path(@journey, focus_id: solo_project.id)
     assert_response :success
-    assert_select ".lp-strategy-siblings", count: 0
+    assert_select ".lp-strategy-map__chip.is-project", text: /Lone Project/i
+    assert_select ".lp-strategy-map__chip.is-project", count: 1
   end
 
   test "strategy overflow shows rename and remove for goals plans projects and battles" do
@@ -286,14 +337,14 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: goal.id)
     assert_response :success
-    assert_select "#strategy-rename-#{goal.id}[value=?]", "Goal"
-    assert_select "#strategy-rename-#{plan.id}[value=?]", "Plan"
-    assert_select ".lp-strategy-overflow__action.is-save", minimum: 1
+    assert_select "[data-controller='strategy-rename'] .lp-strategy-rename__input[value=?]", "Goal"
     assert_select ".lp-strategy-overflow__action.is-remove", minimum: 1
+    assert_select ".lp-strategy-map__chip.is-plan", text: /Plan/i
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select "#strategy-rename-#{battle.id}[value=?]", "Battle"
+    assert_select "[data-controller='strategy-rename'] .lp-strategy-rename__input[value=?]", "Battle"
+    assert_select "[data-controller='strategy-rename'] .lp-strategy-rename__input[value=?]", "Project"
   end
 
   test "update renames strategy goals and syncs battle titles to today" do

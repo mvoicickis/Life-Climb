@@ -1,19 +1,22 @@
-<%# locals: node %>
+<%# locals: node, remove_only: false %>
 <% node = local_assigns.fetch(:node) %>
+<% remove_only = local_assigns.fetch(:remove_only, false) %>
 <details class="lp-strategy-overflow">
   <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
   <div class="lp-strategy-overflow__menu">
-    <%= form_with url: strategy_goal_path(node), method: :patch, class: "lp-strategy-overflow__rename", data: { turbo: false } do %>
-      <label class="lp-strategy-overflow__rename-label" for="strategy-rename-<%= node.id %>">
-        <%= t("strategy.rename") %>
-      </label>
-      <%= text_field_tag :title, node.title,
-            id: "strategy-rename-#{node.id}",
-            required: true,
-            maxlength: 120,
-            class: "lp-strategy-overflow__rename-input",
-            autocomplete: "off" %>
-      <%= submit_tag t("strategy.save_name"), class: "lp-strategy-overflow__action is-save" %>
+    <% unless remove_only %>
+      <%= form_with url: strategy_goal_path(node), method: :patch, class: "lp-strategy-overflow__rename", data: { turbo: false } do %>
+        <label class="lp-strategy-overflow__rename-label" for="strategy-rename-<%= node.id %>">
+          <%= t("strategy.rename") %>
+        </label>
+        <%= text_field_tag :title, node.title,
+              id: "strategy-rename-#{node.id}",
+              required: true,
+              maxlength: 120,
+              class: "lp-strategy-overflow__rename-input",
+              autocomplete: "off" %>
+        <%= submit_tag t("strategy.save_name"), class: "lp-strategy-overflow__action is-save" %>
+      <% end %>
     <% end %>
     <%= button_to t("strategy.remove"),
           strategy_goal_path(node),

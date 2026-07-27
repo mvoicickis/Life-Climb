@@ -1,0 +1,38 @@
+<%# locals: node, title_class: nil %>
+<% node = local_assigns.fetch(:node) %>
+<% title_class = local_assigns[:title_class].presence || "lp-strategy-rename__title" %>
+<% form_id = "strategy-inline-rename-#{node.id}" %>
+
+<div class="lp-strategy-rename"
+     data-controller="strategy-rename"
+     data-strategy-rename-editing-value="false">
+  <div class="lp-strategy-rename__display" data-strategy-rename-target="display">
+    <span class="<%= title_class %>" data-strategy-rename-target="label"><%= node.title %></span>
+    <button type="button"
+            class="lp-strategy-rename__edit"
+            data-action="strategy-rename#edit"
+            aria-label="<%= t('strategy.rename') %>">✎</button>
+  </div>
+
+  <%= form_with url: strategy_goal_path(node),
+        method: :patch,
+        html: {
+          id: form_id,
+          class: "lp-strategy-rename__form",
+          data: { strategy_rename_target: "form", turbo: false },
+          hidden: true
+        } do %>
+    <%= text_field_tag :title, node.title,
+          required: true,
+          maxlength: 120,
+          class: "lp-strategy-rename__input",
+          autocomplete: "off",
+          data: { strategy_rename_target: "input", action: "keydown->strategy-rename#onKeydown" } %>
+    <div class="lp-strategy-rename__actions">
+      <%= submit_tag t("strategy.save_name"), class: "lp-strategy-rename__save" %>
+      <button type="button"
+              class="lp-strategy-rename__cancel"
+              data-action="strategy-rename#cancel"><%= t("strategy.cancel_rename") %></button>
+    </div>
+  <% end %>
+</div>

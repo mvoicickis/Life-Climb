@@ -16,9 +16,11 @@
   source_form = local_assigns.fetch(:source_form, false)
   button_label = local_assigns.fetch(:button_label, t("strategy.help.cta"))
   panel_id = local_assigns.fetch(:panel_id, "strategist-panel")
+  compact = local_assigns.fetch(:compact, false)
+  button_class = compact ? "lp-strategist-launch__power" : "lp-strategy-next__secondary"
 %>
 
-<div class="lp-strategist-launch"
+<div class="lp-strategist-launch <%= 'is-compact' if compact %>"
      data-controller="strategist"
      data-strategist-url-value="<%= strategy_help_path %>"
      data-strategist-accept-as-value="<%= accept_as %>"
@@ -38,7 +40,7 @@
      data-strategist-source-form-value="<%= source_form %>"
      data-strategist-goal-required-value="<%= t("strategy.help.goal_required") %>">
   <button type="button"
-          class="lp-strategy-next__secondary"
+          class="<%= button_class %>"
           data-strategist-target="submit"
           data-action="strategist#requestHelp"><%= button_label %></button>
 

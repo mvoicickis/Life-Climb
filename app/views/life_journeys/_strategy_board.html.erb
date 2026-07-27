@@ -7,18 +7,8 @@
    ) %>
 
 <section class="lp-strategy space-y-4" aria-label="<%= t('strategy.title') %>" id="strategy-board">
-  <%= render "life_journeys/strategy_path" %>
-
-  <% if @crumbs.size > 1 %>
-    <nav class="lp-strategy__crumbs" aria-label="<%= t('strategy.breadcrumb') %>">
-      <%= link_to t("strategy.levels.goal"), life_journey_path(@journey), class: "lp-strategy__crumb is-goal" %>
-      <% @crumbs.each do |crumb| %>
-        <span class="lp-strategy__crumb-sep" aria-hidden="true">/</span>
-        <%= link_to crumb[:title].truncate(24),
-              life_journey_path(@journey, focus_id: crumb[:id]),
-              class: "lp-strategy__crumb is-#{crumb[:kind]}" %>
-      <% end %>
-    </nav>
+  <% unless @goal %>
+    <%= render "life_journeys/strategy_path" %>
   <% end %>
 
   <%= render "life_journeys/strategy_next_up" %>
@@ -46,11 +36,16 @@
 
       <% elsif @level == "plans" %>
         <% plans = @children.select(&:plan?) %>
-        <% if plans.any? %>
+        <% if plans.any? && !focus_create %>
           <div class="lp-strategy__board-head">
-            <h2 class="lp-strategy__board-title"><%= t("strategy.questions.plan") %></h2>
-            <a href="#strategy-add-plan" class="lp-strategy__board-add-link"><%= t("strategy.add_link.plan") %></a>
+            <h2 class="lp-strategy__board-title"><%= t("strategy.map.plans_line") %></h2>
           </div>
+          <div class="lp-strategy-quests">
+            <% plans.each do |plan| %>
+              <%= render "life_journeys/strategy_quest_card", node: plan, journey: @journey %>
+            <% end %>
+          </div>
+        <% elsif plans.any? && focus_create %>
           <div class="lp-strategy-quests">
             <% plans.each do |plan| %>
               <%= render "life_journeys/strategy_quest_card", node: plan, journey: @journey %>
@@ -74,13 +69,11 @@
       <% elsif @level == "projects" %>
         <% projects = @children.select(&:project?) %>
         <div class="lp-strategy__board-head">
-          <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
-          <% unless focus_create %>
-            <a href="#strategy-add-project" class="lp-strategy__board-add-link"><%= t("strategy.add_link.project") %></a>
-          <% end %>
+          <%= render "life_journeys/strategy_rename",
+                node: @focus,
+                title_class: "lp-strategy__board-title" %>
+          <%= render "life_journeys/strategy_overflow", node: @focus, remove_only: true %>
         </div>
-        <%= render "life_journeys/strategy_siblings" %>
-        <p class="lp-strategy__board-hint"><%= t("strategy.questions.project") %></p>
         <div class="lp-strategy__bar" style="--lp-level: var(--lp-level-project)"><span style="width: <%= @focus.progress_percent %>%"></span></div>
 
         <% if projects.any? %>
@@ -108,34 +101,34 @@
       <% else %>
         <% battles = @children.select(&:day?) %>
         <div class="lp-strategy__board-head">
-          <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
-          <% unless focus_create %>
-            <a href="#strategy-add-battle" class="lp-strategy__board-add-link"><%= t("strategy.add_link.battle") %></a>
-          <% end %>
+          <%= render "life_journeys/strategy_rename",
+                node: @focus,
+                title_class: "lp-strategy__board-title" %>
+          <%= render "life_journeys/strategy_overflow", node: @focus, remove_only: true %>
         </div>
-        <%= render "life_journeys/strategy_siblings" %>
-        <p class="lp-strategy__board-hint"><%= t("strategy.questions.battle") %></p>
         <div class="lp-strategy__bar" style="--lp-level: var(--lp-level-battle)"><span style="width: <%= @focus.progress_percent %>%"></span></div>
 
         <% if battles.any? %>
-          <h3 class="pt-2 text-base font-semibold text-[var(--lp-ink)]"><%= t("strategy.battles_heading") %></h3>
-          <ul class="lp-strategy__list">
+          <div class="lp-strategy-quests is-battles">
             <% battles.each do |battle| %>
-              <li class="lp-strategy__item is-battle <%= 'is-done' if battle.completed? %>">
-                <div class="min-w-0 flex-1">
-                  <p class="lp-strategy__item-title">
-                    <span class="lp-strategy__item-marker" aria-hidden="true"><%= battle.completed? ? "✓" : "⚔" %></span>
-                    <%= battle.title %>
-                  </p>
-                  <p class="lp-strategy__item-meta"><%= l(battle.scheduled_on, format: :long) if battle.scheduled_on %></p>
+              <div class="lp-strategy-quest-row is-battle <%= 'is-done' if battle.completed? %>">
+                <div class="lp-strategy-quest is-battle <%= 'is-done' if battle.completed? %>">
+                  <span class="lp-strategy-quest__marker" aria-hidden="true"><%= battle.completed? ? "✓" : "⚔" %></span>
+                  <div class="lp-strategy-quest__body">
+                    <%= render "life_journeys/strategy_rename",
+                          node: battle,
+                          title_class: "lp-strategy-quest__title" %>
+                    <% if battle.scheduled_on %>
+                      <p class="lp-strategy-quest__meta"><%= l(battle.scheduled_on, format: :long) %></p>
+                    <% end %>
+                  </div>
                 </div>
-                <%= render "life_journeys/strategy_overflow", node: battle %>
-              </li>
+                <%= render "life_journeys/strategy_overflow", node: battle, remove_only: true %>
+              </div>
             <% end %>
-          </ul>
+          </div>
         <% end %>
 
-        <%# Always allow more battles on a project; primary first create lives in Next Up when ready. %>
         <% unless focus_create %>
           <%= render "life_journeys/strategy_add_card",
                 kind: "battle",

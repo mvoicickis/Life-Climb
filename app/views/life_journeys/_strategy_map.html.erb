@@ -1,0 +1,86 @@
+<%# Compact expedition map: Goal → plan chips → project chips → battles label. %>
+<% return unless @goal %>
+<%
+  map_plans = @goal.children.for_kind("plan").ordered.to_a
+  active_plan =
+    if @focus&.plan?
+      @focus
+    elsif @focus&.project?
+      @focus.parent
+    end
+  map_projects =
+    if active_plan && (@level == "projects" || @level == "battles")
+      active_plan.children.for_kind("project").ordered.to_a
+    else
+      []
+    end
+  stage_line =
+    case @level
+    when "projects" then t("strategy.map.projects_line")
+    when "battles" then t("strategy.map.battles_line")
+    else t("strategy.map.plans_line")
+    end
+%>
+
+<nav class="lp-strategy-map is-<%= @level %>" aria-label="<%= t('strategy.map.label') %>" data-controller="strategy-zoom">
+  <div class="lp-strategy-map__goal">
+    <%= render "life_journeys/strategy_rename",
+          node: @goal,
+          title_class: "lp-strategy-map__goal-title" %>
+    <span class="lp-strategy-map__due"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></span>
+    <%= render "life_journeys/strategy_overflow", node: @goal, remove_only: true %>
+  </div>
+
+  <p class="lp-strategy-map__stage-line"><%= stage_line %></p>
+
+  <% if map_plans.any? %>
+    <div class="lp-strategy-map__row" role="group" aria-label="<%= t('strategy.path.plans') %>">
+      <span class="lp-strategy-map__row-label"><%= t("strategy.path.plans") %></span>
+      <ul class="lp-strategy-map__chips is-plan">
+        <% map_plans.each do |plan| %>
+          <% on = active_plan&.id == plan.id %>
+          <li>
+            <% if on && @level == "plans" %>
+              <span class="lp-strategy-map__chip is-plan is-on" aria-current="page"><%= plan.title.truncate(22) %></span>
+            <% else %>
+              <%= link_to plan.title.truncate(22),
+                    life_journey_path(@journey, focus_id: plan.id),
+                    class: "lp-strategy-map__chip is-plan #{'is-on' if on}",
+                    data: { action: "click->strategy-zoom#enter" } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if map_projects.any? %>
+    <div class="lp-strategy-map__row" role="group" aria-label="<%= t('strategy.path.projects') %>">
+      <span class="lp-strategy-map__row-label"><%= t("strategy.path.projects") %></span>
+      <ul class="lp-strategy-map__chips is-project">
+        <% map_projects.each do |project| %>
+          <% on = @focus&.project? && @focus.id == project.id %>
+          <li>
+            <% if on %>
+              <span class="lp-strategy-map__chip is-project is-on" aria-current="page"><%= project.title.truncate(22) %></span>
+            <% else %>
+              <%= link_to project.title.truncate(22),
+                    life_journey_path(@journey, focus_id: project.id),
+                    class: "lp-strategy-map__chip is-project",
+                    data: { action: "click->strategy-zoom#enter" } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% elsif active_plan && @level == "plans" %>
+    <% count = active_plan.children.count { |c| c.project? } %>
+    <% if count.positive? %>
+      <p class="lp-strategy-map__whisper"><%= t("strategy.map.projects_count", count: count) %></p>
+    <% end %>
+  <% end %>
+
+  <% if @level == "battles" && @focus&.project? %>
+    <p class="lp-strategy-map__battles-under"><%= t("strategy.map.battles_under", title: @focus.title) %></p>
+  <% end %>
+</nav>
