@@ -58,10 +58,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-strategy-mountain.is-living.is-scenic.is-trailmap.is-foothill"
-    assert_select ".lp-strategy-marker.is-pin.is-goal", text: /Become a Rails deve/i
-    assert_select ".lp-strategy-marker.is-pin.is-goal[title=?]", "Become a Rails developer"
-    assert_match(/Base camp/i, response.body)
+    assert_select "#first-climb-coach"
+    assert_select ".lp-first-climb__goal", text: /Become a Rails developer/i
+    assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
+    assert_select ".lp-strategy-mountain", count: 0
   end
 
   test "guided tree goal plan project battle awards and syncs today" do

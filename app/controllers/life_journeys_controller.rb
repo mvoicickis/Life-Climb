@@ -148,11 +148,12 @@ class LifeJourneysController < ApplicationController
     @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
     @force_notebook = params[:notebook].present?
     @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
+    @first_climb_needed = @goal.present? && @goal.children.for_kind("plan").none?
     @notebook_guide =
-      if @goal.blank?
+      if @first_climb_needed
         nil
-      elsif @goal.children.select(&:plan?).empty?
-        :add_first_plan
+      elsif @goal.blank?
+        nil
       elsif !@mountain_ready
         :keep_building
       elsif @upcoming_battle.present?

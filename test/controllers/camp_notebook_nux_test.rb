@@ -23,13 +23,13 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "new climber lands with notebook open and first-plan guide" do
+  test "new climber lands on first-climb coach instead of crowded mountain" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "#strategy-camp-notebook.is-open"
-    assert_select ".lp-camp-guide__kicker", text: /Start the climb/i
-    assert_select ".lp-camp-notebook__add.is-plan[open]"
-    assert_select ".lp-strategy-marker.is-pin.is-project", count: 0
+    assert_select "#first-climb-coach"
+    assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
+    assert_select "#strategy-camp-notebook", count: 0
+    assert_select ".lp-world-hud__chip.is-sp", count: 0
   end
 
   test "creating a plan focuses that plan notebook instead of the goal" do

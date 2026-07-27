@@ -23,7 +23,20 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "mountain opens as a full-bleed living world with minimal HUD" do
+  test "mountain opens first-climb coach when spine is empty" do
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select ".lp-world.is-living-world.is-first-climb"
+    assert_select "#first-climb-coach"
+    assert_select ".lp-world-hud", count: 0
+  end
+
+  test "mountain opens as a full-bleed living world with camp notebook once a plan exists" do
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Main trail", position: 0
+    )
+
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-world.is-living-world.is-camp-notebook"

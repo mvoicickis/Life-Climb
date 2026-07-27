@@ -16,8 +16,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Welcome to LifePoints/i, response.body)
     assert_match(/Start My Journey/i, response.body)
-    assert_match(/Every day becomes a Battle/i, response.body)
-    assert_match(/Ready to begin your journey/i, response.body)
+    assert_match(/One goal becomes your mountain/i, response.body)
+    assert_match(/Ready to name your goal/i, response.body)
     assert_select ".lp-adventure.is-welcome"
     assert_select ".lp-adventure__welcome"
     assert_select ".lp-adventure__sky"
@@ -32,9 +32,9 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "welcome")
     assert_redirected_to v2_onboarding_path(step: "mountain")
     follow_redirect!
-    assert_match(/one mountain you want to conquer/i, response.body)
+    assert_match(/one big goal you want to reach/i, response.body)
+    assert_match(/Become a licensed plumber/i, response.body)
     year = Strategy::YearCycle.target_dec29.year
-    assert_match(/December 29, #{year}/i, response.body)
 
     patch v2_onboarding_url(step: "mountain"), params: {
       onboarding: { title: "Become a Ruby Developer" }
@@ -47,9 +47,9 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "deadline")
     assert_redirected_to v2_onboarding_path(step: "forge")
     follow_redirect!
-    assert_match(/Forging Your Adventure/i, response.body)
-    assert_match(/Raising your mountain/i, response.body)
-    assert_match(/How the Game Works/i, response.body)
+    assert_match(/Building your climb/i, response.body)
+    assert_match(/Setting your goal/i, response.body)
+    assert_match(/See how it works/i, response.body)
 
     user = User.find_by!(email_address: "fresh@example.com")
     assert user.onboarding_completed?
@@ -104,11 +104,12 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Plan Your Route|Back to the trail|Battle/i, response.body)
+    assert_match(/Start my climb|Plan Your Route|Back to the trail|Battle/i, response.body)
 
     get life_journey_path(journey)
     assert_response :success
     assert_match(/Become a Ruby Developer/i, response.body)
+    assert_select "#first-climb-coach"
 
     achievements = Progress::Dashboard.call(user: user, period: "7d")[:achievements]
     guide = achievements.find { |a| a[:key] == "adventure_guide" }

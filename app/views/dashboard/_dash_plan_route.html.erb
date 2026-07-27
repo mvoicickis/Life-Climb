@@ -1,18 +1,27 @@
-<%# locals: journey, mission, adventure_year %>
+<%# locals: journey, mission, adventure_year, strategy_goal, first_climb %>
 <% reward = mission&.lp_reward.presence || GameRules::ROUTE_MISSION_LP %>
-<section class="lp-dash-route" aria-label="<%= t('dash.route_mission_label') %>">
-  <header class="lp-dash-route__head">
-    <p class="lp-dash-kicker"><%= t("dash.route_mission_label") %></p>
-    <h2 class="lp-dash-route__title"><%= t("v2_onboarding.route_mission_title") %></h2>
-    <p class="lp-dash-route__copy"><%= t("v2_onboarding.route_mission_hint") %></p>
-  </header>
+<% goal = local_assigns[:strategy_goal] %>
+<% first_climb = local_assigns.fetch(:first_climb) { goal.present? } %>
 
-  <div class="lp-dash-route__reward">
-    <span class="lp-dash-route__reward-label"><%= t("dash.route_reward_label") %></span>
-    <span class="lp-dash-route__reward-value">+<%= reward %> <%= t("dash.action_points_short") %></span>
-  </div>
+<% if first_climb && goal.present? %>
+  <section class="lp-dash-route is-first-climb" aria-label="<%= t('strategy.first_climb.label') %>">
+    <%= render "life_journeys/first_climb_coach", journey: journey, goal: goal %>
+  </section>
+<% else %>
+  <section class="lp-dash-route" aria-label="<%= t('dash.route_mission_label') %>">
+    <header class="lp-dash-route__head">
+      <p class="lp-dash-kicker"><%= t("dash.route_mission_label") %></p>
+      <h2 class="lp-dash-route__title"><%= t("v2_onboarding.route_mission_title") %></h2>
+      <p class="lp-dash-route__copy"><%= t("v2_onboarding.route_mission_hint") %></p>
+    </header>
 
-  <%= link_to t("dash.build_strategy"),
-        life_journey_path(journey),
-        class: "lp-dash-cta lp-dash-route__cta" %>
-</section>
+    <div class="lp-dash-route__reward">
+      <span class="lp-dash-route__reward-label"><%= t("dash.route_reward_label") %></span>
+      <span class="lp-dash-route__reward-value">+<%= reward %> <%= t("dash.action_points_short") %></span>
+    </div>
+
+    <%= link_to t("dash.build_strategy"),
+          life_journey_path(journey),
+          class: "lp-dash-cta lp-dash-route__cta" %>
+  </section>
+<% end %>

@@ -52,6 +52,14 @@
         adventure_year: @adventure_year,
         streak: @climb_streak %>
 
+  <% if flash[:human_win].present? %>
+    <div class="lp-dash-human-win" role="status">
+      <p class="lp-dash-human-win__kicker"><%= t("strategy.first_climb.human_kicker") %></p>
+      <p class="lp-dash-human-win__body"><%= flash[:human_win] %></p>
+      <p class="lp-dash-human-win__next"><%= t("strategy.first_climb.human_next") %></p>
+    </div>
+  <% end %>
+
   <% if @project_check %>
     <%= render "dashboard/dash_project_check", project: @project_check %>
   <% elsif @battle_angle_project && @battle_angles.any? %>
@@ -65,7 +73,9 @@
     <%= render "dashboard/dash_plan_route",
           journey: @journey,
           mission: @mission,
-          adventure_year: @adventure_year %>
+          adventure_year: @adventure_year,
+          strategy_goal: @strategy_goal,
+          first_climb: @first_climb_needed %>
   <% else %>
     <%= render "dashboard/dash_battle",
           todos: @daily_todos,

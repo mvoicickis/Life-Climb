@@ -34,7 +34,9 @@ class DashboardController < ApplicationController
     @done_todos = @daily_todos.select(&:completed?)
     @strategy_goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
     retire_plan_route_if_needed!
-    @show_plan_route = plan_route_pending?
+    # Empty spine: never dead-end on "Plan Your Route" — show the 60s first-climb coach.
+    @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").none?
+    @show_plan_route = @first_climb_needed || plan_route_pending?
     @include_mission_in_battle = !@show_plan_route && @mission.present? && !@mission.completed?
     @battle_reward = @open_todos.sum { |t| t.lp_reward.to_i }
     @battle_reward += @mission.lp_reward if @include_mission_in_battle
