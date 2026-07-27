@@ -11,7 +11,7 @@
       <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.trail_cta") %></span>
       <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
-    <%= link_to life_journey_path(@journey, focus_id: @today_battle.parent_id, node_id: @today_battle.id, sheet: 1),
+    <%= link_to life_journey_path(@journey, focus_id: @today_battle.parent_id),
           class: "lp-strategy-fight__sheet",
           aria: { label: t("strategy.fight.current_battle") } do %>
       <span class="lp-strategy-fight__sheet-handle" aria-hidden="true"></span>
@@ -61,6 +61,13 @@
         <% end %>
         <%= submit_tag next_up[:cta], class: "lp-strategy-fight__cta is-primary" %>
       <% end %>
+    </div>
+  <% elsif next_up.present? && next_up[:href].present? %>
+    <div class="lp-strategy-fight__form is-enter" id="strategy-next-up">
+      <p class="lp-strategy-fight__kicker"><%= t("strategy.fight.build_kicker") %></p>
+      <h2 class="lp-strategy-fight__title"><%= next_up[:title] %></h2>
+      <p class="lp-strategy-fight__hint"><%= next_up[:hint] %></p>
+      <%= link_to next_up[:cta], next_up[:href], class: "lp-strategy-fight__cta is-primary" %>
     </div>
   <% elsif next_up.present? && next_up[:key] == :go_today %>
     <%= button_to life_journey_path(@journey),

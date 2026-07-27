@@ -30,7 +30,7 @@ module Strategy
       if plan.nil?
         return payload(
           label: I18n.t("dash.strategy_handoff.add_plan", goal: goal.title),
-          href: helpers.life_journey_path(@journey)
+          href: helpers.life_journey_path(@journey, notebook: 1)
         )
       end
 

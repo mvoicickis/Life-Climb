@@ -146,6 +146,20 @@ class LifeJourneysController < ApplicationController
       end
     @open_sheet = params[:sheet].present?
     @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
+    @force_notebook = params[:notebook].present?
+    @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
+    @notebook_guide =
+      if @goal.blank?
+        nil
+      elsif @goal.children.select(&:plan?).empty?
+        :add_first_plan
+      elsif !@mountain_ready
+        :keep_building
+      elsif @upcoming_battle.present?
+        :tomorrow
+      else
+        :fight_today
+      end
   end
 
   def strategy_branch_for(focus, today_battle)

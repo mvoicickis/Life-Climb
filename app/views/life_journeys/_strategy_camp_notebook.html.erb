@@ -3,7 +3,14 @@
 <% open_plan = @branch_plan %>
 <% open_project = @branch_project %>
 <% area = @journey.life_area %>
-<% notebook_open = open_plan.present? || (@open_sheet && @sheet_node&.plan?) || (@open_sheet && @sheet_node&.goal?) %>
+<% incomplete_spine = @goal.present? && !@mountain_ready %>
+<% notebook_open =
+     open_plan.present? ||
+     open_project.present? ||
+     @force_notebook ||
+     (incomplete_spine && plans.empty?) ||
+     (@open_sheet && (@sheet_node&.plan? || @sheet_node&.goal?)) %>
+<% show_goal_panel = open_plan.blank? %>
 
 <aside id="strategy-camp-notebook"
        class="lp-camp-notebook <%= 'is-open' if notebook_open %>"
@@ -56,7 +63,7 @@
   <%# Goal mode: list plans + add plan %>
   <div class="lp-camp-notebook__panel is-goal"
        data-strategy-notebook-target="goalPanel"
-       <%= "hidden" if open_plan %>>
+       <%= "hidden" unless show_goal_panel %>>
     <ul class="lp-camp-notebook__list" role="list">
       <% plans.each do |plan| %>
         <li>
@@ -78,7 +85,7 @@
       <% end %>
     </ul>
     <% if plans.empty? %>
-      <p class="lp-camp-notebook__empty"><%= t("strategy.zones.add_plan_hint") %></p>
+      <p class="lp-camp-notebook__empty"><%= t("strategy.notebook.first_plan_body") %></p>
     <% end %>
   </div>
 
@@ -206,7 +213,10 @@
           end %>
     </button>
     <% if @goal %>
-      <details class="lp-camp-notebook__add is-plan is-context" data-strategy-notebook-target="goalAdd" <%= "hidden" if open_plan %>>
+      <details class="lp-camp-notebook__add is-plan is-context"
+               data-strategy-notebook-target="goalAdd"
+               <%= "hidden" if open_plan %>
+               <%= "open" if plans.empty? && show_goal_panel %>>
         <summary class="lp-camp-notebook__sr"><%= t("strategy.sheet.add_plan") %></summary>
         <%= form_with url: strategy_goals_path, method: :post, class: "lp-camp-notebook__form" do %>
           <%= hidden_field_tag :life_area_id, area.id %>
@@ -218,7 +228,8 @@
                 maxlength: 120,
                 class: "lp-input w-full",
                 placeholder: t("strategy.plan_placeholder"),
-                autocomplete: "off" %>
+                autocomplete: "off",
+                autofocus: plans.empty? && notebook_open && show_goal_panel %>
           <%= submit_tag t("strategy.sheet.add_plan"), class: "lp-camp-notebook__submit" %>
         <% end %>
       </details>

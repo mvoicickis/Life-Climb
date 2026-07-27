@@ -12278,3 +12278,48 @@ button.lp-strategy-overflow {
 .lp-strategy-mountain.is-camp-notebook .lp-strategy-mountain__slot.is-project.is-react {
   z-index: 8;
 }
+
+.lp-camp-guide {
+  position: absolute;
+  left: 50%;
+  top: 4.85rem;
+  z-index: 18;
+  width: min(100% - 1.25rem, 22rem);
+  transform: translateX(-50%);
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.lp-camp-guide__kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #166534;
+}
+
+.lp-camp-guide__body {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.lp-world.is-notebook-open .lp-camp-guide {
+  top: 4.55rem;
+  opacity: 0.92;
+}
+
+.lp-strategy-fight__form.is-enter .lp-strategy-fight__cta {
+  display: inline-flex;
+  justify-content: center;
+  text-decoration: none;
+  margin-top: 0.35rem;
+}

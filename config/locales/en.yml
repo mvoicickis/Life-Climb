@@ -339,7 +339,15 @@ en:
     notebook:
       label: "Camp notebook"
       crumb: "Climb path"
-      open_hint: "Tap a plan to open your camp notebook"
+      open_hint: "Tap a plan on the mountain — or Enter Plan below — to open your camp notebook."
+      first_plan_body: "Name your first plan. That’s the trail you’ll climb this season."
+      guide_first_kicker: "Start the climb"
+      guide_build_kicker: "Keep building"
+      guide_ready_kicker: "Trail is ready"
+      guide_ready_body: "Fight today’s battle. Come back tomorrow to keep the streak."
+      guide_return_kicker: "Your next fight"
+      guide_return_body: "%{when}: “%{title}”. One battle keeps the mountain alive."
+      tomorrow: "Tomorrow"
     sheet:
       edit: "Edit"
       add_child: "Add child"
