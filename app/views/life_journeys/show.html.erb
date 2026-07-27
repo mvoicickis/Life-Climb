@@ -34,6 +34,17 @@
       </div>
       <span class="lp-strategy-page__goal-due"><%= t("strategy.due_by", date: l(@goal.due_on, format: :long)) %></span>
     </div>
+
+    <%= render "strategy_helps/launch",
+          goal: @goal.title,
+          ideal_scene: @journey.ideal_scene,
+          current_reality: @journey.current_reality,
+          life_area: @journey.life_area&.label,
+          accept_as: "plan",
+          parent_id: @goal.id,
+          life_area_id: @journey.life_area_id,
+          journey_id: @journey.id,
+          button_label: t("strategy.help.cta") %>
   <% end %>
 
   <%= render "life_journeys/strategy_board" %>
