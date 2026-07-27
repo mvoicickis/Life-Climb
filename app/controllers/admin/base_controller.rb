@@ -14,11 +14,22 @@ module Admin
         return
       end
 
+      promote_configured_admin_if_needed!
+
       # Impersonation swaps Current.user to the target account. Only the stop
       # action may proceed without an admin Current.user.
       return if current_user.admin? && !impersonating?
 
       deny_admin_access!
+    end
+
+    def promote_configured_admin_if_needed!
+      email = ENV["ADMIN_EMAIL"].to_s.strip.downcase.presence
+      return if email.blank?
+      return unless current_user.email_address == email
+      return if current_user.admin?
+
+      current_user.update_columns(admin: true)
     end
 
     def deny_admin_access!
