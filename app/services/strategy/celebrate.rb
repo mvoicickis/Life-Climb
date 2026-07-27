@@ -88,13 +88,7 @@ module Strategy
     end
 
     def strategy_path_complete?(root)
-      plan_ids = root.children.for_kind("plan").pluck(:id)
-      return false if plan_ids.empty?
-
-      project_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("project").pluck(:id)
-      return false if project_ids.empty?
-
-      Strategy::Progress.battles_under(root).any?
+      Strategy::HierarchyReady.call(user: @user, goal: root)
     end
   end
 end

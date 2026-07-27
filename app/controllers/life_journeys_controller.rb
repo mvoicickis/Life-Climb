@@ -124,15 +124,7 @@ class LifeJourneysController < ApplicationController
   end
 
   def strategy_mountain_ready?
-    return false if @goal.blank?
-
-    plan_ids = @goal.children.for_kind("plan").pluck(:id)
-    return false if plan_ids.empty?
-
-    project_ids = StrategyGoal.where(parent_id: plan_ids).for_kind("project").pluck(:id)
-    return false if project_ids.empty?
-
-    Strategy::Progress.battles_under(@goal).any?
+    Strategy::HierarchyReady.call(user: current_user, goal: @goal)
   end
 
   def strategy_path_stages

@@ -334,6 +334,20 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "dashboard shows action points and strategy points" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Become ready", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Build skills", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Ship portfolio", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Write one test", scheduled_on: Date.current, position: 0
+    )
+
     get dashboard_path
     assert_response :success
     assert_match(/Action Points/i, response.body)

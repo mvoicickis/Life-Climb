@@ -1,0 +1,45 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class HierarchyGateTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    sign_in_as @user
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Find a job",
+      ideal_scene: "Hired",
+      current_reality: "Searching",
+      today_mission: "Plan the path",
+      closer_percent: 10,
+      route_mission: true
+    )
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @journey = @user.reload.primary_focused_journey
+    @area = @journey.life_area
+    @goal = @user.strategy_goals.for_kind("goal").roots.first
+  end
+
+  test "today redirects to strategy until hierarchy is ready" do
+    get dashboard_path
+    assert_redirected_to life_journey_path(@journey)
+
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan", title: "Get interviews", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Improve apps", position: 0
+    )
+    get dashboard_path
+    assert_redirected_to life_journey_path(@journey)
+
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Make 5 emails better", scheduled_on: Date.current, position: 0
+    )
+    get dashboard_path
+    assert_response :success
+  end
+end
