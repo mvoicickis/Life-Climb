@@ -45,7 +45,7 @@ module Ai
       http: nil
     )
       @provider = provider.to_s.strip.downcase.presence || DEFAULT_PROVIDER
-      @api_key = (api_key.presence || ENV["AI_API_KEY"].presence || ENV["OPENROUTER_API_KEY"].presence || ENV["OPENAI_API_KEY"]).to_s.strip.presence
+      @api_key = resolve_api_key(api_key)
       @base_url = (base_url.presence || PROVIDER_BASE_URLS[@provider] || PROVIDER_BASE_URLS[DEFAULT_PROVIDER]).to_s.chomp("/")
       @model = (model.presence || PROVIDER_DEFAULT_MODELS[@provider] || PROVIDER_DEFAULT_MODELS[DEFAULT_PROVIDER]).to_s
       @timeout = timeout.positive? ? timeout : DEFAULT_TIMEOUT
@@ -76,6 +76,14 @@ module Ai
     end
 
     private
+
+    def resolve_api_key(api_key)
+      # Explicit argument (including blank) wins so tests can force a missing key
+      # even when AI_API_KEY is present in the process environment.
+      return api_key.to_s.strip.presence unless api_key.nil?
+
+      ENV["AI_API_KEY"].presence || ENV["OPENROUTER_API_KEY"].presence || ENV["OPENAI_API_KEY"].presence
+    end
 
     def post_json(path, payload)
       uri = URI.join("#{@base_url}/", path.delete_prefix("/"))
