@@ -52,9 +52,10 @@
           <span class="lp-world-hud__chip-value" data-strategy-celebrate-target="apValue"><%= number_with_delimiter(current_user.life_points) %></span>
           <span class="lp-world-hud__chip-name"><%= t("dash.action_points_short") %></span>
         </div>
-        <div class="lp-world-hud__chip is-sp"
+        <%# SP kept for celebration targets but visually quiet — one proud score on the map. %>
+        <div class="lp-world-hud__chip is-sp is-quiet"
              data-strategy-celebrate-target="spBadge"
-             aria-label="<%= t('strategy.sp_label') %>">
+             aria-hidden="true">
           <span class="lp-world-hud__chip-value" data-strategy-celebrate-target="spValue"><%= number_with_delimiter(current_user.strategy_points) %></span>
           <span class="lp-world-hud__chip-name"><%= t("strategy.sp_hint_short") %></span>
         </div>

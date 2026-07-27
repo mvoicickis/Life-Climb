@@ -14,11 +14,8 @@ class V2OnboardingsController < ApplicationController
     @adventure_year = Strategy::YearCycle.target_dec29.year
 
     if current_user.onboarding_completed? && current_user.planning_v2?
-      if current_user.needs_adventure_guide?
-        redirect_to v2_onboarding_path(step: "how") and return unless @step.in?(%w[forge how])
-      elsif !@step.in?(%w[forge how])
-        redirect_to after_adventure_path and return
-      elsif @step == "how"
+      # Optional how-guide stays reachable; otherwise leave onboarding shell.
+      unless @step.in?(%w[forge how])
         redirect_to after_adventure_path and return
       end
     end
@@ -50,11 +47,19 @@ class V2OnboardingsController < ApplicationController
           route_mission: true
         )
         session.delete(:v2_onboarding)
+        # Guide is optional — unlock Trail Guide and send players to first climb.
+        current_user.mark_adventure_guide_done!
         redirect_to v2_onboarding_path(step: "forge")
       rescue Onboarding::Run::Error, LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error => e
         redirect_to v2_onboarding_path(step: "mountain"), alert: e.message
       end
     when "how"
+      unless current_user.onboarding_completed?
+        redirect_to v2_onboarding_path(step: "welcome") and return
+      end
+      current_user.mark_adventure_guide_done!
+      redirect_to after_adventure_path
+    when "forge"
       unless current_user.onboarding_completed?
         redirect_to v2_onboarding_path(step: "welcome") and return
       end
@@ -91,7 +96,6 @@ class V2OnboardingsController < ApplicationController
 
   def missing_step
     if current_user.onboarding_completed?
-      return "how" if current_user.needs_adventure_guide?
       return "forge"
     end
     return "mountain" if @draft["title"].blank? && @step == "deadline"

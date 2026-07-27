@@ -8,28 +8,53 @@
 <nav class="lp-dash-nav" aria-label="Primary">
   <% if strategy_journey %>
     <%= link_to life_journey_path(strategy_journey), class: "lp-dash-nav__link #{'is-active' if active == 'mountain'}" do %>
-      <span aria-hidden="true">🏔</span>
+      <span class="lp-dash-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
+          <path d="M12 5.5 V8"/>
+        </svg>
+      </span>
       <span><%= t("dash.nav.mountain") %></span>
     <% end %>
   <% else %>
     <%= link_to new_life_journey_path, class: "lp-dash-nav__link #{'is-active' if active == 'mountain'}" do %>
-      <span aria-hidden="true">🏔</span>
+      <span class="lp-dash-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
+          <path d="M12 5.5 V8"/>
+        </svg>
+      </span>
       <span><%= t("dash.nav.mountain") %></span>
     <% end %>
   <% end %>
 
   <%= link_to dashboard_path, class: "lp-dash-nav__link #{'is-active' if active == 'today'}" do %>
-    <span aria-hidden="true">⚔</span>
+    <span class="lp-dash-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M12 7.5 V12.2 L15.2 14"/>
+      </svg>
+    </span>
     <span><%= t("dash.nav.today") %></span>
   <% end %>
 
   <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
-    <span aria-hidden="true">📈</span>
+    <span class="lp-dash-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 17 L9 11 L13 14.5 L20 7"/>
+        <path d="M15 7 H20 V12"/>
+      </svg>
+    </span>
     <span><%= t("dash.nav.journey") %></span>
   <% end %>
 
   <%= link_to settings_path, class: "lp-dash-nav__link #{'is-active' if active == 'you'}" do %>
-    <span aria-hidden="true">👤</span>
+    <span class="lp-dash-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.2"/>
+        <path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/>
+      </svg>
+    </span>
     <span><%= t("dash.nav.you") %></span>
   <% end %>
 </nav>

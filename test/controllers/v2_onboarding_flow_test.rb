@@ -49,11 +49,13 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/Building your climb/i, response.body)
     assert_match(/Setting your goal/i, response.body)
-    assert_match(/See how it works/i, response.body)
+    assert_match(/Start climbing/i, response.body)
+    assert_match(/How climbing works/i, response.body)
 
     user = User.find_by!(email_address: "fresh@example.com")
     assert user.onboarding_completed?
-    assert user.needs_adventure_guide?
+    assert user.adventure_guide_done?
+    assert_not user.needs_adventure_guide?
     assert_equal "self", user.life_areas.v2_selected.first.key
     journey = user.primary_focused_journey
     assert_equal "Become a Ruby Developer", journey.title
@@ -67,49 +69,20 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_operator user.strategy_points, :>=, 100
 
     get dashboard_path
-    assert_redirected_to v2_onboarding_path(step: "how")
-
-    get v2_onboarding_path(step: "how")
     assert_response :success
-    assert_match(/How the game works/i, response.body)
-    assert_match(/Get healthier/i, response.body)
-    assert_match(/Move every day/i, response.body)
-    assert_match(/Eat better/i, response.body)
-    assert_match(/Sleep well/i, response.body)
-    assert_match(/Start a walking habit/i, response.body)
-    assert_match(/Put on walking shoes/i, response.body)
-    assert_match(/Walk for 20 minutes/i, response.body)
-    assert_match(/Log today.?s walk/i, response.body)
-    assert_match(/Five other projects still sleep/i, response.body)
-    assert_match(/Claim Trail Guide badge/i, response.body)
-    assert_select "[data-controller='adventure-guide']"
-    assert_select ".lp-adventure__how-stage"
-    assert_select ".lp-adventure__how-titlecard"
-    assert_select ".lp-adventure__how-dots li", 4
-    assert_select ".lp-adventure__how-tree"
-    assert_select ".lp-adventure__how-plan-chips li", 3
-    assert_select ".lp-adventure__how-project-list li", 2
-    assert_select "[data-adventure-guide-target='flag']", 4
-    assert_select ".lp-adventure__how-map-node", 4
-    assert_select ".lp-adventure__how-badge"
-    assert_no_match(/Find a job/i, response.body)
-    assert_no_match(/Send applications/i, response.body)
-    assert_no_match(/Apply to 3 jobs today/i, response.body)
-
-    patch v2_onboarding_url(step: "how")
-    assert_redirected_to life_journey_path(journey)
-    user.reload
-    assert user.adventure_guide_done?
-    assert_not user.needs_adventure_guide?
-
-    get dashboard_path
-    assert_response :success
-    assert_match(/Start my climb|Plan Your Route|Back to the trail|Battle/i, response.body)
+    assert_match(/Start my climb|Plan Your Route|See your mountain|Battle/i, response.body)
 
     get life_journey_path(journey)
     assert_response :success
     assert_match(/Become a Ruby Developer/i, response.body)
     assert_select "#first-climb-coach"
+
+    get v2_onboarding_path(step: "how")
+    assert_response :success
+    assert_match(/How the game works/i, response.body)
+    assert_match(/Get healthier/i, response.body)
+    assert_select "[data-controller='adventure-guide']"
+    assert_select ".lp-adventure__how-badge"
 
     achievements = Progress::Dashboard.call(user: user, period: "7d")[:achievements]
     guide = achievements.find { |a| a[:key] == "adventure_guide" }

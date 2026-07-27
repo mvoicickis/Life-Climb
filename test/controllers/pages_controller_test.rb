@@ -10,9 +10,9 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Your life, one area at a time/, response.body)
     assert_match(/Every point makes you more alive/, response.body)
     assert_match(/Run my first 10 km/, response.body)
-    assert_match(/goal, plans, and projects/i, response.body)
+    assert_match(/Name today’s step/i, response.body)
     assert_match(/Action Points/i, response.body)
-    assert_match(/Finish projects to climb/i, response.body)
+    assert_match(/Watch your mountain rise/i, response.body)
     assert_match(/\+50 AP/, response.body)
     assert_no_match(/\+50 LP/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
@@ -63,7 +63,21 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "signed in users go to dashboard from root" do
-    sign_in_as users(:one)
+    user = users(:one)
+    sign_in_as user
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Write tests",
+      closer_percent: 20,
+      route_mission: true
+    )
+    user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+
     get root_path
     assert_redirected_to dashboard_path
   end

@@ -418,7 +418,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_match(/Action Points/i, response.body)
-    assert_match(/Strategy Points/i, response.body)
+    assert_no_match(/>\s*Strategy Points\s*</i, response.body)
   end
 
   test "missing life journey redirects instead of 404" do

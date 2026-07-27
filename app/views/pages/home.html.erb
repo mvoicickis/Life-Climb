@@ -32,11 +32,15 @@
     </header>
 
     <div class="lp-landing-hero__copy" data-landing-target="heroCopy">
+      <p class="lp-landing-hero__brand" aria-label="<%= t('app_name') %>">
+        <img class="lp-landing-brand__mark lp-landing-hero__mark" src="/branding/lifepoints-mark.png?v=7" width="48" height="48" alt="" aria-hidden="true">
+        <span class="lp-landing-hero__brand-name"><%= t("landing.hero_kicker") %></span>
+      </p>
       <h1 class="lp-landing-hero__title"><%= t("landing.hero_title") %></h1>
       <p class="lp-landing-hero__body"><%= t("landing.hero_body") %></p>
       <div class="lp-landing-hero__ctas">
         <%= link_to t("landing.start_free"), new_registration_path,
-            class: "lp-landing-cta lp-landing-cta--pulse",
+            class: "lp-landing-cta",
             data: { landing_target: "cta" } %>
         <%= link_to t("landing.sign_in"), new_session_path, class: "lp-landing-cta lp-landing-cta--ghost" %>
       </div>
@@ -161,7 +165,7 @@
       <h2 class="lp-landing-heading"><%= t("landing.cta_title") %></h2>
       <p class="lp-landing-lead"><%= t("landing.cta_body") %></p>
       <div class="lp-landing-hero__ctas lp-landing-hero__ctas--center">
-        <%= link_to t("landing.start_free"), new_registration_path, class: "lp-landing-cta lp-landing-cta--pulse" %>
+        <%= link_to t("landing.start_free"), new_registration_path, class: "lp-landing-cta" %>
         <%= link_to t("landing.sign_in"), new_session_path, class: "lp-landing-cta lp-landing-cta--ghost" %>
       </div>
     </div>

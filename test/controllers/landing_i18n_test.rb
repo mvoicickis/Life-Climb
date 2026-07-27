@@ -7,9 +7,9 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_match(/One mountain\. Today’s battle/, response.body)
     assert_match(/Start free/, response.body)
     assert_match(/Action Points/, response.body)
-    assert_match(/Finish projects to climb/, response.body)
+    assert_match(/Name today’s step/, response.body)
     assert_match(/Run my first 10 km/, response.body)
-    assert_match(/Run a full 10 km/, response.body)
+    assert_match(/Watch your mountain rise/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
     assert_no_match(/Run my first 10K[^m]/, response.body)
   end
