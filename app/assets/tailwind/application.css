@@ -5316,6 +5316,14 @@
   min-height: 14rem;
 }
 
+.lp-adventure__how-stack-body {
+  margin: 0.35rem 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--lp-muted);
+  text-wrap: pretty;
+}
+
 .lp-adventure__how-trail {
   width: 2rem;
   height: 100%;
