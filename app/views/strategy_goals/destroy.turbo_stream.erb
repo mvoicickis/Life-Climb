@@ -1,0 +1,8 @@
+<%= turbo_stream.replace "strategy-world-map" do %>
+  <%= render "life_journeys/strategy_mountain", mountain: @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
+<% end %>
+
+<% if @removed_id %>
+  <%= turbo_stream.remove "strategy-menu-#{@removed_id}" %>
+  <%= turbo_stream.remove "strategy-sheet-#{@removed_id}" %>
+<% end %>

@@ -348,10 +348,14 @@ en:
     fight:
       label: "Today’s climb"
       cta: "Fight this battle"
+      trail_cta: "Fight on the trail"
       current_battle: "Current battle"
       today_hint: "Glowing on your mountain: %{title}"
       build_kicker: "Next on the climb"
       keep_building: "Keep climbing — add the next marker."
+    camera:
+      zoom_out: "Zoom out"
+      explore: "Explore"
     delete_confirm:
       simple: "Delete “%{title}”?"
       with_children: "Delete “%{title}”?\n\nThis will also delete:\n%{list}"

@@ -96,7 +96,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-strategy-marker.is-pin.is-battle.is-today", text: /Learn 20 words/i
-    assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta.is-primary", text: /Fight this battle/i
+    assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta.is-primary", text: /Fight on the trail/i
     assert_select ".lp-strategy-fight__sheet", text: /Learn 20 words/i
     assert_select ".lp-strategy-fight__sheet", text: /\+30 AP/i
     assert_select ".lp-strategy-sheet.is-project"
@@ -116,7 +116,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
       life_area_id: @area.id, life_journey_id: @journey.id,
       parent_id: plan.id, horizon: "month", title: "July"
     }
-    assert_redirected_to dashboard_path
+    assert_redirected_to life_journey_path(@journey, peek: 1)
     assert_match(/Unknown strategy step/i, flash[:alert].to_s)
     assert_equal 0, @user.strategy_goals.where(horizon: "month").count
   end
@@ -195,33 +195,33 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail.is-fog"
+    assert_select ".lp-world.is-living-world"
+    assert_select ".lp-world-hud"
+    assert_select ".lp-strategy-mountain.is-focuspath.is-lit-trail.is-fog.is-world"
     assert_select ".lp-strategy-wire.is-trail-spine"
     assert_select ".lp-strategy-mountain__fog"
-    assert_select ".lp-strategy-crumb"
     assert_select ".lp-strategy-mountain__camp.is-you"
-    assert_select ".lp-strategy-peek", minimum: 1
+    assert_select ".lp-strategy-menu", minimum: 1
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select ".lp-strategy-marker.is-pin.is-plan.is-lit", text: /Plan Alpha/i
-    assert_select ".lp-strategy-marker.is-pin.is-plan", text: /Plan Beta/i, count: 0
-    assert_select ".lp-strategy-pill.is-plan", text: /Plan Beta/i
+    assert_select ".lp-strategy-marker.is-pin.is-plan", text: /Plan Beta/i
     assert_select ".lp-strategy-marker.is-pin.is-project.is-lit", text: /Project One/i
     assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project Two/i
     assert_select ".lp-strategy-marker.is-pin.is-battle.is-today", text: /Battle One/i
+    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Lone Project/i
     assert_select ".lp-strategy-mountain.is-trailmap"
     assert_select ".lp-strategy-mountain__wires"
-    assert_select ".lp-strategy-marker.is-pin", text: /Lone Project/i, count: 0
     assert_select ".lp-strategy-fight.is-sticky.is-mockup.is-sheet"
     assert_select ".lp-strategy-fight__sheet", text: /Battle One/i
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_select "#strategy-sheet-#{battle.id}"
-    assert_select "#strategy-peek-#{battle.id}"
+    assert_select "#strategy-menu-#{battle.id}"
     assert_select ".lp-strategy-sheet__btn.is-delete", minimum: 1
     assert_select "#strategy-sheet-rename-#{goal.id}"
     assert_select ".lp-strategy-siblings", count: 0
     assert_select "a.lp-strategy__board-add-link", count: 0
-    assert_select ".lp-strategy-crumb__link", text: /Plan Alpha/i
     assert_select ".lp-dash-nav a.lp-dash-nav__link:first-child", text: /Mountain/i
+    assert_select "[data-controller*=strategy-camera]"
   end
 
   test "pin peek opens lightly without full sheet by default" do
@@ -234,9 +234,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id, peek: 1)
     assert_response :success
-    assert_select "#strategy-peek-#{plan.id}[open]"
+    assert_select "#strategy-menu-#{plan.id}[open]"
     assert_select "#strategy-sheet-#{plan.id}[open]", count: 0
-    assert_select ".lp-strategy-peek__primary", text: /Add next step/i
+    assert_select "#strategy-menu-#{plan.id} .lp-strategy-menu__btn.is-add", text: /Add project/i
   end
 
   test "completed nodes leave permanent conquest flags" do
@@ -288,11 +288,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: projects.first.id)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-pin.is-plan", count: 1
-    assert_select ".lp-strategy-pill.is-plan", minimum: 3
-    assert_select ".lp-strategy-marker.is-pin.is-project", count: 3
-    assert_select ".lp-strategy-overflow.is-project", text: /\+1 more/i
-    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project 3/i, count: 0
+    # Living world keeps the full tree in the DOM for client zoom.
+    assert_select ".lp-strategy-marker.is-pin.is-plan", minimum: 4
+    assert_select ".lp-strategy-marker.is-pin.is-project", minimum: 4
+    assert_select ".lp-world.is-living-world"
+    assert_select "[data-strategy-camera-level-value='3']"
+    assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project 0/i
   end
 
   test "node sheet exposes edit add help and delete for every level" do

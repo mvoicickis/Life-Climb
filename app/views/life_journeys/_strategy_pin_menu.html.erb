@@ -1,0 +1,64 @@
+<%# Tiny contextual pin menu — stays in the world. locals: node: %>
+<% node = local_assigns[:node] %>
+<% return if node.blank? %>
+<% kind = strategy_kind_css(node) %>
+<% child_horizon = strategy_child_horizon(node) %>
+<% open = @open_peek && (@sheet_node&.id == node.id) %>
+<% can_zoom = node.plan? || node.project? %>
+
+<dialog class="lp-strategy-menu is-<%= kind %>"
+        id="strategy-menu-<%= node.id %>"
+        data-strategy-mountain-target="menu"
+        data-node-id="<%= node.id %>"
+        data-node-kind="<%= kind %>"
+        data-sheet-id="strategy-sheet-<%= node.id %>"
+        <%= "open" if open %>>
+  <div class="lp-strategy-menu__panel">
+    <p class="lp-strategy-menu__kind"><%= t("strategy.horizons.#{node.day? ? 'day' : node.kind}") %></p>
+    <h2 class="lp-strategy-menu__title"><%= node.title.truncate(36) %></h2>
+    <% unless node.day? %>
+      <p class="lp-strategy-menu__progress"><%= node.progress_percent %>%</p>
+    <% end %>
+
+    <div class="lp-strategy-menu__actions">
+      <% if can_zoom %>
+        <button type="button"
+                class="lp-strategy-menu__btn is-zoom"
+                data-action="strategy-mountain#menuZoom"
+                data-node-id="<%= node.id %>"
+                data-node-kind="<%= kind %>">
+          <%= t("strategy.camera.explore") %>
+        </button>
+      <% end %>
+
+      <% if node.day? && !node.completed? %>
+        <%= link_to t("climb.peek.fight_today"), dashboard_path, class: "lp-strategy-menu__btn is-fight" %>
+      <% end %>
+
+      <% if child_horizon.present? %>
+        <button type="button"
+                class="lp-strategy-menu__btn is-add"
+                data-action="strategy-mountain#menuAdd"
+                data-sheet-id="strategy-sheet-<%= node.id %>">
+          <%= strategy_add_label(node) %>
+        </button>
+      <% end %>
+
+      <button type="button"
+              class="lp-strategy-menu__btn is-edit"
+              data-action="strategy-mountain#menuEdit"
+              data-sheet-id="strategy-sheet-<%= node.id %>">
+        <%= t("strategy.sheet.edit") %>
+      </button>
+
+      <button type="button"
+              class="lp-strategy-menu__btn is-more"
+              data-action="strategy-mountain#menuMore"
+              data-sheet-id="strategy-sheet-<%= node.id %>">
+        <%= t("climb.peek.more") %>
+      </button>
+    </div>
+
+    <button type="button" class="lp-strategy-menu__close" data-action="strategy-mountain#closeMenu" aria-label="<%= t('strategy.sheet.close') %>">×</button>
+  </div>
+</dialog>

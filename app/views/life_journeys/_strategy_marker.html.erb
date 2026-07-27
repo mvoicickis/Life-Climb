@@ -1,4 +1,4 @@
-<%# Pin marker on the lit trail — tap opens peek card. locals: node:, lit:, today:, whisper:, on_spine:, side: %>
+<%# Pin marker on the living trail — tap opens tiny menu; plan/project also zoom. locals: node:, lit:, today:, whisper:, on_spine:, side: %>
 <% node = local_assigns.fetch(:node) %>
 <% lit = local_assigns.fetch(:lit, false) %>
 <% today = local_assigns.fetch(:today, false) %>
@@ -8,12 +8,6 @@
 <% kind = strategy_kind_css(node) %>
 <% state = strategy_pin_state(node: node, today: today) %>
 <% ap = node.day? ? GameRules::BATTLE_TODO_LP : nil %>
-<% focus_href =
-     if node.day?
-       life_journey_path(@journey, focus_id: node.parent_id, node_id: node.id, peek: 1)
-     else
-       life_journey_path(@journey, focus_id: node.id, peek: 1)
-     end %>
 
 <button type="button"
       class="<%= [
@@ -22,17 +16,18 @@
         ("is-side" if side),
         ("is-lit" if lit),
         ("is-today" if today),
-        ("is-done" if node.completed?)
+        ("is-done" if node.completed?),
+        ("is-monument" if node.completed?)
       ].compact.join(" ") %>"
       title="<%= node.title %>"
-      data-action="click->strategy-mountain#peek pointerdown->strategy-mountain#press pointerup->strategy-mountain#release pointerleave->strategy-mountain#cancel pointercancel->strategy-mountain#cancel contextmenu->strategy-mountain#menu"
+      data-action="click->strategy-mountain#selectPin pointerdown->strategy-mountain#press pointerup->strategy-mountain#release pointerleave->strategy-mountain#cancel pointercancel->strategy-mountain#cancel contextmenu->strategy-mountain#menu"
       data-strategy-mountain-target="marker"
       data-node-id="<%= node.id %>"
       data-node-kind="<%= kind %>"
       data-can-add="<%= strategy_child_horizon(node).present? %>"
+      data-can-zoom="<%= node.plan? || node.project? %>"
       data-sheet-id="strategy-sheet-<%= node.id %>"
-      data-peek-id="strategy-peek-<%= node.id %>"
-      data-focus-href="<%= focus_href %>">
+      data-menu-id="strategy-menu-<%= node.id %>">
   <span class="lp-strategy-marker__badge" aria-hidden="true">
     <span class="lp-strategy-marker__icon"></span>
   </span>
