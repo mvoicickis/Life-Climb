@@ -14,8 +14,9 @@
      end %>
 <% notebook_plan_id = @branch_plan&.id.to_i %>
 <% notebook_project_id = @branch_project&.id.to_i %>
+<% auto_open_goal_notebook = @force_notebook || (@goal.present? && !@mountain_ready && @branch_plan.blank?) %>
 
-<div class="lp-world lp-strategy-page is-living-world is-lit-trail is-gamefeel is-camp-notebook"
+<div class="lp-world lp-strategy-page is-living-world is-lit-trail is-gamefeel is-camp-notebook <%= 'is-notebook-open' if (notebook_plan_id.positive? || notebook_project_id.positive? || auto_open_goal_notebook) %>"
      id="strategy-world"
      data-controller="strategy-celebrate strategy-mountain strategy-camera strategy-notebook"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
@@ -29,6 +30,7 @@
      data-strategy-notebook-goal-id-value="<%= @goal&.id.to_i %>"
      data-strategy-notebook-plan-id-value="<%= notebook_plan_id %>"
      data-strategy-notebook-project-id-value="<%= notebook_project_id %>"
+     data-strategy-notebook-auto-open-value="<%= auto_open_goal_notebook ? 'true' : 'false' %>"
      data-strategy-notebook-journey-url-value="<%= life_journey_path(@journey) %>"
      <% if @sheet_node.present? %>
        data-strategy-mountain-focus-sheet-value="strategy-sheet-<%= @sheet_node.id %>"
@@ -81,6 +83,29 @@
   <div class="lp-world__stage" id="strategy-world-map">
     <%= render "life_journeys/strategy_mountain", mountain: mountain %>
   </div>
+
+  <% if @notebook_guide.present? %>
+    <div class="lp-camp-guide" role="status">
+      <% case @notebook_guide %>
+      <% when :add_first_plan %>
+        <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_first_kicker") %></p>
+        <p class="lp-camp-guide__body"><%= t("strategy.notebook.first_plan_body") %></p>
+      <% when :keep_building %>
+        <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_build_kicker") %></p>
+        <p class="lp-camp-guide__body"><%= t("strategy.notebook.open_hint") %></p>
+      <% when :fight_today %>
+        <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_ready_kicker") %></p>
+        <p class="lp-camp-guide__body"><%= t("strategy.notebook.guide_ready_body") %></p>
+      <% when :tomorrow %>
+        <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_return_kicker") %></p>
+        <p class="lp-camp-guide__body">
+          <%= t("strategy.notebook.guide_return_body",
+                title: @upcoming_battle[:title],
+                when: (@upcoming_battle[:tomorrow] ? t("strategy.notebook.tomorrow") : l(@upcoming_battle[:scheduled_on], format: :short))) %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
 
   <div id="strategy-camp-notebook-root">
     <%= render "life_journeys/strategy_camp_notebook" %>

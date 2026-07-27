@@ -45,7 +45,7 @@ class StrategyGoalsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render :create, status: :created }
         format.html do
-          redirect_to strategy_redirect_path(focus_id: redirect_focus_id(goal), peek: 1),
+          redirect_to strategy_redirect_path(focus_id: redirect_focus_id(goal)),
                       notice: celebration[:notice], status: :see_other
         end
       end
@@ -139,7 +139,8 @@ class StrategyGoalsController < ApplicationController
   def redirect_focus_id(goal)
     case goal.kind
     when "goal" then goal.id
-    when "plan", "project", "day" then goal.parent_id
+    when "plan" then goal.id # Open the new plan's camp notebook, not the parent goal
+    when "project", "day" then goal.id # Keep notebook on the node just created
     else goal.parent_id
     end
   end
@@ -185,8 +186,22 @@ class StrategyGoalsController < ApplicationController
     @mountain_ready = Strategy::HierarchyReady.call(user: current_user, goal: @goal)
     @next_up = nil
     @sheet_node = @created || @updated || @focus
-    @open_peek = @created.present?
+    @open_peek = false
     @open_sheet = false
+    @force_notebook = @created&.plan? || @created&.goal?
+    @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
+    @notebook_guide =
+      if @goal.blank?
+        nil
+      elsif @goal.children.select(&:plan?).empty?
+        :add_first_plan
+      elsif !@mountain_ready
+        :keep_building
+      elsif @upcoming_battle.present?
+        :tomorrow
+      else
+        :fight_today
+      end
   end
 
   def branch_for(focus)

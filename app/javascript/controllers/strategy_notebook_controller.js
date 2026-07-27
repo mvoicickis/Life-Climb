@@ -29,7 +29,8 @@ export default class extends Controller {
     planId: Number,
     projectId: Number,
     goalId: Number,
-    journeyUrl: String
+    journeyUrl: String,
+    autoOpen: Boolean
   }
 
   connect() {
@@ -38,6 +39,8 @@ export default class extends Controller {
       this.showPlanPanel(this.planIdValue)
       if (this.projectIdValue) this.expandProject(this.projectIdValue, { pulse: false })
       else this.clearReactTent()
+    } else if (this.autoOpenValue) {
+      this.focusGoal()
     }
   }
 
