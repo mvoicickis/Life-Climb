@@ -67,9 +67,18 @@ export default class extends Controller {
     return 1
   }
 
+  focusPlanId(focusId) {
+    const fromProject = this.element.querySelector(`[data-camera-project-id="${focusId}"]`)
+    if (fromProject?.dataset?.cameraPlanId) return Number(fromProject.dataset.cameraPlanId)
+    const planSlot = this.element.querySelector(`[data-camera-plan-id="${focusId}"][data-camera-layer="1"]`)
+    if (planSlot) return focusId
+    return 0
+  }
+
   apply() {
     const level = this.levelValue
     const focusId = Number(this.focusIdValue || 0)
+    const focusPlanId = this.focusPlanId(focusId)
     this.element.dataset.cameraLevel = String(level)
     this.element.classList.toggle("is-zoomed", level > 1)
     this.element.classList.toggle("is-zoom-plan", level === 2)
@@ -79,6 +88,7 @@ export default class extends Controller {
       const layer = Number(el.dataset.cameraLayer || 1)
       const planId = Number(el.dataset.cameraPlanId || 0)
       const projectId = Number(el.dataset.cameraProjectId || 0)
+      const isPill = el.classList.contains("is-pill") || el.classList.contains("is-plan-overflow")
       let visible = false
       let dimmed = false
 
@@ -86,18 +96,44 @@ export default class extends Controller {
         visible = layer === 1
       } else if (level === 2) {
         if (layer === 1) {
-          visible = true
-          dimmed = planId > 0 && planId !== focusId
+          if (isPill) {
+            // Keep side plans quiet at L2 — only dimmed chips, no competing titles.
+            visible = true
+            dimmed = true
+          } else if (planId > 0 && planId !== focusPlanId) {
+            visible = true
+            dimmed = true
+          } else {
+            visible = true
+            dimmed = planId > 0 && planId !== focusId && planId !== focusPlanId
+          }
         } else if (layer === 2) {
-          visible = planId === focusId
+          visible = planId === focusPlanId || planId === focusId
         }
       } else {
+        // L3: only the climb band — hide noisy side plan pills.
         if (layer === 1) {
-          visible = true
-          dimmed = true
+          if (isPill || el.classList.contains("is-plan-overflow")) {
+            visible = false
+          } else if (el.classList.contains("is-goal") || el.classList.contains("is-you") || !planId) {
+            visible = true
+            dimmed = true
+          } else if (planId === focusPlanId) {
+            visible = true
+            dimmed = true
+          } else {
+            visible = false
+          }
         } else if (layer === 2) {
-          visible = projectId === focusId
-          dimmed = false
+          if (projectId === focusId) {
+            visible = true
+            dimmed = false
+          } else if (planId === focusPlanId) {
+            visible = true
+            dimmed = true
+          } else {
+            visible = false
+          }
         } else if (layer === 3) {
           visible = projectId === focusId
         }
@@ -130,9 +166,9 @@ export default class extends Controller {
 
     const x = focusEl ? Number.parseFloat(getComputedStyle(focusEl).getPropertyValue("--lp-x")) || 50 : 50
     const y = focusEl ? Number.parseFloat(getComputedStyle(focusEl).getPropertyValue("--lp-y")) || 50 : 50
-    const scale = this.levelValue === 3 ? 1.55 : 1.28
+    const scale = this.levelValue === 3 ? 1.85 : 1.45
     stage.style.setProperty("--lp-cam-x", `${50 - x}%`)
-    stage.style.setProperty("--lp-cam-y", `${42 - y}%`)
+    stage.style.setProperty("--lp-cam-y", `${48 - y}%`)
     stage.style.setProperty("--lp-cam-scale", String(scale))
   }
 

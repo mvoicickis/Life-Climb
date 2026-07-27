@@ -1,9 +1,12 @@
-<%# Living world map — full tree layers + camera zoom. locals: mountain %>
+<%# Living world map — capped pins per band + camera zoom. locals: mountain %>
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
 <% plans = @goal ? @goal.children.select(&:plan?).sort_by(&:position) : [] %>
 <% selected_plan = @branch_plan || plans.first %>
+<% other_plans = plans.reject { |p| selected_plan && p.id == selected_plan.id } %>
+<% visible_other_plans = other_plans.first(StrategyHelper::PILL_SLOTS.length) %>
+<% hidden_plan_count = [ other_plans.size - visible_other_plans.size, 0 ].max %>
 <% projects_by_plan = plans.to_h { |plan| [ plan.id, plan.children.select(&:project?).sort_by(&:position) ] } %>
 <% all_projects = projects_by_plan.values.flatten %>
 <% selected_project = @branch_project || (selected_plan && projects_by_plan[selected_plan.id]&.first) %>
@@ -75,20 +78,50 @@
         </div>
       <% end %>
 
-      <% plans.each_with_index do |plan, i| %>
-        <% on_spine = selected_plan && plan.id == selected_plan.id %>
-        <% slot = on_spine ? strategy_trail_slot(:selected_plan) : strategy_trail_slot(:pill, i) %>
-        <div class="lp-strategy-mountain__slot is-plan <%= 'is-focus' if on_spine %> <%= 'is-pill' unless on_spine %>"
+      <% if selected_plan %>
+        <% plan_slot = strategy_trail_slot(:selected_plan) %>
+        <div class="lp-strategy-mountain__slot is-plan is-focus"
+             data-camera-layer="1"
+             data-camera-plan-id="<%= selected_plan.id %>"
+             style="--lp-x: <%= plan_slot[:left] %>%; --lp-y: <%= plan_slot[:top] %>%">
+          <%= render "life_journeys/strategy_marker",
+                node: selected_plan,
+                lit: true,
+                today: false,
+                on_spine: true,
+                side: false,
+                whisper: nil %>
+        </div>
+      <% end %>
+
+      <% visible_other_plans.each_with_index do |plan, i| %>
+        <% slot = strategy_trail_slot(:pill, i) %>
+        <div class="lp-strategy-mountain__slot is-plan is-pill"
              data-camera-layer="1"
              data-camera-plan-id="<%= plan.id %>"
              style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
           <%= render "life_journeys/strategy_marker",
                 node: plan,
-                lit: on_spine,
+                lit: false,
                 today: false,
-                on_spine: on_spine,
-                side: !on_spine,
+                on_spine: false,
+                side: true,
+                quiet: true,
                 whisper: nil %>
+        </div>
+      <% end %>
+
+      <% if hidden_plan_count.positive? && @goal %>
+        <% slot = strategy_trail_slot(:plan_overflow) %>
+        <div class="lp-strategy-mountain__slot is-overflow is-plan-overflow"
+             data-camera-layer="1"
+             style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+          <%= render "life_journeys/strategy_overflow",
+                count: hidden_plan_count,
+                kind: "plan",
+                label: t("strategy.zones.more_count", count: hidden_plan_count),
+                sheet_id: "strategy-sheet-#{@goal.id}",
+                menu_id: "strategy-menu-#{@goal.id}" %>
         </div>
       <% end %>
 
@@ -100,21 +133,60 @@
 
       <% plans.each do |plan| %>
         <% plan_projects = projects_by_plan[plan.id] || [] %>
-        <% plan_projects.each_with_index do |project, i| %>
-          <% on_spine = selected_project && project.id == selected_project.id && selected_plan&.id == plan.id %>
-          <% slot = on_spine ? strategy_trail_slot(:selected_project) : strategy_trail_slot(:project, i) %>
-          <div class="lp-strategy-mountain__slot is-project <%= 'is-focus' if on_spine %> <%= 'is-side' unless on_spine %>"
+        <% focus_project = (selected_plan&.id == plan.id) ? selected_project : nil %>
+        <% visible_projects = strategy_visible_nodes(plan_projects, focus_project&.id) %>
+        <% hidden_project_count = [ plan_projects.size - visible_projects.size, 0 ].max %>
+        <% spine_project = focus_project && visible_projects.find { |p| p.id == focus_project.id } %>
+        <% sibling_projects = visible_projects.reject { |p| spine_project && p.id == spine_project.id } %>
+
+        <% if spine_project %>
+          <% slot = strategy_trail_slot(:selected_project) %>
+          <div class="lp-strategy-mountain__slot is-project is-focus"
+               data-camera-layer="2"
+               data-camera-plan-id="<%= plan.id %>"
+               data-camera-project-id="<%= spine_project.id %>"
+               style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+            <%= render "life_journeys/strategy_marker",
+                  node: spine_project,
+                  lit: true,
+                  today: false,
+                  on_spine: true,
+                  side: false,
+                  whisper: nil %>
+          </div>
+        <% end %>
+
+        <% sibling_projects.each_with_index do |project, i| %>
+          <% next if i >= StrategyHelper::SIBLING_PROJECT_SLOTS.length %>
+          <% slot = strategy_trail_slot(:project, i) %>
+          <div class="lp-strategy-mountain__slot is-project is-side"
                data-camera-layer="2"
                data-camera-plan-id="<%= plan.id %>"
                data-camera-project-id="<%= project.id %>"
                style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
             <%= render "life_journeys/strategy_marker",
                   node: project,
-                  lit: on_spine,
+                  lit: false,
                   today: false,
-                  on_spine: on_spine,
-                  side: !on_spine,
+                  on_spine: false,
+                  side: true,
+                  quiet: true,
                   whisper: nil %>
+          </div>
+        <% end %>
+
+        <% if hidden_project_count.positive? %>
+          <% slot = strategy_trail_slot(:project_overflow) %>
+          <div class="lp-strategy-mountain__slot is-overflow is-project-overflow"
+               data-camera-layer="2"
+               data-camera-plan-id="<%= plan.id %>"
+               style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+            <%= render "life_journeys/strategy_overflow",
+                  count: hidden_project_count,
+                  kind: "project",
+                  label: t("strategy.zones.more_count", count: hidden_project_count),
+                  sheet_id: "strategy-sheet-#{plan.id}",
+                  menu_id: "strategy-menu-#{plan.id}" %>
           </div>
         <% end %>
 
@@ -128,21 +200,67 @@
 
       <% all_projects.each do |project| %>
         <% project_battles = battles_by_project[project.id] || [] %>
-        <% project_battles.each_with_index do |battle, i| %>
-          <% on_spine = selected_project&.id == project.id && (@today_battle&.id == battle.id || i.zero?) %>
-          <% slot = on_spine ? strategy_trail_slot(:selected_battle) : strategy_trail_slot(:battle, i) %>
-          <div class="lp-strategy-mountain__slot is-battle <%= 'is-focus' if on_spine %> <%= 'is-side' unless on_spine %>"
+        <% spine_battle =
+             if selected_project&.id == project.id
+               @today_battle ||
+                 project_battles.find { |b| b.id == @focus&.id } ||
+                 project_battles.find { |b| !b.completed? } ||
+                 project_battles.first
+             end %>
+        <% visible_battles = strategy_visible_nodes(project_battles, spine_battle&.id) %>
+        <% hidden_battle_count = [ project_battles.size - visible_battles.size, 0 ].max %>
+        <% spine_visible = spine_battle && visible_battles.find { |b| b.id == spine_battle.id } %>
+        <% sibling_battles = visible_battles.reject { |b| spine_visible && b.id == spine_visible.id } %>
+
+        <% if spine_visible %>
+          <% slot = strategy_trail_slot(:selected_battle) %>
+          <div class="lp-strategy-mountain__slot is-battle is-focus"
+               data-camera-layer="3"
+               data-camera-plan-id="<%= project.parent_id %>"
+               data-camera-project-id="<%= project.id %>"
+               style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+            <%= render "life_journeys/strategy_marker",
+                  node: spine_visible,
+                  lit: true,
+                  today: spine_visible.id == today_id,
+                  on_spine: true,
+                  side: false,
+                  whisper: nil %>
+          </div>
+        <% end %>
+
+        <% sibling_battles.each_with_index do |battle, i| %>
+          <% next if i >= StrategyHelper::SIBLING_BATTLE_SLOTS.length %>
+          <% slot = strategy_trail_slot(:battle, i) %>
+          <div class="lp-strategy-mountain__slot is-battle is-side"
                data-camera-layer="3"
                data-camera-plan-id="<%= project.parent_id %>"
                data-camera-project-id="<%= project.id %>"
                style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
             <%= render "life_journeys/strategy_marker",
                   node: battle,
-                  lit: on_spine,
+                  lit: false,
                   today: battle.id == today_id,
-                  on_spine: on_spine,
-                  side: !on_spine,
+                  on_spine: false,
+                  side: true,
+                  quiet: true,
                   whisper: nil %>
+          </div>
+        <% end %>
+
+        <% if hidden_battle_count.positive? %>
+          <% slot = strategy_trail_slot(:battle_overflow) %>
+          <div class="lp-strategy-mountain__slot is-overflow is-battle-overflow"
+               data-camera-layer="3"
+               data-camera-plan-id="<%= project.parent_id %>"
+               data-camera-project-id="<%= project.id %>"
+               style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+            <%= render "life_journeys/strategy_overflow",
+                  count: hidden_battle_count,
+                  kind: "battle",
+                  label: t("strategy.zones.more_count", count: hidden_battle_count),
+                  sheet_id: "strategy-sheet-#{project.id}",
+                  menu_id: "strategy-menu-#{project.id}" %>
           </div>
         <% end %>
 

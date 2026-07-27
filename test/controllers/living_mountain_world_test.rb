@@ -52,4 +52,54 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_match(/Trail Plan/, response.body)
     assert_match(/strategy-menu-/, response.body)
   end
+
+  test "project overflow chip appears instead of stacking pins" do
+    plan = @goal.children.create!(
+      user: @user,
+      life_area: @area,
+      life_journey: @journey,
+      horizon: "plan",
+      title: "Main trail",
+      position: 0
+    )
+    4.times do |i|
+      plan.children.create!(
+        user: @user,
+        life_area: @area,
+        life_journey: @journey,
+        horizon: "project",
+        title: "Project #{i + 1}",
+        position: i
+      )
+    end
+
+    get life_journey_path(@journey, focus_id: plan.id)
+    assert_response :success
+    assert_select ".lp-strategy-overflow.is-project", text: "+1 more"
+    assert_select ".lp-strategy-mountain__slot.is-project", maximum: 3
+  end
+
+  test "L1 keeps projects on layer 2 for camera zoom" do
+    plan = @goal.children.create!(
+      user: @user,
+      life_area: @area,
+      life_journey: @journey,
+      horizon: "plan",
+      title: "Main trail",
+      position: 0
+    )
+    project = plan.children.create!(
+      user: @user,
+      life_area: @area,
+      life_journey: @journey,
+      horizon: "project",
+      title: "First climb",
+      position: 0
+    )
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select %([data-camera-layer="1"][data-camera-plan-id="#{plan.id}"])
+    assert_select %([data-camera-layer="2"][data-camera-project-id="#{project.id}"])
+  end
 end

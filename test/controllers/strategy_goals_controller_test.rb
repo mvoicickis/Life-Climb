@@ -288,9 +288,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: projects.first.id)
     assert_response :success
-    # Living world keeps the full tree in the DOM for client zoom.
+    # Living world keeps layers in the DOM for zoom, but caps pins so they never stack.
     assert_select ".lp-strategy-marker.is-pin.is-plan", minimum: 4
-    assert_select ".lp-strategy-marker.is-pin.is-project", minimum: 4
+    assert_select ".lp-strategy-marker.is-pin.is-project", maximum: 3
+    assert_select ".lp-strategy-overflow.is-project", text: "+1 more"
     assert_select ".lp-world.is-living-world"
     assert_select "[data-strategy-camera-level-value='3']"
     assert_select ".lp-strategy-marker.is-pin.is-project", text: /Project 0/i

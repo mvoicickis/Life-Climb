@@ -8722,6 +8722,38 @@ a.lp-strategy-siblings__chip:hover {
   transform: scale(0.92);
 }
 
+.lp-strategy-marker.is-pin.is-quiet {
+  max-width: 7.25rem;
+  padding: 0.22rem 0.42rem 0.22rem 0.22rem;
+}
+
+.lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__body {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 180ms ease, opacity 180ms ease;
+}
+
+.lp-strategy-marker.is-pin.is-quiet:hover .lp-strategy-marker__body,
+.lp-strategy-marker.is-pin.is-quiet:focus-visible .lp-strategy-marker__body,
+.lp-strategy-marker.is-pin.is-quiet.is-lit .lp-strategy-marker__body,
+.lp-strategy-mountain__slot.is-focus .lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__body {
+  max-width: 6.5rem;
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__body {
+    max-width: 6.5rem;
+    opacity: 1;
+  }
+}
+
 .lp-strategy-marker.is-pin.is-lit {
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--lp-level) 22%, transparent),
@@ -8824,7 +8856,19 @@ a.lp-strategy-siblings__chip:hover {
 }
 
 .lp-strategy-mountain__slot.is-goal { z-index: 4; }
+.lp-strategy-mountain__slot.is-plan.is-focus { z-index: 5; }
+.lp-strategy-mountain__slot.is-project.is-focus { z-index: 6; }
 .lp-strategy-mountain__slot.is-battle { z-index: 3; }
+.lp-strategy-mountain__slot.is-battle.is-focus { z-index: 7; }
+.lp-strategy-mountain__slot.is-overflow { z-index: 4; }
+
+.lp-strategy-mountain__camp.is-you {
+  z-index: 8;
+}
+
+.lp-strategy-mountain__slot:has(.lp-strategy-marker.is-today) {
+  z-index: 9;
+}
 
 .lp-strategy-mountain__whisper.is-map {
   position: absolute;
@@ -8947,8 +8991,14 @@ a.lp-strategy-siblings__chip:hover {
   white-space: nowrap;
 }
 
+.lp-strategy-overflow.is-plan { --lp-level: var(--lp-level-plan); }
 .lp-strategy-overflow.is-project { --lp-level: var(--lp-level-project); }
 .lp-strategy-overflow.is-battle { --lp-level: var(--lp-level-battle); }
+
+button.lp-strategy-overflow {
+  cursor: pointer;
+  font: inherit;
+}
 
 .lp-strategy-overflow__label {
   color: var(--lp-level);
@@ -11649,27 +11699,56 @@ a.lp-strategy-siblings__chip:hover {
 .lp-strategy-mountain__camera {
   position: absolute;
   inset: 0;
-  transform-origin: 50% 42%;
+  transform-origin: 50% 48%;
   transform: translate3d(var(--lp-cam-x, 0%), var(--lp-cam-y, 0%), 0) scale(var(--lp-cam-scale, 1));
   transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
+/* Zoomed bands: pull spine nodes closer so the trail feels local, not sparse. */
+.lp-world.is-zoom-plan .lp-strategy-mountain__slot.is-goal {
+  top: calc(var(--lp-y) + 4%);
+}
+.lp-world.is-zoom-plan .lp-strategy-mountain__slot.is-plan.is-focus {
+  top: calc(var(--lp-y) + 2%);
+}
+.lp-world.is-zoom-plan .lp-strategy-mountain__slot.is-project {
+  top: calc(var(--lp-y) - 2%);
+}
+
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-goal,
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-plan {
+  top: calc(var(--lp-y) + 6%);
+}
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-project.is-focus {
+  top: calc(var(--lp-y) + 1%);
+}
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-battle {
+  top: calc(var(--lp-y) - 3%);
+}
+
 .lp-strategy-mountain__slot.is-dimmed,
 .lp-strategy-mountain__whisper.is-dimmed,
 .lp-strategy-mountain__camp.is-dimmed {
-  opacity: 0.35;
-  filter: saturate(0.7);
+  opacity: 0.28;
+  filter: saturate(0.55);
+  pointer-events: none;
   transition: opacity 280ms ease, filter 280ms ease;
 }
 
-.lp-strategy-mountain__slot.is-camera-visible {
+.lp-strategy-mountain__slot.is-camera-visible:not(.is-dimmed) {
   animation: lp-pin-grow 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes lp-pin-grow {
-  from { transform: scale(0.72); opacity: 0.2; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: translate(-50%, -50%) scale(0.72);
+    opacity: 0.2;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 
 /* Tiny contextual pin menu */

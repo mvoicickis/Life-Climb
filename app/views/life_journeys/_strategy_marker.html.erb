@@ -1,19 +1,22 @@
-<%# Pin marker on the living trail — tap opens tiny menu; plan/project also zoom. locals: node:, lit:, today:, whisper:, on_spine:, side: %>
+<%# Pin marker on the living trail — tap opens tiny menu; plan/project also zoom. locals: node:, lit:, today:, whisper:, on_spine:, side:, quiet: %>
 <% node = local_assigns.fetch(:node) %>
 <% lit = local_assigns.fetch(:lit, false) %>
 <% today = local_assigns.fetch(:today, false) %>
 <% whisper = local_assigns[:whisper] %>
 <% on_spine = local_assigns.fetch(:on_spine, false) %>
 <% side = local_assigns.fetch(:side, false) %>
+<% quiet = local_assigns.fetch(:quiet, false) %>
 <% kind = strategy_kind_css(node) %>
 <% state = strategy_pin_state(node: node, today: today) %>
 <% ap = node.day? ? GameRules::BATTLE_TODO_LP : nil %>
+<% title_limit = quiet ? 12 : 22 %>
 
 <button type="button"
       class="<%= [
         "lp-strategy-marker is-pin is-#{kind} is-state-#{state}",
         ("is-spine" if on_spine),
         ("is-side" if side),
+        ("is-quiet" if quiet),
         ("is-lit" if lit),
         ("is-today" if today),
         ("is-done" if node.completed?),
@@ -32,14 +35,14 @@
     <span class="lp-strategy-marker__icon"></span>
   </span>
   <span class="lp-strategy-marker__body">
-    <span class="lp-strategy-marker__title"><%= node.title.truncate(22) %></span>
+    <span class="lp-strategy-marker__title"><%= node.title.truncate(title_limit) %></span>
     <% if node.progress_percent.positive? && !node.day? && on_spine %>
       <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
-    <% elsif ap.present? && !node.completed? %>
+    <% elsif ap.present? && !node.completed? && !quiet %>
       <span class="lp-strategy-marker__ap">+<%= ap %> <%= t("dash.action_points_short") %></span>
-    <% elsif whisper.present? %>
+    <% elsif whisper.present? && !quiet %>
       <span class="lp-strategy-marker__whisper"><%= whisper %></span>
-    <% elsif node.completed? %>
+    <% elsif node.completed? && on_spine %>
       <span class="lp-strategy-marker__check" aria-hidden="true">✓</span>
     <% end %>
   </span>

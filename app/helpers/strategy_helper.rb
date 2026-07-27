@@ -9,33 +9,34 @@ module StrategyHelper
 
   VISIBLE_PER_LEVEL = 3
 
-  # Center trail slots — focus path reads top → bottom.
-  GOAL_SLOT = [50, 10].freeze
-  SELECTED_PLAN_SLOT = [50, 28].freeze
+  # Center trail slots — slightly compressed so the climb reads as one trail.
+  GOAL_SLOT = [50, 14].freeze
+  SELECTED_PLAN_SLOT = [50, 32].freeze
   SELECTED_PROJECT_SLOT = [50, 50].freeze
-  SELECTED_BATTLE_SLOT = [50, 72].freeze
-  CAMP_SLOT = [50, 90].freeze
-  CAMP_TOP_AT_ZERO = 88.0
-  CAMP_TOP_AT_SUMMIT = 14.0
+  SELECTED_BATTLE_SLOT = [50, 68].freeze
+  CAMP_SLOT = [50, 86].freeze
+  CAMP_TOP_AT_ZERO = 86.0
+  CAMP_TOP_AT_SUMMIT = 16.0
   PILL_SLOTS = [
-    [14, 18], [86, 18], [10, 28], [90, 28], [12, 38], [88, 38]
+    [16, 22], [84, 22], [12, 34], [88, 34], [14, 42], [86, 42]
   ].freeze
   SIBLING_PROJECT_SLOTS = [
-    [28, 48], [72, 48]
+    [30, 50], [70, 50]
   ].freeze
   SIBLING_BATTLE_SLOTS = [
-    [28, 70], [72, 70]
+    [30, 68], [70, 68]
   ].freeze
-  PROJECT_OVERFLOW_SLOT = [88, 52].freeze
-  BATTLE_OVERFLOW_SLOT = [88, 74].freeze
+  PLAN_OVERFLOW_SLOT = [50, 42].freeze
+  PROJECT_OVERFLOW_SLOT = [88, 54].freeze
+  BATTLE_OVERFLOW_SLOT = [88, 72].freeze
   FLAG_SLOTS = {
-    "goal" => [58, 8],
-    "plan" => [58, 26],
+    "goal" => [58, 12],
+    "plan" => [58, 30],
     "project" => [58, 48],
-    "battle" => [58, 70]
+    "battle" => [58, 66]
   }.freeze
   # Spine tops for fog/cleared math (goal → camp default).
-  SPINE_TOPS = [10.0, 28.0, 50.0, 72.0, 90.0].freeze
+  SPINE_TOPS = [14.0, 32.0, 50.0, 68.0, 86.0].freeze
 
   def strategy_kind_css(node)
     node.day? ? "battle" : node.kind
@@ -177,12 +178,17 @@ module StrategyHelper
       when "pill" then PILL_SLOTS
       when "project" then SIBLING_PROJECT_SLOTS
       when "battle", "day" then SIBLING_BATTLE_SLOTS
+      when "plan_overflow" then [PLAN_OVERFLOW_SLOT]
       when "project_overflow" then [PROJECT_OVERFLOW_SLOT]
       when "battle_overflow" then [BATTLE_OVERFLOW_SLOT]
       when "camp" then [CAMP_SLOT]
       else [[50, 50]]
       end
-    left, top = slots[[index, slots.length - 1].min]
+    # Callers must cap indexes — never silently stack two pins on one slot.
+    safe_index = index.to_i
+    raise ArgumentError, "trail slot index #{safe_index} out of range for #{kind}" if safe_index.negative? || safe_index >= slots.length
+
+    left, top = slots[safe_index]
     { left: left, top: top }
   end
 

@@ -169,6 +169,15 @@ export default class extends Controller {
     this.openSheetById(sheetId, { edit: true })
   }
 
+  openOverflow(event) {
+    event.preventDefault()
+    const btn = event.currentTarget
+    const menuId = btn.dataset.menuId
+    const sheetId = btn.dataset.sheetId
+    if (menuId) this.openMenuById(menuId)
+    else this.openSheetById(sheetId, { edit: true })
+  }
+
   // Back-compat aliases used by older templates
   peek(event) {
     this.selectPin(event)
