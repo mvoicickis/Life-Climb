@@ -553,6 +553,7 @@ en:
     need_areas: "Choose life areas first."
     need_v2: "Choose your life areas to begin."
     created: "Journey saved. Here is today's mission."
+    missing_redirect: "That climb isn’t here anymore — pick up where you left off."
     area: "Life area"
     ideal: "What do you want to achieve?"
     ideal_hint: "Write it in your own words."

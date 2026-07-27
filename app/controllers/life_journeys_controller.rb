@@ -89,11 +89,24 @@ class LifeJourneysController < ApplicationController
   private
 
   def set_journey
-    @journey = current_user.life_journeys.find(params[:id])
+    @journey = current_user.life_journeys.find_by(id: params[:id])
+    return if @journey
+
+    fallback = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+    if fallback
+      redirect_to life_journey_path(fallback), alert: t("journeys.missing_redirect"), status: :see_other
+    else
+      redirect_to new_life_journey_path, alert: t("journeys.missing_redirect"), status: :see_other
+    end
   end
 
   def prepare_strategy!
     area = @journey.life_area
+    if area.blank?
+      redirect_to new_life_journey_path, alert: t("journeys.missing_redirect"), status: :see_other
+      return
+    end
+
     @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:children, :parent)
     @goal = @goals.for_kind("goal").roots.first
     @year_due = Strategy::YearCycle.target_dec29
