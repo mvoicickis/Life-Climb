@@ -73,8 +73,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/How the game works/i, response.body)
     assert_match(/Find a job/i, response.body)
-    assert_match(/Improve my applications/i, response.body)
-    assert_match(/Make 5 emails better/i, response.body)
+    assert_match(/Send applications/i, response.body)
+    assert_match(/Apply to 3 jobs today/i, response.body)
     assert_match(/Claim Trail Guide badge/i, response.body)
     assert_select "[data-controller='adventure-guide']"
     assert_select ".lp-adventure__how-stage"
