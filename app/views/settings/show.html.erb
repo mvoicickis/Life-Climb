@@ -53,6 +53,26 @@
           subtitle: t("share.invite.subtitle") %>
   </section>
 
+  <% if developer? && !impersonating? %>
+    <section class="lp-glass p-5" aria-label="<%= t('developer.tools.title') %>">
+      <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("developer.tools.title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("developer.tools.subtitle") %></p>
+      <div class="mt-3 space-y-2">
+        <%= button_to restart_new_player_experience_developer_tools_path,
+              method: :post,
+              class: "group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-3 text-left text-sm font-bold text-[var(--lp-ink)] transition hover:border-[var(--lp-lime)]",
+              form: {
+                data: {
+                  turbo_confirm: t("developer.tools.restart_npe_confirm")
+                }
+              } do %>
+          <span><%= t("developer.tools.restart_npe") %></span>
+          <span class="text-lg leading-none text-[var(--lp-muted)]" aria-hidden="true">›</span>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <section class="lp-glass p-5">
     <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("settings.account") %></h2>
     <div class="mt-3 space-y-2">

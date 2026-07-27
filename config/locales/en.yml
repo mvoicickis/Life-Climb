@@ -1330,6 +1330,13 @@ en:
     account: "Account"
     change_password: "Change password"
     sign_out: "Sign out"
+  developer:
+    tools:
+      title: "Developer Tools"
+      subtitle: "Only visible to the developer. Does not change other players."
+      restart_npe: "Restart New Player Experience"
+      restart_npe_confirm: "Reset onboarding and tutorial flags, then open the first onboarding screen? Your Goals, Plans, Projects, and Battles will not be deleted."
+      restart_npe_done: "New Player Experience restarted."
   feedback:
     title: "Feedback"
     subtitle: "Message me directly — ideas, bugs, or how LifePoints feels."

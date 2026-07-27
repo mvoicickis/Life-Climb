@@ -48,6 +48,11 @@ class User < ApplicationRecord
     admin
   end
 
+  # True when the DB flag is set or the email is in DEVELOPER_EMAIL / DEVELOPER_EMAILS.
+  def developer?
+    DeveloperAccess.allowed?(self)
+  end
+
   def planning_v2?
     planning_version.to_i >= 2
   end

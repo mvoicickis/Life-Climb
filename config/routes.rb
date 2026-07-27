@@ -78,6 +78,12 @@ Rails.application.routes.draw do
 
   resource :locale, only: :update, controller: "locales"
 
+  namespace :developer do
+    resource :tools, only: [], controller: "tools" do
+      post :restart_new_player_experience
+    end
+  end
+
   namespace :admin do
     root to: "dashboard#show"
     resource :statistics, only: :show, controller: "statistics"
