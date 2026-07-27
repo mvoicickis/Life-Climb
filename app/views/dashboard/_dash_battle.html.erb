@@ -6,11 +6,30 @@
   upcoming = local_assigns[:upcoming]
   battle_empty = open_todos.empty? && done_todos.empty? && !include_mission
   battle_won = !battle_empty && open_count.to_i.zero?
+  done_count = [ total_count.to_i - open_count.to_i, 0 ].max
+  ring_pct = total_count.to_i.positive? ? ((done_count.to_f / total_count) * 100).round : 0
+  ring_pct = 100 if battle_won
 %>
 
 <section class="lp-dash-battle" aria-label="<%= t('dash.battle_title') %>">
   <header class="lp-dash-battle__head">
-    <h2 class="lp-dash-battle__title"><%= t("dash.battle_title") %></h2>
+    <div class="lp-dash-battle__title-row">
+      <h2 class="lp-dash-battle__title"><%= t("dash.battle_title") %></h2>
+      <% unless battle_empty %>
+        <div class="lp-dash-battle__ring"
+             data-battle-day-target="ring"
+             style="--lp-ring: <%= ring_pct %>"
+             aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <circle class="lp-dash-battle__ring-track" cx="18" cy="18" r="15.5" fill="none"/>
+            <circle class="lp-dash-battle__ring-fill" cx="18" cy="18" r="15.5" fill="none"
+                    pathLength="100"
+                    stroke-dasharray="<%= ring_pct %> 100"/>
+          </svg>
+          <span class="lp-dash-battle__ring-label"><%= done_count %>/<%= [ total_count, 1 ].max %></span>
+        </div>
+      <% end %>
+    </div>
     <p class="lp-dash-battle__sub"><%= t("dash.battle_subtitle") %></p>
   </header>
 
@@ -106,6 +125,11 @@
         </p>
       <% else %>
         <p class="lp-dash-battle__won"><%= t("dash.battle_won") %></p>
+        <p class="lp-dash-battle__empty-cta">
+          <%= link_to t("climb.reward.back_to_trail"),
+                life_journey_path(@journey),
+                class: "lp-dash-battle__link-cta" %>
+        </p>
         <% if upcoming %>
           <p class="lp-dash-battle__tomorrow">
             <% if upcoming[:tomorrow] %>

@@ -88,6 +88,23 @@ lv:
       mountain: "Kalns"
       journey: "Ceļojums"
       you: "Tu"
+  climb:
+    streak:
+      chip: "%{count} dienas"
+      title:
+        one: "%{count} dienas kāpiens"
+        other: "%{count} dienu kāpiens"
+      aria: "Sērija %{count} dienas, Base Camp žetoni %{freezes}"
+      frozen_note: "Aizsargāts ar Base Camp"
+      freeze_chip:
+        one: "Base Camp ×%{count}"
+        other: "Base Camp ×%{count}"
+      freeze_hint: "Nosedz vienu mierīgu izlaisto dienu — automātiski."
+      freeze_earned: "Nopelnīts Base Camp žetons"
+      fresh_start: "Sākas jauns kāpiens"
+    reward:
+      personal_best: "Lielākais kāpiens līdz šim"
+      back_to_trail: "Atpakaļ uz taku"
   progress:
     title: "Ceļojums"
     subtitle: "Cik tālu esi nonācis savā kalnā?"

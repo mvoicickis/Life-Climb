@@ -27,7 +27,7 @@
 <% trail_points << battle_slot if spine_battle %>
 <% trail_points << camp_slot %>
 <% completed_flags = strategy_completed_flags(@goal) %>
-<% streak = strategy_climb_streak %>
+<% streak = @climb_streak || strategy_climb_streak_status %>
 
 <figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-focuspath is-lit-trail is-fog is-<%= stage %>"
         data-strategy-celebrate-target="mountain"
@@ -212,12 +212,7 @@
 
   <div class="lp-strategy-mountain__stage-chip" aria-live="polite">
     <span class="lp-strategy-mountain__stage-label"><%= mountain[:label] %></span>
-    <% if streak.positive? %>
-      <span class="lp-strategy-mountain__streak" title="<%= t('climb.streak.title', count: streak) %>">
-        <span aria-hidden="true">🔥</span>
-        <%= t("climb.streak.chip", count: streak) %>
-      </span>
-    <% end %>
+    <%= render "shared/climb_streak_chip", status: streak, compact: true %>
   </div>
 
   <div class="lp-strategy__bar lp-strategy-mountain__bar" aria-hidden="true" data-strategy-celebrate-target="progressBar">

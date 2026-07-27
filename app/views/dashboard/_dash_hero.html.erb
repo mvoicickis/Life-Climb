@@ -1,7 +1,8 @@
-<%# locals: journey, strategy_goal, mountain, closer, adventure_year: nil %>
+<%# locals: journey, strategy_goal, mountain, closer, adventure_year: nil, streak: nil %>
 <% goal_title = strategy_goal&.title.presence || journey.title %>
 <% stage_label = mountain.present? ? mountain[:label] : t("dash.mountain_waiting") %>
 <% year = local_assigns[:adventure_year].presence || Strategy::YearCycle.target_dec29.year %>
+<% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
 <section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-hero__copy">
     <p class="lp-dash-kicker"><%= t("dash.mountain_label") %></p>
@@ -15,19 +16,13 @@
         <div class="lp-dash-bar__fill" data-battle-day-target="goalBar" style="width: <%= closer %>%"></div>
       </div>
       <p class="lp-dash-hero__momentum" data-battle-day-target="momentum"><%= dash_momentum_line(closer, mountain: mountain) %></p>
-      <% streak = strategy_climb_streak %>
-      <% if streak.positive? %>
-        <p class="lp-dash-hero__streak">
-          <span aria-hidden="true">🔥</span>
-          <%= t("climb.streak.title", count: streak) %>
-        </p>
-      <% end %>
+      <%= render "shared/climb_streak_chip", status: streak %>
     </div>
-    <p class="lp-dash-hero__hint"><%= t("dash.journey_hint_climb") %></p>
-    <p class="lp-dash-hero__hint lp-dash-hero__hint--secondary"><%= t("dash.journey_hint_battles") %></p>
   </div>
   <div class="lp-dash-hero__art" aria-hidden="true">
-    <div class="lp-dash-hero__mountain is-<%= mountain&.dig(:stage) || 'empty' %>">
+    <div class="lp-dash-hero__mountain is-<%= mountain&.dig(:stage) || 'empty' %>"
+         style="--lp-camp: <%= closer.to_i %>"
+         data-battle-day-target="campArt">
       <svg class="lp-dash-hero__mountain-art" viewBox="0 0 200 120" role="img">
         <defs>
           <linearGradient id="lp-dash-mtn" x1="0" y1="0" x2="1" y2="1">
@@ -38,7 +33,7 @@
         <path d="M10 120 L100 28 L190 120 Z" fill="url(#lp-dash-mtn)"/>
         <path d="M82 55 L100 28 L118 55 L110 52 L100 68 L90 52 Z" fill="#f8fafc" opacity="0.9"/>
         <path class="lp-dash-hero__trail" d="M48 112 C68 98, 78 88, 96 72" fill="none" stroke="#fef3c7" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 5"/>
-        <g class="lp-dash-hero__camp">
+        <g class="lp-dash-hero__camp" style="transform: translate(0, <%= -closer.to_i * 0.35 %>px)">
           <path d="M70 98 L80 84 L90 98 Z" fill="#d97706"/>
         </g>
         <g class="lp-dash-hero__flags">

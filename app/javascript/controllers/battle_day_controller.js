@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Subtle juice for Complete Battle — confetti, CTA pulse, AP float, reward nudge.
+// Subtle juice for Complete Battle — confetti, ring close, AP float, camp nudge.
 export default class extends Controller {
-  static targets = ["completeBtn", "reward", "goalPct", "goalBar", "item", "lpTotal", "momentum"]
+  static targets = ["completeBtn", "reward", "goalPct", "goalBar", "item", "lpTotal", "momentum", "ring", "campArt"]
   static values = {
     closer: Number,
     celebrate: Boolean,
@@ -22,11 +22,25 @@ export default class extends Controller {
     this.burst()
     this.nudgeReward()
     this.nudgeGoal()
+    this.closeRing()
+    this.nudgeCamp()
     this.floatAp()
     this.chime()
     window.setTimeout(() => {
       this.element.classList.remove("is-celebrating", "is-boss")
     }, this.bossValue ? 1800 : 1400)
+  }
+
+  closeRing() {
+    if (!this.hasRingTarget) return
+    this.ringTarget.classList.add("is-closing")
+    window.setTimeout(() => this.ringTarget.classList.remove("is-closing"), 900)
+  }
+
+  nudgeCamp() {
+    if (!this.hasCampArtTarget) return
+    this.campArtTarget.classList.add("is-nudge")
+    window.setTimeout(() => this.campArtTarget.classList.remove("is-nudge"), 800)
   }
 
   floatAp() {

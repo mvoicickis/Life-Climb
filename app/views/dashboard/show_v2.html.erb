@@ -49,7 +49,8 @@
         strategy_goal: @strategy_goal,
         mountain: @mountain,
         closer: @closer,
-        adventure_year: @adventure_year %>
+        adventure_year: @adventure_year,
+        streak: @climb_streak %>
 
   <% if @project_check %>
     <%= render "dashboard/dash_project_check", project: @project_check %>
@@ -84,11 +85,9 @@
     <%= render "dashboard/dash_targets", targets: @targets %>
   <% end %>
 
-  <aside class="lp-dash-plan" aria-label="<%= t('dash.continue_planning_title') %>">
-    <p class="lp-dash-plan__kicker"><%= t("dash.continue_planning_title") %></p>
-    <p class="lp-dash-plan__copy"><%= t("dash.continue_planning_hint") %></p>
+  <aside class="lp-dash-plan" aria-label="<%= t('climb.reward.back_to_trail') %>">
     <p class="lp-dash-plan__link">
-      <%= link_to t("dash.open_strategy"), life_journey_path(@journey) %>
+      <%= link_to t("climb.reward.back_to_trail"), life_journey_path(@journey) %>
     </p>
   </aside>
 </div>

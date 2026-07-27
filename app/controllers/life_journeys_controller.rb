@@ -133,6 +133,8 @@ class LifeJourneysController < ApplicationController
     @guided_step = guided_step
     @path_stages = strategy_path_stages
     @mountain = Strategy::Mountain.for(goal: @goal)
+    Climb::Streak.reconcile!(user: current_user)
+    @climb_streak = Climb::Streak.status(user: current_user)
     @mountain_ready = strategy_mountain_ready?
     @next_up = strategy_next_up
     @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)

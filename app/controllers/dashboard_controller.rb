@@ -62,6 +62,8 @@ class DashboardController < ApplicationController
     @battle_angles =
       @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
     @adventure_year = Strategy::YearCycle.target_dec29.year
+    Climb::Streak.reconcile!(user: current_user)
+    @climb_streak = Climb::Streak.status(user: current_user)
     render "dashboard/show_v2"
   end
 

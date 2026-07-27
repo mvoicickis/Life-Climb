@@ -131,6 +131,10 @@ module StrategyHelper
     Climb::Streak.current(user: user)
   end
 
+  def strategy_climb_streak_status(user = current_user)
+    Climb::Streak.status(user: user)
+  end
+
   # Segment is cleared when its lower endpoint sits at/below the camp line.
   def strategy_segment_cleared?(to_slot, camp_slot)
     to_slot[:top].to_f >= camp_slot[:top].to_f - 0.5

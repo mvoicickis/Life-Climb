@@ -7,14 +7,18 @@ class BattleCompletionsController < ApplicationController
     Journeys::SyncClimbFromToday.call(user: current_user)
     if result.ok
       streak = Climb::Streak.touch!(user: current_user)
+      pb = Climb::PersonalBest.record!(user: current_user, awarded: result.awarded)
       Strategy::ProjectCheckQueue.enqueue(session: session, project_ids: result.project_check_ids)
       flash[:ap_gained] = result.awarded
       flash[:battle_celebrate] = true
+      flash[:climb_boss] = true if pb.new_record || streak.earned_freeze
       flash[:climb_reward] = Climb::Reward.for_battle(
         user: current_user,
         awarded: result.awarded,
         goal: goal,
-        streak_days: streak.days
+        streak_days: streak.days,
+        personal_best: pb.new_record,
+        earned_freeze: streak.earned_freeze
       )
       redirect_to dashboard_path, notice: result.message
     else

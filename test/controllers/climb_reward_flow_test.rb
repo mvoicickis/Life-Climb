@@ -39,5 +39,7 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     assert_operator @user.reload.climb_streak_days, :>=, 1
     assert_select "#climb-reward"
     assert_match(/Battle won|Climb reward/i, response.body)
+    assert_select ".lp-climb-streak"
+    assert_select ".lp-dash-battle__ring"
   end
 end
