@@ -1,0 +1,22 @@
+<%# Compact focus-path pill for off-path Plans. locals: node: %>
+<% node = local_assigns.fetch(:node) %>
+<% kind = strategy_kind_css(node) %>
+<% count = node.plan? ? strategy_projects_count(node) : 0 %>
+<% href = life_journey_path(@journey, focus_id: node.id, sheet: 1) %>
+
+<%= link_to href,
+      class: "lp-strategy-pill is-#{kind}",
+      title: node.title,
+      data: {
+        strategy_mountain_target: "marker",
+        node_id: node.id,
+        node_kind: kind,
+        can_add: strategy_child_horizon(node).present?,
+        sheet_id: "strategy-sheet-#{node.id}"
+      } do %>
+  <span class="lp-strategy-pill__dot" aria-hidden="true"></span>
+  <span class="lp-strategy-pill__title"><%= node.title.truncate(16) %></span>
+  <% if count.positive? %>
+    <span class="lp-strategy-pill__count"><%= count %></span>
+  <% end %>
+<% end %>

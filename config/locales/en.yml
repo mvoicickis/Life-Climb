@@ -330,6 +330,7 @@ en:
       battles_count:
         one: "%{count} battle"
         other: "%{count} battles"
+      more_count: "+%{count} more"
     sheet:
       edit: "Edit"
       add_child: "Add child"

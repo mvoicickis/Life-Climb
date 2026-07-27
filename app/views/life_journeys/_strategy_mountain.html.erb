@@ -1,22 +1,26 @@
-<%# Exact mockup trail map — frosted cards on scenic photo, parent→child wires. locals: mountain %>
+<%# Focus-path trail map — full cards on active climb; other Plans as pills. locals: mountain %>
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
 <% plans = @goal ? @goal.children.select(&:plan?).sort_by(&:position) : [] %>
-<% projects = @branch_plan ? @branch_plan.children.select(&:project?).sort_by(&:position) : [] %>
+<% selected_plan = @branch_plan %>
+<% other_plans = plans.reject { |p| selected_plan && p.id == selected_plan.id } %>
+<% projects = selected_plan ? selected_plan.children.select(&:project?).sort_by(&:position) : [] %>
+<% visible_projects = strategy_visible_nodes(projects, @branch_project&.id) %>
+<% hidden_project_count = [projects.size - visible_projects.size, 0].max %>
 <% battles = @branch_project ? @branch_project.children.select(&:day?).sort_by(&:position) : [] %>
+<% visible_battles = strategy_visible_nodes(battles, @today_battle&.id || @focus&.id) %>
+<% hidden_battle_count = [battles.size - visible_battles.size, 0].max %>
 <% today_id = @today_battle&.id %>
-<% off_plans = plans.reject { |p| p.id == @branch_plan&.id } %>
-<% off_projects = projects.reject { |p| p.id == @branch_project&.id } %>
+<% off_projects = visible_projects.reject { |p| p.id == @branch_project&.id } %>
 <% goal_slot = strategy_trail_slot(:goal) %>
-<% plan_slots = plans.each_with_index.to_h { |plan, i| [plan.id, strategy_trail_slot(:plan, i)] } %>
-<% project_slots = projects.each_with_index.to_h { |project, i| [project.id, strategy_trail_slot(:project, i)] } %>
-<% battle_slots = battles.each_with_index.to_h { |battle, i| [battle.id, strategy_trail_slot(:battle, i)] } %>
+<% plan_slot = strategy_trail_slot(:selected_plan) %>
+<% project_slots = visible_projects.each_with_index.to_h { |project, i| [project.id, strategy_trail_slot(:project, i)] } %>
+<% battle_slots = visible_battles.each_with_index.to_h { |battle, i| [battle.id, strategy_trail_slot(:battle, i)] } %>
 <% camp_slot = strategy_trail_slot(:camp) %>
-<% branch_plan_slot = @branch_plan ? plan_slots[@branch_plan.id] : goal_slot %>
-<% branch_project_slot = @branch_project ? project_slots[@branch_project.id] : branch_plan_slot %>
+<% branch_project_slot = @branch_project && project_slots[@branch_project.id] ? project_slots[@branch_project.id] : plan_slot %>
 
-<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-<%= stage %>"
+<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-focuspath is-<%= stage %>"
         data-strategy-celebrate-target="mountain"
         style="--lp-camp: <%= camp %>; --lp-scenic: url('/images/strategy-mountain-scenic.jpg')"
         aria-label="<%= mountain[:label] %>">
@@ -25,22 +29,20 @@
   <div class="lp-strategy-mountain__scrim is-bottom" aria-hidden="true"></div>
 
   <svg class="lp-strategy-mountain__wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <% if @goal && plans.any? %>
-      <% plans.each do |plan| %>
-        <path class="lp-strategy-wire is-plan"
-              d="<%= strategy_trail_wire(goal_slot, plan_slots[plan.id]) %>"
-              fill="none"/>
-      <% end %>
+    <% if @goal && selected_plan %>
+      <path class="lp-strategy-wire is-plan"
+            d="<%= strategy_trail_wire(goal_slot, plan_slot) %>"
+            fill="none"/>
     <% end %>
-    <% if @branch_plan && projects.any? %>
-      <% projects.each do |project| %>
+    <% if selected_plan && visible_projects.any? %>
+      <% visible_projects.each do |project| %>
         <path class="lp-strategy-wire is-project"
-              d="<%= strategy_trail_wire(branch_plan_slot, project_slots[project.id]) %>"
+              d="<%= strategy_trail_wire(plan_slot, project_slots[project.id]) %>"
               fill="none"/>
       <% end %>
     <% end %>
-    <% if @branch_project && battles.any? %>
-      <% battles.each do |battle| %>
+    <% if @branch_project && visible_battles.any? && project_slots[@branch_project.id] %>
+      <% visible_battles.each do |battle| %>
         <path class="lp-strategy-wire is-battle"
               d="<%= strategy_trail_wire(branch_project_slot, battle_slots[battle.id]) %>"
               fill="none"/>
@@ -70,15 +72,22 @@
       </div>
     <% end %>
 
-    <% plans.each_with_index do |plan, i| %>
-      <% slot = plan_slots[plan.id] %>
-      <div class="lp-strategy-mountain__slot is-plan"
-           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+    <% if selected_plan %>
+      <div class="lp-strategy-mountain__slot is-plan is-focus"
+           style="--lp-x: <%= plan_slot[:left] %>%; --lp-y: <%= plan_slot[:top] %>%">
         <%= render "life_journeys/strategy_marker",
-              node: plan,
-              lit: @branch_plan&.id == plan.id,
+              node: selected_plan,
+              lit: true,
               today: false,
               whisper: nil %>
+      </div>
+    <% end %>
+
+    <% other_plans.each_with_index do |plan, i| %>
+      <% slot = strategy_trail_slot(:pill, i) %>
+      <div class="lp-strategy-mountain__slot is-pill"
+           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+        <%= render "life_journeys/strategy_pill", node: plan %>
       </div>
     <% end %>
 
@@ -87,7 +96,7 @@
          style="--lp-x: 50%; --lp-y: 28%"><%= t("strategy.zones.add_plan_hint") %></p>
     <% end %>
 
-    <% projects.each do |project| %>
+    <% visible_projects.each do |project| %>
       <% slot = project_slots[project.id] %>
       <div class="lp-strategy-mountain__slot is-project"
            style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
@@ -99,29 +108,41 @@
       </div>
     <% end %>
 
-    <% off_plans.each_with_index do |plan, i| %>
-      <% count = strategy_projects_count(plan) %>
-      <% next unless count.positive? %>
-      <% base = strategy_trail_slot(:project, projects.size + i) %>
-      <div class="lp-strategy-mountain__slot is-collapse"
-           style="--lp-x: <%= base[:left] %>%; --lp-y: <%= base[:top] %>%">
-        <%= render "life_journeys/strategy_collapse",
-              count: count,
-              href: life_journey_path(@journey, focus_id: plan.id),
-              kind: "plan",
-              label: t("strategy.zones.projects_count", count: count) %>
+    <% if hidden_project_count.positive? && selected_plan %>
+      <% slot = strategy_trail_slot(:project_overflow) %>
+      <div class="lp-strategy-mountain__slot is-overflow"
+           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+        <%= render "life_journeys/strategy_overflow",
+              count: hidden_project_count,
+              href: life_journey_path(@journey, focus_id: selected_plan.id, sheet: 1),
+              kind: "project",
+              label: t("strategy.zones.more_count", count: hidden_project_count) %>
       </div>
     <% end %>
 
-    <% if @branch_plan && projects.empty? && off_plans.none? { |p| strategy_projects_count(p).positive? } %>
+    <% off_projects.each_with_index do |project, i| %>
+      <% count = strategy_battles_count(project) %>
+      <% next unless count.positive? %>
+      <% base = strategy_trail_slot(:battle, visible_battles.size + i) %>
+      <div class="lp-strategy-mountain__slot is-collapse"
+           style="--lp-x: <%= [base[:left], 92].min %>%; --lp-y: <%= base[:top] %>%">
+        <%= render "life_journeys/strategy_collapse",
+              count: count,
+              href: life_journey_path(@journey, focus_id: project.id),
+              kind: "project",
+              label: t("strategy.zones.battles_count", count: count) %>
+      </div>
+    <% end %>
+
+    <% if selected_plan && projects.empty? %>
       <p class="lp-strategy-mountain__whisper is-map"
          style="--lp-x: 50%; --lp-y: 48%"><%= t("strategy.zones.add_project_hint") %></p>
-    <% elsif @goal && @branch_plan.nil? && plans.any? %>
+    <% elsif @goal && selected_plan.nil? && plans.any? %>
       <p class="lp-strategy-mountain__whisper is-map is-dim"
          style="--lp-x: 50%; --lp-y: 48%"><%= t("strategy.zones.pick_plan") %></p>
     <% end %>
 
-    <% battles.each do |battle| %>
+    <% visible_battles.each do |battle| %>
       <% slot = battle_slots[battle.id] %>
       <div class="lp-strategy-mountain__slot is-battle"
            style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
@@ -133,24 +154,22 @@
       </div>
     <% end %>
 
-    <% off_projects.each_with_index do |project, i| %>
-      <% count = strategy_battles_count(project) %>
-      <% next unless count.positive? %>
-      <% base = strategy_trail_slot(:battle, battles.size + i) %>
-      <div class="lp-strategy-mountain__slot is-collapse"
-           style="--lp-x: <%= base[:left] %>%; --lp-y: <%= base[:top] %>%">
-        <%= render "life_journeys/strategy_collapse",
-              count: count,
-              href: life_journey_path(@journey, focus_id: project.id),
-              kind: "project",
-              label: t("strategy.zones.battles_count", count: count) %>
+    <% if hidden_battle_count.positive? && @branch_project %>
+      <% slot = strategy_trail_slot(:battle_overflow) %>
+      <div class="lp-strategy-mountain__slot is-overflow"
+           style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+        <%= render "life_journeys/strategy_overflow",
+              count: hidden_battle_count,
+              href: life_journey_path(@journey, focus_id: @branch_project.id, sheet: 1),
+              kind: "battle",
+              label: t("strategy.zones.more_count", count: hidden_battle_count) %>
       </div>
     <% end %>
 
-    <% if @branch_project && battles.empty? && off_projects.none? { |p| strategy_battles_count(p).positive? } %>
+    <% if @branch_project && battles.empty? %>
       <p class="lp-strategy-mountain__whisper is-map"
          style="--lp-x: 50%; --lp-y: 70%"><%= t("strategy.zones.add_battle_hint") %></p>
-    <% elsif @goal && @branch_project.nil? && @branch_plan.present? %>
+    <% elsif @goal && @branch_project.nil? && selected_plan.present? %>
       <p class="lp-strategy-mountain__whisper is-map is-dim"
          style="--lp-x: 50%; --lp-y: 70%"><%= t("strategy.zones.pick_project") %></p>
     <% end %>

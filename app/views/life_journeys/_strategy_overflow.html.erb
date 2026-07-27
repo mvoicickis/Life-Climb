@@ -1,24 +1,14 @@
-<%# locals: node %>
-<% node = local_assigns.fetch(:node) %>
-<details class="lp-strategy-overflow">
-  <summary class="lp-strategy-overflow__trigger" aria-label="<%= t('strategy.more_actions') %>">⋯</summary>
-  <div class="lp-strategy-overflow__menu">
-    <%= form_with url: strategy_goal_path(node), method: :patch, class: "lp-strategy-overflow__rename", data: { turbo: false } do %>
-      <label class="lp-strategy-overflow__rename-label" for="strategy-rename-<%= node.id %>">
-        <%= t("strategy.rename") %>
-      </label>
-      <%= text_field_tag :title, node.title,
-            id: "strategy-rename-#{node.id}",
-            required: true,
-            maxlength: 120,
-            class: "lp-strategy-overflow__rename-input",
-            autocomplete: "off" %>
-      <%= submit_tag t("strategy.save_name"), class: "lp-strategy-overflow__action is-save" %>
-    <% end %>
-    <%= button_to t("strategy.remove"),
-          strategy_goal_path(node),
-          method: :delete,
-          class: "lp-strategy-overflow__action is-remove",
-          form: { data: { turbo: false } } %>
-  </div>
-</details>
+<%# Overflow chip for capped siblings. locals: count:, href:, kind:, label: %>
+<% count = local_assigns.fetch(:count).to_i %>
+<% href = local_assigns.fetch(:href) %>
+<% kind = local_assigns.fetch(:kind) %>
+<% label = local_assigns.fetch(:label) %>
+
+<% if count.positive? %>
+  <%= link_to href,
+        class: "lp-strategy-overflow is-#{kind}",
+        title: label,
+        aria: { label: label } do %>
+    <span class="lp-strategy-overflow__label"><%= t("strategy.zones.more_count", count: count) %></span>
+  <% end %>
+<% end %>
