@@ -4,7 +4,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "shell", "panel", "dot", "sceneLine", "flag", "bar", "pct",
-    "wonNote", "winButton", "battleOne", "apPop", "remain", "mapNode", "badge"
+    "wonNote", "winButton", "battleOne", "apPop", "remain", "mapNode", "badge",
+    "stackBody", "mountainHint"
   ]
 
   static values = {
@@ -23,6 +24,7 @@ export default class extends Controller {
           this.element.dataset.scenePersist || "Not done yet.",
           this.element.dataset.sceneMap || "Your map."
         ]
+    this.element.classList.add("is-alive")
     this.showPanel(0)
   }
 
@@ -81,6 +83,7 @@ export default class extends Controller {
     this.panelTargets.forEach((panel, i) => {
       const on = i === index
       panel.classList.toggle("is-on", on)
+      panel.classList.remove("is-ready")
       panel.hidden = !on
     })
 
@@ -96,28 +99,76 @@ export default class extends Controller {
       this.sceneLineTarget.classList.add("is-in")
     }
 
+    if (this.hasStackBodyTarget) this.stackBodyTarget.classList.remove("is-in")
+    if (this.hasMountainHintTarget) this.mountainHintTarget.classList.remove("is-in")
+
     if (scene === "stack") this.playStack()
+    if (scene === "battle") this.playBattle()
     if (scene === "persist") this.playRemain()
     if (scene === "map") this.playMap()
   }
 
   playStack() {
+    const panel = this.panelTargets[this.index]
     this.flagTargets.forEach((flag) => flag.classList.remove("is-in"))
+    if (this.hasStackBodyTarget) this.stackBodyTarget.classList.remove("is-in")
+    panel?.classList.remove("is-ready")
+
     if (this.reducedMotion()) {
       this.flagTargets.forEach((flag) => flag.classList.add("is-in"))
+      if (this.hasStackBodyTarget) this.stackBodyTarget.classList.add("is-in")
+      panel?.classList.add("is-ready")
       return
     }
+
+    // Staged beats: Goal → Plans → Projects → Battle peek (data-stack-beat 0..3)
     this.flagTargets.forEach((flag, i) => {
-      this.queue(() => flag.classList.add("is-in"), 120 + i * 180)
+      const beat = Number(flag.dataset.stackBeat)
+      const delay = Number.isFinite(beat) ? 160 + beat * 480 : 120 + i * 180
+      this.queue(() => flag.classList.add("is-in"), delay)
     })
+
+    this.queue(() => {
+      if (this.hasStackBodyTarget) this.stackBodyTarget.classList.add("is-in")
+      panel?.classList.add("is-ready")
+    }, 160 + 3 * 480 + 420)
+  }
+
+  playBattle() {
+    if (this.hasBattleOneTarget) {
+      this.battleOneTarget.classList.remove("is-struck")
+      this.battleOneTarget.disabled = false
+    }
+    if (this.hasWinButtonTarget) {
+      this.winButtonTarget.disabled = false
+      this.winButtonTarget.classList.remove("is-won")
+    }
+    if (this.hasWonNoteTarget) this.wonNoteTarget.hidden = true
+    if (this.hasApPopTarget) {
+      this.apPopTarget.hidden = true
+      this.apPopTarget.classList.remove("is-pop")
+    }
+    if (this.hasBarTarget && this.hasPctTarget) {
+      this.barTarget.style.width = "40%"
+      this.pctTarget.textContent = "40%"
+    }
   }
 
   playRemain() {
     this.remainTargets.forEach((el) => el.classList.remove("is-pulse"))
-    if (this.reducedMotion()) return
+    if (this.hasMountainHintTarget) this.mountainHintTarget.classList.remove("is-in")
+
+    if (this.reducedMotion()) {
+      if (this.hasMountainHintTarget) this.mountainHintTarget.classList.add("is-in")
+      return
+    }
+
     this.remainTargets.forEach((el, i) => {
       this.queue(() => el.classList.add("is-pulse"), 200 + i * 160)
     })
+    this.queue(() => {
+      if (this.hasMountainHintTarget) this.mountainHintTarget.classList.add("is-in")
+    }, 520)
   }
 
   playMap() {
