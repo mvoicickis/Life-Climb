@@ -374,9 +374,9 @@ en:
       example_battle: "Learn 20 words"
     help:
       cta: "Help me plan"
-      cta_goal: "Help me name this goal"
-      cta_project: "Help me name this project"
-      cta_battle: "Help me name this battle"
+      cta_goal: "Help me define this goal"
+      cta_project: "Help me define this project"
+      cta_battle: "Help me choose the next battle"
       cta_new_journey: "Help me think this through"
       cta_onboarding: "Help me clarify this mountain"
       thinking: "Thinking…"
