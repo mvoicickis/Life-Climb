@@ -82,6 +82,7 @@ Rails.application.routes.draw do
     resource :statistics, only: :show, controller: "statistics"
     resource :system, only: :show, controller: "systems"
     resource :ops, only: %i[ show update ], controller: "ops"
+    resource :strategy, only: %i[ show create ], controller: "strategy"
     resources :feedbacks, only: %i[ index destroy ]
     resources :users, only: %i[ index show edit update destroy ] do
       member do

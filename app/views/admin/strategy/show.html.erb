@@ -1,0 +1,72 @@
+<% content_for :title, t("admin.strategy.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.strategy.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.strategy.lead") %></p>
+  </div>
+</header>
+
+<%= form_with url: admin_strategy_path, method: :post, local: true, class: "lp-admin__panel lp-admin__form" do %>
+  <label class="lp-admin__field">
+    <span><%= t("admin.strategy.goal") %></span>
+    <%= text_field_tag :goal, @goal, class: "lp-input", required: true, placeholder: t("admin.strategy.goal_placeholder") %>
+  </label>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.strategy.current_reality") %></span>
+    <%= text_area_tag :current_reality, @current_reality, rows: 2, class: "lp-input", placeholder: t("admin.strategy.current_reality_placeholder") %>
+  </label>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.strategy.ideal_scene") %></span>
+    <%= text_area_tag :ideal_scene, @ideal_scene, rows: 2, class: "lp-input", placeholder: t("admin.strategy.ideal_scene_placeholder") %>
+  </label>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.strategy.life_area") %></span>
+    <%= text_field_tag :life_area, @life_area, class: "lp-input", placeholder: t("admin.strategy.life_area_placeholder") %>
+  </label>
+
+  <div class="lp-admin__btn-row">
+    <%= submit_tag t("admin.strategy.run"), class: "lp-admin__btn", data: { turbo_submits_with: t("admin.strategy.running") } %>
+  </div>
+<% end %>
+
+<% if @error.present? %>
+  <div class="lp-admin__flash is-alert" style="margin-top:1rem"><%= @error %></div>
+<% end %>
+
+<% if @result.present? %>
+  <section class="lp-admin__panel" style="margin-top:1rem">
+    <header class="lp-admin__panel-head">
+      <h2><%= t("admin.strategy.result") %></h2>
+    </header>
+
+    <p class="lp-admin__body"><strong><%= t("admin.strategy.summary") %>:</strong> <%= @result["summary"] %></p>
+
+    <% if @result["question"].present? %>
+      <p class="lp-admin__body" style="margin-top:0.75rem">
+        <strong><%= t("admin.strategy.question") %>:</strong> <%= @result["question"] %>
+      </p>
+    <% end %>
+
+    <h3 style="margin:1rem 0 0.5rem;font-family:var(--lp-font-display)"><%= t("admin.strategy.suggestions") %></h3>
+    <% if @result["suggestions"].blank? %>
+      <p class="lp-admin__empty"><%= t("admin.strategy.no_suggestions") %></p>
+    <% else %>
+      <ul class="lp-admin__list">
+        <% @result["suggestions"].each do |suggestion| %>
+          <li class="lp-admin__list-static">
+            <span class="lp-admin__badge"><%= suggestion["type"] %></span>
+            <span><strong><%= suggestion["title"] %></strong></span>
+            <span class="lp-admin__meta"><%= t("admin.strategy.not_saved") %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <p class="lp-admin__meta" style="margin-top:1rem"><%= t("admin.strategy.disclaimer") %></p>
+  </section>
+<% end %>
