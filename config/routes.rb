@@ -72,6 +72,7 @@ Rails.application.routes.draw do
     end
   end
   resources :feedbacks, only: %i[ new create ]
+  resource :strategy_help, only: :create, controller: "strategy_helps"
   resources :completions, only: :create
   resources :daily_logs, only: :create
 

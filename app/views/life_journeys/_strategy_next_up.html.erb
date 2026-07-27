@@ -77,6 +77,19 @@
         <%= submit_tag next_up[:cta], class: "lp-strategy-next__cta" %>
       <% end %>
 
+      <% if form[:horizon].in?(%w[goal plan]) %>
+        <%= render "strategy_helps/launch",
+              goal: (form[:horizon] == "goal" ? @journey.title : (@goal&.title || @journey.title)),
+              ideal_scene: @journey.ideal_scene,
+              current_reality: @journey.current_reality,
+              life_area: area&.label,
+              accept_as: (form[:horizon] == "plan" ? "plan" : "fill"),
+              parent_id: (form[:horizon] == "plan" ? form[:parent_id] : nil),
+              life_area_id: area&.id,
+              journey_id: @journey.id,
+              button_label: t("strategy.help.cta") %>
+      <% end %>
+
     <% elsif next_up[:href].present? %>
       <%= link_to next_up[:cta],
             next_up[:href],

@@ -59,6 +59,16 @@
               autocomplete: "off",
               autofocus: true %>
         <p class="lp-adventure__example"><%= t("v2_onboarding.mountain_example") %></p>
+
+        <%= render "strategy_helps/launch",
+              goal: "",
+              ideal_scene: "",
+              current_reality: "",
+              life_area: "",
+              accept_as: "ideas",
+              source_form: true,
+              button_label: t("strategy.help.cta_onboarding") %>
+
         <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
       <% end %>
     </section>
