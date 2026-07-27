@@ -336,6 +336,10 @@ en:
         one: "%{count} battle"
         other: "%{count} battles"
       more_count: "+%{count} more"
+    notebook:
+      label: "Camp notebook"
+      crumb: "Climb path"
+      open_hint: "Tap a plan to open your camp notebook"
     sheet:
       edit: "Edit"
       add_child: "Add child"

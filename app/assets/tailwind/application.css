@@ -8722,6 +8722,38 @@ a.lp-strategy-siblings__chip:hover {
   transform: scale(0.92);
 }
 
+.lp-strategy-marker.is-pin.is-quiet {
+  max-width: 7.25rem;
+  padding: 0.22rem 0.42rem 0.22rem 0.22rem;
+}
+
+.lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__body {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 180ms ease, opacity 180ms ease;
+}
+
+.lp-strategy-marker.is-pin.is-quiet:hover .lp-strategy-marker__body,
+.lp-strategy-marker.is-pin.is-quiet:focus-visible .lp-strategy-marker__body,
+.lp-strategy-marker.is-pin.is-quiet.is-lit .lp-strategy-marker__body,
+.lp-strategy-mountain__slot.is-focus .lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__body {
+  max-width: 6.5rem;
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .lp-strategy-marker.is-pin.is-quiet .lp-strategy-marker__body {
+    max-width: 6.5rem;
+    opacity: 1;
+  }
+}
+
 .lp-strategy-marker.is-pin.is-lit {
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--lp-level) 22%, transparent),
@@ -8824,7 +8856,19 @@ a.lp-strategy-siblings__chip:hover {
 }
 
 .lp-strategy-mountain__slot.is-goal { z-index: 4; }
+.lp-strategy-mountain__slot.is-plan.is-focus { z-index: 5; }
+.lp-strategy-mountain__slot.is-project.is-focus { z-index: 6; }
 .lp-strategy-mountain__slot.is-battle { z-index: 3; }
+.lp-strategy-mountain__slot.is-battle.is-focus { z-index: 7; }
+.lp-strategy-mountain__slot.is-overflow { z-index: 4; }
+
+.lp-strategy-mountain__camp.is-you {
+  z-index: 8;
+}
+
+.lp-strategy-mountain__slot:has(.lp-strategy-marker.is-today) {
+  z-index: 9;
+}
 
 .lp-strategy-mountain__whisper.is-map {
   position: absolute;
@@ -8947,8 +8991,14 @@ a.lp-strategy-siblings__chip:hover {
   white-space: nowrap;
 }
 
+.lp-strategy-overflow.is-plan { --lp-level: var(--lp-level-plan); }
 .lp-strategy-overflow.is-project { --lp-level: var(--lp-level-project); }
 .lp-strategy-overflow.is-battle { --lp-level: var(--lp-level-battle); }
+
+button.lp-strategy-overflow {
+  cursor: pointer;
+  font: inherit;
+}
 
 .lp-strategy-overflow__label {
   color: var(--lp-level);
@@ -11649,27 +11699,56 @@ a.lp-strategy-siblings__chip:hover {
 .lp-strategy-mountain__camera {
   position: absolute;
   inset: 0;
-  transform-origin: 50% 42%;
+  transform-origin: 50% 48%;
   transform: translate3d(var(--lp-cam-x, 0%), var(--lp-cam-y, 0%), 0) scale(var(--lp-cam-scale, 1));
   transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
+/* Zoomed bands: pull spine nodes closer so the trail feels local, not sparse. */
+.lp-world.is-zoom-plan .lp-strategy-mountain__slot.is-goal {
+  top: calc(var(--lp-y) + 4%);
+}
+.lp-world.is-zoom-plan .lp-strategy-mountain__slot.is-plan.is-focus {
+  top: calc(var(--lp-y) + 2%);
+}
+.lp-world.is-zoom-plan .lp-strategy-mountain__slot.is-project {
+  top: calc(var(--lp-y) - 2%);
+}
+
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-goal,
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-plan {
+  top: calc(var(--lp-y) + 6%);
+}
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-project.is-focus {
+  top: calc(var(--lp-y) + 1%);
+}
+.lp-world.is-zoom-project .lp-strategy-mountain__slot.is-battle {
+  top: calc(var(--lp-y) - 3%);
+}
+
 .lp-strategy-mountain__slot.is-dimmed,
 .lp-strategy-mountain__whisper.is-dimmed,
 .lp-strategy-mountain__camp.is-dimmed {
-  opacity: 0.35;
-  filter: saturate(0.7);
+  opacity: 0.28;
+  filter: saturate(0.55);
+  pointer-events: none;
   transition: opacity 280ms ease, filter 280ms ease;
 }
 
-.lp-strategy-mountain__slot.is-camera-visible {
+.lp-strategy-mountain__slot.is-camera-visible:not(.is-dimmed) {
   animation: lp-pin-grow 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes lp-pin-grow {
-  from { transform: scale(0.72); opacity: 0.2; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: translate(-50%, -50%) scale(0.72);
+    opacity: 0.2;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 
 /* Tiny contextual pin menu */
@@ -11806,4 +11885,396 @@ a.lp-strategy-siblings__chip:hover {
     max-width: 28rem;
     margin: 0 auto;
   }
+}
+
+/* —— Camp notebook Mountain —— */
+.lp-world.is-camp-notebook.is-notebook-open .lp-world__stage {
+  padding-bottom: 0;
+}
+
+.lp-world.is-camp-notebook.is-notebook-open .lp-world__dock {
+  bottom: calc(42vh + 0.5rem);
+}
+
+.lp-camp-notebook {
+  position: fixed;
+  left: 50%;
+  bottom: 3.6rem;
+  z-index: 40;
+  width: min(100vw - 0.75rem, 28rem);
+  max-height: 48vh;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  border-radius: 1.1rem 1.1rem 0.85rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(252, 251, 248, 0.96);
+  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.lp-camp-notebook[hidden] {
+  display: none !important;
+}
+
+.lp-camp-notebook__handle {
+  width: 2.4rem;
+  height: 0.28rem;
+  margin: 0.45rem auto 0.15rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.7);
+}
+
+.lp-camp-notebook__head {
+  padding: 0.35rem 0.9rem 0.45rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.lp-camp-notebook__crumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.lp-camp-notebook__crumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  max-width: 8.5rem;
+}
+
+.lp-camp-notebook__crumb-item span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-camp-notebook__crumb-item.is-project {
+  cursor: default;
+  color: #166534;
+}
+
+.lp-camp-notebook__crumb-sep {
+  opacity: 0.55;
+}
+
+.lp-camp-notebook__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lp-camp-notebook__title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-camp-notebook__close {
+  flex: 0 0 auto;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.95);
+  color: #64748b;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-camp-notebook__panel {
+  flex: 1;
+  overflow: auto;
+  padding: 0.35rem 0.65rem 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lp-camp-notebook__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-camp-notebook__row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.7rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: rgba(255, 255, 255, 0.92);
+  text-align: left;
+  cursor: pointer;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.lp-camp-notebook__row.is-active,
+.lp-camp-notebook__project.is-expanded > .lp-camp-notebook__row {
+  border-color: color-mix(in srgb, #22c55e 45%, #e2e8f0);
+  background: rgba(240, 253, 244, 0.95);
+  box-shadow: 0 0 0 2px color-mix(in srgb, #22c55e 18%, transparent);
+}
+
+.lp-camp-notebook__row-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lp-camp-notebook__row-body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.lp-camp-notebook__row-title {
+  font-size: 0.9rem;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-camp-notebook__row-meta {
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: #64748b;
+}
+
+.lp-camp-notebook__row-chevron {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.lp-camp-notebook__battles {
+  margin: 0.35rem 0 0.45rem 0.85rem;
+  padding: 0.35rem 0 0.15rem 0.75rem;
+  border-left: 2px solid color-mix(in srgb, #22c55e 55%, #cbd5e1);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-camp-notebook__battle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.lp-camp-notebook__battle.is-today {
+  border-color: color-mix(in srgb, #f59e0b 50%, #e2e8f0);
+  background: rgba(255, 251, 235, 0.95);
+}
+
+.lp-camp-notebook__battle.is-done {
+  opacity: 0.72;
+}
+
+.lp-camp-notebook__battle-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-camp-notebook__fight {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  background: #166534;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lp-camp-notebook__battle-more {
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0.15rem;
+}
+
+.lp-camp-notebook__empty {
+  margin: 0.5rem 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: #64748b;
+}
+
+.lp-camp-notebook__empty.is-nested {
+  margin: 0.15rem 0;
+  font-size: 0.75rem;
+}
+
+.lp-camp-notebook__add {
+  margin: 0.45rem 0.15rem;
+  border-radius: 0.75rem;
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  background: rgba(248, 250, 252, 0.9);
+  padding: 0.35rem 0.55rem;
+}
+
+.lp-camp-notebook__add summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #166534;
+  list-style: none;
+}
+
+.lp-camp-notebook__add summary::-webkit-details-marker { display: none; }
+
+.lp-camp-notebook__form {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.lp-camp-notebook__submit {
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.45rem 0.7rem;
+  background: #166534;
+  color: #fff;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.lp-camp-notebook__foot {
+  padding: 0.55rem 0.75rem 0.75rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.lp-camp-notebook__context-add {
+  width: 100%;
+  border: 0;
+  border-radius: 0.85rem;
+  padding: 0.7rem 0.85rem;
+  background: #166534;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(22, 101, 52, 0.22);
+}
+
+.lp-camp-notebook__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.lp-camp-notebook__add.is-context {
+  margin-top: 0.45rem;
+}
+
+.lp-camp-react-tent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 9rem;
+  padding: 0.28rem 0.55rem 0.28rem 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+  color: #14532d;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.lp-camp-react-tent.is-glow {
+  border-color: color-mix(in srgb, #22c55e 55%, #fff);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, #22c55e 25%, transparent),
+    0 0 22px color-mix(in srgb, #22c55e 40%, transparent),
+    0 10px 20px rgba(15, 23, 42, 0.14);
+  animation: lp-camp-tent-glow 1.8s ease-in-out infinite;
+}
+
+.lp-camp-react-tent__icon {
+  width: 1.15rem;
+  height: 0.85rem;
+  background: linear-gradient(180deg, #4ade80 0 62%, #15803d 62% 100%);
+  clip-path: polygon(50% 0, 100% 78%, 100% 100%, 0 100%, 0 78%);
+}
+
+.lp-camp-react-tent__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes lp-camp-tent-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.06); }
+}
+
+.lp-strategy-wire.is-trail-spine.is-pulse {
+  stroke: #22c55e !important;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.75));
+  animation: lp-path-pulse 0.85s ease;
+}
+
+@keyframes lp-path-pulse {
+  from { stroke-opacity: 0.35; }
+  to { stroke-opacity: 1; }
+}
+
+.lp-strategy-path-spark {
+  fill: #fbbf24;
+  filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.9));
+  pointer-events: none;
+}
+
+.lp-strategy-path-spark.is-run {
+  offset-path: path("M50 14 C50 24, 50 24, 50 32");
+  animation: lp-spark-travel 0.8s ease-out forwards;
+}
+
+@keyframes lp-spark-travel {
+  from { offset-distance: 0%; opacity: 1; }
+  to { offset-distance: 100%; opacity: 0.2; }
+}
+
+.lp-strategy-mountain.is-camp-notebook .lp-strategy-mountain__slot.is-project.is-react {
+  z-index: 8;
 }

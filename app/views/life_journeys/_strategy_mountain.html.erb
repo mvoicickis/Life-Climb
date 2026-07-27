@@ -1,22 +1,24 @@
-<%# Living world map — full tree layers + camera zoom. locals: mountain %>
+<%# Mountain answers: Where am I climbing? Goal + Plans only. Reactive tent when a Project is focused in the notebook. locals: mountain %>
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
 <% plans = @goal ? @goal.children.select(&:plan?).sort_by(&:position) : [] %>
 <% selected_plan = @branch_plan || plans.first %>
-<% projects_by_plan = plans.to_h { |plan| [ plan.id, plan.children.select(&:project?).sort_by(&:position) ] } %>
-<% all_projects = projects_by_plan.values.flatten %>
-<% selected_project = @branch_project || (selected_plan && projects_by_plan[selected_plan.id]&.first) %>
-<% battles_by_project = all_projects.to_h { |project| [ project.id, project.children.select(&:day?).sort_by(&:position) ] } %>
-<% today_id = @today_battle&.id %>
+<% other_plans = plans.reject { |p| selected_plan && p.id == selected_plan.id } %>
+<% visible_other_plans = other_plans.first(StrategyHelper::PILL_SLOTS.length) %>
+<% hidden_plan_count = [ other_plans.size - visible_other_plans.size, 0 ].max %>
+<% selected_project = @branch_project %>
 <% goal_slot = strategy_trail_slot(:goal) %>
+<% plan_slot = strategy_trail_slot(:selected_plan) %>
+<% project_slot = strategy_trail_slot(:selected_project) %>
 <% camp_slot = strategy_camp_slot(camp) %>
 <% completed_flags = strategy_completed_flags(@goal) %>
 <% streak = @climb_streak || strategy_climb_streak_status %>
 
-<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-focuspath is-lit-trail is-fog is-world is-<%= stage %>"
+<figure class="lp-strategy-mountain is-living is-scenic is-trailmap is-focuspath is-lit-trail is-fog is-world is-camp-notebook is-<%= stage %>"
         data-strategy-celebrate-target="mountain"
         data-strategy-camera-target="viewport"
+        data-strategy-notebook-target="mountain"
         style="--lp-camp: <%= camp %>; --lp-camp-y: <%= camp_slot[:top] %>%; --lp-scenic: url('/images/strategy-mountain-scenic.jpg')"
         aria-label="<%= mountain[:label] %>">
   <div class="lp-strategy-mountain__photo" aria-hidden="true"></div>
@@ -26,27 +28,26 @@
 
   <div class="lp-strategy-mountain__camera" data-strategy-camera-target="stage">
     <svg class="lp-strategy-mountain__wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <% if @goal && selected_plan %>
-        <% plan_slot = strategy_trail_slot(:selected_plan) %>
-        <% project_slot = strategy_trail_slot(:selected_project) %>
-        <% battle_slot = strategy_trail_slot(:selected_battle) %>
-        <% spine_battle = @today_battle || (selected_project && battles_by_project[selected_project.id]&.find { |b| !b.completed? }) || (selected_project && battles_by_project[selected_project.id]&.first) %>
-        <% trail_points = [ goal_slot, plan_slot ] %>
+      <% if @goal %>
+        <% trail_points = [ goal_slot ] %>
+        <% trail_points << plan_slot if selected_plan || plans.any? %>
         <% trail_points << project_slot if selected_project %>
-        <% trail_points << battle_slot if spine_battle %>
         <% trail_points << camp_slot %>
         <% trail_points.each_cons(2).with_index do |(from, to), i| %>
           <% cleared = strategy_segment_cleared?(to, camp_slot) %>
-          <% segment = %w[is-goal is-plan is-project is-battle][i] || "is-battle" %>
+          <% segment = %w[is-goal is-plan is-project][i] || "is-plan" %>
           <path class="lp-strategy-wire is-trail-spine <%= segment %> <%= cleared ? 'is-cleared' : 'is-fogged' %>"
+                data-strategy-notebook-target="wire"
+                data-wire-segment="<%= segment %>"
                 d="<%= strategy_trail_wire(from, to) %>"
                 fill="none"/>
         <% end %>
+        <circle class="lp-strategy-path-spark" data-strategy-notebook-target="spark" r="1.2" cx="50" cy="14" hidden></circle>
       <% end %>
     </svg>
 
     <div class="lp-strategy-mountain__map">
-      <% completed_flags.each do |flag| %>
+      <% completed_flags.select { |f| f[:kind].in?(%w[goal plan]) }.each do |flag| %>
         <% slot = strategy_flag_slot(flag[:kind]) %>
         <div class="lp-strategy-mountain__flag is-<%= flag[:kind] %> is-monument"
              style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%"
@@ -57,12 +58,12 @@
       <% end %>
 
       <% if @goal %>
-        <div class="lp-strategy-mountain__slot is-goal"
+        <div class="lp-strategy-mountain__slot is-goal <%= 'is-focus' if selected_plan.blank? && selected_project.blank? %>"
              data-camera-layer="1"
              style="--lp-x: <%= goal_slot[:left] %>%; --lp-y: <%= goal_slot[:top] %>%">
           <%= render "life_journeys/strategy_marker",
                 node: @goal,
-                lit: @focus&.id == @goal.id,
+                lit: selected_plan.blank?,
                 today: false,
                 on_spine: true,
                 whisper: nil %>
@@ -75,85 +76,71 @@
         </div>
       <% end %>
 
-      <% plans.each_with_index do |plan, i| %>
-        <% on_spine = selected_plan && plan.id == selected_plan.id %>
-        <% slot = on_spine ? strategy_trail_slot(:selected_plan) : strategy_trail_slot(:pill, i) %>
-        <div class="lp-strategy-mountain__slot is-plan <%= 'is-focus' if on_spine %> <%= 'is-pill' unless on_spine %>"
+      <% if selected_plan %>
+        <div class="lp-strategy-mountain__slot is-plan is-focus"
+             data-camera-layer="1"
+             data-camera-plan-id="<%= selected_plan.id %>"
+             style="--lp-x: <%= plan_slot[:left] %>%; --lp-y: <%= plan_slot[:top] %>%">
+          <%= render "life_journeys/strategy_marker",
+                node: selected_plan,
+                lit: true,
+                today: false,
+                on_spine: true,
+                side: false,
+                whisper: nil %>
+        </div>
+      <% end %>
+
+      <% visible_other_plans.each_with_index do |plan, i| %>
+        <% slot = strategy_trail_slot(:pill, i) %>
+        <div class="lp-strategy-mountain__slot is-plan is-pill"
              data-camera-layer="1"
              data-camera-plan-id="<%= plan.id %>"
              style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
           <%= render "life_journeys/strategy_marker",
                 node: plan,
-                lit: on_spine,
+                lit: false,
                 today: false,
-                on_spine: on_spine,
-                side: !on_spine,
+                on_spine: false,
+                side: true,
+                quiet: true,
                 whisper: nil %>
+        </div>
+      <% end %>
+
+      <% if hidden_plan_count.positive? && @goal %>
+        <% slot = strategy_trail_slot(:plan_overflow) %>
+        <div class="lp-strategy-mountain__slot is-overflow is-plan-overflow"
+             data-camera-layer="1"
+             style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
+          <%= render "life_journeys/strategy_overflow",
+                count: hidden_plan_count,
+                kind: "plan",
+                label: t("strategy.zones.more_count", count: hidden_plan_count),
+                sheet_id: "strategy-sheet-#{@goal.id}",
+                menu_id: "strategy-menu-#{@goal.id}" %>
         </div>
       <% end %>
 
       <% if @goal && plans.empty? %>
         <p class="lp-strategy-mountain__whisper is-map"
            data-camera-layer="1"
-           style="--lp-x: 50%; --lp-y: 28%"><%= t("strategy.zones.add_plan_hint") %></p>
+           style="--lp-x: 50%; --lp-y: 32%"><%= t("strategy.zones.add_plan_hint") %></p>
       <% end %>
 
-      <% plans.each do |plan| %>
-        <% plan_projects = projects_by_plan[plan.id] || [] %>
-        <% plan_projects.each_with_index do |project, i| %>
-          <% on_spine = selected_project && project.id == selected_project.id && selected_plan&.id == plan.id %>
-          <% slot = on_spine ? strategy_trail_slot(:selected_project) : strategy_trail_slot(:project, i) %>
-          <div class="lp-strategy-mountain__slot is-project <%= 'is-focus' if on_spine %> <%= 'is-side' unless on_spine %>"
-               data-camera-layer="2"
-               data-camera-plan-id="<%= plan.id %>"
-               data-camera-project-id="<%= project.id %>"
-               style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
-            <%= render "life_journeys/strategy_marker",
-                  node: project,
-                  lit: on_spine,
-                  today: false,
-                  on_spine: on_spine,
-                  side: !on_spine,
-                  whisper: nil %>
-          </div>
-        <% end %>
-
-        <% if plan_projects.empty? %>
-          <p class="lp-strategy-mountain__whisper is-map"
-             data-camera-layer="2"
-             data-camera-plan-id="<%= plan.id %>"
-             style="--lp-x: 50%; --lp-y: 48%"><%= t("strategy.zones.add_project_hint") %></p>
-        <% end %>
-      <% end %>
-
-      <% all_projects.each do |project| %>
-        <% project_battles = battles_by_project[project.id] || [] %>
-        <% project_battles.each_with_index do |battle, i| %>
-          <% on_spine = selected_project&.id == project.id && (@today_battle&.id == battle.id || i.zero?) %>
-          <% slot = on_spine ? strategy_trail_slot(:selected_battle) : strategy_trail_slot(:battle, i) %>
-          <div class="lp-strategy-mountain__slot is-battle <%= 'is-focus' if on_spine %> <%= 'is-side' unless on_spine %>"
-               data-camera-layer="3"
-               data-camera-plan-id="<%= project.parent_id %>"
-               data-camera-project-id="<%= project.id %>"
-               style="--lp-x: <%= slot[:left] %>%; --lp-y: <%= slot[:top] %>%">
-            <%= render "life_journeys/strategy_marker",
-                  node: battle,
-                  lit: on_spine,
-                  today: battle.id == today_id,
-                  on_spine: on_spine,
-                  side: !on_spine,
-                  whisper: nil %>
-          </div>
-        <% end %>
-
-        <% if project_battles.empty? %>
-          <p class="lp-strategy-mountain__whisper is-map"
-             data-camera-layer="3"
-             data-camera-plan-id="<%= project.parent_id %>"
-             data-camera-project-id="<%= project.id %>"
-             style="--lp-x: 50%; --lp-y: 70%"><%= t("strategy.zones.add_battle_hint") %></p>
-        <% end %>
-      <% end %>
+      <%# World reacts: one glowing tent for the notebook-selected Project — never battles %>
+      <div class="lp-strategy-mountain__slot is-project is-react <%= 'is-focus is-lit' if selected_project %>"
+           data-strategy-notebook-target="reactTent"
+           data-camera-layer="1"
+           <%= "hidden" unless selected_project %>
+           style="--lp-x: <%= project_slot[:left] %>%; --lp-y: <%= project_slot[:top] %>%">
+        <span class="lp-camp-react-tent <%= 'is-glow' if selected_project %>"
+              data-strategy-notebook-target="reactTentLabel"
+              title="<%= selected_project&.title %>">
+          <span class="lp-camp-react-tent__icon" aria-hidden="true"></span>
+          <span class="lp-camp-react-tent__title"><%= selected_project&.title&.truncate(18) %></span>
+        </span>
+      </div>
 
       <div class="lp-strategy-mountain__camp is-you"
            data-camera-layer="1"
@@ -173,12 +160,5 @@
 
   <div class="lp-strategy__bar lp-strategy-mountain__bar" aria-hidden="true" data-strategy-celebrate-target="progressBar">
     <span style="width: <%= mountain[:progress] %>%"></span>
-  </div>
-
-  <div class="lp-strategy-radial" data-strategy-mountain-target="radial" hidden>
-    <button type="button" class="lp-strategy-radial__btn is-edit" data-action="strategy-mountain#radialEdit" aria-label="<%= t('strategy.sheet.edit') %>">✎</button>
-    <button type="button" class="lp-strategy-radial__btn is-help" data-action="strategy-mountain#radialHelp" aria-label="<%= t('strategy.help.cta') %>">?</button>
-    <button type="button" class="lp-strategy-radial__btn is-add" data-action="strategy-mountain#radialAdd" aria-label="<%= t('strategy.sheet.add_child') %>">+</button>
-    <button type="button" class="lp-strategy-radial__btn is-delete" data-action="strategy-mountain#radialDelete" aria-label="<%= t('strategy.remove') %>">⌫</button>
   </div>
 </figure>

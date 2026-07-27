@@ -1,14 +1,28 @@
-<%# Overflow chip for capped siblings. locals: count:, href:, kind:, label: %>
+<%# Overflow chip for capped siblings. locals: count:, kind:, label:, href:, sheet_id:, menu_id: %>
 <% count = local_assigns.fetch(:count).to_i %>
-<% href = local_assigns.fetch(:href) %>
 <% kind = local_assigns.fetch(:kind) %>
 <% label = local_assigns.fetch(:label) %>
+<% href = local_assigns[:href] %>
+<% sheet_id = local_assigns[:sheet_id] %>
+<% menu_id = local_assigns[:menu_id] %>
 
 <% if count.positive? %>
-  <%= link_to href,
-        class: "lp-strategy-overflow is-#{kind}",
-        title: label,
-        aria: { label: label } do %>
-    <span class="lp-strategy-overflow__label"><%= t("strategy.zones.more_count", count: count) %></span>
+  <% if sheet_id.present? || menu_id.present? %>
+    <button type="button"
+            class="lp-strategy-overflow is-<%= kind %>"
+            title="<%= label %>"
+            aria-label="<%= label %>"
+            data-action="click->strategy-mountain#openOverflow"
+            data-sheet-id="<%= sheet_id %>"
+            data-menu-id="<%= menu_id %>">
+      <span class="lp-strategy-overflow__label"><%= t("strategy.zones.more_count", count: count) %></span>
+    </button>
+  <% else %>
+    <%= link_to href,
+          class: "lp-strategy-overflow is-#{kind}",
+          title: label,
+          aria: { label: label } do %>
+      <span class="lp-strategy-overflow__label"><%= t("strategy.zones.more_count", count: count) %></span>
+    <% end %>
   <% end %>
 <% end %>
