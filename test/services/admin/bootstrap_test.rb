@@ -55,6 +55,22 @@ class AdminBootstrapTest < ActiveSupport::TestCase
     assert result[:ok], result.inspect
     assert user.reload.admin?
   end
+end
+
+class AdminBootstrapLoginTest < ActionDispatch::IntegrationTest
+  setup do
+    @email = "owner-login@example.com"
+    User.where(email_address: @email).delete_all
+    @prev_email = ENV["ADMIN_EMAIL"]
+  end
+
+  teardown do
+    if @prev_email.nil?
+      ENV.delete("ADMIN_EMAIL")
+    else
+      ENV["ADMIN_EMAIL"] = @prev_email
+    end
+  end
 
   test "login promotes configured admin email" do
     user = User.create!(
