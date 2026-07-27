@@ -1,4 +1,4 @@
-<%# Compact floating white node card on the mountain. locals: node:, lit:, today:, whisper: %>
+<%# Soft tinted floating node card on the mountain. locals: node:, lit:, today:, whisper: %>
 <% node = local_assigns.fetch(:node) %>
 <% lit = local_assigns.fetch(:lit, false) %>
 <% today = local_assigns.fetch(:today, false) %>
@@ -18,6 +18,7 @@
     else
       life_journey_path(@journey, focus_id: node.id, sheet: 1)
     end
+  ap = node.day? ? GameRules::BATTLE_TODO_LP : nil
 %>
 
 <%= link_to href,
@@ -30,12 +31,14 @@
         can_add: strategy_child_horizon(node).present?,
         sheet_id: "strategy-sheet-#{node.id}"
       } do %>
-  <span class="lp-strategy-marker__rail" aria-hidden="true"></span>
+  <span class="lp-strategy-marker__icon" aria-hidden="true"></span>
   <span class="lp-strategy-marker__body">
     <span class="lp-strategy-marker__kind"><%= kind_label %></span>
     <span class="lp-strategy-marker__title"><%= node.title.truncate(26) %></span>
     <% if node.progress_percent.positive? && !node.day? %>
       <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
+    <% elsif ap.present? && !node.completed? %>
+      <span class="lp-strategy-marker__ap">+<%= ap %> <%= t("dash.action_points_short") %></span>
     <% elsif whisper.present? %>
       <span class="lp-strategy-marker__whisper"><%= whisper %></span>
     <% elsif node.day? && node.completed? %>

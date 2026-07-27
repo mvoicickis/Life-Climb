@@ -95,8 +95,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-strategy-marker.is-card.is-battle.is-today", text: /Learn 20 words/i
-    assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta", text: /Fight this battle/i
-    assert_select ".lp-strategy-fight__meta", text: /Current battle/i
+    assert_select ".lp-strategy-fight.is-sticky .lp-strategy-fight__cta.is-primary", text: /Fight this battle/i
+    assert_select ".lp-strategy-fight__chip-now", text: /Learn 20 words/i
+    assert_select ".lp-strategy-fight__chip-now", text: /\+30 AP/i
     assert_select ".lp-strategy-sheet.is-project"
     assert_select ".lp-strategy__board", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
@@ -198,9 +199,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-strategy-marker.is-card.is-project.is-lit", text: /Project One/i
     assert_select ".lp-strategy-marker.is-card.is-project", text: /Project Two/i
     assert_select ".lp-strategy-marker.is-card.is-battle.is-today", text: /Battle One/i
-    assert_match(/1 battle/i, response.body)
+    assert_select ".lp-strategy-mountain__wires"
+    assert_select ".lp-strategy-collapse.is-plan", text: "1"
     assert_select ".lp-strategy-marker.is-card", text: /Lone Project/i, count: 0
-    assert_select ".lp-strategy-fight.is-sticky"
+    assert_select ".lp-strategy-fight.is-sticky.is-mockup"
+    assert_select ".lp-strategy-fight__chip-now", text: /Battle One/i
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_select "#strategy-sheet-#{battle.id}"
     assert_select ".lp-strategy-sheet__btn.is-delete", minimum: 1

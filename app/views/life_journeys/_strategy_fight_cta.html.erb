@@ -1,20 +1,23 @@
-<%# Sticky slim Fight footer — no hierarchy Focus strip. %>
+<%# Sticky Fight footer — green CTA + current battle chip. %>
 <% next_up = @next_up %>
-<section class="lp-strategy-fight is-sticky" aria-label="<%= t('strategy.fight.label') %>">
+<section class="lp-strategy-fight is-sticky is-mockup" aria-label="<%= t('strategy.fight.label') %>">
   <% if @today_battle.present? && @mountain_ready %>
-    <div class="lp-strategy-fight__now">
-      <p class="lp-strategy-fight__battle">
-        <span class="lp-strategy-fight__sword" aria-hidden="true"></span>
-        <span class="lp-strategy-fight__battle-title"><%= @today_battle.title %></span>
-      </p>
-      <p class="lp-strategy-fight__meta"><%= t("strategy.fight.current_battle") %></p>
-    </div>
-    <%= button_to t("strategy.fight.cta"),
-          life_journey_path(@journey),
+    <%= button_to life_journey_path(@journey),
           method: :patch,
           params: { sync_today: 1 },
-          class: "lp-strategy-fight__cta",
-          form: { data: { turbo: false } } %>
+          class: "lp-strategy-fight__cta is-primary",
+          form: { data: { turbo: false } } do %>
+      <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
+      <span><%= t("strategy.fight.cta") %></span>
+    <% end %>
+    <div class="lp-strategy-fight__chip-now" aria-label="<%= t('strategy.fight.current_battle') %>">
+      <span class="lp-strategy-fight__chip-title"><%= @today_battle.title %></span>
+      <span class="lp-strategy-fight__chip-sep" aria-hidden="true">|</span>
+      <span class="lp-strategy-fight__chip-meta">
+        <%= t("strategy.horizons.day") %>
+        · +<%= GameRules::BATTLE_TODO_LP %> <%= t("dash.action_points_short") %>
+      </span>
+    </div>
   <% elsif next_up.present? && next_up[:form].present? %>
     <% area = @journey.life_area %>
     <% form = next_up[:form] %>
@@ -47,16 +50,18 @@
                   data-action="strategy-next#fillExample"
                   data-title="<%= example %>"><%= example %></button>
         <% end %>
-        <%= submit_tag next_up[:cta], class: "lp-strategy-fight__cta" %>
+        <%= submit_tag next_up[:cta], class: "lp-strategy-fight__cta is-primary" %>
       <% end %>
     </div>
   <% elsif next_up.present? && next_up[:key] == :go_today %>
-    <%= button_to t("strategy.fight.cta"),
-          life_journey_path(@journey),
+    <%= button_to life_journey_path(@journey),
           method: :patch,
           params: { sync_today: 1 },
-          class: "lp-strategy-fight__cta",
-          form: { data: { turbo: false } } %>
+          class: "lp-strategy-fight__cta is-primary",
+          form: { data: { turbo: false } } do %>
+      <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
+      <span><%= t("strategy.fight.cta") %></span>
+    <% end %>
   <% elsif @sheet_node.present? && strategy_child_horizon(@sheet_node).present? %>
     <p class="lp-strategy-fight__hint"><%= next_up&.dig(:hint) || t("strategy.fight.keep_building") %></p>
     <button type="button"
