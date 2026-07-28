@@ -1,4 +1,4 @@
-<%# Mockup HUD — avatar/level, goal, XP + streak. locals: mountain, progress, alive, streak %>
+<%# Mockup HUD — avatar/level, LIFE GOAL, XP + streak. locals: mountain, progress, alive, streak %>
 <% mountain ||= {} %>
 <% progress = local_assigns.fetch(:progress, mountain[:progress].to_i) %>
 <% alive = local_assigns[:alive] || current_user.alive_level %>
@@ -17,6 +17,10 @@
 
   <div class="lp-rpg-summit">
     <% if @goal %>
+      <p class="lp-rpg-summit__kicker">
+        <span class="lp-rpg-summit__crown" aria-hidden="true">♛</span>
+        <%= t("strategy.rpg.life_goal") %>
+      </p>
       <h1 class="lp-rpg-summit__title"><%= @goal.title %></h1>
       <% if @journey.ideal_scene.present? %>
         <p class="lp-rpg-summit__tagline"><%= @journey.ideal_scene.truncate(72) %></p>
@@ -27,6 +31,10 @@
         <%= progress %>% · <%= mountain[:label].presence || t("strategy.rpg.on_my_way") %>
       </p>
     <% else %>
+      <p class="lp-rpg-summit__kicker">
+        <span class="lp-rpg-summit__crown" aria-hidden="true">♛</span>
+        <%= t("strategy.rpg.life_goal") %>
+      </p>
       <h1 class="lp-rpg-summit__title"><%= t("strategy.zones.empty_goal") %></h1>
       <p class="lp-rpg-summit__tagline"><%= t("strategy.promise") %></p>
     <% end %>

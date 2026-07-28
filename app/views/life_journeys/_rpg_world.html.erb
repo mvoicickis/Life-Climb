@@ -1,4 +1,4 @@
-<%# Scenic trail with fixed camp checkpoints. locals: mountain, progress, stage, plans, focus_plan, alive %>
+<%# Scenic trail with tent camps. locals: mountain, progress, stage, plans, focus_plan, alive %>
 <% mountain ||= { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% progress = local_assigns.fetch(:progress, mountain[:progress].to_i) %>
 <% camps = [
@@ -16,20 +16,20 @@
          aria-label="<%= t('strategy.rpg.world_label') %>">
   <div class="lp-rpg-world__birds" aria-hidden="true"></div>
 
-  <div class="lp-rpg-trail" aria-hidden="true">
-    <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <path d="M50 88 C 42 72, 58 58, 48 44 C 40 32, 55 24, 50 12"
+  <div class="lp-rpg-trail">
+    <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
             fill="none"
             stroke="currentColor"
-            stroke-width="1.2"
-            stroke-dasharray="3 2"
+            stroke-width="1.4"
+            stroke-dasharray="2.5 2.2"
             vector-effect="non-scaling-stroke" />
       <path class="lp-rpg-trail__lit"
             data-strategy-rpg-target="trailLit"
-            d="M50 88 C 42 72, 58 58, 48 44 C 40 32, 55 24, 50 12"
+            d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
             fill="none"
             stroke="currentColor"
-            stroke-width="2.4"
+            stroke-width="2.6"
             stroke-linecap="round"
             pathLength="100"
             stroke-dasharray="<%= progress %> 100"
@@ -38,19 +38,33 @@
 
     <% camps.each do |camp| %>
       <% reached = progress >= camp[:pct] %>
-      <% current = progress >= camp[:pct] && (camp[:pct] == 100 ? progress >= 100 : progress < camp[:pct] + 25) %>
-      <% current = true if camp[:pct] == 0 && progress < 25 %>
-      <% current = true if camp[:pct] == 100 && progress >= 100 %>
-      <div class="lp-rpg-node is-camp is-<%= camp[:key] %> <%= 'is-done' if reached %> <%= 'is-here' if current %>"
+      <% current =
+           if camp[:key] == "summit"
+             progress >= 100
+           elsif camp[:pct] == 0
+             progress < 25
+           else
+             progress >= camp[:pct] && progress < camp[:pct] + 25
+           end %>
+      <div class="lp-rpg-node is-camp is-<%= camp[:key] %> <%= 'is-done' if reached %> <%= 'is-here' if current %> <%= 'is-locked' if camp[:key] == 'summit' && progress < 100 %>"
            style="--lp-y: <%= camp[:y] %>%"
            data-strategy-rpg-target="flag">
-        <span class="lp-rpg-node__dot <%= 'is-flag' if camp[:key] == 'summit' %>" aria-hidden="true"></span>
+        <span class="lp-rpg-node__marker" aria-hidden="true">
+          <% if camp[:key] == "summit" %>
+            <span class="lp-rpg-node__flag">⚑</span>
+            <% if progress < 100 %>
+              <span class="lp-rpg-node__lock">🔒</span>
+            <% end %>
+          <% else %>
+            <span class="lp-rpg-node__tent">⛺</span>
+          <% end %>
+        </span>
         <span class="lp-rpg-node__label">
           <strong><%= camp[:label] %></strong>
           <% if current && camp[:key] != "summit" %>
             <em><%= progress %>% · <%= t("strategy.rpg.current_position") %></em>
           <% elsif camp[:key] == "summit" %>
-            <em>100%</em>
+            <em><%= t("strategy.rpg.camps.summit") %> 100%</em>
           <% else %>
             <em><%= camp[:pct] %>%</em>
           <% end %>

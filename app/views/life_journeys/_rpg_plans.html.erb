@@ -1,7 +1,8 @@
-<%# Plans on this trail — sidebar. locals: plans, focus_plan %>
+<%# Plans on this trail — overlay sidebar. locals: plans, focus_plan %>
 <% plans = local_assigns.fetch(:plans, []) %>
 <% focus_plan = local_assigns[:focus_plan] %>
 <% area = @journey.life_area %>
+<% accents = %w[green purple orange pink blue] %>
 
 <aside class="lp-rpg-plans" aria-labelledby="rpg-plans-title">
   <header class="lp-rpg-plans__head">
@@ -10,13 +11,14 @@
 
   <% if @goal && plans.any? %>
     <ul class="lp-rpg-plan-list">
-      <% plans.each do |plan| %>
+      <% plans.each_with_index do |plan, idx| %>
         <% kids = plan.children.select(&:project?) %>
         <% done = kids.count(&:completed?) %>
         <% pct = plan.progress_percent.to_i %>
+        <% accent = accents[idx % accents.size] %>
         <li>
           <%= link_to life_journey_path(@journey, focus_id: plan.id),
-                class: "lp-rpg-plan #{'is-focus' if focus_plan&.id == plan.id} #{'is-done' if plan.completed?}",
+                class: "lp-rpg-plan is-#{accent} #{'is-focus' if focus_plan&.id == plan.id} #{'is-done' if plan.completed?}",
                 data: { strategy_rpg_target: "flag" } do %>
             <span class="lp-rpg-plan__icon" aria-hidden="true">
               <% icon = %w[self career money love growth].include?(area.key.to_s) ? area.key : "tent" %>
@@ -32,6 +34,7 @@
               </span>
             </span>
             <span class="lp-rpg-plan__pct"><%= pct %>%</span>
+            <span class="lp-rpg-plan__chev" aria-hidden="true">›</span>
           <% end %>
         </li>
       <% end %>
