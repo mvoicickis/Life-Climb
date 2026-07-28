@@ -1,0 +1,124 @@
+<%# Plan-scoped trail with checkpoints + adventurer. locals: trail, goal, plan, alive %>
+<% trail = local_assigns[:trail] %>
+<% goal = local_assigns[:goal] %>
+<% plan = local_assigns[:plan] %>
+<% nodes = trail&.visible_nodes || [] %>
+<% all_nodes = trail&.nodes || [] %>
+<% current = trail&.current_node %>
+<% progress = trail&.progress.to_i %>
+<% character_top = current ? current.y : 88 %>
+
+<section class="lp-rpg-world is-trail"
+         data-strategy-rpg-target="world"
+         data-strategy-celebrate-target="mountain"
+         aria-label="<%= t('strategy.rpg.world_label') %>">
+  <div class="lp-rpg-world__birds" aria-hidden="true"></div>
+
+  <% if plan && all_nodes.any? %>
+    <div class="lp-rpg-trail">
+      <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              stroke-dasharray="2.5 2.2"
+              vector-effect="non-scaling-stroke" />
+        <path class="lp-rpg-trail__lit"
+              data-strategy-rpg-target="trailLit"
+              d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.6"
+              stroke-linecap="round"
+              pathLength="100"
+              stroke-dasharray="<%= progress %> 100"
+              vector-effect="non-scaling-stroke" />
+      </svg>
+
+      <% nodes.each do |node| %>
+        <% playable = node.state != :locked %>
+        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %>"
+             style="--lp-y: <%= node.y %>%"
+             data-strategy-rpg-target="flag"
+             data-node-id="<%= node.id %>"
+             data-node-state="<%= node.state %>">
+          <% if playable %>
+            <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
+                  class: "lp-rpg-node__hit",
+                  data: { turbo: true } do %>
+              <span class="lp-rpg-node__marker" aria-hidden="true">
+                <% if node.state == :done %>
+                  <span class="lp-rpg-node__flag">⚑</span>
+                <% else %>
+                  <span class="lp-rpg-node__tent">⛺</span>
+                <% end %>
+              </span>
+              <span class="lp-rpg-node__label">
+                <strong><%= node.title %></strong>
+                <% if node.state == :current %>
+                  <em><%= t("strategy.rpg.trail.you_are_here") %></em>
+                <% end %>
+              </span>
+            <% end %>
+          <% else %>
+            <span class="lp-rpg-node__hit is-locked" aria-label="<%= t('strategy.rpg.locked') %>">
+              <span class="lp-rpg-node__marker" aria-hidden="true">
+                <span class="lp-rpg-node__lock">🔒</span>
+              </span>
+              <span class="lp-rpg-node__label">
+                <strong><%= node.title %></strong>
+                <em><%= t("strategy.rpg.locked") %></em>
+              </span>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="lp-rpg-explorer"
+           data-strategy-rpg-target="explorer"
+           style="--lp-y: <%= character_top %>%">
+        <%= image_tag current_user.character_image,
+              class: "lp-rpg-explorer__sprite",
+              alt: "",
+              aria: { hidden: true } %>
+      </div>
+    </div>
+  <% elsif plan %>
+    <div class="lp-rpg-empty-goal">
+      <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.trail.need_checkpoint") %></p>
+      <details class="lp-rpg-add">
+        <summary><%= t("strategy.rpg.add_checkpoint") %></summary>
+        <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+          <%= hidden_field_tag :life_area_id, @journey.life_area_id %>
+          <%= hidden_field_tag :life_journey_id, @journey.id %>
+          <%= hidden_field_tag :horizon, "project" %>
+          <%= hidden_field_tag :parent_id, plan.id %>
+          <%= text_field_tag :title, nil,
+                required: true,
+                maxlength: 120,
+                class: "lp-rpg-input",
+                placeholder: t("strategy.project_placeholder"),
+                autocomplete: "off" %>
+          <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
+        <% end %>
+      </details>
+    </div>
+  <% elsif goal.blank? %>
+    <div class="lp-rpg-empty-goal">
+      <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-empty-goal__form", data: { turbo: false } do %>
+        <%= hidden_field_tag :life_area_id, @journey.life_area_id %>
+        <%= hidden_field_tag :life_journey_id, @journey.id %>
+        <%= hidden_field_tag :horizon, "goal" %>
+        <label class="lp-rpg-empty-goal__label" for="rpg-goal-title"><%= t("strategy.questions.goal") %></label>
+        <%= text_field_tag :title, nil,
+              id: "rpg-goal-title",
+              required: true,
+              maxlength: 120,
+              class: "lp-rpg-input",
+              placeholder: t("strategy.goal_placeholder"),
+              autocomplete: "off" %>
+        <%= submit_tag t("strategy.next_up.create_goal_cta"), class: "lp-rpg-btn" %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

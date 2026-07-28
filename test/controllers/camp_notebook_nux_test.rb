@@ -45,9 +45,9 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-plan.is-focus", text: /Increase Income/
-    assert_select ".lp-rpg-plan.is-focus", text: /Increase Income/
-    assert_match(/Add project/i, response.body)
+    assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
+    assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
+    assert_match(/Add (project|checkpoint)/i, response.body)
   end
 
   test "after first plan the trail shows the checkpoint" do
@@ -58,7 +58,7 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg-plan", text: /Find Job/i
+    assert_select ".lp-rpg-path", text: /Find Job/i
     assert_select ".lp-rpg-world"
   end
 

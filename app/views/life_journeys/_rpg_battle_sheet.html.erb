@@ -1,0 +1,116 @@
+<%# Collapsible battle sheet — next meaningful actions. locals: current_project, plan, goal, trail %>
+<% current_project = local_assigns[:current_project] %>
+<% plan = local_assigns[:plan] %>
+<% goal = local_assigns[:goal] %>
+<% battle_xp = GameRules::BATTLE_TODO_LP %>
+<% battles = current_project ? current_project.children.select(&:day?).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } : [] %>
+<% now = battles.select { |b| !b.completed? && b.scheduled_on == Date.current } %>
+<% later = battles.select { |b| !b.completed? && b.scheduled_on != Date.current } %>
+<% done = battles.select(&:completed?) %>
+<% preview = (now.presence || later).first(3) %>
+<% area = @journey.life_area %>
+
+<% if current_project %>
+  <section class="lp-rpg-sheet"
+           data-controller="strategy-sheet"
+           data-strategy-sheet-expanded-value="false"
+           aria-label="<%= t('strategy.rpg.sheet.label') %>">
+    <button type="button"
+            class="lp-rpg-sheet__handle"
+            data-action="strategy-sheet#toggle"
+            aria-expanded="false"
+            data-strategy-sheet-target="toggle">
+      <span class="lp-rpg-sheet__grip" aria-hidden="true"></span>
+      <span class="lp-rpg-sheet__head">
+        <span class="lp-rpg-sheet__kicker"><%= t("strategy.rpg.sheet.next_steps") %></span>
+        <strong class="lp-rpg-sheet__title"><%= current_project.title %></strong>
+      </span>
+      <span class="lp-rpg-sheet__cue"><%= current_project.progress_percent.to_i %>%</span>
+    </button>
+
+    <div class="lp-rpg-sheet__preview">
+      <% if preview.any? %>
+        <ul class="lp-rpg-battles is-compact">
+          <% preview.each do |battle| %>
+            <li class="lp-rpg-battle" data-strategy-rpg-target="battleRow">
+              <%= button_to battle_win_path(battle),
+                    method: :post,
+                    class: "lp-rpg-battle__win",
+                    form: { data: { turbo: false } } do %>
+                <span class="lp-rpg-battle__box" aria-hidden="true"></span>
+                <span class="lp-rpg-battle__body">
+                  <span class="lp-rpg-battle__title"><%= battle.title %></span>
+                </span>
+              <% end %>
+              <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.sheet.all_clear") %></p>
+      <% end %>
+    </div>
+
+    <div class="lp-rpg-sheet__body" data-strategy-sheet-target="body" hidden>
+      <% [
+           [ :now, t("strategy.rpg.sheet.now"), now ],
+           [ :later, t("strategy.rpg.sheet.later"), later ],
+           [ :done, t("strategy.rpg.sheet.done"), done ]
+         ].each do |key, label, group| %>
+        <% next if group.empty? %>
+        <div class="lp-rpg-sheet__group is-<%= key %>">
+          <p class="lp-rpg-sheet__group-title"><%= label %></p>
+          <ul class="lp-rpg-battles">
+            <% group.each do |battle| %>
+              <li class="lp-rpg-battle <%= 'is-done' if battle.completed? %>"
+                  data-strategy-rpg-target="battleRow">
+                <% if battle.completed? %>
+                  <span class="lp-rpg-battle__check" aria-hidden="true">✓</span>
+                  <span class="lp-rpg-battle__body">
+                    <span class="lp-rpg-battle__title"><%= battle.title %></span>
+                  </span>
+                <% else %>
+                  <%= button_to battle_win_path(battle),
+                        method: :post,
+                        class: "lp-rpg-battle__win",
+                        form: { data: { turbo: false } } do %>
+                    <span class="lp-rpg-battle__box" aria-hidden="true"></span>
+                    <span class="lp-rpg-battle__body">
+                      <span class="lp-rpg-battle__title"><%= battle.title %></span>
+                    </span>
+                  <% end %>
+                <% end %>
+                <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <details class="lp-rpg-add">
+        <summary>
+          <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+          <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_step") %></span>
+        </summary>
+        <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+          <%= hidden_field_tag :life_area_id, area.id %>
+          <%= hidden_field_tag :life_journey_id, @journey.id %>
+          <%= hidden_field_tag :horizon, "day" %>
+          <%= hidden_field_tag :parent_id, current_project.id %>
+          <%= hidden_field_tag :scheduled_on, Date.current %>
+          <%= text_field_tag :title, nil,
+                required: true,
+                maxlength: 120,
+                class: "lp-rpg-input",
+                placeholder: t("strategy.battle_placeholder"),
+                autocomplete: "off" %>
+          <%= submit_tag t("strategy.sheet.add_battle"), class: "lp-rpg-btn is-small" %>
+        <% end %>
+      </details>
+    </div>
+  </section>
+<% elsif plan %>
+  <section class="lp-rpg-sheet is-quiet">
+    <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.trail.need_checkpoint") %></p>
+  </section>
+<% end %>

@@ -8,7 +8,7 @@ class BattleWinsController < ApplicationController
     amount = GameRules::BATTLE_TODO_LP
 
     if battle.completed?
-      redirect_to life_journey_path(journey, focus_id: battle.parent_id), status: :see_other and return
+      redirect_to mountain_return_path(journey, battle), status: :see_other and return
     end
 
     ActiveRecord::Base.transaction do
@@ -47,10 +47,24 @@ class BattleWinsController < ApplicationController
       earned_freeze: streak.earned_freeze
     )
 
-    redirect_to life_journey_path(journey, focus_id: battle.parent_id),
+    redirect_to mountain_return_path(journey, battle),
                 notice: I18n.t("battle.completed_notice", lp: amount),
                 status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
+  end
+
+  private
+
+  def mountain_return_path(journey, battle)
+    project = battle.parent
+    plan = project&.parent
+    goal = plan&.parent || project&.root_goal
+    life_journey_path(
+      journey,
+      goal_id: goal&.id,
+      plan_id: plan&.id,
+      focus_id: project&.id
+    )
   end
 end

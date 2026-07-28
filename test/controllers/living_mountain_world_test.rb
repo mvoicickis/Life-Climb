@@ -41,7 +41,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-plan", text: /Main trail/i
+    assert_select ".lp-rpg-path", text: /Main trail/i
     assert_select "[data-controller*=strategy-rpg]"
   end
 
@@ -61,11 +61,13 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg-plan", minimum: 1
-    assert_select ".lp-rpg-glass"
+    assert_select ".lp-rpg-path", minimum: 1
+    assert_select ".lp-rpg-trail"
+    assert_select ".lp-rpg-node", text: /First climb/
+    assert_select ".lp-rpg-sheet"
   end
 
-  test "focusing a plan shows missions and battle counts in glass" do
+  test "focusing a plan shows trail checkpoints and battle sheet" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -83,12 +85,13 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-mission", text: /Resume/
-    assert_select ".lp-rpg-mission__meta", text: /2 battles/i
-    assert_select ".lp-rpg-panel.is-projects .lp-rpg-add", text: /Add project/i
+    assert_select ".lp-rpg-node.is-current", text: /Resume/
+    assert_select ".lp-rpg-sheet__title", text: /Resume/
+    assert_select ".lp-rpg-battle", minimum: 1
+    assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
-  test "focusing a project shows battles in glass" do
+  test "focusing a project shows battles in the sheet" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -104,9 +107,75 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-mission.is-focus", text: /Resume/
+    assert_select ".lp-rpg-node.is-current", text: /Resume/
+    assert_select ".lp-rpg-sheet__title", text: /Resume/
     assert_select ".lp-rpg-battle", text: /Update CV/
-    assert_select ".lp-rpg-panel.is-battles .lp-rpg-add", text: /Add battle/i
+    assert_select ".lp-rpg-sheet .lp-rpg-add", text: /Step|battle/i
+  end
+
+  test "locked trail nodes cannot become the active focus" do
+    plan = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Find Job", position: 0
+    )
+    first = plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Resume", position: 0
+    )
+    locked = plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Interviews", position: 1
+    )
+    first.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
+    assert_response :success
+    assert_select ".lp-rpg-node.is-current", text: /Resume/
+    assert_select ".lp-rpg-sheet__title", text: /Resume/
+    assert_select ".lp-rpg-node.is-locked", text: /Interviews/
+  end
+
+  test "goal_id and plan_id switch the climb" do
+    other_goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Health", position: 1
+    )
+    plan_a = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Career path", position: 0
+    )
+    plan_b = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Side path", position: 1
+    )
+    plan_a.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Resume camp", position: 0
+    )
+    plan_b.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Launch camp", position: 0
+    )
+    other_goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Run path", position: 0
+    ).children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "5k camp", position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan_b.id)
+    assert_response :success
+    assert_select ".lp-rpg-path.is-focus", text: /Side path/
+    assert_select ".lp-rpg-node", text: /Launch camp/
+    assert_select ".lp-rpg-goal.is-focus", text: /#{@goal.title}/
+
+    get life_journey_path(@journey, goal_id: other_goal.id)
+    assert_response :success
+    assert_select ".lp-rpg-goal.is-focus", text: /Health/
+    assert_select ".lp-rpg-path", text: /Run path/
   end
 
   test "creating a plan via turbo stream still succeeds" do

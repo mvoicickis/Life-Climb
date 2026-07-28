@@ -108,7 +108,8 @@ class LifeJourneysController < ApplicationController
     end
 
     @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:parent, children: { children: :children })
-    @goal = @goals.for_kind("goal").roots.first
+    @root_goals = @goals.for_kind("goal").roots.to_a
+    @goal = select_strategy_goal
     @year_due = Strategy::YearCycle.target_dec29
 
     @focus =
@@ -132,12 +133,22 @@ class LifeJourneysController < ApplicationController
     @crumbs = strategy_crumbs(@focus)
     @guided_step = guided_step
     @path_stages = strategy_path_stages
-    @mountain = Strategy::Mountain.for(goal: @goal)
+    @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
+    @plan = select_strategy_plan
+    @trail = Strategy::Trail.for(plan: @plan)
+    @current_project =
+      if @branch_project && @plan && @branch_project.parent_id == @plan.id && trail_node_playable?(@branch_project)
+        @branch_project
+      else
+        @trail.current_node&.record
+      end
+    @branch_plan = @plan if @plan
+    @branch_project = @current_project if @current_project
+    @mountain = strategy_mountain_payload
     Climb::Streak.reconcile!(user: current_user)
     @climb_streak = Climb::Streak.status(user: current_user)
     @mountain_ready = strategy_mountain_ready?
     @next_up = strategy_next_up
-    @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
     @sheet_node =
       if params[:node_id].present?
         @goals.find { |g| g.id == params[:node_id].to_i } || @focus
@@ -367,6 +378,64 @@ class LifeJourneysController < ApplicationController
     return [] if root.blank?
 
     Strategy::Progress.battles_under(root).select { |b| b.scheduled_on == Date.current }
+  end
+
+  def select_strategy_goal
+    if params[:goal_id].present?
+      found = @root_goals.find { |g| g.id == params[:goal_id].to_i }
+      return found if found
+    end
+
+    if params[:focus_id].present?
+      focus = @goals.find { |g| g.id == params[:focus_id].to_i }
+      root = focus&.root_goal
+      return root if root&.goal?
+    end
+
+    @root_goals.first
+  end
+
+  def select_strategy_plan
+    plans = @goal ? @goal.children.select(&:plan?).sort_by { |p| [ p.position.to_i, p.id ] } : []
+    return nil if plans.empty?
+
+    if params[:plan_id].present?
+      found = plans.find { |p| p.id == params[:plan_id].to_i }
+      return found if found
+    end
+
+    return @branch_plan if @branch_plan && plans.any? { |p| p.id == @branch_plan.id }
+
+    plans.find { |p| !p.completed? } || plans.first
+  end
+
+  def trail_node_playable?(project)
+    return false if @trail.blank? || project.blank?
+
+    node = @trail.nodes.find { |n| n.id == project.id }
+    node && (node.state == :current || node.state == :done)
+  end
+
+  def strategy_mountain_payload
+    if @plan
+      {
+        stage: trail_stage_for(@trail),
+        progress: @trail.progress,
+        flags: @trail.nodes.count { |n| n.state == :done },
+        label: @trail.label
+      }
+    else
+      Strategy::Mountain.for(goal: @goal)
+    end
+  end
+
+  def trail_stage_for(trail)
+    return :empty if trail.blank? || trail.nodes.empty?
+    return :summit if trail.progress >= 100
+    return :flags if trail.nodes.any? { |n| n.state == :done }
+    return :camp if trail.nodes.any?
+
+    :trail
   end
 
   def strategy_crumbs(node)
