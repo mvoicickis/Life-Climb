@@ -170,7 +170,7 @@ class StrategyGoalsController < ApplicationController
                current_user.primary_focused_journey
     return if @journey.blank?
 
-    @goals = current_user.strategy_goals.for_area(area_id).ordered.includes(:children, :parent)
+    @goals = current_user.strategy_goals.for_area(area_id).ordered.includes(:parent, children: { children: :children })
     @goal = @goals.for_kind("goal").roots.first
     @focus = focus_id.present? ? @goals.find { |g| g.id == focus_id.to_i } : @goal
     @focus ||= @goal

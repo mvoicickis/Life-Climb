@@ -17,6 +17,15 @@ module ContactHelper
     contact_whatsapp_number.present?
   end
 
+  # Human-readable WhatsApp line for the coach page.
+  def contact_whatsapp_display
+    digits = contact_whatsapp_number
+    return nil if digits.blank?
+    return "+353 87 234 6580" if digits == DEFAULT_CONTACT_WHATSAPP
+
+    "+#{digits}"
+  end
+
   def contact_whatsapp_url(prefill: nil)
     return nil unless contact_whatsapp?
 

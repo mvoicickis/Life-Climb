@@ -1,33 +1,47 @@
 <% content_for :title, t("coach.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
-<div class="mx-auto max-w-lg studio-life">
-  <h1 class="studio-dream"><%= t("coach.title") %></h1>
-  <p class="mt-2 studio-muted"><%= t("coach.subtitle") %></p>
+<section class="lp-support" aria-labelledby="lp-coach-heading">
+  <header class="lp-support__hero">
+    <p class="lp-brand-kicker">
+      <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
+      <span><%= t("app_name") %></span>
+    </p>
+    <h1 id="lp-coach-heading" class="lp-support__title"><%= t("coach.title") %></h1>
+    <p class="lp-support__subtitle"><%= t("coach.subtitle") %></p>
+  </header>
 
-  <div class="mt-8 space-y-3">
+  <div class="lp-support__contacts">
     <% if contact_whatsapp? %>
       <a href="<%= coach_whatsapp_url(current_user) %>"
          target="_blank"
          rel="noopener noreferrer"
-         class="studio-rail-card flex items-center justify-between gap-4 no-underline">
-        <span>
-          <span class="block font-bold text-lg text-[var(--studio-ink)]">WhatsApp</span>
-          <span class="studio-muted text-sm">+353 87 234 6580</span>
+         class="lp-support__contact">
+        <span class="lp-support__contact-copy">
+          <span class="lp-support__contact-name">WhatsApp</span>
+          <span class="lp-support__contact-meta"><%= contact_whatsapp_display %></span>
         </span>
-        <span class="studio-link"><%= t("coach.open") %></span>
+        <span class="lp-support__contact-go"><%= t("coach.open") %></span>
       </a>
     <% end %>
 
-    <a href="<%= coach_mailto_url(current_user) %>"
-       class="studio-rail-card flex items-center justify-between gap-4 no-underline">
-      <span>
-        <span class="block font-bold text-lg text-[var(--studio-ink)]"><%= t("share.email") %></span>
-        <span class="studio-muted text-sm"><%= contact_email %></span>
+    <a href="<%= coach_mailto_url(current_user) %>" class="lp-support__contact">
+      <span class="lp-support__contact-copy">
+        <span class="lp-support__contact-name"><%= t("share.email") %></span>
+        <span class="lp-support__contact-meta"><%= contact_email %></span>
       </span>
-      <span class="studio-link"><%= t("coach.write") %></span>
+      <span class="lp-support__contact-go"><%= t("coach.write") %></span>
     </a>
   </div>
 
-  <p class="mt-6 studio-muted text-sm"><%= t("coach.footnote") %></p>
-  <p class="mt-8"><%= link_to t("nav.today"), dashboard_path, class: "studio-link" %></p>
-</div>
+  <p class="lp-support__footnote"><%= t("coach.footnote") %></p>
+
+  <p class="lp-support__links">
+    <%= link_to t("nav.today"), dashboard_path %>
+    <span aria-hidden="true">·</span>
+    <%= link_to t("nav.settings"), settings_path %>
+  </p>
+</section>
+
+<%= render "shared/lp_dash_nav", active: :you %>

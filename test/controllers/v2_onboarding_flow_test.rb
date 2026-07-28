@@ -79,7 +79,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     get v2_onboarding_path(step: "how")
     assert_response :success
-    assert_match(/How the game works/i, response.body)
+    assert_match(/How climbing works/i, response.body)
     assert_match(/Get healthier/i, response.body)
     assert_select "[data-controller='adventure-guide']"
     assert_select ".lp-adventure__how-badge"

@@ -7,7 +7,7 @@
        aria-label="<%= t('climb.streak.aria', count: status.days, freezes: status.freezes) %>">
     <% if status.days.positive? %>
       <span class="lp-climb-streak__days">
-        <span aria-hidden="true"><% if status.frozen_recently %>❄️<% else %><%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline is-fire" %><% end %></span>
+        <span aria-hidden="true"><% if status.frozen_recently %><%= render "shared/lp_icon", name: "camp", class_name: "lp-icon is-inline is-freeze" %><% else %><%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline is-fire" %><% end %></span>
         <%= t("climb.streak.chip", count: status.days) %>
       </span>
       <% if status.frozen_recently %>
