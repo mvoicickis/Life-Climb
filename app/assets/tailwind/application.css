@@ -13317,24 +13317,6 @@ button.lp-strategy-overflow {
   animation: lp-rpg-wave 700ms ease;
 }
 
-.lp-rpg-explorer {
-  position: absolute;
-  left: 50%;
-  top: var(--lp-y, 70%);
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  transition: top 900ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.lp-rpg-explorer__sprite {
-  width: 2.6rem;
-  height: 2.6rem;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
-}
-.lp-rpg-explorer.is-walk {
-  animation: lp-rpg-walk 900ms ease;
-}
-
 .lp-rpg-empty-goal {
   position: relative;
   z-index: 6;
@@ -13629,7 +13611,6 @@ button.lp-strategy-overflow {
 @media (prefers-reduced-motion: reduce) {
   .lp-rpg-world__mist,
   .lp-rpg-world__birds,
-  .lp-rpg-explorer.is-walk,
   .lp-rpg-node.is-wave .lp-rpg-node__dot,
   .lp-rpg-trail__lit.is-ignite,
   .lp-rpg.is-world-reward .lp-rpg-world.is-zoom {
@@ -14011,22 +13992,6 @@ button.lp-strategy-overflow {
 }
 .lp-rpg-node.is-here .lp-rpg-node__label {
   border-color: rgba(87, 211, 91, 0.45);
-}
-
-.lp-rpg-explorer {
-  position: absolute;
-  left: 50%;
-  top: var(--lp-y, 70%);
-  transform: translate(-50%, -50%);
-  z-index: 6;
-  width: 2.6rem;
-  height: 2.6rem;
-}
-.lp-rpg-explorer__sprite {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
 }
 
 .lp-rpg-plans,

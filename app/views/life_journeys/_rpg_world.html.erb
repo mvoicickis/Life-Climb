@@ -8,8 +8,6 @@
      { key: "camp4", pct: 75, y: 34, label: t("strategy.rpg.camps.camp4") },
      { key: "summit", pct: 100, y: 12, label: t("strategy.rpg.camps.summit") }
    ] %>
-<% character_top = [ 88 - (progress * 0.76), 12 ].max %>
-
 <section class="lp-rpg-world"
          data-strategy-rpg-target="world"
          data-strategy-celebrate-target="mountain"
@@ -71,15 +69,6 @@
         </span>
       </div>
     <% end %>
-
-    <div class="lp-rpg-explorer"
-         data-strategy-rpg-target="explorer"
-         style="--lp-y: <%= character_top %>%">
-      <%= image_tag current_user.character_image,
-            class: "lp-rpg-explorer__sprite",
-            alt: "",
-            aria: { hidden: true } %>
-    </div>
   </div>
 
   <% if @goal.blank? %>

@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // World-is-the-reward: battle wins change the mountain, not just numbers.
 export default class extends Controller {
-  static targets = ["world", "explorer", "trailLit", "pct", "flag", "glass", "battleRow"]
+  static targets = ["world", "trailLit", "pct", "flag", "glass", "battleRow"]
   static values = {
     progress: Number,
     celebrate: Boolean
@@ -34,14 +34,12 @@ export default class extends Controller {
 
     this.element.classList.add("is-world-reward")
     if (this.hasWorldTarget) this.worldTarget.classList.add("is-zoom")
-    if (this.hasExplorerTarget) this.explorerTarget.classList.add("is-walk")
     if (this.hasTrailLitTarget) this.trailLitTarget.classList.add("is-ignite")
     this.flagTargets.forEach((flag) => flag.classList.add("is-wave"))
 
     window.setTimeout(() => {
       this.element.classList.remove("is-world-reward")
       this.worldTarget?.classList.remove("is-zoom")
-      this.explorerTarget?.classList.remove("is-walk")
       this.trailLitTarget?.classList.remove("is-ignite")
       this.flagTargets.forEach((flag) => flag.classList.remove("is-wave"))
     }, 1100)
