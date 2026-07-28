@@ -80,10 +80,15 @@ class HabitsController < ApplicationController
   end
 
   def habit_params
-    params.require(:habit).permit(
+    raw = params.require(:habit).permit(
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
       :stat_type, :goal, :min_value, :max_value
     )
+    # Clamp client-supplied LP rewards — habits are not a free AP faucet.
+    if raw[:points].present?
+      raw[:points] = raw[:points].to_i.clamp(1, 50)
+    end
+    raw
   end
 
   # When "Enable a target" is off, the form still may post empty type fields —

@@ -62,17 +62,17 @@
       </div>
       <div class="lp-world-hud__right">
         <%= link_to settings_path, class: "lp-world-hud__gear", aria: { label: t("nav.settings") } do %>
-          <span aria-hidden="true">⚙</span>
+          <%= render "shared/lp_icon", name: "gear" %>
         <% end %>
       </div>
       <div class="lp-world-hud__meta">
         <% if @goal %>
           <p class="lp-world-hud__goal" title="<%= @goal.title %>">
-            <span aria-hidden="true">🎯</span>
+            <%= render "shared/lp_icon", name: "goal", class_name: "lp-icon is-inline" %>
             <span><%= @goal.title.truncate(28) %></span>
           </p>
           <p class="lp-world-hud__camp">
-            <span aria-hidden="true">🏕</span>
+            <%= render "shared/lp_icon", name: "camp", class_name: "lp-icon is-inline" %>
             <span><%= mountain[:label] %></span>
             <span class="lp-world-hud__pct"><%= mountain[:progress].to_i %>%</span>
           </p>

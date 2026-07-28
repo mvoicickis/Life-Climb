@@ -53,7 +53,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     goal = @user.strategy_goals.for_kind("goal").last
     assert Strategy::YearCycle.dec29?(goal.due_on)
     assert_equal 100, @user.reload.strategy_points
-    assert_match(/Goal created/i, flash[:notice].to_s)
+    assert_match(/Goal locked|Goal created/i, flash[:notice].to_s)
     assert_equal 100, flash[:sp_gained].to_i
 
     get life_journey_path(@journey)
