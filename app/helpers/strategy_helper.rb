@@ -136,6 +136,15 @@ module StrategyHelper
     Climb::Streak.status(user: user)
   end
 
+  # Visual-only difficulty for mockup battle pills (reward bands).
+  def strategy_battle_difficulty(reward)
+    n = reward.to_i
+    return "easy" if n <= 15
+    return "hard" if n >= 45
+
+    "medium"
+  end
+
   # Segment is cleared when its lower endpoint sits at/below the camp line.
   def strategy_segment_cleared?(to_slot, camp_slot)
     to_slot[:top].to_f >= camp_slot[:top].to_f - 0.5

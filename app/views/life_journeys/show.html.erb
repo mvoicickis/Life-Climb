@@ -20,6 +20,7 @@
 <% focus_project = @branch_project || projects.find { |p| p.children.any? { |c| c.day? && !c.completed? } } || projects.first %>
 <% battles = focus_project ? focus_project.children.select(&:day?).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } : [] %>
 <% alive = current_user.alive_level %>
+<% streak = @climb_streak || strategy_climb_streak_status %>
 
 <div class="lp-rpg <%= 'is-first-climb' if first_climb %>"
      id="strategy-world"
@@ -38,22 +39,45 @@
       <%= render "life_journeys/first_climb_coach", journey: @journey, goal: @goal %>
     </div>
   <% else %>
-    <%= render "life_journeys/rpg_world",
+    <div class="lp-rpg-scenic" style="--lp-scenic: url('/images/strategy-mountain-scenic.jpg')" aria-hidden="true"></div>
+    <div class="lp-rpg-scenic__veil" aria-hidden="true"></div>
+
+    <%= render "life_journeys/rpg_hud",
           mountain: mountain,
           progress: progress,
-          stage: stage,
-          plans: plans,
-          focus_plan: focus_plan,
-          alive: alive %>
+          alive: alive,
+          streak: streak %>
 
-    <%= render "life_journeys/rpg_glass",
-          plans: plans,
-          focus_plan: focus_plan,
-          projects: projects,
-          focus_project: focus_project,
-          battles: battles,
+    <div class="lp-rpg-board">
+      <%= render "life_journeys/rpg_plans",
+            plans: plans,
+            focus_plan: focus_plan %>
+
+      <div class="lp-rpg-stage">
+        <%= render "life_journeys/rpg_world",
+              mountain: mountain,
+              progress: progress,
+              stage: stage,
+              plans: plans,
+              focus_plan: focus_plan,
+              alive: alive %>
+
+        <%= render "life_journeys/rpg_glass",
+              plans: plans,
+              focus_plan: focus_plan,
+              projects: projects,
+              focus_project: focus_project,
+              battles: battles,
+              mountain: mountain,
+              alive: alive,
+              streak: streak %>
+      </div>
+    </div>
+
+    <%= render "life_journeys/rpg_stats",
           mountain: mountain,
-          alive: alive %>
+          alive: alive,
+          streak: streak %>
   <% end %>
 
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>

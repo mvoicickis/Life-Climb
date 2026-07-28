@@ -1,57 +1,20 @@
-<%# Cinematic mountain world — hero of the page. locals: mountain, progress, stage, plans, focus_plan, alive %>
+<%# Scenic trail with fixed camp checkpoints. locals: mountain, progress, stage, plans, focus_plan, alive %>
 <% mountain ||= { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% progress = local_assigns.fetch(:progress, mountain[:progress].to_i) %>
-<% stage = local_assigns.fetch(:stage, "base") %>
-<% plans = local_assigns.fetch(:plans, []) %>
-<% focus_plan = local_assigns[:focus_plan] %>
-<% character_top = [ 82 - (progress * 0.62), 18 ].max %>
+<% camps = [
+     { key: "base", pct: 0, y: 88, label: t("strategy.rpg.camps.base") },
+     { key: "camp2", pct: 25, y: 70, label: t("strategy.rpg.camps.camp2") },
+     { key: "camp3", pct: 50, y: 52, label: t("strategy.rpg.camps.camp3") },
+     { key: "camp4", pct: 75, y: 34, label: t("strategy.rpg.camps.camp4") },
+     { key: "summit", pct: 100, y: 12, label: t("strategy.rpg.camps.summit") }
+   ] %>
+<% character_top = [ 88 - (progress * 0.76), 12 ].max %>
 
 <section class="lp-rpg-world"
          data-strategy-rpg-target="world"
          data-strategy-celebrate-target="mountain"
          aria-label="<%= t('strategy.rpg.world_label') %>">
-  <div class="lp-rpg-world__sky" aria-hidden="true"></div>
-  <div class="lp-rpg-world__mist" aria-hidden="true"></div>
-  <div class="lp-rpg-world__scenic"
-       style="--lp-scenic: url('/images/strategy-mountain-scenic.jpg')"
-       aria-hidden="true"></div>
   <div class="lp-rpg-world__birds" aria-hidden="true"></div>
-
-  <header class="lp-rpg-hud">
-    <div class="lp-rpg-hud__brand">
-      <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-rpg-hud__mark" %>
-      <span><%= t("app_name") %></span>
-    </div>
-    <div class="lp-rpg-hud__chips">
-      <div class="lp-rpg-chip is-xp" data-strategy-celebrate-target="spBadge" aria-label="<%= t('strategy.rpg.xp') %>">
-        <span class="lp-rpg-chip__value" data-strategy-celebrate-target="apValue"><%= number_with_delimiter(current_user.life_points) %></span>
-        <span class="lp-rpg-chip__name"><%= t("strategy.rpg.xp") %></span>
-      </div>
-      <div class="lp-rpg-chip is-quiet" aria-hidden="true">
-        <span class="lp-rpg-chip__value" data-strategy-celebrate-target="spValue"><%= number_with_delimiter(current_user.strategy_points) %></span>
-      </div>
-      <%= link_to settings_path, class: "lp-rpg-hud__gear", aria: { label: t("nav.settings") } do %>
-        <%= render "shared/lp_icon", name: "gear" %>
-      <% end %>
-    </div>
-  </header>
-
-  <div class="lp-rpg-summit">
-    <% if @goal %>
-      <p class="lp-rpg-summit__kicker"><%= t("strategy.rpg.life_goal") %></p>
-      <h1 class="lp-rpg-summit__title"><%= @goal.title %></h1>
-      <% if @journey.ideal_scene.present? %>
-        <p class="lp-rpg-summit__tagline"><%= @journey.ideal_scene.truncate(72) %></p>
-      <% end %>
-      <p class="lp-rpg-summit__pct" data-strategy-rpg-target="pct" data-strategy-celebrate-target="progressBar">
-        <%= progress %>% · <%= mountain[:label].presence || t("strategy.rpg.climbing") %>
-      </p>
-    <% else %>
-      <p class="lp-rpg-summit__kicker"><%= t("strategy.rpg.life_goal") %></p>
-      <h1 class="lp-rpg-summit__title"><%= t("strategy.zones.empty_goal") %></h1>
-      <p class="lp-rpg-summit__tagline"><%= t("strategy.promise") %></p>
-    <% end %>
-  </div>
 
   <div class="lp-rpg-trail" aria-hidden="true">
     <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -66,35 +29,34 @@
             d="M50 88 C 42 72, 58 58, 48 44 C 40 32, 55 24, 50 12"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
+            stroke-width="2.4"
             stroke-linecap="round"
             pathLength="100"
             stroke-dasharray="<%= progress %> 100"
             vector-effect="non-scaling-stroke" />
     </svg>
 
-    <div class="lp-rpg-node is-camp" style="--lp-y: 88%">
-      <span class="lp-rpg-node__dot"></span>
-      <span class="lp-rpg-node__label"><%= t("strategy.rpg.base_camp") %></span>
-    </div>
-
-    <% plans.each_with_index do |plan, i| %>
-      <% y = 72 - (i * (48.0 / [ plans.size, 1 ].max)) %>
-      <% y = [ y, 22 ].max %>
-      <%= link_to life_journey_path(@journey, focus_id: plan.id),
-            class: "lp-rpg-node is-plan #{'is-done' if plan.completed?} #{'is-focus' if focus_plan&.id == plan.id}",
-            style: "--lp-y: #{y}%",
-            data: { strategy_rpg_target: "flag" },
-            aria: { label: plan.title } do %>
-        <span class="lp-rpg-node__dot" aria-hidden="true"></span>
-        <span class="lp-rpg-node__label"><%= plan.title.truncate(18) %></span>
-      <% end %>
+    <% camps.each do |camp| %>
+      <% reached = progress >= camp[:pct] %>
+      <% current = progress >= camp[:pct] && (camp[:pct] == 100 ? progress >= 100 : progress < camp[:pct] + 25) %>
+      <% current = true if camp[:pct] == 0 && progress < 25 %>
+      <% current = true if camp[:pct] == 100 && progress >= 100 %>
+      <div class="lp-rpg-node is-camp is-<%= camp[:key] %> <%= 'is-done' if reached %> <%= 'is-here' if current %>"
+           style="--lp-y: <%= camp[:y] %>%"
+           data-strategy-rpg-target="flag">
+        <span class="lp-rpg-node__dot <%= 'is-flag' if camp[:key] == 'summit' %>" aria-hidden="true"></span>
+        <span class="lp-rpg-node__label">
+          <strong><%= camp[:label] %></strong>
+          <% if current && camp[:key] != "summit" %>
+            <em><%= progress %>% · <%= t("strategy.rpg.current_position") %></em>
+          <% elsif camp[:key] == "summit" %>
+            <em>100%</em>
+          <% else %>
+            <em><%= camp[:pct] %>%</em>
+          <% end %>
+        </span>
+      </div>
     <% end %>
-
-    <div class="lp-rpg-node is-peak" style="--lp-y: 12%">
-      <span class="lp-rpg-node__dot is-flag"></span>
-      <span class="lp-rpg-node__label"><%= t("strategy.rpg.summit") %></span>
-    </div>
 
     <div class="lp-rpg-explorer"
          data-strategy-rpg-target="explorer"
@@ -123,7 +85,5 @@
         <%= submit_tag t("strategy.next_up.create_goal_cta"), class: "lp-rpg-btn" %>
       <% end %>
     </div>
-  <% elsif plans.empty? %>
-    <%# Handled by first-climb coach in show — keep empty %>
   <% end %>
 </section>
