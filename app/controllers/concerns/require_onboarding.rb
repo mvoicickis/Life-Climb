@@ -61,6 +61,7 @@ module RequireOnboarding
       journey_completions
       journey_targets
       project_completions
+      battle_wins
       settings
       locales
       feedbacks
@@ -70,6 +71,9 @@ module RequireOnboarding
       progress
       focus
       pages
+      finished_products
+      buildings
+      today_actions
     ].include?(controller_name)
   end
 end

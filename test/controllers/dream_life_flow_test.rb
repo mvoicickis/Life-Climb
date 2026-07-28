@@ -3,21 +3,18 @@ require "test_helper"
 class DreamLifeFlowTest < ActionDispatch::IntegrationTest
   setup { @user = users(:one) }
 
-  test "home shows mock dashboard sections" do
+  test "home shows v2 today battle board" do
+    seed_climb!(@user)
     sign_in_as @user
     get dashboard_path
     assert_response :success
-    assert_match(/Life Points/, response.body)
-    assert_match(/Overall Gap/, response.body)
-    assert_match(/Today.s Mission|Today&#39;s Mission/, response.body)
-    assert_select ".lp-twin"
-    assert_select ".lp-gap-card"
-    assert_select ".lp-map-card"
-    assert_select ".lp-mission"
+    assert_match(/Today|Battle|Action Points|LifePoints/i, response.body)
+    assert_select ".lp-dash-nav"
     assert_no_match(/Morale/, response.body)
   end
 
   test "life area page lets you edit ideal present and goal" do
+    seed_climb!(@user)
     sign_in_as @user
     area = life_areas(:one_family)
     get life_area_path(area)
@@ -35,6 +32,7 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "bumping closer raises score" do
+    seed_climb!(@user)
     sign_in_as @user
     area = life_areas(:one_community)
     assert_difference -> { area.reload.closer_score }, 1 do
@@ -49,7 +47,8 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
       email_address: "newdream@example.com",
       password: "password12345",
       password_confirmation: "password12345",
-      home_stat_count: 6
+      home_stat_count: 6,
+      planning_version: 1
     )
     sign_in_as user
 

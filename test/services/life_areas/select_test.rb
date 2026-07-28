@@ -8,6 +8,7 @@ class LifeAreas::SelectTest < ActiveSupport::TestCase
   end
 
   test "selecting one area creates a v2 row and sets planning_version" do
+    @user.update!(planning_version: 1)
     assert_equal 1, @user.planning_version
 
     areas = LifeAreas::Select.call(user: @user, keys: %w[career])

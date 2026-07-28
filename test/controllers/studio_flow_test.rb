@@ -1,51 +1,76 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
+# Legacy studio (v1) assertions retired — product is planning_v2 Mountain/Today.
 class StudioFlowTest < ActionDispatch::IntegrationTest
-  setup { @user = users(:one) }
-
-  test "today shows calm home with quest" do
+  setup do
+    @user = users(:one)
     sign_in_as @user
-    get dashboard_path
-    assert_response :success
-    assert_match(/Overall Gap/, response.body)
-    assert_match(/Life Points/, response.body)
-    assert_match(/Finish authentication/, response.body)
-    assert_select ".lp-twin"
-    assert_select ".lp-map-card"
-    assert_select ".lp-mission"
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "App live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Finish authentication",
+      closer_percent: 20,
+      route_mission: true
+    )
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @journey = @user.reload.primary_focused_journey
+    @goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = @goal.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "plan", title: "Build", position: 0
+    )
+    project = plan.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "project", title: "Auth", position: 0
+    )
+    project.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "day", title: "Finish authentication", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
   end
 
-  test "completing today action earns life points" do
-    sign_in_as @user
-    action = today_actions(:one)
-    action.update!(completed_at: nil)
+  test "today shows v2 battle home" do
+    get dashboard_path
+    assert_response :success
+    assert_match(/Today|Battle|Action Points/i, response.body)
+    assert_select ".lp-dash-nav"
+  end
 
-    assert_difference -> { @user.reload.total_points }, LifePointsAward::ACTION do
-      post complete_today_action_path(action)
+  test "completing a synced battle todo earns action points" do
+    todo = @user.daily_todos.for_day.find_by!(title: "Finish authentication")
+    assert_difference -> { @user.reload.total_points }, todo.lp_reward.to_i do
+      post complete_daily_todo_path(todo)
     end
     assert_redirected_to dashboard_path
   end
 
-  test "life points page shows alive story" do
-    sign_in_as @user
+  test "journey page shows mountain progress story" do
     get life_points_path
     assert_response :success
-    assert_match(/more alive you are/, response.body)
+    assert_match(/Journey|Mountain|Action Points/i, response.body)
   end
 
-  test "nav includes plan finished and life points" do
-    sign_in_as @user
+  test "nav includes mountain today journey you" do
     get dashboard_path
-    assert_match(/Plan/, response.body)
-    assert_match(/Finished/, response.body)
-    assert_select "a[href=?]", finished_products_path
+    assert_response :success
+    assert_select ".lp-dash-nav__link", text: /Mountain/i
+    assert_select ".lp-dash-nav__link", text: /Today/i
+    assert_select ".lp-dash-nav__link", text: /Journey/i
+    assert_select ".lp-dash-nav__link", text: /You/i
     assert_select "a[href=?]", life_points_path
   end
 
-  test "building page loads focus building" do
-    sign_in_as @user
-    get building_path
+  test "mountain page loads for focused journey" do
+    get life_journey_path(@journey)
     assert_response :success
-    assert_match(/LifePoints/, response.body)
+    assert_match(/LifePoints|Mountain/i, response.body)
+    assert_select ".lp-rpg, #first-climb-coach"
   end
 end

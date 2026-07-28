@@ -10,33 +10,33 @@ module StrategyHelper
   VISIBLE_PER_LEVEL = 3
 
   # Center trail slots — slightly compressed so the climb reads as one trail.
-  GOAL_SLOT = [50, 14].freeze
-  SELECTED_PLAN_SLOT = [50, 32].freeze
-  SELECTED_PROJECT_SLOT = [50, 50].freeze
-  SELECTED_BATTLE_SLOT = [50, 68].freeze
-  CAMP_SLOT = [50, 86].freeze
+  GOAL_SLOT = [ 50, 14 ].freeze
+  SELECTED_PLAN_SLOT = [ 50, 32 ].freeze
+  SELECTED_PROJECT_SLOT = [ 50, 50 ].freeze
+  SELECTED_BATTLE_SLOT = [ 50, 68 ].freeze
+  CAMP_SLOT = [ 50, 86 ].freeze
   CAMP_TOP_AT_ZERO = 86.0
   CAMP_TOP_AT_SUMMIT = 16.0
   PILL_SLOTS = [
-    [16, 22], [84, 22], [12, 34], [88, 34], [14, 42], [86, 42]
+    [ 16, 22 ], [ 84, 22 ], [ 12, 34 ], [ 88, 34 ], [ 14, 42 ], [ 86, 42 ]
   ].freeze
   SIBLING_PROJECT_SLOTS = [
-    [30, 50], [70, 50]
+    [ 30, 50 ], [ 70, 50 ]
   ].freeze
   SIBLING_BATTLE_SLOTS = [
-    [30, 68], [70, 68]
+    [ 30, 68 ], [ 70, 68 ]
   ].freeze
-  PLAN_OVERFLOW_SLOT = [50, 42].freeze
-  PROJECT_OVERFLOW_SLOT = [88, 54].freeze
-  BATTLE_OVERFLOW_SLOT = [88, 72].freeze
+  PLAN_OVERFLOW_SLOT = [ 50, 42 ].freeze
+  PROJECT_OVERFLOW_SLOT = [ 88, 54 ].freeze
+  BATTLE_OVERFLOW_SLOT = [ 88, 72 ].freeze
   FLAG_SLOTS = {
-    "goal" => [58, 12],
-    "plan" => [58, 30],
-    "project" => [58, 48],
-    "battle" => [58, 66]
+    "goal" => [ 58, 12 ],
+    "plan" => [ 58, 30 ],
+    "project" => [ 58, 48 ],
+    "battle" => [ 58, 66 ]
   }.freeze
   # Spine tops for fog/cleared math (goal → camp default).
-  SPINE_TOPS = [14.0, 32.0, 50.0, 68.0, 86.0].freeze
+  SPINE_TOPS = [ 14.0, 32.0, 50.0, 68.0, 86.0 ].freeze
 
   def strategy_kind_css(node)
     node.day? ? "battle" : node.kind
@@ -136,6 +136,15 @@ module StrategyHelper
     Climb::Streak.status(user: user)
   end
 
+  # Visual-only difficulty for mockup battle pills (reward bands).
+  def strategy_battle_difficulty(reward)
+    n = reward.to_i
+    return "easy" if n <= 15
+    return "hard" if n >= 45
+
+    "medium"
+  end
+
   # Segment is cleared when its lower endpoint sits at/below the camp line.
   def strategy_segment_cleared?(to_slot, camp_slot)
     to_slot[:top].to_f >= camp_slot[:top].to_f - 0.5
@@ -171,18 +180,18 @@ module StrategyHelper
   def strategy_trail_slot(kind, index = 0)
     slots =
       case kind.to_s
-      when "goal" then [GOAL_SLOT]
-      when "plan", "selected_plan" then [SELECTED_PLAN_SLOT]
-      when "selected_project" then [SELECTED_PROJECT_SLOT]
-      when "selected_battle" then [SELECTED_BATTLE_SLOT]
+      when "goal" then [ GOAL_SLOT ]
+      when "plan", "selected_plan" then [ SELECTED_PLAN_SLOT ]
+      when "selected_project" then [ SELECTED_PROJECT_SLOT ]
+      when "selected_battle" then [ SELECTED_BATTLE_SLOT ]
       when "pill" then PILL_SLOTS
       when "project" then SIBLING_PROJECT_SLOTS
       when "battle", "day" then SIBLING_BATTLE_SLOTS
-      when "plan_overflow" then [PLAN_OVERFLOW_SLOT]
-      when "project_overflow" then [PROJECT_OVERFLOW_SLOT]
-      when "battle_overflow" then [BATTLE_OVERFLOW_SLOT]
-      when "camp" then [CAMP_SLOT]
-      else [[50, 50]]
+      when "plan_overflow" then [ PLAN_OVERFLOW_SLOT ]
+      when "project_overflow" then [ PROJECT_OVERFLOW_SLOT ]
+      when "battle_overflow" then [ BATTLE_OVERFLOW_SLOT ]
+      when "camp" then [ CAMP_SLOT ]
+      else [ [ 50, 50 ] ]
       end
     # Callers must cap indexes — never silently stack two pins on one slot.
     safe_index = index.to_i
@@ -193,7 +202,7 @@ module StrategyHelper
   end
 
   def strategy_flag_slot(kind)
-    left, top = FLAG_SLOTS.fetch(kind.to_s, [58, 50])
+    left, top = FLAG_SLOTS.fetch(kind.to_s, [ 58, 50 ])
     { left: left, top: top }
   end
 
@@ -203,7 +212,7 @@ module StrategyHelper
 
     selected = selected_id.present? ? list.find { |n| n.id == selected_id } : nil
     rest = selected ? list.reject { |n| n.id == selected.id } : list
-    (selected ? [selected] + rest : rest).first(limit)
+    (selected ? [ selected ] + rest : rest).first(limit)
   end
 
   def strategy_trail_wire(from_slot, to_slot)
@@ -237,6 +246,6 @@ module StrategyHelper
   end
 
   def strategy_breadcrumb_nodes(goal:, plan:, project:, battle:)
-    [goal, plan, project, battle].compact
+    [ goal, plan, project, battle ].compact
   end
 end

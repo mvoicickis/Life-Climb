@@ -4,6 +4,7 @@ class DailyLogsControllerTest < ActionDispatch::IntegrationTest
   test "save today amount and compare to yesterday" do
     user = users(:one)
     habit = habits(:one)
+    seed_climb!(user)
     sign_in_as user
 
     habit.daily_logs.create!(user: user, logged_on: Date.yesterday, amount: 6, goal: 6)
@@ -21,6 +22,7 @@ class DailyLogsControllerTest < ActionDispatch::IntegrationTest
   test "blank amount becomes zero" do
     user = users(:one)
     habit = habits(:one)
+    seed_climb!(user)
     sign_in_as user
 
     post daily_logs_path(habit_id: habit.id), params: { daily_log: { amount: "" } }

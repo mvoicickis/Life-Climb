@@ -3,6 +3,7 @@ require "test_helper"
 class HabitsCreateTest < ActionDispatch::IntegrationTest
   test "create habit" do
     user = users(:one)
+    seed_climb!(user)
     sign_in_as user
     assert_difference "Habit.count", 1 do
       post habits_path, params: {

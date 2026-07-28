@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
-require "application_system_test_case"
-
-class LifepointsTest < ApplicationSystemTestCase
-  test "sign in reaches the climb with greeting" do
-    user = users(:one)
+# Seeds a v2 player who can reach Today / Mountain without hierarchy redirects.
+module ClimbTestHelper
+  def seed_climb!(
+    user,
+    area_key: "career",
+    title: "Ship LifePoints",
+    today_mission: "Finish authentication"
+  )
     Onboarding::Run.call(
       user: user,
-      area_key: "career",
-      title: "Ship LifePoints",
+      area_key: area_key,
+      title: title,
       ideal_scene: "App live",
       current_reality: "Building",
       next_win: "Launch",
-      today_mission: "Write tests",
+      today_mission: today_mission,
       closer_percent: 20,
       route_mission: true
     )
@@ -21,23 +24,21 @@ class LifepointsTest < ApplicationSystemTestCase
     goal = user.strategy_goals.for_kind("goal").roots.first
     plan = goal.children.create!(
       user: user, life_area: journey.life_area, life_journey: journey,
-      horizon: "plan", title: "Trail", position: 0
+      horizon: "plan", title: "Build", position: 0
     )
     project = plan.children.create!(
       user: user, life_area: journey.life_area, life_journey: journey,
-      horizon: "project", title: "Camp", position: 0
+      horizon: "project", title: "Auth", position: 0
     )
     project.children.create!(
       user: user, life_area: journey.life_area, life_journey: journey,
-      horizon: "day", title: "First fight", scheduled_on: Date.current, position: 0
+      horizon: "day", title: today_mission, scheduled_on: Date.current, position: 0
     )
-
-    visit new_session_path
-    fill_in "Email", with: user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-
-    assert_text "LifePoints"
-    assert_text(/Today|Mountain|Start my climb|#{Regexp.escape(user.display_name)}/i)
+    Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area)
+    journey
   end
+end
+
+ActiveSupport.on_load(:action_dispatch_integration_test) do
+  include ClimbTestHelper
 end

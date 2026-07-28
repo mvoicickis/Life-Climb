@@ -41,7 +41,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-node.is-plan", text: /Main trail/i
+    assert_select ".lp-rpg-plan", text: /Main trail/i
     assert_select "[data-controller*=strategy-rpg]"
   end
 
@@ -61,7 +61,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg-node.is-plan", minimum: 1
+    assert_select ".lp-rpg-plan", minimum: 1
     assert_select ".lp-rpg-glass"
   end
 
@@ -85,7 +85,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-mission", text: /Resume/
     assert_select ".lp-rpg-mission__meta", text: /2 battles/i
-    assert_select ".lp-rpg-panel.is-missions .lp-rpg-add", text: /Add project/i
+    assert_select ".lp-rpg-panel.is-projects .lp-rpg-add", text: /Add project/i
   end
 
   test "focusing a project shows battles in glass" do
