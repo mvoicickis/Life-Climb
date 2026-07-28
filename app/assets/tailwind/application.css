@@ -793,7 +793,7 @@
     font-size: 1.15rem;
     font-weight: 800;
     font-family: "Fraunces", Georgia, serif;
-    color: #0f172a;
+    color: #f3f6f8;
     text-decoration: none;
   }
 
@@ -803,8 +803,8 @@
     height: 2rem;
     border-radius: 999px;
     object-fit: cover;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.18);
+    background: #171c22;
+    box-shadow: 0 4px 12px rgba(87, 211, 91, 0.22);
   }
 
   .auth-topbar-actions {
@@ -817,29 +817,31 @@
     display: inline-flex;
     align-items: center;
     border-radius: 0.9rem;
-    border: 1.5px solid rgba(15, 23, 42, 0.12);
-    background: #fff;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: rgba(23, 28, 34, 0.88);
+    color: #f3f6f8;
     padding: 0.5rem 0.85rem;
     font-size: 0.82rem;
     font-weight: 800;
-    color: #0f172a;
     text-decoration: none;
   }
 
   .auth-back-btn:hover {
-    border-color: rgba(34, 197, 94, 0.45);
-    color: #22c55e;
+    border-color: rgba(87, 211, 91, 0.45);
+    color: #57d35b;
   }
 
   .auth-back-btn:focus-visible {
-    outline: 2px solid #22c55e;
+    outline: 2px solid #57d35b;
     outline-offset: 2px;
   }
 
   .lp-auth {
     font-family: "Source Sans 3", "Segoe UI", sans-serif;
-    color: #0f172a;
-    background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 45%, #fff 100%);
+    color: #f3f6f8;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(87, 211, 91, 0.16), transparent 55%),
+      linear-gradient(180deg, #152033 0%, #0b0f14 48%, #0b0f14 100%);
   }
 
   .lp-auth-card {
@@ -852,13 +854,13 @@
     font-size: clamp(2rem, 5vw, 2.6rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #0f172a;
+    color: #f3f6f8;
   }
 
   .lp-auth-sub {
     margin: 0.65rem 0 1.75rem;
     font-weight: 600;
-    color: #64748b;
+    color: #9aa6b2;
   }
 
   .lp-auth-label {
@@ -866,22 +868,22 @@
     margin-bottom: 0.35rem;
     font-size: 0.85rem;
     font-weight: 700;
-    color: #0f172a;
+    color: #f3f6f8;
   }
 
   .lp-auth-input {
     width: 100%;
     border-radius: 1rem;
-    border: 1.5px solid rgba(15, 23, 42, 0.12);
-    background: #fff;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: rgba(23, 28, 34, 0.88);
     padding: 0.85rem 1rem;
     font-weight: 600;
-    color: #0f172a;
+    color: #f3f6f8;
   }
 
   .lp-auth-input:focus {
     outline: none;
-    border-color: #22c55e;
+    border-color: #57d35b;
   }
 
   .lp-auth-submit {
@@ -889,24 +891,24 @@
     cursor: pointer;
     border: 0;
     border-radius: 1rem;
-    background: #22c55e;
+    background: #57d35b;
     padding: 0.9rem 1rem;
     font-weight: 800;
-    color: #fff;
+    color: #0b0f14;
   }
 
   .lp-auth-submit:hover {
-    background: #16a34a;
+    background: #3dbd48;
   }
 
   .lp-auth-link {
     font-weight: 800;
-    color: #22c55e;
+    color: #57d35b;
     text-decoration: none;
   }
 
   .lp-auth-link:hover {
-    color: #16a34a;
+    color: #86efac;
   }
 
   .today-banner-veil {
@@ -1000,26 +1002,26 @@
     }
   }
 
-  /* —— Landing brand (Life Green light) —— */
+  /* —— Landing brand (Dark cinematic RPG) —— */
   .lp-landing-body {
-    --lp-paper: #ffffff;
-    --lp-paper-soft: #f1f5f9;
-    --lp-mist: #f1f5f9;
-    --lp-ink: #0f172a;
-    --lp-ink-dark: #0f172a;
-    --lp-muted: #475569;
-    --lp-muted-dark: #64748b;
-    --lp-charcoal: #334155;
-    --lp-green: #22c55e;
-    --lp-green-deep: #16a34a;
-    --lp-green-soft: #86efac;
+    --lp-paper: #0b0f14;
+    --lp-paper-soft: #171c22;
+    --lp-mist: #1a222c;
+    --lp-ink: #f3f6f8;
+    --lp-ink-dark: #f3f6f8;
+    --lp-muted: #9aa6b2;
+    --lp-muted-dark: #8b95a5;
+    --lp-charcoal: #e2e8f0;
+    --lp-green: #57d35b;
+    --lp-green-deep: #3dbd48;
+    --lp-green-soft: rgba(87, 211, 91, 0.28);
     --lp-teal: var(--lp-green);
     --lp-teal-deep: var(--lp-green-deep);
     --lp-forest: var(--lp-green);
-    --lp-forest-deep: var(--lp-green-deep);
-    --lp-gold: #f59e0b;
-    --lp-dawn-from: #ecfdf5;
-    --lp-dawn-to: #ffffff;
+    --lp-forest-deep: #1f7a45;
+    --lp-gold: #d4a017;
+    --lp-dawn-from: #152033;
+    --lp-dawn-to: #0b0f14;
     --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
     --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
     margin: 0;
@@ -1037,7 +1039,9 @@
   .lp-landing-cta-band {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(165deg, var(--lp-dawn-from) 0%, var(--lp-dawn-to) 55%, #fff 100%);
+    background:
+      radial-gradient(120% 70% at 50% -10%, rgba(87, 211, 91, 0.14), transparent 55%),
+      linear-gradient(180deg, #152033 0%, #0b0f14 55%, #0b0f14 100%);
     color: var(--lp-ink);
   }
 
@@ -1073,8 +1077,8 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(236, 253, 245, 0.55) 38%, rgba(255, 255, 255, 0.18) 62%, rgba(255, 255, 255, 0.72) 100%),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.25) 48%, rgba(255, 255, 255, 0.05) 100%);
+      linear-gradient(180deg, rgba(11, 15, 20, 0.55) 0%, rgba(11, 15, 20, 0.25) 38%, rgba(11, 15, 20, 0.15) 62%, rgba(11, 15, 20, 0.82) 100%),
+      linear-gradient(90deg, rgba(11, 15, 20, 0.55) 0%, rgba(11, 15, 20, 0.2) 48%, rgba(11, 15, 20, 0.05) 100%);
   }
 
   .lp-landing-nav {
@@ -1788,9 +1792,10 @@
     overflow: auto;
     margin: 0;
     border-radius: 1.5rem 1.5rem 0 0;
-    background: #fff;
-    color: #0f172a;
-    box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.18);
+    background: #171c22;
+    color: #f3f6f8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
     padding: 0.75rem 1.15rem 1.35rem;
     transform: translateY(110%);
     transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -1805,7 +1810,7 @@
     height: 0.28rem;
     margin: 0.15rem auto 0.85rem;
     border-radius: 999px;
-    background: #cbd5e1;
+    background: rgba(255, 255, 255, 0.22);
   }
 
   .share-sheet__header {
@@ -3134,49 +3139,61 @@
   border: 0;
 }
 
-/* ——— LifePoints app surface (Life Green brand) ———
-   Paper/mist daily surfaces, Life Green CTAs, deep ink for numbers.
+/* ——— LifePoints app surface (Dark cinematic RPG) ———
+   Night ground + glass panels + Life Green / gold accents.
    Amber ONLY for brief +LP reward flashes — never LP chip text. */
 :root {
-  --lp-paper: #ffffff;
-  --lp-paper-soft: #f1f5f9;
-  --lp-mist: #f1f5f9;
-  --lp-ink: #0f172a;
-  --lp-charcoal: #334155;
-  --lp-muted: #475569;
-  --lp-green: #22c55e;
-  --lp-green-deep: #16a34a;
-  --lp-green-soft: #86efac;
+  --lp-paper: #0b0f14;
+  --lp-paper-soft: #171c22;
+  --lp-mist: #1a222c;
+  --lp-ink: #f3f6f8;
+  --lp-charcoal: #e2e8f0;
+  --lp-muted: #9aa6b2;
+  --lp-green: #57d35b;
+  --lp-green-deep: #3dbd48;
+  --lp-green-soft: rgba(87, 211, 91, 0.28);
   --lp-teal: var(--lp-green);
   --lp-teal-deep: var(--lp-green-deep);
-  --lp-gold: #f59e0b;
-  --lp-dawn-from: #ecfdf5;
-  --lp-dawn-to: #ffffff;
+  --lp-gold: #d4a017;
+  --lp-dawn-from: #152033;
+  --lp-dawn-to: #0b0f14;
   --lp-navy: #0b1220;
   --lp-forest: var(--lp-green);
-  --lp-forest-deep: var(--lp-green-deep);
-  --lp-void: #0f172a;
-  --lp-surface: #ffffff;
-  --lp-elevated: #ffffff;
-  --lp-glass: rgba(255, 255, 255, 0.92);
-  --lp-border: rgba(34, 197, 94, 0.18);
-  --lp-emerald: var(--lp-green-deep);
+  --lp-forest-deep: #1f7a45;
+  --lp-void: #0b0f14;
+  --lp-surface: #171c22;
+  --lp-elevated: #171c22;
+  --lp-glass: rgba(23, 28, 34, 0.78);
+  --lp-border: rgba(255, 255, 255, 0.1);
+  --lp-emerald: var(--lp-forest-deep);
   --lp-lime: var(--lp-green);
   --lp-mint: var(--lp-green-soft);
   --lp-rose: #ef476f;
-  --lp-track: #f1f5f9;
+  --lp-track: #1e2630;
   --lp-neon: var(--lp-green);
-  --lp-neon-soft: rgba(34, 197, 94, 0.12);
-  --lp-neon-glow: rgba(34, 197, 94, 0.22);
+  --lp-neon-soft: rgba(87, 211, 91, 0.14);
+  --lp-neon-glow: rgba(87, 211, 91, 0.28);
+  --rpg-bg: #0b0f14;
+  --rpg-card: #171c22;
+  --rpg-glass: rgba(23, 28, 34, 0.78);
+  --rpg-green: #57d35b;
+  --rpg-emerald: #1f7a45;
+  --rpg-gold: #d4a017;
+  --rpg-mist: #8b95a5;
+  --rpg-ink: #f3f6f8;
+  --rpg-muted: #9aa6b2;
+  --rpg-amber: #f59e0b;
+  --rpg-red: #ef4444;
+  --rpg-blue: #3b82f6;
   --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
 }
 
 .lp-game {
-  --lp-level-goal: #22c55e;
+  --lp-level-goal: #57d35b;
   --lp-level-plan: #3b82f6;
-  --lp-level-project: #0f766e;
-  --lp-level-battle: #f59e0b;
+  --lp-level-project: #2dd4bf;
+  --lp-level-battle: #d4a017;
   font-family: var(--lp-font-ui);
   background: var(--lp-paper);
   color: var(--lp-ink);
@@ -3188,7 +3205,6 @@
 }
 
 .lp-game--navy {
-  /* Legacy alias — Life Green keeps onboarding on paper. */
   background: var(--lp-paper);
   color: var(--lp-ink);
 }
@@ -3196,8 +3212,10 @@
 .lp-glass {
   background: var(--lp-glass);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--lp-border);
   border-radius: 1.5rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
 .lp-you-row--flash {
@@ -3326,8 +3344,8 @@
 }
 
 .lp-top-nav {
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 15, 20, 0.92);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
@@ -3985,8 +4003,10 @@
   min-width: 7.25rem;
   max-width: 9.5rem;
   border-radius: 0.9rem;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(23, 28, 34, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 0.45rem 0.65rem;
   line-height: 1.15;
 }
@@ -4136,10 +4156,12 @@
 
 .lp-dash-battle-angles {
   border-radius: 1.15rem;
-  border: 1px solid rgba(15, 118, 110, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    linear-gradient(145deg, rgba(15, 118, 110, 0.08), transparent 55%),
-    rgba(255, 255, 255, 0.92);
+    linear-gradient(145deg, rgba(87, 211, 91, 0.1), transparent 55%),
+    rgba(23, 28, 34, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 1rem 1.05rem 1.05rem;
 }
 
@@ -4149,7 +4171,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--rpg-green, #57d35b);
 }
 
 .lp-dash-battle-angles__title {
@@ -4179,8 +4201,8 @@
   width: 100%;
   text-align: left;
   border-radius: 0.85rem;
-  border: 1px solid rgba(15, 118, 110, 0.2);
-  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(11, 15, 20, 0.55);
   padding: 0.75rem 0.9rem;
   font-size: 0.92rem;
   font-weight: 700;
@@ -4190,8 +4212,8 @@
 }
 
 .lp-dash-battle-angles__chip:hover {
-  border-color: rgba(15, 118, 110, 0.4);
-  background: #fff;
+  border-color: rgba(87, 211, 91, 0.4);
+  background: rgba(87, 211, 91, 0.12);
   transform: translateY(-1px);
 }
 
@@ -4243,17 +4265,19 @@
 
 .lp-dash-card {
   border-radius: 1.4rem;
-  border: 1px solid rgba(34, 197, 94, 0.12);
-  background: #fff;
-  box-shadow: 0 12px 28px rgba(20, 32, 26, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   padding: 1.1rem 1.15rem;
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
 }
 
 .lp-dash-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(34, 197, 94, 0.22);
-  box-shadow: 0 16px 32px rgba(20, 32, 26, 0.1);
+  border-color: rgba(87, 211, 91, 0.28);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42);
 }
 
 .lp-dash-card__head {
@@ -4282,9 +4306,9 @@
   border-radius: 0;
   box-shadow: none;
   background:
-    radial-gradient(ellipse 90% 70% at 88% 78%, rgba(15, 118, 110, 0.16), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 12% 18%, rgba(34, 197, 94, 0.1), transparent 55%),
-    linear-gradient(180deg, rgba(236, 253, 245, 0.55), transparent 62%);
+    radial-gradient(ellipse 90% 70% at 88% 78%, rgba(87, 211, 91, 0.12), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 12% 18%, rgba(212, 160, 23, 0.08), transparent 55%),
+    linear-gradient(180deg, rgba(21, 32, 51, 0.65), transparent 62%);
   padding: 0.35rem 0 1.35rem;
   min-height: 14rem;
 }
@@ -4481,8 +4505,11 @@
 
 .lp-dash-battle {
   border-radius: 1.25rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   padding: 1.05rem 1.05rem 1.15rem;
 }
 
@@ -4512,7 +4539,7 @@
 }
 
 .lp-dash-battle__ring-track {
-  stroke: #e2e8f0;
+  stroke: rgba(255, 255, 255, 0.12);
   stroke-width: 3.2;
 }
 
@@ -4535,7 +4562,7 @@
   place-items: center;
   font-size: 0.62rem;
   font-weight: 800;
-  color: #334155;
+  color: #9aa6b2;
 }
 
 .lp-dash-battle__title {
@@ -4615,7 +4642,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 0;
-  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .lp-dash-battle__item:first-child {
@@ -4642,7 +4669,7 @@
 .lp-dash-battle__lp {
   font-size: 0.78rem;
   font-weight: 650;
-  color: color-mix(in srgb, #166534 72%, transparent);
+  color: var(--rpg-gold, #d4a017);
   white-space: nowrap;
 }
 
@@ -4792,13 +4819,13 @@
   margin-top: 0.35rem;
   padding: 1.15rem 1.1rem 1.25rem;
   border-radius: 1.15rem;
-  border: 1px solid color-mix(in srgb, var(--lp-green) 28%, var(--lp-border));
+  border: 1px solid rgba(87, 211, 91, 0.28);
   background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--lp-green) 10%, var(--lp-paper)) 0%,
-      var(--lp-paper) 100%
-    );
+    radial-gradient(90% 60% at 50% 0%, rgba(87, 211, 91, 0.12), transparent 55%),
+    var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
 .lp-dash-route__head {
@@ -4864,10 +4891,10 @@
   height: 18rem;
   border-radius: 0 0 2.5rem 2.5rem;
   background:
-    radial-gradient(ellipse 55% 45% at 18% 35%, color-mix(in srgb, #fde68a 38%, transparent), transparent 70%),
-    radial-gradient(ellipse 70% 60% at 78% 22%, color-mix(in srgb, #6ee7b7 42%, transparent), transparent 68%),
-    radial-gradient(ellipse 90% 75% at 50% 8%, color-mix(in srgb, #86efac 48%, transparent), transparent 72%),
-    linear-gradient(180deg, #d1fae5 0%, color-mix(in srgb, #ecfdf5 70%, #fef3c7) 42%, transparent 100%);
+    radial-gradient(ellipse 55% 45% at 18% 35%, rgba(212, 160, 23, 0.18), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 78% 22%, rgba(87, 211, 91, 0.2), transparent 68%),
+    radial-gradient(ellipse 90% 75% at 50% 8%, rgba(87, 211, 91, 0.16), transparent 72%),
+    linear-gradient(180deg, #152033 0%, rgba(11, 15, 20, 0.85) 42%, transparent 100%);
   pointer-events: none;
   z-index: 0;
   animation: lp-adventure-atmosphere-in 900ms ease-out both;
@@ -4901,13 +4928,11 @@
   gap: 0.85rem;
   padding: 1.35rem 1.2rem 1.4rem;
   border-radius: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--lp-green) 22%, var(--lp-border));
-  background:
-    linear-gradient(
-      165deg,
-      color-mix(in srgb, #ecfdf5 70%, transparent),
-      var(--lp-paper) 55%
-    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
 .lp-adventure__welcome {
@@ -6474,8 +6499,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 0.1rem;
   padding: 0.35rem 0.45rem calc(0.35rem + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.94);
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(11, 15, 20, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -6503,8 +6529,8 @@
 }
 
 .lp-dash-nav__link.is-active {
-  color: var(--lp-green-deep);
-  background: rgba(34, 197, 94, 0.12);
+  color: var(--rpg-green, var(--lp-green));
+  background: rgba(87, 211, 91, 0.14);
 }
 
 .lp-dash-confetti {
@@ -6601,8 +6627,10 @@
 
 .lp-journey-points__card {
   border-radius: 1.1rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 1rem 1.05rem;
 }
 
@@ -6624,8 +6652,10 @@
 
 .lp-journey-summary {
   border-radius: 1.15rem;
-  border: 1px solid rgba(22, 101, 52, 0.14);
-  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(87, 211, 91, 0.22);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 1.05rem 1.1rem 1.15rem;
 }
 
@@ -6750,8 +6780,8 @@
 .lp-progress-filters__chip {
   flex: 0 0 auto;
   border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(23, 28, 34, 0.82);
   color: var(--lp-ink);
   padding: 0.48rem 0.8rem;
   font-size: 0.8rem;
@@ -6765,15 +6795,15 @@
 
 .lp-progress-filters__chip:hover {
   color: var(--lp-ink);
-  background: var(--lp-mist);
-  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(87, 211, 91, 0.12);
+  border-color: rgba(87, 211, 91, 0.4);
 }
 
 .lp-progress-filters__chip.is-active {
-  color: #fff;
+  color: #0b0f14;
   background: var(--lp-green);
   border-color: var(--lp-green-deep);
-  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.24);
+  box-shadow: 0 6px 14px rgba(87, 211, 91, 0.28);
 }
 
 .lp-progress-kpis {
@@ -6791,9 +6821,11 @@
 
 .lp-progress-card {
   border-radius: 1rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
   padding: 0.85rem 0.8rem;
   min-width: 0;
   max-width: 100%;
@@ -6804,16 +6836,16 @@
   .lp-progress-card {
     border-radius: 1.25rem;
     padding: 1.05rem 1.1rem;
-    box-shadow: 0 12px 28px rgba(20, 32, 26, 0.06);
-    border-color: rgba(34, 197, 94, 0.12);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .lp-progress-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(34, 197, 94, 0.22);
-    box-shadow: 0 16px 32px rgba(20, 32, 26, 0.1);
+    border-color: rgba(87, 211, 91, 0.28);
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42);
   }
 }
 
@@ -9593,20 +9625,26 @@ button.lp-strategy-overflow {
 }
 
 .lp-climb-reward::backdrop {
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(11, 15, 20, 0.72);
 }
 
 .lp-climb-reward__panel {
   position: relative;
   padding: 1.25rem 1.15rem 1.2rem;
   border-radius: 1.25rem;
-  background: linear-gradient(180deg, #ecfdf5 0%, #fff 55%);
-  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(90% 60% at 50% 0%, rgba(87, 211, 91, 0.18), transparent 55%),
+    linear-gradient(180deg, #171c22 0%, #0b0f14 100%);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+  color: var(--rpg-ink, #f3f6f8);
   text-align: center;
 }
 
 .lp-climb-reward.is-boss .lp-climb-reward__panel {
-  background: linear-gradient(180deg, #fef3c7 0%, #fff 58%);
+  background:
+    radial-gradient(90% 60% at 50% 0%, rgba(212, 160, 23, 0.22), transparent 55%),
+    linear-gradient(180deg, #171c22 0%, #0b0f14 100%);
 }
 
 .lp-climb-reward__eyebrow {
@@ -9615,7 +9653,7 @@ button.lp-strategy-overflow {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #166534;
+  color: var(--rpg-green, #57d35b);
 }
 
 .lp-climb-reward__title {
@@ -11452,10 +11490,13 @@ button.lp-strategy-overflow {
 }
 
 .lp-strategist {
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 1.1rem;
   padding: 0.9rem 1rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
 }
 
 .lp-strategist__kicker {
@@ -11464,7 +11505,7 @@ button.lp-strategy-overflow {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #166534;
+  color: var(--rpg-green, #57d35b);
 }
 
 .lp-strategist__summary,
@@ -12353,7 +12394,7 @@ button.lp-strategy-overflow {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 35%, rgba(252, 251, 248, 0.92) 72%);
+  background: linear-gradient(180deg, transparent 25%, rgba(11, 15, 20, 0.88) 72%);
 }
 
 .lp-first-climb {
@@ -12362,9 +12403,12 @@ button.lp-strategy-overflow {
   width: min(100%, 24rem);
   padding: 1.1rem 1rem 1.15rem;
   border-radius: 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  background: rgba(252, 251, 248, 0.97);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(23, 28, 34, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  color: #f3f6f8;
 }
 
 .lp-first-climb__kicker {
@@ -12373,14 +12417,14 @@ button.lp-strategy-overflow {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #166534;
+  color: #57d35b;
 }
 
 .lp-first-climb__title {
   margin: 0.25rem 0 0;
   font-size: 1.35rem;
   font-weight: 850;
-  color: #0f172a;
+  color: #f3f6f8;
   line-height: 1.2;
 }
 
@@ -12391,8 +12435,9 @@ button.lp-strategy-overflow {
   margin: 0.65rem 0 0;
   padding: 0.45rem 0.6rem;
   border-radius: 0.75rem;
-  background: rgba(240, 253, 244, 0.95);
-  color: #14532d;
+  background: rgba(87, 211, 91, 0.14);
+  border: 1px solid rgba(87, 211, 91, 0.28);
+  color: #86efac;
   font-size: 0.88rem;
   font-weight: 750;
 }
@@ -12407,7 +12452,7 @@ button.lp-strategy-overflow {
   margin: 0.55rem 0 0.85rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #475569;
+  color: #9aa6b2;
   line-height: 1.35;
 }
 
@@ -12423,7 +12468,7 @@ button.lp-strategy-overflow {
   margin-top: 0.45rem;
   font-size: 0.88rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #f3f6f8;
   line-height: 1.3;
 }
 
@@ -12435,8 +12480,8 @@ button.lp-strategy-overflow {
   height: 1.25rem;
   margin-top: 0.05rem;
   border-radius: 999px;
-  background: #166534;
-  color: #fff;
+  background: #57d35b;
+  color: #0b0f14;
   font-size: 0.7rem;
   font-weight: 850;
 }
@@ -12445,7 +12490,7 @@ button.lp-strategy-overflow {
   margin: 0 0 0.35rem;
   font-size: 0.72rem;
   font-weight: 600;
-  color: #64748b;
+  color: #9aa6b2;
 }
 
 .lp-first-climb__cta {
@@ -12453,12 +12498,12 @@ button.lp-strategy-overflow {
   border: 0;
   border-radius: 0.9rem;
   padding: 0.85rem 1rem;
-  background: #166534;
-  color: #fff;
+  background: #57d35b;
+  color: #0b0f14;
   font-size: 1rem;
   font-weight: 850;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(22, 101, 52, 0.28);
+  box-shadow: 0 10px 22px rgba(87, 211, 91, 0.28);
 }
 
 .lp-dash-route.is-first-climb {
@@ -12744,8 +12789,9 @@ button.lp-strategy-overflow {
 
 .lp-auth {
   background:
-    radial-gradient(120% 80% at 50% -10%, rgba(34, 197, 94, 0.16), transparent 55%),
-    linear-gradient(180deg, #f0fdf4 0%, #ffffff 48%, #f8fafc 100%);
+    radial-gradient(120% 80% at 50% -10%, rgba(87, 211, 91, 0.16), transparent 55%),
+    linear-gradient(180deg, #152033 0%, #0b0f14 48%, #0b0f14 100%);
+  color: #f3f6f8;
 }
 
 .lp-landing-chip {
@@ -13591,20 +13637,4 @@ button.lp-strategy-overflow {
   }
 }
 
-.lp-game:has(.lp-rpg:not(.is-first-climb)) {
-  background: #0b0f14;
-}
-.lp-game:has(.lp-rpg:not(.is-first-climb)) .lp-main {
-  background: #0b0f14;
-}
-.lp-game:has(.lp-rpg:not(.is-first-climb)) .lp-dash-nav {
-  background: rgba(11, 15, 20, 0.92);
-  border-top-color: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
-}
-.lp-game:has(.lp-rpg:not(.is-first-climb)) .lp-dash-nav__link {
-  color: #94a3b8;
-}
-.lp-game:has(.lp-rpg:not(.is-first-climb)) .lp-dash-nav__link.is-active {
-  color: var(--rpg-green, #57d35b);
-}
+/* RPG world keeps its own tokens; game chrome is already dark globally. */
