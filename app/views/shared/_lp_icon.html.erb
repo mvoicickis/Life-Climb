@@ -1,0 +1,77 @@
+<%# locals: name (goal|camp|gear|flag|sign|tent|sword|fire|check), class_name %>
+<% name = local_assigns.fetch(:name)
+   class_name = local_assigns.fetch(:class_name, "lp-icon") %>
+<span class="<%= class_name %>" aria-hidden="true">
+  <% case name.to_s %>
+  <% when "goal" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="8.5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+    </svg>
+  <% when "camp" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19 L12 6 L20 19 Z"/>
+      <path d="M12 11 V19"/>
+    </svg>
+  <% when "gear" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 3.5 V6.2 M12 17.8 V20.5 M3.5 12 H6.2 M17.8 12 H20.5 M6.2 6.2 L8.1 8.1 M15.9 15.9 L17.8 17.8 M17.8 6.2 L15.9 8.1 M8.1 15.9 L6.2 17.8"/>
+    </svg>
+  <% when "flag" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 21 V4"/>
+      <path d="M6 5 L17 9 L6 13 Z" fill="currentColor" stroke="none" opacity="0.9"/>
+    </svg>
+  <% when "sign" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3 V21"/>
+      <path d="M7 7 H17 L15 10 L17 13 H7 Z"/>
+    </svg>
+  <% when "tent" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 19 L12 5 L21 19 Z"/>
+      <path d="M12 5 V19"/>
+    </svg>
+  <% when "sword" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.5 4.5 L19.5 9.5 L10 19 H5 V14 Z"/>
+      <path d="M12 12 L8 16"/>
+    </svg>
+  <% when "fire" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3 C13.5 6 10 8 10 11 C10 14 12 16 12 16 C12 16 14 14 14 11 C14 8 10.5 6 12 3 Z"/>
+      <path d="M8.5 13.5 C7.5 15 8 18 12 20 C16 18 16.5 15 15.5 13.5"/>
+    </svg>
+  <% when "check" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12.5 L10 17.5 L19 7"/>
+    </svg>
+  <% when "self" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="3.2"/>
+      <path d="M5.5 19 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19"/>
+    </svg>
+  <% when "career" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="8" width="18" height="12" rx="2"/>
+      <path d="M8 8 V6 A2 2 0 0 1 10 4 H14 A2 2 0 0 1 16 6 V8"/>
+    </svg>
+  <% when "money" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="8.5"/>
+      <path d="M12 7 V17 M9.5 9.5 C9.5 8.2 10.6 7.5 12 7.5 C13.6 7.5 14.5 8.3 14.5 9.6 C14.5 11.5 9.5 11.2 9.5 13.4 C9.5 14.8 10.6 15.5 12 15.5 C13.5 15.5 14.5 14.7 14.5 13.4"/>
+    </svg>
+  <% when "love" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19 S4 13.5 4 9 A4 4 0 0 1 12 9 A4 4 0 0 1 20 9 C20 13.5 12 19 12 19 Z"/>
+    </svg>
+  <% when "growth" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20 V10"/>
+      <path d="M12 12 C8 12 6 9 6 5 C10 5 12 7 12 10"/>
+      <path d="M12 14 C16 14 18 11 18 7 C14 7 12 9 12 12"/>
+    </svg>
+  <% end %>
+</span>

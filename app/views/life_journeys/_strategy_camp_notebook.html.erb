@@ -27,7 +27,7 @@
                 class="lp-camp-notebook__crumb-item is-goal"
                 data-action="strategy-notebook#focusGoal"
                 data-node-id="<%= @goal.id %>">
-          <span aria-hidden="true">🚩</span>
+          <%= render "shared/lp_icon", name: "flag", class_name: "lp-icon is-inline" %>
           <span><%= @goal.title.truncate(18) %></span>
         </button>
       <% end %>
@@ -37,14 +37,14 @@
               data-strategy-notebook-target="crumbPlan"
               data-action="strategy-notebook#focusPlanCrumb"
               <%= "hidden" unless open_plan %>>
-        <span aria-hidden="true">🪧</span>
+        <%= render "shared/lp_icon", name: "sign", class_name: "lp-icon is-inline" %>
         <span data-strategy-notebook-target="crumbPlanTitle"><%= open_plan&.title&.truncate(18) %></span>
       </button>
       <span class="lp-camp-notebook__crumb-sep" data-strategy-notebook-target="crumbProjectSep" <%= "hidden" unless open_project %> aria-hidden="true">›</span>
       <span class="lp-camp-notebook__crumb-item is-project"
             data-strategy-notebook-target="crumbProject"
             <%= "hidden" unless open_project %>>
-        <span aria-hidden="true">⛺</span>
+        <%= render "shared/lp_icon", name: "tent", class_name: "lp-icon is-inline" %>
         <span data-strategy-notebook-target="crumbProjectTitle"><%= open_project&.title&.truncate(18) %></span>
       </span>
     </nav>
@@ -72,7 +72,7 @@
                   data-action="strategy-notebook#openPlan"
                   data-plan-id="<%= plan.id %>"
                   data-plan-title="<%= plan.title %>">
-            <span class="lp-camp-notebook__row-icon" aria-hidden="true">🪧</span>
+            <%= render "shared/lp_icon", name: "sign", class_name: "lp-camp-notebook__row-icon lp-icon" %>
             <span class="lp-camp-notebook__row-body">
               <span class="lp-camp-notebook__row-title"><%= plan.title %></span>
               <span class="lp-camp-notebook__row-meta">
@@ -114,7 +114,7 @@
                     data-project-title="<%= project.title %>"
                     data-plan-id="<%= plan.id %>"
                     aria-expanded="<%= expanded %>">
-              <span class="lp-camp-notebook__row-icon" aria-hidden="true">⛺</span>
+              <%= render "shared/lp_icon", name: "tent", class_name: "lp-camp-notebook__row-icon lp-icon" %>
               <span class="lp-camp-notebook__row-body">
                 <span class="lp-camp-notebook__row-title"><%= project.title %></span>
                 <span class="lp-camp-notebook__row-meta">
@@ -127,7 +127,7 @@
             <div class="lp-camp-notebook__battles" <%= "hidden" unless expanded %>>
               <% battles.each do |battle| %>
                 <div class="lp-camp-notebook__battle <%= 'is-done' if battle.completed? %> <%= 'is-today' if @today_battle&.id == battle.id %>">
-                  <span class="lp-camp-notebook__battle-icon" aria-hidden="true">⚔</span>
+                  <%= render "shared/lp_icon", name: "sword", class_name: "lp-camp-notebook__battle-icon lp-icon" %>
                   <span class="lp-camp-notebook__battle-title"><%= battle.title %></span>
                   <% if battle.completed? %>
                     <span class="lp-camp-notebook__battle-check" aria-hidden="true">✓</span>

@@ -32,7 +32,7 @@
     <% end %>
     <% if streak.positive? %>
       <p class="lp-climb-reward__streak">
-        <span aria-hidden="true">🔥</span>
+        <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
         <%= t("climb.streak.title", count: streak) %>
       </p>
     <% end %>

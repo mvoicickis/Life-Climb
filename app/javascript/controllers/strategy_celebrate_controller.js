@@ -53,7 +53,7 @@ export default class extends Controller {
   }
 
   spLabel() {
-    return "Strategy Points"
+    return "planning"
   }
 
   burst() {

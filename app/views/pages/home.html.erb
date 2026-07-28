@@ -53,14 +53,14 @@
       <p class="lp-landing-lead"><%= t("landing.areas_body") %></p>
       <ul class="lp-landing-chips" aria-label="<%= t("landing.areas_title") %>">
         <% [
-          ["self", "😊", t("life_area_catalog.self.short")],
-          ["career", "💼", t("life_area_catalog.career.short")],
-          ["money", "💰", t("life_area_catalog.money.short")],
-          ["love", "❤️", t("life_area_catalog.relationships.name")],
-          ["growth", "✨", t("life_area_catalog.purpose.short")]
-        ].each do |tone, emoji, label| %>
+          ["self", "self", t("life_area_catalog.self.short")],
+          ["career", "career", t("life_area_catalog.career.short")],
+          ["money", "money", t("life_area_catalog.money.short")],
+          ["love", "love", t("life_area_catalog.relationships.name")],
+          ["growth", "growth", t("life_area_catalog.purpose.short")]
+        ].each do |tone, icon, label| %>
           <li class="lp-landing-chip lp-landing-chip--<%= tone %>">
-            <span aria-hidden="true"><%= emoji %></span>
+            <%= render "shared/lp_icon", name: icon, class_name: "lp-icon is-chip" %>
             <span><%= label %></span>
           </li>
         <% end %>

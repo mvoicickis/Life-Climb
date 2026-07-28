@@ -7,7 +7,7 @@
           params: { sync_today: 1 },
           class: "lp-strategy-fight__cta is-primary",
           form: { data: { turbo: false }, class: "lp-strategy-fight__cta-form" } do %>
-      <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
+      <%= render "shared/lp_icon", name: "sword", class_name: "lp-strategy-fight__cta-icon lp-icon" %>
       <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.trail_cta") %></span>
       <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
@@ -75,7 +75,7 @@
           params: { sync_today: 1 },
           class: "lp-strategy-fight__cta is-primary",
           form: { data: { turbo: false }, class: "lp-strategy-fight__cta-form" } do %>
-      <span class="lp-strategy-fight__cta-icon" aria-hidden="true">⚔</span>
+      <%= render "shared/lp_icon", name: "sword", class_name: "lp-strategy-fight__cta-icon lp-icon" %>
       <span class="lp-strategy-fight__cta-label"><%= t("strategy.fight.trail_cta") %></span>
       <span class="lp-strategy-fight__cta-chevron" aria-hidden="true"></span>
     <% end %>
