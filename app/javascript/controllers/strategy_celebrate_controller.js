@@ -45,8 +45,8 @@ export default class extends Controller {
     if (this.apGainedValue > 0) {
       const host = this.hasMountainTarget ? this.mountainTarget : this.element
       const chip = document.createElement("span")
-      chip.className = "lp-strategy__ap-float"
-      chip.textContent = `+${this.apGainedValue} AP`
+      chip.className = "lp-strategy__ap-float lp-rpg-xp-float"
+      chip.textContent = `+${this.apGainedValue} XP`
       host.appendChild(chip)
       window.setTimeout(() => chip.remove(), 1200)
     }

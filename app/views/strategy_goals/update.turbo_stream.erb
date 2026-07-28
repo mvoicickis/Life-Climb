@@ -1,18 +1,3 @@
-<%= turbo_stream.replace "strategy-world-map" do %>
-  <%= render "life_journeys/strategy_mountain", mountain: @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
-<% end %>
-
-<%= turbo_stream.replace "strategy-camp-notebook-root" do %>
-  <div id="strategy-camp-notebook-root">
-    <%= render "life_journeys/strategy_camp_notebook" %>
-  </div>
-<% end %>
-
-<% if @updated %>
-  <%= turbo_stream.replace "strategy-menu-#{@updated.id}" do %>
-    <%= render "life_journeys/strategy_pin_menu", node: @updated %>
-  <% end %>
-  <%= turbo_stream.replace "strategy-sheet-#{@updated.id}" do %>
-    <%= render "life_journeys/strategy_node_sheet", node: @updated %>
-  <% end %>
+<%= turbo_stream.append "strategy-world" do %>
+  <meta data-rpg-refresh="1">
 <% end %>
