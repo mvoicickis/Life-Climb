@@ -6,39 +6,31 @@
 <% boss = flash[:climb_boss].present? %>
 <% mountain = @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% climb_reward = flash[:climb_reward] %>
-<% camera_level = @branch_plan.present? || @branch_project.present? ? 2 : 1 %>
-<% camera_focus =
-     if @branch_project.present? then @branch_project.id
-     elsif @branch_plan.present? then @branch_plan.id
-     else @goal&.id
-     end %>
-<% notebook_plan_id = @branch_plan&.id.to_i %>
-<% notebook_project_id = @branch_project&.id.to_i %>
 <% first_climb = @first_climb_needed %>
-<% auto_open_goal_notebook = !first_climb && (@force_notebook || (@goal.present? && !@mountain_ready && @branch_plan.blank?)) %>
+<% progress = mountain[:progress].to_i %>
+<% stage =
+     if progress >= 75 then "summit"
+     elsif progress >= 45 then "ridge"
+     elsif progress >= 15 then "trail"
+     else "base"
+     end %>
+<% plans = @goal ? @goal.children.select(&:plan?).sort_by { |p| [ p.position.to_i, p.id ] } : [] %>
+<% focus_plan = @branch_plan || plans.first %>
+<% projects = focus_plan ? focus_plan.children.select(&:project?).sort_by { |p| [ p.position.to_i, p.id ] } : [] %>
+<% focus_project = @branch_project || projects.find { |p| p.children.any? { |c| c.day? && !c.completed? } } || projects.first %>
+<% battles = focus_project ? focus_project.children.select(&:day?).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } : [] %>
+<% alive = current_user.alive_level %>
 
-<div class="lp-world lp-strategy-page is-living-world is-lit-trail is-gamefeel <%= 'is-camp-notebook' unless first_climb %> <%= 'is-first-climb' if first_climb %> <%= 'is-notebook-open' if (!first_climb && (notebook_plan_id.positive? || notebook_project_id.positive? || auto_open_goal_notebook)) %>"
+<div class="lp-rpg <%= 'is-first-climb' if first_climb %>"
      id="strategy-world"
-     data-controller="strategy-celebrate<%= ' strategy-mountain strategy-camera strategy-notebook' unless first_climb %>"
+     data-controller="strategy-celebrate strategy-rpg"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
      data-strategy-celebrate-ap-gained-value="<%= ap_gained %>"
      data-strategy-celebrate-boss-value="<%= boss %>"
-     <% unless first_climb %>
-       data-strategy-mountain-open-value="<%= @open_sheet ? 'true' : 'false' %>"
-       data-strategy-mountain-open-menu-value="<%= @open_peek ? 'true' : 'false' %>"
-       data-strategy-camera-level-value="<%= camera_level %>"
-       data-strategy-camera-focus-id-value="<%= camera_focus %>"
-       data-strategy-camera-journey-url-value="<%= life_journey_path(@journey) %>"
-       data-strategy-notebook-goal-id-value="<%= @goal&.id.to_i %>"
-       data-strategy-notebook-plan-id-value="<%= notebook_plan_id %>"
-       data-strategy-notebook-project-id-value="<%= notebook_project_id %>"
-       data-strategy-notebook-auto-open-value="<%= auto_open_goal_notebook ? 'true' : 'false' %>"
-       data-strategy-notebook-journey-url-value="<%= life_journey_path(@journey) %>"
-       <% if @sheet_node.present? %>
-         data-strategy-mountain-focus-sheet-value="strategy-sheet-<%= @sheet_node.id %>"
-         data-strategy-mountain-focus-menu-value="strategy-menu-<%= @sheet_node.id %>"
-       <% end %>
-     <% end %>>
+     data-strategy-rpg-progress-value="<%= progress %>"
+     data-strategy-rpg-celebrate-value="<%= ap_gained.positive? || flash[:battle_celebrate].present? %>"
+     data-progress="<%= progress %>"
+     data-stage="<%= stage %>">
 
   <% if first_climb && @goal %>
     <div class="lp-first-climb-shell">
@@ -46,98 +38,22 @@
       <%= render "life_journeys/first_climb_coach", journey: @journey, goal: @goal %>
     </div>
   <% else %>
-    <header class="lp-world-hud" aria-label="<%= t('strategy.page_title') %>">
-      <div class="lp-world-hud__left">
-        <div class="lp-world-hud__chip is-ap" aria-label="<%= t('dash.action_points_label') %>">
-          <span class="lp-world-hud__chip-value" data-strategy-celebrate-target="apValue"><%= number_with_delimiter(current_user.life_points) %></span>
-          <span class="lp-world-hud__chip-name"><%= t("dash.action_points_short") %></span>
-        </div>
-        <%# SP kept for celebration targets but visually quiet — one proud score on the map. %>
-        <div class="lp-world-hud__chip is-sp is-quiet"
-             data-strategy-celebrate-target="spBadge"
-             aria-hidden="true">
-          <span class="lp-world-hud__chip-value" data-strategy-celebrate-target="spValue"><%= number_with_delimiter(current_user.strategy_points) %></span>
-          <span class="lp-world-hud__chip-name"><%= t("strategy.sp_hint_short") %></span>
-        </div>
-      </div>
-      <div class="lp-world-hud__right">
-        <%= link_to settings_path, class: "lp-world-hud__gear", aria: { label: t("nav.settings") } do %>
-          <%= render "shared/lp_icon", name: "gear" %>
-        <% end %>
-      </div>
-      <div class="lp-world-hud__meta">
-        <% if @goal %>
-          <p class="lp-world-hud__goal" title="<%= @goal.title %>">
-            <%= render "shared/lp_icon", name: "goal", class_name: "lp-icon is-inline" %>
-            <span><%= @goal.title.truncate(28) %></span>
-          </p>
-          <p class="lp-world-hud__camp">
-            <%= render "shared/lp_icon", name: "camp", class_name: "lp-icon is-inline" %>
-            <span><%= mountain[:label] %></span>
-            <span class="lp-world-hud__pct"><%= mountain[:progress].to_i %>%</span>
-          </p>
-        <% else %>
-          <p class="lp-world-hud__goal"><%= t("strategy.promise") %></p>
-        <% end %>
-        <%= render "shared/climb_streak_chip", status: (@climb_streak || strategy_climb_streak_status), compact: true %>
-      </div>
-      <button type="button"
-              class="lp-world-hud__zoomout"
-              data-strategy-camera-target="zoomOut"
-              data-action="strategy-camera#zoomOut"
-              hidden>
-        <%= t("strategy.camera.zoom_out") %>
-      </button>
-    </header>
+    <%= render "life_journeys/rpg_world",
+          mountain: mountain,
+          progress: progress,
+          stage: stage,
+          plans: plans,
+          focus_plan: focus_plan,
+          alive: alive %>
 
-    <div class="lp-world__stage" id="strategy-world-map">
-      <%= render "life_journeys/strategy_mountain", mountain: mountain %>
-    </div>
-
-    <% if @notebook_guide.present? %>
-      <div class="lp-camp-guide" role="status">
-        <% case @notebook_guide %>
-        <% when :keep_building %>
-          <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_build_kicker") %></p>
-          <p class="lp-camp-guide__body"><%= t("strategy.notebook.open_hint") %></p>
-        <% when :fight_today %>
-          <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_ready_kicker") %></p>
-          <p class="lp-camp-guide__body"><%= t("strategy.notebook.guide_ready_body") %></p>
-        <% when :tomorrow %>
-          <p class="lp-camp-guide__kicker"><%= t("strategy.notebook.guide_return_kicker") %></p>
-          <p class="lp-camp-guide__body">
-            <%= t("strategy.notebook.guide_return_body",
-                  title: @upcoming_battle[:title],
-                  when: (@upcoming_battle[:tomorrow] ? t("strategy.notebook.tomorrow") : l(@upcoming_battle[:scheduled_on], format: :short))) %>
-          </p>
-        <% end %>
-      </div>
-    <% end %>
-
-    <div id="strategy-camp-notebook-root" class="lp-world__journal">
-      <%= render "life_journeys/strategy_camp_notebook" %>
-    </div>
-
-    <div class="lp-world__dock">
-      <%= render "life_journeys/strategy_fight_cta" %>
-    </div>
-
-    <% if @goal %>
-      <%
-        sheet_nodes = [ @goal ]
-        @goal.children.select(&:plan?).each do |plan|
-          sheet_nodes << plan
-          plan.children.select(&:project?).each do |project|
-            sheet_nodes << project
-            project.children.select(&:day?).each { |battle| sheet_nodes << battle }
-          end
-        end
-      %>
-      <% sheet_nodes.uniq.each do |node| %>
-        <%= render "life_journeys/strategy_pin_menu", node: node %>
-        <%= render "life_journeys/strategy_node_sheet", node: node %>
-      <% end %>
-    <% end %>
+    <%= render "life_journeys/rpg_glass",
+          plans: plans,
+          focus_plan: focus_plan,
+          projects: projects,
+          focus_project: focus_project,
+          battles: battles,
+          mountain: mountain,
+          alive: alive %>
   <% end %>
 
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>

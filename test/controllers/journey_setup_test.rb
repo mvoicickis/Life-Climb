@@ -22,7 +22,7 @@ class JourneySetupTest < ActionDispatch::IntegrationTest
   test "journey show is strategy mountain not climb stack" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-world.is-living-world"
+    assert_select ".lp-rpg"
     assert_match(/What do I ultimately want to achieve|Name your mountain/i, response.body)
     assert_no_match(/Climb clarity/i, response.body)
     assert_select "#climb-purpose", count: 0

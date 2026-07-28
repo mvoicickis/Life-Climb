@@ -7,6 +7,7 @@ en:
   battle:
     lp_reason: "Battle win: %{title}"
     completed_notice: "Battle complete. +%{lp} Action Points"
+    win: "Win battle"
   dash:
     promise: "One mountain. Today’s battle."
     goal_label: "Today's Goal"
@@ -307,6 +308,24 @@ en:
     page_title: "My Mountain"
     title: "Build your mountain"
     promise: "One mountain. Today’s battle."
+    rpg:
+      world_label: "Your life mountain"
+      life_goal: "Life goal"
+      climbing: "Climbing"
+      base_camp: "Base camp"
+      summit: "Summit"
+      missions: "Missions"
+      missions_kicker: "Missions on this trail"
+      battles_kicker: "Today’s quests"
+      todays_battles: "Today’s Battles"
+      today: "Today"
+      pick_checkpoint: "Tap a checkpoint on the trail"
+      pick_mission: "Open a mission to reveal today’s battles"
+      stats: "Climb stats"
+      xp: "XP"
+      level: "Level"
+      streak: "Streak"
+      mountain: "Mountain"
     hierarchy_gate:
       notice: "Name your next plan and today’s action on Mountain — then Today unlocks."
     breadcrumb: "Mountain path"

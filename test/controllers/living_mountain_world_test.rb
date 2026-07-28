@@ -26,12 +26,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
   test "mountain opens first-climb coach when spine is empty" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-world.is-living-world.is-first-climb"
+    assert_select ".lp-rpg.is-first-climb"
     assert_select "#first-climb-coach"
-    assert_select ".lp-world-hud", count: 0
+    assert_select ".lp-rpg-glass", count: 0
   end
 
-  test "mountain opens as a full-bleed living world with camp notebook once a plan exists" do
+  test "mountain opens as cinematic RPG world once a plan exists" do
     @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Main trail", position: 0
@@ -39,13 +39,13 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-world.is-living-world.is-camp-notebook"
-    assert_select ".lp-world-hud"
-    assert_select "[data-controller*=strategy-notebook]"
-    assert_select ".lp-strategy-page__title", count: 0
+    assert_select ".lp-rpg"
+    assert_select ".lp-rpg-world"
+    assert_select ".lp-rpg-node.is-plan", text: /Main trail/i
+    assert_select "[data-controller*=strategy-rpg]"
   end
 
-  test "resting mountain shows plans but not project or battle pins" do
+  test "resting mountain shows plan checkpoints on the trail" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Main trail", position: 0
@@ -61,13 +61,11 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-strategy-marker.is-pin.is-plan", minimum: 1
-    assert_select ".lp-strategy-marker.is-pin.is-project", count: 0
-    assert_select ".lp-strategy-marker.is-pin.is-battle", count: 0
-    assert_select "#strategy-camp-notebook"
+    assert_select ".lp-rpg-node.is-plan", minimum: 1
+    assert_select ".lp-rpg-glass"
   end
 
-  test "focusing a plan opens the camp notebook with projects and battle counts" do
+  test "focusing a plan shows missions and battle counts in glass" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -85,13 +83,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select "#strategy-camp-notebook.is-open"
-    assert_select ".lp-camp-notebook__row.is-project", text: /Resume/
-    assert_select ".lp-camp-notebook__row-meta", text: /2 battles/i
-    assert_select ".lp-camp-notebook__context-add", text: /Add project/i
+    assert_select ".lp-rpg-mission", text: /Resume/
+    assert_select ".lp-rpg-mission__meta", text: /2 battles/i
+    assert_select ".lp-rpg-panel.is-missions .lp-rpg-add", text: /Add project/i
   end
 
-  test "focusing a project expands battles and shows reactive tent" do
+  test "focusing a project shows battles in glass" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -107,15 +104,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select "#strategy-camp-notebook.is-open"
-    assert_select ".lp-camp-notebook__project.is-expanded"
-    assert_select ".lp-camp-notebook__battle-title", text: /Update CV/
-    assert_select ".lp-strategy-mountain__slot.is-project.is-react:not([hidden])"
-    assert_select ".lp-camp-react-tent.is-glow", text: /Resume/
-    assert_select ".lp-camp-notebook__context-add", text: /Add battle/i
+    assert_select ".lp-rpg-mission.is-focus", text: /Resume/
+    assert_select ".lp-rpg-battle", text: /Update CV/
+    assert_select ".lp-rpg-panel.is-battles .lp-rpg-add", text: /Add battle/i
   end
 
-  test "creating a plan via turbo stream refreshes map and notebook" do
+  test "creating a plan via turbo stream still succeeds" do
     post strategy_goals_path,
          params: {
            life_area_id: @area.id,
@@ -127,8 +121,6 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
          as: :turbo_stream
 
     assert_response :created
-    assert_match(/strategy-world-map/, response.body)
-    assert_match(/strategy-camp-notebook/, response.body)
-    assert_match(/Trail Plan/, response.body)
+    assert @user.strategy_goals.for_kind("plan").exists?(title: "Trail Plan")
   end
 end

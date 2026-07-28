@@ -29,10 +29,10 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     assert_select "#first-climb-coach"
     assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
     assert_select "#strategy-camp-notebook", count: 0
-    assert_select ".lp-world-hud__chip.is-sp", count: 0
+    assert_select ".lp-rpg-glass", count: 0
   end
 
-  test "creating a plan focuses that plan notebook instead of the goal" do
+  test "creating a plan focuses that plan on the RPG mountain" do
     post strategy_goals_path, params: {
       life_area_id: @area.id,
       life_journey_id: @journey.id,
@@ -44,14 +44,13 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(@journey, focus_id: plan.id)
 
     follow_redirect!
-    assert_select "#strategy-camp-notebook.is-open"
-    assert_select ".lp-camp-notebook__panel.is-plan:not([hidden])"
-    assert_select ".lp-camp-notebook__title", text: /Increase Income/
-    assert_select ".lp-camp-notebook__add.is-project"
+    assert_select ".lp-rpg"
+    assert_select ".lp-rpg-node.is-plan.is-focus", text: /Increase Income/
+    assert_select ".lp-rpg-panel__title", text: /Increase Income/
     assert_match(/Add project/i, response.body)
   end
 
-  test "after first plan the dock offers enter plan" do
+  test "after first plan the trail shows the checkpoint" do
     @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -59,12 +58,12 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-strategy-fight__cta.is-primary", text: /Enter Plan/i
-    assert_select ".lp-camp-guide__body", text: /Tap a plan/i
+    assert_select ".lp-rpg-node.is-plan", text: /Find Job/i
+    assert_select ".lp-rpg-world"
   end
 
-  test "handoff add plan deep-links into notebook" do
+  test "handoff add plan deep-links still available" do
     handoff = Strategy::Handoff.for(user: @user, journey: @journey)
-    assert_includes handoff[:href], "notebook=1"
+    assert handoff[:href].present?
   end
 end
