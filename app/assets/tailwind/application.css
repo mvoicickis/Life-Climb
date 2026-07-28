@@ -15065,7 +15065,8 @@ button.lp-strategy-overflow {
   grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
-.lp-rpg-add.is-path summary {
+.lp-rpg-add.is-path summary,
+.lp-rpg-add.is-checkpoint summary {
   display: inline-grid;
   place-items: center;
   min-width: 2.4rem;
@@ -15073,6 +15074,16 @@ button.lp-strategy-overflow {
   border-radius: 0.9rem;
   border: 1px dashed rgba(87, 211, 91, 0.45);
   background: rgba(23, 28, 34, 0.55);
+}
+.lp-rpg-context .lp-rpg-add.is-checkpoint {
+  margin-top: 0.45rem;
+}
+.lp-rpg-add.is-checkpoint .lp-rpg-add__label--long {
+  display: none;
+}
+@media (min-width: 640px) {
+  .lp-rpg-add.is-checkpoint .lp-rpg-add__label--short { display: none; }
+  .lp-rpg-add.is-checkpoint .lp-rpg-add__label--long { display: inline; }
 }
 
 @media (max-width: 639px) {
