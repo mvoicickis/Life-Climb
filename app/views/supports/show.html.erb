@@ -1,21 +1,23 @@
 <% content_for :title, t("support.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
-<%= tag.div class: "studio-support",
+<%= tag.div class: "lp-support",
       data: {
         controller: "share",
         share_text_value: invite_share_message_body,
         share_url_value: share_landing_url,
         share_title_value: t("share.invite.title")
       } do %>
-  <header class="studio-support__hero">
+  <header class="lp-support__hero">
     <p class="lp-brand-kicker">
       <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
       <span><%= t("app_name") %></span>
     </p>
-    <p class="studio-kicker"><%= t("support.kicker") %></p>
-    <h1 class="studio-dream"><%= t("support.title") %></h1>
-    <p class="studio-support__subtitle"><%= t("support.subtitle") %></p>
-    <p class="studio-muted mt-4 max-w-xl"><%= t("support.body") %></p>
+    <p class="lp-support__kicker"><%= t("support.kicker") %></p>
+    <h1 class="lp-support__title"><%= t("support.title") %></h1>
+    <p class="lp-support__subtitle"><%= t("support.subtitle") %></p>
+    <p class="lp-support__body"><%= t("support.body") %></p>
   </header>
 
   <section class="lp-support-invite" aria-label="<%= t('share.invite.section_title') %>">
@@ -29,10 +31,10 @@
     </button>
   </section>
 
-  <section class="studio-support__actions" aria-label="<%= t('support.title') %>">
+  <section class="lp-support__actions" aria-label="<%= t('support.title') %>">
     <% if @primary %>
       <a href="<%= @primary[:url] %>"
-         class="studio-btn studio-btn--strong studio-support__primary"
+         class="lp-support__primary"
          target="<%= @primary[:url].to_s.start_with?('mailto:') ? nil : '_blank' %>"
          rel="<%= @primary[:url].to_s.start_with?('mailto:') ? nil : 'noopener noreferrer' %>">
         <%= t(@primary[:i18n_key]) %>
@@ -41,10 +43,10 @@
 
     <% secondary = @providers.reject { |p| p == @primary } %>
     <% if secondary.any? %>
-      <div class="studio-support__secondary">
+      <div class="lp-support__secondary">
         <% secondary.each do |provider| %>
           <a href="<%= provider[:url] %>"
-             class="studio-btn"
+             class="lp-support__secondary-link"
              target="_blank"
              rel="noopener noreferrer">
             <%= t(provider[:i18n_key]) %>
@@ -54,11 +56,11 @@
     <% end %>
 
     <% if @coming_soon.any? %>
-      <div class="studio-support__soon">
-        <p class="studio-label"><%= t("support.coming_soon") %></p>
+      <div class="lp-support__soon">
+        <p class="lp-support__soon-label"><%= t("support.coming_soon") %></p>
         <ul>
           <% @coming_soon.each do |provider| %>
-            <li class="studio-support__soon-item" aria-disabled="true">
+            <li class="lp-support__soon-item" aria-disabled="true">
               <%= t(provider[:i18n_key]) %>
             </li>
           <% end %>
@@ -67,15 +69,19 @@
     <% end %>
   </section>
 
-  <p class="studio-muted mt-10 text-sm max-w-lg"><%= t("support.footnote") %></p>
+  <p class="lp-support__footnote"><%= t("support.footnote") %></p>
 
-  <p class="mt-8 flex flex-wrap gap-4">
-    <%= link_to t("about.title"), about_path, class: "studio-link" %>
-    <%= link_to t("nav.settings"), settings_path, class: "studio-link" %>
-    <%= link_to t("nav.today"), dashboard_path, class: "studio-link" %>
+  <p class="lp-support__links">
+    <%= link_to t("about.title"), about_path %>
+    <span aria-hidden="true">·</span>
+    <%= link_to t("nav.settings"), settings_path %>
+    <span aria-hidden="true">·</span>
+    <%= link_to t("nav.today"), dashboard_path %>
   </p>
 
   <%= render "shared/share_sheet",
         title: t("share.invite.title"),
         subtitle: t("share.invite.subtitle") %>
 <% end %>
+
+<%= render "shared/lp_dash_nav", active: :you %>

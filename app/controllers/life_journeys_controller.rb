@@ -107,7 +107,7 @@ class LifeJourneysController < ApplicationController
       return
     end
 
-    @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:children, :parent)
+    @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:parent, children: { children: :children })
     @goal = @goals.for_kind("goal").roots.first
     @year_due = Strategy::YearCycle.target_dec29
 
@@ -125,7 +125,7 @@ class LifeJourneysController < ApplicationController
 
     @focus ||= @goal
     @level = strategy_level_for(@focus)
-    @children = @focus ? @focus.children.ordered.to_a : []
+    @children = @focus ? @focus.children.sort_by { |c| [ c.position.to_i, c.id ] } : []
     @siblings = strategy_siblings(@focus)
     @today_battles = today_battles_for(@focus || @goal)
     @today_battle = @today_battles.find { |b| b.completed_at.blank? } || @today_battles.first
@@ -148,7 +148,7 @@ class LifeJourneysController < ApplicationController
     @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
     @force_notebook = params[:notebook].present?
     @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
-    @first_climb_needed = @goal.present? && @goal.children.for_kind("plan").none?
+    @first_climb_needed = @goal.present? && @goal.children.none?(&:plan?)
     @notebook_guide =
       if @first_climb_needed
         nil

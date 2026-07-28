@@ -1,27 +1,31 @@
 <% content_for :title, t("about.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
-<div class="studio-support">
-  <header>
+<div class="lp-support">
+  <header class="lp-support__hero">
     <p class="lp-brand-kicker">
       <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
       <span><%= t("app_name") %></span>
     </p>
-    <h1 class="studio-dream"><%= t("about.title") %></h1>
-    <p class="studio-support__subtitle mt-4"><%= t("about.subtitle") %></p>
+    <h1 class="lp-support__title"><%= t("about.title") %></h1>
+    <p class="lp-support__subtitle"><%= t("about.subtitle") %></p>
   </header>
 
-  <div class="studio-muted mt-6 max-w-xl space-y-4 text-base font-semibold leading-relaxed">
+  <div class="lp-support__prose">
     <p><%= t("about.p1") %></p>
     <p><%= t("about.p2") %></p>
     <p><%= t("about.tagline") %></p>
   </div>
 
-  <div class="mt-10 flex flex-wrap gap-3">
-    <%= link_to t("support.title"), support_path, class: "studio-btn studio-btn--strong" %>
-    <%= link_to t("coach.title"), new_feedback_path, class: "studio-btn" %>
+  <div class="lp-support__actions is-row">
+    <%= link_to t("support.title"), support_path, class: "lp-support__primary" %>
+    <%= link_to t("coach.title"), new_feedback_path, class: "lp-support__secondary-link" %>
   </div>
 
-  <p class="mt-8">
-    <%= link_to t("nav.settings"), settings_path, class: "studio-link" %>
+  <p class="lp-support__links">
+    <%= link_to t("nav.settings"), settings_path %>
   </p>
 </div>
+
+<%= render "shared/lp_dash_nav", active: :you %>

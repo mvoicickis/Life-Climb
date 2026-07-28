@@ -159,25 +159,25 @@
   <div class="lp-adventure__how-panel" data-adventure-guide-target="panel" data-scene="map" hidden>
     <ul class="lp-adventure__how-map">
       <li class="lp-adventure__how-map-node is-today" data-adventure-guide-target="mapNode">
-        <span class="lp-adventure__how-map-icon" aria-hidden="true">🏠</span>
+        <%= render "shared/lp_icon", name: "camp", class_name: "lp-adventure__how-map-icon lp-icon" %>
         <span><%= t("v2_onboarding.how_map_today") %></span>
       </li>
       <li class="lp-adventure__how-map-node is-strategy" data-adventure-guide-target="mapNode">
-        <span class="lp-adventure__how-map-icon" aria-hidden="true">🗺</span>
+        <%= render "shared/lp_icon", name: "flag", class_name: "lp-adventure__how-map-icon lp-icon" %>
         <span><%= t("v2_onboarding.how_map_strategy") %></span>
       </li>
       <li class="lp-adventure__how-map-node is-journey" data-adventure-guide-target="mapNode">
-        <span class="lp-adventure__how-map-icon" aria-hidden="true">📈</span>
+        <%= render "shared/lp_icon", name: "growth", class_name: "lp-adventure__how-map-icon lp-icon" %>
         <span><%= t("v2_onboarding.how_map_journey") %></span>
       </li>
       <li class="lp-adventure__how-map-node is-you" data-adventure-guide-target="mapNode">
-        <span class="lp-adventure__how-map-icon" aria-hidden="true">👤</span>
+        <%= render "shared/lp_icon", name: "self", class_name: "lp-adventure__how-map-icon lp-icon" %>
         <span><%= t("v2_onboarding.how_map_you") %></span>
       </li>
     </ul>
 
     <div class="lp-adventure__how-badge" data-adventure-guide-target="badge" aria-hidden="true">
-      <span class="lp-adventure__how-badge-hex">🧭</span>
+      <%= render "shared/lp_icon", name: "goal", class_name: "lp-adventure__how-badge-hex lp-icon is-badge" %>
       <span class="lp-adventure__how-badge-title"><%= t("progress.achievements.adventure_guide") %></span>
     </div>
 

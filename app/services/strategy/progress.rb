@@ -25,8 +25,24 @@ module Strategy
       end
     end
 
+    def self.child_nodes(node, kind)
+      kids =
+        if node.association(:children).loaded?
+          node.children.sort_by { |c| [ c.position.to_i, c.id ] }
+        else
+          StrategyGoal.where(parent_id: node.id).ordered.to_a
+        end
+      kids.select { |child| child.kind == kind }
+    end
+    private_class_method :child_nodes
+
+    # Prefer a preloaded tree when available — Goal→Plan→Project→Battle in one walk.
     def self.battles_under(node)
       return [ node ] if node.day?
+
+      if fully_preloaded?(node)
+        return collect_battles(node).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] }
+      end
 
       ids = [ node.id ]
       frontier = [ node.id ]
@@ -41,9 +57,21 @@ module Strategy
       StrategyGoal.where(id: ids, horizon: "day").ordered.to_a
     end
 
-    def self.child_nodes(node, kind)
-      StrategyGoal.where(parent_id: node.id).ordered.select { |child| child.kind == kind }
+    def self.fully_preloaded?(node)
+      return false unless node.association(:children).loaded?
+
+      node.children.all? do |child|
+        child.association(:children).loaded? &&
+          child.children.all? { |grand| grand.association(:children).loaded? || grand.day? }
+      end
     end
-    private_class_method :child_nodes
+    private_class_method :fully_preloaded?
+
+    def self.collect_battles(node)
+      return [ node ] if node.day?
+
+      node.children.flat_map { |child| collect_battles(child) }
+    end
+    private_class_method :collect_battles
   end
 end
