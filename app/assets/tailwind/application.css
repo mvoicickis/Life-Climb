@@ -14283,6 +14283,14 @@ button.lp-strategy-overflow {
   color: var(--rpg-mist, #8b95a5);
 }
 
+.lp-rpg-panel.is-projects {
+  position: relative;
+}
+
+.lp-rpg-projects > li {
+  min-width: 0;
+}
+
 .lp-rpg-mission__ring {
   --lp-pct: 0;
   width: 1.55rem;
@@ -14364,6 +14372,9 @@ button.lp-strategy-overflow {
   font-weight: 750;
   letter-spacing: -0.01em;
 }
+.lp-rpg-battle__body {
+  min-width: 0;
+}
 .lp-rpg-battle__tags {
   display: flex;
   gap: 0.35rem;
@@ -14403,6 +14414,8 @@ button.lp-strategy-overflow {
   font-weight: 800;
   color: var(--rpg-green, #57d35b);
 }
+.lp-rpg-add__label--short { display: none; }
+.lp-rpg-add__label--long { display: inline; }
 .lp-rpg-add summary::-webkit-details-marker { display: none; }
 .lp-rpg-add__form {
   display: grid;
@@ -14452,6 +14465,11 @@ button.lp-strategy-overflow {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   text-align: center;
+}
+.lp-rpg-stat__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
 }
 .lp-rpg-stat__icon { font-size: 0.95rem; line-height: 1; }
 .lp-rpg-stat__value {
@@ -14503,6 +14521,247 @@ button.lp-strategy-overflow {
   .lp-rpg-node__label { min-width: 5.5rem; }
 }
 
+@media (max-width: 639px) {
+  .lp-rpg-glass {
+    gap: 0.25rem;
+    padding: 0.1rem 0.8rem calc(0.95rem + env(safe-area-inset-bottom));
+  }
+
+  .lp-rpg-panel {
+    padding: 0.8rem 0.8rem 0.85rem;
+  }
+
+  .lp-rpg-panel__head {
+    margin-bottom: 0.55rem;
+  }
+
+  .lp-rpg-panel.is-projects::after {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    right: 0;
+    bottom: 0.75rem;
+    width: 2rem;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(23, 28, 34, 0), rgba(23, 28, 34, 0.92) 90%);
+  }
+
+  .lp-rpg-projects {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0.1rem 2.75rem 0.1rem 0;
+    overflow-x: auto;
+    overflow-y: visible;
+    overscroll-behavior-x: contain;
+    scroll-padding-left: 0;
+    scroll-padding-right: 2.75rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .lp-rpg-projects::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lp-rpg-project {
+    flex: 0 0 clamp(15.5rem, 72vw, 17.5rem);
+    min-width: 0;
+    min-height: 6.75rem;
+    padding: 0.72rem 0.78rem;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    opacity: 0.92;
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease,
+      border-color 200ms ease,
+      opacity 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .lp-rpg-project:hover {
+    transform: none;
+  }
+
+  .lp-rpg-project.is-focus {
+    transform: scale(1.02);
+    border-color: rgba(135, 245, 144, 0.78);
+    background: rgba(11, 15, 20, 0.64);
+    box-shadow:
+      0 0 0 1px rgba(87, 211, 91, 0.28),
+      0 16px 34px rgba(87, 211, 91, 0.12),
+      0 10px 22px rgba(0, 0, 0, 0.26);
+    opacity: 1;
+  }
+
+  .lp-rpg-projects > li:has(.lp-rpg-project:not(.is-focus)) .lp-rpg-project {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+  }
+
+  .lp-rpg-project__title {
+    font-size: 0.9rem;
+    line-height: 1.18;
+  }
+
+  .lp-rpg-project__desc {
+    font-size: 0.73rem;
+    line-height: 1.22;
+  }
+
+  .lp-rpg-project__meta {
+    gap: 0.35rem;
+    font-size: 0.67rem;
+  }
+
+  .lp-rpg-battles {
+    gap: 0.28rem;
+  }
+
+  .lp-rpg-battle {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.45rem;
+    padding: 0.46rem 0.55rem;
+    align-items: center;
+  }
+
+  .lp-rpg-battle.is-done {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    gap: 0.35rem;
+  }
+
+  .lp-rpg-battle__win {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 0.42rem;
+    row-gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .lp-rpg-battle__box,
+  .lp-rpg-battle__check {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 0.32rem;
+  }
+
+  .lp-rpg-battle__glyph {
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 0.88rem;
+    align-self: center;
+  }
+
+  .lp-rpg-battle__body {
+    min-width: 0;
+    display: grid;
+    gap: 0.08rem;
+  }
+
+  .lp-rpg-battle__title {
+    font-size: 0.88rem;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lp-rpg-battle__tags {
+    gap: 0.22rem;
+    margin-top: 0;
+    min-height: 0.82rem;
+    flex-wrap: wrap;
+  }
+
+  .lp-rpg-diff {
+    padding: 0.1rem 0.38rem;
+    font-size: 0.56rem;
+  }
+
+  .lp-rpg-battle__xp {
+    font-size: 0.72rem;
+    align-self: center;
+  }
+
+  .lp-rpg-add {
+    margin-top: 0.45rem;
+  }
+
+  .lp-rpg-add summary {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.6rem;
+    min-height: 1.6rem;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .lp-rpg-add__label--short { display: inline; }
+  .lp-rpg-add__label--long { display: none; }
+
+  .lp-rpg-stats {
+    display: flex;
+    align-items: stretch;
+    gap: 0.32rem;
+    max-width: 72rem;
+    margin: 0.12rem auto 0;
+    padding: 0 0.8rem calc(0.95rem + env(safe-area-inset-bottom));
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(23, 28, 34, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .lp-rpg-stat {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.48rem 0.18rem 0.38rem;
+    gap: 0.06rem;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .lp-rpg-stat__chip {
+    gap: 0.1rem;
+    justify-content: center;
+  }
+
+  .lp-rpg-stat__icon {
+    font-size: 0.82rem;
+  }
+
+  .lp-rpg-stat__value {
+    font-size: 0.82rem;
+  }
+
+  .lp-rpg-stat.is-rank .lp-rpg-stat__value {
+    font-size: 0.78rem;
+  }
+
+  .lp-rpg-stat__label {
+    font-size: 0.49rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (max-width: 389px) {
+  .lp-rpg-stats {
+    padding-bottom: calc(0.9rem + env(safe-area-inset-bottom));
+  }
+
+  .lp-rpg-stat__label {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-rpg-world__birds { animation: none !important; }
+
+  .lp-rpg-project {
+    transition: none !important;
+  }
 }
