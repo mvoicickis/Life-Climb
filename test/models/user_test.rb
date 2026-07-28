@@ -23,13 +23,21 @@ class UserTest < ActiveSupport::TestCase
     refute user.character_chosen?
   end
 
-  test "overall closer percent averages life areas" do
+  test "overall closer percent averages life areas for legacy v1" do
     user = users(:one)
+    user.update!(planning_version: 1)
     areas = user.active_dream.life_areas.tree.to_a
     skip "needs life areas" if areas.empty?
 
     areas.each { |a| a.update!(closer_score: 3) } # 50% closer
     assert_equal 50, user.overall_closer_percent(areas)
     assert_equal 50, user.overall_gap_percent(areas)
+  end
+
+  test "overall closer percent uses journey gap for planning v2" do
+    user = users(:one)
+    seed_climb!(user)
+    # Empty gap when the climb is just started → closer stays high until progress math moves.
+    assert_equal (100 - user.overall_gap_percent).clamp(0, 100), user.overall_closer_percent
   end
 end

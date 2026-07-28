@@ -48,6 +48,18 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
 
   test "first finished product offers thank-you once" do
     sign_in_as @user
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "Live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Code",
+      closer_percent: 20,
+      route_mission: true
+    )
+    @user.update!(support_milestones_shown: [])
     product = @user.finished_products.create!(
       title: "Portfolio site",
       shipped_on: Date.current,

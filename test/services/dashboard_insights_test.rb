@@ -75,45 +75,57 @@ class DashboardInsightsTest < ActiveSupport::TestCase
 end
 
 class DashboardControllerTest < ActionDispatch::IntegrationTest
-  test "today board shows dream story and actions" do
+  test "today board shows battle home after climb is seeded" do
     user = users(:one)
+    seed_climb!(user, today_mission: "Finish authentication")
     sign_in_as user
 
     get dashboard_path
     assert_response :success
-    assert_match(/Overall Gap|Life Points/, response.body)
+    assert_match(/Today|Battle|Action Points/i, response.body)
     assert_match(/Finish authentication/, response.body)
-    assert_select ".lp-twin"
-    assert_select ".lp-gap-card"
-    assert_select ".lp-mission"
+    assert_select ".lp-dash-nav"
     refute_match(/Morale/, response.body)
   end
 end
 
 class LocalesControllerTest < ActionDispatch::IntegrationTest
+  teardown { I18n.locale = I18n.default_locale }
+
   test "can switch locale to latvian" do
-    sign_in_as users(:one)
+    user = users(:one)
+    seed_climb!(user)
+    sign_in_as user
     patch locale_path(locale: :lv)
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match(/Iestatījumi|Settings|Dream Life|Life Points/, response.body)
+    assert_response :success
+    get settings_path
+    assert_match(/Iestatījumi/, response.body)
   end
 
   test "can switch locale to german" do
-    sign_in_as users(:one)
+    user = users(:one)
+    seed_climb!(user)
+    sign_in_as user
     patch locale_path(locale: :de)
     assert_redirected_to dashboard_path
     follow_redirect!
+    assert_response :success
+    assert_match(/Heute|Berg|Du/, response.body)
+    get settings_path
     assert_match(/Einstellungen/, response.body)
-    assert_match(/Dream Life|Life Points|Building|Bauen/, response.body)
   end
 
   test "can switch locale to spanish" do
-    sign_in_as users(:one)
+    user = users(:one)
+    seed_climb!(user)
+    sign_in_as user
     patch locale_path(locale: :es)
     assert_redirected_to dashboard_path
     follow_redirect!
+    assert_response :success
+    get settings_path
     assert_match(/Ajustes/, response.body)
-    assert_match(/Dream Life|Life Points|Building|Proyecto/, response.body)
   end
 end
