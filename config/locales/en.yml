@@ -310,7 +310,7 @@ en:
     promise: "One mountain. Today’s battle."
     rpg:
       world_label: "Your life mountain"
-      life_goal: "Life goal"
+      life_goal: "LIFE GOAL"
       climbing: "Climbing"
       on_my_way: "On my way"
       summit_tagline: "The summit of a life without limits."
@@ -347,6 +347,8 @@ en:
         one: "%{count} Day streak"
         other: "%{count} Day streak"
       mountain: "Mountain"
+      rank: "Rank"
+      fire_level: "Fire Level %{n}"
       difficulty:
         easy: "Easy"
         medium: "Medium"

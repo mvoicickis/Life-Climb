@@ -6,6 +6,8 @@
 <% battles = local_assigns.fetch(:battles, []) %>
 <% area = @journey.life_area %>
 <% battle_xp = GameRules::BATTLE_TODO_LP %>
+<% project_accents = %w[green purple orange pink blue] %>
+<% battle_glyphs = %w[⚔️ 📖 💪 🎯 🔥 ✍️] %>
 
 <div class="lp-rpg-glass" data-strategy-rpg-target="glass">
   <% if @goal && plans.any? && focus_plan %>
@@ -17,9 +19,6 @@
           </p>
         </div>
         <div class="lp-rpg-panel__actions">
-          <%= link_to t("strategy.rpg.view_all_projects"),
-                life_journey_path(@journey, focus_id: focus_plan.id),
-                class: "lp-rpg-panel__link" %>
           <details class="lp-rpg-add">
             <summary><%= t("strategy.rpg.add_project") %></summary>
             <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
@@ -41,20 +40,33 @@
 
       <% if projects.any? %>
         <ul class="lp-rpg-projects">
-          <% projects.each do |project| %>
+          <% projects.each_with_index do |project, idx| %>
             <% pct = project.progress_percent.to_i %>
             <% battle_count = project.children.count(&:day?) %>
             <% locked = !project.completed? && battle_count.zero? && focus_project&.id != project.id %>
+            <% accent = project_accents[idx % project_accents.size] %>
             <li>
               <% if locked %>
-                <div class="lp-rpg-project is-locked" aria-label="<%= t('strategy.rpg.locked') %>">
-                  <span class="lp-rpg-project__lock" aria-hidden="true">🔒</span>
+                <div class="lp-rpg-project is-locked is-<%= accent %>" aria-label="<%= t('strategy.rpg.locked') %>">
+                  <span class="lp-rpg-project__top">
+                    <span class="lp-rpg-project__glyph" aria-hidden="true">🔒</span>
+                    <span class="lp-rpg-project__pct">0%</span>
+                  </span>
                   <span class="lp-rpg-project__title"><%= project.title %></span>
+                  <span class="lp-rpg-project__bar" aria-hidden="true">
+                    <span class="lp-rpg-project__fill" style="width: 0%"></span>
+                  </span>
                   <span class="lp-rpg-project__meta lp-rpg-mission__meta"><%= t("strategy.rpg.locked") %></span>
                 </div>
               <% else %>
                 <%= link_to life_journey_path(@journey, focus_id: project.id),
-                      class: "lp-rpg-project lp-rpg-mission #{'is-focus' if focus_project&.id == project.id} #{'is-done' if project.completed?}" do %>
+                      class: "lp-rpg-project lp-rpg-mission is-#{accent} #{'is-focus' if focus_project&.id == project.id} #{'is-done' if project.completed?}" do %>
+                  <span class="lp-rpg-project__top">
+                    <span class="lp-rpg-project__glyph" aria-hidden="true">
+                      <%= render "shared/lp_icon", name: "flag", class_name: "lp-icon is-chip" %>
+                    </span>
+                    <span class="lp-rpg-project__pct"><%= pct %>%</span>
+                  </span>
                   <span class="lp-rpg-project__title"><%= project.title %></span>
                   <% if project.description.present? %>
                     <span class="lp-rpg-project__desc"><%= project.description.truncate(48) %></span>
@@ -63,10 +75,8 @@
                     <span class="lp-rpg-project__fill" style="width: <%= pct %>%"></span>
                   </span>
                   <span class="lp-rpg-project__meta lp-rpg-mission__meta">
-                    <span class="lp-rpg-mission__ring" style="--lp-pct: <%= pct %>" aria-hidden="true">
-                      <% if project.completed? %>✓<% else %><%= pct %>%<% end %>
-                    </span>
-                    <%= t("strategy.zones.battles_count", count: battle_count) %>
+                    <span class="lp-rpg-mission__ring" style="--lp-pct: <%= pct %>" aria-hidden="true"></span>
+                    ⚔️ <%= t("strategy.zones.battles_count", count: battle_count) %>
                   </span>
                 <% end %>
               <% end %>
@@ -81,7 +91,6 @@
     <section class="lp-rpg-panel is-battles" aria-labelledby="rpg-battles-title">
       <header class="lp-rpg-panel__head">
         <div>
-          <p class="lp-rpg-panel__kicker"><%= t("strategy.rpg.battles_kicker") %></p>
           <h2 id="rpg-battles-title" class="lp-rpg-panel__title"><%= t("strategy.rpg.todays_battles") %></h2>
         </div>
         <% if focus_project %>
@@ -109,12 +118,14 @@
         <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.pick_mission") %></p>
       <% elsif battles.any? %>
         <ul class="lp-rpg-battles">
-          <% battles.each do |battle| %>
+          <% battles.each_with_index do |battle, idx| %>
             <% difficulty = strategy_battle_difficulty(battle_xp) %>
+            <% glyph = battle_glyphs[idx % battle_glyphs.size] %>
             <li class="lp-rpg-battle <%= 'is-done' if battle.completed? %>"
                 data-strategy-rpg-target="battleRow">
               <% if battle.completed? %>
                 <span class="lp-rpg-battle__check" aria-hidden="true">✓</span>
+                <span class="lp-rpg-battle__glyph" aria-hidden="true"><%= glyph %></span>
                 <span class="lp-rpg-battle__body">
                   <span class="lp-rpg-battle__title"><%= battle.title %></span>
                 </span>
@@ -124,6 +135,7 @@
                       class: "lp-rpg-battle__win",
                       form: { data: { turbo: false } } do %>
                   <span class="lp-rpg-battle__box" aria-hidden="true"></span>
+                  <span class="lp-rpg-battle__glyph" aria-hidden="true"><%= glyph %></span>
                   <span class="lp-rpg-battle__body">
                     <span class="lp-rpg-battle__title"><%= battle.title %></span>
                     <span class="lp-rpg-battle__tags">

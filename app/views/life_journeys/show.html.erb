@@ -48,31 +48,29 @@
           alive: alive,
           streak: streak %>
 
-    <div class="lp-rpg-board">
+    <div class="lp-rpg-climb">
+      <%= render "life_journeys/rpg_world",
+            mountain: mountain,
+            progress: progress,
+            stage: stage,
+            plans: plans,
+            focus_plan: focus_plan,
+            alive: alive %>
+
       <%= render "life_journeys/rpg_plans",
             plans: plans,
             focus_plan: focus_plan %>
-
-      <div class="lp-rpg-stage">
-        <%= render "life_journeys/rpg_world",
-              mountain: mountain,
-              progress: progress,
-              stage: stage,
-              plans: plans,
-              focus_plan: focus_plan,
-              alive: alive %>
-
-        <%= render "life_journeys/rpg_glass",
-              plans: plans,
-              focus_plan: focus_plan,
-              projects: projects,
-              focus_project: focus_project,
-              battles: battles,
-              mountain: mountain,
-              alive: alive,
-              streak: streak %>
-      </div>
     </div>
+
+    <%= render "life_journeys/rpg_glass",
+          plans: plans,
+          focus_plan: focus_plan,
+          projects: projects,
+          focus_project: focus_project,
+          battles: battles,
+          mountain: mountain,
+          alive: alive,
+          streak: streak %>
 
     <%= render "life_journeys/rpg_stats",
           mountain: mountain,
