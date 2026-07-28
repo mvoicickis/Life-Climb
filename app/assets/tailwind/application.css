@@ -14283,6 +14283,40 @@ button.lp-strategy-overflow {
   color: var(--rpg-mist, #8b95a5);
 }
 
+@media (max-width: 639px) {
+  .lp-rpg-projects {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.6rem;
+    margin-inline: -0.15rem;
+    padding-inline: 0.15rem 0.85rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 0.15rem;
+  }
+
+  .lp-rpg-project {
+    flex: 0 0 clamp(9.5rem, 86vw, 13rem);
+    min-width: 0;
+    min-height: 6.9rem;
+    padding: 0.75rem 0.8rem;
+  }
+
+  .lp-rpg-project__title {
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  .lp-rpg-project__desc {
+    font-size: 0.74rem;
+  }
+
+  .lp-rpg-project__meta {
+    gap: 0.35rem;
+    font-size: 0.68rem;
+  }
+}
+
 .lp-rpg-mission__ring {
   --lp-pct: 0;
   width: 1.55rem;
@@ -14363,6 +14397,9 @@ button.lp-strategy-overflow {
   font-size: 0.95rem;
   font-weight: 750;
   letter-spacing: -0.01em;
+}
+.lp-rpg-battle__body {
+  min-width: 0;
 }
 .lp-rpg-battle__tags {
   display: flex;
@@ -14501,6 +14538,50 @@ button.lp-strategy-overflow {
   .lp-rpg-hud__chips { grid-area: chips; }
   .lp-rpg-summit { grid-area: goal; text-align: left; margin: 0; max-width: none; }
   .lp-rpg-node__label { min-width: 5.5rem; }
+}
+
+@media (max-width: 639px) {
+  .lp-rpg-panel {
+    padding: 0.85rem 0.85rem 0.95rem;
+  }
+
+  .lp-rpg-battle {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    padding: 0.6rem 0.65rem;
+  }
+
+  .lp-rpg-battle.is-done {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    gap: 0.45rem;
+  }
+
+  .lp-rpg-battle__win {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .lp-rpg-battle__body {
+    min-width: 0;
+  }
+
+  .lp-rpg-battle__title {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lp-rpg-battle__tags {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .lp-rpg-battle__xp {
+    font-size: 0.74rem;
+    align-self: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
