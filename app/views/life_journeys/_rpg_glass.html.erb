@@ -20,7 +20,10 @@
         </div>
         <div class="lp-rpg-panel__actions">
           <details class="lp-rpg-add">
-            <summary><%= t("strategy.rpg.add_project") %></summary>
+            <summary>
+              <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+              <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_project") %></span>
+            </summary>
             <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
               <%= hidden_field_tag :life_area_id, area.id %>
               <%= hidden_field_tag :life_journey_id, @journey.id %>
@@ -95,7 +98,10 @@
         </div>
         <% if focus_project %>
           <details class="lp-rpg-add">
-            <summary><%= t("strategy.rpg.add_battle") %></summary>
+            <summary>
+              <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+              <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_battle") %></span>
+            </summary>
             <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
               <%= hidden_field_tag :life_area_id, area.id %>
               <%= hidden_field_tag :life_journey_id, @journey.id %>

@@ -5,23 +5,31 @@
 
 <section class="lp-rpg-stats" aria-label="<%= t('strategy.rpg.stats') %>">
   <div class="lp-rpg-stat is-xp">
-    <span class="lp-rpg-stat__icon" aria-hidden="true">★</span>
-    <span class="lp-rpg-stat__value"><%= number_with_delimiter(current_user.life_points) %></span>
+    <span class="lp-rpg-stat__chip">
+      <span class="lp-rpg-stat__icon" aria-hidden="true">★</span>
+      <span class="lp-rpg-stat__value"><%= number_with_delimiter(current_user.life_points) %></span>
+    </span>
     <span class="lp-rpg-stat__label"><%= t("strategy.rpg.xp") %></span>
   </div>
   <div class="lp-rpg-stat is-streak">
-    <span class="lp-rpg-stat__icon" aria-hidden="true">🔥</span>
-    <span class="lp-rpg-stat__value"><%= streak.days %></span>
+    <span class="lp-rpg-stat__chip">
+      <span class="lp-rpg-stat__icon" aria-hidden="true">🔥</span>
+      <span class="lp-rpg-stat__value"><%= streak.days %></span>
+    </span>
     <span class="lp-rpg-stat__label"><%= t("strategy.rpg.day_streak", count: streak.days) %></span>
   </div>
   <div class="lp-rpg-stat is-mountain">
-    <span class="lp-rpg-stat__icon" aria-hidden="true">⛰</span>
-    <span class="lp-rpg-stat__value"><%= mountain[:progress].to_i %>%</span>
+    <span class="lp-rpg-stat__chip">
+      <span class="lp-rpg-stat__icon" aria-hidden="true">⛰</span>
+      <span class="lp-rpg-stat__value"><%= mountain[:progress].to_i %>%</span>
+    </span>
     <span class="lp-rpg-stat__label"><%= t("strategy.rpg.mountain") %></span>
   </div>
   <div class="lp-rpg-stat is-rank">
-    <span class="lp-rpg-stat__icon" aria-hidden="true">⛨</span>
-    <span class="lp-rpg-stat__value"><%= t("strategy.rpg.fire_level", n: alive.number) %></span>
+    <span class="lp-rpg-stat__chip">
+      <span class="lp-rpg-stat__icon" aria-hidden="true">⛨</span>
+      <span class="lp-rpg-stat__value"><%= "Lv#{alive.number}" %></span>
+    </span>
     <span class="lp-rpg-stat__label"><%= alive.title %></span>
   </div>
 </section>
