@@ -48,8 +48,7 @@
     </div>
     <div class="lp-rpg-chip is-streak" aria-label="<%= t('strategy.rpg.streak') %>">
       <span class="lp-rpg-chip__icon" aria-hidden="true">🔥</span>
-      <span class="lp-rpg-chip__value"><%= streak.days %></span>
-      <span class="lp-rpg-chip__name"><%= t("strategy.rpg.day_streak", count: streak.days) %></span>
+      <span class="lp-rpg-chip__value"><%= t("strategy.rpg.day_streak", count: streak.days) %></span>
     </div>
     <div class="lp-rpg-chip is-quiet" aria-hidden="true">
       <span class="lp-rpg-chip__value" data-strategy-celebrate-target="spValue"><%= number_with_delimiter(current_user.strategy_points) %></span>
