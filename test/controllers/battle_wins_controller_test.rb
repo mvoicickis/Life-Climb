@@ -39,7 +39,12 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert @battle.reload.completed?
-    assert_redirected_to life_journey_path(@journey, focus_id: @project.id)
+    assert_redirected_to life_journey_path(
+      @journey,
+      goal_id: @goal.id,
+      plan_id: @plan.id,
+      focus_id: @project.id
+    )
     assert_equal GameRules::BATTLE_TODO_LP, flash[:ap_gained].to_i
     assert flash[:battle_celebrate]
 
