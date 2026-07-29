@@ -86,12 +86,14 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-battle", minimum: 1
+    assert_select ".lp-rpg-sheet__title", text: /Battle 0/
+    assert_select ".lp-rpg-btn.is-begin", text: /Begin/i
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
+    assert_select ".lp-rpg-hero .lp-rpg-chip", count: 0
+    assert_select ".lp-rpg-hero .lp-rpg-stats", count: 0
   end
 
-  test "focusing a project shows battles in the sheet" do
+  test "focusing a project shows Begin for the next battle" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -108,7 +110,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
+    assert_select ".lp-rpg-sheet__title", text: /Update CV/
+    assert_select ".lp-rpg-btn.is-begin", text: /Begin/i
     assert_select ".lp-rpg-battle", text: /Update CV/
     assert_select ".lp-rpg-sheet .lp-rpg-add", text: /Step|battle/i
   end
@@ -134,7 +137,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
+    assert_select ".lp-rpg-sheet__title", text: /Update CV/
     assert_select ".lp-rpg-node.is-locked", text: /Interviews/
   end
 

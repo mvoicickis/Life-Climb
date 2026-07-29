@@ -1,4 +1,4 @@
-<%# Plan-scoped trail with checkpoints + adventurer. locals: trail, goal, plan, alive %>
+<%# Plan-scoped trail — camera focused on player. locals: trail, goal, plan, alive %>
 <% trail = local_assigns[:trail] %>
 <% goal = local_assigns[:goal] %>
 <% plan = local_assigns[:plan] %>
@@ -8,14 +8,16 @@
 <% progress = trail&.progress.to_i %>
 <% character_top = current ? current.y : 88 %>
 
-<section class="lp-rpg-world is-trail"
+<section class="lp-rpg-world is-trail is-camera"
          data-strategy-rpg-target="world"
          data-strategy-celebrate-target="mountain"
          aria-label="<%= t('strategy.rpg.world_label') %>">
   <div class="lp-rpg-world__birds" aria-hidden="true"></div>
 
   <% if plan && all_nodes.any? %>
-    <div class="lp-rpg-trail">
+    <div class="lp-rpg-trail"
+         data-strategy-rpg-target="camera"
+         style="--lp-focus-y: <%= character_top %>;">
       <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <path d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
               fill="none"
@@ -46,28 +48,21 @@
             <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
                   class: "lp-rpg-node__hit",
                   data: { turbo: true } do %>
-              <span class="lp-rpg-node__marker" aria-hidden="true">
-                <% if node.state == :done %>
-                  <span class="lp-rpg-node__flag">⚑</span>
-                <% else %>
-                  <span class="lp-rpg-node__tent">⛺</span>
-                <% end %>
-              </span>
+              <span class="lp-rpg-node__marker" aria-hidden="true"></span>
               <span class="lp-rpg-node__label">
-                <strong><%= node.title %></strong>
                 <% if node.state == :current %>
+                  <strong><%= node.title %></strong>
                   <em><%= t("strategy.rpg.trail.you_are_here") %></em>
+                <% else %>
+                  <strong class="lp-rpg-node__quiet"><%= node.title %></strong>
                 <% end %>
               </span>
             <% end %>
           <% else %>
             <span class="lp-rpg-node__hit is-locked" aria-label="<%= t('strategy.rpg.locked') %>">
-              <span class="lp-rpg-node__marker" aria-hidden="true">
-                <span class="lp-rpg-node__lock">🔒</span>
-              </span>
+              <span class="lp-rpg-node__marker" aria-hidden="true"></span>
               <span class="lp-rpg-node__label">
-                <strong><%= node.title %></strong>
-                <em><%= t("strategy.rpg.locked") %></em>
+                <strong class="lp-rpg-node__quiet"><%= node.title %></strong>
               </span>
             </span>
           <% end %>

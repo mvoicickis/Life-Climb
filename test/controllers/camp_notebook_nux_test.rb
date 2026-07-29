@@ -46,7 +46,7 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
-    assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
+    assert_select ".lp-rpg-disclosure.is-path", text: /Change path/i
     assert_match(/Add (project|checkpoint)/i, response.body)
   end
 

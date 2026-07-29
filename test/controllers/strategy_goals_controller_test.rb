@@ -92,6 +92,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-battle", text: /Learn 20 words/i
     assert_select ".lp-rpg-node.is-current", text: /Learn German/i
+    assert_select ".lp-rpg-sheet__title", text: /Learn 20 words/i
+    assert_select ".lp-rpg-btn.is-begin", text: /Begin/i
     assert_select ".lp-rpg-sheet"
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
@@ -195,7 +197,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-node.is-current", text: /Project One/i
     assert_select ".lp-rpg-project", text: /Project Two/i
-    assert_select ".lp-rpg-battle", text: /Battle One/i
+    assert_select ".lp-rpg-sheet__title", text: /Battle One/i
+    assert_select ".lp-rpg-btn.is-begin", text: /Begin/i
     assert_select ".lp-rpg-stats"
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0

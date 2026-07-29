@@ -1,55 +1,60 @@
-<%# Collapsible battle sheet — next meaningful actions. locals: current_project, plan, goal, trail %>
+<%# Hero Q3 — one Begin action. Later/Done/add behind expand. locals: current_project, plan, goal, trail %>
 <% current_project = local_assigns[:current_project] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
-<% battle_xp = GameRules::BATTLE_TODO_LP %>
 <% battles = current_project ? current_project.children.select(&:day?).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } : [] %>
 <% now = battles.select { |b| !b.completed? && b.scheduled_on == Date.current } %>
 <% later = battles.select { |b| !b.completed? && b.scheduled_on != Date.current } %>
 <% done = battles.select(&:completed?) %>
-<% preview = (now.presence || later).first(3) %>
+<% next_battle = now.first || later.first %>
+<% more_count = [ now.size + later.size - 1, 0 ].max %>
 <% area = @journey.life_area %>
 
 <% if current_project %>
-  <section class="lp-rpg-sheet"
+  <section class="lp-rpg-sheet is-game-first"
            data-controller="strategy-sheet"
            data-strategy-sheet-expanded-value="false"
            aria-label="<%= t('strategy.rpg.sheet.label') %>">
-    <button type="button"
-            class="lp-rpg-sheet__handle"
-            data-action="strategy-sheet#toggle"
-            aria-expanded="false"
-            data-strategy-sheet-target="toggle">
-      <span class="lp-rpg-sheet__grip" aria-hidden="true"></span>
-      <span class="lp-rpg-sheet__head">
-        <span class="lp-rpg-sheet__kicker"><%= t("strategy.rpg.sheet.next_steps") %></span>
-        <strong class="lp-rpg-sheet__title"><%= current_project.title %></strong>
-      </span>
-      <span class="lp-rpg-sheet__cue"><%= current_project.progress_percent.to_i %>%</span>
-    </button>
-
-    <div class="lp-rpg-sheet__preview">
-      <% if preview.any? %>
-        <ul class="lp-rpg-battles is-compact">
-          <% preview.each do |battle| %>
-            <li class="lp-rpg-battle" data-strategy-rpg-target="battleRow">
-              <%= button_to battle_win_path(battle),
-                    method: :post,
-                    class: "lp-rpg-battle__win",
-                    form: { data: { turbo: false } } do %>
-                <span class="lp-rpg-battle__box" aria-hidden="true"></span>
-                <span class="lp-rpg-battle__body">
-                  <span class="lp-rpg-battle__title"><%= battle.title %></span>
-                </span>
-              <% end %>
-              <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
-            </li>
-          <% end %>
-        </ul>
-      <% else %>
+    <% if next_battle %>
+      <div class="lp-rpg-sheet__hero">
+        <p class="lp-rpg-sheet__kicker"><%= t("strategy.rpg.sheet.next_battle") %></p>
+        <h2 class="lp-rpg-sheet__title"><%= next_battle.title %></h2>
+        <%= button_to t("strategy.rpg.sheet.begin"),
+              battle_win_path(next_battle),
+              method: :post,
+              class: "lp-rpg-btn is-begin",
+              form: { data: { turbo: false }, class: "lp-rpg-sheet__begin-form" } %>
+        <% if more_count.positive? %>
+          <button type="button"
+                  class="lp-rpg-sheet__more"
+                  data-action="strategy-sheet#toggle"
+                  data-strategy-sheet-target="toggle"
+                  aria-expanded="false">
+            <%= t("strategy.rpg.sheet.more", count: more_count) %>
+          </button>
+        <% else %>
+          <button type="button"
+                  class="lp-rpg-sheet__more is-quiet"
+                  data-action="strategy-sheet#toggle"
+                  data-strategy-sheet-target="toggle"
+                  aria-expanded="false">
+            <%= t("strategy.rpg.sheet.show_more") %>
+          </button>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="lp-rpg-sheet__hero">
+        <p class="lp-rpg-sheet__kicker"><%= t("strategy.rpg.sheet.next_battle") %></p>
         <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.sheet.all_clear") %></p>
-      <% end %>
-    </div>
+        <button type="button"
+                class="lp-rpg-sheet__more"
+                data-action="strategy-sheet#toggle"
+                data-strategy-sheet-target="toggle"
+                aria-expanded="false">
+          <%= t("strategy.rpg.sheet.show_more") %>
+        </button>
+      </div>
+    <% end %>
 
     <div class="lp-rpg-sheet__body" data-strategy-sheet-target="body" hidden>
       <% [
@@ -80,7 +85,6 @@
                     </span>
                   <% end %>
                 <% end %>
-                <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
               </li>
             <% end %>
           </ul>
@@ -110,7 +114,7 @@
     </div>
   </section>
 <% elsif plan %>
-  <section class="lp-rpg-sheet is-quiet">
+  <section class="lp-rpg-sheet is-quiet is-game-first">
     <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.trail.need_checkpoint") %></p>
   </section>
 <% end %>

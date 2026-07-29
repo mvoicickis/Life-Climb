@@ -1,51 +1,54 @@
-<%# Path rail — horizontal trail choices under the destination. locals: plans, plan, goal %>
+<%# Current path + Change Path disclosure (not a hero rail). locals: plans, plan, goal %>
 <% plans = local_assigns.fetch(:plans, []) %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
 <% area = @journey.life_area %>
-<% accents = %w[green purple orange pink blue] %>
 
-<% if goal && plans.any? %>
-  <nav class="lp-rpg-plan-rail" aria-label="<%= t('strategy.rpg.paths') %>">
-    <ul class="lp-rpg-plan-rail__track">
-      <% plans.each_with_index do |p, idx| %>
-        <% accent = accents[idx % accents.size] %>
+<% if goal && plans.any? && plan %>
+  <nav class="lp-rpg-plan-rail is-disclosure" aria-label="<%= t('strategy.rpg.paths') %>">
+    <p class="lp-rpg-path is-focus is-current-label">
+      <span class="lp-rpg-path__title"><%= plan.title %></span>
+    </p>
+    <details class="lp-rpg-disclosure is-path">
+      <summary><%= t("strategy.rpg.change_path") %></summary>
+      <ul class="lp-rpg-plan-rail__track is-disclosure">
+        <% plans.each do |p| %>
+          <li>
+            <%= link_to life_journey_path(@journey, goal_id: goal.id, plan_id: p.id),
+                  class: "lp-rpg-path #{'is-focus' if plan.id == p.id} #{'is-done' if p.completed?}",
+                  data: { turbo: true } do %>
+              <span class="lp-rpg-path__title"><%= p.title %></span>
+            <% end %>
+          </li>
+        <% end %>
         <li>
-          <%= link_to life_journey_path(@journey, goal_id: goal.id, plan_id: p.id),
-                class: "lp-rpg-path is-#{accent} #{'is-focus' if plan&.id == p.id} #{'is-done' if p.completed?}",
-                data: { turbo: true } do %>
-            <span class="lp-rpg-path__title"><%= p.title %></span>
-            <span class="lp-rpg-path__pct"><%= p.progress_percent.to_i %>%</span>
-          <% end %>
+          <details class="lp-rpg-add is-path">
+            <summary aria-label="<%= t('strategy.rpg.add_plan') %>">
+              <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+              <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_path") %></span>
+            </summary>
+            <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+              <%= hidden_field_tag :life_area_id, area.id %>
+              <%= hidden_field_tag :life_journey_id, @journey.id %>
+              <%= hidden_field_tag :horizon, "plan" %>
+              <%= hidden_field_tag :parent_id, goal.id %>
+              <%= text_field_tag :title, nil,
+                    required: true,
+                    maxlength: 120,
+                    class: "lp-rpg-input",
+                    placeholder: t("strategy.plan_placeholder"),
+                    autocomplete: "off" %>
+              <%= submit_tag t("strategy.sheet.add_plan"), class: "lp-rpg-btn is-small" %>
+            <% end %>
+          </details>
         </li>
-      <% end %>
-      <li>
-        <details class="lp-rpg-add is-path">
-          <summary aria-label="<%= t('strategy.rpg.add_plan') %>">
-            <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
-            <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_path") %></span>
-          </summary>
-          <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
-            <%= hidden_field_tag :life_area_id, area.id %>
-            <%= hidden_field_tag :life_journey_id, @journey.id %>
-            <%= hidden_field_tag :horizon, "plan" %>
-            <%= hidden_field_tag :parent_id, goal.id %>
-            <%= text_field_tag :title, nil,
-                  required: true,
-                  maxlength: 120,
-                  class: "lp-rpg-input",
-                  placeholder: t("strategy.plan_placeholder"),
-                  autocomplete: "off" %>
-            <%= submit_tag t("strategy.sheet.add_plan"), class: "lp-rpg-btn is-small" %>
-          <% end %>
-        </details>
-      </li>
-    </ul>
+      </ul>
+    </details>
   </nav>
 <% elsif goal %>
   <div class="lp-rpg-plan-rail is-empty">
     <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.pick_path_hint") %></p>
-    <details class="lp-rpg-add is-path is-open-hint">
+    <details class="lp-rpg-add is-path is-open-hint" open>
       <summary><%= t("strategy.rpg.add_path") %></summary>
       <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
         <%= hidden_field_tag :life_area_id, area.id %>

@@ -337,9 +337,17 @@ en:
         you_are_here: "You are here"
         need_checkpoint: "Place your first checkpoint on this path."
         current_checkpoint: "Current checkpoint"
+      switch_destination: "Switch destination"
+      change_path: "Change path"
       sheet:
-        label: "Next steps"
+        label: "Next battle"
         next_steps: "Next steps"
+        next_battle: "Next battle"
+        begin: "Begin"
+        more:
+          one: "+%{count} more"
+          other: "+%{count} more"
+        show_more: "More"
         all_clear: "Path clear — add the next step."
         now: "Now"
         later: "Later"

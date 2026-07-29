@@ -22,7 +22,7 @@
 <% alive = current_user.alive_level %>
 <% streak = @climb_streak || strategy_climb_streak_status %>
 
-<div class="lp-rpg is-focus-phase <%= 'is-first-climb' if first_climb %>"
+<div class="lp-rpg is-focus-phase is-game-first <%= 'is-first-climb' if first_climb %>"
      id="strategy-world"
      data-controller="strategy-celebrate strategy-rpg"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
@@ -42,42 +42,61 @@
     <div class="lp-rpg-scenic" style="--lp-scenic: url('/images/strategy-mountain-scenic.jpg')" aria-hidden="true"></div>
     <div class="lp-rpg-scenic__veil" aria-hidden="true"></div>
 
-    <%= render "life_journeys/rpg_goal_switcher",
-          root_goals: root_goals,
-          goal: @goal,
-          progress: progress,
-          mountain: mountain,
-          alive: alive,
-          streak: streak %>
+    <%# Hero Rule Q1–Q3 only in first viewport %>
+    <div class="lp-rpg-hero">
+      <%= render "life_journeys/rpg_goal_switcher",
+            root_goals: root_goals,
+            goal: @goal %>
 
-    <%= render "life_journeys/rpg_plan_rail",
-          plans: plans,
-          plan: plan,
-          goal: @goal %>
-
-    <div class="lp-rpg-climb is-hero">
-      <%= render "life_journeys/rpg_trail",
-            trail: trail,
-            goal: @goal,
+      <%= render "life_journeys/rpg_plan_rail",
+            plans: plans,
             plan: plan,
-            alive: alive %>
+            goal: @goal %>
+
+      <div class="lp-rpg-climb is-hero">
+        <%= render "life_journeys/rpg_trail",
+              trail: trail,
+              goal: @goal,
+              plan: plan,
+              alive: alive %>
+      </div>
+
+      <%= render "life_journeys/rpg_battle_sheet",
+            current_project: current_project,
+            plan: plan,
+            goal: @goal,
+            trail: trail %>
     </div>
 
-    <%= render "life_journeys/rpg_context",
-          trail: trail,
-          current_project: current_project,
-          plan: plan %>
+    <%# Fourth-question UI — below the fold %>
+    <div class="lp-rpg-support" id="mountain-support">
+      <%= render "life_journeys/rpg_stats",
+            mountain: mountain,
+            alive: alive,
+            streak: streak %>
 
-    <%= render "life_journeys/rpg_battle_sheet",
-          current_project: current_project,
-          plan: plan,
-          goal: @goal,
-          trail: trail %>
-
-    <%= render "life_journeys/rpg_stats",
-          mountain: mountain,
-          alive: alive,
-          streak: streak %>
+      <% if plan %>
+        <details class="lp-rpg-add is-checkpoint">
+          <summary aria-label="<%= t('strategy.rpg.add_checkpoint') %>">
+            <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+            <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_checkpoint") %></span>
+          </summary>
+          <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, @journey.life_area_id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :horizon, "project" %>
+            <%= hidden_field_tag :parent_id, plan.id %>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  class: "lp-rpg-input",
+                  placeholder: t("strategy.project_placeholder"),
+                  autocomplete: "off" %>
+            <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
+          <% end %>
+        </details>
+      <% end %>
+    </div>
   <% end %>
 
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
