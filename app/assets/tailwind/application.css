@@ -14987,6 +14987,9 @@ button.lp-strategy-overflow {
 .lp-rpg-path__menu-item.is-danger {
   color: #fca5a5;
 }
+.lp-rpg-path__edit::backdrop {
+  background: rgba(4, 8, 14, 0.55);
+}
 
 .lp-rpg-plan-rail__arrow {
   display: none;

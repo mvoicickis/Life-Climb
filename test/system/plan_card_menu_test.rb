@@ -62,7 +62,6 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-path__menu:not([hidden])", text: /Delete Plan/
     assert_selector ".lp-rpg-path__menu:not([hidden])", count: 1
 
-    # Click a neutral page corner so the menu's outside-pointer handler closes it.
     page.execute_script("document.elementFromPoint(4, 4).dispatchEvent(new PointerEvent('pointerdown', {bubbles:true}))")
     assert_no_selector ".lp-rpg-path__menu:not([hidden])"
 
@@ -77,5 +76,29 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-path__menu:not([hidden])", count: 1
     assert_equal "true", second_btn["aria-expanded"]
     assert_equal "false", first_btn["aria-expanded"]
+  end
+
+  test "edit plan opens existing rename form, saves, and returns to mountain" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    within(".lp-dash-nav") { click_link "Mountain" }
+
+    assert_selector ".lp-rpg-path", text: /Alpha Path/
+    find(".lp-rpg-path__menu-btn", match: :first).click
+    click_button "Edit Plan"
+
+    assert_selector "dialog.lp-rpg-path__edit[open]"
+    within("dialog.lp-rpg-path__edit[open]") do
+      assert_field "plan-edit-title-#{@plan_a.id}", with: "Alpha Path"
+      fill_in "plan-edit-title-#{@plan_a.id}", with: "Renamed Path"
+      click_button "Save name"
+    end
+
+    assert_selector "#strategy-world", wait: 5
+    assert_selector ".lp-rpg-path.is-focus", text: /Renamed Path/
+    assert_equal "Renamed Path", @plan_a.reload.title
+    assert_no_selector "dialog.lp-rpg-path__edit[open]"
   end
 end

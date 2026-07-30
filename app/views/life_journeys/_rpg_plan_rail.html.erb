@@ -47,7 +47,7 @@
             <button type="button"
                     class="lp-rpg-path__menu-item"
                     role="menuitem"
-                    data-action="click->plan-card-menu#noop">
+                    data-action="click->plan-card-menu#edit">
               <span aria-hidden="true">✏</span>
               <%= t("strategy.rpg.edit_plan") %>
             </button>
@@ -59,6 +59,38 @@
               <%= t("strategy.rpg.delete_plan") %>
             </button>
           </div>
+
+          <%# Reuses the existing strategy sheet rename form (title) — no new edit UI. %>
+          <dialog class="lp-strategy-sheet is-plan lp-rpg-path__edit"
+                  id="plan-edit-<%= p.id %>"
+                  data-plan-card-menu-target="editDialog">
+            <div class="lp-strategy-sheet__panel">
+              <header class="lp-strategy-sheet__head">
+                <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.plan") %></p>
+                <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_plan") %></h2>
+                <button type="button"
+                        class="lp-strategy-sheet__close"
+                        data-action="click->plan-card-menu#closeEdit"
+                        aria-label="<%= t('strategy.sheet.close') %>">×</button>
+              </header>
+              <div class="lp-strategy-sheet__actions">
+                <div class="lp-strategy-sheet__edit" open>
+                  <%= form_with url: strategy_goal_path(p), method: :patch,
+                        class: "lp-strategy-sheet__form",
+                        data: { turbo: false } do %>
+                    <%= text_field_tag :title, p.title,
+                          required: true,
+                          maxlength: 120,
+                          id: "plan-edit-title-#{p.id}",
+                          class: "lp-input w-full",
+                          autocomplete: "off",
+                          aria: { label: t("strategy.rpg.edit_plan") } %>
+                    <%= submit_tag t("strategy.save_name"), class: "lp-strategy-sheet__btn is-save" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </dialog>
         </li>
       <% end %>
       <li class="lp-rpg-plan-rail__item is-add">

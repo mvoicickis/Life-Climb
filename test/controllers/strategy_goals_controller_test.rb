@@ -348,6 +348,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     patch strategy_goal_path(plan), params: { title: "New Plan" }
     assert_equal "New Plan", plan.reload.title
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id)
 
     patch strategy_goal_path(project), params: { title: "New Project" }
     assert_equal "New Project", project.reload.title
