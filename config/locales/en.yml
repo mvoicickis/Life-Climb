@@ -592,6 +592,7 @@ en:
     renamed: "Renamed."
     rename: "Rename"
     save_name: "Save name"
+    save_changes: "Save Changes"
     brief_saved: "Scale notes saved."
     synced:
       one: "Today’s fight is ready."

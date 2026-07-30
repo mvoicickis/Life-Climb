@@ -60,8 +60,8 @@
             </button>
           </div>
 
-          <%# Reuses the existing strategy sheet rename form (title) — no new edit UI. %>
-          <dialog class="lp-strategy-sheet is-plan lp-rpg-path__edit"
+          <%# Shared LifePoints dialog (strategy sheet) — Plan edit consumer. %>
+          <dialog class="lp-strategy-sheet is-plan"
                   id="plan-edit-<%= p.id %>"
                   data-plan-card-menu-target="editDialog">
             <div class="lp-strategy-sheet__panel">
@@ -74,7 +74,7 @@
                         aria-label="<%= t('strategy.sheet.close') %>">×</button>
               </header>
               <div class="lp-strategy-sheet__actions">
-                <div class="lp-strategy-sheet__edit" open>
+                <div class="lp-strategy-sheet__edit">
                   <%= form_with url: strategy_goal_path(p), method: :patch,
                         class: "lp-strategy-sheet__form",
                         data: { turbo: false } do %>
@@ -82,10 +82,14 @@
                           required: true,
                           maxlength: 120,
                           id: "plan-edit-title-#{p.id}",
-                          class: "lp-input w-full",
+                          class: "lp-rpg-input",
                           autocomplete: "off",
                           aria: { label: t("strategy.rpg.edit_plan") } %>
-                    <%= submit_tag t("strategy.save_name"), class: "lp-strategy-sheet__btn is-save" %>
+                    <div class="lp-strategy-sheet__footer">
+                      <%= submit_tag t("strategy.save_changes"),
+                            class: "lp-strategy-sheet__btn is-save",
+                            data: { plan_card_menu_target: "saveButton" } %>
+                    </div>
                   <% end %>
                 </div>
               </div>

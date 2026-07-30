@@ -17,6 +17,7 @@ es:
       projects: "Cambiar de proyecto"
     rename: "Renombrar"
     save_name: "Guardar nombre"
+    save_changes: "Guardar cambios"
     renamed: "Renombrado."
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"

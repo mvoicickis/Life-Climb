@@ -2,15 +2,16 @@ import { Controller } from "@hotwired/stimulus"
 
 const OPEN_EVENT = "lp-rpg-path-menu:open"
 
-// Plan card ⋮ menu — Edit opens the existing rename form; Delete is still a placeholder.
+// Plan card ⋮ menu — Edit opens the shared LifePoints dialog; Delete is still a placeholder.
 export default class extends Controller {
-  static targets = ["button", "menu", "editDialog"]
+  static targets = ["button", "menu", "editDialog", "saveButton"]
 
   connect() {
     this._onPointer = (event) => this.onPointerDown(event)
     this._onKey = (event) => this.onKeydown(event)
     this._onOpenElsewhere = (event) => this.onOpenElsewhere(event)
     this._onReposition = () => this.positionMenu()
+    this._onViewport = () => this.ensurePrimaryVisible()
     window.addEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
 
@@ -37,15 +38,18 @@ export default class extends Controller {
     if (!this.hasEditDialogTarget) return
 
     this.editDialogTarget.showModal()
-    const input = this.editDialogTarget.querySelector("input[name='title']")
+    this.bindDialogKeyboardGuards()
+    const input = this.editDialogTarget.querySelector("input[name='title'], input, textarea")
     if (input) {
       input.focus()
-      input.select()
+      if (typeof input.select === "function") input.select()
     }
+    this.ensurePrimaryVisible()
   }
 
   closeEdit(event) {
     event?.preventDefault()
+    this.unbindDialogKeyboardGuards()
     if (!this.hasEditDialogTarget) return
     if (this.editDialogTarget.open) this.editDialogTarget.close()
   }
@@ -55,6 +59,36 @@ export default class extends Controller {
     event.preventDefault()
     event.stopPropagation()
     this.close()
+  }
+
+  bindDialogKeyboardGuards() {
+    this.unbindDialogKeyboardGuards()
+    if (!this.hasEditDialogTarget) return
+    const input = this.editDialogTarget.querySelector("input[name='title'], input, textarea")
+    this._onInputFocus = () => this.ensurePrimaryVisible()
+    input?.addEventListener("focus", this._onInputFocus)
+    window.visualViewport?.addEventListener("resize", this._onViewport)
+    window.visualViewport?.addEventListener("scroll", this._onViewport)
+  }
+
+  unbindDialogKeyboardGuards() {
+    if (this.hasEditDialogTarget) {
+      const input = this.editDialogTarget.querySelector("input[name='title'], input, textarea")
+      if (input && this._onInputFocus) input.removeEventListener("focus", this._onInputFocus)
+    }
+    window.visualViewport?.removeEventListener("resize", this._onViewport)
+    window.visualViewport?.removeEventListener("scroll", this._onViewport)
+  }
+
+  ensurePrimaryVisible() {
+    if (!this.hasEditDialogTarget || !this.editDialogTarget.open) return
+    const primary =
+      (this.hasSaveButtonTarget && this.saveButtonTarget) ||
+      this.editDialogTarget.querySelector(".lp-strategy-sheet__btn.is-save, .lp-strategy-sheet__footer")
+    if (!primary) return
+    requestAnimationFrame(() => {
+      primary.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" })
+    })
   }
 
   open() {
