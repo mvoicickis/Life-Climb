@@ -1,4 +1,4 @@
-<%# Path rail — horizontal trail choices under the destination. locals: plans, plan, goal %>
+<%# Path rail — snap strip of full cards only; desktop arrows when overflowing. locals: plans, plan, goal %>
 <% plans = local_assigns.fetch(:plans, []) %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
@@ -6,11 +6,22 @@
 <% accents = %w[green purple orange pink blue] %>
 
 <% if goal && plans.any? %>
-  <nav class="lp-rpg-plan-rail" aria-label="<%= t('strategy.rpg.paths') %>">
-    <ul class="lp-rpg-plan-rail__track">
+  <nav class="lp-rpg-plan-rail"
+       aria-label="<%= t('strategy.rpg.paths') %>"
+       data-controller="strategy-plan-rail">
+    <button type="button"
+            class="lp-rpg-plan-rail__arrow is-prev"
+            data-strategy-plan-rail-target="prev"
+            data-action="strategy-plan-rail#prev"
+            hidden
+            aria-label="<%= t('strategy.rpg.paths_prev') %>">
+      <span aria-hidden="true">‹</span>
+    </button>
+
+    <ul class="lp-rpg-plan-rail__track" data-strategy-plan-rail-target="track">
       <% plans.each_with_index do |p, idx| %>
         <% accent = accents[idx % accents.size] %>
-        <li>
+        <li class="lp-rpg-plan-rail__item <%= 'is-focus' if plan&.id == p.id %>">
           <%= link_to life_journey_path(@journey, goal_id: goal.id, plan_id: p.id),
                 class: "lp-rpg-path is-#{accent} #{'is-focus' if plan&.id == p.id} #{'is-done' if p.completed?}",
                 data: { turbo: true } do %>
@@ -19,7 +30,7 @@
           <% end %>
         </li>
       <% end %>
-      <li>
+      <li class="lp-rpg-plan-rail__item is-add">
         <details class="lp-rpg-add is-path">
           <summary aria-label="<%= t('strategy.rpg.add_plan') %>">
             <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
@@ -41,6 +52,15 @@
         </details>
       </li>
     </ul>
+
+    <button type="button"
+            class="lp-rpg-plan-rail__arrow is-next"
+            data-strategy-plan-rail-target="next"
+            data-action="strategy-plan-rail#next"
+            hidden
+            aria-label="<%= t('strategy.rpg.paths_next') %>">
+      <span aria-hidden="true">›</span>
+    </button>
   </nav>
 <% elsif goal %>
   <div class="lp-rpg-plan-rail is-empty">

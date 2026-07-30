@@ -138,6 +138,32 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-node.is-locked", text: /Interviews/
   end
 
+  test "plan rail keeps multiple paths with snap track and overflow arrows" do
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Path Alpha", position: 0
+    )
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Path Beta", position: 1
+    )
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Path Gamma", position: 2
+    )
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select ".lp-rpg-plan-rail[data-controller*=strategy-plan-rail]"
+    assert_select ".lp-rpg-plan-rail__track[data-strategy-plan-rail-target=track]"
+    assert_select ".lp-rpg-plan-rail__item", minimum: 3
+    assert_select ".lp-rpg-path", text: /Path Alpha/
+    assert_select ".lp-rpg-path", text: /Path Beta/
+    assert_select ".lp-rpg-path", text: /Path Gamma/
+    assert_select ".lp-rpg-plan-rail__arrow.is-prev[data-strategy-plan-rail-target=prev]"
+    assert_select ".lp-rpg-plan-rail__arrow.is-next[data-strategy-plan-rail-target=next]"
+  end
+
   test "goal_id and plan_id switch the climb" do
     other_goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Health", position: 1
