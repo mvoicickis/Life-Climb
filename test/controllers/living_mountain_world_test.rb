@@ -168,8 +168,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path__menu-btn", minimum: 3
     assert_select ".lp-rpg-path__menu .lp-rpg-path__menu-item", text: /Edit Plan/, minimum: 3
     assert_select ".lp-rpg-path__menu .lp-rpg-path__menu-item", text: /Delete Plan/, minimum: 3
-    assert_select "dialog.lp-strategy-sheet", minimum: 3
+    assert_select "dialog.lp-strategy-sheet", minimum: 6
     assert_select "dialog.lp-strategy-sheet form[action*='strategy_goals'] input[name=title]", minimum: 3
+    assert_select "dialog.lp-strategy-sheet form[action*='strategy_goals'] input[type=submit][value=?]", "Delete", minimum: 3
   end
 
   test "goal_id and plan_id switch the climb" do

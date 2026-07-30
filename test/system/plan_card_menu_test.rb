@@ -101,4 +101,32 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_equal "Renamed Path", @plan_a.reload.title
     assert_no_selector "dialog.lp-strategy-sheet[open]"
   end
+
+  test "delete plan requires confirmation then removes plan and keeps sibling focused" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    within(".lp-dash-nav") { click_link "Mountain" }
+
+    assert_selector ".lp-rpg-path", text: /Alpha Path/
+    find(".lp-rpg-path__menu-btn", match: :first).click
+    click_button "Delete Plan"
+
+    assert_selector "dialog.lp-strategy-sheet[open]", text: /Delete Plan\?/
+    assert_selector "dialog.lp-strategy-sheet[open]", text: /cannot be undone/i
+    within("dialog.lp-strategy-sheet[open]") { click_button "Cancel" }
+    assert_no_selector "dialog.lp-strategy-sheet[open]"
+    assert StrategyGoal.exists?(@plan_a.id)
+    assert_selector ".lp-rpg-path", text: /Alpha Path/
+
+    find(".lp-rpg-path__menu-btn", match: :first).click
+    click_button "Delete Plan"
+    within("dialog.lp-strategy-sheet[open]") { click_button "Delete" }
+
+    assert_selector "#strategy-world", wait: 5
+    assert_no_selector ".lp-rpg-path", text: /Alpha Path/
+    assert_selector ".lp-rpg-path.is-focus", text: /Beta Path/
+    assert_not StrategyGoal.exists?(@plan_a.id)
+  end
 end

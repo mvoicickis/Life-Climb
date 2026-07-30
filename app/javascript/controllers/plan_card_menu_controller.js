@@ -2,9 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 const OPEN_EVENT = "lp-rpg-path-menu:open"
 
-// Plan card ⋮ menu — Edit opens the shared LifePoints dialog; Delete is still a placeholder.
+// Plan card ⋮ menu — Edit / Delete use the shared LifePoints dialog.
 export default class extends Controller {
-  static targets = ["button", "menu", "editDialog", "saveButton"]
+  static targets = ["button", "menu", "editDialog", "deleteDialog", "saveButton"]
 
   connect() {
     this._onPointer = (event) => this.onPointerDown(event)
@@ -18,6 +18,7 @@ export default class extends Controller {
   disconnect() {
     this.close()
     this.closeEdit()
+    this.closeDelete()
     window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
 
@@ -35,6 +36,7 @@ export default class extends Controller {
     event.preventDefault()
     event.stopPropagation()
     this.close()
+    this.closeDelete()
     if (!this.hasEditDialogTarget) return
 
     this.editDialogTarget.showModal()
@@ -54,11 +56,19 @@ export default class extends Controller {
     if (this.editDialogTarget.open) this.editDialogTarget.close()
   }
 
-  // Placeholder until Delete Plan is implemented.
-  noop(event) {
+  confirmDelete(event) {
     event.preventDefault()
     event.stopPropagation()
     this.close()
+    this.closeEdit()
+    if (!this.hasDeleteDialogTarget) return
+    this.deleteDialogTarget.showModal()
+  }
+
+  closeDelete(event) {
+    event?.preventDefault()
+    if (!this.hasDeleteDialogTarget) return
+    if (this.deleteDialogTarget.open) this.deleteDialogTarget.close()
   }
 
   bindDialogKeyboardGuards() {
