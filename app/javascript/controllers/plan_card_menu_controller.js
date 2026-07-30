@@ -2,13 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 const OPEN_EVENT = "lp-rpg-path-menu:open"
 
-// Plan card ⋮ menu — UI only; edit/delete actions are wired later.
+// Plan card ⋮ menu — Edit opens the existing rename form; Delete is still a placeholder.
 export default class extends Controller {
-  static targets = ["button", "menu"]
+  static targets = ["button", "menu", "editDialog"]
 
   connect() {
-    this.menuEl = this.menuTarget
-    this.menuHome = this.menuEl.parentElement
     this._onPointer = (event) => this.onPointerDown(event)
     this._onKey = (event) => this.onKeydown(event)
     this._onOpenElsewhere = (event) => this.onOpenElsewhere(event)
@@ -18,20 +16,41 @@ export default class extends Controller {
 
   disconnect() {
     this.close()
+    this.closeEdit()
     window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
 
   toggle(event) {
     event.preventDefault()
     event.stopPropagation()
-    if (this.menuEl.hidden) {
+    if (this.menuTarget.hidden) {
       this.open()
     } else {
       this.close()
     }
   }
 
-  // Placeholder until edit/delete are implemented.
+  edit(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    this.close()
+    if (!this.hasEditDialogTarget) return
+
+    this.editDialogTarget.showModal()
+    const input = this.editDialogTarget.querySelector("input[name='title']")
+    if (input) {
+      input.focus()
+      input.select()
+    }
+  }
+
+  closeEdit(event) {
+    event?.preventDefault()
+    if (!this.hasEditDialogTarget) return
+    if (this.editDialogTarget.open) this.editDialogTarget.close()
+  }
+
+  // Placeholder until Delete Plan is implemented.
   noop(event) {
     event.preventDefault()
     event.stopPropagation()
@@ -40,10 +59,7 @@ export default class extends Controller {
 
   open() {
     window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
-    if (this.menuEl.parentElement !== document.body) {
-      document.body.appendChild(this.menuEl)
-    }
-    this.menuEl.hidden = false
+    this.menuTarget.hidden = false
     this.buttonTarget.setAttribute("aria-expanded", "true")
     this.element.classList.add("is-menu-open")
     this.positionMenu()
@@ -58,13 +74,10 @@ export default class extends Controller {
   }
 
   close() {
-    if (!this.menuEl) return
-    this.menuEl.hidden = true
+    if (!this.hasMenuTarget) return
+    this.menuTarget.hidden = true
     if (this.hasButtonTarget) this.buttonTarget.setAttribute("aria-expanded", "false")
     this.element.classList.remove("is-menu-open")
-    if (this.menuHome && this.menuEl.parentElement !== this.menuHome) {
-      this.menuHome.appendChild(this.menuEl)
-    }
     document.removeEventListener("pointerdown", this._onPointer)
     document.removeEventListener("keydown", this._onKey)
     window.removeEventListener("resize", this._onReposition)
@@ -73,10 +86,10 @@ export default class extends Controller {
   }
 
   positionMenu() {
-    if (!this.menuEl || this.menuEl.hidden || !this.hasButtonTarget) return
+    if (!this.hasMenuTarget || this.menuTarget.hidden || !this.hasButtonTarget) return
 
     const rect = this.buttonTarget.getBoundingClientRect()
-    const menu = this.menuEl
+    const menu = this.menuTarget
     menu.style.position = "fixed"
     menu.style.top = `${Math.round(rect.bottom + 4)}px`
     menu.style.left = "auto"
@@ -96,7 +109,7 @@ export default class extends Controller {
   }
 
   onPointerDown(event) {
-    if (this.buttonTarget.contains(event.target) || this.menuEl.contains(event.target)) return
+    if (this.buttonTarget.contains(event.target) || this.menuTarget.contains(event.target)) return
     this.close()
   }
 

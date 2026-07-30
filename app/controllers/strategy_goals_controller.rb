@@ -83,7 +83,7 @@ class StrategyGoalsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render :update }
         format.html do
-          redirect_to strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id),
+          redirect_to after_update_path(goal),
                       notice: t("strategy.renamed"), status: :see_other
         end
       end
@@ -93,6 +93,20 @@ class StrategyGoalsController < ApplicationController
   end
 
   private
+
+  def after_update_path(goal)
+    journey = current_user.life_journeys.active.find_by(life_area_id: goal.life_area_id) ||
+              current_user.primary_focused_journey
+    return new_life_journey_path(life_area_id: goal.life_area_id) if journey.blank?
+
+    # Plans return to Mountain with that path still focused so the rename is obvious.
+    if goal.plan?
+      return life_journey_path(journey, goal_id: goal.parent_id, plan_id: goal.id)
+    end
+
+    focus_id = goal.goal? ? goal.id : goal.parent_id
+    strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id)
+  end
 
   def require_planning_v2
     return if current_user.planning_v2?
