@@ -362,6 +362,30 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/blank|can't be blank|Title/i, flash[:alert].to_s)
   end
 
+  test "destroying a plan redirects to the next sibling on mountain" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Summit", position: 0
+    )
+    plan_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Alpha", position: 0
+    )
+    plan_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Beta", position: 1
+    )
+
+    delete strategy_goal_path(plan_a)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan_b.id)
+    assert_not StrategyGoal.exists?(plan_a.id)
+    assert StrategyGoal.exists?(plan_b.id)
+
+    delete strategy_goal_path(plan_b)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: nil)
+    assert_not StrategyGoal.exists?(plan_b.id)
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg.is-first-climb, .lp-rpg-plan-rail.is-empty, .lp-rpg-add.is-path", minimum: 1
+  end
+
   test "dashboard shows action points and strategy points" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Become ready", position: 0

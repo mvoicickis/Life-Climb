@@ -10005,6 +10005,13 @@ button.lp-strategy-overflow {
     color-mix(in srgb, var(--rpg-card, #171c22) 0%, transparent)
   );
 }
+.lp-strategy-sheet__footer.is-split {
+  display: grid;
+  gap: var(--lp-sheet-space-2);
+}
+.lp-strategy-sheet__form.is-delete-action {
+  margin-top: 0;
+}
 
 .lp-strategy-sheet__btn {
   display: inline-flex;
@@ -10022,6 +10029,17 @@ button.lp-strategy-overflow {
   cursor: pointer;
 }
 
+.lp-strategy-sheet__btn.is-cancel {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--rpg-ink, #f3f6f8);
+}
+.lp-strategy-sheet__btn.is-cancel:hover,
+.lp-strategy-sheet__btn.is-cancel:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
 .lp-strategy-sheet__btn.is-save,
 .lp-strategy-sheet__btn.is-add {
   border-color: transparent;
@@ -10037,9 +10055,14 @@ button.lp-strategy-overflow {
 }
 
 .lp-strategy-sheet__btn.is-delete {
-  border-color: color-mix(in srgb, var(--rpg-red, #ef4444) 45%, rgba(255, 255, 255, 0.12));
-  color: #fecaca;
-  background: color-mix(in srgb, var(--rpg-red, #ef4444) 14%, var(--rpg-card, #171c22));
+  border-color: transparent;
+  color: #fff;
+  background: var(--rpg-red, #ef4444);
+}
+.lp-strategy-sheet__btn.is-delete:hover,
+.lp-strategy-sheet__btn.is-delete:focus-visible {
+  filter: brightness(1.06);
+  outline: none;
 }
 
 @keyframes lp-sheet-dialog-in {

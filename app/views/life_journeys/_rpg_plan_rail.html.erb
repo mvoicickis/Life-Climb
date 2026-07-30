@@ -54,13 +54,13 @@
             <button type="button"
                     class="lp-rpg-path__menu-item is-danger"
                     role="menuitem"
-                    data-action="click->plan-card-menu#noop">
+                    data-action="click->plan-card-menu#confirmDelete">
               <span aria-hidden="true">🗑</span>
               <%= t("strategy.rpg.delete_plan") %>
             </button>
           </div>
 
-          <%# Shared LifePoints dialog (strategy sheet) — Plan edit consumer. %>
+          <%# Shared LifePoints dialog — Plan edit consumer. %>
           <dialog class="lp-strategy-sheet is-plan"
                   id="plan-edit-<%= p.id %>"
                   data-plan-card-menu-target="editDialog">
@@ -92,6 +92,36 @@
                     </div>
                   <% end %>
                 </div>
+              </div>
+            </div>
+          </dialog>
+
+          <%# Shared LifePoints dialog — Plan delete confirmation. %>
+          <dialog class="lp-strategy-sheet is-plan"
+                  id="plan-delete-<%= p.id %>"
+                  data-plan-card-menu-target="deleteDialog">
+            <div class="lp-strategy-sheet__panel">
+              <header class="lp-strategy-sheet__head">
+                <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.plan") %></p>
+                <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.delete_plan_title") %></h2>
+                <p class="lp-strategy-sheet__desc"><%= t("strategy.rpg.delete_plan_body") %></p>
+                <button type="button"
+                        class="lp-strategy-sheet__close"
+                        data-action="click->plan-card-menu#closeDelete"
+                        aria-label="<%= t('strategy.sheet.close') %>">×</button>
+              </header>
+              <div class="lp-strategy-sheet__footer is-split">
+                <button type="button"
+                        class="lp-strategy-sheet__btn is-cancel"
+                        data-action="click->plan-card-menu#closeDelete">
+                  <%= t("strategy.rpg.cancel") %>
+                </button>
+                <%= form_with url: strategy_goal_path(p), method: :delete,
+                      class: "lp-strategy-sheet__form is-delete-action",
+                      data: { turbo: false } do %>
+                  <%= submit_tag t("strategy.rpg.delete_confirm"),
+                        class: "lp-strategy-sheet__btn is-delete" %>
+                <% end %>
               </div>
             </div>
           </dialog>
