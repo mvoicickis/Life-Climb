@@ -23,13 +23,42 @@
     <ul class="lp-rpg-plan-rail__track" data-strategy-plan-rail-target="track">
       <% plans.each_with_index do |p, idx| %>
         <% accent = accents[idx % accents.size] %>
-        <li class="lp-rpg-plan-rail__item <%= 'is-focus' if plan&.id == p.id %>">
+        <li class="lp-rpg-plan-rail__item <%= 'is-focus' if plan&.id == p.id %>"
+            data-controller="plan-card-menu">
           <%= link_to life_journey_path(@journey, goal_id: goal.id, plan_id: p.id),
                 class: "lp-rpg-path is-#{accent} #{'is-focus' if plan&.id == p.id} #{'is-done' if p.completed?}",
                 data: { turbo: true } do %>
             <span class="lp-rpg-path__title"><%= p.title %></span>
             <span class="lp-rpg-path__pct"><%= p.progress_percent.to_i %>%</span>
           <% end %>
+          <button type="button"
+                  class="lp-rpg-path__menu-btn"
+                  data-plan-card-menu-target="button"
+                  data-action="click->plan-card-menu#toggle"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-label="<%= t('strategy.rpg.plan_menu') %>">
+            <span aria-hidden="true">⋮</span>
+          </button>
+          <div class="lp-rpg-path__menu"
+               data-plan-card-menu-target="menu"
+               role="menu"
+               hidden>
+            <button type="button"
+                    class="lp-rpg-path__menu-item"
+                    role="menuitem"
+                    data-action="click->plan-card-menu#noop">
+              <span aria-hidden="true">✏</span>
+              <%= t("strategy.rpg.edit_plan") %>
+            </button>
+            <button type="button"
+                    class="lp-rpg-path__menu-item is-danger"
+                    role="menuitem"
+                    data-action="click->plan-card-menu#noop">
+              <span aria-hidden="true">🗑</span>
+              <%= t("strategy.rpg.delete_plan") %>
+            </button>
+          </div>
         </li>
       <% end %>
       <li class="lp-rpg-plan-rail__item is-add">

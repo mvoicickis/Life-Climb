@@ -14872,6 +14872,7 @@ button.lp-strategy-overflow {
   scroll-snap-align: start;
   scroll-snap-stop: normal;
   min-width: 0;
+  position: relative;
 }
 .lp-rpg-plan-rail__item > .lp-rpg-path,
 .lp-rpg-plan-rail__item > .lp-rpg-add {
@@ -14879,6 +14880,9 @@ button.lp-strategy-overflow {
   max-width: none;
   min-width: 0;
   box-sizing: border-box;
+}
+.lp-rpg-plan-rail__item > .lp-rpg-path {
+  padding-inline-end: 1.55rem;
 }
 .lp-rpg-path {
   display: grid;
@@ -14920,6 +14924,68 @@ button.lp-strategy-overflow {
 .lp-rpg-path.is-blue { --plan-accent: #60a5fa; }
 .lp-rpg-path.is-focus {
   border-color: color-mix(in srgb, var(--plan-accent, #57d35b) 70%, white);
+}
+
+.lp-rpg-path__menu-btn {
+  position: absolute;
+  top: 0.28rem;
+  right: 0.22rem;
+  z-index: 2;
+  width: 1.35rem;
+  height: 1.35rem;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.lp-rpg-path__menu-btn:hover,
+.lp-rpg-path__menu-btn:focus-visible,
+.lp-rpg-plan-rail__item.is-menu-open .lp-rpg-path__menu-btn {
+  color: rgba(248, 250, 252, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+.lp-rpg-path__menu {
+  min-width: 8.75rem;
+  padding: 0.28rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.7rem;
+  background: rgba(14, 18, 24, 0.96);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+}
+.lp-rpg-path__menu[hidden] { display: none !important; }
+.lp-rpg-path__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+.lp-rpg-path__menu-item:hover,
+.lp-rpg-path__menu-item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+.lp-rpg-path__menu-item.is-danger {
+  color: #fca5a5;
 }
 
 .lp-rpg-plan-rail__arrow {

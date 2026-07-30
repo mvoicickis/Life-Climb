@@ -164,6 +164,10 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Path Gamma/
     assert_select ".lp-rpg-plan-rail__nav.is-prev .lp-rpg-plan-rail__arrow.is-prev[data-strategy-plan-rail-target=prev]"
     assert_select ".lp-rpg-plan-rail__nav.is-next .lp-rpg-plan-rail__arrow.is-next[data-strategy-plan-rail-target=next]"
+    assert_select ".lp-rpg-plan-rail__item[data-controller*=plan-card-menu]", minimum: 3
+    assert_select ".lp-rpg-path__menu-btn", minimum: 3
+    assert_select ".lp-rpg-path__menu .lp-rpg-path__menu-item", text: /Edit Plan/, minimum: 3
+    assert_select ".lp-rpg-path__menu .lp-rpg-path__menu-item", text: /Delete Plan/, minimum: 3
   end
 
   test "goal_id and plan_id switch the climb" do
