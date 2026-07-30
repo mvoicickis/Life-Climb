@@ -17,6 +17,7 @@ de:
       projects: "Projekt wechseln"
     rename: "Umbenennen"
     save_name: "Name speichern"
+    save_changes: "Änderungen speichern"
     renamed: "Umbenannt."
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"

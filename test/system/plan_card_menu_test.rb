@@ -89,16 +89,16 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     find(".lp-rpg-path__menu-btn", match: :first).click
     click_button "Edit Plan"
 
-    assert_selector "dialog.lp-rpg-path__edit[open]"
-    within("dialog.lp-rpg-path__edit[open]") do
+    assert_selector "dialog.lp-strategy-sheet[open]"
+    within("dialog.lp-strategy-sheet[open]") do
       assert_field "plan-edit-title-#{@plan_a.id}", with: "Alpha Path"
       fill_in "plan-edit-title-#{@plan_a.id}", with: "Renamed Path"
-      click_button "Save name"
+      click_button "Save Changes"
     end
 
     assert_selector "#strategy-world", wait: 5
     assert_selector ".lp-rpg-path.is-focus", text: /Renamed Path/
     assert_equal "Renamed Path", @plan_a.reload.title
-    assert_no_selector "dialog.lp-rpg-path__edit[open]"
+    assert_no_selector "dialog.lp-strategy-sheet[open]"
   end
 end

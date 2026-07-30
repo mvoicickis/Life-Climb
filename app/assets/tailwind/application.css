@@ -9836,39 +9836,56 @@ button.lp-strategy-overflow {
 .lp-strategy-radial__btn.is-add { left: 50%; bottom: 0; transform: translateX(-50%); }
 .lp-strategy-radial__btn.is-delete { left: 0; top: 50%; transform: translateY(-50%); color: #b91c1c; }
 
+/* Shared LifePoints dialog — edit / create / delete confirm / future settings */
 .lp-strategy-sheet {
+  --lp-sheet-space-1: 0.5rem;
+  --lp-sheet-space-2: 0.75rem;
+  --lp-sheet-space-3: 1rem;
+  --lp-sheet-space-4: 1.25rem;
   border: 0;
   padding: 0;
   background: transparent;
+  width: 92vw;
   max-width: 28rem;
-  width: calc(100% - 1.5rem);
-  margin: auto auto 0;
+  max-height: min(85dvh, 36rem);
+  margin: auto;
+  color: var(--rpg-ink, #f3f6f8);
 }
-
 .lp-strategy-sheet::backdrop {
-  background: rgba(15, 23, 42, 0.35);
+  background: rgba(4, 8, 14, 0.65);
+}
+.lp-strategy-sheet[open]::backdrop {
+  animation: lp-sheet-backdrop-in 200ms ease-out both;
 }
 
 .lp-strategy-sheet__panel {
-  border-radius: 1.15rem 1.15rem 0 0;
-  border: 1px solid color-mix(in srgb, var(--lp-level) 28%, var(--lp-border));
-  border-bottom: 0;
-  background: #fff;
-  padding: 1rem 1rem 1.25rem;
-  box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.16);
+  display: flex;
+  flex-direction: column;
+  max-height: min(85dvh, 36rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--rpg-card, #171c22);
+  padding: var(--lp-sheet-space-3) var(--lp-sheet-space-3) var(--lp-sheet-space-4);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  transform-origin: center center;
+}
+.lp-strategy-sheet[open] .lp-strategy-sheet__panel {
+  animation: lp-sheet-dialog-in 200ms ease-out both;
 }
 
-.lp-strategy-sheet.is-goal { --lp-level: var(--lp-level-goal); }
-.lp-strategy-sheet.is-plan { --lp-level: var(--lp-level-plan); }
-.lp-strategy-sheet.is-project { --lp-level: var(--lp-level-project); }
-.lp-strategy-sheet.is-battle { --lp-level: var(--lp-level-battle); }
+.lp-strategy-sheet.is-goal { --lp-level: var(--lp-level-goal, var(--rpg-green, #57d35b)); }
+.lp-strategy-sheet.is-plan { --lp-level: var(--lp-level-plan, #60a5fa); }
+.lp-strategy-sheet.is-project { --lp-level: var(--lp-level-project, #fb923c); }
+.lp-strategy-sheet.is-battle { --lp-level: var(--lp-level-battle, #f472b6); }
 
 .lp-strategy-sheet__head {
   position: relative;
-  padding-right: 2rem;
-  padding-bottom: 0.75rem;
-  margin-bottom: 0.75rem;
-  border-bottom: 2px solid color-mix(in srgb, var(--lp-level) 35%, transparent);
+  padding-right: 3rem;
+  padding-bottom: var(--lp-sheet-space-2);
+  margin-bottom: var(--lp-sheet-space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--lp-level, var(--rpg-green)) 35%, rgba(255, 255, 255, 0.08));
 }
 
 .lp-strategy-sheet__kind {
@@ -9877,83 +9894,174 @@ button.lp-strategy-overflow {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--lp-level);
+  color: color-mix(in srgb, var(--lp-level, var(--rpg-mist)) 70%, var(--rpg-mist, #8b95a5));
 }
 
 .lp-strategy-sheet__title {
-  margin: 0.2rem 0 0;
-  font-family: var(--lp-font-display);
-  font-size: 1.35rem;
-  font-weight: 650;
-  color: var(--lp-ink);
+  margin: 0.35rem 0 0;
+  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-size: clamp(1.35rem, 4.5vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--rpg-ink, #f3f6f8);
+}
+
+.lp-strategy-sheet__desc {
+  margin: var(--lp-sheet-space-1) 0 0;
+  font-size: 0.9rem;
+  font-weight: 550;
+  line-height: 1.4;
+  color: var(--rpg-mist, #8b95a5);
 }
 
 .lp-strategy-sheet__progress {
-  margin: 0.25rem 0 0;
+  margin: 0.35rem 0 0;
   font-size: 0.8rem;
-  color: var(--lp-muted);
+  color: var(--rpg-mist, #8b95a5);
 }
 
 .lp-strategy-sheet__close {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 2rem;
-  height: 2rem;
+  top: -0.15rem;
+  right: -0.15rem;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
   border: 0;
+  border-radius: 0.75rem;
   background: transparent;
-  font-size: 1.35rem;
-  color: var(--lp-muted);
+  font-size: 1.45rem;
+  line-height: 1;
+  color: var(--rpg-mist, #8b95a5);
+  cursor: pointer;
+}
+.lp-strategy-sheet__close:hover,
+.lp-strategy-sheet__close:focus-visible {
+  color: var(--rpg-ink, #f3f6f8);
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
 }
 
 .lp-strategy-sheet__actions {
   display: grid;
-  gap: 0.65rem;
+  gap: var(--lp-sheet-space-2);
 }
 
 .lp-strategy-sheet__edit,
 .lp-strategy-sheet__add {
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--lp-level) 18%, var(--lp-border));
-  padding: 0.55rem 0.7rem;
-  background: color-mix(in srgb, var(--lp-level) 6%, #fff);
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--lp-sheet-space-2) var(--lp-sheet-space-2);
+  background: color-mix(in srgb, var(--rpg-bg, #0b0f14) 55%, var(--rpg-card, #171c22));
 }
 
 .lp-strategy-sheet__edit > summary,
 .lp-strategy-sheet__add > summary {
   cursor: pointer;
   font-weight: 700;
-  color: var(--lp-ink);
+  color: var(--rpg-ink, #f3f6f8);
 }
 
 .lp-strategy-sheet__form {
   display: grid;
-  gap: 0.5rem;
-  margin-top: 0.55rem;
+  gap: var(--lp-sheet-space-2);
+  margin-top: var(--lp-sheet-space-2);
+}
+
+.lp-strategy-sheet .lp-input,
+.lp-strategy-sheet .lp-rpg-input {
+  width: 100%;
+  min-height: 3rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(11, 15, 20, 0.72);
+  color: var(--rpg-ink, #f3f6f8);
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+.lp-strategy-sheet .lp-input::placeholder,
+.lp-strategy-sheet .lp-rpg-input::placeholder {
+  color: var(--rpg-mist, #8b95a5);
+}
+.lp-strategy-sheet .lp-input:focus,
+.lp-strategy-sheet .lp-rpg-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--rpg-green, #57d35b) 55%, white);
+  outline-offset: 1px;
+  border-color: color-mix(in srgb, var(--rpg-green, #57d35b) 45%, rgba(255, 255, 255, 0.2));
+}
+
+.lp-strategy-sheet__footer {
+  position: sticky;
+  bottom: 0;
+  margin-top: var(--lp-sheet-space-1);
+  padding-top: var(--lp-sheet-space-2);
+  background: linear-gradient(
+    to top,
+    var(--rpg-card, #171c22) 70%,
+    color-mix(in srgb, var(--rpg-card, #171c22) 0%, transparent)
+  );
 }
 
 .lp-strategy-sheet__btn {
   display: inline-flex;
+  align-items: center;
   justify-content: center;
   width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid var(--lp-border);
-  padding: 0.65rem 0.85rem;
-  font-weight: 700;
-  background: #fff;
+  min-height: 3rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--rpg-ink, #f3f6f8);
+  cursor: pointer;
 }
 
 .lp-strategy-sheet__btn.is-save,
 .lp-strategy-sheet__btn.is-add {
-  border-color: color-mix(in srgb, var(--lp-level) 40%, var(--lp-border));
-  background: color-mix(in srgb, var(--lp-level) 14%, #fff);
-  color: var(--lp-ink);
+  border-color: transparent;
+  background: var(--rpg-green, #57d35b);
+  color: #0b0f14;
+}
+.lp-strategy-sheet__btn.is-save:hover,
+.lp-strategy-sheet__btn.is-add:hover,
+.lp-strategy-sheet__btn.is-save:focus-visible,
+.lp-strategy-sheet__btn.is-add:focus-visible {
+  filter: brightness(1.06);
+  outline: none;
 }
 
 .lp-strategy-sheet__btn.is-delete {
-  border-color: color-mix(in srgb, #ef4444 35%, var(--lp-border));
-  color: #b91c1c;
-  background: color-mix(in srgb, #ef4444 6%, #fff);
+  border-color: color-mix(in srgb, var(--rpg-red, #ef4444) 45%, rgba(255, 255, 255, 0.12));
+  color: #fecaca;
+  background: color-mix(in srgb, var(--rpg-red, #ef4444) 14%, var(--rpg-card, #171c22));
+}
+
+@keyframes lp-sheet-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes lp-sheet-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-strategy-sheet[open] .lp-strategy-sheet__panel,
+  .lp-strategy-sheet[open]::backdrop {
+    animation: none;
+  }
 }
 
 .lp-strategy-mountain__bar.is-surge > span,
@@ -14986,9 +15094,6 @@ button.lp-strategy-overflow {
 }
 .lp-rpg-path__menu-item.is-danger {
   color: #fca5a5;
-}
-.lp-rpg-path__edit::backdrop {
-  background: rgba(4, 8, 14, 0.55);
 }
 
 .lp-rpg-plan-rail__arrow {

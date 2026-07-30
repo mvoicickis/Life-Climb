@@ -17,6 +17,7 @@ lv:
       projects: "Mainīt projektu"
     rename: "Pārdēvēt"
     save_name: "Saglabāt nosaukumu"
+    save_changes: "Saglabāt izmaiņas"
     renamed: "Pārdēvēts."
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
