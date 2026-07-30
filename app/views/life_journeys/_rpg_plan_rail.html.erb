@@ -9,14 +9,16 @@
   <nav class="lp-rpg-plan-rail"
        aria-label="<%= t('strategy.rpg.paths') %>"
        data-controller="strategy-plan-rail">
-    <button type="button"
-            class="lp-rpg-plan-rail__arrow is-prev"
-            data-strategy-plan-rail-target="prev"
-            data-action="strategy-plan-rail#prev"
-            hidden
-            aria-label="<%= t('strategy.rpg.paths_prev') %>">
-      <span aria-hidden="true">‹</span>
-    </button>
+    <div class="lp-rpg-plan-rail__nav is-prev">
+      <button type="button"
+              class="lp-rpg-plan-rail__arrow is-prev"
+              data-strategy-plan-rail-target="prev"
+              data-action="strategy-plan-rail#prev"
+              hidden
+              aria-label="<%= t('strategy.rpg.paths_prev') %>">
+        <span aria-hidden="true">‹</span>
+      </button>
+    </div>
 
     <ul class="lp-rpg-plan-rail__track" data-strategy-plan-rail-target="track">
       <% plans.each_with_index do |p, idx| %>
@@ -53,14 +55,16 @@
       </li>
     </ul>
 
-    <button type="button"
-            class="lp-rpg-plan-rail__arrow is-next"
-            data-strategy-plan-rail-target="next"
-            data-action="strategy-plan-rail#next"
-            hidden
-            aria-label="<%= t('strategy.rpg.paths_next') %>">
-      <span aria-hidden="true">›</span>
-    </button>
+    <div class="lp-rpg-plan-rail__nav is-next">
+      <button type="button"
+              class="lp-rpg-plan-rail__arrow is-next"
+              data-strategy-plan-rail-target="next"
+              data-action="strategy-plan-rail#next"
+              hidden
+              aria-label="<%= t('strategy.rpg.paths_next') %>">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
   </nav>
 <% elsif goal %>
   <div class="lp-rpg-plan-rail is-empty">
