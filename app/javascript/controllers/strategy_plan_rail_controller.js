@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Snap Plan Rail: only full cards visible; desktop arrows when overflowing.
+// Snap Plan Rail: track fills space between nav columns; center when content fits.
 export default class extends Controller {
   static targets = ["track", "prev", "next"]
 
@@ -27,14 +27,13 @@ export default class extends Controller {
   }
 
   layout() {
-    this.fitFullCardsOnly()
+    this.syncEndSpacer()
     this.ensureFocusedVisible()
     this.syncArrows()
   }
 
-  // Shrink the track viewport so leftover width is empty gutter — never a card peek.
-  // End spacer lets the last card snap fully into view only when content overflows.
-  fitFullCardsOnly() {
+  // End spacer only when overflowing so the last card can snap fully into view.
+  syncEndSpacer() {
     if (!this.hasTrackTarget) return
 
     const track = this.trackTarget
@@ -46,24 +45,15 @@ export default class extends Controller {
     const cardWidth = item.getBoundingClientRect().width
     if (cardWidth <= 0) return
 
-    const step = cardWidth + gap
+    track.style.setProperty("--lp-rail-end-spacer", "0px")
+
     const items = track.querySelectorAll(":scope > li")
     const contentWidth = items.length * cardWidth + Math.max(0, items.length - 1) * gap
+    const overflowing = contentWidth > track.clientWidth + 1
 
-    const currentGutter =
-      parseFloat(getComputedStyle(this.element).getPropertyValue("--lp-rail-gutter-end")) || 0
-    // Available width is the track before the dynamic full-card gutter.
-    const available = track.clientWidth + currentGutter
-    const count = Math.max(1, Math.floor((available + gap) / step))
-    const used = count * step - gap
-    const leftover = Math.max(0, available - used)
-    this.element.style.setProperty("--lp-rail-gutter-end", `${leftover}px`)
-
-    const viewport = Math.max(cardWidth, available - leftover)
-    const overflowing = contentWidth > viewport + 1
     track.style.setProperty(
       "--lp-rail-end-spacer",
-      overflowing ? `${Math.max(0, viewport - cardWidth)}px` : "0px"
+      overflowing ? `${Math.max(0, track.clientWidth - cardWidth)}px` : "0px"
     )
   }
 
@@ -73,7 +63,6 @@ export default class extends Controller {
     const maxScroll = track.scrollWidth - track.clientWidth
     if (maxScroll <= 1) return
 
-    // Map vertical wheel (or shift+wheel) to horizontal scroll when the rail overflows.
     const delta =
       Math.abs(event.deltaX) > Math.abs(event.deltaY)
         ? event.deltaX
