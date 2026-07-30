@@ -155,13 +155,15 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg-plan-rail[data-controller*=strategy-plan-rail]"
+    assert_select ".lp-rpg-plan-rail__nav.is-prev"
+    assert_select ".lp-rpg-plan-rail__nav.is-next"
     assert_select ".lp-rpg-plan-rail__track[data-strategy-plan-rail-target=track]"
     assert_select ".lp-rpg-plan-rail__item", minimum: 3
     assert_select ".lp-rpg-path", text: /Path Alpha/
     assert_select ".lp-rpg-path", text: /Path Beta/
     assert_select ".lp-rpg-path", text: /Path Gamma/
-    assert_select ".lp-rpg-plan-rail__arrow.is-prev[data-strategy-plan-rail-target=prev]"
-    assert_select ".lp-rpg-plan-rail__arrow.is-next[data-strategy-plan-rail-target=next]"
+    assert_select ".lp-rpg-plan-rail__nav.is-prev .lp-rpg-plan-rail__arrow.is-prev[data-strategy-plan-rail-target=prev]"
+    assert_select ".lp-rpg-plan-rail__nav.is-next .lp-rpg-plan-rail__arrow.is-next[data-strategy-plan-rail-target=next]"
   end
 
   test "goal_id and plan_id switch the climb" do

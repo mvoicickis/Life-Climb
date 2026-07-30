@@ -14824,8 +14824,12 @@ button.lp-strategy-overflow {
   --lp-path-gap: 0.5rem;
   --lp-rail-gutter-end: 0px;
   --lp-rail-end-spacer: 0px;
+  --lp-rail-nav: 1.85rem;
   position: relative;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0;
   max-width: 72rem;
   width: 100%;
   margin: 0 auto;
@@ -14834,11 +14838,22 @@ button.lp-strategy-overflow {
   box-sizing: border-box;
   overflow: hidden;
 }
+.lp-rpg-plan-rail__nav {
+  flex: 0 0 0;
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  align-self: center;
+}
 .lp-rpg-plan-rail__track {
   list-style: none;
   margin: 0;
   padding: 0.1rem 0 0.35rem;
   padding-inline-end: var(--lp-rail-end-spacer);
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   gap: var(--lp-path-gap);
   overflow-x: auto;
@@ -14909,13 +14924,10 @@ button.lp-strategy-overflow {
 
 .lp-rpg-plan-rail__arrow {
   display: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-55%);
-  z-index: 4;
-  width: 1.85rem;
-  height: 1.85rem;
   place-items: center;
+  width: var(--lp-rail-nav);
+  height: var(--lp-rail-nav);
+  flex: 0 0 auto;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   background: rgba(11, 15, 20, 0.78);
@@ -14926,11 +14938,16 @@ button.lp-strategy-overflow {
   padding: 0;
   backdrop-filter: blur(8px);
 }
-.lp-rpg-plan-rail__arrow.is-prev { left: 0.35rem; }
-.lp-rpg-plan-rail__arrow.is-next { right: 0.35rem; }
 .lp-rpg-plan-rail__arrow[hidden] { display: none !important; }
 
 @media (min-width: 640px) {
+  .lp-rpg-plan-rail.is-overflowing {
+    gap: 0.35rem;
+  }
+  .lp-rpg-plan-rail.is-overflowing .lp-rpg-plan-rail__nav {
+    flex-basis: var(--lp-rail-nav);
+    width: var(--lp-rail-nav);
+  }
   .lp-rpg-plan-rail.is-overflowing .lp-rpg-plan-rail__arrow:not([hidden]) {
     display: grid;
   }
