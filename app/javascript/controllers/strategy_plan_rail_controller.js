@@ -27,34 +27,8 @@ export default class extends Controller {
   }
 
   layout() {
-    this.syncEndSpacer()
     this.ensureFocusedVisible()
     this.syncArrows()
-  }
-
-  // End spacer only when overflowing so the last card can snap fully into view.
-  syncEndSpacer() {
-    if (!this.hasTrackTarget) return
-
-    const track = this.trackTarget
-    const item = track.querySelector(":scope > li")
-    if (!item) return
-
-    const styles = getComputedStyle(track)
-    const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0
-    const cardWidth = item.getBoundingClientRect().width
-    if (cardWidth <= 0) return
-
-    track.style.setProperty("--lp-rail-end-spacer", "0px")
-
-    const items = track.querySelectorAll(":scope > li")
-    const contentWidth = items.length * cardWidth + Math.max(0, items.length - 1) * gap
-    const overflowing = contentWidth > track.clientWidth + 1
-
-    track.style.setProperty(
-      "--lp-rail-end-spacer",
-      overflowing ? `${Math.max(0, track.clientWidth - cardWidth)}px` : "0px"
-    )
   }
 
   handleWheel(event) {
