@@ -2,18 +2,20 @@
 
 module Strategy
   # Fast path for new climbers: plan title + today's action → full spine ready for Today.
+  # Scaffolds under the Active Destination (goal) being onboarded — never a different root.
   class FirstClimb
     Result = Struct.new(:plan, :project, :battle, :goal, keyword_init: true)
 
-    def self.call(user:, journey:, plan_title:, today_action:)
-      new(user:, journey:, plan_title:, today_action:).call
+    def self.call(user:, journey:, plan_title:, today_action:, goal: nil)
+      new(user:, journey:, plan_title:, today_action:, goal:).call
     end
 
-    def initialize(user:, journey:, plan_title:, today_action:)
+    def initialize(user:, journey:, plan_title:, today_action:, goal: nil)
       @user = user
       @journey = journey
       @plan_title = plan_title.to_s.strip
       @today_action = today_action.to_s.strip
+      @goal = goal
     end
 
     def call
@@ -21,7 +23,7 @@ module Strategy
       raise ArgumentError, I18n.t("strategy.first_climb.need_action") if @today_action.blank?
 
       area = @journey.life_area
-      goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
+      goal = resolve_goal(area)
       raise ArgumentError, I18n.t("strategy.need_goal") if goal.blank?
 
       result = nil
@@ -58,6 +60,15 @@ module Strategy
     end
 
     private
+
+    def resolve_goal(area)
+      if @goal.present?
+        return @goal if @goal.user_id == @user.id && @goal.goal? && @goal.parent_id.nil? &&
+                        @goal.life_area_id == area.id
+      end
+
+      @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
+    end
 
     def create_child!(parent:, horizon:, title:, life_area:, scheduled_on: nil)
       scope = @user.strategy_goals.where(life_area_id: life_area.id).for_kind(horizon).where(parent_id: parent.id)
