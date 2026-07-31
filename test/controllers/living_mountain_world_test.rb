@@ -230,7 +230,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id)
     assert_response :success
     assert_select ".lp-rpg-destination[data-controller*=destination-switcher]"
-    assert_select ".lp-rpg-destination__trigger", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination__trigger.is-switchable", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination__trigger .lp-rpg-destination__icon", count: 1
+    assert_select ".lp-rpg-destination__chevron", count: 1
     assert_select ".lp-rpg-destination__item[href=?]", life_journey_path(@journey, goal_id: @goal.id)
     assert_select ".lp-rpg-destination__item[href=?]", life_journey_path(@journey, goal_id: other.id)
     assert_select ".lp-rpg-destination__item.is-new", text: /New Destination/
@@ -238,6 +240,20 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select "#destination-create input[name=horizon][value=goal]"
     assert_select "#destination-create input[name=life_journey_id][value=?]", @journey.id.to_s
     assert_select "#destination-create input[name=title]"
+  end
+
+  test "single destination hides the switcher chevron" do
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Only path", position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id)
+    assert_response :success
+    assert_select ".lp-rpg-destination__trigger", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination__trigger.is-switchable", count: 0
+    assert_select ".lp-rpg-destination__chevron", count: 0
+    assert_select ".lp-rpg-destination__item.is-new", text: /New Destination/
   end
 
   test "creating a plan via turbo stream still succeeds" do

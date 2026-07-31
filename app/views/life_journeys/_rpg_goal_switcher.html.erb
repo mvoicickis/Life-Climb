@@ -22,8 +22,9 @@
 
     <div class="lp-rpg-destination" data-controller="destination-switcher">
       <% if root_goals.any? && goal %>
+        <% multi_destination = root_goals.size > 1 %>
         <button type="button"
-                class="lp-rpg-destination__trigger"
+                class="lp-rpg-destination__trigger <%= 'is-switchable' if multi_destination %>"
                 data-destination-switcher-target="button"
                 data-action="click->destination-switcher#toggle"
                 aria-haspopup="menu"
@@ -31,8 +32,9 @@
                 aria-label="<%= t('strategy.rpg.switch_destination') %>">
           <span class="lp-rpg-destination__icon" aria-hidden="true">🏔</span>
           <span class="lp-rpg-destination__title"><%= goal.title %></span>
-          <span class="lp-rpg-destination__icon is-trail" aria-hidden="true">🏔</span>
-          <span class="lp-rpg-destination__chevron" aria-hidden="true">▼</span>
+          <% if multi_destination %>
+            <span class="lp-rpg-destination__chevron" aria-hidden="true">▼</span>
+          <% end %>
         </button>
 
         <div class="lp-rpg-destination__menu"
@@ -71,7 +73,6 @@
                 aria-label="<%= t('strategy.rpg.new_destination') %>">
           <span class="lp-rpg-destination__icon" aria-hidden="true">🏔</span>
           <span class="lp-rpg-destination__title"><%= t("strategy.zones.empty_goal") %></span>
-          <span class="lp-rpg-destination__chevron" aria-hidden="true">▼</span>
         </button>
         <p class="lp-rpg-summit__tagline"><%= t("strategy.promise") %></p>
       <% end %>
