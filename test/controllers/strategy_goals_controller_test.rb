@@ -49,6 +49,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 100, @user.reload.strategy_points
     assert_match(/Goal locked|Goal created/i, flash[:notice].to_s)
     assert_equal 100, flash[:sp_gained].to_i
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, focus_id: goal.id)
 
     get life_journey_path(@journey)
     assert_response :success
@@ -56,6 +57,30 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-first-climb__goal", text: /Become a Rails developer/i
     assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
     assert_select ".lp-strategy-mountain", count: 0
+  end
+
+  test "creating a second destination redirects as the active goal" do
+    existing = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "First summit", position: 0
+    )
+    existing.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Old path", position: 0
+    )
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      horizon: "goal",
+      title: "Second summit"
+    }
+    goal = @user.strategy_goals.for_kind("goal").find_by!(title: "Second summit")
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, focus_id: goal.id)
+
+    follow_redirect!
+    # New destination has no plans yet → first-climb coach for that destination.
+    assert_select "#first-climb-coach"
+    assert_select ".lp-first-climb__goal", text: /Second summit/
   end
 
   test "guided tree goal plan project battle awards and syncs today" do
@@ -190,7 +215,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-goal__title", text: /Goal/i
+    assert_select ".lp-rpg-destination__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-node.is-current", text: /Project One/i
