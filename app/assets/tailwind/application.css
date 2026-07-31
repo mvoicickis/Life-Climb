@@ -14953,7 +14953,6 @@ button.lp-strategy-overflow {
 .lp-rpg-plan-rail {
   --lp-path-card: 7.5rem;
   --lp-path-gap: 0.5rem;
-  --lp-rail-end-spacer: 0px;
   --lp-rail-nav: 1.85rem;
   position: relative;
   z-index: 3;
@@ -14980,7 +14979,6 @@ button.lp-strategy-overflow {
   list-style: none;
   margin: 0;
   padding: 0.1rem 0 0.35rem;
-  padding-inline-end: var(--lp-rail-end-spacer);
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
@@ -15006,6 +15004,10 @@ button.lp-strategy-overflow {
   scroll-snap-stop: normal;
   min-width: 0;
   position: relative;
+}
+/* Last card snaps flush to the track end (before the right arrow) — no end spacer. */
+.lp-rpg-plan-rail__item:last-child {
+  scroll-snap-align: end;
 }
 .lp-rpg-plan-rail__item > .lp-rpg-path,
 .lp-rpg-plan-rail__item > .lp-rpg-add {
