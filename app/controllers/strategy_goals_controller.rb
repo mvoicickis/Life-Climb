@@ -45,7 +45,10 @@ class StrategyGoalsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render :create, status: :created }
         format.html do
-          redirect_to strategy_redirect_path(focus_id: redirect_focus_id(goal)),
+          redirect_to strategy_redirect_path(
+                        focus_id: redirect_focus_id(goal),
+                        goal_id: (goal.goal? ? goal.id : nil)
+                      ),
                       notice: celebration[:notice], status: :see_other
         end
       end
@@ -193,19 +196,26 @@ class StrategyGoalsController < ApplicationController
     end
   end
 
-  def strategy_redirect_path(area_id: @life_area&.id, focus_id: nil, peek: nil, sheet: nil)
+  def strategy_redirect_path(area_id: @life_area&.id, focus_id: nil, goal_id: nil, peek: nil, sheet: nil, plan_id: nil)
     area_id ||= current_user.primary_focused_journey&.life_area_id
     journey = current_user.life_journeys.active.find_by(life_area_id: area_id) ||
               current_user.primary_focused_journey
     if journey
-      life_journey_path(journey, focus_id: focus_id, peek: peek, sheet: sheet)
+      life_journey_path(
+        journey,
+        focus_id: focus_id,
+        goal_id: goal_id,
+        plan_id: plan_id,
+        peek: peek,
+        sheet: sheet
+      )
     else
       new_life_journey_path(life_area_id: area_id)
     end
   end
 
-  def fail_redirect(message, area_id: @life_area&.id, focus_id: nil)
-    redirect_to strategy_redirect_path(area_id: area_id, focus_id: focus_id, peek: 1),
+  def fail_redirect(message, area_id: @life_area&.id, focus_id: nil, goal_id: nil)
+    redirect_to strategy_redirect_path(area_id: area_id, focus_id: focus_id, goal_id: goal_id, peek: 1),
                 alert: message, status: :see_other
   end
 

@@ -170,11 +170,11 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Side path/
     assert_select ".lp-rpg-node", text: /Launch camp/
-    assert_select ".lp-rpg-goal.is-focus", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination-carousel__title", text: /#{@goal.title}/
 
     get life_journey_path(@journey, goal_id: other_goal.id)
     assert_response :success
-    assert_select ".lp-rpg-goal.is-focus", text: /Health/
+    assert_select ".lp-rpg-destination-carousel__title", text: /Health/
     assert_select ".lp-rpg-path", text: /Run path/
   end
 

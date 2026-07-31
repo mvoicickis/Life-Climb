@@ -190,7 +190,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-goal__title", text: /Goal/i
+    assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-node.is-current", text: /Project One/i
