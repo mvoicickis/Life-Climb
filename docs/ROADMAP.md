@@ -67,4 +67,4 @@ Prefer daily loop (M1–M3) before Mountain polish if only one engineer.
 
 ## Next
 
-After M0 merges → start **M1 – Today’s Battle Plan**.
+**M1 – Today’s Battle Plan** (One Battle Plan Law).
