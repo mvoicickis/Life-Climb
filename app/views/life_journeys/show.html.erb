@@ -42,8 +42,8 @@
     <div class="lp-rpg-scenic" style="--lp-scenic: url('/images/strategy-mountain-scenic.jpg')" aria-hidden="true"></div>
     <div class="lp-rpg-scenic__veil" aria-hidden="true"></div>
 
-    <%# Step 1: Hero = destination / path / trail / next action. Partials unchanged. %>
-    <div class="lp-rpg-hero">
+    <%# Hero: summit-centered destination → quest cards → mountain climb. %>
+    <div class="lp-rpg-hero is-summit-focus">
       <%= render "life_journeys/rpg_goal_switcher",
             root_goals: root_goals,
             goal: @goal,
