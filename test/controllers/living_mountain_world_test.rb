@@ -205,12 +205,39 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Side path/
     assert_select ".lp-rpg-node", text: /Launch camp/
-    assert_select ".lp-rpg-goal.is-focus", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination__trigger .lp-rpg-destination__title", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination__item.is-active", text: /#{@goal.title}/
+    assert_select ".lp-rpg-path", text: /Run path/, count: 0
 
     get life_journey_path(@journey, goal_id: other_goal.id)
     assert_response :success
-    assert_select ".lp-rpg-goal.is-focus", text: /Health/
+    assert_select ".lp-rpg-destination__trigger .lp-rpg-destination__title", text: /Health/
+    assert_select ".lp-rpg-destination__item.is-active", text: /Health/
     assert_select ".lp-rpg-path", text: /Run path/
+    assert_select ".lp-rpg-path", text: /Career path/, count: 0
+    assert_select ".lp-rpg-path", text: /Side path/, count: 0
+  end
+
+  test "active destination selector lists destinations and create sheet" do
+    other = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Health", position: 1
+    )
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Career path", position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id)
+    assert_response :success
+    assert_select ".lp-rpg-destination[data-controller*=destination-switcher]"
+    assert_select ".lp-rpg-destination__trigger", text: /#{@goal.title}/
+    assert_select ".lp-rpg-destination__item[href=?]", life_journey_path(@journey, goal_id: @goal.id)
+    assert_select ".lp-rpg-destination__item[href=?]", life_journey_path(@journey, goal_id: other.id)
+    assert_select ".lp-rpg-destination__item.is-new", text: /New Destination/
+    assert_select "dialog.lp-strategy-sheet.is-goal#destination-create"
+    assert_select "#destination-create input[name=horizon][value=goal]"
+    assert_select "#destination-create input[name=life_journey_id][value=?]", @journey.id.to_s
+    assert_select "#destination-create input[name=title]"
   end
 
   test "creating a plan via turbo stream still succeeds" do
