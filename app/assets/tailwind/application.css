@@ -16228,6 +16228,11 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg.is-focus-phase .lp-rpg-stats.is-compact {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+.lp-rpg.is-focus-phase .lp-rpg-stat.is-rank .lp-rpg-stat__chip {
+  /* Level lives on the avatar badge — Spark is title/icon only */
+  justify-content: center;
+  min-width: 2.4rem;
+}
 /* Tall path-focus actions stay out of the pinned chrome once camps exist. */
 .lp-rpg.is-focus-phase .lp-rpg__chrome-top .lp-rpg-path-focus:not(.is-empty-plan) {
   display: none;
