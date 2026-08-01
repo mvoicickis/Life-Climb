@@ -358,6 +358,11 @@ en:
         summit: "Standing at the summit"
         at_checkpoint: "At %{title}"
         you_are_here: "You are here"
+        you_are_here_pct: "you are here · %{pct}%"
+        cleared: "cleared"
+        in_fog: "in the fog"
+        window_prev: "Show previous camps"
+        window_next: "Show next camps"
         need_checkpoint: "Place your first checkpoint on this path."
         current_checkpoint: "Current checkpoint"
       sheet:

@@ -18,7 +18,7 @@
 <% plan_id = plan&.id || (current_project&.parent&.plan? ? current_project.parent_id : current_project&.ancestor_chain&.reverse&.find(&:plan?)&.id) %>
 
 <% if current_project %>
-  <section class="lp-rpg-sheet <%= 'is-branch' if is_branch %>"
+  <section class="lp-rpg-sheet is-dominant <%= 'is-branch' if is_branch %>"
            data-controller="strategy-sheet"
            data-strategy-sheet-expanded-value="false"
            aria-label="<%= t('strategy.rpg.sheet.label') %>">

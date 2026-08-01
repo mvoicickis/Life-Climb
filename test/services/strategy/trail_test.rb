@@ -76,7 +76,9 @@ class StrategyTrailTest < ActiveSupport::TestCase
     @plan.children.for_kind("project").ordered.limit(2).each(&:complete!)
 
     trail = Strategy::Trail.for(plan: @plan.reload)
-    assert_operator trail.visible_nodes.size, :<=, 4
+    assert_operator trail.visible_nodes.size, :<=, 3
+    assert_equal 3, trail.visible_nodes.size
     assert_includes trail.visible_nodes.map(&:state), :current
+    assert_equal 5, trail.nodes.size
   end
 end

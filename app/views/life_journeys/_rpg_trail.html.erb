@@ -1,73 +1,103 @@
-<%# Plan-scoped trail with checkpoints + adventurer. locals: trail, goal, plan, alive %>
+<%# Plan-scoped trail — 3-slot window over full nodes. locals: trail, goal, plan, alive, current_project %>
 <% trail = local_assigns[:trail] %>
 <% goal = local_assigns[:goal] %>
 <% plan = local_assigns[:plan] %>
-<% nodes = trail&.visible_nodes || [] %>
+<% current_project = local_assigns[:current_project] %>
 <% all_nodes = trail&.nodes || [] %>
 <% current = trail&.current_node %>
 <% progress = trail&.progress.to_i %>
-<% character_top = current ? current.y : 88 %>
-
+<% focus_index =
+     if current
+       current.position.to_i
+     elsif all_nodes.any?
+       done_idx = all_nodes.rindex { |n| n.state == :done }
+       done_idx || 0
+     else
+       0
+     end %>
 <section class="lp-rpg-world is-trail"
+         data-controller="trail-window"
+         data-trail-window-index-value="<%= focus_index %>"
          data-strategy-rpg-target="world"
          data-strategy-celebrate-target="mountain"
          aria-label="<%= t('strategy.rpg.world_label') %>">
   <div class="lp-rpg-world__birds" aria-hidden="true"></div>
 
   <% if plan && all_nodes.any? %>
-    <div class="lp-rpg-trail">
+    <% can_shift = all_nodes.size > 3 %>
+    <div class="lp-rpg-trail is-windowed <%= 'has-shift' if can_shift %>">
+      <% if can_shift %>
+        <button type="button"
+                class="lp-rpg-trail__shift is-prev"
+                data-trail-window-target="prev"
+                data-action="trail-window#prev"
+                aria-label="<%= t('strategy.rpg.trail.window_prev') %>">
+          <span aria-hidden="true">▲</span>
+        </button>
+      <% end %>
+
       <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
+        <path d="M28 12 V88"
               fill="none"
               stroke="currentColor"
-              stroke-width="1.4"
-              stroke-dasharray="2.5 2.2"
+              stroke-width="1.2"
+              stroke-dasharray="2.2 2.4"
               vector-effect="non-scaling-stroke" />
         <path class="lp-rpg-trail__lit"
               data-strategy-rpg-target="trailLit"
-              d="M52 90 C 38 74, 62 60, 46 46 C 34 34, 58 24, 50 10"
+              d="M28 12 V88"
               fill="none"
               stroke="currentColor"
-              stroke-width="2.6"
+              stroke-width="2.2"
               stroke-linecap="round"
               pathLength="100"
               stroke-dasharray="<%= progress %> 100"
               vector-effect="non-scaling-stroke" />
       </svg>
 
-      <% nodes.each do |node| %>
+      <% all_nodes.each_with_index do |node, idx| %>
         <% playable = node.state != :locked %>
-        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %>"
-             style="--lp-y: <%= node.y %>%"
+        <% here = current&.id == node.id %>
+        <% slot =
+             if idx == focus_index - 1 then "prev"
+             elsif idx == focus_index then "focus"
+             elsif idx == focus_index + 1 then "next"
+             end %>
+        <% slot_y = { "prev" => "18%", "focus" => "50%", "next" => "82%" }[slot] %>
+        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %> <%= "is-window-visible is-slot-#{slot}" if slot %>"
+             data-trail-window-target="node"
              data-strategy-rpg-target="flag"
              data-node-id="<%= node.id %>"
-             data-node-state="<%= node.state %>">
+             data-node-state="<%= node.state %>"
+             data-index="<%= idx %>"
+             style="<%= "--lp-slot-y: #{slot_y};" if slot %>"
+             <%= "hidden" unless slot %>>
           <% if playable %>
             <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
                   class: "lp-rpg-node__hit",
                   data: { turbo: true } do %>
               <span class="lp-rpg-node__marker" aria-hidden="true">
-                <% if node.state == :done %>
-                  <span class="lp-rpg-node__flag">⚑</span>
+                <% if node.state == :done && !here %>
+                  <span class="lp-rpg-node__check">✓</span>
                 <% else %>
-                  <span class="lp-rpg-node__tent">⛺</span>
+                  <span class="lp-rpg-node__flag">⚑</span>
                 <% end %>
               </span>
               <span class="lp-rpg-node__label">
-                <strong><%= node.title %></strong>
-                <% if node.state == :current %>
-                  <em><%= t("strategy.rpg.trail.you_are_here") %></em>
+                <strong><%= node.title %><% if node.state == :done && !here %> — <%= t("strategy.rpg.trail.cleared") %><% end %></strong>
+                <% if here %>
+                  <% here_pct = (current_project&.id == node.id) ? current_project.progress_percent.to_i : node.pct.to_i %>
+                  <em><%= t("strategy.rpg.trail.you_are_here_pct", pct: here_pct) %></em>
                 <% end %>
               </span>
             <% end %>
           <% else %>
             <span class="lp-rpg-node__hit is-locked" aria-label="<%= t('strategy.rpg.locked') %>">
               <span class="lp-rpg-node__marker" aria-hidden="true">
-                <span class="lp-rpg-node__lock">🔒</span>
+                <span class="lp-rpg-node__fog">☁</span>
               </span>
               <span class="lp-rpg-node__label">
-                <strong><%= node.title %></strong>
-                <em><%= t("strategy.rpg.locked") %></em>
+                <strong><%= node.title %> — <%= t("strategy.rpg.trail.in_fog") %></strong>
               </span>
             </span>
           <% end %>
@@ -75,13 +105,24 @@
       <% end %>
 
       <div class="lp-rpg-explorer"
+           data-trail-window-target="explorer"
            data-strategy-rpg-target="explorer"
-           style="--lp-y: <%= character_top %>%">
+           style="--lp-y: 50%">
         <%= image_tag current_user.character_image,
               class: "lp-rpg-explorer__sprite",
               alt: "",
               aria: { hidden: true } %>
       </div>
+
+      <% if can_shift %>
+        <button type="button"
+                class="lp-rpg-trail__shift is-next"
+                data-trail-window-target="next"
+                data-action="trail-window#next"
+                aria-label="<%= t('strategy.rpg.trail.window_next') %>">
+          <span aria-hidden="true">▼</span>
+        </button>
+      <% end %>
     </div>
   <% elsif plan %>
     <%# Empty trail — first checkpoint is prompted from the path focus panel only. %>
