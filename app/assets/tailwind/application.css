@@ -15494,3 +15494,158 @@ button.lp-strategy-overflow {
   }
 }
 
+
+/* —— Path focus carousel + destination dots —— */
+.lp-rpg-paths {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 0.45rem;
+  max-width: 72rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 0.85rem 0.55rem;
+  box-sizing: border-box;
+}
+
+.lp-rpg-paths__label {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.88);
+}
+
+.lp-rpg-paths .lp-rpg-plan-rail {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.lp-rpg-paths__cue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  color: rgba(100, 116, 139, 0.9);
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.lp-rpg-paths__cue-bar {
+  width: min(42%, 10rem);
+  height: 0.22rem;
+  border-radius: 999px;
+  background: rgba(51, 65, 85, 0.95);
+}
+
+.lp-rpg-path.is-focus {
+  border-color: rgba(96, 165, 250, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.35),
+    0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.lp-rpg-path.is-focus .lp-rpg-path__pct {
+  color: #60a5fa;
+}
+
+.lp-rpg-path-focus {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.15rem;
+  padding: 0.85rem 0.9rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(96, 165, 250, 0.55);
+  background: rgba(18, 22, 28, 0.88);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+}
+
+.lp-rpg-path-focus__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: rgba(248, 250, 252, 0.96);
+}
+
+.lp-rpg-path-focus__actions {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lp-rpg-path-focus__action {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(248, 250, 252, 0.95);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lp-rpg-path-focus__action:hover,
+.lp-rpg-path-focus__action:focus-visible {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.35);
+  outline: none;
+}
+
+.lp-rpg-path-focus__icon {
+  width: 1.25rem;
+  text-align: center;
+  opacity: 0.92;
+}
+
+.lp-rpg-destination-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0.15rem;
+}
+
+.lp-rpg-destination-dots__dot {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  text-decoration: none;
+}
+
+.lp-rpg-destination-dots__pip {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.85);
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.lp-rpg-destination-dots__dot.is-active .lp-rpg-destination-dots__pip,
+.lp-rpg-destination-dots__dot[aria-current="true"] .lp-rpg-destination-dots__pip {
+  background: rgba(248, 250, 252, 0.96);
+  transform: scale(1.15);
+}
+
+.lp-rpg-destination-swipe-hint {
+  margin: 0 0 0.35rem;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 550;
+  letter-spacing: 0.02em;
+  color: rgba(148, 163, 184, 0.82);
+  text-transform: lowercase;
+}
+
+.lp-rpg-destination-carousel {
+  touch-action: pan-y;
+}

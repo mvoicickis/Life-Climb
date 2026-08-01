@@ -1,15 +1,44 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Destination create dialog (carousel arrows use Turbo links for Focus).
+// Destination create dialog + swipe navigation (arrows/dots use Turbo links).
 export default class extends Controller {
-  static targets = ["button", "createDialog", "saveButton"]
+  static targets = ["button", "createDialog", "saveButton", "prevLink", "nextLink"]
 
   connect() {
     this._onViewport = () => this.ensurePrimaryVisible()
+    this._swipeX = null
   }
 
   disconnect() {
     this.closeCreate()
+    this._swipeX = null
+  }
+
+  swipeStart(event) {
+    if (event.pointerType === "mouse" && event.button !== 0) return
+    if (event.target.closest("a, button, input, textarea, summary, dialog")) return
+    this._swipeX = event.clientX
+    this._swipeY = event.clientY
+  }
+
+  swipeCancel() {
+    this._swipeX = null
+  }
+
+  swipeEnd(event) {
+    if (this._swipeX == null) return
+    const dx = event.clientX - this._swipeX
+    const dy = event.clientY - (this._swipeY || event.clientY)
+    this._swipeX = null
+    this._swipeY = null
+
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return
+
+    const link = dx < 0
+      ? (this.hasNextLinkTarget ? this.nextLinkTarget : null)
+      : (this.hasPrevLinkTarget ? this.prevLinkTarget : null)
+    if (!link) return
+    link.click()
   }
 
   openCreate(event) {

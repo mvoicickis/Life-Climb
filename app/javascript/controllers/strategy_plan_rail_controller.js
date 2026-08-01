@@ -1,18 +1,25 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Snap Plan Rail: track fills space between nav columns; arrows when overflowing.
+// Snap Plan Rail + inline path focus panel. Preserves horizontal scroll across Turbo visits.
 export default class extends Controller {
-  static targets = ["track", "prev", "next"]
+  static targets = ["track", "prev", "next", "focusPanel"]
+  static values = { goal: Number, journey: Number }
 
   connect() {
-    this.onScroll = () => this.syncArrows()
+    this.onScroll = () => {
+      this.syncArrows()
+      this.persistScroll()
+    }
     this.onResize = () => this.layout()
     this.onWheel = (event) => this.handleWheel(event)
+    this.onBeforeVisit = () => this.persistScroll()
 
     if (this.hasTrackTarget) {
       this.trackTarget.addEventListener("scroll", this.onScroll, { passive: true })
       this.trackTarget.addEventListener("wheel", this.onWheel, { passive: false })
     }
+    document.addEventListener("turbo:before-visit", this.onBeforeVisit)
+
     this.resizeObserver = new ResizeObserver(this.onResize)
     this.resizeObserver.observe(this.element)
     if (this.hasTrackTarget) this.resizeObserver.observe(this.trackTarget)
@@ -21,14 +28,48 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.persistScroll()
     this.trackTarget?.removeEventListener("scroll", this.onScroll)
     this.trackTarget?.removeEventListener("wheel", this.onWheel)
+    document.removeEventListener("turbo:before-visit", this.onBeforeVisit)
     this.resizeObserver?.disconnect()
   }
 
   layout() {
+    this.restoreScroll()
     this.ensureFocusedVisible()
     this.syncArrows()
+  }
+
+  scrollStorageKey() {
+    return `lp-path-rail-scroll:${this.journeyValue || 0}:${this.goalValue || 0}`
+  }
+
+  persistScroll() {
+    if (!this.hasTrackTarget) return
+    try {
+      sessionStorage.setItem(this.scrollStorageKey(), String(this.trackTarget.scrollLeft))
+    } catch (_) {
+      /* private mode */
+    }
+  }
+
+  rememberScrollFromClick(event) {
+    if (event.target.closest("a.lp-rpg-path")) this.persistScroll()
+  }
+
+  restoreScroll() {
+    if (!this.hasTrackTarget) return
+    let raw = null
+    try {
+      raw = sessionStorage.getItem(this.scrollStorageKey())
+    } catch (_) {
+      return
+    }
+    if (raw == null) return
+    const left = Number.parseFloat(raw)
+    if (Number.isNaN(left)) return
+    this.trackTarget.scrollLeft = left
   }
 
   handleWheel(event) {
@@ -75,7 +116,10 @@ export default class extends Controller {
       left: direction * step,
       behavior: reduce ? "auto" : "smooth"
     })
-    window.setTimeout(() => this.syncArrows(), reduce ? 0 : 320)
+    window.setTimeout(() => {
+      this.syncArrows()
+      this.persistScroll()
+    }, reduce ? 0 : 320)
   }
 
   cardStep() {
@@ -102,12 +146,13 @@ export default class extends Controller {
 
     if (fullyVisible) return
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    // Instant jump after Turbo so scroll does not animate back to the start.
     item.scrollIntoView({
-      inline: "start",
+      inline: "nearest",
       block: "nearest",
-      behavior: reduce ? "auto" : "smooth"
+      behavior: "auto"
     })
+    this.persistScroll()
   }
 
   syncArrows() {
@@ -116,6 +161,8 @@ export default class extends Controller {
     const track = this.trackTarget
     const maxScroll = track.scrollWidth - track.clientWidth
     const overflowing = maxScroll > 1
+    const rail = this.element.querySelector(".lp-rpg-plan-rail") || this.element
+    rail.classList.toggle("is-overflowing", overflowing)
     this.element.classList.toggle("is-overflowing", overflowing)
 
     const atStart = track.scrollLeft <= 1
@@ -129,5 +176,37 @@ export default class extends Controller {
       this.nextTarget.hidden = !overflowing || atEnd
       this.nextTarget.disabled = !overflowing || atEnd
     }
+  }
+
+  placeCheckpoint(event) {
+    event.preventDefault()
+    const details =
+      document.querySelector("#rpg-add-checkpoint") ||
+      document.querySelector(".lp-rpg-add.is-checkpoint")
+    if (!details) return
+    details.open = true
+    details.scrollIntoView({ behavior: "smooth", block: "center" })
+    const input = details.querySelector("input[name='title'], input, textarea")
+    input?.focus()
+  }
+
+  editPath(event) {
+    event.preventDefault()
+    const focused = this.element.querySelector("li.is-focus[data-controller~='plan-card-menu']")
+    if (!focused) return
+    const menu = this.application.getControllerForElementAndIdentifier(focused, "plan-card-menu")
+    if (menu?.edit) {
+      menu.edit({ preventDefault() {}, stopPropagation() {} })
+      return
+    }
+    focused.querySelector("[data-action*='plan-card-menu#edit']")?.click()
+  }
+
+  viewProgress(event) {
+    event.preventDefault()
+    const climb =
+      document.querySelector(".lp-rpg-climb") ||
+      document.querySelector(".lp-rpg-world.is-trail")
+    climb?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 }

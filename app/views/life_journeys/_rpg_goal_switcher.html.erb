@@ -1,4 +1,4 @@
-<%# Destination carousel — one active world + peeks + arrows. locals: root_goals, goal, progress, mountain, alive, streak %>
+<%# Destination carousel — one active world + peeks + arrows + dots + swipe. locals: root_goals, goal, progress, mountain, alive, streak %>
 <% root_goals = local_assigns.fetch(:root_goals, []) %>
 <% goal = local_assigns[:goal] %>
 <% progress = local_assigns.fetch(:progress, 0) %>
@@ -27,12 +27,16 @@
     <div class="lp-rpg-destination" data-controller="destination-switcher">
       <% if root_goals.any? && goal %>
         <nav class="lp-rpg-destination-carousel <%= 'is-multi' if multi %>"
-             aria-label="<%= t('strategy.rpg.destinations') %>">
+             aria-label="<%= t('strategy.rpg.destinations') %>"
+             data-action="pointerdown->destination-switcher#swipeStart pointerup->destination-switcher#swipeEnd pointercancel->destination-switcher#swipeCancel">
           <div class="lp-rpg-destination-carousel__nav is-prev">
             <% if prev_goal %>
               <%= link_to life_journey_path(@journey, goal_id: prev_goal.id),
                     class: "lp-rpg-destination-carousel__arrow is-prev",
-                    data: { turbo: true },
+                    data: {
+                      turbo: true,
+                      destination_switcher_target: "prevLink"
+                    },
                     aria: { label: t("strategy.rpg.destination_prev") } do %>
                 <span aria-hidden="true">‹</span>
               <% end %>
@@ -78,7 +82,10 @@
             <% if next_goal %>
               <%= link_to life_journey_path(@journey, goal_id: next_goal.id),
                     class: "lp-rpg-destination-carousel__arrow is-next",
-                    data: { turbo: true },
+                    data: {
+                      turbo: true,
+                      destination_switcher_target: "nextLink"
+                    },
                     aria: { label: t("strategy.rpg.destination_next") } do %>
                 <span aria-hidden="true">›</span>
               <% end %>
@@ -89,6 +96,24 @@
             <% end %>
           </div>
         </nav>
+
+        <% if multi %>
+          <div class="lp-rpg-destination-dots" role="tablist" aria-label="<%= t('strategy.rpg.destinations') %>">
+            <% root_goals.each_with_index do |g, i| %>
+              <% active = goal.id == g.id %>
+              <%= link_to life_journey_path(@journey, goal_id: g.id),
+                    class: "lp-rpg-destination-dots__dot #{'is-active' if active}",
+                    data: { turbo: true },
+                    aria: {
+                      label: g.title,
+                      current: active ? "true" : nil
+                    } do %>
+                <span class="lp-rpg-destination-dots__pip" aria-hidden="true"></span>
+              <% end %>
+            <% end %>
+          </div>
+          <p class="lp-rpg-destination-swipe-hint"><%= t("strategy.rpg.destination_swipe_hint") %></p>
+        <% end %>
 
         <p class="lp-rpg-summit__pct" data-strategy-rpg-target="pct" data-strategy-celebrate-target="progressBar">
           <%= progress %>% · <%= mountain[:label].presence || t("strategy.rpg.on_my_way") %>

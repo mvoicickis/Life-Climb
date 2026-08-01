@@ -38,12 +38,13 @@ class PlanRailOverflowTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id)
     assert_response :success
 
-    assert_select ".lp-rpg-plan-rail[data-controller='strategy-plan-rail']"
+    assert_select ".lp-rpg-paths[data-controller='strategy-plan-rail']"
     assert_select ".lp-rpg-plan-rail__track[data-strategy-plan-rail-target='track']"
     assert_select "button.lp-rpg-plan-rail__arrow.is-prev[data-strategy-plan-rail-target='prev']"
     assert_select "button.lp-rpg-plan-rail__arrow.is-next[data-strategy-plan-rail-target='next']"
     assert_select ".lp-rpg-plan-rail__item[data-controller='plan-card-menu']", minimum: 6
     assert_select ".lp-rpg-path__menu-btn", minimum: 6
     assert_select ".lp-rpg-path", text: /Overflow plan 1/i
+    assert_select ".lp-rpg-path-focus", count: 1
   end
 end

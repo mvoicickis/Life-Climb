@@ -1,0 +1,79 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class PathFocusCarouselTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    sign_in_as @user
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Debt free",
+      ideal_scene: "Free",
+      current_reality: "Building",
+      next_win: "Job",
+      today_mission: "Apply",
+      closer_percent: 20,
+      route_mission: true
+    )
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @journey = @user.reload.primary_focused_journey
+    @area = @journey.life_area
+    @goal = @user.strategy_goals.for_kind("goal").roots.first
+    @plan_a = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Find a job", position: 0
+    )
+    @plan_b = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Learn German", position: 1
+    )
+    @other = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey,
+      horizon: "goal", title: "Health", position: 1
+    )
+    @other.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Run", position: 0
+    )
+  end
+
+  test "paths row shows scroll label, focused path, and one focus panel with three actions" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    assert_response :success
+
+    assert_select ".lp-rpg-paths[data-controller='strategy-plan-rail']"
+    assert_select ".lp-rpg-paths__label", text: /PATHS/i
+    assert_select ".lp-rpg-path.is-focus", text: /Find a job/i
+    assert_select ".lp-rpg-path-focus", count: 1
+    assert_select ".lp-rpg-path-focus__title", text: /Find a job/i
+    assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#placeCheckpoint']"
+    assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#editPath']"
+    assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#viewProgress']"
+    assert_select "#rpg-add-checkpoint"
+  end
+
+  test "switching path updates the single focus panel title" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_b.id)
+    assert_response :success
+
+    assert_select ".lp-rpg-path.is-focus", text: /Learn German/i
+    assert_select ".lp-rpg-path-focus", count: 1
+    assert_select ".lp-rpg-path-focus__title", text: /Learn German/i
+    assert_select ".lp-rpg-path-focus__title", text: /Find a job/i, count: 0
+  end
+
+  test "destination dots and swipe hint render for multiple destinations" do
+    get life_journey_path(@journey, goal_id: @goal.id)
+    assert_response :success
+
+    assert_select ".lp-rpg-destination-dots .lp-rpg-destination-dots__dot", count: 2
+    assert_select ".lp-rpg-destination-dots__dot.is-active[href=?]",
+                  life_journey_path(@journey, goal_id: @goal.id)
+    assert_select ".lp-rpg-destination-dots__dot[href=?]",
+                  life_journey_path(@journey, goal_id: @other.id)
+    assert_select ".lp-rpg-destination-swipe-hint", text: /swipe to change destination/i
+    assert_select ".lp-rpg-destination-carousel[data-action*='destination-switcher#swipeStart']"
+  end
+end

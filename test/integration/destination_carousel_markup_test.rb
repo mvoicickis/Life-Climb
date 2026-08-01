@@ -44,7 +44,9 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-rpg-destination-carousel__arrow.is-next[href=?]",
                   life_journey_path(@journey, goal_id: @other.id)
     assert_select ".lp-rpg-destination-carousel__peek.is-next", text: /Health Summit/i
+    assert_select ".lp-rpg-destination-dots__dot", count: 2
     assert_select ".lp-rpg-path", text: /Career Path/
+    assert_select ".lp-rpg-path-focus", count: 1
     assert_select ".lp-rpg-goals", count: 0
   end
 
