@@ -327,6 +327,29 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
   end
 
+  test "deleting a checkpoint returns to a sibling camp on the same path" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Main path", position: 0
+    )
+    keep = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Keep me", position: 0
+    )
+    junk = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "wewe", position: 1
+    )
+
+    delete strategy_goal_path(junk)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: keep.id)
+    assert_not @user.strategy_goals.exists?(id: junk.id)
+
+    follow_redirect!
+    assert_select ".lp-rpg-node.is-planning-focus, .lp-rpg-node.is-slot-focus", text: /Keep me/
+    assert_select ".lp-rpg-node", text: /wewe/, count: 0
+  end
+
   test "creating a checkpoint redirects with goal plan and focus so it stays visible" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0

@@ -61,9 +61,16 @@ class StrategyGoalsController < ApplicationController
     parent_id = goal.parent_id
     removed_id = goal.id
     was_plan = goal.plan?
+    was_project = goal.project?
+    root_id = goal.root_goal&.id
+    plan_for_project =
+      if was_project
+        goal.parent&.plan? ? goal.parent : goal.ancestor_chain.reverse.find(&:plan?)
+      end
     next_plan_id = was_plan ? next_sibling_plan_id(goal) : nil
+    next_focus_id = was_project ? next_sibling_project_id(goal) : nil
     goal.destroy!
-    prepare_world_for_area!(area_id, focus_id: parent_id)
+    prepare_world_for_area!(area_id, focus_id: next_focus_id || parent_id)
     @removed_id = removed_id
     respond_to do |format|
       format.turbo_stream { render :destroy }
@@ -72,7 +79,11 @@ class StrategyGoalsController < ApplicationController
                       area_id: area_id,
                       parent_id: parent_id,
                       was_plan: was_plan,
-                      next_plan_id: next_plan_id
+                      was_project: was_project,
+                      next_plan_id: next_plan_id,
+                      next_focus_id: next_focus_id,
+                      plan_id: plan_for_project&.id,
+                      goal_id: root_id
                     ),
                     notice: t("strategy.removed"), status: :see_other
       end
@@ -122,13 +133,22 @@ class StrategyGoalsController < ApplicationController
 
   private
 
-  def after_destroy_path(area_id:, parent_id:, was_plan: false, next_plan_id: nil)
+  def after_destroy_path(area_id:, parent_id:, was_plan: false, was_project: false, next_plan_id: nil, next_focus_id: nil, plan_id: nil, goal_id: nil)
     journey = current_user.life_journeys.active.find_by(life_area_id: area_id) ||
               current_user.primary_focused_journey
     return new_life_journey_path(life_area_id: area_id) if journey.blank?
 
     if was_plan
       return life_journey_path(journey, goal_id: parent_id, plan_id: next_plan_id)
+    end
+
+    if was_project
+      return life_journey_path(
+        journey,
+        goal_id: goal_id,
+        plan_id: plan_id || parent_id,
+        focus_id: next_focus_id || plan_id || parent_id
+      )
     end
 
     strategy_redirect_path(area_id: area_id, focus_id: parent_id)
@@ -147,6 +167,18 @@ class StrategyGoalsController < ApplicationController
     return if remaining.empty?
 
     remaining[index] || remaining[index - 1] || remaining.first
+  end
+
+  # Prefer the next sibling camp; otherwise the previous one.
+  def next_sibling_project_id(project)
+    parent = project.parent
+    return if parent.blank?
+
+    siblings = parent.children.select(&:project?).sort_by { |p| [ p.position.to_i, p.id ] }
+    index = siblings.index { |p| p.id == project.id }
+    return if index.nil?
+
+    (siblings[index + 1] || (index.positive? ? siblings[index - 1] : nil))&.id
   end
 
   def after_update_path(goal)
@@ -176,8 +208,17 @@ class StrategyGoalsController < ApplicationController
       )
     end
 
-    focus_id = goal.parent_id
-    strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id)
+    if goal.project?
+      plan = goal.parent&.plan? ? goal.parent : goal.ancestor_chain.reverse.find(&:plan?)
+      return life_journey_path(
+        journey,
+        goal_id: goal.root_goal&.id,
+        plan_id: plan&.id,
+        focus_id: goal.id
+      )
+    end
+
+    strategy_redirect_path(area_id: goal.life_area_id, focus_id: goal.parent_id)
   end
 
   def require_planning_v2

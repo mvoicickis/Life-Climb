@@ -16134,6 +16134,25 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   color: #fff;
   outline: none;
 }
+.lp-rpg-trail.is-windowed .lp-rpg-node__action.is-switch {
+  text-decoration: none;
+  color: rgba(252, 211, 77, 0.9);
+  border-color: rgba(212, 160, 23, 0.35);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__action.is-switch:hover,
+.lp-rpg-trail.is-windowed .lp-rpg-node__action.is-switch:focus-visible {
+  background: rgba(212, 160, 23, 0.16);
+  color: #fde68a;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__action.is-delete {
+  color: rgba(252, 165, 165, 0.92);
+  border-color: rgba(248, 113, 113, 0.28);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__action.is-delete:hover,
+.lp-rpg-trail.is-windowed .lp-rpg-node__action.is-delete:focus-visible {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fecaca;
+}
 .lp-rpg-trail.is-windowed .lp-rpg-node__add {
   position: relative;
 }

@@ -122,13 +122,37 @@
             <% end %>
 
               <% if slot == "focus" && project %>
+                <% prev_camp = idx.positive? ? all_nodes[idx - 1] : nil %>
+                <% next_camp = idx < all_nodes.size - 1 ? all_nodes[idx + 1] : nil %>
                 <div class="lp-rpg-node__actions">
+                  <% if prev_camp %>
+                    <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: prev_camp.id),
+                          class: "lp-rpg-node__action is-switch",
+                          data: { turbo: true },
+                          aria: { label: t("strategy.rpg.trail.prev_camp", title: prev_camp.title) } do %>
+                      <span aria-hidden="true">▲</span>
+                    <% end %>
+                  <% end %>
+                  <% if next_camp %>
+                    <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: next_camp.id),
+                          class: "lp-rpg-node__action is-switch",
+                          data: { turbo: true },
+                          aria: { label: t("strategy.rpg.trail.next_camp", title: next_camp.title) } do %>
+                      <span aria-hidden="true">▼</span>
+                    <% end %>
+                  <% end %>
                   <button type="button"
                           class="lp-rpg-node__action is-edit"
                           data-plan-card-menu-target="button"
                           data-action="click->plan-card-menu#edit"
                           aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
                     <span aria-hidden="true">✎</span>
+                  </button>
+                  <button type="button"
+                          class="lp-rpg-node__action is-delete"
+                          data-action="click->plan-card-menu#confirmDelete"
+                          aria-label="<%= t('strategy.rpg.delete_checkpoint') %>">
+                    <span aria-hidden="true">🗑</span>
                   </button>
                   <details class="lp-rpg-node__add"
                            id="rpg-trail-add-checkpoint-<%= project.id %>"
@@ -240,6 +264,37 @@
                           </div>
                         <% end %>
                       </div>
+                    </div>
+                  </div>
+                </dialog>
+
+                <dialog class="lp-strategy-sheet is-plan"
+                        id="checkpoint-delete-<%= project.id %>"
+                        data-plan-card-menu-target="deleteDialog">
+                  <div class="lp-strategy-sheet__panel">
+                    <header class="lp-strategy-sheet__head">
+                      <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+                      <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.delete_checkpoint_title") %></h2>
+                      <p class="lp-strategy-sheet__desc">
+                        <%= t("strategy.rpg.delete_checkpoint_body", title: project.title) %>
+                      </p>
+                      <button type="button"
+                              class="lp-strategy-sheet__close"
+                              data-action="click->plan-card-menu#closeDelete"
+                              aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                    </header>
+                    <div class="lp-strategy-sheet__footer is-split">
+                      <button type="button"
+                              class="lp-strategy-sheet__btn is-cancel"
+                              data-action="click->plan-card-menu#closeDelete">
+                        <%= t("strategy.rpg.cancel") %>
+                      </button>
+                      <%= form_with url: strategy_goal_path(project), method: :delete,
+                            class: "lp-strategy-sheet__form is-delete-action",
+                            data: { turbo: false } do %>
+                        <%= submit_tag t("strategy.rpg.delete_confirm"),
+                              class: "lp-strategy-sheet__btn is-delete" %>
+                      <% end %>
                     </div>
                   </div>
                 </dialog>
