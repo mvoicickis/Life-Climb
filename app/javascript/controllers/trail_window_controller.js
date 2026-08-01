@@ -1,27 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Vertical 3-slot trail window: previous cleared / current (largest) / next fogged.
-// Shifts over the full node list without Turbo. Separate from strategy-plan-rail.
+// Slot index comes from the server (focus_id). Camp switching is Turbo navigation —
+// do not shift slots client-side or the battle sheet will desync.
 export default class extends Controller {
-  static targets = ["node", "prev", "next", "explorer"]
+  static targets = ["node", "explorer"]
   static values = { index: { type: Number, default: 0 } }
 
   connect() {
-    this.render()
-  }
-
-  prev(event) {
-    event?.preventDefault()
-    if (this.indexValue <= 0) return
-    this.indexValue -= 1
-    this.render()
-  }
-
-  next(event) {
-    event?.preventDefault()
-    const max = this.nodeTargets.length - 1
-    if (this.indexValue >= max) return
-    this.indexValue += 1
     this.render()
   }
 
@@ -31,10 +17,7 @@ export default class extends Controller {
 
   render() {
     const nodes = this.nodeTargets
-    if (!nodes.length) {
-      this.syncControls(false, false)
-      return
-    }
+    if (!nodes.length) return
 
     const focus = Math.min(Math.max(this.indexValue, 0), nodes.length - 1)
     if (focus !== this.indexValue) this.indexValue = focus
@@ -61,24 +44,11 @@ export default class extends Controller {
       this.explorerTarget.style.setProperty("--lp-y", this.slotY("focus"))
       this.explorerTarget.hidden = false
     }
-
-    this.syncControls(focus > 0, focus < nodes.length - 1)
   }
 
   slotY(slot) {
     if (slot === "prev") return "18%"
     if (slot === "next") return "82%"
     return "50%"
-  }
-
-  syncControls(canPrev, canNext) {
-    if (this.hasPrevTarget) {
-      this.prevTarget.disabled = !canPrev
-      this.prevTarget.setAttribute("aria-disabled", canPrev ? "false" : "true")
-    }
-    if (this.hasNextTarget) {
-      this.nextTarget.disabled = !canNext
-      this.nextTarget.setAttribute("aria-disabled", canNext ? "false" : "true")
-    }
   }
 }

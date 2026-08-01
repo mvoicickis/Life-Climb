@@ -16435,6 +16435,9 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   left: 50%;
   transform: translateX(-50%);
   z-index: 9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 1.7rem;
   height: 1.35rem;
   margin: 0;
@@ -16444,13 +16447,16 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   background: rgba(17, 22, 28, 0.72);
   color: rgba(226, 232, 240, 0.85);
   font-size: 0.62rem;
+  text-decoration: none;
   cursor: pointer;
 }
 .lp-rpg-trail__shift.is-prev { top: 0.1rem; }
 .lp-rpg-trail__shift.is-next { bottom: 0.1rem; }
-.lp-rpg-trail__shift:disabled {
-  opacity: 0.35;
-  cursor: default;
+.lp-rpg-trail__shift:hover,
+.lp-rpg-trail__shift:focus-visible {
+  color: #fff;
+  background: rgba(17, 22, 28, 0.9);
+  outline: none;
 }
 .lp-rpg-trail__shift[hidden] { display: none !important; }
 
@@ -16778,6 +16784,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   font-weight: 750;
   letter-spacing: -0.015em;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 }
 .lp-rpg-current-path__crumb:hover,
@@ -16806,6 +16813,10 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 }
 .lp-rpg-practice-cats.is-exited {
   pointer-events: none;
+}
+a.lp-rpg-practice-cat {
+  text-decoration: none;
+  color: inherit;
 }
 .lp-rpg-practice-cat {
   display: grid;
@@ -16871,8 +16882,36 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   gap: 0.15rem;
   flex: 0 0 auto;
 }
+.lp-rpg-practice-focus__switch {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+.lp-rpg-practice-focus__nav {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  background: rgba(17, 22, 28, 0.55);
+  color: rgba(226, 232, 240, 0.88);
+  font-size: 0.62rem;
+  text-decoration: none;
+  line-height: 1;
+}
+.lp-rpg-practice-focus__nav:hover,
+.lp-rpg-practice-focus__nav:focus-visible {
+  color: #fff;
+  background: rgba(17, 22, 28, 0.85);
+  outline: none;
+}
 .lp-rpg-practice-focus__title {
   margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
   font-size: 1.28rem;
   font-weight: 750;
@@ -16884,6 +16923,13 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   font-size: 0.78rem;
   font-weight: 650;
   color: var(--lp-rpg-green, #57d35b);
+}
+.lp-rpg-todays-practice__empty {
+  margin: 0.15rem 0 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 550;
+  line-height: 1.35;
+  color: rgba(226, 232, 240, 0.72);
 }
 .lp-rpg-todays-practice {
   display: flex;
