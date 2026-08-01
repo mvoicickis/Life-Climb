@@ -57,22 +57,24 @@
             goal: @goal %>
     </div>
 
-    <div class="lp-rpg__stage">
-      <div class="lp-rpg__stage-trail">
-        <%= render "life_journeys/rpg_trail",
-              trail: trail,
-              goal: @goal,
-              plan: plan,
-              alive: alive,
-              current_project: current_project %>
-      </div>
+    <div class="lp-rpg__stage is-planning">
+      <div class="lp-rpg__planning">
+        <div class="lp-rpg__stage-trail is-glance">
+          <%= render "life_journeys/rpg_trail",
+                trail: trail,
+                goal: @goal,
+                plan: plan,
+                alive: alive,
+                current_project: current_project %>
+        </div>
 
-      <div class="lp-rpg__stage-battle">
-        <%= render "life_journeys/rpg_battle_sheet",
-              current_project: current_project,
-              plan: plan,
-              goal: @goal,
-              trail: trail %>
+        <div class="lp-rpg__stage-battle">
+          <%= render "life_journeys/rpg_battle_sheet",
+                current_project: current_project,
+                plan: plan,
+                goal: @goal,
+                trail: trail %>
+        </div>
       </div>
     </div>
 

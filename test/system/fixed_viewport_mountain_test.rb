@@ -41,12 +41,14 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     camps[0].complete!
     camps[1].children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Design battle card", scheduled_on: Date.current, position: 0
+      horizon: "day", title: "Design battle card",
+      description: "Wire the planning card",
+      scheduled_on: Date.current, position: 0
     )
     @current = camps[1]
   end
 
-  test "short phone keeps page locked and Now cards in viewport" do
+  test "short phone keeps page locked and Today's Plan in viewport" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -56,26 +58,31 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#strategy-world", wait: 5
 
-    # Focus the camp with today's battle so the Now rail is populated.
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
     assert_no_selector ".lp-first-climb-shell"
 
-    assert_selector ".lp-rpg__stage-trail", visible: :all
-    assert_selector ".lp-rpg-sheet.is-dominant", visible: :all
+    assert_selector ".lp-rpg__stage.is-planning", visible: :all
+    assert_selector ".lp-rpg-sheet.is-planning", visible: :all
+    assert_selector ".lp-rpg-current-path", visible: :all
     assert_selector ".lp-rpg-node.is-window-visible", minimum: 2, wait: 5
     assert_text(/Daily battles/i)
-    assert_selector ".lp-rpg-now-card__title", text: /Design battle card/i, visible: :all, wait: 5
-    assert_selector ".lp-rpg-node.is-current em", text: /you are here/i, visible: :all
+    assert_selector ".lp-rpg-plan-card__title", text: /Design battle card/i, visible: :all, wait: 5
     assert_no_selector ".lp-rpg-stat.is-mountain"
-    assert_no_text(/you are here ·/i)
+    assert_no_text(/you are here · \d+%/i)
+    assert_selector ".lp-rpg-current-path__here", text: /You are here/i
+    assert_no_selector "form[action*='battle_win']"
+
+    find(".lp-rpg-plan-card__summary", text: /Design battle card/i).click
+    assert_selector ".lp-rpg-plan-card[open] .lp-rpg-plan-card__cta", text: /Open in Today/i, wait: 3
+    assert_text(/Wire the planning card/i)
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-trail');
         const battle = document.querySelector('.lp-rpg__stage-battle');
-        const nowCard = document.querySelector('.lp-rpg-now-card');
+        const planCard = document.querySelector('.lp-rpg-plan-card');
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom');
@@ -86,7 +93,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
         const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
         const statsPad = stats ? getComputedStyle(stats).paddingLeft : '';
-        const nowRect = nowCard ? nowCard.getBoundingClientRect() : null;
+        const planRect = planCard ? planCard.getBoundingClientRect() : null;
         const statsR = stats ? stats.getBoundingClientRect() : null;
         window.scrollTo(0, 200);
         const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
@@ -101,11 +108,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           statsPad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
-          nowTop: nowRect ? Math.round(nowRect.top) : null,
-          nowBottom: nowRect ? Math.round(nowRect.bottom) : null,
-          nowH: nowRect ? Math.round(nowRect.height) : null,
-          statsBottom: statsR ? Math.round(statsR.bottom) : null,
-          nowVisible: !!(nowRect && nowRect.height > 8 && nowRect.top < window.innerHeight && nowRect.bottom > 0),
+          planVisible: !!(planRect && planRect.height > 8 && planRect.top < window.innerHeight && planRect.bottom > 0),
           statsInView: !!(statsR && statsR.top < window.innerHeight && statsR.bottom > 0),
           pageScrolled: scrolled > 1
         };
@@ -113,20 +116,19 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_operator metrics["visible"], :<=, 3
     assert_operator metrics["visible"], :>=, 2
-    assert_operator metrics["trailH"], :>=, 36, "trail stage too short at 568px: #{metrics.inspect}"
-    assert_operator metrics["battleH"], :>=, 88, "battle stage too short at 568px: #{metrics.inspect}"
+    assert_operator metrics["trailH"], :>=, 28, "trail glance too short at 568px: #{metrics.inspect}"
+    assert_operator metrics["battleH"], :>=, 88, "planning stage too short at 568px: #{metrics.inspect}"
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
-    # Battle gets the larger stage share (dominant).
     assert_operator metrics["battleH"], :>, metrics["trailH"]
-    assert_equal true, metrics["nowVisible"], "Now battle card should stay in viewport: #{metrics.inspect}"
+    assert_equal true, metrics["planVisible"], "Today's Plan card should stay in viewport: #{metrics.inspect}"
     assert_equal true, metrics["statsInView"], "stats strip should stay in viewport: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["statsPad"], "chrome/stats gutters should match: #{metrics.inspect}"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    path = "/opt/cursor/artifacts/screenshots/mountain-focus-polish-568px.png"
+    path = "/opt/cursor/artifacts/screenshots/mountain-planning-center-568px.png"
     page.save_screenshot(path)
     assert File.exist?(path), "expected screenshot at #{path}"
   end

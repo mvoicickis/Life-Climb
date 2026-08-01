@@ -27,7 +27,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty leaf shows Now and Camps snap rows with ghost add cards" do
+  test "empty leaf shows Today's Plan add and Camps snap row" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -35,17 +35,17 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-sheet-rail.is-now[data-controller~='strategy-plan-rail']"
+    assert_select ".lp-rpg-current-path__here", text: /Resume/
+    assert_select ".lp-rpg-todays-plan.is-checklist"
+    assert_select ".lp-rpg-todays-plan .lp-rpg-add.is-ghost.is-step"
     assert_select ".lp-rpg-sheet-rail.is-camps[data-controller~='strategy-plan-rail']"
-    assert_select ".lp-rpg-sheet-rail.is-now .lp-rpg-add.is-ghost.is-step"
     assert_select ".lp-rpg-sheet-rail.is-camps .lp-rpg-add.is-ghost.is-checkpoint"
-    assert_select ".lp-rpg-sheet-rail__label", text: /NOW/
-    assert_select ".lp-rpg-sheet-rail__label", text: /SPLIT INTO CAMPS/
+    assert_select ".lp-rpg-todays-plan__kicker", text: /Today.?s Plan/i
+    assert_select ".lp-rpg-sheet-rail__label", text: /Camps/i
     assert_select ".lp-rpg-trail .lp-rpg-node", text: /Resume/
   end
 
-  test "leaf with day children shows Now row only and keeps battle win" do
+  test "leaf with day children shows planning cards without battle win" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -57,10 +57,11 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet-rail.is-now"
-    assert_select ".lp-rpg-now-card__title", text: /Update CV/
-    assert_select ".lp-rpg-now-card__xp", text: /xp/i
-    assert_select "form[action=?]", battle_win_path(battle)
+    assert_select ".lp-rpg-todays-plan.is-checklist"
+    assert_select ".lp-rpg-plan-card__title", text: /Update CV/
+    assert_select ".lp-rpg-plan-card__xp", text: /XP/i
+    assert_select ".lp-rpg-plan-card__cta", text: /Open in Today/i
+    assert_select "form[action=?]", battle_win_path(battle), count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
 
@@ -85,8 +86,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camp-card__title", text: /Landing page/
     assert_select ".lp-rpg-camp-card__title", text: /Payments/
     assert_select ".lp-rpg-sheet-rail.is-camps .lp-rpg-add.is-ghost.is-checkpoint"
-    assert_select ".lp-rpg-sheet-rail.is-now", count: 0
-    assert_select ".lp-rpg-now-card", count: 0
+    assert_select ".lp-rpg-todays-plan", count: 0
+    assert_select ".lp-rpg-plan-card", count: 0
     assert_select "a.lp-rpg-camp-card[href*='focus_id=#{child.id}']"
 
     # Trail stays plan-level only — nested child is not a trail node
@@ -110,8 +111,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: child.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet__title", text: /Landing page/
-    assert_select ".lp-rpg-now-card__title", text: /Draft hero/
+    assert_select ".lp-rpg-current-path__here", text: /Landing page/
+    assert_select ".lp-rpg-plan-card__title", text: /Draft hero/
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
