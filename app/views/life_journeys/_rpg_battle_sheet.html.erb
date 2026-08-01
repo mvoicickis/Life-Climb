@@ -50,14 +50,13 @@
         <h2 class="lp-rpg-current-path__plan"
             data-category-focus-target="pathTitle"
             <%= "hidden" if category_entered %>><%= plan.title %></h2>
-        <button type="button"
-                class="lp-rpg-current-path__crumb"
-                data-category-focus-target="crumb"
-                data-action="category-focus#exit"
-                <%= "hidden" unless category_entered %>>
+        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: plan.id),
+              class: "lp-rpg-current-path__crumb",
+              data: { turbo: true, category_focus_target: "crumb" },
+              **(category_entered ? {} : { hidden: true }) do %>
           <span class="lp-rpg-current-path__crumb-mark" aria-hidden="true">←</span>
           <span><%= plan.title %></span>
-        </button>
+        <% end %>
       <% end %>
     </header>
 
@@ -69,17 +68,15 @@
       <% categories.each do |cat| %>
         <% days = cat.children.select(&:day?).reject(&:completed?) %>
         <% planned = days.count { |d| d.scheduled_on == Date.current } %>
-        <button type="button"
-                class="lp-rpg-practice-cat"
-                data-action="category-focus#enter"
-                data-category-focus-id-param="<%= cat.id %>"
-                data-category-id="<%= cat.id %>">
+        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: cat.id),
+              class: "lp-rpg-practice-cat",
+              data: { turbo: true, category_id: cat.id } do %>
           <span class="lp-rpg-practice-cat__title"><%= cat.title %></span>
           <span class="lp-rpg-practice-cat__count"><%= days.size %></span>
           <span class="lp-rpg-practice-cat__meta">
             <%= t("strategy.rpg.practice_planned_short", selected: planned, total: days.size) %>
           </span>
-        </button>
+        <% end %>
       <% end %>
     </div>
 
@@ -89,20 +86,50 @@
       <% planned = open_days.count { |d| d.scheduled_on == Date.current } %>
       <% total = open_days.size %>
       <% entered = category_entered && cat.id == initial_category_id %>
+      <% cat_idx = categories.index { |c| c.id == cat.id } %>
+      <% prev_cat = cat_idx&.positive? ? categories[cat_idx - 1] : nil %>
+      <% next_cat = cat_idx && cat_idx < categories.size - 1 ? categories[cat_idx + 1] : nil %>
       <div class="lp-rpg-practice-focus<%= ' is-entered' if entered %>"
            data-category-focus-target="panel"
            data-category-id="<%= cat.id %>"
            <%= "hidden" unless entered %>
            aria-hidden="<%= entered ? 'false' : 'true' %>">
         <div class="lp-rpg-practice-focus__head">
-          <h3 class="lp-rpg-practice-focus__title"><%= cat.title %></h3>
+          <div class="lp-rpg-practice-focus__switch"
+               role="navigation"
+               aria-label="<%= t('strategy.rpg.camp_switcher') %>">
+            <% if prev_cat %>
+              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: prev_cat.id),
+                    class: "lp-rpg-practice-focus__nav is-prev",
+                    data: { turbo: true },
+                    aria: { label: t("strategy.rpg.trail.prev_camp", title: prev_cat.title) } do %>
+                <span aria-hidden="true">▲</span>
+              <% end %>
+            <% end %>
+            <h3 class="lp-rpg-practice-focus__title"><%= cat.title %></h3>
+            <% if next_cat %>
+              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: next_cat.id),
+                    class: "lp-rpg-practice-focus__nav is-next",
+                    data: { turbo: true },
+                    aria: { label: t("strategy.rpg.trail.next_camp", title: next_cat.title) } do %>
+                <span aria-hidden="true">▼</span>
+              <% end %>
+            <% end %>
+          </div>
           <p class="lp-rpg-practice-focus__progress">
-            <%= t("strategy.rpg.practice_planned", selected: planned, total: total) %>
+            <% if total.zero? %>
+              <%= t("strategy.rpg.practice_empty") %>
+            <% else %>
+              <%= t("strategy.rpg.practice_planned", selected: planned, total: total) %>
+            <% end %>
           </p>
         </div>
 
         <div class="lp-rpg-todays-practice">
           <p class="lp-rpg-todays-practice__kicker"><%= t("strategy.rpg.todays_practice") %></p>
+          <% if open_days.empty? %>
+            <p class="lp-rpg-todays-practice__empty"><%= t("strategy.rpg.practice_empty") %></p>
+          <% end %>
           <ul class="lp-rpg-todays-practice__list" aria-label="<%= t('strategy.rpg.todays_practice') %>">
             <% open_days.each do |battle| %>
               <% selected_today = battle.scheduled_on == Date.current %>

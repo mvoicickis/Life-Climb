@@ -41,16 +41,17 @@
   <div class="lp-rpg-world__birds" aria-hidden="true"></div>
 
   <% if plan && all_nodes.any? %>
-    <% can_shift = all_nodes.size > 3 %>
+    <% prev_window_camp = focus_index.positive? ? all_nodes[focus_index - 1] : nil %>
+    <% next_window_camp = focus_index < all_nodes.size - 1 ? all_nodes[focus_index + 1] : nil %>
+    <% can_shift = prev_window_camp.present? || next_window_camp.present? %>
     <div class="lp-rpg-trail is-windowed <%= 'has-shift' if can_shift %>">
-      <% if can_shift %>
-        <button type="button"
-                class="lp-rpg-trail__shift is-prev"
-                data-trail-window-target="prev"
-                data-action="trail-window#prev"
-                aria-label="<%= t('strategy.rpg.trail.window_prev') %>">
+      <% if prev_window_camp %>
+        <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: prev_window_camp.id),
+              class: "lp-rpg-trail__shift is-prev",
+              data: { turbo: true },
+              aria: { label: t("strategy.rpg.trail.prev_camp", title: prev_window_camp.title) } do %>
           <span aria-hidden="true">▲</span>
-        </button>
+        <% end %>
       <% end %>
 
       <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -313,14 +314,13 @@
               aria: { hidden: true } %>
       </div>
 
-      <% if can_shift %>
-        <button type="button"
-                class="lp-rpg-trail__shift is-next"
-                data-trail-window-target="next"
-                data-action="trail-window#next"
-                aria-label="<%= t('strategy.rpg.trail.window_next') %>">
+      <% if next_window_camp %>
+        <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: next_window_camp.id),
+              class: "lp-rpg-trail__shift is-next",
+              data: { turbo: true },
+              aria: { label: t("strategy.rpg.trail.next_camp", title: next_window_camp.title) } do %>
           <span aria-hidden="true">▼</span>
-        </button>
+        <% end %>
       <% end %>
     </div>
   <% elsif plan %>
