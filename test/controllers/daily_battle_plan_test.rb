@@ -71,12 +71,14 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Cut spend", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: area, life_journey: journey, parent: project, horizon: "day",
+      life_area: area, life_journey: journey, parent: project_leaf, horizon: "day",
       title: "Cancel subscription", scheduled_on: Date.current, position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: area, life_journey: journey, parent: project, horizon: "day",
+      life_area: area, life_journey: journey, parent: project_leaf, horizon: "day",
       title: "Call bank tomorrow", scheduled_on: Date.current + 1.day, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: area)
@@ -88,13 +90,16 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     assert battle.reload.completed?
     assert_equal 0, goal.reload.progress_percent
-    assert_match(/Is .*Cut spend.* finished/i, response.body)
+    assert_match(/Is .*Steps.* finished/i, response.body)
     assert_match(/Yes, project done/i, response.body)
 
+    post project_completions_url, params: { project_id: project_leaf.id, decision: "done" }
+    assert_redirected_to dashboard_path
     post project_completions_url, params: { project_id: project.id, decision: "done" }
     assert_redirected_to dashboard_path
     follow_redirect!
 
+    assert project_leaf.reload.completed?
     assert project.reload.completed?
     assert_equal 100, goal.reload.progress_percent
     assert_match(/Mountain now 100%/i, flash[:notice].to_s + response.body)

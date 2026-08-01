@@ -34,7 +34,8 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "wewe", position: 1
     )
-    @first.children.create!(
+    @first_leaf = practice_leaf_for!(@first)
+    @first_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Design battle card",
       scheduled_on: Date.current, position: 0

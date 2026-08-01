@@ -26,11 +26,15 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Learn German", position: 0
     )
-    @vocab = @plan.children.create!(
+    @lang = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Language skills", position: 0
+    )
+    @vocab = @lang.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Vocabulary", position: 0
     )
-    @grammar = @plan.children.create!(
+    @grammar = @lang.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Grammar", position: 1
     )
@@ -53,7 +57,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
     assert_selector "#strategy-world.lp-rpg", wait: 5
     assert_selector ".lp-rpg-practice-cats", visible: true
     assert_selector ".lp-rpg-practice-cat__title", text: /Vocabulary/i
@@ -69,12 +73,12 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__check", minimum: 1, visible: :all, wait: 3
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Flashcards|Learn 15/i, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Add Practice/i, visible: :all
-    assert_selector ".lp-rpg-current-path__crumb", text: /Learn German/i
+    assert_selector ".lp-rpg-current-path__crumb", text: /Language skills/i
     assert_no_selector ".lp-rpg-practice-cats:not([hidden]) .lp-rpg-practice-cat__title", text: /Grammar/i
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
-    find(".lp-rpg-current-path__crumb", text: /Learn German/i).click
+    find(".lp-rpg-current-path__crumb", text: /Language skills/i).click
     assert_selector ".lp-rpg-practice-cats", visible: true, wait: 3
     assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true

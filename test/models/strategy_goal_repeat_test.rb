@@ -16,8 +16,9 @@ class StrategyGoalRepeatTest < ActiveSupport::TestCase
   end
 
   test "day practice can repeat daily" do
+    @camp_leaf = practice_leaf_for!(@camp)
     day = @user.strategy_goals.create!(
-      life_area: @area, parent: @camp, horizon: "day",
+      life_area: @area, parent: @camp_leaf, horizon: "day",
       title: "Do lessons", scheduled_on: Date.current, repeat: "daily", position: 0
     )
     assert day.repeat_daily?
@@ -32,8 +33,9 @@ class StrategyGoalRepeatTest < ActiveSupport::TestCase
   end
 
   test "blank repeat normalizes to none" do
+    leaf = practice_leaf_for!(@camp)
     day = @user.strategy_goals.build(
-      life_area: @area, parent: @camp, horizon: "day",
+      life_area: @area, parent: leaf, horizon: "day",
       title: "Once", scheduled_on: Date.current, repeat: nil, position: 0
     )
     assert day.valid?

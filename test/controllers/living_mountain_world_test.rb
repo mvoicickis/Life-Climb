@@ -54,7 +54,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "First climb", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Battle one", scheduled_on: Date.current, position: 0
     )
@@ -77,7 +78,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       horizon: "project", title: "Resume", position: 0
     )
     2.times do |i|
-      project.children.create!(
+      project_leaf = practice_leaf_for!(project)
+      project_leaf.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
         horizon: "day", title: "Battle #{i}", scheduled_on: Date.current, position: i
       )
@@ -101,15 +103,16 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Resume/
+    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Steps/
     assert_select ".lp-rpg-practice-row__title", text: /Update CV/
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i
   end
@@ -127,18 +130,21 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Interviews", position: 1
     )
-    first.children.create!(
+    first_leaf = practice_leaf_for!(first)
+    first_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
     assert_response :success
-    # Fight current stays Resume; planning focus opens Interviews.
+    # Fight current stays Resume; planning focus opens Interviews (split-first).
     assert_select ".lp-rpg-node.is-current", text: /Resume/
     assert_select ".lp-rpg-node.is-planning-focus.is-locked", text: /Interviews/
     assert_select ".lp-rpg-node.is-slot-focus", text: /Interviews/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Interviews/
+    assert_select ".lp-rpg-current-path__plan", text: /Interviews/
+    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
+    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_match(/Planning here/i, response.body)
   end
 

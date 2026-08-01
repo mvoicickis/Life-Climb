@@ -14,8 +14,9 @@ class StrategyBattleAnglesTest < ActiveSupport::TestCase
   end
 
   test "suggests sharper titles from project and last battle" do
+    @project_leaf = practice_leaf_for!(@project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, parent: @project, horizon: "day",
+      life_area: @area, parent: @project_leaf, horizon: "day",
       title: "Cancel subscription", scheduled_on: Date.current, position: 0
     )
     battle.complete!
@@ -28,8 +29,9 @@ class StrategyBattleAnglesTest < ActiveSupport::TestCase
 
   test "skips titles that already exist under the project" do
     existing = I18n.t("dash.battle_angles.templates.fifteen", project: "Cut spend")
+    @project_leaf = practice_leaf_for!(@project)
     @user.strategy_goals.create!(
-      life_area: @area, parent: @project, horizon: "day",
+      life_area: @area, parent: @project_leaf, horizon: "day",
       title: existing, scheduled_on: Date.current, position: 0
     )
 

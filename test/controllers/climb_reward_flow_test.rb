@@ -21,8 +21,9 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     goal = @user.strategy_goals.create!(life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0)
     project = @user.strategy_goals.create!(life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0)
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Today Battle", scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)

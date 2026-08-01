@@ -44,12 +44,14 @@ class StrategyMountainTest < ActiveSupport::TestCase
     )
     assert_equal :camp, Strategy::Mountain.for(goal: goal.reload)[:stage]
 
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Learn 20 words", scheduled_on: Date.current, position: 0
     )
+    other_leaf = practice_leaf_for!(other)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: other, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: other_leaf, horizon: "day",
       title: "Write README", scheduled_on: Date.current, position: 0
     )
 

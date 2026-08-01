@@ -61,8 +61,9 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Call a customer", scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: area)

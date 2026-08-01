@@ -35,6 +35,7 @@ class StrategyGoal < ApplicationRecord
   validate :due_on_rules
   validate :parent_kind_matches
   validate :parent_leaf_branch_xor
+  validate :day_requires_nested_camp, on: :create
   validate :child_fits_parent_window
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
@@ -103,6 +104,16 @@ class StrategyGoal < ApplicationRecord
 
   def leaf_checkpoint?
     project? && children.none?(&:project?)
+  end
+
+  # Camp hanging directly under a Path (plan).
+  def path_level_camp?
+    project? && parent&.plan?
+  end
+
+  # Nested leaf camp — the layer that holds daily practices.
+  def nested_leaf_camp?
+    project? && parent&.project? && leaf_checkpoint?
   end
 
   def split_eligible?
@@ -228,6 +239,15 @@ class StrategyGoal < ApplicationRecord
     elsif day? && siblings.any?(&:project?)
       errors.add(:base, I18n.t("strategy.rpg.checkpoint_branch_no_days"))
     end
+  end
+
+  # Daily practices hang under nested camps, not directly under a Path-level camp.
+  def day_requires_nested_camp
+    return unless day?
+    return if parent.blank?
+    return unless parent.path_level_camp?
+
+    errors.add(:base, I18n.t("strategy.rpg.day_needs_nested_camp"))
   end
 
   def root_must_be_goal

@@ -21,15 +21,26 @@ class StrategyGoalNestedTest < ActiveSupport::TestCase
     assert @checkpoint.split_eligible?
   end
 
-  test "leaf checkpoint can take day children unchanged" do
+  test "nested leaf checkpoint can take day children" do
+    nested = practice_leaf_for!(@checkpoint)
     day = @user.strategy_goals.create!(
-      life_area: @area, parent: @checkpoint, horizon: "day",
+      life_area: @area, parent: nested, horizon: "day",
       title: "Battle", scheduled_on: Date.current, position: 0
     )
 
     assert day.persisted?
-    assert @checkpoint.reload.leaf_checkpoint?
-    assert_not @checkpoint.split_eligible?
+    assert nested.reload.leaf_checkpoint?
+    assert_not nested.split_eligible?
+  end
+
+  test "path-level leaf cannot take new day children" do
+    day = @user.strategy_goals.build(
+      life_area: @area, parent: @checkpoint, horizon: "day",
+      title: "Battle", scheduled_on: Date.current, position: 0
+    )
+
+    assert_not day.valid?
+    assert_includes day.errors[:base], I18n.t("strategy.rpg.day_needs_nested_camp")
   end
 
   test "split creates project children under the checkpoint" do
@@ -45,33 +56,35 @@ class StrategyGoalNestedTest < ActiveSupport::TestCase
   end
 
   test "split is blocked when day children exist" do
+    nested = practice_leaf_for!(@checkpoint)
     @user.strategy_goals.create!(
-      life_area: @area, parent: @checkpoint, horizon: "day",
+      life_area: @area, parent: nested, horizon: "day",
       title: "Open battle", scheduled_on: Date.current, position: 0
     )
 
-    nested = @user.strategy_goals.build(
-      life_area: @area, parent: @checkpoint, horizon: "project", title: "Too late", position: 1
+    too_late = @user.strategy_goals.build(
+      life_area: @area, parent: nested, horizon: "project", title: "Too late", position: 1
     )
 
-    assert_not nested.valid?
-    assert_includes nested.errors[:base],
+    assert_not too_late.valid?
+    assert_includes too_late.errors[:base],
                     "Remove or finish steps on this checkpoint before splitting it."
   end
 
   test "split is blocked when completed day children exist" do
+    nested = practice_leaf_for!(@checkpoint)
     day = @user.strategy_goals.create!(
-      life_area: @area, parent: @checkpoint, horizon: "day",
+      life_area: @area, parent: nested, horizon: "day",
       title: "Done battle", scheduled_on: Date.current, position: 0
     )
     day.complete!
 
-    nested = @user.strategy_goals.build(
-      life_area: @area, parent: @checkpoint, horizon: "project", title: "Still blocked", position: 1
+    too_late = @user.strategy_goals.build(
+      life_area: @area, parent: nested, horizon: "project", title: "Still blocked", position: 1
     )
 
-    assert_not nested.valid?
-    assert_includes nested.errors[:base],
+    assert_not too_late.valid?
+    assert_includes too_late.errors[:base],
                     "Remove or finish steps on this checkpoint before splitting it."
   end
 

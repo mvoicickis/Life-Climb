@@ -17,8 +17,9 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
     project = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Pr", position: 0)
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, parent: project, horizon: "day", title: "A",
+      life_area: @area, parent: project_leaf, horizon: "day", title: "A",
       scheduled_on: Date.current, position: 0
     )
     battle.complete!
@@ -75,17 +76,18 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
   test "leaf checkpoint percent stays binary and project-gated" do
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
-    project = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Leaf", position: 0)
+    project = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Camp", position: 0)
+    leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, parent: project, horizon: "day", title: "A",
+      life_area: @area, parent: leaf, horizon: "day", title: "A",
       scheduled_on: Date.current, position: 0
     )
     battle.complete!
 
-    assert_equal 0, Strategy::Progress.percent(project.reload)
+    assert_equal 0, Strategy::Progress.percent(leaf.reload)
 
-    project.complete!
-    assert_equal 100, Strategy::Progress.percent(project.reload)
+    leaf.complete!
+    assert_equal 100, Strategy::Progress.percent(leaf.reload)
   end
 
   test "branch checkpoint percent averages direct children recursively at depth 3+" do

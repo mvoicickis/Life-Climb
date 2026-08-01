@@ -8,15 +8,21 @@
 <% area = @journey.life_area %>
 <% goal_id = goal&.id || current_project&.root_goal&.id %>
 <% plan_id = plan&.id || (current_project&.parent&.plan? ? current_project.parent_id : current_project&.ancestor_chain&.reverse&.find(&:plan?)&.id) %>
-<%# Scope = Path, or a branch camp whose children are Practice Categories. %>
+<%# Scope = Path, branch camp, or empty Path-level camp (split-first before dailies). %>
+<% path_level_split_first =
+     focus&.path_level_camp? && focus.leaf_checkpoint? && focus.children.none?(&:day?) %>
 <% category_scope =
      if focus&.day? && focus.parent&.project?
        parent = focus.parent
        parent.parent&.project? ? parent.parent : plan
+     elsif focus&.plan?
+       plan
      elsif focus&.project? && focus.branch_checkpoint?
        focus
      elsif focus&.project? && focus.parent&.project?
        focus.parent
+     elsif path_level_split_first
+       focus
      elsif focus&.project? && focus.parent&.plan?
        plan
      elsif current_project&.branch_checkpoint?
@@ -32,9 +38,9 @@
                   []
                 end %>
 <% leaf_categories = categories.reject(&:branch_checkpoint?) %>
-<%# Empty branch still gets Level A + add camp; empty Path stays on the quiet empty sheet. %>
+<%# Empty branch / empty Path-level camp → Level A + add smaller camp; empty Path stays quiet. %>
 <% use_category_focus = category_scope.present? && (categories.any? || category_scope.project?) %>
-<%# Enter Level B only for leaf camps (or a day inside one). Path/branch focus stays on Level A. %>
+<%# Enter Level B for nested leaves, or legacy Path-level camps that already have days. %>
 <% wanted_category_id =
      if use_category_focus && focus && !focus.plan?
        if focus.day? && leaf_categories.any? { |c| c.id == focus.parent_id }
@@ -50,6 +56,12 @@
 <% crumb_focus_id = category_entered ? category_scope&.id : plan&.id %>
 <% crumb_label = category_entered ? scope_title : plan&.title %>
 <% show_crumb = category_entered || branch_level_a %>
+<% scope_add_label =
+     if category_scope&.path_level_camp?
+       t("strategy.rpg.add_smaller_camp")
+     else
+       t("strategy.rpg.add_checkpoint")
+     end %>
 
 <% if use_category_focus %>
   <section class="lp-rpg-sheet is-dominant is-planning <%= category_entered ? 'is-category-focus' : 'is-categories' %>"
@@ -87,6 +99,9 @@
          aria-label="<%= t('strategy.rpg.practice_categories') %>"
          <%= "hidden" if category_entered %>
          aria-hidden="<%= category_entered ? 'true' : 'false' %>">
+      <% if path_level_split_first %>
+        <p class="lp-rpg-practice-cats__hint"><%= t("strategy.rpg.nest_before_dailies") %></p>
+      <% end %>
       <% categories.each do |cat| %>
         <% if cat.branch_checkpoint? %>
           <% camp_count = cat.children.count(&:project?) %>
@@ -120,9 +135,9 @@
                  data-controller="floating-create"
                  data-action="toggle->floating-create#onToggle">
           <summary class="lp-rpg-practice-add"
-                   aria-label="<%= t('strategy.rpg.add_checkpoint') %>">
+                   aria-label="<%= scope_add_label %>">
             <span aria-hidden="true">+</span>
-            <span><%= t("strategy.rpg.add_checkpoint") %></span>
+            <span><%= scope_add_label %></span>
           </summary>
           <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
             <button type="button"
@@ -253,77 +268,79 @@
             <% end %>
           </ul>
 
-          <details class="lp-rpg-node__add is-practice-add"
-                   id="rpg-add-practice-<%= cat.id %>"
-                   data-controller="floating-create"
-                   data-action="toggle->floating-create#onToggle">
-            <summary class="lp-rpg-practice-add"
-                     aria-label="<%= t('strategy.rpg.add_practice') %>">
-              <span aria-hidden="true">+</span>
-              <span><%= t("strategy.rpg.add_practice") %></span>
-            </summary>
-            <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
-              <button type="button"
-                      class="lp-rpg-float-create__backdrop"
-                      data-action="click->floating-create#close"
-                      tabindex="-1"
-                      aria-label="<%= t('strategy.rpg.cancel') %>"></button>
-              <div class="lp-rpg-float-create__card"
-                   data-floating-create-target="card"
-                   role="dialog"
-                   aria-modal="true"
-                   aria-labelledby="rpg-add-practice-title-<%= cat.id %>">
-                <header class="lp-rpg-float-create__head">
-                  <p class="lp-rpg-float-create__kicker"><%= cat.title %></p>
-                  <h2 class="lp-rpg-float-create__heading" id="rpg-add-practice-title-<%= cat.id %>">
-                    <%= t("strategy.rpg.add_practice") %>
-                  </h2>
-                </header>
-                <%= form_with url: strategy_goals_path,
-                      method: :post,
-                      class: "lp-rpg-float-create__form",
-                      data: { turbo: false } do %>
-                  <%= hidden_field_tag :life_area_id, area.id %>
-                  <%= hidden_field_tag :life_journey_id, @journey.id %>
-                  <%= hidden_field_tag :horizon, "day" %>
-                  <%= hidden_field_tag :parent_id, cat.id %>
-                  <%= hidden_field_tag :scheduled_on, Date.current %>
-                  <label class="lp-rpg-float-create__field">
-                    <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_name") %></span>
-                    <%= text_field_tag :title, nil,
-                          required: true,
-                          maxlength: 120,
-                          class: "lp-rpg-float-create__input",
-                          placeholder: t("strategy.rpg.practice_name_placeholder"),
-                          autocomplete: "off",
-                          data: { floating_create_target: "title" } %>
-                  </label>
-                  <fieldset class="lp-rpg-float-create__repeat">
-                    <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
-                    <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
-                      <label class="lp-rpg-practice-repeat__option">
-                        <%= radio_button_tag :repeat, "none", true, class: "lp-rpg-practice-repeat__input" %>
-                        <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
-                      </label>
-                      <label class="lp-rpg-practice-repeat__option">
-                        <%= radio_button_tag :repeat, "daily", false, class: "lp-rpg-practice-repeat__input" %>
-                        <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
-                      </label>
+          <% if cat.nested_leaf_camp? %>
+            <details class="lp-rpg-node__add is-practice-add"
+                     id="rpg-add-practice-<%= cat.id %>"
+                     data-controller="floating-create"
+                     data-action="toggle->floating-create#onToggle">
+              <summary class="lp-rpg-practice-add"
+                       aria-label="<%= t('strategy.rpg.add_practice') %>">
+                <span aria-hidden="true">+</span>
+                <span><%= t("strategy.rpg.add_practice") %></span>
+              </summary>
+              <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+                <button type="button"
+                        class="lp-rpg-float-create__backdrop"
+                        data-action="click->floating-create#close"
+                        tabindex="-1"
+                        aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+                <div class="lp-rpg-float-create__card"
+                     data-floating-create-target="card"
+                     role="dialog"
+                     aria-modal="true"
+                     aria-labelledby="rpg-add-practice-title-<%= cat.id %>">
+                  <header class="lp-rpg-float-create__head">
+                    <p class="lp-rpg-float-create__kicker"><%= cat.title %></p>
+                    <h2 class="lp-rpg-float-create__heading" id="rpg-add-practice-title-<%= cat.id %>">
+                      <%= t("strategy.rpg.add_practice") %>
+                    </h2>
+                  </header>
+                  <%= form_with url: strategy_goals_path,
+                        method: :post,
+                        class: "lp-rpg-float-create__form",
+                        data: { turbo: false } do %>
+                    <%= hidden_field_tag :life_area_id, area.id %>
+                    <%= hidden_field_tag :life_journey_id, @journey.id %>
+                    <%= hidden_field_tag :horizon, "day" %>
+                    <%= hidden_field_tag :parent_id, cat.id %>
+                    <%= hidden_field_tag :scheduled_on, Date.current %>
+                    <label class="lp-rpg-float-create__field">
+                      <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_name") %></span>
+                      <%= text_field_tag :title, nil,
+                            required: true,
+                            maxlength: 120,
+                            class: "lp-rpg-float-create__input",
+                            placeholder: t("strategy.rpg.practice_name_placeholder"),
+                            autocomplete: "off",
+                            data: { floating_create_target: "title" } %>
+                    </label>
+                    <fieldset class="lp-rpg-float-create__repeat">
+                      <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
+                      <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
+                        <label class="lp-rpg-practice-repeat__option">
+                          <%= radio_button_tag :repeat, "none", true, class: "lp-rpg-practice-repeat__input" %>
+                          <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
+                        </label>
+                        <label class="lp-rpg-practice-repeat__option">
+                          <%= radio_button_tag :repeat, "daily", false, class: "lp-rpg-practice-repeat__input" %>
+                          <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <div class="lp-rpg-float-create__actions">
+                      <button type="button"
+                              class="lp-rpg-float-create__btn is-cancel"
+                              data-action="click->floating-create#close">
+                        <%= t("strategy.rpg.cancel") %>
+                      </button>
+                      <%= submit_tag t("strategy.rpg.create_practice"),
+                            class: "lp-rpg-float-create__btn is-create" %>
                     </div>
-                  </fieldset>
-                  <div class="lp-rpg-float-create__actions">
-                    <button type="button"
-                            class="lp-rpg-float-create__btn is-cancel"
-                            data-action="click->floating-create#close">
-                      <%= t("strategy.rpg.cancel") %>
-                    </button>
-                    <%= submit_tag t("strategy.rpg.create_practice"),
-                          class: "lp-rpg-float-create__btn is-create" %>
-                  </div>
-                <% end %>
+                  <% end %>
+                </div>
               </div>
-            </div>
-          </details>
+            </details>
+          <% end %>
         </div>
 
         <%= link_to t("strategy.rpg.open_in_today"),

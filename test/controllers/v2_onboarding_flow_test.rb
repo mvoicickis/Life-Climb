@@ -115,8 +115,9 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     project = user.strategy_goals.create!(
       life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Launch", position: 0
     )
+    leaf = practice_leaf_for!(project)
     user.strategy_goals.create!(
-      life_area: area, life_journey: journey, parent: project, horizon: "day",
+      life_area: area, life_journey: journey, parent: leaf, horizon: "day",
       title: "Write one test", scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: user, life_area: area)

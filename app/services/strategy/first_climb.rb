@@ -38,8 +38,15 @@ module Strategy
           title: I18n.t("strategy.first_climb.project_title", plan: @plan_title.truncate(40)),
           life_area: area
         )
-        battle = create_child!(
+        # Dailies hang under a nested camp, not directly on the Path-level camp.
+        nested = create_child!(
           parent: project,
+          horizon: "project",
+          title: I18n.t("strategy.first_climb.nested_camp_title"),
+          life_area: area
+        )
+        battle = create_child!(
+          parent: nested,
           horizon: "day",
           title: @today_action,
           life_area: area,

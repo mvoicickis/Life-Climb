@@ -16,8 +16,9 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
   end
 
   test "daily template gets a fresh todo after today is completed" do
+    @camp_leaf = practice_leaf_for!(@camp)
     practice = @user.strategy_goals.create!(
-      life_area: @area, parent: @camp, horizon: "day",
+      life_area: @area, parent: @camp_leaf, horizon: "day",
       title: "Do lessons", scheduled_on: Date.current, repeat: "daily", position: 0
     )
 
@@ -41,8 +42,9 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
   end
 
   test "one-time completed todo is not recreated" do
+    @camp_leaf = practice_leaf_for!(@camp)
     practice = @user.strategy_goals.create!(
-      life_area: @area, parent: @camp, horizon: "day",
+      life_area: @area, parent: @camp_leaf, horizon: "day",
       title: "Once", scheduled_on: Date.current, repeat: "none", position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
