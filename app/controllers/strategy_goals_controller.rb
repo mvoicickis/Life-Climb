@@ -136,12 +136,16 @@ class StrategyGoalsController < ApplicationController
               current_user.primary_focused_journey
     return new_life_journey_path(life_area_id: goal.life_area_id) if journey.blank?
 
-    # Plans return to Mountain with that path still focused so the rename is obvious.
+    # Keep Mountain focused on the renamed node so the new title is obvious.
+    if goal.goal?
+      return life_journey_path(journey, goal_id: goal.id)
+    end
+
     if goal.plan?
       return life_journey_path(journey, goal_id: goal.parent_id, plan_id: goal.id)
     end
 
-    focus_id = goal.goal? ? goal.id : goal.parent_id
+    focus_id = goal.parent_id
     strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id)
   end
 

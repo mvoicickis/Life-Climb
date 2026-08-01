@@ -60,9 +60,55 @@
               <span class="lp-rpg-destination-carousel__peek is-prev is-empty" aria-hidden="true"></span>
             <% end %>
 
-            <div class="lp-rpg-destination-carousel__active" aria-current="true">
+            <div class="lp-rpg-destination-carousel__active"
+                 data-controller="plan-card-menu"
+                 aria-current="true">
               <span class="lp-rpg-destination-carousel__icon" aria-hidden="true">🏔</span>
-              <h1 class="lp-rpg-destination-carousel__title"><%= goal.title %></h1>
+              <div class="lp-rpg-destination-carousel__title-row">
+                <h1 class="lp-rpg-destination-carousel__title"><%= goal.title %></h1>
+                <button type="button"
+                        class="lp-rpg-destination-carousel__edit"
+                        data-plan-card-menu-target="button"
+                        data-action="click->plan-card-menu#edit"
+                        aria-label="<%= t('strategy.rpg.edit_destination') %>">
+                  <span aria-hidden="true">✎</span>
+                </button>
+              </div>
+
+              <dialog class="lp-strategy-sheet is-goal"
+                      id="destination-edit-<%= goal.id %>"
+                      data-plan-card-menu-target="editDialog">
+                <div class="lp-strategy-sheet__panel">
+                  <header class="lp-strategy-sheet__head">
+                    <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.goal") %></p>
+                    <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_destination") %></h2>
+                    <button type="button"
+                            class="lp-strategy-sheet__close"
+                            data-action="click->plan-card-menu#closeEdit"
+                            aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                  </header>
+                  <div class="lp-strategy-sheet__actions">
+                    <div class="lp-strategy-sheet__edit">
+                      <%= form_with url: strategy_goal_path(goal), method: :patch,
+                            class: "lp-strategy-sheet__form",
+                            data: { turbo: false } do %>
+                        <%= text_field_tag :title, goal.title,
+                              required: true,
+                              maxlength: 120,
+                              id: "destination-edit-title-#{goal.id}",
+                              class: "lp-rpg-input",
+                              autocomplete: "off",
+                              aria: { label: t("strategy.rpg.edit_destination") } %>
+                        <div class="lp-strategy-sheet__footer">
+                          <%= submit_tag t("strategy.save_changes"),
+                                class: "lp-strategy-sheet__btn is-save",
+                                data: { plan_card_menu_target: "saveButton" } %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </dialog>
             </div>
 
             <% if next_goal %>

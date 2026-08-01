@@ -41,6 +41,9 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg-destination-carousel.is-multi"
     assert_select ".lp-rpg-destination-carousel__title", text: /Ship LifePoints/i
+    assert_select ".lp-rpg-destination-carousel__active[data-controller~='plan-card-menu']"
+    assert_select ".lp-rpg-destination-carousel__edit[data-action*='plan-card-menu#edit']"
+    assert_select "dialog#destination-edit-#{@goal.id}"
     assert_select "a.lp-rpg-destination-carousel__arrow.is-next[href=?]",
                   life_journey_path(@journey, goal_id: @other.id)
     assert_select ".lp-rpg-destination-carousel__peek.is-next", text: /Health Summit/i
@@ -55,7 +58,19 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg-destination-carousel__title", text: /Health Summit/i
+    assert_select "dialog#destination-edit-#{@other.id}"
     assert_select ".lp-rpg-path", text: /Run Path/
     assert_select ".lp-rpg-path", text: /Career Path/, count: 0
+  end
+
+  test "renaming a destination from mountain returns with the new title" do
+    patch strategy_goal_path(@goal), params: { title: "Debt Free" }
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id)
+    assert_equal "Debt Free", @goal.reload.title
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-destination-carousel__title", text: /Debt Free/i
+    assert_select ".lp-rpg-destination-dots__dot", count: 2
   end
 end

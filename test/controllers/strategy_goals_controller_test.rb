@@ -343,7 +343,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert @user.daily_todos.for_day(Date.current).exists?(title: "Old Battle", strategy_goal_id: battle.id)
 
     patch strategy_goal_path(goal), params: { title: "New Goal" }
-    assert_redirected_to life_journey_path(@journey, focus_id: goal.id)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id)
     assert_equal "New Goal", goal.reload.title
     assert_match(/Renamed/i, flash[:notice].to_s)
 
