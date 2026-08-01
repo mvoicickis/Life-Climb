@@ -81,4 +81,29 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select "[data-trail-window-target='prev']", count: 0
     assert_select "[data-trail-window-target='next']", count: 0
   end
+
+  test "focus polish de-dupes mountain percent and quiet labels" do
+    project = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Daily battles", position: 0
+    )
+    project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Design battle card", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
+    assert_response :success
+    assert_select ".lp-rpg-stats.is-compact"
+    assert_select ".lp-rpg-stat.is-mountain", count: 0
+    assert_select ".lp-rpg-stat.is-xp"
+    assert_select ".lp-rpg-stat.is-streak"
+    assert_select ".lp-rpg-stat.is-rank"
+    assert_select ".lp-rpg-paths__label.is-quiet"
+    assert_select ".lp-rpg-sheet-rail__label.is-quiet", minimum: 1
+    assert_no_match(/you are here ·/i, response.body)
+    assert_match(/You are here/i, response.body)
+    assert_no_match(/PATHS · scroll/i, response.body)
+    assert_no_match(/NOW · scroll/i, response.body)
+  end
 end
