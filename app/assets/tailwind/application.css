@@ -16141,19 +16141,198 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   border-color: rgba(87, 211, 91, 0.45);
   color: rgba(187, 247, 208, 0.95);
 }
-.lp-rpg-trail.is-windowed .lp-rpg-node__add-form {
-  position: absolute;
-  top: calc(100% + 0.35rem);
-  right: 0;
-  z-index: 12;
+/* Floating planning card — Create Checkpoint (ported to body while open) */
+.lp-rpg-float-create {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+.lp-rpg-float-create[hidden] {
+  display: none !important;
+}
+.lp-rpg-float-create__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  pointer-events: auto;
+  cursor: default;
+  background: rgba(4, 8, 14, 0.38);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: lp-rpg-float-create-backdrop 160ms ease;
+}
+.lp-rpg-float-create__card {
+  position: fixed;
+  z-index: 71;
+  pointer-events: auto;
+  width: min(22.5rem, calc(100vw - 1.5rem));
   display: grid;
-  gap: 0.4rem;
-  width: min(14.5rem, 72vw);
-  padding: 0.55rem;
-  border-radius: 0.85rem;
+  gap: 1rem;
+  padding: 1.15rem 1.2rem 1.2rem;
+  border-radius: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(14, 18, 24, 0.96);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+  background: rgba(8, 12, 18, 0.92);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  animation: lp-rpg-float-create-in 200ms cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+.lp-rpg-float-create__head {
+  display: grid;
+  gap: 0.2rem;
+}
+.lp-rpg-float-create__kicker {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.72);
+}
+.lp-rpg-float-create__heading {
+  margin: 0;
+  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: rgba(248, 250, 252, 0.98);
+}
+.lp-rpg-float-create__form {
+  display: grid;
+  gap: 0.85rem;
+}
+.lp-rpg-float-create__field {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+.lp-rpg-float-create__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.78);
+}
+.lp-rpg-float-create__label em {
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: rgba(148, 163, 184, 0.5);
+}
+.lp-rpg-float-create__input,
+.lp-rpg-float-create__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(248, 250, 252, 0.98);
+  font: inherit;
+  outline: none;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+.lp-rpg-float-create__input {
+  min-height: 3.1rem;
+  padding: 0.85rem 1rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+.lp-rpg-float-create__textarea {
+  min-height: 5.25rem;
+  padding: 0.8rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 550;
+  line-height: 1.45;
+  resize: vertical;
+}
+.lp-rpg-float-create__input::placeholder,
+.lp-rpg-float-create__textarea::placeholder {
+  color: rgba(148, 163, 184, 0.55);
+  font-weight: 500;
+}
+.lp-rpg-float-create__input:focus,
+.lp-rpg-float-create__textarea:focus {
+  border-color: rgba(212, 160, 23, 0.55);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.14);
+}
+.lp-rpg-float-create__actions {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 0.55rem;
+  margin-top: 0.15rem;
+}
+.lp-rpg-float-create__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.65rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: filter 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+.lp-rpg-float-create__btn.is-cancel {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(226, 232, 240, 0.88);
+}
+.lp-rpg-float-create__btn.is-cancel:hover,
+.lp-rpg-float-create__btn.is-cancel:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+.lp-rpg-float-create__btn.is-create {
+  border: 1px solid rgba(212, 160, 23, 0.55);
+  background: linear-gradient(180deg, #e0b12a 0%, #d4a017 100%);
+  color: #14110a;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+.lp-rpg-float-create__btn.is-create:hover,
+.lp-rpg-float-create__btn.is-create:focus-visible {
+  filter: brightness(1.05);
+  outline: none;
+}
+@keyframes lp-rpg-float-create-backdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes lp-rpg-float-create-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@media (max-width: 420px) {
+  .lp-rpg-float-create__card {
+    width: calc(100vw - 1.25rem);
+    padding: 1rem 1rem 1.05rem;
+  }
+  .lp-rpg-float-create__heading {
+    font-size: 1.2rem;
+  }
+  .lp-rpg-float-create__input {
+    min-height: 2.9rem;
+    font-size: 1rem;
+  }
 }
 .lp-rpg-trail.is-windowed .lp-rpg-node__marker {
   width: 1.85rem;
