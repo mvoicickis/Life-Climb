@@ -119,6 +119,11 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-plan-card__cta[href='#{dashboard_path}']"
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__chip.is-actions"
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-edit"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__add"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__add[data-controller='floating-create']"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__card"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__input[name='title']"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__textarea[name='description']"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__btn.is-create"
+    assert_select ".lp-rpg-node.is-slot-focus form.lp-rpg-node__add-form[action='/strategy_goals']"
   end
 end

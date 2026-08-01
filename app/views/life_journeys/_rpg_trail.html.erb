@@ -106,23 +106,82 @@
                           aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
                     <span aria-hidden="true">✎</span>
                   </button>
-                  <details class="lp-rpg-node__add" id="rpg-trail-add-checkpoint-<%= project.id %>">
-                    <summary aria-label="<%= t('strategy.rpg.add_checkpoint') %>">
+                  <details class="lp-rpg-node__add"
+                           id="rpg-trail-add-checkpoint-<%= project.id %>"
+                           data-controller="floating-create"
+                           data-action="toggle->floating-create#onToggle">
+                    <summary class="lp-rpg-node__add-trigger"
+                             aria-label="<%= t('strategy.rpg.add_checkpoint') %>">
                       <span aria-hidden="true">+</span>
                     </summary>
-                    <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-node__add-form", data: { turbo: false } do %>
-                      <%= hidden_field_tag :life_area_id, area.id %>
-                      <%= hidden_field_tag :life_journey_id, @journey.id %>
-                      <%= hidden_field_tag :horizon, "project" %>
-                      <%= hidden_field_tag :parent_id, plan.id %>
-                      <%= text_field_tag :title, nil,
-                            required: true,
-                            maxlength: 120,
-                            class: "lp-rpg-input",
-                            placeholder: t("strategy.project_placeholder"),
-                            autocomplete: "off" %>
-                      <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
-                    <% end %>
+
+                    <div class="lp-rpg-float-create"
+                         data-floating-create-target="shell"
+                         hidden>
+                      <button type="button"
+                              class="lp-rpg-float-create__backdrop"
+                              data-action="click->floating-create#close"
+                              tabindex="-1"
+                              aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+
+                      <div class="lp-rpg-float-create__card"
+                           data-floating-create-target="card"
+                           role="dialog"
+                           aria-modal="true"
+                           aria-labelledby="rpg-trail-add-checkpoint-title-<%= project.id %>">
+                        <header class="lp-rpg-float-create__head">
+                          <p class="lp-rpg-float-create__kicker"><%= t("strategy.horizons.project") %></p>
+                          <h2 class="lp-rpg-float-create__heading"
+                              id="rpg-trail-add-checkpoint-title-<%= project.id %>">
+                            <%= t("strategy.rpg.new_checkpoint") %>
+                          </h2>
+                        </header>
+
+                        <%= form_with url: strategy_goals_path,
+                              method: :post,
+                              class: "lp-rpg-float-create__form lp-rpg-node__add-form",
+                              data: { turbo: false } do %>
+                          <%= hidden_field_tag :life_area_id, area.id %>
+                          <%= hidden_field_tag :life_journey_id, @journey.id %>
+                          <%= hidden_field_tag :horizon, "project" %>
+                          <%= hidden_field_tag :parent_id, plan.id %>
+
+                          <label class="lp-rpg-float-create__field">
+                            <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.checkpoint_name") %></span>
+                            <%= text_field_tag :title, nil,
+                                  required: true,
+                                  maxlength: 120,
+                                  class: "lp-rpg-float-create__input",
+                                  placeholder: t("strategy.rpg.checkpoint_name_placeholder"),
+                                  autocomplete: "off",
+                                  data: { floating_create_target: "title" } %>
+                          </label>
+
+                          <label class="lp-rpg-float-create__field is-optional">
+                            <span class="lp-rpg-float-create__label">
+                              <%= t("strategy.rpg.plan_card.description") %>
+                              <em><%= t("strategy.rpg.optional") %></em>
+                            </span>
+                            <%= text_area_tag :description, nil,
+                                  rows: 3,
+                                  maxlength: StrategyGoal::SUMMARY_MAX,
+                                  class: "lp-rpg-float-create__textarea",
+                                  placeholder: t("strategy.rpg.checkpoint_description_placeholder"),
+                                  autocomplete: "off" %>
+                          </label>
+
+                          <div class="lp-rpg-float-create__actions">
+                            <button type="button"
+                                    class="lp-rpg-float-create__btn is-cancel"
+                                    data-action="click->floating-create#close">
+                              <%= t("strategy.rpg.cancel") %>
+                            </button>
+                            <%= submit_tag t("strategy.rpg.create_checkpoint"),
+                                  class: "lp-rpg-float-create__btn is-create" %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
                   </details>
                 </div>
 
