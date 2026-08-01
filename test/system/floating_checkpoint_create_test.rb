@@ -90,4 +90,31 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_no_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
     assert_selector ".lp-rpg-node.is-slot-focus .lp-rpg-node__add:not([open])"
   end
+
+  test "create checkpoint saves and keeps the new camp visible on the trail" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+
+    visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+
+    find(".lp-rpg-node.is-slot-focus .lp-rpg-node__add-trigger", wait: 5).click
+    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+
+    within("body > .lp-rpg-float-create") do
+      fill_in "title", with: "Notifications camp"
+      click_button "Create Checkpoint"
+    end
+
+    assert_selector ".lp-rpg-node.is-planning-focus", text: /Notifications camp/i, wait: 5
+    assert_selector ".lp-rpg-node.is-slot-focus", text: /Notifications camp/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Notifications camp/i, visible: :all
+    assert @user.strategy_goals.for_kind("project").exists?(title: "Notifications camp", parent_id: @plan.id)
+
+    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-create-visible.png")
+  end
 end

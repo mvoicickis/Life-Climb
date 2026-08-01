@@ -114,7 +114,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i
   end
 
-  test "locked trail nodes cannot become the active focus" do
+  test "locked trail camps stay battle-locked but can be planning-focused" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -134,9 +134,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
     assert_response :success
+    # Fight current stays Resume; planning focus opens Interviews.
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Resume/
-    assert_select ".lp-rpg-node.is-locked", text: /Interviews/
+    assert_select ".lp-rpg-node.is-planning-focus.is-locked", text: /Interviews/
+    assert_select ".lp-rpg-node.is-slot-focus", text: /Interviews/
+    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Interviews/
+    assert_match(/Planning here/i, response.body)
   end
 
   test "goal_id and plan_id switch the climb" do

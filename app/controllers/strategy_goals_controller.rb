@@ -45,11 +45,9 @@ class StrategyGoalsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render :create, status: :created }
         format.html do
-          redirect_to strategy_redirect_path(
-                        focus_id: redirect_focus_id(goal),
-                        goal_id: (goal.goal? ? goal.id : nil)
-                      ),
-                      notice: celebration[:notice], status: :see_other
+          redirect_to strategy_redirect_path(**create_redirect_params(goal)),
+                      notice: create_notice(goal, celebration),
+                      status: :see_other
         end
       end
     else
@@ -238,9 +236,45 @@ class StrategyGoalsController < ApplicationController
     case goal.kind
     when "goal" then goal.id
     when "plan" then goal.id # Open the new plan's camp notebook, not the parent goal
-    when "project" then goal.id # Keep notebook on the node just created
+    when "project" then goal.id # Keep Mountain on the camp just created
     when "day" then goal.parent_id # Stay inside the Practice Category
     else goal.parent_id
+    end
+  end
+
+  # Keep Destination + Path context after create so the new node is visible.
+  def create_redirect_params(goal)
+    case goal.kind
+    when "goal"
+      { focus_id: goal.id, goal_id: goal.id }
+    when "plan"
+      { focus_id: goal.id, goal_id: goal.parent_id, plan_id: goal.id }
+    when "project"
+      plan = goal.parent&.plan? ? goal.parent : goal.ancestor_chain.reverse.find(&:plan?)
+      {
+        focus_id: goal.id,
+        goal_id: goal.root_goal&.id,
+        plan_id: plan&.id
+      }
+    when "day"
+      category = goal.parent
+      plan = category&.parent if category&.parent&.plan?
+      plan ||= category&.ancestor_chain&.reverse&.find(&:plan?)
+      {
+        focus_id: category&.id,
+        goal_id: goal.root_goal&.id,
+        plan_id: plan&.id
+      }
+    else
+      { focus_id: redirect_focus_id(goal) }
+    end
+  end
+
+  def create_notice(goal, celebration)
+    return celebration[:notice] if celebration[:notice].present?
+
+    if goal.project?
+      I18n.t("strategy.rpg.checkpoint_added", title: goal.title)
     end
   end
 

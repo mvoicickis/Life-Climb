@@ -7,8 +7,24 @@
 <% all_nodes = trail&.nodes || [] %>
 <% current = trail&.current_node %>
 <% progress = trail&.progress.to_i %>
+<%# Window on the planning-focused camp (may be battle-locked); else the fight current. %>
+<% planning_trail_id =
+     if current_project && plan
+       if current_project.parent_id == plan.id
+         current_project.id
+       else
+         node = current_project
+         while node&.project? && node.parent_id != plan.id
+           node = node.parent
+         end
+         node&.parent_id == plan.id ? node.id : nil
+       end
+     end %>
+<% planning_trail_node = all_nodes.find { |n| n.id == planning_trail_id } if planning_trail_id %>
 <% focus_index =
-     if current
+     if planning_trail_node
+       planning_trail_node.position.to_i
+     elsif current
        current.position.to_i
      elsif all_nodes.any?
        done_idx = all_nodes.rindex { |n| n.state == :done }
@@ -59,6 +75,7 @@
       <% all_nodes.each_with_index do |node, idx| %>
         <% playable = node.state != :locked %>
         <% here = current&.id == node.id %>
+        <% planning_here = planning_trail_node&.id == node.id %>
         <% slot =
              if idx == focus_index - 1 then "prev"
              elsif idx == focus_index then "focus"
@@ -66,7 +83,7 @@
              end %>
         <% slot_y = { "prev" => "18%", "focus" => "50%", "next" => "82%" }[slot] %>
         <% project = node.record %>
-        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %> <%= "is-window-visible is-slot-#{slot}" if slot %>"
+        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %> <%= "is-window-visible is-slot-#{slot}" if slot %> <%= "is-planning-focus" if planning_here %>"
              data-trail-window-target="node"
              data-strategy-rpg-target="flag"
              data-node-id="<%= node.id %>"
@@ -74,28 +91,35 @@
              data-index="<%= idx %>"
              style="<%= "--lp-slot-y: #{slot_y};" if slot %>"
              <%= "hidden" unless slot %>>
-          <% if playable %>
-            <div class="lp-rpg-node__chip <%= 'is-actions' if slot == 'focus' && project %>"
-                 <% if slot == "focus" && project %>data-controller="plan-card-menu"<% end %>>
-              <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
-                    class: "lp-rpg-node__hit",
-                    data: { turbo: true } do %>
-                <span class="lp-rpg-node__marker" aria-hidden="true">
-                  <% if node.state == :done && !here %>
-                    <span class="lp-rpg-node__check">✓</span>
-                  <% else %>
-                    <span class="lp-rpg-node__flag">⚑</span>
-                  <% end %>
-                </span>
-                <span class="lp-rpg-node__label">
-                  <strong><%= node.title %></strong>
-                  <% if node.state == :done && !here %>
-                    <em><%= t("strategy.rpg.trail.cleared") %></em>
-                  <% elsif here %>
-                    <em><%= t("strategy.rpg.trail.you_are_here") %></em>
-                  <% end %>
-                </span>
-              <% end %>
+          <%# Mountain plans ahead — locked camps stay tappable for architecture, not fighting. %>
+          <div class="lp-rpg-node__chip <%= 'is-actions' if slot == 'focus' && project %>"
+               <% if slot == "focus" && project %>data-controller="plan-card-menu"<% end %>>
+            <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
+                  class: "lp-rpg-node__hit #{'is-locked' unless playable}",
+                  data: { turbo: true } do %>
+              <span class="lp-rpg-node__marker" aria-hidden="true">
+                <% if !playable %>
+                  <span class="lp-rpg-node__fog">☁</span>
+                <% elsif node.state == :done && !here %>
+                  <span class="lp-rpg-node__check">✓</span>
+                <% else %>
+                  <span class="lp-rpg-node__flag">⚑</span>
+                <% end %>
+              </span>
+              <span class="lp-rpg-node__label">
+                <strong>
+                  <%= node.title %>
+                  <% if !playable %> — <%= t("strategy.rpg.trail.in_fog") %><% end %>
+                </strong>
+                <% if node.state == :done && !here %>
+                  <em><%= t("strategy.rpg.trail.cleared") %></em>
+                <% elsif here %>
+                  <em><%= t("strategy.rpg.trail.you_are_here") %></em>
+                <% elsif planning_here && !here %>
+                  <em><%= t("strategy.rpg.trail.planning_here") %></em>
+                <% end %>
+              </span>
+            <% end %>
 
               <% if slot == "focus" && project %>
                 <div class="lp-rpg-node__actions">
@@ -220,17 +244,7 @@
                   </div>
                 </dialog>
               <% end %>
-            </div>
-          <% else %>
-            <span class="lp-rpg-node__hit is-locked" aria-label="<%= t('strategy.rpg.locked') %>">
-              <span class="lp-rpg-node__marker" aria-hidden="true">
-                <span class="lp-rpg-node__fog">☁</span>
-              </span>
-              <span class="lp-rpg-node__label">
-                <strong><%= node.title %> — <%= t("strategy.rpg.trail.in_fog") %></strong>
-              </span>
-            </span>
-          <% end %>
+          </div>
         </div>
       <% end %>
 
