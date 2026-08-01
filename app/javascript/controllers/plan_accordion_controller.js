@@ -11,5 +11,11 @@ export default class extends Controller {
     this.itemTargets.forEach((item) => {
       if (item !== opened && item.open) item.open = false
     })
+
+    // Keep Open in Today visible inside the fixed Mountain sheet.
+    requestAnimationFrame(() => {
+      const footer = opened.querySelector(".lp-rpg-plan-card__footer")
+      ;(footer || opened).scrollIntoView({ block: "nearest", behavior: "smooth" })
+    })
   }
 }

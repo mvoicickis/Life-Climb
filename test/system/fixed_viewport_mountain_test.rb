@@ -66,6 +66,15 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-sheet.is-planning", visible: :all
     assert_selector ".lp-rpg-current-path", visible: :all
     assert_selector ".lp-rpg-node.is-window-visible", minimum: 2, wait: 5
+    title_metrics = page.evaluate_script(<<~JS)
+      (() => {
+        const t = document.querySelector(".lp-rpg-destination-carousel__title");
+        const r = t.getBoundingClientRect();
+        return { w: r.width, h: r.height, text: (t.textContent || "").trim() };
+      })()
+    JS
+    assert_match(/Ship the MVP/i, title_metrics["text"])
+    assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
     assert_text(/Daily battles/i)
     assert_selector ".lp-rpg-plan-card__title", text: /Design battle card/i, visible: :all, wait: 5
     assert_no_selector ".lp-rpg-stat.is-mountain"
@@ -73,9 +82,13 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-current-path__here", text: /You are here/i
     assert_no_selector "form[action*='battle_win']"
 
+    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-contrast-568px.png")
+
     find(".lp-rpg-plan-card__summary", text: /Design battle card/i).click
     assert_selector ".lp-rpg-plan-card[open] .lp-rpg-plan-card__cta", text: /Open in Today/i, wait: 3
     assert_text(/Wire the planning card/i)
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-contrast-expanded-568px.png")
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
@@ -127,9 +140,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["statsPad"], "chrome/stats gutters should match: #{metrics.inspect}"
 
-    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    path = "/opt/cursor/artifacts/screenshots/mountain-planning-center-568px.png"
-    page.save_screenshot(path)
-    assert File.exist?(path), "expected screenshot at #{path}"
+    assert File.exist?("/opt/cursor/artifacts/screenshots/mountain-contrast-568px.png")
+    assert File.exist?("/opt/cursor/artifacts/screenshots/mountain-contrast-expanded-568px.png")
   end
 end

@@ -45,7 +45,7 @@
     </header>
 
     <% if show_now %>
-      <div class="lp-rpg-todays-plan <%= 'is-checklist' if use_checklist %> <%= 'is-rail' unless use_checklist %>"
+      <div class="lp-rpg-todays-plan is-panel <%= 'is-checklist' if use_checklist %> <%= 'is-rail' unless use_checklist %>"
            data-controller="plan-accordion">
         <p class="lp-rpg-todays-plan__kicker is-quiet"><%= t("strategy.rpg.todays_plan") %></p>
 
@@ -81,6 +81,8 @@
                         </div>
                       <% end %>
                     </div>
+                  </div>
+                  <div class="lp-rpg-plan-card__footer">
                     <%= link_to t("strategy.rpg.open_in_today"),
                           dashboard_path,
                           class: "lp-rpg-plan-card__cta",
@@ -151,6 +153,8 @@
                           </div>
                         <% end %>
                       </div>
+                    </div>
+                    <div class="lp-rpg-plan-card__footer">
                       <%= link_to t("strategy.rpg.open_in_today"),
                             dashboard_path,
                             class: "lp-rpg-plan-card__cta",
