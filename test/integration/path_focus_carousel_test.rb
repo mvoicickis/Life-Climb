@@ -64,7 +64,10 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-xp:not(.is-quiet)", count: 0
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-streak", count: 0
-    assert_select ".lp-rpg-destination__new"
+    assert_select ".lp-rpg-destination-menu__btn"
+    assert_select ".lp-rpg-destination-menu__item[data-action*='destination-switcher#openCreate']"
+    assert_select ".lp-rpg-destination__new", count: 0
+    assert_select ".lp-rpg-summit__pct", count: 0
   end
 
   test "switching path updates the single focus panel title" do

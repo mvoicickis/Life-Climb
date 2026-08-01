@@ -61,7 +61,7 @@ export default class extends Controller {
     this.unbindDialogKeyboardGuards()
     if (!this.hasCreateDialogTarget) return
     if (this.createDialogTarget.open) this.createDialogTarget.close()
-    this.buttonTarget?.focus()
+    if (this.hasButtonTarget) this.buttonTarget.focus()
   }
 
   bindDialogKeyboardGuards() {

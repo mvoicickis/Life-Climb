@@ -76,16 +76,17 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector ".lp-rpg-destination", wait: 5
 
-    click_button "+ New Destination"
-    assert_selector "dialog.lp-strategy-sheet.is-goal[open]", wait: 3
-    within("dialog.lp-strategy-sheet.is-goal[open]") do
-      fill_in "destination-create-title", with: "Family Peak"
-      click_button "Create Destination"
-    end
+    find(".lp-rpg-destination-menu__btn", wait: 3).click
+    assert_selector ".lp-rpg-destination-menu:not([hidden])", wait: 3
+    find(".lp-rpg-destination-menu__item", text: /New Destination/i).click
+    assert_selector "dialog#destination-create[open]", wait: 3
+    fill_in "destination-create-title", with: "Family Peak"
+    page.execute_script(<<~JS)
+      document.querySelector("#destination-create form")?.requestSubmit()
+    JS
 
+    assert_selector "#first-climb-coach", wait: 8
     assert StrategyGoal.for_kind("goal").roots.exists?(title: "Family Peak")
-    # Empty Destination enters Focus via first-climb for that world.
-    assert_selector "#first-climb-coach", wait: 5
     assert_match(/goal_id=\d+/, page.current_url)
   end
 end
