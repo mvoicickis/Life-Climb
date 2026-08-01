@@ -16900,6 +16900,16 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     min-height: 2.2rem;
     font-size: 0.8rem;
   }
+  /* Expanded plan owns the sheet — keep Open in Today fully on screen */
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning:has(.lp-rpg-plan-card[open]) .lp-rpg-current-path {
+    display: none;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning:has(.lp-rpg-plan-card[open]) .lp-rpg-todays-plan__kicker {
+    margin-bottom: 0.25rem;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning:has(.lp-rpg-plan-card[open]) .lp-rpg-plan-card__body {
+    max-height: 6.5rem;
+  }
   .lp-rpg.is-focus-phase .lp-rpg-paths__label {
     display: none;
   }
