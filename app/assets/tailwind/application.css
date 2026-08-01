@@ -14896,7 +14896,70 @@ button.lp-strategy-overflow {
 
 /* === Mountain Focus Phase 1 === */
 .lp-rpg.is-focus-phase {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding-bottom: calc(4.85rem + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+.lp-rpg.is-focus-phase.is-first-climb {
+  display: block;
+  height: auto;
+  max-height: none;
+  overflow: visible;
   padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+}
+.lp-game:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.lp-rpg__chrome-top,
+.lp-rpg__chrome-bottom {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+  min-width: 0;
+}
+.lp-rpg__chrome-top {
+  padding-bottom: 0.15rem;
+}
+.lp-rpg__chrome-bottom {
+  padding-top: 0.15rem;
+}
+.lp-rpg__stage {
+  position: relative;
+  z-index: 4;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 0.32fr) minmax(0, 0.68fr);
+  gap: 0.35rem;
+  overflow: hidden;
+}
+.lp-rpg__stage-trail {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.lp-rpg__stage-battle {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.lp-rpg__stage-battle > .lp-rpg-sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Destination carousel — one active world, peeks + arrows (Nintendo world select) */
@@ -15299,15 +15362,18 @@ button.lp-strategy-overflow {
 }
 
 .lp-rpg-climb.is-hero {
-  min-height: min(58dvh, 30rem);
-  padding-top: 0.15rem;
+  min-height: 0;
+  padding-top: 0;
 }
 .lp-rpg.is-focus-phase .lp-rpg-world {
-  min-height: min(58dvh, 30rem);
+  min-height: 0;
+  height: 100%;
 }
 .lp-rpg.is-focus-phase .lp-rpg-trail {
-  height: min(56dvh, 28rem);
-  max-width: 20rem;
+  height: 100%;
+  max-height: none;
+  max-width: min(22rem, 100%);
+  margin: 0 auto;
 }
 
 .lp-rpg-node__hit {
@@ -15506,19 +15572,19 @@ button.lp-strategy-overflow {
 
 @media (max-width: 639px) {
   .lp-rpg-climb.is-hero {
-    min-height: min(52dvh, 26rem);
+    min-height: 0;
   }
   .lp-rpg.is-focus-phase .lp-rpg-world,
   .lp-rpg.is-focus-phase .lp-rpg-trail {
-    min-height: min(52dvh, 26rem);
-    height: min(52dvh, 26rem);
+    min-height: 0;
+    height: 100%;
   }
   .lp-rpg-context {
     margin-inline: 0.85rem;
   }
-  .lp-rpg-sheet {
+  .lp-rpg__stage-battle > .lp-rpg-sheet {
     margin-inline: 0.65rem;
-    padding-bottom: calc(0.85rem + env(safe-area-inset-bottom));
+    padding-bottom: 0.65rem;
   }
   .lp-rpg-destination-carousel__title {
     font-size: clamp(1.05rem, 4vw, 1.35rem);
@@ -15891,4 +15957,215 @@ button.lp-strategy-overflow {
   flex-basis: 13.5rem;
   width: 13.5rem;
   max-width: 13.5rem;
+}
+
+/* —— Fixed-viewport trail window (3 slots) —— */
+.lp-rpg-trail.is-windowed {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 7.5rem;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-trail__path {
+  left: 0;
+  width: 3.5rem;
+  opacity: 0.85;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node {
+  left: 0;
+  right: 0;
+  width: 100%;
+  top: var(--lp-slot-y, 50%);
+  transform: translateY(-50%);
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  padding: 0 0.35rem 0 0.15rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: top 220ms ease, opacity 180ms ease, transform 220ms ease;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-window-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-focus {
+  z-index: 7;
+  transform: translateY(-50%) scale(1.06);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-prev,
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-next {
+  z-index: 5;
+  opacity: 0.72;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__hit {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  text-align: left;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__marker {
+  width: 1.85rem;
+  height: 1.85rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: rgba(17, 22, 28, 0.82);
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-done .lp-rpg-node__marker {
+  border-color: rgba(87, 211, 91, 0.65);
+  background: rgba(34, 120, 60, 0.55);
+  color: #ecfdf5;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-current .lp-rpg-node__marker,
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-focus.is-current .lp-rpg-node__marker {
+  border-color: rgba(245, 158, 11, 0.85);
+  background: rgba(120, 70, 12, 0.55);
+  color: #fde68a;
+  transform: none;
+  filter: none;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-locked .lp-rpg-node__marker {
+  border-style: dashed;
+  border-color: rgba(148, 163, 184, 0.45);
+  background: rgba(30, 35, 42, 0.55);
+  color: rgba(148, 163, 184, 0.85);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__label {
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__label strong {
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-focus .lp-rpg-node__label strong {
+  font-size: 1rem;
+  font-weight: 850;
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-done .lp-rpg-node__label strong {
+  color: rgba(110, 231, 140, 0.95);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-current .lp-rpg-node__label strong {
+  color: rgba(252, 211, 77, 0.98);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node.is-locked .lp-rpg-node__label strong {
+  color: rgba(148, 163, 184, 0.78);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-node__label em {
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 650;
+  color: rgba(251, 191, 36, 0.9);
+}
+.lp-rpg-trail.is-windowed .lp-rpg-explorer {
+  left: 0.35rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  z-index: 8;
+  opacity: 0.92;
+}
+.lp-rpg-trail__shift {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  width: 1.7rem;
+  height: 1.35rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 22, 28, 0.72);
+  color: rgba(226, 232, 240, 0.85);
+  font-size: 0.62rem;
+  cursor: pointer;
+}
+.lp-rpg-trail__shift.is-prev { top: 0.1rem; }
+.lp-rpg-trail__shift.is-next { bottom: 0.1rem; }
+.lp-rpg-trail__shift:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.lp-rpg-trail__shift[hidden] { display: none !important; }
+
+/* Dominant battle sheet in stage cell */
+.lp-rpg-sheet.is-dominant {
+  padding: 0.75rem 0.95rem 0.85rem;
+  border-radius: 1.15rem;
+  background: rgba(22, 28, 36, 0.94);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.38);
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-sheet__handle {
+  padding-bottom: 0.55rem;
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-sheet__kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-sheet__title {
+  font-size: 1.15rem;
+  margin-top: 0.18rem;
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-sheet__cue {
+  font-size: 0.95rem;
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-sheet-rail {
+  margin-top: 0.45rem;
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-now-card,
+.lp-rpg-sheet.is-dominant .lp-rpg-camp-card,
+.lp-rpg-sheet.is-dominant .lp-rpg-add.is-ghost {
+  min-height: 6.1rem;
+}
+.lp-rpg-sheet.is-dominant .lp-rpg-now-card__title,
+.lp-rpg-sheet.is-dominant .lp-rpg-camp-card__title {
+  font-size: 0.92rem;
+}
+.lp-rpg__stage-battle .lp-rpg-sheet__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  max-height: 40%;
+}
+.lp-rpg.is-focus-phase .lp-rpg-stats {
+  margin: 0;
+  padding: 0.35rem 0.65rem 0.45rem;
+  background: rgba(11, 15, 20, 0.55);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.lp-rpg.is-focus-phase .lp-rpg-hud {
+  padding-top: 0.35rem;
+  padding-bottom: 0.15rem;
+}
+.lp-rpg.is-focus-phase .lp-rpg-paths {
+  padding-bottom: 0.25rem;
+}
+
+/* Short phones: keep 3 trail nodes readable — nudge trail share slightly */
+@media (max-height: 600px) {
+  .lp-rpg__stage {
+    grid-template-rows: minmax(0, 0.36fr) minmax(0, 0.64fr);
+  }
+  .lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-focus .lp-rpg-node__label strong {
+    font-size: 0.92rem;
+  }
+  .lp-rpg-sheet.is-dominant .lp-rpg-sheet__title {
+    font-size: 1.02rem;
+  }
+  .lp-rpg-sheet.is-dominant .lp-rpg-now-card,
+  .lp-rpg-sheet.is-dominant .lp-rpg-camp-card,
+  .lp-rpg-sheet.is-dominant .lp-rpg-add.is-ghost {
+    min-height: 5.2rem;
+  }
 }
