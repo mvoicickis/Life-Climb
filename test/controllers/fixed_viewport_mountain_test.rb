@@ -117,5 +117,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-plan-card__section-value", text: /Sketch the card layout/
     assert_select ".lp-rpg-plan-card__cta", text: /Open in Today/i
     assert_select ".lp-rpg-plan-card__cta[href='#{dashboard_path}']"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__chip.is-actions"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-edit"
+    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__add"
   end
 end

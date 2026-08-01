@@ -3,6 +3,7 @@
 <% goal = local_assigns[:goal] %>
 <% plan = local_assigns[:plan] %>
 <% current_project = local_assigns[:current_project] %>
+<% area = @journey.life_area %>
 <% all_nodes = trail&.nodes || [] %>
 <% current = trail&.current_node %>
 <% progress = trail&.progress.to_i %>
@@ -37,7 +38,7 @@
       <% end %>
 
       <svg class="lp-rpg-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M28 12 V88"
+        <path d="M50 12 V88"
               fill="none"
               stroke="currentColor"
               stroke-width="1.2"
@@ -45,7 +46,7 @@
               vector-effect="non-scaling-stroke" />
         <path class="lp-rpg-trail__lit"
               data-strategy-rpg-target="trailLit"
-              d="M28 12 V88"
+              d="M50 12 V88"
               fill="none"
               stroke="currentColor"
               stroke-width="2.2"
@@ -64,6 +65,7 @@
              elsif idx == focus_index + 1 then "next"
              end %>
         <% slot_y = { "prev" => "18%", "focus" => "50%", "next" => "82%" }[slot] %>
+        <% project = node.record %>
         <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %> <%= "is-window-visible is-slot-#{slot}" if slot %>"
              data-trail-window-target="node"
              data-strategy-rpg-target="flag"
@@ -73,25 +75,93 @@
              style="<%= "--lp-slot-y: #{slot_y};" if slot %>"
              <%= "hidden" unless slot %>>
           <% if playable %>
-            <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
-                  class: "lp-rpg-node__hit",
-                  data: { turbo: true } do %>
-              <span class="lp-rpg-node__marker" aria-hidden="true">
-                <% if node.state == :done && !here %>
-                  <span class="lp-rpg-node__check">✓</span>
-                <% else %>
-                  <span class="lp-rpg-node__flag">⚑</span>
-                <% end %>
-              </span>
-              <span class="lp-rpg-node__label">
-                <strong><%= node.title %></strong>
-                <% if node.state == :done && !here %>
-                  <em><%= t("strategy.rpg.trail.cleared") %></em>
-                <% elsif here %>
-                  <em><%= t("strategy.rpg.trail.you_are_here") %></em>
-                <% end %>
-              </span>
-            <% end %>
+            <div class="lp-rpg-node__chip <%= 'is-actions' if slot == 'focus' && project %>"
+                 <% if slot == "focus" && project %>data-controller="plan-card-menu"<% end %>>
+              <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
+                    class: "lp-rpg-node__hit",
+                    data: { turbo: true } do %>
+                <span class="lp-rpg-node__marker" aria-hidden="true">
+                  <% if node.state == :done && !here %>
+                    <span class="lp-rpg-node__check">✓</span>
+                  <% else %>
+                    <span class="lp-rpg-node__flag">⚑</span>
+                  <% end %>
+                </span>
+                <span class="lp-rpg-node__label">
+                  <strong><%= node.title %></strong>
+                  <% if node.state == :done && !here %>
+                    <em><%= t("strategy.rpg.trail.cleared") %></em>
+                  <% elsif here %>
+                    <em><%= t("strategy.rpg.trail.you_are_here") %></em>
+                  <% end %>
+                </span>
+              <% end %>
+
+              <% if slot == "focus" && project %>
+                <div class="lp-rpg-node__actions">
+                  <button type="button"
+                          class="lp-rpg-node__action is-edit"
+                          data-plan-card-menu-target="button"
+                          data-action="click->plan-card-menu#edit"
+                          aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
+                    <span aria-hidden="true">✎</span>
+                  </button>
+                  <details class="lp-rpg-node__add" id="rpg-trail-add-checkpoint-<%= project.id %>">
+                    <summary aria-label="<%= t('strategy.rpg.add_checkpoint') %>">
+                      <span aria-hidden="true">+</span>
+                    </summary>
+                    <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-node__add-form", data: { turbo: false } do %>
+                      <%= hidden_field_tag :life_area_id, area.id %>
+                      <%= hidden_field_tag :life_journey_id, @journey.id %>
+                      <%= hidden_field_tag :horizon, "project" %>
+                      <%= hidden_field_tag :parent_id, plan.id %>
+                      <%= text_field_tag :title, nil,
+                            required: true,
+                            maxlength: 120,
+                            class: "lp-rpg-input",
+                            placeholder: t("strategy.project_placeholder"),
+                            autocomplete: "off" %>
+                      <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
+                    <% end %>
+                  </details>
+                </div>
+
+                <dialog class="lp-strategy-sheet is-plan"
+                        id="checkpoint-edit-<%= project.id %>"
+                        data-plan-card-menu-target="editDialog">
+                  <div class="lp-strategy-sheet__panel">
+                    <header class="lp-strategy-sheet__head">
+                      <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+                      <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_checkpoint") %></h2>
+                      <button type="button"
+                              class="lp-strategy-sheet__close"
+                              data-action="click->plan-card-menu#closeEdit"
+                              aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                    </header>
+                    <div class="lp-strategy-sheet__actions">
+                      <div class="lp-strategy-sheet__edit">
+                        <%= form_with url: strategy_goal_path(project), method: :patch,
+                              class: "lp-strategy-sheet__form",
+                              data: { turbo: false } do %>
+                          <%= text_field_tag :title, project.title,
+                                required: true,
+                                maxlength: 120,
+                                id: "checkpoint-edit-title-#{project.id}",
+                                class: "lp-rpg-input",
+                                autocomplete: "off",
+                                aria: { label: t("strategy.rpg.edit_checkpoint") } %>
+                          <div class="lp-strategy-sheet__footer">
+                            <%= submit_tag t("strategy.save_changes"),
+                                  class: "lp-strategy-sheet__btn is-save",
+                                  data: { plan_card_menu_target: "saveButton" } %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </dialog>
+              <% end %>
+            </div>
           <% else %>
             <span class="lp-rpg-node__hit is-locked" aria-label="<%= t('strategy.rpg.locked') %>">
               <span class="lp-rpg-node__marker" aria-hidden="true">
