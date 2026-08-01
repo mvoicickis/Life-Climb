@@ -16259,6 +16259,9 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-node__label strong {
   font-size: 0.78rem;
 }
+.lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-node.is-current .lp-rpg-node__label em {
+  display: none; /* Current Path owns “You are here” */
+}
 .lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-node:not(.is-slot-focus) .lp-rpg-node__label {
   opacity: 0.55;
 }
