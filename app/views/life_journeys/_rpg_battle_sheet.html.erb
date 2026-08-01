@@ -26,26 +26,16 @@
                   []
                 end %>
 <% use_category_focus = categories.any? %>
-<%# Enter Level B when focus is a Practice Category (or day inside one). Path focus stays on Level A.
-    Locked trail camps fall back to the playable current_project category. %>
+<%# Enter Level B when focus is a Practice Category (or day inside one). Path focus stays on Level A. %>
 <% wanted_category_id =
-     if use_category_focus && focus
+     if use_category_focus && focus && !focus.plan?
        if focus.day? && categories.any? { |c| c.id == focus.parent_id }
          focus.parent_id
        elsif focus.project? && !focus.branch_checkpoint? && categories.any? { |c| c.id == focus.id }
          focus.id
        end
      end %>
-<% initial_category_id =
-     if wanted_category_id
-       if focus&.day? || current_project&.id == wanted_category_id
-         wanted_category_id
-       elsif current_project && categories.any? { |c| c.id == current_project.id }
-         current_project.id
-       else
-         wanted_category_id
-       end
-     end %>
+<% initial_category_id = wanted_category_id %>
 <% category_entered = initial_category_id.present? %>
 
 <% if use_category_focus %>

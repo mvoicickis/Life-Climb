@@ -136,10 +136,10 @@ class LifeJourneysController < ApplicationController
     @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
     @plan = select_strategy_plan
     @trail = Strategy::Trail.for(plan: @plan)
-    # Sheet may focus a nested checkpoint; trail playability is judged on the
-    # plan-level ancestor so Path trail stays plan-scoped only.
+    # Mountain = planning. Allow focusing any camp on this Path (even battle-locked)
+    # so newly created checkpoints stay visible after save. Today still owns fighting.
     @current_project =
-      if @branch_project && @plan && nested_checkpoint_playable?(@branch_project, @plan)
+      if @branch_project && @plan && planning_focus_on_path?(@branch_project, @plan)
         @branch_project
       else
         @trail.current_node&.record
@@ -199,7 +199,7 @@ class LifeJourneysController < ApplicationController
     [ plan, project ]
   end
 
-  # Nested checkpoints are playable when their plan-level ancestor is current/done.
+  # Nested checkpoints are fight-playable when their plan-level ancestor is current/done.
   def nested_checkpoint_playable?(project, plan)
     return false if project.blank? || plan.blank?
 
@@ -207,6 +207,13 @@ class LifeJourneysController < ApplicationController
     return false unless plan_level
 
     trail_node_playable?(plan_level)
+  end
+
+  # Planning focus: any project that belongs on this Path (trail camp or nested under one).
+  def planning_focus_on_path?(project, plan)
+    return false if project.blank? || plan.blank? || !project.project?
+
+    plan_level_checkpoint(project, plan).present?
   end
 
   def plan_level_checkpoint(project, plan)

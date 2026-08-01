@@ -324,6 +324,40 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.for_kind("project").find_by!(title: "Improve Resume")
     assert_equal plan.id, project.parent_id
     assert_not_equal other_plan.id, project.parent_id
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+  end
+
+  test "creating a checkpoint redirects with goal plan and focus so it stays visible" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Main path", position: 0
+    )
+    current = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "First camp", position: 0
+    )
+    current.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Step one", scheduled_on: Date.current, position: 0
+    )
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: plan.id,
+      horizon: "project",
+      title: "Launch prep"
+    }
+    created = @user.strategy_goals.for_kind("project").find_by!(title: "Launch prep")
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: created.id)
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-node.is-planning-focus", text: /Launch prep/
+    assert_select ".lp-rpg-node.is-slot-focus", text: /Launch prep/
+    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Launch prep/
+    assert_match(/Checkpoint added|Launch prep/i, flash[:notice].to_s + response.body)
   end
 
   test "day schedule toggle plans practice for today via scheduled_on" do
