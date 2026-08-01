@@ -55,19 +55,27 @@ class CampSheetNavTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id)
     assert_selector ".lp-rpg-node.is-planning-focus", text: /Get first 100 users/i, wait: 5
-    assert_selector ".lp-rpg-practice-focus.is-entered", text: /Ask 5 friends for feedback/i
-    assert_no_selector ".lp-rpg-practice-focus.is-entered", text: /Draft hero headline/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Get first 100 users/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+                    text: /Ask 5 friends for feedback/i, visible: :all
+    assert_no_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+                       text: /Draft hero headline/i, visible: :all
 
     find(".lp-rpg-trail__shift.is-next", wait: 3).click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id), wait: 5
     assert_selector ".lp-rpg-node.is-planning-focus", text: /Ship landing page/i, wait: 5
-    assert_selector ".lp-rpg-practice-focus.is-entered", text: /Draft hero headline/i
-    assert_no_selector ".lp-rpg-practice-focus.is-entered", text: /Ask 5 friends for feedback/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Ship landing page/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+                    text: /Draft hero headline/i, visible: :all
+    assert_no_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+                       text: /Ask 5 friends for feedback/i, visible: :all
 
     find(".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__nav.is-prev", wait: 3).click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
-    assert_selector ".lp-rpg-practice-focus.is-entered", text: /Ask 5 friends for feedback/i, wait: 5
-    assert_no_selector ".lp-rpg-practice-focus.is-entered", text: /Draft hero headline/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title",
+                    text: /Get first 100 users/i, wait: 5
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+                    text: /Ask 5 friends for feedback/i, visible: :all
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/camp-sheet-nav.png")
@@ -86,7 +94,9 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
-    assert_selector ".lp-rpg-practice-focus.is-entered", text: /Empty camp/i, wait: 5
-    assert_selector ".lp-rpg-todays-practice__empty", text: /No practices yet/i
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Empty camp/i, wait: 5
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__progress",
+                    text: /No practices yet/i
+    assert_selector ".lp-rpg-todays-practice__empty", text: /No practices yet/i, visible: :all
   end
 end

@@ -117,7 +117,11 @@
             <% end %>
           </div>
           <p class="lp-rpg-practice-focus__progress">
-            <%= t("strategy.rpg.practice_planned", selected: planned, total: total) %>
+            <% if total.zero? %>
+              <%= t("strategy.rpg.practice_empty") %>
+            <% else %>
+              <%= t("strategy.rpg.practice_planned", selected: planned, total: total) %>
+            <% end %>
           </p>
         </div>
 
