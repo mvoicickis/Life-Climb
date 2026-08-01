@@ -41,7 +41,7 @@
            data-strategy-plan-rail-scope-value="sheet-now-<%= current_project.id %>"
            data-strategy-plan-rail-goal-value="<%= goal_id.to_i %>"
            data-strategy-plan-rail-journey-value="<%= @journey.id %>">
-        <p class="lp-rpg-sheet-rail__label"><%= t("strategy.rpg.sheet.now_scroll_label") %></p>
+        <p class="lp-rpg-sheet-rail__label is-quiet"><%= t("strategy.rpg.sheet.now") %></p>
         <ul class="lp-rpg-sheet-rail__track"
             data-strategy-plan-rail-target="track"
             aria-label="<%= t('strategy.rpg.sheet.now') %>">
@@ -90,9 +90,9 @@
            data-strategy-plan-rail-scope-value="sheet-camps-<%= current_project.id %>"
            data-strategy-plan-rail-goal-value="<%= goal_id.to_i %>"
            data-strategy-plan-rail-journey-value="<%= @journey.id %>">
-        <p class="lp-rpg-sheet-rail__label">
+        <p class="lp-rpg-sheet-rail__label is-quiet">
           <span class="lp-rpg-sheet-rail__flag" aria-hidden="true">⚑</span>
-          <%= t("strategy.rpg.sheet.camps_scroll_label") %>
+          <%= t("strategy.rpg.sheet.camps") %>
         </p>
         <ul class="lp-rpg-sheet-rail__track"
             data-strategy-plan-rail-target="track"

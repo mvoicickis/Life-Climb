@@ -86,8 +86,7 @@
               <span class="lp-rpg-node__label">
                 <strong><%= node.title %><% if node.state == :done && !here %> — <%= t("strategy.rpg.trail.cleared") %><% end %></strong>
                 <% if here %>
-                  <% here_pct = (current_project&.id == node.id) ? current_project.progress_percent.to_i : node.pct.to_i %>
-                  <em><%= t("strategy.rpg.trail.you_are_here_pct", pct: here_pct) %></em>
+                  <em><%= t("strategy.rpg.trail.you_are_here") %></em>
                 <% end %>
               </span>
             <% end %>

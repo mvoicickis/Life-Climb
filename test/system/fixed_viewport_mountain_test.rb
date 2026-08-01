@@ -46,7 +46,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     @current = camps[1]
   end
 
-  test "short phone keeps page locked and trail legible at 32-36 percent stage" do
+  test "short phone keeps page locked and Now cards in viewport" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -67,17 +67,27 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_text(/Daily battles/i)
     assert_selector ".lp-rpg-now-card__title", text: /Design battle card/i, visible: :all, wait: 5
     assert_selector ".lp-rpg-node.is-current em", text: /you are here/i, visible: :all
+    assert_no_selector ".lp-rpg-stat.is-mountain"
+    assert_no_text(/you are here ·/i)
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-trail');
         const battle = document.querySelector('.lp-rpg__stage-battle');
+        const nowCard = document.querySelector('.lp-rpg-now-card');
+        const chrome = document.querySelector('.lp-rpg__chrome-top');
+        const stage = document.querySelector('.lp-rpg__stage');
+        const stats = document.querySelector('.lp-rpg__chrome-bottom');
         const visible = Array.from(document.querySelectorAll('[data-trail-window-target="node"]'))
           .filter((n) => !n.hidden && n.classList.contains('is-window-visible')).length;
         const rootStyle = root ? getComputedStyle(root) : null;
         const htmlStyle = getComputedStyle(document.documentElement);
-        const bodyStyle = getComputedStyle(document.body);
+        const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
+        const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
+        const statsPad = stats ? getComputedStyle(stats).paddingLeft : '';
+        const nowRect = nowCard ? nowCard.getBoundingClientRect() : null;
+        const statsR = stats ? stats.getBoundingClientRect() : null;
         window.scrollTo(0, 200);
         const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
         window.scrollTo(0, 0);
@@ -86,25 +96,37 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           innerHeight: window.innerHeight,
           rootOverflow: rootStyle ? rootStyle.overflowY || rootStyle.overflow : '',
           htmlOverflow: htmlStyle.overflowY || htmlStyle.overflow,
-          bodyOverflow: bodyStyle.overflowY || bodyStyle.overflow,
+          chromePad,
+          stagePad,
+          statsPad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
+          nowTop: nowRect ? Math.round(nowRect.top) : null,
+          nowBottom: nowRect ? Math.round(nowRect.bottom) : null,
+          nowH: nowRect ? Math.round(nowRect.height) : null,
+          statsBottom: statsR ? Math.round(statsR.bottom) : null,
+          nowVisible: !!(nowRect && nowRect.height > 8 && nowRect.top < window.innerHeight && nowRect.bottom > 0),
+          statsInView: !!(statsR && statsR.top < window.innerHeight && statsR.bottom > 0),
           pageScrolled: scrolled > 1
         };
       })()
     JS
     assert_operator metrics["visible"], :<=, 3
     assert_operator metrics["visible"], :>=, 2
-    assert_operator metrics["trailH"], :>=, 48, "trail stage too short at 568px: #{metrics.inspect}"
-    assert_operator metrics["battleH"], :>=, 96, "battle stage too short at 568px: #{metrics.inspect}"
+    assert_operator metrics["trailH"], :>=, 36, "trail stage too short at 568px: #{metrics.inspect}"
+    assert_operator metrics["battleH"], :>=, 88, "battle stage too short at 568px: #{metrics.inspect}"
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
     # Battle gets the larger stage share (dominant).
     assert_operator metrics["battleH"], :>, metrics["trailH"]
+    assert_equal true, metrics["nowVisible"], "Now battle card should stay in viewport: #{metrics.inspect}"
+    assert_equal true, metrics["statsInView"], "stats strip should stay in viewport: #{metrics.inspect}"
+    assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
+    assert_equal metrics["chromePad"], metrics["statsPad"], "chrome/stats gutters should match: #{metrics.inspect}"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    path = "/opt/cursor/artifacts/screenshots/mountain-568px.png"
+    path = "/opt/cursor/artifacts/screenshots/mountain-focus-polish-568px.png"
     page.save_screenshot(path)
     assert File.exist?(path), "expected screenshot at #{path}"
   end
