@@ -1,14 +1,19 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Floating planning card for Mountain “+ Checkpoint”.
+// Floating planning card for Mountain “+ Checkpoint” / “+ Add Practice”.
 // Reuses the native <details> trigger + Rails form; portals the card to <body>
 // so trail transforms / overflow cannot clip it.
+//
+// Important: after portaling, Stimulus actions inside the shell no longer reach
+// this controller (targets/actions must live inside the controller element).
+// Close clicks are bound manually on the portaled shell.
 export default class extends Controller {
   static targets = ["shell", "card", "title"]
 
   connect() {
     this._onKey = (event) => this.onKeydown(event)
     this._onReposition = () => this.positionCard()
+    this._onShellClick = (event) => this.onShellClick(event)
     this._ported = false
     this.cacheRefs()
   }
@@ -88,6 +93,8 @@ export default class extends Controller {
     window.addEventListener("resize", this._onReposition)
     window.visualViewport?.addEventListener("resize", this._onReposition)
     window.addEventListener("scroll", this._onReposition, true)
+    // Portaled shell is outside the controller element — wire Cancel / backdrop here.
+    this.shellEl?.addEventListener("click", this._onShellClick)
   }
 
   unbindOpenGuards() {
@@ -95,6 +102,19 @@ export default class extends Controller {
     window.removeEventListener("resize", this._onReposition)
     window.visualViewport?.removeEventListener("resize", this._onReposition)
     window.removeEventListener("scroll", this._onReposition, true)
+    this.shellEl?.removeEventListener("click", this._onShellClick)
+  }
+
+  onShellClick(event) {
+    const target = event.target
+    if (!(target instanceof Element)) return
+
+    const closes =
+      target.closest(".lp-rpg-float-create__backdrop") ||
+      target.closest(".lp-rpg-float-create__btn.is-cancel")
+    if (!closes || !this.shellEl?.contains(closes)) return
+
+    this.close(event)
   }
 
   onKeydown(event) {

@@ -72,4 +72,22 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_no_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
     assert_selector ".lp-rpg-node.is-slot-focus .lp-rpg-node__add:not([open])"
   end
+
+  test "cancel button closes the portaled floating create card" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+
+    visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+
+    find(".lp-rpg-node.is-slot-focus .lp-rpg-node__add-trigger", wait: 5).click
+    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+
+    find("body > .lp-rpg-float-create .lp-rpg-float-create__btn.is-cancel", text: /Cancel/i).click
+    assert_no_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+    assert_selector ".lp-rpg-node.is-slot-focus .lp-rpg-node__add:not([open])"
+  end
 end

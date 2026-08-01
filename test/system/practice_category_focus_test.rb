@@ -108,4 +108,26 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       sleep 0.1
     end
   end
+
+  test "Add Practice Cancel closes the portaled floating card" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
+    assert_selector ".lp-rpg-practice-focus.is-entered", wait: 5
+
+    page.execute_script(<<~JS)
+      const trigger = document.querySelector(".lp-rpg-practice-focus.is-entered .lp-rpg-practice-add");
+      trigger?.scrollIntoView({ block: "center" });
+      trigger?.click();
+    JS
+    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+    assert_selector ".lp-rpg-float-create__heading", text: /Add Practice/i
+
+    find("body > .lp-rpg-float-create .lp-rpg-float-create__btn.is-cancel", text: /Cancel/i).click
+    assert_no_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+  end
 end
