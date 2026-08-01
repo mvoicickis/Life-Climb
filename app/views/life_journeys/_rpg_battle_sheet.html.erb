@@ -228,7 +228,7 @@
           <ul class="lp-rpg-todays-practice__list" aria-label="<%= t('strategy.rpg.todays_practice') %>">
             <% open_days.each do |battle| %>
               <% selected_today = battle.scheduled_on == Date.current %>
-              <li class="lp-rpg-practice-row <%= 'is-selected' if selected_today %>">
+              <li class="lp-rpg-practice-row <%= 'is-selected' if selected_today %> <%= 'is-daily' if battle.repeat_daily? %>">
                 <%= form_with url: strategy_goal_path(battle),
                       method: :patch,
                       class: "lp-rpg-practice-row__form",
@@ -240,7 +240,12 @@
                            <%= "checked" if selected_today %>
                            onchange="this.form.requestSubmit()"
                            aria-label="<%= battle.title %>">
-                    <span class="lp-rpg-practice-row__title"><%= battle.title %></span>
+                    <span class="lp-rpg-practice-row__title">
+                      <%= battle.title %>
+                      <% if battle.repeat_daily? %>
+                        <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
+                      <% end %>
+                    </span>
                     <span class="lp-rpg-practice-row__xp">+<%= battle_xp %> XP</span>
                   </label>
                 <% end %>
@@ -293,6 +298,19 @@
                           autocomplete: "off",
                           data: { floating_create_target: "title" } %>
                   </label>
+                  <fieldset class="lp-rpg-float-create__repeat">
+                    <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
+                    <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
+                      <label class="lp-rpg-practice-repeat__option">
+                        <%= radio_button_tag :repeat, "none", true, class: "lp-rpg-practice-repeat__input" %>
+                        <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
+                      </label>
+                      <label class="lp-rpg-practice-repeat__option">
+                        <%= radio_button_tag :repeat, "daily", false, class: "lp-rpg-practice-repeat__input" %>
+                        <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
+                      </label>
+                    </div>
+                  </fieldset>
                   <div class="lp-rpg-float-create__actions">
                     <button type="button"
                             class="lp-rpg-float-create__btn is-cancel"

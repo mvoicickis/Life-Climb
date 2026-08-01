@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_01_210000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -288,6 +288,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
     t.integer "life_journey_id"
     t.integer "parent_id"
     t.integer "position", default: 0, null: false
+    t.string "repeat", default: "none", null: false
     t.date "scheduled_on"
     t.string "title", null: false
     t.datetime "updated_at", null: false
@@ -296,6 +297,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
     t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
     t.index ["parent_id"], name: "index_strategy_goals_on_parent_id"
+    t.index ["user_id", "horizon", "repeat"], name: "index_strategy_goals_on_user_horizon_repeat"
     t.index ["user_id", "life_area_id", "horizon"], name: "index_strategy_goals_on_user_id_and_life_area_id_and_horizon"
     t.index ["user_id", "scheduled_on"], name: "index_strategy_goals_on_user_id_and_scheduled_on"
     t.index ["user_id"], name: "index_strategy_goals_on_user_id"

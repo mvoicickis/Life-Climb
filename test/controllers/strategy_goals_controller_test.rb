@@ -482,4 +482,63 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Journey/i, response.body)
     assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
   end
+
+  test "creating a daily practice persists repeat and shows Every day badge" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Lessons", position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+    assert_response :success
+    assert_select ".lp-rpg-practice-repeat input[name='repeat'][value='none']"
+    assert_select ".lp-rpg-practice-repeat input[name='repeat'][value='daily']"
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: project.id, horizon: "day", scheduled_on: Date.current.to_s,
+      title: "Do lessons", repeat: "daily"
+    }
+    practice = @user.strategy_goals.for_kind("day").find_by!(title: "Do lessons")
+    assert practice.repeat_daily?
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-practice-row.is-daily .lp-rpg-practice-row__repeat", text: /Every day/i
+    assert_select ".lp-rpg-practice-row__title", text: /Do lessons/i
+  end
+
+  test "completing a daily practice rolls the template to tomorrow" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Lessons", position: 0
+    )
+    practice = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Do lessons", scheduled_on: Date.current, repeat: "daily", position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: practice.id, scheduled_on: Date.current)
+
+    post complete_daily_todo_path(todo)
+    assert_redirected_to dashboard_path
+
+    practice.reload
+    assert practice.repeat_daily?
+    assert_nil practice.completed_at
+    assert_equal Date.current + 1.day, practice.scheduled_on
+    assert todo.reload.completed?
+    assert @user.daily_todos.exists?(strategy_goal_id: practice.id, scheduled_on: Date.current + 1.day)
+  end
 end

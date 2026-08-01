@@ -16,12 +16,13 @@ class DailyTodosController < ApplicationController
     if todo.completed?
       ActiveRecord::Base.transaction do
         todo.update!(completed_at: nil)
-        todo.strategy_goal&.reopen!
+        # Daily templates stay open; only one-time goals need reopen.
+        todo.strategy_goal&.reopen! unless todo.strategy_goal&.repeat_daily?
       end
     else
       ActiveRecord::Base.transaction do
         todo.update!(completed_at: Time.current)
-        todo.strategy_goal&.complete!
+        finish_linked_strategy_goal!(todo)
         LifePoints::Award.call(
           user: current_user,
           amount: todo.lp_reward,
@@ -59,5 +60,22 @@ class DailyTodosController < ApplicationController
     todo.destroy!
     Journeys::SyncClimbFromToday.call(user: current_user)
     redirect_to dashboard_path
+  end
+
+  private
+
+  # One-time battles finish the day goal. Daily templates roll to the next day.
+  def finish_linked_strategy_goal!(todo)
+    goal = todo.strategy_goal
+    return if goal.blank?
+
+    unless goal.repeat_daily?
+      goal.complete!
+      return
+    end
+
+    next_day = [ Date.current + 1.day, todo.scheduled_on + 1.day ].max
+    goal.update!(scheduled_on: next_day, completed_at: nil)
+    Strategy::CascadeToDaily.call(user: current_user, life_area: goal.life_area)
   end
 end

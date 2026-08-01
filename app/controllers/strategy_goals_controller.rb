@@ -29,6 +29,7 @@ class StrategyGoalsController < ApplicationController
       description: params[:description].to_s.strip.presence,
       due_on: parse_due_on(kind, parent),
       scheduled_on: parse_scheduled_on(kind),
+      repeat: parse_repeat(kind),
       position: next_position(parent, kind)
     )
 
@@ -255,6 +256,13 @@ class StrategyGoalsController < ApplicationController
     Date.parse(params[:scheduled_on].presence || Date.current.to_s)
   rescue ArgumentError, TypeError
     Date.current
+  end
+
+  def parse_repeat(kind)
+    return "none" unless kind == "day"
+
+    value = params[:repeat].to_s
+    StrategyGoal::REPEAT_KINDS.include?(value) ? value : "none"
   end
 
   # Day goals require a date — "later" / blank moves practice off today (tomorrow).
