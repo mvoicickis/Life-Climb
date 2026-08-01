@@ -16910,6 +16910,20 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning:has(.lp-rpg-plan-card[open]) .lp-rpg-plan-card__body {
     max-height: 6.5rem;
   }
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning,
+  .lp-rpg-plan-card__body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning::-webkit-scrollbar,
+  .lp-rpg-plan-card__body::-webkit-scrollbar {
+    width: 0.3rem;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning::-webkit-scrollbar-thumb,
+  .lp-rpg-plan-card__body::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+  }
   .lp-rpg.is-focus-phase .lp-rpg-paths__label {
     display: none;
   }
