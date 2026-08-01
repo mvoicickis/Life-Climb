@@ -58,13 +58,20 @@
       <% all_nodes.each_with_index do |node, idx| %>
         <% playable = node.state != :locked %>
         <% here = current&.id == node.id %>
-        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %>"
+        <% slot =
+             if idx == focus_index - 1 then "prev"
+             elsif idx == focus_index then "focus"
+             elsif idx == focus_index + 1 then "next"
+             end %>
+        <% slot_y = { "prev" => "18%", "focus" => "50%", "next" => "82%" }[slot] %>
+        <div class="lp-rpg-node lp-rpg-project is-camp is-<%= node.state %> <%= "is-window-visible is-slot-#{slot}" if slot %>"
              data-trail-window-target="node"
              data-strategy-rpg-target="flag"
              data-node-id="<%= node.id %>"
              data-node-state="<%= node.state %>"
              data-index="<%= idx %>"
-             hidden>
+             style="<%= "--lp-slot-y: #{slot_y};" if slot %>"
+             <%= "hidden" unless slot %>>
           <% if playable %>
             <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
                   class: "lp-rpg-node__hit",

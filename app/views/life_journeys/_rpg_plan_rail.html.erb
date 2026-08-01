@@ -1,4 +1,4 @@
-<%# Path snap carousel + inline focus panel. locals: plans, plan, goal %>
+<%# Path snap carousel + inline path focus panel. locals: plans, plan, goal %>
 <% plans = local_assigns.fetch(:plans, []) %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
@@ -170,7 +170,8 @@
     </nav>
 
     <% if plan %>
-      <div class="lp-rpg-path-focus"
+      <% plan_empty = plan.children.none?(&:project?) %>
+      <div class="lp-rpg-path-focus <%= 'is-empty-plan' if plan_empty %>"
            data-strategy-plan-rail-target="focusPanel"
            role="region"
            aria-label="<%= t('strategy.rpg.path_focus_label', title: plan.title) %>">
