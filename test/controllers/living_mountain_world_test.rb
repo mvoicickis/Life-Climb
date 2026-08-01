@@ -87,7 +87,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
     assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-battle", minimum: 1
+    assert_select ".lp-rpg-now-card", minimum: 1
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
@@ -109,8 +109,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
     assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-battle", text: /Update CV/
-    assert_select ".lp-rpg-sheet .lp-rpg-add", text: /Step|battle/i
+    assert_select ".lp-rpg-now-card__title", text: /Update CV/
+    assert_select ".lp-rpg-sheet-rail.is-now .lp-rpg-add.is-ghost.is-step"
   end
 
   test "locked trail nodes cannot become the active focus" do

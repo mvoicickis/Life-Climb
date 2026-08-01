@@ -27,7 +27,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "leaf checkpoint sheet matches pre-change dailies behavior and offers split when empty" do
+  test "empty leaf shows Now and Camps snap rows with ghost add cards" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -36,23 +36,35 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-sheet .lp-rpg-add", text: /Step|battle/i
-    assert_select ".lp-rpg-sheet__split-link", text: /Split into smaller checkpoints/
-    assert_select ".lp-rpg-checkpoints", count: 0
+    assert_select ".lp-rpg-sheet-rail.is-now[data-controller~='strategy-plan-rail']"
+    assert_select ".lp-rpg-sheet-rail.is-camps[data-controller~='strategy-plan-rail']"
+    assert_select ".lp-rpg-sheet-rail.is-now .lp-rpg-add.is-ghost.is-step"
+    assert_select ".lp-rpg-sheet-rail.is-camps .lp-rpg-add.is-ghost.is-checkpoint"
+    assert_select ".lp-rpg-sheet-rail__label", text: /NOW/
+    assert_select ".lp-rpg-sheet-rail__label", text: /SPLIT INTO CAMPS/
     assert_select ".lp-rpg-trail .lp-rpg-node", text: /Resume/
+  end
 
-    project.children.create!(
+  test "leaf with day children shows Now row only and keeps battle win" do
+    project = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Resume", position: 0
+    )
+    battle = project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-battle", text: /Update CV/
-    assert_select ".lp-rpg-sheet__split-link", count: 0
+    assert_select ".lp-rpg-sheet-rail.is-now"
+    assert_select ".lp-rpg-now-card__title", text: /Update CV/
+    assert_select ".lp-rpg-now-card__xp", text: /xp/i
+    assert_select "form[action=?]", battle_win_path(battle)
+    assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
 
-  test "branch checkpoint sheet lists child checkpoints instead of dailies" do
+  test "branch checkpoint sheet lists camps in a horizontal snap row" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -69,18 +81,20 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: parent.id)
     assert_response :success
     assert_select ".lp-rpg-sheet.is-branch"
-    assert_select ".lp-rpg-checkpoint__title", text: /Landing page/
-    assert_select ".lp-rpg-checkpoint__title", text: /Payments/
-    assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint/
-    assert_select ".lp-rpg-sheet .lp-rpg-battle", count: 0
-    assert_select ".lp-rpg-checkpoint__hit[href*='focus_id=#{child.id}']"
+    assert_select ".lp-rpg-sheet-rail.is-camps[data-controller~='strategy-plan-rail']"
+    assert_select ".lp-rpg-camp-card__title", text: /Landing page/
+    assert_select ".lp-rpg-camp-card__title", text: /Payments/
+    assert_select ".lp-rpg-sheet-rail.is-camps .lp-rpg-add.is-ghost.is-checkpoint"
+    assert_select ".lp-rpg-sheet-rail.is-now", count: 0
+    assert_select ".lp-rpg-now-card", count: 0
+    assert_select "a.lp-rpg-camp-card[href*='focus_id=#{child.id}']"
 
     # Trail stays plan-level only — nested child is not a trail node
     assert_select ".lp-rpg-trail .lp-rpg-node", text: /Launch prep/
     assert_select ".lp-rpg-trail .lp-rpg-node", text: /Landing page/, count: 0
   end
 
-  test "focusing a nested child recurses into leaf sheet" do
+  test "focusing a nested child recurses into leaf Now sheet" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -97,7 +111,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: child.id)
     assert_response :success
     assert_select ".lp-rpg-sheet__title", text: /Landing page/
-    assert_select ".lp-rpg-battle", text: /Draft hero/
+    assert_select ".lp-rpg-now-card__title", text: /Draft hero/
     assert_select ".lp-rpg-sheet.is-branch", count: 0
+    assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
 end

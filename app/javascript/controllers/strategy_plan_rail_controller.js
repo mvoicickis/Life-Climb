@@ -1,9 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Snap Plan Rail + inline path focus panel. Preserves horizontal scroll across Turbo visits.
+// Shared horizontal snap-scroll for Paths, Now battles, and Camps rows.
+// Path rail also hosts the inline focus panel actions.
 export default class extends Controller {
   static targets = ["track", "prev", "next", "focusPanel"]
-  static values = { goal: Number, journey: Number }
+  static values = { goal: Number, journey: Number, scope: String }
 
   connect() {
     this.onScroll = () => {
@@ -42,7 +43,12 @@ export default class extends Controller {
   }
 
   scrollStorageKey() {
-    return `lp-path-rail-scroll:${this.journeyValue || 0}:${this.goalValue || 0}`
+    const journey = this.journeyValue || 0
+    const goal = this.goalValue || 0
+    if (this.hasScopeValue && this.scopeValue) {
+      return `lp-snap-scroll:${this.scopeValue}:${journey}:${goal}`
+    }
+    return `lp-path-rail-scroll:${journey}:${goal}`
   }
 
   persistScroll() {
@@ -164,6 +170,7 @@ export default class extends Controller {
     const rail = this.element.querySelector(".lp-rpg-plan-rail") || this.element
     rail.classList.toggle("is-overflowing", overflowing)
     this.element.classList.toggle("is-overflowing", overflowing)
+    track.classList.toggle("is-overflowing", overflowing)
 
     const atStart = track.scrollLeft <= 1
     const atEnd = track.scrollLeft >= maxScroll - 1
