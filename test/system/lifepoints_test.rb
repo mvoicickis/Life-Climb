@@ -27,7 +27,8 @@ class LifepointsTest < ApplicationSystemTestCase
       user: user, life_area: journey.life_area, life_journey: journey,
       horizon: "project", title: "Camp", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: user, life_area: journey.life_area, life_journey: journey,
       horizon: "day", title: "First fight", scheduled_on: Date.current, position: 0
     )

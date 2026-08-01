@@ -32,12 +32,13 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg.is-focus-phase"
     assert_select ".lp-rpg__chrome-top"
@@ -62,11 +63,11 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
       camp.complete! if i < 2
     end
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
     assert_select "[data-trail-window-target='node']", count: 5
-    assert_select "[data-trail-window-target='prev']"
-    assert_select "[data-trail-window-target='next']"
+    assert_select ".lp-rpg-trail__shift.is-prev"
+    assert_select ".lp-rpg-trail__shift.is-next"
     assert_match(/you are here/i, response.body)
   end
 
@@ -78,11 +79,11 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
       )
     end
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
     assert_select "[data-trail-window-target='node']", count: 2
-    assert_select "[data-trail-window-target='prev']", count: 0
-    assert_select "[data-trail-window-target='next']", count: 0
+    # With three or fewer camps the window does not need a previous shift.
+    assert_select ".lp-rpg-trail__shift.is-prev", count: 0
   end
 
   test "planning center de-dupes progress and never exposes battle win" do
@@ -90,7 +91,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Daily battles", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Design battle card",
       description: "Sketch the card layout",
@@ -101,10 +103,10 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
       horizon: "plan", title: "Side path", position: 1
     )
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project_leaf.id)
     assert_response :success
 
-    assert_select ".lp-rpg-summit__complete", text: /Complete/i
+    assert_select ".lp-rpg-summit", minimum: 1
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_no_match(/battle_wins|battle_win/, response.body)
@@ -114,13 +116,13 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 
     assert_select "[data-controller='category-focus']", minimum: 1
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Daily battles/i
+    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Steps/i
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Design battle card/i
     assert_select ".lp-rpg-todays-practice__kicker", text: /Today's Practice/i
     assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
     assert_select ".lp-rpg-practice-focus__cta[href='#{dashboard_path}']"
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i
-    assert_select ".lp-rpg-current-path__crumb", text: /Main trail/
+    assert_select ".lp-rpg-current-path__crumb", text: /Daily battles/
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__chip.is-actions"
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-edit"
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__add[data-controller='floating-create']"

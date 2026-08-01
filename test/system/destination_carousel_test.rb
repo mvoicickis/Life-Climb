@@ -23,23 +23,25 @@ class DestinationCarouselTest < ApplicationSystemTestCase
       life_area: @journey.life_area, life_journey: @journey,
       horizon: "goal", title: "Health Summit", position: 1
     )
-    @goal.children.create!(
+    career_camp = @goal.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "plan", title: "Career Path", position: 0
     ).children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "project", title: "Resume Camp", position: 0
-    ).children.create!(
+    )
+    practice_leaf_for!(career_camp).children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "day", title: "Write CV", scheduled_on: Date.current, position: 0
     )
-    @other.children.create!(
+    run_camp = @other.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "plan", title: "Run Path", position: 0
     ).children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "project", title: "5k Camp", position: 0
-    ).children.create!(
+    )
+    practice_leaf_for!(run_camp).children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "day", title: "Jog", scheduled_on: Date.current, position: 0
     )

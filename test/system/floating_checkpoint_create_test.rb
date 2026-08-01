@@ -37,7 +37,7 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
       )
     end
     camps[0].complete!
-    camps[1].children.create!(
+    practice_leaf_for!(camps[1]).children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Design battle card",
       scheduled_on: Date.current, position: 0

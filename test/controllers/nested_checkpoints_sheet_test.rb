@@ -27,7 +27,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty practice category shows Add Practice inside focus mode" do
+  test "empty Path-level camp shows split-first instead of Add Practice" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -35,25 +35,28 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-cats.is-exited", 1
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Resume/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-add", text: /Add Practice/i
-    assert_select ".lp-rpg-current-path__crumb", text: /Main trail/
+    assert_select ".lp-rpg-sheet.is-categories"
+    assert_select ".lp-rpg-current-path__plan", text: /Resume/
+    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
+    assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp/i
+    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
+    assert_select ".lp-rpg-practice-add", text: /Add Practice/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-trail .lp-rpg-node", text: /Resume/
   end
 
-  test "leaf with day children shows Today's Practice without battle win" do
+  test "nested leaf with day children shows Today's Practice without battle win" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
     )
-    battle = project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    battle = project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-todays-practice__kicker", text: /Today.?s Practice/i
     assert_select ".lp-rpg-practice-row__title", text: /Update CV/
@@ -87,7 +90,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-current-path__crumb.is-up", text: /Main trail/
     assert_select ".lp-rpg-practice-cats:not(.is-exited) .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-practice-cats:not(.is-exited) .lp-rpg-practice-cat__title", text: /Payments/
-    assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Checkpoint/i
+    assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp|Checkpoint/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select "a.lp-rpg-practice-cat[href*='focus_id=#{child.id}']"
 
@@ -125,7 +128,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Landing page", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Write hero copy", scheduled_on: Date.current, position: 0
     )
@@ -141,7 +145,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: @plan.id)
     assert_response :success
     assert_select ".lp-rpg-practice-cats:not(.is-exited)", 1
-    assert_select ".lp-rpg-practice-cat[data-category-id='#{project.id}']", text: /Landing page/
+    assert_select ".lp-rpg-practice-cat.is-branch[data-category-id='#{project.id}']", text: /Landing page/
     assert_select ".lp-rpg-practice-cat.is-branch[data-category-id='#{branch.id}']", text: /Launch prep/
     assert_select ".lp-rpg-practice-cat.is-branch", text: /1 camp/
     assert_select ".lp-rpg-practice-cats .lp-rpg-practice-row", 0

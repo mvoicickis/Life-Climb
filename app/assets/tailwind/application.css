@@ -16848,6 +16848,13 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   min-height: 0;
   animation: lp-rpg-cat-list-in 200ms ease;
 }
+.lp-rpg-practice-cats__hint {
+  margin: 0 0 0.15rem;
+  padding: 0 0.15rem;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.72);
+}
 .lp-rpg-practice-cats.is-entering {
   animation: lp-rpg-cat-list-in 220ms ease;
 }

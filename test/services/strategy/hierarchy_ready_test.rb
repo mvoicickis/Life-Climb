@@ -34,8 +34,9 @@ class StrategyHierarchyReadyTest < ActiveSupport::TestCase
     )
     refute Strategy::HierarchyReady.call(user: @user, goal: @goal)
 
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Make 5 emails better", scheduled_on: Date.current, position: 0
     )
     assert Strategy::HierarchyReady.call(user: @user, goal: @goal)

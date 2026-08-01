@@ -372,6 +372,9 @@ en:
       practice_repeat_daily: "Every day"
       practice_repeat_badge: "Every day"
       camp_switcher: "Switch camp"
+      nest_before_dailies: "Break this into smaller camps, then plan daily steps there."
+      add_smaller_camp: "+ Smaller camp"
+      day_needs_nested_camp: "Add a smaller camp under this one, then create daily practices there."
       camps_count:
         one: "%{count} camp"
         other: "%{count} camps"
@@ -510,6 +513,7 @@ en:
       action_hint: "One real action you can finish tonight."
       cta: "Start my climb"
       project_title: "Start: %{plan}"
+      nested_camp_title: "First steps"
       need_plan: "Name the biggest part of your goal."
       need_action: "Name one thing you’ll do today."
       ready_notice: "Your trail is open. Win today’s battle."

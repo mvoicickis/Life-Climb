@@ -29,12 +29,14 @@ class BattlesCompleteDayTest < ActiveSupport::TestCase
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Cut spend", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     battle_a = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Cancel subscription", scheduled_on: Date.current, position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Call bank", scheduled_on: Date.current, position: 1
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
@@ -44,7 +46,7 @@ class BattlesCompleteDayTest < ActiveSupport::TestCase
     result = Battles::CompleteDay.call(user: @user)
     assert result.ok
     assert_operator result.awarded, :>, 0
-    assert_includes result.project_check_ids, project.id
+    assert_includes result.project_check_ids, project_leaf.id
     assert_match(/Action Points/i, result.message)
     assert_no_match(/Mountain now/i, result.message)
 
