@@ -52,6 +52,19 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#editPath']"
     assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#viewProgress']"
     assert_select "#rpg-add-checkpoint"
+    assert_select ".lp-rpg-paths__cue", count: 0
+    assert_select ".lp-rpg-empty-goal", count: 0
+    assert_select ".lp-rpg-context", count: 0
+  end
+
+  test "zero xp and streak chips stay hidden for a fresh climber" do
+    @user.update!(total_points: 0, climb_streak_days: 0, climb_streak_on: nil)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    assert_response :success
+
+    assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-xp:not(.is-quiet)", count: 0
+    assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-streak", count: 0
+    assert_select ".lp-rpg-destination__new"
   end
 
   test "switching path updates the single focus panel title" do

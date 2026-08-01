@@ -169,12 +169,6 @@
       </div>
     </nav>
 
-    <div class="lp-rpg-paths__cue" aria-hidden="true">
-      <span>◀</span>
-      <span class="lp-rpg-paths__cue-bar"></span>
-      <span>▶</span>
-    </div>
-
     <% if plan %>
       <div class="lp-rpg-path-focus"
            data-strategy-plan-rail-target="focusPanel"
@@ -203,6 +197,25 @@
             <span><%= t("strategy.rpg.path_focus_view_progress") %></span>
           </button>
         </div>
+
+        <details class="lp-rpg-add is-checkpoint is-focus-form" id="rpg-add-checkpoint">
+          <summary class="lp-rpg-path-focus__form-summary">
+            <%= t("strategy.rpg.add_checkpoint") %>
+          </summary>
+          <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, area.id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :horizon, "project" %>
+            <%= hidden_field_tag :parent_id, plan.id %>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  class: "lp-rpg-input",
+                  placeholder: t("strategy.project_placeholder"),
+                  autocomplete: "off" %>
+            <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
+          <% end %>
+        </details>
       </div>
     <% end %>
   </section>

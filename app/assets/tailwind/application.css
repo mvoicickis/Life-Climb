@@ -15038,19 +15038,20 @@ button.lp-strategy-overflow {
 }
 .lp-rpg-destination__new {
   display: inline-flex;
-  margin: 0.35rem auto 0;
-  padding: 0.2rem 0.55rem;
+  margin: 0.2rem auto 0;
+  padding: 0.1rem 0.35rem;
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--rpg-mist, #8b95a5);
-  font-size: 0.72rem;
-  font-weight: 650;
+  color: rgba(100, 116, 139, 0.78);
+  font-size: 0.62rem;
+  font-weight: 550;
+  letter-spacing: 0.01em;
   cursor: pointer;
 }
 .lp-rpg-destination__new:hover,
 .lp-rpg-destination__new:focus-visible {
-  color: rgba(248, 250, 252, 0.92);
+  color: rgba(148, 163, 184, 0.95);
   outline: none;
 }
 
@@ -15524,21 +15525,30 @@ button.lp-strategy-overflow {
   padding: 0;
 }
 
-.lp-rpg-paths__cue {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  color: rgba(100, 116, 139, 0.9);
-  font-size: 0.65rem;
-  line-height: 1;
+/* Path scroll cue removed — looked like unlabeled dots below the paths row. */
+
+.lp-rpg-path-focus .lp-rpg-add.is-focus-form {
+  margin-top: 0.15rem;
 }
 
-.lp-rpg-paths__cue-bar {
-  width: min(42%, 10rem);
-  height: 0.22rem;
-  border-radius: 999px;
-  background: rgba(51, 65, 85, 0.95);
+.lp-rpg-path-focus .lp-rpg-add.is-focus-form:not([open]) > summary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lp-rpg-path-focus .lp-rpg-add.is-focus-form[open] > summary {
+  display: none;
+}
+
+.lp-rpg-path-focus .lp-rpg-add.is-focus-form .lp-rpg-add__form {
+  margin-top: 0.35rem;
 }
 
 .lp-rpg-path.is-focus {

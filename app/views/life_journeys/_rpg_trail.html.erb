@@ -84,25 +84,8 @@
       </div>
     </div>
   <% elsif plan %>
-    <div class="lp-rpg-empty-goal">
-      <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.trail.need_checkpoint") %></p>
-      <details class="lp-rpg-add">
-        <summary><%= t("strategy.rpg.add_checkpoint") %></summary>
-        <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
-          <%= hidden_field_tag :life_area_id, @journey.life_area_id %>
-          <%= hidden_field_tag :life_journey_id, @journey.id %>
-          <%= hidden_field_tag :horizon, "project" %>
-          <%= hidden_field_tag :parent_id, plan.id %>
-          <%= text_field_tag :title, nil,
-                required: true,
-                maxlength: 120,
-                class: "lp-rpg-input",
-                placeholder: t("strategy.project_placeholder"),
-                autocomplete: "off" %>
-          <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
-        <% end %>
-      </details>
-    </div>
+    <%# Empty trail — first checkpoint is prompted from the path focus panel only. %>
+    <div class="lp-rpg-trail-empty" aria-hidden="true"></div>
   <% elsif goal.blank? %>
     <div class="lp-rpg-empty-goal">
       <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-empty-goal__form", data: { turbo: false } do %>
