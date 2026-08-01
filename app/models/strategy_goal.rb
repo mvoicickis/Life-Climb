@@ -4,6 +4,7 @@ class StrategyGoal < ApplicationRecord
   include TextLimits
 
   # Guided tree: Goal → Plans → Projects → Battles.
+  # Projects may nest (branch checkpoints) or take days (leaf). Never both.
   # Legacy month/week rows are migrated away; year maps to goal.
   KINDS = %w[goal plan project day].freeze
   LEGACY_KINDS = %w[month week].freeze
@@ -12,7 +13,7 @@ class StrategyGoal < ApplicationRecord
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
     "plan" => %w[project],
-    "project" => %w[day],
+    "project" => %w[project day],
     "day" => []
   }.freeze
 
@@ -30,6 +31,7 @@ class StrategyGoal < ApplicationRecord
   validate :scheduled_on_required_for_day
   validate :due_on_rules
   validate :parent_kind_matches
+  validate :parent_leaf_branch_xor
   validate :child_fits_parent_window
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
@@ -84,6 +86,19 @@ class StrategyGoal < ApplicationRecord
 
   def allowed_child_kinds
     ALLOWED_CHILDREN.fetch(kind, [])
+  end
+
+  # Branch = has nested checkpoints. Leaf = takes dailies (or empty, ready for either).
+  def branch_checkpoint?
+    project? && children.any?(&:project?)
+  end
+
+  def leaf_checkpoint?
+    project? && children.none?(&:project?)
+  end
+
+  def split_eligible?
+    project? && children.none?(&:day?)
   end
 
   def aspect_key
@@ -172,6 +187,25 @@ class StrategyGoal < ApplicationRecord
     return if parent.allowed_child_kinds.include?(kind)
 
     errors.add(:parent_id, :invalid)
+  end
+
+  # Leaf XOR branch: a checkpoint has day children or project children, never both.
+  def parent_leaf_branch_xor
+    return if parent.blank?
+    return unless parent.project?
+
+    siblings =
+      if parent.association(:children).loaded?
+        parent.children.reject { |c| c.id == id }
+      else
+        parent.children.where.not(id: id).to_a
+      end
+
+    if project? && siblings.any?(&:day?)
+      errors.add(:base, I18n.t("strategy.rpg.checkpoint_split_blocked"))
+    elsif day? && siblings.any?(&:project?)
+      errors.add(:base, I18n.t("strategy.rpg.checkpoint_branch_no_days"))
+    end
   end
 
   def root_must_be_goal

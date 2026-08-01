@@ -1,24 +1,29 @@
-<%# Collapsible battle sheet — next meaningful actions. locals: current_project, plan, goal, trail %>
+<%# Collapsible battle sheet — leaf: dailies; branch: child checkpoints. locals: current_project, plan, goal, trail %>
 <% current_project = local_assigns[:current_project] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
 <% battle_xp = GameRules::BATTLE_TODO_LP %>
-<% battles = current_project ? current_project.children.select(&:day?).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } : [] %>
+<% area = @journey.life_area %>
+<% is_branch = current_project&.branch_checkpoint? %>
+<% child_checkpoints = is_branch ? current_project.children.select(&:project?).sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
+<% battles = (!is_branch && current_project) ? current_project.children.select(&:day?).sort_by { |b| [ b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } : [] %>
 <% now = battles.select { |b| !b.completed? && b.scheduled_on == Date.current } %>
 <% later = battles.select { |b| !b.completed? && b.scheduled_on != Date.current } %>
 <% done = battles.select(&:completed?) %>
 <% preview = (now.presence || later).first(3) %>
-<% area = @journey.life_area %>
+<% split_eligible = current_project&.split_eligible? %>
+<% goal_id = goal&.id || current_project&.root_goal&.id %>
+<% plan_id = plan&.id || (current_project&.parent&.plan? ? current_project.parent_id : current_project&.ancestor_chain&.reverse&.find(&:plan?)&.id) %>
 
 <% if current_project %>
-  <section class="lp-rpg-sheet"
+  <section class="lp-rpg-sheet <%= 'is-branch' if is_branch %>"
            data-controller="strategy-sheet"
-           data-strategy-sheet-expanded-value="false"
+           data-strategy-sheet-expanded-value="<%= is_branch ? 'true' : 'false' %>"
            aria-label="<%= t('strategy.rpg.sheet.label') %>">
     <button type="button"
             class="lp-rpg-sheet__handle"
             data-action="strategy-sheet#toggle"
-            aria-expanded="false"
+            aria-expanded="<%= is_branch ? 'true' : 'false' %>"
             data-strategy-sheet-target="toggle">
       <span class="lp-rpg-sheet__grip" aria-hidden="true"></span>
       <span class="lp-rpg-sheet__head">
@@ -28,86 +33,165 @@
       <span class="lp-rpg-sheet__cue"><%= current_project.progress_percent.to_i %>%</span>
     </button>
 
-    <div class="lp-rpg-sheet__preview">
-      <% if preview.any? %>
-        <ul class="lp-rpg-battles is-compact">
-          <% preview.each do |battle| %>
-            <li class="lp-rpg-battle" data-strategy-rpg-target="battleRow">
-              <%= button_to battle_win_path(battle),
-                    method: :post,
-                    class: "lp-rpg-battle__win",
-                    form: { data: { turbo: false } } do %>
-                <span class="lp-rpg-battle__box" aria-hidden="true"></span>
-                <span class="lp-rpg-battle__body">
-                  <span class="lp-rpg-battle__title"><%= battle.title %></span>
-                </span>
-              <% end %>
-              <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
-            </li>
-          <% end %>
-        </ul>
-      <% else %>
-        <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.sheet.all_clear") %></p>
-      <% end %>
-    </div>
+    <% if is_branch %>
+      <div class="lp-rpg-sheet__preview">
+        <% if child_checkpoints.any? %>
+          <ul class="lp-rpg-checkpoints">
+            <% child_checkpoints.first(3).each do |child| %>
+              <li class="lp-rpg-checkpoint <%= 'is-done' if child.completed? %>">
+                <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: child.id),
+                      class: "lp-rpg-checkpoint__hit",
+                      data: { turbo: true } do %>
+                  <span class="lp-rpg-checkpoint__title"><%= child.title %></span>
+                  <span class="lp-rpg-checkpoint__pct"><%= child.progress_percent.to_i %>%</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.sheet.split_empty") %></p>
+        <% end %>
+      </div>
 
-    <div class="lp-rpg-sheet__body" data-strategy-sheet-target="body" hidden>
-      <% [
-           [ :now, t("strategy.rpg.sheet.now"), now ],
-           [ :later, t("strategy.rpg.sheet.later"), later ],
-           [ :done, t("strategy.rpg.sheet.done"), done ]
-         ].each do |key, label, group| %>
-        <% next if group.empty? %>
-        <div class="lp-rpg-sheet__group is-<%= key %>">
-          <p class="lp-rpg-sheet__group-title"><%= label %></p>
-          <ul class="lp-rpg-battles">
-            <% group.each do |battle| %>
-              <li class="lp-rpg-battle <%= 'is-done' if battle.completed? %>"
-                  data-strategy-rpg-target="battleRow">
-                <% if battle.completed? %>
-                  <span class="lp-rpg-battle__check" aria-hidden="true">✓</span>
+      <div class="lp-rpg-sheet__body" data-strategy-sheet-target="body" <%= "hidden" unless is_branch %>>
+        <% if child_checkpoints.size > 3 %>
+          <ul class="lp-rpg-checkpoints">
+            <% child_checkpoints.drop(3).each do |child| %>
+              <li class="lp-rpg-checkpoint <%= 'is-done' if child.completed? %>">
+                <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: child.id),
+                      class: "lp-rpg-checkpoint__hit",
+                      data: { turbo: true } do %>
+                  <span class="lp-rpg-checkpoint__title"><%= child.title %></span>
+                  <span class="lp-rpg-checkpoint__pct"><%= child.progress_percent.to_i %>%</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <details class="lp-rpg-add is-checkpoint">
+          <summary>
+            <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+            <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_child_checkpoint") %></span>
+          </summary>
+          <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, area.id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :horizon, "project" %>
+            <%= hidden_field_tag :parent_id, current_project.id %>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  class: "lp-rpg-input",
+                  placeholder: t("strategy.project_placeholder"),
+                  autocomplete: "off" %>
+            <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
+          <% end %>
+        </details>
+      </div>
+    <% else %>
+      <div class="lp-rpg-sheet__preview">
+        <% if preview.any? %>
+          <ul class="lp-rpg-battles is-compact">
+            <% preview.each do |battle| %>
+              <li class="lp-rpg-battle" data-strategy-rpg-target="battleRow">
+                <%= button_to battle_win_path(battle),
+                      method: :post,
+                      class: "lp-rpg-battle__win",
+                      form: { data: { turbo: false } } do %>
+                  <span class="lp-rpg-battle__box" aria-hidden="true"></span>
                   <span class="lp-rpg-battle__body">
                     <span class="lp-rpg-battle__title"><%= battle.title %></span>
                   </span>
-                <% else %>
-                  <%= button_to battle_win_path(battle),
-                        method: :post,
-                        class: "lp-rpg-battle__win",
-                        form: { data: { turbo: false } } do %>
-                    <span class="lp-rpg-battle__box" aria-hidden="true"></span>
-                    <span class="lp-rpg-battle__body">
-                      <span class="lp-rpg-battle__title"><%= battle.title %></span>
-                    </span>
-                  <% end %>
                 <% end %>
                 <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
               </li>
             <% end %>
           </ul>
-        </div>
-      <% end %>
-
-      <details class="lp-rpg-add">
-        <summary>
-          <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
-          <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_step") %></span>
-        </summary>
-        <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
-          <%= hidden_field_tag :life_area_id, area.id %>
-          <%= hidden_field_tag :life_journey_id, @journey.id %>
-          <%= hidden_field_tag :horizon, "day" %>
-          <%= hidden_field_tag :parent_id, current_project.id %>
-          <%= hidden_field_tag :scheduled_on, Date.current %>
-          <%= text_field_tag :title, nil,
-                required: true,
-                maxlength: 120,
-                class: "lp-rpg-input",
-                placeholder: t("strategy.battle_placeholder"),
-                autocomplete: "off" %>
-          <%= submit_tag t("strategy.sheet.add_battle"), class: "lp-rpg-btn is-small" %>
+        <% else %>
+          <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.sheet.all_clear") %></p>
         <% end %>
-      </details>
-    </div>
+      </div>
+
+      <div class="lp-rpg-sheet__body" data-strategy-sheet-target="body" hidden>
+        <% [
+             [ :now, t("strategy.rpg.sheet.now"), now ],
+             [ :later, t("strategy.rpg.sheet.later"), later ],
+             [ :done, t("strategy.rpg.sheet.done"), done ]
+           ].each do |key, label, group| %>
+          <% next if group.empty? %>
+          <div class="lp-rpg-sheet__group is-<%= key %>">
+            <p class="lp-rpg-sheet__group-title"><%= label %></p>
+            <ul class="lp-rpg-battles">
+              <% group.each do |battle| %>
+                <li class="lp-rpg-battle <%= 'is-done' if battle.completed? %>"
+                    data-strategy-rpg-target="battleRow">
+                  <% if battle.completed? %>
+                    <span class="lp-rpg-battle__check" aria-hidden="true">✓</span>
+                    <span class="lp-rpg-battle__body">
+                      <span class="lp-rpg-battle__title"><%= battle.title %></span>
+                    </span>
+                  <% else %>
+                    <%= button_to battle_win_path(battle),
+                          method: :post,
+                          class: "lp-rpg-battle__win",
+                          form: { data: { turbo: false } } do %>
+                      <span class="lp-rpg-battle__box" aria-hidden="true"></span>
+                      <span class="lp-rpg-battle__body">
+                        <span class="lp-rpg-battle__title"><%= battle.title %></span>
+                      </span>
+                    <% end %>
+                  <% end %>
+                  <span class="lp-rpg-battle__xp">+<%= battle_xp %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <details class="lp-rpg-add">
+          <summary>
+            <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+            <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_step") %></span>
+          </summary>
+          <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, area.id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :horizon, "day" %>
+            <%= hidden_field_tag :parent_id, current_project.id %>
+            <%= hidden_field_tag :scheduled_on, Date.current %>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  class: "lp-rpg-input",
+                  placeholder: t("strategy.battle_placeholder"),
+                  autocomplete: "off" %>
+            <%= submit_tag t("strategy.sheet.add_battle"), class: "lp-rpg-btn is-small" %>
+          <% end %>
+        </details>
+
+        <% if split_eligible %>
+          <details class="lp-rpg-add is-split">
+            <summary class="lp-rpg-sheet__split-link">
+              <%= t("strategy.rpg.split_checkpoint") %>
+            </summary>
+            <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
+              <%= hidden_field_tag :life_area_id, area.id %>
+              <%= hidden_field_tag :life_journey_id, @journey.id %>
+              <%= hidden_field_tag :horizon, "project" %>
+              <%= hidden_field_tag :parent_id, current_project.id %>
+              <%= text_field_tag :title, nil,
+                    required: true,
+                    maxlength: 120,
+                    class: "lp-rpg-input",
+                    placeholder: t("strategy.rpg.split_checkpoint_placeholder"),
+                    autocomplete: "off" %>
+              <%= submit_tag t("strategy.rpg.split_checkpoint_cta"), class: "lp-rpg-btn is-small" %>
+            <% end %>
+          </details>
+        <% end %>
+      </div>
+    <% end %>
   </section>
 <% elsif plan %>
   <section class="lp-rpg-sheet is-quiet">

@@ -136,8 +136,10 @@ class LifeJourneysController < ApplicationController
     @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
     @plan = select_strategy_plan
     @trail = Strategy::Trail.for(plan: @plan)
+    # Sheet may focus a nested checkpoint; trail playability is judged on the
+    # plan-level ancestor so Path trail stays plan-scoped only.
     @current_project =
-      if @branch_project && @plan && @branch_project.parent_id == @plan.id && trail_node_playable?(@branch_project)
+      if @branch_project && @plan && nested_checkpoint_playable?(@branch_project, @plan)
         @branch_project
       else
         @trail.current_node&.record
@@ -178,10 +180,8 @@ class LifeJourneysController < ApplicationController
     plan =
       if focus&.plan?
         focus
-      elsif focus&.project?
-        focus.parent
-      elsif focus&.day?
-        focus.parent&.parent
+      elsif focus&.project? || focus&.day?
+        focus.ancestor_chain.reverse.find(&:plan?)
       end
     project =
       if focus&.project?
@@ -192,11 +192,31 @@ class LifeJourneysController < ApplicationController
 
     # Keep Goal summit map clean: don't auto-place a Project tent from today's battle.
     # Plan can still light from today's climb so the trail reads "where am I".
-    if plan.nil? && today_battle&.parent
-      plan ||= today_battle.parent&.parent if focus.blank? || focus.goal?
+    if plan.nil? && today_battle&.parent && (focus.blank? || focus.goal?)
+      plan = today_battle.ancestor_chain.reverse.find(&:plan?)
     end
 
     [ plan, project ]
+  end
+
+  # Nested checkpoints are playable when their plan-level ancestor is current/done.
+  def nested_checkpoint_playable?(project, plan)
+    return false if project.blank? || plan.blank?
+
+    plan_level = plan_level_checkpoint(project, plan)
+    return false unless plan_level
+
+    trail_node_playable?(plan_level)
+  end
+
+  def plan_level_checkpoint(project, plan)
+    node = project
+    while node&.project?
+      return node if node.parent_id == plan.id
+
+      node = node.parent
+    end
+    nil
   end
 
   def strategy_mountain_ready?
@@ -244,8 +264,22 @@ class LifeJourneysController < ApplicationController
       }
     end
 
-    # Inside a project: always plan battles here first. Handoff only after this project has at least one.
+    # Inside a checkpoint: leaf → battles; branch → child checkpoints.
     if @focus&.project?
+      if @focus.branch_checkpoint?
+        return mountain_ready_next_up if @mountain_ready
+
+        return {
+          key: :add_project,
+          title: I18n.t("strategy.questions.project"),
+          hint: I18n.t("strategy.next_up.add_project_hint"),
+          cta: I18n.t("strategy.rpg.add_child_checkpoint"),
+          placeholder: I18n.t("strategy.rpg.split_checkpoint_placeholder"),
+          examples: [ I18n.t("strategy.next_up.example_project") ],
+          form: { horizon: "project", parent_id: @focus.id }
+        }
+      end
+
       battles = @children.select(&:day?)
       if battles.empty?
         return {
