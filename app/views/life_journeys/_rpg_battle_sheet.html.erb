@@ -244,26 +244,94 @@
             <% open_days.each do |battle| %>
               <% selected_today = battle.scheduled_on == Date.current %>
               <li class="lp-rpg-practice-row <%= 'is-selected' if selected_today %> <%= 'is-daily' if battle.repeat_daily? %>">
-                <%= form_with url: strategy_goal_path(battle),
-                      method: :patch,
-                      class: "lp-rpg-practice-row__form",
-                      data: { turbo: true } do %>
-                  <%= hidden_field_tag :scheduled_on, selected_today ? "later" : Date.current %>
-                  <label class="lp-rpg-practice-row__label">
-                    <input type="checkbox"
-                           class="lp-rpg-practice-row__check"
-                           <%= "checked" if selected_today %>
-                           onchange="this.form.requestSubmit()"
-                           aria-label="<%= battle.title %>">
-                    <span class="lp-rpg-practice-row__title">
-                      <%= battle.title %>
-                      <% if battle.repeat_daily? %>
-                        <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
-                      <% end %>
-                    </span>
-                    <span class="lp-rpg-practice-row__xp">+<%= battle_xp %> XP</span>
-                  </label>
-                <% end %>
+                <div class="lp-rpg-practice-row__bar">
+                  <%= form_with url: strategy_goal_path(battle),
+                        method: :patch,
+                        class: "lp-rpg-practice-row__form",
+                        data: { turbo: true } do %>
+                    <%= hidden_field_tag :scheduled_on, selected_today ? "later" : Date.current %>
+                    <label class="lp-rpg-practice-row__label">
+                      <input type="checkbox"
+                             class="lp-rpg-practice-row__check"
+                             <%= "checked" if selected_today %>
+                             onchange="this.form.requestSubmit()"
+                             aria-label="<%= battle.title %>">
+                      <span class="lp-rpg-practice-row__title">
+                        <%= battle.title %>
+                        <% if battle.repeat_daily? %>
+                          <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
+                        <% end %>
+                      </span>
+                      <span class="lp-rpg-practice-row__xp">+<%= battle_xp %> XP</span>
+                    </label>
+                  <% end %>
+
+                  <details class="lp-rpg-practice-row__edit"
+                           id="rpg-edit-practice-<%= battle.id %>"
+                           data-controller="floating-create"
+                           data-action="toggle->floating-create#onToggle">
+                    <summary class="lp-rpg-practice-row__edit-btn"
+                             aria-label="<%= t('strategy.rpg.edit_practice') %>">
+                      <span aria-hidden="true">✎</span>
+                    </summary>
+                    <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+                      <button type="button"
+                              class="lp-rpg-float-create__backdrop"
+                              data-action="click->floating-create#close"
+                              tabindex="-1"
+                              aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+                      <div class="lp-rpg-float-create__card"
+                           data-floating-create-target="card"
+                           role="dialog"
+                           aria-modal="true"
+                           aria-labelledby="rpg-edit-practice-title-<%= battle.id %>">
+                        <header class="lp-rpg-float-create__head">
+                          <p class="lp-rpg-float-create__kicker"><%= cat.title %></p>
+                          <h2 class="lp-rpg-float-create__heading" id="rpg-edit-practice-title-<%= battle.id %>">
+                            <%= t("strategy.rpg.edit_practice") %>
+                          </h2>
+                        </header>
+                        <%= form_with url: strategy_goal_path(battle),
+                              method: :patch,
+                              class: "lp-rpg-float-create__form",
+                              data: { turbo: false } do %>
+                          <label class="lp-rpg-float-create__field">
+                            <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_name") %></span>
+                            <%= text_field_tag :title, battle.title,
+                                  required: true,
+                                  maxlength: 120,
+                                  class: "lp-rpg-float-create__input",
+                                  placeholder: t("strategy.rpg.practice_name_placeholder"),
+                                  autocomplete: "off",
+                                  data: { floating_create_target: "title" } %>
+                          </label>
+                          <fieldset class="lp-rpg-float-create__repeat">
+                            <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
+                            <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
+                              <label class="lp-rpg-practice-repeat__option">
+                                <%= radio_button_tag :repeat, "none", !battle.repeat_daily?, class: "lp-rpg-practice-repeat__input" %>
+                                <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
+                              </label>
+                              <label class="lp-rpg-practice-repeat__option">
+                                <%= radio_button_tag :repeat, "daily", battle.repeat_daily?, class: "lp-rpg-practice-repeat__input" %>
+                                <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
+                              </label>
+                            </div>
+                          </fieldset>
+                          <div class="lp-rpg-float-create__actions">
+                            <button type="button"
+                                    class="lp-rpg-float-create__btn is-cancel"
+                                    data-action="click->floating-create#close">
+                              <%= t("strategy.rpg.cancel") %>
+                            </button>
+                            <%= submit_tag t("strategy.save_changes"),
+                                  class: "lp-rpg-float-create__btn is-create" %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </details>
+                </div>
               </li>
             <% end %>
           </ul>

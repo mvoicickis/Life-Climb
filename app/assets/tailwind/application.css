@@ -17022,8 +17022,15 @@ a.lp-rpg-practice-cat {
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
 }
+.lp-rpg-practice-row__bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.25rem;
+}
 .lp-rpg-practice-row__form {
   margin: 0;
+  min-width: 0;
 }
 .lp-rpg-practice-row__label {
   display: grid;
@@ -17036,6 +17043,35 @@ a.lp-rpg-practice-cat {
   border: 1px solid transparent;
   cursor: pointer;
   transition: background 140ms ease, border-color 140ms ease;
+}
+.lp-rpg-practice-row__edit {
+  position: relative;
+  margin: 0;
+}
+.lp-rpg-practice-row__edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin: 0;
+  padding: 0;
+  border-radius: 0.65rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  list-style: none;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+.lp-rpg-practice-row__edit-btn::-webkit-details-marker { display: none; }
+.lp-rpg-practice-row__edit-btn:hover,
+.lp-rpg-practice-row__edit[open] > .lp-rpg-practice-row__edit-btn {
+  color: rgba(252, 211, 77, 0.95);
+  background: rgba(212, 160, 23, 0.12);
+  border-color: rgba(212, 160, 23, 0.35);
 }
 .lp-rpg-practice-row.is-selected .lp-rpg-practice-row__label {
   background: rgba(87, 211, 91, 0.08);

@@ -93,10 +93,17 @@ class StrategyGoalsController < ApplicationController
 
   def update
     goal = current_user.strategy_goals.find(params[:id])
-    schedule_only = goal.day? && params.key?(:scheduled_on) && !params.key?(:title)
+    schedule_only = goal.day? &&
+                    params.key?(:scheduled_on) &&
+                    !params.key?(:title) &&
+                    !params.key?(:repeat)
 
     if params.key?(:title)
       goal.title = params[:title].to_s.strip
+    end
+
+    if goal.day? && params.key?(:repeat)
+      goal.repeat = parse_repeat("day")
     end
 
     if goal.day? && params.key?(:scheduled_on)

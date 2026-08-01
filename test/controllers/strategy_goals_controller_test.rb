@@ -535,6 +535,59 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-row__title", text: /Do lessons/i
   end
 
+  test "practice row shows edit control for name and repeat type" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Lessons", position: 0
+    )
+    nested = practice_leaf_for!(project)
+    practice = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: nested, horizon: "day",
+      title: "Do lessons", scheduled_on: Date.current, repeat: "none", position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
+    assert_response :success
+    assert_select "#rpg-edit-practice-#{practice.id}.lp-rpg-practice-row__edit"
+    assert_select "#rpg-edit-practice-#{practice.id} input[name='title'][value='Do lessons']"
+    assert_select "#rpg-edit-practice-#{practice.id} input[name='repeat'][value='none'][checked]"
+    assert_select "#rpg-edit-practice-#{practice.id} input[name='repeat'][value='daily']"
+  end
+
+  test "update renames a practice and switches it to every day" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Lessons", position: 0
+    )
+    nested = practice_leaf_for!(project)
+    practice = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: nested, horizon: "day",
+      title: "Do lessons", scheduled_on: Date.current, repeat: "none", position: 0
+    )
+
+    patch strategy_goal_path(practice), params: { title: "Spanish drills", repeat: "daily" }
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
+
+    practice.reload
+    assert_equal "Spanish drills", practice.title
+    assert practice.repeat_daily?
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-practice-row.is-daily .lp-rpg-practice-row__title", text: /Spanish drills/i
+    assert_select ".lp-rpg-practice-row.is-daily .lp-rpg-practice-row__repeat", text: /Every day/i
+  end
+
   test "completing a daily practice rolls the template to tomorrow" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
