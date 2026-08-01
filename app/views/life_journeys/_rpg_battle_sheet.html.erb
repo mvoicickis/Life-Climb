@@ -309,11 +309,15 @@
                             <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
                             <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
                               <label class="lp-rpg-practice-repeat__option">
-                                <%= radio_button_tag :repeat, "none", !battle.repeat_daily?, class: "lp-rpg-practice-repeat__input" %>
+                                <%= radio_button_tag :repeat, "none", !battle.repeat_daily?,
+                                      id: "practice-#{battle.id}-repeat-none",
+                                      class: "lp-rpg-practice-repeat__input" %>
                                 <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
                               </label>
                               <label class="lp-rpg-practice-repeat__option">
-                                <%= radio_button_tag :repeat, "daily", battle.repeat_daily?, class: "lp-rpg-practice-repeat__input" %>
+                                <%= radio_button_tag :repeat, "daily", battle.repeat_daily?,
+                                      id: "practice-#{battle.id}-repeat-daily",
+                                      class: "lp-rpg-practice-repeat__input" %>
                                 <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
                               </label>
                             </div>
