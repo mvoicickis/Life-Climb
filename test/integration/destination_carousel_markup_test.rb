@@ -42,13 +42,19 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-destination-carousel.is-multi"
     assert_select ".lp-rpg-destination-carousel__title", text: /Ship LifePoints/i
     assert_select ".lp-rpg-destination-carousel__active[data-controller~='plan-card-menu']"
-    assert_select ".lp-rpg-destination-carousel__edit[data-action*='plan-card-menu#edit']"
+    assert_select ".lp-rpg-destination-menu__btn[data-action*='plan-card-menu#toggle']"
+    assert_select ".lp-rpg-destination-menu__item[data-action*='plan-card-menu#edit']", text: /Edit Destination/i
+    assert_select ".lp-rpg-destination-menu__item[data-action*='destination-switcher#openCreate']", text: /New Destination/i
     assert_select "dialog#destination-edit-#{@goal.id}"
+    assert_select "dialog#destination-create"
+    assert_select ".lp-rpg-summit__pct", count: 0
+    assert_select ".lp-rpg-destination__new", count: 0
     assert_select "a.lp-rpg-destination-carousel__arrow.is-next[href=?]",
                   life_journey_path(@journey, goal_id: @other.id)
     assert_select ".lp-rpg-destination-carousel__peek.is-next", text: /Health Summit/i
     assert_select ".lp-rpg-destination-dots__dot", count: 2
     assert_select ".lp-rpg-path", text: /Career Path/
+    assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct[data-strategy-celebrate-target='progressBar']"
     assert_select ".lp-rpg-path-focus", count: 1
     assert_select ".lp-rpg-goals", count: 0
   end

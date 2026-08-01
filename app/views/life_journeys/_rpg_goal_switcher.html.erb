@@ -67,11 +67,33 @@
               <div class="lp-rpg-destination-carousel__title-row">
                 <h1 class="lp-rpg-destination-carousel__title"><%= goal.title %></h1>
                 <button type="button"
-                        class="lp-rpg-destination-carousel__edit"
+                        class="lp-rpg-destination-menu__btn"
                         data-plan-card-menu-target="button"
-                        data-action="click->plan-card-menu#edit"
-                        aria-label="<%= t('strategy.rpg.edit_destination') %>">
+                        data-action="click->plan-card-menu#toggle"
+                        aria-haspopup="menu"
+                        aria-expanded="false"
+                        aria-label="<%= t('strategy.rpg.destination_menu') %>">
+                  <span aria-hidden="true">⋯</span>
+                </button>
+              </div>
+
+              <div class="lp-rpg-destination-menu"
+                   data-plan-card-menu-target="menu"
+                   role="menu"
+                   hidden>
+                <button type="button"
+                        class="lp-rpg-destination-menu__item"
+                        role="menuitem"
+                        data-action="click->plan-card-menu#edit">
                   <span aria-hidden="true">✎</span>
+                  <%= t("strategy.rpg.edit_destination") %>
+                </button>
+                <button type="button"
+                        class="lp-rpg-destination-menu__item"
+                        role="menuitem"
+                        data-action="click->plan-card-menu#close click->destination-switcher#openCreate">
+                  <span aria-hidden="true">+</span>
+                  <%= t("strategy.rpg.new_destination") %>
                 </button>
               </div>
 
@@ -160,18 +182,6 @@
           </div>
           <p class="lp-rpg-destination-swipe-hint"><%= t("strategy.rpg.destination_swipe_hint") %></p>
         <% end %>
-
-        <p class="lp-rpg-summit__pct" data-strategy-rpg-target="pct" data-strategy-celebrate-target="progressBar">
-          <span class="lp-rpg-summit__complete"><%= t("strategy.rpg.pct_complete", pct: progress) %></span>
-          <span class="lp-rpg-summit__at"><%= mountain[:label].presence || t("strategy.rpg.on_my_way") %></span>
-        </p>
-
-        <button type="button"
-                class="lp-rpg-destination__new"
-                data-action="click->destination-switcher#openCreate"
-                aria-haspopup="dialog">
-          <%= t("strategy.rpg.new_destination") %>
-        </button>
       <% else %>
         <button type="button"
                 class="lp-rpg-destination-carousel__active is-empty"
