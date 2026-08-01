@@ -48,7 +48,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     @current = camps[1]
   end
 
-  test "short phone keeps page locked and Today's Plan in viewport" do
+  test "short phone keeps Practice Category focus and Open in Today in viewport" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -75,27 +75,27 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_text(/Daily battles/i)
-    assert_selector ".lp-rpg-plan-card__title", text: /Design battle card/i, visible: :all, wait: 5
+    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Daily battles/i
+    assert_selector ".lp-rpg-practice-row__title", text: /Design battle card/i, visible: :all, wait: 5
+    assert_selector ".lp-rpg-todays-practice__kicker", text: /Today's Practice/i
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
-    assert_selector ".lp-rpg-current-path__here", text: /You are here/i
+    assert_selector ".lp-rpg-current-path__crumb", text: /MVP path/i
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-contrast-568px.png")
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
 
-    find(".lp-rpg-plan-card__summary", text: /Design battle card/i).click
-    assert_selector ".lp-rpg-plan-card[open] .lp-rpg-plan-card__cta", text: /Open in Today/i, wait: 3
-    assert_text(/Wire the planning card/i)
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-contrast-expanded-568px.png")
+    assert_selector ".lp-rpg-practice-focus__cta", text: /Open in Today/i, visible: :all
+    assert_selector ".lp-rpg-practice-add", text: /Add Practice/i, visible: :all
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-trail');
         const battle = document.querySelector('.lp-rpg__stage-battle');
-        const planCard = document.querySelector('.lp-rpg-plan-card');
+        const practice = document.querySelector('.lp-rpg-practice-focus.is-entered .lp-rpg-practice-row');
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom');
@@ -106,7 +106,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
         const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
         const statsPad = stats ? getComputedStyle(stats).paddingLeft : '';
-        const planRect = planCard ? planCard.getBoundingClientRect() : null;
+        const practiceRect = practice ? practice.getBoundingClientRect() : null;
         const statsR = stats ? stats.getBoundingClientRect() : null;
         window.scrollTo(0, 200);
         const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
@@ -121,7 +121,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           statsPad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
-          planVisible: !!(planRect && planRect.height > 8 && planRect.top < window.innerHeight && planRect.bottom > 0),
+          practiceVisible: !!(practiceRect && practiceRect.height > 8 && practiceRect.top < window.innerHeight && practiceRect.bottom > 0),
           statsInView: !!(statsR && statsR.top < window.innerHeight && statsR.bottom > 0),
           pageScrolled: scrolled > 1
         };
@@ -135,12 +135,12 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
     assert_operator metrics["battleH"], :>, metrics["trailH"]
-    assert_equal true, metrics["planVisible"], "Today's Plan card should stay in viewport: #{metrics.inspect}"
+    assert_equal true, metrics["practiceVisible"], "Today's Practice row should stay in viewport: #{metrics.inspect}"
     assert_equal true, metrics["statsInView"], "stats strip should stay in viewport: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["statsPad"], "chrome/stats gutters should match: #{metrics.inspect}"
 
-    assert File.exist?("/opt/cursor/artifacts/screenshots/mountain-contrast-568px.png")
-    assert File.exist?("/opt/cursor/artifacts/screenshots/mountain-contrast-expanded-568px.png")
+    assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
+    assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")
   end
 end

@@ -90,7 +90,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-plan-card__title", text: /Learn 20 words/i
+    assert_select ".lp-rpg-practice-row__title", text: /Learn 20 words/i
     assert_select ".lp-rpg-node.is-current", text: /Learn German/i
     assert_select ".lp-rpg-sheet"
     assert_select "#strategy-camp-notebook", count: 0
@@ -195,13 +195,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-node.is-current", text: /Project One/i
     assert_select ".lp-rpg-project", text: /Project Two/i
-    assert_select ".lp-rpg-plan-card__title", text: /Battle One/i
+    assert_select ".lp-rpg-practice-row__title", text: /Battle One/i
     assert_select ".lp-rpg-stats"
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
     assert_select "form[action=?]", battle_win_path(battle), count: 0
-    assert_select ".lp-rpg-plan-card__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
   end
 
   test "focusing a plan lights that path and shows its trail nodes" do
@@ -271,7 +271,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-rpg-project", minimum: 3
-    assert_select ".lp-rpg-plan-card__title", text: /Battle Focus/i
+    assert_select ".lp-rpg-practice-row__title", text: /Battle Focus/i
     assert_select "#strategy-camp-notebook", count: 0
   end
 
@@ -293,8 +293,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-rpg-todays-plan .lp-rpg-add.is-ghost.is-step"
-    assert_select ".lp-rpg-plan-card__title", text: /Battle/
+    assert_select ".lp-rpg-practice-add", text: /Add Practice/i
+    assert_select ".lp-rpg-practice-row__title", text: /Battle/
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end
 
@@ -324,6 +324,31 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.for_kind("project").find_by!(title: "Improve Resume")
     assert_equal plan.id, project.parent_id
     assert_not_equal other_plan.id, project.parent_id
+  end
+
+  test "day schedule toggle plans practice for today via scheduled_on" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Vocabulary", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Flashcards", scheduled_on: Date.current + 1.day, position: 0
+    )
+
+    patch strategy_goal_path(battle), params: { scheduled_on: Date.current.to_s }
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+    assert_equal Date.current, battle.reload.scheduled_on
+    assert_nil flash[:notice]
+
+    patch strategy_goal_path(battle), params: { scheduled_on: "later" }
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+    assert_equal Date.current + 1.day, battle.reload.scheduled_on
   end
 
   test "update renames strategy goals and syncs battle titles to today" do

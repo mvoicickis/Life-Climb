@@ -48,7 +48,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__chrome-bottom"
     assert_select ".lp-rpg-sheet.is-planning"
     assert_select ".lp-rpg-current-path"
-    assert_select ".lp-rpg-todays-plan"
+    assert_select "[data-controller='category-focus']"
+    assert_select ".lp-rpg-todays-practice"
     assert_select ".lp-rpg-context", count: 0
   end
 
@@ -104,7 +105,6 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg-summit__complete", text: /Complete/i
-    assert_select ".lp-rpg-current-path__meter-label", text: /\d+%/
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_no_match(/battle_wins|battle_win/, response.body)
@@ -113,10 +113,14 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 
-    assert_select ".lp-rpg-plan-card", minimum: 1
-    assert_select ".lp-rpg-plan-card__section-value", text: /Sketch the card layout/
-    assert_select ".lp-rpg-plan-card__cta", text: /Open in Today/i
-    assert_select ".lp-rpg-plan-card__cta[href='#{dashboard_path}']"
+    assert_select "[data-controller='category-focus']", minimum: 1
+    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Daily battles/i
+    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Design battle card/i
+    assert_select ".lp-rpg-todays-practice__kicker", text: /Today's Practice/i
+    assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-practice-focus__cta[href='#{dashboard_path}']"
+    assert_select ".lp-rpg-practice-add", text: /Add Practice/i
+    assert_select ".lp-rpg-current-path__crumb", text: /Main trail/
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__chip.is-actions"
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-edit"
     assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__add[data-controller='floating-create']"

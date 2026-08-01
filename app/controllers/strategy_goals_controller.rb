@@ -83,18 +83,38 @@ class StrategyGoalsController < ApplicationController
 
   def update
     goal = current_user.strategy_goals.find(params[:id])
-    goal.title = params[:title].to_s.strip
-    focus_id = goal.goal? ? goal.id : goal.parent_id
+    schedule_only = goal.day? && params.key?(:scheduled_on) && !params.key?(:title)
+
+    if params.key?(:title)
+      goal.title = params[:title].to_s.strip
+    end
+
+    if goal.day? && params.key?(:scheduled_on)
+      goal.scheduled_on = parse_day_schedule_param(params[:scheduled_on])
+    end
+
+    # Stay inside the Practice Category after toggling today's practice.
+    focus_id = if goal.day?
+      goal.parent_id
+    elsif goal.goal?
+      goal.id
+    else
+      goal.parent_id
+    end
 
     if goal.save
       Strategy::CascadeToDaily.call(user: current_user, life_area: goal.life_area) if goal.day?
       @updated = goal
       prepare_world_for!(goal, focus_id: focus_id)
       respond_to do |format|
-        format.turbo_stream { render :update }
-        format.html do
-          redirect_to after_update_path(goal),
-                      notice: t("strategy.renamed"), status: :see_other
+        # Schedule toggles always reload Mountain so Practice Category state stays in sync.
+        if schedule_only
+          format.any { redirect_to after_update_path(goal), status: :see_other }
+        else
+          format.turbo_stream { render :update }
+          format.html do
+            redirect_to after_update_path(goal), notice: t("strategy.renamed"), status: :see_other
+          end
         end
       end
     else
@@ -145,6 +165,19 @@ class StrategyGoalsController < ApplicationController
       return life_journey_path(journey, goal_id: goal.parent_id, plan_id: goal.id)
     end
 
+    if goal.day?
+      category = goal.parent
+      plan = category&.parent if category&.parent&.plan?
+      plan ||= category&.ancestor_chain&.reverse&.find(&:plan?)
+      root = goal.root_goal
+      return life_journey_path(
+        journey,
+        goal_id: root&.id,
+        plan_id: plan&.id,
+        focus_id: category&.id
+      )
+    end
+
     focus_id = goal.parent_id
     strategy_redirect_path(area_id: goal.life_area_id, focus_id: focus_id)
   end
@@ -185,6 +218,16 @@ class StrategyGoalsController < ApplicationController
     Date.current
   end
 
+  # Day goals require a date — "later" / blank moves practice off today (tomorrow).
+  def parse_day_schedule_param(raw)
+    value = raw.to_s.strip
+    return Date.current + 1.day if value.blank? || value == "later"
+
+    Date.parse(value)
+  rescue ArgumentError, TypeError
+    Date.current
+  end
+
   def next_position(parent, kind)
     scope = current_user.strategy_goals.where(life_area_id: @life_area.id).for_kind(kind)
     scope = parent ? scope.where(parent_id: parent.id) : scope.roots
@@ -195,7 +238,8 @@ class StrategyGoalsController < ApplicationController
     case goal.kind
     when "goal" then goal.id
     when "plan" then goal.id # Open the new plan's camp notebook, not the parent goal
-    when "project", "day" then goal.id # Keep notebook on the node just created
+    when "project" then goal.id # Keep notebook on the node just created
+    when "day" then goal.parent_id # Stay inside the Practice Category
     else goal.parent_id
     end
   end
