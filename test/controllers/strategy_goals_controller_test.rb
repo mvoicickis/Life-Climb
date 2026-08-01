@@ -90,7 +90,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-now-card__title", text: /Learn 20 words/i
+    assert_select ".lp-rpg-plan-card__title", text: /Learn 20 words/i
     assert_select ".lp-rpg-node.is-current", text: /Learn German/i
     assert_select ".lp-rpg-sheet"
     assert_select "#strategy-camp-notebook", count: 0
@@ -195,12 +195,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-node.is-current", text: /Project One/i
     assert_select ".lp-rpg-project", text: /Project Two/i
-    assert_select ".lp-rpg-now-card__title", text: /Battle One/i
+    assert_select ".lp-rpg-plan-card__title", text: /Battle One/i
     assert_select ".lp-rpg-stats"
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
-    assert_select "form[action=?]", battle_win_path(battle)
+    assert_select "form[action=?]", battle_win_path(battle), count: 0
+    assert_select ".lp-rpg-plan-card__cta", text: /Open in Today/i
   end
 
   test "focusing a plan lights that path and shows its trail nodes" do
@@ -270,7 +271,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-rpg-project", minimum: 3
-    assert_select ".lp-rpg-now-card__title", text: /Battle Focus/i
+    assert_select ".lp-rpg-plan-card__title", text: /Battle Focus/i
     assert_select "#strategy-camp-notebook", count: 0
   end
 
@@ -292,8 +293,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-rpg-sheet-rail.is-now .lp-rpg-add.is-ghost.is-step"
-    assert_select ".lp-rpg-now-card__title", text: /Battle/
+    assert_select ".lp-rpg-todays-plan .lp-rpg-add.is-ghost.is-step"
+    assert_select ".lp-rpg-plan-card__title", text: /Battle/
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end
 

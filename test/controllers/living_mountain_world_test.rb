@@ -86,8 +86,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-now-card", minimum: 1
+    assert_select ".lp-rpg-current-path__here", text: /Resume/
+    assert_select ".lp-rpg-plan-card", minimum: 1
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
@@ -108,9 +108,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-now-card__title", text: /Update CV/
-    assert_select ".lp-rpg-sheet-rail.is-now .lp-rpg-add.is-ghost.is-step"
+    assert_select ".lp-rpg-current-path__here", text: /Resume/
+    assert_select ".lp-rpg-plan-card__title", text: /Update CV/
+    assert_select ".lp-rpg-todays-plan .lp-rpg-add.is-ghost.is-step"
   end
 
   test "locked trail nodes cannot become the active focus" do
@@ -134,7 +134,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
     assert_response :success
     assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
+    assert_select ".lp-rpg-current-path__here", text: /Resume/
     assert_select ".lp-rpg-node.is-locked", text: /Interviews/
   end
 

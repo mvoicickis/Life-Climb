@@ -69,7 +69,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_text(/Daily battles/i)
     assert_selector ".lp-rpg-plan-card__title", text: /Design battle card/i, visible: :all, wait: 5
     assert_no_selector ".lp-rpg-stat.is-mountain"
-    assert_no_text(/you are here ·/i)
+    assert_no_text(/you are here · \d+%/i)
+    assert_selector ".lp-rpg-current-path__here", text: /You are here/i
     assert_no_selector "form[action*='battle_win']"
 
     find(".lp-rpg-plan-card__summary", text: /Design battle card/i).click

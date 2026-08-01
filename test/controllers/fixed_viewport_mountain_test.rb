@@ -104,7 +104,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg-summit__complete", text: /Complete/i
-    assert_select ".lp-rpg-current-path__meter-label", text: "%"
+    assert_select ".lp-rpg-current-path__meter-label", text: /\d+%/
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_no_match(/battle_wins|battle_win/, response.body)
