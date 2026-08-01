@@ -9,6 +9,7 @@ class StrategyGoal < ApplicationRecord
   KINDS = %w[goal plan project day].freeze
   LEGACY_KINDS = %w[month week].freeze
   LEGACY_KIND = { "year" => "goal" }.freeze
+  REPEAT_KINDS = %w[none daily].freeze
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
@@ -27,8 +28,10 @@ class StrategyGoal < ApplicationRecord
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KINDS + LEGACY_KIND.keys }
+  validates :repeat, presence: true, inclusion: { in: REPEAT_KINDS }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :scheduled_on_required_for_day
+  validate :repeat_allowed_for_kind
   validate :due_on_rules
   validate :parent_kind_matches
   validate :parent_leaf_branch_xor
@@ -37,6 +40,7 @@ class StrategyGoal < ApplicationRecord
   validate :legacy_kinds_readonly, on: :create
 
   before_validation :normalize_legacy_kind
+  before_validation :normalize_repeat
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -82,6 +86,10 @@ class StrategyGoal < ApplicationRecord
 
   def day?
     kind == "day"
+  end
+
+  def repeat_daily?
+    day? && repeat.to_s == "daily"
   end
 
   def allowed_child_kinds
@@ -163,6 +171,13 @@ class StrategyGoal < ApplicationRecord
     self.horizon = LEGACY_KIND[horizon] if LEGACY_KIND.key?(horizon.to_s)
   end
 
+  def normalize_repeat
+    value = repeat.to_s.presence || "none"
+    value = "none" unless day?
+    value = "none" unless REPEAT_KINDS.include?(value)
+    self.repeat = value
+  end
+
   def assign_goal_due_on
     self.due_on = Strategy::YearCycle.target_dec29
   end
@@ -172,6 +187,13 @@ class StrategyGoal < ApplicationRecord
     return if scheduled_on.present?
 
     errors.add(:scheduled_on, :blank)
+  end
+
+  def repeat_allowed_for_kind
+    return if repeat.to_s == "none"
+    return if day? && REPEAT_KINDS.include?(repeat.to_s)
+
+    errors.add(:repeat, :invalid)
   end
 
   def due_on_rules

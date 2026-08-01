@@ -367,6 +367,10 @@ en:
       practice_planned: "%{selected} / %{total} planned"
       practice_planned_short: "%{selected}/%{total}"
       practice_empty: "No practices yet — add one below"
+      practice_repeat_label: "Repeat"
+      practice_repeat_one_time: "One-time"
+      practice_repeat_daily: "Every day"
+      practice_repeat_badge: "Every day"
       camp_switcher: "Switch camp"
       camps_count:
         one: "%{count} camp"

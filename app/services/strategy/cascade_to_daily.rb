@@ -15,35 +15,60 @@ module Strategy
     end
 
     def call
-      day_goals = @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day")
-        .where(scheduled_on: @from..@to)
-        .ordered
-
       created = 0
       ActiveRecord::Base.transaction do
-        day_goals.each do |goal|
-          todo = @user.daily_todos.find_or_initialize_by(strategy_goal_id: goal.id)
-          next if todo.persisted? && todo.completed?
+        one_time_goals.find_each do |goal|
+          created += 1 if upsert_todo!(goal, goal.scheduled_on)
+        end
 
-          todo.assign_attributes(
-            title: goal.title,
-            scheduled_on: goal.scheduled_on,
-            aspect_key: goal.aspect_key,
-            position: goal.position,
-            lp_reward: GameRules::BATTLE_TODO_LP,
-            tag: "strategy"
-          )
-          if todo.new_record?
-            # Cap: skip if day is full and we're creating fresh.
-            day_count = @user.daily_todos.for_day(goal.scheduled_on).count
-            next if day_count >= GameRules::MAX_DAILY_TODOS
+        daily_templates.find_each do |goal|
+          (@from..@to).each do |date|
+            next if goal.scheduled_on.present? && date < goal.scheduled_on
+
+            created += 1 if upsert_todo!(goal, date)
           end
-          todo.save!
-          created += 1 if todo.previously_new_record?
         end
       end
       created
+    end
+
+    private
+
+    def one_time_goals
+      @user.strategy_goals
+        .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
+        .where(scheduled_on: @from..@to)
+        .ordered
+    end
+
+    def daily_templates
+      @user.strategy_goals
+        .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
+        .incomplete
+        .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
+        .ordered
+    end
+
+    # Returns true when a new todo row was created.
+    def upsert_todo!(goal, date)
+      return false if date.blank?
+
+      todo = @user.daily_todos.find_or_initialize_by(strategy_goal_id: goal.id, scheduled_on: date)
+      return false if todo.persisted? && todo.completed?
+
+      todo.assign_attributes(
+        title: goal.title,
+        aspect_key: goal.aspect_key,
+        position: goal.position,
+        lp_reward: GameRules::BATTLE_TODO_LP,
+        tag: "strategy"
+      )
+      if todo.new_record?
+        day_count = @user.daily_todos.for_day(date).count
+        return false if day_count >= GameRules::MAX_DAILY_TODOS
+      end
+      todo.save!
+      todo.previously_new_record?
     end
   end
 end
