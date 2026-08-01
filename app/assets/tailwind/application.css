@@ -15023,6 +15023,14 @@ button.lp-strategy-overflow {
   line-height: 1;
   opacity: 0.9;
 }
+.lp-rpg-destination-carousel__title-row {
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.3rem;
+  max-width: 100%;
+  min-width: 0;
+}
 .lp-rpg-destination-carousel__title {
   margin: 0;
   max-width: 100%;
@@ -15035,6 +15043,28 @@ button.lp-strategy-overflow {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.lp-rpg-destination-carousel__edit {
+  display: inline-grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(148, 163, 184, 0.72);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.lp-rpg-destination-carousel__edit:hover,
+.lp-rpg-destination-carousel__edit:focus-visible {
+  color: rgba(248, 250, 252, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
 }
 .lp-rpg-destination__new {
   display: inline-flex;

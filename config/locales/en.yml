@@ -331,6 +331,7 @@ en:
       destination_swipe_hint: "swipe to change destination"
       plan_menu: "Plan options"
       edit_plan: "Edit Plan"
+      edit_destination: "Edit Destination"
       delete_plan: "Delete Plan"
       delete_plan_title: "Delete Plan?"
       delete_plan_body: "This action cannot be undone."
