@@ -16621,13 +16621,17 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   color: var(--lp-rpg-green);
 }
 .lp-rpg-plan-card__body {
-  padding: 0 0.9rem 0.9rem;
+  padding: 0 0.9rem 0.55rem;
   display: grid;
   gap: 0.75rem;
-  max-height: 12rem;
+  max-height: 9.5rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   animation: lp-rpg-plan-expand 180ms ease;
+}
+.lp-rpg-plan-card__footer {
+  padding: 0 0.9rem 0.85rem;
+  display: grid;
 }
 @keyframes lp-rpg-plan-expand {
   from { opacity: 0; transform: translateY(-0.2rem); }
@@ -16886,12 +16890,13 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     font-size: 0.84rem;
   }
   .lp-rpg-plan-card__body {
-    max-height: 7.5rem;
-    padding-bottom: 0.65rem;
+    max-height: 5.5rem;
+    padding-bottom: 0.4rem;
+  }
+  .lp-rpg-plan-card__footer {
+    padding: 0 0.65rem 0.6rem;
   }
   .lp-rpg-plan-card__cta {
-    position: sticky;
-    bottom: 0;
     min-height: 2.2rem;
     font-size: 0.8rem;
   }

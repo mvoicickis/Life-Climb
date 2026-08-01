@@ -12,10 +12,10 @@ export default class extends Controller {
       if (item !== opened && item.open) item.open = false
     })
 
-    // Keep the briefing CTA visible inside the fixed Mountain sheet.
+    // Keep Open in Today visible inside the fixed Mountain sheet.
     requestAnimationFrame(() => {
-      const cta = opened.querySelector(".lp-rpg-plan-card__cta")
-      ;(cta || opened).scrollIntoView({ block: "nearest", behavior: "smooth" })
+      const footer = opened.querySelector(".lp-rpg-plan-card__footer")
+      ;(footer || opened).scrollIntoView({ block: "nearest", behavior: "smooth" })
     })
   }
 }
