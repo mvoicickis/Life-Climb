@@ -84,8 +84,10 @@
                 <% end %>
               </span>
               <span class="lp-rpg-node__label">
-                <strong><%= node.title %><% if node.state == :done && !here %> — <%= t("strategy.rpg.trail.cleared") %><% end %></strong>
-                <% if here %>
+                <strong><%= node.title %></strong>
+                <% if node.state == :done && !here %>
+                  <em><%= t("strategy.rpg.trail.cleared") %></em>
+                <% elsif here %>
                   <em><%= t("strategy.rpg.trail.you_are_here") %></em>
                 <% end %>
               </span>

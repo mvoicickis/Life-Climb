@@ -38,7 +38,9 @@
                   data: { turbo: true },
                   aria: { current: focused ? "true" : nil } do %>
               <span class="lp-rpg-path__title"><%= p.title %></span>
-              <span class="lp-rpg-path__pct"><%= p.progress_percent.to_i %>%</span>
+              <% if focused %>
+                <span class="lp-rpg-path__pct"><%= p.progress_percent.to_i %>%</span>
+              <% end %>
             <% end %>
             <button type="button"
                     class="lp-rpg-path__menu-btn"

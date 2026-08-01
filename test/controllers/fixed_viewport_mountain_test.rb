@@ -27,7 +27,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "mountain uses fixed-viewport shell with trail and battle stages" do
+  test "mountain uses fixed-viewport planning shell" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -41,13 +41,15 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-focus-phase"
     assert_select ".lp-rpg__chrome-top"
-    assert_select ".lp-rpg__stage"
-    assert_select ".lp-rpg__stage-trail"
+    assert_select ".lp-rpg__stage.is-planning"
+    assert_select ".lp-rpg__planning"
+    assert_select ".lp-rpg__stage-trail.is-glance"
     assert_select ".lp-rpg__stage-battle"
     assert_select ".lp-rpg__chrome-bottom"
-    assert_select ".lp-rpg-sheet.is-dominant"
+    assert_select ".lp-rpg-sheet.is-planning"
+    assert_select ".lp-rpg-current-path"
+    assert_select ".lp-rpg-todays-plan"
     assert_select ".lp-rpg-context", count: 0
-    assert_select ".lp-rpg-trail.is-windowed[data-controller~='trail-window'], .lp-rpg-world[data-controller~='trail-window']"
   end
 
   test "trail window controls appear only when more than three camps exist" do
@@ -82,28 +84,38 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select "[data-trail-window-target='next']", count: 0
   end
 
-  test "focus polish de-dupes mountain percent and quiet labels" do
+  test "planning center de-dupes progress and never exposes battle win" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Daily battles", position: 0
     )
     project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Design battle card", scheduled_on: Date.current, position: 0
+      horizon: "day", title: "Design battle card",
+      description: "Sketch the card layout",
+      scheduled_on: Date.current, position: 0
+    )
+    @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Side path", position: 1
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-stats.is-compact"
+
+    assert_select ".lp-rpg-summit__complete", text: /Complete/i
+    assert_select ".lp-rpg-current-path__meter-label", text: "%"
     assert_select ".lp-rpg-stat.is-mountain", count: 0
-    assert_select ".lp-rpg-stat.is-xp"
-    assert_select ".lp-rpg-stat.is-streak"
-    assert_select ".lp-rpg-stat.is-rank"
-    assert_select ".lp-rpg-paths__label.is-quiet"
-    assert_select ".lp-rpg-sheet-rail__label.is-quiet", minimum: 1
-    assert_no_match(/you are here ·/i, response.body)
-    assert_match(/You are here/i, response.body)
-    assert_no_match(/PATHS · scroll/i, response.body)
-    assert_no_match(/NOW · scroll/i, response.body)
+    assert_select ".lp-rpg-sheet__cue", count: 0
+    assert_no_match(/battle_wins|battle_win/, response.body)
+    assert_select "form[action*='battle_win']", count: 0
+
+    assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
+    assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
+
+    assert_select ".lp-rpg-plan-card", minimum: 1
+    assert_select ".lp-rpg-plan-card__section-value", text: /Sketch the card layout/
+    assert_select ".lp-rpg-plan-card__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-plan-card__cta[href='#{dashboard_path}']"
   end
 end

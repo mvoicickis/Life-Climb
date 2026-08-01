@@ -162,7 +162,8 @@
         <% end %>
 
         <p class="lp-rpg-summit__pct" data-strategy-rpg-target="pct" data-strategy-celebrate-target="progressBar">
-          <%= progress %>% · <%= mountain[:label].presence || t("strategy.rpg.on_my_way") %>
+          <span class="lp-rpg-summit__complete"><%= t("strategy.rpg.pct_complete", pct: progress) %></span>
+          <span class="lp-rpg-summit__at"><%= mountain[:label].presence || t("strategy.rpg.on_my_way") %></span>
         </p>
 
         <button type="button"

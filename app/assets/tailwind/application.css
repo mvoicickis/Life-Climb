@@ -14960,12 +14960,28 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   padding-inline: var(--lp-rpg-gutter, 0.85rem);
   box-sizing: border-box;
 }
+/* Planning Command Center — one briefing column (glance + plan) */
+.lp-rpg__stage.is-planning {
+  grid-template-rows: minmax(0, 1fr);
+}
+.lp-rpg__planning {
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--lp-rpg-gap, 0.5rem);
+  overflow: hidden;
+}
 .lp-rpg__stage-trail {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+}
+.lp-rpg__stage-trail.is-glance {
+  max-height: 5.5rem;
+  overflow: hidden;
 }
 .lp-rpg__stage-battle {
   min-height: 0;
@@ -16193,21 +16209,40 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   max-width: none;
   width: 100%;
 }
+.lp-rpg.is-focus-phase {
+  --lp-rpg-radius: 1rem;
+  --lp-rpg-glass: rgba(14, 18, 24, 0.72);
+  --lp-rpg-glass-border: rgba(255, 255, 255, 0.1);
+  --lp-rpg-glass-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+  --lp-rpg-accent: #57d35b;
+  --lp-rpg-gold: #d4a017;
+}
 .lp-rpg.is-focus-phase .lp-rpg-paths__label,
-.lp-rpg.is-focus-phase .lp-rpg-sheet-rail__label.is-quiet {
+.lp-rpg.is-focus-phase .lp-rpg-sheet-rail__label.is-quiet,
+.lp-rpg.is-focus-phase .lp-rpg-current-path__kicker,
+.lp-rpg.is-focus-phase .lp-rpg-todays-plan__kicker {
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   font-weight: 700;
   color: rgba(148, 163, 184, 0.72);
   text-transform: uppercase;
-}
-.lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-sheet__kicker {
-  display: none; /* aria-label already names the sheet */
+  margin: 0 0 0.35rem;
 }
 .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant {
-  /* Horizontal inset comes from the shared stage gutter — pad vertically only */
-  padding: 0.55rem 0 0.5rem;
+  padding: 0.65rem 0.85rem 0.7rem;
   margin-inline: 0;
+  border-radius: var(--lp-rpg-radius);
+  background: var(--lp-rpg-glass);
+  border: 1px solid var(--lp-rpg-glass-border);
+  box-shadow: var(--lp-rpg-glass-shadow);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+.lp-rpg.is-focus-phase .lp-rpg-sheet.is-planning {
+  gap: 0.55rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .lp-rpg.is-focus-phase .lp-rpg-trail {
   max-width: none;
@@ -16217,6 +16252,21 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg.is-focus-phase .lp-rpg-trail.is-windowed .lp-rpg-explorer {
   display: none; /* HUD hero already carries identity */
 }
+.lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-trail.is-windowed {
+  min-height: 4.75rem;
+  height: 4.75rem;
+}
+.lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-node__label strong {
+  font-size: 0.78rem;
+}
+.lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-node:not(.is-slot-focus) .lp-rpg-node__label {
+  opacity: 0.55;
+}
+.lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-trail__shift {
+  width: 1.4rem;
+  height: 1.1rem;
+  font-size: 0.55rem;
+}
 .lp-rpg.is-focus-phase .lp-rpg-stats {
   margin: 0;
   padding: 0.35rem 0 0.45rem;
@@ -16224,6 +16274,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   width: 100%;
   background: transparent;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+  opacity: 0.88;
 }
 .lp-rpg.is-focus-phase .lp-rpg-stats.is-compact {
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -16232,6 +16283,236 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   /* Level lives on the avatar badge — Spark is title/icon only */
   justify-content: center;
   min-width: 2.4rem;
+}
+/* Destination hero */
+.lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
+  font-size: clamp(1.35rem, 5vw, 1.85rem);
+  font-weight: 750;
+  line-height: 1.12;
+}
+.lp-rpg.is-focus-phase .lp-rpg-summit__pct {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+  margin: 0.35rem 0 0;
+  padding: 0.35rem 0.85rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(87, 211, 91, 0.14);
+  border: 1px solid rgba(87, 211, 91, 0.35);
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+.lp-rpg.is-focus-phase .lp-rpg-summit__complete {
+  color: var(--rpg-green, #57d35b);
+}
+.lp-rpg.is-focus-phase .lp-rpg-summit__at {
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+/* Selected path dominance */
+.lp-rpg.is-focus-phase .lp-rpg-path {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(17, 22, 28, 0.55);
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
+}
+.lp-rpg.is-focus-phase .lp-rpg-path.is-focus {
+  opacity: 1;
+  transform: scale(1.04);
+  border-color: rgba(87, 211, 91, 0.7);
+  background: rgba(22, 28, 34, 0.88);
+  box-shadow: 0 0 0 1px rgba(87, 211, 91, 0.28), 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+.lp-rpg.is-focus-phase .lp-rpg-path.is-focus .lp-rpg-path__pct {
+  color: var(--lp-rpg-accent);
+}
+.lp-rpg.is-focus-phase .lp-rpg-path:not(.is-focus) .lp-rpg-path__title {
+  color: rgba(226, 232, 240, 0.78);
+}
+/* Current Path briefing */
+.lp-rpg-current-path {
+  display: grid;
+  gap: 0.28rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.lp-rpg-current-path__plan {
+  margin: 0;
+  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  color: rgba(248, 250, 252, 0.96);
+}
+.lp-rpg-current-path__here {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: rgba(251, 191, 36, 0.92);
+}
+.lp-rpg-current-path__pin {
+  font-size: 0.78rem;
+  line-height: 1;
+}
+.lp-rpg-current-path__meter {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
+}
+.lp-rpg-current-path__meter-track {
+  flex: 1 1 auto;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.lp-rpg-current-path__meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(87, 211, 91, 0.75), rgba(212, 160, 23, 0.9));
+}
+.lp-rpg-current-path__meter-label {
+  flex: 0 0 auto;
+  font-size: 0.68rem;
+  font-weight: 750;
+  color: rgba(226, 232, 240, 0.78);
+}
+/* Today's Plan cards */
+.lp-rpg-todays-plan {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 0;
+}
+.lp-rpg-todays-plan__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.lp-rpg-plan-card {
+  border-radius: calc(var(--lp-rpg-radius, 1rem) - 0.15rem);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(11, 15, 20, 0.5);
+  overflow: hidden;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.lp-rpg-plan-card[open] {
+  border-color: rgba(87, 211, 91, 0.4);
+  background: rgba(14, 18, 24, 0.78);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+.lp-rpg-plan-card__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  cursor: pointer;
+  list-style: none;
+}
+.lp-rpg-plan-card__summary::-webkit-details-marker { display: none; }
+.lp-rpg-plan-card__title {
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: rgba(248, 250, 252, 0.96);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-rpg-plan-card__xp {
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: var(--lp-rpg-gold, #d4a017);
+  white-space: nowrap;
+}
+.lp-rpg-plan-card__body {
+  padding: 0 0.85rem 0.85rem;
+  display: grid;
+  gap: 0.7rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: lp-rpg-plan-expand 180ms ease;
+}
+@keyframes lp-rpg-plan-expand {
+  from { opacity: 0; transform: translateY(-0.2rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lp-rpg-plan-card__sections {
+  display: grid;
+  gap: 0.55rem;
+}
+.lp-rpg-plan-card__section-label {
+  margin: 0 0 0.12rem;
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.78);
+}
+.lp-rpg-plan-card__section-value {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(226, 232, 240, 0.92);
+}
+.lp-rpg-plan-card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.55rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(87, 211, 91, 0.45);
+  background: rgba(87, 211, 91, 0.14);
+  color: rgba(187, 247, 208, 0.98);
+  font-size: 0.84rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.lp-rpg-plan-card__cta:hover,
+.lp-rpg-plan-card__cta:focus-visible {
+  background: rgba(87, 211, 91, 0.22);
+  border-color: rgba(87, 211, 91, 0.65);
+  outline: none;
+}
+.lp-rpg-todays-plan__item.is-add .lp-rpg-add.is-ghost {
+  min-height: 3rem;
+  border-radius: calc(var(--lp-rpg-radius, 1rem) - 0.15rem);
+}
+.lp-rpg-todays-plan__more {
+  margin-top: 0.15rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.18);
+}
+.lp-rpg-todays-plan__more > summary {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.78);
+  cursor: pointer;
+}
+.lp-rpg-todays-plan__more-body {
+  padding: 0 0.65rem 0.65rem;
+}
+.lp-rpg-battles.is-planning .lp-rpg-battle.is-review {
+  grid-template-columns: 1fr auto;
+  opacity: 0.78;
 }
 /* Tall path-focus actions stay out of the pinned chrome once camps exist. */
 .lp-rpg.is-focus-phase .lp-rpg__chrome-top .lp-rpg-path-focus:not(.is-empty-plan) {
@@ -16251,23 +16532,23 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg.is-focus-phase .lp-rpg-destination__new {
   margin-top: 0.05rem;
 }
-.lp-rpg.is-focus-phase .lp-rpg-summit__pct {
-  margin: 0.15rem 0 0;
-  font-size: 0.72rem;
-}
-
-/* Short phones: compact chrome so Now cards stay inside the fixed viewport */
+/* Short phones: compact chrome so Today's Plan stays inside the fixed viewport */
 @media (max-height: 600px) {
   .lp-rpg.is-focus-phase {
     --lp-rpg-gutter: 0.7rem;
     --lp-rpg-gap: 0.28rem;
-    /* Keep a real stage floor so trail + Now cannot collapse under tall chrome */
     grid-template-rows: auto minmax(11.5rem, 1fr) auto;
     padding-bottom: calc(4.15rem + env(safe-area-inset-bottom));
   }
-  .lp-rpg__stage {
-    /* Prefer battle/Now over trail glance on short viewports */
-    grid-template-rows: minmax(3.25rem, 0.3fr) minmax(7.5rem, 0.7fr);
+  .lp-rpg__stage.is-planning {
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .lp-rpg__stage-trail.is-glance {
+    max-height: 3.6rem;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg__stage-trail.is-glance .lp-rpg-trail.is-windowed {
+    min-height: 3.4rem;
+    height: 3.4rem;
   }
   /* Avatar floats over destination — drops a full HUD row */
   .lp-rpg.is-focus-phase .lp-rpg-hud {
@@ -16314,7 +16595,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     padding: 0;
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
-    font-size: 0.92rem;
+    font-size: 1.05rem;
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__icon {
     display: none;
@@ -16326,9 +16607,29 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     display: none; /* reclaim a row for the battle stage */
   }
   .lp-rpg.is-focus-phase .lp-rpg-summit__pct {
-    margin: 0.05rem 0 0;
-    padding: 0.15rem 0.55rem;
-    font-size: 0.62rem;
+    margin: 0.08rem 0 0;
+    padding: 0.22rem 0.65rem 0.28rem;
+    font-size: 0.64rem;
+    flex-direction: row;
+    gap: 0.35rem;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg-summit__at {
+    font-size: 0.64rem;
+  }
+  .lp-rpg-current-path__plan {
+    font-size: 0.92rem;
+  }
+  .lp-rpg-current-path__here {
+    font-size: 0.7rem;
+  }
+  .lp-rpg-plan-card__summary {
+    padding: 0.55rem 0.7rem;
+  }
+  .lp-rpg-plan-card__title {
+    font-size: 0.84rem;
+  }
+  .lp-rpg-plan-card__body {
+    max-height: 8.5rem;
   }
   .lp-rpg.is-focus-phase .lp-rpg-paths__label {
     display: none;
@@ -16358,32 +16659,22 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     font-size: 0.78rem;
   }
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant {
-    padding: 0.28rem 0 0.2rem;
-  }
-  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-sheet__handle {
-    padding-bottom: 0.12rem;
-  }
-  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-sheet__grip {
-    display: none;
-  }
-  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-sheet__title {
-    font-size: 0.86rem;
-    margin-top: 0;
+    padding: 0.45rem 0.65rem 0.5rem;
   }
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-sheet-rail {
     min-height: 0;
     margin-top: 0.12rem;
     gap: 0.15rem;
   }
-  .lp-rpg.is-focus-phase .lp-rpg-sheet-rail__label.is-quiet {
+  .lp-rpg.is-focus-phase .lp-rpg-sheet-rail__label.is-quiet,
+  .lp-rpg.is-focus-phase .lp-rpg-todays-plan__kicker,
+  .lp-rpg.is-focus-phase .lp-rpg-current-path__kicker {
     font-size: 0.56rem;
   }
-  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-now-card,
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-camp-card,
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-add.is-ghost {
     min-height: 3.2rem;
   }
-  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-now-card__title,
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-camp-card__title {
     font-size: 0.8rem;
   }
