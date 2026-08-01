@@ -6,37 +6,50 @@
 <% focus = local_assigns[:focus] %>
 <% battle_xp = GameRules::BATTLE_TODO_LP %>
 <% area = @journey.life_area %>
-<% is_branch = current_project&.branch_checkpoint? %>
-<% child_checkpoints = is_branch ? current_project.children.select(&:project?).sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
-<% show_camps = current_project.present? && is_branch %>
 <% goal_id = goal&.id || current_project&.root_goal&.id %>
 <% plan_id = plan&.id || (current_project&.parent&.plan? ? current_project.parent_id : current_project&.ancestor_chain&.reverse&.find(&:plan?)&.id) %>
-<%# Practice categories = leaf projects under the Path, or under a branch when focused inside one. %>
+<%# Scope = Path, or a branch camp whose children are Practice Categories. %>
 <% category_scope =
-     if current_project&.project? && !current_project.branch_checkpoint? && current_project.parent&.project?
-       current_project.parent
+     if focus&.day? && focus.parent&.project?
+       parent = focus.parent
+       parent.parent&.project? ? parent.parent : plan
+     elsif focus&.project? && focus.branch_checkpoint?
+       focus
+     elsif focus&.project? && focus.parent&.project?
+       focus.parent
+     elsif focus&.project? && focus.parent&.plan?
+       plan
      elsif current_project&.branch_checkpoint?
-       nil
+       current_project
+     elsif current_project&.project? && !current_project.branch_checkpoint? && current_project.parent&.project?
+       current_project.parent
      else
        plan
      end %>
 <% categories = if category_scope
-                  category_scope.children.select(&:project?).reject(&:branch_checkpoint?).sort_by { |c| [ c.position.to_i, c.id ] }
+                  category_scope.children.select(&:project?).sort_by { |c| [ c.position.to_i, c.id ] }
                 else
                   []
                 end %>
-<% use_category_focus = categories.any? %>
-<%# Enter Level B when focus is a Practice Category (or day inside one). Path focus stays on Level A. %>
+<% leaf_categories = categories.reject(&:branch_checkpoint?) %>
+<%# Empty branch still gets Level A + add camp; empty Path stays on the quiet empty sheet. %>
+<% use_category_focus = category_scope.present? && (categories.any? || category_scope.project?) %>
+<%# Enter Level B only for leaf camps (or a day inside one). Path/branch focus stays on Level A. %>
 <% wanted_category_id =
      if use_category_focus && focus && !focus.plan?
-       if focus.day? && categories.any? { |c| c.id == focus.parent_id }
+       if focus.day? && leaf_categories.any? { |c| c.id == focus.parent_id }
          focus.parent_id
-       elsif focus.project? && !focus.branch_checkpoint? && categories.any? { |c| c.id == focus.id }
+       elsif focus.project? && !focus.branch_checkpoint? && leaf_categories.any? { |c| c.id == focus.id }
          focus.id
        end
      end %>
 <% initial_category_id = wanted_category_id %>
 <% category_entered = initial_category_id.present? %>
+<% scope_title = category_scope&.title || plan&.title %>
+<% branch_level_a = category_scope&.project? && !category_entered %>
+<% crumb_focus_id = category_entered ? category_scope&.id : plan&.id %>
+<% crumb_label = category_entered ? scope_title : plan&.title %>
+<% show_crumb = category_entered || branch_level_a %>
 
 <% if use_category_focus %>
   <section class="lp-rpg-sheet is-dominant is-planning <%= category_entered ? 'is-category-focus' : 'is-categories' %>"
@@ -46,16 +59,25 @@
            <% if category_entered %>data-focus-category-id="<%= initial_category_id %>"<% end %>>
     <header class="lp-rpg-current-path is-expedition">
       <p class="lp-rpg-current-path__kicker is-quiet"><%= t("strategy.rpg.current_path") %></p>
-      <% if plan %>
-        <h2 class="lp-rpg-current-path__plan"
-            data-category-focus-target="pathTitle"
-            <%= "hidden" if category_entered %>><%= plan.title %></h2>
+      <% if branch_level_a && plan %>
         <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: plan.id),
-              class: "lp-rpg-current-path__crumb",
-              data: { turbo: true, category_focus_target: "crumb" },
-              **(category_entered ? {} : { hidden: true }) do %>
+              class: "lp-rpg-current-path__crumb is-up",
+              data: { turbo: true } do %>
           <span class="lp-rpg-current-path__crumb-mark" aria-hidden="true">←</span>
           <span><%= plan.title %></span>
+        <% end %>
+      <% end %>
+      <% if scope_title.present? %>
+        <h2 class="lp-rpg-current-path__plan"
+            data-category-focus-target="pathTitle"
+            <%= "hidden" if category_entered %>><%= scope_title %></h2>
+      <% end %>
+      <% if category_entered && category_scope && crumb_label.present? %>
+        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: category_scope.id),
+              class: "lp-rpg-current-path__crumb",
+              data: { turbo: true, category_focus_target: "crumb" } do %>
+          <span class="lp-rpg-current-path__crumb-mark" aria-hidden="true">←</span>
+          <span><%= crumb_label %></span>
         <% end %>
       <% end %>
     </header>
@@ -66,29 +88,102 @@
          <%= "hidden" if category_entered %>
          aria-hidden="<%= category_entered ? 'true' : 'false' %>">
       <% categories.each do |cat| %>
-        <% days = cat.children.select(&:day?).reject(&:completed?) %>
-        <% planned = days.count { |d| d.scheduled_on == Date.current } %>
-        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: cat.id),
-              class: "lp-rpg-practice-cat",
-              data: { turbo: true, category_id: cat.id } do %>
-          <span class="lp-rpg-practice-cat__title"><%= cat.title %></span>
-          <span class="lp-rpg-practice-cat__count"><%= days.size %></span>
-          <span class="lp-rpg-practice-cat__meta">
-            <%= t("strategy.rpg.practice_planned_short", selected: planned, total: days.size) %>
-          </span>
+        <% if cat.branch_checkpoint? %>
+          <% camp_count = cat.children.count(&:project?) %>
+          <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
+                class: "lp-rpg-practice-cat is-branch",
+                data: { turbo: true, category_id: cat.id } do %>
+            <span class="lp-rpg-practice-cat__title"><%= cat.title %></span>
+            <span class="lp-rpg-practice-cat__count"><%= camp_count %></span>
+            <span class="lp-rpg-practice-cat__meta">
+              <%= t("strategy.rpg.camps_count", count: camp_count) %>
+            </span>
+          <% end %>
+        <% else %>
+          <% days = cat.children.select(&:day?).reject(&:completed?) %>
+          <% planned = days.count { |d| d.scheduled_on == Date.current } %>
+          <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
+                class: "lp-rpg-practice-cat",
+                data: { turbo: true, category_id: cat.id } do %>
+            <span class="lp-rpg-practice-cat__title"><%= cat.title %></span>
+            <span class="lp-rpg-practice-cat__count"><%= days.size %></span>
+            <span class="lp-rpg-practice-cat__meta">
+              <%= t("strategy.rpg.practice_planned_short", selected: planned, total: days.size) %>
+            </span>
+          <% end %>
         <% end %>
+      <% end %>
+
+      <% if category_scope&.project? %>
+        <details class="lp-rpg-node__add is-practice-add is-scope-add"
+                 id="rpg-add-camp-<%= category_scope.id %>"
+                 data-controller="floating-create"
+                 data-action="toggle->floating-create#onToggle">
+          <summary class="lp-rpg-practice-add"
+                   aria-label="<%= t('strategy.rpg.add_checkpoint') %>">
+            <span aria-hidden="true">+</span>
+            <span><%= t("strategy.rpg.add_checkpoint") %></span>
+          </summary>
+          <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+            <button type="button"
+                    class="lp-rpg-float-create__backdrop"
+                    data-action="click->floating-create#close"
+                    tabindex="-1"
+                    aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+            <div class="lp-rpg-float-create__card"
+                 data-floating-create-target="card"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="rpg-add-camp-title-<%= category_scope.id %>">
+              <header class="lp-rpg-float-create__head">
+                <p class="lp-rpg-float-create__kicker"><%= category_scope.title %></p>
+                <h2 class="lp-rpg-float-create__heading" id="rpg-add-camp-title-<%= category_scope.id %>">
+                  <%= t("strategy.rpg.create_checkpoint") %>
+                </h2>
+              </header>
+              <%= form_with url: strategy_goals_path,
+                    method: :post,
+                    class: "lp-rpg-float-create__form",
+                    data: { turbo: false } do %>
+                <%= hidden_field_tag :life_area_id, area.id %>
+                <%= hidden_field_tag :life_journey_id, @journey.id %>
+                <%= hidden_field_tag :horizon, "project" %>
+                <%= hidden_field_tag :parent_id, category_scope.id %>
+                <label class="lp-rpg-float-create__field">
+                  <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.checkpoint_name") %></span>
+                  <%= text_field_tag :title, nil,
+                        required: true,
+                        maxlength: 120,
+                        class: "lp-rpg-float-create__input",
+                        placeholder: t("strategy.rpg.split_checkpoint_placeholder"),
+                        autocomplete: "off",
+                        data: { floating_create_target: "title" } %>
+                </label>
+                <div class="lp-rpg-float-create__actions">
+                  <button type="button"
+                          class="lp-rpg-float-create__btn is-cancel"
+                          data-action="click->floating-create#close">
+                    <%= t("strategy.rpg.cancel") %>
+                  </button>
+                  <%= submit_tag t("strategy.rpg.create_checkpoint"),
+                        class: "lp-rpg-float-create__btn is-create" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </details>
       <% end %>
     </div>
 
-    <% categories.each do |cat| %>
+    <% leaf_categories.each do |cat| %>
       <% days = cat.children.select(&:day?).sort_by { |b| [ b.completed? ? 1 : 0, b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } %>
       <% open_days = days.reject(&:completed?) %>
       <% planned = open_days.count { |d| d.scheduled_on == Date.current } %>
       <% total = open_days.size %>
       <% entered = category_entered && cat.id == initial_category_id %>
-      <% cat_idx = categories.index { |c| c.id == cat.id } %>
-      <% prev_cat = cat_idx&.positive? ? categories[cat_idx - 1] : nil %>
-      <% next_cat = cat_idx && cat_idx < categories.size - 1 ? categories[cat_idx + 1] : nil %>
+      <% cat_idx = leaf_categories.index { |c| c.id == cat.id } %>
+      <% prev_cat = cat_idx&.positive? ? leaf_categories[cat_idx - 1] : nil %>
+      <% next_cat = cat_idx && cat_idx < leaf_categories.size - 1 ? leaf_categories[cat_idx + 1] : nil %>
       <div class="lp-rpg-practice-focus<%= ' is-entered' if entered %>"
            data-category-focus-target="panel"
            data-category-id="<%= cat.id %>"
@@ -99,7 +194,7 @@
                role="navigation"
                aria-label="<%= t('strategy.rpg.camp_switcher') %>">
             <% if prev_cat %>
-              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: prev_cat.id),
+              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: prev_cat.id),
                     class: "lp-rpg-practice-focus__nav is-prev",
                     data: { turbo: true },
                     aria: { label: t("strategy.rpg.trail.prev_camp", title: prev_cat.title) } do %>
@@ -108,7 +203,7 @@
             <% end %>
             <h3 class="lp-rpg-practice-focus__title"><%= cat.title %></h3>
             <% if next_cat %>
-              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan.id, focus_id: next_cat.id),
+              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: next_cat.id),
                     class: "lp-rpg-practice-focus__nav is-next",
                     data: { turbo: true },
                     aria: { label: t("strategy.rpg.trail.next_camp", title: next_cat.title) } do %>
@@ -221,73 +316,8 @@
     <% end %>
   </section>
 
-<% elsif current_project %>
-  <%# Branch camps or empty path fallback %>
-  <section class="lp-rpg-sheet is-dominant is-planning <%= 'is-branch' if is_branch %>"
-           aria-label="<%= t('strategy.rpg.sheet.label') %>">
-    <header class="lp-rpg-current-path">
-      <p class="lp-rpg-current-path__kicker is-quiet"><%= t("strategy.rpg.current_path") %></p>
-      <% if plan %>
-        <h2 class="lp-rpg-current-path__plan"><%= plan.title %></h2>
-      <% end %>
-      <p class="lp-rpg-current-path__here">
-        <span class="lp-rpg-current-path__pin" aria-hidden="true">⚑</span>
-        <span><%= t("strategy.rpg.trail.you_are_here") %> · <%= current_project.title %></span>
-      </p>
-    </header>
-
-    <% if show_camps %>
-      <div class="lp-rpg-sheet-rail is-camps"
-           data-controller="strategy-plan-rail"
-           data-strategy-plan-rail-scope-value="sheet-camps-<%= current_project.id %>"
-           data-strategy-plan-rail-goal-value="<%= goal_id.to_i %>"
-           data-strategy-plan-rail-journey-value="<%= @journey.id %>">
-        <p class="lp-rpg-sheet-rail__label is-quiet">
-          <span class="lp-rpg-sheet-rail__flag" aria-hidden="true">⚑</span>
-          <%= t("strategy.rpg.sheet.camps") %>
-        </p>
-        <ul class="lp-rpg-sheet-rail__track"
-            data-strategy-plan-rail-target="track"
-            aria-label="<%= t('strategy.rpg.sheet.camps') %>">
-          <% child_checkpoints.each do |child| %>
-            <% focused = params[:focus_id].to_i == child.id %>
-            <li class="lp-rpg-sheet-rail__item <%= 'is-focus' if focused %>">
-              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: child.id),
-                    class: "lp-rpg-camp-card #{'is-done' if child.completed?} #{'is-focus' if focused}",
-                    data: { turbo: true } do %>
-                <span class="lp-rpg-camp-card__icon" aria-hidden="true">⛰</span>
-                <span class="lp-rpg-camp-card__title"><%= child.title %></span>
-              <% end %>
-            </li>
-          <% end %>
-          <li class="lp-rpg-sheet-rail__item is-add">
-            <details class="lp-rpg-add is-ghost is-checkpoint" id="rpg-sheet-add-camp">
-              <summary aria-label="<%= t('strategy.rpg.add_child_checkpoint') %>">
-                <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
-              </summary>
-              <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
-                <%= hidden_field_tag :life_area_id, area.id %>
-                <%= hidden_field_tag :life_journey_id, @journey.id %>
-                <%= hidden_field_tag :horizon, "project" %>
-                <%= hidden_field_tag :parent_id, current_project.id %>
-                <%= text_field_tag :title, nil,
-                      required: true,
-                      maxlength: 120,
-                      class: "lp-rpg-input",
-                      placeholder: t("strategy.rpg.split_checkpoint_placeholder"),
-                      autocomplete: "off" %>
-                <%= submit_tag t("strategy.rpg.split_checkpoint_cta"), class: "lp-rpg-btn is-small" %>
-              <% end %>
-            </details>
-          </li>
-        </ul>
-      </div>
-    <% else %>
-      <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.trail.need_checkpoint") %></p>
-    <% end %>
-  </section>
-<% elsif plan %>
-  <section class="lp-rpg-sheet is-quiet">
+<% elsif current_project || plan %>
+  <section class="lp-rpg-sheet is-quiet is-planning">
     <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.trail.need_checkpoint") %></p>
   </section>
 <% end %>
