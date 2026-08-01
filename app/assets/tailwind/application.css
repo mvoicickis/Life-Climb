@@ -14896,6 +14896,9 @@ button.lp-strategy-overflow {
 
 /* === Mountain Focus Phase 1 === */
 .lp-rpg.is-focus-phase {
+  --lp-rpg-gutter: 0.85rem;
+  --lp-rpg-content: min(40rem, 100%);
+  --lp-rpg-gap: 0.5rem;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -14929,12 +14932,19 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   z-index: 5;
   flex-shrink: 0;
   min-width: 0;
+  max-width: var(--lp-rpg-content, min(40rem, 100%));
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--lp-rpg-gutter, 0.85rem);
+  box-sizing: border-box;
 }
 .lp-rpg__chrome-top {
-  padding-bottom: 0.15rem;
+  padding-bottom: var(--lp-rpg-gap, 0.5rem);
+  display: grid;
+  gap: var(--lp-rpg-gap, 0.5rem);
 }
 .lp-rpg__chrome-bottom {
-  padding-top: 0.15rem;
+  padding-top: var(--lp-rpg-gap, 0.5rem);
 }
 .lp-rpg__stage {
   position: relative;
@@ -14942,8 +14952,13 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   min-height: 0;
   display: grid;
   grid-template-rows: minmax(0, 0.32fr) minmax(0, 0.68fr);
-  gap: 0.35rem;
+  gap: var(--lp-rpg-gap, 0.5rem);
   overflow: hidden;
+  max-width: var(--lp-rpg-content, min(40rem, 100%));
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--lp-rpg-gutter, 0.85rem);
+  box-sizing: border-box;
 }
 .lp-rpg__stage-trail {
   min-height: 0;
@@ -14957,7 +14972,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 0 0.65rem;
+  padding: 0;
   box-sizing: border-box;
 }
 .lp-rpg__stage-battle > .lp-rpg-sheet {
@@ -15591,7 +15606,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     margin-inline: 0.85rem;
   }
   .lp-rpg__stage-battle > .lp-rpg-sheet {
-    margin-inline: 0.65rem;
+    margin-inline: 0;
     padding-bottom: 0.65rem;
   }
   .lp-rpg-destination-carousel__title {
@@ -16156,25 +16171,69 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overscroll-behavior: contain;
   max-height: 40%;
 }
-.lp-rpg.is-focus-phase .lp-rpg-stats {
-  margin: 0;
-  padding: 0.35rem 0.65rem 0.45rem;
-  background: rgba(11, 15, 20, 0.55);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
+/* —— Focus polish: one column, one rhythm, less noise —— */
 .lp-rpg.is-focus-phase .lp-rpg-hud {
-  padding-top: 0.35rem;
-  padding-bottom: 0.15rem;
+  padding: 0.35rem 0 0;
+  max-width: none;
+  width: 100%;
+}
+.lp-rpg.is-focus-phase .lp-rpg-hud__chips {
+  display: none; /* XP / streak live in the bottom stats strip only */
+}
+.lp-rpg.is-focus-phase .lp-rpg-destination {
+  max-width: none;
 }
 .lp-rpg.is-focus-phase .lp-rpg-paths {
-  padding-bottom: 0.25rem;
+  padding: 0;
+  max-width: none;
+  width: 100%;
+}
+.lp-rpg.is-focus-phase .lp-rpg-plan-rail {
+  padding: 0;
+  max-width: none;
+  width: 100%;
+}
+.lp-rpg.is-focus-phase .lp-rpg-paths__label,
+.lp-rpg.is-focus-phase .lp-rpg-sheet-rail__label.is-quiet {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: rgba(148, 163, 184, 0.72);
+  text-transform: uppercase;
+}
+.lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-sheet__kicker {
+  display: none; /* aria-label already names the sheet */
+}
+.lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant {
+  /* Horizontal inset comes from the shared stage gutter — pad vertically only */
+  padding: 0.55rem 0 0.5rem;
+  margin-inline: 0;
+}
+.lp-rpg.is-focus-phase .lp-rpg-trail {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+.lp-rpg.is-focus-phase .lp-rpg-trail.is-windowed .lp-rpg-explorer {
+  display: none; /* HUD hero already carries identity */
+}
+.lp-rpg.is-focus-phase .lp-rpg-stats {
+  margin: 0;
+  padding: 0.35rem 0 0.45rem;
+  max-width: none;
+  width: 100%;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.lp-rpg.is-focus-phase .lp-rpg-stats.is-compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 /* Tall path-focus actions stay out of the pinned chrome once camps exist. */
 .lp-rpg.is-focus-phase .lp-rpg__chrome-top .lp-rpg-path-focus:not(.is-empty-plan) {
   display: none;
 }
 .lp-rpg.is-focus-phase .lp-rpg__chrome-top .lp-rpg-path-focus.is-empty-plan {
-  margin-top: 0.25rem;
+  margin-top: 0;
   padding: 0.55rem 0.7rem 0.65rem;
   gap: 0.4rem;
 }
@@ -16195,14 +16254,13 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 /* Short phones: compact chrome so stage (trail + battle) stays legible */
 @media (max-height: 600px) {
   .lp-rpg.is-focus-phase {
+    --lp-rpg-gutter: 0.7rem;
+    --lp-rpg-gap: 0.4rem;
     grid-template-rows: auto minmax(16rem, 1fr) auto;
     padding-bottom: calc(4.35rem + env(safe-area-inset-bottom));
   }
   .lp-rpg__stage {
     grid-template-rows: minmax(5.25rem, 0.34fr) minmax(10rem, 0.66fr);
-  }
-  .lp-rpg.is-focus-phase .lp-rpg-hud__chips {
-    display: none;
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek,
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__nav {
@@ -16217,25 +16275,20 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   .lp-rpg.is-focus-phase .lp-rpg-destination-dots {
     margin: 0.1rem 0 0;
   }
-  .lp-rpg.is-focus-phase .lp-rpg-paths {
-    padding-top: 0;
-    padding-bottom: 0.1rem;
-  }
   .lp-rpg.is-focus-phase .lp-rpg-paths__label {
     display: none;
   }
   .lp-rpg.is-focus-phase .lp-rpg-plan-rail {
     --lp-path-card: 6.4rem;
-    padding-bottom: 0.1rem;
   }
   .lp-rpg.is-focus-phase .lp-rpg-stats {
-    padding: 0.2rem 0.5rem 0.3rem;
+    padding: 0.2rem 0 0.3rem;
   }
   .lp-rpg-trail.is-windowed .lp-rpg-node.is-slot-focus .lp-rpg-node__label strong {
     font-size: 0.9rem;
   }
-  .lp-rpg-sheet.is-dominant {
-    padding: 0.45rem 0.7rem 0.5rem;
+  .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant {
+    padding: 0.45rem 0 0.4rem;
   }
   .lp-rpg-sheet.is-dominant .lp-rpg-sheet__title {
     font-size: 0.98rem;
