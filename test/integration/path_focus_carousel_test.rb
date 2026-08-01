@@ -44,7 +44,7 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg-paths[data-controller='strategy-plan-rail']"
-    assert_select ".lp-rpg-paths__label", text: /PATHS/i
+    assert_select ".lp-rpg-paths__label", count: 0
     assert_select ".lp-rpg-path.is-focus", text: /Find a job/i
     assert_select ".lp-rpg-path-focus", count: 1
     assert_select ".lp-rpg-path-focus__title", text: /Find a job/i
