@@ -1,9 +1,7 @@
 module ApplicationHelper
+  # Stage label (e.g. "Camp set") lives on the mountain caption only —
+  # never echo mountain[:label] here or the hero shows it twice.
   def dash_momentum_line(percent, mountain: nil)
-    if mountain.present? && mountain[:label].present?
-      return mountain[:label]
-    end
-
     p = percent.to_i
     key =
       if p >= 100 then "summit"

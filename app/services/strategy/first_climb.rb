@@ -76,6 +76,12 @@ module Strategy
     def mark_route_done!
       flags = (@journey.setup_flags.presence || {}).stringify_keys.merge(Onboarding::Run::ROUTE_FLAG => "done")
       @journey.update!(setup_flags: flags)
+
+      # Retire the scaffolding "Plan Your Route" mission now — otherwise Today
+      # still lists it beside the real first-climb action (retire_plan_route_if_needed!
+      # only runs while the route flag is still "pending").
+      mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first
+      mission&.update!(status: "replaced")
     end
   end
 end
