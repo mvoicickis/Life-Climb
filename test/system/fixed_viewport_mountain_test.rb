@@ -98,15 +98,13 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const practice = document.querySelector('.lp-rpg-practice-focus.is-entered .lp-rpg-practice-row');
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
-        const stats = document.querySelector('.lp-rpg__chrome-bottom');
+        const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
         const visible = Array.from(document.querySelectorAll('.lp-rpg-section-card')).length;
         const rootStyle = root ? getComputedStyle(root) : null;
         const htmlStyle = getComputedStyle(document.documentElement);
         const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
         const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
-        const statsPad = stats ? getComputedStyle(stats).paddingLeft : '';
         const practiceRect = practice ? practice.getBoundingClientRect() : null;
-        const statsR = stats ? stats.getBoundingClientRect() : null;
         window.scrollTo(0, 200);
         const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
         window.scrollTo(0, 0);
@@ -117,11 +115,10 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           htmlOverflow: htmlStyle.overflowY || htmlStyle.overflow,
           chromePad,
           stagePad,
-          statsPad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
           practiceVisible: !!(practiceRect && practiceRect.height > 8 && practiceRect.top < window.innerHeight && practiceRect.bottom > 0),
-          statsInView: !!(statsR && statsR.top < window.innerHeight && statsR.bottom > 0),
+          statsPresent: !!stats,
           pageScrolled: scrolled > 1
         };
       })()
@@ -135,7 +132,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
     assert_operator metrics["battleH"], :>, metrics["trailH"]
     assert_equal true, metrics["practiceVisible"], "Today's Practice row should stay in viewport: #{metrics.inspect}"
-    assert_equal true, metrics["statsInView"], "stats strip should stay in viewport: #{metrics.inspect}"
+    assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["statsPad"], "chrome/stats gutters should match: #{metrics.inspect}"
 

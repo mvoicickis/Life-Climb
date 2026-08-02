@@ -47,7 +47,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage-sections"
     assert_select ".lp-rpg-sections"
     assert_select ".lp-rpg__stage-battle"
-    assert_select ".lp-rpg__chrome-bottom"
+    assert_select ".lp-rpg__chrome-bottom", count: 0
+    assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-rpg-sheet.is-planning"
     assert_select ".lp-rpg-breadcrumbs"
     assert_select "[data-controller='category-focus']"
