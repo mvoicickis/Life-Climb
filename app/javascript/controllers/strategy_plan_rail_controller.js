@@ -61,7 +61,7 @@ export default class extends Controller {
   }
 
   rememberScrollFromClick(event) {
-    if (event.target.closest("a.lp-rpg-path")) this.persistScroll()
+    if (event.target.closest("a.lp-rpg-path, a.lp-rpg-section-card")) this.persistScroll()
   }
 
   restoreScroll() {
@@ -139,7 +139,9 @@ export default class extends Controller {
   ensureFocusedVisible() {
     if (!this.hasTrackTarget) return
     const focused =
+      this.trackTarget.querySelector(".lp-rpg-section-card.is-selected") ||
       this.trackTarget.querySelector(".lp-rpg-path.is-focus") ||
+      this.trackTarget.querySelector("li.is-selected") ||
       this.trackTarget.querySelector("li.is-focus")
     const item = focused?.closest("li") || focused
     if (!item) return
@@ -212,6 +214,7 @@ export default class extends Controller {
   viewProgress(event) {
     event.preventDefault()
     const climb =
+      document.querySelector(".lp-rpg-sections") ||
       document.querySelector(".lp-rpg-climb") ||
       document.querySelector(".lp-rpg-world.is-trail")
     climb?.scrollIntoView({ behavior: "smooth", block: "start" })

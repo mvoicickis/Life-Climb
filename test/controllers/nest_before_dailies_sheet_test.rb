@@ -35,8 +35,8 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
     assert_select ".lp-rpg-sheet.is-categories"
-    assert_select ".lp-rpg-current-path__plan", text: /Learn German/
-    assert_select ".lp-rpg-current-path__crumb.is-up", text: /Find a job/
+    assert_select ".lp-rpg-section-head__title", text: /Learn German/
+    assert_select ".lp-rpg-breadcrumbs__item", text: /Find a job/
     assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
     assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
@@ -53,13 +53,15 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Vocabulary/
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-add", text: /Add Practice/i
-    assert_select ".lp-rpg-current-path__crumb", text: /Learn German/
+    assert_select ".lp-rpg-breadcrumbs__item", text: /Learn German/
   end
 
-  test "Path Level A still lists Learn German" do
+  test "Path focus shows Learn German in Project Sections carousel" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-cats:not(.is-exited) .lp-rpg-practice-cat__title", text: /Learn German/
+    assert_select ".lp-rpg-section-card", text: /Learn German/
+    assert_select ".lp-rpg-section-head__title", text: /Learn German/
+    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
   end
 

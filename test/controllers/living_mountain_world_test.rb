@@ -40,7 +40,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-world"
+    assert_select ".lp-rpg-sections"
     assert_select ".lp-rpg-path", text: /Main trail/i
     assert_select "[data-controller*=strategy-rpg]"
   end
@@ -63,12 +63,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg-path", minimum: 1
-    assert_select ".lp-rpg-trail"
-    assert_select ".lp-rpg-node", text: /First climb/
+    assert_select ".lp-rpg-sections"
+    assert_select ".lp-rpg-section-card", text: /First climb/
     assert_select ".lp-rpg-sheet"
   end
 
-  test "focusing a plan shows trail checkpoints and battle sheet" do
+  test "focusing a plan shows section carousel and nested camps for the active section" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -87,11 +87,11 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-node.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-head__title", text: /Resume/
     assert_select ".lp-rpg-practice-cats:not(.is-exited)", 1
-    assert_select ".lp-rpg-practice-cat__title", text: /Resume/
+    assert_select ".lp-rpg-practice-cat__title", text: /Steps/
     assert_select ".lp-rpg-practice-focus.is-entered", 0
-    assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
   test "focusing a project shows battles in the sheet" do
@@ -111,13 +111,13 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-node.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Steps/
     assert_select ".lp-rpg-practice-row__title", text: /Update CV/
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i
   end
 
-  test "locked trail camps stay battle-locked but can be planning-focused" do
+  test "locked sections stay visible in the carousel but are not drillable links" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -136,16 +136,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: first.id)
     assert_response :success
-    # Fight current stays Resume; planning focus opens Interviews (split-first).
-    assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-node.is-planning-focus.is-locked", text: /Interviews/
-    assert_select ".lp-rpg-node.is-slot-focus", text: /Interviews/
-    assert_select ".lp-rpg-current-path__plan", text: /Interviews/
-    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_match(/Planning here/i, response.body)
+    assert_select "a.lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-card.is-locked", text: /Interviews/
+    assert_select "a.lp-rpg-section-card", text: /Interviews/, count: 0
+    assert_select ".lp-rpg-section-head__title", text: /Resume/
   end
 
   test "goal_id and plan_id switch the climb" do
@@ -179,7 +175,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan_b.id)
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Side path/
-    assert_select ".lp-rpg-node", text: /Launch camp/
+    assert_select ".lp-rpg-section-card", text: /Launch camp/
     assert_select ".lp-rpg-destination-carousel__title", text: /#{@goal.title}/
 
     get life_journey_path(@journey, goal_id: other_goal.id)

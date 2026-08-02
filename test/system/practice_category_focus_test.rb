@@ -73,12 +73,12 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__check", minimum: 1, visible: :all, wait: 3
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Flashcards|Learn 15/i, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Add Practice/i, visible: :all
-    assert_selector ".lp-rpg-current-path__crumb", text: /Language skills/i
+    assert_selector ".lp-rpg-breadcrumbs__item", text: /Language skills/i
     assert_no_selector ".lp-rpg-practice-cats:not([hidden]) .lp-rpg-practice-cat__title", text: /Grammar/i
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
-    find(".lp-rpg-current-path__crumb", text: /Language skills/i).click
+    find("a.lp-rpg-breadcrumbs__item", text: /Language skills/i).click
     assert_selector ".lp-rpg-practice-cats", visible: true, wait: 3
     assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
