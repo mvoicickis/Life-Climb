@@ -81,7 +81,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_no_selector ".lp-rpg-section-head"
-    assert_selector ".lp-rpg-section-card", text: /MVP path/i, visible: :all
+    assert_selector ".lp-rpg-section-card", text: /Daily battles/i, visible: :all
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
