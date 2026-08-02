@@ -205,7 +205,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card.is-current", text: /Project One/i
     assert_select ".lp-rpg-section-card", text: /Project Two/i
     assert_select ".lp-rpg-practice-row__title", text: /Battle One/i
-    assert_select ".lp-rpg-stats"
+    assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"

@@ -78,13 +78,6 @@
         </div>
       </div>
     </div>
-
-    <div class="lp-rpg__chrome-bottom">
-      <%= render "life_journeys/rpg_stats",
-            mountain: mountain,
-            alive: alive,
-            streak: streak %>
-    </div>
   <% end %>
 
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
