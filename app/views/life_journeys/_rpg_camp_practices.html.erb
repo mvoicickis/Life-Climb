@@ -69,13 +69,12 @@
                         <% if battle.repeat_daily? %>
                           <em class="lp-rpg-practice-folder__badge"><%= t("strategy.rpg.practice_repeat_badge") %></em>
                         <% end %>
-                        <span class="lp-rpg-practice-folder__xp" aria-label="<%= battle_xp %> XP">
-                          <span aria-hidden="true">⭐</span> +<%= battle_xp %> XP
-                        </span>
+                        <span class="lp-rpg-practice-folder__xp" aria-label="<%= battle_xp %> XP">+<%= battle_xp %> XP</span>
                       <% end %>
                     </span>
                     <% unless battle.completed? %>
                       <span class="lp-rpg-practice-folder__progress">
+                        <span class="lp-rpg-practice-folder__progress-check <%= 'is-done' if total_count.positive? && done_count == total_count %>" aria-hidden="true"></span>
                         <span class="lp-rpg-practice-folder__progress-label">
                           <%= t("strategy.rpg.objectives_progress", done: done_count, total: total_count) %>
                         </span>
@@ -89,6 +88,12 @@
                 </summary>
 
                 <div class="lp-rpg-practice-folder__body">
+                  <div class="lp-rpg-practice-folder__objectives-head">
+                    <p class="lp-rpg-practice-folder__objectives-label"><%= t("strategy.rpg.objectives_label") %></p>
+                    <p class="lp-rpg-practice-folder__objectives-count">
+                      <%= t("strategy.rpg.objectives_completed", done: done_count, total: total_count) %>
+                    </p>
+                  </div>
                   <% if tasks.any? %>
                     <ul class="lp-rpg-practice-tasks" aria-label="<%= t('strategy.rpg.objectives_label') %>">
                       <% tasks.each do |task| %>
@@ -105,6 +110,7 @@
                                      <%= "disabled" if battle.completed? %>
                                      onchange="this.form.requestSubmit()"
                                      aria-label="<%= task.title %>">
+                              <span class="lp-rpg-practice-task__box" aria-hidden="true"></span>
                               <span class="lp-rpg-practice-task__title"><%= task.title %></span>
                             </label>
                           <% end %>

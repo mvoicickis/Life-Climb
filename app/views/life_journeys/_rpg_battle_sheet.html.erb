@@ -70,7 +70,7 @@
       <% unless listing_path_level %>
         <div class="lp-rpg-camps__head">
           <p class="lp-rpg-camps__kicker"><%= t("strategy.rpg.quest_folders_label") %></p>
-          <% if category_scope&.project? %>
+          <% if category_scope&.project? && category_scope.split_eligible? %>
             <details class="lp-rpg-node__add is-practice-add is-scope-add is-camps-new"
                      id="rpg-add-camp-<%= category_scope.id %>"
                      data-controller="floating-create"
@@ -94,7 +94,7 @@
                   <header class="lp-rpg-float-create__head">
                     <p class="lp-rpg-float-create__kicker"><%= category_scope.title %></p>
                     <h2 class="lp-rpg-float-create__heading" id="rpg-add-camp-title-<%= category_scope.id %>">
-                      <%= t("strategy.rpg.create_checkpoint") %>
+                      <%= t("strategy.rpg.new_quest_folder") %>
                     </h2>
                   </header>
                   <%= form_with url: strategy_goals_path,
@@ -106,12 +106,12 @@
                     <%= hidden_field_tag :horizon, "project" %>
                     <%= hidden_field_tag :parent_id, category_scope.id %>
                     <label class="lp-rpg-float-create__field">
-                      <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.checkpoint_name") %></span>
+                      <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.quest_folder_name") %></span>
                       <%= text_field_tag :title, nil,
                             required: true,
                             maxlength: 120,
                             class: "lp-rpg-float-create__input",
-                            placeholder: t("strategy.rpg.split_checkpoint_placeholder"),
+                            placeholder: t("strategy.rpg.quest_folder_placeholder"),
                             autocomplete: "off",
                             data: { floating_create_target: "title" } %>
                     </label>
@@ -121,7 +121,7 @@
                               data-action="click->floating-create#close">
                         <%= t("strategy.rpg.cancel") %>
                       </button>
-                      <%= submit_tag t("strategy.rpg.create_checkpoint"),
+                      <%= submit_tag t("strategy.rpg.new_quest_folder"),
                             class: "lp-rpg-float-create__btn is-create" %>
                     </div>
                   <% end %>
@@ -138,10 +138,10 @@
         <p class="lp-rpg-practice-cats__hint"><%= t("strategy.rpg.pick_section_hint") %></p>
       <% end %>
 
-      <%# Legacy path-level camp with days directly — show practices inline (no Add Practice). %>
+      <%# Legacy path-level camp with days directly — Quest cards as the board surface. %>
       <% if !listing_path_level && categories.empty? && category_scope&.project? &&
             !category_scope.branch_checkpoint? && category_scope.children.any?(&:day?) %>
-        <div class="lp-rpg-camp-folder is-legacy-scope is-green" open data-category-id="<%= category_scope.id %>">
+        <div class="lp-rpg-camp-folder is-legacy-scope is-quest-board is-green" open data-category-id="<%= category_scope.id %>">
           <%= render "life_journeys/rpg_camp_practices",
                 cat: category_scope, accent: "green", area: area, battle_xp: battle_xp %>
         </div>
