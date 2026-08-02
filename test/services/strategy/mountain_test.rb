@@ -55,16 +55,18 @@ class StrategyMountainTest < ActiveSupport::TestCase
       title: "Write README", scheduled_on: Date.current, position: 0
     )
 
-    project.complete!
-    Strategy::SyncCompletion.call(project: project)
+    # Progress is nested-camp gated: completing a Path camp's leaf moves %;
+    # marking only the Path node done is not enough for summit.
+    project_leaf.complete!
+    Strategy::SyncCompletion.call(project: project_leaf)
 
     mountain = Strategy::Mountain.for(goal: goal.reload)
     assert_equal :flags, mountain[:stage]
     assert_equal 1, mountain[:flags]
     assert_operator mountain[:progress], :<, 100
 
-    other.complete!
-    Strategy::SyncCompletion.call(project: other)
+    other_leaf.complete!
+    Strategy::SyncCompletion.call(project: other_leaf)
     summit = Strategy::Mountain.for(goal: goal.reload)
     assert_equal :summit, summit[:stage]
     assert_equal 100, summit[:progress]
