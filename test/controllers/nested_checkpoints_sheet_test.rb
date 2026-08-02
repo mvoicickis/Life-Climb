@@ -39,14 +39,14 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_select ".lp-qs-new__btn", text: /New Quest/
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Prepare New Practice/i, count: 0
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-section-card", text: /Resume/
   end
 
-  test "nested leaf with day children shows Today's Practice without battle win" do
+  test "nested leaf with day children opens Quest Space detail without battle win" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -56,23 +56,20 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
+    battle.practice_tasks.create!(user: @user, title: "Rewrite summary", position: 0)
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
-    assert_select ".lp-rpg-camp-switch", count: 0
-    assert_select ".lp-rpg-camp-practices", 1
-    assert_select ".lp-rpg-practice-folder__title", text: /Update CV/
-    assert_select ".lp-rpg-practice-folder__xp", text: /XP/i
-    assert_select ".lp-rpg-practice-folder__plan-check[checked]", minimum: 1
-    assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
+    assert_select ".lp-qs-detail.is-open"
+    assert_select ".lp-qs-detail__title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
+    assert_select ".lp-qs-obj__text[value='Rewrite summary']"
+    assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select "form[action=?]", battle_win_path(battle), count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
-    assert_select ".lp-rpg-camps:not([hidden])", 1
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
   end
 
-  test "branch checkpoint sheet lists child camps as practice categories" do
+  test "branch checkpoint sheet lists child camps as quest cards" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -88,25 +85,24 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: parent.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet.is-categories"
+    assert_select ".lp-rpg-sheet.is-categories.is-quest-space"
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-section-card", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Landing page/
-    assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Payments/
-    assert_select ".lp-rpg-camps .lp-rpg-camp-row.is-leaf", minimum: 2
-    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_select ".lp-qs-card__name", text: /Landing page/
+    assert_select ".lp-qs-card__name", text: /Payments/
+    assert_select ".lp-qs-new__btn", text: /New Quest/
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-camp-folder[data-category-id='#{child.id}']"
+    assert_select "a.lp-qs-card[href*='focus_id=#{child.id}']"
 
     # Sections carousel stays plan-level only — nested child is not a section card
     assert_select ".lp-rpg-section-card", text: /Launch prep/
     assert_select ".lp-rpg-section-card", text: /Landing page/, count: 0
   end
 
-  test "focusing a nested child opens that camp folder under its section" do
+  test "focusing a nested child opens Quest Space detail under its section" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -115,20 +111,19 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Landing page", position: 0
     )
-    child.children.create!(
+    day = child.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Draft hero", scheduled_on: Date.current, position: 0
     )
+    day.practice_tasks.create!(user: @user, title: "Write headline", position: 0)
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: child.id)
     assert_response :success
     assert_select ".lp-rpg-section-card.is-selected", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{child.id}'] .lp-rpg-practice-cat__title", text: /Landing page/
-    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title", text: /Draft hero/
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Landing page/
+    assert_select ".lp-qs-obj__text[value='Write headline']"
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-rpg-section-card.is-selected", text: /Launch prep/
-    assert_select ".lp-rpg-camps:not([hidden])", 1
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
@@ -159,8 +154,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card.is-locked", text: /Launch prep/
     assert_select ".lp-rpg-section-card.is-current, .lp-rpg-section-card.is-selected", text: /Landing page/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Steps/
-    assert_select ".lp-rpg-camp-folder[open]", 0
+    assert_select ".lp-qs-card__name", text: /Steps/
+    assert_select ".lp-qs-detail.is-open", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 end

@@ -40,16 +40,14 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     end
     camps[0].complete!
     @leaf = practice_leaf_for!(camps[1])
-    @leaf.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Design battle card",
-      description: "Wire the planning card",
-      scheduled_on: Date.current, position: 0
+    host = Strategy::EnsureFolderQuest.call(folder: @leaf)
+    host.practice_tasks.create!(
+      user: @user, title: "Design battle card", position: 0
     )
     @current = @leaf
   end
 
-  test "short phone keeps Practice Category focus and Open in Today in viewport" do
+  test "short phone keeps Quest Space detail in the planning viewport" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -64,7 +62,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-first-climb-shell"
 
     assert_selector ".lp-rpg__stage.is-planning", visible: :all
-    assert_selector ".lp-rpg-sheet.is-planning", visible: :all
+    assert_selector ".lp-rpg-sheet.is-planning.is-quest-space", visible: :all
     assert_no_selector ".lp-rpg-breadcrumbs"
     assert_selector ".lp-rpg-section-card", minimum: 2, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
@@ -76,22 +74,21 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@leaf.id}']", wait: 5
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-cat__title", text: /Steps/i, visible: :all
-    assert_selector ".lp-rpg-practice-folder__title", text: /Design battle card/i, visible: :all, wait: 5
+    assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i, wait: 5
+    assert_selector ".lp-qs-obj__text[value='Design battle card']", visible: :all, wait: 5
     assert_no_selector ".lp-rpg-camp-switch"
-    assert_selector ".lp-rpg-camp-practices", visible: :all
+    assert_selector ".lp-qs-detail__add-input", visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_no_selector ".lp-rpg-section-head"
-    assert_selector ".lp-rpg-section-card", text: /MVP path/i, visible: :all
+    assert_selector ".lp-rpg-section-card", text: /Daily battles/i, visible: :all
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
 
-    assert_selector ".lp-rpg-camp-folder__cta", text: /Begin Today's Battles/i, visible: :all
-    assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
+    assert_no_selector ".lp-rpg-camp-folder__cta", text: /Begin Today's Battles/i
+    assert_no_selector ".lp-rpg-practice-add", text: /Prepare New Quest/i
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")
 
     metrics = page.evaluate_script(<<~JS)
@@ -99,10 +96,10 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-sections');
         const battle = document.querySelector('.lp-rpg__stage-battle');
-        const folder = document.querySelector('.lp-rpg-camp-folder[open]');
-        const practice = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-practice-folder');
-        const cta = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-camp-folder__cta');
-        practice?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        const detail = document.querySelector('.lp-qs-detail.is-open');
+        const objective = document.querySelector('.lp-qs-detail.is-open .lp-qs-obj');
+        const add = document.querySelector('.lp-qs-detail.is-open .lp-qs-detail__add-input');
+        objective?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
@@ -114,7 +111,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const htmlStyle = getComputedStyle(document.documentElement);
         const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
         const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
-        const practiceRect = practice ? practice.getBoundingClientRect() : null;
+        const objectiveRect = objective ? objective.getBoundingClientRect() : null;
+        const addRect = add ? add.getBoundingClientRect() : null;
         const battleRect = battle ? battle.getBoundingClientRect() : null;
         const inBattle = (rect) => !!(rect && battleRect &&
           rect.height > 8 &&
@@ -132,9 +130,9 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           stagePad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
-          folderOpen: !!folder,
-          practiceInBattle: inBattle(practiceRect),
-          ctaInBattle: inBattle(cta ? cta.getBoundingClientRect() : null),
+          detailOpen: !!detail,
+          objectiveInBattle: inBattle(objectiveRect),
+          addInBattle: inBattle(addRect),
           statsPresent: !!stats,
           pageScrolled: scrolled > 1
         };
@@ -148,9 +146,9 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
     assert_operator metrics["battleH"], :>, metrics["trailH"]
-    assert_equal true, metrics["folderOpen"], "focused camp folder should be open: #{metrics.inspect}"
-    assert_equal true, metrics["practiceInBattle"] || metrics["ctaInBattle"],
-                 "folder quests or Begin Today's Battles should stay in the planning stage: #{metrics.inspect}"
+    assert_equal true, metrics["detailOpen"], "quest detail should be open: #{metrics.inspect}"
+    assert_equal true, metrics["objectiveInBattle"] || metrics["addInBattle"],
+                 "quest objectives or sticky add should stay in the planning stage: #{metrics.inspect}"
     assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
 

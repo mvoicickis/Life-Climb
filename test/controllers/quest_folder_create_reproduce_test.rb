@@ -1,0 +1,63 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    sign_in_as @user
+    Onboarding::Run.call(
+      user: @user, area_key: "career", title: "Find a job",
+      ideal_scene: "Hired", current_reality: "Searching", next_win: "Interview",
+      today_mission: "Apply", closer_percent: 20, route_mission: true
+    )
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @journey = @user.reload.primary_focused_journey
+    @area = @journey.life_area
+    @goal = @user.strategy_goals.for_kind("goal").roots.first
+    @plan = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Find a job", position: 0
+    )
+    @camp = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Learn German", position: 0
+    )
+  end
+
+  test "New Quest form disables turbo" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_response :success
+    assert_select "#rpg-add-camp-#{@camp.id} form[action=?][data-turbo=false]", strategy_goals_path
+    assert_select ".lp-qs-new__btn", text: /New Quest/
+  end
+
+  test "HTML create nested quest opens Quest Space detail" do
+    assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id, life_journey_id: @journey.id,
+        parent_id: @camp.id, horizon: "project", title: "Vocabulary"
+      }
+    end
+    created = @camp.children.find_by!(title: "Vocabulary")
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
+    follow_redirect!
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/
+    assert_select ".lp-qs-detail__add-input"
+  end
+
+  test "turbo_stream create nested quest redirects so the sheet can refresh" do
+    assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
+      post strategy_goals_path,
+           params: {
+             life_area_id: @area.id, life_journey_id: @journey.id,
+             parent_id: @camp.id, horizon: "project", title: "Grammar"
+           },
+           as: :turbo_stream
+    end
+    created = @camp.children.find_by!(title: "Grammar")
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
+    follow_redirect!
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Grammar/
+  end
+end

@@ -94,9 +94,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: nested.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-practice-folder__title", text: /Learn 20 words/i
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i
     assert_select ".lp-rpg-section-card.is-current", text: /Learn German/i
-    assert_select ".lp-rpg-sheet"
+    assert_select ".lp-rpg-sheet.is-quest-space"
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_no_match(/Monthly Goals/i, response.body)
@@ -204,13 +204,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-section-card.is-current", text: /Project One/i
     assert_select ".lp-rpg-section-card", text: /Project Two/i
-    assert_select ".lp-rpg-practice-folder__title", text: /Battle One/i
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
     assert_select "form[action=?]", battle_win_path(battle), count: 0
-    assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
+    assert_select ".lp-rpg-camp-folder__cta", count: 0
   end
 
   test "focusing a plan lights that path and shows its section cards" do
@@ -282,11 +282,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-rpg-section-card", minimum: 3
-    assert_select ".lp-rpg-practice-folder__title", text: /Battle Focus/i
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_select "#strategy-camp-notebook", count: 0
   end
 
-  test "focus surface exposes quiet add path checkpoint and step" do
+  test "focus surface exposes quiet add path checkpoint and quest detail" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -305,8 +305,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Practice/i
-    assert_select ".lp-rpg-practice-folder__title", text: /Battle/
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
+    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end
 
@@ -500,7 +501,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
   end
 
-  test "creating a daily practice persists repeat and shows Every day badge" do
+  test "creating a daily practice persists repeat on the model" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -514,8 +515,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-repeat input[name='repeat'][value='none']"
-    assert_select ".lp-rpg-practice-repeat input[name='repeat'][value='daily']"
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
+    assert_select ".lp-qs-detail__add-input"
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
@@ -528,8 +529,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-practice-folder.is-daily .lp-rpg-practice-folder__badge", text: /Every day/i
-    assert_select ".lp-rpg-practice-folder__title", text: /Do lessons/i
+    # Quest Space surfaces objectives on the checklist host, not day-quest cards.
+    assert_select ".lp-qs-detail.is-open"
+    assert_select ".lp-rpg-practice-folder__title", count: 0
   end
 
   test "completing a daily practice rolls the template to tomorrow" do

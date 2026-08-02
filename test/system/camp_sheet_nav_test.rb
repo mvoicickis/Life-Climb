@@ -35,20 +35,18 @@ class CampSheetNavTest < ApplicationSystemTestCase
       horizon: "project", title: "Ship landing page", position: 1
     )
     @camp_a_leaf = practice_leaf_for!(@camp_a)
-    @camp_a_leaf.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Ask 5 friends for feedback",
-      scheduled_on: Date.current, position: 0
+    host_a = Strategy::EnsureFolderQuest.call(folder: @camp_a_leaf)
+    host_a.practice_tasks.create!(
+      user: @user, title: "Ask 5 friends for feedback", position: 0
     )
     @camp_b_leaf = practice_leaf_for!(@camp_b)
-    @camp_b_leaf.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Draft hero headline",
-      scheduled_on: Date.current, position: 0
+    host_b = Strategy::EnsureFolderQuest.call(folder: @camp_b_leaf)
+    host_b.practice_tasks.create!(
+      user: @user, title: "Draft hero headline", position: 0
     )
   end
 
-  test "section carousel and sheet switchers change focused camp practices" do
+  test "section carousel and quest cards change focused objectives" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -59,29 +57,26 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
     assert_selector ".lp-rpg-section-card.is-locked", text: /Ship landing page/i
     assert_no_selector "a.lp-rpg-section-card", text: /Ship landing page/i
-    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@camp_a_leaf.id}'] .lp-rpg-practice-cat__title", text: /Steps/i
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title",
-                    text: /Ask 5 friends for feedback/i, visible: :all
-    assert_no_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title",
-                       text: /Draft hero headline/i, visible: :all
+    assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
+    assert_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
+    assert_no_selector ".lp-qs-obj__text[value='Draft hero headline']", visible: :all
 
     # Unlock the next section, then switch via the carousel.
     @camp_a.complete!
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id)
     assert_selector ".lp-rpg-section-card.is-selected", text: /Ship landing page/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
-    find(".lp-rpg-practice-cat", text: /Steps/i).click
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title",
-                    text: /Draft hero headline/i, visible: :all, wait: 3
-    assert_no_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title",
-                       text: /Ask 5 friends for feedback/i, visible: :all
+    find(".lp-qs-card", text: /Steps/i).click
+    assert_selector ".lp-qs-detail.is-open .lp-qs-obj__text[value='Draft hero headline']",
+                    visible: :all, wait: 3
+    assert_no_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
 
     find("a.lp-rpg-section-card", text: /Get first 100 users/i, wait: 3).click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
     assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
-    find(".lp-rpg-practice-cat", text: /Steps/i).click
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title",
-                    text: /Ask 5 friends for feedback/i, visible: :all, wait: 3
+    find(".lp-qs-card", text: /Steps/i).click
+    assert_selector ".lp-qs-detail.is-open .lp-qs-obj__text[value='Ask 5 friends for feedback']",
+                    visible: :all, wait: 3
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/camp-sheet-nav.png")
@@ -103,7 +98,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-section-card", text: /Empty camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_selector ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_selector ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_selector ".lp-qs-new__btn", text: /New Quest/i
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
   end
 end
