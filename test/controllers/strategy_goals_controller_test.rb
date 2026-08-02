@@ -210,7 +210,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
     assert_select "form[action=?]", battle_win_path(battle), count: 0
-    assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-camp-folder__cta", text: /Open in Today/i
   end
 
   test "focusing a plan lights that path and shows its section cards" do

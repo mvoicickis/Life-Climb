@@ -51,8 +51,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-rpg-sheet.is-planning"
     assert_select ".lp-rpg-breadcrumbs"
-    assert_select "[data-controller='category-focus']"
-    assert_select ".lp-rpg-todays-practice"
+    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
+    assert_select ".lp-rpg-camp-practices.is-today"
     assert_select ".lp-rpg-context", count: 0
   end
 
@@ -117,12 +117,13 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 
-    assert_select "[data-controller='category-focus']", minimum: 1
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Steps/i
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Design battle card/i
-    assert_select ".lp-rpg-todays-practice__kicker", text: /Today's Practice/i
-    assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
-    assert_select ".lp-rpg-practice-focus__cta[href='#{dashboard_path}']"
+    assert_select ".lp-rpg-camps:not([hidden])", minimum: 1
+    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}'] .lp-rpg-practice-cat__title", text: /Steps/i
+    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title", text: /Design battle card/i
+    assert_select ".lp-rpg-camp-practices__kicker", text: /Today's Practice/i
+    assert_select ".lp-rpg-camp-practices__kicker", text: /All Practices/i
+    assert_select ".lp-rpg-camp-folder__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-camp-folder__cta[href='#{dashboard_path}']"
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i
     assert_select ".lp-rpg-breadcrumbs__item", text: /Daily battles/
     assert_select ".lp-rpg-section-card.is-selected", text: /Daily battles/

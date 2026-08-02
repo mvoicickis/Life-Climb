@@ -50,7 +50,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     )
   end
 
-  test "path lists categories; enter and exit via path crumb; toggle today's practice" do
+  test "path lists camps; expand folder for practices; toggle today's practice" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -62,34 +62,34 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-practice-cats", visible: true
     assert_selector ".lp-rpg-practice-cat__title", text: /Vocabulary/i
     assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
-    assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
+    assert_no_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-a.png")
 
     find(".lp-rpg-practice-cat", text: /Vocabulary/i).click
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Vocabulary/i, wait: 3
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-todays-practice__kicker", text: /Today's Practice/i, visible: :all
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__check", minimum: 1, visible: :all, wait: 3
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Flashcards|Learn 15/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 3
+    assert_selector ".lp-rpg-camp-practices.is-today .lp-rpg-camp-practices__kicker", text: /Today's Practice/i, visible: :all
+    assert_selector ".lp-rpg-camp-practices.is-all .lp-rpg-camp-practices__kicker", text: /All Practices/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__check", minimum: 1, visible: :all, wait: 3
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title", text: /Flashcards|Learn 15/i, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Add Practice/i, visible: :all
     assert_selector ".lp-rpg-breadcrumbs__item", text: /Language skills/i
-    assert_no_selector ".lp-rpg-practice-cats:not([hidden]) .lp-rpg-practice-cat__title", text: /Grammar/i
+    assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
-    find("a.lp-rpg-breadcrumbs__item", text: /Language skills/i).click
-    assert_selector ".lp-rpg-practice-cats", visible: true, wait: 3
+    find(".lp-rpg-practice-cat", text: /Vocabulary/i).click
+    assert_no_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 3
     assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
-    assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
-    assert_selector ".lp-rpg-practice-focus.is-entered", wait: 5
+    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 5
     assert_selector ".lp-rpg-practice-row.is-selected .lp-rpg-practice-row__check[checked]", visible: :all
     assert_selector ".lp-rpg-practice-row__check[aria-label='Flashcards']:not(:checked)", visible: :all
 
     page.execute_script(<<~JS)
-      const el = document.querySelector(".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__check[aria-label='Flashcards']");
+      const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-practice-row__check[aria-label='Flashcards']");
       el?.scrollIntoView({ block: "center" });
       el?.form?.requestSubmit();
     JS
@@ -101,7 +101,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     end
 
     page.execute_script(<<~JS)
-      const el = document.querySelector(".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__check[aria-label='Learn 15 new words']");
+      const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-practice-row__check[aria-label='Learn 15 new words']");
       el?.scrollIntoView({ block: "center" });
       el?.form?.requestSubmit();
     JS
@@ -121,10 +121,10 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
-    assert_selector ".lp-rpg-practice-focus.is-entered", wait: 5
+    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 5
 
     page.execute_script(<<~JS)
-      const trigger = document.querySelector(".lp-rpg-practice-focus.is-entered .lp-rpg-practice-add");
+      const trigger = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-practice-add");
       trigger?.scrollIntoView({ block: "center" });
       trigger?.click();
     JS

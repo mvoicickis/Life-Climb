@@ -1,0 +1,170 @@
+<%# Practices inside an expanded camp folder. locals: cat, accent, area, battle_xp %>
+<% cat = local_assigns.fetch(:cat) %>
+<% accent = local_assigns.fetch(:accent) %>
+<% area = local_assigns.fetch(:area) %>
+<% battle_xp = local_assigns.fetch(:battle_xp) %>
+<% days = cat.children.select(&:day?).sort_by { |d| [ d.completed? ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
+<% today_days = days.select { |d| !d.completed? && d.scheduled_on == Date.current } %>
+<% all_open = days.reject(&:completed?) %>
+<% all_done = days.select(&:completed?) %>
+
+<div class="lp-rpg-camp-folder__body is-<%= accent %>">
+  <section class="lp-rpg-camp-practices is-today" aria-label="<%= t('strategy.rpg.todays_practice') %>">
+    <p class="lp-rpg-camp-practices__kicker"><%= t("strategy.rpg.todays_practice") %></p>
+    <% if today_days.empty? %>
+      <p class="lp-rpg-camp-practices__empty"><%= t("strategy.rpg.practice_empty_hint") %></p>
+    <% else %>
+      <ul class="lp-rpg-todays-practice__list lp-rpg-camp-practices__list">
+        <% today_days.each do |battle| %>
+          <li class="lp-rpg-practice-row is-selected <%= 'is-daily' if battle.repeat_daily? %>">
+            <%= form_with url: strategy_goal_path(battle),
+                  method: :patch,
+                  class: "lp-rpg-practice-row__form",
+                  data: { turbo: true } do %>
+              <%= hidden_field_tag :scheduled_on, "later" %>
+              <label class="lp-rpg-practice-row__label">
+                <input type="checkbox"
+                       class="lp-rpg-practice-row__check"
+                       checked
+                       onchange="this.form.requestSubmit()"
+                       aria-label="<%= battle.title %>">
+                <span class="lp-rpg-practice-row__icon" aria-hidden="true">📄</span>
+                <span class="lp-rpg-practice-row__title">
+                  <%= battle.title %>
+                  <% if battle.repeat_daily? %>
+                    <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
+                  <% end %>
+                </span>
+                <span class="lp-rpg-practice-row__xp">+<%= battle_xp %> XP</span>
+              </label>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="lp-rpg-camp-practices is-all" aria-label="<%= t('strategy.rpg.all_practices') %>">
+    <p class="lp-rpg-camp-practices__kicker"><%= t("strategy.rpg.all_practices") %></p>
+    <% if days.empty? %>
+      <p class="lp-rpg-camp-practices__empty"><%= t("strategy.rpg.practice_empty") %></p>
+    <% else %>
+      <ul class="lp-rpg-todays-practice__list lp-rpg-camp-practices__list">
+        <% (all_open + all_done).each do |battle| %>
+          <% selected_today = !battle.completed? && battle.scheduled_on == Date.current %>
+          <li class="lp-rpg-practice-row <%= 'is-selected' if selected_today %> <%= 'is-daily' if battle.repeat_daily? %> <%= 'is-complete' if battle.completed? %>">
+            <% if battle.completed? %>
+              <div class="lp-rpg-practice-row__label is-static">
+                <span class="lp-rpg-camp-row__check is-done" aria-hidden="true"></span>
+                <span class="lp-rpg-practice-row__icon" aria-hidden="true">📄</span>
+                <span class="lp-rpg-practice-row__title"><%= battle.title %></span>
+                <span class="lp-rpg-camp-row__done"><%= t("strategy.rpg.camp_done_badge") %></span>
+              </div>
+            <% else %>
+              <%= form_with url: strategy_goal_path(battle),
+                    method: :patch,
+                    class: "lp-rpg-practice-row__form",
+                    data: { turbo: true } do %>
+                <%= hidden_field_tag :scheduled_on, selected_today ? "later" : Date.current %>
+                <label class="lp-rpg-practice-row__label">
+                  <input type="checkbox"
+                         class="lp-rpg-practice-row__check"
+                         <%= "checked" if selected_today %>
+                         onchange="this.form.requestSubmit()"
+                         aria-label="<%= battle.title %>">
+                  <span class="lp-rpg-practice-row__icon" aria-hidden="true">📄</span>
+                  <span class="lp-rpg-practice-row__title">
+                    <%= battle.title %>
+                    <% if battle.repeat_daily? %>
+                      <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
+                    <% end %>
+                  </span>
+                  <span class="lp-rpg-practice-row__xp">+<%= battle_xp %> XP</span>
+                </label>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+
+  <% if cat.nested_leaf_camp? %>
+    <details class="lp-rpg-node__add is-practice-add"
+             id="rpg-add-practice-<%= cat.id %>"
+             data-controller="floating-create"
+             data-action="toggle->floating-create#onToggle">
+      <summary class="lp-rpg-practice-add is-folder"
+               aria-label="<%= t('strategy.rpg.add_practice') %>">
+        <span aria-hidden="true">+</span>
+        <span><%= t("strategy.rpg.add_practice") %></span>
+      </summary>
+      <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+        <button type="button"
+                class="lp-rpg-float-create__backdrop"
+                data-action="click->floating-create#close"
+                tabindex="-1"
+                aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+        <div class="lp-rpg-float-create__card"
+             data-floating-create-target="card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="rpg-add-practice-title-<%= cat.id %>">
+          <header class="lp-rpg-float-create__head">
+            <p class="lp-rpg-float-create__kicker"><%= cat.title %></p>
+            <h2 class="lp-rpg-float-create__heading" id="rpg-add-practice-title-<%= cat.id %>">
+              <%= t("strategy.rpg.add_practice") %>
+            </h2>
+          </header>
+          <%= form_with url: strategy_goals_path,
+                method: :post,
+                class: "lp-rpg-float-create__form",
+                data: { turbo: false } do %>
+            <%= hidden_field_tag :life_area_id, area.id %>
+            <%= hidden_field_tag :life_journey_id, @journey.id %>
+            <%= hidden_field_tag :horizon, "day" %>
+            <%= hidden_field_tag :parent_id, cat.id %>
+            <%= hidden_field_tag :scheduled_on, Date.current %>
+            <label class="lp-rpg-float-create__field">
+              <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_name") %></span>
+              <%= text_field_tag :title, nil,
+                    required: true,
+                    maxlength: 120,
+                    class: "lp-rpg-float-create__input",
+                    placeholder: t("strategy.rpg.practice_name_placeholder"),
+                    autocomplete: "off",
+                    data: { floating_create_target: "title" } %>
+            </label>
+            <fieldset class="lp-rpg-float-create__repeat">
+              <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
+              <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
+                <label class="lp-rpg-practice-repeat__option">
+                  <%= radio_button_tag :repeat, "none", true, class: "lp-rpg-practice-repeat__input" %>
+                  <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
+                </label>
+                <label class="lp-rpg-practice-repeat__option">
+                  <%= radio_button_tag :repeat, "daily", false, class: "lp-rpg-practice-repeat__input" %>
+                  <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
+                </label>
+              </div>
+            </fieldset>
+            <div class="lp-rpg-float-create__actions">
+              <button type="button"
+                      class="lp-rpg-float-create__btn is-cancel"
+                      data-action="click->floating-create#close">
+                <%= t("strategy.rpg.cancel") %>
+              </button>
+              <%= submit_tag t("strategy.rpg.create_practice"),
+                    class: "lp-rpg-float-create__btn is-create" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </details>
+  <% end %>
+
+  <%= link_to t("strategy.rpg.open_in_today"),
+        dashboard_path,
+        class: "lp-rpg-camp-folder__cta",
+        data: { turbo: false } %>
+</div>

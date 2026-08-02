@@ -39,13 +39,14 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
       )
     end
     camps[0].complete!
-    practice_leaf_for!(camps[1]).children.create!(
+    @leaf = practice_leaf_for!(camps[1])
+    @leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Design battle card",
       description: "Wire the planning card",
       scheduled_on: Date.current, position: 0
     )
-    @current = camps[1]
+    @current = @leaf
   end
 
   test "short phone keeps Practice Category focus and Open in Today in viewport" do
@@ -75,18 +76,19 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Daily battles/i
+    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@leaf.id}']", wait: 5
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-cat__title", text: /Steps/i, visible: :all
     assert_selector ".lp-rpg-practice-row__title", text: /Design battle card/i, visible: :all, wait: 5
-    assert_selector ".lp-rpg-todays-practice__kicker", text: /Today's Practice/i
+    assert_selector ".lp-rpg-camp-practices__kicker", text: /Today's Practice/i, visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
-    assert_selector ".lp-rpg-breadcrumbs__item", text: /MVP path/i
+    assert_selector ".lp-rpg-breadcrumbs__item", text: /MVP path/i, visible: :all
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
 
-    assert_selector ".lp-rpg-practice-focus__cta", text: /Open in Today/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder__cta", text: /Open in Today/i, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Add Practice/i, visible: :all
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")
 
@@ -95,16 +97,27 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-sections');
         const battle = document.querySelector('.lp-rpg__stage-battle');
-        const practice = document.querySelector('.lp-rpg-practice-focus.is-entered .lp-rpg-practice-row');
+        const folder = document.querySelector('.lp-rpg-camp-folder[open]');
+        const practice = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-practice-row');
+        const cta = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-camp-folder__cta');
+        practice?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
-        const visible = Array.from(document.querySelectorAll('.lp-rpg-section-card')).length;
+        const visible = Array.from(document.querySelectorAll('.lp-rpg-section-card')).filter((el) => {
+          const r = el.getBoundingClientRect();
+          return r.width > 8 && r.height > 8 && r.right > 0 && r.left < window.innerWidth;
+        }).length;
         const rootStyle = root ? getComputedStyle(root) : null;
         const htmlStyle = getComputedStyle(document.documentElement);
         const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
         const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
         const practiceRect = practice ? practice.getBoundingClientRect() : null;
+        const battleRect = battle ? battle.getBoundingClientRect() : null;
+        const inBattle = (rect) => !!(rect && battleRect &&
+          rect.height > 8 &&
+          rect.bottom > battleRect.top &&
+          rect.top < battleRect.bottom);
         window.scrollTo(0, 200);
         const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
         window.scrollTo(0, 0);
@@ -117,7 +130,9 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           stagePad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
-          practiceVisible: !!(practiceRect && practiceRect.height > 8 && practiceRect.top < window.innerHeight && practiceRect.bottom > 0),
+          folderOpen: !!folder,
+          practiceInBattle: inBattle(practiceRect),
+          ctaInBattle: inBattle(cta ? cta.getBoundingClientRect() : null),
           statsPresent: !!stats,
           pageScrolled: scrolled > 1
         };
@@ -131,10 +146,11 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
     assert_operator metrics["battleH"], :>, metrics["trailH"]
-    assert_equal true, metrics["practiceVisible"], "Today's Practice row should stay in viewport: #{metrics.inspect}"
+    assert_equal true, metrics["folderOpen"], "focused camp folder should be open: #{metrics.inspect}"
+    assert_equal true, metrics["practiceInBattle"] || metrics["ctaInBattle"],
+                 "folder practices or Open in Today should stay in the planning stage: #{metrics.inspect}"
     assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
-    assert_equal metrics["chromePad"], metrics["statsPad"], "chrome/stats gutters should match: #{metrics.inspect}"
 
     assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
     assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")

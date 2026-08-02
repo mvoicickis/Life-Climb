@@ -40,7 +40,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
     assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-practice-focus .lp-rpg-practice-add", text: /Add Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Add Practice/i, count: 0
   end
 
   test "nested leaf camp shows Add Practice" do
@@ -51,9 +51,10 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: nested.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Vocabulary/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-add", text: /Add Practice/i
+    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{nested.id}'] .lp-rpg-practice-cat__title", text: /Vocabulary/
+    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-add", text: /Add Practice/i
     assert_select ".lp-rpg-breadcrumbs__item", text: /Learn German/
+    assert_select ".lp-rpg-camps:not([hidden])", 1
   end
 
   test "Path focus shows Learn German in Project Sections carousel" do
@@ -74,8 +75,8 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Do lessons/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-add", text: /Add Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-row__title", text: /Do lessons/
+    assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-add", text: /Add Practice/i, count: 0
   end
 
   test "creating a day under Path-level camp redirects with nest message" do

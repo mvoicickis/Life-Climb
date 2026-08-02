@@ -1,4 +1,4 @@
-<%# Planning sheet — progressive drill: Section → nested camps → Today's Practice. locals: current_project, plan, goal, trail, focus %>
+<%# Planning sheet — Section → Camp folders (practices inline). locals: current_project, plan, goal, trail, focus %>
 <% current_project = local_assigns[:current_project] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
@@ -24,29 +24,24 @@
      elsif path_level_split_first
        focus
      elsif focus&.project? && focus.parent&.plan?
-       # Path-level section: drill into branch / empty split-first camps.
-       # Legacy path-level camps that already have days stay scoped to the Path so Level B can open.
-       if focus.branch_checkpoint? || (focus.leaf_checkpoint? && focus.children.none?(&:day?))
-         focus
-       else
-         plan
-       end
+       # Path-level section: always scope to the section (camps list or nest-before).
+       focus
      elsif current_project&.branch_checkpoint?
        current_project
      elsif current_project&.path_level_camp? && current_project.leaf_checkpoint? && current_project.children.none?(&:day?)
        current_project
      elsif current_project&.project? && !current_project.branch_checkpoint? && current_project.parent&.project?
        current_project.parent
-     elsif current_project&.path_level_camp? && current_project.branch_checkpoint?
+     elsif current_project&.path_level_camp?
        current_project
      else
        plan
      end %>
 <%# Prefer the active section over listing Path-level camps again (carousel owns that). %>
-<% if category_scope&.plan? && current_project&.path_level_camp? &&
-      (current_project.branch_checkpoint? || current_project.children.none?(&:day?))
+<% if category_scope&.plan? && current_project&.path_level_camp?
      category_scope = current_project
-     path_level_split_first = current_project.leaf_checkpoint? && current_project.children.none?(&:day?)
+     path_level_split_first = current_project.leaf_checkpoint? && current_project.children.none?(&:day?) &&
+                              current_project.children.none?(&:project?)
    end %>
 <% categories = if category_scope
                   category_scope.children.select(&:project?).sort_by { |c| [ c.position.to_i, c.id ] }
@@ -54,44 +49,25 @@
                   []
                 end %>
 <% leaf_categories = categories.reject(&:branch_checkpoint?) %>
-<%# Empty branch / empty Path-level camp → Level A + add smaller camp; empty Path stays quiet. %>
 <% use_category_focus = category_scope.present? && (categories.any? || category_scope.project?) %>
-<%# Enter Level B for nested leaves, or legacy Path-level camps that already have days. %>
-<% wanted_category_id =
+<%# Auto-open a leaf folder when focus points at that camp (or a day under it). %>
+<% open_folder_id =
      if use_category_focus && focus && !focus.plan?
        if focus.day? && leaf_categories.any? { |c| c.id == focus.parent_id }
          focus.parent_id
        elsif focus.project? && !focus.branch_checkpoint? && leaf_categories.any? { |c| c.id == focus.id }
          focus.id
        end
-     elsif use_category_focus && category_scope&.plan? && current_project&.path_level_camp? &&
-           !current_project.branch_checkpoint? && current_project.children.any?(&:day?) &&
-           leaf_categories.any? { |c| c.id == current_project.id }
-       # Auto-open legacy path-level section practices (carousel already picked the section).
-       current_project.id
      end %>
-<% initial_category_id = wanted_category_id %>
-<% category_entered = initial_category_id.present? %>
 <% listing_path_level = category_scope&.plan? %>
 <% scope_title = category_scope&.title || plan&.title %>
-<% branch_level_a = category_scope&.project? && !category_entered %>
 <% section_node = trail&.nodes&.find { |n| n.id == category_scope&.id } if category_scope&.path_level_camp? %>
-<% section_node ||= trail&.nodes&.find { |n| n.id == initial_category_id } if category_entered && listing_path_level %>
 <% section_active = section_node&.state == :current %>
-<% entered_cat = leaf_categories.find { |c| c.id == initial_category_id } if category_entered %>
-<% header_title = category_entered && entered_cat ? entered_cat.title : scope_title %>
-<% header_pct = (category_entered && entered_cat ? entered_cat : category_scope)&.progress_percent.to_i %>
-<% scope_add_label =
-     if category_scope&.path_level_camp?
-       t("strategy.rpg.add_smaller_camp")
-     else
-       t("strategy.rpg.add_checkpoint")
-     end %>
+<% header_title = scope_title %>
+<% header_pct = category_scope&.progress_percent.to_i %>
 <% scope_pct = header_pct %>
 <% scope_desc =
-     if category_entered && entered_cat&.description.to_s.strip.present?
-       entered_cat.description.to_s.strip
-     elsif category_scope&.description.to_s.strip.present?
+     if category_scope&.description.to_s.strip.present?
        category_scope.description.to_s.strip
      elsif path_level_split_first
        t("strategy.rpg.nest_before_dailies")
@@ -102,11 +78,9 @@
      end %>
 
 <% if use_category_focus %>
-  <section class="lp-rpg-sheet is-dominant is-planning is-sections <%= category_entered ? 'is-category-focus' : 'is-categories' %>"
+  <section class="lp-rpg-sheet is-dominant is-planning is-sections is-categories"
            aria-label="<%= t('strategy.rpg.sheet.label') %>"
-           data-controller="category-focus"
-           data-category-focus-initial-id-value="<%= initial_category_id %>"
-           <% if category_entered %>data-focus-category-id="<%= initial_category_id %>"<% end %>>
+           <% if open_folder_id %>data-open-folder-id="<%= open_folder_id %>"<% end %>>
     <nav class="lp-rpg-breadcrumbs" aria-label="<%= t('strategy.rpg.breadcrumbs_label') %>">
       <% if goal %>
         <%= link_to goal.title,
@@ -125,29 +99,19 @@
       <% if category_scope&.project? %>
         <%= link_to scope_title,
               life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: category_scope.id),
-              class: "lp-rpg-breadcrumbs__item #{'is-current' unless category_entered}",
-              data: { turbo: true, category_focus_target: "crumb" } %>
-      <% elsif category_entered && entered_cat %>
-        <%= link_to entered_cat.title,
-              life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: entered_cat.id),
               class: "lp-rpg-breadcrumbs__item is-current",
-              data: { turbo: true, category_focus_target: "crumb" } %>
-      <% end %>
-      <% if category_entered && entered_cat && category_scope&.project? %>
-        <span class="lp-rpg-breadcrumbs__sep" aria-hidden="true">›</span>
-        <span class="lp-rpg-breadcrumbs__item is-current"><%= entered_cat.title %></span>
+              data: { turbo: true } %>
       <% end %>
     </nav>
 
-    <header class="lp-rpg-section-head <%= 'is-deep' if category_entered %>"
-            <%= "hidden" if category_entered %>>
+    <header class="lp-rpg-section-head">
       <div class="lp-rpg-section-head__ring" aria-hidden="true">
         <span class="lp-rpg-section-head__icon">⚑</span>
         <span class="lp-rpg-section-head__ring-fill" style="--lp-section-pct: <%= scope_pct %>"></span>
       </div>
       <div class="lp-rpg-section-head__copy">
         <div class="lp-rpg-section-head__title-row">
-          <h2 class="lp-rpg-section-head__title" data-category-focus-target="pathTitle"><%= header_title %></h2>
+          <h2 class="lp-rpg-section-head__title"><%= header_title %></h2>
           <% if section_active %>
             <span class="lp-rpg-section-head__badge"><%= t("strategy.rpg.section_active") %></span>
           <% end %>
@@ -160,11 +124,8 @@
     </header>
 
     <% camp_accents = %w[green purple blue orange pink gold] %>
-    <div class="lp-rpg-practice-cats lp-rpg-camps<%= ' is-exited' if category_entered %>"
-         data-category-focus-target="list"
-         aria-label="<%= t('strategy.rpg.camps_label') %>"
-         <%= "hidden" if category_entered %>
-         aria-hidden="<%= category_entered ? 'true' : 'false' %>">
+    <div class="lp-rpg-practice-cats lp-rpg-camps"
+         aria-label="<%= t('strategy.rpg.camps_label') %>">
       <% unless listing_path_level %>
         <div class="lp-rpg-camps__head">
           <p class="lp-rpg-camps__kicker"><%= t("strategy.rpg.camps_label") %></p>
@@ -232,8 +193,17 @@
 
       <% if path_level_split_first %>
         <p class="lp-rpg-practice-cats__hint"><%= t("strategy.rpg.nest_before_dailies") %></p>
-      <% elsif listing_path_level && !category_entered %>
+      <% elsif listing_path_level %>
         <p class="lp-rpg-practice-cats__hint"><%= t("strategy.rpg.pick_section_hint") %></p>
+      <% end %>
+
+      <%# Legacy path-level camp with days directly — show practices inline (no Add Practice). %>
+      <% if !listing_path_level && categories.empty? && category_scope&.project? &&
+            !category_scope.branch_checkpoint? && category_scope.children.any?(&:day?) %>
+        <div class="lp-rpg-camp-folder is-legacy-scope is-green" open data-category-id="<%= category_scope.id %>">
+          <%= render "life_journeys/rpg_camp_practices",
+                cat: category_scope, accent: "green", area: area, battle_xp: battle_xp %>
+        </div>
       <% end %>
 
       <% unless listing_path_level %>
@@ -310,35 +280,42 @@
                           <% end %>
                         </li>
                       <% else %>
-                        <% day_total = kid.children.count(&:day?) %>
-                        <% day_done = kid.children.count { |d| d.day? && d.completed? } %>
+                        <% kid_days = kid.children.select(&:day?) %>
+                        <% day_total = kid_days.size %>
+                        <% day_done = kid_days.count(&:completed?) %>
                         <% leaf_done = day_total.positive? && day_done >= day_total %>
-                        <li>
-                          <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: kid.id),
-                                class: "lp-rpg-practice-cat lp-rpg-camp-row is-child is-leaf is-#{kid_accent}",
-                                data: { turbo: true, category_id: kid.id } do %>
-                            <span class="lp-rpg-camp-row__mark" aria-hidden="true">
-                              <span class="lp-rpg-camp-row__check <%= 'is-done' if kid.completed? || leaf_done %>"></span>
-                            </span>
-                            <span class="lp-rpg-camp-row__icon" aria-hidden="true">📄</span>
-                            <span class="lp-rpg-camp-row__body">
-                              <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
-                                <span class="lp-rpg-camp-row__num"><%= kid_num %></span>
-                                <%= kid.title %>
+                        <% kid_pct = day_total.positive? ? ((day_done * 100.0) / day_total).round : kid.progress_percent.to_i %>
+                        <% kid_open = open_folder_id == kid.id %>
+                        <li class="lp-rpg-camps__nested-leaf">
+                          <details class="lp-rpg-camp-folder is-nested is-<%= kid_accent %>"
+                                   data-controller="camp-folder"
+                                   data-category-id="<%= kid.id %>"
+                                   <%= "open" if kid_open %>>
+                            <summary class="lp-rpg-practice-cat lp-rpg-camp-row is-child is-folder is-leaf is-<%= kid_accent %>">
+                              <span class="lp-rpg-camp-row__mark" aria-hidden="true">
+                                <span class="lp-rpg-camp-row__check <%= 'is-done' if kid.completed? || leaf_done %>"></span>
                               </span>
-                              <span class="lp-rpg-camp-row__desc">
-                                <%= kid.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
+                              <span class="lp-rpg-camp-row__icon" aria-hidden="true">📁</span>
+                              <span class="lp-rpg-camp-row__body">
+                                <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
+                                  <span class="lp-rpg-camp-row__num"><%= kid_num %></span>
+                                  <%= kid.title %>
+                                </span>
+                                <span class="lp-rpg-camp-row__desc">
+                                  <%= kid.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
+                                </span>
                               </span>
-                            </span>
-                            <% if leaf_done %>
-                              <span class="lp-rpg-camp-row__done"><%= t("strategy.rpg.camp_done_badge") %></span>
-                            <% else %>
-                              <span class="lp-rpg-camp-row__fraction">
-                                <%= day_done %> / <%= day_total %>
+                              <span class="lp-rpg-camp-row__meta is-compact">
+                                <span class="lp-rpg-camp-row__pct"><%= kid_pct %>%</span>
+                                <span class="lp-rpg-camp-row__count">
+                                  <%= t("strategy.rpg.camps_completed", done: day_done, total: day_total) %>
+                                </span>
                               </span>
-                            <% end %>
-                            <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
-                          <% end %>
+                              <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>
+                            </summary>
+                            <%= render "life_journeys/rpg_camp_practices",
+                                  cat: kid, accent: kid_accent, area: area, battle_xp: battle_xp %>
+                          </details>
                         </li>
                       <% end %>
                     <% end %>
@@ -347,13 +324,17 @@
                 <%= render "life_journeys/rpg_camp_menu", project: cat %>
               </li>
             <% else %>
-              <% days = cat.children.select(&:day?).sort_by { |d| [ d.completed? ? 1 : 0, d.position.to_i, d.id ] } %>
+              <% days = cat.children.select(&:day?) %>
               <% day_total = days.size %>
               <% day_done = days.count(&:completed?) %>
               <% leaf_pct = day_total.positive? ? ((day_done * 100.0) / day_total).round : camp_pct %>
+              <% folder_open = open_folder_id == cat.id %>
               <li class="lp-rpg-camps__item is-leaf" data-controller="plan-card-menu">
-                <details class="lp-rpg-camp-folder is-<%= accent %>">
-                  <summary class="lp-rpg-camp-row is-folder is-leaf is-<%= accent %>">
+                <details class="lp-rpg-camp-folder is-<%= accent %>"
+                         data-controller="camp-folder"
+                         data-category-id="<%= cat.id %>"
+                         <%= "open" if folder_open %>>
+                  <summary class="lp-rpg-practice-cat lp-rpg-camp-row is-folder is-leaf is-<%= accent %>">
                     <span class="lp-rpg-camp-row__drag" aria-hidden="true"></span>
                     <span class="lp-rpg-camp-row__mark" aria-hidden="true">
                       <span class="lp-rpg-camp-row__check <%= 'is-done' if cat.completed? %>"></span>
@@ -379,45 +360,8 @@
                     </span>
                     <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>
                   </summary>
-                  <ul class="lp-rpg-camp-folder__kids" aria-label="<%= cat.title %>">
-                    <% days.each_with_index do |day, day_idx| %>
-                      <% day_num = "#{num}.#{day_idx + 1}" %>
-                      <li>
-                        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
-                              class: "lp-rpg-camp-row is-child is-todo is-#{accent} #{'is-complete' if day.completed?}",
-                              data: { turbo: true, category_id: cat.id } do %>
-                          <span class="lp-rpg-camp-row__mark" aria-hidden="true">
-                            <span class="lp-rpg-camp-row__check <%= 'is-done' if day.completed? %>"></span>
-                          </span>
-                          <span class="lp-rpg-camp-row__icon" aria-hidden="true">📄</span>
-                          <span class="lp-rpg-camp-row__body">
-                            <span class="lp-rpg-camp-row__title">
-                              <span class="lp-rpg-camp-row__num"><%= day_num %></span>
-                              <%= day.title %>
-                            </span>
-                          </span>
-                          <% if day.completed? %>
-                            <span class="lp-rpg-camp-row__done"><%= t("strategy.rpg.camp_done_badge") %></span>
-                          <% else %>
-                            <span class="lp-rpg-camp-row__fraction">0 / 1</span>
-                          <% end %>
-                          <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
-                        <% end %>
-                      </li>
-                    <% end %>
-                    <li>
-                      <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
-                            class: "lp-rpg-practice-cat lp-rpg-camp-row is-child is-open is-#{accent}",
-                            data: { turbo: true, category_id: cat.id } do %>
-                        <span class="lp-rpg-camp-row__body">
-                          <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
-                            <%= t("strategy.rpg.open_camp_practices") %>
-                          </span>
-                        </span>
-                        <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
-                      <% end %>
-                    </li>
-                  </ul>
+                  <%= render "life_journeys/rpg_camp_practices",
+                        cat: cat, accent: accent, area: area, battle_xp: battle_xp %>
                 </details>
                 <%= render "life_journeys/rpg_camp_menu", project: cat %>
               </li>
@@ -426,166 +370,6 @@
         </ul>
       <% end %>
     </div>
-
-    <% leaf_categories.each do |cat| %>
-      <% days = cat.children.select(&:day?).sort_by { |b| [ b.completed? ? 1 : 0, b.scheduled_on || Date.new(9999), b.position.to_i, b.id ] } %>
-      <% open_days = days.reject(&:completed?) %>
-      <% planned = open_days.count { |d| d.scheduled_on == Date.current } %>
-      <% total = open_days.size %>
-      <% entered = category_entered && cat.id == initial_category_id %>
-      <% cat_idx = leaf_categories.index { |c| c.id == cat.id } %>
-      <% prev_cat = cat_idx&.positive? ? leaf_categories[cat_idx - 1] : nil %>
-      <% next_cat = cat_idx && cat_idx < leaf_categories.size - 1 ? leaf_categories[cat_idx + 1] : nil %>
-      <div class="lp-rpg-practice-focus<%= ' is-entered' if entered %>"
-           data-category-focus-target="panel"
-           data-category-id="<%= cat.id %>"
-           <%= "hidden" unless entered %>
-           aria-hidden="<%= entered ? 'false' : 'true' %>">
-        <div class="lp-rpg-practice-focus__head">
-          <div class="lp-rpg-practice-focus__switch"
-               role="navigation"
-               aria-label="<%= t('strategy.rpg.camp_switcher') %>">
-            <% if prev_cat %>
-              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: prev_cat.id),
-                    class: "lp-rpg-practice-focus__nav is-prev",
-                    data: { turbo: true },
-                    aria: { label: t("strategy.rpg.trail.prev_camp", title: prev_cat.title) } do %>
-                <span aria-hidden="true">▲</span>
-              <% end %>
-            <% end %>
-            <h3 class="lp-rpg-practice-focus__title"><%= cat.title %></h3>
-            <% if next_cat %>
-              <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: next_cat.id),
-                    class: "lp-rpg-practice-focus__nav is-next",
-                    data: { turbo: true },
-                    aria: { label: t("strategy.rpg.trail.next_camp", title: next_cat.title) } do %>
-                <span aria-hidden="true">▼</span>
-              <% end %>
-            <% end %>
-          </div>
-          <p class="lp-rpg-practice-focus__progress">
-            <% if total.zero? %>
-              <%= t("strategy.rpg.practice_empty") %>
-            <% else %>
-              <%= t("strategy.rpg.practice_planned", selected: planned, total: total) %>
-            <% end %>
-          </p>
-        </div>
-
-        <div class="lp-rpg-todays-practice">
-          <p class="lp-rpg-todays-practice__kicker"><%= t("strategy.rpg.todays_practice") %></p>
-          <% if open_days.empty? %>
-            <p class="lp-rpg-todays-practice__empty"><%= t("strategy.rpg.practice_empty") %></p>
-          <% end %>
-          <ul class="lp-rpg-todays-practice__list" aria-label="<%= t('strategy.rpg.todays_practice') %>">
-            <% open_days.each do |battle| %>
-              <% selected_today = battle.scheduled_on == Date.current %>
-              <li class="lp-rpg-practice-row <%= 'is-selected' if selected_today %> <%= 'is-daily' if battle.repeat_daily? %>">
-                <%= form_with url: strategy_goal_path(battle),
-                      method: :patch,
-                      class: "lp-rpg-practice-row__form",
-                      data: { turbo: true } do %>
-                  <%= hidden_field_tag :scheduled_on, selected_today ? "later" : Date.current %>
-                  <label class="lp-rpg-practice-row__label">
-                    <input type="checkbox"
-                           class="lp-rpg-practice-row__check"
-                           <%= "checked" if selected_today %>
-                           onchange="this.form.requestSubmit()"
-                           aria-label="<%= battle.title %>">
-                    <span class="lp-rpg-practice-row__title">
-                      <%= battle.title %>
-                      <% if battle.repeat_daily? %>
-                        <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
-                      <% end %>
-                    </span>
-                    <span class="lp-rpg-practice-row__xp">+<%= battle_xp %> XP</span>
-                  </label>
-                <% end %>
-              </li>
-            <% end %>
-          </ul>
-
-          <% if cat.nested_leaf_camp? %>
-            <details class="lp-rpg-node__add is-practice-add"
-                     id="rpg-add-practice-<%= cat.id %>"
-                     data-controller="floating-create"
-                     data-action="toggle->floating-create#onToggle">
-              <summary class="lp-rpg-practice-add"
-                       aria-label="<%= t('strategy.rpg.add_practice') %>">
-                <span aria-hidden="true">+</span>
-                <span><%= t("strategy.rpg.add_practice") %></span>
-              </summary>
-              <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
-                <button type="button"
-                        class="lp-rpg-float-create__backdrop"
-                        data-action="click->floating-create#close"
-                        tabindex="-1"
-                        aria-label="<%= t('strategy.rpg.cancel') %>"></button>
-                <div class="lp-rpg-float-create__card"
-                     data-floating-create-target="card"
-                     role="dialog"
-                     aria-modal="true"
-                     aria-labelledby="rpg-add-practice-title-<%= cat.id %>">
-                  <header class="lp-rpg-float-create__head">
-                    <p class="lp-rpg-float-create__kicker"><%= cat.title %></p>
-                    <h2 class="lp-rpg-float-create__heading" id="rpg-add-practice-title-<%= cat.id %>">
-                      <%= t("strategy.rpg.add_practice") %>
-                    </h2>
-                  </header>
-                  <%= form_with url: strategy_goals_path,
-                        method: :post,
-                        class: "lp-rpg-float-create__form",
-                        data: { turbo: false } do %>
-                    <%= hidden_field_tag :life_area_id, area.id %>
-                    <%= hidden_field_tag :life_journey_id, @journey.id %>
-                    <%= hidden_field_tag :horizon, "day" %>
-                    <%= hidden_field_tag :parent_id, cat.id %>
-                    <%= hidden_field_tag :scheduled_on, Date.current %>
-                    <label class="lp-rpg-float-create__field">
-                      <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_name") %></span>
-                      <%= text_field_tag :title, nil,
-                            required: true,
-                            maxlength: 120,
-                            class: "lp-rpg-float-create__input",
-                            placeholder: t("strategy.rpg.practice_name_placeholder"),
-                            autocomplete: "off",
-                            data: { floating_create_target: "title" } %>
-                    </label>
-                    <fieldset class="lp-rpg-float-create__repeat">
-                      <legend class="lp-rpg-float-create__label"><%= t("strategy.rpg.practice_repeat_label") %></legend>
-                      <div class="lp-rpg-practice-repeat" role="radiogroup" aria-label="<%= t('strategy.rpg.practice_repeat_label') %>">
-                        <label class="lp-rpg-practice-repeat__option">
-                          <%= radio_button_tag :repeat, "none", true, class: "lp-rpg-practice-repeat__input" %>
-                          <span><%= t("strategy.rpg.practice_repeat_one_time") %></span>
-                        </label>
-                        <label class="lp-rpg-practice-repeat__option">
-                          <%= radio_button_tag :repeat, "daily", false, class: "lp-rpg-practice-repeat__input" %>
-                          <span><%= t("strategy.rpg.practice_repeat_daily") %></span>
-                        </label>
-                      </div>
-                    </fieldset>
-                    <div class="lp-rpg-float-create__actions">
-                      <button type="button"
-                              class="lp-rpg-float-create__btn is-cancel"
-                              data-action="click->floating-create#close">
-                        <%= t("strategy.rpg.cancel") %>
-                      </button>
-                      <%= submit_tag t("strategy.rpg.create_practice"),
-                            class: "lp-rpg-float-create__btn is-create" %>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            </details>
-          <% end %>
-        </div>
-
-        <%= link_to t("strategy.rpg.open_in_today"),
-              dashboard_path,
-              class: "lp-rpg-practice-focus__cta",
-              data: { turbo: false } %>
-      </div>
-    <% end %>
   </section>
 
 <% elsif current_project || plan %>
