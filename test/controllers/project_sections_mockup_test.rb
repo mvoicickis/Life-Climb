@@ -51,6 +51,7 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title", text: "Today's Page"
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title[title=?]", "Today's Page"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
     assert_select ".lp-rpg-sections__item.is-locked.is-menu-enabled .lp-rpg-section-card__menu-btn"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"

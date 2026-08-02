@@ -84,7 +84,7 @@
                         aria-hidden="true">
                     <% if node.state == :done %>✓<% elsif node.state == :locked %>🔒<% else %>🚩<% end %>
                   </span>
-                  <span class="lp-rpg-section-card__title"><%= node.title %></span>
+                  <span class="lp-rpg-section-card__title" title="<%= node.title %>"><%= node.title %></span>
                   <span class="lp-rpg-section-card__badge" aria-hidden="true"><%= idx + 1 %></span>
                 <% end %>
 
