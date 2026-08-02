@@ -15,7 +15,7 @@
   <div class="lp-rpg-camp-workspace__rail" aria-hidden="true"></div>
   <div class="lp-rpg-camp-workspace__surface">
     <section class="lp-rpg-camp-practices is-active"
-             aria-label="<%= t('strategy.rpg.all_practices') %>">
+             aria-label="<%= t('strategy.rpg.quest_board_label') %>">
       <% if days.empty? %>
         <div class="lp-rpg-camp-empty">
           <div class="lp-rpg-camp-empty__seal" aria-hidden="true">
@@ -42,9 +42,15 @@
           <% end %>
         </div>
       <% else %>
-        <ul class="lp-rpg-practice-folders" aria-label="<%= t('strategy.rpg.all_practices') %>">
+        <header class="lp-rpg-quest-board__head">
+          <p class="lp-rpg-quest-board__kicker"><%= t("strategy.rpg.quest_board_label") %></p>
+        </header>
+        <ul class="lp-rpg-practice-folders" aria-label="<%= t('strategy.rpg.quest_board_label') %>">
           <% (all_open + all_done).each do |battle| %>
             <% tasks = tasks_by_practice[battle.id] || [] %>
+            <% done_count = tasks.count(&:completed?) %>
+            <% total_count = tasks.size %>
+            <% obj_pct = total_count.positive? ? ((done_count * 100.0) / total_count).round : 0 %>
             <% selected_today = !battle.completed? && battle.scheduled_on == Date.current %>
             <% show_finish = !battle.completed? && tasks.any? && tasks.all?(&:completed?) %>
             <% start_open = !battle.completed? && (tasks.any? || selected_today) %>
@@ -54,45 +60,35 @@
                        <%= "open" if start_open %>>
                 <summary class="lp-rpg-practice-folder__summary">
                   <span class="lp-rpg-practice-folder__mark" aria-hidden="true">
-                    <span class="lp-rpg-practice-folder__icon is-closed">📁</span>
-                    <span class="lp-rpg-practice-folder__icon is-open">📂</span>
+                    <span class="lp-rpg-practice-folder__icon"></span>
                   </span>
                   <span class="lp-rpg-practice-folder__copy">
-                    <span class="lp-rpg-practice-folder__title">
-                      <%= battle.title %>
-                      <% if battle.repeat_daily? %>
-                        <em class="lp-rpg-practice-row__repeat"><%= t("strategy.rpg.practice_repeat_badge") %></em>
-                      <% end %>
-                    </span>
+                    <span class="lp-rpg-practice-folder__title"><%= battle.title %></span>
                     <span class="lp-rpg-practice-folder__meta">
                       <% if battle.completed? %>
-                        <%= t("strategy.rpg.quest_completed") %>
+                        <span class="lp-rpg-practice-folder__status"><%= t("strategy.rpg.quest_completed") %></span>
+                        <span class="lp-rpg-practice-folder__xp is-done">+<%= battle_xp %> XP</span>
                       <% else %>
-                        <%= t("strategy.rpg.objectives_progress",
-                              done: tasks.count(&:completed?),
-                              total: tasks.size) %>
+                        <% if battle.repeat_daily? %>
+                          <em class="lp-rpg-practice-folder__badge"><%= t("strategy.rpg.practice_repeat_badge") %></em>
+                        <% end %>
+                        <span class="lp-rpg-practice-folder__xp" aria-label="<%= battle_xp %> XP">
+                          <span aria-hidden="true">⭐</span> +<%= battle_xp %> XP
+                        </span>
                       <% end %>
-                      <span class="lp-rpg-practice-folder__xp">+<%= battle_xp %> XP</span>
                     </span>
-                  </span>
-                  <% unless battle.completed? %>
-                    <%= form_with url: strategy_goal_path(battle),
-                          method: :patch,
-                          class: "lp-rpg-practice-folder__plan",
-                          data: { turbo: true },
-                          html: { onclick: "event.stopPropagation()" } do %>
-                      <%= hidden_field_tag :scheduled_on, selected_today ? "later" : Date.current %>
-                      <label class="lp-rpg-practice-folder__plan-label">
-                        <input type="checkbox"
-                               class="lp-rpg-practice-folder__plan-check"
-                               <%= "checked" if selected_today %>
-                               onclick="event.stopPropagation()"
-                               onchange="this.form.requestSubmit()"
-                               aria-label="<%= t('strategy.rpg.plan_for_today_aria', title: battle.title) %>">
-                        <span><%= t("strategy.rpg.plan_for_today") %></span>
-                      </label>
+                    <% unless battle.completed? %>
+                      <span class="lp-rpg-practice-folder__progress">
+                        <span class="lp-rpg-practice-folder__progress-label">
+                          <%= t("strategy.rpg.objectives_progress", done: done_count, total: total_count) %>
+                        </span>
+                        <span class="lp-rpg-practice-folder__bar" aria-hidden="true">
+                          <span class="lp-rpg-practice-folder__bar-fill" style="width: <%= obj_pct %>%"></span>
+                        </span>
+                      </span>
                     <% end %>
-                  <% end %>
+                  </span>
+                  <span class="lp-rpg-practice-folder__chevron" aria-hidden="true"></span>
                 </summary>
 
                 <div class="lp-rpg-practice-folder__body">
@@ -118,7 +114,7 @@
                         </li>
                       <% end %>
                     </ul>
-                  <% else %>
+                  <% elsif !battle.completed? %>
                     <p class="lp-rpg-practice-folder__empty"><%= t("strategy.rpg.objectives_empty") %></p>
                   <% end %>
 
@@ -133,30 +129,59 @@
                               form: { data: { turbo: false } } %>
                         <button type="button"
                                 class="lp-rpg-practice-finish__btn is-more"
-                                data-action="click->practice-folder#addMore">
-                          <%= t("strategy.rpg.add_more_tasks") %>
+                                data-action="click->practice-folder#revealAdd">
+                          <%= t("strategy.rpg.add_more_objectives") %>
                         </button>
                       </div>
                     </div>
                   <% end %>
 
                   <% unless battle.completed? %>
-                    <%= form_with url: strategy_goal_practice_tasks_path(battle),
-                          method: :post,
-                          class: "lp-rpg-practice-folder__add",
-                          data: { turbo: false } do %>
-                      <label class="lp-rpg-practice-folder__add-field">
-                        <span class="sr-only"><%= t("strategy.rpg.task_name") %></span>
-                        <%= text_field_tag :title, nil,
-                              required: true,
-                              maxlength: 120,
-                              class: "lp-rpg-practice-folder__add-input",
-                              placeholder: t("strategy.rpg.task_name_placeholder"),
-                              autocomplete: "off",
-                              data: { practice_folder_target: "title" } %>
+                    <div class="lp-rpg-practice-folder__add-wrap"
+                         data-practice-folder-target="addWrap">
+                      <button type="button"
+                              class="lp-rpg-practice-folder__add-reveal"
+                              data-action="click->practice-folder#revealAdd"
+                              data-practice-folder-target="reveal">
+                        <span aria-hidden="true">＋</span>
+                        <%= t("strategy.rpg.add_objective") %>
+                      </button>
+                      <%= form_with url: strategy_goal_practice_tasks_path(battle),
+                            method: :post,
+                            class: "lp-rpg-practice-folder__add",
+                            data: { turbo: false, practice_folder_target: "form" },
+                            html: { hidden: true } do %>
+                        <label class="lp-rpg-practice-folder__add-field">
+                          <span class="sr-only"><%= t("strategy.rpg.objective_name") %></span>
+                          <%= text_field_tag :title, nil,
+                                required: true,
+                                maxlength: 120,
+                                class: "lp-rpg-practice-folder__add-input",
+                                placeholder: t("strategy.rpg.objective_name_placeholder"),
+                                autocomplete: "off",
+                                data: { practice_folder_target: "title" } %>
+                        </label>
+                        <%= submit_tag t("strategy.rpg.save_objective"),
+                              class: "lp-rpg-practice-folder__add-btn" %>
+                      <% end %>
+                    </div>
+
+                    <%= form_with url: strategy_goal_path(battle),
+                          method: :patch,
+                          class: "lp-rpg-practice-folder__plan",
+                          data: { turbo: true } do %>
+                      <%= hidden_field_tag :scheduled_on, selected_today ? "later" : Date.current %>
+                      <label class="lp-rpg-practice-folder__plan-label">
+                        <input type="checkbox"
+                               class="lp-rpg-practice-folder__plan-check"
+                               <%= "checked" if selected_today %>
+                               onchange="this.form.requestSubmit()"
+                               aria-label="<%= t('strategy.rpg.plan_for_today_aria', title: battle.title) %>">
+                        <span class="lp-rpg-practice-folder__plan-copy">
+                          <span class="lp-rpg-practice-folder__plan-title"><%= t("strategy.rpg.plan_for_today") %></span>
+                          <span class="lp-rpg-practice-folder__plan-hint"><%= t("strategy.rpg.plan_for_today_hint") %></span>
+                        </span>
                       </label>
-                      <%= submit_tag t("strategy.rpg.add_new_task"),
-                            class: "lp-rpg-practice-folder__add-btn" %>
                     <% end %>
                   <% end %>
                 </div>

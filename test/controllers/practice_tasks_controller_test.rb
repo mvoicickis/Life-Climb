@@ -47,7 +47,9 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select ".lp-rpg-practice-folder__title", text: /Finish page/
     assert_select ".lp-rpg-practice-task__title", text: /Design layout/
-    assert_select "input.lp-rpg-practice-folder__add-btn[value*='Add New Task']"
+    assert_select ".lp-rpg-quest-board__kicker", text: /Quest Board/i
+    assert_select ".lp-rpg-practice-folder__add-reveal", text: /Add Objective/i
+    assert_select ".lp-rpg-practice-folder__plan-hint", text: /today's battles/i
   end
 
   test "completing all tasks shows finish prompt without completing practice" do
@@ -63,7 +65,7 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_not @practice.reload.completed?
     assert_select ".lp-rpg-practice-finish__copy", text: /All objectives are complete/
     assert_select ".lp-rpg-practice-finish__btn.is-complete", text: /Complete Practice/i
-    assert_select ".lp-rpg-practice-finish__btn.is-more", text: /Add More Tasks/i
+    assert_select ".lp-rpg-practice-finish__btn.is-more", text: /Add More Objectives/i
   end
 
   test "plan for today stays on the practice folder" do
