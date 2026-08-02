@@ -241,12 +241,15 @@
           <% categories.each_with_index do |cat, idx| %>
             <% accent = camp_accents[idx % camp_accents.size] %>
             <% num = idx + 1 %>
+            <% camp_pct = cat.progress_percent.to_i %>
             <% if cat.branch_checkpoint? %>
               <% kids = cat.children.select(&:project?).sort_by { |c| [ c.position.to_i, c.id ] } %>
-              <% camp_pct = cat.progress_percent.to_i %>
-              <li class="lp-rpg-camps__item is-branch">
+              <% done_count = kids.count(&:completed?) %>
+              <% total_count = kids.size %>
+              <li class="lp-rpg-camps__item is-branch" data-controller="plan-card-menu">
                 <details class="lp-rpg-camp-folder is-<%= accent %>">
                   <summary class="lp-rpg-camp-row is-folder is-<%= accent %>">
+                    <span class="lp-rpg-camp-row__drag" aria-hidden="true"></span>
                     <span class="lp-rpg-camp-row__mark" aria-hidden="true">
                       <span class="lp-rpg-camp-row__check <%= 'is-done' if cat.completed? %>"></span>
                     </span>
@@ -260,7 +263,15 @@
                         <%= cat.description.to_s.strip.presence || t("strategy.rpg.folder_branch_desc") %>
                       </span>
                     </span>
-                    <span class="lp-rpg-camp-row__pct"><%= camp_pct %>%</span>
+                    <span class="lp-rpg-camp-row__meta">
+                      <span class="lp-rpg-camp-row__pct"><%= camp_pct %>%</span>
+                      <span class="lp-rpg-camp-row__meter" aria-hidden="true">
+                        <span class="lp-rpg-camp-row__meter-fill" style="width: <%= camp_pct %>%"></span>
+                      </span>
+                      <span class="lp-rpg-camp-row__count">
+                        <%= t("strategy.rpg.camps_completed", done: done_count, total: total_count) %>
+                      </span>
+                    </span>
                     <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>
                   </summary>
                   <ul class="lp-rpg-camp-folder__kids" aria-label="<%= cat.title %>">
@@ -269,10 +280,16 @@
                       <% kid_num = "#{num}.#{kid_idx + 1}" %>
                       <% if kid.branch_checkpoint? %>
                         <% kid_pct = kid.progress_percent.to_i %>
+                        <% kid_kids = kid.children.select(&:project?) %>
+                        <% kid_done = kid_kids.count(&:completed?) %>
+                        <% kid_total = kid_kids.size %>
                         <li>
                           <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: kid.id),
                                 class: "lp-rpg-practice-cat lp-rpg-camp-row is-child is-folder is-#{kid_accent}",
                                 data: { turbo: true, category_id: kid.id } do %>
+                            <span class="lp-rpg-camp-row__mark" aria-hidden="true">
+                              <span class="lp-rpg-camp-row__check <%= 'is-done' if kid.completed? %>"></span>
+                            </span>
                             <span class="lp-rpg-camp-row__icon" aria-hidden="true">📁</span>
                             <span class="lp-rpg-camp-row__body">
                               <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
@@ -283,17 +300,26 @@
                                 <%= kid.description.to_s.strip.presence || t("strategy.rpg.folder_branch_desc") %>
                               </span>
                             </span>
-                            <span class="lp-rpg-camp-row__pct"><%= kid_pct %>%</span>
+                            <span class="lp-rpg-camp-row__meta is-compact">
+                              <span class="lp-rpg-camp-row__pct"><%= kid_pct %>%</span>
+                              <span class="lp-rpg-camp-row__count">
+                                <%= t("strategy.rpg.camps_completed", done: kid_done, total: kid_total) %>
+                              </span>
+                            </span>
                             <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
                           <% end %>
                         </li>
                       <% else %>
                         <% day_total = kid.children.count(&:day?) %>
                         <% day_done = kid.children.count { |d| d.day? && d.completed? } %>
+                        <% leaf_done = day_total.positive? && day_done >= day_total %>
                         <li>
                           <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: kid.id),
                                 class: "lp-rpg-practice-cat lp-rpg-camp-row is-child is-leaf is-#{kid_accent}",
                                 data: { turbo: true, category_id: kid.id } do %>
+                            <span class="lp-rpg-camp-row__mark" aria-hidden="true">
+                              <span class="lp-rpg-camp-row__check <%= 'is-done' if kid.completed? || leaf_done %>"></span>
+                            </span>
                             <span class="lp-rpg-camp-row__icon" aria-hidden="true">📄</span>
                             <span class="lp-rpg-camp-row__body">
                               <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
@@ -304,9 +330,13 @@
                                 <%= kid.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
                               </span>
                             </span>
-                            <span class="lp-rpg-camp-row__fraction <%= 'is-done' if day_total.positive? && day_done >= day_total %>">
-                              <%= day_done %> / <%= day_total %>
-                            </span>
+                            <% if leaf_done %>
+                              <span class="lp-rpg-camp-row__done"><%= t("strategy.rpg.camp_done_badge") %></span>
+                            <% else %>
+                              <span class="lp-rpg-camp-row__fraction">
+                                <%= day_done %> / <%= day_total %>
+                              </span>
+                            <% end %>
                             <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
                           <% end %>
                         </li>
@@ -314,32 +344,82 @@
                     <% end %>
                   </ul>
                 </details>
+                <%= render "life_journeys/rpg_camp_menu", project: cat %>
               </li>
             <% else %>
-              <% day_total = cat.children.count(&:day?) %>
-              <% day_done = cat.children.count { |d| d.day? && d.completed? } %>
-              <li class="lp-rpg-camps__item is-leaf">
-                <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
-                      class: "lp-rpg-practice-cat lp-rpg-camp-row is-leaf is-#{accent}",
-                      data: { turbo: true, category_id: cat.id } do %>
-                  <span class="lp-rpg-camp-row__mark" aria-hidden="true">
-                    <span class="lp-rpg-camp-row__check <%= 'is-done' if cat.completed? %>"></span>
-                  </span>
-                  <span class="lp-rpg-camp-row__icon" aria-hidden="true">📄</span>
-                  <span class="lp-rpg-camp-row__body">
-                    <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
-                      <span class="lp-rpg-camp-row__num"><%= num %>.</span>
-                      <%= cat.title %>
+              <% days = cat.children.select(&:day?).sort_by { |d| [ d.completed? ? 1 : 0, d.position.to_i, d.id ] } %>
+              <% day_total = days.size %>
+              <% day_done = days.count(&:completed?) %>
+              <% leaf_pct = day_total.positive? ? ((day_done * 100.0) / day_total).round : camp_pct %>
+              <li class="lp-rpg-camps__item is-leaf" data-controller="plan-card-menu">
+                <details class="lp-rpg-camp-folder is-<%= accent %>">
+                  <summary class="lp-rpg-camp-row is-folder is-leaf is-<%= accent %>">
+                    <span class="lp-rpg-camp-row__drag" aria-hidden="true"></span>
+                    <span class="lp-rpg-camp-row__mark" aria-hidden="true">
+                      <span class="lp-rpg-camp-row__check <%= 'is-done' if cat.completed? %>"></span>
                     </span>
-                    <span class="lp-rpg-camp-row__desc">
-                      <%= cat.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
+                    <span class="lp-rpg-camp-row__icon" aria-hidden="true">📁</span>
+                    <span class="lp-rpg-camp-row__body">
+                      <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
+                        <span class="lp-rpg-camp-row__num"><%= num %>.</span>
+                        <%= cat.title %>
+                      </span>
+                      <span class="lp-rpg-camp-row__desc">
+                        <%= cat.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
+                      </span>
                     </span>
-                  </span>
-                  <span class="lp-rpg-camp-row__fraction <%= 'is-done' if day_total.positive? && day_done >= day_total %>">
-                    <%= day_done %> / <%= day_total %>
-                  </span>
-                  <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
-                <% end %>
+                    <span class="lp-rpg-camp-row__meta">
+                      <span class="lp-rpg-camp-row__pct"><%= leaf_pct %>%</span>
+                      <span class="lp-rpg-camp-row__meter" aria-hidden="true">
+                        <span class="lp-rpg-camp-row__meter-fill" style="width: <%= leaf_pct %>%"></span>
+                      </span>
+                      <span class="lp-rpg-camp-row__count">
+                        <%= t("strategy.rpg.camps_completed", done: day_done, total: day_total) %>
+                      </span>
+                    </span>
+                    <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>
+                  </summary>
+                  <ul class="lp-rpg-camp-folder__kids" aria-label="<%= cat.title %>">
+                    <% days.each_with_index do |day, day_idx| %>
+                      <% day_num = "#{num}.#{day_idx + 1}" %>
+                      <li>
+                        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
+                              class: "lp-rpg-camp-row is-child is-todo is-#{accent} #{'is-complete' if day.completed?}",
+                              data: { turbo: true, category_id: cat.id } do %>
+                          <span class="lp-rpg-camp-row__mark" aria-hidden="true">
+                            <span class="lp-rpg-camp-row__check <%= 'is-done' if day.completed? %>"></span>
+                          </span>
+                          <span class="lp-rpg-camp-row__icon" aria-hidden="true">📄</span>
+                          <span class="lp-rpg-camp-row__body">
+                            <span class="lp-rpg-camp-row__title">
+                              <span class="lp-rpg-camp-row__num"><%= day_num %></span>
+                              <%= day.title %>
+                            </span>
+                          </span>
+                          <% if day.completed? %>
+                            <span class="lp-rpg-camp-row__done"><%= t("strategy.rpg.camp_done_badge") %></span>
+                          <% else %>
+                            <span class="lp-rpg-camp-row__fraction">0 / 1</span>
+                          <% end %>
+                          <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
+                        <% end %>
+                      </li>
+                    <% end %>
+                    <li>
+                      <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: cat.id),
+                            class: "lp-rpg-practice-cat lp-rpg-camp-row is-child is-open is-#{accent}",
+                            data: { turbo: true, category_id: cat.id } do %>
+                        <span class="lp-rpg-camp-row__body">
+                          <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
+                            <%= t("strategy.rpg.open_camp_practices") %>
+                          </span>
+                        </span>
+                        <span class="lp-rpg-camp-row__chevron is-link" aria-hidden="true">›</span>
+                      <% end %>
+                    </li>
+                  </ul>
+                </details>
+                <%= render "life_journeys/rpg_camp_menu", project: cat %>
               </li>
             <% end %>
           <% end %>

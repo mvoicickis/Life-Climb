@@ -18112,13 +18112,16 @@ a.lp-rpg-layer-card {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
-.lp-rpg-camps__item { min-width: 0; }
+.lp-rpg-camps__item {
+  position: relative;
+  min-width: 0;
+}
 
 .lp-rpg-camp-folder {
   margin: 0;
-  border-radius: 1.1rem;
+  border-radius: 1.05rem;
 }
 .lp-rpg-camp-folder > summary.lp-rpg-camp-row {
   list-style: none;
@@ -18134,16 +18137,17 @@ a.lp-rpg-camp-row {
 .lp-rpg-camp-row {
   --lp-camp-accent: #57d35b;
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 0.55rem 0.65rem;
-  min-height: 3.7rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: 1.1rem;
+  gap: 0.45rem 0.55rem;
+  min-height: 4.1rem;
+  padding: 0.8rem 2.35rem 0.8rem 0.7rem;
+  border-radius: 1.05rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid transparent;
   background:
     linear-gradient(165deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.28)),
-    rgba(10, 14, 20, 0.72);
+    rgba(10, 14, 20, 0.78);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
   transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
 }
@@ -18157,15 +18161,26 @@ a.lp-rpg-camp-row {
 .lp-rpg-camp-row:hover,
 .lp-rpg-camp-row:focus-visible,
 .lp-rpg-camp-folder[open] > summary.lp-rpg-camp-row {
-  border-color: color-mix(in srgb, var(--lp-camp-accent) 45%, transparent);
+  border-color: color-mix(in srgb, var(--lp-camp-accent) 40%, transparent);
   outline: none;
 }
 .lp-rpg-camp-folder[open] > summary.lp-rpg-camp-row {
+  border-left-color: var(--lp-camp-accent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--lp-camp-accent) 22%, transparent),
-    0 10px 24px rgba(0, 0, 0, 0.28);
+    0 0 0 1px color-mix(in srgb, var(--lp-camp-accent) 18%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.28),
+    inset 3px 0 12px color-mix(in srgb, var(--lp-camp-accent) 12%, transparent);
 }
 
+.lp-rpg-camp-row__drag {
+  width: 0.7rem;
+  height: 1.05rem;
+  opacity: 0.45;
+  background-image: radial-gradient(circle, rgba(203, 213, 225, 0.85) 1.1px, transparent 1.25px);
+  background-size: 0.35rem 0.35rem;
+  background-position: center;
+  cursor: grab;
+}
 .lp-rpg-camp-row__mark {
   display: inline-flex;
   align-items: center;
@@ -18200,23 +18215,24 @@ a.lp-rpg-camp-row {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 2.2rem;
+  height: 2.2rem;
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--lp-camp-accent) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--lp-camp-accent) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lp-camp-accent) 42%, transparent);
   font-size: 0.95rem;
   line-height: 1;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--lp-camp-accent) 18%, transparent);
 }
 .lp-rpg-camp-row__body {
   display: grid;
-  gap: 0.12rem;
+  gap: 0.14rem;
   min-width: 0;
 }
 .lp-rpg-camp-row__title {
   display: block;
   min-width: 0;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 750;
   color: rgba(248, 250, 252, 0.96);
   overflow: hidden;
@@ -18236,55 +18252,183 @@ a.lp-rpg-camp-row {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.lp-rpg-camp-row__meta {
+  display: grid;
+  justify-items: end;
+  gap: 0.22rem;
+  min-width: 4.6rem;
+}
+.lp-rpg-camp-row__meta.is-compact {
+  min-width: 3.4rem;
+  gap: 0.1rem;
+}
 .lp-rpg-camp-row__pct,
-.lp-rpg-camp-row__fraction {
-  flex: 0 0 auto;
-  font-size: 0.72rem;
+.lp-rpg-camp-row__fraction,
+.lp-rpg-camp-row__count {
+  font-size: 0.7rem;
   font-weight: 800;
   color: var(--lp-camp-accent);
   white-space: nowrap;
 }
-.lp-rpg-camp-row__fraction.is-done { color: #57d35b; }
+.lp-rpg-camp-row__count {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--lp-camp-accent) 80%, #94a3b8);
+}
+.lp-rpg-camp-row__meter {
+  display: block;
+  width: 4.4rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.lp-rpg-camp-row__meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--lp-camp-accent) 75%, #fff),
+    var(--lp-camp-accent)
+  );
+  box-shadow: 0 0 8px color-mix(in srgb, var(--lp-camp-accent) 35%, transparent);
+}
+.lp-rpg-camp-row__done {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(87, 211, 91, 0.45);
+  background: rgba(87, 211, 91, 0.1);
+  color: #8ef092;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 .lp-rpg-camp-row__chevron {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1rem;
-  color: rgba(148, 163, 184, 0.65);
-  font-size: 1.05rem;
-  transition: transform 160ms ease;
+  width: 1.1rem;
+  color: rgba(148, 163, 184, 0.7);
+  font-size: 0.85rem;
+  transition: transform 160ms ease, color 160ms ease;
 }
-.lp-rpg-camp-row__chevron:not(.is-link)::before { content: "›"; }
+.lp-rpg-camp-row__chevron:not(.is-link)::before { content: "▾"; }
+.lp-rpg-camp-folder[open] > summary .lp-rpg-camp-row__chevron:not(.is-link)::before {
+  content: "▴";
+}
 .lp-rpg-camp-folder[open] > summary .lp-rpg-camp-row__chevron:not(.is-link) {
-  transform: rotate(-90deg);
+  color: var(--lp-camp-accent);
 }
+
+.lp-rpg-camp-row__menu-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.45rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin: 0;
+  padding: 0;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(203, 213, 225, 0.7);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.lp-rpg-camp-row__menu-btn:hover,
+.lp-rpg-camps__item.is-menu-open > .lp-rpg-camp-row__menu-btn {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(248, 250, 252, 0.92);
+}
+.lp-rpg-camp-row__menu {
+  position: absolute;
+  top: 2.2rem;
+  right: 0.35rem;
+  z-index: 4;
+  min-width: 9.5rem;
+  padding: 0.3rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 16, 22, 0.96);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+.lp-rpg-camp-row__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: rgba(248, 250, 252, 0.92);
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+.lp-rpg-camp-row__menu-item:hover,
+.lp-rpg-camp-row__menu-item:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+.lp-rpg-camp-row__menu-item.is-danger { color: #fca5a5; }
 
 .lp-rpg-camp-folder__kids {
   list-style: none;
-  margin: 0.35rem 0 0.15rem 1.15rem;
-  padding: 0.15rem 0 0.15rem 0.85rem;
+  margin: 0.4rem 0 0.2rem 1.35rem;
+  padding: 0.2rem 0 0.2rem 0.9rem;
   display: grid;
   gap: 0.4rem;
-  border-left: 1.5px dashed rgba(255, 255, 255, 0.14);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.12);
 }
 .lp-rpg-camp-row.is-child {
-  min-height: 3.25rem;
-  padding: 0.6rem 0.75rem;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  min-height: 3.15rem;
+  padding: 0.55rem 0.75rem;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+}
+.lp-rpg-camp-row.is-child.is-open {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 2.6rem;
+  border-style: dashed;
+  background: rgba(10, 14, 20, 0.45);
 }
 .lp-rpg-camp-row.is-child .lp-rpg-camp-row__icon {
-  width: 1.9rem;
-  height: 1.9rem;
+  width: 1.85rem;
+  height: 1.85rem;
   border-radius: 0.65rem;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  box-shadow: none;
+}
+.lp-rpg-camp-row.is-child.is-complete {
+  opacity: 0.88;
 }
 
 @media (max-width: 420px) {
   .lp-rpg-camp-row {
-    gap: 0.45rem 0.5rem;
-    padding: 0.65rem 0.7rem;
+    gap: 0.35rem 0.4rem;
+    padding: 0.7rem 2.1rem 0.7rem 0.55rem;
+    grid-template-columns: auto auto minmax(0, 1fr) auto auto;
   }
+  .lp-rpg-camp-row__drag { display: none; }
+  .lp-rpg-camp-row__meta { min-width: 3.6rem; }
+  .lp-rpg-camp-row__meter { width: 3.4rem; }
   .lp-rpg-camp-folder__kids {
     margin-left: 0.7rem;
     padding-left: 0.65rem;
