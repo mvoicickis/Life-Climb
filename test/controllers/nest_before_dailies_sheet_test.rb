@@ -38,9 +38,9 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-head__title", text: /Learn German/
     assert_select ".lp-rpg-breadcrumbs__item", text: /Find a job/
     assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
-    assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp/i
+    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-practice-add", text: /Add Practice/i, count: 0
+    assert_select ".lp-rpg-practice-focus .lp-rpg-practice-add", text: /Add Practice/i, count: 0
   end
 
   test "nested leaf camp shows Add Practice" do

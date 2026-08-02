@@ -89,7 +89,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-section-card.is-current", text: /Resume/
     assert_select ".lp-rpg-section-head__title", text: /Resume/
-    assert_select ".lp-rpg-practice-cats:not(.is-exited)", 1
+    assert_select ".lp-rpg-camps:not(.is-exited)", 1
     assert_select ".lp-rpg-practice-cat__title", text: /Steps/
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
