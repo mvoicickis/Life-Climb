@@ -5104,6 +5104,50 @@
   animation: lp-adventure-copy-slam 700ms cubic-bezier(0.22, 1.15, 0.36, 1) 0.52s both;
 }
 
+.lp-adventure__step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lp-adventure__back {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  text-decoration: none;
+}
+
+.lp-adventure__back:hover,
+.lp-adventure__back:focus-visible {
+  color: var(--lp-ink);
+  text-decoration: underline;
+}
+
+.lp-adventure__progress-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__progress-track {
+  height: 0.28rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-green) 16%, var(--lp-border));
+  overflow: hidden;
+}
+
+.lp-adventure__progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lp-green-deep, #166534), var(--lp-green));
+}
+
 .lp-adventure__kicker {
   margin: 0;
   font-size: 0.8rem;

@@ -44,8 +44,16 @@
 
   <% elsif @step == "mountain" %>
     <section class="lp-adventure__card" aria-labelledby="adventure-mountain-title">
+      <div class="lp-adventure__step-head">
+        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "welcome"), class: "lp-adventure__back" %>
+        <p class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></p>
+      </div>
+      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>" aria-label="<%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %>">
+        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+      </div>
+
       <p class="lp-adventure__kicker"><%= t("v2_onboarding.mountain_kicker") %></p>
-      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title", year: @adventure_year) %></h1>
+      <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title") %></h1>
       <p class="lp-adventure__lead"><%= t("v2_onboarding.mountain_lead") %></p>
 
       <%= form_with url: v2_onboarding_path(step: "mountain"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
