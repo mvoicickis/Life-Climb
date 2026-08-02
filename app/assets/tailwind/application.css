@@ -5300,7 +5300,8 @@
   opacity: 1;
   transform: none;
   border-style: solid;
-  background: color-mix(in srgb, var(--lp-green) 10%, #fff);
+  /* Paper base (not #fff): --lp-ink is light on the dark RPG theme */
+  background: color-mix(in srgb, var(--lp-green) 12%, var(--lp-paper));
   color: var(--lp-ink);
 }
 
