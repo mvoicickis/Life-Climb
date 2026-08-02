@@ -78,8 +78,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@leaf.id}']", wait: 5
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-cat__title", text: /Steps/i, visible: :all
-    assert_selector ".lp-rpg-practice-row__title", text: /Design battle card/i, visible: :all, wait: 5
-    assert_selector ".lp-rpg-camp-practices__kicker", text: /Today's Practice/i, visible: :all
+    assert_selector ".lp-rpg-quest-row__title", text: /Design battle card/i, visible: :all, wait: 5
+    assert_selector ".lp-rpg-camp-switch__tab", text: /Today's Orders/i, visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_selector ".lp-rpg-breadcrumbs__item", text: /MVP path/i, visible: :all
@@ -88,8 +88,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
 
-    assert_selector ".lp-rpg-camp-folder__cta", text: /Open in Today/i, visible: :all
-    assert_selector ".lp-rpg-practice-add", text: /Add Practice/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder__cta", text: /Begin Today's Battles/i, visible: :all
+    assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")
 
     metrics = page.evaluate_script(<<~JS)
@@ -98,7 +98,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const trail = document.querySelector('.lp-rpg__stage-sections');
         const battle = document.querySelector('.lp-rpg__stage-battle');
         const folder = document.querySelector('.lp-rpg-camp-folder[open]');
-        const practice = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-practice-row');
+        const practice = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-quest-row');
         const cta = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-camp-folder__cta');
         practice?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const chrome = document.querySelector('.lp-rpg__chrome-top');
@@ -148,7 +148,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator metrics["battleH"], :>, metrics["trailH"]
     assert_equal true, metrics["folderOpen"], "focused camp folder should be open: #{metrics.inspect}"
     assert_equal true, metrics["practiceInBattle"] || metrics["ctaInBattle"],
-                 "folder practices or Open in Today should stay in the planning stage: #{metrics.inspect}"
+                 "folder quests or Begin Today's Battles should stay in the planning stage: #{metrics.inspect}"
     assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
 

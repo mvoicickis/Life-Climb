@@ -113,8 +113,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-section-card.is-current", text: /Resume/
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}'] .lp-rpg-practice-cat__title", text: /Steps/
-    assert_select ".lp-rpg-practice-row__title", text: /Update CV/
-    assert_select ".lp-rpg-practice-add", text: /Add Practice/i
+    assert_select ".lp-rpg-quest-row__title", text: /Update CV/
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Practice/i
   end
 
   test "locked sections stay visible in the carousel but are not drillable links" do
