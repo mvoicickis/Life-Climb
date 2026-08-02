@@ -29,6 +29,11 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_operator user.life_journeys.count, :>, 0
     assert_operator user.life_areas.count, :>, 0
 
+    day = user.strategy_goals.battles.first || user.strategy_goals.first
+    day.update_columns(horizon: "day", scheduled_on: Date.current) unless day.day?
+    user.practice_tasks.create!(strategy_goal: day, title: "Orphan me", position: 0)
+    assert_operator user.practice_tasks.count, :>, 0
+
     Developer::RestartNewPlayerExperience.call(user:)
 
     user.reload
@@ -40,6 +45,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_equal 0, user.life_journeys.count
     assert_equal 0, user.life_areas.count
     assert_equal 0, user.daily_todos.count
+    assert_equal 0, user.practice_tasks.count
     assert_equal 0, user.strategy_point_ledgers.count
     assert_equal 0, user.strategy_points
 

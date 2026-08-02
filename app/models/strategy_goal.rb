@@ -21,6 +21,7 @@ class StrategyGoal < ApplicationRecord
   belongs_to :life_journey, optional: true
   belongs_to :parent, class_name: "StrategyGoal", optional: true
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
+  has_many :practice_tasks, dependent: :destroy
   has_many :daily_todos, dependent: :nullify
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
