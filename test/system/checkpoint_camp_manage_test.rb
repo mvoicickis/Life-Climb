@@ -42,22 +42,23 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
     )
   end
 
-  test "switch between camps and delete an unnecessary checkpoint" do
+  test "current section menu can delete the active checkpoint" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @junk.id)
-    assert_selector ".lp-rpg-section-card.is-selected", text: /wewe/i, wait: 5
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @first.id)
+    assert_selector ".lp-rpg-section-card.is-selected.is-current", text: /Daily battles/i, wait: 5
     assert_selector ".lp-rpg-sections__item.is-selected .lp-rpg-section-card__menu-btn"
+    assert_selector ".lp-rpg-section-card.is-locked", text: /wewe/i
+    assert_no_selector ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn"
 
-    find("a.lp-rpg-section-card", text: /Daily battles/i, wait: 3).click
-    assert_selector ".lp-rpg-section-card.is-selected", text: /Daily battles/i, wait: 5
-
+    # Unlock the next section, then delete it while it is the active (current) card.
+    @first.complete!
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @junk.id)
-    assert_selector ".lp-rpg-section-card.is-selected", text: /wewe/i, wait: 5
+    assert_selector ".lp-rpg-section-card.is-selected.is-current", text: /wewe/i, wait: 5
     find(".lp-rpg-sections__item.is-selected .lp-rpg-section-card__menu-btn").click
     find(".lp-rpg-section-card__menu-item.is-danger", text: /Delete/i).click
     assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Delete Checkpoint/i, wait: 3
@@ -65,7 +66,7 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
 
     assert_no_selector ".lp-rpg-section-card", text: /wewe/i, wait: 5
     assert_not @user.strategy_goals.exists?(id: @junk.id)
-    assert_selector ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-current", text: /Daily battles/i
+    assert_selector ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-done", text: /Daily battles/i
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-camp-manage.png")

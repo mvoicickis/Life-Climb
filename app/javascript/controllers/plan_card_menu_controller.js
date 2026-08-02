@@ -25,6 +25,9 @@ export default class extends Controller {
   toggle(event) {
     event.preventDefault()
     event.stopPropagation()
+    if (typeof event.stopImmediatePropagation === "function") {
+      event.stopImmediatePropagation()
+    }
     if (this.menuTarget.hidden) {
       this.open()
     } else {

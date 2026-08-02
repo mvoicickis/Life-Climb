@@ -86,7 +86,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
     assert_select ".lp-rpg-section-card", count: 2
-    assert_select "a.lp-rpg-section-card.is-current", minimum: 1
+    assert_select ".lp-rpg-section-card.is-current", minimum: 1
+    assert_select ".lp-rpg-section-card.is-current a.lp-rpg-section-card__link", minimum: 1
   end
 
   test "planning center de-dupes progress and never exposes battle win" do
