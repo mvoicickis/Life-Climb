@@ -5,6 +5,10 @@ require "test_helper"
 class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
   test "wipes strategy data and clears onboarding while keeping the account" do
     user = users(:one)
+    user.update_columns(developer: true, total_points: 120)
+    habit_ids = user.habits.pluck(:id)
+    action_points_before = user.total_points
+
     Onboarding::Run.call(
       user: user,
       area_key: "learning",
@@ -23,6 +27,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
 
     assert_operator user.strategy_goals.count, :>, 0
     assert_operator user.life_journeys.count, :>, 0
+    assert_operator user.life_areas.count, :>, 0
 
     Developer::RestartNewPlayerExperience.call(user:)
 
@@ -33,8 +38,15 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_includes user.support_milestones_shown, "first_finished_product"
     assert_equal 0, user.strategy_goals.count
     assert_equal 0, user.life_journeys.count
+    assert_equal 0, user.life_areas.count
+    assert_equal 0, user.daily_todos.count
     assert_equal 0, user.strategy_point_ledgers.count
     assert_equal 0, user.strategy_points
+
+    # Kept: account, developer flag, Action Points, habits
     assert User.exists?(user.id)
+    assert user.read_attribute(:developer)
+    assert_equal action_points_before, user.total_points
+    assert_equal habit_ids.sort, user.habits.pluck(:id).sort
   end
 end
