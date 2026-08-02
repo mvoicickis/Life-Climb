@@ -15,7 +15,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_match(/Welcome to LifePoints/i, response.body)
-    assert_match(/Start My Journey/i, response.body)
+    assert_match(/See My First Step/i, response.body)
+    assert_match(/Takes about 2 minutes/i, response.body)
     assert_match(/One goal becomes your mountain/i, response.body)
     assert_match(/Ready to name your goal/i, response.body)
     assert_select ".lp-adventure.is-welcome"
@@ -32,9 +33,20 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "welcome")
     assert_redirected_to v2_onboarding_path(step: "mountain")
     follow_redirect!
-    assert_match(/one big goal you want to reach/i, response.body)
+    assert_match(/one goal you.?re working toward/i, response.body)
+    assert_match(/Step 2 of 3/i, response.body)
+    assert_select "a.lp-adventure__back", text: /Back/i
+    assert_select ".lp-adventure__progress-track"
     assert_match(/Become a licensed plumber/i, response.body)
     year = Strategy::YearCycle.target_dec29.year
+
+    get v2_onboarding_path(step: "welcome")
+    assert_response :success
+    assert_match(/Welcome to LifePoints/i, response.body)
+
+    get v2_onboarding_path(step: "mountain")
+    assert_response :success
+    assert_match(/one goal you.?re working toward/i, response.body)
 
     patch v2_onboarding_url(step: "mountain"), params: {
       onboarding: { title: "Become a Ruby Developer" }
@@ -43,6 +55,16 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/December 29, #{year}/i, response.body)
     assert_match(/Become a Ruby Developer/i, response.body)
+    assert_match(/Step 3 of 3/i, response.body)
+    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "mountain"), text: /Back/i
+    assert_select ".lp-adventure__progress-track"
+
+    get v2_onboarding_path(step: "mountain")
+    assert_response :success
+    assert_select "#onboarding_title[value=?]", "Become a Ruby Developer"
+
+    get v2_onboarding_path(step: "deadline")
+    assert_response :success
 
     patch v2_onboarding_url(step: "deadline")
     assert_redirected_to v2_onboarding_path(step: "forge")

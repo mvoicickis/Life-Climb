@@ -4946,11 +4946,14 @@
     0 0 0 1px color-mix(in srgb, #86efac 28%, transparent),
     0 18px 40px color-mix(in srgb, #166534 12%, transparent),
     inset 0 1px 0 color-mix(in srgb, #fff 70%, transparent);
+  /* Mix with paper (not transparent) so multi-line lead copy sits on
+     even luminance — transparent stops let the dark atmosphere wash
+     the first line more than the ones below. */
   background:
     linear-gradient(
       165deg,
-      color-mix(in srgb, #bbf7d0 55%, transparent),
-      color-mix(in srgb, #ecfdf5 80%, transparent) 28%,
+      color-mix(in srgb, #bbf7d0 28%, var(--lp-paper)),
+      color-mix(in srgb, #ecfdf5 18%, var(--lp-paper)) 28%,
       var(--lp-paper) 62%
     );
   animation: lp-adventure-panel-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -5102,6 +5105,52 @@
 
 .lp-adventure__intro .lp-adventure__lead {
   animation: lp-adventure-copy-slam 700ms cubic-bezier(0.22, 1.15, 0.36, 1) 0.52s both;
+  opacity: 1;
+  color: color-mix(in srgb, var(--lp-ink) 88%, var(--lp-muted));
+}
+
+.lp-adventure__step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lp-adventure__back {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  text-decoration: none;
+}
+
+.lp-adventure__back:hover,
+.lp-adventure__back:focus-visible {
+  color: var(--lp-ink);
+  text-decoration: underline;
+}
+
+.lp-adventure__progress-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__progress-track {
+  height: 0.28rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-green) 16%, var(--lp-border));
+  overflow: hidden;
+}
+
+.lp-adventure__progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lp-green-deep, #166534), var(--lp-green));
 }
 
 .lp-adventure__kicker {
@@ -5140,6 +5189,13 @@
   color: var(--lp-ink);
   animation: lp-adventure-beat-in 520ms ease-out both;
   animation-delay: 1.15s;
+}
+
+.lp-adventure__duration {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--lp-muted);
 }
 
 .lp-adventure__beats {
@@ -5217,7 +5273,8 @@
   margin: 0;
   padding: 0.75rem 0.9rem;
   border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--lp-green) 8%, #fff);
+  /* Dark paper base (not #fff) so --lp-ink stays readable on RPG surfaces */
+  background: color-mix(in srgb, var(--lp-green) 12%, var(--lp-paper));
   font-weight: 750;
   color: var(--lp-ink);
 }
@@ -5255,7 +5312,8 @@
   opacity: 1;
   transform: none;
   border-style: solid;
-  background: color-mix(in srgb, var(--lp-green) 10%, #fff);
+  /* Paper base (not #fff): --lp-ink is light on the dark RPG theme */
+  background: color-mix(in srgb, var(--lp-green) 12%, var(--lp-paper));
   color: var(--lp-ink);
 }
 
