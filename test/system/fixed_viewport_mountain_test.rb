@@ -64,8 +64,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
 
     assert_selector ".lp-rpg__stage.is-planning", visible: :all
     assert_selector ".lp-rpg-sheet.is-planning", visible: :all
-    assert_selector ".lp-rpg-current-path", visible: :all
-    assert_selector ".lp-rpg-node.is-window-visible", minimum: 2, wait: 5
+    assert_selector ".lp-rpg-breadcrumbs", visible: :all
+    assert_selector ".lp-rpg-section-card", minimum: 2, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
         const t = document.querySelector(".lp-rpg-destination-carousel__title");
@@ -80,7 +80,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-todays-practice__kicker", text: /Today's Practice/i
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
-    assert_selector ".lp-rpg-current-path__crumb", text: /MVP path/i
+    assert_selector ".lp-rpg-breadcrumbs__item", text: /MVP path/i
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
@@ -93,14 +93,13 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
-        const trail = document.querySelector('.lp-rpg__stage-trail');
+        const trail = document.querySelector('.lp-rpg__stage-sections');
         const battle = document.querySelector('.lp-rpg__stage-battle');
         const practice = document.querySelector('.lp-rpg-practice-focus.is-entered .lp-rpg-practice-row');
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom');
-        const visible = Array.from(document.querySelectorAll('[data-trail-window-target="node"]'))
-          .filter((n) => !n.hidden && n.classList.contains('is-window-visible')).length;
+        const visible = Array.from(document.querySelectorAll('.lp-rpg-section-card')).length;
         const rootStyle = root ? getComputedStyle(root) : null;
         const htmlStyle = getComputedStyle(document.documentElement);
         const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';

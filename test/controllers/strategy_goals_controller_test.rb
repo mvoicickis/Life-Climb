@@ -25,11 +25,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/My Mountain/i, response.body)
     assert_match(/One mountain\. Today.?s battle/i, response.body)
-    assert_match(/What do I ultimately want to achieve/i, response.body)
-    assert_match(/Begin Journey/i, response.body)
+    assert_match(/Name your mountain|New Destination/i, response.body)
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-empty-goal"
+    assert_select ".lp-rpg__stage-sections"
     assert_select "[data-controller*='strategy-celebrate']"
     assert_select "[data-controller*='strategy-rpg']"
     assert_select "#strategy-camp-notebook", count: 0
@@ -97,7 +95,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-practice-row__title", text: /Learn 20 words/i
-    assert_select ".lp-rpg-node.is-current", text: /Learn German/i
+    assert_select ".lp-rpg-section-card.is-current", text: /Learn German/i
     assert_select ".lp-rpg-sheet"
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
@@ -200,12 +198,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_a_leaf.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-world"
+    assert_select ".lp-rpg-sections"
     assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
-    assert_select ".lp-rpg-node.is-current", text: /Project One/i
-    assert_select ".lp-rpg-project", text: /Project Two/i
+    assert_select ".lp-rpg-section-card.is-current", text: /Project One/i
+    assert_select ".lp-rpg-section-card", text: /Project Two/i
     assert_select ".lp-rpg-practice-row__title", text: /Battle One/i
     assert_select ".lp-rpg-stats"
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
@@ -215,7 +213,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
   end
 
-  test "focusing a plan lights that path and shows its trail nodes" do
+  test "focusing a plan lights that path and shows its section cards" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -229,7 +227,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Plan/i
-    assert_select ".lp-rpg-node", text: /Auth Mission/i
+    assert_select ".lp-rpg-section-card", text: /Auth Mission/i
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
@@ -257,7 +255,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path.is-done", text: /Done Plan/i
   end
 
-  test "trail lists focused missions under the selected plan" do
+  test "sections carousel lists path-level camps under the selected plan" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -283,7 +281,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
-    assert_select ".lp-rpg-project", minimum: 3
+    assert_select ".lp-rpg-section-card", minimum: 3
     assert_select ".lp-rpg-practice-row__title", text: /Battle Focus/i
     assert_select "#strategy-camp-notebook", count: 0
   end
@@ -360,8 +358,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_not @user.strategy_goals.exists?(id: junk.id)
 
     follow_redirect!
-    assert_select ".lp-rpg-node.is-planning-focus, .lp-rpg-node.is-slot-focus", text: /Keep me/
-    assert_select ".lp-rpg-node", text: /wewe/, count: 0
+    assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-current", text: /Keep me/
+    assert_select ".lp-rpg-section-card", text: /wewe/, count: 0
   end
 
   test "creating a checkpoint redirects with goal plan and focus so it stays visible" do
@@ -392,9 +390,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-node.is-planning-focus", text: /Launch prep/
-    assert_select ".lp-rpg-node.is-slot-focus", text: /Launch prep/
-    assert_select ".lp-rpg-current-path__plan", text: /Launch prep/
+    assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-locked", text: /Launch prep/
+    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_match(/Checkpoint added|Launch prep/i, flash[:notice].to_s + response.body)

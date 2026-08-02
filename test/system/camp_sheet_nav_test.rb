@@ -48,7 +48,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
   end
 
-  test "trail window and sheet switchers change focused camp practices" do
+  test "section carousel and sheet switchers change focused camp practices" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -56,27 +56,29 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a_leaf.id)
-    assert_selector ".lp-rpg-node.is-planning-focus", text: /Get first 100 users/i, wait: 5
+    assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
+    assert_selector ".lp-rpg-section-card.is-locked", text: /Ship landing page/i
+    assert_no_selector "a.lp-rpg-section-card", text: /Ship landing page/i
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Steps/i
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
                     text: /Ask 5 friends for feedback/i, visible: :all
     assert_no_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
                        text: /Draft hero headline/i, visible: :all
 
-    find(".lp-rpg-trail__shift.is-next", wait: 3).click
-    assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id), wait: 5
-    assert_selector ".lp-rpg-node.is-planning-focus", text: /Ship landing page/i, wait: 5
-    # Path-level camp with nested Steps → Level A under that camp
-    assert_selector ".lp-rpg-current-path__plan", text: /Ship landing page/i, wait: 5
+    # Unlock the next section, then switch via the carousel.
+    @camp_a.complete!
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id)
+    assert_selector ".lp-rpg-section-card.is-selected", text: /Ship landing page/i, wait: 5
+    assert_selector ".lp-rpg-section-head__title", text: /Ship landing page/i, wait: 5
     find(".lp-rpg-practice-cat", text: /Steps/i).click
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
                     text: /Draft hero headline/i, visible: :all, wait: 3
     assert_no_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
                        text: /Ask 5 friends for feedback/i, visible: :all
 
-    find(".lp-rpg-trail__shift.is-prev", wait: 3).click
+    find("a.lp-rpg-section-card", text: /Get first 100 users/i, wait: 3).click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
-    assert_selector ".lp-rpg-current-path__plan", text: /Get first 100 users/i, wait: 5
+    assert_selector ".lp-rpg-section-head__title", text: /Get first 100 users/i, wait: 5
     find(".lp-rpg-practice-cat", text: /Steps/i).click
     assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
                     text: /Ask 5 friends for feedback/i, visible: :all, wait: 3
@@ -98,7 +100,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
-    assert_selector ".lp-rpg-current-path__plan", text: /Empty camp/i, wait: 5
+    assert_selector ".lp-rpg-section-head__title", text: /Empty camp/i, wait: 5
     assert_selector ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_selector ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp/i
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true

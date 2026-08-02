@@ -59,13 +59,13 @@
 
     <div class="lp-rpg__stage is-planning">
       <div class="lp-rpg__planning">
-        <div class="lp-rpg__stage-trail is-glance">
-          <%= render "life_journeys/rpg_trail",
+        <div class="lp-rpg__stage-sections">
+          <%= render "life_journeys/rpg_section_carousel",
                 trail: trail,
                 goal: @goal,
                 plan: plan,
-                alive: alive,
-                current_project: current_project %>
+                current_project: current_project,
+                focus: @focus %>
         </div>
 
         <div class="lp-rpg__stage-battle">

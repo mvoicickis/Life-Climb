@@ -36,13 +36,13 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-sheet.is-categories"
-    assert_select ".lp-rpg-current-path__plan", text: /Resume/
+    assert_select ".lp-rpg-section-head__title", text: /Resume/
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
-    assert_select ".lp-rpg-trail .lp-rpg-node", text: /Resume/
+    assert_select ".lp-rpg-section-card", text: /Resume/
   end
 
   test "nested leaf with day children shows Today's Practice without battle win" do
@@ -86,17 +86,18 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet.is-categories"
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
-    assert_select ".lp-rpg-current-path__plan", text: /Launch prep/
-    assert_select ".lp-rpg-current-path__crumb.is-up", text: /Main trail/
+    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
+    assert_select ".lp-rpg-breadcrumbs__item", text: /Main trail/
     assert_select ".lp-rpg-practice-cats:not(.is-exited) .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-practice-cats:not(.is-exited) .lp-rpg-practice-cat__title", text: /Payments/
+    assert_select ".lp-rpg-layer-card", minimum: 2
     assert_select ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp|Checkpoint/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select "a.lp-rpg-practice-cat[href*='focus_id=#{child.id}']"
 
-    # Trail stays plan-level only — nested child is not a trail node
-    assert_select ".lp-rpg-trail .lp-rpg-node", text: /Launch prep/
-    assert_select ".lp-rpg-trail .lp-rpg-node", text: /Landing page/, count: 0
+    # Sections carousel stays plan-level only — nested child is not a section card
+    assert_select ".lp-rpg-section-card", text: /Launch prep/
+    assert_select ".lp-rpg-section-card", text: /Landing page/, count: 0
   end
 
   test "focusing a nested child enters practice category focus with branch crumb" do
@@ -117,13 +118,13 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Landing page/
     assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Draft hero/
-    assert_select ".lp-rpg-current-path__crumb", text: /Launch prep/
-    assert_select "a.lp-rpg-current-path__crumb[href*='focus_id=#{parent.id}']"
+    assert_select ".lp-rpg-breadcrumbs__item", text: /Launch prep/
+    assert_select "a.lp-rpg-breadcrumbs__item[href*='focus_id=#{parent.id}']"
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
 
-  test "path focus lists practice categories including branch rows" do
+  test "path focus shows sections in carousel and drills into the active section" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Landing page", position: 0
@@ -144,12 +145,11 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-cats:not(.is-exited)", 1
-    assert_select ".lp-rpg-practice-cat.is-branch[data-category-id='#{project.id}']", text: /Landing page/
-    assert_select ".lp-rpg-practice-cat.is-branch[data-category-id='#{branch.id}']", text: /Launch prep/
-    assert_select ".lp-rpg-practice-cat.is-branch", text: /1 camp/
+    assert_select ".lp-rpg-section-card", text: /Landing page/
+    assert_select ".lp-rpg-section-card.is-locked", text: /Launch prep/
+    assert_select ".lp-rpg-section-head__title", text: /Landing page/
+    assert_select ".lp-rpg-practice-cats:not(.is-exited) .lp-rpg-practice-cat__title", text: /Steps/
     assert_select ".lp-rpg-practice-cats .lp-rpg-practice-row", 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
-    assert_select ".lp-rpg-current-path__plan", text: /Main trail/
   end
 end

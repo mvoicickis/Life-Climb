@@ -44,17 +44,18 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__chrome-top"
     assert_select ".lp-rpg__stage.is-planning"
     assert_select ".lp-rpg__planning"
-    assert_select ".lp-rpg__stage-trail.is-glance"
+    assert_select ".lp-rpg__stage-sections"
+    assert_select ".lp-rpg-sections"
     assert_select ".lp-rpg__stage-battle"
     assert_select ".lp-rpg__chrome-bottom"
     assert_select ".lp-rpg-sheet.is-planning"
-    assert_select ".lp-rpg-current-path"
+    assert_select ".lp-rpg-breadcrumbs"
     assert_select "[data-controller='category-focus']"
     assert_select ".lp-rpg-todays-practice"
     assert_select ".lp-rpg-context", count: 0
   end
 
-  test "trail window controls appear only when more than three camps exist" do
+  test "project sections carousel lists all path-level camps" do
     5.times do |i|
       camp = @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -65,13 +66,14 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select "[data-trail-window-target='node']", count: 5
-    assert_select ".lp-rpg-trail__shift.is-prev"
-    assert_select ".lp-rpg-trail__shift.is-next"
-    assert_match(/you are here/i, response.body)
+    assert_select ".lp-rpg-section-card", count: 5
+    assert_select ".lp-rpg-section-card.is-done", minimum: 2
+    assert_select ".lp-rpg-section-card.is-current", minimum: 1
+    assert_select ".lp-rpg-section-card.is-locked", minimum: 1
+    assert_match(/Project Sections/i, response.body)
   end
 
-  test "trail window controls stay absent when three or fewer camps" do
+  test "project sections carousel still renders with few camps" do
     2.times do |i|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -81,9 +83,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select "[data-trail-window-target='node']", count: 2
-    # With three or fewer camps the window does not need a previous shift.
-    assert_select ".lp-rpg-trail__shift.is-prev", count: 0
+    assert_select ".lp-rpg-section-card", count: 2
+    assert_select "a.lp-rpg-section-card.is-current", minimum: 1
   end
 
   test "planning center de-dupes progress and never exposes battle win" do
@@ -122,14 +123,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
     assert_select ".lp-rpg-practice-focus__cta[href='#{dashboard_path}']"
     assert_select ".lp-rpg-practice-add", text: /Add Practice/i
-    assert_select ".lp-rpg-current-path__crumb", text: /Daily battles/
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__chip.is-actions"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-edit"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-node__add[data-controller='floating-create']"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__card"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__input[name='title']"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__textarea[name='description']"
-    assert_select ".lp-rpg-node.is-slot-focus .lp-rpg-float-create__btn.is-create"
-    assert_select ".lp-rpg-node.is-slot-focus form.lp-rpg-node__add-form[action='/strategy_goals']"
+    assert_select ".lp-rpg-breadcrumbs__item", text: /Daily battles/
+    assert_select ".lp-rpg-section-card.is-selected", text: /Daily battles/
+    assert_select "#rpg-add-checkpoint"
   end
 end

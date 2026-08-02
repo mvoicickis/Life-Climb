@@ -50,22 +50,22 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @junk.id)
-    assert_selector ".lp-rpg-node.is-planning-focus", text: /wewe/i, wait: 5
-    assert_selector ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-delete"
-    assert_selector ".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-switch", minimum: 1
+    assert_selector ".lp-rpg-section-card.is-selected", text: /wewe/i, wait: 5
+    assert_selector ".lp-rpg-sections__item.is-selected .lp-rpg-section-card__menu-btn"
 
-    find(".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-switch[aria-label*='Daily battles']", wait: 3).click
-    assert_selector ".lp-rpg-node.is-planning-focus", text: /Daily battles/i, wait: 5
+    find("a.lp-rpg-section-card", text: /Daily battles/i, wait: 3).click
+    assert_selector ".lp-rpg-section-card.is-selected", text: /Daily battles/i, wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @junk.id)
-    assert_selector ".lp-rpg-node.is-planning-focus", text: /wewe/i, wait: 5
-    find(".lp-rpg-node.is-slot-focus .lp-rpg-node__action.is-delete").click
+    assert_selector ".lp-rpg-section-card.is-selected", text: /wewe/i, wait: 5
+    find(".lp-rpg-sections__item.is-selected .lp-rpg-section-card__menu-btn").click
+    find(".lp-rpg-section-card__menu-item.is-danger", text: /Delete/i).click
     assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Delete Checkpoint/i, wait: 3
     within("dialog[open]") { click_button "Delete" }
 
-    assert_no_selector ".lp-rpg-node", text: /wewe/i, wait: 5
+    assert_no_selector ".lp-rpg-section-card", text: /wewe/i, wait: 5
     assert_not @user.strategy_goals.exists?(id: @junk.id)
-    assert_selector ".lp-rpg-node.is-planning-focus, .lp-rpg-node.is-slot-focus", text: /Daily battles/i
+    assert_selector ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-current", text: /Daily battles/i
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-camp-manage.png")
