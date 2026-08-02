@@ -5261,7 +5261,8 @@
   margin: 0;
   padding: 0.75rem 0.9rem;
   border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--lp-green) 8%, #fff);
+  /* Dark paper base (not #fff) so --lp-ink stays readable on RPG surfaces */
+  background: color-mix(in srgb, var(--lp-green) 12%, var(--lp-paper));
   font-weight: 750;
   color: var(--lp-ink);
 }
