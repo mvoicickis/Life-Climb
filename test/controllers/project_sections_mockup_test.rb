@@ -46,14 +46,16 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
   end
 
   test "locked cards keep dimmed meter and percent without menu" do
+    @locked.update!(title: "Today's Page")
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-rpg-section-card.is-locked", text: /Launch/
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title", text: "Today's Page"
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", count: 0
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-slot", count: 0
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__status.is-locked", text: /Locked/i
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", count: 0
     assert_select ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link", count: 0
   end
 
