@@ -65,7 +65,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
 
     assert_selector ".lp-rpg__stage.is-planning", visible: :all
     assert_selector ".lp-rpg-sheet.is-planning", visible: :all
-    assert_selector ".lp-rpg-breadcrumbs", visible: :all
+    assert_no_selector ".lp-rpg-breadcrumbs"
     assert_selector ".lp-rpg-section-card", minimum: 2, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
@@ -82,7 +82,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-camp-switch__tab", text: /Today's Orders/i, visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
-    assert_selector ".lp-rpg-breadcrumbs__item", text: /MVP path/i, visible: :all
+    assert_selector ".lp-rpg-section-head__title", text: /MVP path/i, visible: :all
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")

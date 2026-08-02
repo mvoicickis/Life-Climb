@@ -50,7 +50,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__chrome-bottom", count: 0
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-rpg-sheet.is-planning"
-    assert_select ".lp-rpg-breadcrumbs"
+    assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
     assert_select ".lp-rpg-camp-practices.is-orders"
     assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
@@ -126,7 +126,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
     assert_select ".lp-rpg-camp-folder__cta[href='#{dashboard_path}']"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Practice/i
-    assert_select ".lp-rpg-breadcrumbs__item", text: /Daily battles/
+    assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-section-card.is-selected", text: /Daily battles/
     assert_select "#rpg-add-checkpoint"
   end

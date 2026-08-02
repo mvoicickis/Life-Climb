@@ -371,7 +371,6 @@ en:
       section_locked: "%{title} — locked"
       section_progress: "%{pct}% complete"
       pick_section_hint: "Choose a project section above to drill deeper."
-      breadcrumbs_label: "You are here"
       layer_camps_desc: "Break this into smaller camps, then plan daily practice."
       layer_branch_desc: "Open this camp to see the camps inside."
       layer_leaf_desc: "Open to add daily practices."

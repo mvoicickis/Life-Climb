@@ -17854,45 +17854,6 @@ a.lp-rpg-section-card {
 }
 .lp-rpg-section-card__menu-item.is-danger { color: #fca5a5; }
 
-.lp-rpg-breadcrumbs {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 0.3rem;
-  min-width: 0;
-  margin: 0 0 0.55rem;
-  padding: 0.35rem 0.15rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.lp-rpg-breadcrumbs::-webkit-scrollbar { display: none; }
-.lp-rpg-breadcrumbs__item {
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 8.5rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgba(203, 213, 225, 0.72);
-  font-size: 0.74rem;
-  font-weight: 650;
-  text-decoration: none;
-}
-a.lp-rpg-breadcrumbs__item:hover,
-a.lp-rpg-breadcrumbs__item:focus-visible {
-  color: #8ef092;
-  outline: none;
-}
-.lp-rpg-breadcrumbs__item.is-current {
-  color: rgba(248, 250, 252, 0.96);
-  font-weight: 750;
-}
-.lp-rpg-breadcrumbs__sep {
-  flex: 0 0 auto;
-  color: rgba(148, 163, 184, 0.45);
-  font-size: 0.8rem;
-}
-
 .lp-rpg-section-head {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
