@@ -88,7 +88,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg-section-card.is-current", text: /Resume/
-    assert_select ".lp-rpg-section-head__title", text: /Resume/
+    assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-camps", 1
     assert_select ".lp-rpg-practice-cat__title", text: /Steps/
     assert_select ".lp-rpg-practice-focus.is-entered", 0
@@ -141,7 +141,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-rpg-section-card.is-current", text: /Resume/
     assert_select ".lp-rpg-section-card.is-locked", text: /Interviews/
     assert_select "a.lp-rpg-section-card", text: /Interviews/, count: 0
-    assert_select ".lp-rpg-section-head__title", text: /Resume/
+    assert_select ".lp-rpg-section-head", count: 0
   end
 
   test "goal_id and plan_id switch the climb" do

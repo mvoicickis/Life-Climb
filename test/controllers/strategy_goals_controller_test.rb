@@ -391,7 +391,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-locked", text: /Launch prep/
-    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
+    assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_match(/Checkpoint added|Launch prep/i, flash[:notice].to_s + response.body)

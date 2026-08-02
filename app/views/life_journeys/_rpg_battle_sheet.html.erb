@@ -1,8 +1,7 @@
-<%# Planning sheet — Section → Camp folders (practices inline). locals: current_project, plan, goal, trail, focus %>
+<%# Planning sheet — Section → Camp folders (practices inline). locals: current_project, plan, goal, focus %>
 <% current_project = local_assigns[:current_project] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
-<% trail = local_assigns[:trail] %>
 <% focus = local_assigns[:focus] %>
 <% battle_xp = GameRules::BATTLE_TODO_LP %>
 <% area = @journey.life_area %>
@@ -60,46 +59,11 @@
        end
      end %>
 <% listing_path_level = category_scope&.plan? %>
-<% scope_title = category_scope&.title || plan&.title %>
-<% section_node = trail&.nodes&.find { |n| n.id == category_scope&.id } if category_scope&.path_level_camp? %>
-<% section_active = section_node&.state == :current %>
-<% header_title = scope_title %>
-<% header_pct = category_scope&.progress_percent.to_i %>
-<% scope_pct = header_pct %>
-<% scope_desc =
-     if category_scope&.description.to_s.strip.present?
-       category_scope.description.to_s.strip
-     elsif path_level_split_first
-       t("strategy.rpg.nest_before_dailies")
-     elsif category_scope&.project?
-       t("strategy.rpg.layer_camps_desc")
-     else
-       nil
-     end %>
 
 <% if use_category_focus %>
   <section class="lp-rpg-sheet is-dominant is-planning is-sections is-categories"
            aria-label="<%= t('strategy.rpg.sheet.label') %>"
            <% if open_folder_id %>data-open-folder-id="<%= open_folder_id %>"<% end %>>
-    <header class="lp-rpg-section-head">
-      <div class="lp-rpg-section-head__ring" aria-hidden="true">
-        <span class="lp-rpg-section-head__icon">⚑</span>
-        <span class="lp-rpg-section-head__ring-fill" style="--lp-section-pct: <%= scope_pct %>"></span>
-      </div>
-      <div class="lp-rpg-section-head__copy">
-        <div class="lp-rpg-section-head__title-row">
-          <h2 class="lp-rpg-section-head__title"><%= header_title %></h2>
-          <% if section_active %>
-            <span class="lp-rpg-section-head__badge"><%= t("strategy.rpg.section_active") %></span>
-          <% end %>
-        </div>
-        <% if scope_desc.present? %>
-          <p class="lp-rpg-section-head__desc"><%= scope_desc %></p>
-        <% end %>
-        <p class="lp-rpg-section-head__progress"><%= t("strategy.rpg.section_progress", pct: scope_pct) %></p>
-      </div>
-    </header>
-
     <% camp_accents = %w[green purple blue orange pink gold] %>
     <div class="lp-rpg-practice-cats lp-rpg-camps"
          aria-label="<%= t('strategy.rpg.camps_label') %>">
