@@ -54,10 +54,17 @@
              aria-hidden="false">
       <% if today_days.empty? %>
         <div class="lp-rpg-camp-empty is-orders">
-          <p class="lp-rpg-camp-empty__camp">
-            <span aria-hidden="true">🏕</span>
-            <%= cat.title %>
-          </p>
+          <div class="lp-rpg-camp-empty__seal" aria-hidden="true">
+            <span class="lp-rpg-camp-empty__seal-icon">📜</span>
+          </div>
+          <div class="lp-rpg-camp-empty__banner">
+            <span class="lp-rpg-camp-empty__rule" aria-hidden="true"></span>
+            <p class="lp-rpg-camp-empty__camp">
+              <span aria-hidden="true">🏕</span>
+              <%= cat.title %>
+            </p>
+            <span class="lp-rpg-camp-empty__rule" aria-hidden="true"></span>
+          </div>
           <p class="lp-rpg-camp-empty__title"><%= t("strategy.rpg.orders_empty_title") %></p>
           <p class="lp-rpg-camp-empty__body"><%= t("strategy.rpg.orders_empty_body") %></p>
           <% if can_prepare %>
@@ -65,7 +72,7 @@
                     class="lp-rpg-camp-empty__prepare"
                     data-action="click->camp-workspace#prepare"
                     data-camp-workspace-id-param="<%= cat.id %>">
-              <span aria-hidden="true">＋</span>
+              <span class="lp-rpg-camp-empty__prepare-plus" aria-hidden="true">＋</span>
               <%= t("strategy.rpg.prepare_new_practice") %>
             </button>
           <% end %>
@@ -113,10 +120,17 @@
              aria-hidden="true">
       <% if days.empty? %>
         <div class="lp-rpg-camp-empty is-all">
-          <p class="lp-rpg-camp-empty__camp">
-            <span aria-hidden="true">📚</span>
-            <%= t("strategy.rpg.all_practices") %>
-          </p>
+          <div class="lp-rpg-camp-empty__seal" aria-hidden="true">
+            <span class="lp-rpg-camp-empty__seal-icon">📚</span>
+          </div>
+          <div class="lp-rpg-camp-empty__banner">
+            <span class="lp-rpg-camp-empty__rule" aria-hidden="true"></span>
+            <p class="lp-rpg-camp-empty__camp">
+              <span aria-hidden="true">🏕</span>
+              <%= cat.title %>
+            </p>
+            <span class="lp-rpg-camp-empty__rule" aria-hidden="true"></span>
+          </div>
           <p class="lp-rpg-camp-empty__title"><%= t("strategy.rpg.all_empty_title") %></p>
           <p class="lp-rpg-camp-empty__body"><%= t("strategy.rpg.all_empty_body") %></p>
           <% if can_prepare %>
@@ -124,7 +138,7 @@
                     class="lp-rpg-camp-empty__prepare"
                     data-action="click->camp-workspace#prepare"
                     data-camp-workspace-id-param="<%= cat.id %>">
-              <span aria-hidden="true">＋</span>
+              <span class="lp-rpg-camp-empty__prepare-plus" aria-hidden="true">＋</span>
               <%= t("strategy.rpg.prepare_new_practice") %>
             </button>
           <% end %>
