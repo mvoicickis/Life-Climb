@@ -85,7 +85,7 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     end
 
     assert_selector ".lp-rpg-section-card", text: /Notifications camp/i, wait: 5
-    assert_selector ".lp-rpg-section-head__title", text: /Notifications camp/i, wait: 5
+    assert_no_selector ".lp-rpg-section-head"
     assert @user.strategy_goals.for_kind("project").exists?(title: "Notifications camp", parent_id: @plan.id)
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")

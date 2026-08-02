@@ -36,7 +36,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg-sheet.is-categories"
-    assert_select ".lp-rpg-section-head__title", text: /Resume/
+    assert_select ".lp-rpg-section-card", text: /Resume/
+    assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
@@ -90,9 +91,9 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet.is-categories"
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
-    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
+    assert_select ".lp-rpg-section-card", text: /Launch prep/
+    assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Payments/
     assert_select ".lp-rpg-camps .lp-rpg-camp-row.is-leaf", minimum: 2
@@ -121,7 +122,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: child.id)
     assert_response :success
-    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
+    assert_select ".lp-rpg-section-card.is-selected", text: /Launch prep/
+    assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{child.id}'] .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Draft hero/
     assert_select ".lp-rpg-breadcrumbs", count: 0
@@ -155,7 +157,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-section-card", text: /Landing page/
     assert_select ".lp-rpg-section-card.is-locked", text: /Launch prep/
-    assert_select ".lp-rpg-section-head__title", text: /Landing page/
+    assert_select ".lp-rpg-section-card.is-current, .lp-rpg-section-card.is-selected", text: /Landing page/
+    assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Steps/
     assert_select ".lp-rpg-camp-folder[open]", 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
