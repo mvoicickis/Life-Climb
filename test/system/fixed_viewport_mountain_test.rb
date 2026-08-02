@@ -78,7 +78,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@leaf.id}']", wait: 5
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-cat__title", text: /Steps/i, visible: :all
-    assert_selector ".lp-rpg-quest-row__title", text: /Design battle card/i, visible: :all, wait: 5
+    assert_selector ".lp-rpg-practice-folder__title", text: /Design battle card/i, visible: :all, wait: 5
     assert_no_selector ".lp-rpg-camp-switch"
     assert_selector ".lp-rpg-camp-practices", visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
@@ -100,7 +100,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const trail = document.querySelector('.lp-rpg__stage-sections');
         const battle = document.querySelector('.lp-rpg__stage-battle');
         const folder = document.querySelector('.lp-rpg-camp-folder[open]');
-        const practice = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-quest-row');
+        const practice = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-practice-folder');
         const cta = document.querySelector('.lp-rpg-camp-folder[open] .lp-rpg-camp-folder__cta');
         practice?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const chrome = document.querySelector('.lp-rpg__chrome-top');

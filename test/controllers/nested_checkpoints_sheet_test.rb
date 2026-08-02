@@ -62,9 +62,9 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-practices", 1
-    assert_select ".lp-rpg-quest-row__title", text: /Update CV/
-    assert_select ".lp-rpg-quest-row__xp", text: /XP/i
-    assert_select ".lp-rpg-quest-row__check[checked]", minimum: 1
+    assert_select ".lp-rpg-practice-folder__title", text: /Update CV/
+    assert_select ".lp-rpg-practice-folder__xp", text: /XP/i
+    assert_select ".lp-rpg-practice-folder__plan-check[checked]", minimum: 1
     assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
     assert_select "form[action=?]", battle_win_path(battle), count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
@@ -125,7 +125,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card.is-selected", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{child.id}'] .lp-rpg-practice-cat__title", text: /Landing page/
-    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Draft hero/
+    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title", text: /Draft hero/
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-section-card.is-selected", text: /Launch prep/
     assert_select ".lp-rpg-camps:not([hidden])", 1
