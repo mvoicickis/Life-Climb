@@ -40,7 +40,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Add Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Prepare New Practice/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-section-card", text: /Resume/
   end
@@ -59,12 +59,12 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
-    assert_select ".lp-rpg-camp-practices.is-today .lp-rpg-camp-practices__kicker", text: /Today.?s Practice/i
-    assert_select ".lp-rpg-camp-practices.is-all .lp-rpg-camp-practices__kicker", text: /All Practices/i
-    assert_select ".lp-rpg-practice-row__title", text: /Update CV/
-    assert_select ".lp-rpg-practice-row__xp", text: /XP/i
-    assert_select ".lp-rpg-practice-row__check[checked]", minimum: 1
-    assert_select ".lp-rpg-camp-folder__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
+    assert_select ".lp-rpg-camp-switch__tab", text: /All Practices/i
+    assert_select ".lp-rpg-quest-row__title", text: /Update CV/
+    assert_select ".lp-rpg-quest-row__xp", text: /XP/i
+    assert_select ".lp-rpg-quest-row__check[checked]", minimum: 1
+    assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
     assert_select "form[action=?]", battle_win_path(battle), count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-camps:not([hidden])", 1
@@ -123,7 +123,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-section-head__title", text: /Launch prep/
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{child.id}'] .lp-rpg-practice-cat__title", text: /Landing page/
-    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title", text: /Draft hero/
+    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Draft hero/
     assert_select ".lp-rpg-breadcrumbs__item", text: /Launch prep/
     assert_select "a.lp-rpg-breadcrumbs__item[href*='focus_id=#{parent.id}']"
     assert_select ".lp-rpg-camps:not([hidden])", 1

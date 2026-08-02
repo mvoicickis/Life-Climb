@@ -94,7 +94,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: nested.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-practice-row__title", text: /Learn 20 words/i
+    assert_select ".lp-rpg-quest-row__title", text: /Learn 20 words/i
     assert_select ".lp-rpg-section-card.is-current", text: /Learn German/i
     assert_select ".lp-rpg-sheet"
     assert_select "#strategy-camp-notebook", count: 0
@@ -204,13 +204,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-rpg-section-card.is-current", text: /Project One/i
     assert_select ".lp-rpg-section-card", text: /Project Two/i
-    assert_select ".lp-rpg-practice-row__title", text: /Battle One/i
+    assert_select ".lp-rpg-quest-row__title", text: /Battle One/i
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
     assert_select "form[action=?]", battle_win_path(battle), count: 0
-    assert_select ".lp-rpg-camp-folder__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
   end
 
   test "focusing a plan lights that path and shows its section cards" do
@@ -282,7 +282,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-rpg-section-card", minimum: 3
-    assert_select ".lp-rpg-practice-row__title", text: /Battle Focus/i
+    assert_select ".lp-rpg-quest-row__title", text: /Battle Focus/i
     assert_select "#strategy-camp-notebook", count: 0
   end
 
@@ -305,8 +305,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-rpg-practice-add", text: /Add Practice/i
-    assert_select ".lp-rpg-practice-row__title", text: /Battle/
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Practice/i
+    assert_select ".lp-rpg-quest-row__title", text: /Battle/
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end
 
@@ -528,8 +528,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-practice-row.is-daily .lp-rpg-practice-row__repeat", text: /Every day/i
-    assert_select ".lp-rpg-practice-row__title", text: /Do lessons/i
+    assert_select ".lp-rpg-quest-row.is-daily .lp-rpg-practice-row__repeat", text: /Every day/i
+    assert_select ".lp-rpg-quest-row__title", text: /Do lessons/i
   end
 
   test "completing a daily practice rolls the template to tomorrow" do
