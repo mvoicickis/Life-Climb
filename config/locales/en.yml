@@ -383,6 +383,7 @@ en:
       todays_practice: "Today's Practice"
       all_practices: "All Practices"
       add_practice: "+ Add Practice"
+      add_practice_label: "Add Practice"
       practice_name: "Practice name"
       practice_name_placeholder: "What will you practice?"
       create_practice: "Create Practice"

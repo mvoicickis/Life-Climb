@@ -18151,12 +18151,18 @@ a.lp-rpg-camp-row {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
   transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
 }
-.lp-rpg-camp-row.is-green { --lp-camp-accent: #57d35b; }
-.lp-rpg-camp-row.is-purple { --lp-camp-accent: #a78bfa; }
-.lp-rpg-camp-row.is-blue { --lp-camp-accent: #60a5fa; }
-.lp-rpg-camp-row.is-orange { --lp-camp-accent: #fb923c; }
-.lp-rpg-camp-row.is-pink { --lp-camp-accent: #f472b6; }
-.lp-rpg-camp-row.is-gold { --lp-camp-accent: #e0b12a; }
+.lp-rpg-camp-row.is-green,
+.lp-rpg-camp-folder.is-green { --lp-camp-accent: #57d35b; }
+.lp-rpg-camp-row.is-purple,
+.lp-rpg-camp-folder.is-purple { --lp-camp-accent: #a78bfa; }
+.lp-rpg-camp-row.is-blue,
+.lp-rpg-camp-folder.is-blue { --lp-camp-accent: #60a5fa; }
+.lp-rpg-camp-row.is-orange,
+.lp-rpg-camp-folder.is-orange { --lp-camp-accent: #fb923c; }
+.lp-rpg-camp-row.is-pink,
+.lp-rpg-camp-folder.is-pink { --lp-camp-accent: #f472b6; }
+.lp-rpg-camp-row.is-gold,
+.lp-rpg-camp-folder.is-gold { --lp-camp-accent: #e0b12a; }
 
 .lp-rpg-camp-row:hover,
 .lp-rpg-camp-row:focus-visible,
@@ -18420,81 +18426,258 @@ a.lp-rpg-camp-row {
   opacity: 0.88;
 }
 
-.lp-rpg-camp-folder__body {
-  --lp-camp-accent: #57d35b;
-  display: grid;
-  gap: 0.7rem;
-  margin: 0.35rem 0 0.25rem 1.15rem;
-  padding: 0.65rem 0.75rem 0.75rem;
-  border-left: 1.5px solid color-mix(in srgb, var(--lp-camp-accent) 45%, transparent);
-  border-radius: 0 0.85rem 0.85rem 0;
-  background: rgba(0, 0, 0, 0.22);
+/* Open camp = one folder card: summary + workspace body */
+.lp-rpg-camp-folder[open] {
+  border-radius: 1.05rem;
+  border: 1px solid color-mix(in srgb, var(--lp-camp-accent, #57d35b) 28%, transparent);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
+    rgba(8, 12, 18, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 14px 28px rgba(0, 0, 0, 0.28);
+  overflow: clip;
 }
-.lp-rpg-camp-folder__body.is-green { --lp-camp-accent: #57d35b; }
-.lp-rpg-camp-folder__body.is-purple { --lp-camp-accent: #a78bfa; }
-.lp-rpg-camp-folder__body.is-blue { --lp-camp-accent: #60a5fa; }
-.lp-rpg-camp-folder__body.is-orange { --lp-camp-accent: #fb923c; }
-.lp-rpg-camp-folder__body.is-pink { --lp-camp-accent: #f472b6; }
-.lp-rpg-camp-folder__body.is-gold { --lp-camp-accent: #e0b12a; }
+.lp-rpg-camp-folder[open] > summary.lp-rpg-camp-row {
+  border-color: transparent;
+  border-radius: 1.05rem 1.05rem 0 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+  background: transparent;
+}
+.lp-rpg-camp-folder[open] > summary.lp-rpg-camp-row.is-leaf,
+.lp-rpg-camp-folder[open] > summary.lp-rpg-camp-row.is-folder {
+  border-left-color: var(--lp-camp-accent);
+}
 
-.lp-rpg-camp-folder.is-nested > .lp-rpg-camp-folder__body {
-  margin-left: 0.55rem;
-  padding: 0.55rem 0.6rem 0.65rem;
+.lp-rpg-camp-folder__body,
+.lp-rpg-camp-workspace {
+  --lp-camp-accent: #57d35b;
+  position: relative;
+  display: grid;
+  grid-template-columns: 0.35rem minmax(0, 1fr);
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0 0 1.05rem 1.05rem;
+  background: transparent;
+}
+.lp-rpg-camp-folder__body.is-green,
+.lp-rpg-camp-workspace.is-green { --lp-camp-accent: #57d35b; }
+.lp-rpg-camp-folder__body.is-purple,
+.lp-rpg-camp-workspace.is-purple { --lp-camp-accent: #a78bfa; }
+.lp-rpg-camp-folder__body.is-blue,
+.lp-rpg-camp-workspace.is-blue { --lp-camp-accent: #60a5fa; }
+.lp-rpg-camp-folder__body.is-orange,
+.lp-rpg-camp-workspace.is-orange { --lp-camp-accent: #fb923c; }
+.lp-rpg-camp-folder__body.is-pink,
+.lp-rpg-camp-workspace.is-pink { --lp-camp-accent: #f472b6; }
+.lp-rpg-camp-folder__body.is-gold,
+.lp-rpg-camp-workspace.is-gold { --lp-camp-accent: #e0b12a; }
+
+.lp-rpg-camp-workspace__rail {
+  width: 0.35rem;
+  min-height: 100%;
+  background: linear-gradient(
+    180deg,
+    var(--lp-camp-accent),
+    color-mix(in srgb, var(--lp-camp-accent) 35%, transparent)
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--lp-camp-accent) 35%, transparent);
+}
+
+.lp-rpg-camp-workspace__surface {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.7rem 0.75rem 0.8rem;
+  background:
+    radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--lp-camp-accent) 12%, transparent), transparent 55%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.22));
+}
+
+.lp-rpg-camp-folder.is-nested > .lp-rpg-camp-folder__body,
+.lp-rpg-camp-folder.is-nested > .lp-rpg-camp-workspace {
+  border-radius: 0 0 0.9rem 0.9rem;
+}
+.lp-rpg-camp-folder.is-legacy-scope.lp-rpg-camp-folder__body,
+.lp-rpg-camp-folder.is-legacy-scope {
+  border-radius: 1.05rem;
+  border: 1px solid color-mix(in srgb, var(--lp-camp-accent, #57d35b) 28%, transparent);
+  overflow: clip;
 }
 
 .lp-rpg-camp-practices {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
   min-width: 0;
+  padding: 0.55rem 0.6rem 0.6rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(6, 10, 16, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.lp-rpg-camp-practices__head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.lp-rpg-camp-practices__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, var(--lp-camp-accent) 16%, transparent);
+  color: color-mix(in srgb, var(--lp-camp-accent) 85%, #fff);
+  font-size: 0.68rem;
+  line-height: 1;
 }
 .lp-rpg-camp-practices__kicker {
   margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.55);
+  color: rgba(226, 232, 240, 0.62);
+}
+.lp-rpg-camp-practices__count {
+  flex: 0 0 auto;
+  min-width: 1.25rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--lp-camp-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--lp-camp-accent) 12%, transparent);
+  color: color-mix(in srgb, var(--lp-camp-accent) 90%, #fff);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-align: center;
 }
 .lp-rpg-camp-practices__empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
   margin: 0;
-  padding: 0.35rem 0.1rem;
-  font-size: 0.78rem;
-  line-height: 1.35;
-  color: rgba(203, 213, 225, 0.62);
+  padding: 0.85rem 0.6rem;
+  border-radius: 0.7rem;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  text-align: center;
 }
-.lp-rpg-camp-practices__list {
-  max-height: 9.5rem;
-}
-.lp-rpg-camp-practices .lp-rpg-practice-row__icon {
-  flex: 0 0 auto;
-  font-size: 0.85rem;
+.lp-rpg-camp-practices__empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--lp-camp-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lp-camp-accent) 28%, transparent);
+  font-size: 0.95rem;
   line-height: 1;
   opacity: 0.9;
 }
+.lp-rpg-camp-practices__empty-copy {
+  margin: 0;
+  max-width: 16rem;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: rgba(203, 213, 225, 0.68);
+}
+.lp-rpg-camp-practices__list {
+  max-height: 8.5rem;
+  gap: 0.3rem;
+}
+.lp-rpg-camp-practices .lp-rpg-practice-row.is-doc .lp-rpg-practice-row__label {
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  min-height: 2.45rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.7rem;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.025);
+}
+.lp-rpg-camp-practices .lp-rpg-practice-row.is-doc.is-selected .lp-rpg-practice-row__label {
+  border-color: color-mix(in srgb, var(--lp-camp-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--lp-camp-accent) 10%, transparent);
+}
+.lp-rpg-camp-practices .lp-rpg-practice-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--lp-camp-accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lp-camp-accent) 30%, transparent);
+  font-size: 0.78rem;
+  line-height: 1;
+  opacity: 0.95;
+}
 .lp-rpg-camp-practices .lp-rpg-practice-row__label.is-static {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.45rem;
   width: 100%;
-  min-height: 2.4rem;
-  padding: 0.35rem 0.45rem;
-  opacity: 0.78;
+  min-height: 2.45rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  opacity: 0.82;
 }
 .lp-rpg-camp-practices .lp-rpg-practice-row.is-complete {
-  opacity: 0.85;
+  opacity: 0.9;
+}
+.lp-rpg-camp-practices .lp-rpg-practice-row__title {
+  font-size: 0.84rem;
+}
+
+.lp-rpg-camp-workspace__footer {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.1rem;
+}
+.lp-rpg-camp-workspace__footer .lp-rpg-node__add.is-practice-add {
+  margin: 0;
 }
 
 .lp-rpg-practice-add.is-folder {
-  border-style: solid;
-  border-color: rgba(87, 211, 91, 0.45);
-  background: rgba(87, 211, 91, 0.08);
-  color: #8ef092;
   width: 100%;
   justify-content: center;
+  min-height: 2.5rem;
+  margin: 0;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--lp-camp-accent, #57d35b) 50%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lp-camp-accent, #57d35b) 16%, transparent), transparent),
+    rgba(87, 211, 91, 0.06);
+  color: #8ef092;
+  font-size: 0.84rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.lp-rpg-practice-add.is-folder .lp-rpg-practice-add__plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(142, 240, 146, 0.45);
+  background: rgba(87, 211, 91, 0.14);
+  font-size: 0.95rem;
+  line-height: 1;
 }
 .lp-rpg-practice-add.is-folder:hover,
 .lp-rpg-node__add.is-practice-add[open] > .lp-rpg-practice-add.is-folder {
-  border-color: rgba(87, 211, 91, 0.7);
+  border-color: color-mix(in srgb, var(--lp-camp-accent, #57d35b) 70%, transparent);
   background: rgba(87, 211, 91, 0.14);
   color: #b6f7b8;
 }
@@ -18504,16 +18687,19 @@ a.lp-rpg-camp-row {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 2.35rem;
-  padding: 0.5rem 0.95rem;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.95rem;
   border-radius: 0.85rem;
   border: 1px solid rgba(212, 160, 23, 0.55);
-  background: linear-gradient(180deg, #e0b12a 0%, #d4a017 100%);
+  background: linear-gradient(180deg, #e8bc3a 0%, #d4a017 100%);
   color: #14110a;
   font-size: 0.86rem;
   font-weight: 800;
+  letter-spacing: 0.01em;
   text-decoration: none;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 .lp-rpg-camp-folder__cta:hover,
 .lp-rpg-camp-folder__cta:focus-visible {
@@ -18538,8 +18724,14 @@ a.lp-rpg-camp-row {
     margin-left: 0.7rem;
     padding-left: 0.65rem;
   }
-  .lp-rpg-camp-folder__body {
-    margin-left: 0.55rem;
-    padding-left: 0.55rem;
+  .lp-rpg-camp-workspace__surface {
+    padding: 0.55rem 0.55rem 0.65rem;
+    gap: 0.55rem;
+  }
+  .lp-rpg-camp-practices {
+    padding: 0.45rem 0.5rem 0.5rem;
+  }
+  .lp-rpg-camp-practices__empty {
+    padding: 0.7rem 0.45rem;
   }
 }
