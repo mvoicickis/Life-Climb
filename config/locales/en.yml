@@ -353,6 +353,7 @@ en:
       cancel: "Cancel"
       optional: "optional"
       new_checkpoint: "New Checkpoint"
+      new_project: "New Project"
       checkpoint_name: "Checkpoint name"
       checkpoint_name_placeholder: "Checkpoint name"
       checkpoint_description_placeholder: "What makes this milestone matter?"

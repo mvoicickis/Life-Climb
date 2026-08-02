@@ -138,9 +138,14 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: first.id)
     assert_response :success
-    assert_select "a.lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-card.is-current a.lp-rpg-section-card__link"
     assert_select ".lp-rpg-section-card.is-locked", text: /Interviews/
-    assert_select "a.lp-rpg-section-card", text: /Interviews/, count: 0
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
+    assert_select ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link", count: 0
+    assert_select ".lp-rpg-sections__new-btn", text: /New Project/
     assert_select ".lp-rpg-section-head", count: 0
   end
 

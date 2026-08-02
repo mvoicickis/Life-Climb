@@ -56,7 +56,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a_leaf.id)
     assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
     assert_selector ".lp-rpg-section-card.is-locked", text: /Ship landing page/i
-    assert_no_selector "a.lp-rpg-section-card", text: /Ship landing page/i
+    assert_no_selector ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link"
     assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
     assert_no_selector ".lp-qs-obj__text[value='Draft hero headline']", visible: :all
@@ -71,7 +71,8 @@ class CampSheetNavTest < ApplicationSystemTestCase
                     visible: :all, wait: 3
     assert_no_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
 
-    find("a.lp-rpg-section-card", text: /Get first 100 users/i, wait: 3).click
+    find(".lp-rpg-section-card", text: /Get first 100 users/i, wait: 3)
+      .find("a.lp-rpg-section-card__link").click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
     assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
     find(".lp-qs-card", text: /Steps/i).click
