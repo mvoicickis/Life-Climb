@@ -132,4 +132,3 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
     assert_equal 25, Strategy::Progress.percent(plan.reload)
   end
 end
-
