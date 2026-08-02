@@ -41,16 +41,11 @@ class StrategyGoalsController < ApplicationController
         flash[:climb_boss] = true if celebration[:amount].to_i >= 50
       end
 
-      @created = goal
-      prepare_world_for!(goal, focus_id: redirect_focus_id(goal))
-      respond_to do |format|
-        format.turbo_stream { render :create, status: :created }
-        format.html do
-          redirect_to strategy_redirect_path(**create_redirect_params(goal)),
-                      notice: create_notice(goal, celebration),
-                      status: :see_other
-        end
-      end
+      # Always redirect — Turbo form posts used to hit a no-op turbo_stream that
+      # saved the record but left the Quest Folders sheet unchanged.
+      redirect_to strategy_redirect_path(**create_redirect_params(goal)),
+                  notice: create_notice(goal, celebration),
+                  status: :see_other
     else
       fail_redirect(goal.errors.full_messages.to_sentence, focus_id: parent&.id)
     end

@@ -184,7 +184,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Run path/
   end
 
-  test "creating a plan via turbo stream still succeeds" do
+  test "creating a plan via turbo stream redirects so the mountain refreshes" do
     post strategy_goals_path,
          params: {
            life_area_id: @area.id,
@@ -195,7 +195,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
          },
          as: :turbo_stream
 
-    assert_response :created
-    assert @user.strategy_goals.for_kind("plan").exists?(title: "Trail Plan")
+    created = @user.strategy_goals.for_kind("plan").find_by!(title: "Trail Plan")
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: created.id, focus_id: created.id)
   end
 end
