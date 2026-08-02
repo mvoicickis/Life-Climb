@@ -15,7 +15,7 @@
       <%= render "shared/lp_brand_mark", size: 64, class_name: "lp-adventure__mark" %>
       <div class="lp-adventure__intro">
         <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
-        <p class="lp-adventure__lead"><%= t("v2_onboarding.welcome_lead") %></p>
+        <%= simple_format t("v2_onboarding.welcome_lead"), { class: "lp-adventure__lead" } %>
       </div>
 
       <ul class="lp-adventure__beats">
