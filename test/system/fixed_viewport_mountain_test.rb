@@ -79,7 +79,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@leaf.id}']", wait: 5
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-cat__title", text: /Steps/i, visible: :all
     assert_selector ".lp-rpg-quest-row__title", text: /Design battle card/i, visible: :all, wait: 5
-    assert_selector ".lp-rpg-camp-switch__tab", text: /Today's Orders/i, visible: :all
+    assert_no_selector ".lp-rpg-camp-switch"
+    assert_selector ".lp-rpg-camp-practices", visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_no_selector ".lp-rpg-section-head"
