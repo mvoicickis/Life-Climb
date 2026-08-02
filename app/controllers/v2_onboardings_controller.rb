@@ -5,6 +5,8 @@ class V2OnboardingsController < ApplicationController
 
   # Simplified MVP adventure start — no life-area picker, no long coach funnel.
   STEPS = %w[welcome mountain deadline forge how].freeze
+  # User-facing setup progress (forge/how are post-create transitions).
+  SETUP_STEPS = %w[welcome mountain deadline].freeze
   DEFAULT_AREA_KEY = "self".freeze
 
   def show
@@ -12,6 +14,10 @@ class V2OnboardingsController < ApplicationController
     @step = (params[:step].presence || "welcome").to_s
     @step = "welcome" unless STEPS.include?(@step)
     @adventure_year = Strategy::YearCycle.target_dec29.year
+    if SETUP_STEPS.include?(@step)
+      @setup_step_index = SETUP_STEPS.index(@step) + 1
+      @setup_step_total = SETUP_STEPS.size
+    end
 
     if current_user.onboarding_completed? && current_user.planning_v2?
       # Optional how-guide stays reachable; otherwise leave onboarding shell.
