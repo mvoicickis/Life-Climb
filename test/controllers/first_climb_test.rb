@@ -47,6 +47,15 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-route.is-first-climb", count: 0
     assert @user.daily_todos.for_day(Date.current).exists?(title: "Study chapter 1 for 20 minutes")
     assert Strategy::HierarchyReady.call(user: @user, journey: @journey)
+
+    # One real action only — scaffolding "Plan Your Route" mission is retired.
+    assert_select ".lp-dash-battle__list > .lp-dash-battle__item", count: 1
+    assert_select ".lp-dash-battle__name", text: "Study chapter 1 for 20 minutes"
+    assert_no_match(/Plan Your Route/i, response.body)
+
+    # Stage label once (mountain caption), not also in the momentum line.
+    assert_select ".lp-dash-hero__mountain-caption", text: /Camp set/i, count: 1
+    assert_select ".lp-dash-hero__momentum", text: /Camp set/i, count: 0
   end
 
   test "today dead-end shows first-climb coach when spine empty" do

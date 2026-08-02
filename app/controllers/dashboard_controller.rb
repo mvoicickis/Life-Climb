@@ -37,7 +37,9 @@ class DashboardController < ApplicationController
     # Empty spine: never dead-end on "Plan Your Route" — show the 60s first-climb coach.
     @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").none?
     @show_plan_route = @first_climb_needed || plan_route_pending?
-    @include_mission_in_battle = !@show_plan_route && @mission.present? && !@mission.completed?
+    # Only pending missions belong in Today's Battle. "replaced" scaffolding
+    # (e.g. Plan Your Route after first climb) must not reappear beside real actions.
+    @include_mission_in_battle = !@show_plan_route && @mission.present? && @mission.status == "pending"
     @battle_reward = @open_todos.sum { |t| t.lp_reward.to_i }
     @battle_reward += @mission.lp_reward if @include_mission_in_battle
     @battle_open_count = @open_todos.size + (@include_mission_in_battle ? 1 : 0)
@@ -53,7 +55,7 @@ class DashboardController < ApplicationController
     @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
     @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
     @battle_celebrate = flash[:battle_celebrate].present?
-    @battle_total_count = @daily_todos.size + ((@mission.present? && !@show_plan_route) ? 1 : 0)
+    @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
     @project_check = Strategy::ProjectCheckQueue.next_for(user: current_user, session: session)
     @battle_angle_project =
       if @project_check
