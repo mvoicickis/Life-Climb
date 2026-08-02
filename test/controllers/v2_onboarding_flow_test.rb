@@ -54,6 +54,16 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/December 29, #{year}/i, response.body)
     assert_match(/Become a Ruby Developer/i, response.body)
+    assert_match(/Step 3 of 3/i, response.body)
+    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "mountain"), text: /Back/i
+    assert_select ".lp-adventure__progress-track"
+
+    get v2_onboarding_path(step: "mountain")
+    assert_response :success
+    assert_select "#onboarding_title[value=?]", "Become a Ruby Developer"
+
+    get v2_onboarding_path(step: "deadline")
+    assert_response :success
 
     patch v2_onboarding_url(step: "deadline")
     assert_redirected_to v2_onboarding_path(step: "forge")
