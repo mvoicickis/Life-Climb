@@ -838,7 +838,10 @@ en:
   v2_onboarding:
     title: "Start your adventure"
     welcome_title: "Welcome to LifePoints"
-    welcome_lead: "Turn one real goal into a climb you can win today."
+    welcome_lead: |-
+      Most goals die in your notes app.
+      Not from lack of ambition — from lack of a next step that actually feels like progress.
+      One goal. One climb. One win today.
     welcome_beat_mountain: "One goal becomes your mountain."
     welcome_beat_battle: "Each day has one clear next action."
     welcome_beat_points: "Every win proves you’re becoming who you want to be."
