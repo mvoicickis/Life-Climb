@@ -109,7 +109,7 @@ export default class extends Controller {
 
   next(event) {
     event.preventDefault()
-    this.scrollByCards(1)
+    this.scrollToNextCard()
   }
 
   scrollByCards(direction) {
@@ -126,6 +126,36 @@ export default class extends Controller {
       this.syncArrows()
       this.persistScroll()
     }, reduce ? 0 : 320)
+  }
+
+  // Snap to the next card's start. Avoids smooth scrollBy fighting mandatory scroll-snap.
+  scrollToNextCard() {
+    if (!this.hasTrackTarget) return
+
+    const track = this.trackTarget
+    const items = Array.from(track.querySelectorAll(":scope > li"))
+    if (!items.length) return
+
+    const leftOf = (item) =>
+      item.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft
+
+    // Snap often parks a few px short of the next card's left; use half a step as tolerance.
+    const step = this.cardStep()
+    const tolerance = step > 0 ? step / 2 : 2
+    let index = 0
+    items.forEach((item, i) => {
+      if (leftOf(item) <= track.scrollLeft + tolerance) index = i
+    })
+    const target = items[Math.min(index + 1, items.length - 1)]
+    const destination = leftOf(target)
+
+    // Instant snap-align: smooth scrollTo/scrollBy races mandatory scroll-snap and can no-op.
+    target.scrollIntoView({ inline: "start", block: "nearest", behavior: "auto" })
+    if (Math.abs(track.scrollLeft - destination) > 2) {
+      track.scrollLeft = destination
+    }
+    this.syncArrows()
+    this.persistScroll()
   }
 
   cardStep() {
