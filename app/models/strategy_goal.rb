@@ -25,7 +25,6 @@ class StrategyGoal < ApplicationRecord
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
   has_many :practice_tasks, dependent: :destroy
   has_many :daily_todos, dependent: :nullify
-  has_many :practice_tasks, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
