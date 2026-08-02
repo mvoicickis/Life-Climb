@@ -15,7 +15,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_match(/Welcome to LifePoints/i, response.body)
-    assert_match(/Start My Journey/i, response.body)
+    assert_match(/See My First Step/i, response.body)
+    assert_match(/Takes about 2 minutes/i, response.body)
     assert_match(/One goal becomes your mountain/i, response.body)
     assert_match(/Ready to name your goal/i, response.body)
     assert_select ".lp-adventure.is-welcome"

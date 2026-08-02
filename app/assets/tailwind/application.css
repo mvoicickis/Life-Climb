@@ -5142,6 +5142,13 @@
   animation-delay: 1.15s;
 }
 
+.lp-adventure__duration {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--lp-muted);
+}
+
 .lp-adventure__beats {
   list-style: none;
   margin: 0.35rem 0 0.15rem;

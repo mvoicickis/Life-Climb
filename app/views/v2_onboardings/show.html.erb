@@ -35,6 +35,8 @@
 
       <p class="lp-adventure__ready"><%= t("v2_onboarding.welcome_ready") %></p>
 
+      <p class="lp-adventure__duration"><%= t("v2_onboarding.welcome_duration") %></p>
+
       <%= button_to t("v2_onboarding.start_journey"),
             v2_onboarding_path(step: "welcome"),
             method: :patch,
