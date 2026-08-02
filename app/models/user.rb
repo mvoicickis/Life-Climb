@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :life_point_ledgers, dependent: :destroy
   has_many :strategy_point_ledgers, dependent: :destroy
   has_many :strategy_goals, dependent: :destroy
+  has_many :practice_tasks, dependent: :destroy
   has_many :life_journeys, dependent: :destroy
   has_many :missions, dependent: :destroy
   has_many :journey_targets, dependent: :destroy

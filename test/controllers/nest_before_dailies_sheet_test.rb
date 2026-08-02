@@ -80,7 +80,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
-    assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-quest-row__title", text: /Do lessons/
+    assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-folder__title", text: /Do lessons/
     assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-add", text: /Prepare New Practice/i, count: 0
   end
 

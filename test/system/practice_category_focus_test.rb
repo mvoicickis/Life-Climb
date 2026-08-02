@@ -70,9 +70,9 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     find(".lp-rpg-practice-cat", text: /Vocabulary/i).click
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 3
     assert_no_selector ".lp-rpg-camp-switch"
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__check", minimum: 1, visible: :all, wait: 3
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Learn 15/i, visible: :all
-    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Flashcards/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title", text: /Learn 15/i, visible: :all, wait: 3
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title", text: /Flashcards/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__plan-check", minimum: 1, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
     assert_no_selector ".lp-rpg-breadcrumbs"
     assert_no_selector ".lp-rpg-section-head"
@@ -87,11 +87,11 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 5
-    assert_selector ".lp-rpg-quest-row.is-ready .lp-rpg-quest-row__check[checked]", visible: :all
-    assert_selector ".lp-rpg-quest-row__check[aria-label='Flashcards']:not(:checked)", visible: :all
+    assert_selector ".lp-rpg-practice-folder.is-ready .lp-rpg-practice-folder__plan-check[checked]", visible: :all
+    assert_selector ".lp-rpg-practice-folder__plan-check[aria-label*='Flashcards']:not(:checked)", visible: :all
 
     page.execute_script(<<~JS)
-      const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-quest-row__check[aria-label='Flashcards']");
+      const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__plan-check[aria-label*='Flashcards']");
       el?.scrollIntoView({ block: "center" });
       el?.form?.requestSubmit();
     JS
@@ -103,7 +103,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     end
 
     page.execute_script(<<~JS)
-      const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-quest-row__check[aria-label='Learn 15 new words']");
+      const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__plan-check[aria-label*='Learn 15 new words']");
       el?.scrollIntoView({ block: "center" });
       el?.form?.requestSubmit();
     JS

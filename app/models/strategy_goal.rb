@@ -24,6 +24,7 @@ class StrategyGoal < ApplicationRecord
   belongs_to :parent, class_name: "StrategyGoal", optional: true
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
   has_many :daily_todos, dependent: :nullify
+  has_many :practice_tasks, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
@@ -118,6 +119,11 @@ class StrategyGoal < ApplicationRecord
 
   def split_eligible?
     project? && children.none?(&:day?)
+  end
+
+  # True when this Practice has objectives and every one is checked off.
+  def all_objectives_complete?
+    day? && practice_tasks.any? && practice_tasks.all?(&:completed?)
   end
 
   def aspect_key
