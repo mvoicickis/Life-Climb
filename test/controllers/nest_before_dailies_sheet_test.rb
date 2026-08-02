@@ -54,9 +54,9 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{nested.id}'] .lp-rpg-practice-cat__title", text: /Vocabulary/
     assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-add", text: /Prepare New Practice/i
-    assert_select ".lp-rpg-camp-empty.is-orders .lp-rpg-camp-empty__camp", text: /Vocabulary/
-    assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
-    assert_select ".lp-rpg-camp-switch__tab", text: /All Practices/i
+    assert_select ".lp-rpg-camp-empty .lp-rpg-camp-empty__camp", text: /Vocabulary/
+    assert_select ".lp-rpg-camp-switch", count: 0
+    assert_select ".lp-rpg-camp-practices", 1
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-camps:not([hidden])", 1
   end

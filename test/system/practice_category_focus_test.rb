@@ -69,19 +69,15 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
 
     find(".lp-rpg-practice-cat", text: /Vocabulary/i).click
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 3
-    assert_selector ".lp-rpg-camp-switch__tab.is-active", text: /Today's Orders/i, visible: :all
-    assert_selector ".lp-rpg-camp-switch__tab", text: /All Practices/i, visible: :all
+    assert_no_selector ".lp-rpg-camp-switch"
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__check", minimum: 1, visible: :all, wait: 3
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Learn 15/i, visible: :all
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Flashcards/i, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
     assert_no_selector ".lp-rpg-breadcrumbs"
     assert_no_selector ".lp-rpg-section-head"
     assert_selector ".lp-rpg-section-card", text: /Language skills/i, visible: :all
     assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
-
-    find(".lp-rpg-camp-switch__tab", text: /All Practices/i).click
-    assert_selector ".lp-rpg-camp-practices.is-all.is-active, .lp-rpg-camp-practices.is-all:not([hidden])", wait: 2
-    assert_selector ".lp-rpg-quest-row__title", text: /Flashcards/i, visible: :all
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
@@ -91,7 +87,6 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@vocab.id}']", wait: 5
-    find(".lp-rpg-camp-switch__tab", text: /All Practices/i).click
     assert_selector ".lp-rpg-quest-row.is-ready .lp-rpg-quest-row__check[checked]", visible: :all
     assert_selector ".lp-rpg-quest-row__check[aria-label='Flashcards']:not(:checked)", visible: :all
 
@@ -107,7 +102,6 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       sleep 0.1
     end
 
-    find(".lp-rpg-camp-switch__tab", text: /Today's Orders/i).click
     page.execute_script(<<~JS)
       const el = document.querySelector(".lp-rpg-camp-folder[open] .lp-rpg-quest-row__check[aria-label='Learn 15 new words']");
       el?.scrollIntoView({ block: "center" });

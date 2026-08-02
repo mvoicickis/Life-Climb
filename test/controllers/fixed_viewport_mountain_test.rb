@@ -52,8 +52,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet.is-planning"
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
-    assert_select ".lp-rpg-camp-practices.is-orders"
-    assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
+    assert_select ".lp-rpg-camp-practices"
+    assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-context", count: 0
   end
 
@@ -121,8 +121,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camps:not([hidden])", minimum: 1
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}'] .lp-rpg-practice-cat__title", text: /Steps/i
     assert_select ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Design battle card/i
-    assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
-    assert_select ".lp-rpg-camp-switch__tab", text: /All Practices/i
+    assert_select ".lp-rpg-camp-switch", count: 0
+    assert_select ".lp-rpg-camp-practices", 1
     assert_select ".lp-rpg-camp-folder__cta", text: /Begin Today.?s Battles/i
     assert_select ".lp-rpg-camp-folder__cta[href='#{dashboard_path}']"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Practice/i

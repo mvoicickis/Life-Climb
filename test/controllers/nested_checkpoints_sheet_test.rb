@@ -60,8 +60,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
-    assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
-    assert_select ".lp-rpg-camp-switch__tab", text: /All Practices/i
+    assert_select ".lp-rpg-camp-switch", count: 0
+    assert_select ".lp-rpg-camp-practices", 1
     assert_select ".lp-rpg-quest-row__title", text: /Update CV/
     assert_select ".lp-rpg-quest-row__xp", text: /XP/i
     assert_select ".lp-rpg-quest-row__check[checked]", minimum: 1
