@@ -14,11 +14,11 @@ class PracticeTasksController < ApplicationController
 
     if task.save
       redirect_to mountain_focus_path(practice),
-                  notice: t("strategy.rpg.task_added"),
+                  notice: t("strategy.rpg.objective_added"),
                   status: :see_other
     else
       redirect_to mountain_focus_path(practice),
-                  alert: task.errors.full_messages.to_sentence.presence || t("strategy.rpg.task_add_failed"),
+                  alert: task.errors.full_messages.to_sentence.presence || t("strategy.rpg.objective_add_failed"),
                   status: :see_other
     end
   rescue ActiveRecord::RecordNotFound

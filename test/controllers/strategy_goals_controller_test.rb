@@ -528,7 +528,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-practice-folder.is-daily .lp-rpg-practice-row__repeat", text: /Every day/i
+    assert_select ".lp-rpg-practice-folder.is-daily .lp-rpg-practice-folder__badge", text: /Every day/i
     assert_select ".lp-rpg-practice-folder__title", text: /Do lessons/i
   end
 
