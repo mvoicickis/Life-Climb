@@ -91,7 +91,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-section-head__title", text: /Launch prep/
-    assert_select ".lp-rpg-breadcrumbs__item", text: /Main trail/
+    assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-section-head__title", text: /Launch prep/
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Payments/
@@ -105,7 +105,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card", text: /Landing page/, count: 0
   end
 
-  test "focusing a nested child opens that camp folder with branch crumb" do
+  test "focusing a nested child opens that camp folder under its section" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -124,8 +124,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-head__title", text: /Launch prep/
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{child.id}'] .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Draft hero/
-    assert_select ".lp-rpg-breadcrumbs__item", text: /Launch prep/
-    assert_select "a.lp-rpg-breadcrumbs__item[href*='focus_id=#{parent.id}']"
+    assert_select ".lp-rpg-breadcrumbs", count: 0
+    assert_select ".lp-rpg-section-card.is-selected", text: /Launch prep/
     assert_select ".lp-rpg-camps:not([hidden])", 1
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-sheet.is-branch", count: 0

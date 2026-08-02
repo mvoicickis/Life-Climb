@@ -74,7 +74,8 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__check", minimum: 1, visible: :all, wait: 3
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-quest-row__title", text: /Learn 15/i, visible: :all
     assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
-    assert_selector ".lp-rpg-breadcrumbs__item", text: /Language skills/i
+    assert_no_selector ".lp-rpg-breadcrumbs"
+    assert_selector ".lp-rpg-section-head__title", text: /Language skills/i, visible: :all
     assert_selector ".lp-rpg-practice-cat__title", text: /Grammar/i
 
     find(".lp-rpg-camp-switch__tab", text: /All Practices/i).click

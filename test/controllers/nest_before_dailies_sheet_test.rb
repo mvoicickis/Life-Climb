@@ -36,7 +36,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-sheet.is-categories"
     assert_select ".lp-rpg-section-head__title", text: /Learn German/
-    assert_select ".lp-rpg-breadcrumbs__item", text: /Find a job/
+    assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
     assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
@@ -56,7 +56,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camp-empty.is-orders .lp-rpg-camp-empty__camp", text: /Vocabulary/
     assert_select ".lp-rpg-camp-switch__tab", text: /Today.?s Orders/i
     assert_select ".lp-rpg-camp-switch__tab", text: /All Practices/i
-    assert_select ".lp-rpg-breadcrumbs__item", text: /Learn German/
+    assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-camps:not([hidden])", 1
   end
 

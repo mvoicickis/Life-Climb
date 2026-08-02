@@ -81,29 +81,6 @@
   <section class="lp-rpg-sheet is-dominant is-planning is-sections is-categories"
            aria-label="<%= t('strategy.rpg.sheet.label') %>"
            <% if open_folder_id %>data-open-folder-id="<%= open_folder_id %>"<% end %>>
-    <nav class="lp-rpg-breadcrumbs" aria-label="<%= t('strategy.rpg.breadcrumbs_label') %>">
-      <% if goal %>
-        <%= link_to goal.title,
-              life_journey_path(@journey, goal_id: goal.id),
-              class: "lp-rpg-breadcrumbs__item",
-              data: { turbo: true } %>
-        <span class="lp-rpg-breadcrumbs__sep" aria-hidden="true">›</span>
-      <% end %>
-      <% if plan %>
-        <%= link_to plan.title,
-              life_journey_path(@journey, goal_id: goal_id, plan_id: plan.id, focus_id: plan.id),
-              class: "lp-rpg-breadcrumbs__item",
-              data: { turbo: true } %>
-        <span class="lp-rpg-breadcrumbs__sep" aria-hidden="true">›</span>
-      <% end %>
-      <% if category_scope&.project? %>
-        <%= link_to scope_title,
-              life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id || plan&.id, focus_id: category_scope.id),
-              class: "lp-rpg-breadcrumbs__item is-current",
-              data: { turbo: true } %>
-      <% end %>
-    </nav>
-
     <header class="lp-rpg-section-head">
       <div class="lp-rpg-section-head__ring" aria-hidden="true">
         <span class="lp-rpg-section-head__icon">⚑</span>
