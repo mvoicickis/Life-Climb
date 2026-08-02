@@ -2,12 +2,16 @@
 
 # Idempotent Money-focused Mountain demo for demo@lifepoints.test.
 # Safe to re-run: find-or-create by title + parent; complete! only when open.
+#
+# Quest Space counts PracticeTask rows on one host day
+# (Strategy::EnsureFolderQuest::HOST_TITLE), not sibling day StrategyGoals.
 
 demo_user = User.find_by!(email_address: "demo@lifepoints.test")
 
 JOURNEY_TITLE = "Reach $10k/month with LifePoints"
 PLAN_TITLE = "Main path"
 STEPS_TITLE = "Steps"
+HOST_TITLE = Strategy::EnsureFolderQuest::HOST_TITLE
 
 CHECKPOINT_TITLES = [
   "Nail the MVP experience",
@@ -17,11 +21,11 @@ CHECKPOINT_TITLES = [
   "Scale to 1,000 subscribers"
 ].freeze
 
-BATTLES = [
-  { title: "Fix onboarding drop-off", scheduled_on: Date.current - 2, complete: true },
-  { title: "Add a referral share button", scheduled_on: Date.current - 1, complete: true },
-  { title: "Post in 3 founder communities", scheduled_on: Date.current, complete: false },
-  { title: "Set up basic analytics", scheduled_on: Date.current + 1, complete: false }
+OBJECTIVES = [
+  { title: "Fix onboarding drop-off", complete: true },
+  { title: "Add a referral share button", complete: true },
+  { title: "Post in 3 founder communities", complete: false },
+  { title: "Set up basic analytics", complete: false }
 ].freeze
 
 LifeAreas::Select.call(user: demo_user, keys: [ "money" ])
@@ -53,7 +57,11 @@ ensure_child = lambda do |parent:, horizon:, title:, position:, scheduled_on: ni
   )
   goal = scope.first
   if goal
-    goal.update!(position: position, life_journey: journey) if goal.position != position || goal.life_journey_id != journey.id
+    attrs = {}
+    attrs[:position] = position if goal.position != position
+    attrs[:life_journey] = journey if goal.life_journey_id != journey.id
+    attrs[:scheduled_on] = scheduled_on if scheduled_on && goal.scheduled_on != scheduled_on
+    goal.update!(attrs) if attrs.any?
     goal
   else
     demo_user.strategy_goals.create!(
@@ -80,18 +88,29 @@ checkpoints.first.complete!
 current = checkpoints[1]
 steps = ensure_child.call(parent: current, horizon: "project", title: STEPS_TITLE, position: 0)
 
-BATTLES.each_with_index do |attrs, index|
-  battle = ensure_child.call(
-    parent: steps,
-    horizon: "day",
-    title: attrs[:title],
-    position: index,
-    scheduled_on: attrs[:scheduled_on]
-  )
-  battle.update!(scheduled_on: attrs[:scheduled_on]) if battle.scheduled_on != attrs[:scheduled_on]
-  battle.complete! if attrs[:complete]
+# Heal older seed shape: objective titles used to be sibling day goals.
+legacy_titles = OBJECTIVES.map { |o| o[:title] }
+steps.children.where(horizon: "day", title: legacy_titles).find_each(&:destroy!)
+
+host = ensure_child.call(
+  parent: steps,
+  horizon: "day",
+  title: HOST_TITLE,
+  position: 0,
+  scheduled_on: Date.current
+)
+
+OBJECTIVES.each_with_index do |attrs, index|
+  task = host.practice_tasks.find_or_initialize_by(title: attrs[:title])
+  task.user = demo_user
+  task.position = index
+  task.save!
+  task.complete! if attrs[:complete]
 end
 
+# Cascade syncs day StrategyGoals → daily_todos (not PracticeTasks).
 Strategy::CascadeToDaily.call(user: demo_user, life_area: area)
 
-puts "Mountain demo: #{JOURNEY_TITLE} (Money) — 5 checkpoints, Steps battles under ##{2}"
+done = host.practice_tasks.count(&:completed?)
+total = host.practice_tasks.size
+puts "Mountain demo: #{JOURNEY_TITLE} (Money) — 5 checkpoints, Steps host '#{HOST_TITLE}' #{done}/#{total} objectives"
