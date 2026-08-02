@@ -1,0 +1,92 @@
+<%# Edit / delete menu for one camp. locals: project %>
+<% project = local_assigns.fetch(:project) %>
+<button type="button"
+        class="lp-rpg-camp-row__menu-btn"
+        data-plan-card-menu-target="button"
+        data-action="click->plan-card-menu#toggle"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
+  <span aria-hidden="true">⋯</span>
+</button>
+<div class="lp-rpg-camp-row__menu"
+     data-plan-card-menu-target="menu"
+     role="menu"
+     hidden>
+  <button type="button"
+          class="lp-rpg-camp-row__menu-item"
+          role="menuitem"
+          data-action="click->plan-card-menu#edit">
+    <span aria-hidden="true">✎</span>
+    <%= t("strategy.rpg.edit_checkpoint") %>
+  </button>
+  <button type="button"
+          class="lp-rpg-camp-row__menu-item is-danger"
+          role="menuitem"
+          data-action="click->plan-card-menu#confirmDelete">
+    <span aria-hidden="true">🗑</span>
+    <%= t("strategy.rpg.delete_checkpoint") %>
+  </button>
+</div>
+<dialog class="lp-strategy-sheet is-plan"
+        id="camp-edit-<%= project.id %>"
+        data-plan-card-menu-target="editDialog">
+  <div class="lp-strategy-sheet__panel">
+    <header class="lp-strategy-sheet__head">
+      <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+      <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_checkpoint") %></h2>
+      <button type="button"
+              class="lp-strategy-sheet__close"
+              data-action="click->plan-card-menu#closeEdit"
+              aria-label="<%= t('strategy.sheet.close') %>">×</button>
+    </header>
+    <div class="lp-strategy-sheet__actions">
+      <div class="lp-strategy-sheet__edit">
+        <%= form_with url: strategy_goal_path(project), method: :patch,
+              class: "lp-strategy-sheet__form",
+              data: { turbo: false } do %>
+          <%= text_field_tag :title, project.title,
+                required: true,
+                maxlength: 120,
+                id: "camp-edit-title-#{project.id}",
+                class: "lp-rpg-input",
+                autocomplete: "off",
+                aria: { label: t("strategy.rpg.edit_checkpoint") } %>
+          <div class="lp-strategy-sheet__footer">
+            <%= submit_tag t("strategy.save_changes"),
+                  class: "lp-strategy-sheet__btn is-save",
+                  data: { plan_card_menu_target: "saveButton" } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</dialog>
+<dialog class="lp-strategy-sheet is-plan"
+        id="camp-delete-<%= project.id %>"
+        data-plan-card-menu-target="deleteDialog">
+  <div class="lp-strategy-sheet__panel">
+    <header class="lp-strategy-sheet__head">
+      <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+      <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.delete_checkpoint_title") %></h2>
+      <p class="lp-strategy-sheet__desc"><%= t("strategy.rpg.delete_checkpoint_body", title: project.title) %></p>
+      <button type="button"
+              class="lp-strategy-sheet__close"
+              data-action="click->plan-card-menu#closeDelete"
+              aria-label="<%= t('strategy.sheet.close') %>">×</button>
+    </header>
+    <div class="lp-strategy-sheet__footer is-split">
+      <button type="button"
+              class="lp-strategy-sheet__btn is-cancel"
+              data-action="click->plan-card-menu#closeDelete">
+        <%= t("strategy.rpg.cancel") %>
+      </button>
+      <%= form_with url: strategy_goal_path(project), method: :delete,
+            class: "lp-strategy-sheet__form is-delete-action",
+            data: { turbo: false } do %>
+        <%= submit_tag t("strategy.rpg.delete_confirm"),
+              class: "lp-strategy-sheet__btn is-delete" %>
+      <% end %>
+    </div>
+  </div>
+</dialog>

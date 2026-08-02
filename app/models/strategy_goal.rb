@@ -4,15 +4,17 @@ class StrategyGoal < ApplicationRecord
   include TextLimits
 
   # Guided tree: Goal → Plans → Projects → Battles.
+  # Projects may nest (branch checkpoints) or take days (leaf). Never both.
   # Legacy month/week rows are migrated away; year maps to goal.
   KINDS = %w[goal plan project day].freeze
   LEGACY_KINDS = %w[month week].freeze
   LEGACY_KIND = { "year" => "goal" }.freeze
+  REPEAT_KINDS = %w[none daily].freeze
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
     "plan" => %w[project],
-    "project" => %w[day],
+    "project" => %w[project day],
     "day" => []
   }.freeze
 
@@ -21,20 +23,26 @@ class StrategyGoal < ApplicationRecord
   belongs_to :life_journey, optional: true
   belongs_to :parent, class_name: "StrategyGoal", optional: true
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
+  has_many :practice_tasks, dependent: :destroy
   has_many :daily_todos, dependent: :nullify
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KINDS + LEGACY_KIND.keys }
+  validates :repeat, presence: true, inclusion: { in: REPEAT_KINDS }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :scheduled_on_required_for_day
+  validate :repeat_allowed_for_kind
   validate :due_on_rules
   validate :parent_kind_matches
+  validate :parent_leaf_branch_xor
+  validate :day_requires_nested_camp, on: :create
   validate :child_fits_parent_window
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
 
   before_validation :normalize_legacy_kind
+  before_validation :normalize_repeat
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -82,8 +90,40 @@ class StrategyGoal < ApplicationRecord
     kind == "day"
   end
 
+  def repeat_daily?
+    day? && repeat.to_s == "daily"
+  end
+
   def allowed_child_kinds
     ALLOWED_CHILDREN.fetch(kind, [])
+  end
+
+  # Branch = has nested checkpoints. Leaf = takes dailies (or empty, ready for either).
+  def branch_checkpoint?
+    project? && children.any?(&:project?)
+  end
+
+  def leaf_checkpoint?
+    project? && children.none?(&:project?)
+  end
+
+  # Camp hanging directly under a Path (plan).
+  def path_level_camp?
+    project? && parent&.plan?
+  end
+
+  # Nested leaf camp — the layer that holds daily practices.
+  def nested_leaf_camp?
+    project? && parent&.project? && leaf_checkpoint?
+  end
+
+  def split_eligible?
+    project? && children.none?(&:day?)
+  end
+
+  # True when this Practice has objectives and every one is checked off.
+  def all_objectives_complete?
+    day? && practice_tasks.any? && practice_tasks.all?(&:completed?)
   end
 
   def aspect_key
@@ -148,6 +188,13 @@ class StrategyGoal < ApplicationRecord
     self.horizon = LEGACY_KIND[horizon] if LEGACY_KIND.key?(horizon.to_s)
   end
 
+  def normalize_repeat
+    value = repeat.to_s.presence || "none"
+    value = "none" unless day?
+    value = "none" unless REPEAT_KINDS.include?(value)
+    self.repeat = value
+  end
+
   def assign_goal_due_on
     self.due_on = Strategy::YearCycle.target_dec29
   end
@@ -157,6 +204,13 @@ class StrategyGoal < ApplicationRecord
     return if scheduled_on.present?
 
     errors.add(:scheduled_on, :blank)
+  end
+
+  def repeat_allowed_for_kind
+    return if repeat.to_s == "none"
+    return if day? && REPEAT_KINDS.include?(repeat.to_s)
+
+    errors.add(:repeat, :invalid)
   end
 
   def due_on_rules
@@ -172,6 +226,34 @@ class StrategyGoal < ApplicationRecord
     return if parent.allowed_child_kinds.include?(kind)
 
     errors.add(:parent_id, :invalid)
+  end
+
+  # Leaf XOR branch: a checkpoint has day children or project children, never both.
+  def parent_leaf_branch_xor
+    return if parent.blank?
+    return unless parent.project?
+
+    siblings =
+      if parent.association(:children).loaded?
+        parent.children.reject { |c| c.id == id }
+      else
+        parent.children.where.not(id: id).to_a
+      end
+
+    if project? && siblings.any?(&:day?)
+      errors.add(:base, I18n.t("strategy.rpg.checkpoint_split_blocked"))
+    elsif day? && siblings.any?(&:project?)
+      errors.add(:base, I18n.t("strategy.rpg.checkpoint_branch_no_days"))
+    end
+  end
+
+  # Daily practices hang under nested camps, not directly under a Path-level camp.
+  def day_requires_nested_camp
+    return unless day?
+    return if parent.blank?
+    return unless parent.path_level_camp?
+
+    errors.add(:base, I18n.t("strategy.rpg.day_needs_nested_camp"))
   end
 
   def root_must_be_goal

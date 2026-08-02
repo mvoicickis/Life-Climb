@@ -42,42 +42,42 @@
     <div class="lp-rpg-scenic" style="--lp-scenic: url('/images/strategy-mountain-scenic.jpg')" aria-hidden="true"></div>
     <div class="lp-rpg-scenic__veil" aria-hidden="true"></div>
 
-    <%= render "life_journeys/rpg_goal_switcher",
-          root_goals: root_goals,
-          goal: @goal,
-          progress: progress,
-          mountain: mountain,
-          alive: alive,
-          streak: streak %>
-
-    <%= render "life_journeys/rpg_plan_rail",
-          plans: plans,
-          plan: plan,
-          goal: @goal %>
-
-    <div class="lp-rpg-climb is-hero">
-      <%= render "life_journeys/rpg_trail",
-            trail: trail,
+    <div class="lp-rpg__chrome-top">
+      <%= render "life_journeys/rpg_goal_switcher",
+            root_goals: root_goals,
             goal: @goal,
+            progress: progress,
+            mountain: mountain,
+            alive: alive,
+            streak: streak %>
+
+      <%= render "life_journeys/rpg_plan_rail",
+            plans: plans,
             plan: plan,
-            alive: alive %>
+            goal: @goal %>
     </div>
 
-    <%= render "life_journeys/rpg_context",
-          trail: trail,
-          current_project: current_project,
-          plan: plan %>
+    <div class="lp-rpg__stage is-planning">
+      <div class="lp-rpg__planning">
+        <div class="lp-rpg__stage-sections">
+          <%= render "life_journeys/rpg_section_carousel",
+                trail: trail,
+                goal: @goal,
+                plan: plan,
+                current_project: current_project,
+                focus: @focus %>
+        </div>
 
-    <%= render "life_journeys/rpg_battle_sheet",
-          current_project: current_project,
-          plan: plan,
-          goal: @goal,
-          trail: trail %>
-
-    <%= render "life_journeys/rpg_stats",
-          mountain: mountain,
-          alive: alive,
-          streak: streak %>
+        <div class="lp-rpg__stage-battle">
+          <%= render "life_journeys/rpg_battle_sheet",
+                current_project: current_project,
+                plan: plan,
+                goal: @goal,
+                trail: trail,
+                focus: @focus %>
+        </div>
+      </div>
+    </div>
   <% end %>
 
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>

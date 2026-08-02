@@ -38,8 +38,15 @@ module Strategy
           title: I18n.t("strategy.first_climb.project_title", plan: @plan_title.truncate(40)),
           life_area: area
         )
-        battle = create_child!(
+        # Dailies hang under a nested camp, not directly on the Path-level camp.
+        nested = create_child!(
           parent: project,
+          horizon: "project",
+          title: I18n.t("strategy.first_climb.nested_camp_title"),
+          life_area: area
+        )
+        battle = create_child!(
+          parent: nested,
           horizon: "day",
           title: @today_action,
           life_area: area,
@@ -76,6 +83,12 @@ module Strategy
     def mark_route_done!
       flags = (@journey.setup_flags.presence || {}).stringify_keys.merge(Onboarding::Run::ROUTE_FLAG => "done")
       @journey.update!(setup_flags: flags)
+
+      # Retire the scaffolding "Plan Your Route" mission now — otherwise Today
+      # still lists it beside the real first-climb action (retire_plan_route_if_needed!
+      # only runs while the route flag is still "pending").
+      mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first
+      mission&.update!(status: "replaced")
     end
   end
 end

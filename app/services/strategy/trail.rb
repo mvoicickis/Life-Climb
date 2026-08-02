@@ -5,7 +5,8 @@ module Strategy
   # Phase 1 trail nodes = Projects under a Plan.
   # Phase 2 can swap nodes to Programs without rewriting the views.
   class Trail
-    VISIBLE_AHEAD = 2
+    # Default server window: previous cleared + current + next fogged.
+    VISIBLE_AHEAD = 1
     VISIBLE_BEHIND = 1
 
     Node = Struct.new(

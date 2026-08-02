@@ -1,0 +1,296 @@
+<%# Project Sections — horizontal path-level camp carousel. locals: trail, goal, plan, current_project, focus %>
+<% trail = local_assigns[:trail] %>
+<% goal = local_assigns[:goal] %>
+<% plan = local_assigns[:plan] %>
+<% current_project = local_assigns[:current_project] %>
+<% focus = local_assigns[:focus] %>
+<% all_nodes = trail&.nodes || [] %>
+<% area = @journey.life_area %>
+
+<%# Selected section = focused path-level camp, else ancestor under the Path, else current climb. %>
+<% selected_section_id =
+     if focus&.project? && plan && focus.parent_id == plan.id
+       focus.id
+     elsif focus&.project? && plan
+       node = focus
+       while node&.project? && node.parent_id != plan.id
+         node = node.parent
+       end
+       node&.parent_id == plan.id ? node.id : nil
+     elsif focus&.day? && plan
+       node = focus.parent
+       while node&.project? && node.parent_id != plan.id
+         node = node.parent
+       end
+       node&.parent_id == plan.id ? node.id : nil
+     end %>
+<% selected_section_id ||= current_project&.id if current_project&.parent_id == plan&.id %>
+<% selected_section_id ||= trail&.current_node&.id %>
+
+<% if plan %>
+  <section class="lp-rpg-sections <%= 'is-empty' if all_nodes.empty? %>"
+           data-controller="strategy-plan-rail"
+           data-strategy-plan-rail-goal-value="<%= goal&.id %>"
+           data-strategy-plan-rail-journey-value="<%= @journey.id %>"
+           data-strategy-plan-rail-scope-value="sections"
+           aria-label="<%= t('strategy.rpg.project_sections') %>">
+    <p class="lp-rpg-sections__kicker"><%= t("strategy.rpg.project_sections") %></p>
+
+    <nav class="lp-rpg-sections__rail" aria-label="<%= t('strategy.rpg.project_sections') %>">
+      <div class="lp-rpg-sections__nav is-prev">
+        <button type="button"
+                class="lp-rpg-sections__arrow is-prev"
+                data-strategy-plan-rail-target="prev"
+                data-action="strategy-plan-rail#prev"
+                hidden
+                aria-label="<%= t('strategy.rpg.sections_prev') %>">
+          <span aria-hidden="true">‹</span>
+        </button>
+      </div>
+
+      <ul class="lp-rpg-sections__track"
+          data-strategy-plan-rail-target="track"
+          data-action="click->strategy-plan-rail#rememberScrollFromClick">
+        <% all_nodes.each_with_index do |node, idx| %>
+          <% playable = node.state != :locked %>
+          <% selected = selected_section_id == node.id %>
+          <% pct = playable ? node.pct.to_i : 0 %>
+          <% project = node.record %>
+          <% show_menu = node.state != :done && project.present? %>
+          <% card_classes = "lp-rpg-section-card is-#{node.state} #{'is-selected' if selected}" %>
+          <li class="lp-rpg-sections__item <%= 'is-selected' if selected %> <%= "is-#{node.state}" %> <%= 'is-menu-enabled' if show_menu %>"
+              data-section-id="<%= node.id %>"
+              <% if show_menu %>data-controller="plan-card-menu"<% end %>>
+            <div class="<%= card_classes %>"
+                 <% unless playable %>
+                   aria-disabled="true"
+                   aria-label="<%= t('strategy.rpg.section_locked', title: node.title) %>"
+                 <% end %>>
+              <div class="lp-rpg-section-card__top">
+                <% if show_menu %>
+                  <button type="button"
+                          class="lp-rpg-section-card__menu-btn"
+                          data-plan-card-menu-target="button"
+                          data-action="click->plan-card-menu#toggle"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
+                    <span aria-hidden="true">⋮</span>
+                  </button>
+                <% end %>
+
+                <% card_body = capture do %>
+                  <span class="lp-rpg-section-card__icon <%= 'is-lock' if node.state == :locked %> <%= 'is-done' if node.state == :done %>"
+                        aria-hidden="true">
+                    <% if node.state == :done %>✓<% elsif node.state == :locked %>🔒<% else %>🚩<% end %>
+                  </span>
+                  <span class="lp-rpg-section-card__title" title="<%= node.title %>"><%= node.title %></span>
+                  <span class="lp-rpg-section-card__badge" aria-hidden="true"><%= idx + 1 %></span>
+                <% end %>
+
+                <% if playable %>
+                  <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
+                        class: "lp-rpg-section-card__link",
+                        data: { turbo: true },
+                        aria: { current: selected ? "true" : nil } do %>
+                    <%= card_body %>
+                  <% end %>
+                <% else %>
+                  <div class="lp-rpg-section-card__link is-static">
+                    <%= card_body %>
+                  </div>
+                <% end %>
+              </div>
+
+              <% if playable %>
+                <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
+                      class: "lp-rpg-section-card__footer-link",
+                      data: { turbo: true },
+                      tabindex: -1,
+                      aria: { hidden: true } do %>
+                  <span class="lp-rpg-section-card__meter" aria-hidden="true">
+                    <span class="lp-rpg-section-card__meter-fill" style="width: <%= pct %>%"></span>
+                  </span>
+                  <span class="lp-rpg-section-card__bottom">
+                    <% if node.state == :current %>
+                      <span class="lp-rpg-section-card__status"><%= t("strategy.rpg.section_active") %></span>
+                    <% elsif node.state == :done %>
+                      <span class="lp-rpg-section-card__status is-done"><%= t("strategy.rpg.section_done") %></span>
+                    <% else %>
+                      <span class="lp-rpg-section-card__status is-muted" aria-hidden="true">&nbsp;</span>
+                    <% end %>
+                    <span class="lp-rpg-section-card__pct"><%= pct %>%</span>
+                  </span>
+                <% end %>
+              <% else %>
+                <div class="lp-rpg-section-card__footer-link is-static">
+                  <div class="lp-rpg-section-card__meter" aria-hidden="true">
+                    <span class="lp-rpg-section-card__meter-fill" style="width: <%= pct %>%"></span>
+                  </div>
+                  <div class="lp-rpg-section-card__bottom">
+                    <span class="lp-rpg-section-card__status is-locked"><%= t("strategy.rpg.section_locked_short") %></span>
+                    <span class="lp-rpg-section-card__pct"><%= pct %>%</span>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <% if show_menu %>
+              <div class="lp-rpg-section-card__menu"
+                   data-plan-card-menu-target="menu"
+                   role="menu"
+                   hidden>
+                <button type="button"
+                        class="lp-rpg-section-card__menu-item"
+                        role="menuitem"
+                        data-action="click->plan-card-menu#edit">
+                  <span aria-hidden="true">✎</span>
+                  <%= t("strategy.rpg.edit_checkpoint") %>
+                </button>
+                <button type="button"
+                        class="lp-rpg-section-card__menu-item is-danger"
+                        role="menuitem"
+                        data-action="click->plan-card-menu#confirmDelete">
+                  <span aria-hidden="true">🗑</span>
+                  <%= t("strategy.rpg.delete_checkpoint") %>
+                </button>
+              </div>
+              <dialog class="lp-strategy-sheet is-plan"
+                      id="section-edit-<%= project.id %>"
+                      data-plan-card-menu-target="editDialog">
+                <div class="lp-strategy-sheet__panel">
+                  <header class="lp-strategy-sheet__head">
+                    <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+                    <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_checkpoint") %></h2>
+                    <button type="button"
+                            class="lp-strategy-sheet__close"
+                            data-action="click->plan-card-menu#closeEdit"
+                            aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                  </header>
+                  <div class="lp-strategy-sheet__actions">
+                    <div class="lp-strategy-sheet__edit">
+                      <%= form_with url: strategy_goal_path(project), method: :patch,
+                            class: "lp-strategy-sheet__form",
+                            data: { turbo: false } do %>
+                        <%= text_field_tag :title, project.title,
+                              required: true,
+                              maxlength: 120,
+                              id: "section-edit-title-#{project.id}",
+                              class: "lp-rpg-input",
+                              autocomplete: "off",
+                              aria: { label: t("strategy.rpg.edit_checkpoint") } %>
+                        <div class="lp-strategy-sheet__footer">
+                          <%= submit_tag t("strategy.save_changes"),
+                                class: "lp-strategy-sheet__btn is-save",
+                                data: { plan_card_menu_target: "saveButton" } %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </dialog>
+              <dialog class="lp-strategy-sheet is-plan"
+                      id="section-delete-<%= project.id %>"
+                      data-plan-card-menu-target="deleteDialog">
+                <div class="lp-strategy-sheet__panel">
+                  <header class="lp-strategy-sheet__head">
+                    <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+                    <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.delete_checkpoint_title") %></h2>
+                    <p class="lp-strategy-sheet__desc"><%= t("strategy.rpg.delete_checkpoint_body", title: project.title) %></p>
+                    <button type="button"
+                            class="lp-strategy-sheet__close"
+                            data-action="click->plan-card-menu#closeDelete"
+                            aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                  </header>
+                  <div class="lp-strategy-sheet__footer is-split">
+                    <button type="button"
+                            class="lp-strategy-sheet__btn is-cancel"
+                            data-action="click->plan-card-menu#closeDelete">
+                      <%= t("strategy.rpg.cancel") %>
+                    </button>
+                    <%= form_with url: strategy_goal_path(project), method: :delete,
+                          class: "lp-strategy-sheet__form is-delete-action",
+                          data: { turbo: false } do %>
+                      <%= submit_tag t("strategy.rpg.delete_confirm"),
+                            class: "lp-strategy-sheet__btn is-delete" %>
+                    <% end %>
+                  </div>
+                </div>
+              </dialog>
+            <% end %>
+          </li>
+        <% end %>
+
+        <li class="lp-rpg-sections__item is-new">
+          <details class="lp-rpg-sections__new"
+                   id="rpg-add-section-<%= plan.id %>"
+                   data-controller="floating-create"
+                   data-action="toggle->floating-create#onToggle">
+            <summary class="lp-rpg-sections__new-btn"
+                     aria-label="<%= t('strategy.rpg.new_project') %>">
+              + <%= t("strategy.rpg.new_project") %>
+            </summary>
+            <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+              <button type="button"
+                      class="lp-rpg-float-create__backdrop"
+                      data-action="click->floating-create#close"
+                      tabindex="-1"
+                      aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+              <div class="lp-rpg-float-create__card"
+                   data-floating-create-target="card"
+                   role="dialog"
+                   aria-modal="true"
+                   aria-labelledby="rpg-add-section-title-<%= plan.id %>">
+                <header class="lp-rpg-float-create__head">
+                  <p class="lp-rpg-float-create__kicker"><%= t("strategy.rpg.project_sections") %></p>
+                  <h2 class="lp-rpg-float-create__heading" id="rpg-add-section-title-<%= plan.id %>">
+                    <%= t("strategy.rpg.new_project") %>
+                  </h2>
+                </header>
+                <%= form_with url: strategy_goals_path,
+                      method: :post,
+                      class: "lp-rpg-float-create__form",
+                      data: { turbo: false } do %>
+                  <%= hidden_field_tag :life_area_id, area.id %>
+                  <%= hidden_field_tag :life_journey_id, @journey.id %>
+                  <%= hidden_field_tag :horizon, "project" %>
+                  <%= hidden_field_tag :parent_id, plan.id %>
+                  <label class="lp-rpg-float-create__field">
+                    <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.checkpoint_name") %></span>
+                    <%= text_field_tag :title, nil,
+                          required: true,
+                          maxlength: 120,
+                          class: "lp-rpg-float-create__input",
+                          placeholder: t("strategy.rpg.checkpoint_name_placeholder"),
+                          autocomplete: "off",
+                          data: { floating_create_target: "title" } %>
+                  </label>
+                  <div class="lp-rpg-float-create__actions">
+                    <button type="button"
+                            class="lp-rpg-float-create__btn is-cancel"
+                            data-action="click->floating-create#close">
+                      <%= t("strategy.rpg.cancel") %>
+                    </button>
+                    <%= submit_tag t("strategy.rpg.new_project"),
+                          class: "lp-rpg-float-create__btn is-create" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </details>
+        </li>
+      </ul>
+
+      <div class="lp-rpg-sections__nav is-next">
+        <button type="button"
+                class="lp-rpg-sections__arrow is-next"
+                data-strategy-plan-rail-target="next"
+                data-action="strategy-plan-rail#next"
+                hidden
+                aria-label="<%= t('strategy.rpg.sections_next') %>">
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
+    </nav>
+  </section>
+<% end %>

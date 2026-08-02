@@ -53,6 +53,8 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     refute @user.adventure_guide_done?
     assert_equal 0, @user.strategy_goals.count
     assert_equal 0, @user.life_journeys.count
+    assert_equal 0, @user.life_areas.count
+    assert_equal 0, @user.daily_todos.count
   end
 
   test "env whitelist promotes and allows restart" do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -256,6 +256,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
     t.index ["user_id"], name: "index_missions_on_user_id"
   end
 
+  create_table "practice_tasks", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "strategy_goal_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["strategy_goal_id", "position"], name: "index_practice_tasks_on_strategy_goal_id_and_position"
+    t.index ["strategy_goal_id"], name: "index_practice_tasks_on_strategy_goal_id"
+    t.index ["user_id"], name: "index_practice_tasks_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -288,6 +301,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
     t.integer "life_journey_id"
     t.integer "parent_id"
     t.integer "position", default: 0, null: false
+    t.string "repeat", default: "none", null: false
     t.date "scheduled_on"
     t.string "title", null: false
     t.datetime "updated_at", null: false
@@ -296,6 +310,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
     t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
     t.index ["parent_id"], name: "index_strategy_goals_on_parent_id"
+    t.index ["user_id", "horizon", "repeat"], name: "index_strategy_goals_on_user_horizon_repeat"
     t.index ["user_id", "life_area_id", "horizon"], name: "index_strategy_goals_on_user_id_and_life_area_id_and_horizon"
     t.index ["user_id", "scheduled_on"], name: "index_strategy_goals_on_user_id_and_scheduled_on"
     t.index ["user_id"], name: "index_strategy_goals_on_user_id"
@@ -381,6 +396,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_213000) do
   add_foreign_key "life_point_ledgers", "users"
   add_foreign_key "missions", "life_journeys"
   add_foreign_key "missions", "users"
+  add_foreign_key "practice_tasks", "strategy_goals"
+  add_foreign_key "practice_tasks", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"
   add_foreign_key "steps", "users"

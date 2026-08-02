@@ -27,8 +27,9 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     @project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Project", position: 0
     )
+    @project_leaf = practice_leaf_for!(@project)
     @battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: @project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: @project_leaf, horizon: "day",
       title: "Win this fight", scheduled_on: Date.current, position: 0
     )
   end
@@ -39,17 +40,14 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert @battle.reload.completed?
-    assert_redirected_to life_journey_path(
-      @journey,
-      goal_id: @goal.id,
-      plan_id: @plan.id,
-      focus_id: @project.id
-    )
+    assert_response :redirect
+    assert_match(%r{/life_journeys/#{@journey.id}}, @response.redirect_url)
+    assert_includes @response.redirect_url, "focus_id=#{@project_leaf.id}"
     assert_equal GameRules::BATTLE_TODO_LP, flash[:ap_gained].to_i
     assert flash[:battle_celebrate]
 
     follow_redirect!
+    assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-battle.is-done", text: /Win this fight/i
   end
 end

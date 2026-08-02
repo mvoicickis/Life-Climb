@@ -29,12 +29,14 @@ class StrategyUpcomingBattleTest < ActiveSupport::TestCase
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Today fight", scheduled_on: Date.current, position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     tomorrow = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Tomorrow fight", scheduled_on: Date.current + 1.day, position: 0
     )
 

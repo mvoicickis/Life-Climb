@@ -69,3 +69,5 @@ puts "Seeded demo user: demo@lifepoints.test"
 puts "Seeded admin: #{admin.email_address} → /admin"
 puts "On Home: #{demo.habits.active.on_home.ordered.pluck(:name).join(', ')}"
 puts "(Passwords are not printed. Set DEMO_PASSWORD / ADMIN_PASSWORD via env.)"
+
+load Rails.root.join("db/seeds/mountain_demo.rb")

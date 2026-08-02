@@ -3,7 +3,7 @@
 <% alive = local_assigns[:alive] || current_user.alive_level %>
 <% streak = local_assigns[:streak] || strategy_climb_streak_status %>
 
-<section class="lp-rpg-stats" aria-label="<%= t('strategy.rpg.stats') %>">
+<section class="lp-rpg-stats is-compact" aria-label="<%= t('strategy.rpg.stats') %>">
   <div class="lp-rpg-stat is-xp">
     <span class="lp-rpg-stat__chip">
       <span class="lp-rpg-stat__icon" aria-hidden="true">★</span>
@@ -18,17 +18,9 @@
     </span>
     <span class="lp-rpg-stat__label"><%= t("strategy.rpg.streak") %></span>
   </div>
-  <div class="lp-rpg-stat is-mountain">
-    <span class="lp-rpg-stat__chip">
-      <span class="lp-rpg-stat__icon" aria-hidden="true">⛰</span>
-      <span class="lp-rpg-stat__value"><%= mountain[:progress].to_i %>%</span>
-    </span>
-    <span class="lp-rpg-stat__label"><%= t("strategy.rpg.mountain") %></span>
-  </div>
-  <div class="lp-rpg-stat is-rank">
+  <div class="lp-rpg-stat is-rank" aria-label="<%= alive.title %>">
     <span class="lp-rpg-stat__chip">
       <span class="lp-rpg-stat__icon" aria-hidden="true">⛨</span>
-      <span class="lp-rpg-stat__value"><%= "Lv#{alive.number}" %></span>
     </span>
     <span class="lp-rpg-stat__label"><%= alive.title %></span>
   </div>

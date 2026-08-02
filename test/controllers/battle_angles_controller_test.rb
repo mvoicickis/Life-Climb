@@ -27,8 +27,9 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
     @project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Cut spend", position: 0
     )
+    @project_leaf = practice_leaf_for!(@project)
     @battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: @project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: @project_leaf, horizon: "day",
       title: "Cancel subscription", scheduled_on: Date.current, position: 0
     )
   end
@@ -39,9 +40,9 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
 
     post complete_daily_todo_path(todo)
     follow_redirect!
-    assert_match(/Is .*Cut spend.* finished/i, response.body)
+    assert_match(/Is .*Steps.* finished/i, response.body)
 
-    post project_completions_path, params: { project_id: @project.id, decision: "not_yet" }
+    post project_completions_path, params: { project_id: @project_leaf.id, decision: "not_yet" }
     assert_redirected_to dashboard_path
     follow_redirect!
 
@@ -49,12 +50,12 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Make the next battle sharper/i, response.body)
     assert_select ".lp-dash-battle-angles__chip", minimum: 1
 
-    angle = Strategy::BattleAngles.for(project: @project).first
-    post battle_angles_path, params: { project_id: @project.id, title: angle }
+    angle = Strategy::BattleAngles.for(project: @project_leaf).first
+    post battle_angles_path, params: { project_id: @project_leaf.id, title: angle }
     assert_redirected_to dashboard_path
     follow_redirect!
 
-    tomorrow = @user.strategy_goals.find_by!(horizon: "day", title: angle, parent_id: @project.id)
+    tomorrow = @user.strategy_goals.find_by!(horizon: "day", title: angle, parent_id: @project_leaf.id)
     assert_equal Date.current + 1.day, tomorrow.scheduled_on
     assert_match(/Tomorrow.?s battle is set/i, flash[:notice].to_s + response.body)
     assert_select ".lp-dash-battle-angles", count: 0

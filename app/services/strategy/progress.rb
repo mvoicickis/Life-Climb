@@ -2,19 +2,21 @@
 
 module Strategy
   # Mountain % is project-gated, not battle-count.
-  # Goal = average of plans (equal weight). Plan = completed projects / projects.
+  # Goal = average of plans. Plan = average of direct project percents.
+  # Leaf project = binary (completed_at). Branch project = recursive avg of child projects.
   # Battles never move year %.
   class Progress
     def self.percent(node)
       case node.kind
-      when "day", "project"
+      when "day"
         node.completed_at.present? ? 100 : 0
+      when "project"
+        project_percent(node)
       when "plan"
         projects = child_nodes(node, "project")
         return 0 if projects.empty?
 
-        done = projects.count { |p| p.completed_at.present? }
-        ((done.to_f / projects.size) * 100).round
+        (projects.sum { |project| percent(project) }.to_f / projects.size).round
       when "goal"
         plans = child_nodes(node, "plan")
         return 0 if plans.empty?
@@ -24,6 +26,16 @@ module Strategy
         0
       end
     end
+
+    def self.project_percent(node)
+      child_projects = child_nodes(node, "project")
+      if child_projects.any?
+        (child_projects.sum { |project| percent(project) }.to_f / child_projects.size).round
+      else
+        node.completed_at.present? ? 100 : 0
+      end
+    end
+    private_class_method :project_percent
 
     def self.child_nodes(node, kind)
       kids =
@@ -61,8 +73,10 @@ module Strategy
       return false unless node.association(:children).loaded?
 
       node.children.all? do |child|
-        child.association(:children).loaded? &&
-          child.children.all? { |grand| grand.association(:children).loaded? || grand.day? }
+        next true if child.day?
+        next false unless child.association(:children).loaded?
+
+        child.children.all? { |grand| grand.association(:children).loaded? || grand.day? || grand.project? }
       end
     end
     private_class_method :fully_preloaded?

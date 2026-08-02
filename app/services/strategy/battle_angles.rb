@@ -33,12 +33,16 @@ module Strategy
     private
 
     def existing_titles
-      @project.children.battles.map { |b| b.title.to_s.strip.downcase }
+      battles_under.map { |b| b.title.to_s.strip.downcase }
     end
 
     def last_battle_title
-      @project.children.battles.order(completed_at: :desc, id: :desc).first&.title.presence ||
-        @project.children.battles.ordered.last&.title
+      battles_under.max_by { |b| [ b.completed_at || Time.at(0), b.id ] }&.title.presence ||
+        battles_under.min_by { |b| [ b.position.to_i, b.id ] }&.title
+    end
+
+    def battles_under
+      @battles_under ||= Strategy::Progress.battles_under(@project)
     end
 
     def candidates

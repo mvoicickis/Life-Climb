@@ -40,7 +40,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-world"
+    assert_select ".lp-rpg-sections"
     assert_select ".lp-rpg-path", text: /Main trail/i
     assert_select "[data-controller*=strategy-rpg]"
   end
@@ -54,7 +54,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "First climb", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Battle one", scheduled_on: Date.current, position: 0
     )
@@ -62,12 +63,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg-path", minimum: 1
-    assert_select ".lp-rpg-trail"
-    assert_select ".lp-rpg-node", text: /First climb/
+    assert_select ".lp-rpg-sections"
+    assert_select ".lp-rpg-section-card", text: /First climb/
     assert_select ".lp-rpg-sheet"
   end
 
-  test "focusing a plan shows trail checkpoints and battle sheet" do
+  test "focusing a plan shows section carousel and nested camps for the active section" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -77,7 +78,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       horizon: "project", title: "Resume", position: 0
     )
     2.times do |i|
-      project.children.create!(
+      project_leaf = practice_leaf_for!(project)
+      project_leaf.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
         horizon: "day", title: "Battle #{i}", scheduled_on: Date.current, position: i
       )
@@ -85,10 +87,11 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-battle", minimum: 1
-    assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
+    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-head", count: 0
+    assert_select ".lp-qs", 1
+    assert_select ".lp-qs-card__name", text: /Steps/
+    assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 
   test "focusing a project shows battles in the sheet" do
@@ -100,20 +103,21 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
     )
-    project.children.create!(
+    project_leaf = practice_leaf_for!(project)
+    project_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-battle", text: /Update CV/
-    assert_select ".lp-rpg-sheet .lp-rpg-add", text: /Step|battle/i
+    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
+    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
-  test "locked trail nodes cannot become the active focus" do
+  test "locked sections stay visible in the carousel but are not drillable links" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -126,16 +130,23 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Interviews", position: 1
     )
-    first.children.create!(
+    first_leaf = practice_leaf_for!(first)
+    first_leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: locked.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: first.id)
     assert_response :success
-    assert_select ".lp-rpg-node.is-current", text: /Resume/
-    assert_select ".lp-rpg-sheet__title", text: /Resume/
-    assert_select ".lp-rpg-node.is-locked", text: /Interviews/
+    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-rpg-section-card.is-current a.lp-rpg-section-card__link"
+    assert_select ".lp-rpg-section-card.is-locked", text: /Interviews/
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
+    assert_select ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link", count: 0
+    assert_select ".lp-rpg-sections__new-btn", text: /New Project/
+    assert_select ".lp-rpg-section-head", count: 0
   end
 
   test "goal_id and plan_id switch the climb" do
@@ -169,16 +180,16 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan_b.id)
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Side path/
-    assert_select ".lp-rpg-node", text: /Launch camp/
-    assert_select ".lp-rpg-goal.is-focus", text: /#{@goal.title}/
+    assert_select ".lp-rpg-section-card", text: /Launch camp/
+    assert_select ".lp-rpg-destination-carousel__title", text: /#{@goal.title}/
 
     get life_journey_path(@journey, goal_id: other_goal.id)
     assert_response :success
-    assert_select ".lp-rpg-goal.is-focus", text: /Health/
+    assert_select ".lp-rpg-destination-carousel__title", text: /Health/
     assert_select ".lp-rpg-path", text: /Run path/
   end
 
-  test "creating a plan via turbo stream still succeeds" do
+  test "creating a plan via turbo stream redirects so the mountain refreshes" do
     post strategy_goals_path,
          params: {
            life_area_id: @area.id,
@@ -189,7 +200,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
          },
          as: :turbo_stream
 
-    assert_response :created
-    assert @user.strategy_goals.for_kind("plan").exists?(title: "Trail Plan")
+    created = @user.strategy_goals.for_kind("plan").find_by!(title: "Trail Plan")
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: created.id, focus_id: created.id)
   end
 end

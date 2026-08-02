@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Strategy
-  # After a project is marked done/reopened, stamp or clear plan + goal completed_at.
+  # After a project is marked done/reopened, stamp or clear ancestors
+  # (nested branch checkpoints → plan → goal).
   class SyncCompletion
     def self.call(project:)
       new(project).call
@@ -14,19 +15,39 @@ module Strategy
     def call
       return unless @project&.project?
 
-      plan = StrategyGoal.find_by(id: @project.parent_id)
-      return unless plan&.plan?
+      node = @project
+      while node
+        parent = StrategyGoal.find_by(id: node.parent_id)
+        break if parent.blank?
 
-      sync_plan!(plan)
-      goal = StrategyGoal.find_by(id: plan.parent_id)
-      sync_goal!(goal) if goal&.goal?
+        if parent.project?
+          sync_branch!(parent)
+          node = parent
+        elsif parent.plan?
+          sync_plan!(parent)
+          goal = StrategyGoal.find_by(id: parent.parent_id)
+          sync_goal!(goal) if goal&.goal?
+          break
+        else
+          break
+        end
+      end
     end
 
     private
 
+    def sync_branch!(branch)
+      projects = StrategyGoal.where(parent_id: branch.id, horizon: "project").to_a
+      if projects.any? && projects.all? { |p| p.completed_at.present? }
+        branch.complete!
+      else
+        branch.reopen!
+      end
+    end
+
     def sync_plan!(plan)
       projects = StrategyGoal.where(parent_id: plan.id, horizon: "project").to_a
-      if projects.any? && projects.all? { |p| p.completed_at.present? }
+      if projects.any? && projects.all? { |p| Strategy::Progress.percent(p) >= 100 }
         plan.complete!
       else
         plan.reopen!
@@ -35,7 +56,6 @@ module Strategy
 
     def sync_goal!(goal)
       plans = StrategyGoal.where(parent_id: goal.id, horizon: %w[plan]).to_a
-      # legacy "year" roots are goals; child plans use horizon plan
       if plans.any? && plans.all? { |plan| Strategy::Progress.percent(plan) >= 100 }
         goal.complete!
       else

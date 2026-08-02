@@ -25,11 +25,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/My Mountain/i, response.body)
     assert_match(/One mountain\. Today.?s battle/i, response.body)
-    assert_match(/What do I ultimately want to achieve/i, response.body)
-    assert_match(/Begin Journey/i, response.body)
+    assert_match(/Name your mountain|New Destination/i, response.body)
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-empty-goal"
+    assert_select ".lp-rpg__stage-sections"
     assert_select "[data-controller*='strategy-celebrate']"
     assert_select "[data-controller*='strategy-rpg']"
     assert_select "#strategy-camp-notebook", count: 0
@@ -81,18 +79,24 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
-      parent_id: project.id, horizon: "day", scheduled_on: Date.current.to_s,
+      parent_id: project.id, horizon: "project", title: "Vocabulary"
+    }
+    nested = @user.strategy_goals.for_kind("project").find_by!(title: "Vocabulary")
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: nested.id, horizon: "day", scheduled_on: Date.current.to_s,
       title: "Learn 20 words"
     }
     assert @user.daily_todos.for_day(Date.current).exists?(title: "Learn 20 words")
     assert_operator @user.reload.strategy_points, :>=, 725 # includes strategy complete 500
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: nested.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-battle", text: /Learn 20 words/i
-    assert_select ".lp-rpg-node.is-current", text: /Learn German/i
-    assert_select ".lp-rpg-sheet"
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i
+    assert_select ".lp-rpg-section-card.is-current", text: /Learn German/i
+    assert_select ".lp-rpg-sheet.is-quest-space"
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_no_match(/Monthly Goals/i, response.body)
@@ -124,12 +128,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Direct battle", scheduled_on: Date.current, position: 0
     )
     assert battle.persisted?
-    assert_equal project.id, battle.parent_id
+    assert_equal project_leaf.id, battle.parent_id
   end
 
   test "battle complete does not move goal until project confirmed" do
@@ -142,8 +147,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Win this", scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
@@ -155,8 +161,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert battle.reload.completed?
 
     follow_redirect!
-    assert_match(/Is .*Project.* finished/i, response.body)
+    assert_match(/Is .*Steps.* finished/i, response.body)
 
+    post project_completions_path, params: { project_id: project_leaf.id, decision: "done" }
+    assert project_leaf.reload.completed?
     post project_completions_path, params: { project_id: project.id, decision: "done" }
     assert_equal 100, goal.reload.progress_percent
     assert project.reload.completed?
@@ -178,32 +186,34 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project Two", position: 1
     )
+    project_a_leaf = practice_leaf_for!(project_a)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project_a, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_a_leaf, horizon: "day",
       title: "Battle One", scheduled_on: Date.current, position: 0
     )
     @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan_b, horizon: "project", title: "Lone Project", position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project_a.id)
+    get life_journey_path(@journey, focus_id: project_a_leaf.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-world"
-    assert_select ".lp-rpg-goal__title", text: /Goal/i
+    assert_select ".lp-rpg-sections"
+    assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
-    assert_select ".lp-rpg-node.is-current", text: /Project One/i
-    assert_select ".lp-rpg-project", text: /Project Two/i
-    assert_select ".lp-rpg-battle", text: /Battle One/i
-    assert_select ".lp-rpg-stats"
+    assert_select ".lp-rpg-section-card.is-current", text: /Project One/i
+    assert_select ".lp-rpg-section-card", text: /Project Two/i
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
+    assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
-    assert_select "form[action=?]", battle_win_path(battle)
+    assert_select "form[action=?]", battle_win_path(battle), count: 0
+    assert_select ".lp-rpg-camp-folder__cta", count: 0
   end
 
-  test "focusing a plan lights that path and shows its trail nodes" do
+  test "focusing a plan lights that path and shows its section cards" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -217,7 +227,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Plan/i
-    assert_select ".lp-rpg-node", text: /Auth Mission/i
+    assert_select ".lp-rpg-section-card", text: /Auth Mission/i
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
@@ -231,8 +241,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Done Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Done Battle", scheduled_on: Date.current, position: 0
     )
     battle.complete!
@@ -244,7 +255,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path.is-done", text: /Done Plan/i
   end
 
-  test "trail lists focused missions under the selected plan" do
+  test "sections carousel lists path-level camps under the selected plan" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -261,20 +272,21 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
         life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project #{i}", position: i
       )
     end
+    projects_first_leaf = practice_leaf_for!(projects.first)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: projects.first, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: projects_first_leaf, horizon: "day",
       title: "Battle Focus", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: projects.first.id)
+    get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
-    assert_select ".lp-rpg-project", minimum: 3
-    assert_select ".lp-rpg-battle", text: /Battle Focus/i
+    assert_select ".lp-rpg-section-card", minimum: 3
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_select "#strategy-camp-notebook", count: 0
   end
 
-  test "focus surface exposes quiet add path checkpoint and step" do
+  test "focus surface exposes quiet add path checkpoint and quest detail" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -284,15 +296,18 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Battle", scheduled_on: Date.current, position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project.id)
+    get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-rpg-sheet .lp-rpg-add", text: /Step|battle/i
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
+    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end
 
@@ -322,6 +337,91 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.for_kind("project").find_by!(title: "Improve Resume")
     assert_equal plan.id, project.parent_id
     assert_not_equal other_plan.id, project.parent_id
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+  end
+
+  test "deleting a checkpoint returns to a sibling camp on the same path" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Main path", position: 0
+    )
+    keep = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Keep me", position: 0
+    )
+    junk = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "wewe", position: 1
+    )
+
+    delete strategy_goal_path(junk)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: keep.id)
+    assert_not @user.strategy_goals.exists?(id: junk.id)
+
+    follow_redirect!
+    assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-current", text: /Keep me/
+    assert_select ".lp-rpg-section-card", text: /wewe/, count: 0
+  end
+
+  test "creating a checkpoint redirects with goal plan and focus so it stays visible" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Main path", position: 0
+    )
+    current = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "First camp", position: 0
+    )
+    current_leaf = practice_leaf_for!(current)
+    current_leaf.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Step one", scheduled_on: Date.current, position: 0
+    )
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: plan.id,
+      horizon: "project",
+      title: "Launch prep"
+    }
+    created = @user.strategy_goals.for_kind("project").find_by!(title: "Launch prep")
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: created.id)
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-locked", text: /Launch prep/
+    assert_select ".lp-rpg-section-head", count: 0
+    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
+    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
+    assert_match(/Checkpoint added|Launch prep/i, flash[:notice].to_s + response.body)
+  end
+
+  test "day schedule toggle plans practice for today via scheduled_on" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Vocabulary", position: 0
+    )
+    project_leaf = practice_leaf_for!(project)
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
+      title: "Flashcards", scheduled_on: Date.current + 1.day, position: 0
+    )
+
+    patch strategy_goal_path(battle), params: { scheduled_on: Date.current.to_s }
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project_leaf.id)
+    assert_equal Date.current, battle.reload.scheduled_on
+    assert_nil flash[:notice]
+
+    patch strategy_goal_path(battle), params: { scheduled_on: "later" }
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project_leaf.id)
+    assert_equal Date.current + 1.day, battle.reload.scheduled_on
   end
 
   test "update renames strategy goals and syncs battle titles to today" do
@@ -334,15 +434,16 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Old Project", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Old Battle", scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     assert @user.daily_todos.for_day(Date.current).exists?(title: "Old Battle", strategy_goal_id: battle.id)
 
     patch strategy_goal_path(goal), params: { title: "New Goal" }
-    assert_redirected_to life_journey_path(@journey, focus_id: goal.id)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id)
     assert_equal "New Goal", goal.reload.title
     assert_match(/Renamed/i, flash[:notice].to_s)
 
@@ -371,8 +472,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Ship portfolio", position: 0
     )
+    project_leaf = practice_leaf_for!(project)
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
       title: "Write one test", scheduled_on: Date.current, position: 0
     )
 
@@ -397,5 +499,67 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Journey/i, response.body)
     assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+  end
+
+  test "creating a daily practice persists repeat on the model" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Lessons", position: 0
+    )
+    nested = practice_leaf_for!(project)
+
+    get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
+    assert_response :success
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
+    assert_select ".lp-qs-detail__add-input"
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: nested.id, horizon: "day", scheduled_on: Date.current.to_s,
+      title: "Do lessons", repeat: "daily"
+    }
+    practice = @user.strategy_goals.for_kind("day").find_by!(title: "Do lessons")
+    assert practice.repeat_daily?
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
+
+    follow_redirect!
+    assert_response :success
+    # Quest Space surfaces objectives on the checklist host, not day-quest cards.
+    assert_select ".lp-qs-detail.is-open"
+    assert_select ".lp-rpg-practice-folder__title", count: 0
+  end
+
+  test "completing a daily practice rolls the template to tomorrow" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Lessons", position: 0
+    )
+    project_leaf = practice_leaf_for!(project)
+    practice = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
+      title: "Do lessons", scheduled_on: Date.current, repeat: "daily", position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: practice.id, scheduled_on: Date.current)
+
+    post complete_daily_todo_path(todo)
+    assert_redirected_to dashboard_path
+
+    practice.reload
+    assert practice.repeat_daily?
+    assert_nil practice.completed_at
+    assert_equal Date.current + 1.day, practice.scheduled_on
+    assert todo.reload.completed?
+    assert @user.daily_todos.exists?(strategy_goal_id: practice.id, scheduled_on: Date.current + 1.day)
   end
 end

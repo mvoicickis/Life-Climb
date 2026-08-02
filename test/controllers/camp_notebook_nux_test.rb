@@ -41,16 +41,16 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
       title: "Increase Income"
     }
     plan = @user.strategy_goals.for_kind("plan").last
-    assert_redirected_to life_journey_path(@journey, focus_id: plan.id)
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: plan.id)
 
     follow_redirect!
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
-    assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
-    assert_match(/Add (project|checkpoint)/i, response.body)
+    assert_select ".lp-rpg-sections"
+    assert_match(/Project Sections|Add section|New section/i, response.body)
   end
 
-  test "after first plan the trail shows the checkpoint" do
+  test "after first plan the mountain shows project sections carousel" do
     @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -59,7 +59,8 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg-path", text: /Find Job/i
-    assert_select ".lp-rpg-world"
+    assert_select ".lp-rpg-sections"
+    assert_select ".lp-rpg-world", count: 0
   end
 
   test "handoff add plan deep-links still available" do

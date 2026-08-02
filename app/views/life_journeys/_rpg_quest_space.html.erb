@@ -1,0 +1,149 @@
+<%# Quest Space board + slide-in detail. locals: categories, category_scope, open_folder_id, area, goal_id, plan_id, camp_accents %>
+<% categories = local_assigns.fetch(:categories) %>
+<% category_scope = local_assigns.fetch(:category_scope) %>
+<% open_folder_id = local_assigns[:open_folder_id] %>
+<% area = local_assigns.fetch(:area) %>
+<% goal_id = local_assigns[:goal_id] %>
+<% plan_id = local_assigns[:plan_id] %>
+<% camp_accents = local_assigns.fetch(:camp_accents) %>
+<% open_folder = open_folder_id && categories.find { |c| c.id == open_folder_id && !c.branch_checkpoint? } %>
+<% open_folder ||= open_folder_id && category_scope&.id == open_folder_id && category_scope.project? && !category_scope.branch_checkpoint? ? category_scope : nil %>
+<% leafs = categories.reject(&:branch_checkpoint?) %>
+<% branches = categories.select(&:branch_checkpoint?) %>
+
+<div class="lp-qs"
+     data-controller="quest-space"
+     data-quest-space-open-id-value="<%= open_folder&.id.to_i %>">
+  <div class="lp-qs-board" data-quest-space-target="board" <%= "aria-hidden=true" if open_folder %>>
+    <header class="lp-qs-board__head">
+      <p class="lp-qs-board__eyebrow"><%= t("strategy.rpg.quest_space_eyebrow") %></p>
+      <h2 class="lp-qs-board__title"><%= t("strategy.rpg.quest_space_title") %></h2>
+      <p class="lp-qs-board__sub"><%= t("strategy.rpg.quest_space_sub") %></p>
+    </header>
+
+    <div class="lp-qs-board__list">
+      <% branches.each_with_index do |cat, idx| %>
+        <% accent = camp_accents[idx % camp_accents.size] %>
+        <% branch_kids = cat.children.select(&:project?) %>
+        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: cat.id),
+              class: "lp-qs-card is-branch is-#{accent}",
+              data: { turbo: true } do %>
+          <div class="lp-qs-card__top">
+            <span class="lp-qs-card__icon" aria-hidden="true">📁</span>
+            <span class="lp-qs-card__copy">
+              <span class="lp-qs-card__name"><%= cat.title %></span>
+              <span class="lp-qs-card__meta">
+                <%= t("strategy.rpg.quest_folders_progress",
+                      done: branch_kids.count(&:completed?),
+                      total: branch_kids.size) %>
+              </span>
+            </span>
+            <span class="lp-qs-card__arrow" aria-hidden="true">›</span>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% leafs.each_with_index do |cat, idx| %>
+        <% accent = camp_accents[(branches.size + idx) % camp_accents.size] %>
+        <% prog = folder_objective_progress(cat) %>
+        <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: cat.id),
+              class: "lp-qs-card is-#{accent}",
+              data: { turbo: true } do %>
+          <div class="lp-qs-card__top">
+            <span class="lp-qs-card__icon" aria-hidden="true">📂</span>
+            <span class="lp-qs-card__copy">
+              <span class="lp-qs-card__name"><%= cat.title %></span>
+              <span class="lp-qs-card__meta">
+                <%= t("strategy.rpg.objectives_done_short", done: prog[:done], total: prog[:total]) %>
+              </span>
+            </span>
+            <span class="lp-qs-card__arrow" aria-hidden="true">›</span>
+          </div>
+          <div class="lp-qs-card__bar" aria-hidden="true">
+            <span class="lp-qs-card__bar-fill" style="width: <%= prog[:pct] %>%"></span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if category_scope&.project? && category_scope.split_eligible? %>
+      <details class="lp-rpg-node__add is-practice-add is-scope-add is-camps-new lp-qs-new"
+               id="rpg-add-camp-<%= category_scope.id %>"
+               data-controller="floating-create"
+               data-action="toggle->floating-create#onToggle">
+        <summary class="lp-qs-new__btn"
+                 aria-label="<%= t('strategy.rpg.new_quest') %>">
+          + <%= t("strategy.rpg.new_quest") %>
+        </summary>
+        <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+          <button type="button"
+                  class="lp-rpg-float-create__backdrop"
+                  data-action="click->floating-create#close"
+                  tabindex="-1"
+                  aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+          <div class="lp-rpg-float-create__card"
+               data-floating-create-target="card"
+               role="dialog"
+               aria-modal="true"
+               aria-labelledby="rpg-add-camp-title-<%= category_scope.id %>">
+            <header class="lp-rpg-float-create__head">
+              <p class="lp-rpg-float-create__kicker"><%= category_scope.title %></p>
+              <h2 class="lp-rpg-float-create__heading" id="rpg-add-camp-title-<%= category_scope.id %>">
+                <%= t("strategy.rpg.new_quest") %>
+              </h2>
+            </header>
+            <%= form_with url: strategy_goals_path,
+                  method: :post,
+                  class: "lp-rpg-float-create__form",
+                  data: { turbo: false } do %>
+              <%= hidden_field_tag :life_area_id, area.id %>
+              <%= hidden_field_tag :life_journey_id, @journey.id %>
+              <%= hidden_field_tag :horizon, "project" %>
+              <%= hidden_field_tag :parent_id, category_scope.id %>
+              <label class="lp-rpg-float-create__field">
+                <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.quest_name_label") %></span>
+                <%= text_field_tag :title, nil,
+                      required: true,
+                      maxlength: 120,
+                      class: "lp-rpg-float-create__input",
+                      placeholder: t("strategy.rpg.quest_name_placeholder"),
+                      autocomplete: "off",
+                      data: { floating_create_target: "title" } %>
+              </label>
+              <div class="lp-rpg-float-create__actions">
+                <button type="button"
+                        class="lp-rpg-float-create__btn is-cancel"
+                        data-action="click->floating-create#close">
+                  <%= t("strategy.rpg.cancel") %>
+                </button>
+                <%= submit_tag t("strategy.rpg.new_quest"),
+                      class: "lp-rpg-float-create__btn is-create" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </details>
+    <% end %>
+  </div>
+
+  <div class="lp-qs-detail <%= 'is-open' if open_folder %>"
+       data-quest-space-target="detail"
+       aria-hidden="<%= open_folder ? 'false' : 'true' %>">
+    <% if open_folder %>
+      <%= render "life_journeys/rpg_quest_detail",
+            folder: open_folder,
+            area: area,
+            goal_id: goal_id,
+            plan_id: plan_id %>
+    <% end %>
+  </div>
+
+  <div class="lp-qs-undo" data-quest-space-target="undoBar">
+    <span data-quest-space-target="undoText"><%= t("strategy.rpg.objective_removed") %></span>
+    <button type="button"
+            class="lp-qs-undo__link"
+            data-action="click->quest-space#undoDelete">
+      <%= t("strategy.rpg.undo") %>
+    </button>
+  </div>
+</div>

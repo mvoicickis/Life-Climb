@@ -18,6 +18,8 @@ module Developer
         @user.daily_todos.delete_all
         @user.strategy_goals.destroy_all
         @user.life_journeys.destroy_all
+        # Journeys first: LifeArea has_many :life_journeys, dependent: :restrict_with_error
+        @user.life_areas.destroy_all
         @user.strategy_point_ledgers.delete_all
 
         shown = Array(@user.support_milestones_shown).map(&:to_s)
