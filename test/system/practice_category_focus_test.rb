@@ -73,7 +73,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title", text: /Learn 15/i, visible: :all, wait: 3
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__title", text: /Flashcards/i, visible: :all
     assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-folder__plan-check", minimum: 1, visible: :all
-    assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
+    assert_selector ".lp-rpg-practice-add", text: /Prepare New Quest/i, visible: :all
     assert_no_selector ".lp-rpg-breadcrumbs"
     assert_no_selector ".lp-rpg-section-head"
     assert_selector ".lp-rpg-section-card", text: /Language skills/i, visible: :all
@@ -115,7 +115,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     end
   end
 
-  test "Prepare New Practice Cancel closes the portaled floating card" do
+  test "Prepare New Quest Cancel closes the portaled floating card" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -131,7 +131,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       trigger?.click();
     JS
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-    assert_selector ".lp-rpg-float-create__heading", text: /Prepare New Practice/i
+    assert_selector ".lp-rpg-float-create__heading", text: /Prepare New Quest/i
 
     find("body > .lp-rpg-float-create .lp-rpg-float-create__btn.is-cancel", text: /Cancel/i).click
     assert_no_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3

@@ -66,19 +66,19 @@
            <% if open_folder_id %>data-open-folder-id="<%= open_folder_id %>"<% end %>>
     <% camp_accents = %w[green purple blue orange pink gold] %>
     <div class="lp-rpg-practice-cats lp-rpg-camps"
-         aria-label="<%= t('strategy.rpg.camps_label') %>">
+         aria-label="<%= t('strategy.rpg.quest_folders_label') %>">
       <% unless listing_path_level %>
         <div class="lp-rpg-camps__head">
-          <p class="lp-rpg-camps__kicker"><%= t("strategy.rpg.camps_label") %></p>
+          <p class="lp-rpg-camps__kicker"><%= t("strategy.rpg.quest_folders_label") %></p>
           <% if category_scope&.project? %>
             <details class="lp-rpg-node__add is-practice-add is-scope-add is-camps-new"
                      id="rpg-add-camp-<%= category_scope.id %>"
                      data-controller="floating-create"
                      data-action="toggle->floating-create#onToggle">
               <summary class="lp-rpg-camps__new"
-                       aria-label="<%= t('strategy.rpg.new_camp') %>">
+                       aria-label="<%= t('strategy.rpg.new_quest_folder') %>">
                 <span aria-hidden="true">+</span>
-                <span><%= t("strategy.rpg.new_camp") %></span>
+                <span><%= t("strategy.rpg.new_quest_folder") %></span>
               </summary>
               <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
                 <button type="button"
@@ -157,30 +157,22 @@
               <% kids = cat.children.select(&:project?).sort_by { |c| [ c.position.to_i, c.id ] } %>
               <% done_count = kids.count(&:completed?) %>
               <% total_count = kids.size %>
+              <% folder_pct = total_count.positive? ? ((done_count * 100.0) / total_count).round : camp_pct %>
               <li class="lp-rpg-camps__item is-branch" data-controller="plan-card-menu">
                 <details class="lp-rpg-camp-folder is-<%= accent %>">
-                  <summary class="lp-rpg-camp-row is-folder is-<%= accent %>">
-                    <span class="lp-rpg-camp-row__drag" aria-hidden="true"></span>
+                  <summary class="lp-rpg-camp-row is-quest-folder is-folder is-<%= accent %>">
                     <span class="lp-rpg-camp-row__mark" aria-hidden="true">
-                      <span class="lp-rpg-camp-row__check <%= 'is-done' if cat.completed? %>"></span>
+                      <span class="lp-rpg-camp-row__folder-icon"></span>
                     </span>
-                    <span class="lp-rpg-camp-row__icon" aria-hidden="true">📁</span>
-                    <span class="lp-rpg-camp-row__body">
-                      <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
-                        <span class="lp-rpg-camp-row__num"><%= num %>.</span>
-                        <%= cat.title %>
-                      </span>
-                      <span class="lp-rpg-camp-row__desc">
-                        <%= cat.description.to_s.strip.presence || t("strategy.rpg.folder_branch_desc") %>
-                      </span>
-                    </span>
-                    <span class="lp-rpg-camp-row__meta">
-                      <span class="lp-rpg-camp-row__pct"><%= camp_pct %>%</span>
-                      <span class="lp-rpg-camp-row__meter" aria-hidden="true">
-                        <span class="lp-rpg-camp-row__meter-fill" style="width: <%= camp_pct %>%"></span>
-                      </span>
-                      <span class="lp-rpg-camp-row__count">
-                        <%= t("strategy.rpg.camps_completed", done: done_count, total: total_count) %>
+                    <span class="lp-rpg-camp-row__copy">
+                      <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title"><%= cat.title %></span>
+                      <span class="lp-rpg-camp-row__progress">
+                        <span class="lp-rpg-camp-row__progress-label">
+                          <%= t("strategy.rpg.quest_folders_progress", done: done_count, total: total_count) %>
+                        </span>
+                        <span class="lp-rpg-camp-row__bar" aria-hidden="true">
+                          <span class="lp-rpg-camp-row__bar-fill" style="width: <%= folder_pct %>%"></span>
+                        </span>
                       </span>
                     </span>
                     <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>
@@ -232,24 +224,19 @@
                                    data-controller="camp-folder"
                                    data-category-id="<%= kid.id %>"
                                    <%= "open" if kid_open %>>
-                            <summary class="lp-rpg-practice-cat lp-rpg-camp-row is-child is-folder is-leaf is-<%= kid_accent %>">
+                            <summary class="lp-rpg-practice-cat lp-rpg-camp-row is-quest-folder is-child is-folder is-leaf is-<%= kid_accent %>">
                               <span class="lp-rpg-camp-row__mark" aria-hidden="true">
-                                <span class="lp-rpg-camp-row__check <%= 'is-done' if kid.completed? || leaf_done %>"></span>
+                                <span class="lp-rpg-camp-row__folder-icon"></span>
                               </span>
-                              <span class="lp-rpg-camp-row__icon" aria-hidden="true">📁</span>
-                              <span class="lp-rpg-camp-row__body">
-                                <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
-                                  <span class="lp-rpg-camp-row__num"><%= kid_num %></span>
-                                  <%= kid.title %>
-                                </span>
-                                <span class="lp-rpg-camp-row__desc">
-                                  <%= kid.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
-                                </span>
-                              </span>
-                              <span class="lp-rpg-camp-row__meta is-compact">
-                                <span class="lp-rpg-camp-row__pct"><%= kid_pct %>%</span>
-                                <span class="lp-rpg-camp-row__count">
-                                  <%= t("strategy.rpg.camps_completed", done: day_done, total: day_total) %>
+                              <span class="lp-rpg-camp-row__copy">
+                                <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title"><%= kid.title %></span>
+                                <span class="lp-rpg-camp-row__progress">
+                                  <span class="lp-rpg-camp-row__progress-label">
+                                    <%= t("strategy.rpg.quests_progress", done: day_done, total: day_total) %>
+                                  </span>
+                                  <span class="lp-rpg-camp-row__bar" aria-hidden="true">
+                                    <span class="lp-rpg-camp-row__bar-fill" style="width: <%= kid_pct %>%"></span>
+                                  </span>
                                 </span>
                               </span>
                               <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>
@@ -275,28 +262,19 @@
                          data-controller="camp-folder"
                          data-category-id="<%= cat.id %>"
                          <%= "open" if folder_open %>>
-                  <summary class="lp-rpg-practice-cat lp-rpg-camp-row is-folder is-leaf is-<%= accent %>">
-                    <span class="lp-rpg-camp-row__drag" aria-hidden="true"></span>
+                  <summary class="lp-rpg-practice-cat lp-rpg-camp-row is-quest-folder is-folder is-leaf is-<%= accent %>">
                     <span class="lp-rpg-camp-row__mark" aria-hidden="true">
-                      <span class="lp-rpg-camp-row__check <%= 'is-done' if cat.completed? %>"></span>
+                      <span class="lp-rpg-camp-row__folder-icon"></span>
                     </span>
-                    <span class="lp-rpg-camp-row__icon" aria-hidden="true">📁</span>
-                    <span class="lp-rpg-camp-row__body">
-                      <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title">
-                        <span class="lp-rpg-camp-row__num"><%= num %>.</span>
-                        <%= cat.title %>
-                      </span>
-                      <span class="lp-rpg-camp-row__desc">
-                        <%= cat.description.to_s.strip.presence || t("strategy.rpg.folder_leaf_desc") %>
-                      </span>
-                    </span>
-                    <span class="lp-rpg-camp-row__meta">
-                      <span class="lp-rpg-camp-row__pct"><%= leaf_pct %>%</span>
-                      <span class="lp-rpg-camp-row__meter" aria-hidden="true">
-                        <span class="lp-rpg-camp-row__meter-fill" style="width: <%= leaf_pct %>%"></span>
-                      </span>
-                      <span class="lp-rpg-camp-row__count">
-                        <%= t("strategy.rpg.camps_completed", done: day_done, total: day_total) %>
+                    <span class="lp-rpg-camp-row__copy">
+                      <span class="lp-rpg-practice-cat__title lp-rpg-camp-row__title"><%= cat.title %></span>
+                      <span class="lp-rpg-camp-row__progress">
+                        <span class="lp-rpg-camp-row__progress-label">
+                          <%= t("strategy.rpg.quests_progress", done: day_done, total: day_total) %>
+                        </span>
+                        <span class="lp-rpg-camp-row__bar" aria-hidden="true">
+                          <span class="lp-rpg-camp-row__bar-fill" style="width: <%= leaf_pct %>%"></span>
+                        </span>
                       </span>
                     </span>
                     <span class="lp-rpg-camp-row__chevron" aria-hidden="true"></span>

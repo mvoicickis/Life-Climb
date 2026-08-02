@@ -103,7 +103,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-section-card", text: /Empty camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_selector ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_selector ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_selector ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Quest Folder/i
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
   end
 end

@@ -305,7 +305,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Practice/i
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i
     assert_select ".lp-rpg-practice-folder__title", text: /Battle/
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end

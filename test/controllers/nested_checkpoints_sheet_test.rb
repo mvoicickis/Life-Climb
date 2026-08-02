@@ -39,9 +39,9 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Quest Folder/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Prepare New Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-section-card", text: /Resume/
   end
@@ -97,7 +97,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Landing page/
     assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Payments/
     assert_select ".lp-rpg-camps .lp-rpg-camp-row.is-leaf", minimum: 2
-    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Quest Folder/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-camp-folder[data-category-id='#{child.id}']"
 

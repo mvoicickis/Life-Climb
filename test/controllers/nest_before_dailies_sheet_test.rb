@@ -39,12 +39,12 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
-    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
+    assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Quest Folder/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Prepare New Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
-  test "nested leaf camp shows Prepare New Practice" do
+  test "nested leaf camp shows Prepare New Quest" do
     nested = @camp.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Vocabulary", position: 0
@@ -53,7 +53,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: nested.id)
     assert_response :success
     assert_select ".lp-rpg-camp-folder[open][data-category-id='#{nested.id}'] .lp-rpg-practice-cat__title", text: /Vocabulary/
-    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-add", text: /Prepare New Practice/i
+    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-add", text: /Prepare New Quest/i
     assert_select ".lp-rpg-camp-empty .lp-rpg-camp-empty__camp", text: /Vocabulary/
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-practices", 1
@@ -81,7 +81,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
     assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-folder__title", text: /Do lessons/
-    assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-add", text: /Prepare New Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder.is-legacy-scope .lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
   test "creating a day under Path-level camp redirects with nest message" do

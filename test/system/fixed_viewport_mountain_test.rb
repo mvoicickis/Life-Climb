@@ -91,7 +91,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
 
     assert_selector ".lp-rpg-camp-folder__cta", text: /Begin Today's Battles/i, visible: :all
-    assert_selector ".lp-rpg-practice-add", text: /Prepare New Practice/i, visible: :all
+    assert_selector ".lp-rpg-practice-add", text: /Prepare New Quest/i, visible: :all
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")
 
     metrics = page.evaluate_script(<<~JS)
