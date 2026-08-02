@@ -23,6 +23,7 @@ class User < ApplicationRecord
   has_many :missions, dependent: :destroy
   has_many :journey_targets, dependent: :destroy
   has_many :daily_todos, dependent: :destroy
+  has_many :practice_tasks, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
 
