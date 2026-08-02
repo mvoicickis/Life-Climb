@@ -1,0 +1,75 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    sign_in_as @user
+    Onboarding::Run.call(
+      user: @user, area_key: "career", title: "Ship LifePoints",
+      ideal_scene: "App live", current_reality: "Building", next_win: "Launch",
+      today_mission: "Write tests", closer_percent: 20, route_mission: true
+    )
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @journey = @user.reload.primary_focused_journey
+    @area = @journey.life_area
+    @goal = @user.strategy_goals.for_kind("goal").roots.first
+    @plan = @goal.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "plan", title: "Main trail", position: 0
+    )
+    @section = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Resume", position: 0
+    )
+    @folder = @section.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Vocabulary", position: 0
+    )
+  end
+
+  test "board lists quest cards with New Quest" do
+    host = Strategy::EnsureFolderQuest.call(folder: @folder)
+    host.practice_tasks.create!(user: @user, title: "Learn 15 words", position: 0, completed_at: Time.current)
+    host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    assert_response :success
+    assert_select ".lp-rpg-sheet.is-quest-space"
+    assert_select ".lp-qs-board__title", text: /Your Quests/
+    assert_select ".lp-qs-card__name", text: /Vocabulary/
+    assert_select ".lp-qs-card__meta", text: /1 \/ 2 done/
+    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+    assert_select ".lp-rpg-camp-folder__cta", count: 0
+  end
+
+  test "focusing a quest opens detail with objectives and sticky add" do
+    host = Strategy::EnsureFolderQuest.call(folder: @folder)
+    host.practice_tasks.create!(user: @user, title: "Learn 15 words", position: 0)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
+    assert_response :success
+    assert_select ".lp-qs-detail.is-open"
+    assert_select ".lp-qs-detail__title", text: /Vocabulary/
+    assert_select ".lp-qs-obj__text[value='Learn 15 words']"
+    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-qs-detail__progress", text: /objectives done/
+    assert_select ".lp-rpg-practice-folder__plan-label", count: 0
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+    assert_select ".lp-rpg-camp-folder__cta", count: 0
+  end
+
+  test "empty path-level camp shows nest hint and New Quest" do
+    empty = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Empty section", position: 1
+    )
+    get life_journey_path(@journey, focus_id: empty.id)
+    assert_response :success
+    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
+    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+  end
+end

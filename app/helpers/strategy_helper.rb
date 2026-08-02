@@ -248,4 +248,23 @@ module StrategyHelper
   def strategy_breadcrumb_nodes(goal:, plan:, project:, battle:)
     [ goal, plan, project, battle ].compact
   end
+
+  # Objective progress for a Quest Folder card (does not create a host day).
+  # Matches Strategy::EnsureFolderQuest host selection (Checklist title, else oldest day).
+  def folder_objective_progress(folder)
+    days =
+      if folder.association(:children).loaded?
+        folder.children.select(&:day?).sort_by { |d| [ d.position.to_i, d.id ] }
+      else
+        folder.children.where(horizon: "day").ordered.to_a
+      end
+    host = days.find { |d| d.title.to_s == Strategy::EnsureFolderQuest::HOST_TITLE } || days.first
+    return { done: 0, total: 0, pct: 0 } if host.blank?
+
+    tasks = host.practice_tasks.to_a
+    done = tasks.count(&:completed?)
+    total = tasks.size
+    pct = total.positive? ? ((done * 100.0) / total).round : 0
+    { done: done, total: total, pct: pct }
+  end
 end

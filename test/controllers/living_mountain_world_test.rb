@@ -89,8 +89,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-section-card.is-current", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-camps", 1
-    assert_select ".lp-rpg-practice-cat__title", text: /Steps/
+    assert_select ".lp-qs", 1
+    assert_select ".lp-qs-card__name", text: /Steps/
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 
@@ -112,9 +112,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-section-card.is-current", text: /Resume/
-    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}'] .lp-rpg-practice-cat__title", text: /Steps/
-    assert_select ".lp-rpg-practice-folder__title", text: /Update CV/
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
+    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
   test "locked sections stay visible in the carousel but are not drillable links" do

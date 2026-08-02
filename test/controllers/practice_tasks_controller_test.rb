@@ -33,27 +33,46 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Camp", position: 0
     )
-    @practice = @camp.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Finish page", scheduled_on: Date.current, position: 0
-    )
+    @practice = Strategy::EnsureFolderQuest.call(folder: @camp)
   end
 
-  test "create adds an objective under a practice" do
+  test "create adds an objective under the folder checklist" do
     assert_difference -> { @practice.practice_tasks.count }, 1 do
       post strategy_goal_practice_tasks_path(@practice), params: { title: "Design layout" }
     end
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     follow_redirect!
-    assert_select ".lp-rpg-practice-folder__title", text: /Finish page/
-    assert_select ".lp-rpg-practice-task__title", text: /Design layout/
-    assert_select ".lp-rpg-camps__kicker", text: /Quest Folders/i
-    assert_select ".lp-rpg-camp-row.is-quest-folder .lp-rpg-camp-row__progress-label", text: /Quests/i
-    assert_select ".lp-rpg-practice-folder__add-reveal", text: /Add Objective/i
-    assert_select ".lp-rpg-practice-folder__plan-hint", text: /today's battles/i
+    assert_select ".lp-qs-detail.is-open"
+    assert_select ".lp-qs-detail__title", text: /Camp/
+    assert_select ".lp-qs-obj__text[value='Design layout']"
+    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-rpg-practice-folder__plan-hint", count: 0
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
-  test "completing all tasks shows finish prompt without completing practice" do
+  test "create with position inserts and shifts siblings" do
+    first = @practice.practice_tasks.create!(user: @user, title: "A", position: 0)
+    second = @practice.practice_tasks.create!(user: @user, title: "B", position: 1)
+
+    post strategy_goal_practice_tasks_path(@practice),
+         params: { title: "Restored", position: 0, completed: "1" }
+    assert_response :redirect
+
+    restored = @practice.practice_tasks.find_by!(title: "Restored")
+    assert_equal 0, restored.position
+    assert restored.completed?
+    assert_equal 1, first.reload.position
+    assert_equal 2, second.reload.position
+  end
+
+  test "update renames an objective title" do
+    task = @practice.practice_tasks.create!(user: @user, title: "Old name", position: 0)
+    patch practice_task_path(task), params: { title: "New name" }
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_equal "New name", task.reload.title
+  end
+
+  test "completing objectives does not auto-complete the host day" do
     first = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
     second = @practice.practice_tasks.create!(user: @user, title: "Polish header", position: 1)
 
@@ -64,16 +83,15 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     patch practice_task_path(second), params: { completed: "1" }
     follow_redirect!
     assert_not @practice.reload.completed?
-    assert_select ".lp-rpg-practice-finish__copy", text: /All objectives are complete/
-    assert_select ".lp-rpg-practice-finish__btn.is-complete", text: /Complete Quest/i
-    assert_select ".lp-rpg-practice-finish__btn.is-more", text: /Add More Objectives/i
+    assert_select ".lp-qs-obj__check.is-done", minimum: 2
+    assert_select ".lp-rpg-practice-finish__copy", count: 0
   end
 
-  test "plan for today stays on the practice folder" do
-    @practice.update!(scheduled_on: Date.current + 1.day)
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    assert_response :success
-    assert_select ".lp-rpg-practice-folder__plan-check:not([checked])"
-    assert_select ".lp-rpg-practice-folder__plan-label", text: /Plan for Today/i
+  test "destroy removes an objective" do
+    task = @practice.practice_tasks.create!(user: @user, title: "Temp", position: 0)
+    assert_difference -> { @practice.practice_tasks.count }, -1 do
+      delete practice_task_path(task)
+    end
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
   end
 end

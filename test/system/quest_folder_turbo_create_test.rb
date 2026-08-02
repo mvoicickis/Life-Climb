@@ -27,14 +27,14 @@ class QuestFolderTurboCreateTest < ApplicationSystemTestCase
     )
   end
 
-  test "Turbo create shows the new Quest Folder in the sheet" do
+  test "Turbo create shows the new Quest in the sheet" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    find(".lp-rpg-camps__new", text: /New Quest Folder/i).click
+    find(".lp-qs-new__btn", text: /New Quest/i).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
 
     card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
@@ -45,9 +45,9 @@ class QuestFolderTurboCreateTest < ApplicationSystemTestCase
     JS
     card.find(".lp-rpg-float-create__btn.is-create").click
 
-    assert_selector ".lp-rpg-practice-cat__title", text: /Vocabulary/i, wait: 5
+    assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i, wait: 5
     assert @user.strategy_goals.for_kind("project").exists?(title: "Vocabulary", parent_id: @camp.id),
-           "Quest Folder should be saved"
+           "Quest should be saved"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-folder-turbo-create-fixed.png")

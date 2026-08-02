@@ -22,7 +22,7 @@ Rails.application.routes.draw do
   resources :strategy_goals, only: %i[ create update destroy ] do
     resources :practice_tasks, only: %i[ create ]
   end
-  resources :practice_tasks, only: %i[ update ]
+  resources :practice_tasks, only: %i[ update destroy ]
   resources :first_climbs, only: :create
   resources :journey_targets, only: %i[ destroy ] do
     member do

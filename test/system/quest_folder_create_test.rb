@@ -32,7 +32,7 @@ class QuestFolderCreateTest < ApplicationSystemTestCase
     )
   end
 
-  test "New Quest Folder create shows the folder in the sheet" do
+  test "New Quest create opens the quest detail in the sheet" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -40,14 +40,14 @@ class QuestFolderCreateTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    assert_selector ".lp-rpg-camps__new", text: /New Quest Folder/i, wait: 5
+    assert_selector ".lp-qs-new__btn", text: /New Quest/i, wait: 5
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-folder-create-before.png")
 
-    find(".lp-rpg-camps__new", text: /New Quest Folder/i).click
+    find(".lp-qs-new__btn", text: /New Quest/i).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-    assert_selector ".lp-rpg-float-create__heading", text: /Create Checkpoint/i
+    assert_selector ".lp-rpg-float-create__heading", text: /New Quest/i
 
     card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
     card.fill_in "title", with: "Vocabulary"
@@ -56,9 +56,9 @@ class QuestFolderCreateTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-folder-create-after.png")
 
     assert @user.strategy_goals.for_kind("project").exists?(title: "Vocabulary", parent_id: @camp.id),
-           "Quest Folder should be saved"
+           "Quest should be saved"
     created = @camp.children.find_by!(title: "Vocabulary")
-    assert_selector ".lp-rpg-camp-folder[data-category-id='#{created.id}']", wait: 5
-    assert_selector ".lp-rpg-practice-cat__title", text: /Vocabulary/i, wait: 5
+    assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i, wait: 5
+    assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id), wait: 5
   end
 end

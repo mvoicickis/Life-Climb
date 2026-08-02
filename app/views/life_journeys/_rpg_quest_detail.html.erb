@@ -1,0 +1,81 @@
+<%# Slide-in Quest Space detail. locals: folder, area, journey, goal_id, plan_id %>
+<% folder = local_assigns.fetch(:folder) %>
+<% area = local_assigns.fetch(:area) %>
+<% goal_id = local_assigns[:goal_id] %>
+<% plan_id = local_assigns[:plan_id] %>
+<% host = Strategy::EnsureFolderQuest.call(folder: folder) %>
+<% tasks = host ? host.practice_tasks.ordered.to_a : [] %>
+<% done = tasks.count(&:completed?) %>
+<% total = tasks.size %>
+<% create_url = host ? strategy_goal_practice_tasks_path(host) : nil %>
+<% board_path = life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: folder.parent_id || folder.id) %>
+
+<div class="lp-qs-detail__head">
+  <%= link_to board_path,
+        class: "lp-qs-detail__back",
+        data: { action: "click->quest-space#close", turbo: true },
+        aria: { label: t("strategy.rpg.quest_space_back") } do %>
+    ←
+  <% end %>
+  <div class="lp-qs-detail__head-copy">
+    <h2 class="lp-qs-detail__title"><%= folder.title %></h2>
+    <p class="lp-qs-detail__progress">
+      <%= t("strategy.rpg.objectives_done", done: done, total: total) %>
+    </p>
+  </div>
+</div>
+
+<div class="lp-qs-detail__objectives" data-quest-space-target="objectives">
+  <% if tasks.empty? %>
+    <p class="lp-qs-detail__empty"><%= t("strategy.rpg.objectives_empty_short") %></p>
+  <% else %>
+    <% tasks.each do |task| %>
+      <div class="lp-qs-obj"
+           data-quest-space-row
+           data-title="<%= task.title %>"
+           data-position="<%= task.position %>"
+           data-completed="<%= task.completed? ? '1' : '0' %>"
+           data-create-url="<%= create_url %>"
+           data-destroy-url="<%= practice_task_path(task) %>">
+        <button type="button"
+                class="lp-qs-obj__check <%= 'is-done' if task.completed? %>"
+                data-action="click->quest-space#toggleComplete"
+                data-update-url="<%= practice_task_path(task) %>"
+                data-completed="<%= task.completed? ? '1' : '0' %>"
+                aria-label="<%= task.title %>">
+          <%= "✓" if task.completed? %>
+        </button>
+        <input type="text"
+               class="lp-qs-obj__text <%= 'is-done' if task.completed? %>"
+               value="<%= task.title %>"
+               maxlength="120"
+               data-update-url="<%= practice_task_path(task) %>"
+               data-original-title="<%= task.title %>"
+               data-action="keydown->quest-space#saveTitle blur->quest-space#saveTitle"
+               aria-label="<%= t('strategy.rpg.objective_name') %>">
+        <button type="button"
+                class="lp-qs-obj__trash"
+                data-action="click->quest-space#deleteObjective"
+                aria-label="<%= t('strategy.rpg.delete_objective') %>">🗑</button>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<div class="lp-qs-detail__add">
+  <div class="lp-qs-detail__add-wrap">
+    <span class="lp-qs-detail__add-plus" aria-hidden="true">+</span>
+    <% if create_url %>
+      <input type="text"
+             class="lp-qs-detail__add-input"
+             placeholder="<%= t('strategy.rpg.add_objective_placeholder') %>"
+             maxlength="120"
+             autocomplete="off"
+             data-create-url="<%= create_url %>"
+             data-action="keydown->quest-space#addObjective"
+             aria-label="<%= t('strategy.rpg.add_objective') %>">
+    <% else %>
+      <p class="lp-qs-detail__empty"><%= t("strategy.rpg.nest_before_dailies") %></p>
+    <% end %>
+  </div>
+</div>

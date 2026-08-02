@@ -25,13 +25,14 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "New Quest Folder form disables turbo" do
+  test "New Quest form disables turbo" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
     assert_select "#rpg-add-camp-#{@camp.id} form[action=?][data-turbo=false]", strategy_goals_path
+    assert_select ".lp-qs-new__btn", text: /New Quest/
   end
 
-  test "HTML create nested quest folder shows it in sheet" do
+  test "HTML create nested quest opens Quest Space detail" do
     assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
       post strategy_goals_path, params: {
         life_area_id: @area.id, life_journey_id: @journey.id,
@@ -41,11 +42,11 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     created = @camp.children.find_by!(title: "Vocabulary")
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
     follow_redirect!
-    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{created.id}'] .lp-rpg-practice-cat__title", text: /Vocabulary/
-    assert_select ".lp-rpg-camp-row.is-quest-folder .lp-rpg-camp-row__progress-label", text: /0 \/ 0 Quests/
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/
+    assert_select ".lp-qs-detail__add-input"
   end
 
-  test "turbo_stream create nested quest folder redirects so the sheet can refresh" do
+  test "turbo_stream create nested quest redirects so the sheet can refresh" do
     assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
       post strategy_goals_path,
            params: {
@@ -57,6 +58,6 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     created = @camp.children.find_by!(title: "Grammar")
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
     follow_redirect!
-    assert_select ".lp-rpg-practice-cat__title", text: /Grammar/
+    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Grammar/
   end
 end
