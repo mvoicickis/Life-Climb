@@ -102,7 +102,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
     assert_selector ".lp-rpg-section-head__title", text: /Empty camp/i, wait: 5
     assert_selector ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_selector ".lp-rpg-practice-cats .is-scope-add .lp-rpg-practice-add", text: /Smaller camp/i
+    assert_selector ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
   end
 end
