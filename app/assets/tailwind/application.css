@@ -4946,11 +4946,14 @@
     0 0 0 1px color-mix(in srgb, #86efac 28%, transparent),
     0 18px 40px color-mix(in srgb, #166534 12%, transparent),
     inset 0 1px 0 color-mix(in srgb, #fff 70%, transparent);
+  /* Mix with paper (not transparent) so multi-line lead copy sits on
+     even luminance — transparent stops let the dark atmosphere wash
+     the first line more than the ones below. */
   background:
     linear-gradient(
       165deg,
-      color-mix(in srgb, #bbf7d0 55%, transparent),
-      color-mix(in srgb, #ecfdf5 80%, transparent) 28%,
+      color-mix(in srgb, #bbf7d0 28%, var(--lp-paper)),
+      color-mix(in srgb, #ecfdf5 18%, var(--lp-paper)) 28%,
       var(--lp-paper) 62%
     );
   animation: lp-adventure-panel-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -5102,6 +5105,8 @@
 
 .lp-adventure__intro .lp-adventure__lead {
   animation: lp-adventure-copy-slam 700ms cubic-bezier(0.22, 1.15, 0.36, 1) 0.52s both;
+  opacity: 1;
+  color: color-mix(in srgb, var(--lp-ink) 88%, var(--lp-muted));
 }
 
 .lp-adventure__kicker {
