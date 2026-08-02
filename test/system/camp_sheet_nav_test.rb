@@ -59,10 +59,10 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
     assert_selector ".lp-rpg-section-card.is-locked", text: /Ship landing page/i
     assert_no_selector "a.lp-rpg-section-card", text: /Ship landing page/i
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Steps/i
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+    assert_selector ".lp-rpg-camp-folder[open][data-category-id='#{@camp_a_leaf.id}'] .lp-rpg-practice-cat__title", text: /Steps/i
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title",
                     text: /Ask 5 friends for feedback/i, visible: :all
-    assert_no_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+    assert_no_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title",
                        text: /Draft hero headline/i, visible: :all
 
     # Unlock the next section, then switch via the carousel.
@@ -71,16 +71,16 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-section-card.is-selected", text: /Ship landing page/i, wait: 5
     assert_selector ".lp-rpg-section-head__title", text: /Ship landing page/i, wait: 5
     find(".lp-rpg-practice-cat", text: /Steps/i).click
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title",
                     text: /Draft hero headline/i, visible: :all, wait: 3
-    assert_no_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+    assert_no_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title",
                        text: /Ask 5 friends for feedback/i, visible: :all
 
     find("a.lp-rpg-section-card", text: /Get first 100 users/i, wait: 3).click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
     assert_selector ".lp-rpg-section-head__title", text: /Get first 100 users/i, wait: 5
     find(".lp-rpg-practice-cat", text: /Steps/i).click
-    assert_selector ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title",
+    assert_selector ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title",
                     text: /Ask 5 friends for feedback/i, visible: :all, wait: 3
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")

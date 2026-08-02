@@ -40,7 +40,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-practice-focus .lp-rpg-practice-add", text: /Add Practice/i, count: 0
+    assert_select ".lp-rpg-camp-folder .lp-rpg-practice-add", text: /Add Practice/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-rpg-section-card", text: /Resume/
   end
@@ -58,13 +58,17 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-todays-practice__kicker", text: /Today.?s Practice/i
+    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{project_leaf.id}']"
+    assert_select ".lp-rpg-camp-practices.is-today .lp-rpg-camp-practices__kicker", text: /Today.?s Practice/i
+    assert_select ".lp-rpg-camp-practices.is-all .lp-rpg-camp-practices__kicker", text: /All Practices/i
     assert_select ".lp-rpg-practice-row__title", text: /Update CV/
     assert_select ".lp-rpg-practice-row__xp", text: /XP/i
-    assert_select ".lp-rpg-practice-row__check[checked]", 1
-    assert_select ".lp-rpg-practice-focus__cta", text: /Open in Today/i
+    assert_select ".lp-rpg-practice-row__check[checked]", minimum: 1
+    assert_select ".lp-rpg-camp-folder__cta", text: /Open in Today/i
     assert_select "form[action=?]", battle_win_path(battle), count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
+    assert_select ".lp-rpg-camps:not([hidden])", 1
+    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
   end
 
   test "branch checkpoint sheet lists child camps as practice categories" do
@@ -89,19 +93,19 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-head__title", text: /Launch prep/
     assert_select ".lp-rpg-breadcrumbs__item", text: /Main trail/
     assert_select ".lp-rpg-section-head__title", text: /Launch prep/
-    assert_select ".lp-rpg-camps:not(.is-exited) .lp-rpg-practice-cat__title", text: /Landing page/
-    assert_select ".lp-rpg-camps:not(.is-exited) .lp-rpg-practice-cat__title", text: /Payments/
+    assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Landing page/
+    assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Payments/
     assert_select ".lp-rpg-camps .lp-rpg-camp-row.is-leaf", minimum: 2
     assert_select ".lp-rpg-camps .is-scope-add .lp-rpg-camps__new", text: /New Camp/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select "a.lp-rpg-practice-cat[href*='focus_id=#{child.id}']"
+    assert_select ".lp-rpg-camp-folder[data-category-id='#{child.id}']"
 
     # Sections carousel stays plan-level only — nested child is not a section card
     assert_select ".lp-rpg-section-card", text: /Launch prep/
     assert_select ".lp-rpg-section-card", text: /Landing page/, count: 0
   end
 
-  test "focusing a nested child enters practice category focus with branch crumb" do
+  test "focusing a nested child opens that camp folder with branch crumb" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -117,10 +121,13 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: child.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-focus__title", text: /Landing page/
-    assert_select ".lp-rpg-practice-focus.is-entered .lp-rpg-practice-row__title", text: /Draft hero/
+    assert_select ".lp-rpg-section-head__title", text: /Launch prep/
+    assert_select ".lp-rpg-camp-folder[open][data-category-id='#{child.id}'] .lp-rpg-practice-cat__title", text: /Landing page/
+    assert_select ".lp-rpg-camp-folder[open] .lp-rpg-practice-row__title", text: /Draft hero/
     assert_select ".lp-rpg-breadcrumbs__item", text: /Launch prep/
     assert_select "a.lp-rpg-breadcrumbs__item[href*='focus_id=#{parent.id}']"
+    assert_select ".lp-rpg-camps:not([hidden])", 1
+    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
@@ -149,8 +156,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card", text: /Landing page/
     assert_select ".lp-rpg-section-card.is-locked", text: /Launch prep/
     assert_select ".lp-rpg-section-head__title", text: /Landing page/
-    assert_select ".lp-rpg-camps:not(.is-exited) .lp-rpg-practice-cat__title", text: /Steps/
-    assert_select ".lp-rpg-practice-cats .lp-rpg-practice-row", 0
+    assert_select ".lp-rpg-camps .lp-rpg-practice-cat__title", text: /Steps/
+    assert_select ".lp-rpg-camp-folder[open]", 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 end
