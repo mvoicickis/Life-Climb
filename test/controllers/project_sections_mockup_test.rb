@@ -45,14 +45,14 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sections__new-btn", text: /New Project/
   end
 
-  test "locked cards keep dimmed meter and percent without menu" do
+  test "locked cards keep dimmed meter and show menu" do
     @locked.update!(title: "Today's Page")
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title", text: "Today's Page"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", count: 0
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-slot", count: 0
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
+    assert_select ".lp-rpg-sections__item.is-locked.is-menu-enabled .lp-rpg-section-card__menu-btn"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__status.is-locked", text: /Locked/i
@@ -79,5 +79,61 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-sections.is-empty .lp-rpg-sections__new-btn", text: /New Project/
     assert_select ".lp-rpg-section-card", count: 0
+  end
+
+  test "rename succeeds on a locked section" do
+    patch strategy_goal_path(@locked), params: { title: "Today's Page" }
+    assert_response :redirect
+    assert_equal "Today's Page", @locked.reload.title
+    assert_not @locked.completed?
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title", text: "Today's Page"
+    assert_select ".lp-rpg-section-card.is-current", text: /MVP/
+  end
+
+  test "delete succeeds on a locked section" do
+    assert_difference -> { @plan.children.where(horizon: "project").count }, -1 do
+      delete strategy_goal_path(@locked)
+    end
+    assert_response :redirect
+    assert_not StrategyGoal.exists?(@locked.id)
+
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-rpg-section-card", text: /Launch/, count: 0
+    assert_select ".lp-rpg-section-card.is-current", text: /MVP/
+  end
+
+  test "mid-list locked delete advances unlock queue without renumbering positions" do
+    section_c = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Polish", position: 2
+    )
+    position_a = @active.position
+    position_b = @locked.position
+    position_c = section_c.position
+
+    delete strategy_goal_path(@locked)
+    assert_response :redirect
+    assert_not StrategyGoal.exists?(@locked.id)
+
+    assert_equal position_a, @active.reload.position
+    assert_equal position_c, section_c.reload.position
+    assert_not_equal position_b, section_c.position
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
+    assert_response :success
+    assert_select ".lp-rpg-section-card.is-current", text: /MVP/
+    assert_select ".lp-rpg-section-card.is-locked", text: /Polish/
+    assert_select ".lp-rpg-section-card", text: /Launch/, count: 0
+
+    @active.complete!
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
+    assert_response :success
+    assert_select ".lp-rpg-section-card.is-done", text: /MVP/
+    assert_select ".lp-rpg-section-card.is-current", text: /Polish/
+    assert_equal position_c, section_c.reload.position
   end
 end

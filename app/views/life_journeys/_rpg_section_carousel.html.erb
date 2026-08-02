@@ -56,7 +56,7 @@
           <% selected = selected_section_id == node.id %>
           <% pct = playable ? node.pct.to_i : 0 %>
           <% project = node.record %>
-          <% show_menu = playable && node.state != :done && project.present? %>
+          <% show_menu = node.state != :done && project.present? %>
           <% card_classes = "lp-rpg-section-card is-#{node.state} #{'is-selected' if selected}" %>
           <li class="lp-rpg-sections__item <%= 'is-selected' if selected %> <%= "is-#{node.state}" %> <%= 'is-menu-enabled' if show_menu %>"
               data-section-id="<%= node.id %>"

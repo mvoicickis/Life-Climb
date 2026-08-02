@@ -143,7 +143,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-card.is-locked", text: /Interviews/
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
     assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", count: 0
+    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
     assert_select ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link", count: 0
     assert_select ".lp-rpg-sections__new-btn", text: /New Project/
     assert_select ".lp-rpg-section-head", count: 0
