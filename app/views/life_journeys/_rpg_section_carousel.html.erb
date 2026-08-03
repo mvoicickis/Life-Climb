@@ -80,12 +80,14 @@
                 <% end %>
 
                 <% card_body = capture do %>
-                  <span class="lp-rpg-section-card__icon <%= 'is-lock' if node.state == :locked %> <%= 'is-done' if node.state == :done %>"
-                        aria-hidden="true">
-                    <% if node.state == :done %>✓<% elsif node.state == :locked %>🔒<% else %>🚩<% end %>
+                  <span class="lp-rpg-section-card__meta">
+                    <span class="lp-rpg-section-card__icon <%= 'is-lock' if node.state == :locked %> <%= 'is-done' if node.state == :done %>"
+                          aria-hidden="true">
+                      <% if node.state == :done %>✓<% elsif node.state == :locked %>🔒<% else %>🚩<% end %>
+                    </span>
+                    <span class="lp-rpg-section-card__badge" aria-hidden="true"><%= idx + 1 %></span>
                   </span>
                   <span class="lp-rpg-section-card__title" title="<%= node.title %>"><%= node.title %></span>
-                  <span class="lp-rpg-section-card__badge" aria-hidden="true"><%= idx + 1 %></span>
                 <% end %>
 
                 <% if playable %>
