@@ -200,6 +200,10 @@ de:
       final: "Letzter Aufstieg"
       summit: "Gipfel erreicht"
     battle_ready_count: "%{open} / %{total} Kämpfe bereit"
+    checklist_progress: "%{done} / %{total}"
+    checklist_objectives: "Ziele"
+    checklist_finish_objectives: "Erledige zuerst die Ziele."
+    checklist_locked: "%{title} — zuerst die Ziele erledigen"
     battle_next_kicker: "Gut — halte den Aufstieg am Laufen."
     battle_next_coaching: "Ein kurzer Check darunter hält deinen Berg ehrlich."
     project_check:

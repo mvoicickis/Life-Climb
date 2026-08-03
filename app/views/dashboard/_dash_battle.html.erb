@@ -73,6 +73,10 @@
       <% end %>
 
       <% open_todos.each do |todo| %>
+        <% checklist_tasks = todo.strategy_goal&.practice_tasks %>
+        <% if checklist_tasks.present? %>
+          <%= render "dashboard/dash_battle_checklist", todo: todo %>
+        <% else %>
         <% qty_project = todo.strategy_goal&.quantified_path_project %>
         <li class="lp-dash-battle__item"
             data-battle-day-target="item"
@@ -141,6 +145,7 @@
           <span class="lp-dash-battle__name"><%= todo.title %></span>
           <span class="lp-dash-battle__lp" aria-label="+<%= todo.lp_reward %> <%= t('dash.action_points_label') %>">+<%= todo.lp_reward %></span>
         </li>
+        <% end %>
       <% end %>
     </ul>
 
@@ -149,6 +154,9 @@
         <summary><%= t("dash.battle_done_summary", count: done_todos.size) %></summary>
         <ul class="lp-dash-battle__list lp-dash-battle__list--done">
           <% done_todos.each do |todo| %>
+            <% if todo.strategy_goal&.practice_tasks.present? %>
+              <%= render "dashboard/dash_battle_checklist", todo: todo %>
+            <% else %>
             <li class="lp-dash-battle__item is-done"
                 data-battle-day-target="item"
                 data-open="false"
@@ -162,6 +170,7 @@
               <span class="lp-dash-battle__name"><%= todo.title %></span>
               <span class="lp-dash-battle__lp" aria-label="+<%= todo.lp_reward %> <%= t('dash.action_points_label') %>">+<%= todo.lp_reward %></span>
             </li>
+            <% end %>
           <% end %>
         </ul>
       </details>
