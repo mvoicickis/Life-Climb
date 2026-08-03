@@ -4956,6 +4956,13 @@
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
+.lp-adventure__lang {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 3;
+}
+
 .lp-adventure__welcome {
   position: relative;
   overflow: hidden;

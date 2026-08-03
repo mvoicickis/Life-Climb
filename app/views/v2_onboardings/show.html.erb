@@ -12,6 +12,10 @@
         <%= render "v2_onboardings/mountain_art", prefix: "lp-welcome-mtn" %>
       </div>
 
+      <div class="lp-adventure__lang">
+        <%= render "shared/locale_switcher", variant: :compact %>
+      </div>
+
       <%= render "shared/lp_brand_mark", size: 64, class_name: "lp-adventure__mark" %>
       <div class="lp-adventure__intro">
         <h1 id="adventure-welcome-title" class="lp-adventure__title"><%= t("v2_onboarding.welcome_title") %></h1>
