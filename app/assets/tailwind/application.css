@@ -4025,7 +4025,7 @@
 .lp-dash-bar--thin {
   height: 0.32rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.14);
   overflow: hidden;
 }
 
@@ -4076,7 +4076,8 @@
   height: 3px;
   transform: translateY(-50%);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.12);
+  /* Light translucent track — visible on dark --lp-paper (#0b0f14). */
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .lp-dash-climb__rail-fill {

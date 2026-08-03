@@ -1,6 +1,8 @@
 <%# Character-first Today band — avatar, XP bar, streak, compact climb strip.
     locals: closer, streak, life_points (optional; falls back to ivars) %>
 <% closer = local_assigns.fetch(:closer) { @closer }.to_i.clamp(0, 100) %>
+<%# Keep the climber on-track at the start — raw 0% sits under the header avatar. %>
+<% trail_pct = [ closer, 6 ].max %>
 <% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
 <% life_points = local_assigns.fetch(:life_points) { @life_points } %>
 
@@ -48,7 +50,7 @@
       <div class="lp-dash-climb__rail-fill" style="width: <%= closer %>%"></div>
       <div
         class="lp-dash-climb__climber"
-        style="left: <%= closer %>%"
+        style="left: <%= trail_pct %>%"
         data-battle-day-target="campArt"
       >
         <%= image_tag current_user.character_image,
