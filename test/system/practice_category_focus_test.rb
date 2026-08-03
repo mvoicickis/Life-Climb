@@ -43,7 +43,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     @host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
   end
 
-  test "board lists quests; open detail; back returns to board; toggle objective" do
+  test "board lists quests; open detail; back returns to board; status-only checks" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -65,6 +65,8 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-qs-obj__text[value='Learn 15 new words']", visible: :all
     assert_selector ".lp-qs-obj__text[value='Flashcards']", visible: :all
     assert_selector ".lp-qs-detail__add-input", visible: :all
+    assert_selector ".lp-qs-detail__add-btn", text: /\AAdd\z/, visible: :all
+    assert_no_selector "button.lp-qs-obj__check"
     assert_no_selector ".lp-rpg-practice-add", text: /Prepare New Quest/i
     assert_selector ".lp-rpg-section-card", text: /Language skills/i, visible: :all
 
@@ -78,16 +80,19 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-qs-detail.is-open", wait: 5
     flash = @host.practice_tasks.find_by!(title: "Flashcards")
     page.execute_script(<<~JS)
-      const el = document.querySelector(".lp-qs-obj__check[data-update-url*='#{flash.id}']");
+      const el = document.querySelector(".lp-qs-obj__check");
       el?.scrollIntoView({ block: "center" });
-      el?.click();
+      el?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     JS
-    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 5
-    loop do
-      break if flash.reload.completed?
-      raise "Flashcards was not completed" if Process.clock_gettime(Process::CLOCK_MONOTONIC) > deadline
-      sleep 0.1
-    end
+    sleep 0.4
+    assert_not flash.reload.completed?, "Quest Space checkbox must stay read-only"
+
+    find(".lp-qs-detail__add-input", visible: :all).set("Review verbs")
+    find(".lp-qs-detail__add-btn", visible: :all).click
+    assert_selector ".lp-qs-obj__text[value='Review verbs']", visible: :all, wait: 5
+    assert @host.practice_tasks.exists?(title: "Review verbs")
+
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-space-add-btn-mobile.png")
   end
 
   test "New Quest Cancel closes the portaled floating card" do

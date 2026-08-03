@@ -55,6 +55,10 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-qs-detail__title", text: /Vocabulary/
     assert_select ".lp-qs-obj__text[value='Learn 15 words']"
     assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-qs-detail__add-btn", text: /\AAdd\z/
+    assert_select ".lp-qs-obj__check[data-action]", count: 0
+    assert_select "button.lp-qs-obj__check", count: 0
+    assert_select "span.lp-qs-obj__check", minimum: 1
     assert_select ".lp-qs-detail__progress", text: /objectives done/
     assert_select ".lp-rpg-practice-folder__plan-label", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0

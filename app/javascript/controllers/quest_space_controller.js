@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Board ↔ slide-in quest detail for Mountain Quest Space.
 export default class extends Controller {
-  static targets = ["board", "detail", "undoBar", "undoText"]
+  static targets = ["board", "detail", "undoBar", "undoText", "addInput"]
   static values = {
     openId: Number,
     createUrl: String
@@ -47,11 +47,17 @@ export default class extends Controller {
   }
 
   addObjective(event) {
-    if (event.key !== "Enter" || event.isComposing) return
+    if (event.type === "keydown" && (event.key !== "Enter" || event.isComposing)) return
     event.preventDefault()
-    const input = event.currentTarget
+
+    const input = this.hasAddInputTarget ? this.addInputTarget : event.currentTarget
+    if (!input || input.tagName !== "INPUT") return
+
     const title = input.value.trim()
-    if (!title) return
+    if (!title) {
+      input.focus()
+      return
+    }
 
     const url = input.dataset.createUrl
     if (!url) return
@@ -94,15 +100,6 @@ export default class extends Controller {
     }
 
     this.postForm(url, { title }, "patch")
-  }
-
-  toggleComplete(event) {
-    event.preventDefault()
-    const btn = event.currentTarget
-    const url = btn.dataset.updateUrl
-    const completed = btn.dataset.completed === "1" ? "0" : "1"
-    if (!url) return
-    this.postForm(url, { completed }, "patch")
   }
 
   deleteObjective(event) {
