@@ -267,4 +267,18 @@ module StrategyHelper
     pct = total.positive? ? ((done * 100.0) / total).round : 0
     { done: done, total: total, pct: pct }
   end
+
+  # e.g. "7 / 700 pages" for quantified path-level projects.
+  def strategy_quantity_progress_label(project)
+    return "" unless project&.quantified?
+
+    "#{format_strategy_quantity(project.current_amount)} / #{format_strategy_quantity(project.target_amount)} #{project.unit}"
+  end
+
+  def format_strategy_quantity(value)
+    n = value.to_d
+    return n.to_i.to_s if n == n.to_i
+
+    format("%.1f", n)
+  end
 end

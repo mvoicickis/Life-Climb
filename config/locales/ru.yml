@@ -105,6 +105,12 @@ ru:
       human_kicker: "Ты на тропе"
       human_ready: "Сегодняшняя битва: «%{action}»."
       human_next: "Отметь её ниже, когда закончишь."
+    quantity:
+      track: "Отслеживать как число?"
+      target_label: "Цель"
+      target_placeholder: "700"
+      unit_label: "Единица"
+      unit_placeholder: "страницы, €, письма…"
   life_area_catalog:
     self:
       name: "Себя"

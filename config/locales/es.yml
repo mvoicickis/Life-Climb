@@ -105,6 +105,12 @@ es:
       human_kicker: "Estás en el sendero"
       human_ready: "Pelea de hoy: “%{action}”."
       human_next: "Márcala abajo cuando termines."
+    quantity:
+      track: "¿Seguirlo como un número?"
+      target_label: "Meta"
+      target_placeholder: "700"
+      unit_label: "Unidad"
+      unit_placeholder: "páginas, €, emails…"
   life_area_catalog:
     self:
       name: "Yo"

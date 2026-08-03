@@ -600,6 +600,12 @@ en:
       human_kicker: "You’re on the trail"
       human_ready: "Today’s fight: “%{action}”."
       human_next: "Check it off below when you’re done."
+    quantity:
+      track: "Track this as a number?"
+      target_label: "Target"
+      target_placeholder: "700"
+      unit_label: "Unit"
+      unit_placeholder: "pages, €, emails…"
     sheet:
       edit: "Edit"
       add_child: "Add next step"

@@ -105,6 +105,12 @@ lv:
       human_kicker: "Tu esi uz takas"
       human_ready: "Šodienas cīņa: “%{action}”."
       human_next: "Atzīmē to zemāk, kad esi gatavs."
+    quantity:
+      track: "Sekot kā skaitlim?"
+      target_label: "Mērķis"
+      target_placeholder: "700"
+      unit_label: "Vienība"
+      unit_placeholder: "lappuses, €, e-pasti…"
   life_area_catalog:
     self:
       name: "Es"
