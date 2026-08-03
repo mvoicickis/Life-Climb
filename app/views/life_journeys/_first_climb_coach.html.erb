@@ -12,7 +12,14 @@
   </p>
   <p class="lp-first-climb__lead"><%= t("strategy.first_climb.lead") %></p>
 
-  <%= form_with url: first_climbs_path, method: :post, class: "lp-first-climb__form", data: { turbo: false } do %>
+  <%= form_with url: first_climbs_path,
+        method: :post,
+        class: "lp-first-climb__form",
+        data: {
+          turbo: false,
+          controller: "first-climb",
+          action: "submit->first-climb#disable"
+        } do %>
     <%= hidden_field_tag :life_journey_id, journey.id %>
 
     <label class="lp-first-climb__label" for="first-climb-plan">
@@ -42,6 +49,8 @@
           placeholder: t("strategy.first_climb.action_placeholder") %>
     <p class="lp-first-climb__hint"><%= t("strategy.first_climb.action_hint") %></p>
 
-    <%= submit_tag t("strategy.first_climb.cta"), class: "lp-first-climb__cta" %>
+    <%= submit_tag t("strategy.first_climb.cta"),
+          class: "lp-first-climb__cta",
+          data: { first_climb_target: "submit" } %>
   <% end %>
 </section>

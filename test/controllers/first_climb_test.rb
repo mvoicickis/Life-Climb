@@ -64,4 +64,52 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_select "#first-climb-coach"
     assert_select ".lp-first-climb__title", text: /today count/i
   end
+
+  test "double submit creates only one plan project battle tree" do
+    params = {
+      life_journey_id: @journey.id,
+      plan_title: "Get certified",
+      today_action: "Study chapter 1 for 20 minutes"
+    }
+
+    assert_difference -> { @user.strategy_goals.for_kind("plan").count }, +1 do
+      assert_difference -> { @user.strategy_goals.for_kind("day").count }, +1 do
+        post first_climbs_path, params: params
+        assert_redirected_to dashboard_path
+
+        # Second tap / retry with different titles must not spawn another spine.
+        post first_climbs_path, params: params.merge(
+          plan_title: "Get certified AGAIN",
+          today_action: "A second accidental battle"
+        )
+        assert_redirected_to dashboard_path
+      end
+    end
+
+    @goal.reload
+    plans = @goal.children.select(&:plan?)
+    assert_equal 1, plans.size, "expected one plan, got: #{plans.map(&:title).inspect}"
+    assert_equal "Get certified", plans.first.title
+
+    projects = plans.first.children.select(&:project?)
+    assert_equal 1, projects.size
+
+    nested = projects.first.children.select(&:project?)
+    assert_equal 1, nested.size
+    assert_equal I18n.t("strategy.first_climb.nested_camp_title"), nested.first.title
+
+    battles = nested.first.children.select(&:day?)
+    assert_equal 1, battles.size
+    assert_equal "Study chapter 1 for 20 minutes", battles.first.title
+    assert_equal 1, @user.daily_todos.for_day(Date.current).where(title: "Study chapter 1 for 20 minutes").count
+    assert_equal 0, @user.daily_todos.for_day(Date.current).where(title: "A second accidental battle").count
+  end
+
+  test "first climb form disables submit on click via stimulus hook" do
+    get dashboard_path
+    assert_response :success
+    assert_select "form.lp-first-climb__form[data-controller='first-climb']"
+    assert_select "form.lp-first-climb__form[data-action*='submit->first-climb#disable']"
+    assert_select ".lp-first-climb__cta[data-first-climb-target='submit']"
+  end
 end

@@ -12,9 +12,14 @@ class FirstClimbsController < ApplicationController
       today_action: params.require(:today_action)
     )
 
-    flash[:first_climb] = true
-    flash[:human_win] = I18n.t("strategy.first_climb.human_ready", action: result.battle.title)
-    redirect_to dashboard_path, notice: I18n.t("strategy.first_climb.ready_notice"), status: :see_other
+    if result.created?
+      flash[:first_climb] = true
+      flash[:human_win] = I18n.t("strategy.first_climb.human_ready", action: result.battle.title) if result.battle
+      redirect_to dashboard_path, notice: I18n.t("strategy.first_climb.ready_notice"), status: :see_other
+    else
+      # Idempotent retry (double-submit / refresh): land on Today without recreating.
+      redirect_to dashboard_path, status: :see_other
+    end
   rescue ArgumentError => e
     redirect_to life_journey_path(journey_for_redirect), alert: e.message, status: :see_other
   rescue ActiveRecord::RecordInvalid => e
