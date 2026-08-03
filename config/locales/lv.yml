@@ -169,8 +169,10 @@ lv:
     mountain_label: "Kalns"
     year_adventure: "Gada piedzīvojums: %{year}"
     battle_title: "Šodienas kauja"
-    battle_subtitle: "Uzvari šodien. Virzi savu kalnu uz priekšu."
-    battle_subtitle_sync: "Uzvari šodien. Virzi savu kalnu uz priekšu."
+    battle_subtitle: "Uzvari šodienas kauju"
+    battle_subtitle_sync: "Uzvari šodienas kauju"
+    climb_up: "%{pct}% augšā pa kalnu"
+    climb_up_html: "%{pct}% augšā pa kalnu"
     complete_battle: "Pabeigt šodienas kauju"
     action_points_reward: "Darba punktu balva"
     momentum:

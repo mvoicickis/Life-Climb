@@ -2,15 +2,6 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<%
-  greeting =
-    case Time.current.hour
-    when 5..11 then t("game_ui.good_morning")
-    when 12..17 then t("game_ui.good_afternoon")
-    else t("game_ui.good_evening")
-    end
-%>
-
 <div
   class="lp-dash<%= ' is-battle-won' if @battle_open_count.to_i.zero? && (@daily_todos.any? || @mission.present?) %>"
   data-controller="battle-day"
@@ -19,33 +10,10 @@
   data-battle-day-ap-gained-value="<%= flash[:ap_gained].to_i %>"
   data-battle-day-boss-value="<%= flash[:climb_boss].present? %>"
 >
-  <header class="lp-dash__top">
-    <div class="lp-dash__identity">
-      <%= link_to dashboard_path, class: "lp-dash__brand" do %>
-        <%= render "shared/lp_brand_mark", size: 30, class_name: "lp-dash__brand-mark" %>
-        <span><%= t("app_name") %></span>
-      <% end %>
-      <div class="lp-dash__greeting">
-        <h1><%= greeting %>, <%= current_user.display_name %></h1>
-        <p><%= t("dash.promise") %></p>
-      </div>
-    </div>
-    <div class="lp-dash__stats">
-      <div class="lp-dash__stat-chip is-primary" aria-label="<%= t('dash.action_points_label') %>">
-        <span class="lp-dash__stat-value" data-battle-day-target="lpTotal"><%= number_with_delimiter(@life_points) %></span>
-        <span class="lp-dash__stat-name"><%= t("dash.action_points_label") %></span>
-        <span class="lp-dash__stat-hint"><%= t("dash.action_points_hint") %></span>
-      </div>
-    </div>
-  </header>
-
-  <%= render "dashboard/dash_hero",
-        journey: @journey,
-        strategy_goal: @strategy_goal,
-        mountain: @mountain,
+  <%= render "dashboard/dash_climb_band",
         closer: @closer,
-        adventure_year: @adventure_year,
-        streak: @climb_streak %>
+        streak: @climb_streak,
+        life_points: @life_points %>
 
   <% if flash[:human_win].present? %>
     <div class="lp-dash-human-win" role="status">

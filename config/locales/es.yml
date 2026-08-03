@@ -169,8 +169,10 @@ es:
     mountain_label: "Montaña"
     year_adventure: "Aventura del año: %{year}"
     battle_title: "Batalla de hoy"
-    battle_subtitle: "Gana hoy. Avanza tu montaña."
-    battle_subtitle_sync: "Gana hoy. Avanza tu montaña."
+    battle_subtitle: "Gana la batalla de hoy"
+    battle_subtitle_sync: "Gana la batalla de hoy"
+    climb_up: "%{pct}% subiendo la montaña"
+    climb_up_html: "%{pct}% subiendo la montaña"
     complete_battle: "Completar la batalla de hoy"
     action_points_reward: "Recompensa de puntos de acción"
     momentum:

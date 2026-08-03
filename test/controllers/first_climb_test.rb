@@ -53,9 +53,10 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-battle__name", text: "Study chapter 1 for 20 minutes"
     assert_no_match(/Plan Your Route/i, response.body)
 
-    # Stage label once (mountain caption), not also in the momentum line.
-    assert_select ".lp-dash-hero__mountain-caption", text: /Camp set/i, count: 1
-    assert_select ".lp-dash-hero__momentum", text: /Camp set/i, count: 0
+    # Character-first climb band (not the old mountain hero).
+    assert_select ".lp-dash-climb", count: 1
+    assert_select ".lp-dash-climb__climber[data-battle-day-target='campArt']", count: 1
+    assert_select ".lp-dash-hero", count: 0
   end
 
   test "today dead-end shows first-climb coach when spine empty" do

@@ -1,0 +1,74 @@
+<%# Character-first Today band — avatar, XP bar, streak, compact climb strip.
+    locals: closer, streak, life_points (optional; falls back to ivars) %>
+<% closer = local_assigns.fetch(:closer) { @closer }.to_i.clamp(0, 100) %>
+<% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
+<% life_points = local_assigns.fetch(:life_points) { @life_points } %>
+
+<section class="lp-dash-climb" aria-label="<%= t('dash.goal_label') %>">
+  <div class="lp-dash-climb__top">
+    <div class="lp-dash-climb__who">
+      <%= link_to settings_path, class: "lp-dash-climb__avatar", aria: { label: t("nav.settings") } do %>
+        <%= image_tag current_user.character_image,
+              class: "lp-dash-climb__avatar-img",
+              alt: "" %>
+      <% end %>
+
+      <div class="lp-dash-climb__meta">
+        <p class="lp-dash-climb__name"><%= current_user.display_name %></p>
+        <div
+          class="lp-dash-bar lp-dash-bar--thin"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="<%= closer %>"
+          aria-label="<%= t('dash.goal_label') %>"
+        >
+          <div
+            class="lp-dash-bar__fill"
+            data-battle-day-target="goalBar"
+            style="width: <%= closer %>%"
+          ></div>
+        </div>
+      </div>
+
+      <%= render "shared/climb_streak_chip", status: streak, compact: true %>
+    </div>
+
+    <div class="lp-dash-climb__stats">
+      <div class="lp-dash__stat-chip is-primary is-compact" aria-label="<%= t('dash.action_points_label') %>">
+        <span class="lp-dash__stat-value" data-battle-day-target="lpTotal"><%= number_with_delimiter(life_points) %></span>
+        <span class="lp-dash__stat-name"><%= t("dash.action_points_label") %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-dash-climb__strip">
+    <div class="lp-dash-climb__track" aria-hidden="true">
+      <div class="lp-dash-climb__rail"></div>
+      <div class="lp-dash-climb__rail-fill" style="width: <%= closer %>%"></div>
+      <div
+        class="lp-dash-climb__climber"
+        style="left: <%= closer %>%"
+        data-battle-day-target="campArt"
+      >
+        <%= image_tag current_user.character_image,
+              class: "lp-dash-climb__climber-img",
+              alt: "" %>
+      </div>
+      <div class="lp-dash-climb__summit">
+        <%= render "shared/lp_icon", name: "flag", class_name: "lp-icon is-inline lp-dash-climb__flag" %>
+      </div>
+    </div>
+    <p class="lp-dash-climb__label" data-battle-day-target="momentum">
+      <%= t(
+            "dash.climb_up_html",
+            pct: content_tag(
+              :span,
+              closer,
+              class: "lp-dash-climb__pct",
+              data: { battle_day_target: "goalPct" }
+            )
+          ) %>
+    </p>
+  </div>
+</section>

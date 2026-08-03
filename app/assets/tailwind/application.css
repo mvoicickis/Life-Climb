@@ -3962,6 +3962,208 @@
   gap: 0.85rem;
 }
 
+/* Character-first Today climb band — compact header + strip (not a hero card). */
+.lp-dash-climb {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.15rem 0 0.35rem;
+}
+
+.lp-dash-climb__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.lp-dash-climb__who {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.lp-dash-climb__avatar {
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-neon, #22c55e) 55%, transparent);
+}
+
+.lp-dash-climb__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  background: #171c22;
+}
+
+.lp-dash-climb__meta {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  gap: 0.28rem;
+}
+
+.lp-dash-climb__name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lp-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-dash-bar--thin {
+  height: 0.32rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+}
+
+.lp-dash-climb__who .lp-climb-streak {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+.lp-dash-climb__stats {
+  flex: 0 0 auto;
+}
+
+.lp-dash__stat-chip.is-compact {
+  min-width: 0;
+  max-width: none;
+  padding: 0.32rem 0.55rem;
+}
+
+.lp-dash__stat-chip.is-compact .lp-dash__stat-value {
+  font-size: 0.92rem;
+}
+
+.lp-dash__stat-chip.is-compact .lp-dash__stat-name {
+  font-size: 0.62rem;
+}
+
+.lp-dash__stat-chip.is-compact .lp-dash__stat-hint {
+  display: none;
+}
+
+.lp-dash-climb__strip {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 3.5rem;
+}
+
+.lp-dash-climb__track {
+  position: relative;
+  height: 2.4rem;
+  margin: 0 0.15rem;
+}
+
+.lp-dash-climb__rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.lp-dash-climb__rail-fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, var(--lp-neon, #84cc16));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--lp-neon, #22c55e) 40%, transparent);
+  max-width: 100%;
+  transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-dash-climb__climber {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 2;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 4px 10px rgba(15, 23, 42, 0.18);
+  background: #171c22;
+}
+
+.lp-dash-climb__climber.is-nudge {
+  animation: lp-camp-nudge 0.7s ease;
+}
+
+.lp-dash-climb__climber-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.lp-dash-climb__summit {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(20%, -50%);
+  z-index: 1;
+  color: var(--lp-neon, #84cc16);
+  display: grid;
+  place-items: center;
+}
+
+.lp-dash-climb__flag {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: #84cc16;
+}
+
+.lp-dash-climb__label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  transition: color 220ms ease, text-shadow 220ms ease;
+}
+
+.lp-dash-climb__label.is-glow,
+.lp-dash-climb__pct.is-glow {
+  color: var(--lp-green-deep, #166534);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--lp-neon, #22c55e) 40%, transparent);
+}
+
+@media (max-width: 430px) {
+  .lp-dash-climb__top {
+    flex-wrap: wrap;
+  }
+
+  .lp-dash-climb__stats {
+    width: 100%;
+  }
+
+  .lp-dash-climb__stats .lp-dash__stat-chip {
+    width: 100%;
+  }
+}
+
 .lp-dash__identity {
   display: grid;
   gap: 0.35rem;

@@ -169,8 +169,10 @@ ru:
     mountain_label: "Гора"
     year_adventure: "Приключение года: %{year}"
     battle_title: "Сегодняшняя битва"
-    battle_subtitle: "Победи сегодня. Продвинь свою гору вперёд."
-    battle_subtitle_sync: "Победи сегодня. Продвинь свою гору вперёд."
+    battle_subtitle: "Выиграй сегодняшнюю битву"
+    battle_subtitle_sync: "Выиграй сегодняшнюю битву"
+    climb_up: "%{pct}% вверх по горе"
+    climb_up_html: "%{pct}% вверх по горе"
     complete_battle: "Завершить сегодняшнюю битву"
     action_points_reward: "Награда в очках действий"
     momentum:

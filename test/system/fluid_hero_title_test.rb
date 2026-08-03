@@ -43,12 +43,12 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_destination_fluid_title(390, 568)
   end
 
-  test "today hero title is fluid and untruncated on tall phone" do
-    assert_today_fluid_title(390, 844)
+  test "today climb band renders on tall phone" do
+    assert_today_climb_band(390, 844)
   end
 
-  test "today hero title is fluid and untruncated on short phone" do
-    assert_today_fluid_title(390, 568)
+  test "today climb band renders on short phone" do
+    assert_today_climb_band(390, 568)
   end
 
   private
@@ -115,12 +115,14 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_hero_title_ok(metrics, "Become a Rails developer", width, height)
   end
 
-  def assert_today_fluid_title(width, height)
+  def assert_today_climb_band(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
     within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-hero__title", visible: :all, wait: 5
-    metrics = title_metrics(".lp-dash-hero__title")
-    assert_hero_title_ok(metrics, "Become a Rails developer", width, height)
+    assert_selector ".lp-dash-climb", visible: :all, wait: 5
+    assert_selector ".lp-dash-climb__avatar-img", visible: :all
+    assert_selector ".lp-dash-climb__climber", visible: :all
+    assert_selector ".lp-dash-battle", visible: :all
+    assert_no_selector ".lp-dash-hero"
   end
 end

@@ -169,8 +169,10 @@ de:
     mountain_label: "Berg"
     year_adventure: "Jahresabenteuer: %{year}"
     battle_title: "Kampf von heute"
-    battle_subtitle: "Gewinne heute. Bringe deinen Berg voran."
-    battle_subtitle_sync: "Gewinne heute. Bringe deinen Berg voran."
+    battle_subtitle: "Gewinne den Kampf von heute"
+    battle_subtitle_sync: "Gewinne den Kampf von heute"
+    climb_up: "%{pct}% den Berg hinauf"
+    climb_up_html: "%{pct}% den Berg hinauf"
     complete_battle: "Kampf von heute abschließen"
     action_points_reward: "Aktionspunkte-Belohnung"
     momentum:

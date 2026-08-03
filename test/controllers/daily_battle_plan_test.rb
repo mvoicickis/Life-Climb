@@ -21,19 +21,17 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Today/i, response.body)
     assert_match(/Battle/i, response.body)
-    assert_match(/Goal/i, response.body)
     assert_match(/Action Points/i, response.body)
     assert_no_match(/>\s*Strategy Points\s*</i, response.body)
-    assert_match(/One mountain\. Today.?s battle/i, response.body)
     assert_select ".lp-dash-cta", text: /Complete Today/i
     assert_match(/battles ready/i, response.body)
     assert_match(/See your mountain/i, response.body)
-    assert_select ".lp-dash-hero__momentum", text: /climbing|begun|Halfway|summit|waiting/i
     assert_match(/Review my budget/i, response.body)
-    assert_match(/Financial freedom/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
-    assert_select ".lp-dash-hero__mountain"
-    assert_select ".lp-dash-hero__momentum"
+    assert_select ".lp-dash-climb", count: 1
+    assert_select ".lp-dash-climb__label", text: /up the mountain/i
+    assert_select ".lp-dash-battle", count: 1
+    assert_select ".lp-dash-hero", count: 0
     assert_select ".lp-dash-plan"
     assert_select ".lp-dash-project", count: 0
     assert_no_match(/Life Tree|Open Life/i, response.body)
@@ -42,7 +40,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_no_match(/>\s*SP\s*</, response.body)
   end
 
-  test "hero uses strategy season goal when present" do
+  test "climb band shows mountain percent when strategy goal present" do
     journey = @user.primary_focused_journey
     area = journey.life_area
     @user.strategy_goals.create!(
@@ -52,11 +50,14 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Become debt-free/i, response.body)
-    assert_select ".lp-dash-hero__mountain-caption"
-    assert_select ".lp-dash-hero__pct", count: 1
-    assert_select ".lp-dash-hero__area-closer", count: 0
-    assert_select ".lp-dash-hero__momentum", text: /Base camp|Mountain just begun/i
+    assert_select ".lp-dash-climb", count: 1
+    climber_style = css_select(".lp-dash-climb__climber").first["style"].to_s
+    assert_match(/\Aleft:\s*(\d+)%\z/, climber_style)
+    closer = climber_style[/\d+/].to_i
+    assert_select ".lp-dash-bar__fill[style=?]", "width: #{closer}%"
+    assert_select ".lp-dash-climb__pct", text: closer.to_s
+    assert_select ".lp-dash-climb__label", text: /#{closer}%\s*up the mountain/i
+    assert_select ".lp-dash-hero", count: 0
   end
 
   test "complete battle asks project check without moving mountain percent" do
