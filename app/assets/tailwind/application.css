@@ -3217,6 +3217,11 @@
   overscroll-behavior-y: contain;
 }
 
+/* Today already clears the fixed nav via .lp-main:has(.lp-dash) — avoid double void. */
+.lp-game:has(.lp-dash) {
+  padding-bottom: 0;
+}
+
 .lp-game--navy {
   background: var(--lp-paper);
   color: var(--lp-ink);
@@ -3946,13 +3951,13 @@
 .lp-main:has(.lp-progress) {
   max-width: 42rem;
   margin-inline: auto;
-  padding: 1rem 1rem 6.5rem;
+  padding: 1rem 1rem calc(4.85rem + env(safe-area-inset-bottom));
 }
 
 .lp-dash {
   position: relative;
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .lp-dash__top {
@@ -3986,14 +3991,15 @@
 
 .lp-dash-climb__avatar {
   flex: 0 0 auto;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 1.45rem;
+  height: 1.45rem;
   border-radius: 999px;
   overflow: hidden;
   display: grid;
   place-items: center;
   text-decoration: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-neon, #22c55e) 55%, transparent);
+  opacity: 0.88;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.22);
 }
 
 .lp-dash-climb__avatar-img {
@@ -4058,59 +4064,66 @@
 
 .lp-dash-climb__strip {
   display: grid;
-  gap: 0.35rem;
-  min-height: 3.5rem;
+  gap: 0.3rem;
+  min-height: 3.75rem;
 }
 
 .lp-dash-climb__track {
   position: relative;
-  height: 2.4rem;
-  margin: 0 0.15rem;
+  height: 3.35rem;
+  margin: 0 0.35rem 0 0.2rem;
 }
 
-.lp-dash-climb__rail {
+.lp-dash-climb__path-art {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 3px;
-  transform: translateY(-50%);
-  border-radius: 999px;
-  /* Light translucent track — visible on dark --lp-paper (#0b0f14). */
-  background: rgba(255, 255, 255, 0.14);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
 
-.lp-dash-climb__rail-fill {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  height: 3px;
-  transform: translateY(-50%);
-  border-radius: 999px;
-  background: linear-gradient(90deg, #22c55e, var(--lp-neon, #84cc16));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--lp-neon, #22c55e) 40%, transparent);
-  max-width: 100%;
-  transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+.lp-dash-climb__path {
+  color: rgba(254, 243, 199, 0.42);
+}
+
+.lp-dash-climb__path-lit {
+  color: var(--lp-neon, #57d35b);
+  filter: drop-shadow(0 0 5px rgba(87, 211, 91, 0.4));
+  transition: stroke-dasharray 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .lp-dash-climb__climber {
   position: absolute;
-  top: 50%;
-  left: 0;
+  /* Follow the ascent: lower-left → upper-right with --lp-trail (0–100). */
+  left: calc(var(--lp-trail, 6) * 1%);
+  top: calc(84% - (var(--lp-trail, 6) * 0.58%));
   transform: translate(-50%, -50%);
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2.2rem;
+  height: 2.2rem;
   border-radius: 999px;
   overflow: hidden;
   z-index: 2;
   box-shadow:
     0 0 0 2px #fff,
-    0 4px 10px rgba(15, 23, 42, 0.18);
+    0 4px 12px rgba(15, 23, 42, 0.28);
   background: #171c22;
+  animation: lp-climb-idle 2.6s ease-in-out infinite;
 }
 
 .lp-dash-climb__climber.is-nudge {
   animation: lp-camp-nudge 0.7s ease;
+}
+
+@keyframes lp-climb-idle {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50% { transform: translate(-50%, calc(-50% - 3px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash-climb__climber {
+    animation: none;
+  }
 }
 
 .lp-dash-climb__climber-img {
@@ -4123,8 +4136,8 @@
 .lp-dash-climb__summit {
   position: absolute;
   right: 0;
-  top: 50%;
-  transform: translate(20%, -50%);
+  top: 16%;
+  transform: translate(15%, -50%);
   z-index: 1;
   color: var(--lp-neon, #84cc16);
   display: grid;
@@ -4132,9 +4145,10 @@
 }
 
 .lp-dash-climb__flag {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.25rem;
+  height: 1.25rem;
   color: #84cc16;
+  filter: drop-shadow(0 0 6px rgba(132, 204, 22, 0.35));
 }
 
 .lp-dash-climb__label {
@@ -4277,9 +4291,9 @@
 }
 
 .lp-dash-plan {
-  margin-top: 0.35rem;
-  padding: 0.85rem 0.15rem 0.25rem;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  margin-top: 0;
+  padding: 0.35rem 0.15rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .lp-dash-plan__kicker {
@@ -4299,13 +4313,13 @@
 }
 
 .lp-dash-plan__link {
-  margin: 0.45rem 0 0;
+  margin: 0;
 }
 
 .lp-dash-plan__link a {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: var(--lp-green-deep, #166534);
+  color: var(--lp-green, #57d35b);
   text-decoration: none;
 }
 

@@ -45,12 +45,33 @@
   </div>
 
   <div class="lp-dash-climb__strip">
-    <div class="lp-dash-climb__track" aria-hidden="true">
-      <div class="lp-dash-climb__rail"></div>
-      <div class="lp-dash-climb__rail-fill" style="width: <%= closer %>%"></div>
+    <div class="lp-dash-climb__track" aria-hidden="true" style="--lp-trail: <%= trail_pct %>">
+      <%# Sloped dashed trail — same language as Mountain SVG trails. %>
+      <svg class="lp-dash-climb__path-art" viewBox="0 0 100 36" preserveAspectRatio="none" focusable="false">
+        <path
+          class="lp-dash-climb__path"
+          d="M4 30 C28 30, 55 20, 96 8"
+          fill="none"
+          pathLength="100"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-dasharray="2.2 3.4"
+        />
+        <path
+          class="lp-dash-climb__path-lit"
+          d="M4 30 C28 30, 55 20, 96 8"
+          fill="none"
+          pathLength="100"
+          stroke="currentColor"
+          stroke-width="2.6"
+          stroke-linecap="round"
+          stroke-dasharray="<%= closer %> 100"
+        />
+      </svg>
       <div
         class="lp-dash-climb__climber"
-        style="left: <%= trail_pct %>%"
+        style="--lp-trail: <%= trail_pct %>"
         data-battle-day-target="campArt"
       >
         <%= image_tag current_user.character_image,

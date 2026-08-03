@@ -52,15 +52,15 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-climb", count: 1
     climber_style = css_select(".lp-dash-climb__climber").first["style"].to_s
-    assert_match(/\Aleft:\s*(\d+)%\z/, climber_style)
+    assert_match(/--lp-trail:\s*(\d+)/, climber_style)
     trail_pct = climber_style[/\d+/].to_i
     closer = css_select(".lp-dash-climb__pct").first.text.to_i
     assert_equal [ closer, 6 ].max, trail_pct, "climber should be inset at least 6% on the trail"
     assert_select ".lp-dash-bar__fill[style=?]", "width: #{closer}%"
-    assert_select ".lp-dash-climb__rail-fill[style=?]", "width: #{closer}%"
+    assert_select ".lp-dash-climb__path-lit[stroke-dasharray=?]", "#{closer} 100"
+    assert_select ".lp-dash-climb__path", count: 1
     assert_select ".lp-dash-climb__pct", text: closer.to_s
     assert_select ".lp-dash-climb__label", text: /#{closer}%\s*up the mountain/i
-    assert_select ".lp-dash-climb__rail", count: 1
     assert_select ".lp-dash-hero", count: 0
   end
 

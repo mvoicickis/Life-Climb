@@ -68,23 +68,25 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-climb", count: 1
     assert_select ".lp-dash-climb__avatar-img[src*='character-woman']", count: 1
     assert_select ".lp-dash-climb__name", text: "Alex Climber"
-    assert_select ".lp-dash-climb__climber[style*='left:']", count: 1
+    assert_select ".lp-dash-climb__climber[style*='--lp-trail']", count: 1
     assert_select ".lp-dash-climb__climber-img[src*='character-woman']", count: 1
     assert_select ".lp-dash-bar__fill[data-battle-day-target='goalBar']", count: 1
     assert_select ".lp-dash-climb__pct[data-battle-day-target='goalPct']", count: 1
     assert_select ".lp-dash-climb__label[data-battle-day-target='momentum']", count: 1
     assert_select ".lp-dash-climb__climber[data-battle-day-target='campArt']", count: 1
+    assert_select ".lp-dash-climb__path", count: 1
+    assert_select ".lp-dash-climb__path-lit", count: 1
+    assert_select ".lp-dash-climb__path[stroke-dasharray]", count: 1
 
     climber_style = css_select(".lp-dash-climb__climber").first["style"].to_s
-    assert_match(/\Aleft:\s*(\d+)%\z/, climber_style)
+    assert_match(/--lp-trail:\s*(\d+)/, climber_style)
     trail_pct = climber_style[/\d+/].to_i
     closer = css_select(".lp-dash-climb__pct").first.text.to_i
     assert_equal [ closer, 6 ].max, trail_pct, "climber should be inset at least 6% on the trail"
     assert_select ".lp-dash-bar__fill[style=?]", "width: #{closer}%"
-    assert_select ".lp-dash-climb__rail-fill[style=?]", "width: #{closer}%"
+    assert_select ".lp-dash-climb__path-lit[stroke-dasharray=?]", "#{closer} 100"
     assert_select ".lp-dash-climb__pct", text: closer.to_s
     assert_select ".lp-dash-climb__label", text: /#{closer}%\s*up the mountain/i
-    assert_select ".lp-dash-climb__rail", count: 1
 
     # Battle card still sits below the climb band, unchanged.
     assert_select ".lp-dash-battle", count: 1
