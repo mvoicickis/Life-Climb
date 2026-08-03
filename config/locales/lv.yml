@@ -238,6 +238,9 @@ lv:
       tasks: "Uzvarētās kaujas"
       rate: "Izpildes īpatsvars"
     achievements_hint: "Pagrieziena punkti, ko jau esi nopelnījis."
+    achievements_empty: "Uzvari šodienas kauju vai pabeidz Taku ceļvedi, lai nopelnītu pirmo žetonu."
+    achievements_earned: "Nopelnīts"
+    achievements_locked: "Vēl nav nopelnīts"
     details_summary: "Skatīt aktivitātes detaļas"
     details_hint: "Diagrammas un filtri — neobligāti."
     achievements:

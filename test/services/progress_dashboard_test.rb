@@ -46,6 +46,11 @@ class ProgressDashboardTest < ActiveSupport::TestCase
     assert data[:mountain_summary].is_a?(Hash)
     assert_equal [], data[:projects]
     assert data[:achievements].any?
+    first_battle = data[:achievements].find { |a| a[:key] == "first_battle" }
+    assert first_battle
+    assert first_battle[:unlocked]
+    assert_equal "✅", first_battle[:icon]
+    assert data[:achievements].all? { |a| a[:unlocked] }
     assert data[:insights].any?
     assert data[:heatmap][:cells].any?
     assert_equal 26 * 7, data[:heatmap][:cells].size

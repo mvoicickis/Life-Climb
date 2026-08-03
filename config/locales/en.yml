@@ -195,6 +195,9 @@ en:
     empty_climbs: "Lock your season goal on Mountain to track the climb."
     achievements_title: "Achievements"
     achievements_hint: "Milestones you have already earned."
+    achievements_empty: "Win today’s battle or finish the Trail Guide to earn your first badge."
+    achievements_earned: "Earned"
+    achievements_locked: "Not earned yet"
     achievements:
       adventure_guide: "Trail Guide"
       adventure_guide_hint: "You learned how Goals, Plans, Projects, and Battles fit together."

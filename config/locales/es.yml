@@ -238,6 +238,9 @@ es:
       tasks: "Batallas completadas"
       rate: "Tasa de finalización"
     achievements_hint: "Hitos que ya has ganado."
+    achievements_empty: "Gana la batalla de hoy o termina la Guía del sendero para ganar tu primera insignia."
+    achievements_earned: "Ganado"
+    achievements_locked: "Aún no ganado"
     details_summary: "Ver detalles de actividad"
     details_hint: "Gráficos y filtros — opcionales."
     achievements:

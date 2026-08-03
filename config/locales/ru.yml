@@ -242,6 +242,9 @@ ru:
       tasks: "Битвы выиграны"
       rate: "Процент завершения"
     achievements_hint: "Вехи, которые ты уже заработал."
+    achievements_empty: "Выиграй сегодняшнюю битву или пройди Проводник тропы, чтобы получить первый значок."
+    achievements_earned: "Заработано"
+    achievements_locked: "Ещё не заработано"
     details_summary: "Смотреть детали активности"
     details_hint: "Графики и фильтры — по желанию."
     achievements:

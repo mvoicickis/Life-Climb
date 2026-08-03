@@ -238,6 +238,9 @@ de:
       tasks: "Schlachten gewonnen"
       rate: "Abschlussrate"
     achievements_hint: "Meilensteine, die du schon verdient hast."
+    achievements_empty: "Gewinne den Kampf von heute oder schließe den Pfadführer ab, um dein erstes Abzeichen zu verdienen."
+    achievements_earned: "Verdient"
+    achievements_locked: "Noch nicht verdient"
     details_summary: "Aktivitätsdetails ansehen"
     details_hint: "Diagramme und Filter — optional."
     achievements:
