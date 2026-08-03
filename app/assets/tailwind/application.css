@@ -3265,6 +3265,20 @@
   animation: lp-breathe 4.2s ease-in-out infinite;
 }
 
+.lp-character-pick {
+  border: 1.5px solid transparent;
+}
+
+.lp-character-pick:has(input:checked) {
+  border-color: var(--lp-lime);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-lime) 35%, transparent);
+}
+
+.lp-character-pick:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--lp-lime) 55%, transparent);
+  outline-offset: 2px;
+}
+
 .lp-gap-track {
   height: 0.75rem;
   border-radius: 999px;
@@ -12636,6 +12650,20 @@ button.lp-strategy-overflow {
   font-weight: 850;
   color: #f3f6f8;
   line-height: 1.2;
+}
+
+.lp-first-climb__climber {
+  display: flex;
+  justify-content: center;
+  margin: 0.75rem 0 0;
+}
+
+.lp-first-climb__climber-img {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 999px;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px rgba(87, 211, 91, 0.45), 0 8px 20px rgba(0, 0, 0, 0.35);
 }
 
 .lp-first-climb__goal {

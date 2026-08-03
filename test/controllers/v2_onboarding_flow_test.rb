@@ -31,11 +31,23 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_no_match(/Which area|improve first/i, response.body)
 
     patch v2_onboarding_url(step: "welcome")
+    assert_redirected_to v2_onboarding_path(step: "character")
+    follow_redirect!
+    assert_match(/Choose your character/i, response.body)
+    assert_match(/Step 2 of 4/i, response.body)
+    assert_select "input[name='user[character]'][value=man]"
+    assert_select "input[name='user[character]'][value=woman]"
+    assert_select "img[src*='character-man']"
+    assert_select "img[src*='character-woman']"
+    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "welcome"), text: /Back/i
+    assert_select ".lp-adventure__progress-track"
+
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "man" } }
     assert_redirected_to v2_onboarding_path(step: "mountain")
     follow_redirect!
     assert_match(/one goal you.?re working toward/i, response.body)
-    assert_match(/Step 2 of 3/i, response.body)
-    assert_select "a.lp-adventure__back", text: /Back/i
+    assert_match(/Step 3 of 4/i, response.body)
+    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "character"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
     assert_match(/Become a licensed plumber/i, response.body)
     year = Strategy::YearCycle.target_dec29.year
@@ -55,7 +67,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/December 29, #{year}/i, response.body)
     assert_match(/Become a Ruby Developer/i, response.body)
-    assert_match(/Step 3 of 3/i, response.body)
+    assert_match(/Step 4 of 4/i, response.body)
     assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "mountain"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
 
@@ -123,6 +135,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
       }
     }
     patch v2_onboarding_url(step: "welcome")
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "man" } }
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "deadline")
     patch v2_onboarding_url(step: "how")
@@ -171,5 +184,52 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to next_mountain_path
     follow_redirect!
     assert_match(/Congratulations|next/i, response.body)
+  end
+
+  test "picking woman during onboarding shows woman avatar on mountain" do
+    post registration_url, params: {
+      user: {
+        name: "Alexa",
+        email_address: "woman-climber@example.com",
+        password: "password12345",
+        password_confirmation: "password12345"
+      }
+    }
+    patch v2_onboarding_url(step: "welcome")
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "woman" } }
+    assert_redirected_to v2_onboarding_path(step: "mountain")
+
+    user = User.find_by!(email_address: "woman-climber@example.com")
+    assert_equal "woman", user.character
+    assert_equal "characters/character-woman.png", user.character_image
+
+    patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Lead with calm" } }
+    patch v2_onboarding_url(step: "deadline")
+    follow_redirect! # forge
+    patch v2_onboarding_url(step: "forge")
+
+    journey = user.reload.primary_focused_journey
+    get life_journey_path(journey)
+    assert_response :success
+    assert_select "#first-climb-coach img.lp-first-climb__climber-img[src*='character-woman']"
+
+    # After first climb the Mountain HUD avatar uses the character image.
+    post first_climbs_path, params: {
+      life_journey_id: journey.id,
+      plan_title: "Build trust",
+      today_action: "Call one friend"
+    }
+    get life_journey_path(journey)
+    assert_response :success
+    assert_select ".lp-rpg-avatar img[src*='character-woman']"
+
+    # Settings can switch climber later.
+    patch settings_path, params: { user: { character: "man" } }
+    assert_redirected_to settings_path(highlight: "character")
+    assert_equal "man", user.reload.character
+
+    get life_journey_path(journey)
+    assert_response :success
+    assert_select ".lp-rpg-avatar img[src*='character-man']"
   end
 end

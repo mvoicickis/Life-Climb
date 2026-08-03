@@ -49,6 +49,8 @@ class SettingsController < ApplicationController
   def update_notice
     if updating?(:name)
       t("settings.name_updated")
+    elsif updating?(:character)
+      t("settings.character_updated")
     elsif updating?(:home_stat_count)
       t("settings.today_count_updated")
     else
@@ -59,6 +61,8 @@ class SettingsController < ApplicationController
   def highlight_key
     if updating?(:name)
       "name"
+    elsif updating?(:character)
+      "character"
     elsif updating?(:home_stat_count)
       "today_count"
     end
