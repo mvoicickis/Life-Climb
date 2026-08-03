@@ -94,6 +94,7 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
     assert_selector ".lp-rpg-section-card.is-current .lp-rpg-section-card__title", visible: :all, wait: 5
 
     metrics = title_metrics
