@@ -15113,7 +15113,8 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow: hidden;
 }
 .lp-rpg-destination-carousel:not(.is-multi) {
-  grid-template-columns: 0 minmax(0, 1fr) 0;
+  /* Nav is display:none — a single column so .stage is not parked in a 0-width track. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0;
 }
 .lp-rpg-destination-carousel:not(.is-multi) .lp-rpg-destination-carousel__nav {
@@ -15150,11 +15151,16 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 }
 .lp-rpg-destination-carousel__stage {
   display: grid;
-  grid-template-columns: 14% minmax(0, 1fr) 14%;
+  /* One column by default so a lone .active never lands in a leftover 14% track. */
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 0.25rem;
   min-width: 0;
   overflow: hidden;
+}
+/* Side peeks only when there are real neighboring destinations. */
+.lp-rpg-destination-carousel.is-multi .lp-rpg-destination-carousel__stage {
+  grid-template-columns: 14% minmax(0, 1fr) 14%;
 }
 .lp-rpg-destination-carousel__peek {
   min-width: 0;
@@ -15177,7 +15183,8 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
 }
 .lp-rpg-destination-carousel__peek.is-empty {
-  visibility: hidden;
+  /* display:none (not visibility:hidden) so empty peeks leave the grid entirely. */
+  display: none;
   pointer-events: none;
 }
 .lp-rpg-destination-carousel__peek:hover,
@@ -16758,6 +16765,8 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   max-width: 100%;
   margin-inline: auto;
   gap: 0.35rem;
+  /* Definite min size so flex title (min-width:0) cannot shrink to an invisible sliver. */
+  min-width: min(100%, 12rem);
 }
 .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
   flex: 1 1 auto;
@@ -17499,8 +17508,12 @@ a.lp-rpg-practice-cat {
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel {
     grid-template-columns: minmax(0, 1fr);
   }
-  /* Peeks are display:none — collapse stage to one column or title sits in 14% */
-  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__stage {
+  /*
+   * Peeks are display:none here — force stage to one column even for .is-multi,
+   * or auto-placement parks .active in the leftover 14% track (edge-clipped title).
+   */
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__stage,
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel.is-multi .lp-rpg-destination-carousel__stage {
     grid-template-columns: minmax(0, 1fr);
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__active {
