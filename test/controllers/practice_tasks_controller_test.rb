@@ -46,8 +46,24 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-qs-detail__title", text: /Camp/
     assert_select ".lp-qs-obj__text[value='Design layout']"
     assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-qs-detail__add-btn", text: /\AAdd\z/
     assert_select ".lp-rpg-practice-folder__plan-hint", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+  end
+
+  test "quest detail checkboxes are status-only without complete action" do
+    task = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_response :success
+    assert_select "button.lp-qs-obj__check", count: 0
+    assert_select "span.lp-qs-obj__check[aria-label=?]", "Design layout — not done yet"
+    assert_select ".lp-qs-obj__check[data-action]", count: 0
+    assert_select ".lp-qs-detail__add-btn"
+
+    task.complete!
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_select "span.lp-qs-obj__check.is-done[aria-label=?]", "Design layout — done"
   end
 
   test "create with position inserts and shifts siblings" do

@@ -37,14 +37,12 @@
            data-completed="<%= task.completed? ? '1' : '0' %>"
            data-create-url="<%= create_url %>"
            data-destroy-url="<%= practice_task_path(task) %>">
-        <button type="button"
-                class="lp-qs-obj__check <%= 'is-done' if task.completed? %>"
-                data-action="click->quest-space#toggleComplete"
-                data-update-url="<%= practice_task_path(task) %>"
-                data-completed="<%= task.completed? ? '1' : '0' %>"
-                aria-label="<%= task.title %>">
+        <%# Status only — complete battles on Today, not on Mountain. %>
+        <span class="lp-qs-obj__check <%= 'is-done' if task.completed? %>"
+              role="img"
+              aria-label="<%= task.completed? ? t('strategy.rpg.objective_done_status', title: task.title) : t('strategy.rpg.objective_open_status', title: task.title) %>">
           <%= "✓" if task.completed? %>
-        </button>
+        </span>
         <input type="text"
                class="lp-qs-obj__text <%= 'is-done' if task.completed? %>"
                value="<%= task.title %>"
@@ -71,9 +69,16 @@
              placeholder="<%= t('strategy.rpg.add_objective_placeholder') %>"
              maxlength="120"
              autocomplete="off"
+             data-quest-space-target="addInput"
              data-create-url="<%= create_url %>"
              data-action="keydown->quest-space#addObjective"
              aria-label="<%= t('strategy.rpg.add_objective') %>">
+      <button type="button"
+              class="lp-qs-detail__add-btn"
+              data-action="click->quest-space#addObjective"
+              aria-label="<%= t('strategy.rpg.add_objective_submit') %>">
+        <%= t("strategy.rpg.add_objective_submit") %>
+      </button>
     <% else %>
       <p class="lp-qs-detail__empty"><%= t("strategy.rpg.nest_before_dailies") %></p>
     <% end %>
