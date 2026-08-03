@@ -4329,11 +4329,14 @@
 
 .lp-dash-project-check {
   border-radius: 1.15rem;
-  border: 1px solid rgba(22, 101, 52, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    linear-gradient(135deg, rgba(34, 197, 94, 0.08), transparent 55%),
-    rgba(255, 255, 255, 0.9);
+    linear-gradient(145deg, rgba(87, 211, 91, 0.12), transparent 55%),
+    rgba(23, 28, 34, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 1rem 1.05rem 1.1rem;
+  color: var(--lp-ink);
 }
 
 .lp-dash-project-check__kicker {
@@ -4342,7 +4345,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--lp-green-deep, #166534);
+  color: var(--lp-green, #57d35b);
 }
 
 .lp-dash-project-check__title {
@@ -4352,6 +4355,7 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  color: var(--lp-ink);
 }
 
 .lp-dash-project-check__hint {
@@ -4388,14 +4392,14 @@
 
 .lp-dash-project-check__yes {
   border: 0;
-  color: #fff;
-  background: var(--lp-forest);
+  color: #0b0f14;
+  background: var(--lp-green, #57d35b);
 }
 
 .lp-dash-project-check__no {
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: var(--lp-ink);
-  background: transparent;
+  background: rgba(11, 15, 20, 0.55);
 }
 
 .lp-dash-battle-angles {

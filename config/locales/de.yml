@@ -185,6 +185,15 @@ de:
     battle_ready_count: "%{open} / %{total} Kämpfe bereit"
     battle_next_kicker: "Gut — halte den Aufstieg am Laufen."
     battle_next_coaching: "Ein kurzer Check darunter hält deinen Berg ehrlich."
+    project_check:
+      kicker: "Projekt-Check"
+      title: "Ist „%{title}“ fertig?"
+      hint: "Kämpfe gewinnen den Tag. Nur ein fertiges Projekt bewegt dein Jahresziel."
+      confirm: "Ja, Projekt fertig"
+      not_yet: "Noch nicht"
+      done_notice: "Projekt fertig — „%{title}“. Berg jetzt %{percent}%."
+      not_yet_notice: "Kampf gewonnen. Schärfe den nächsten Kampf, solange das Projekt offen ist."
+      invalid: "Dieser Projekt-Check ist ungültig."
   climb:
     streak:
       chip: "%{count} Tage"

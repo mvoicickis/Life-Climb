@@ -185,6 +185,15 @@ lv:
     battle_ready_count: "%{open} / %{total} kaujas gatavas"
     battle_next_kicker: "Forši — turi kāpienu."
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
+    project_check:
+      kicker: "Projekta pārbaude"
+      title: "Vai “%{title}” ir pabeigts?"
+      hint: "Kaujas uzvar dienu. Tikai pabeigts projekts virza gada mērķi."
+      confirm: "Jā, projekts gatavs"
+      not_yet: "Vēl nē"
+      done_notice: "Projekts gatavs — “%{title}”. Kalns tagad %{percent}%."
+      not_yet_notice: "Kauja uzvarēta. Padari nākamo kauju asāku, kamēr projekts vēl atvērts."
+      invalid: "Šī projekta pārbaude nav derīga."
   climb:
     streak:
       chip: "%{count} dienas"
