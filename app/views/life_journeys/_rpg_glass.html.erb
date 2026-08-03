@@ -35,6 +35,8 @@
                     class: "lp-rpg-input",
                     placeholder: t("strategy.project_placeholder"),
                     autocomplete: "off" %>
+              <%= render "life_journeys/quantity_track_fields",
+                    form_id: "rpg-glass-add-#{focus_plan.id}" %>
               <%= submit_tag t("strategy.sheet.add_project"), class: "lp-rpg-btn is-small" %>
             <% end %>
           </details>

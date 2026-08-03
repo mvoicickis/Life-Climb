@@ -112,6 +112,35 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
     assert_select "#rpg-add-section-#{@plan.id} input[name='unit']"
   end
 
+  test "path-focus Place first checkpoint form includes quantity track toggle" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#rpg-add-checkpoint input[name='track_quantity']"
+    assert_select "#rpg-add-checkpoint input[name='target_amount']"
+    assert_select "#rpg-add-checkpoint input[name='unit']"
+  end
+
+  test "path-focus Place first checkpoint accepts and saves quantity fields" do
+    assert_difference -> { @user.strategy_goals.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: @plan.id,
+        horizon: "project",
+        title: "First checkpoint pages",
+        track_quantity: "1",
+        target_amount: "120",
+        unit: "pages"
+      }
+    end
+
+    project = @user.strategy_goals.for_kind("project").find_by!(title: "First checkpoint pages")
+    assert project.quantified?
+    assert_equal BigDecimal("120"), project.target_amount
+    assert_equal "pages", project.unit
+    assert_equal BigDecimal("0"), project.current_amount
+  end
+
   private
 
   def sign_in_as(user)
