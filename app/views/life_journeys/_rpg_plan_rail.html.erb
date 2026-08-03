@@ -35,7 +35,7 @@
                   class: "lp-rpg-path is-#{accent} #{'is-focus' if focused} #{'is-done' if p.completed?}",
                   data: { turbo: true },
                   aria: { current: focused ? "true" : nil } do %>
-              <span class="lp-rpg-path__title"><%= p.title %></span>
+              <span class="lp-rpg-path__title" title="<%= p.title %>"><%= p.title %></span>
               <% if focused %>
                 <span class="lp-rpg-path__pct"
                       data-strategy-celebrate-target="progressBar"><%= p.progress_percent.to_i %>%</span>

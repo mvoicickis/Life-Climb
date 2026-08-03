@@ -15355,10 +15355,11 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg-plan-rail__track {
   list-style: none;
   margin: 0;
-  padding: 0.1rem 0 0.35rem;
+  padding: 0.15rem 0 0.4rem;
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
+  align-items: flex-start;
   justify-content: center;
   gap: var(--lp-path-gap);
   overflow-x: auto;
@@ -15417,12 +15418,20 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   transform: translateY(-1px);
 }
 .lp-rpg-path__title {
-  font-size: 0.88rem;
+  min-width: 0;
+  font-size: var(--lp-type-ui-sm);
   font-weight: 800;
   letter-spacing: -0.01em;
-  white-space: nowrap;
+  line-height: 1.2;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .lp-rpg-path__pct {
   font-size: 0.68rem;
@@ -17652,7 +17661,8 @@ a.lp-rpg-practice-cat {
     padding: 0.28rem 0.45rem;
   }
   .lp-rpg.is-focus-phase .lp-rpg-path__title {
-    font-size: 0.74rem;
+    font-size: var(--lp-type-ui-sm);
+    line-height: 1.15;
   }
   .lp-rpg.is-focus-phase .lp-rpg-path__pct {
     font-size: 0.6rem;
