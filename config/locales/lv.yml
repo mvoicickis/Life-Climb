@@ -97,6 +97,9 @@ lv:
       action_placeholder: "Mācīties 1. nodaļu 20 minūtes"
       action_hint: "Viena īsta darbība, ko vari pabeigt šovakar."
       cta: "Sākt manu kāpienu"
+      ready_notice: "Tava taka ir vaļā. Uzvari šodienas kauju."
+      human_ready: "Šodienas cīņa: “%{action}”."
+      human_next: "Atzīmē to zemāk, kad esi gatavs."
   life_area_catalog:
     self:
       name: "Es"
@@ -154,7 +157,7 @@ lv:
     journey_hint_climb: "Pabeidz projektus, lai kāptu savā kalnā."
     journey_hint_battles: "Uzvari šodienas kaujas, lai pabeigtu projektus."
     action_points_short: "AP"
-    action_points_label: "Action Points"
+    action_points_label: "Darba punkti"
     action_points_hint: "Uzvari šodienas kaujas"
     nav:
       today: "Šodien"
@@ -169,7 +172,7 @@ lv:
     battle_subtitle: "Uzvari šodien. Virzi savu kalnu uz priekšu."
     battle_subtitle_sync: "Uzvari šodien. Virzi savu kalnu uz priekšu."
     complete_battle: "Pabeigt šodienas kauju"
-    action_points_reward: "Action Points balva"
+    action_points_reward: "Darba punktu balva"
     momentum:
       begun: "Bāzes nometne"
       climbing: "Tu kāp"
@@ -177,6 +180,7 @@ lv:
       close: "Virsotne ir tuvu"
       final: "Pēdējais kāpiens"
       summit: "Virsotne sasniegta"
+    battle_ready_count: "%{open} / %{total} kaujas gatavas"
   climb:
     streak:
       chip: "%{count} dienas"

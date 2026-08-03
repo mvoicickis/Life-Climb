@@ -97,6 +97,9 @@ ru:
       action_placeholder: "Учить главу 1 20 минут"
       action_hint: "Одно реальное действие, которое можно закончить сегодня вечером."
       cta: "Начать мой подъём"
+      ready_notice: "Твоя тропа открыта. Выиграй сегодняшнюю битву."
+      human_ready: "Сегодняшняя битва: «%{action}»."
+      human_next: "Отметь её ниже, когда закончишь."
   life_area_catalog:
     self:
       name: "Себя"
@@ -154,7 +157,7 @@ ru:
     journey_hint_climb: "Завершай проекты, чтобы подниматься по горе."
     journey_hint_battles: "Выигрывай сегодняшние битвы, чтобы завершать проекты."
     action_points_short: "AP"
-    action_points_label: "Action Points"
+    action_points_label: "Очки действий"
     action_points_hint: "Выигрывай сегодняшние битвы"
     nav:
       today: "Сегодня"
@@ -169,7 +172,7 @@ ru:
     battle_subtitle: "Победи сегодня. Продвинь свою гору вперёд."
     battle_subtitle_sync: "Победи сегодня. Продвинь свою гору вперёд."
     complete_battle: "Завершить сегодняшнюю битву"
-    action_points_reward: "Награда Action Points"
+    action_points_reward: "Награда в очках действий"
     momentum:
       begun: "Базовый лагерь"
       climbing: "Ты поднимаешься"
@@ -177,6 +180,7 @@ ru:
       close: "Вершина близко"
       final: "Финальный подъём"
       summit: "Вершина достигнута"
+    battle_ready_count: "%{open} / %{total} битв готовы"
   climb:
     streak:
       chip: "%{count} дн."

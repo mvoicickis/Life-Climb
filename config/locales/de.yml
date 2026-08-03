@@ -97,6 +97,9 @@ de:
       action_placeholder: "Kapitel 1 für 20 Minuten lernen"
       action_hint: "Eine echte Aktion, die du heute Abend fertig kriegst."
       cta: "Meinen Aufstieg starten"
+      ready_notice: "Dein Pfad ist offen. Gewinne den Kampf von heute."
+      human_ready: "Kampf von heute: „%{action}“."
+      human_next: "Hake ihn unten ab, wenn du fertig bist."
   life_area_catalog:
     self:
       name: "Selbst"
@@ -154,7 +157,7 @@ de:
     journey_hint_climb: "Beende Projekte, um deinen Berg zu besteigen."
     journey_hint_battles: "Gewinne die Schlachten von heute, um deine Projekte fertigzustellen."
     action_points_short: "AP"
-    action_points_label: "Action Points"
+    action_points_label: "Aktionspunkte"
     action_points_hint: "Gewinne die Schlachten von heute"
     nav:
       today: "Heute"
@@ -169,7 +172,7 @@ de:
     battle_subtitle: "Gewinne heute. Bringe deinen Berg voran."
     battle_subtitle_sync: "Gewinne heute. Bringe deinen Berg voran."
     complete_battle: "Kampf von heute abschließen"
-    action_points_reward: "Action-Points-Belohnung"
+    action_points_reward: "Aktionspunkte-Belohnung"
     momentum:
       begun: "Basislager"
       climbing: "Du steigst"
@@ -177,6 +180,7 @@ de:
       close: "Der Gipfel ist nah"
       final: "Letzter Aufstieg"
       summit: "Gipfel erreicht"
+    battle_ready_count: "%{open} / %{total} Kämpfe bereit"
   climb:
     streak:
       chip: "%{count} Tage"

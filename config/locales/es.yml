@@ -97,6 +97,9 @@ es:
       action_placeholder: "Estudiar el capítulo 1 durante 20 minutos"
       action_hint: "Una acción real que puedas terminar esta noche."
       cta: "Empezar mi subida"
+      ready_notice: "Tu sendero está abierto. Gana la batalla de hoy."
+      human_ready: "Pelea de hoy: “%{action}”."
+      human_next: "Márcala abajo cuando termines."
   life_area_catalog:
     self:
       name: "Yo"
@@ -154,7 +157,7 @@ es:
     journey_hint_climb: "Termina proyectos para subir tu montaña."
     journey_hint_battles: "Gana las batallas de hoy para terminar tus proyectos."
     action_points_short: "AP"
-    action_points_label: "Action Points"
+    action_points_label: "Puntos de acción"
     action_points_hint: "Gana las batallas de hoy"
     nav:
       today: "Hoy"
@@ -169,7 +172,7 @@ es:
     battle_subtitle: "Gana hoy. Avanza tu montaña."
     battle_subtitle_sync: "Gana hoy. Avanza tu montaña."
     complete_battle: "Completar la batalla de hoy"
-    action_points_reward: "Recompensa de Action Points"
+    action_points_reward: "Recompensa de puntos de acción"
     momentum:
       begun: "Campamento base"
       climbing: "Estás subiendo"
@@ -177,6 +180,7 @@ es:
       close: "La cumbre está cerca"
       final: "Ascenso final"
       summit: "Cumbre alcanzada"
+    battle_ready_count: "%{open} / %{total} batallas listas"
   climb:
     streak:
       chip: "%{count} días"
