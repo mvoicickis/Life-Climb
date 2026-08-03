@@ -527,3 +527,8 @@ de:
     mountain_example: "Beispiele: Klempner mit Meisterbrief werden · Eine Ausbildung finden · Die Prüfung bestehen · Schulden abbauen"
     need_mountain: "Nenne das Ziel, das du erreichen willst."
     continue: "Weiter"
+    deadline_kicker: "Eine Ziellinie hilft"
+    deadline_title: "Dieser Jahresaufstieg hat eine sanfte Ziellinie."
+    deadline_lead: "29. Dezember %{year} — ein Checkpoint zum Feiern, keine Drohung."
+    deadline_body: "Du kannst immer weitergehen. Erreiche deinen Gipfel, feiere, und starte im nächsten Jahr neu, wenn du willst."
+    forge_cta: "Meinen Plan erstellen"

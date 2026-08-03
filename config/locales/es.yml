@@ -527,3 +527,8 @@ es:
     mountain_example: "Ejemplos: Convertirme en fontanero con licencia · Conseguir un aprendizaje · Aprobar el examen del oficio · Salir de deudas"
     need_mountain: "Nombra la meta que quieres alcanzar."
     continue: "Continuar"
+    deadline_kicker: "Una meta final ayuda"
+    deadline_title: "La subida de este año tiene una meta final suave."
+    deadline_lead: "29 de diciembre de %{year} — un punto de control para celebrar, no una amenaza."
+    deadline_body: "Siempre puedes seguir. Llega a tu cumbre, celebra y, si quieres, empieza de nuevo el año que viene."
+    forge_cta: "Crear mi plan"

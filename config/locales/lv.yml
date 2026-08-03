@@ -527,3 +527,8 @@ lv:
     mountain_example: "Piemēri: Kļūt par licencētu santehniķi · Dabūt mācekļa vietu · Nokārtot kvalifikācijas eksāmenu · Atbrīvoties no parādiem"
     need_mountain: "Nosauc mērķi, ko vēlies sasniegt."
     continue: "Turpināt"
+    deadline_kicker: "Finiša līnija palīdz"
+    deadline_title: "Šī gada kāpienam ir maiga finiša līnija."
+    deadline_lead: "29. decembris, %{year} — kontrolpunkts, ko svinēt, nevis drauds."
+    deadline_body: "Tu vienmēr vari turpināt. Sasniedz virsotni, nosvinē un, ja vēlies, nākamajā gadā sāc no jauna."
+    forge_cta: "Izveidot manu plānu"
