@@ -1024,6 +1024,12 @@
     --lp-dawn-to: #0b0f14;
     --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
     --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+    --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
+    --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
+    --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
+    --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
+    --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
+    --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
     margin: 0;
     background: var(--lp-paper);
     color: var(--lp-ink);
@@ -3187,6 +3193,13 @@
   --rpg-blue: #3b82f6;
   --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+  /* Fluid type scale — viewport-responsive; pair with line-clamp for long names */
+  --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
+  --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
+  --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
+  --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
+  --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
+  --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
 }
 
 .lp-game {
@@ -4331,10 +4344,18 @@
 .lp-dash-hero__title {
   margin: 0.4rem 0 0;
   font-family: var(--lp-font-display);
-  font-size: clamp(1.55rem, 4vw, 2.05rem);
+  font-size: var(--lp-type-display-lg);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.12;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .lp-dash-hero__year {
@@ -15113,7 +15134,8 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow: hidden;
 }
 .lp-rpg-destination-carousel:not(.is-multi) {
-  grid-template-columns: 0 minmax(0, 1fr) 0;
+  /* Nav is display:none — a single column so .stage is not parked in a 0-width track. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0;
 }
 .lp-rpg-destination-carousel:not(.is-multi) .lp-rpg-destination-carousel__nav {
@@ -15150,11 +15172,16 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 }
 .lp-rpg-destination-carousel__stage {
   display: grid;
-  grid-template-columns: 14% minmax(0, 1fr) 14%;
+  /* One column by default so a lone .active never lands in a leftover 14% track. */
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 0.25rem;
   min-width: 0;
   overflow: hidden;
+}
+/* Side peeks only when there are real neighboring destinations. */
+.lp-rpg-destination-carousel.is-multi .lp-rpg-destination-carousel__stage {
+  grid-template-columns: 14% minmax(0, 1fr) 14%;
 }
 .lp-rpg-destination-carousel__peek {
   min-width: 0;
@@ -15177,7 +15204,8 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
 }
 .lp-rpg-destination-carousel__peek.is-empty {
-  visibility: hidden;
+  /* display:none (not visibility:hidden) so empty peeks leave the grid entirely. */
+  display: none;
   pointer-events: none;
 }
 .lp-rpg-destination-carousel__peek:hover,
@@ -15229,14 +15257,19 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   margin: 0;
   max-width: 100%;
   font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
-  font-size: clamp(1.15rem, 4.2vw, 1.55rem);
+  font-size: var(--lp-type-display-lg);
   font-weight: 750;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--rpg-ink, #f3f6f8);
-  white-space: nowrap;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 .lp-rpg-destination-menu__btn {
   display: inline-grid;
@@ -15739,7 +15772,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     padding-bottom: 0.65rem;
   }
   .lp-rpg-destination-carousel__title {
-    font-size: clamp(1.05rem, 4vw, 1.35rem);
+    font-size: var(--lp-type-display-lg);
   }
 }
 
@@ -16752,27 +16785,34 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 }
 .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title-row {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: min(100%, 20rem);
   max-width: 100%;
   margin-inline: auto;
   gap: 0.35rem;
+  /* Definite min size so flex title (min-width:0) cannot shrink to an invisible sliver. */
+  min-width: min(100%, 12rem);
 }
 .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
   flex: 1 1 auto;
   min-width: 0;
   font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
-  font-size: clamp(1.6rem, 5.8vw, 2.1rem);
+  font-size: var(--lp-type-display-lg);
   font-weight: 780;
-  line-height: 1.06;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--lp-rpg-ink);
   text-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   text-align: center;
-  white-space: nowrap;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__icon {
   opacity: 0.55;
@@ -17499,8 +17539,12 @@ a.lp-rpg-practice-cat {
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel {
     grid-template-columns: minmax(0, 1fr);
   }
-  /* Peeks are display:none — collapse stage to one column or title sits in 14% */
-  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__stage {
+  /*
+   * Peeks are display:none here — force stage to one column even for .is-multi,
+   * or auto-placement parks .active in the leftover 14% track (edge-clipped title).
+   */
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__stage,
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel.is-multi .lp-rpg-destination-carousel__stage {
     grid-template-columns: minmax(0, 1fr);
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__active {
@@ -17512,7 +17556,8 @@ a.lp-rpg-practice-cat {
     width: 100%;
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
-    font-size: 1.2rem;
+    /* Tighter floor so a 2-line wrap does not eat the short-phone stage. */
+    font-size: clamp(1.25rem, 4.8vw + 0.4rem, 2.1rem);
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__icon {
     display: none;
