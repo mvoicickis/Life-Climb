@@ -372,6 +372,10 @@ lv:
     make_yours_title: "Padari to par savu"
     make_yours_hint: "Pielāgo to, ko jūti katru dienu."
     support_body: "Ja LifePoints tev ir palīdzējis, tu vari palīdzēt tam turpināt palīdzēt citiem."
+    character_title: "Tavs kāpējs"
+    character_hint: "Redzams uz Kalna un uz takas."
+    character_updated: "Kāpējs atjaunināts."
+    character_save: "Saglabāt kāpēju"
   feedback:
     title: "Atsauksmes"
     subtitle: "Raksti man tieši — idejas, kļūdas vai kā jūtas LifePoints."
@@ -507,6 +511,12 @@ lv:
     good_morning: "Labrīt"
     good_afternoon: "Labdien"
     good_evening: "Labvakar"
+    choose_character: "Izvēlies savu tēlu"
+    choose_character_hint: "Kurš stāv tavā kalnā?"
+    continue: "Turpināt"
+    character:
+      man: "Vīrietis"
+      woman: "Sieviete"
   support:
     title: "Atbalsti LifePoints"
     subtitle: "Ja LifePoints tev ir palīdzējis veidot labāku dzīvi, tu vari palīdzēt mums veidot labāku LifePoints."

@@ -378,6 +378,10 @@ ru:
     make_yours_title: "Сделай своим"
     make_yours_hint: "Настрой то, что чувствуешь каждый день."
     support_body: "Если LifePoints тебе помог, ты можешь помочь ему продолжать помогать другим."
+    character_title: "Твой персонаж"
+    character_hint: "Показывается на Горе и на тропе."
+    character_updated: "Персонаж обновлён."
+    character_save: "Сохранить персонажа"
   feedback:
     title: "Отзыв"
     subtitle: "Напиши мне напрямую — идеи, баги или как ощущается LifePoints."
@@ -513,6 +517,12 @@ ru:
     good_morning: "Доброе утро"
     good_afternoon: "Добрый день"
     good_evening: "Добрый вечер"
+    choose_character: "Выбери своего персонажа"
+    choose_character_hint: "Кто стоит на твоей горе?"
+    continue: "Продолжить"
+    character:
+      man: "Мужчина"
+      woman: "Женщина"
   support:
     title: "Поддержать LifePoints"
     subtitle: "Если LifePoints помог тебе строить лучшую жизнь, ты можешь помочь нам строить лучший LifePoints."

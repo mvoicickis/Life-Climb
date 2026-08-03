@@ -372,6 +372,10 @@ es:
     make_yours_title: "Hazla tuya"
     make_yours_hint: "Ajusta lo que sientes cada día."
     support_body: "Si LifePoints te ha ayudado, puedes ayudar a que siga ayudando a otros."
+    character_title: "Tu escalador"
+    character_hint: "Se muestra en la Montaña y en el sendero."
+    character_updated: "Escalador actualizado."
+    character_save: "Guardar escalador"
   feedback:
     title: "Comentarios"
     subtitle: "Escríbeme directamente: ideas, errores o cómo se siente LifePoints."
@@ -507,6 +511,12 @@ es:
     good_morning: "Buenos días"
     good_afternoon: "Buenas tardes"
     good_evening: "Buenas noches"
+    choose_character: "Elige tu personaje"
+    choose_character_hint: "¿Quién está en tu montaña?"
+    continue: "Continuar"
+    character:
+      man: "Hombre"
+      woman: "Mujer"
   support:
     title: "Apoyar LifePoints"
     subtitle: "Si LifePoints te ha ayudado a construir una vida mejor, puedes ayudarnos a construir un mejor LifePoints."
