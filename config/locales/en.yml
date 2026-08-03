@@ -606,6 +606,9 @@ en:
       target_placeholder: "700"
       unit_label: "Unit"
       unit_placeholder: "pages, €, emails…"
+      how_many: "How many %{unit}?"
+      log_confirm: "Log it"
+      amount_required: "Enter how many %{unit}."
     sheet:
       edit: "Edit"
       add_child: "Add next step"

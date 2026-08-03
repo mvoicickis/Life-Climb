@@ -21,7 +21,23 @@ class DailyTodosController < ApplicationController
         todo.strategy_goal&.reopen! unless todo.strategy_goal&.repeat_daily?
       end
     else
+      project = todo.strategy_goal&.quantified_path_project
+      if project && !valid_quantity_amount?(params[:amount])
+        redirect_to dashboard_path,
+                    alert: t("strategy.quantity.amount_required", unit: project.unit)
+        return
+      end
+
       ActiveRecord::Base.transaction do
+        if project
+          Strategy::Quantity::Log.call(
+            project: project,
+            amount: params[:amount],
+            user: current_user,
+            source_day: todo.strategy_goal,
+            daily_todo: todo
+          )
+        end
         todo.update!(completed_at: Time.current)
         finish_linked_strategy_goal!(todo)
         LifePoints::Award.call(
@@ -59,6 +75,14 @@ class DailyTodosController < ApplicationController
   end
 
   private
+
+  def valid_quantity_amount?(raw)
+    return false if raw.blank?
+
+    BigDecimal(raw.to_s).positive?
+  rescue ArgumentError
+    false
+  end
 
   # One-time battles finish the day goal. Daily templates roll to the next day.
   def finish_linked_strategy_goal!(todo)

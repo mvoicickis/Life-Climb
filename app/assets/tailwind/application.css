@@ -16714,6 +16714,42 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
     grid-template-columns: 1fr;
   }
 }
+.lp-quantity-complete {
+  width: min(92vw, 22rem);
+  max-width: 22rem;
+}
+.lp-quantity-complete .lp-strategy-sheet__panel {
+  background: #171c22;
+}
+.lp-quantity-complete .lp-strategy-sheet__title {
+  font-size: clamp(1.15rem, 4.2vw, 1.4rem);
+}
+.lp-quantity-complete__form {
+  display: grid;
+  gap: 1rem;
+}
+.lp-quantity-complete__field {
+  display: grid;
+  gap: 0.35rem;
+}
+.lp-quantity-complete__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rpg-mist, #8b95a5);
+}
+.lp-quantity-complete__input {
+  font-size: 1.25rem;
+  font-weight: 700;
+  min-height: 3rem;
+}
+.lp-quantity-complete .lp-strategy-sheet__footer.is-split {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 0.65rem;
+  align-items: stretch;
+}
 .lp-rpg-float-create__field {
   display: grid;
   gap: 0.35rem;

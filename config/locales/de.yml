@@ -111,6 +111,9 @@ de:
       target_placeholder: "700"
       unit_label: "Einheit"
       unit_placeholder: "Seiten, €, E-Mails…"
+      how_many: "Wie viele %{unit}?"
+      log_confirm: "Eintragen"
+      amount_required: "Gib an, wie viele %{unit}."
   life_area_catalog:
     self:
       name: "Selbst"

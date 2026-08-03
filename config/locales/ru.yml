@@ -111,6 +111,9 @@ ru:
       target_placeholder: "700"
       unit_label: "Единица"
       unit_placeholder: "страницы, €, письма…"
+      how_many: "Сколько %{unit}?"
+      log_confirm: "Записать"
+      amount_required: "Укажи, сколько %{unit}."
   life_area_catalog:
     self:
       name: "Себя"

@@ -111,6 +111,9 @@ lv:
       target_placeholder: "700"
       unit_label: "Vienība"
       unit_placeholder: "lappuses, €, e-pasti…"
+      how_many: "Cik %{unit}?"
+      log_confirm: "Saglabāt"
+      amount_required: "Ieraksti, cik %{unit}."
   life_area_catalog:
     self:
       name: "Es"

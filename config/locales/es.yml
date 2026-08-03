@@ -111,6 +111,9 @@ es:
       target_placeholder: "700"
       unit_label: "Unidad"
       unit_placeholder: "páginas, €, emails…"
+      how_many: "¿Cuántos %{unit}?"
+      log_confirm: "Registrar"
+      amount_required: "Escribe cuántos %{unit}."
   life_area_catalog:
     self:
       name: "Yo"
