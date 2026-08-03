@@ -88,4 +88,28 @@ class StrategyGoalQuantityTest < ActiveSupport::TestCase
     @checkpoint.complete!
     assert_equal 100, Strategy::Progress.percent(@checkpoint.reload)
   end
+
+  test "creating any StrategyGoal with nil quantity fields does not raise" do
+    assert_nothing_raised do
+      goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "Plain goal", position: 1)
+      plan = @user.strategy_goals.create!(
+        life_area: @area, parent: goal, horizon: "plan", title: "Plain plan", position: 0
+      )
+      project = @user.strategy_goals.create!(
+        life_area: @area, parent: plan, horizon: "project", title: "Plain project", position: 0
+      )
+      leaf = practice_leaf_for!(project)
+      day = @user.strategy_goals.create!(
+        life_area: @area, parent: leaf, horizon: "day", title: "Plain day",
+        scheduled_on: Date.current, position: 0
+      )
+
+      assert_nil goal.target_amount
+      assert_nil goal.unit
+      assert_equal BigDecimal("0"), goal.current_amount
+      assert_nil plan.unit
+      assert_nil project.unit
+      assert_nil day.unit
+    end
+  end
 end

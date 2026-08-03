@@ -62,7 +62,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-hero__pct", text: /#{expected}\s*%/
+    assert_select ".lp-dash-climb__pct", text: /#{expected}/
 
     get life_points_path
     assert_response :success

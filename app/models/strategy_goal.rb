@@ -218,16 +218,20 @@ class StrategyGoal < ApplicationRecord
   end
 
   def normalize_quantity_fields
-    self.unit = unit.to_s.strip.presence
-    self.current_amount = 0 if current_amount.nil?
-    return if target_amount.present?
+    # Fires on every StrategyGoal create/update — must be safe when quantity
+    # columns are nil (normal goals/plans/days) and always use explicit readers.
+    return unless has_attribute?(:unit)
 
-    self.unit = nil
+    self.unit = self.unit.to_s.strip.presence
+    self.current_amount = 0 if self.current_amount.nil?
+    self.unit = nil if self.target_amount.blank?
   end
 
   def quantity_target_rules
-    if target_amount.blank?
-      errors.add(:unit, :invalid) if unit.present?
+    return unless has_attribute?(:target_amount)
+
+    if self.target_amount.blank?
+      errors.add(:unit, :invalid) if self.unit.present?
       return
     end
 
@@ -241,8 +245,8 @@ class StrategyGoal < ApplicationRecord
       return
     end
 
-    errors.add(:target_amount, :greater_than, count: 0) unless target_amount.to_d.positive?
-    errors.add(:unit, :blank) if unit.blank?
+    errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
+    errors.add(:unit, :blank) if self.unit.blank?
   end
 
   def assign_goal_due_on

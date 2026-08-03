@@ -20,7 +20,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/Viens kalns\. Šodienas kauja/, response.body)
     assert_match(/Sākt bez maksas/, response.body)
-    assert_match(/Action Points/, response.body)
+    assert_match(/darba punkt/i, response.body)
     assert_match(/Nosauc šodienas soli/i, response.body)
     assert_match(/10 km/, response.body)
     assert_no_match(/tuvojies virsotnei/i, response.body)
@@ -95,6 +95,6 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Du/i
     assert_match(/Reise/, response.body)
     assert_match(/Berg-Zusammenfassung/, response.body)
-    assert_match(/Action Points/, response.body)
+    assert_match(/Aktionspunkte/, response.body)
   end
 end
