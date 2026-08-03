@@ -85,6 +85,18 @@ es:
         summit: "Cumbre"
     help:
       cta_onboarding: "Ayúdame a aclarar esta montaña"
+    first_climb:
+      label: "Empieza tu subida"
+      kicker: "60 segundos hasta tu primera pelea"
+      title: "Hagamos que hoy cuente."
+      lead: "Dos respuestas cortas. Luego puedes ganar la batalla de hoy."
+      plan_label: "¿La parte más grande de “%{goal}”?"
+      plan_placeholder: "Obtener la certificación"
+      plan_hint: "Una gran pieza de la meta — no cada tarea."
+      action_label: "¿Qué harás hoy?"
+      action_placeholder: "Estudiar el capítulo 1 durante 20 minutos"
+      action_hint: "Una acción real que puedas terminar esta noche."
+      cta: "Empezar mi subida"
   life_area_catalog:
     self:
       name: "Yo"
@@ -532,3 +544,11 @@ es:
     deadline_lead: "29 de diciembre de %{year} — un punto de control para celebrar, no una amenaza."
     deadline_body: "Siempre puedes seguir. Llega a tu cumbre, celebra y, si quieres, empieza de nuevo el año que viene."
     forge_cta: "Crear mi plan"
+    forge_title: "Construyendo tu subida..."
+    forge_step_mountain: "Fijando tu meta"
+    forge_step_journey: "Abriendo tu sendero"
+    forge_step_camp: "Preparando el campamento base"
+    forge_step_ready: "Estás listo."
+    forge_wait: "Casi listo…"
+    enter_how: "Empezar a subir"
+    how_optional: "Cómo funciona la subida"

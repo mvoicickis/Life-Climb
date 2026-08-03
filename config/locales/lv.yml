@@ -85,6 +85,18 @@ lv:
         summit: "Virsotne"
     help:
       cta_onboarding: "Palīdzi man noskaidrot šo kalnu"
+    first_climb:
+      label: "Sāc savu kāpienu"
+      kicker: "60 sekundes līdz pirmajai cīņai"
+      title: "Padarīsim šodienu nozīmīgu."
+      lead: "Divas īsas atbildes. Tad tu vari uzvarēt šodienas kauju."
+      plan_label: "Lielākā daļa no “%{goal}”?"
+      plan_placeholder: "Iegūt sertifikātu"
+      plan_hint: "Liels mērķa gabals — nevis katrs uzdevums."
+      action_label: "Ko tu darīsi šodien?"
+      action_placeholder: "Mācīties 1. nodaļu 20 minūtes"
+      action_hint: "Viena īsta darbība, ko vari pabeigt šovakar."
+      cta: "Sākt manu kāpienu"
   life_area_catalog:
     self:
       name: "Es"
@@ -532,3 +544,11 @@ lv:
     deadline_lead: "29. decembris, %{year} — kontrolpunkts, ko svinēt, nevis drauds."
     deadline_body: "Tu vienmēr vari turpināt. Sasniedz virsotni, nosvinē un, ja vēlies, nākamajā gadā sāc no jauna."
     forge_cta: "Izveidot manu plānu"
+    forge_title: "Veidojam tavu kāpienu..."
+    forge_step_mountain: "Iestatām tavu mērķi"
+    forge_step_journey: "Atveram tavu taku"
+    forge_step_camp: "Sagatavojam bāzes nometni"
+    forge_step_ready: "Tu esi gatavs."
+    forge_wait: "Gandrīz gatavs…"
+    enter_how: "Sākt kāpt"
+    how_optional: "Kā darbojas kāpšana"

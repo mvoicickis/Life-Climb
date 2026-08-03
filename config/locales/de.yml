@@ -85,6 +85,18 @@ de:
         summit: "Gipfel"
     help:
       cta_onboarding: "Hilf mir, diesen Berg klarer zu machen"
+    first_climb:
+      label: "Starte deinen Aufstieg"
+      kicker: "60 Sekunden bis zu deinem ersten Kampf"
+      title: "Lass uns den heutigen Tag zählen."
+      lead: "Zwei kurze Antworten. Dann kannst du den Kampf von heute gewinnen."
+      plan_label: "Größter Teil von „%{goal}“?"
+      plan_placeholder: "Zertifikat holen"
+      plan_hint: "Ein großes Stück des Ziels — nicht jede Aufgabe."
+      action_label: "Was wirst du heute tun?"
+      action_placeholder: "Kapitel 1 für 20 Minuten lernen"
+      action_hint: "Eine echte Aktion, die du heute Abend fertig kriegst."
+      cta: "Meinen Aufstieg starten"
   life_area_catalog:
     self:
       name: "Selbst"
@@ -532,3 +544,11 @@ de:
     deadline_lead: "29. Dezember %{year} — ein Checkpoint zum Feiern, keine Drohung."
     deadline_body: "Du kannst immer weitergehen. Erreiche deinen Gipfel, feiere, und starte im nächsten Jahr neu, wenn du willst."
     forge_cta: "Meinen Plan erstellen"
+    forge_title: "Dein Aufstieg wird gebaut..."
+    forge_step_mountain: "Dein Ziel wird gesetzt"
+    forge_step_journey: "Dein Pfad wird geöffnet"
+    forge_step_camp: "Basislager wird vorbereitet"
+    forge_step_ready: "Du bist bereit."
+    forge_wait: "Gleich soweit…"
+    enter_how: "Aufstieg starten"
+    how_optional: "So funktioniert der Aufstieg"
