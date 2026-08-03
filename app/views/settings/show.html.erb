@@ -32,6 +32,14 @@
     </div>
   </section>
 
+  <section class="lp-glass p-5" id="you-language">
+    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.language_title") %></h2>
+    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.language_hint") %></p>
+    <div class="mt-4">
+      <%= render "shared/locale_switcher", variant: :settings %>
+    </div>
+  </section>
+
   <section class="lp-glass p-5"
            data-controller="share"
            data-share-text-value="<%= invite_share_message_body %>"

@@ -89,43 +89,4 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 end
 
-class LocalesControllerTest < ActionDispatch::IntegrationTest
-  teardown { I18n.locale = I18n.default_locale }
-
-  test "can switch locale to latvian" do
-    user = users(:one)
-    seed_climb!(user)
-    sign_in_as user
-    patch locale_path(locale: :lv)
-    assert_redirected_to dashboard_path
-    follow_redirect!
-    assert_response :success
-    get settings_path
-    assert_match(/Iestatījumi/, response.body)
-  end
-
-  test "can switch locale to german" do
-    user = users(:one)
-    seed_climb!(user)
-    sign_in_as user
-    patch locale_path(locale: :de)
-    assert_redirected_to dashboard_path
-    follow_redirect!
-    assert_response :success
-    assert_match(/Heute|Berg|Du/, response.body)
-    get settings_path
-    assert_match(/Einstellungen/, response.body)
-  end
-
-  test "can switch locale to spanish" do
-    user = users(:one)
-    seed_climb!(user)
-    sign_in_as user
-    patch locale_path(locale: :es)
-    assert_redirected_to dashboard_path
-    follow_redirect!
-    assert_response :success
-    get settings_path
-    assert_match(/Ajustes/, response.body)
-  end
-end
+# Locale switching coverage lives in test/controllers/locales_controller_test.rb

@@ -145,6 +145,7 @@ de:
     de: "Deutsch"
     es: "Español"
     lv: "Latviešu"
+    ru: "Русский"
   dashboard:
     title: "Heute"
     kicker: "Dein Wachstumsboard"
@@ -233,6 +234,8 @@ de:
   settings:
     title: "Einstellungen"
     subtitle: "Gestalte Heute so, dass es einfach und motivierend bleibt."
+    language_title: "Sprache"
+    language_hint: "Wähle die Sprache für Buttons, Beschriftungen und Meldungen."
     profile_title: "Dein Name"
     profile_hint: "Erscheint in der Begrüßung auf Home."
     count_title: "Wie viele auf Heute"

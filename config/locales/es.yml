@@ -145,6 +145,7 @@ es:
     de: "Deutsch"
     es: "Español"
     lv: "Latviešu"
+    ru: "Русский"
   dashboard:
     title: "Hoy"
     kicker: "Tu tablero de crecimiento"
@@ -233,6 +234,8 @@ es:
   settings:
     title: "Ajustes"
     subtitle: "Da forma a Hoy para que sea simple y motivador."
+    language_title: "Idioma"
+    language_hint: "Elige el idioma de botones, etiquetas y mensajes."
     profile_title: "Tu nombre"
     profile_hint: "Se muestra en el saludo de Inicio."
     count_title: "Cuántos en Hoy"

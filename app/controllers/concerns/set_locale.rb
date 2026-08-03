@@ -20,8 +20,17 @@ module SetLocale
   end
 
   def requested_locale
-    candidate = params[:locale].presence || session[:locale].presence || cookies[:locale].presence || I18n.default_locale
+    candidate =
+      params[:locale].presence ||
+      signed_in_user_locale ||
+      session[:locale].presence ||
+      cookies[:locale].presence ||
+      I18n.default_locale
     candidate = candidate.to_s.to_sym
     I18n.available_locales.include?(candidate) ? candidate : I18n.default_locale
+  end
+
+  def signed_in_user_locale
+    Current.user&.locale.presence
   end
 end

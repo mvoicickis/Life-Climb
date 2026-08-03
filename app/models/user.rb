@@ -42,6 +42,9 @@ class User < ApplicationRecord
   }
   validates :character, inclusion: { in: %w[man woman] }, allow_nil: true
   validates :planning_version, inclusion: { in: [ 1, 2 ] }
+  validates :locale, inclusion: {
+    in: ->(_) { I18n.available_locales.map(&:to_s) }
+  }, allow_nil: true
 
   CHARACTERS = %w[man woman].freeze
 

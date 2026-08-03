@@ -21,6 +21,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a#you-row-today-count", count: 0
     assert_select "a[href=?]", edit_name_settings_path
     assert_select "a#you-row-life-area", count: 0
+    assert_select "#you-language"
+    assert_select "#you-language form[action=?]", locale_path(locale: :en)
+    assert_select "#you-language form[action=?]", locale_path(locale: :ru)
     assert_select "a[href=?]", support_path
     assert_select "a[href=?]", new_password_path
     assert_select "a[href=?]", about_path, count: 0

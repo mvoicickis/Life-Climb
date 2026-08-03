@@ -145,6 +145,7 @@ lv:
     de: "Deutsch"
     es: "Español"
     lv: "Latviešu"
+    ru: "Русский"
   dashboard:
     title: "Šodien"
     kicker: "Tavs izaugsmes panelis"
@@ -233,6 +234,8 @@ lv:
   settings:
     title: "Iestatījumi"
     subtitle: "Veido Šodien tā, lai tas paliek vienkāršs un motivējošs."
+    language_title: "Valoda"
+    language_hint: "Izvēlies valodu pogām, etiķetēm un ziņojumiem."
     profile_title: "Tavs vārds"
     profile_hint: "Rādās Sākumā dienas sveicienā."
     count_title: "Cik rādīt uz Šodien"
