@@ -4980,11 +4980,31 @@
   color: var(--lp-muted);
 }
 
+.lp-dash-battle__next {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lp-dash-battle__next-kicker {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-dash-battle__next-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+  line-height: 1.4;
+}
+
 .lp-dash-battle__tomorrow {
   margin: 0.15rem 0 0;
   font-size: 0.9rem;
   font-weight: 650;
-  color: var(--lp-green-deep, #166534);
+  color: var(--lp-green, #57d35b);
   line-height: 1.35;
 }
 
@@ -7020,7 +7040,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--lp-green-deep, #166534);
+  color: var(--lp-green, #57d35b);
 }
 
 .lp-journey-summary__expedition {
@@ -7029,6 +7049,7 @@
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+  color: var(--lp-ink);
 }
 
 .lp-journey-summary__link {
@@ -7038,7 +7059,7 @@
 .lp-journey-summary__link a {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--lp-green-deep, #166534);
+  color: var(--lp-green, #57d35b);
   text-decoration: none;
 }
 
@@ -13105,8 +13126,10 @@ button.lp-strategy-overflow {
 }
 
 .lp-journey-points__card.is-lead {
-  border-color: color-mix(in srgb, #22c55e 35%, #e2e8f0);
-  background: rgba(240, 253, 244, 0.85);
+  border-color: color-mix(in srgb, #57d35b 42%, rgba(255, 255, 255, 0.12));
+  background:
+    linear-gradient(145deg, rgba(87, 211, 91, 0.14), transparent 55%),
+    rgba(23, 28, 34, 0.88);
 }
 
 .lp-journey-points__card.is-quiet {
@@ -13116,8 +13139,10 @@ button.lp-strategy-overflow {
 .lp-journey-details {
   margin: 1.25rem 0 2rem;
   border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 0.35rem 1rem 0.85rem;
 }
 
@@ -13132,14 +13157,14 @@ button.lp-strategy-overflow {
 .lp-journey-details__title {
   display: block;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--lp-ink);
 }
 
 .lp-journey-details__hint {
   display: block;
   margin-top: 0.15rem;
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--lp-muted);
 }
 
 .lp-adventure__forge-optional {
