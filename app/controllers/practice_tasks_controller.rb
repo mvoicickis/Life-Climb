@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Objectives inside a Quest Folder checklist on Mountain.
+# Objectives inside a Quest Folder checklist on Mountain (plan) / Today (complete).
 class PracticeTasksController < ApplicationController
   before_action :require_planning_v2
 
@@ -22,6 +22,8 @@ class PracticeTasksController < ApplicationController
       task.complete! if ActiveModel::Type::Boolean.new.cast(params[:completed])
     end
 
+    Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
+    # Creating still happens on Mountain; stay there for planning.
     redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
@@ -37,33 +39,74 @@ class PracticeTasksController < ApplicationController
 
     if params.key?(:title)
       task.update!(title: params.require(:title).to_s.strip)
+      redirect_to mountain_focus_path(practice), status: :see_other
     elsif params.key?(:completed)
-      if ActiveModel::Type::Boolean.new.cast(params[:completed])
+      completing = ActiveModel::Type::Boolean.new.cast(params[:completed])
+      if completing
         task.complete!
+        finish_checklist_day_if_ready!(practice)
       else
         task.reopen!
+        reopen_checklist_day_if_needed!(practice)
       end
+      Journeys::SyncClimbFromToday.call(user: current_user)
+      redirect_to dashboard_path, status: :see_other
+    else
+      redirect_to dashboard_path, status: :see_other
     end
-
-    redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   rescue ActiveRecord::RecordInvalid => e
-    redirect_to mountain_focus_path(e.record.strategy_goal),
-                alert: e.record.errors.full_messages.to_sentence,
-                status: :see_other
+    redirect_to(
+      (params.key?(:completed) ? dashboard_path : mountain_focus_path(e.record.strategy_goal)),
+      alert: e.record.errors.full_messages.to_sentence,
+      status: :see_other
+    )
   end
 
   def destroy
     task = current_user.practice_tasks.find(params[:id])
     practice = task.strategy_goal
     task.destroy!
+    Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
     redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
   private
+
+  def finish_checklist_day_if_ready!(practice)
+    return unless practice.all_objectives_complete?
+
+    Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
+    todo = linked_today_todo(practice)
+    return if todo.blank? || todo.completed?
+
+    # Quantified days need the amount dialog on the shell checkbox — don't auto-finish.
+    return if practice.quantified_path_project.present?
+
+    result = Battles::CompleteTodo.call(todo: todo, user: current_user, session: session)
+    flash[:ap_gained] = todo.lp_reward.to_i
+    flash[:battle_celebrate] = true
+    maybe_milestone_climb_reward!(
+      awarded: todo.lp_reward.to_i,
+      streak: result.streak,
+      personal_best: result.personal_best_new
+    )
+  end
+
+  def reopen_checklist_day_if_needed!(practice)
+    todo = linked_today_todo(practice)
+    return if todo.blank? || !todo.completed?
+
+    # Keep sibling objectives as-is; only reopen the day shell + quantity log.
+    Battles::UncompleteTodo.call(todo: todo, user: current_user, reset_objectives: false)
+  end
+
+  def linked_today_todo(practice)
+    current_user.daily_todos.for_day(Date.current).find_by(strategy_goal_id: practice.id)
+  end
 
   def parse_position(raw, practice)
     return next_position(practice) if raw.blank?
@@ -97,6 +140,24 @@ class PracticeTasksController < ApplicationController
       goal_id: goal&.id,
       plan_id: plan&.id,
       focus_id: camp&.id
+    )
+  end
+
+  def maybe_milestone_climb_reward!(awarded:, streak:, personal_best:)
+    milestone = personal_best || streak.earned_freeze
+    return unless milestone
+
+    flash[:climb_boss] = true
+    journey = current_user.primary_focused_journey
+    goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+    flash[:climb_reward] = Climb::Reward.for_battle(
+      user: current_user,
+      awarded: awarded,
+      goal: goal,
+      streak_days: streak.days,
+      personal_best: personal_best,
+      earned_freeze: streak.earned_freeze,
+      boss: true
     )
   end
 

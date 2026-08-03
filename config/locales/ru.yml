@@ -200,6 +200,10 @@ ru:
       final: "Финальный подъём"
       summit: "Вершина достигнута"
     battle_ready_count: "%{open} / %{total} битв готовы"
+    checklist_progress: "%{done} / %{total}"
+    checklist_objectives: "Цели"
+    checklist_finish_objectives: "Сначала выполни цели."
+    checklist_locked: "%{title} — сначала выполни цели"
     battle_next_kicker: "Отлично — продолжай подъём."
     battle_next_coaching: "Один быстрый вопрос ниже держит гору честной."
     project_check:

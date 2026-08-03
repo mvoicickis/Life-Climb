@@ -63,6 +63,10 @@ en:
     battle_empty: "Nothing to fight yet — plan the next step on Mountain."
     battle_empty_cta: "Continue on Mountain"
     battle_ready_count: "%{open} / %{total} battles ready"
+    checklist_progress: "%{done} / %{total}"
+    checklist_objectives: "Objectives"
+    checklist_finish_objectives: "Finish the objectives first."
+    checklist_locked: "%{title} — finish objectives first"
     battle_done_summary:
       one: "%{count} won today"
       other: "%{count} won today"

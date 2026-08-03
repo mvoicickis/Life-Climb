@@ -200,6 +200,10 @@ lv:
       final: "Pēdējais kāpiens"
       summit: "Virsotne sasniegta"
     battle_ready_count: "%{open} / %{total} kaujas gatavas"
+    checklist_progress: "%{done} / %{total}"
+    checklist_objectives: "Mērķi"
+    checklist_finish_objectives: "Vispirms izpildi mērķus."
+    checklist_locked: "%{title} — vispirms izpildi mērķus"
     battle_next_kicker: "Forši — turi kāpienu."
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
     project_check:
