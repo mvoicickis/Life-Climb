@@ -183,6 +183,8 @@ de:
       final: "Letzter Aufstieg"
       summit: "Gipfel erreicht"
     battle_ready_count: "%{open} / %{total} Kämpfe bereit"
+    battle_next_kicker: "Gut — halte den Aufstieg am Laufen."
+    battle_next_coaching: "Ein kurzer Check darunter hält deinen Berg ehrlich."
   climb:
     streak:
       chip: "%{count} Tage"

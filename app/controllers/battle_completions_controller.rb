@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class BattleCompletionsController < ApplicationController
+  # DEPRECATED: batch "Complete Today's Battle" — Today uses per-item checkboxes.
+  # Route kept temporarily; UI no longer posts here.
   def create
     goal = current_strategy_goal
     result = Battles::CompleteDay.call(user: current_user)

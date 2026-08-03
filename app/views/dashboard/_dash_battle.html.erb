@@ -1,14 +1,16 @@
-<%# locals: todos, open_todos, done_todos, mission, include_mission, reward, open_count, total_count, aspect_key, upcoming %>
+<%# locals: todos, open_todos, done_todos, mission, include_mission, open_count, total_count, aspect_key, upcoming %>
 <%
   open_todos = local_assigns.fetch(:open_todos) { todos.reject(&:completed?) }
   done_todos = local_assigns.fetch(:done_todos) { todos.select(&:completed?) }
   total_count = local_assigns.fetch(:total_count) { todos.size + (include_mission ? 1 : 0) }
   upcoming = local_assigns[:upcoming]
+  handoff = @strategy_handoff
   battle_empty = open_todos.empty? && done_todos.empty? && !include_mission
   battle_won = !battle_empty && open_count.to_i.zero?
   done_count = [ total_count.to_i - open_count.to_i, 0 ].max
   ring_pct = total_count.to_i.positive? ? ((done_count.to_f / total_count) * 100).round : 0
   ring_pct = 100 if battle_won
+  coaching_below = @project_check.present? || (@battle_angle_project.present? && @battle_angles.present?)
 %>
 
 <section class="lp-dash-battle" aria-label="<%= t('dash.battle_title') %>">
@@ -34,7 +36,6 @@
   </header>
 
   <% if battle_empty %>
-    <% handoff = @strategy_handoff %>
     <div class="lp-dash-battle__empty">
       <p class="lp-dash-empty"><%= t("dash.battle_empty") %></p>
       <p class="lp-dash-battle__empty-cta">
@@ -114,31 +115,33 @@
     <div class="lp-dash-battle__footer">
       <% if open_count.positive? %>
         <p class="lp-dash-battle__ready"><%= t("dash.battle_ready_count", open: open_count, total: [ total_count, open_count ].max) %></p>
-        <%= button_to t("dash.complete_battle"),
-              battle_completion_path,
-              method: :post,
-              class: "lp-dash-cta lp-dash-cta--soft",
-              data: { battle_day_target: "completeBtn", action: "click->battle-day#celebrate" } %>
-        <p class="lp-dash-battle__reward" aria-live="polite">
-          <span data-battle-day-target="reward">+<%= reward %></span>
-          <span><%= t("dash.action_points_reward") %></span>
-        </p>
       <% else %>
-        <p class="lp-dash-battle__won"><%= t("dash.battle_won") %></p>
-        <p class="lp-dash-battle__empty-cta">
-          <%= link_to t("climb.reward.back_to_trail"),
-                life_journey_path(@journey),
-                class: "lp-dash-battle__link-cta" %>
-        </p>
-        <% if upcoming %>
-          <p class="lp-dash-battle__tomorrow">
-            <% if upcoming[:tomorrow] %>
-              <%= t("dash.tomorrow_set", title: upcoming[:title]) %>
-            <% else %>
-              <%= t("dash.next_battle_set", title: upcoming[:title], date: l(upcoming[:scheduled_on], format: :short)) %>
-            <% end %>
-          </p>
-        <% end %>
+        <%# Forward momentum — not a finish line. Project check / angles may render below. %>
+        <div class="lp-dash-battle__next">
+          <p class="lp-dash-battle__next-kicker"><%= t("dash.battle_next_kicker") %></p>
+          <% if coaching_below %>
+            <p class="lp-dash-battle__next-hint"><%= t("dash.battle_next_coaching") %></p>
+          <% elsif upcoming %>
+            <p class="lp-dash-battle__tomorrow">
+              <% if upcoming[:tomorrow] %>
+                <%= t("dash.tomorrow_set", title: upcoming[:title]) %>
+              <% else %>
+                <%= t("dash.next_battle_set", title: upcoming[:title], date: l(upcoming[:scheduled_on], format: :short)) %>
+              <% end %>
+            </p>
+            <p class="lp-dash-battle__empty-cta">
+              <%= link_to t("climb.reward.back_to_trail"),
+                    life_journey_path(@journey),
+                    class: "lp-dash-battle__link-cta" %>
+            </p>
+          <% else %>
+            <p class="lp-dash-battle__empty-cta">
+              <%= link_to (handoff&.dig(:label) || t("dash.battle_empty_cta")),
+                    (handoff&.dig(:href) || life_journey_path(@journey)),
+                    class: "lp-dash-battle__link-cta" %>
+            </p>
+          <% end %>
+        </div>
       <% end %>
     </div>
   <% end %>

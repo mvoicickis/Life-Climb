@@ -183,6 +183,8 @@ lv:
       final: "Pēdējais kāpiens"
       summit: "Virsotne sasniegta"
     battle_ready_count: "%{open} / %{total} kaujas gatavas"
+    battle_next_kicker: "Forši — turi kāpienu."
+    battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
   climb:
     streak:
       chip: "%{count} dienas"

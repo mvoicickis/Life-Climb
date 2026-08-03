@@ -37,18 +37,13 @@ class DailyTodosController < ApplicationController
         session: session,
         project_ids: Strategy::ProjectCheckQueue.from_battles([ todo.strategy_goal ].compact)
       )
+      # Light juice on every checkbox — full Climb Reward modal only for milestones.
       flash[:ap_gained] = todo.lp_reward.to_i
       flash[:battle_celebrate] = true
-      flash[:climb_boss] = true if pb.new_record || streak.earned_freeze
-      journey = current_user.primary_focused_journey
-      goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
-      flash[:climb_reward] = Climb::Reward.for_battle(
-        user: current_user,
+      maybe_milestone_climb_reward!(
         awarded: todo.lp_reward.to_i,
-        goal: goal,
-        streak_days: streak.days,
-        personal_best: pb.new_record,
-        earned_freeze: streak.earned_freeze
+        streak: streak,
+        personal_best: pb.new_record
       )
     end
     Journeys::SyncClimbFromToday.call(user: current_user)
@@ -77,5 +72,23 @@ class DailyTodosController < ApplicationController
     next_day = [ Date.current + 1.day, todo.scheduled_on + 1.day ].max
     goal.update!(scheduled_on: next_day, completed_at: nil)
     Strategy::CascadeToDaily.call(user: current_user, life_area: goal.life_area)
+  end
+
+  def maybe_milestone_climb_reward!(awarded:, streak:, personal_best:)
+    milestone = personal_best || streak.earned_freeze
+    return unless milestone
+
+    flash[:climb_boss] = true
+    journey = current_user.primary_focused_journey
+    goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+    flash[:climb_reward] = Climb::Reward.for_battle(
+      user: current_user,
+      awarded: awarded,
+      goal: goal,
+      streak_days: streak.days,
+      personal_best: personal_best,
+      earned_freeze: streak.earned_freeze,
+      boss: true
+    )
   end
 end

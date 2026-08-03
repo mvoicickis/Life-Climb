@@ -23,7 +23,8 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_match(/Battle/i, response.body)
     assert_match(/Action Points/i, response.body)
     assert_no_match(/>\s*Strategy Points\s*</i, response.body)
-    assert_select ".lp-dash-cta", text: /Complete Today/i
+    assert_select ".lp-dash-cta", count: 0
+    assert_select "form[action=?]", battle_completion_path, count: 0
     assert_match(/battles ready/i, response.body)
     assert_match(/See your mountain/i, response.body)
     assert_match(/Review my budget/i, response.body)
@@ -31,6 +32,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-climb", count: 1
     assert_select ".lp-dash-climb__label", text: /up the mountain/i
     assert_select ".lp-dash-battle", count: 1
+    assert_select ".lp-dash-check", minimum: 1
     assert_select ".lp-dash-hero", count: 0
     assert_select ".lp-dash-plan"
     assert_select ".lp-dash-project", count: 0
@@ -64,7 +66,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-hero", count: 0
   end
 
-  test "complete battle asks project check without moving mountain percent" do
+  test "completing a battle checkbox asks project check without moving mountain percent" do
     journey = @user.primary_focused_journey
     area = journey.life_area
     goal = @user.strategy_goals.create!(
@@ -87,9 +89,10 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
       title: "Call bank tomorrow", scheduled_on: Date.current + 1.day, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: area)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
 
     assert_equal 0, goal.progress_percent
-    post battle_completion_url
+    post complete_daily_todo_path(todo)
     assert_redirected_to dashboard_path
     follow_redirect!
 
@@ -124,23 +127,35 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_nil @user.daily_todos.for_day.find_by(title: "Cancel unused subscription")
   end
 
-  test "complete battle finishes open mission and todos" do
-    @user.daily_todos.create!(
+  test "checkbox completes open mission and todos with light juice" do
+    todo = @user.daily_todos.create!(
       title: "Track spending",
       aspect_key: "money",
       scheduled_on: Date.current
     )
+    mission = @user.missions.for_day.primary.incomplete.order(:id).first
+    assert mission
 
     before = @user.reload.total_points
-    post battle_completion_url
+    post complete_daily_todo_path(todo)
     assert_redirected_to dashboard_path
-    follow_redirect!
-    assert_match(/Battle complete/i, flash[:notice].to_s + response.body)
+    assert_operator flash[:ap_gained].to_i, :>, 0
+    assert flash[:battle_celebrate].present?
+    assert_nil flash[:climb_reward], "first ordinary checkbox is not a Climb Reward moment"
 
+    post mission_completion_path(mission), params: { aspect_key: "money" }
+    assert_redirected_to dashboard_path
+    assert_operator flash[:ap_gained].to_i, :>, 0
+    assert flash[:battle_celebrate].present?
+    # A later win in the same day may hit a personal-best milestone — that's reserved.
+
+    follow_redirect!
     assert @user.daily_todos.for_day.incomplete.none?
-    mission = @user.missions.for_day.primary.order(:id).last
-    assert mission.completed?
+    assert mission.reload.completed?
     assert_operator @user.reload.total_points, :>, before
+    assert_select ".lp-dash-battle__next"
+    assert_select ".lp-dash-battle__won", count: 0
+    assert_select "form[action=?]", battle_completion_path, count: 0
   end
 
   test "today lists strategy-fed battles without an add form" do
@@ -168,8 +183,9 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
     assert_select "form.lp-dash-add", count: 0
     assert_match(/See your mountain/i, response.body)
-
-    expected_reward = (5 * GameRules::BATTLE_TODO_LP) + @user.missions.for_day.primary.incomplete.first.lp_reward
-    assert_match(/\+#{expected_reward}/, response.body)
+    assert_select ".lp-dash-check", minimum: 5
+    assert_select "form[action=?]", battle_completion_path, count: 0
+    # Per-item AP chips remain; batch reward footer is gone.
+    assert_match(/\+#{GameRules::BATTLE_TODO_LP}/, response.body)
   end
 end

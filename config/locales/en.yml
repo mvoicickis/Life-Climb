@@ -66,6 +66,8 @@ en:
     battle_done_summary:
       one: "%{count} won today"
       other: "%{count} won today"
+    battle_next_kicker: "Nice — keep the climb moving."
+    battle_next_coaching: "One quick check below keeps your mountain honest."
     tomorrow_set: "Tomorrow’s first battle is set — “%{title}”"
     next_battle_set: "Next battle is set for %{date} — “%{title}”"
     strategy_handoff:

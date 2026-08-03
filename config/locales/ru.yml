@@ -183,6 +183,8 @@ ru:
       final: "Финальный подъём"
       summit: "Вершина достигнута"
     battle_ready_count: "%{open} / %{total} битв готовы"
+    battle_next_kicker: "Отлично — продолжай подъём."
+    battle_next_coaching: "Один быстрый вопрос ниже держит гору честной."
   climb:
     streak:
       chip: "%{count} дн."

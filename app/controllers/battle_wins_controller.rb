@@ -36,16 +36,20 @@ class BattleWinsController < ApplicationController
 
     flash[:ap_gained] = amount
     flash[:battle_celebrate] = true
-    flash[:climb_boss] = true if pb.new_record || streak.earned_freeze
-    goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
-    flash[:climb_reward] = Climb::Reward.for_battle(
-      user: current_user,
-      awarded: amount,
-      goal: goal,
-      streak_days: streak.days,
-      personal_best: pb.new_record,
-      earned_freeze: streak.earned_freeze
-    )
+    # Ordinary Mountain battle wins stay light; Climb Reward is for milestones only.
+    if pb.new_record || streak.earned_freeze
+      flash[:climb_boss] = true
+      goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      flash[:climb_reward] = Climb::Reward.for_battle(
+        user: current_user,
+        awarded: amount,
+        goal: goal,
+        streak_days: streak.days,
+        personal_best: pb.new_record,
+        earned_freeze: streak.earned_freeze,
+        boss: true
+      )
+    end
 
     redirect_to mountain_return_path(journey, battle),
                 notice: I18n.t("battle.completed_notice", lp: amount),
