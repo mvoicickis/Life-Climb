@@ -15,6 +15,7 @@ class DailyTodosController < ApplicationController
     todo = current_user.daily_todos.find(params[:id])
     if todo.completed?
       ActiveRecord::Base.transaction do
+        Strategy::Quantity::Unlog.call(daily_todo: todo)
         todo.update!(completed_at: nil)
         # Daily templates stay open; only one-time goals need reopen.
         todo.strategy_goal&.reopen! unless todo.strategy_goal&.repeat_daily?

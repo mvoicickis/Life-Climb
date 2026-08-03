@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_110323) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_151227) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -294,6 +294,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_110323) do
   create_table "strategy_goals", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.decimal "current_amount", precision: 12, scale: 2, default: "0.0", null: false
     t.text "description"
     t.date "due_on"
     t.string "horizon", null: false
@@ -303,7 +304,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_110323) do
     t.integer "position", default: 0, null: false
     t.string "repeat", default: "none", null: false
     t.date "scheduled_on"
+    t.decimal "target_amount", precision: 12, scale: 2
     t.string "title", null: false
+    t.string "unit"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
@@ -326,6 +329,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_110323) do
     t.integer "user_id", null: false
     t.index ["source_type", "source_id"], name: "index_strategy_point_ledgers_on_source_type_and_source_id"
     t.index ["user_id"], name: "index_strategy_point_ledgers_on_user_id"
+  end
+
+  create_table "strategy_quantity_logs", force: :cascade do |t|
+    t.decimal "amount", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.integer "daily_todo_id"
+    t.date "logged_on", null: false
+    t.integer "source_day_id"
+    t.integer "strategy_goal_id", null: false
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["daily_todo_id"], name: "index_strategy_quantity_logs_on_daily_todo_id"
+    t.index ["source_day_id"], name: "index_strategy_quantity_logs_on_source_day_id"
+    t.index ["strategy_goal_id", "logged_on"], name: "index_strategy_quantity_logs_on_strategy_goal_id_and_logged_on"
+    t.index ["strategy_goal_id"], name: "index_strategy_quantity_logs_on_strategy_goal_id"
+    t.index ["user_id", "logged_on"], name: "index_strategy_quantity_logs_on_user_id_and_logged_on"
+    t.index ["user_id"], name: "index_strategy_quantity_logs_on_user_id"
   end
 
   create_table "today_actions", force: :cascade do |t|
@@ -407,6 +428,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_110323) do
   add_foreign_key "strategy_goals", "strategy_goals", column: "parent_id"
   add_foreign_key "strategy_goals", "users"
   add_foreign_key "strategy_point_ledgers", "users"
+  add_foreign_key "strategy_quantity_logs", "daily_todos"
+  add_foreign_key "strategy_quantity_logs", "strategy_goals"
+  add_foreign_key "strategy_quantity_logs", "strategy_goals", column: "source_day_id"
+  add_foreign_key "strategy_quantity_logs", "users"
   add_foreign_key "today_actions", "buildings"
   add_foreign_key "today_actions", "users"
   add_foreign_key "users", "buildings", column: "focus_building_id"

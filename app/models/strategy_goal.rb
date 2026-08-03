@@ -25,12 +25,15 @@ class StrategyGoal < ApplicationRecord
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
   has_many :practice_tasks, dependent: :destroy
   has_many :daily_todos, dependent: :nullify
+  has_many :strategy_quantity_logs, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KINDS + LEGACY_KIND.keys }
   validates :repeat, presence: true, inclusion: { in: REPEAT_KINDS }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
+  validates :unit, length: { maximum: 40 }, allow_blank: true
   validate :scheduled_on_required_for_day
   validate :repeat_allowed_for_kind
   validate :due_on_rules
@@ -40,9 +43,11 @@ class StrategyGoal < ApplicationRecord
   validate :child_fits_parent_window
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
+  validate :quantity_target_rules
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
+  before_validation :normalize_quantity_fields
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -115,6 +120,23 @@ class StrategyGoal < ApplicationRecord
   # Nested leaf camp — the layer that holds daily practices.
   def nested_leaf_camp?
     project? && parent&.project? && leaf_checkpoint?
+  end
+
+  # Path-level project with a numeric target (pages, €, emails, …).
+  def quantified?
+    path_level_camp? && target_amount.present? && target_amount.to_d.positive?
+  end
+
+  # Walk up from a day/battle (or nested camp) to the quantified path-level project.
+  def quantified_path_project
+    return self if quantified?
+
+    node = self
+    while node
+      return node if node.quantified?
+      node = node.parent
+    end
+    nil
   end
 
   def split_eligible?
@@ -193,6 +215,34 @@ class StrategyGoal < ApplicationRecord
     value = "none" unless day?
     value = "none" unless REPEAT_KINDS.include?(value)
     self.repeat = value
+  end
+
+  def normalize_quantity_fields
+    self.unit = unit.to_s.strip.presence
+    self.current_amount = 0 if current_amount.nil?
+    return if target_amount.present?
+
+    self.unit = nil
+  end
+
+  def quantity_target_rules
+    if target_amount.blank?
+      errors.add(:unit, :invalid) if unit.present?
+      return
+    end
+
+    unless project?
+      errors.add(:target_amount, :invalid)
+      return
+    end
+
+    unless path_level_camp?
+      errors.add(:target_amount, :invalid)
+      return
+    end
+
+    errors.add(:target_amount, :greater_than, count: 0) unless target_amount.to_d.positive?
+    errors.add(:unit, :blank) if unit.blank?
   end
 
   def assign_goal_due_on
