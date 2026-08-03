@@ -1024,6 +1024,12 @@
     --lp-dawn-to: #0b0f14;
     --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
     --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+    --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
+    --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
+    --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
+    --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
+    --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
+    --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
     margin: 0;
     background: var(--lp-paper);
     color: var(--lp-ink);
@@ -3187,6 +3193,13 @@
   --rpg-blue: #3b82f6;
   --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+  /* Fluid type scale — viewport-responsive; pair with line-clamp for long names */
+  --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
+  --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
+  --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
+  --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
+  --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
+  --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
 }
 
 .lp-game {
@@ -17724,7 +17737,8 @@ a.lp-rpg-practice-cat {
   flex-direction: column;
   gap: 0.65rem;
   width: 12.5rem; /* room for longer section names */
-  min-height: 7rem;
+  /* Tall enough for icon row + 2-line title + meter + status without clipping. */
+  min-height: 7.75rem;
   padding: 0.875rem;
   border-radius: 0.75rem;
   border: 1.5px solid #2f9dab;
@@ -17747,7 +17761,8 @@ a.lp-rpg-practice-cat {
 }
 .lp-rpg-section-card__top {
   display: flex;
-  align-items: center;
+  /* flex-start so a 2-line title can grow; center was collapsing clamp to ~1 line. */
+  align-items: flex-start;
   gap: 0.35rem;
   min-width: 0;
 }
@@ -17787,7 +17802,8 @@ a.lp-rpg-section-card__link,
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
-  align-items: center;
+  /* Top-align icon/badge so title line-clamp can use its full 2-line height. */
+  align-items: flex-start;
   gap: 0.5rem;
   text-decoration: none;
   color: inherit;
@@ -17796,6 +17812,7 @@ a.lp-rpg-section-card__link,
   flex: 0 0 auto;
   width: 2.125rem;
   height: 2.125rem;
+  margin-top: 0.05rem;
   border-radius: 0.5rem;
   background: #1c2b1c;
   border: 1px solid #3f7a3f;
@@ -17818,8 +17835,9 @@ a.lp-rpg-section-card__link,
 }
 .lp-rpg-section-card__title {
   flex: 1 1 auto;
+  align-self: stretch;
   min-width: 0;
-  font-size: 0.94rem;
+  font-size: var(--lp-type-ui-md);
   font-weight: 700;
   color: #f2efe6;
   line-height: 1.25;
@@ -17831,11 +17849,13 @@ a.lp-rpg-section-card__link,
   text-overflow: ellipsis;
   white-space: normal;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .lp-rpg-section-card__badge {
   flex: 0 0 auto;
   width: 1.375rem;
   height: 1.375rem;
+  margin-top: 0.2rem;
   border-radius: 999px;
   background: #2f6b2f;
   color: #d9f7d9;
@@ -17932,7 +17952,7 @@ a.lp-rpg-section-card__footer-link,
 }
 .lp-rpg-sections__new {
   width: 12.5rem;
-  min-height: 7rem;
+  min-height: 7.75rem;
   margin: 0;
 }
 .lp-rpg-sections__new > summary.lp-rpg-sections__new-btn {
@@ -17941,7 +17961,7 @@ a.lp-rpg-section-card__footer-link,
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 7rem;
+  min-height: 7.75rem;
   padding: 0.875rem;
   border-radius: 0.75rem;
   border: 1.5px dashed #6a6455;
@@ -18043,20 +18063,20 @@ a.lp-rpg-layer-card {
   max-height: none;
 }
 .lp-rpg.is-focus-phase .lp-rpg-section-card {
-  min-height: 7rem;
+  min-height: 7.75rem;
   width: 12.5rem;
 }
 @media (max-width: 420px) {
   .lp-rpg-section-card,
   .lp-rpg.is-focus-phase .lp-rpg-section-card {
     width: min(12.5rem, 72vw);
-    min-height: 7rem;
+    min-height: 7.75rem;
     padding: 0.75rem;
   }
   .lp-rpg-sections__new,
   .lp-rpg-sections__new > summary.lp-rpg-sections__new-btn {
     width: min(12.5rem, 72vw);
-    min-height: 7rem;
+    min-height: 7.75rem;
   }
   .lp-rpg-layer-card.lp-rpg-practice-cat {
     min-height: 3.7rem;
