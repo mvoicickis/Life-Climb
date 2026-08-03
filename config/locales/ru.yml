@@ -83,6 +83,8 @@ ru:
         camp3: "Лагерь 3"
         camp4: "Лагерь 4"
         summit: "Вершина"
+    help:
+      cta_onboarding: "Помоги уточнить эту гору"
   life_area_catalog:
     self:
       name: "Себя"
@@ -521,3 +523,13 @@ ru:
     welcome_duration: "Займёт около 2 минут"
     start_journey: "Посмотреть мой первый шаг"
     welcome: "Твоё приключение готово."
+    back: "‹ Назад"
+    step_progress: "Шаг %{current} из %{total}"
+    mountain_kicker: "Выбери свою гору"
+    mountain_title: "Какая одна цель, над которой ты работаешь?"
+    mountain_lead: "Напиши простыми словами. Мы разобьём её на следующий шаг на сегодня."
+    mountain_field_label: "Твоя цель"
+    mountain_placeholder: "Стать лицензированным сантехником"
+    mountain_example: "Примеры: Стать лицензированным сантехником · Получить ученичество · Сдать экзамен · Выбраться из долгов"
+    need_mountain: "Назови цель, которой хочешь достичь."
+    continue: "Продолжить"

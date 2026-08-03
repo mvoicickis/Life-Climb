@@ -83,6 +83,8 @@ es:
         camp3: "Campamento 3"
         camp4: "Campamento 4"
         summit: "Cumbre"
+    help:
+      cta_onboarding: "Ayúdame a aclarar esta montaña"
   life_area_catalog:
     self:
       name: "Yo"
@@ -515,3 +517,13 @@ es:
     welcome_duration: "Toma unos 2 minutos"
     start_journey: "Ver mi primer paso"
     welcome: "Tu aventura está lista."
+    back: "‹ Atrás"
+    step_progress: "Paso %{current} de %{total}"
+    mountain_kicker: "Elige tu montaña"
+    mountain_title: "¿Cuál es una meta en la que estás trabajando?"
+    mountain_lead: "Escríbela con palabras sencillas. La convertiremos en el siguiente paso de hoy."
+    mountain_field_label: "Tu meta"
+    mountain_placeholder: "Convertirme en fontanero con licencia"
+    mountain_example: "Ejemplos: Convertirme en fontanero con licencia · Conseguir un aprendizaje · Aprobar el examen del oficio · Salir de deudas"
+    need_mountain: "Nombra la meta que quieres alcanzar."
+    continue: "Continuar"

@@ -83,6 +83,8 @@ lv:
         camp3: "3. nometne"
         camp4: "4. nometne"
         summit: "Virsotne"
+    help:
+      cta_onboarding: "Palīdzi man noskaidrot šo kalnu"
   life_area_catalog:
     self:
       name: "Es"
@@ -515,3 +517,13 @@ lv:
     welcome_duration: "Aizņems apmēram 2 minūtes"
     start_journey: "Skatīt manu pirmo soli"
     welcome: "Tavs piedzīvojums ir gatavs."
+    back: "‹ Atpakaļ"
+    step_progress: "%{current}. solis no %{total}"
+    mountain_kicker: "Izvēlies savu kalnu"
+    mountain_title: "Kāds ir viens mērķis, pie kura tu strādā?"
+    mountain_lead: "Uzraksti to vienkāršiem vārdiem. Mēs to sadalīsim šodienas nākamajā solī."
+    mountain_field_label: "Tavs mērķis"
+    mountain_placeholder: "Kļūt par licencētu santehniķi"
+    mountain_example: "Piemēri: Kļūt par licencētu santehniķi · Dabūt mācekļa vietu · Nokārtot kvalifikācijas eksāmenu · Atbrīvoties no parādiem"
+    need_mountain: "Nosauc mērķi, ko vēlies sasniegt."
+    continue: "Turpināt"

@@ -83,6 +83,8 @@ de:
         camp3: "Lager 3"
         camp4: "Lager 4"
         summit: "Gipfel"
+    help:
+      cta_onboarding: "Hilf mir, diesen Berg klarer zu machen"
   life_area_catalog:
     self:
       name: "Selbst"
@@ -515,3 +517,13 @@ de:
     welcome_duration: "Dauert etwa 2 Minuten"
     start_journey: "Meinen ersten Schritt sehen"
     welcome: "Dein Abenteuer ist bereit."
+    back: "‹ Zurück"
+    step_progress: "Schritt %{current} von %{total}"
+    mountain_kicker: "Wähle deinen Berg"
+    mountain_title: "An welchem Ziel arbeitest du gerade?"
+    mountain_lead: "Schreib es in einfachen Worten. Wir zerlegen es in den nächsten Schritt für heute."
+    mountain_field_label: "Dein Ziel"
+    mountain_placeholder: "Klempner mit Meisterbrief werden"
+    mountain_example: "Beispiele: Klempner mit Meisterbrief werden · Eine Ausbildung finden · Die Prüfung bestehen · Schulden abbauen"
+    need_mountain: "Nenne das Ziel, das du erreichen willst."
+    continue: "Weiter"
