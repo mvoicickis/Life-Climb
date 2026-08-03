@@ -110,6 +110,8 @@ es:
       human_next: "Márcala abajo cuando termines."
     quantity:
       track: "¿Seguirlo como un número?"
+      track_objective: "¿Seguir progreso (%{unit})?"
+      track_objective_badge: "+%{unit}"
       target_label: "Meta"
       target_placeholder: "700"
       unit_label: "Unidad"

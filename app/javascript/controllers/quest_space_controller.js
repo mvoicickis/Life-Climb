@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Board ↔ slide-in quest detail for Mountain Quest Space.
 export default class extends Controller {
-  static targets = ["board", "detail", "undoBar", "undoText", "addInput"]
+  static targets = ["board", "detail", "undoBar", "undoText", "addInput", "addTrack"]
   static values = {
     openId: Number,
     createUrl: String
@@ -82,8 +82,24 @@ export default class extends Controller {
     field.value = title
     form.appendChild(field)
 
+    if (this.hasAddTrackTarget && this.addTrackTarget.checked) {
+      const track = document.createElement("input")
+      track.type = "hidden"
+      track.name = "track_quantity"
+      track.value = "1"
+      form.appendChild(track)
+    }
+
     document.body.appendChild(form)
     form.requestSubmit()
+  }
+
+  saveTrackQuantity(event) {
+    const input = event.currentTarget
+    const url = input.dataset.updateUrl
+    if (!url) return
+
+    this.postForm(url, { track_quantity: input.checked ? "1" : "0" }, "patch")
   }
 
   saveTitle(event) {

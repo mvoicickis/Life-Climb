@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_151227) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_190000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -262,6 +262,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_151227) do
     t.integer "position", default: 0, null: false
     t.integer "strategy_goal_id", null: false
     t.string "title", null: false
+    t.boolean "track_quantity", default: false, null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["strategy_goal_id", "position"], name: "index_practice_tasks_on_strategy_goal_id_and_position"
@@ -336,12 +337,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_151227) do
     t.datetime "created_at", null: false
     t.integer "daily_todo_id"
     t.date "logged_on", null: false
+    t.integer "practice_task_id"
     t.integer "source_day_id"
     t.integer "strategy_goal_id", null: false
     t.string "unit", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["daily_todo_id"], name: "index_strategy_quantity_logs_on_daily_todo_id"
+    t.index ["practice_task_id"], name: "index_strategy_quantity_logs_on_practice_task_id"
+    t.index ["practice_task_id"], name: "index_strategy_quantity_logs_on_practice_task_id_unique", unique: true, where: "practice_task_id IS NOT NULL"
     t.index ["source_day_id"], name: "index_strategy_quantity_logs_on_source_day_id"
     t.index ["strategy_goal_id", "logged_on"], name: "index_strategy_quantity_logs_on_strategy_goal_id_and_logged_on"
     t.index ["strategy_goal_id"], name: "index_strategy_quantity_logs_on_strategy_goal_id"
@@ -429,6 +433,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_151227) do
   add_foreign_key "strategy_goals", "users"
   add_foreign_key "strategy_point_ledgers", "users"
   add_foreign_key "strategy_quantity_logs", "daily_todos"
+  add_foreign_key "strategy_quantity_logs", "practice_tasks"
   add_foreign_key "strategy_quantity_logs", "strategy_goals"
   add_foreign_key "strategy_quantity_logs", "strategy_goals", column: "source_day_id"
   add_foreign_key "strategy_quantity_logs", "users"

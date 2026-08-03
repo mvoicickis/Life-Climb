@@ -17,9 +17,19 @@ module Battles
       return false unless @todo.completed?
 
       ActiveRecord::Base.transaction do
-        Strategy::Quantity::Unlog.call(daily_todo: @todo)
-        @todo.update!(completed_at: nil)
         day = @todo.strategy_goal
+        if day&.practice_tasks&.any?
+          # Shell undo resets everything. Objective undo already reversed its own log.
+          if @reset_objectives
+            day.practice_tasks.find_each do |task|
+              Strategy::Quantity::Unlog.call(practice_task: task)
+            end
+          end
+        else
+          Strategy::Quantity::Unlog.call(daily_todo: @todo)
+        end
+
+        @todo.update!(completed_at: nil)
         day&.reopen! unless day&.repeat_daily?
         if @reset_objectives && day&.practice_tasks&.any?
           day.practice_tasks.find_each(&:reopen!)

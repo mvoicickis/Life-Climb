@@ -4,23 +4,25 @@ module Strategy
   module Quantity
     # Append an amount to a quantified path-level project and refresh mountain %.
     class Log
-      def self.call(project:, amount:, user:, source_day: nil, daily_todo: nil, logged_on: Date.current)
+      def self.call(project:, amount:, user:, source_day: nil, daily_todo: nil, practice_task: nil, logged_on: Date.current)
         new(
           project: project,
           amount: amount,
           user: user,
           source_day: source_day,
           daily_todo: daily_todo,
+          practice_task: practice_task,
           logged_on: logged_on
         ).call
       end
 
-      def initialize(project:, amount:, user:, source_day:, daily_todo:, logged_on:)
+      def initialize(project:, amount:, user:, source_day:, daily_todo:, practice_task:, logged_on:)
         @project = project
         @amount = BigDecimal(amount.to_s)
         @user = user
         @source_day = source_day
         @daily_todo = daily_todo
+        @practice_task = practice_task
         @logged_on = logged_on
       end
 
@@ -35,14 +37,14 @@ module Strategy
             strategy_goal: @project,
             source_day: @source_day,
             daily_todo: @daily_todo,
+            practice_task: @practice_task,
             amount: @amount,
             unit: @project.unit,
             logged_on: @logged_on
           )
 
           new_total = @project.current_amount.to_d + @amount
-          attrs = { current_amount: new_total }
-          @project.update!(attrs)
+          @project.update!(current_amount: new_total)
 
           if new_total >= @project.target_amount.to_d
             @project.complete!

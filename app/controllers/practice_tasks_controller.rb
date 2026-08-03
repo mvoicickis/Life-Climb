@@ -16,14 +16,14 @@ class PracticeTasksController < ApplicationController
       task = practice.practice_tasks.new(
         user: current_user,
         title: title,
-        position: position
+        position: position,
+        track_quantity: track_quantity_param_for(practice)
       )
       task.save!
       task.complete! if ActiveModel::Type::Boolean.new.cast(params[:completed])
     end
 
     Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
-    # Creating still happens on Mountain; stay there for planning.
     redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
@@ -37,20 +37,25 @@ class PracticeTasksController < ApplicationController
     task = current_user.practice_tasks.find(params[:id])
     practice = task.strategy_goal
 
-    if params.key?(:title)
-      task.update!(title: params.require(:title).to_s.strip)
-      redirect_to mountain_focus_path(practice), status: :see_other
-    elsif params.key?(:completed)
+    if params.key?(:completed)
       completing = ActiveModel::Type::Boolean.new.cast(params[:completed])
       if completing
-        task.complete!
-        finish_checklist_day_if_ready!(practice)
+        unless complete_objective!(task, practice)
+          return
+        end
       else
+        Strategy::Quantity::Unlog.call(practice_task: task)
         task.reopen!
         reopen_checklist_day_if_needed!(practice)
       end
       Journeys::SyncClimbFromToday.call(user: current_user)
       redirect_to dashboard_path, status: :see_other
+    elsif params.key?(:title) || params.key?(:track_quantity)
+      attrs = {}
+      attrs[:title] = params.require(:title).to_s.strip if params.key?(:title)
+      attrs[:track_quantity] = track_quantity_param_for(practice) if params.key?(:track_quantity)
+      task.update!(attrs)
+      redirect_to mountain_focus_path(practice), status: :see_other
     else
       redirect_to dashboard_path, status: :see_other
     end
@@ -76,6 +81,31 @@ class PracticeTasksController < ApplicationController
 
   private
 
+  def complete_objective!(task, practice)
+    project = practice.quantified_path_project
+    if task.tracks_quantity?
+      unless valid_quantity_amount?(params[:amount])
+        redirect_to dashboard_path,
+                    alert: t("strategy.quantity.amount_required", unit: project&.unit),
+                    status: :see_other
+        return false
+      end
+
+      Strategy::Quantity::Log.call(
+        project: project,
+        amount: params[:amount],
+        user: current_user,
+        source_day: practice,
+        daily_todo: linked_today_todo(practice),
+        practice_task: task
+      )
+    end
+
+    task.complete!
+    finish_checklist_day_if_ready!(practice)
+    true
+  end
+
   def finish_checklist_day_if_ready!(practice)
     return unless practice.all_objectives_complete?
 
@@ -83,9 +113,7 @@ class PracticeTasksController < ApplicationController
     todo = linked_today_todo(practice)
     return if todo.blank? || todo.completed?
 
-    # Quantified days need the amount dialog on the shell checkbox — don't auto-finish.
-    return if practice.quantified_path_project.present?
-
+    # Checklist quantity (if any) already logged on opted-in objectives — no second prompt.
     result = Battles::CompleteTodo.call(todo: todo, user: current_user, session: session)
     flash[:ap_gained] = todo.lp_reward.to_i
     flash[:battle_celebrate] = true
@@ -100,8 +128,21 @@ class PracticeTasksController < ApplicationController
     todo = linked_today_todo(practice)
     return if todo.blank? || !todo.completed?
 
-    # Keep sibling objectives as-is; only reopen the day shell + quantity log.
     Battles::UncompleteTodo.call(todo: todo, user: current_user, reset_objectives: false)
+  end
+
+  def track_quantity_param_for(practice)
+    return false if practice.quantified_path_project.blank?
+
+    ActiveModel::Type::Boolean.new.cast(params[:track_quantity])
+  end
+
+  def valid_quantity_amount?(raw)
+    return false if raw.blank?
+
+    BigDecimal(raw.to_s).positive?
+  rescue ArgumentError
+    false
   end
 
   def linked_today_todo(practice)

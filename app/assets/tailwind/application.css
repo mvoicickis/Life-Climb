@@ -5045,6 +5045,15 @@
   font-weight: 650;
   color: var(--lp-ink, #f3f6f8);
   min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.lp-dash-checklist__obj-track {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--lp-muted, #9aa6b2);
 }
 
 .lp-dash-checklist__obj.is-done .lp-dash-checklist__obj-name {
@@ -20246,8 +20255,14 @@ a.lp-qs-card:active {
   background: var(--qs-success);
   border-color: var(--qs-success);
 }
-.lp-qs-obj__text {
+.lp-qs-obj__main {
   flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.lp-qs-obj__text {
+  width: 100%;
   min-width: 0;
   font-size: 0.92rem;
   outline: none;
@@ -20259,6 +20274,21 @@ a.lp-qs-card:active {
 .lp-qs-obj__text.is-done {
   color: var(--qs-ink-dim);
   text-decoration: line-through;
+}
+.lp-qs-obj__track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--qs-ink-dim);
+  cursor: pointer;
+}
+.lp-qs-obj__track-check {
+  width: 0.95rem;
+  height: 0.95rem;
+  accent-color: var(--qs-gold, #d4a017);
 }
 .lp-qs-obj__trash {
   width: 2rem;
@@ -20297,9 +20327,17 @@ a.lp-qs-card:active {
   color: var(--qs-gold);
   font-size: 1rem;
   font-weight: 700;
+  align-self: flex-start;
+  margin-top: 0.55rem;
+}
+.lp-qs-detail__add-fields {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
 }
 .lp-qs-detail__add-input {
-  flex: 1 1 auto;
+  width: 100%;
   min-width: 0;
   background: transparent;
   border: none;
@@ -20310,6 +20348,21 @@ a.lp-qs-card:active {
 }
 .lp-qs-detail__add-input::placeholder {
   color: var(--qs-ink-dim);
+}
+.lp-qs-detail__add-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--qs-ink-dim);
+  cursor: pointer;
+}
+.lp-qs-detail__add-track-check {
+  width: 0.95rem;
+  height: 0.95rem;
+  accent-color: var(--qs-gold, #d4a017);
 }
 .lp-qs-detail__add-btn {
   flex: 0 0 auto;

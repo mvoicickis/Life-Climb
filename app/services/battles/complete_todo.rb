@@ -19,7 +19,10 @@ module Battles
     def call
       raise ArgumentError, "Todo already completed" if @todo.completed?
 
-      project = @todo.strategy_goal&.quantified_path_project
+      day = @todo.strategy_goal
+      checklist = day&.practice_tasks&.any?
+      # Checklist days log quantity on opted-in objectives only — never again at day finish.
+      project = checklist ? nil : day&.quantified_path_project
       if project
         raise ArgumentError, "Amount required" unless valid_amount?(@amount)
       end
@@ -30,7 +33,7 @@ module Battles
             project: project,
             amount: @amount,
             user: @user,
-            source_day: @todo.strategy_goal,
+            source_day: day,
             daily_todo: @todo
           )
         end
@@ -49,7 +52,7 @@ module Battles
       pb = Climb::PersonalBest.record!(user: @user, awarded: @todo.lp_reward.to_i)
       Strategy::ProjectCheckQueue.enqueue(
         session: @session,
-        project_ids: Strategy::ProjectCheckQueue.from_battles([ @todo.strategy_goal ].compact)
+        project_ids: Strategy::ProjectCheckQueue.from_battles([ day ].compact)
       )
 
       Result.new(streak: streak, personal_best_new: pb.new_record)
