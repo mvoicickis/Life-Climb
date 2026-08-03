@@ -110,6 +110,8 @@ lv:
       human_next: "Atzīmē to zemāk, kad esi gatavs."
     quantity:
       track: "Sekot kā skaitlim?"
+      track_objective: "Sekot progresam (%{unit})?"
+      track_objective_badge: "+%{unit}"
       target_label: "Mērķis"
       target_placeholder: "700"
       unit_label: "Vienība"

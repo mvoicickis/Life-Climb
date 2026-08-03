@@ -110,6 +110,8 @@ de:
       human_next: "Hake ihn unten ab, wenn du fertig bist."
     quantity:
       track: "Als Zahl verfolgen?"
+      track_objective: "Fortschritt verfolgen (%{unit})?"
+      track_objective_badge: "+%{unit}"
       target_label: "Ziel"
       target_placeholder: "700"
       unit_label: "Einheit"

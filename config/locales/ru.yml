@@ -110,6 +110,8 @@ ru:
       human_next: "Отметь её ниже, когда закончишь."
     quantity:
       track: "Отслеживать как число?"
+      track_objective: "Следить за прогрессом (%{unit})?"
+      track_objective_badge: "+%{unit}"
       target_label: "Цель"
       target_placeholder: "700"
       unit_label: "Единица"

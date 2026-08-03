@@ -2,20 +2,25 @@
 
 module Strategy
   module Quantity
-    # Reverse a quantity log tied to a completed battle (undo).
+    # Reverse a quantity log (battle via daily_todo, or objective via practice_task).
     class Unlog
-      def self.call(daily_todo:)
-        new(daily_todo: daily_todo).call
+      def self.call(daily_todo: nil, practice_task: nil)
+        new(daily_todo: daily_todo, practice_task: practice_task).call
       end
 
-      def initialize(daily_todo:)
+      def initialize(daily_todo:, practice_task:)
         @daily_todo = daily_todo
+        @practice_task = practice_task
       end
 
       def call
-        return if @daily_todo.blank?
-
-        entry = StrategyQuantityLog.find_by(daily_todo_id: @daily_todo.id)
+        entry =
+          if @practice_task.present?
+            StrategyQuantityLog.find_by(practice_task_id: @practice_task.id)
+          elsif @daily_todo.present?
+            # Plain day battles only — ignore objective-scoped rows tied to the same todo.
+            StrategyQuantityLog.where(daily_todo_id: @daily_todo.id, practice_task_id: nil).first
+          end
         return if entry.blank?
 
         project = entry.strategy_goal

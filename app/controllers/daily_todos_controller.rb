@@ -22,7 +22,8 @@ class DailyTodosController < ApplicationController
         return
       end
 
-      project = day&.quantified_path_project
+      checklist = day&.practice_tasks&.any?
+      project = checklist ? nil : day&.quantified_path_project
       if project && !valid_quantity_amount?(params[:amount])
         redirect_to dashboard_path,
                     alert: t("strategy.quantity.amount_required", unit: project.unit)

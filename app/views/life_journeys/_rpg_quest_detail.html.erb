@@ -8,6 +8,7 @@
 <% done = tasks.count(&:completed?) %>
 <% total = tasks.size %>
 <% create_url = host ? strategy_goal_practice_tasks_path(host) : nil %>
+<% qty_project = host&.quantified_path_project %>
 <% board_path = life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: folder.parent_id || folder.id) %>
 
 <div class="lp-qs-detail__head">
@@ -43,14 +44,28 @@
               aria-label="<%= task.completed? ? t('strategy.rpg.objective_done_status', title: task.title) : t('strategy.rpg.objective_open_status', title: task.title) %>">
           <%= "✓" if task.completed? %>
         </span>
-        <input type="text"
-               class="lp-qs-obj__text <%= 'is-done' if task.completed? %>"
-               value="<%= task.title %>"
-               maxlength="120"
-               data-update-url="<%= practice_task_path(task) %>"
-               data-original-title="<%= task.title %>"
-               data-action="keydown->quest-space#saveTitle blur->quest-space#saveTitle"
-               aria-label="<%= t('strategy.rpg.objective_name') %>">
+        <div class="lp-qs-obj__main">
+          <input type="text"
+                 class="lp-qs-obj__text <%= 'is-done' if task.completed? %>"
+                 value="<%= task.title %>"
+                 maxlength="120"
+                 data-update-url="<%= practice_task_path(task) %>"
+                 data-original-title="<%= task.title %>"
+                 data-action="keydown->quest-space#saveTitle blur->quest-space#saveTitle"
+                 aria-label="<%= t('strategy.rpg.objective_name') %>">
+          <% if qty_project %>
+            <label class="lp-qs-obj__track" for="qs-track-<%= task.id %>">
+              <%= check_box_tag "track_quantity_#{task.id}", "1", task.track_quantity?,
+                    id: "qs-track-#{task.id}",
+                    class: "lp-qs-obj__track-check",
+                    data: {
+                      update_url: practice_task_path(task),
+                      action: "change->quest-space#saveTrackQuantity"
+                    } %>
+              <span><%= t("strategy.quantity.track_objective", unit: qty_project.unit) %></span>
+            </label>
+          <% end %>
+        </div>
         <button type="button"
                 class="lp-qs-obj__trash"
                 data-action="click->quest-space#deleteObjective"
@@ -64,15 +79,27 @@
   <div class="lp-qs-detail__add-wrap">
     <span class="lp-qs-detail__add-plus" aria-hidden="true">+</span>
     <% if create_url %>
-      <input type="text"
-             class="lp-qs-detail__add-input"
-             placeholder="<%= t('strategy.rpg.add_objective_placeholder') %>"
-             maxlength="120"
-             autocomplete="off"
-             data-quest-space-target="addInput"
-             data-create-url="<%= create_url %>"
-             data-action="keydown->quest-space#addObjective"
-             aria-label="<%= t('strategy.rpg.add_objective') %>">
+      <div class="lp-qs-detail__add-fields">
+        <input type="text"
+               class="lp-qs-detail__add-input"
+               placeholder="<%= t('strategy.rpg.add_objective_placeholder') %>"
+               maxlength="120"
+               autocomplete="off"
+               data-quest-space-target="addInput"
+               data-create-url="<%= create_url %>"
+               data-action="keydown->quest-space#addObjective"
+               aria-label="<%= t('strategy.rpg.add_objective') %>">
+        <% if qty_project %>
+          <label class="lp-qs-detail__add-track" for="qs-add-track">
+            <input type="checkbox"
+                   id="qs-add-track"
+                   class="lp-qs-detail__add-track-check"
+                   data-quest-space-target="addTrack"
+                   value="1">
+            <span><%= t("strategy.quantity.track_objective", unit: qty_project.unit) %></span>
+          </label>
+        <% end %>
+      </div>
       <button type="button"
               class="lp-qs-detail__add-btn"
               data-action="click->quest-space#addObjective"

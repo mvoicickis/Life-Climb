@@ -609,6 +609,8 @@ en:
       human_next: "Check it off below when you’re done."
     quantity:
       track: "Track this as a number?"
+      track_objective: "Track progress (%{unit})?"
+      track_objective_badge: "+%{unit}"
       target_label: "Target"
       target_placeholder: "700"
       unit_label: "Unit"

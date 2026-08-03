@@ -12,10 +12,7 @@
 <li class="lp-dash-battle__item lp-dash-checklist <%= 'is-done' if row_done %>"
     data-battle-day-target="item"
     data-open="<%= row_done ? 'false' : 'true' %>"
-    data-lp="<%= todo.lp_reward %>"
-    <% if shell_ready && qty_project && !row_done %>
-      data-controller="quantity-complete"
-    <% end %>>
+    data-lp="<%= todo.lp_reward %>">
   <div class="lp-dash-checklist__head">
     <% if row_done %>
       <%= button_to complete_daily_todo_path(todo),
@@ -25,62 +22,12 @@
         <span aria-hidden="true"></span>
       <% end %>
     <% elsif shell_ready %>
+      <%# Checklist quantity is logged on opted-in objectives — shell is AP-only. %>
       <%= button_to complete_daily_todo_path(todo),
             method: :post,
-            form: (qty_project ? {
-              data: {
-                quantity_complete_target: "form",
-                action: "submit->quantity-complete#intercept"
-              }
-            } : {}),
             class: "lp-dash-check",
             aria: { label: "Complete #{todo.title}" } do %>
         <span aria-hidden="true"></span>
-      <% end %>
-      <% if qty_project %>
-        <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
-                id="qty-complete-<%= todo.id %>"
-                data-quantity-complete-target="dialog"
-                data-action="click->quantity-complete#backdropClose">
-          <div class="lp-strategy-sheet__panel">
-            <header class="lp-strategy-sheet__head">
-              <p class="lp-strategy-sheet__kind"><%= todo.title %></p>
-              <h2 class="lp-strategy-sheet__title">
-                <%= t("strategy.quantity.how_many", unit: qty_project.unit) %>
-              </h2>
-              <button type="button"
-                      class="lp-strategy-sheet__close"
-                      data-action="click->quantity-complete#close"
-                      aria-label="<%= t('strategy.sheet.close') %>">×</button>
-            </header>
-            <form class="lp-strategy-sheet__form lp-quantity-complete__form"
-                  data-action="submit->quantity-complete#confirm">
-              <label class="lp-quantity-complete__field" for="qty-complete-input-<%= todo.id %>">
-                <span class="lp-quantity-complete__label"><%= qty_project.unit %></span>
-                <%= number_field_tag :dialog_amount, nil,
-                      id: "qty-complete-input-#{todo.id}",
-                      class: "lp-rpg-input lp-quantity-complete__input",
-                      min: "0.01",
-                      step: "any",
-                      inputmode: "decimal",
-                      required: true,
-                      autocomplete: "off",
-                      placeholder: "0",
-                      data: { quantity_complete_target: "amount" } %>
-              </label>
-              <div class="lp-strategy-sheet__footer is-split">
-                <button type="button"
-                        class="lp-strategy-sheet__btn is-cancel"
-                        data-action="click->quantity-complete#close">
-                  <%= t("strategy.rpg.cancel") %>
-                </button>
-                <button type="submit" class="lp-strategy-sheet__btn is-save">
-                  <%= t("strategy.quantity.log_confirm") %>
-                </button>
-              </div>
-            </form>
-          </div>
-        </dialog>
       <% end %>
     <% else %>
       <span class="lp-dash-check is-locked"
@@ -105,17 +52,77 @@
     </summary>
     <ul class="lp-dash-checklist__list">
       <% tasks.each do |task| %>
-        <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %>">
+        <% track = task.tracks_quantity? && qty_project %>
+        <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %>"
+            <% if track && !task.completed? %>
+              data-controller="quantity-complete"
+            <% end %>>
           <%= button_to practice_task_path(task),
                 method: :patch,
                 params: { completed: task.completed? ? "0" : "1" },
+                form: (track && !task.completed? ? {
+                  data: {
+                    quantity_complete_target: "form",
+                    action: "submit->quantity-complete#intercept"
+                  }
+                } : {}),
                 class: "lp-dash-check #{'is-on' if task.completed?}",
                 aria: {
                   label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}")
                 } do %>
             <span aria-hidden="true"></span>
           <% end %>
-          <span class="lp-dash-checklist__obj-name"><%= task.title %></span>
+          <% if track && !task.completed? %>
+            <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
+                    id="qty-obj-<%= task.id %>"
+                    data-quantity-complete-target="dialog"
+                    data-action="click->quantity-complete#backdropClose">
+              <div class="lp-strategy-sheet__panel">
+                <header class="lp-strategy-sheet__head">
+                  <p class="lp-strategy-sheet__kind"><%= task.title %></p>
+                  <h2 class="lp-strategy-sheet__title">
+                    <%= t("strategy.quantity.how_many", unit: qty_project.unit) %>
+                  </h2>
+                  <button type="button"
+                          class="lp-strategy-sheet__close"
+                          data-action="click->quantity-complete#close"
+                          aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                </header>
+                <form class="lp-strategy-sheet__form lp-quantity-complete__form"
+                      data-action="submit->quantity-complete#confirm">
+                  <label class="lp-quantity-complete__field" for="qty-obj-input-<%= task.id %>">
+                    <span class="lp-quantity-complete__label"><%= qty_project.unit %></span>
+                    <%= number_field_tag :dialog_amount, nil,
+                          id: "qty-obj-input-#{task.id}",
+                          class: "lp-rpg-input lp-quantity-complete__input",
+                          min: "0.01",
+                          step: "any",
+                          inputmode: "decimal",
+                          required: true,
+                          autocomplete: "off",
+                          placeholder: "0",
+                          data: { quantity_complete_target: "amount" } %>
+                  </label>
+                  <div class="lp-strategy-sheet__footer is-split">
+                    <button type="button"
+                            class="lp-strategy-sheet__btn is-cancel"
+                            data-action="click->quantity-complete#close">
+                      <%= t("strategy.rpg.cancel") %>
+                    </button>
+                    <button type="submit" class="lp-strategy-sheet__btn is-save">
+                      <%= t("strategy.quantity.log_confirm") %>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </dialog>
+          <% end %>
+          <span class="lp-dash-checklist__obj-name">
+            <%= task.title %>
+            <% if task.track_quantity? && qty_project %>
+              <em class="lp-dash-checklist__obj-track"><%= t("strategy.quantity.track_objective_badge", unit: qty_project.unit) %></em>
+            <% end %>
+          </span>
         </li>
       <% end %>
     </ul>
