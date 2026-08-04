@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_112231) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_112644) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -86,7 +86,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_112231) do
 
   create_table "feedbacks", force: :cascade do |t|
     t.text "body", null: false
+    t.string "contact_info"
     t.datetime "created_at", null: false
+    t.boolean "ok_to_contact", default: false, null: false
     t.string "page_context"
     t.integer "rating"
     t.datetime "updated_at", null: false

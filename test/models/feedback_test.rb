@@ -17,4 +17,17 @@ class FeedbackTest < ActiveSupport::TestCase
     feedback = Feedback.create!(body: "From landing", page_context: "landing", rating: 3)
     assert_nil feedback.user_id
   end
+
+  test "contact_info is cleared unless ok_to_contact" do
+    feedback = Feedback.create!(
+      body: "Please ignore this number",
+      ok_to_contact: false,
+      contact_info: "+1000000"
+    )
+    assert_equal false, feedback.ok_to_contact
+    assert_nil feedback.contact_info
+
+    feedback.update!(ok_to_contact: true, contact_info: " me@example.com ")
+    assert_equal "me@example.com", feedback.contact_info
+  end
 end

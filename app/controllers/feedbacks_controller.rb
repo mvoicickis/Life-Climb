@@ -5,7 +5,9 @@ class FeedbacksController < ApplicationController
   def new
     @feedback = Feedback.new(
       page_context: feedback_page_context,
-      rating: params[:rating]
+      rating: params[:rating],
+      ok_to_contact: false,
+      contact_info: default_contact_info
     )
   end
 
@@ -29,7 +31,13 @@ class FeedbacksController < ApplicationController
   private
 
   def feedback_params
-    params.require(:feedback).permit(:body, :rating, :page_context)
+    params.require(:feedback).permit(:body, :rating, :page_context, :ok_to_contact, :contact_info)
+  end
+
+  def default_contact_info
+    return nil unless authenticated?
+
+    current_user.email_address.to_s.presence
   end
 
   def feedback_page_context

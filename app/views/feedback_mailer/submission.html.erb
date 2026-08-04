@@ -6,6 +6,11 @@
   <% if @feedback.rating.present? %>
     <strong>Rating:</strong> <%= @feedback.rating %>/5<br>
   <% end %>
+  <% if @feedback.ok_to_contact? %>
+    <strong>OK to contact:</strong> yes — <%= @feedback.contact_info.presence || "no detail shared" %><br>
+  <% else %>
+    <strong>OK to contact:</strong> no<br>
+  <% end %>
   <strong>Sent:</strong> <%= @feedback.created_at.utc.strftime("%Y-%m-%d %H:%M UTC") %>
 </p>
 

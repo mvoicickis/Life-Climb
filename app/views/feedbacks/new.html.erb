@@ -3,6 +3,8 @@
 <% content_for :lp_hide_top_nav, true if authenticated? %>
 <%
   page_label = @feedback.page_context.presence || params[:page].presence
+  logged_in = authenticated?
+  contact_default = @feedback.contact_info.presence || (logged_in ? current_user.email_address : nil)
 %>
 
 <section class="lp-feedback" aria-labelledby="lp-feedback-heading">
@@ -15,7 +17,8 @@
     <p class="lp-feedback__subtitle"><%= t("feedback.subtitle") %></p>
   </header>
 
-  <%= form_with model: @feedback, url: feedbacks_path, class: "lp-feedback__form", data: { turbo: false } do |form| %>
+  <%= form_with model: @feedback, url: feedbacks_path, class: "lp-feedback__form",
+        data: { turbo: false, controller: "feedback-contact" } do |form| %>
     <% if @feedback.errors.any? %>
       <div class="lp-feedback__errors">
         <ul>
@@ -56,6 +59,43 @@
             maxlength: 2000,
             placeholder: t("feedback.body_placeholder"),
             class: "lp-feedback__textarea" %>
+    </div>
+
+    <div class="lp-feedback__field lp-feedback__contact" data-feedback-contact-target="wrap">
+      <label class="lp-feedback__opt-in">
+        <%= form.check_box :ok_to_contact,
+              class: "lp-feedback__checkbox",
+              data: {
+                feedback_contact_target: "optIn",
+                action: "change->feedback-contact#sync"
+              } %>
+        <span><%= t("feedback.ok_to_contact") %></span>
+      </label>
+
+      <div class="lp-feedback__contact-panel"
+           data-feedback-contact-target="panel"
+           <%= "hidden" unless @feedback.ok_to_contact? %>>
+        <% if logged_in %>
+          <%= form.label :contact_info, t("feedback.contact_logged_in_label"), class: "lp-feedback__label" %>
+          <%= form.text_field :contact_info,
+                value: contact_default,
+                maxlength: 120,
+                placeholder: t("feedback.contact_logged_in_placeholder"),
+                class: "lp-feedback__input",
+                data: {
+                  feedback_contact_target: "input",
+                  keep_default: "true"
+                } %>
+          <p class="lp-feedback__hint"><%= t("feedback.contact_logged_in_hint", email: current_user.email_address) %></p>
+        <% else %>
+          <%= form.label :contact_info, t("feedback.contact_anon_label"), class: "lp-feedback__label" %>
+          <%= form.text_field :contact_info,
+                maxlength: 120,
+                placeholder: t("feedback.contact_anon_placeholder"),
+                class: "lp-feedback__input",
+                data: { feedback_contact_target: "input" } %>
+        <% end %>
+      </div>
     </div>
 
     <%= form.submit t("feedback.submit"), class: "lp-feedback__submit" %>

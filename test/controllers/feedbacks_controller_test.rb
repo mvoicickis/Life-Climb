@@ -12,6 +12,8 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='feedback[page_context]'][value=?]", "today"
     assert_select "input[name='feedback[rating]']", count: 5
     assert_select "textarea[name='feedback[body]']"
+    assert_select "input[name='feedback[ok_to_contact]']"
+    assert_select "input[name='feedback[contact_info]'][value=?]", users(:one).email_address
     assert_select ".lp-feedback-fab", count: 0
   end
 
@@ -23,7 +25,8 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
         feedback: {
           body: "The battle list feels clear.",
           rating: 5,
-          page_context: "today"
+          page_context: "today",
+          ok_to_contact: "0"
         }
       }
     end
@@ -33,7 +36,46 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "The battle list feels clear.", feedback.body
     assert_equal 5, feedback.rating
     assert_equal "today", feedback.page_context
+    assert_equal false, feedback.ok_to_contact
+    assert_nil feedback.contact_info
     assert_redirected_to dashboard_path
+  end
+
+  test "logged in contact opt-in keeps email or whatsapp detail" do
+    sign_in_as users(:one)
+
+    assert_difference "Feedback.count", 1 do
+      post feedbacks_path, params: {
+        feedback: {
+          body: "Happy to chat about quests.",
+          rating: 4,
+          page_context: "mountain",
+          ok_to_contact: "1",
+          contact_info: "+371 2000 0000"
+        }
+      }
+    end
+
+    feedback = Feedback.order(:id).last
+    assert feedback.ok_to_contact?
+    assert_equal "+371 2000 0000", feedback.contact_info
+  end
+
+  test "unchecked opt-in clears contact_info" do
+    sign_in_as users(:one)
+
+    post feedbacks_path, params: {
+      feedback: {
+        body: "No follow-up please.",
+        page_context: "today",
+        ok_to_contact: "0",
+        contact_info: "should-be-cleared@example.com"
+      }
+    }
+
+    feedback = Feedback.order(:id).last
+    assert_equal false, feedback.ok_to_contact
+    assert_nil feedback.contact_info
   end
 
   test "anonymous visitor can submit feedback with page context" do
@@ -42,7 +84,9 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
         feedback: {
           body: "Landing CTA made sense.",
           rating: 4,
-          page_context: "landing"
+          page_context: "landing",
+          ok_to_contact: "1",
+          contact_info: "visitor@example.com"
         }
       }
     end
@@ -51,6 +95,8 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_nil feedback.user_id
     assert_equal "landing", feedback.page_context
     assert_equal 4, feedback.rating
+    assert feedback.ok_to_contact?
+    assert_equal "visitor@example.com", feedback.contact_info
     assert_redirected_to root_path
   end
 
@@ -82,7 +128,14 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
 
   test "admin inbox shows page context and rating" do
     user = users(:one)
-    Feedback.create!(user: user, body: "Need clearer quest colors.", rating: 2, page_context: "mountain")
+    Feedback.create!(
+      user: user,
+      body: "Need clearer quest colors.",
+      rating: 2,
+      page_context: "mountain",
+      ok_to_contact: true,
+      contact_info: "+353 87 234 6580"
+    )
 
     sign_in_as users(:admin)
     get admin_feedbacks_path
@@ -90,6 +143,8 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Need clearer quest colors/, response.body)
     assert_match(/mountain/, response.body)
     assert_match(%r{2/5}, response.body)
+    assert_match(/OK to contact/i, response.body)
+    assert_match(/\+353 87 234 6580/, response.body)
   end
 end
 
