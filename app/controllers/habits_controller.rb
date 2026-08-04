@@ -57,7 +57,8 @@ class HabitsController < ApplicationController
   end
 
   def destroy
-    @habit.destroy
+    @habit.destroy!
+    flash[:turbo_clear_cache] = true
     redirect_to habits_path, notice: "Removed.", status: :see_other
   end
 
