@@ -2,6 +2,13 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
+<% if flash[:turbo_clear_cache] %>
+  <div data-controller="turbo-cache"
+       data-turbo-cache-clear-value="true"
+       hidden
+       aria-hidden="true"></div>
+<% end %>
+
 <div class="lp-habits mx-auto max-w-lg px-4 pb-28 pt-5">
   <header class="lp-habits__head">
     <div class="lp-habits__head-copy">
