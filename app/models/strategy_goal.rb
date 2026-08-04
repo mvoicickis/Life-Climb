@@ -25,8 +25,17 @@ class StrategyGoal < ApplicationRecord
   belongs_to :parent, class_name: "StrategyGoal", optional: true
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
   has_many :practice_tasks, dependent: :destroy
+  # Open Today rows are purged below; completed history is nullified (AP already awarded).
   has_many :daily_todos, dependent: :nullify
   has_many :strategy_quantity_logs, dependent: :destroy
+  # Quantity logs may point at a day as the battle source without owning the project.
+  has_many :sourced_quantity_logs,
+           class_name: "StrategyQuantityLog",
+           foreign_key: :source_day_id,
+           dependent: :nullify,
+           inverse_of: :source_day
+
+  before_destroy :destroy_open_daily_todos, prepend: true
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
@@ -208,6 +217,12 @@ class StrategyGoal < ApplicationRecord
   end
 
   private
+
+  # Phantom Today battles: open DailyTodos must not outlive their Mountain day/quest.
+  # Completed rows keep AP history via dependent: :nullify (strategy_goal_id cleared).
+  def destroy_open_daily_todos
+    daily_todos.incomplete.find_each(&:destroy!)
+  end
 
   def ancestors_fallback
     node = self
