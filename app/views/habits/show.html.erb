@@ -19,6 +19,9 @@
            class="lp-habits__detail has-color is-amber <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
     <div class="lp-habits__detail-top">
       <div>
+        <% if @habit.identity_label.present? %>
+          <p class="lp-habit-identity"><%= @habit.identity_label %></p>
+        <% end %>
         <h1 class="lp-habits__detail-title"><%= @habit.name %></h1>
         <p class="lp-habits__meta">
           <%= @habit.unit %> · <%= @habit.evaluation_label %>

@@ -10,6 +10,7 @@ class Habit < ApplicationRecord
   has_many :daily_logs, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 120 }
+  validates :identity_label, length: { maximum: 120 }, allow_nil: true
   validates :points, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 100 }
   validates :description, length: { maximum: 2_000 }, allow_nil: true
   validates :frequency, inclusion: { in: FREQUENCIES }
@@ -25,6 +26,7 @@ class Habit < ApplicationRecord
 
   before_validation :normalize_unit
   before_validation :normalize_stat_fields
+  before_validation :normalize_identity_label
   before_create :assign_next_position
 
   scope :active, -> { where(active: true) }
@@ -175,6 +177,10 @@ class Habit < ApplicationRecord
 
   def normalize_unit
     self.unit = unit.to_s.strip.downcase.presence || "times"
+  end
+
+  def normalize_identity_label
+    self.identity_label = identity_label.to_s.strip.presence
   end
 
   def normalize_stat_fields

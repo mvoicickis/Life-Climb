@@ -87,13 +87,14 @@ class HabitsController < ApplicationController
   def habit_params
     raw = params.require(:habit).permit(
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
-      :stat_type, :goal, :min_value, :max_value, :life_journey_id
+      :stat_type, :goal, :min_value, :max_value, :life_journey_id, :identity_label
     )
     # Clamp client-supplied LP rewards — habits are not a free AP faucet.
     if raw[:points].present?
       raw[:points] = raw[:points].to_i.clamp(1, 50)
     end
     raw[:life_journey_id] = raw[:life_journey_id].presence
+    raw[:identity_label] = raw[:identity_label].presence
     raw
   end
 
