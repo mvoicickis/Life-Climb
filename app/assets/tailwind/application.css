@@ -1342,7 +1342,7 @@
   }
 
   .lp-landing-section {
-    padding: 3.25rem 1rem;
+    padding: 3.25rem max(1.15rem, env(safe-area-inset-right, 0px)) 3.25rem max(1.15rem, env(safe-area-inset-left, 0px));
   }
 
   .lp-landing-section--light {
@@ -1610,14 +1610,20 @@
 
   .lp-landing-progress {
     margin-top: 2rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.85rem;
+    display: flex;
     align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    /* Keep "64%" clear of the mobile viewport edge */
+    padding-inline-end: max(0.5rem, env(safe-area-inset-right, 0px));
   }
 
   .lp-landing-progress__track {
     position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
     height: 0.85rem;
     border-radius: 999px;
     background: #e2e8f0;
@@ -1632,10 +1638,13 @@
   }
 
   .lp-landing-progress__pct {
+    flex: 0 0 auto;
     font-family: var(--lp-font-display);
-    font-size: 1.15rem;
+    font-size: clamp(1rem, 4.2vw, 1.15rem);
     font-weight: 800;
+    line-height: 1;
     color: var(--lp-ink);
+    white-space: nowrap;
   }
 
   .lp-landing-cta-band {
