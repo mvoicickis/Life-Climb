@@ -4,7 +4,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "landing page is public" do
     get root_path
     assert_response :success
-    assert_match(/One mountain\. Today’s battle/, response.body)
+    assert_match(/Most goals die in your notes app/, response.body)
     assert_match(/Start free/, response.body)
     assert_match(/How it works/, response.body)
     assert_match(/Your life, one area at a time/, response.body)
@@ -13,6 +13,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Name today’s step/i, response.body)
     assert_match(/Action Points/i, response.body)
     assert_match(/Watch your mountain rise/i, response.body)
+    assert_match(/Early climbers are already on their way/, response.body)
+    assert_match(/Free to start/, response.body)
     assert_match(/\+50 AP/, response.body)
     assert_no_match(/\+50 LP/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
@@ -42,7 +44,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/name="theme-color" content="#0b0f14"/, response.body)
     assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-brand\.png"}, response.body)
-    assert_match(/og:image:alt" content="LifePoints — One mountain\. Today’s battle\."/, response.body)
+    assert_match(/og:image:alt" content="LifePoints — Most goals die in your notes app\."/, response.body)
     assert_match(%r{og:url" content="https://[^"]+/"}, response.body)
     assert_match(/application\/ld\+json/, response.body)
     assert_match(/SoftwareApplication/, response.body)
