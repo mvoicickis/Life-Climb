@@ -84,6 +84,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /Mountain/i
+    assert_select ".lp-dash-nav__link", text: /Habits/i
     assert_select ".lp-dash-nav__link", text: /Journey/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /\A\s*Progress\s*\z/, count: 0

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_074231) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_094344) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -138,6 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_074231) do
     t.string "frequency", default: "daily", null: false
     t.decimal "goal", precision: 12, scale: 2
     t.date "goal_raise_declined_on"
+    t.integer "life_journey_id"
     t.decimal "max_value", precision: 12, scale: 2
     t.decimal "min_value", precision: 12, scale: 2
     t.string "name", null: false
@@ -148,6 +149,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_074231) do
     t.string "unit", default: "times", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["life_journey_id"], name: "index_habits_on_life_journey_id"
     t.index ["user_id", "position"], name: "index_habits_on_user_id_and_position"
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
@@ -413,6 +415,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_074231) do
   add_foreign_key "goals", "dreams"
   add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
+  add_foreign_key "habits", "life_journeys"
   add_foreign_key "habits", "users"
   add_foreign_key "journey_targets", "life_journeys"
   add_foreign_key "journey_targets", "users"
