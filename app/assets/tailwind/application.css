@@ -1314,15 +1314,19 @@
   }
 
   .lp-landing-cta--ghost {
-    border: 1.5px solid rgba(15, 23, 42, 0.16);
+    border: 1.5px solid rgba(15, 23, 42, 0.22);
     background: #fff;
-    color: var(--lp-ink);
+    /* White button: --lp-ink is near-white on RPG theme */
+    color: #0f172a;
   }
 
   .lp-landing-cta:hover { transform: translateY(-1px); }
   .lp-landing-cta--pulse:hover,
   .lp-landing-cta--nav:hover { background: var(--lp-forest-deep); }
-  .lp-landing-cta--ghost:hover { background: var(--lp-mist); }
+  .lp-landing-cta--ghost:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
 
   .lp-landing-cta--pulse.is-ready {
     animation: lp-landing-cta-pulse 2.8s ease-in-out infinite;
