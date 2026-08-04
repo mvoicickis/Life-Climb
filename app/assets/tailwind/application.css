@@ -12080,14 +12080,31 @@ button.lp-strategy-overflow {
 }
 
 
-/* —— Admin panel (LifePoints SaaS console) —— */
+/* —— Admin panel (LifePoints SaaS console) ——
+   Light console on purpose: white cards / soft gray page.
+   Override dark RPG :root tokens so ink stays readable. */
 .lp-admin {
+  --lp-paper: #f8fafc;
+  --lp-paper-soft: #eef2f7;
+  --lp-mist: #e2e8f0;
+  --lp-ink: #0f172a;
+  --lp-ink-dark: #0f172a;
+  --lp-charcoal: #334155;
+  --lp-muted: #475569;
+  --lp-muted-dark: #64748b;
+  --lp-border: rgba(15, 23, 42, 0.1);
+  --lp-surface: #ffffff;
+  --lp-elevated: #ffffff;
+  --lp-glass: rgba(255, 255, 255, 0.92);
+  --lp-track: #e2e8f0;
   background:
     radial-gradient(1200px 500px at 10% -10%, rgba(34, 197, 94, 0.14), transparent 55%),
     radial-gradient(900px 420px at 100% 0%, rgba(15, 23, 42, 0.06), transparent 50%),
     linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
   color: var(--lp-ink);
   font-family: var(--lp-font-ui);
+  /* Admin has no fixed bottom nav — don't inherit .lp-game void padding */
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
 }
 
 .lp-admin__top {
@@ -12275,6 +12292,7 @@ button.lp-strategy-overflow {
   font-family: var(--lp-font-display);
   font-size: 1.05rem;
   font-weight: 800;
+  color: var(--lp-ink);
 }
 
 .lp-admin__chart {
