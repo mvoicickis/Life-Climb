@@ -1566,7 +1566,8 @@
     font-size: clamp(2.6rem, 6vw, 3.5rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: var(--lp-ink);
+    /* White/mint card: --lp-ink is near-white on RPG theme */
+    color: #0f172a;
     line-height: 1;
   }
 
