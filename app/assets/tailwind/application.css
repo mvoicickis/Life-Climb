@@ -3175,62 +3175,19 @@
   border: 0;
 }
 
-/* ——— LifePoints app surface (Dark cinematic RPG) ———
-   Night ground + glass panels + Life Green / gold accents.
-   Amber ONLY for brief +LP reward flashes — never LP chip text. */
+/* ——— LifePoints app surface ———
+   Light is the default product theme. Dark preserves today's cinematic RPG palette.
+   Density / type tokens stay shared (not theme-specific). */
 :root {
-  --lp-paper: #0b0f14;
-  --lp-paper-soft: #171c22;
-  --lp-mist: #1a222c;
-  --lp-ink: #f3f6f8;
-  --lp-charcoal: #e2e8f0;
-  --lp-muted: #9aa6b2;
-  --lp-green: #57d35b;
-  --lp-green-deep: #3dbd48;
-  --lp-green-soft: rgba(87, 211, 91, 0.28);
-  --lp-teal: var(--lp-green);
-  --lp-teal-deep: var(--lp-green-deep);
-  --lp-gold: #d4a017;
-  --lp-dawn-from: #152033;
-  --lp-dawn-to: #0b0f14;
-  --lp-navy: #0b1220;
-  --lp-forest: var(--lp-green);
-  --lp-forest-deep: #1f7a45;
-  --lp-void: #0b0f14;
-  --lp-surface: #171c22;
-  --lp-elevated: #171c22;
-  --lp-glass: rgba(23, 28, 34, 0.78);
-  --lp-border: rgba(255, 255, 255, 0.1);
-  --lp-emerald: var(--lp-forest-deep);
-  --lp-lime: var(--lp-green);
-  --lp-mint: var(--lp-green-soft);
-  --lp-rose: #ef476f;
-  --lp-track: #1e2630;
-  --lp-neon: var(--lp-green);
-  --lp-neon-soft: rgba(87, 211, 91, 0.14);
-  --lp-neon-glow: rgba(87, 211, 91, 0.28);
-  --rpg-bg: #0b0f14;
-  --rpg-card: #171c22;
-  --rpg-glass: rgba(23, 28, 34, 0.78);
-  --rpg-green: #57d35b;
-  --rpg-emerald: #1f7a45;
-  --rpg-gold: #d4a017;
-  --rpg-mist: #8b95a5;
-  --rpg-ink: #f3f6f8;
-  --rpg-muted: #9aa6b2;
-  --rpg-amber: #f59e0b;
-  --rpg-red: #ef4444;
-  --rpg-blue: #3b82f6;
+  /* Shared type + density (unchanged across themes) */
   --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
-  /* Fluid type scale — viewport-responsive; pair with line-clamp for long names */
   --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
   --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
   --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
   --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
   --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
   --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
-  /* App density scale — tighten scroll without shrinking tap targets */
   --lp-space-1: 0.35rem;
   --lp-space-2: 0.55rem;
   --lp-space-3: 0.75rem;
@@ -3238,6 +3195,123 @@
   --lp-pad-card: 0.75rem 0.85rem;
   --lp-pad-row-y: 0.65rem;
   --lp-tap: 2.75rem;
+  /* Today section accents — same hues in both themes */
+  --lp-accent-battles: #2dd4bf;
+  --lp-accent-quests: #a78bfa;
+  --lp-accent-habits: #f59e0b;
+  /* Brand greens / golds (stable across themes) */
+  --lp-green: #57d35b;
+  --lp-green-deep: #3dbd48;
+  --lp-green-soft: rgba(87, 211, 91, 0.28);
+  --lp-teal: var(--lp-green);
+  --lp-teal-deep: var(--lp-green-deep);
+  --lp-gold: #d4a017;
+  --lp-forest: var(--lp-green);
+  --lp-forest-deep: #1f7a45;
+  --lp-emerald: var(--lp-forest-deep);
+  --lp-lime: var(--lp-green);
+  --lp-mint: var(--lp-green-soft);
+  --lp-rose: #ef476f;
+  --lp-neon: var(--lp-green);
+  --lp-neon-soft: rgba(87, 211, 91, 0.14);
+  --lp-neon-glow: rgba(87, 211, 91, 0.28);
+  --rpg-green: #57d35b;
+  --rpg-emerald: #1f7a45;
+  --rpg-gold: #d4a017;
+  --rpg-amber: #f59e0b;
+  --rpg-red: #ef4444;
+  --rpg-blue: #3b82f6;
+  /* Default = light surfaces */
+  --lp-paper: #f8fafc;
+  --lp-paper-soft: #eef2f7;
+  --lp-mist: #e2e8f0;
+  --lp-ink: #0f172a;
+  --lp-ink-dark: #0f172a;
+  --lp-charcoal: #334155;
+  --lp-muted: #475569;
+  --lp-muted-dark: #64748b;
+  --lp-dawn-from: #e2e8f0;
+  --lp-dawn-to: #f8fafc;
+  --lp-navy: #e2e8f0;
+  --lp-void: #f8fafc;
+  --lp-surface: #ffffff;
+  --lp-elevated: #ffffff;
+  --lp-glass: rgba(255, 255, 255, 0.92);
+  --lp-border: rgba(15, 23, 42, 0.1);
+  --lp-track: #e2e8f0;
+  --lp-theme-color: #f8fafc;
+  --rpg-bg: #f1f5f9;
+  --rpg-card: #ffffff;
+  --rpg-glass: rgba(255, 255, 255, 0.88);
+  --rpg-mist: #64748b;
+  --rpg-ink: #0f172a;
+  --rpg-muted: #475569;
+  /* Mountain focus-phase glass (light) */
+  --lp-rpg-glass: rgba(255, 255, 255, 0.88);
+  --lp-rpg-glass-strong: rgba(255, 255, 255, 0.96);
+  --lp-rpg-glass-soft: rgba(248, 250, 252, 0.72);
+  --lp-rpg-glass-border: rgba(15, 23, 42, 0.1);
+  --lp-rpg-glass-blur: 18px;
+  --lp-rpg-glass-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+  --lp-rpg-ink: rgba(15, 23, 42, 0.96);
+  --lp-rpg-muted: rgba(71, 85, 105, 0.88);
+  --lp-rpg-meta: rgba(100, 116, 139, 0.78);
+  --lp-rpg-gold: #d4a017;
+  --lp-rpg-gold-soft: rgba(212, 160, 23, 0.18);
+  --lp-rpg-green: #57d35b;
+  --lp-rpg-veil-a: rgba(248, 250, 252, 0.55);
+  --lp-rpg-veil-b: rgba(248, 250, 252, 0.22);
+  --lp-rpg-veil-c: rgba(241, 245, 249, 0.78);
+  --lp-rpg-scenic-filter: saturate(1.02) contrast(1.02) brightness(1.05);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Dark = today's cinematic RPG palette */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --lp-paper: #0b0f14;
+  --lp-paper-soft: #171c22;
+  --lp-mist: #1a222c;
+  --lp-ink: #f3f6f8;
+  --lp-ink-dark: #f3f6f8;
+  --lp-charcoal: #e2e8f0;
+  --lp-muted: #9aa6b2;
+  --lp-muted-dark: #9aa6b2;
+  --lp-dawn-from: #152033;
+  --lp-dawn-to: #0b0f14;
+  --lp-navy: #0b1220;
+  --lp-void: #0b0f14;
+  --lp-surface: #171c22;
+  --lp-elevated: #171c22;
+  --lp-glass: rgba(23, 28, 34, 0.78);
+  --lp-border: rgba(255, 255, 255, 0.1);
+  --lp-track: #1e2630;
+  --lp-theme-color: #0b0f14;
+  --rpg-bg: #0b0f14;
+  --rpg-card: #171c22;
+  --rpg-glass: rgba(23, 28, 34, 0.78);
+  --rpg-mist: #8b95a5;
+  --rpg-ink: #f3f6f8;
+  --rpg-muted: #9aa6b2;
+  --lp-rpg-glass: rgba(8, 12, 18, 0.8);
+  --lp-rpg-glass-strong: rgba(6, 10, 16, 0.9);
+  --lp-rpg-glass-soft: rgba(12, 16, 22, 0.52);
+  --lp-rpg-glass-border: rgba(255, 255, 255, 0.1);
+  --lp-rpg-glass-blur: 18px;
+  --lp-rpg-glass-shadow: 0 18px 42px rgba(0, 0, 0, 0.44);
+  --lp-rpg-ink: rgba(248, 250, 252, 0.98);
+  --lp-rpg-muted: rgba(203, 213, 225, 0.74);
+  --lp-rpg-meta: rgba(148, 163, 184, 0.62);
+  --lp-rpg-gold: #d4a017;
+  --lp-rpg-gold-soft: rgba(212, 160, 23, 0.22);
+  --lp-rpg-green: #57d35b;
+  --lp-rpg-veil-a: rgba(6, 10, 16, 0.58);
+  --lp-rpg-veil-b: rgba(6, 10, 16, 0.24);
+  --lp-rpg-veil-c: rgba(6, 10, 16, 0.84);
+  --lp-rpg-scenic-filter: saturate(0.92) contrast(1.08) brightness(0.78);
 }
 
 .lp-game {
@@ -3323,6 +3397,46 @@
 @keyframes lp-you-row-flash {
   0% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-lime) 45%, transparent); }
   100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Settings appearance: segmented Light | Dark */
+.lp-theme-switch {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper-soft);
+}
+
+.lp-theme-switch__form {
+  display: contents;
+}
+
+.lp-theme-switch__btn {
+  min-height: 2.25rem;
+  min-width: 4.5rem;
+  padding: 0.4rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.lp-theme-switch__btn.is-active {
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+.lp-theme-switch__btn:focus-visible {
+  outline: 2px solid var(--lp-green);
+  outline-offset: 2px;
 }
 
 .lp-cta {
@@ -5143,13 +5257,13 @@
   margin-left: -0.15rem;
 }
 .lp-dash-battle__item.has-color.is-teal,
-.lp-dash-checklist__obj.has-color.is-teal { --lp-item-color: #2dd4bf; }
+.lp-dash-checklist__obj.has-color.is-teal { --lp-item-color: var(--lp-accent-battles); }
 .lp-dash-battle__item.has-color.is-coral,
 .lp-dash-checklist__obj.has-color.is-coral { --lp-item-color: #e2604f; }
 .lp-dash-battle__item.has-color.is-amber,
-.lp-dash-checklist__obj.has-color.is-amber { --lp-item-color: #f59e0b; }
+.lp-dash-checklist__obj.has-color.is-amber { --lp-item-color: var(--lp-accent-habits); }
 .lp-dash-battle__item.has-color.is-purple,
-.lp-dash-checklist__obj.has-color.is-purple { --lp-item-color: #a78bfa; }
+.lp-dash-checklist__obj.has-color.is-purple { --lp-item-color: var(--lp-accent-quests); }
 .lp-dash-battle__item.has-color.is-blue,
 .lp-dash-checklist__obj.has-color.is-blue { --lp-item-color: #60a5fa; }
 .lp-dash-battle__item.has-color.is-green,
@@ -5194,9 +5308,9 @@
   text-transform: uppercase;
   color: var(--lp-muted, #9aa6b2);
 }
-.lp-dash-section.is-battles .lp-dash-section__label { color: #2dd4bf; }
-.lp-dash-section.is-quests .lp-dash-section__label { color: #a78bfa; }
-.lp-dash-section.is-habits .lp-dash-section__label { color: #f59e0b; }
+.lp-dash-section.is-battles .lp-dash-section__label { color: var(--lp-accent-battles); }
+.lp-dash-section.is-quests .lp-dash-section__label { color: var(--lp-accent-quests); }
+.lp-dash-section.is-habits .lp-dash-section__label { color: var(--lp-accent-habits); }
 .lp-dash-section__empty {
   margin: 0.35rem 0 0.55rem;
   font-size: 0.82rem;
@@ -14339,20 +14453,10 @@ button.lp-strategy-overflow {
 
 /* Desktop side-by-side journal removed — mountain stays the world map. */
 
-/* === cinematic RPG mountain === */
+/* === cinematic RPG mountain ===
+   Color tokens (--rpg-* / --lp-rpg-*) live on :root + html[data-theme].
+   Do not hardcode a theme here. */
 .lp-rpg {
-  --rpg-bg: #0b0f14;
-  --rpg-card: #171c22;
-  --rpg-glass: rgba(23, 28, 34, 0.78);
-  --rpg-green: #57d35b;
-  --rpg-emerald: #1f7a45;
-  --rpg-gold: #d4a017;
-  --rpg-mist: #8b95a5;
-  --rpg-ink: #f3f6f8;
-  --rpg-muted: #9aa6b2;
-  --rpg-amber: #f59e0b;
-  --rpg-red: #ef4444;
-  --rpg-blue: #3b82f6;
   position: relative;
   min-height: 100dvh;
   color: var(--rpg-ink);
@@ -14376,8 +14480,8 @@ button.lp-strategy-overflow {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(120% 70% at 50% -10%, rgba(87, 211, 91, 0.14), transparent 55%),
-    linear-gradient(180deg, #152033 0%, #0b0f14 55%, #0b0f14 100%);
+    radial-gradient(120% 70% at 50% -10%, color-mix(in srgb, var(--rpg-green) 14%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--lp-dawn-from) 0%, var(--rpg-bg) 55%, var(--rpg-bg) 100%);
   z-index: 0;
   transition: filter 700ms ease, opacity 700ms ease;
 }
@@ -14398,8 +14502,8 @@ button.lp-strategy-overflow {
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(80% 40% at 50% 85%, rgba(139, 149, 165, 0.35), transparent 70%),
-    linear-gradient(180deg, transparent 30%, rgba(11, 15, 20, 0.35) 100%);
+    radial-gradient(80% 40% at 50% 85%, color-mix(in srgb, var(--rpg-mist) 35%, transparent), transparent 70%),
+    linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--rpg-bg) 35%, transparent) 100%);
   opacity: 0.85;
   transition: opacity 800ms ease;
   animation: lp-rpg-mist 14s ease-in-out infinite alternate;
@@ -14931,7 +15035,7 @@ button.lp-strategy-overflow {
   }
 }
 
-/* RPG world keeps its own tokens; game chrome is already dark globally. */
+/* RPG world inherits theme tokens from html[data-theme]. */
 
 /* === Exact Life-RPG Mountain mockup === */
 .lp-rpg {
@@ -14939,8 +15043,8 @@ button.lp-strategy-overflow {
   min-height: 100dvh;
   padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
   overflow-x: hidden;
-  color: var(--rpg-ink, #f3f6f8);
-  background: var(--rpg-bg, #0b0f14);
+  color: var(--rpg-ink);
+  background: var(--rpg-bg);
 }
 
 .lp-rpg-scenic {
@@ -14949,9 +15053,9 @@ button.lp-strategy-overflow {
   z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(11, 15, 20, 0.35) 0%, rgba(11, 15, 20, 0.15) 40%, rgba(11, 15, 20, 0.72) 100%),
+    linear-gradient(180deg, var(--lp-rpg-veil-a) 0%, var(--lp-rpg-veil-b) 40%, var(--lp-rpg-veil-c) 100%),
     var(--lp-scenic) center 35% / cover no-repeat;
-  filter: saturate(1.05) contrast(1.08) brightness(0.92);
+  filter: var(--lp-rpg-scenic-filter);
 }
 
 .lp-rpg-scenic__veil {
@@ -14960,8 +15064,8 @@ button.lp-strategy-overflow {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(80% 50% at 50% 20%, rgba(87, 211, 91, 0.08), transparent 55%),
-    linear-gradient(180deg, rgba(11, 15, 20, 0.45) 0%, transparent 28%, rgba(11, 15, 20, 0.55) 100%);
+    radial-gradient(80% 50% at 50% 20%, color-mix(in srgb, var(--rpg-green) 8%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--lp-rpg-veil-a) 0%, transparent 28%, var(--lp-rpg-veil-c) 100%);
 }
 
 .lp-rpg-hud,
@@ -16083,24 +16187,13 @@ button.lp-strategy-overflow {
   }
 }
 
-/* === Mountain Focus Phase 1 === */
+/* === Mountain Focus Phase 1 ===
+   Density/layout tokens stay here; glass/ink colors come from html[data-theme]. */
 .lp-rpg.is-focus-phase {
   --lp-rpg-gutter: 0.95rem;
   --lp-rpg-content: min(40rem, 100%);
   --lp-rpg-gap: 0.8rem;
   --lp-rpg-radius: 1.05rem;
-  --lp-rpg-glass: rgba(8, 12, 18, 0.8);
-  --lp-rpg-glass-strong: rgba(6, 10, 16, 0.9);
-  --lp-rpg-glass-soft: rgba(12, 16, 22, 0.52);
-  --lp-rpg-glass-border: rgba(255, 255, 255, 0.1);
-  --lp-rpg-glass-blur: 18px;
-  --lp-rpg-glass-shadow: 0 18px 42px rgba(0, 0, 0, 0.44);
-  --lp-rpg-ink: rgba(248, 250, 252, 0.98);
-  --lp-rpg-muted: rgba(203, 213, 225, 0.74);
-  --lp-rpg-meta: rgba(148, 163, 184, 0.62);
-  --lp-rpg-gold: #d4a017;
-  --lp-rpg-gold-soft: rgba(212, 160, 23, 0.22);
-  --lp-rpg-green: #57d35b;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -16109,17 +16202,17 @@ button.lp-strategy-overflow {
   padding-bottom: calc(4.85rem + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
-/* Scenic is nested inside .lp-rpg — deepen veil so glass text stays readable */
+/* Scenic is nested inside .lp-rpg — theme veil keeps glass text readable */
 .lp-rpg.is-focus-phase .lp-rpg-scenic {
-  filter: saturate(0.92) contrast(1.08) brightness(0.78);
+  filter: var(--lp-rpg-scenic-filter);
   background:
-    linear-gradient(180deg, rgba(6, 10, 16, 0.58) 0%, rgba(6, 10, 16, 0.24) 40%, rgba(6, 10, 16, 0.84) 100%),
+    linear-gradient(180deg, var(--lp-rpg-veil-a) 0%, var(--lp-rpg-veil-b) 40%, var(--lp-rpg-veil-c) 100%),
     var(--lp-scenic) center 35% / cover no-repeat;
 }
 .lp-rpg.is-focus-phase .lp-rpg-scenic__veil {
   background:
-    radial-gradient(72% 44% at 50% 16%, rgba(6, 10, 16, 0.12), transparent 58%),
-    linear-gradient(180deg, rgba(6, 10, 16, 0.62) 0%, rgba(6, 10, 16, 0.16) 32%, rgba(6, 10, 16, 0.78) 100%);
+    radial-gradient(72% 44% at 50% 16%, color-mix(in srgb, var(--lp-rpg-veil-c) 20%, transparent), transparent 58%),
+    linear-gradient(180deg, var(--lp-rpg-veil-a) 0%, var(--lp-rpg-veil-b) 32%, var(--lp-rpg-veil-c) 100%);
 }
 .lp-rpg.is-focus-phase.is-first-climb {
   display: block;

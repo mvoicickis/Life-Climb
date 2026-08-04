@@ -46,6 +46,17 @@ module ApplicationHelper
     content_for?(:meta_description) ? content_for(:meta_description) : I18n.t("landing.meta_description")
   end
 
+  # App chrome theme: light (default) or dark. Guests always get light.
+  def theme_for_request
+    return current_user.theme_key if respond_to?(:current_user) && current_user
+
+    "light"
+  end
+
+  def theme_color_for_request
+    theme_for_request == "dark" ? "#0b0f14" : "#f8fafc"
+  end
+
   def status_tone(status)
     case status
     when :better, :perfect then :good
