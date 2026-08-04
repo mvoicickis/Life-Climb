@@ -1579,21 +1579,33 @@
     line-height: 1;
   }
 
-  .lp-landing-lp__unit {
-    margin-left: 0.25rem;
-    font-size: 0.45em;
+  .lp-landing-lp__label {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    color: #0f172a;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .lp-landing-lp__abbr {
+    display: inline-block;
+    margin-left: 0.2rem;
+    font-size: 0.78em;
     font-weight: 700;
-    vertical-align: super;
+    color: #3f6212;
   }
 
   .lp-landing-lp__chip {
     margin: 0;
     border-radius: 999px;
-    background: rgba(134, 239, 172, 0.55);
-    color: var(--lp-ink);
-    padding: 0.35rem 0.75rem;
-    font-size: 0.85rem;
+    background: #166534;
+    color: #fff;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.88rem;
     font-weight: 800;
+    letter-spacing: 0.01em;
   }
 
   .lp-landing-progress {
