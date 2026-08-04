@@ -129,9 +129,12 @@
           <img class="lp-landing-lp__mark" src="/branding/lifepoints-mark.png?v=7" width="56" height="56" alt="">
           <p class="lp-landing-lp__count">
             <span data-landing-target="lpCount">0</span>
-            <span class="lp-landing-lp__unit">AP</span>
           </p>
-          <p class="lp-landing-lp__chip">+50 AP</p>
+          <p class="lp-landing-lp__label">
+            <%= t("landing.why_ap_label") %>
+            <span class="lp-landing-lp__abbr"><%= t("landing.why_ap_abbr") %></span>
+          </p>
+          <p class="lp-landing-lp__chip"><%= t("landing.why_ap_chip") %></p>
         </div>
       </div>
       <div class="lp-landing-why__copy">

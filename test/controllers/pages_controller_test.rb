@@ -16,6 +16,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Early climbers are already on their way/, response.body)
     assert_match(/Free to start/, response.body)
     assert_match(/\+50 AP/, response.body)
+    assert_match(/Action Points/, response.body)
     assert_no_match(/\+50 LP/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
     assert_no_match(/status\.better_full|landing\.sample_better|today-card--good|lifepoints-landing-hero\.jpg/, response.body)
