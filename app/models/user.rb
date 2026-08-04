@@ -47,8 +47,10 @@ class User < ApplicationRecord
   validates :locale, inclusion: {
     in: ->(_) { I18n.available_locales.map(&:to_s) }
   }, allow_nil: true
+  validates :theme, inclusion: { in: ->(_) { THEMES } }
 
   CHARACTERS = %w[man woman].freeze
+  THEMES = %w[light dark].freeze
 
   def admin?
     admin
@@ -91,6 +93,10 @@ class User < ApplicationRecord
 
   def character_key
     character.presence_in(CHARACTERS) || "man"
+  end
+
+  def theme_key
+    theme.presence_in(THEMES) || "light"
   end
 
   def character_chosen?

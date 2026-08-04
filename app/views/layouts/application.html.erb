@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>">
+<html lang="<%= I18n.locale %>" data-theme="<%= theme_for_request %>">
   <head>
     <title><%= page_meta_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0b0f14">
+    <meta name="theme-color" content="<%= theme_color_for_request %>">
     <meta name="application-name" content="LifePoints">
     <meta name="mobile-web-app-capable" content="yes">
     <%= render "shared/social_meta" %>

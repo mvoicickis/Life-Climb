@@ -23,6 +23,19 @@ class UserTest < ActiveSupport::TestCase
     refute user.character_chosen?
   end
 
+  test "theme defaults to light and rejects unknown values" do
+    user = users(:one)
+    assert_equal "light", user.theme
+    assert_equal "light", user.theme_key
+
+    user.theme = "dark"
+    assert user.valid?
+
+    user.theme = "neon"
+    refute user.valid?
+    assert_includes user.errors[:theme], "is not included in the list"
+  end
+
   test "overall closer percent averages life areas for legacy v1" do
     user = users(:one)
     user.update!(planning_version: 1)
