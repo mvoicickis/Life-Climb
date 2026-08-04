@@ -14,8 +14,14 @@
       <li class="lp-admin__panel">
         <div class="lp-admin__panel-head">
           <div>
-            <strong><%= feedback.user&.email_address || "—" %></strong>
+            <strong><%= feedback.user&.email_address || t("admin.feedbacks.anonymous") %></strong>
             <p class="lp-admin__meta"><%= l(feedback.created_at, format: :long) %></p>
+            <% if feedback.page_context.present? %>
+              <p class="lp-admin__meta is-page"><%= t("admin.feedbacks.page") %>: <code><%= feedback.page_context %></code></p>
+            <% end %>
+            <% if feedback.rating.present? %>
+              <p class="lp-admin__meta is-rating"><%= t("admin.feedbacks.rating") %>: <%= feedback.rating %>/5</p>
+            <% end %>
           </div>
           <div class="lp-admin__btn-row">
             <% if feedback.user %>

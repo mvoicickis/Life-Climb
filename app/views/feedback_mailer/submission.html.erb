@@ -1,5 +1,11 @@
 <p style="margin:0 0 12px;font-family:system-ui,sans-serif;font-size:14px;color:#334155;">
-  <strong>From:</strong> <%= @user.email_address %><br>
+  <strong>From:</strong> <%= @user&.email_address.presence || "Anonymous visitor" %><br>
+  <% if @feedback.page_context.present? %>
+    <strong>Page:</strong> <%= @feedback.page_context %><br>
+  <% end %>
+  <% if @feedback.rating.present? %>
+    <strong>Rating:</strong> <%= @feedback.rating %>/5<br>
+  <% end %>
   <strong>Sent:</strong> <%= @feedback.created_at.utc.strftime("%Y-%m-%d %H:%M UTC") %>
 </p>
 

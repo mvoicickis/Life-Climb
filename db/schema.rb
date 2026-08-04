@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_095142) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_112231) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -87,8 +87,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_095142) do
   create_table "feedbacks", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
+    t.string "page_context"
+    t.integer "rating"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
+    t.index ["page_context"], name: "index_feedbacks_on_page_context"
     t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
