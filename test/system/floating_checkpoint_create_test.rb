@@ -81,6 +81,9 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
 
+    page.evaluate_script(<<~JS)
+      document.querySelector('.lp-rpg-sections__item.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
+    JS
     find(".lp-rpg-sections__new-btn", text: /New Project/i, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
 

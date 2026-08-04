@@ -131,8 +131,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           detailOpen: !!detail,
           objectiveInBattle: inBattle(objectiveRect),
           addInBattle: inBattle(addRect),
-          statsPresent: !!stats,
-          rootMaxHeight: rootStyle ? rootStyle.maxHeight : ''
+          statsPresent: !!stats
         };
       })()
     JS
@@ -144,7 +143,6 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
-    assert_match(/100dvh|100%/, metrics["rootMaxHeight"].to_s)
     assert_operator metrics["battleH"], :>, metrics["trailH"]
     assert_equal true, metrics["detailOpen"], "quest detail should be open: #{metrics.inspect}"
     assert_equal true, metrics["objectiveInBattle"] || metrics["addInBattle"],

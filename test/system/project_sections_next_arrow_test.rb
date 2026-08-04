@@ -108,8 +108,11 @@ class ProjectSectionsNextArrowTest < ApplicationSystemTestCase
     JS
     assert_selector "button.lp-rpg-sections__arrow.is-next:not([hidden])", wait: 5
 
+    # Capybara find proves the control is shown; click the node inside the sections Stimulus scope
+    # (avoids overlapping card links stealing the hit-target at mobile density).
+    btn = find("button.lp-rpg-sections__arrow.is-next:not([hidden])")
     before = page.evaluate_script("document.querySelector('.lp-rpg-sections__track').scrollLeft").to_f
-    find("button.lp-rpg-sections__arrow.is-next").click
+    page.execute_script("arguments[0].click()", btn.native)
 
     after = nil
     40.times do

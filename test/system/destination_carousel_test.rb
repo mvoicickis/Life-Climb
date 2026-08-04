@@ -48,6 +48,9 @@ class DestinationCarouselTest < ApplicationSystemTestCase
   end
 
   test "destination carousel shows one active world and arrow focus switch updates missions" do
+    # Other system tests resize to short phones (hides peeks/nav under max-height: 600px).
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -56,23 +59,27 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#strategy-world", wait: 5
     assert_selector ".lp-rpg-destination-carousel.is-multi"
-    # Title uses -webkit-box/line-clamp — Capybara visible-text can false-negative as "".
+    # Title/peek use line-clamp or mask — Capybara visible-text can false-negative as "".
     assert_selector ".lp-rpg-destination-carousel__title", visible: :all, wait: 5
     assert_match(/Ship LifePoints/i, destination_title_text)
-    assert_selector ".lp-rpg-destination-carousel__peek.is-next", text: /Health Summit/i
+    assert_selector ".lp-rpg-destination-carousel__peek.is-next", visible: :all
+    assert_match(/Health Summit/i, peek_title_text("next"))
     assert_selector ".lp-rpg-path", text: /Career Path/
     assert_no_selector ".lp-rpg-path", text: /Run Path/
     assert_no_selector ".lp-rpg-goals .lp-rpg-goal"
 
-    find(".lp-rpg-destination-carousel__arrow.is-next").click
+    find("a.lp-rpg-destination-carousel__arrow.is-next").click
 
+    # Arrow is a Turbo link — wait for the destination switch before reading title text.
+    assert_selector ".lp-rpg-path", text: /Run Path/, wait: 5
+    assert_no_selector ".lp-rpg-path", text: /Career Path/
     assert_selector ".lp-rpg-destination-carousel__title", visible: :all, wait: 5
     assert_match(/Health Summit/i, destination_title_text)
-    assert_selector ".lp-rpg-path", text: /Run Path/
-    assert_no_selector ".lp-rpg-path", text: /Career Path/
   end
 
   test "new destination sheet creates and activates the destination" do
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -100,6 +107,12 @@ class DestinationCarouselTest < ApplicationSystemTestCase
   def destination_title_text
     page.evaluate_script(<<~JS)
       (document.querySelector(".lp-rpg-destination-carousel__title")?.textContent || "").trim()
+    JS
+  end
+
+  def peek_title_text(side)
+    page.evaluate_script(<<~JS)
+      (document.querySelector(".lp-rpg-destination-carousel__peek.is-#{side} .lp-rpg-destination-carousel__peek-title")?.textContent || "").trim()
     JS
   end
 end
