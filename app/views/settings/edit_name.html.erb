@@ -2,18 +2,18 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+<div class="lp-home mx-auto max-w-lg">
   <header class="flex items-center gap-3">
     <%= link_to settings_path, class: "rounded-xl border border-[var(--lp-border)] px-3 py-2 text-sm font-bold text-[var(--lp-ink)]" do %>
       ← <%= t("settings.back") %>
     <% end %>
     <div class="min-w-0">
-      <h1 class="truncate text-xl font-semibold text-[var(--lp-ink)]"><%= t("settings.profile_title") %></h1>
-      <p class="text-sm text-[var(--lp-muted)]"><%= t("settings.profile_hint") %></p>
+      <h1 class="truncate lp-home__title"><%= t("settings.profile_title") %></h1>
+      <p class="lp-home__subtitle"><%= t("settings.profile_hint") %></p>
     </div>
   </header>
 
-  <section class="lp-glass p-5">
+  <section class="lp-glass lp-glass--pad">
     <%= form_with model: current_user, url: settings_path, method: :patch, class: "space-y-3", data: { turbo: false } do |form| %>
       <%= form.label :name, t("auth.name"), class: "lp-auth-label" %>
       <%= form.text_field :name, required: true, maxlength: 80, autofocus: true, autocomplete: "name",

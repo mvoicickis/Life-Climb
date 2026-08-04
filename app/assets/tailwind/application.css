@@ -3230,6 +3230,14 @@
   --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
   --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
   --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
+  /* App density scale — tighten scroll without shrinking tap targets */
+  --lp-space-1: 0.35rem;
+  --lp-space-2: 0.55rem;
+  --lp-space-3: 0.75rem;
+  --lp-space-4: 1rem;
+  --lp-pad-card: 0.75rem 0.85rem;
+  --lp-pad-row-y: 0.65rem;
+  --lp-tap: 2.75rem;
 }
 
 .lp-game {
@@ -3237,6 +3245,13 @@
   --lp-level-plan: #3b82f6;
   --lp-level-project: #2dd4bf;
   --lp-level-battle: #d4a017;
+  --lp-space-1: 0.35rem;
+  --lp-space-2: 0.55rem;
+  --lp-space-3: 0.75rem;
+  --lp-space-4: 1rem;
+  --lp-pad-card: 0.75rem 0.85rem;
+  --lp-pad-row-y: 0.65rem;
+  --lp-tap: 2.75rem;
   font-family: var(--lp-font-ui);
   background: var(--lp-paper);
   color: var(--lp-ink);
@@ -3264,6 +3279,34 @@
   border: 1px solid var(--lp-border);
   border-radius: 1.5rem;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.lp-glass--pad {
+  padding: var(--lp-pad-card);
+}
+
+/* Shared list/settings shell — denser than Tailwind space-y-6 / p-5 */
+.lp-home {
+  display: grid;
+  gap: var(--lp-space-4);
+  width: 100%;
+  padding: var(--lp-space-3) var(--lp-space-4) calc(6rem + env(safe-area-inset-bottom, 0px));
+}
+
+.lp-home__title {
+  margin: 0;
+  font-size: var(--lp-type-display-sm);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--lp-ink);
+}
+
+.lp-home__subtitle {
+  margin: var(--lp-space-1) 0 0;
+  font-size: 0.875rem;
+  color: var(--lp-muted);
+  line-height: 1.35;
 }
 
 .lp-you-row--flash {
@@ -3987,7 +4030,7 @@
 .lp-dash {
   position: relative;
   display: grid;
-  gap: 0.85rem;
+  gap: var(--lp-space-3);
 }
 
 .lp-dash__top {
@@ -4548,7 +4591,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  padding: 1.1rem 1.15rem;
+  padding: var(--lp-pad-card);
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
 }
 
@@ -4796,11 +4839,11 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  padding: 1.05rem 1.05rem 1.15rem;
+  padding: var(--lp-pad-card);
 }
 
 .lp-dash-battle__head {
-  margin-bottom: 0.95rem;
+  margin-bottom: var(--lp-space-3);
 }
 
 .lp-dash-battle__title-row {
@@ -4927,7 +4970,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 0;
+  padding: var(--lp-pad-row-y) 0;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -5013,8 +5056,8 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 0.55rem;
   align-items: stretch;
-  padding-top: 0.85rem;
-  padding-bottom: 0.85rem;
+  padding-top: var(--lp-space-3);
+  padding-bottom: var(--lp-space-3);
 }
 
 .lp-dash-checklist__head {
@@ -5137,11 +5180,11 @@
 
 /* Today section labels — Battles / Quests / Habits */
 .lp-dash-section {
-  margin-top: 1.15rem;
-  padding-top: 0.35rem;
+  margin-top: var(--lp-space-4);
+  padding-top: var(--lp-space-1);
 }
 .lp-dash-section:first-of-type {
-  margin-top: 0.35rem;
+  margin-top: var(--lp-space-1);
 }
 .lp-dash-section__label {
   margin: 0 0 0.45rem;
@@ -5232,15 +5275,20 @@
 }
 
 /* Habits page — game chrome */
+.lp-habits {
+  width: 100%;
+  padding: var(--lp-space-3) var(--lp-space-4) calc(7rem + env(safe-area-inset-bottom, 0px));
+}
+
 .lp-habits__head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.85rem;
-  margin-bottom: 1.25rem;
+  gap: var(--lp-space-3);
+  margin-bottom: var(--lp-space-4);
 }
 .lp-habits__eyebrow {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--lp-space-1);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -5249,19 +5297,19 @@
 }
 .lp-habits__title {
   margin: 0;
-  font-size: 1.7rem;
+  font-size: var(--lp-type-display-sm);
   font-weight: 750;
   color: var(--lp-ink);
   letter-spacing: -0.02em;
 }
 .lp-habits__sub {
-  margin: 0.35rem 0 0;
+  margin: var(--lp-space-1) 0 0;
   font-size: 0.9rem;
   color: var(--lp-muted);
 }
 .lp-habits__back {
   display: inline-block;
-  margin-bottom: 0.85rem;
+  margin-bottom: var(--lp-space-3);
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--lp-muted);
@@ -5273,7 +5321,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.7rem;
+  gap: var(--lp-space-2);
 }
 .lp-habits__card {
   --lp-item-color: #f59e0b;
@@ -5281,7 +5329,7 @@
   border: 1px solid color-mix(in srgb, var(--lp-item-color) 28%, transparent);
   border-left: 3px solid var(--lp-item-color);
   background: color-mix(in srgb, var(--lp-item-color) 7%, rgba(18, 22, 30, 0.88));
-  padding: 0.9rem 1rem;
+  padding: var(--lp-pad-card);
 }
 .lp-habits__card.is-off { opacity: 0.62; }
 .lp-habits__card-main {
@@ -5678,7 +5726,7 @@
 .lp-dash-battle__footer {
   display: grid;
   gap: 0.55rem;
-  margin-top: 1.15rem;
+  margin-top: var(--lp-space-4);
 }
 
 .lp-dash-battle__ready {
@@ -7638,7 +7686,7 @@
 
 .lp-progress {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--lp-space-3);
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -7646,7 +7694,7 @@
 
 @media (min-width: 640px) {
   .lp-progress {
-    gap: 0.95rem;
+    gap: var(--lp-space-4);
   }
 }
 
@@ -7655,7 +7703,7 @@
 }
 
 .lp-journey-section__head {
-  margin-bottom: 0.85rem;
+  margin-bottom: var(--lp-space-3);
 }
 
 .lp-journey-section__head h2 {
@@ -7666,7 +7714,7 @@
 }
 
 .lp-journey-section__head p {
-  margin: 0.25rem 0 0;
+  margin: var(--lp-space-1) 0 0;
   color: var(--lp-muted);
   font-size: 0.9rem;
 }
@@ -7674,12 +7722,12 @@
 .lp-journey-points,
 .lp-journey-summary,
 .lp-journey-activity {
-  margin-top: 0.35rem;
+  margin-top: var(--lp-space-1);
 }
 
 .lp-journey-points__grid {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--lp-space-3);
   grid-template-columns: 1fr 1fr;
 }
 
@@ -7689,7 +7737,7 @@
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 1rem 1.05rem;
+  padding: var(--lp-pad-card);
 }
 
 .lp-journey-points__label {
@@ -7714,7 +7762,7 @@
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 1.05rem 1.1rem 1.15rem;
+  padding: var(--lp-pad-card);
 }
 
 .lp-journey-summary__stats {
@@ -7800,10 +7848,10 @@
 .lp-progress__title {
   margin: 0.15rem 0 0;
   font-family: var(--lp-font-display);
-  font-size: clamp(1.55rem, 6.5vw, 2.1rem);
+  font-size: var(--lp-type-display-sm);
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.05;
+  line-height: 1.15;
 }
 
 .lp-progress__subtitle {
