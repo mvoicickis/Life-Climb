@@ -71,6 +71,7 @@ class DashboardController < ApplicationController
     @adventure_year = Strategy::YearCycle.target_dec29.year
     Climb::Streak.reconcile!(user: current_user)
     @climb_streak = Climb::Streak.status(user: current_user)
+    @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
     render "dashboard/show_v2"
   end
 

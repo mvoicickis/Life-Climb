@@ -37,6 +37,15 @@ class Habit < ApplicationRecord
     stat_type == "standard"
   end
 
+  # Today UX: quantity loggers (pages/steps/hours/goals) vs one-tap checkbox dailies.
+  def quantity_checkin?
+    standard? || goal.present? || !%w[times].include?(unit.to_s.downcase)
+  end
+
+  def binary_checkin?
+    !quantity_checkin?
+  end
+
   def better_than_yesterday?
     growth?
   end

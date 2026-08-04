@@ -8,13 +8,20 @@ class DailyLogsController < ApplicationController
 
     if @daily_log.save
       award_rhythm_points_if_won!
-      redirect_to habit_path(@habit, saved: 1, won: (won? ? 1 : 0)), notice: notice_for(@daily_log)
+      redirect_to after_log_path, notice: notice_for(@daily_log)
     else
-      redirect_to habit_path(@habit), alert: @daily_log.errors.full_messages.to_sentence
+      redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
     end
   end
 
   private
+
+  def after_log_path(fallback_habit: false)
+    return dashboard_path if params[:return_to].to_s == "today"
+    return habit_path(@habit) if fallback_habit
+
+    habit_path(@habit, saved: 1, won: (won? ? 1 : 0))
+  end
 
   def award_rhythm_points_if_won!
     return unless won?
