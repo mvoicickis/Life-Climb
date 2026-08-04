@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
     return if current_user&.admin?
     return if impersonating? && true_admin_session?
     return if controller_path.start_with?("admin")
-    return if controller_name.in?(%w[sessions passwords registrations locales])
+    return if controller_name.in?(%w[sessions passwords registrations locales two_factor_sessions])
     return if controller_path == "rails/health"
 
     render template: "shared/maintenance", layout: "application", status: :service_unavailable

@@ -41,11 +41,11 @@ module RequireOnboarding
   end
 
   def onboarding_flow_controller?
-    %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains].include?(controller_name)
+    %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains two_factor_sessions].include?(controller_name)
   end
 
   def hierarchy_gate_exempt?
-    return true if controller_path.start_with?("admin", "developer")
+    return true if controller_path.start_with?("admin", "developer", "settings")
 
     # Today stays reachable: empty / plan-route / handoff states guide players to Mountain.
     # Completing Today actions must not bounce mid-fight when the spine is still growing.
@@ -63,6 +63,8 @@ module RequireOnboarding
       project_completions
       battle_wins
       settings
+      two_factors
+      two_factor_sessions
       locales
       feedbacks
       supports

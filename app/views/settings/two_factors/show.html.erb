@@ -1,0 +1,73 @@
+<% content_for :title, t("two_factor.settings_title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+  <header>
+    <p class="lp-brand-kicker">
+      <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
+      <span><%= t("app_name") %></span>
+    </p>
+    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= t("two_factor.settings_title") %></h1>
+    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("two_factor.settings_subtitle") %></p>
+    <p class="mt-3">
+      <%= link_to t("settings.back"), settings_path, class: "text-sm font-bold text-[var(--lp-lime)] underline-offset-2 hover:underline" %>
+    </p>
+  </header>
+
+  <% if @backup_codes.present? %>
+    <section class="lp-glass border border-[var(--lp-lime)]/40 p-5">
+      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.backup_codes_title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.backup_codes_hint") %></p>
+      <ul class="mt-4 grid grid-cols-2 gap-2 font-mono text-sm font-bold text-[var(--lp-ink)]">
+        <% @backup_codes.each do |code| %>
+          <li class="rounded-lg bg-[var(--lp-elevated)] px-3 py-2 text-center"><%= code %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% if current_user.otp_enabled? %>
+    <section class="lp-glass p-5">
+      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.enabled_title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.enabled_body") %></p>
+
+      <%= form_with url: regenerate_backup_codes_settings_two_factor_path, method: :post, class: "mt-4 space-y-3", data: { turbo: false } do |form| %>
+        <%= form.label :code, t("two_factor.code_label"), class: "lp-auth-label" %>
+        <%= form.text_field :code, required: true, autocomplete: "one-time-code", class: "lp-auth-input", maxlength: 16 %>
+        <%= form.submit t("two_factor.regenerate_backup_codes"), class: "lp-cta" %>
+      <% end %>
+
+      <%= form_with url: settings_two_factor_path, method: :delete, class: "mt-6 space-y-3 border-t border-[var(--lp-border)] pt-5", data: { turbo: false } do |form| %>
+        <p class="text-sm text-[var(--lp-muted)]"><%= t("two_factor.disable_hint") %></p>
+        <%= form.label :code, t("two_factor.code_label"), class: "lp-auth-label" %>
+        <%= form.text_field :code, required: true, autocomplete: "one-time-code", class: "lp-auth-input", maxlength: 16 %>
+        <%= form.submit t("two_factor.disable"), class: "lp-cta bg-[var(--lp-rose)] hover:opacity-90" %>
+      <% end %>
+    </section>
+  <% elsif current_user.otp_secret_plain.present? %>
+    <section class="lp-glass p-5">
+      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.scan_title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.scan_body") %></p>
+
+      <div class="mt-4 flex justify-center rounded-xl bg-white p-4">
+        <%= current_user.otp_qr_svg %>
+      </div>
+      <p class="mt-3 break-all text-center font-mono text-xs text-[var(--lp-muted)]"><%= current_user.otp_secret_plain %></p>
+
+      <%= form_with url: confirm_settings_two_factor_path, method: :post, class: "mt-5 space-y-3", data: { turbo: false } do |form| %>
+        <%= form.label :code, t("two_factor.confirm_code_label"), class: "lp-auth-label" %>
+        <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code", inputmode: "numeric", maxlength: 8, class: "lp-auth-input" %>
+        <%= form.submit t("two_factor.confirm_enable"), class: "lp-cta" %>
+      <% end %>
+    </section>
+  <% else %>
+    <section class="lp-glass p-5">
+      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.setup_title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.setup_body") %></p>
+      <%= button_to t("two_factor.start_setup"), settings_two_factor_path, method: :post, class: "lp-cta mt-4", form: { data: { turbo: false } } %>
+    </section>
+  <% end %>
+</div>
+
+<%= render "shared/lp_dash_nav", active: :you %>

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include TextLimits
+  include UserOtp
 
   has_secure_password
   has_many :sessions, dependent: :destroy
