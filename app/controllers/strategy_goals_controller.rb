@@ -33,6 +33,7 @@ class StrategyGoalsController < ApplicationController
       position: next_position(parent, kind)
     )
     apply_quantity_params!(goal) if kind == "project" && parent&.plan?
+    apply_color_key_params!(goal) if kind == "project"
 
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
@@ -96,6 +97,7 @@ class StrategyGoalsController < ApplicationController
     end
 
     apply_quantity_params!(goal) if goal.path_level_camp?
+    apply_color_key_params!(goal) if goal.project?
 
     if goal.day? && params.key?(:scheduled_on)
       goal.scheduled_on = parse_day_schedule_param(params[:scheduled_on])
@@ -248,6 +250,13 @@ class StrategyGoalsController < ApplicationController
       goal.target_amount = nil
       goal.unit = nil
     end
+  end
+
+  # Leaf-quest accent. Only applied when the form includes color_key.
+  def apply_color_key_params!(goal)
+    return unless params.key?(:color_key)
+
+    goal.color_key = params[:color_key].to_s.strip.presence
   end
 
   def parse_due_on(kind, parent)

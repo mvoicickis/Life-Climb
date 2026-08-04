@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_074231) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -293,6 +293,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_190000) do
   end
 
   create_table "strategy_goals", force: :cascade do |t|
+    t.string "color_key"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.decimal "current_amount", precision: 12, scale: 2, default: "0.0", null: false

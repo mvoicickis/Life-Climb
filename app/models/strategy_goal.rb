@@ -10,6 +10,7 @@ class StrategyGoal < ApplicationRecord
   LEGACY_KINDS = %w[month week].freeze
   LEGACY_KIND = { "year" => "goal" }.freeze
   REPEAT_KINDS = %w[none daily].freeze
+  COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
@@ -34,6 +35,7 @@ class StrategyGoal < ApplicationRecord
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :unit, length: { maximum: 40 }, allow_blank: true
+  validates :color_key, inclusion: { in: COLOR_KEYS }, allow_nil: true
   validate :scheduled_on_required_for_day
   validate :repeat_allowed_for_kind
   validate :due_on_rules
@@ -48,6 +50,7 @@ class StrategyGoal < ApplicationRecord
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
   before_validation :normalize_quantity_fields
+  before_validation :normalize_color_key
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -120,6 +123,12 @@ class StrategyGoal < ApplicationRecord
   # Nested leaf camp — the layer that holds daily practices.
   def nested_leaf_camp?
     project? && parent&.project? && leaf_checkpoint?
+  end
+
+  # Curated accent key for Quest cards / Today rows (nil = default styling).
+  def tagged_color_key
+    key = color_key.to_s.presence
+    COLOR_KEYS.include?(key) ? key : nil
   end
 
   # Path-level project with a numeric target (pages, €, emails, …).
@@ -225,6 +234,12 @@ class StrategyGoal < ApplicationRecord
     self.unit = self.unit.to_s.strip.presence
     self.current_amount = 0 if self.current_amount.nil?
     self.unit = nil if self.target_amount.blank?
+  end
+
+  def normalize_color_key
+    return unless has_attribute?(:color_key)
+
+    self.color_key = color_key.to_s.strip.presence
   end
 
   def quantity_target_rules

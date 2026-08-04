@@ -10,8 +10,10 @@
 <% create_url = host ? strategy_goal_practice_tasks_path(host) : nil %>
 <% qty_project = host&.quantified_path_project %>
 <% board_path = life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: folder.parent_id || folder.id) %>
+<% color_key = folder.tagged_color_key %>
 
-<div class="lp-qs-detail__head">
+<div class="lp-qs-detail__head <%= "has-color is-#{color_key}" if color_key %>"
+     data-controller="plan-card-menu">
   <%= link_to board_path,
         class: "lp-qs-detail__back",
         data: { action: "click->quest-space#close", turbo: true },
@@ -24,6 +26,50 @@
       <%= t("strategy.rpg.objectives_done", done: done, total: total) %>
     </p>
   </div>
+  <button type="button"
+          class="lp-qs-detail__edit"
+          data-plan-card-menu-target="button"
+          data-action="click->plan-card-menu#edit"
+          aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
+    <span aria-hidden="true">✎</span>
+  </button>
+  <dialog class="lp-strategy-sheet is-project"
+          id="quest-edit-<%= folder.id %>"
+          data-plan-card-menu-target="editDialog">
+    <div class="lp-strategy-sheet__panel">
+      <header class="lp-strategy-sheet__head">
+        <p class="lp-strategy-sheet__kind"><%= t("strategy.rpg.new_quest") %></p>
+        <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_checkpoint") %></h2>
+        <button type="button"
+                class="lp-strategy-sheet__close"
+                data-action="click->plan-card-menu#closeEdit"
+                aria-label="<%= t('strategy.sheet.close') %>">×</button>
+      </header>
+      <div class="lp-strategy-sheet__actions">
+        <div class="lp-strategy-sheet__edit">
+          <%= form_with url: strategy_goal_path(folder), method: :patch,
+                class: "lp-strategy-sheet__form",
+                data: { turbo: false } do %>
+            <%= text_field_tag :title, folder.title,
+                  required: true,
+                  maxlength: 120,
+                  id: "quest-edit-title-#{folder.id}",
+                  class: "lp-rpg-input",
+                  autocomplete: "off",
+                  aria: { label: t("strategy.rpg.quest_name_label") } %>
+            <%= render "life_journeys/color_swatch_fields",
+                  selected: color_key,
+                  form_id: "quest-edit-#{folder.id}" %>
+            <div class="lp-strategy-sheet__footer">
+              <%= submit_tag t("strategy.save_changes"),
+                    class: "lp-strategy-sheet__btn is-save",
+                    data: { plan_card_menu_target: "saveButton" } %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </dialog>
 </div>
 
 <div class="lp-qs-detail__objectives" data-quest-space-target="objectives">
