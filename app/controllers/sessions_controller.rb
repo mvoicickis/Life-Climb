@@ -8,6 +8,14 @@ class SessionsController < ApplicationController
   def create
     if user = User.authenticate_by(params.permit(:email_address, :password))
       promote_configured_admin!(user)
+
+      if user.privileged_for_2fa? && user.otp_enabled?
+        stash_pending_2fa!(user)
+        redirect_to new_two_factor_session_path
+        return
+      end
+
+      clear_pending_2fa!
       start_new_session_for user
       redirect_to after_authentication_url
     else

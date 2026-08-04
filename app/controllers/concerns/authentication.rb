@@ -4,6 +4,7 @@ module Authentication
   extend ActiveSupport::Concern
 
   SESSION_TTL = 30.days
+  PENDING_2FA_TTL = 10.minutes
 
   included do
     before_action :require_authentication
@@ -60,7 +61,7 @@ module Authentication
       path = request.fullpath.to_s
       return nil if path.blank?
       return nil unless path.start_with?("/") && !path.start_with?("//")
-      return nil if path.start_with?("/session", "/registration", "/passwords")
+      return nil if path.start_with?("/session", "/registration", "/passwords", "/two_factor_session")
 
       path
     end
@@ -99,5 +100,28 @@ module Authentication
       cookies.delete(:session_id, same_site: :lax, secure: Rails.env.production?)
       Current.reset
       reset_session
+    end
+
+    def stash_pending_2fa!(user)
+      session[:pending_2fa_user_id] = user.id
+      session[:pending_2fa_at] = Time.current.to_i
+    end
+
+    def clear_pending_2fa!
+      session.delete(:pending_2fa_user_id)
+      session.delete(:pending_2fa_at)
+    end
+
+    def pending_2fa_user
+      user_id = session[:pending_2fa_user_id]
+      started = session[:pending_2fa_at].to_i
+      return if user_id.blank? || started.zero?
+
+      if started < PENDING_2FA_TTL.ago.to_i
+        clear_pending_2fa!
+        return nil
+      end
+
+      User.find_by(id: user_id)
     end
 end

@@ -73,6 +73,26 @@
           subtitle: t("share.invite.subtitle") %>
   </section>
 
+  <% if current_user.privileged_for_2fa? && !impersonating? %>
+    <section class="lp-glass p-5" id="you-two-factor">
+      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.settings_title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.settings_card_body") %></p>
+      <div class="mt-4">
+        <%= link_to settings_two_factor_path, class: row_class do %>
+          <span>
+            <%= current_user.otp_enabled? ? t("two_factor.manage") : t("two_factor.set_up") %>
+          </span>
+          <span class="flex min-w-0 items-center gap-2">
+            <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]">
+              <%= current_user.otp_enabled? ? t("two_factor.status_on") : t("two_factor.status_off") %>
+            </span>
+            <%= chevron %>
+          </span>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <% if developer? && !impersonating? %>
     <section class="lp-glass p-5" aria-label="<%= t('developer.tools.title') %>">
       <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("developer.tools.title") %></h2>

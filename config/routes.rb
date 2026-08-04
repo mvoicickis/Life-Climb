@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resource :registration, only: %i[ new create ]
+  resource :two_factor_session, only: %i[ new create destroy ]
 
   root "pages#home"
   resource :dashboard, only: :show, controller: "dashboard"
@@ -10,6 +11,12 @@ Rails.application.routes.draw do
   resource :settings, only: %i[ show update ] do
     get "name/edit", to: "settings#edit_name", as: :edit_name, on: :collection
     get "today_count/edit", to: "settings#edit_today_count", as: :edit_today_count, on: :collection
+  end
+  namespace :settings do
+    resource :two_factor, only: %i[ show create destroy ], controller: "two_factors" do
+      post :confirm
+      post :regenerate_backup_codes
+    end
   end
   patch "settings/reorder", to: "settings#reorder", as: :reorder_settings
   patch "settings/habits/:id", to: "settings#update_habit", as: :settings_habit

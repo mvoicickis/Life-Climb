@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_144500) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_152000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -393,6 +393,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_144500) do
     t.string "locale"
     t.string "name"
     t.datetime "onboarding_completed_at"
+    t.json "otp_backup_codes_digest", default: [], null: false
+    t.datetime "otp_enabled_at"
+    t.text "otp_secret"
     t.string "password_digest", null: false
     t.integer "planning_version", default: 2, null: false
     t.integer "strategy_points", default: 0, null: false
