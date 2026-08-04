@@ -5144,6 +5144,20 @@
   gap: 0.12rem;
   min-width: 0;
 }
+.lp-habit-identity {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--lp-muted, #9aa6b2);
+  line-height: 1.25;
+  font-style: italic;
+}
+.lp-habits__card .lp-habit-identity,
+.lp-habits__detail .lp-habit-identity {
+  margin: 0 0 0.15rem;
+  color: color-mix(in srgb, #f59e0b 45%, #9aa6b2);
+}
 .lp-dash-habit__meta {
   font-size: 0.72rem;
   font-weight: 650;

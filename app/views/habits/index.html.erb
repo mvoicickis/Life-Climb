@@ -19,6 +19,9 @@
         <li class="lp-habits__card has-color is-amber <%= 'is-off' unless habit.active? %>">
           <div class="lp-habits__card-main">
             <div class="lp-habits__card-copy">
+              <% if habit.identity_label.present? %>
+                <p class="lp-habit-identity"><%= habit.identity_label %></p>
+              <% end %>
               <%= link_to habit.name, habit_path(habit), class: "lp-habits__name" %>
               <p class="lp-habits__meta">
                 <%= habit.unit %> · <%= habit.evaluation_label %>

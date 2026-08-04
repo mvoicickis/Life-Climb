@@ -22,7 +22,12 @@
         <span aria-hidden="true"></span>
       <% end %>
     <% end %>
-    <span class="lp-dash-battle__name"><%= habit.name %></span>
+    <div class="lp-dash-habit__copy">
+      <% if habit.identity_label.present? %>
+        <span class="lp-habit-identity"><%= habit.identity_label %></span>
+      <% end %>
+      <span class="lp-dash-battle__name"><%= habit.name %></span>
+    </div>
     <span class="lp-dash-habit__meta"><%= habit.unit %></span>
   </li>
 <% else %>
@@ -34,6 +39,9 @@
       <span aria-hidden="true"></span>
     </span>
     <div class="lp-dash-habit__copy">
+      <% if habit.identity_label.present? %>
+        <span class="lp-habit-identity"><%= habit.identity_label %></span>
+      <% end %>
       <span class="lp-dash-battle__name"><%= habit.name %></span>
       <span class="lp-dash-habit__meta">
         <%= format_amount(amount) %> <%= habit.unit %>

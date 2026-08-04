@@ -29,6 +29,15 @@
   </div>
 
   <div class="lp-habits-form__field">
+    <%= form.label :identity_label, t("habits.identity_label"), class: "lp-habits__field-label" %>
+    <%= form.text_field :identity_label,
+        placeholder: t("habits.identity_placeholder"),
+        maxlength: 120,
+        class: "lp-habits__input" %>
+    <p class="lp-habits__hint"><%= t("habits.identity_hint") %></p>
+  </div>
+
+  <div class="lp-habits-form__field">
     <%= form.label :unit, t("habits.unit_label"), class: "lp-habits__field-label" %>
     <%= form.text_field :unit,
         list: "count-ideas",

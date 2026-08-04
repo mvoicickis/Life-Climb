@@ -24,4 +24,21 @@ class HabitTest < ActiveSupport::TestCase
     habit.life_journey = nil
     assert habit.valid?
   end
+
+  test "identity_label is optional and blank strips to nil" do
+    user = users(:one)
+    habit = user.habits.build(
+      name: "Read", unit: "pages", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth",
+      identity_label: "  I am a reader  "
+    )
+    assert habit.valid?
+    habit.save!
+    assert_equal "I am a reader", habit.identity_label
+
+    habit.identity_label = "   "
+    assert habit.valid?
+    habit.save!
+    assert_nil habit.identity_label
+  end
 end
