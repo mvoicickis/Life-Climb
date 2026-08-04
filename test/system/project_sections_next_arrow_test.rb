@@ -109,14 +109,14 @@ class ProjectSectionsNextArrowTest < ApplicationSystemTestCase
     assert_selector "button.lp-rpg-sections__arrow.is-next:not([hidden])", wait: 5
 
     before = page.evaluate_script("document.querySelector('.lp-rpg-sections__track').scrollLeft").to_f
-    page.evaluate_script(<<~JS)
-      (function() {
-        var btn = document.querySelector('button.lp-rpg-sections__arrow.is-next');
-        btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-        return true;
-      })()
-    JS
-    after = page.evaluate_script("document.querySelector('.lp-rpg-sections__track').scrollLeft").to_f
+    find("button.lp-rpg-sections__arrow.is-next").click
+
+    after = nil
+    40.times do
+      after = page.evaluate_script("document.querySelector('.lp-rpg-sections__track').scrollLeft").to_f
+      break if after > before + 1
+      sleep 0.05
+    end
     assert after > before + 1, "› click should advance scroll (#{before} -> #{after})"
   end
 end

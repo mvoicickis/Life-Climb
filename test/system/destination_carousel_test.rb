@@ -56,7 +56,9 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#strategy-world", wait: 5
     assert_selector ".lp-rpg-destination-carousel.is-multi"
-    assert_selector ".lp-rpg-destination-carousel__title", text: /Ship LifePoints/i
+    # Title uses -webkit-box/line-clamp — Capybara visible-text can false-negative as "".
+    assert_selector ".lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_match(/Ship LifePoints/i, destination_title_text)
     assert_selector ".lp-rpg-destination-carousel__peek.is-next", text: /Health Summit/i
     assert_selector ".lp-rpg-path", text: /Career Path/
     assert_no_selector ".lp-rpg-path", text: /Run Path/
@@ -64,7 +66,8 @@ class DestinationCarouselTest < ApplicationSystemTestCase
 
     find(".lp-rpg-destination-carousel__arrow.is-next").click
 
-    assert_selector ".lp-rpg-destination-carousel__title", text: /Health Summit/i, wait: 5
+    assert_selector ".lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_match(/Health Summit/i, destination_title_text)
     assert_selector ".lp-rpg-path", text: /Run Path/
     assert_no_selector ".lp-rpg-path", text: /Career Path/
   end
@@ -90,5 +93,13 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_selector "#first-climb-coach", wait: 8
     assert StrategyGoal.for_kind("goal").roots.exists?(title: "Family Peak")
     assert_match(/goal_id=\d+/, page.current_url)
+  end
+
+  private
+
+  def destination_title_text
+    page.evaluate_script(<<~JS)
+      (document.querySelector(".lp-rpg-destination-carousel__title")?.textContent || "").trim()
+    JS
   end
 end

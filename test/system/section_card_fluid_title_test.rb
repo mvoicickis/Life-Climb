@@ -65,15 +65,16 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
   end
 
   def title_metrics
     page.evaluate_script(<<~JS)
       (() => {
-        const el = document.querySelector(".lp-rpg-section-card.is-current .lp-rpg-section-card__title");
-        const card = document.querySelector(".lp-rpg-section-card.is-current");
-        const link = document.querySelector(".lp-rpg-section-card.is-current .lp-rpg-section-card__link");
-        const meta = document.querySelector(".lp-rpg-section-card.is-current .lp-rpg-section-card__meta");
+        const el = document.querySelector(".lp-rpg-section-card.is-selected .lp-rpg-section-card__title");
+        const card = document.querySelector(".lp-rpg-section-card.is-selected");
+        const link = document.querySelector(".lp-rpg-section-card.is-selected .lp-rpg-section-card__link");
+        const meta = document.querySelector(".lp-rpg-section-card.is-selected .lp-rpg-section-card__meta");
         if (!el || !card || !link) return { ok: false, reason: "missing" };
         const cs = getComputedStyle(el);
         const r = el.getBoundingClientRect();
@@ -105,10 +106,14 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
   def assert_section_title_readable(section, expected_text, width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
+
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: section.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector ".lp-rpg-section-card.is-current .lp-rpg-section-card__title", visible: :all, wait: 5
-    assert_selector ".lp-rpg-section-card.is-current .lp-rpg-section-card__meta", visible: :all, wait: 5
+    assert_selector ".lp-rpg-section-card.is-selected .lp-rpg-section-card__title", visible: :all, wait: 5
+    assert_selector ".lp-rpg-section-card.is-selected .lp-rpg-section-card__meta", visible: :all, wait: 5
 
     # Capybara visible text must include the full title (not a mid-string ellipsis fragment).
     assert_text expected_text

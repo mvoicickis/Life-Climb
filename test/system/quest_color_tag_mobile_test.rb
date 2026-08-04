@@ -51,8 +51,8 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-checklist.has-color.is-purple", text: /Purple Volume/, wait: 5
     assert_selector ".lp-dash-checklist__obj.has-color.is-purple", text: /Do a lesson/
     assert_selector ".lp-dash-checklist__obj.has-color.is-purple", text: /Review notes/
-    assert_selector ".lp-dash-checklist", text: /Plain Volume/
-    assert_no_selector ".lp-dash-checklist.has-color", text: /Plain Volume/
+    # Quests section defaults to purple; custom color_key overrides (Purple Volume above).
+    assert_selector ".lp-dash-checklist.has-color.is-purple", text: /Plain Volume/
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-today-mobile.png")
   end
 end

@@ -58,9 +58,14 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
     assert_no_selector ".lp-first-climb-shell"
 
-    find("button[data-action='strategy-plan-rail#placeCheckpoint']", wait: 5).click
-    assert_selector "#rpg-add-checkpoint[open]", wait: 3
-    assert_selector "#rpg-add-checkpoint input[name='title']"
+    # Path-focus place-checkpoint is hidden once camps exist; use Project Sections create.
+    page.evaluate_script(<<~JS)
+      document.querySelector('.lp-rpg-sections__item.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
+    JS
+    find(".lp-rpg-sections__new-btn", text: /New Project/i, wait: 5).click
+    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+    assert_selector ".lp-rpg-float-create__heading", text: /New Project/i
+    assert_selector "body > .lp-rpg-float-create input[name='title']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-checkpoint-float-create.png")
@@ -76,13 +81,12 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
 
-    find("button[data-action='strategy-plan-rail#placeCheckpoint']", wait: 5).click
-    assert_selector "#rpg-add-checkpoint[open]", wait: 3
+    find(".lp-rpg-sections__new-btn", text: /New Project/i, wait: 5).click
+    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
 
-    within("#rpg-add-checkpoint") do
-      fill_in "title", with: "Notifications camp"
-      click_button "Add Project"
-    end
+    card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
+    card.fill_in "title", with: "Notifications camp"
+    card.find(".lp-rpg-float-create__btn.is-create").click
 
     assert_selector ".lp-rpg-section-card", text: /Notifications camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
