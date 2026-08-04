@@ -412,7 +412,8 @@ module Progress
 
       catalog = [
         { key: "adventure_guide", icon: "🧭", title: I18n.t("progress.achievements.adventure_guide"), hint: I18n.t("progress.achievements.adventure_guide_hint"), unlocked: @user.adventure_guide_done? },
-        { key: "first_battle", icon: "⚔", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
+        # ✅ — crossed-swords ⚔ reads as an X / “not earned” under the earned heading.
+        { key: "first_battle", icon: "✅", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
         { key: "lp_100", icon: "⚡", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
         { key: "closer_25", icon: "⛰", title: I18n.t("progress.achievements.closer_25"), hint: I18n.t("progress.achievements.closer_25_hint"), unlocked: mountain >= 25 },
         { key: "lp_1000", icon: "⚡", title: I18n.t("progress.achievements.lp_1000"), hint: I18n.t("progress.achievements.lp_1000_hint"), unlocked: total >= 1000 },
@@ -421,8 +422,8 @@ module Progress
         { key: "closer_100", icon: "🏔", title: I18n.t("progress.achievements.closer_100"), hint: I18n.t("progress.achievements.closer_100_hint"), unlocked: mountain >= 100 }
       ]
 
-      unlocked = catalog.select { |a| a[:unlocked] }
-      unlocked.presence || catalog.first(2)
+      # Only earned badges belong under the “already earned” hint — never pad with locked ones.
+      catalog.select { |a| a[:unlocked] }
     end
 
     def insights

@@ -58,14 +58,16 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Journey|Mountain|Action Points/i, response.body)
   end
 
-  test "nav includes mountain today journey you" do
+  test "nav includes mountain today habits journey you" do
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /Today/i
+    assert_select ".lp-dash-nav__link", text: /Habits/i
     assert_select ".lp-dash-nav__link", text: /Journey/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select "a[href=?]", life_points_path
+    assert_select "a[href=?]", habits_path
   end
 
   test "mountain page loads for focused journey" do

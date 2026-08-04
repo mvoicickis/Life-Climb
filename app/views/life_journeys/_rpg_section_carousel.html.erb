@@ -80,12 +80,14 @@
                 <% end %>
 
                 <% card_body = capture do %>
-                  <span class="lp-rpg-section-card__icon <%= 'is-lock' if node.state == :locked %> <%= 'is-done' if node.state == :done %>"
-                        aria-hidden="true">
-                    <% if node.state == :done %>✓<% elsif node.state == :locked %>🔒<% else %>🚩<% end %>
+                  <span class="lp-rpg-section-card__meta">
+                    <span class="lp-rpg-section-card__icon <%= 'is-lock' if node.state == :locked %> <%= 'is-done' if node.state == :done %>"
+                          aria-hidden="true">
+                      <% if node.state == :done %>✓<% elsif node.state == :locked %>🔒<% else %>🚩<% end %>
+                    </span>
+                    <span class="lp-rpg-section-card__badge" aria-hidden="true"><%= idx + 1 %></span>
                   </span>
                   <span class="lp-rpg-section-card__title" title="<%= node.title %>"><%= node.title %></span>
-                  <span class="lp-rpg-section-card__badge" aria-hidden="true"><%= idx + 1 %></span>
                 <% end %>
 
                 <% if playable %>
@@ -112,14 +114,18 @@
                     <span class="lp-rpg-section-card__meter-fill" style="width: <%= pct %>%"></span>
                   </span>
                   <span class="lp-rpg-section-card__bottom">
-                    <% if node.state == :current %>
-                      <span class="lp-rpg-section-card__status"><%= t("strategy.rpg.section_active") %></span>
-                    <% elsif node.state == :done %>
-                      <span class="lp-rpg-section-card__status is-done"><%= t("strategy.rpg.section_done") %></span>
+                    <% if project&.quantified? %>
+                      <span class="lp-rpg-section-card__status is-quantity"><%= strategy_quantity_progress_label(project) %></span>
                     <% else %>
-                      <span class="lp-rpg-section-card__status is-muted" aria-hidden="true">&nbsp;</span>
+                      <% if node.state == :current %>
+                        <span class="lp-rpg-section-card__status"><%= t("strategy.rpg.section_active") %></span>
+                      <% elsif node.state == :done %>
+                        <span class="lp-rpg-section-card__status is-done"><%= t("strategy.rpg.section_done") %></span>
+                      <% else %>
+                        <span class="lp-rpg-section-card__status is-muted" aria-hidden="true">&nbsp;</span>
+                      <% end %>
+                      <span class="lp-rpg-section-card__pct"><%= pct %>%</span>
                     <% end %>
-                    <span class="lp-rpg-section-card__pct"><%= pct %>%</span>
                   </span>
                 <% end %>
               <% else %>
@@ -128,8 +134,12 @@
                     <span class="lp-rpg-section-card__meter-fill" style="width: <%= pct %>%"></span>
                   </div>
                   <div class="lp-rpg-section-card__bottom">
-                    <span class="lp-rpg-section-card__status is-locked"><%= t("strategy.rpg.section_locked_short") %></span>
-                    <span class="lp-rpg-section-card__pct"><%= pct %>%</span>
+                    <% if project&.quantified? %>
+                      <span class="lp-rpg-section-card__status is-quantity is-locked"><%= strategy_quantity_progress_label(project) %></span>
+                    <% else %>
+                      <span class="lp-rpg-section-card__status is-locked"><%= t("strategy.rpg.section_locked_short") %></span>
+                      <span class="lp-rpg-section-card__pct"><%= pct %>%</span>
+                    <% end %>
                   </div>
                 </div>
               <% end %>
@@ -179,6 +189,9 @@
                               class: "lp-rpg-input",
                               autocomplete: "off",
                               aria: { label: t("strategy.rpg.edit_checkpoint") } %>
+                        <%= render "life_journeys/quantity_track_fields",
+                              project: project,
+                              form_id: "section-edit-#{project.id}" %>
                         <div class="lp-strategy-sheet__footer">
                           <%= submit_tag t("strategy.save_changes"),
                                 class: "lp-strategy-sheet__btn is-save",
@@ -265,6 +278,8 @@
                           autocomplete: "off",
                           data: { floating_create_target: "title" } %>
                   </label>
+                  <%= render "life_journeys/quantity_track_fields",
+                        form_id: "rpg-add-section-#{plan.id}" %>
                   <div class="lp-rpg-float-create__actions">
                     <button type="button"
                             class="lp-rpg-float-create__btn is-cancel"

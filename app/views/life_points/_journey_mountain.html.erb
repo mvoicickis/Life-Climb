@@ -4,7 +4,7 @@
 <section class="lp-dash-hero lp-journey-hero" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-hero__copy">
     <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
-    <h2 class="lp-dash-hero__title"><%= goal_title %></h2>
+    <h2 class="lp-dash-hero__title" title="<%= goal_title %>"><%= goal_title %></h2>
     <div class="lp-dash-hero__progress">
       <p class="lp-dash-hero__pct"><%= closer %>%</p>
       <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">

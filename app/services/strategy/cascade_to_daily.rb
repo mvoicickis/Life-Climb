@@ -57,7 +57,7 @@ module Strategy
       return false if todo.persisted? && todo.completed?
 
       todo.assign_attributes(
-        title: goal.title,
+        title: display_title_for(goal),
         aspect_key: goal.aspect_key,
         position: goal.position,
         lp_reward: GameRules::BATTLE_TODO_LP,
@@ -69,6 +69,10 @@ module Strategy
       end
       todo.save!
       todo.previously_new_record?
+    end
+
+    def display_title_for(goal)
+      Strategy::EnsureFolderQuest.display_title_for(goal)
     end
   end
 end

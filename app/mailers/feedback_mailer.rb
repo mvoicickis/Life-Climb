@@ -2,11 +2,12 @@ class FeedbackMailer < ApplicationMailer
   def submission(feedback)
     @feedback = feedback
     @user = feedback.user
+    who = @user&.email_address.presence || "anonymous visitor"
 
     mail(
       to: feedback_recipient,
-      reply_to: @user.email_address,
-      subject: "LifePoints feedback from #{@user.email_address}"
+      reply_to: @user&.email_address,
+      subject: "LifePoints feedback from #{who}"
     )
   end
 

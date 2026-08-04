@@ -1,0 +1,133 @@
+<%# locals: todo, section_color: "purple" %>
+<%
+  day = todo.strategy_goal
+  tasks = day&.practice_tasks&.sort_by { |t| [ t.position.to_i, t.id ] } || []
+  done_n = tasks.count(&:completed?)
+  total_n = tasks.size
+  open_n = total_n - done_n
+  shell_ready = open_n.zero?
+  qty_project = day&.quantified_path_project
+  row_done = todo.completed?
+  # Custom quest color overrides the Quests-section default (purple).
+  color_key = day&.parent&.tagged_color_key.presence || local_assigns.fetch(:section_color, "purple")
+  color_class = "has-color is-#{color_key}"
+%>
+<li class="lp-dash-battle__item lp-dash-checklist <%= 'is-done' if row_done %> <%= color_class %>"
+    data-battle-day-target="item"
+    data-open="<%= row_done ? 'false' : 'true' %>"
+    data-lp="<%= todo.lp_reward %>">
+  <div class="lp-dash-checklist__head">
+    <% if row_done %>
+      <%= button_to complete_daily_todo_path(todo),
+            method: :post,
+            class: "lp-dash-check is-on",
+            aria: { label: "Undo #{todo.title}" } do %>
+        <span aria-hidden="true"></span>
+      <% end %>
+    <% elsif shell_ready %>
+      <%# Checklist quantity is logged on opted-in objectives — shell is AP-only. %>
+      <%= button_to complete_daily_todo_path(todo),
+            method: :post,
+            class: "lp-dash-check",
+            aria: { label: "Complete #{todo.title}" } do %>
+        <span aria-hidden="true"></span>
+      <% end %>
+    <% else %>
+      <span class="lp-dash-check is-locked"
+            role="img"
+            aria-label="<%= t('dash.checklist_locked', title: todo.title) %>">
+        <span aria-hidden="true"></span>
+      </span>
+    <% end %>
+
+    <div class="lp-dash-checklist__copy">
+      <span class="lp-dash-battle__name"><%= todo.title %></span>
+      <span class="lp-dash-checklist__progress">
+        <%= t("dash.checklist_progress", done: done_n, total: total_n) %>
+      </span>
+    </div>
+    <span class="lp-dash-battle__lp" aria-label="+<%= todo.lp_reward %> <%= t('dash.action_points_label') %>">+<%= todo.lp_reward %></span>
+  </div>
+
+  <details class="lp-dash-checklist__body"<%= " open" unless row_done %>>
+    <summary class="lp-dash-checklist__summary">
+      <%= t("dash.checklist_objectives") %>
+    </summary>
+    <ul class="lp-dash-checklist__list">
+      <% tasks.each do |task| %>
+        <% track = task.tracks_quantity? && qty_project %>
+        <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %> <%= color_class %>"
+            <% if track && !task.completed? %>
+              data-controller="quantity-complete"
+            <% end %>>
+          <%= button_to practice_task_path(task),
+                method: :patch,
+                params: { completed: task.completed? ? "0" : "1" },
+                form: (track && !task.completed? ? {
+                  data: {
+                    quantity_complete_target: "form",
+                    action: "submit->quantity-complete#intercept"
+                  }
+                } : {}),
+                class: "lp-dash-check #{'is-on' if task.completed?}",
+                aria: {
+                  label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}")
+                } do %>
+            <span aria-hidden="true"></span>
+          <% end %>
+          <% if track && !task.completed? %>
+            <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
+                    id="qty-obj-<%= task.id %>"
+                    data-quantity-complete-target="dialog"
+                    data-action="click->quantity-complete#backdropClose">
+              <div class="lp-strategy-sheet__panel">
+                <header class="lp-strategy-sheet__head">
+                  <p class="lp-strategy-sheet__kind"><%= task.title %></p>
+                  <h2 class="lp-strategy-sheet__title">
+                    <%= t("strategy.quantity.how_many", unit: qty_project.unit) %>
+                  </h2>
+                  <button type="button"
+                          class="lp-strategy-sheet__close"
+                          data-action="click->quantity-complete#close"
+                          aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                </header>
+                <form class="lp-strategy-sheet__form lp-quantity-complete__form"
+                      data-action="submit->quantity-complete#confirm">
+                  <label class="lp-quantity-complete__field" for="qty-obj-input-<%= task.id %>">
+                    <span class="lp-quantity-complete__label"><%= qty_project.unit %></span>
+                    <%= number_field_tag :dialog_amount, nil,
+                          id: "qty-obj-input-#{task.id}",
+                          class: "lp-rpg-input lp-quantity-complete__input",
+                          min: "0.01",
+                          step: "any",
+                          inputmode: "decimal",
+                          required: true,
+                          autocomplete: "off",
+                          placeholder: "0",
+                          data: { quantity_complete_target: "amount" } %>
+                  </label>
+                  <div class="lp-strategy-sheet__footer is-split">
+                    <button type="button"
+                            class="lp-strategy-sheet__btn is-cancel"
+                            data-action="click->quantity-complete#close">
+                      <%= t("strategy.rpg.cancel") %>
+                    </button>
+                    <button type="submit" class="lp-strategy-sheet__btn is-save">
+                      <%= t("strategy.quantity.log_confirm") %>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </dialog>
+          <% end %>
+          <span class="lp-dash-checklist__obj-name">
+            <%= task.title %>
+            <% if task.track_quantity? && qty_project %>
+              <em class="lp-dash-checklist__obj-track"><%= t("strategy.quantity.track_objective_badge", unit: qty_project.unit) %></em>
+            <% end %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  </details>
+</li>

@@ -65,7 +65,8 @@
                  aria-current="true">
               <span class="lp-rpg-destination-carousel__icon" aria-hidden="true">🏔</span>
               <div class="lp-rpg-destination-carousel__title-row">
-                <h1 class="lp-rpg-destination-carousel__title"><%= goal.title %></h1>
+                <% destination_title = goal&.title.presence || @journey.title %>
+                <h1 class="lp-rpg-destination-carousel__title" title="<%= destination_title %>"><%= destination_title %></h1>
                 <button type="button"
                         class="lp-rpg-destination-menu__btn"
                         data-plan-card-menu-target="button"

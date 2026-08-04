@@ -5,10 +5,12 @@ class Habit < ApplicationRecord
   STAT_TYPES = %w[growth standard].freeze
 
   belongs_to :user
+  belongs_to :life_journey, optional: true
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 120 }
+  validates :identity_label, length: { maximum: 120 }, allow_nil: true
   validates :points, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 100 }
   validates :description, length: { maximum: 2_000 }, allow_nil: true
   validates :frequency, inclusion: { in: FREQUENCIES }
@@ -20,9 +22,11 @@ class Habit < ApplicationRecord
   validates :max_value, numericality: true, allow_nil: true
   validate :healthy_range_bounds
   validate :max_not_below_min
+  validate :life_journey_belongs_to_user
 
   before_validation :normalize_unit
   before_validation :normalize_stat_fields
+  before_validation :normalize_identity_label
   before_create :assign_next_position
 
   scope :active, -> { where(active: true) }
@@ -35,6 +39,15 @@ class Habit < ApplicationRecord
 
   def standard?
     stat_type == "standard"
+  end
+
+  # Today UX: quantity loggers (pages/steps/hours/goals) vs one-tap checkbox dailies.
+  def quantity_checkin?
+    standard? || goal.present? || !%w[times].include?(unit.to_s.downcase)
+  end
+
+  def binary_checkin?
+    !quantity_checkin?
   end
 
   def better_than_yesterday?
@@ -166,6 +179,10 @@ class Habit < ApplicationRecord
     self.unit = unit.to_s.strip.downcase.presence || "times"
   end
 
+  def normalize_identity_label
+    self.identity_label = identity_label.to_s.strip.presence
+  end
+
   def normalize_stat_fields
     self.stat_type = stat_type.to_s.presence || "growth"
     self.goal = nil if goal.blank?
@@ -200,5 +217,12 @@ class Habit < ApplicationRecord
 
     max_position = user&.habits&.maximum(:position) || 0
     self.position = max_position + 1
+  end
+
+  def life_journey_belongs_to_user
+    return if life_journey_id.blank?
+    return if user&.life_journeys&.exists?(id: life_journey_id)
+
+    errors.add(:life_journey_id, :invalid)
   end
 end

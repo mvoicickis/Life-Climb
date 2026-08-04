@@ -1,4 +1,4 @@
-<%# Primary nav — Mountain · Today · Journey · You %>
+<%# Primary nav — Mountain · Today · Habits · Journey · You %>
 <% active = local_assigns.fetch(:active, :today).to_s %>
 <% active = "mountain" if active == "strategy" %>
 <%
@@ -36,6 +36,16 @@
       </svg>
     </span>
     <span><%= t("dash.nav.today") %></span>
+  <% end %>
+
+  <%= link_to habits_path, class: "lp-dash-nav__link #{'is-active' if active == 'habits'}" do %>
+    <span class="lp-dash-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 5.5 H16 A2.5 2.5 0 0 1 18.5 8 V16 A2.5 2.5 0 0 1 16 18.5 H8 A2.5 2.5 0 0 1 5.5 16 V8 A2.5 2.5 0 0 1 8 5.5 Z"/>
+        <path d="M8.8 12.1 L11 14.2 L15.3 9.6"/>
+      </svg>
+    </span>
+    <span><%= t("dash.nav.habits") %></span>
   <% end %>
 
   <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>

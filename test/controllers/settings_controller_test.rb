@@ -21,10 +21,29 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a#you-row-today-count", count: 0
     assert_select "a[href=?]", edit_name_settings_path
     assert_select "a#you-row-life-area", count: 0
+    assert_select "#you-character"
+    assert_select "#you-character input[name='user[character]'][value=man]"
+    assert_select "#you-character input[name='user[character]'][value=woman]"
+    assert_select "#you-character img[src*='character-man']"
+    assert_select "#you-character img[src*='character-woman']"
+    assert_select "#you-language"
+    assert_select "#you-language form[action=?]", locale_path(locale: :en)
+    assert_select "#you-language form[action=?]", locale_path(locale: :ru)
     assert_select "a[href=?]", support_path
     assert_select "a[href=?]", new_password_path
     assert_select "a[href=?]", about_path, count: 0
     assert_select "a[href=?]", new_feedback_path
+  end
+
+  test "update character from settings" do
+    user = users(:one)
+    sign_in_as user
+    assert_nil user.character
+
+    patch settings_path, params: { user: { character: "woman" } }
+    assert_redirected_to settings_path(highlight: "character")
+    assert_equal "woman", user.reload.character
+    assert_equal "characters/character-woman.png", user.character_image
   end
 
   test "edit name page and update" do

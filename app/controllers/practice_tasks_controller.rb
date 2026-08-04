@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Objectives inside a Quest Folder checklist on Mountain.
+# Objectives inside a Quest Folder checklist on Mountain (plan) / Today (complete).
 class PracticeTasksController < ApplicationController
   before_action :require_planning_v2
 
@@ -16,12 +16,14 @@ class PracticeTasksController < ApplicationController
       task = practice.practice_tasks.new(
         user: current_user,
         title: title,
-        position: position
+        position: position,
+        track_quantity: track_quantity_param_for(practice)
       )
       task.save!
       task.complete! if ActiveModel::Type::Boolean.new.cast(params[:completed])
     end
 
+    Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
     redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
@@ -35,35 +37,117 @@ class PracticeTasksController < ApplicationController
     task = current_user.practice_tasks.find(params[:id])
     practice = task.strategy_goal
 
-    if params.key?(:title)
-      task.update!(title: params.require(:title).to_s.strip)
-    elsif params.key?(:completed)
-      if ActiveModel::Type::Boolean.new.cast(params[:completed])
-        task.complete!
+    if params.key?(:completed)
+      completing = ActiveModel::Type::Boolean.new.cast(params[:completed])
+      if completing
+        unless complete_objective!(task, practice)
+          return
+        end
       else
+        Strategy::Quantity::Unlog.call(practice_task: task)
         task.reopen!
+        reopen_checklist_day_if_needed!(practice)
       end
+      Journeys::SyncClimbFromToday.call(user: current_user)
+      redirect_to dashboard_path, status: :see_other
+    elsif params.key?(:title) || params.key?(:track_quantity)
+      attrs = {}
+      attrs[:title] = params.require(:title).to_s.strip if params.key?(:title)
+      attrs[:track_quantity] = track_quantity_param_for(practice) if params.key?(:track_quantity)
+      task.update!(attrs)
+      redirect_to mountain_focus_path(practice), status: :see_other
+    else
+      redirect_to dashboard_path, status: :see_other
     end
-
-    redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   rescue ActiveRecord::RecordInvalid => e
-    redirect_to mountain_focus_path(e.record.strategy_goal),
-                alert: e.record.errors.full_messages.to_sentence,
-                status: :see_other
+    redirect_to(
+      (params.key?(:completed) ? dashboard_path : mountain_focus_path(e.record.strategy_goal)),
+      alert: e.record.errors.full_messages.to_sentence,
+      status: :see_other
+    )
   end
 
   def destroy
     task = current_user.practice_tasks.find(params[:id])
     practice = task.strategy_goal
     task.destroy!
+    Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
     redirect_to mountain_focus_path(practice), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
   private
+
+  def complete_objective!(task, practice)
+    project = practice.quantified_path_project
+    if task.tracks_quantity?
+      unless valid_quantity_amount?(params[:amount])
+        redirect_to dashboard_path,
+                    alert: t("strategy.quantity.amount_required", unit: project&.unit),
+                    status: :see_other
+        return false
+      end
+
+      Strategy::Quantity::Log.call(
+        project: project,
+        amount: params[:amount],
+        user: current_user,
+        source_day: practice,
+        daily_todo: linked_today_todo(practice),
+        practice_task: task
+      )
+    end
+
+    task.complete!
+    finish_checklist_day_if_ready!(practice)
+    true
+  end
+
+  def finish_checklist_day_if_ready!(practice)
+    return unless practice.all_objectives_complete?
+
+    Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
+    todo = linked_today_todo(practice)
+    return if todo.blank? || todo.completed?
+
+    # Checklist quantity (if any) already logged on opted-in objectives — no second prompt.
+    result = Battles::CompleteTodo.call(todo: todo, user: current_user, session: session)
+    flash[:ap_gained] = todo.lp_reward.to_i
+    flash[:battle_celebrate] = true
+    maybe_milestone_climb_reward!(
+      awarded: todo.lp_reward.to_i,
+      streak: result.streak,
+      personal_best: result.personal_best_new
+    )
+  end
+
+  def reopen_checklist_day_if_needed!(practice)
+    todo = linked_today_todo(practice)
+    return if todo.blank? || !todo.completed?
+
+    Battles::UncompleteTodo.call(todo: todo, user: current_user, reset_objectives: false)
+  end
+
+  def track_quantity_param_for(practice)
+    return false if practice.quantified_path_project.blank?
+
+    ActiveModel::Type::Boolean.new.cast(params[:track_quantity])
+  end
+
+  def valid_quantity_amount?(raw)
+    return false if raw.blank?
+
+    BigDecimal(raw.to_s).positive?
+  rescue ArgumentError
+    false
+  end
+
+  def linked_today_todo(practice)
+    current_user.daily_todos.for_day(Date.current).find_by(strategy_goal_id: practice.id)
+  end
 
   def parse_position(raw, practice)
     return next_position(practice) if raw.blank?
@@ -97,6 +181,24 @@ class PracticeTasksController < ApplicationController
       goal_id: goal&.id,
       plan_id: plan&.id,
       focus_id: camp&.id
+    )
+  end
+
+  def maybe_milestone_climb_reward!(awarded:, streak:, personal_best:)
+    milestone = personal_best || streak.earned_freeze
+    return unless milestone
+
+    flash[:climb_boss] = true
+    journey = current_user.primary_focused_journey
+    goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+    flash[:climb_reward] = Climb::Reward.for_battle(
+      user: current_user,
+      awarded: awarded,
+      goal: goal,
+      streak_days: streak.days,
+      personal_best: personal_best,
+      earned_freeze: streak.earned_freeze,
+      boss: true
     )
   end
 

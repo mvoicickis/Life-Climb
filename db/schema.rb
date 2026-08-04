@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_112644) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -86,9 +86,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
 
   create_table "feedbacks", force: :cascade do |t|
     t.text "body", null: false
+    t.string "contact_info"
     t.datetime "created_at", null: false
+    t.boolean "ok_to_contact", default: false, null: false
+    t.string "page_context"
+    t.integer "rating"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
+    t.index ["page_context"], name: "index_feedbacks_on_page_context"
     t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
@@ -138,6 +143,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
     t.string "frequency", default: "daily", null: false
     t.decimal "goal", precision: 12, scale: 2
     t.date "goal_raise_declined_on"
+    t.string "identity_label"
+    t.integer "life_journey_id"
     t.decimal "max_value", precision: 12, scale: 2
     t.decimal "min_value", precision: 12, scale: 2
     t.string "name", null: false
@@ -148,6 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
     t.string "unit", default: "times", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["life_journey_id"], name: "index_habits_on_life_journey_id"
     t.index ["user_id", "position"], name: "index_habits_on_user_id_and_position"
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
@@ -262,6 +270,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
     t.integer "position", default: 0, null: false
     t.integer "strategy_goal_id", null: false
     t.string "title", null: false
+    t.boolean "track_quantity", default: false, null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["strategy_goal_id", "position"], name: "index_practice_tasks_on_strategy_goal_id_and_position"
@@ -292,8 +301,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
   end
 
   create_table "strategy_goals", force: :cascade do |t|
+    t.string "color_key"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.decimal "current_amount", precision: 12, scale: 2, default: "0.0", null: false
     t.text "description"
     t.date "due_on"
     t.string "horizon", null: false
@@ -303,7 +314,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
     t.integer "position", default: 0, null: false
     t.string "repeat", default: "none", null: false
     t.date "scheduled_on"
+    t.decimal "target_amount", precision: 12, scale: 2
     t.string "title", null: false
+    t.string "unit"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
@@ -326,6 +339,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
     t.integer "user_id", null: false
     t.index ["source_type", "source_id"], name: "index_strategy_point_ledgers_on_source_type_and_source_id"
     t.index ["user_id"], name: "index_strategy_point_ledgers_on_user_id"
+  end
+
+  create_table "strategy_quantity_logs", force: :cascade do |t|
+    t.decimal "amount", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.integer "daily_todo_id"
+    t.date "logged_on", null: false
+    t.integer "practice_task_id"
+    t.integer "source_day_id"
+    t.integer "strategy_goal_id", null: false
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["daily_todo_id"], name: "index_strategy_quantity_logs_on_daily_todo_id"
+    t.index ["practice_task_id"], name: "index_strategy_quantity_logs_on_practice_task_id"
+    t.index ["practice_task_id"], name: "index_strategy_quantity_logs_on_practice_task_id_unique", unique: true, where: "practice_task_id IS NOT NULL"
+    t.index ["source_day_id"], name: "index_strategy_quantity_logs_on_source_day_id"
+    t.index ["strategy_goal_id", "logged_on"], name: "index_strategy_quantity_logs_on_strategy_goal_id_and_logged_on"
+    t.index ["strategy_goal_id"], name: "index_strategy_quantity_logs_on_strategy_goal_id"
+    t.index ["user_id", "logged_on"], name: "index_strategy_quantity_logs_on_user_id_and_logged_on"
+    t.index ["user_id"], name: "index_strategy_quantity_logs_on_user_id"
   end
 
   create_table "today_actions", force: :cascade do |t|
@@ -356,6 +390,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
     t.string "email_address", null: false
     t.integer "focus_building_id"
     t.integer "home_stat_count", default: 6, null: false
+    t.string "locale"
     t.string "name"
     t.datetime "onboarding_completed_at"
     t.string "password_digest", null: false
@@ -386,6 +421,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
   add_foreign_key "goals", "dreams"
   add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
+  add_foreign_key "habits", "life_journeys"
   add_foreign_key "habits", "users"
   add_foreign_key "journey_targets", "life_journeys"
   add_foreign_key "journey_targets", "users"
@@ -406,6 +442,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_140158) do
   add_foreign_key "strategy_goals", "strategy_goals", column: "parent_id"
   add_foreign_key "strategy_goals", "users"
   add_foreign_key "strategy_point_ledgers", "users"
+  add_foreign_key "strategy_quantity_logs", "daily_todos"
+  add_foreign_key "strategy_quantity_logs", "practice_tasks"
+  add_foreign_key "strategy_quantity_logs", "strategy_goals"
+  add_foreign_key "strategy_quantity_logs", "strategy_goals", column: "source_day_id"
+  add_foreign_key "strategy_quantity_logs", "users"
   add_foreign_key "today_actions", "buildings"
   add_foreign_key "today_actions", "users"
   add_foreign_key "users", "buildings", column: "focus_building_id"

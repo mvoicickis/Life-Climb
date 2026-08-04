@@ -46,8 +46,24 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-qs-detail__title", text: /Camp/
     assert_select ".lp-qs-obj__text[value='Design layout']"
     assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-qs-detail__add-btn", text: /\AAdd\z/
     assert_select ".lp-rpg-practice-folder__plan-hint", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+  end
+
+  test "quest detail checkboxes are status-only without complete action" do
+    task = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_response :success
+    assert_select "button.lp-qs-obj__check", count: 0
+    assert_select "span.lp-qs-obj__check[aria-label=?]", "Design layout — not done yet"
+    assert_select ".lp-qs-obj__check[data-action]", count: 0
+    assert_select ".lp-qs-detail__add-btn"
+
+    task.complete!
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_select "span.lp-qs-obj__check.is-done[aria-label=?]", "Design layout — done"
   end
 
   test "create with position inserts and shifts siblings" do
@@ -72,19 +88,21 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "New name", task.reload.title
   end
 
-  test "completing objectives does not auto-complete the host day" do
+  test "completing the last objective on Today finishes the host day" do
     first = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
     second = @practice.practice_tasks.create!(user: @user, title: "Polish header", position: 1)
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @practice.id)
 
     patch practice_task_path(first), params: { completed: "1" }
-    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_redirected_to dashboard_path
     assert_not @practice.reload.completed?
+    assert_not todo.reload.completed?
 
     patch practice_task_path(second), params: { completed: "1" }
-    follow_redirect!
-    assert_not @practice.reload.completed?
-    assert_select ".lp-qs-obj__check.is-done", minimum: 2
-    assert_select ".lp-rpg-practice-finish__copy", count: 0
+    assert_redirected_to dashboard_path
+    assert @practice.reload.completed?
+    assert todo.reload.completed?
   end
 
   test "destroy removes an objective" do

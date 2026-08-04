@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :life_point_ledgers, dependent: :destroy
   has_many :strategy_point_ledgers, dependent: :destroy
   has_many :strategy_goals, dependent: :destroy
+  has_many :strategy_quantity_logs, dependent: :destroy
   has_many :practice_tasks, dependent: :destroy
   has_many :life_journeys, dependent: :destroy
   has_many :missions, dependent: :destroy
@@ -42,6 +43,9 @@ class User < ApplicationRecord
   }
   validates :character, inclusion: { in: %w[man woman] }, allow_nil: true
   validates :planning_version, inclusion: { in: [ 1, 2 ] }
+  validates :locale, inclusion: {
+    in: ->(_) { I18n.available_locales.map(&:to_s) }
+  }, allow_nil: true
 
   CHARACTERS = %w[man woman].freeze
 

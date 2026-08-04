@@ -1,21 +1,31 @@
-<%# locals: todos, open_todos, done_todos, mission, include_mission, reward, open_count, total_count, aspect_key, upcoming %>
+<%# locals: todos, open_todos, done_todos, mission, include_mission, open_count, total_count, aspect_key, upcoming, habits %>
 <%
   open_todos = local_assigns.fetch(:open_todos) { todos.reject(&:completed?) }
   done_todos = local_assigns.fetch(:done_todos) { todos.select(&:completed?) }
   total_count = local_assigns.fetch(:total_count) { todos.size + (include_mission ? 1 : 0) }
   upcoming = local_assigns[:upcoming]
-  battle_empty = open_todos.empty? && done_todos.empty? && !include_mission
-  battle_won = !battle_empty && open_count.to_i.zero?
+  habits = local_assigns.fetch(:habits) { @habits || [] }
+  handoff = @strategy_handoff
+  open_battles = open_todos.reject { |t| t.strategy_goal&.practice_tasks.present? }
+  open_quests = open_todos.select { |t| t.strategy_goal&.practice_tasks.present? }
+  done_battles = done_todos.reject { |t| t.strategy_goal&.practice_tasks.present? }
+  done_quests = done_todos.select { |t| t.strategy_goal&.practice_tasks.present? }
+  battle_empty = open_battles.empty? && done_battles.empty? && !include_mission
+  quest_empty = open_quests.empty? && done_quests.empty?
+  habit_empty = habits.blank?
+  day_empty = battle_empty && quest_empty && habit_empty
+  battle_won = !day_empty && open_count.to_i.zero?
   done_count = [ total_count.to_i - open_count.to_i, 0 ].max
   ring_pct = total_count.to_i.positive? ? ((done_count.to_f / total_count) * 100).round : 0
   ring_pct = 100 if battle_won
+  coaching_below = @project_check.present? || (@battle_angle_project.present? && @battle_angles.present?)
 %>
 
 <section class="lp-dash-battle" aria-label="<%= t('dash.battle_title') %>">
   <header class="lp-dash-battle__head">
     <div class="lp-dash-battle__title-row">
       <h2 class="lp-dash-battle__title"><%= t("dash.battle_title") %></h2>
-      <% unless battle_empty %>
+      <% unless day_empty %>
         <div class="lp-dash-battle__ring"
              data-battle-day-target="ring"
              style="--lp-ring: <%= ring_pct %>"
@@ -33,8 +43,7 @@
     <p class="lp-dash-battle__sub"><%= t("dash.battle_subtitle") %></p>
   </header>
 
-  <% if battle_empty %>
-    <% handoff = @strategy_handoff %>
+  <% if day_empty %>
     <div class="lp-dash-battle__empty">
       <p class="lp-dash-empty"><%= t("dash.battle_empty") %></p>
       <p class="lp-dash-battle__empty-cta">
@@ -53,92 +62,200 @@
       <% end %>
     </div>
   <% else %>
-    <ul class="lp-dash-battle__list">
-      <% if include_mission && mission %>
-        <li class="lp-dash-battle__item"
-            data-battle-day-target="item"
-            data-open="true"
-            data-lp="<%= mission.lp_reward %>">
-          <%= button_to mission_completion_path(mission),
-                method: :post,
-                params: { aspect_key: mission.aspect_key.presence || aspect_key },
-                class: "lp-dash-check",
-                aria: { label: "Complete #{mission.title}" } do %>
-            <span aria-hidden="true"></span>
-          <% end %>
-          <span class="lp-dash-battle__name"><%= mission.title %></span>
-          <span class="lp-dash-battle__lp" aria-label="+<%= mission.lp_reward %> <%= t('dash.action_points_label') %>">+<%= mission.lp_reward %></span>
-        </li>
-      <% end %>
-
-      <% open_todos.each do |todo| %>
-        <li class="lp-dash-battle__item"
-            data-battle-day-target="item"
-            data-open="true"
-            data-lp="<%= todo.lp_reward %>">
-          <%= button_to complete_daily_todo_path(todo),
-                method: :post,
-                class: "lp-dash-check",
-                aria: { label: "Complete #{todo.title}" } do %>
-            <span aria-hidden="true"></span>
-          <% end %>
-          <span class="lp-dash-battle__name"><%= todo.title %></span>
-          <span class="lp-dash-battle__lp" aria-label="+<%= todo.lp_reward %> <%= t('dash.action_points_label') %>">+<%= todo.lp_reward %></span>
-        </li>
-      <% end %>
-    </ul>
-
-    <% if done_todos.any? %>
-      <details class="lp-dash-battle__done"<%= " open" if battle_won %>>
-        <summary><%= t("dash.battle_done_summary", count: done_todos.size) %></summary>
-        <ul class="lp-dash-battle__list lp-dash-battle__list--done">
-          <% done_todos.each do |todo| %>
-            <li class="lp-dash-battle__item is-done"
+    <%# ——— BATTLES ——— %>
+    <section class="lp-dash-section is-battles" aria-labelledby="dash-sec-battles">
+      <h3 id="dash-sec-battles" class="lp-dash-section__label"><%= t("dash.section_battles") %></h3>
+      <% if battle_empty %>
+        <p class="lp-dash-section__empty"><%= t("dash.battle_empty") %></p>
+      <% else %>
+        <ul class="lp-dash-battle__list">
+          <% if include_mission && mission %>
+            <li class="lp-dash-battle__item has-color is-teal"
                 data-battle-day-target="item"
-                data-open="false"
-                data-lp="<%= todo.lp_reward %>">
+                data-open="true"
+                data-lp="<%= mission.lp_reward %>">
+              <%= button_to mission_completion_path(mission),
+                    method: :post,
+                    params: { aspect_key: mission.aspect_key.presence || aspect_key },
+                    class: "lp-dash-check",
+                    aria: { label: "Complete #{mission.title}" } do %>
+                <span aria-hidden="true"></span>
+              <% end %>
+              <span class="lp-dash-battle__name"><%= mission.title %></span>
+              <span class="lp-dash-battle__lp" aria-label="+<%= mission.lp_reward %> <%= t('dash.action_points_label') %>">+<%= mission.lp_reward %></span>
+            </li>
+          <% end %>
+
+          <% open_battles.each do |todo| %>
+            <% qty_project = todo.strategy_goal&.quantified_path_project %>
+            <li class="lp-dash-battle__item has-color is-teal"
+                data-battle-day-target="item"
+                data-open="true"
+                data-lp="<%= todo.lp_reward %>"
+                <% if qty_project %>
+                  data-controller="quantity-complete"
+                <% end %>>
               <%= button_to complete_daily_todo_path(todo),
                     method: :post,
-                    class: "lp-dash-check is-on",
-                    aria: { label: "Undo #{todo.title}" } do %>
+                    form: (qty_project ? {
+                      data: {
+                        quantity_complete_target: "form",
+                        action: "submit->quantity-complete#intercept"
+                      }
+                    } : {}),
+                    class: "lp-dash-check",
+                    aria: { label: "Complete #{todo.title}" } do %>
                 <span aria-hidden="true"></span>
+              <% end %>
+              <% if qty_project %>
+                <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
+                        id="qty-complete-<%= todo.id %>"
+                        data-quantity-complete-target="dialog"
+                        data-action="click->quantity-complete#backdropClose">
+                  <div class="lp-strategy-sheet__panel">
+                    <header class="lp-strategy-sheet__head">
+                      <p class="lp-strategy-sheet__kind"><%= todo.title %></p>
+                      <h2 class="lp-strategy-sheet__title">
+                        <%= t("strategy.quantity.how_many", unit: qty_project.unit) %>
+                      </h2>
+                      <button type="button"
+                              class="lp-strategy-sheet__close"
+                              data-action="click->quantity-complete#close"
+                              aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                    </header>
+                    <form class="lp-strategy-sheet__form lp-quantity-complete__form"
+                          data-action="submit->quantity-complete#confirm">
+                      <label class="lp-quantity-complete__field" for="qty-complete-input-<%= todo.id %>">
+                        <span class="lp-quantity-complete__label"><%= qty_project.unit %></span>
+                        <%= number_field_tag :dialog_amount, nil,
+                              id: "qty-complete-input-#{todo.id}",
+                              class: "lp-rpg-input lp-quantity-complete__input",
+                              min: "0.01",
+                              step: "any",
+                              inputmode: "decimal",
+                              required: true,
+                              autocomplete: "off",
+                              placeholder: "0",
+                              data: { quantity_complete_target: "amount" } %>
+                      </label>
+                      <div class="lp-strategy-sheet__footer is-split">
+                        <button type="button"
+                                class="lp-strategy-sheet__btn is-cancel"
+                                data-action="click->quantity-complete#close">
+                          <%= t("strategy.rpg.cancel") %>
+                        </button>
+                        <button type="submit" class="lp-strategy-sheet__btn is-save">
+                          <%= t("strategy.quantity.log_confirm") %>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </dialog>
               <% end %>
               <span class="lp-dash-battle__name"><%= todo.title %></span>
               <span class="lp-dash-battle__lp" aria-label="+<%= todo.lp_reward %> <%= t('dash.action_points_label') %>">+<%= todo.lp_reward %></span>
             </li>
           <% end %>
         </ul>
-      </details>
-    <% end %>
+
+        <% if done_battles.any? %>
+          <details class="lp-dash-battle__done"<%= " open" if battle_won && quest_empty %>>
+            <summary><%= t("dash.battle_done_summary", count: done_battles.size) %></summary>
+            <ul class="lp-dash-battle__list lp-dash-battle__list--done">
+              <% done_battles.each do |todo| %>
+                <li class="lp-dash-battle__item is-done has-color is-teal"
+                    data-battle-day-target="item"
+                    data-open="false"
+                    data-lp="<%= todo.lp_reward %>">
+                  <%= button_to complete_daily_todo_path(todo),
+                        method: :post,
+                        class: "lp-dash-check is-on",
+                        aria: { label: "Undo #{todo.title}" } do %>
+                    <span aria-hidden="true"></span>
+                  <% end %>
+                  <span class="lp-dash-battle__name"><%= todo.title %></span>
+                  <span class="lp-dash-battle__lp" aria-label="+<%= todo.lp_reward %> <%= t('dash.action_points_label') %>">+<%= todo.lp_reward %></span>
+                </li>
+              <% end %>
+            </ul>
+          </details>
+        <% end %>
+      <% end %>
+    </section>
+
+    <%# ——— QUESTS ——— %>
+    <section class="lp-dash-section is-quests" aria-labelledby="dash-sec-quests">
+      <h3 id="dash-sec-quests" class="lp-dash-section__label"><%= t("dash.section_quests") %></h3>
+      <% if quest_empty %>
+        <p class="lp-dash-section__empty"><%= t("dash.battle_empty") %></p>
+      <% else %>
+        <ul class="lp-dash-battle__list">
+          <% open_quests.each do |todo| %>
+            <%= render "dashboard/dash_battle_checklist", todo: todo, section_color: "purple" %>
+          <% end %>
+        </ul>
+        <% if done_quests.any? %>
+          <details class="lp-dash-battle__done"<%= " open" if battle_won && battle_empty %>>
+            <summary><%= t("dash.battle_done_summary", count: done_quests.size) %></summary>
+            <ul class="lp-dash-battle__list lp-dash-battle__list--done">
+              <% done_quests.each do |todo| %>
+                <%= render "dashboard/dash_battle_checklist", todo: todo, section_color: "purple" %>
+              <% end %>
+            </ul>
+          </details>
+        <% end %>
+      <% end %>
+    </section>
+
+    <%# ——— HABITS ——— %>
+    <section class="lp-dash-section is-habits" aria-labelledby="dash-sec-habits">
+      <h3 id="dash-sec-habits" class="lp-dash-section__label"><%= t("dash.section_habits") %></h3>
+      <% if habit_empty %>
+        <p class="lp-dash-section__empty">
+          <%= t("dash.habits_empty") %>
+          <%= link_to t("dash.habits_empty_cta"), habits_path, class: "lp-dash-battle__link-cta" %>
+        </p>
+      <% else %>
+        <ul class="lp-dash-battle__list lp-dash-habits">
+          <% habits.each do |habit| %>
+            <%= render "dashboard/dash_habit_row", habit: habit %>
+          <% end %>
+        </ul>
+        <p class="lp-dash-section__more">
+          <%= link_to t("habits.index_title"), habits_path, class: "lp-dash-battle__link-cta" %>
+        </p>
+      <% end %>
+    </section>
 
     <div class="lp-dash-battle__footer">
       <% if open_count.positive? %>
         <p class="lp-dash-battle__ready"><%= t("dash.battle_ready_count", open: open_count, total: [ total_count, open_count ].max) %></p>
-        <%= button_to t("dash.complete_battle"),
-              battle_completion_path,
-              method: :post,
-              class: "lp-dash-cta lp-dash-cta--soft",
-              data: { battle_day_target: "completeBtn", action: "click->battle-day#celebrate" } %>
-        <p class="lp-dash-battle__reward" aria-live="polite">
-          <span data-battle-day-target="reward">+<%= reward %></span>
-          <span><%= t("dash.action_points_reward") %></span>
-        </p>
       <% else %>
-        <p class="lp-dash-battle__won"><%= t("dash.battle_won") %></p>
-        <p class="lp-dash-battle__empty-cta">
-          <%= link_to t("climb.reward.back_to_trail"),
-                life_journey_path(@journey),
-                class: "lp-dash-battle__link-cta" %>
-        </p>
-        <% if upcoming %>
-          <p class="lp-dash-battle__tomorrow">
-            <% if upcoming[:tomorrow] %>
-              <%= t("dash.tomorrow_set", title: upcoming[:title]) %>
-            <% else %>
-              <%= t("dash.next_battle_set", title: upcoming[:title], date: l(upcoming[:scheduled_on], format: :short)) %>
-            <% end %>
-          </p>
-        <% end %>
+        <div class="lp-dash-battle__next">
+          <p class="lp-dash-battle__next-kicker"><%= t("dash.battle_next_kicker") %></p>
+          <% if coaching_below %>
+            <p class="lp-dash-battle__next-hint"><%= t("dash.battle_next_coaching") %></p>
+          <% elsif upcoming %>
+            <p class="lp-dash-battle__tomorrow">
+              <% if upcoming[:tomorrow] %>
+                <%= t("dash.tomorrow_set", title: upcoming[:title]) %>
+              <% else %>
+                <%= t("dash.next_battle_set", title: upcoming[:title], date: l(upcoming[:scheduled_on], format: :short)) %>
+              <% end %>
+            </p>
+            <p class="lp-dash-battle__empty-cta">
+              <%= link_to t("climb.reward.back_to_trail"),
+                    life_journey_path(@journey),
+                    class: "lp-dash-battle__link-cta" %>
+            </p>
+          <% else %>
+            <p class="lp-dash-battle__empty-cta">
+              <%= link_to (handoff&.dig(:label) || t("dash.battle_empty_cta")),
+                    (handoff&.dig(:href) || life_journey_path(@journey)),
+                    class: "lp-dash-battle__link-cta" %>
+            </p>
+          <% end %>
+        </div>
       <% end %>
     </div>
   <% end %>

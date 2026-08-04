@@ -10,6 +10,17 @@ module Strategy
       new(folder: folder).call
     end
 
+    def self.checklist_host?(day)
+      day&.day? && day.title.to_s == HOST_TITLE
+    end
+
+    def self.display_title_for(day)
+      return day.title if day.blank?
+      return day.parent.title if checklist_host?(day) && day.parent.present?
+
+      day.title
+    end
+
     def initialize(folder:)
       @folder = folder
     end
@@ -18,13 +29,15 @@ module Strategy
       raise ArgumentError, "folder required" if @folder.blank?
       raise ArgumentError, "folder must be a project" unless @folder.project?
 
-      @folder.with_lock do
+      created = false
+      host = @folder.with_lock do
         existing = host_day
-        return existing if existing
+        next existing if existing
 
         # Days belong under nested leaf folders (not path-level camps).
-        return nil unless @folder.nested_leaf_camp? || (@folder.project? && @folder.parent&.project?)
+        next nil unless @folder.nested_leaf_camp? || (@folder.project? && @folder.parent&.project?)
 
+        created = true
         @folder.children.create!(
           user: @folder.user,
           life_area: @folder.life_area,
@@ -36,6 +49,12 @@ module Strategy
           repeat: "none"
         )
       end
+
+      if created && host
+        Strategy::CascadeToDaily.call(user: host.user, life_area: host.life_area)
+      end
+
+      host
     end
 
     private

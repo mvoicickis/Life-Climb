@@ -5,6 +5,7 @@ class DailyTodo < ApplicationRecord
 
   belongs_to :user
   belongs_to :strategy_goal, optional: true
+  has_one :strategy_quantity_log, dependent: :nullify
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :aspect_key, presence: true, inclusion: { in: LifeArea::HOME_ASPECT_KEYS }

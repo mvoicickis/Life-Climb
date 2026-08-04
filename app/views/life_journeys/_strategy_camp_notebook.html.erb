@@ -190,6 +190,8 @@
                 class: "lp-input w-full",
                 placeholder: t("strategy.project_placeholder"),
                 autocomplete: "off" %>
+          <%= render "life_journeys/quantity_track_fields",
+                form_id: "notebook-add-project-#{plan.id}" %>
           <%= submit_tag t("strategy.sheet.add_project"), class: "lp-camp-notebook__submit" %>
         <% end %>
       </details>

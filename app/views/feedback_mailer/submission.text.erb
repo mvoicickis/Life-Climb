@@ -1,6 +1,10 @@
 New LifePoints feedback
 
-From: <%= @user.email_address %>
-Sent: <%= @feedback.created_at.utc.strftime("%Y-%m-%d %H:%M UTC") %>
+From: <%= @user&.email_address.presence || "Anonymous visitor" %>
+<% if @feedback.page_context.present? %>Page: <%= @feedback.page_context %>
+<% end %><% if @feedback.rating.present? %>Rating: <%= @feedback.rating %>/5
+<% end %><% if @feedback.ok_to_contact? %>OK to contact: yes — <%= @feedback.contact_info.presence || "no detail shared" %>
+<% else %>OK to contact: no
+<% end %>Sent: <%= @feedback.created_at.utc.strftime("%Y-%m-%d %H:%M UTC") %>
 
 <%= @feedback.body %>

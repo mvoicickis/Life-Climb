@@ -68,6 +68,8 @@
                 focus: @focus %>
         </div>
 
+        <%= render "life_journeys/rpg_supporting_habits", habits: @supporting_habits %>
+
         <div class="lp-rpg__stage-battle">
           <%= render "life_journeys/rpg_battle_sheet",
                 current_project: current_project,
@@ -84,3 +86,4 @@
 </div>
 
 <%= render "shared/lp_dash_nav", active: :mountain %>
+<%= render "shared/feedback_prompt", page: "mountain" %>

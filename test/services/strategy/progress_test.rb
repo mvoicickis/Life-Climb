@@ -131,4 +131,21 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
     assert_equal 50, Strategy::Progress.percent(branch.reload)
     assert_equal 25, Strategy::Progress.percent(plan.reload)
   end
+
+  test "quantified path-level project percent uses amount over target" do
+    goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
+    plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
+    project = @user.strategy_goals.create!(
+      life_area: @area, parent: plan, horizon: "project", title: "Book",
+      position: 0, target_amount: 700, unit: "pages", current_amount: 70
+    )
+    leaf = practice_leaf_for!(project)
+    # Nested leaf incomplete — quantity still drives path-level %.
+    assert_equal 0, Strategy::Progress.percent(leaf)
+    assert_equal 10, Strategy::Progress.percent(project)
+    assert_equal 10, Strategy::Progress.percent(plan)
+
+    project.update!(current_amount: 700)
+    assert_equal 100, Strategy::Progress.percent(project.reload)
+  end
 end

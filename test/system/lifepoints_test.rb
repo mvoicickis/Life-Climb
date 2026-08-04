@@ -38,7 +38,12 @@ class LifepointsTest < ApplicationSystemTestCase
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
-    assert_text "LifePoints"
-    assert_text(/Today|Mountain|Start my climb|#{Regexp.escape(user.display_name)}/i)
+    # Today hides the top brand wordmark — assert real climb chrome instead.
+    assert_selector ".lp-dash-nav", wait: 5
+    assert_selector ".lp-dash-nav__link", text: /Today/i
+    assert_selector ".lp-dash-nav__link", text: /Mountain/i
+    assert_text user.display_name
+    assert_selector ".lp-dash-battle, .lp-dash-climb", wait: 5
+    assert_text(/Today's battle|Action Points|up the mountain/i)
   end
 end

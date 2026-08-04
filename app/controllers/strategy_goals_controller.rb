@@ -32,6 +32,8 @@ class StrategyGoalsController < ApplicationController
       repeat: parse_repeat(kind),
       position: next_position(parent, kind)
     )
+    apply_quantity_params!(goal) if kind == "project" && parent&.plan?
+    apply_color_key_params!(goal) if kind == "project"
 
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
@@ -93,6 +95,9 @@ class StrategyGoalsController < ApplicationController
     if params.key?(:title)
       goal.title = params[:title].to_s.strip
     end
+
+    apply_quantity_params!(goal) if goal.path_level_camp?
+    apply_color_key_params!(goal) if goal.project?
 
     if goal.day? && params.key?(:scheduled_on)
       goal.scheduled_on = parse_day_schedule_param(params[:scheduled_on])
@@ -231,6 +236,27 @@ class StrategyGoalsController < ApplicationController
     return if params[:parent_id].blank?
 
     current_user.strategy_goals.find(params[:parent_id])
+  end
+
+  # Path-level project quantity targets. Only applied when the form includes
+  # track_quantity (section create/edit). Never touches current_amount.
+  def apply_quantity_params!(goal)
+    return unless params.key?(:track_quantity)
+
+    if ActiveModel::Type::Boolean.new.cast(params[:track_quantity])
+      goal.target_amount = params[:target_amount].presence
+      goal.unit = params[:unit].to_s.strip.presence
+    else
+      goal.target_amount = nil
+      goal.unit = nil
+    end
+  end
+
+  # Leaf-quest accent. Only applied when the form includes color_key.
+  def apply_color_key_params!(goal)
+    return unless params.key?(:color_key)
+
+    goal.color_key = params[:color_key].to_s.strip.presence
   end
 
   def parse_due_on(kind, parent)

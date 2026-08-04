@@ -15,7 +15,7 @@
     <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= t("settings.subtitle") %></p>
   </header>
 
-  <section class="lp-glass p-5">
+  <section class="lp-glass p-5<%= ' lp-you-row--flash' if highlight == 'character' %>" id="you-character">
     <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.make_yours_title") %></h2>
     <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.make_yours_hint") %></p>
 
@@ -29,6 +29,26 @@
           <%= chevron %>
         </span>
       <% end %>
+    </div>
+
+    <div class="mt-6 border-t border-[var(--lp-border)] pt-5">
+      <h3 class="text-base font-semibold text-[var(--lp-ink)]"><%= t("settings.character_title") %></h3>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.character_hint") %></p>
+      <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do %>
+        <%= render "shared/character_picker",
+              selected: current_user.character_key,
+              show_brand: false,
+              show_heading: false,
+              submit_label: t("settings.character_save") %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="lp-glass p-5" id="you-language">
+    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.language_title") %></h2>
+    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.language_hint") %></p>
+    <div class="mt-4">
+      <%= render "shared/locale_switcher", variant: :settings %>
     </div>
   </section>
 

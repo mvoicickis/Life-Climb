@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module Battles
+  # DEPRECATED: Today completes one checkbox at a time via DailyTodosController /
+  # MissionCompletionsController. Kept for now so existing tests and the unused
+  # battle_completions route still resolve — do not wire new UI to this.
+  #
   # Completes remaining open battle items for today and awards LP once per item.
   # Linked Strategy battles are marked complete. Year goal % does not move until
   # the player confirms the parent project is done.

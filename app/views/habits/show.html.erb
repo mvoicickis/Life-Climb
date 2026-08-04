@@ -1,109 +1,115 @@
 <% content_for :title, @habit.name %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 <% status = @habit.status %>
 <% progress = @habit.goal_progress_percent %>
 <% saved = params[:saved].present? %>
 <% won = params[:won] == "1" %>
 
-<div class="mx-auto max-w-lg"
+<div class="lp-habits mx-auto max-w-lg px-4 pb-28 pt-5"
      data-controller="save-pop share"
      data-save-pop-saved-value="<%= saved %>"
      data-save-pop-won-value="<%= won %>"
      data-share-text-value="<%= share_message_body_for(@habit) %>"
      data-share-url-value="<%= share_landing_url %>"
      data-share-title-value="<%= @habit.name %> · LifePoints">
-  <%= link_to t("habits.back_today"), dashboard_path, class: "mb-4 inline-block text-sm font-bold text-slate-300 hover:text-emerald-300" %>
+  <%= link_to t("habits.back_list"), habits_path, class: "lp-habits__back" %>
 
   <article id="detail-card"
-           class="overflow-hidden rounded-[1.75rem] border p-6 shadow-sm <%= vs_yesterday_classes(status) %> <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
-    <div class="flex items-start justify-between gap-3">
+           class="lp-habits__detail has-color is-amber <%= 'pop-save' if saved %> <%= 'glow-win' if won %>">
+    <div class="lp-habits__detail-top">
       <div>
-        <h1 class="text-3xl font-black tracking-tight"><%= @habit.name %></h1>
-        <p class="mt-1 text-sm font-bold opacity-70">
+        <% if @habit.identity_label.present? %>
+          <p class="lp-habit-identity"><%= @habit.identity_label %></p>
+        <% end %>
+        <h1 class="lp-habits__detail-title"><%= @habit.name %></h1>
+        <p class="lp-habits__meta">
           <%= @habit.unit %> · <%= @habit.evaluation_label %>
         </p>
+        <% if @habit.life_journey.present? %>
+          <p class="lp-habits__mountain">
+            <%= t("habits.linked_mountain", title: @habit.life_journey.title) %>
+          </p>
+        <% end %>
       </div>
       <%= render "shared/status_badge", status: status %>
     </div>
 
     <% if @milestone_label.present? %>
-      <p class="mt-4 rounded-xl bg-white/10 px-3 py-2 text-sm font-bold text-emerald-200"><%= @milestone_label %></p>
+      <p class="lp-habits__milestone"><%= @milestone_label %></p>
     <% end %>
 
-    <p class="mt-5 text-lg font-black leading-snug">
-      <%= status_full_text(status) %>
-    </p>
+    <p class="lp-habits__status-lead"><%= status_full_text(status) %></p>
 
-    <div class="mt-6 flex items-end justify-between gap-4">
+    <div class="lp-habits__stats">
       <div>
-        <p class="text-xs font-bold uppercase tracking-wide opacity-60"><%= t("habits.today") %></p>
-        <p class="text-5xl font-black leading-none"><%= format_amount(@habit.today_amount) %></p>
+        <p class="lp-habits__stat-label"><%= t("habits.today") %></p>
+        <p class="lp-habits__stat-value"><%= format_amount(@habit.today_amount) %></p>
       </div>
-      <div class="text-right">
+      <div class="lp-habits__stats-side">
         <% if @habit.better_than_yesterday? %>
-          <p class="text-xs font-bold uppercase tracking-wide opacity-60"><%= t("habits.yesterday") %></p>
-          <p class="text-2xl font-black"><%= format_amount(@habit.yesterday_amount) %></p>
+          <p class="lp-habits__stat-label"><%= t("habits.yesterday") %></p>
+          <p class="lp-habits__stat-side"><%= format_amount(@habit.yesterday_amount) %></p>
           <% if @habit.goal.present? %>
-            <p class="mt-1 text-xs font-bold opacity-70"><%= t("habits.goal", value: format_amount(@habit.goal)) %></p>
+            <p class="lp-habits__meta"><%= t("habits.goal", value: format_amount(@habit.goal)) %></p>
           <% end %>
         <% else %>
-          <p class="text-xs font-bold uppercase tracking-wide opacity-60"><%= t("habits.healthy_range") %></p>
-          <p class="text-2xl font-black"><%= @habit.range_summary %></p>
+          <p class="lp-habits__stat-label"><%= t("habits.healthy_range") %></p>
+          <p class="lp-habits__stat-side"><%= @habit.range_summary %></p>
         <% end %>
       </div>
     </div>
 
     <% if @habit.better_than_yesterday? && @habit.goal.present? %>
-      <div class="mt-5">
-        <div class="mb-2 flex justify-between text-xs font-bold uppercase tracking-wide opacity-70">
+      <div class="lp-habits__progress">
+        <div class="lp-habits__progress-labels">
           <span>Toward goal</span>
           <span><%= progress %>%</span>
         </div>
-        <div class="h-3 overflow-hidden rounded-full bg-black/10">
-          <div class="bar-fill h-full rounded-full <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
+        <div class="lp-habits__progress-track">
+          <div class="lp-habits__progress-fill" style="width: <%= progress %>%"></div>
         </div>
       </div>
     <% end %>
 
-    <p class="mt-3 text-xs font-semibold opacity-55">No number today? It counts as 0.</p>
+    <p class="lp-habits__hint">No number today? It counts as 0.</p>
 
     <% if @habit.show_goal_raise_prompt? %>
-      <div class="mt-5 rounded-2xl border-2 border-emerald-300 bg-white/85 p-4">
-        <p class="text-base font-black text-emerald-950">Nice! Want to raise your goal?</p>
-        <p class="mt-1 text-sm font-semibold text-emerald-900/80">
+      <div class="lp-habits__raise">
+        <p class="lp-habits__raise-title">Nice! Want to raise your goal?</p>
+        <p class="lp-habits__meta">
           You hit <%= format_amount(@habit.goal) %> <%= @habit.unit %>.
         </p>
-        <div class="mt-3 flex flex-wrap gap-2">
+        <div class="lp-habits__raise-actions">
           <%= button_to "Raise it", raise_goal_habit_path(@habit), method: :patch,
-              class: "rounded-xl bg-emerald-500 px-4 py-2 text-sm font-black text-white hover:bg-emerald-600" %>
+              class: "lp-habits__btn is-primary" %>
           <%= button_to "Keep it", decline_goal_raise_habit_path(@habit), method: :patch,
-              class: "rounded-xl border-2 border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700" %>
+              class: "lp-habits__btn is-quiet" %>
         </div>
       </div>
     <% end %>
 
-    <%= form_with url: daily_logs_path(habit_id: @habit.id), scope: :daily_log, class: "mt-6 space-y-3", data: { turbo: false } do |form| %>
-      <div>
-        <%= form.label :amount, t("habits.how_many"), class: "mb-1.5 block text-sm font-bold" %>
-        <%= form.number_field :amount,
-            value: @habit.today_log&.amount || 0,
-            min: 0,
-            step: :any,
-            class: "w-full rounded-2xl border-2 border-black/10 bg-white px-4 py-3.5 text-xl font-black focus:border-emerald-500 focus:outline-none" %>
-      </div>
-
-      <%= form.submit t("habits.save"),
-          class: "w-full cursor-pointer rounded-2xl bg-slate-900 px-4 py-4 text-lg font-black text-white hover:bg-slate-800" %>
+    <%= form_with url: daily_logs_path(habit_id: @habit.id), scope: :daily_log, class: "lp-habits__log", data: { turbo: false } do |form| %>
+      <%= form.label :amount, t("habits.how_many"), class: "lp-habits__field-label" %>
+      <%= form.number_field :amount,
+          value: @habit.today_log&.amount || 0,
+          min: 0,
+          step: :any,
+          class: "lp-habits__input" %>
+      <%= form.submit t("habits.save"), class: "lp-habits__btn is-primary is-wide" %>
     <% end %>
 
-    <div class="mt-5 flex flex-wrap gap-2">
+    <div class="lp-habits__detail-actions">
       <button type="button"
               data-action="click->share#open"
-              class="rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold <%= 'ring-2 ring-emerald-400/70' if @share_worthy %>">
+              class="lp-habits__btn is-quiet <%= 'is-highlight' if @share_worthy %>">
         <%= t("habits.share") %>
       </button>
-      <%= link_to t("habits.edit"), edit_habit_path(@habit), class: "rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold" %>
+      <%= link_to t("habits.edit"), edit_habit_path(@habit), class: "lp-habits__btn is-quiet" %>
     </div>
   </article>
 
   <%= render "shared/share_sheet" %>
 </div>
+
+<%= render "shared/lp_dash_nav", active: :habits %>

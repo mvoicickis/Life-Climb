@@ -170,7 +170,8 @@ module ApplicationHelper
       { code: :en, short: "EN", flag: "🇬🇧" },
       { code: :de, short: "DE", flag: "🇩🇪" },
       { code: :es, short: "ES", flag: "🇪🇸" },
-      { code: :lv, short: "LV", flag: "🇱🇻" }
+      { code: :lv, short: "LV", flag: "🇱🇻" },
+      { code: :ru, short: "RU", flag: "🇷🇺" }
     ]
   end
 end

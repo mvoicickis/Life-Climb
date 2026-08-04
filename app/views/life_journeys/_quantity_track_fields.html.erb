@@ -1,0 +1,52 @@
+<%# locals: project: nil, form_id: "qty" %>
+<% project = local_assigns[:project] %>
+<% form_id = local_assigns.fetch(:form_id, "qty") %>
+<% quantified = project&.quantified? %>
+<% toggle_id = "#{form_id}-track" %>
+<% amount_id = "#{form_id}-amount" %>
+<% unit_id = "#{form_id}-unit" %>
+
+<div class="lp-quantity-track" data-controller="quantity-track">
+  <label class="lp-quantity-track__toggle" for="<%= toggle_id %>">
+    <%= hidden_field_tag :track_quantity, "0", id: nil %>
+    <%= check_box_tag :track_quantity, "1", quantified,
+          id: toggle_id,
+          class: "lp-quantity-track__checkbox",
+          data: {
+            quantity_track_target: "toggle",
+            action: "quantity-track#toggle"
+          } %>
+    <span class="lp-quantity-track__toggle-text"><%= t("strategy.quantity.track") %></span>
+  </label>
+
+  <div class="lp-quantity-track__fields"
+       data-quantity-track-target="fields"
+       <%= "hidden" unless quantified %>>
+    <label class="lp-rpg-float-create__field" for="<%= amount_id %>">
+      <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.target_label") %></span>
+      <%= number_field_tag :target_amount,
+            project&.target_amount,
+            id: amount_id,
+            class: "lp-rpg-float-create__input lp-quantity-track__input",
+            min: "0.01",
+            step: "any",
+            inputmode: "decimal",
+            placeholder: t("strategy.quantity.target_placeholder"),
+            autocomplete: "off",
+            data: { quantity_required: true },
+            required: quantified %>
+    </label>
+    <label class="lp-rpg-float-create__field" for="<%= unit_id %>">
+      <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.unit_label") %></span>
+      <%= text_field_tag :unit,
+            project&.unit,
+            id: unit_id,
+            class: "lp-rpg-float-create__input lp-quantity-track__input",
+            maxlength: 40,
+            placeholder: t("strategy.quantity.unit_placeholder"),
+            autocomplete: "off",
+            data: { quantity_required: true },
+            required: quantified %>
+    </label>
+  </div>
+</div>

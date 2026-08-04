@@ -219,6 +219,9 @@
                                   autocomplete: "off" %>
                           </label>
 
+                          <%= render "life_journeys/quantity_track_fields",
+                                form_id: "rpg-trail-add-#{project.id}" %>
+
                           <div class="lp-rpg-float-create__actions">
                             <button type="button"
                                     class="lp-rpg-float-create__btn is-cancel"
@@ -258,6 +261,11 @@
                                 class: "lp-rpg-input",
                                 autocomplete: "off",
                                 aria: { label: t("strategy.rpg.edit_checkpoint") } %>
+                          <% if project.path_level_camp? %>
+                            <%= render "life_journeys/quantity_track_fields",
+                                  project: project,
+                                  form_id: "checkpoint-edit-#{project.id}" %>
+                          <% end %>
                           <div class="lp-strategy-sheet__footer">
                             <%= submit_tag t("strategy.save_changes"),
                                   class: "lp-strategy-sheet__btn is-save",

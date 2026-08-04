@@ -1,47 +1,116 @@
-<% content_for :title, t("coach.title") %>
-<% content_for :lp_game, true %>
-<% content_for :lp_hide_top_nav, true %>
+<% content_for :title, t("feedback.title") %>
+<% content_for :lp_game, true if authenticated? %>
+<% content_for :lp_hide_top_nav, true if authenticated? %>
+<%
+  page_label = @feedback.page_context.presence || params[:page].presence
+  logged_in = authenticated?
+  contact_default = @feedback.contact_info.presence || (logged_in ? current_user.email_address : nil)
+%>
 
-<section class="lp-support" aria-labelledby="lp-coach-heading">
-  <header class="lp-support__hero">
+<section class="lp-feedback" aria-labelledby="lp-feedback-heading">
+  <header class="lp-feedback__hero">
     <p class="lp-brand-kicker">
       <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
       <span><%= t("app_name") %></span>
     </p>
-    <h1 id="lp-coach-heading" class="lp-support__title"><%= t("coach.title") %></h1>
-    <p class="lp-support__subtitle"><%= t("coach.subtitle") %></p>
+    <h1 id="lp-feedback-heading" class="lp-feedback__title"><%= t("feedback.title") %></h1>
+    <p class="lp-feedback__subtitle"><%= t("feedback.subtitle") %></p>
   </header>
 
-  <div class="lp-support__contacts">
-    <% if contact_whatsapp? %>
-      <a href="<%= coach_whatsapp_url(current_user) %>"
-         target="_blank"
-         rel="noopener noreferrer"
-         class="lp-support__contact">
-        <span class="lp-support__contact-copy">
-          <span class="lp-support__contact-name">WhatsApp</span>
-          <span class="lp-support__contact-meta"><%= contact_whatsapp_display %></span>
-        </span>
-        <span class="lp-support__contact-go"><%= t("coach.open") %></span>
-      </a>
+  <%= form_with model: @feedback, url: feedbacks_path, class: "lp-feedback__form",
+        data: { turbo: false, controller: "feedback-contact" } do |form| %>
+    <% if @feedback.errors.any? %>
+      <div class="lp-feedback__errors">
+        <ul>
+          <% @feedback.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
     <% end %>
 
-    <a href="<%= coach_mailto_url(current_user) %>" class="lp-support__contact">
-      <span class="lp-support__contact-copy">
-        <span class="lp-support__contact-name"><%= t("share.email") %></span>
-        <span class="lp-support__contact-meta"><%= contact_email %></span>
-      </span>
-      <span class="lp-support__contact-go"><%= t("coach.write") %></span>
-    </a>
-  </div>
+    <%= form.hidden_field :page_context, value: page_label %>
 
-  <p class="lp-support__footnote"><%= t("coach.footnote") %></p>
+    <div class="lp-feedback__field">
+      <p class="lp-feedback__label"><%= t("feedback.page_label") %></p>
+      <p class="lp-feedback__page">
+        <%= page_label.presence || t("feedback.page_unknown") %>
+      </p>
+    </div>
 
-  <p class="lp-support__links">
-    <%= link_to t("nav.today"), dashboard_path %>
-    <span aria-hidden="true">·</span>
-    <%= link_to t("nav.settings"), settings_path %>
+    <fieldset class="lp-feedback__field">
+      <legend class="lp-feedback__label"><%= t("feedback.rating_label") %></legend>
+      <div class="lp-feedback__ratings" role="radiogroup" aria-label="<%= t("feedback.rating_label") %>">
+        <% Feedback::RATINGS.each do |score| %>
+          <label class="lp-feedback__rating">
+            <%= form.radio_button :rating, score, class: "lp-feedback__rating-input" %>
+            <span class="lp-feedback__rating-face" aria-hidden="true"><%= t("feedback.rating_faces.#{score}") %></span>
+            <span class="lp-feedback__rating-num"><%= score %></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <div class="lp-feedback__field">
+      <%= form.label :body, t("feedback.body_label"), class: "lp-feedback__label" %>
+      <%= form.text_area :body,
+            rows: 6,
+            required: true,
+            maxlength: 2000,
+            placeholder: t("feedback.body_placeholder"),
+            class: "lp-feedback__textarea" %>
+    </div>
+
+    <div class="lp-feedback__field lp-feedback__contact" data-feedback-contact-target="wrap">
+      <label class="lp-feedback__opt-in">
+        <%= form.check_box :ok_to_contact,
+              class: "lp-feedback__checkbox",
+              data: {
+                feedback_contact_target: "optIn",
+                action: "change->feedback-contact#sync"
+              } %>
+        <span><%= t("feedback.ok_to_contact") %></span>
+      </label>
+
+      <div class="lp-feedback__contact-panel"
+           data-feedback-contact-target="panel"
+           <%= "hidden" unless @feedback.ok_to_contact? %>>
+        <% if logged_in %>
+          <%= form.label :contact_info, t("feedback.contact_logged_in_label"), class: "lp-feedback__label" %>
+          <%= form.text_field :contact_info,
+                value: contact_default,
+                maxlength: 120,
+                placeholder: t("feedback.contact_logged_in_placeholder"),
+                class: "lp-feedback__input",
+                data: {
+                  feedback_contact_target: "input",
+                  keep_default: "true"
+                } %>
+          <p class="lp-feedback__hint"><%= t("feedback.contact_logged_in_hint", email: current_user.email_address) %></p>
+        <% else %>
+          <%= form.label :contact_info, t("feedback.contact_anon_label"), class: "lp-feedback__label" %>
+          <%= form.text_field :contact_info,
+                maxlength: 120,
+                placeholder: t("feedback.contact_anon_placeholder"),
+                class: "lp-feedback__input",
+                data: { feedback_contact_target: "input" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <%= form.submit t("feedback.submit"), class: "lp-feedback__submit" %>
+  <% end %>
+
+  <p class="lp-feedback__alt">
+    <%= t("feedback.or_contact") %>
+    <% if contact_whatsapp? %>
+      <%= link_to "WhatsApp", contact_whatsapp_url, target: "_blank", rel: "noopener noreferrer" %>
+      <span aria-hidden="true">·</span>
+    <% end %>
+    <%= link_to t("share.email"), contact_mailto_url %>
   </p>
-</section>
 
-<%= render "shared/lp_dash_nav", active: :you %>
+  <% if authenticated? %>
+    <%= render "shared/lp_dash_nav", active: :you %>
+  <% end %>
+</section>

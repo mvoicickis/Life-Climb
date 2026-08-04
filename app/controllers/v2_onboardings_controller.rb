@@ -4,9 +4,9 @@ class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
   # Simplified MVP adventure start — no life-area picker, no long coach funnel.
-  STEPS = %w[welcome mountain deadline forge how].freeze
+  STEPS = %w[welcome character mountain deadline forge how].freeze
   # User-facing setup progress (forge/how are post-create transitions).
-  SETUP_STEPS = %w[welcome mountain deadline].freeze
+  SETUP_STEPS = %w[welcome character mountain deadline].freeze
   DEFAULT_AREA_KEY = "self".freeze
 
   def show
@@ -36,6 +36,13 @@ class V2OnboardingsController < ApplicationController
 
     case step
     when "welcome"
+      redirect_to v2_onboarding_path(step: "character")
+    when "character"
+      key = params.dig(:user, :character).to_s
+      unless User::CHARACTERS.include?(key)
+        redirect_to v2_onboarding_path(step: "character"), alert: t("v2_onboarding.need_character") and return
+      end
+      current_user.update!(character: key)
       redirect_to v2_onboarding_path(step: "mountain")
     when "mountain"
       title = draft["title"].to_s.strip
@@ -92,8 +99,9 @@ class V2OnboardingsController < ApplicationController
 
   def step_incomplete?
     case @step
-    when "welcome", "mountain" then false
-    when "deadline" then @draft["title"].blank?
+    when "welcome", "character" then false
+    when "mountain" then !current_user.character_chosen?
+    when "deadline" then @draft["title"].blank? || !current_user.character_chosen?
     when "forge" then !current_user.onboarding_completed?
     when "how" then !current_user.onboarding_completed?
     else false
@@ -104,8 +112,9 @@ class V2OnboardingsController < ApplicationController
     if current_user.onboarding_completed?
       return "forge"
     end
+    return "character" if !current_user.character_chosen? && @step.in?(%w[mountain deadline])
     return "mountain" if @draft["title"].blank? && @step == "deadline"
-    return "welcome" if @draft["title"].blank? && !@step.in?(%w[welcome mountain])
+    return "welcome" if @draft["title"].blank? && !@step.in?(%w[welcome character mountain])
 
     "mountain"
   end

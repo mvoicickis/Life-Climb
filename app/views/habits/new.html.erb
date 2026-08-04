@@ -1,7 +1,16 @@
 <% content_for :title, "Add" %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
-<div class="mx-auto max-w-lg">
-  <h1 class="mb-2 text-4xl font-black tracking-tight text-slate-900">Add something that matters</h1>
-  <p class="mb-8 text-base font-semibold text-slate-600">Keep it simple. You can refine targets later.</p>
-  <%= render "form", habit: @habit %>
+<div class="lp-habits mx-auto max-w-lg px-4 pb-28 pt-5">
+  <header class="lp-habits__head">
+    <div class="lp-habits__head-copy">
+      <p class="lp-habits__eyebrow"><%= t("dash.section_habits") %></p>
+      <h1 class="lp-habits__title"><%= t("habits.new_title") %></h1>
+      <p class="lp-habits__sub"><%= t("habits.new_subtitle") %></p>
+    </div>
+  </header>
+  <%= render "form", habit: @habit, journeys: @journeys %>
 </div>
+
+<%= render "shared/lp_dash_nav", active: :habits %>

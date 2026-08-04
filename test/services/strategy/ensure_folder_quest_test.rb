@@ -27,11 +27,13 @@ class Strategy::EnsureFolderQuestTest < ActiveSupport::TestCase
     )
   end
 
-  test "creates a checklist host day under a nested leaf" do
+  test "creates a checklist host day under a nested leaf and cascades to Today" do
     host = Strategy::EnsureFolderQuest.call(folder: @folder)
     assert host.day?
     assert_equal Strategy::EnsureFolderQuest::HOST_TITLE, host.title
     assert_equal @folder.id, host.parent_id
+    todo = @user.daily_todos.for_day(Date.current).find_by(strategy_goal_id: host.id)
+    assert_equal "Vocabulary", todo.title
   end
 
   test "second call returns the same host day id" do

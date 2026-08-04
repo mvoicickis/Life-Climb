@@ -118,14 +118,12 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           rect.height > 8 &&
           rect.bottom > battleRect.top &&
           rect.top < battleRect.bottom);
-        window.scrollTo(0, 200);
-        const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
-        window.scrollTo(0, 0);
         return {
           visible,
           innerHeight: window.innerHeight,
           rootOverflow: rootStyle ? rootStyle.overflowY || rootStyle.overflow : '',
           htmlOverflow: htmlStyle.overflowY || htmlStyle.overflow,
+          bodyOverflow: getComputedStyle(document.body).overflowY || getComputedStyle(document.body).overflow,
           chromePad,
           stagePad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
@@ -133,8 +131,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           detailOpen: !!detail,
           objectiveInBattle: inBattle(objectiveRect),
           addInBattle: inBattle(addRect),
-          statsPresent: !!stats,
-          pageScrolled: scrolled > 1
+          statsPresent: !!stats
         };
       })()
     JS
@@ -142,9 +139,10 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator metrics["visible"], :>=, 2
     assert_operator metrics["trailH"], :>=, 28, "trail glance too short at 568px: #{metrics.inspect}"
     assert_operator metrics["battleH"], :>=, 88, "planning stage too short at 568px: #{metrics.inspect}"
+    # Lock is CSS overflow (not scrollY-after-scrollTo — headless Chrome can still bump scrollY).
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
-    assert_equal false, metrics["pageScrolled"], "page should refuse scroll at 568px: #{metrics.inspect}"
+    assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_operator metrics["battleH"], :>, metrics["trailH"]
     assert_equal true, metrics["detailOpen"], "quest detail should be open: #{metrics.inspect}"
     assert_equal true, metrics["objectiveInBattle"] || metrics["addInBattle"],

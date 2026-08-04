@@ -3,6 +3,7 @@
 module Strategy
   # Mountain % is project-gated, not battle-count.
   # Goal = average of plans. Plan = average of direct project percents.
+  # Quantified path-level project = current_amount / target_amount (replaces binary/avg).
   # Leaf project = binary (completed_at). Branch project = recursive avg of child projects.
   # Battles never move year %.
   class Progress
@@ -28,11 +29,18 @@ module Strategy
     end
 
     def self.project_percent(node)
-      child_projects = child_nodes(node, "project")
-      if child_projects.any?
-        (child_projects.sum { |project| percent(project) }.to_f / child_projects.size).round
+      if node.quantified?
+        target = node.target_amount.to_d
+        return 0 if target <= 0
+
+        ((node.current_amount.to_d / target) * 100).clamp(0, 100).round
       else
-        node.completed_at.present? ? 100 : 0
+        child_projects = child_nodes(node, "project")
+        if child_projects.any?
+          (child_projects.sum { |project| percent(project) }.to_f / child_projects.size).round
+        else
+          node.completed_at.present? ? 100 : 0
+        end
       end
     end
     private_class_method :project_percent

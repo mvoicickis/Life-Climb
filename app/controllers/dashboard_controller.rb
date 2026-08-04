@@ -29,7 +29,10 @@ class DashboardController < ApplicationController
     @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                @journey.missions.for_day(Date.current).primary.order(:id).first
     @life_points = current_user.life_points
-    @daily_todos = current_user.daily_todos.for_day(Date.current).ordered
+    @daily_todos = current_user.daily_todos
+      .for_day(Date.current)
+      .includes(strategy_goal: [ :practice_tasks, :parent ])
+      .ordered
     @open_todos = @daily_todos.reject(&:completed?)
     @done_todos = @daily_todos.select(&:completed?)
     @strategy_goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
@@ -68,6 +71,7 @@ class DashboardController < ApplicationController
     @adventure_year = Strategy::YearCycle.target_dec29.year
     Climb::Streak.reconcile!(user: current_user)
     @climb_streak = Climb::Streak.status(user: current_user)
+    @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
     render "dashboard/show_v2"
   end
 

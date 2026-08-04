@@ -38,6 +38,7 @@ class LifeJourney < ApplicationRecord
   has_many :missions, dependent: :destroy
   has_many :gap_snapshots, dependent: :destroy
   has_many :journey_targets, dependent: :destroy
+  has_many :habits, dependent: :nullify
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :ideal_scene, presence: true, length: { maximum: SUMMARY_MAX }

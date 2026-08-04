@@ -10,6 +10,7 @@ class StrategyGoal < ApplicationRecord
   LEGACY_KINDS = %w[month week].freeze
   LEGACY_KIND = { "year" => "goal" }.freeze
   REPEAT_KINDS = %w[none daily].freeze
+  COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
@@ -24,13 +25,26 @@ class StrategyGoal < ApplicationRecord
   belongs_to :parent, class_name: "StrategyGoal", optional: true
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
   has_many :practice_tasks, dependent: :destroy
+  # Open Today rows are purged below; completed history is nullified (AP already awarded).
   has_many :daily_todos, dependent: :nullify
+  has_many :strategy_quantity_logs, dependent: :destroy
+  # Quantity logs may point at a day as the battle source without owning the project.
+  has_many :sourced_quantity_logs,
+           class_name: "StrategyQuantityLog",
+           foreign_key: :source_day_id,
+           dependent: :nullify,
+           inverse_of: :source_day
+
+  before_destroy :destroy_open_daily_todos, prepend: true
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KINDS + LEGACY_KIND.keys }
   validates :repeat, presence: true, inclusion: { in: REPEAT_KINDS }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
+  validates :unit, length: { maximum: 40 }, allow_blank: true
+  validates :color_key, inclusion: { in: COLOR_KEYS }, allow_nil: true
   validate :scheduled_on_required_for_day
   validate :repeat_allowed_for_kind
   validate :due_on_rules
@@ -40,9 +54,12 @@ class StrategyGoal < ApplicationRecord
   validate :child_fits_parent_window
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
+  validate :quantity_target_rules
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
+  before_validation :normalize_quantity_fields
+  before_validation :normalize_color_key
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -117,6 +134,29 @@ class StrategyGoal < ApplicationRecord
     project? && parent&.project? && leaf_checkpoint?
   end
 
+  # Curated accent key for Quest cards / Today rows (nil = default styling).
+  def tagged_color_key
+    key = color_key.to_s.presence
+    COLOR_KEYS.include?(key) ? key : nil
+  end
+
+  # Path-level project with a numeric target (pages, €, emails, …).
+  def quantified?
+    path_level_camp? && target_amount.present? && target_amount.to_d.positive?
+  end
+
+  # Walk up from a day/battle (or nested camp) to the quantified path-level project.
+  def quantified_path_project
+    return self if quantified?
+
+    node = self
+    while node
+      return node if node.quantified?
+      node = node.parent
+    end
+    nil
+  end
+
   def split_eligible?
     project? && children.none?(&:day?)
   end
@@ -178,6 +218,12 @@ class StrategyGoal < ApplicationRecord
 
   private
 
+  # Phantom Today battles: open DailyTodos must not outlive their Mountain day/quest.
+  # Completed rows keep AP history via dependent: :nullify (strategy_goal_id cleared).
+  def destroy_open_daily_todos
+    daily_todos.incomplete.find_each(&:destroy!)
+  end
+
   def ancestors_fallback
     node = self
     node = node.parent while node.parent
@@ -193,6 +239,44 @@ class StrategyGoal < ApplicationRecord
     value = "none" unless day?
     value = "none" unless REPEAT_KINDS.include?(value)
     self.repeat = value
+  end
+
+  def normalize_quantity_fields
+    # Fires on every StrategyGoal create/update — must be safe when quantity
+    # columns are nil (normal goals/plans/days) and always use explicit readers.
+    return unless has_attribute?(:unit)
+
+    self.unit = self.unit.to_s.strip.presence
+    self.current_amount = 0 if self.current_amount.nil?
+    self.unit = nil if self.target_amount.blank?
+  end
+
+  def normalize_color_key
+    return unless has_attribute?(:color_key)
+
+    self.color_key = color_key.to_s.strip.presence
+  end
+
+  def quantity_target_rules
+    return unless has_attribute?(:target_amount)
+
+    if self.target_amount.blank?
+      errors.add(:unit, :invalid) if self.unit.present?
+      return
+    end
+
+    unless project?
+      errors.add(:target_amount, :invalid)
+      return
+    end
+
+    unless path_level_camp?
+      errors.add(:target_amount, :invalid)
+      return
+    end
+
+    errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
+    errors.add(:unit, :blank) if self.unit.blank?
   end
 
   def assign_goal_due_on

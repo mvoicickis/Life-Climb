@@ -1,52 +1,67 @@
 <% content_for :title, t("habits.index_title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
 
-<div class="mx-auto max-w-3xl">
-  <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
-    <div>
-      <h1 class="text-4xl font-black tracking-tight text-slate-900"><%= t("habits.index_title") %></h1>
-      <p class="mt-2 text-lg font-semibold text-slate-600"><%= t("habits.index_subtitle") %></p>
+<% if flash[:turbo_clear_cache] %>
+  <div data-controller="turbo-cache"
+       data-turbo-cache-clear-value="true"
+       hidden
+       aria-hidden="true"></div>
+<% end %>
+
+<div class="lp-habits mx-auto max-w-lg px-4 pb-28 pt-5">
+  <header class="lp-habits__head">
+    <div class="lp-habits__head-copy">
+      <p class="lp-habits__eyebrow"><%= t("dash.section_habits") %></p>
+      <h1 class="lp-habits__title"><%= t("habits.index_title") %></h1>
+      <p class="lp-habits__sub"><%= t("habits.index_subtitle") %></p>
     </div>
-    <%= link_to t("dashboard.add"), new_habit_path,
-        class: "rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-black text-white shadow-sm hover:bg-emerald-600" %>
-  </div>
+    <%= link_to t("dashboard.add"), new_habit_path, class: "lp-habits__add" %>
+  </header>
 
   <% if @habits.any? %>
-    <div class="space-y-3">
+    <ul class="lp-habits__list">
       <% @habits.each do |habit| %>
         <% status = habit.status %>
-        <div class="flex items-center justify-between gap-4 rounded-3xl border-2 border-slate-200/80 bg-white/90 p-5 shadow-sm">
-          <div class="min-w-0">
-            <div class="flex flex-wrap items-center gap-2">
-              <%= link_to habit.name, habit_path(habit), class: "truncate text-xl font-black text-slate-900 hover:text-emerald-700" %>
-              <% unless habit.active? %>
-                <span class="rounded-xl bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600"><%= t("habits.off") %></span>
+        <li class="lp-habits__card has-color is-amber <%= 'is-off' unless habit.active? %>">
+          <div class="lp-habits__card-main">
+            <div class="lp-habits__card-copy">
+              <% if habit.identity_label.present? %>
+                <p class="lp-habit-identity"><%= habit.identity_label %></p>
               <% end %>
+              <%= link_to habit.name, habit_path(habit), class: "lp-habits__name" %>
+              <p class="lp-habits__meta">
+                <%= habit.unit %> · <%= habit.evaluation_label %>
+                <% if habit.show_on_home? %> · <%= t("habits.on_today") %><% end %>
+                <% unless habit.active? %> · <%= t("habits.off") %><% end %>
+              </p>
+              <% if habit.life_journey.present? %>
+                <p class="lp-habits__mountain">
+                  <%= t("habits.linked_mountain", title: habit.life_journey.title) %>
+                </p>
+              <% end %>
+              <p class="lp-habits__status is-<%= status_tone(status) %>">
+                <%= status_full_text(status) %>
+              </p>
             </div>
-            <p class="mt-1 text-sm font-semibold text-slate-500">
-              <%= habit.unit %> · <%= habit.evaluation_label %>
-              <% if habit.show_on_home? %> · <%= t("habits.on_today") %><% end %>
-            </p>
-            <p class="mt-2 text-sm font-bold <%= status_tone(status) == :good ? 'text-emerald-700' : status_tone(status) == :same ? 'text-amber-700' : 'text-rose-700' %>">
-              <%= status_full_text(status) %>
-            </p>
+            <div class="lp-habits__card-actions">
+              <%= link_to t("habits.edit"), edit_habit_path(habit), class: "lp-habits__btn is-quiet" %>
+              <%= button_to t("habits.delete"), habit_path(habit), method: :delete,
+                    data: { turbo_confirm: t("habits.delete_confirm") },
+                    class: "lp-habits__btn is-danger" %>
+            </div>
           </div>
-          <div class="flex shrink-0 gap-2">
-            <%= link_to t("habits.edit"), edit_habit_path(habit),
-                class: "rounded-xl border-2 border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50" %>
-            <%= button_to t("habits.delete"), habit_path(habit), method: :delete,
-                data: { turbo_confirm: t("habits.delete_confirm") },
-                class: "cursor-pointer rounded-xl border-2 border-rose-200 px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50" %>
-          </div>
-        </div>
+        </li>
       <% end %>
-    </div>
+    </ul>
   <% else %>
-    <div class="rounded-3xl border-2 border-dashed border-slate-300 bg-white/90 p-12 text-center">
-      <p class="text-2xl font-black text-slate-900"><%= t("habits.empty_title") %></p>
-      <p class="mx-auto mt-3 max-w-sm text-base font-semibold text-slate-600">
-        <%= t("habits.empty_body") %>
-      </p>
-      <%= link_to t("habits.empty_cta"), new_habit_path, class: "mt-6 inline-flex rounded-2xl bg-emerald-500 px-5 py-3 font-black text-white" %>
+    <div class="lp-habits__empty">
+      <p class="lp-habits__empty-title"><%= t("habits.empty_title") %></p>
+      <p class="lp-habits__empty-body"><%= t("habits.empty_body") %></p>
+      <%= link_to t("habits.empty_cta"), new_habit_path, class: "lp-habits__add is-block" %>
     </div>
   <% end %>
 </div>
+
+<%= render "shared/lp_dash_nav", active: :habits %>
+<%= render "shared/feedback_prompt", page: "habits" %>

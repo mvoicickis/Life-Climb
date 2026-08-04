@@ -1,13 +1,32 @@
-<%# locals: variant: :compact | :menu | :auth %>
+<%# locals: variant: :compact | :menu | :auth | :settings %>
 <% variant ||= :compact %>
 <% if variant == :menu %>
   <% locale_options.each do |locale| %>
     <%= button_to "#{locale[:flag]} #{t("languages.#{locale[:code]}")}",
         locale_path(locale: locale[:code]),
         method: :patch,
-        class: "app-menu-item w-full text-left",
+        class: "app-menu-item w-full text-left #{'is-active' if I18n.locale == locale[:code]}",
         role: "menuitem" %>
   <% end %>
+<% elsif variant == :settings %>
+  <div class="space-y-2" role="group" aria-label="<%= t('nav.language') %>">
+    <% locale_options.each do |locale| %>
+      <% active = I18n.locale == locale[:code] %>
+      <%= button_to locale_path(locale: locale[:code]),
+            method: :patch,
+            class: "group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-sm font-bold transition #{active ? 'border-[var(--lp-lime)] bg-[var(--lp-elevated)] text-[var(--lp-ink)]' : 'border-[var(--lp-border)] bg-[var(--lp-elevated)] text-[var(--lp-ink)] hover:border-[var(--lp-lime)]'}" do %>
+        <span class="flex min-w-0 items-center gap-2">
+          <span aria-hidden="true"><%= locale[:flag] %></span>
+          <span class="truncate"><%= t("languages.#{locale[:code]}") %></span>
+        </span>
+        <% if active %>
+          <span class="shrink-0 text-[var(--lp-lime)]" aria-hidden="true">✓</span>
+        <% else %>
+          <span class="shrink-0 text-lg leading-none text-[var(--lp-muted)] transition group-hover:text-[var(--lp-lime)]" aria-hidden="true">›</span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
 <% else %>
   <div class="landing-lang <%= 'landing-lang--light' if variant == :auth %>" role="group" aria-label="<%= t('nav.language') %>">
     <% locale_options.each do |locale| %>
