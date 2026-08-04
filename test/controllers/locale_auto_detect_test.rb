@@ -10,7 +10,7 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=?]", "lv"
-    assert_match(/Viens kalns\. Šodienas kauja/, response.body)
+    assert_match(/Lielākā daļa mērķu nomirst piezīmju lietotnē/, response.body)
     assert_match(/Sākt bez maksas/, response.body)
   end
 
@@ -19,7 +19,7 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=?]", "en"
-    assert_match(/One mountain\. Today’s battle/, response.body)
+    assert_match(/Most goals die in your notes app/, response.body)
     assert_match(/Start free/, response.body)
   end
 
@@ -31,7 +31,7 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=?]", "de"
-    assert_match(/Ein Berg\. Die Schlacht von heute/, response.body)
+    assert_match(/Die meisten Ziele sterben in der Notizen-App/, response.body)
   end
 
   test "Latvian Accept-Language carries through signup to Welcome with picker" do
