@@ -7,12 +7,12 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
 
   setup do
     @user = users(:one)
-    sign_in_as @user
+    page.driver.browser.manage.window.resize_to(390, 844)
+
     @journey = seed_climb!(@user, today_mission: "Ship auth")
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
-    @leaf = @section.children.find(&:project?)
 
     @user.habits.destroy_all
     @user.habits.create!(
@@ -30,10 +30,12 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
   end
 
   test "five item nav and mountain supporting habits look clean on mobile" do
-    page.driver.browser.manage.window.resize_to(390, 844)
-
-    visit dashboard_path
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
+
     assert_selector ".lp-dash-nav__link", text: /Habits/i
     links = all(".lp-dash-nav__link")
     assert_equal 5, links.size

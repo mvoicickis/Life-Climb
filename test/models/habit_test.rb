@@ -8,7 +8,7 @@ class HabitTest < ActiveSupport::TestCase
   test "optional life_journey link must belong to the habit owner" do
     user = users(:one)
     journey = seed_climb!(user)
-    other = seed_climb!(users(:two), area_key: "health", title: "Other", today_mission: "Walk")
+    other = seed_climb!(users(:two), area_key: "self", title: "Other", today_mission: "Walk")
 
     habit = user.habits.build(
       name: "Push-ups", unit: "times", points: 5, frequency: "daily",
