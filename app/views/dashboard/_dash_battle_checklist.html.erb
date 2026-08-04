@@ -8,8 +8,11 @@
   shell_ready = open_n.zero?
   qty_project = day&.quantified_path_project
   row_done = todo.completed?
+  # Inherit accent from the parent leaf quest (not the invisible Checklist day).
+  color_key = day&.parent&.tagged_color_key
+  color_class = color_key ? "has-color is-#{color_key}" : nil
 %>
-<li class="lp-dash-battle__item lp-dash-checklist <%= 'is-done' if row_done %>"
+<li class="lp-dash-battle__item lp-dash-checklist <%= 'is-done' if row_done %> <%= color_class %>"
     data-battle-day-target="item"
     data-open="<%= row_done ? 'false' : 'true' %>"
     data-lp="<%= todo.lp_reward %>">
@@ -53,7 +56,7 @@
     <ul class="lp-dash-checklist__list">
       <% tasks.each do |task| %>
         <% track = task.tracks_quantity? && qty_project %>
-        <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %>"
+        <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %> <%= color_class %>"
             <% if track && !task.completed? %>
               data-controller="quantity-complete"
             <% end %>>

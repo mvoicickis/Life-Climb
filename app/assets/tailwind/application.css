@@ -5061,6 +5061,50 @@
   text-decoration: line-through;
 }
 
+/* Quest color tags — checkbox border + left stripe (camp-accent pattern). */
+.lp-dash-battle__item.has-color,
+.lp-dash-checklist__obj.has-color {
+  --lp-item-color: var(--lp-muted, #9aa6b2);
+  border-left: 3px solid var(--lp-item-color);
+  padding-left: 0.65rem;
+  margin-left: -0.15rem;
+}
+.lp-dash-battle__item.has-color.is-teal,
+.lp-dash-checklist__obj.has-color.is-teal { --lp-item-color: #2dd4bf; }
+.lp-dash-battle__item.has-color.is-coral,
+.lp-dash-checklist__obj.has-color.is-coral { --lp-item-color: #e2604f; }
+.lp-dash-battle__item.has-color.is-amber,
+.lp-dash-checklist__obj.has-color.is-amber { --lp-item-color: #f59e0b; }
+.lp-dash-battle__item.has-color.is-purple,
+.lp-dash-checklist__obj.has-color.is-purple { --lp-item-color: #a78bfa; }
+.lp-dash-battle__item.has-color.is-blue,
+.lp-dash-checklist__obj.has-color.is-blue { --lp-item-color: #60a5fa; }
+.lp-dash-battle__item.has-color.is-green,
+.lp-dash-checklist__obj.has-color.is-green { --lp-item-color: #57d35b; }
+.lp-dash-battle__item.has-color.is-pink,
+.lp-dash-checklist__obj.has-color.is-pink { --lp-item-color: #f472b6; }
+.lp-dash-battle__item.has-color.is-gray,
+.lp-dash-checklist__obj.has-color.is-gray { --lp-item-color: #9aa6b2; }
+
+.lp-dash-battle__item.has-color .lp-dash-check,
+.lp-dash-checklist__obj.has-color .lp-dash-check {
+  border-color: color-mix(in srgb, var(--lp-item-color) 72%, transparent);
+}
+.lp-dash-battle__item.has-color .lp-dash-check.is-on,
+.lp-dash-battle__item.has-color.is-done .lp-dash-check,
+.lp-dash-checklist__obj.has-color .lp-dash-check.is-on,
+.lp-dash-checklist__obj.has-color.is-done .lp-dash-check {
+  border-color: var(--lp-item-color);
+  background: color-mix(in srgb, var(--lp-item-color) 22%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--lp-item-color) 35%, transparent);
+}
+.lp-dash-battle__item.has-color .lp-dash-check.is-on span,
+.lp-dash-battle__item.has-color.is-done .lp-dash-check span,
+.lp-dash-checklist__obj.has-color .lp-dash-check.is-on span,
+.lp-dash-checklist__obj.has-color.is-done .lp-dash-check span {
+  background: var(--lp-item-color);
+}
+
 .lp-dash-battle__footer {
   display: grid;
   gap: 0.55rem;
@@ -20072,6 +20116,34 @@ a.lp-qs-card {
   padding: 0.9rem 0.95rem;
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
+a.lp-qs-card.has-color {
+  --lp-item-color: var(--lp-muted, #9aa6b2);
+  border-left: 3px solid var(--lp-item-color);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lp-item-color) 12%, transparent);
+}
+a.lp-qs-card.has-color.is-teal { --lp-item-color: #2dd4bf; }
+a.lp-qs-card.has-color.is-coral { --lp-item-color: #e2604f; }
+a.lp-qs-card.has-color.is-amber { --lp-item-color: #f59e0b; }
+a.lp-qs-card.has-color.is-purple { --lp-item-color: #a78bfa; }
+a.lp-qs-card.has-color.is-blue { --lp-item-color: #60a5fa; }
+a.lp-qs-card.has-color.is-green { --lp-item-color: #57d35b; }
+a.lp-qs-card.has-color.is-pink { --lp-item-color: #f472b6; }
+a.lp-qs-card.has-color.is-gray { --lp-item-color: #9aa6b2; }
+a.lp-qs-card.has-color .lp-qs-card__icon {
+  border-color: color-mix(in srgb, var(--lp-item-color) 45%, transparent);
+  background: color-mix(in srgb, var(--lp-item-color) 14%, transparent);
+}
+a.lp-qs-card.has-color .lp-qs-card__bar-fill {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--lp-item-color) 70%, #000),
+    var(--lp-item-color)
+  );
+}
+a.lp-qs-card.has-color:hover,
+a.lp-qs-card.has-color:focus-visible {
+  border-color: color-mix(in srgb, var(--lp-item-color) 55%, transparent);
+}
 a.lp-qs-card:hover,
 a.lp-qs-card:focus-visible {
   border-color: rgba(232, 182, 76, 0.4);
@@ -20184,6 +20256,18 @@ a.lp-qs-card:active {
   border-bottom: 1px solid var(--qs-line);
   flex-shrink: 0;
 }
+.lp-qs-detail__head.has-color {
+  --lp-item-color: var(--lp-muted, #9aa6b2);
+  box-shadow: inset 3px 0 0 var(--lp-item-color);
+}
+.lp-qs-detail__head.has-color.is-teal { --lp-item-color: #2dd4bf; }
+.lp-qs-detail__head.has-color.is-coral { --lp-item-color: #e2604f; }
+.lp-qs-detail__head.has-color.is-amber { --lp-item-color: #f59e0b; }
+.lp-qs-detail__head.has-color.is-purple { --lp-item-color: #a78bfa; }
+.lp-qs-detail__head.has-color.is-blue { --lp-item-color: #60a5fa; }
+.lp-qs-detail__head.has-color.is-green { --lp-item-color: #57d35b; }
+.lp-qs-detail__head.has-color.is-pink { --lp-item-color: #f472b6; }
+.lp-qs-detail__head.has-color.is-gray { --lp-item-color: #9aa6b2; }
 .lp-qs-detail__back {
   width: 2.25rem;
   height: 2.25rem;
@@ -20198,7 +20282,28 @@ a.lp-qs-card:active {
   text-decoration: none;
   flex-shrink: 0;
 }
-.lp-qs-detail__head-copy { min-width: 0; }
+.lp-qs-detail__head-copy { min-width: 0; flex: 1 1 auto; }
+.lp-qs-detail__edit {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--qs-line);
+  background: var(--qs-surface-alt);
+  color: var(--qs-ink-dim);
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.lp-qs-detail__edit:hover,
+.lp-qs-detail__edit:focus-visible {
+  color: var(--qs-gold);
+  border-color: rgba(232, 182, 76, 0.4);
+  outline: none;
+}
 .lp-qs-detail__title {
   margin: 0;
   font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
@@ -20416,3 +20521,83 @@ a.lp-qs-card:active {
   cursor: pointer;
   padding: 0;
 }
+
+/* Curated color swatches for leaf quest create/edit. */
+.lp-color-swatches {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.lp-color-swatches__label {
+  display: block;
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-muted, #9aa6b2);
+}
+.lp-color-swatches__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+.lp-color-swatches__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.72rem;
+  color: var(--lp-muted, #9aa6b2);
+}
+.lp-color-swatch {
+  position: relative;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.lp-color-swatch__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+.lp-color-swatch__dot {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.lp-color-swatch.is-teal .lp-color-swatch__dot { background: #2dd4bf; }
+.lp-color-swatch.is-coral .lp-color-swatch__dot { background: #e2604f; }
+.lp-color-swatch.is-amber .lp-color-swatch__dot { background: #f59e0b; }
+.lp-color-swatch.is-purple .lp-color-swatch__dot { background: #a78bfa; }
+.lp-color-swatch.is-blue .lp-color-swatch__dot { background: #60a5fa; }
+.lp-color-swatch.is-green .lp-color-swatch__dot { background: #57d35b; }
+.lp-color-swatch.is-pink .lp-color-swatch__dot { background: #f472b6; }
+.lp-color-swatch.is-gray .lp-color-swatch__dot { background: #9aa6b2; }
+.lp-color-swatch:hover .lp-color-swatch__dot,
+.lp-color-swatch:focus-within .lp-color-swatch__dot {
+  transform: scale(1.08);
+}
+.lp-color-swatch:has(.lp-color-swatch__input:checked) .lp-color-swatch__dot {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, #fff 70%, transparent),
+    0 0 0 4px currentColor,
+    inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+  transform: scale(1.06);
+}
+.lp-color-swatch.is-teal { color: #2dd4bf; }
+.lp-color-swatch.is-coral { color: #e2604f; }
+.lp-color-swatch.is-amber { color: #f59e0b; }
+.lp-color-swatch.is-purple { color: #a78bfa; }
+.lp-color-swatch.is-blue { color: #60a5fa; }
+.lp-color-swatch.is-green { color: #57d35b; }
+.lp-color-swatch.is-pink { color: #f472b6; }
+.lp-color-swatch.is-gray { color: #9aa6b2; }

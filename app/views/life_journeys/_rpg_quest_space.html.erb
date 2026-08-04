@@ -44,10 +44,10 @@
       <% end %>
 
       <% leafs.each_with_index do |cat, idx| %>
-        <% accent = camp_accents[(branches.size + idx) % camp_accents.size] %>
+        <% accent = cat.tagged_color_key || camp_accents[(branches.size + idx) % camp_accents.size] %>
         <% prog = folder_objective_progress(cat) %>
         <%= link_to life_journey_path(@journey, goal_id: goal_id, plan_id: plan_id, focus_id: cat.id),
-              class: "lp-qs-card is-#{accent}",
+              class: "lp-qs-card is-#{accent} #{'has-color' if cat.tagged_color_key}",
               data: { turbo: true } do %>
           <div class="lp-qs-card__top">
             <span class="lp-qs-card__icon" aria-hidden="true">📂</span>
@@ -110,6 +110,8 @@
                       autocomplete: "off",
                       data: { floating_create_target: "title" } %>
               </label>
+              <%= render "life_journeys/color_swatch_fields",
+                    form_id: "qs-new-#{category_scope.id}" %>
               <div class="lp-rpg-float-create__actions">
                 <button type="button"
                         class="lp-rpg-float-create__btn is-cancel"
