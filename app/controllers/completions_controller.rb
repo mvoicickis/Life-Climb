@@ -12,4 +12,12 @@ class CompletionsController < ApplicationController
       redirect_to dashboard_path, alert: @completion.errors.full_messages.to_sentence
     end
   end
+
+  def destroy
+    completion = current_user.completions.find(params[:id])
+    completion.destroy!
+    redirect_to dashboard_path, notice: t("habits.undone"), status: :see_other
+  rescue ActiveRecord::RecordNotFound
+    redirect_to dashboard_path, status: :see_other
+  end
 end

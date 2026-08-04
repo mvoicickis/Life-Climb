@@ -1,0 +1,62 @@
+<%# locals: habit %>
+<%
+  done = habit.completed_today?
+  amount = habit.today_amount
+%>
+<% if habit.binary_checkin? %>
+  <li class="lp-dash-battle__item lp-dash-habit has-color is-amber <%= 'is-done' if done %>"
+      id="<%= dom_id(habit, :today) %>">
+    <% if done %>
+      <% completion = habit.completion_for(Date.current) %>
+      <%= button_to completion_path(completion),
+            method: :delete,
+            class: "lp-dash-check is-on",
+            aria: { label: "Undo #{habit.name}" } do %>
+        <span aria-hidden="true"></span>
+      <% end %>
+    <% else %>
+      <%= button_to completions_path(habit_id: habit.id),
+            method: :post,
+            class: "lp-dash-check",
+            aria: { label: "Complete #{habit.name}" } do %>
+        <span aria-hidden="true"></span>
+      <% end %>
+    <% end %>
+    <span class="lp-dash-battle__name"><%= habit.name %></span>
+    <span class="lp-dash-habit__meta"><%= habit.unit %></span>
+  </li>
+<% else %>
+  <li class="lp-dash-battle__item lp-dash-habit is-quantity has-color is-amber <%= 'is-done' if habit.met_habit_goal? %>"
+      id="<%= dom_id(habit, :today) %>">
+    <span class="lp-dash-check is-meter"
+          role="img"
+          aria-label="<%= habit.name %> — <%= format_amount(amount) %> <%= habit.unit %>">
+      <span aria-hidden="true"></span>
+    </span>
+    <div class="lp-dash-habit__copy">
+      <span class="lp-dash-battle__name"><%= habit.name %></span>
+      <span class="lp-dash-habit__meta">
+        <%= format_amount(amount) %> <%= habit.unit %>
+        <% if habit.goal.present? %>
+          · <%= t("habits.goal", value: format_amount(habit.goal)) %>
+        <% elsif habit.standard? && habit.range_summary.present? %>
+          · <%= habit.range_summary %>
+        <% end %>
+      </span>
+    </div>
+    <%= form_with url: daily_logs_path(habit_id: habit.id),
+          scope: :daily_log,
+          class: "lp-dash-habit__log",
+          data: { turbo: false } do |form| %>
+      <%= hidden_field_tag :return_to, "today" %>
+      <%= form.number_field :amount,
+            value: amount,
+            min: 0,
+            step: :any,
+            inputmode: "decimal",
+            class: "lp-dash-habit__input",
+            aria: { label: t("habits.how_many") } %>
+      <%= form.submit t("habits.save"), class: "lp-dash-habit__save" %>
+    <% end %>
+  </li>
+<% end %>

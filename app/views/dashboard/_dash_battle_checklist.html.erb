@@ -1,4 +1,4 @@
-<%# locals: todo %>
+<%# locals: todo, section_color: "purple" %>
 <%
   day = todo.strategy_goal
   tasks = day&.practice_tasks&.sort_by { |t| [ t.position.to_i, t.id ] } || []
@@ -8,9 +8,9 @@
   shell_ready = open_n.zero?
   qty_project = day&.quantified_path_project
   row_done = todo.completed?
-  # Inherit accent from the parent leaf quest (not the invisible Checklist day).
-  color_key = day&.parent&.tagged_color_key
-  color_class = color_key ? "has-color is-#{color_key}" : nil
+  # Custom quest color overrides the Quests-section default (purple).
+  color_key = day&.parent&.tagged_color_key.presence || local_assigns.fetch(:section_color, "purple")
+  color_class = "has-color is-#{color_key}"
 %>
 <li class="lp-dash-battle__item lp-dash-checklist <%= 'is-done' if row_done %> <%= color_class %>"
     data-battle-day-target="item"

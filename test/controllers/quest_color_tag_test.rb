@@ -90,7 +90,7 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-checklist__obj.has-color.is-teal .lp-dash-checklist__obj-name", text: /Review notes/
   end
 
-  test "uncolored quest checklist stays without color classes" do
+  test "uncolored quest checklist uses Quests section purple default" do
     quest = @section.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Plain Volume", position: 0
@@ -101,9 +101,8 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist .lp-dash-battle__name", text: "Plain Volume"
-    assert_select ".lp-dash-checklist.has-color", text: /Plain Volume/, count: 0
-    assert_select ".lp-dash-checklist__obj.has-color", count: 0
+    assert_select ".lp-dash-checklist.has-color.is-purple .lp-dash-battle__name", text: "Plain Volume"
+    assert_select ".lp-dash-checklist__obj.has-color.is-purple", minimum: 1
   end
 
   test "quest detail edit dialog can update color_key" do
