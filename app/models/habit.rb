@@ -5,6 +5,7 @@ class Habit < ApplicationRecord
   STAT_TYPES = %w[growth standard].freeze
 
   belongs_to :user
+  belongs_to :life_journey, optional: true
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
 
@@ -20,6 +21,7 @@ class Habit < ApplicationRecord
   validates :max_value, numericality: true, allow_nil: true
   validate :healthy_range_bounds
   validate :max_not_below_min
+  validate :life_journey_belongs_to_user
 
   before_validation :normalize_unit
   before_validation :normalize_stat_fields
@@ -209,5 +211,12 @@ class Habit < ApplicationRecord
 
     max_position = user&.habits&.maximum(:position) || 0
     self.position = max_position + 1
+  end
+
+  def life_journey_belongs_to_user
+    return if life_journey_id.blank?
+    return if user&.life_journeys&.exists?(id: life_journey_id)
+
+    errors.add(:life_journey_id, :invalid)
   end
 end

@@ -68,6 +68,8 @@
                 focus: @focus %>
         </div>
 
+        <%= render "life_journeys/rpg_supporting_habits", habits: @supporting_habits %>
+
         <div class="lp-rpg__stage-battle">
           <%= render "life_journeys/rpg_battle_sheet",
                 current_project: current_project,

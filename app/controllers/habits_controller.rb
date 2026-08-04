@@ -1,8 +1,9 @@
 class HabitsController < ApplicationController
   before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
+  before_action :load_journeys, only: %i[ new create edit update ]
 
   def index
-    @habits = current_user.habits.ordered
+    @habits = current_user.habits.ordered.includes(:life_journey)
   end
 
   def show
@@ -79,15 +80,20 @@ class HabitsController < ApplicationController
     @habit = current_user.habits.find(params[:id])
   end
 
+  def load_journeys
+    @journeys = current_user.life_journeys.active.order(:title, :id)
+  end
+
   def habit_params
     raw = params.require(:habit).permit(
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
-      :stat_type, :goal, :min_value, :max_value
+      :stat_type, :goal, :min_value, :max_value, :life_journey_id
     )
     # Clamp client-supplied LP rewards — habits are not a free AP faucet.
     if raw[:points].present?
       raw[:points] = raw[:points].to_i.clamp(1, 50)
     end
+    raw[:life_journey_id] = raw[:life_journey_id].presence
     raw
   end
 
