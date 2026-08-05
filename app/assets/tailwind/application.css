@@ -16173,10 +16173,15 @@ button.lp-strategy-overflow {
 /* === Mountain Focus Phase 1 ===
    Density/layout tokens stay here; glass/ink colors come from html[data-theme]. */
 .lp-rpg.is-focus-phase {
-  --lp-rpg-gutter: 0.95rem;
+  /* Phone-first density — Android must not rely on max-height: 600px alone. */
+  --lp-rpg-gutter: 0.7rem;
   --lp-rpg-content: min(40rem, 100%);
-  --lp-rpg-gap: 0.8rem;
+  --lp-rpg-gap: 0.5rem;
   --lp-rpg-radius: 1.05rem;
+  --lp-rpg-section-card-w: 11.5rem;
+  --lp-rpg-section-card-min-h: 6.75rem;
+  --lp-rpg-section-card-pad: 0.6rem;
+  --lp-tap: 2.75rem;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -16276,6 +16281,11 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg__stage-sections {
   min-height: 0;
   overflow: hidden;
+}
+.lp-rpg.is-focus-phase .lp-rpg__stage-sections {
+  /* Let section arrows sit outside the track without being clipped. */
+  max-height: none;
+  overflow: visible;
 }
 .lp-rpg__stage-battle {
   min-height: 0;
@@ -18726,7 +18736,7 @@ a.lp-rpg-practice-cat {
   color: var(--lp-rpg-ink);
 }
 .lp-rpg.is-focus-phase .lp-rpg__planning {
-  gap: 0.75rem;
+  gap: var(--lp-rpg-gap, 0.5rem);
 }
 .lp-rpg.is-focus-phase .lp-rpg-path__menu-btn {
   opacity: 0.45;
@@ -18984,7 +18994,7 @@ a.lp-rpg-practice-cat {
 /* Project Sections carousel — mockup: teal cards + dashed New Project */
 .lp-rpg-sections {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.45rem;
   min-width: 0;
 }
 .lp-rpg-sections__kicker {
@@ -18994,25 +19004,30 @@ a.lp-rpg-practice-cat {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #9a9686;
+  color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.96));
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 0 10px rgba(0, 0, 0, 0.25);
 }
 .lp-rpg-sections__rail {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: stretch;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.15rem;
   min-width: 0;
 }
 .lp-rpg-sections__nav {
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-height: var(--lp-tap, 2.75rem);
 }
 .lp-rpg-sections__track {
   list-style: none;
   margin: 0;
-  padding: 0.1rem 0.05rem 0.25rem;
+  padding: 0.1rem 0.05rem 0.2rem;
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -19031,17 +19046,20 @@ a.lp-rpg-practice-cat {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
   margin: 0;
   padding: 0;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(0, 0, 0, 0.35);
   color: rgba(248, 250, 252, 0.88);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .lp-rpg-sections__arrow[hidden] { display: none !important; }
 
@@ -19049,11 +19067,11 @@ a.lp-rpg-practice-cat {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  width: 12.5rem; /* room for longer section names */
-  /* Chrome row + full-width 2-line title + meter + status. */
-  min-height: 8.5rem;
-  padding: 0.875rem;
+  gap: 0.35rem;
+  width: var(--lp-rpg-section-card-w, 11.5rem);
+  /* Chrome row + title + meter + status — denser for phone viewports. */
+  min-height: var(--lp-rpg-section-card-min-h, 6.75rem);
+  padding: var(--lp-rpg-section-card-pad, 0.6rem);
   border-radius: 0.75rem;
   border: 1.5px solid #2f9dab;
   background: var(--rpg-glass);
@@ -19082,8 +19100,10 @@ a.lp-rpg-practice-cat {
 .lp-rpg-section-card__menu-btn,
 .lp-rpg-section-card__menu-slot {
   flex: 0 0 auto;
-  width: 1.65rem;
-  height: 2.1rem;
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
   margin: 0;
   padding: 0;
   display: inline-flex;
@@ -19101,9 +19121,7 @@ a.lp-rpg-practice-cat {
   letter-spacing: 0.06em;
   line-height: 1;
   cursor: pointer;
-  /* Comfortable hit area: covers dots + gap toward the flag icon */
-  padding-right: 0.35rem;
-  margin-right: -0.15rem;
+  touch-action: manipulation;
 }
 .lp-rpg-section-card__menu-btn:hover,
 .lp-rpg-section-card__menu-btn:focus-visible {
@@ -19117,7 +19135,7 @@ a.lp-rpg-section-card__link,
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 0.4rem;
+  gap: 0.3rem;
   text-decoration: none;
   color: inherit;
 }
@@ -19130,16 +19148,16 @@ a.lp-rpg-section-card__link,
 }
 .lp-rpg-section-card__icon {
   flex: 0 0 auto;
-  width: 2.125rem;
-  height: 2.125rem;
-  border-radius: 0.5rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.45rem;
   background: #1c2b1c;
   border: 1px solid #3f7a3f;
   color: #7fd77f;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 .lp-rpg-section-card__icon.is-done {
   background: #1c2b1c;
@@ -19160,10 +19178,10 @@ a.lp-rpg-section-card__link,
   width: 100%;
   min-width: 0;
   margin: 0;
-  font-size: var(--lp-type-ui-md);
+  font-size: var(--lp-type-ui-sm);
   font-weight: 700;
   color: var(--lp-ink);
-  line-height: 1.25;
+  line-height: 1.22;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
@@ -19187,7 +19205,7 @@ a.lp-rpg-section-card__footer-link,
 .lp-rpg-section-card__footer-link.is-static {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.4rem;
   text-decoration: none;
   color: inherit;
 }
@@ -19245,8 +19263,8 @@ a.lp-rpg-section-card__footer-link,
 }
 .lp-rpg-section-card__menu {
   position: absolute;
-  top: 2.4rem;
-  left: 0.55rem;
+  top: calc(var(--lp-tap, 2.75rem) + 0.15rem);
+  left: 0.35rem;
   z-index: 5;
   min-width: 9.5rem;
   padding: 0.3rem;
@@ -19283,8 +19301,8 @@ a.lp-rpg-section-card__footer-link,
   align-items: stretch;
 }
 .lp-rpg-sections__new {
-  width: 12.5rem;
-  min-height: 8.5rem;
+  width: var(--lp-rpg-section-card-w, 11.5rem);
+  min-height: var(--lp-rpg-section-card-min-h, 6.75rem);
   margin: 0;
 }
 .lp-rpg-sections__new > summary.lp-rpg-sections__new-btn {
@@ -19293,17 +19311,18 @@ a.lp-rpg-section-card__footer-link,
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 8.5rem;
-  padding: 0.875rem;
+  min-height: var(--lp-rpg-section-card-min-h, 6.75rem);
+  padding: var(--lp-rpg-section-card-pad, 0.6rem);
   border-radius: 0.75rem;
   border: 1.5px dashed #6a6455;
   background: transparent;
   color: #e8b64c;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
   text-align: center;
+  touch-action: manipulation;
 }
 .lp-rpg-sections__new > summary.lp-rpg-sections__new-btn::-webkit-details-marker { display: none; }
 .lp-rpg-sections__new > summary.lp-rpg-sections__new-btn:hover,
@@ -19391,24 +19410,28 @@ a.lp-rpg-layer-card {
   color: rgba(148, 163, 184, 0.55);
 }
 
-.lp-rpg.is-focus-phase .lp-rpg__stage-sections {
-  max-height: none;
-}
 .lp-rpg.is-focus-phase .lp-rpg-section-card {
-  min-height: 8.5rem;
-  width: 12.5rem;
+  min-height: var(--lp-rpg-section-card-min-h, 6.75rem);
+  width: var(--lp-rpg-section-card-w, 11.5rem);
 }
-@media (max-width: 420px) {
+@media (max-width: 430px) {
+  .lp-rpg.is-focus-phase {
+    --lp-rpg-gutter: 0.65rem;
+    --lp-rpg-gap: 0.45rem;
+    --lp-rpg-section-card-w: min(11.5rem, 70vw);
+    --lp-rpg-section-card-min-h: 6.5rem;
+    --lp-rpg-section-card-pad: 0.55rem;
+  }
   .lp-rpg-section-card,
   .lp-rpg.is-focus-phase .lp-rpg-section-card {
-    width: min(12.5rem, 72vw);
-    min-height: 8.5rem;
-    padding: 0.75rem;
+    width: var(--lp-rpg-section-card-w);
+    min-height: var(--lp-rpg-section-card-min-h);
+    padding: var(--lp-rpg-section-card-pad);
   }
   .lp-rpg-sections__new,
   .lp-rpg-sections__new > summary.lp-rpg-sections__new-btn {
-    width: min(12.5rem, 72vw);
-    min-height: 8.5rem;
+    width: var(--lp-rpg-section-card-w, min(11.5rem, 70vw));
+    min-height: var(--lp-rpg-section-card-min-h, 6.5rem);
   }
   .lp-rpg-layer-card.lp-rpg-practice-cat {
     min-height: 3.7rem;
@@ -20814,6 +20837,32 @@ a.lp-rpg-camp-row {
   padding: 0.35rem 0.25rem 0.55rem;
   border-bottom: 1px solid var(--qs-line);
 }
+.lp-rpg.is-focus-phase .lp-qs-board {
+  gap: 0.6rem;
+  padding: 0.1rem 0.05rem 0.35rem;
+}
+.lp-rpg.is-focus-phase .lp-qs-board__head {
+  padding: 0.25rem 0.2rem 0.4rem;
+}
+.lp-rpg.is-focus-phase .lp-qs-board__title {
+  font-size: 1.15rem;
+}
+.lp-rpg.is-focus-phase .lp-qs-board__list {
+  gap: 0.5rem;
+  padding: 0.25rem 0.05rem;
+}
+.lp-rpg.is-focus-phase a.lp-qs-card {
+  padding: 0.72rem 0.78rem;
+  border-radius: 0.8rem;
+}
+.lp-rpg.is-focus-phase .lp-qs-card__top {
+  gap: 0.55rem;
+}
+.lp-rpg.is-focus-phase .lp-qs-card__icon {
+  width: 2.15rem;
+  height: 2.15rem;
+  font-size: 1rem;
+}
 .lp-qs-board__eyebrow {
   margin: 0 0 0.25rem;
   font-size: 0.68rem;
@@ -21493,6 +21542,12 @@ a.lp-qs-card:active {
   font-weight: 750;
   backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+/* Mountain: keep FAB off the bottom tab bar (was floating above Habits/Journey). */
+body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
+  top: max(0.7rem, env(safe-area-inset-top, 0px));
+  bottom: auto;
+  right: max(0.7rem, env(safe-area-inset-right, 0px));
 }
 .lp-landing-body .lp-feedback-fab {
   bottom: calc(1rem + env(safe-area-inset-bottom));
