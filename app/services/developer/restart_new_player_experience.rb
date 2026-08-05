@@ -15,6 +15,8 @@ module Developer
 
     def call
       ActiveRecord::Base.transaction do
+        # Quantity logs FK to daily_todos — must go first (delete_all skips nullify callbacks).
+        @user.strategy_quantity_logs.delete_all
         @user.daily_todos.delete_all
         @user.strategy_goals.destroy_all
         @user.life_journeys.destroy_all
