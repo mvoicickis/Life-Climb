@@ -77,3 +77,5 @@ gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 3.2"
 
 gem "ruby-vips", "~> 2.2"
+
+gem "web-push", "~> 3.1"
