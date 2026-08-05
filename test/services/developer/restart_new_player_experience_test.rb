@@ -3,6 +3,8 @@
 require "test_helper"
 
 class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
+  include ClimbTestHelper
+
   test "wipes strategy data and clears onboarding while keeping the account" do
     user = users(:one)
     user.update_columns(developer: true, total_points: 120)
@@ -54,5 +56,64 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert user.read_attribute(:developer)
     assert_equal action_points_before, user.total_points
     assert_equal habit_ids.sort, user.habits.pluck(:id).sort
+  end
+
+  test "succeeds when a quantity log still points at a daily todo" do
+    user = users(:one)
+    user.update_columns(developer: true)
+
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "Shipped",
+      current_reality: "Building",
+      today_mission: "Write tests",
+      closer_percent: 10,
+      route_mission: true
+    )
+
+    area = user.primary_focused_journey.life_area
+    goal = user.strategy_goals.for_kind("goal").roots.first
+    plan = user.strategy_goals.create!(
+      life_area: area, life_journey: goal.life_journey, parent: goal,
+      horizon: "plan", title: "Build", position: 0
+    )
+    project = user.strategy_goals.create!(
+      life_area: area, life_journey: goal.life_journey, parent: plan,
+      horizon: "project", title: "Pages", position: 0,
+      target_amount: 100, unit: "pages", current_amount: 0
+    )
+    leaf = practice_leaf_for!(project)
+    day = user.strategy_goals.create!(
+      life_area: area, life_journey: goal.life_journey, parent: leaf,
+      horizon: "day", title: "Read", scheduled_on: Date.current, position: 0
+    )
+    todo = user.daily_todos.create!(
+      title: "Read pages",
+      aspect_key: "career",
+      scheduled_on: Date.current,
+      strategy_goal: day,
+      position: 0
+    )
+    user.strategy_quantity_logs.create!(
+      strategy_goal: project,
+      source_day: day,
+      daily_todo: todo,
+      amount: 12,
+      unit: "pages",
+      logged_on: Date.current
+    )
+
+    assert_operator user.strategy_quantity_logs.count, :>, 0
+
+    assert_nothing_raised do
+      Developer::RestartNewPlayerExperience.call(user:)
+    end
+
+    user.reload
+    assert_equal 0, user.strategy_quantity_logs.count
+    assert_equal 0, user.daily_todos.count
+    assert_nil user.onboarding_completed_at
   end
 end
