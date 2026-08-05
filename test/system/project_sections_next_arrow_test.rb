@@ -95,31 +95,62 @@ class ProjectSectionsNextArrowTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
 
+    # Drop any restored snap position so the arrow starts from a known scrollLeft = 0.
+    page.evaluate_script(<<~JS)
+      (function() {
+        var prefix = 'lp-snap-scroll:sections:';
+        Object.keys(sessionStorage).forEach(function(key) {
+          if (key.indexOf(prefix) === 0) sessionStorage.removeItem(key);
+        });
+        return true;
+      })()
+    JS
+
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camps.first.id)
     assert_selector ".lp-rpg-sections__track", wait: 5
 
     page.evaluate_script(<<~JS)
       (function() {
-        var track = document.querySelector('.lp-rpg-sections__track');
+        var el = document.querySelector('.lp-rpg-sections[data-controller~="strategy-plan-rail"]');
+        var ctrl = window.Stimulus.getControllerForElementAndIdentifier(el, 'strategy-plan-rail');
+        var track = ctrl.trackTarget;
         track.scrollLeft = 0;
         track.dispatchEvent(new Event('scroll'));
+        if (typeof ctrl.syncArrows === 'function') ctrl.syncArrows();
         return true;
       })()
     JS
-    assert_selector "button.lp-rpg-sections__arrow.is-next:not([hidden])", wait: 5
 
-    # Capybara find proves the control is shown; click the node inside the sections Stimulus scope
-    # (avoids overlapping card links stealing the hit-target at mobile density).
-    btn = find("button.lp-rpg-sections__arrow.is-next:not([hidden])")
-    before = page.evaluate_script("document.querySelector('.lp-rpg-sections__track').scrollLeft").to_f
-    page.execute_script("arguments[0].click()", btn.native)
-
-    after = nil
+    # Wait until the track actually overflows — arrow visibility alone can race layout.
+    overflowing = false
     40.times do
-      after = page.evaluate_script("document.querySelector('.lp-rpg-sections__track').scrollLeft").to_f
-      break if after > before + 1
+      overflowing = page.evaluate_script(<<~JS)
+        (function() {
+          var track = document.querySelector('.lp-rpg-sections__track');
+          return (track.scrollWidth - track.clientWidth) > 1;
+        })()
+      JS
+      break if overflowing
       sleep 0.05
     end
+    assert overflowing, "sections track should overflow before clicking ›"
+
+    assert_selector "button.lp-rpg-sections__arrow.is-next:not([hidden]):not([disabled])", wait: 5
+
+    # Click via the Stimulus next target in-page. Selenium/Capybara coordinate clicks are
+    # unreliable against this rail at mobile density; HTMLElement.click() still exercises
+    # strategy-plan-rail#next (unlike calling scrollToNextCard directly).
+    moved = page.evaluate_script(<<~JS)
+      (function() {
+        var el = document.querySelector('.lp-rpg-sections[data-controller~="strategy-plan-rail"]');
+        var ctrl = window.Stimulus.getControllerForElementAndIdentifier(el, 'strategy-plan-rail');
+        var before = ctrl.trackTarget.scrollLeft;
+        ctrl.nextTarget.click();
+        return { before: before, after: ctrl.trackTarget.scrollLeft };
+      })()
+    JS
+    before = moved["before"].to_f
+    after = moved["after"].to_f
     assert after > before + 1, "› click should advance scroll (#{before} -> #{after})"
   end
 end
