@@ -8,7 +8,6 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
   test "wipes strategy data and clears onboarding while keeping the account" do
     user = users(:one)
     user.update_columns(developer: true, total_points: 120)
-    habit_ids = user.habits.pluck(:id)
     action_points_before = user.total_points
 
     Onboarding::Run.call(
@@ -51,11 +50,36 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_equal 0, user.strategy_point_ledgers.count
     assert_equal 0, user.strategy_points
 
-    # Kept: account, developer flag, Action Points, habits
+    # Kept: account, developer flag, Action Points
     assert User.exists?(user.id)
     assert user.read_attribute(:developer)
     assert_equal action_points_before, user.total_points
-    assert_equal habit_ids.sort, user.habits.pluck(:id).sort
+  end
+
+  test "wipes habits together with daily logs and completions" do
+    user = users(:one)
+    user.update_columns(developer: true, planning_version: 2)
+
+    habit = user.habits.create!(
+      name: "Walk",
+      unit: "minutes",
+      points: 5,
+      frequency: "daily",
+      position: 0
+    )
+    user.daily_logs.create!(habit: habit, logged_on: Date.current, amount: 20, goal: 30)
+    user.completions.create!(habit: habit, completed_on: Date.current, points_awarded: 5)
+
+    assert_operator user.habits.count, :>, 0
+    assert_operator user.daily_logs.count, :>, 0
+    assert_operator user.completions.count, :>, 0
+
+    Developer::RestartNewPlayerExperience.call(user:)
+
+    user.reload
+    assert_equal 0, user.habits.count
+    assert_equal 0, user.daily_logs.count
+    assert_equal 0, user.completions.count
   end
 
   test "succeeds when a quantity log still points at a daily todo" do

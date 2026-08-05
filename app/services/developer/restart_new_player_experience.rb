@@ -2,8 +2,9 @@
 
 module Developer
   # Full New Player Experience restart for the developer account.
-  # Wipes Strategy / journey data so the app feels brand new.
-  # Never deletes the User account, Action Points, or habits.
+  # Wipes Strategy / journey data and habits (plus their logs/check-offs)
+  # so the app feels brand new.
+  # Never deletes the User account or Action Points.
   class RestartNewPlayerExperience
     def self.call(user:)
       new(user:).call
@@ -23,6 +24,8 @@ module Developer
         # Journeys first: LifeArea has_many :life_journeys, dependent: :restrict_with_error
         @user.life_areas.destroy_all
         @user.strategy_point_ledgers.delete_all
+        # Cascades daily_logs + completions via Habit dependent: :destroy.
+        @user.habits.destroy_all
 
         shown = Array(@user.support_milestones_shown).map(&:to_s)
         shown.delete(User::ADVENTURE_GUIDE_KEY)
