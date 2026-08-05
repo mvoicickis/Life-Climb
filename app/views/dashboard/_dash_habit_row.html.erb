@@ -58,10 +58,10 @@
           data: { turbo: false } do |form| %>
       <%= hidden_field_tag :return_to, "today" %>
       <%= form.number_field :amount,
-            value: amount,
+            value: format_amount(amount),
             min: 0,
-            step: :any,
-            inputmode: "decimal",
+            step: habit.quantity_input_step,
+            inputmode: habit.quantity_inputmode,
             class: "lp-dash-habit__input",
             aria: { label: t("habits.how_many") } %>
       <%= form.submit t("habits.save"), class: "lp-dash-habit__save" %>
