@@ -1828,9 +1828,9 @@
     overflow: auto;
     margin: 0;
     border-radius: 1.5rem 1.5rem 0 0;
-    background: #171c22;
-    color: #f3f6f8;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--lp-elevated);
+    color: var(--lp-ink);
+    border: 1px solid var(--lp-border);
     box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
     padding: 0.75rem 1.15rem 1.35rem;
     transform: translateY(110%);
@@ -2023,32 +2023,6 @@
       transform: translateY(0) scale(1);
       opacity: 1;
     }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .share-sheet__panel {
-      background: #0f172a;
-      color: #f8fafc;
-      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
-    }
-
-    .share-sheet__handle { background: #334155; }
-    .share-sheet__subtitle { color: #94a3b8; }
-    .share-sheet__close { background: #1e293b; color: #e2e8f0; }
-    .share-sheet__close:hover,
-    .share-sheet__close:focus-visible { background: #334155; }
-    .share-sheet__preview {
-      background: #1e293b;
-      border-color: #334155;
-      color: #cbd5e1;
-    }
-    .share-sheet__label { color: #cbd5e1; }
-    .share-sheet__copy-message {
-      background: #1e293b;
-      border-color: #334155;
-      color: #f8fafc;
-    }
-    .share-sheet__icon--x { background: #e2e8f0; color: #0f172a; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -3263,6 +3237,11 @@
   --lp-rpg-veil-b: rgba(248, 250, 252, 0.22);
   --lp-rpg-veil-c: rgba(241, 245, 249, 0.78);
   --lp-rpg-scenic-filter: saturate(1.02) contrast(1.02) brightness(1.05);
+  /* Quest Space — follows theme (light surfaces + slate ink / dark purple + cream) */
+  --qs-ink: #0f172a;
+  --qs-ink-dim: #475569;
+  --qs-surface: #ffffff;
+  --qs-surface-alt: #f8f5fc;
 }
 
 html[data-theme="light"] {
@@ -3312,6 +3291,10 @@ html[data-theme="dark"] {
   --lp-rpg-veil-b: rgba(6, 10, 16, 0.24);
   --lp-rpg-veil-c: rgba(6, 10, 16, 0.84);
   --lp-rpg-scenic-filter: saturate(0.92) contrast(1.08) brightness(0.78);
+  --qs-ink: #efe6d8;
+  --qs-ink-dim: #8f8496;
+  --qs-surface: #1e1a2e;
+  --qs-surface-alt: #241f38;
 }
 
 .lp-game {
@@ -3563,8 +3546,8 @@ html[data-theme="dark"] {
 }
 
 .lp-top-nav {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(11, 15, 20, 0.92);
+  border-bottom: 1px solid var(--lp-border);
+  background: var(--lp-glass);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
@@ -4434,8 +4417,8 @@ html[data-theme="dark"] {
   min-width: 7.25rem;
   max-width: 9.5rem;
   border-radius: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(23, 28, 34, 0.82);
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 0.45rem 0.65rem;
@@ -4516,10 +4499,10 @@ html[data-theme="dark"] {
 
 .lp-dash-project-check {
   border-radius: 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background:
     linear-gradient(145deg, rgba(87, 211, 91, 0.12), transparent 55%),
-    rgba(23, 28, 34, 0.82);
+    var(--rpg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: 1rem 1.05rem 1.1rem;
@@ -4591,7 +4574,7 @@ html[data-theme="dark"] {
 
 .lp-dash-battle-angles {
   border-radius: 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background:
     linear-gradient(145deg, rgba(87, 211, 91, 0.1), transparent 55%),
     rgba(23, 28, 34, 0.78);
@@ -4636,7 +4619,7 @@ html[data-theme="dark"] {
   width: 100%;
   text-align: left;
   border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(11, 15, 20, 0.55);
   padding: 0.75rem 0.9rem;
   font-size: 0.92rem;
@@ -4700,7 +4683,7 @@ html[data-theme="dark"] {
 
 .lp-dash-card {
   border-radius: 1.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -4948,7 +4931,7 @@ html[data-theme="dark"] {
 
 .lp-dash-battle {
   border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -5442,7 +5425,7 @@ html[data-theme="dark"] {
   border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--lp-item-color) 28%, transparent);
   border-left: 3px solid var(--lp-item-color);
-  background: color-mix(in srgb, var(--lp-item-color) 7%, rgba(18, 22, 30, 0.88));
+  background: color-mix(in srgb, var(--lp-item-color) 7%, var(--rpg-glass));
   padding: var(--lp-pad-card);
 }
 .lp-habits__card.is-off { opacity: 0.62; }
@@ -5554,7 +5537,7 @@ html[data-theme="dark"] {
   border-radius: 1.15rem;
   border: 1px solid color-mix(in srgb, var(--lp-item-color) 30%, transparent);
   border-left: 3px solid var(--lp-item-color);
-  background: color-mix(in srgb, var(--lp-item-color) 8%, rgba(18, 22, 30, 0.92));
+  background: color-mix(in srgb, var(--lp-item-color) 8%, var(--rpg-glass));
   padding: 1.15rem 1.1rem 1.25rem;
 }
 .lp-habits__detail-top {
@@ -5710,7 +5693,7 @@ html[data-theme="dark"] {
   justify-content: space-between;
   gap: 0.85rem;
   border-radius: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(255, 255, 255, 0.03);
   padding: 0.85rem 0.95rem;
   cursor: pointer;
@@ -6074,7 +6057,7 @@ html[data-theme="dark"] {
   gap: 0.85rem;
   padding: 1.35rem 1.2rem 1.4rem;
   border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -7710,8 +7693,8 @@ html[data-theme="dark"] {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.05rem;
   padding: 0.3rem 0.25rem calc(0.3rem + env(safe-area-inset-bottom));
-  background: rgba(11, 15, 20, 0.92);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--lp-glass);
+  border-top: 1px solid var(--lp-border);
   color: #e2e8f0;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -7847,7 +7830,7 @@ html[data-theme="dark"] {
 
 .lp-journey-points__card {
   border-radius: 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -8002,7 +7985,7 @@ html[data-theme="dark"] {
   flex: 0 0 auto;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(23, 28, 34, 0.82);
+  background: var(--rpg-glass);
   color: var(--lp-ink);
   padding: 0.48rem 0.8rem;
   font-size: 0.8rem;
@@ -8042,7 +8025,7 @@ html[data-theme="dark"] {
 
 .lp-progress-card {
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -8526,11 +8509,11 @@ button.lp-progress-heat__cell {
 .lp-progress-badge {
   position: relative;
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   border-radius: 1.1rem;
   background:
     linear-gradient(145deg, rgba(87, 211, 91, 0.1), transparent 55%),
-    rgba(23, 28, 34, 0.88);
+    var(--rpg-glass);
   color: var(--lp-ink);
   padding: 0.85rem 0.6rem;
   display: grid;
@@ -10881,7 +10864,7 @@ button.lp-strategy-overflow {
   position: relative;
   padding: 1.25rem 1.15rem 1.2rem;
   border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background:
     radial-gradient(90% 60% at 50% 0%, rgba(87, 211, 91, 0.18), transparent 55%),
     linear-gradient(180deg, #171c22 0%, #0b0f14 100%);
@@ -11201,7 +11184,7 @@ button.lp-strategy-overflow {
 .lp-strategy-sheet__edit,
 .lp-strategy-sheet__add {
   border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   padding: var(--lp-sheet-space-2) var(--lp-sheet-space-2);
   background: color-mix(in srgb, var(--rpg-bg, #0b0f14) 55%, var(--rpg-card, #171c22));
 }
@@ -12881,7 +12864,7 @@ button.lp-strategy-overflow {
 }
 
 .lp-strategist {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -14072,7 +14055,7 @@ button.lp-strategy-overflow {
   border-color: color-mix(in srgb, #57d35b 42%, rgba(255, 255, 255, 0.12));
   background:
     linear-gradient(145deg, rgba(87, 211, 91, 0.14), transparent 55%),
-    rgba(23, 28, 34, 0.88);
+    var(--rpg-glass);
 }
 
 .lp-journey-points__card.is-quiet {
@@ -14082,7 +14065,7 @@ button.lp-strategy-overflow {
 .lp-journey-details {
   margin: 1.25rem 0 2rem;
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -15203,7 +15186,7 @@ button.lp-strategy-overflow {
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
   background: rgba(23, 28, 34, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -15389,7 +15372,7 @@ button.lp-strategy-overflow {
   padding: 0.35rem 0.55rem;
   border-radius: 0.65rem;
   background: rgba(23, 28, 34, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   text-align: center;
@@ -15414,7 +15397,7 @@ button.lp-strategy-overflow {
 .lp-rpg-plans,
 .lp-rpg-panel {
   border-radius: 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(23, 28, 34, 0.78);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -15623,7 +15606,7 @@ button.lp-strategy-overflow {
   gap: 0.4rem;
   padding: 0.85rem 0.9rem;
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(11, 15, 20, 0.5);
   text-decoration: none;
   color: inherit;
@@ -15915,7 +15898,7 @@ button.lp-strategy-overflow {
   max-width: 22rem;
   padding: 1rem;
   border-radius: 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(23, 28, 34, 0.88);
   backdrop-filter: blur(16px);
 }
@@ -16608,8 +16591,8 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   width: 100%;
   padding: 0.55rem 0.7rem;
   border-radius: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(23, 28, 34, 0.72);
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass);
   backdrop-filter: blur(12px);
   text-decoration: none;
   color: inherit;
@@ -16865,7 +16848,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   margin: 0.15rem auto 0.35rem;
   padding: 0.55rem 0.85rem 0.75rem;
   border-radius: 1.2rem 1.2rem 0.95rem 0.95rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(17, 22, 28, 0.88);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -17062,7 +17045,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   padding: 0.85rem 0.9rem 0.95rem;
   border-radius: 1rem;
   border: 1px solid rgba(96, 165, 250, 0.55);
-  background: rgba(18, 22, 28, 0.88);
+  background: var(--rpg-glass);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
 }
 
@@ -17087,7 +17070,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   margin: 0;
   padding: 0.75rem 0.85rem;
   border-radius: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(255, 255, 255, 0.04);
   color: rgba(248, 250, 252, 0.95);
   font-size: 0.9rem;
@@ -17221,7 +17204,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   min-height: 5.6rem;
   padding: 0.65rem 0.7rem 0.55rem;
   border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(28, 33, 40, 0.92);
   box-sizing: border-box;
 }
@@ -18280,7 +18263,7 @@ a.lp-rpg-practice-cat {
   min-height: 3.15rem;
   padding: 0.7rem 0.85rem;
   border-radius: calc(var(--lp-rpg-radius, 1rem) - 0.15rem);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: var(--lp-rpg-glass-soft, rgba(14, 18, 24, 0.55));
   color: inherit;
   text-align: left;
@@ -19073,8 +19056,8 @@ a.lp-rpg-practice-cat {
   padding: 0.875rem;
   border-radius: 0.75rem;
   border: 1.5px solid #2f9dab;
-  background: #12161d;
-  color: #f2efe6;
+  background: var(--rpg-glass);
+  color: var(--lp-ink);
   box-shadow: none;
   transition: border-color 160ms ease, opacity 160ms ease, transform 160ms ease;
 }
@@ -19124,7 +19107,7 @@ a.lp-rpg-practice-cat {
 }
 .lp-rpg-section-card__menu-btn:hover,
 .lp-rpg-section-card__menu-btn:focus-visible {
-  color: #f2efe6;
+  color: var(--lp-ink);
   outline: none;
 }
 a.lp-rpg-section-card__link,
@@ -19179,7 +19162,7 @@ a.lp-rpg-section-card__link,
   margin: 0;
   font-size: var(--lp-type-ui-md);
   font-weight: 700;
-  color: #f2efe6;
+  color: var(--lp-ink);
   line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -19246,7 +19229,7 @@ a.lp-rpg-section-card__footer-link,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #c6d4c0;
+  color: var(--lp-muted);
 }
 .lp-rpg-section-card__status.is-quantity.is-locked {
   color: #9a9686;
@@ -20633,7 +20616,7 @@ a.lp-rpg-camp-row {
   flex: 0 0 auto;
   padding: 0.12rem 0.4rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(0, 0, 0, 0.22);
   color: rgba(203, 213, 225, 0.78);
   font-size: 0.62rem;
@@ -20800,13 +20783,9 @@ a.lp-rpg-camp-row {
   overflow: hidden;
 }
 .lp-qs {
-  --qs-surface: #1e1a2e;
-  --qs-surface-alt: #241f38;
   --qs-line: rgba(232, 182, 76, 0.15);
   --qs-gold: #e8b64c;
   --qs-gold-dim: #a9822f;
-  --qs-ink: #efe6d8;
-  --qs-ink-dim: #8f8496;
   --qs-success: #5fbf7f;
   --qs-danger: #e2604f;
   position: relative;
@@ -20954,7 +20933,7 @@ a.lp-qs-card:active {
 .lp-qs-card__bar {
   height: 0.38rem;
   border-radius: 0.3rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--qs-line);
   margin-top: 0.75rem;
   overflow: hidden;
 }
@@ -21415,7 +21394,7 @@ a.lp-qs-card:active {
   min-width: 2.6rem;
   padding: 0.4rem 0.35rem;
   border-radius: 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   background: rgba(255, 255, 255, 0.03);
 }
 .lp-feedback__rating-input { position: absolute; opacity: 0; pointer-events: none; }
@@ -21535,7 +21514,7 @@ a.lp-qs-card:active {
   padding: 0.85rem 0.9rem;
   border-radius: 0.95rem;
   border: 1px solid color-mix(in srgb, var(--lp-green, #57d35b) 30%, transparent);
-  background: color-mix(in srgb, var(--lp-green, #57d35b) 8%, rgba(12, 16, 24, 0.88));
+  background: color-mix(in srgb, var(--lp-green, #57d35b) 8%, var(--lp-elevated));
 }
 .lp-feedback-prompt__inner {
   display: flex;
@@ -21547,6 +21526,7 @@ a.lp-qs-card:active {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 800;
+  color: var(--lp-ink);
 }
 .lp-feedback-prompt__sub {
   margin: 0.2rem 0 0;
@@ -21574,7 +21554,7 @@ a.lp-qs-card:active {
 .lp-feedback-prompt__rating {
   cursor: pointer;
   border-radius: 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--lp-border);
   padding: 0.3rem 0.45rem;
   font-size: 1rem;
   background: rgba(0, 0, 0, 0.18);
@@ -21587,13 +21567,17 @@ a.lp-qs-card:active {
 .lp-feedback-prompt__input {
   width: 100%;
   border-radius: 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.22);
-  color: inherit;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper-soft);
+  color: var(--lp-ink);
   font-size: 0.88rem;
   font-weight: 600;
   padding: 0.55rem 0.65rem;
   resize: vertical;
+}
+.lp-feedback-prompt__input::placeholder {
+  color: var(--lp-muted);
+  opacity: 1;
 }
 .lp-feedback-prompt__send {
   justify-self: start;
