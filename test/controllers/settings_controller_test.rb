@@ -32,6 +32,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-language"
     assert_select "#you-language form[action=?]", locale_path(locale: :en)
     assert_select "#you-language form[action=?]", locale_path(locale: :ru)
+    assert_select "#you-reminders[data-controller=?]", "push-reminders"
+    assert_select "#you-reminders button[data-action=?]", "click->push-reminders#enable"
+    assert_select "#you-reminders button[data-action=?]", "click->push-reminders#sendTest"
     assert_select "a[href=?]", support_path
     assert_select "a[href=?]", new_password_path
     assert_select "a[href=?]", about_path, count: 0

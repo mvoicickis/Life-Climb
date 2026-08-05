@@ -63,6 +63,8 @@ module RequireOnboarding
       project_completions
       battle_wins
       settings
+      push_subscriptions
+      push_configs
       two_factors
       two_factor_sessions
       locales

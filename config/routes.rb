@@ -12,6 +12,10 @@ Rails.application.routes.draw do
     get "name/edit", to: "settings#edit_name", as: :edit_name, on: :collection
     get "today_count/edit", to: "settings#edit_today_count", as: :edit_today_count, on: :collection
   end
+  resource :push_config, only: :show, controller: "push_configs"
+  resource :push_subscription, only: %i[ create destroy ], controller: "push_subscriptions" do
+    post :test
+  end
   namespace :settings do
     resource :two_factor, only: %i[ show create destroy ], controller: "two_factors" do
       post :confirm

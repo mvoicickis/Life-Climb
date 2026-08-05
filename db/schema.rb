@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_193520) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_120643) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -278,6 +278,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_193520) do
     t.index ["user_id"], name: "index_practice_tasks_on_user_id"
   end
 
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth", null: false
+    t.datetime "created_at", null: false
+    t.text "endpoint", null: false
+    t.datetime "last_seen_at"
+    t.string "p256dh", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -438,6 +451,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_193520) do
   add_foreign_key "missions", "users"
   add_foreign_key "practice_tasks", "strategy_goals"
   add_foreign_key "practice_tasks", "users"
+  add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"
   add_foreign_key "steps", "users"
