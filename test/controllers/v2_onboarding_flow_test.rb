@@ -32,16 +32,18 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "welcome")
     assert_redirected_to v2_onboarding_path(step: "character")
     follow_redirect!
-    assert_match(/Choose your character/i, response.body)
+    assert_match(/Choose your companion/i, response.body)
     assert_match(/Step 2 of 5/i, response.body)
-    assert_select "input[name='user[character]'][value=man]"
-    assert_select "input[name='user[character]'][value=woman]"
-    assert_select "img[src*='character-man']"
-    assert_select "img[src*='character-woman']"
+    assert_select "input[name='user[character]'][value=birdie]"
+    assert_select "input[name='user[character]'][value=bee]"
+    assert_select "input[name='user[character]'][value=bear]"
+    assert_select "input[name='user[character]'][value=fox]"
+    assert_select "input[name='user[character]'][value=horse]"
+    assert_select "img[src*='character-fox']"
     assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "welcome"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
 
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "man" } }
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     assert_redirected_to v2_onboarding_path(step: "category")
     follow_redirect!
     assert_match(/Where should this climb begin/i, response.body)
@@ -165,7 +167,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
       }
     }
     patch v2_onboarding_url(step: "welcome")
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "woman" } }
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "birdie" } }
     patch v2_onboarding_url(step: "category"), params: { onboarding: { category: "other" } }
     follow_redirect!
     assert_match(/Clear the biggest blocker/i, response.body)
@@ -196,7 +198,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
       }
     }
     patch v2_onboarding_url(step: "welcome")
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "man" } }
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     patch v2_onboarding_url(step: "category"), params: { onboarding: { category: "money" } }
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Build a cash cushion" } }
 
@@ -219,7 +221,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
       }
     }
     patch v2_onboarding_url(step: "welcome")
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "woman" } }
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "birdie" } }
     patch v2_onboarding_url(step: "category"), params: { onboarding: { category: "self" } }
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Sleep better" } }
 
@@ -239,7 +241,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
       }
     }
     patch v2_onboarding_url(step: "welcome")
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "man" } }
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     patch v2_onboarding_url(step: "category"), params: { onboarding: { category: "career" } }
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "deadline")
@@ -291,22 +293,22 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Congratulations|next/i, response.body)
   end
 
-  test "picking woman during onboarding shows woman avatar on mountain" do
+  test "picking birdie during onboarding shows companion avatar on mountain" do
     post registration_url, params: {
       user: {
         name: "Alexa",
-        email_address: "woman-climber@example.com",
+        email_address: "birdie-climber@example.com",
         password: "password12345",
         password_confirmation: "password12345"
       }
     }
     patch v2_onboarding_url(step: "welcome")
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "woman" } }
+    patch v2_onboarding_url(step: "character"), params: { user: { character: "birdie" } }
     assert_redirected_to v2_onboarding_path(step: "category")
 
-    user = User.find_by!(email_address: "woman-climber@example.com")
-    assert_equal "woman", user.character
-    assert_equal "characters/character-woman.png", user.character_image
+    user = User.find_by!(email_address: "birdie-climber@example.com")
+    assert_equal "birdie", user.character
+    assert_equal "characters/character-birdie.png", user.character_image
 
     patch v2_onboarding_url(step: "category"), params: { onboarding: { category: "relationships" } }
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Lead with calm" } }
@@ -317,7 +319,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     journey = user.reload.primary_focused_journey
     get life_journey_path(journey)
     assert_response :success
-    assert_select "#first-climb-coach img.lp-first-climb__climber-img[src*='character-woman']"
+    assert_select "#first-climb-coach img.lp-first-climb__climber-img[src*='character-birdie']"
 
     # After first climb the Mountain HUD avatar uses the character image.
     post first_climbs_path, params: {
@@ -327,15 +329,15 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     }
     get life_journey_path(journey)
     assert_response :success
-    assert_select ".lp-rpg-avatar img[src*='character-woman']"
+    assert_select ".lp-rpg-avatar img[src*='character-birdie']"
 
     # Settings can switch climber later.
-    patch settings_path, params: { user: { character: "man" } }
+    patch settings_path, params: { user: { character: "fox" } }
     assert_redirected_to settings_path(highlight: "character")
-    assert_equal "man", user.reload.character
+    assert_equal "fox", user.reload.character
 
     get life_journey_path(journey)
     assert_response :success
-    assert_select ".lp-rpg-avatar img[src*='character-man']"
+    assert_select ".lp-rpg-avatar img[src*='character-fox']"
   end
 end

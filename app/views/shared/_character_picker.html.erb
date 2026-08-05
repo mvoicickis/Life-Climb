@@ -1,10 +1,11 @@
-<%# Character picker — posts user[character].
+<%# Character / companion picker — posts user[character].
     Locals:
-      selected: (optional) "man" | "woman" | …
+      selected: (optional) one of User::CHARACTERS
       submit_label: (optional) button text
       show_brand: (optional, default true)
       show_heading: (optional, default true) %>
 <% selected = local_assigns.fetch(:selected, nil)
+   selected = selected.presence_in(User::CHARACTERS)
    submit_label = local_assigns.fetch(:submit_label, t("game_ui.continue"))
    show_brand = local_assigns.fetch(:show_brand, true)
    show_heading = local_assigns.fetch(:show_heading, true) %>
@@ -22,7 +23,7 @@
     <h2 id="character-pick-title" class="sr-only"><%= t("game_ui.choose_character") %></h2>
   <% end %>
 
-  <div class="mx-auto mt-6 grid max-w-md grid-cols-2 gap-4" role="radiogroup" aria-labelledby="character-pick-title">
+  <div class="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3 sm:grid-cols-3" role="radiogroup" aria-labelledby="character-pick-title">
     <% User::CHARACTERS.each do |key| %>
       <label class="lp-character-pick lp-glass cursor-pointer p-3 transition">
         <input type="radio"

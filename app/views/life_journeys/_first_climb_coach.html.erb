@@ -9,9 +9,7 @@
   <p class="lp-first-climb__kicker"><%= t("strategy.first_climb.kicker") %></p>
   <h1 class="lp-first-climb__title"><%= t("strategy.first_climb.title") %></h1>
   <div class="lp-first-climb__climber" aria-hidden="true">
-    <%= image_tag current_user.character_image,
-          class: "lp-first-climb__climber-img",
-          alt: "" %>
+    <%= companion_image_tag class: "lp-first-climb__climber-img", alt: "" %>
   </div>
   <p class="lp-first-climb__goal" title="<%= goal.title %>">
     <%= render "shared/lp_icon", name: "flag", class_name: "lp-icon is-inline" %>

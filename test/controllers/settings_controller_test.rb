@@ -22,10 +22,12 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", edit_name_settings_path
     assert_select "a#you-row-life-area", count: 0
     assert_select "#you-character"
-    assert_select "#you-character input[name='user[character]'][value=man]"
-    assert_select "#you-character input[name='user[character]'][value=woman]"
-    assert_select "#you-character img[src*='character-man']"
-    assert_select "#you-character img[src*='character-woman']"
+    assert_select "#you-character input[name='user[character]'][value=birdie]"
+    assert_select "#you-character input[name='user[character]'][value=bee]"
+    assert_select "#you-character input[name='user[character]'][value=bear]"
+    assert_select "#you-character input[name='user[character]'][value=fox]"
+    assert_select "#you-character input[name='user[character]'][value=horse]"
+    assert_select "#you-character img[src*='character-fox']"
     assert_select "#you-theme"
     assert_select "#you-theme .lp-theme-switch__btn.is-active", text: "Light"
     assert_select "html[data-theme=light]"
@@ -78,10 +80,37 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
     assert_nil user.character
 
-    patch settings_path, params: { user: { character: "woman" } }
+    patch settings_path, params: { user: { character: "fox" } }
     assert_redirected_to settings_path(highlight: "character")
-    assert_equal "woman", user.reload.character
-    assert_equal "characters/character-woman.png", user.character_image
+    assert_equal "fox", user.reload.character
+    assert_equal "characters/character-fox.png", user.character_image
+    assert user.companion_pick_done?
+    refute user.needs_companion_pick?
+  end
+
+  test "legacy character users see companion re-pick prompt until they choose" do
+    user = users(:one)
+    user.update_columns(
+      character: "man",
+      onboarding_completed_at: Time.current,
+      planning_version: 2
+    )
+    sign_in_as user
+    seed_climb!(user)
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#companion-pick-prompt"
+    assert_select "#companion-pick-prompt input[name='user[character]'][value=fox]"
+
+    patch settings_path, params: { user: { character: "bee" } }
+    assert_redirected_to settings_path(highlight: "character")
+    assert_equal "bee", user.reload.character
+    refute user.needs_companion_pick?
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#companion-pick-prompt", count: 0
   end
 
   test "edit name page and update" do
