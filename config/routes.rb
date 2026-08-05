@@ -113,4 +113,8 @@ Rails.application.routes.draw do
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # Dynamic PWA files from app/views/pwa/* (also linked in application layout)
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest, defaults: { format: :json }
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker, defaults: { format: :js }
 end
