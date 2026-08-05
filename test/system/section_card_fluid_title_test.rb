@@ -128,15 +128,17 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     refute_equal "nowrap", metrics["whiteSpace"].to_s
     assert_includes %w[2], metrics["webkitLineClamp"].to_s
 
-    # Full-width title column (not the old ~70px squeeze beside icon+badge).
-    assert_operator metrics["width"].to_f, :>=, 120.0,
+    # Full-width title column under chrome (not the old ~70px squeeze beside icon+badge).
+    # Menu hit area is --lp-tap (2.75rem), so title width is card minus pad/gap/menu.
+    assert_operator metrics["width"].to_f, :>=, 100.0,
                     "title column still too narrow at #{width}x#{height}: #{metrics.inspect}"
 
     # For these realistic lengths, 2-line clamp must not clip — text is fully painted.
     refute metrics["truncated"],
            "title still visually truncated at #{width}x#{height}: #{metrics.inspect}"
 
-    assert_operator metrics["cardHeight"].to_f, :>=, 8.0 * 16,
+    # Matches --lp-rpg-section-card-min-h (6.5rem at max-width: 430px; 6.75rem otherwise).
+    assert_operator metrics["cardHeight"].to_f, :>=, 6.5 * 16,
                     "card too short for stacked chrome+title at #{width}x#{height}: #{metrics.inspect}"
   end
 end
