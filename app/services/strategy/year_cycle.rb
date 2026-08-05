@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 module Strategy
-  # Birthday year cycle: every postulate ends on December 29.
+  # Soft finish line for a climb. New goals default to one year from today;
+  # older Dec 29 helpers remain for legacy references/tests.
   class YearCycle
     MONTH_DAY = [ 12, 29 ].freeze
+
+    def self.default_goal_due(today = Date.current)
+      today + 1.year
+    end
 
     def self.target_dec29(today = Date.current)
       candidate = Date.new(today.year, *MONTH_DAY)
@@ -14,15 +19,15 @@ module Strategy
       date.present? && date.month == 12 && date.day == 29
     end
 
-    # Remaining calendar months from today through the month of target Dec 29.
-    def self.remaining_month_slots(today: Date.current, target: target_dec29(today))
+    # Remaining calendar months from today through the month of target.
+    def self.remaining_month_slots(today: Date.current, target: default_goal_due(today))
       cursor = Date.new(today.year, today.month, 1)
       last = Date.new(target.year, target.month, 1)
       slots = []
 
       while cursor <= last
         due =
-          if cursor.year == target.year && cursor.month == 12
+          if cursor.year == target.year && cursor.month == target.month
             target
           else
             cursor.end_of_month

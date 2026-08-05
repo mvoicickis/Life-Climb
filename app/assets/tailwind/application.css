@@ -6319,6 +6319,193 @@ html[data-theme="dark"] {
   line-height: 1.5;
 }
 
+.lp-adventure__categories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0.35rem 0 1rem;
+}
+
+.lp-adventure__category {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 5.5rem;
+  padding: 0.85rem 0.65rem;
+  border-radius: 1rem;
+  border: 1.5px solid color-mix(in srgb, var(--lp-green) 18%, var(--lp-border));
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--lp-green) 8%, var(--lp-paper)),
+      var(--lp-paper));
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, opacity 160ms ease;
+}
+
+.lp-adventure__category:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--lp-lime) 45%, var(--lp-border));
+}
+
+.lp-adventure__category:has(input:checked),
+.lp-adventure__category.is-picked {
+  border-color: var(--lp-lime);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-lime) 32%, transparent);
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--lp-lime) 14%, var(--lp-paper)),
+      var(--lp-paper));
+}
+
+.lp-adventure__category.is-confirming {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--lp-lime) 40%, transparent),
+    0 10px 22px color-mix(in srgb, var(--lp-green) 18%, transparent);
+}
+
+.lp-adventure__category.is-dimmed {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.lp-adventure__category:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--lp-lime) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.lp-adventure__category-check {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--lp-green-deep, #166534);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 140ms ease, transform 180ms cubic-bezier(0.22, 1.2, 0.36, 1);
+}
+
+.lp-adventure__category.is-picked .lp-adventure__category-check,
+.lp-adventure__category.is-confirming .lp-adventure__category-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lp-adventure__category-check .lp-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.lp-adventure__category:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--lp-lime) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.lp-adventure__category-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  color: var(--lp-green-deep, #166534);
+  background: color-mix(in srgb, var(--lp-green) 12%, var(--lp-paper));
+}
+
+.lp-adventure__category-icon .lp-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.lp-adventure__category-label {
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+  line-height: 1.2;
+}
+
+.lp-adventure__picked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.15rem 0 0.35rem;
+  padding: 0.28rem 0.65rem 0.28rem 0.35rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 22%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-green) 8%, var(--lp-paper));
+  color: var(--lp-green-deep, #166534);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.lp-adventure__picked-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-paper));
+  color: var(--lp-green-deep, #166534);
+}
+
+.lp-adventure__picked-icon .lp-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.lp-adventure__picked-label {
+  color: var(--lp-ink);
+}
+
+.lp-adventure__due-echo {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__due-change {
+  margin: 0.35rem 0 0.85rem;
+}
+
+.lp-adventure__due-change-btn {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--lp-green-deep, #166534);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.lp-adventure__due-change-btn:hover,
+.lp-adventure__due-change-btn:focus-visible {
+  color: var(--lp-ink);
+  outline: none;
+}
+
+.lp-adventure__due-picker {
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
 .lp-adventure__ready {
   margin-top: 0.15rem;
   font-weight: 750;
@@ -13879,6 +14066,39 @@ button.lp-strategy-overflow {
   font-size: 0.72rem;
   font-weight: 600;
   color: #9aa6b2;
+}
+
+.lp-first-climb__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.2rem 0 0.45rem;
+}
+
+.lp-first-climb__chip {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 22%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-green) 7%, var(--lp-paper));
+  color: var(--lp-ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.25;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.lp-first-climb__chip:hover,
+.lp-first-climb__chip:focus-visible {
+  border-color: color-mix(in srgb, var(--lp-lime) 50%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-lime) 14%, var(--lp-paper));
+  outline: none;
+}
+
+.lp-first-climb__chip:active {
+  transform: scale(0.98);
 }
 
 .lp-first-climb__cta {

@@ -110,7 +110,7 @@ class LifeJourneysController < ApplicationController
     @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:parent, children: { children: :children })
     @root_goals = @goals.for_kind("goal").roots.to_a
     @goal = select_strategy_goal
-    @year_due = Strategy::YearCycle.target_dec29
+    @year_due = @goal&.due_on.presence || Strategy::YearCycle.default_goal_due
 
     @focus =
       if params[:focus_id].present?

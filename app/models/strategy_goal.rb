@@ -280,7 +280,9 @@ class StrategyGoal < ApplicationRecord
   end
 
   def assign_goal_due_on
-    self.due_on = Strategy::YearCycle.target_dec29
+    return if due_on.present?
+
+    self.due_on = Strategy::YearCycle.default_goal_due
   end
 
   def scheduled_on_required_for_day
@@ -298,11 +300,15 @@ class StrategyGoal < ApplicationRecord
   end
 
   def due_on_rules
-    case kind
-    when "goal"
-      errors.add(:due_on, :blank) if due_on.blank?
-      errors.add(:due_on, :invalid) if due_on.present? && !Strategy::YearCycle.dec29?(due_on)
-    end
+    return unless kind == "goal"
+
+    errors.add(:due_on, :blank) if due_on.blank?
+    return if due_on.blank?
+    # Only enforce the floor for new goals or when the date itself changes,
+    # so existing past/legacy Dec 29 due dates are left alone.
+    return unless new_record? || will_save_change_to_due_on?
+
+    errors.add(:due_on, :invalid) if due_on < Date.current
   end
 
   def parent_kind_matches

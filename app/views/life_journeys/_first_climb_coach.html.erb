@@ -1,7 +1,9 @@
 <%# First-climb coach — one surface: biggest part + today's action. locals: journey, goal %>
 <% journey = local_assigns.fetch(:journey)
    goal = local_assigns.fetch(:goal)
-   area = journey.life_area %>
+   category = Onboarding::Categories.id_for_journey(journey)
+   plan_examples = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: []))
+   action_examples = Array(I18n.t("strategy.first_climb.examples.#{category}.action", default: [])) %>
 
 <section class="lp-first-climb" id="first-climb-coach" aria-label="<%= t('strategy.first_climb.label') %>">
   <p class="lp-first-climb__kicker"><%= t("strategy.first_climb.kicker") %></p>
@@ -29,7 +31,7 @@
 
     <label class="lp-first-climb__label" for="first-climb-plan">
       <span class="lp-first-climb__step">1</span>
-      <%= t("strategy.first_climb.plan_label", goal: goal.title.truncate(42)) %>
+      <%= t("strategy.first_climb.plan_label") %>
     </label>
     <%= text_field_tag :plan_title, nil,
           id: "first-climb-plan",
@@ -38,7 +40,21 @@
           autofocus: true,
           autocomplete: "off",
           class: "lp-input w-full lp-first-climb__input",
-          placeholder: t("strategy.first_climb.plan_placeholder") %>
+          data: { first_climb_target: "planInput" },
+          placeholder: plan_examples.first.presence || t("strategy.first_climb.plan_placeholder") %>
+    <% if plan_examples.any? %>
+      <div class="lp-first-climb__chips" role="group" aria-label="<%= t('strategy.first_climb.plan_examples_label') %>">
+        <% plan_examples.each do |example| %>
+          <button type="button"
+                  class="lp-first-climb__chip"
+                  data-action="first-climb#fill"
+                  data-first-climb-field-param="plan"
+                  data-first-climb-value-param="<%= example %>">
+            <%= example %>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
     <p class="lp-first-climb__hint"><%= t("strategy.first_climb.plan_hint") %></p>
 
     <label class="lp-first-climb__label" for="first-climb-action">
@@ -51,7 +67,21 @@
           maxlength: 120,
           autocomplete: "off",
           class: "lp-input w-full lp-first-climb__input",
-          placeholder: t("strategy.first_climb.action_placeholder") %>
+          data: { first_climb_target: "actionInput" },
+          placeholder: action_examples.first.presence || t("strategy.first_climb.action_placeholder") %>
+    <% if action_examples.any? %>
+      <div class="lp-first-climb__chips" role="group" aria-label="<%= t('strategy.first_climb.action_examples_label') %>">
+        <% action_examples.each do |example| %>
+          <button type="button"
+                  class="lp-first-climb__chip"
+                  data-action="first-climb#fill"
+                  data-first-climb-field-param="action"
+                  data-first-climb-value-param="<%= example %>">
+            <%= example %>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
     <p class="lp-first-climb__hint"><%= t("strategy.first_climb.action_hint") %></p>
 
     <%= submit_tag t("strategy.first_climb.cta"),

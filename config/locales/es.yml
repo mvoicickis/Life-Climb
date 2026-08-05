@@ -93,12 +93,14 @@ es:
       kicker: "60 segundos hasta tu primera pelea"
       title: "Hagamos que hoy cuente."
       lead: "Dos respuestas cortas. Luego puedes ganar la batalla de hoy."
-      plan_label: "¿La parte más grande de “%{goal}”?"
+      plan_label: "¿Qué es una cosa grande que necesitas terminar primero?"
       plan_placeholder: "Obtener la certificación"
-      plan_hint: "Una gran pieza de la meta — no cada tarea."
-      action_label: "¿Qué harás hoy?"
+      plan_hint: "Algo que toma semanas, no un día."
+      plan_examples_label: "Ideas rápidas para la cosa grande"
+      action_label: "¿Qué puedes hacer al respecto hoy?"
       action_placeholder: "Estudiar el capítulo 1 durante 20 minutos"
-      action_hint: "Una acción real que puedas terminar esta noche."
+      action_hint: "Algo pequeño que puedas terminar en la próxima hora."
+      action_examples_label: "Ideas rápidas para hoy"
       cta: "Empezar mi subida"
       project_title: "Empezar: %{plan}"
       nested_camp_title: "Primeros pasos"
@@ -108,6 +110,49 @@ es:
       human_kicker: "Estás en el sendero"
       human_ready: "Pelea de hoy: “%{action}”."
       human_next: "Márcala abajo cuando termines."
+      examples:
+        self:
+          plan:
+            - "Dormir con constancia"
+            - "Arreglar mi energía de la mañana"
+          action:
+            - "Poner una alarma para dormir"
+            - "Estirarme 10 minutos"
+        career:
+          plan:
+            - "Obtener la certificación"
+            - "Conseguir el próximo puesto"
+          action:
+            - "Estudiar el capítulo 1 durante 20 minutos"
+            - "Actualizar un punto del currículum"
+        money:
+          plan:
+            - "Crear un fondo de emergencia"
+            - "Salir de la deuda de la tarjeta"
+          action:
+            - "Mover $20 a ahorros"
+            - "Listar los gastos de esta semana"
+        relationships:
+          plan:
+            - "Reconstruir confianza con alguien cercano"
+            - "Hacer más planes reales juntos"
+          action:
+            - "Enviar un mensaje honesto"
+            - "Agendar un paseo esta semana"
+        growth:
+          plan:
+            - "Terminar una habilidad que empecé"
+            - "Leer con más propósito"
+          action:
+            - "Hacer un bloque de práctica enfocada"
+            - "Leer 10 páginas"
+        other:
+          plan:
+            - "Quitar el mayor obstáculo"
+            - "Terminar lo que he aplazado"
+          action:
+            - "Dar el primer paso pequeño"
+            - "Bloquear 25 minutos y empezar"
     quantity:
       track: "¿Seguirlo como un número?"
       track_objective: "¿Seguir progreso (%{unit})?"
@@ -187,7 +232,7 @@ es:
       you: "Tú"
     promise: "Una montaña. La batalla de hoy."
     mountain_label: "Montaña"
-    year_adventure: "Aventura del año: %{year}"
+    year_adventure: "Subiendo hasta %{date}"
     battle_title: "Batalla de hoy"
     battle_subtitle: "Gana la batalla de hoy"
     battle_subtitle_sync: "Gana la batalla de hoy"
@@ -601,12 +646,41 @@ es:
     mountain_field_label: "Tu meta"
     mountain_placeholder: "Convertirme en fontanero con licencia"
     mountain_example: "Ejemplos: Convertirme en fontanero con licencia · Conseguir un aprendizaje · Aprobar el examen del oficio · Salir de deudas"
+    mountain_placeholders:
+      self: "Dormir con constancia"
+      career: "Convertirme en fontanero con licencia"
+      money: "Crear un fondo de emergencia"
+      relationships: "Reconstruir confianza con alguien cercano"
+      growth: "Terminar una habilidad que empecé"
+      other: "Quitar el mayor obstáculo"
+    mountain_examples:
+      self: "Ejemplos: Dormir con constancia · Arreglar mi energía de la mañana · Beber más agua · Caminar cada día"
+      career: "Ejemplos: Convertirme en fontanero con licencia · Conseguir un aprendizaje · Aprobar el examen · Conseguir el próximo puesto"
+      money: "Ejemplos: Crear un fondo de emergencia · Salir de la deuda de la tarjeta · Seguir un presupuesto · Ahorrar para una compra grande"
+      relationships: "Ejemplos: Reconstruir confianza con alguien cercano · Hacer más planes reales juntos · Salir con más intención · Estar más cerca de la familia"
+      growth: "Ejemplos: Terminar una habilidad que empecé · Leer con más propósito · Aprender un idioma · Terminar un proyecto creativo"
+      other: "Ejemplos: Quitar el mayor obstáculo · Terminar lo que he aplazado · Organizar la casa · Empezar algo nuevo"
+    category_kicker: "Elige un enfoque"
+    category_title: "¿Por dónde debe empezar esta subida?"
+    category_lead: "Elige un área. Puedes subir otras después."
+    need_category: "Elige un área para empezar."
+    categories:
+      self: "Yo"
+      career: "Carrera"
+      money: "Dinero"
+      relationships: "Relaciones"
+      growth: "Crecimiento"
+      other: "Otra cosa"
     need_mountain: "Nombra la meta que quieres alcanzar."
+    need_character: "Elige quién eres en la montaña."
     continue: "Continuar"
     deadline_kicker: "Una meta final ayuda"
-    deadline_title: "La subida de este año tiene una meta final suave."
-    deadline_lead: "29 de diciembre de %{year} — un punto de control para celebrar, no una amenaza."
-    deadline_body: "Siempre puedes seguir. Llega a tu cumbre, celebra y, si quieres, empieza de nuevo el año que viene."
+    deadline_title: "Tu subida tiene una meta final suave."
+    deadline_lead: "%{date} — un punto de control, no una fecha límite."
+    deadline_body: "Un año desde hoy — un punto de control, no una fecha límite. Llega, celebra y sigue subiendo o empieza de nuevo. Tú decides."
+    deadline_date_label: "Meta final: %{date}"
+    deadline_change: "Cambiar fecha"
+    deadline_picker_label: "Elige una meta final"
     forge_cta: "Crear mi plan"
     forge_title: "Construyendo tu subida..."
     forge_step_mountain: "Fijando tu meta"
