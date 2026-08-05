@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v3"
+const CACHE_VERSION = "v4"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const OFFLINE_URL = "/offline.html"
 
@@ -6,7 +6,7 @@ const PRECACHE_URLS = [
   OFFLINE_URL,
   "/icon.png",
   "/icon-192.png",
-  "/icon-512.png"
+  "/icon-maskable-512.png"
 ]
 
 self.addEventListener("install", (event) => {
