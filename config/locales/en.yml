@@ -12,7 +12,7 @@ en:
     promise: "One mountain. Today’s battle."
     goal_label: "Today's Goal"
     mountain_label: "Mountain"
-    year_adventure: "Year Adventure: %{year}"
+    year_adventure: "Climbing until %{date}"
     route_mission_label: "Today's First Mission"
     route_reward_label: "Reward"
     build_strategy: "Build Mountain"
@@ -613,12 +613,14 @@ en:
       kicker: "60 seconds to your first fight"
       title: "Let’s make today count."
       lead: "Two short answers. Then you can win today’s battle."
-      plan_label: "Biggest part of “%{goal}”?"
+      plan_label: "What’s one big thing you need to finish first?"
       plan_placeholder: "Get certified"
-      plan_hint: "A big piece of the goal — not every task."
-      action_label: "What will you do today?"
+      plan_hint: "Something that takes weeks, not one day."
+      plan_examples_label: "Idea chips for the big thing"
+      action_label: "What can you do about it today?"
       action_placeholder: "Study chapter 1 for 20 minutes"
-      action_hint: "One real action you can finish tonight."
+      action_hint: "Something small you could finish in the next hour."
+      action_examples_label: "Idea chips for today"
       cta: "Start my climb"
       project_title: "Start: %{plan}"
       nested_camp_title: "First steps"
@@ -628,6 +630,49 @@ en:
       human_kicker: "You’re on the trail"
       human_ready: "Today’s fight: “%{action}”."
       human_next: "Check it off below when you’re done."
+      examples:
+        self:
+          plan:
+            - "Get consistent sleep"
+            - "Fix my morning energy"
+          action:
+            - "Set a bedtime alarm"
+            - "Stretch for 10 minutes"
+        career:
+          plan:
+            - "Get certified"
+            - "Land the next role"
+          action:
+            - "Study chapter 1 for 20 minutes"
+            - "Update one resume bullet"
+        money:
+          plan:
+            - "Build an emergency fund"
+            - "Get out of credit-card debt"
+          action:
+            - "Move $20 to savings"
+            - "List this week’s spending"
+        relationships:
+          plan:
+            - "Rebuild trust with someone close"
+            - "Make more real plans together"
+          action:
+            - "Send one honest check-in"
+            - "Schedule a walk this week"
+        growth:
+          plan:
+            - "Finish a skill I’ve started"
+            - "Read more on purpose"
+          action:
+            - "Do one focused practice block"
+            - "Read 10 pages"
+        other:
+          plan:
+            - "Clear the biggest blocker"
+            - "Finish the thing I’ve delayed"
+          action:
+            - "Take the first small step"
+            - "Block 25 minutes and start"
     quantity:
       track: "Track this as a number?"
       track_objective: "Track progress (%{unit})?"
@@ -706,7 +751,7 @@ en:
     next_up:
       kicker: "Next up"
       create_goal_title: "Lock your season goal"
-      create_goal_hint: "Name the one mountain you are climbing until December 29."
+      create_goal_hint: "Name the one mountain you are climbing this season."
       create_goal_cta: "Begin Journey"
       add_plan_title: "Add your first plan"
       add_plan_hint: "Name the biggest part of this goal."
@@ -771,9 +816,9 @@ en:
     siblings:
       plans: "Switch plan"
       projects: "Switch project"
-    plan_hint: "One big goal until December 29. Then plans, projects, and battles."
+    plan_hint: "One big goal for about a year. Then plans, projects, and battles."
     plan_hint_v1: "What are the biggest parts of this goal?"
-    year_runs_until: "Your year runs until %{date}."
+    year_runs_until: "Your climb runs until %{date}."
     fixed_due: "Season ends %{date}."
     due_by: "Due %{date}"
     due_label: "Due by"
@@ -835,7 +880,7 @@ en:
       month: "Monthly Goal"
       week: "Week"
       day: "Battle"
-    goal_hint: "One season ambition. Everything hangs under it until December 29."
+    goal_hint: "One season ambition. Everything hangs under it until your finish line."
     goal_placeholder: "e.g. Become a Rails developer"
     goal_description_placeholder: "Optional — why this matters"
     plan_placeholder: "e.g. Find a job"
@@ -1060,12 +1105,40 @@ en:
     mountain_field_label: "Your goal"
     mountain_placeholder: "Become a licensed plumber"
     mountain_example: "Examples: Become a licensed plumber · Land an apprenticeship · Pass the trade exam · Get out of debt"
+    mountain_placeholders:
+      self: "Get consistent sleep"
+      career: "Become a licensed plumber"
+      money: "Build an emergency fund"
+      relationships: "Rebuild trust with someone close"
+      growth: "Finish a skill I’ve started"
+      other: "Clear the biggest blocker"
+    mountain_examples:
+      self: "Examples: Get consistent sleep · Fix my morning energy · Drink more water · Walk every day"
+      career: "Examples: Become a licensed plumber · Land an apprenticeship · Pass the trade exam · Get the next role"
+      money: "Examples: Build an emergency fund · Get out of credit-card debt · Stick to a budget · Save for a big purchase"
+      relationships: "Examples: Rebuild trust with someone close · Make more real plans together · Date with more intention · Stay closer to family"
+      growth: "Examples: Finish a skill I’ve started · Read more on purpose · Learn a language · Ship a creative project"
+      other: "Examples: Clear the biggest blocker · Finish the thing I’ve delayed · Get organized at home · Start something new"
+    category_kicker: "Pick a focus"
+    category_title: "Where should this climb begin?"
+    category_lead: "Choose one area. You can climb others later."
+    need_category: "Pick one area to begin."
+    categories:
+      self: "Self"
+      career: "Career"
+      money: "Money"
+      relationships: "Relationships"
+      growth: "Growth"
+      other: "Or else"
     need_mountain: "Name the goal you want to reach."
     need_character: "Pick who you are on the mountain."
     deadline_kicker: "A finish line helps"
-    deadline_title: "This year’s climb has a soft finish line."
-    deadline_lead: "December 29, %{year} — a checkpoint to celebrate, not a threat."
-    deadline_body: "You can always keep going. Reach your summit, celebrate, and start fresh next year if you want."
+    deadline_title: "Your climb has a soft finish line."
+    deadline_lead: "%{date} — a checkpoint, not a deadline."
+    deadline_body: "One year from today — a checkpoint, not a deadline. Reach it, celebrate, and keep climbing or start fresh. Your call."
+    deadline_date_label: "Finish line: %{date}"
+    deadline_change: "Change date"
+    deadline_picker_label: "Pick a finish line"
     forge_cta: "Create my plan"
     forge_title: "Building your climb..."
     forge_step_mountain: "Setting your goal"

@@ -1,13 +1,14 @@
 <%# locals: journey, strategy_goal, mountain, closer, adventure_year: nil, streak: nil %>
 <% goal_title = strategy_goal&.title.presence || journey.title %>
 <% stage_label = mountain.present? ? mountain[:label] : t("dash.mountain_waiting") %>
-<% year = local_assigns[:adventure_year].presence || Strategy::YearCycle.target_dec29.year %>
+<% due_on = strategy_goal&.due_on.presence || Strategy::YearCycle.default_goal_due %>
+<% year = local_assigns[:adventure_year].presence || due_on.year %>
 <% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
 <section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-hero__copy">
     <p class="lp-dash-kicker"><%= t("dash.mountain_label") %></p>
     <h2 class="lp-dash-hero__title" title="<%= goal_title %>"><%= goal_title %></h2>
-    <p class="lp-dash-hero__year"><%= t("dash.year_adventure", year: year) %></p>
+    <p class="lp-dash-hero__year"><%= t("dash.year_adventure", date: l(due_on, format: :long), year: year) %></p>
     <div class="lp-dash-hero__progress">
       <p class="lp-dash-hero__pct">
         <span data-battle-day-target="goalPct"><%= closer %></span>%

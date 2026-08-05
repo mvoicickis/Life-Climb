@@ -93,12 +93,14 @@ de:
       kicker: "60 Sekunden bis zu deinem ersten Kampf"
       title: "Lass uns den heutigen Tag zählen."
       lead: "Zwei kurze Antworten. Dann kannst du den Kampf von heute gewinnen."
-      plan_label: "Größter Teil von „%{goal}“?"
+      plan_label: "Was ist eine große Sache, die du zuerst fertig kriegen musst?"
       plan_placeholder: "Zertifikat holen"
-      plan_hint: "Ein großes Stück des Ziels — nicht jede Aufgabe."
-      action_label: "Was wirst du heute tun?"
+      plan_hint: "Etwas, das Wochen braucht — nicht einen Tag."
+      plan_examples_label: "Ideen-Chips für die große Sache"
+      action_label: "Was kannst du heute dazu tun?"
       action_placeholder: "Kapitel 1 für 20 Minuten lernen"
-      action_hint: "Eine echte Aktion, die du heute Abend fertig kriegst."
+      action_hint: "Etwas Kleines, das du in der nächsten Stunde schaffen kannst."
+      action_examples_label: "Ideen-Chips für heute"
       cta: "Meinen Aufstieg starten"
       project_title: "Start: %{plan}"
       nested_camp_title: "Erste Schritte"
@@ -108,6 +110,49 @@ de:
       human_kicker: "Du bist auf dem Pfad"
       human_ready: "Kampf von heute: „%{action}“."
       human_next: "Hake ihn unten ab, wenn du fertig bist."
+      examples:
+        self:
+          plan:
+            - "Regelmäßig schlafen"
+            - "Morgenenergie verbessern"
+          action:
+            - "Schlafenszeit-Wecker stellen"
+            - "10 Minuten dehnen"
+        career:
+          plan:
+            - "Zertifikat holen"
+            - "Den nächsten Job landen"
+          action:
+            - "Kapitel 1 für 20 Minuten lernen"
+            - "Einen Lebenslauf-Punkt updaten"
+        money:
+          plan:
+            - "Notgroschen aufbauen"
+            - "Kreditkartenschulden abbauen"
+          action:
+            - "20 € aufs Sparkonto legen"
+            - "Ausgaben dieser Woche notieren"
+        relationships:
+          plan:
+            - "Vertrauen bei jemandem Nahen aufbauen"
+            - "Mehr echte Pläne zusammen machen"
+          action:
+            - "Eine ehrliche Nachricht senden"
+            - "Diese Woche einen Spaziergang planen"
+        growth:
+          plan:
+            - "Eine begonnene Fähigkeit fertig machen"
+            - "Bewusster lesen"
+          action:
+            - "Einen fokussierten Übungsblock machen"
+            - "10 Seiten lesen"
+        other:
+          plan:
+            - "Den größten Blocker wegräumen"
+            - "Das Aufgeschobene fertig machen"
+          action:
+            - "Den ersten kleinen Schritt tun"
+            - "25 Minuten blocken und starten"
     quantity:
       track: "Als Zahl verfolgen?"
       track_objective: "Fortschritt verfolgen (%{unit})?"
@@ -187,7 +232,7 @@ de:
       you: "Du"
     promise: "Ein Berg. Der Kampf von heute."
     mountain_label: "Berg"
-    year_adventure: "Jahresabenteuer: %{year}"
+    year_adventure: "Unterwegs bis %{date}"
     battle_title: "Kampf von heute"
     battle_subtitle: "Gewinne den Kampf von heute"
     battle_subtitle_sync: "Gewinne den Kampf von heute"
@@ -601,12 +646,41 @@ de:
     mountain_field_label: "Dein Ziel"
     mountain_placeholder: "Klempner mit Meisterbrief werden"
     mountain_example: "Beispiele: Klempner mit Meisterbrief werden · Eine Ausbildung finden · Die Prüfung bestehen · Schulden abbauen"
+    mountain_placeholders:
+      self: "Regelmäßig schlafen"
+      career: "Klempner mit Meisterbrief werden"
+      money: "Notgroschen aufbauen"
+      relationships: "Vertrauen bei jemandem Nahen aufbauen"
+      growth: "Eine begonnene Fähigkeit fertig machen"
+      other: "Den größten Blocker wegräumen"
+    mountain_examples:
+      self: "Beispiele: Regelmäßig schlafen · Morgenenergie verbessern · Mehr Wasser trinken · Täglich spazieren"
+      career: "Beispiele: Klempner mit Meisterbrief werden · Eine Ausbildung finden · Die Prüfung bestehen · Den nächsten Job landen"
+      money: "Beispiele: Notgroschen aufbauen · Kreditkartenschulden abbauen · Beim Budget bleiben · Für einen großen Kauf sparen"
+      relationships: "Beispiele: Vertrauen bei jemandem Nahen aufbauen · Mehr echte Pläne zusammen · Bewusster daten · Näher bei der Familie bleiben"
+      growth: "Beispiele: Eine begonnene Fähigkeit fertig machen · Bewusster lesen · Eine Sprache lernen · Ein Kreativprojekt fertigstellen"
+      other: "Beispiele: Den größten Blocker wegräumen · Das Aufgeschobene fertig machen · Zuhause aufräumen · Etwas Neues starten"
+    category_kicker: "Wähle einen Fokus"
+    category_title: "Wo soll dieser Aufstieg beginnen?"
+    category_lead: "Wähle einen Bereich. Andere kannst du später angehen."
+    need_category: "Wähle einen Bereich zum Start."
+    categories:
+      self: "Selbst"
+      career: "Karriere"
+      money: "Geld"
+      relationships: "Beziehungen"
+      growth: "Wachstum"
+      other: "Sonstiges"
     need_mountain: "Nenne das Ziel, das du erreichen willst."
+    need_character: "Wähle, wer du auf dem Berg bist."
     continue: "Weiter"
     deadline_kicker: "Eine Ziellinie hilft"
-    deadline_title: "Dieser Jahresaufstieg hat eine sanfte Ziellinie."
-    deadline_lead: "29. Dezember %{year} — ein Checkpoint zum Feiern, keine Drohung."
-    deadline_body: "Du kannst immer weitergehen. Erreiche deinen Gipfel, feiere, und starte im nächsten Jahr neu, wenn du willst."
+    deadline_title: "Dein Aufstieg hat eine sanfte Ziellinie."
+    deadline_lead: "%{date} — ein Checkpoint, keine Deadline."
+    deadline_body: "Ein Jahr ab heute — ein Checkpoint, keine Deadline. Erreiche ihn, feiere, und steige weiter oder starte neu. Deine Wahl."
+    deadline_date_label: "Ziellinie: %{date}"
+    deadline_change: "Datum ändern"
+    deadline_picker_label: "Ziellinie wählen"
     forge_cta: "Meinen Plan erstellen"
     forge_title: "Dein Aufstieg wird gebaut..."
     forge_step_mountain: "Dein Ziel wird gesetzt"

@@ -93,12 +93,14 @@ lv:
       kicker: "60 sekundes līdz pirmajai cīņai"
       title: "Padarīsim šodienu nozīmīgu."
       lead: "Divas īsas atbildes. Tad tu vari uzvarēt šodienas kauju."
-      plan_label: "Lielākā daļa no “%{goal}”?"
+      plan_label: "Kas ir viena liela lieta, kas jāpabeidz vispirms?"
       plan_placeholder: "Iegūt sertifikātu"
-      plan_hint: "Liels mērķa gabals — nevis katrs uzdevums."
-      action_label: "Ko tu darīsi šodien?"
+      plan_hint: "Kaut kas, kas prasa nedēļas, nevis vienu dienu."
+      plan_examples_label: "Ideju čipi lielajai lietai"
+      action_label: "Ko tu vari darīt ar to šodien?"
       action_placeholder: "Mācīties 1. nodaļu 20 minūtes"
-      action_hint: "Viena īsta darbība, ko vari pabeigt šovakar."
+      action_hint: "Kaut kas mazs, ko vari pabeigt nākamajā stundā."
+      action_examples_label: "Ideju čipi šodienai"
       cta: "Sākt manu kāpienu"
       project_title: "Sākt: %{plan}"
       nested_camp_title: "Pirmie soļi"
@@ -108,6 +110,49 @@ lv:
       human_kicker: "Tu esi uz takas"
       human_ready: "Šodienas cīņa: “%{action}”."
       human_next: "Atzīmē to zemāk, kad esi gatavs."
+      examples:
+        self:
+          plan:
+            - "Ieturēt stabilu miegu"
+            - "Sakārtot rīta enerģiju"
+          action:
+            - "Iestatīt gulētiešanas signālu"
+            - "Pastiepties 10 minūtes"
+        career:
+          plan:
+            - "Iegūt sertifikātu"
+            - "Dabūt nākamo darbu"
+          action:
+            - "Mācīties 1. nodaļu 20 minūtes"
+            - "Atjaunināt vienu CV punktu"
+        money:
+          plan:
+            - "Izveidot avārijas fondu"
+            - "Atbrīvoties no kredītkaršu parāda"
+          action:
+            - "Pārlikt €20 uzkrājumos"
+            - "Uzskaitīt šīs nedēļas tēriņus"
+        relationships:
+          plan:
+            - "Atjaunot uzticību tuvam cilvēkam"
+            - "Vairāk īstu kopīgu plānu"
+          action:
+            - "Nosūtīt vienu godīgu ziņu"
+            - "Ieplānot pastaigu šonedēļ"
+        growth:
+          plan:
+            - "Pabeigt iesāktu prasmi"
+            - "Lasīt ar nodomu"
+          action:
+            - "Izdarīt vienu koncentrētu treniņu"
+            - "Izlasīt 10 lappuses"
+        other:
+          plan:
+            - "Novākt lielāko šķērsli"
+            - "Pabeigt atlikto lietu"
+          action:
+            - "Spert pirmo mazo soli"
+            - "Bloķēt 25 minūtes un sākt"
     quantity:
       track: "Sekot kā skaitlim?"
       track_objective: "Sekot progresam (%{unit})?"
@@ -187,7 +232,7 @@ lv:
       you: "Tu"
     promise: "Viens kalns. Šodienas kauja."
     mountain_label: "Kalns"
-    year_adventure: "Gada piedzīvojums: %{year}"
+    year_adventure: "Kāpjam līdz %{date}"
     battle_title: "Šodienas kauja"
     battle_subtitle: "Uzvari šodienas kauju"
     battle_subtitle_sync: "Uzvari šodienas kauju"
@@ -601,12 +646,41 @@ lv:
     mountain_field_label: "Tavs mērķis"
     mountain_placeholder: "Kļūt par licencētu santehniķi"
     mountain_example: "Piemēri: Kļūt par licencētu santehniķi · Dabūt mācekļa vietu · Nokārtot kvalifikācijas eksāmenu · Atbrīvoties no parādiem"
+    mountain_placeholders:
+      self: "Ieturēt stabilu miegu"
+      career: "Kļūt par licencētu santehniķi"
+      money: "Izveidot avārijas fondu"
+      relationships: "Atjaunot uzticību tuvam cilvēkam"
+      growth: "Pabeigt iesāktu prasmi"
+      other: "Novākt lielāko šķērsli"
+    mountain_examples:
+      self: "Piemēri: Ieturēt stabilu miegu · Sakārtot rīta enerģiju · Dzert vairāk ūdens · Staigāt katru dienu"
+      career: "Piemēri: Kļūt par licencētu santehniķi · Dabūt mācekļa vietu · Nokārtot kvalifikācijas eksāmenu · Dabūt nākamo darbu"
+      money: "Piemēri: Izveidot avārijas fondu · Atbrīvoties no kredītkaršu parāda · Turēties pie budžeta · Krāt lielam pirkumam"
+      relationships: "Piemēri: Atjaunot uzticību tuvam cilvēkam · Vairāk īstu kopīgu plānu · Datēt ar lielāku nodomu · Būt tuvāk ģimenei"
+      growth: "Piemēri: Pabeigt iesāktu prasmi · Lasīt ar nodomu · Iemācīties valodu · Pabeigt radošu projektu"
+      other: "Piemēri: Novākt lielāko šķērsli · Pabeigt atlikto lietu · Sakārtot mājas · Sākt kaut ko jaunu"
+    category_kicker: "Izvēlies fokusu"
+    category_title: "Kur sākt šo kāpienu?"
+    category_lead: "Izvēlies vienu jomu. Citas vari kāpt vēlāk."
+    need_category: "Izvēlies vienu jomu, ar ko sākt."
+    categories:
+      self: "Es"
+      career: "Karjera"
+      money: "Nauda"
+      relationships: "Attiecības"
+      growth: "Izaugsme"
+      other: "Kas cits"
     need_mountain: "Nosauc mērķi, ko vēlies sasniegt."
+    need_character: "Izvēlies, kas tu esi kalnā."
     continue: "Turpināt"
     deadline_kicker: "Finiša līnija palīdz"
-    deadline_title: "Šī gada kāpienam ir maiga finiša līnija."
-    deadline_lead: "29. decembris, %{year} — kontrolpunkts, ko svinēt, nevis drauds."
-    deadline_body: "Tu vienmēr vari turpināt. Sasniedz virsotni, nosvinē un, ja vēlies, nākamajā gadā sāc no jauna."
+    deadline_title: "Tavam kāpienam ir maiga finiša līnija."
+    deadline_lead: "%{date} — kontrolpunkts, nevis termiņš."
+    deadline_body: "Gads no šodienas — kontrolpunkts, nevis termiņš. Sasniedz to, nosvinē un turpini kāpt vai sāc no jauna. Tava izvēle."
+    deadline_date_label: "Finiša līnija: %{date}"
+    deadline_change: "Mainīt datumu"
+    deadline_picker_label: "Izvēlies finiša līniju"
     forge_cta: "Izveidot manu plānu"
     forge_title: "Veidojam tavu kāpienu..."
     forge_step_mountain: "Iestatām tavu mērķi"

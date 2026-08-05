@@ -113,4 +113,33 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_select "form.lp-first-climb__form[data-action*='submit->first-climb#disable']"
     assert_select ".lp-first-climb__cta[data-first-climb-target='submit']"
   end
+
+  test "first climb shows category example chips for the area" do
+    get dashboard_path
+    assert_response :success
+    assert_match(/What.?s one big thing you need to finish first/i, response.body)
+    assert_match(/What can you do about it today/i, response.body)
+    assert_match(/Something that takes weeks, not one day/i, response.body)
+    assert_match(/Something small you could finish in the next hour/i, response.body)
+    assert_select ".lp-first-climb__chip[data-action='first-climb#fill']", minimum: 4
+    assert_select ".lp-first-climb__chip", text: "Get certified"
+    assert_select ".lp-first-climb__chip", text: "Land the next role"
+    assert_select ".lp-first-climb__chip", text: "Study chapter 1 for 20 minutes"
+    assert_select ".lp-first-climb__chip", text: "Update one resume bullet"
+    assert_select "#first-climb-plan[data-first-climb-target='planInput']"
+    assert_select "#first-climb-action[data-first-climb-target='actionInput']"
+  end
+
+  test "onboarding category flag drives first-climb chips" do
+    flags = (@journey.setup_flags.presence || {}).stringify_keys.merge(
+      Onboarding::Categories::CATEGORY_FLAG => "self"
+    )
+    @journey.update_columns(setup_flags: flags)
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select ".lp-first-climb__chip", text: "Get consistent sleep"
+    assert_select ".lp-first-climb__chip", text: "Set a bedtime alarm"
+    assert_select ".lp-first-climb__chip", text: "Get certified", count: 0
+  end
 end

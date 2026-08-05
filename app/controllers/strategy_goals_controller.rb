@@ -262,13 +262,14 @@ class StrategyGoalsController < ApplicationController
   def parse_due_on(kind, parent)
     case kind
     when "goal"
-      Strategy::YearCycle.target_dec29
+      raw = params[:due_on].presence
+      raw ? Date.parse(raw.to_s) : Strategy::YearCycle.default_goal_due
     when "plan", "project"
       raw = params[:due_on].presence
       raw ? Date.parse(raw.to_s) : parent&.due_on
     end
   rescue ArgumentError, TypeError
-    parent&.due_on
+    kind == "goal" ? Strategy::YearCycle.default_goal_due : parent&.due_on
   end
 
   def parse_scheduled_on(kind)

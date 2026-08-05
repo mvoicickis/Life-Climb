@@ -3,17 +3,21 @@
 class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
-  # Simplified MVP adventure start — no life-area picker, no long coach funnel.
-  STEPS = %w[welcome character mountain deadline forge how].freeze
+  # Simplified MVP adventure start — category picker, then mountain goal.
+  STEPS = %w[welcome character category mountain deadline forge how].freeze
   # User-facing setup progress (forge/how are post-create transitions).
-  SETUP_STEPS = %w[welcome character mountain deadline].freeze
+  SETUP_STEPS = %w[welcome character category mountain deadline].freeze
   DEFAULT_AREA_KEY = "self".freeze
 
   def show
     @draft = (session[:v2_onboarding] || {}).stringify_keys
     @step = (params[:step].presence || "welcome").to_s
     @step = "welcome" unless STEPS.include?(@step)
-    @adventure_year = Strategy::YearCycle.target_dec29.year
+    @default_due_on = Strategy::YearCycle.default_goal_due
+    @goal_due_on = parse_due_on(@draft["due_on"]) || @default_due_on
+    @adventure_year = @goal_due_on.year
+    @categories = Onboarding::Categories.all
+    @onboarding_category = @draft["category"].presence || "self"
     if SETUP_STEPS.include?(@step)
       @setup_step_index = SETUP_STEPS.index(@step) + 1
       @setup_step_total = SETUP_STEPS.size
@@ -43,6 +47,17 @@ class V2OnboardingsController < ApplicationController
         redirect_to v2_onboarding_path(step: "character"), alert: t("v2_onboarding.need_character") and return
       end
       current_user.update!(character: key)
+      redirect_to v2_onboarding_path(step: "category")
+    when "category"
+      category = draft["category"].to_s
+      entry = Onboarding::Categories.find(category)
+      unless entry
+        redirect_to v2_onboarding_path(step: "category"), alert: t("v2_onboarding.need_category") and return
+      end
+      session[:v2_onboarding] = draft.merge(
+        "category" => entry.id,
+        "area_key" => entry.area_key
+      )
       redirect_to v2_onboarding_path(step: "mountain")
     when "mountain"
       title = draft["title"].to_s.strip
@@ -53,10 +68,14 @@ class V2OnboardingsController < ApplicationController
       redirect_to v2_onboarding_path(step: "deadline")
     when "deadline"
       begin
+        area_key = draft["area_key"].presence || Onboarding::Categories.area_key_for(draft["category"]) || DEFAULT_AREA_KEY
+        due_on = parse_due_on(draft["due_on"]) || Strategy::YearCycle.default_goal_due
         Onboarding::Run.call(
           user: current_user,
-          area_key: DEFAULT_AREA_KEY,
+          area_key: area_key,
           title: draft["title"],
+          onboarding_category: draft["category"],
+          due_on: due_on,
           route_mission: true
         )
         session.delete(:v2_onboarding)
@@ -86,7 +105,18 @@ class V2OnboardingsController < ApplicationController
   private
 
   def onboarding_params
-    params.fetch(:onboarding, {}).permit(:title)
+    params.fetch(:onboarding, {}).permit(:title, :category, :area_key, :due_on)
+  end
+
+  def parse_due_on(raw)
+    return if raw.blank?
+
+    date = Date.parse(raw.to_s)
+    return if date < Date.current.tomorrow
+
+    date
+  rescue ArgumentError, TypeError
+    nil
   end
 
   def after_adventure_path
@@ -97,11 +127,16 @@ class V2OnboardingsController < ApplicationController
     dashboard_path
   end
 
+  def category_missing?
+    !Onboarding::Categories.valid_id?(@draft["category"])
+  end
+
   def step_incomplete?
     case @step
     when "welcome", "character" then false
-    when "mountain" then !current_user.character_chosen?
-    when "deadline" then @draft["title"].blank? || !current_user.character_chosen?
+    when "category" then !current_user.character_chosen?
+    when "mountain" then !current_user.character_chosen? || category_missing?
+    when "deadline" then @draft["title"].blank? || !current_user.character_chosen? || category_missing?
     when "forge" then !current_user.onboarding_completed?
     when "how" then !current_user.onboarding_completed?
     else false
@@ -112,9 +147,10 @@ class V2OnboardingsController < ApplicationController
     if current_user.onboarding_completed?
       return "forge"
     end
-    return "character" if !current_user.character_chosen? && @step.in?(%w[mountain deadline])
+    return "character" if !current_user.character_chosen? && @step.in?(%w[category mountain deadline])
+    return "category" if category_missing? && @step.in?(%w[mountain deadline])
     return "mountain" if @draft["title"].blank? && @step == "deadline"
-    return "welcome" if @draft["title"].blank? && !@step.in?(%w[welcome character mountain])
+    return "welcome" if @draft["title"].blank? && !@step.in?(%w[welcome character category mountain])
 
     "mountain"
   end

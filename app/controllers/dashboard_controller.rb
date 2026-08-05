@@ -68,7 +68,7 @@ class DashboardController < ApplicationController
       end
     @battle_angles =
       @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
-    @adventure_year = Strategy::YearCycle.target_dec29.year
+    @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
     Climb::Streak.reconcile!(user: current_user)
     @climb_streak = Climb::Streak.status(user: current_user)
     @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)

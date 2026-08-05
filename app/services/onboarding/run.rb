@@ -9,7 +9,8 @@ module Onboarding
     ROUTE_FLAG = "route".freeze
 
     def self.call(user:, title: nil, area_key: DEFAULT_AREA_KEY, ideal_scene: nil, current_reality: nil,
-                  next_win: nil, today_mission: nil, closer_percent: 5, route_mission: false)
+                  next_win: nil, today_mission: nil, closer_percent: 5, route_mission: false,
+                  onboarding_category: nil, due_on: nil)
       new(
         user:,
         area_key:,
@@ -19,11 +20,13 @@ module Onboarding
         next_win:,
         today_mission:,
         closer_percent:,
-        route_mission:
+        route_mission:,
+        onboarding_category:,
+        due_on:
       ).call
     end
 
-    def initialize(user:, area_key:, title:, ideal_scene:, current_reality:, next_win:, today_mission:, closer_percent:, route_mission:)
+    def initialize(user:, area_key:, title:, ideal_scene:, current_reality:, next_win:, today_mission:, closer_percent:, route_mission:, onboarding_category: nil, due_on: nil)
       @user = user
       @area_key = area_key.to_s.presence || DEFAULT_AREA_KEY
       @title = title.to_s.strip
@@ -33,6 +36,8 @@ module Onboarding
       @today_mission = today_mission.to_s.strip
       @closer_percent = closer_percent
       @route_mission = route_mission
+      @onboarding_category = onboarding_category.to_s.presence
+      @due_on = due_on
     end
 
     def call
@@ -65,8 +70,12 @@ module Onboarding
         )
         Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
 
-        if @route_mission
-          flags = (journey.setup_flags.presence || {}).stringify_keys.merge(ROUTE_FLAG => "pending")
+        if @route_mission || Onboarding::Categories.valid_id?(@onboarding_category)
+          flags = (journey.setup_flags.presence || {}).stringify_keys
+          flags = flags.merge(ROUTE_FLAG => "pending") if @route_mission
+          if Onboarding::Categories.valid_id?(@onboarding_category)
+            flags = flags.merge(Onboarding::Categories::CATEGORY_FLAG => @onboarding_category)
+          end
           journey.update_columns(setup_flags: flags, updated_at: Time.current)
           journey.setup_flags = flags
         end
@@ -77,13 +86,15 @@ module Onboarding
         end
 
         if @route_mission
-          goal = @user.strategy_goals.create!(
+          goal_attrs = {
             life_area: primary_area,
             life_journey: journey,
             horizon: "goal",
             title: title,
             position: 0
-          )
+          }
+          goal_attrs[:due_on] = @due_on if @due_on.present?
+          goal = @user.strategy_goals.create!(goal_attrs)
           Strategy::Celebrate.call(user: @user, goal: goal)
         end
 

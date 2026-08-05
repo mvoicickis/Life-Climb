@@ -3,6 +3,11 @@
 require "test_helper"
 
 class Strategy::YearCycleTest < ActiveSupport::TestCase
+  test "default_goal_due is one year from today" do
+    assert_equal Date.new(2027, 7, 24), Strategy::YearCycle.default_goal_due(Date.new(2026, 7, 24))
+    assert_equal Date.new(2027, 2, 28), Strategy::YearCycle.default_goal_due(Date.new(2026, 2, 28))
+  end
+
   test "target_dec29 is this year before or on Dec 29" do
     assert_equal Date.new(2026, 12, 29), Strategy::YearCycle.target_dec29(Date.new(2026, 7, 24))
     assert_equal Date.new(2026, 12, 29), Strategy::YearCycle.target_dec29(Date.new(2026, 12, 29))

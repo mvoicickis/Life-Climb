@@ -35,7 +35,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Today.?s Focus/i, response.body)
   end
 
-  test "goal locks due_on to December 29 and awards goal SP" do
+  test "goal defaults due_on to one year from today and awards goal SP" do
     post strategy_goals_path, params: {
       life_area_id: @area.id,
       life_journey_id: @journey.id,
@@ -43,7 +43,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
       title: "Become a Rails developer"
     }
     goal = @user.strategy_goals.for_kind("goal").last
-    assert Strategy::YearCycle.dec29?(goal.due_on)
+    assert_equal Strategy::YearCycle.default_goal_due, goal.due_on
     assert_equal 100, @user.reload.strategy_points
     assert_match(/Goal locked|Goal created/i, flash[:notice].to_s)
     assert_equal 100, flash[:sp_gained].to_i

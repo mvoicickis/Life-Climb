@@ -66,8 +66,8 @@
       <% end %>
     </section>
 
-  <% elsif @step == "mountain" %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-mountain-title">
+  <% elsif @step == "category" %>
+    <section class="lp-adventure__card" aria-labelledby="adventure-category-title">
       <div class="lp-adventure__step-head">
         <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "character"), class: "lp-adventure__back" %>
         <p class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></p>
@@ -76,7 +76,64 @@
         <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
       </div>
 
+      <p class="lp-adventure__kicker"><%= t("v2_onboarding.category_kicker") %></p>
+      <h1 id="adventure-category-title" class="lp-adventure__title"><%= t("v2_onboarding.category_title") %></h1>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.category_lead") %></p>
+
+      <%= form_with url: v2_onboarding_path(step: "category"),
+            method: :patch,
+            class: "lp-adventure__form",
+            data: {
+              turbo: false,
+              controller: "onboarding-category",
+              onboarding_category_delay_value: 340
+            } do %>
+        <div class="lp-adventure__categories" role="group" aria-labelledby="adventure-category-title">
+          <% @categories.each do |entry| %>
+            <div class="lp-adventure__category"
+                 role="button"
+                 tabindex="0"
+                 data-onboarding-category-target="card"
+                 data-action="click->onboarding-category#pick keydown.enter->onboarding-category#pick keydown.space->onboarding-category#pick"
+                 aria-label="<%= t("v2_onboarding.categories.#{entry.id}") %>">
+              <%= radio_button_tag "onboarding[category]", entry.id,
+                    false,
+                    class: "sr-only",
+                    tabindex: -1 %>
+              <span class="lp-adventure__category-check" aria-hidden="true">
+                <%= render "shared/lp_icon", name: "check", class_name: "lp-icon" %>
+              </span>
+              <span class="lp-adventure__category-icon" aria-hidden="true">
+                <%= render "shared/lp_icon", name: entry.icon, class_name: "lp-icon" %>
+              </span>
+              <span class="lp-adventure__category-label"><%= t("v2_onboarding.categories.#{entry.id}") %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+  <% elsif @step == "mountain" %>
+    <% mountain_category = Onboarding::Categories.valid_id?(@onboarding_category) ? @onboarding_category : "self"
+       mountain_entry = Onboarding::Categories.find(mountain_category) %>
+    <section class="lp-adventure__card" aria-labelledby="adventure-mountain-title">
+      <div class="lp-adventure__step-head">
+        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "category"), class: "lp-adventure__back" %>
+        <p class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></p>
+      </div>
+      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>" aria-label="<%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %>">
+        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+      </div>
+
       <p class="lp-adventure__kicker"><%= t("v2_onboarding.mountain_kicker") %></p>
+      <% if mountain_entry %>
+        <p class="lp-adventure__picked" aria-label="<%= t("v2_onboarding.categories.#{mountain_entry.id}") %>">
+          <span class="lp-adventure__picked-icon" aria-hidden="true">
+            <%= render "shared/lp_icon", name: mountain_entry.icon, class_name: "lp-icon" %>
+          </span>
+          <span class="lp-adventure__picked-label"><%= t("v2_onboarding.categories.#{mountain_entry.id}") %></span>
+        </p>
+      <% end %>
       <h1 id="adventure-mountain-title" class="lp-adventure__title"><%= t("v2_onboarding.mountain_title") %></h1>
       <p class="lp-adventure__lead"><%= t("v2_onboarding.mountain_lead") %></p>
 
@@ -87,10 +144,10 @@
               required: true,
               maxlength: 120,
               class: "lp-input w-full",
-              placeholder: t("v2_onboarding.mountain_placeholder"),
+              placeholder: t("v2_onboarding.mountain_placeholders.#{mountain_category}"),
               autocomplete: "off",
               autofocus: true %>
-        <p class="lp-adventure__example"><%= t("v2_onboarding.mountain_example") %></p>
+        <p class="lp-adventure__example"><%= t("v2_onboarding.mountain_examples.#{mountain_category}") %></p>
 
         <%= render "strategy_helps/launch",
               goal: "",
@@ -109,7 +166,12 @@
     </section>
 
   <% elsif @step == "deadline" %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-deadline-title">
+    <% due_on = @goal_due_on || @default_due_on || Strategy::YearCycle.default_goal_due
+       due_min = Date.current.tomorrow
+       due_label = l(due_on, format: :long) %>
+    <section class="lp-adventure__card"
+             aria-labelledby="adventure-deadline-title"
+             data-controller="onboarding-deadline">
       <div class="lp-adventure__step-head">
         <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "mountain"), class: "lp-adventure__back" %>
         <p class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></p>
@@ -118,16 +180,37 @@
         <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
       </div>
 
-      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker", year: @adventure_year) %></p>
+      <p class="lp-adventure__kicker"><%= t("v2_onboarding.deadline_kicker") %></p>
       <h1 id="adventure-deadline-title" class="lp-adventure__title"><%= t("v2_onboarding.deadline_title") %></h1>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead", year: @adventure_year) %></p>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.deadline_lead", date: due_label) %></p>
       <p class="lp-adventure__body"><%= t("v2_onboarding.deadline_body") %></p>
       <p class="lp-adventure__mountain-echo"><%= @draft["title"] %></p>
-      <%= button_to t("v2_onboarding.forge_cta"),
-            v2_onboarding_path(step: "deadline"),
+
+      <%= form_with url: v2_onboarding_path(step: "deadline"),
             method: :patch,
-            class: "lp-cta w-full",
-            form: { data: { turbo: false } } %>
+            class: "lp-adventure__form",
+            data: { turbo: false } do %>
+        <p class="lp-adventure__due-echo" data-onboarding-deadline-target="summary">
+          <%= t("v2_onboarding.deadline_date_label", date: due_label) %>
+        </p>
+        <p class="lp-adventure__due-change">
+          <button type="button"
+                  class="lp-adventure__due-change-btn"
+                  data-onboarding-deadline-target="toggle"
+                  data-action="onboarding-deadline#show">
+            <%= t("v2_onboarding.deadline_change") %>
+          </button>
+        </p>
+        <div class="lp-adventure__due-picker" data-onboarding-deadline-target="picker" hidden>
+          <label class="lp-adventure__label" for="onboarding_due_on"><%= t("v2_onboarding.deadline_picker_label") %></label>
+          <%= date_field_tag "onboarding[due_on]", due_on,
+                id: "onboarding_due_on",
+                min: due_min,
+                class: "lp-input w-full" %>
+        </div>
+
+        <%= submit_tag t("v2_onboarding.forge_cta"), class: "lp-cta w-full" %>
+      <% end %>
     </section>
 
   <% elsif @step == "forge" %>
