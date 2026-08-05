@@ -1,6 +1,13 @@
 class Habit < ApplicationRecord
   FREQUENCIES = %w[daily weekly].freeze
   UNIT_IDEAS = %w[times steps minutes pages words glasses hours money km litres liters].freeze
+  # Units that naturally use fractions in the log input (everything else is whole-number).
+  # Free-text units are matched by token (e.g. "km run", "hours slept", "€ spent").
+  DECIMAL_QUANTITY_UNITS = %w[
+    money hour hours km kilometer kilometers kilometre kilometres
+    litre litres liter liters
+  ].freeze
+  DECIMAL_QUANTITY_SYMBOLS = %w[€ $ £ ¥].freeze
   # Stored keys; UI labels come from I18n (habits.growth_title / habits.range_title)
   STAT_TYPES = %w[growth standard].freeze
 
@@ -48,6 +55,24 @@ class Habit < ApplicationRecord
 
   def binary_checkin?
     !quantity_checkin?
+  end
+
+  # Log inputs: steps/pages/messages stay integers; money/km/hours keep decimals.
+  def decimal_quantity_unit?
+    key = unit.to_s.downcase.strip
+    return true if DECIMAL_QUANTITY_UNITS.include?(key)
+    return true if DECIMAL_QUANTITY_SYMBOLS.include?(key)
+
+    tokens = key.scan(/[a-z]+|[€$£¥]/)
+    tokens.any? { |token| DECIMAL_QUANTITY_UNITS.include?(token) || DECIMAL_QUANTITY_SYMBOLS.include?(token) }
+  end
+
+  def quantity_input_step
+    decimal_quantity_unit? ? :any : 1
+  end
+
+  def quantity_inputmode
+    decimal_quantity_unit? ? "decimal" : "numeric"
   end
 
   def better_than_yesterday?

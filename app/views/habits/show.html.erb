@@ -92,9 +92,10 @@
     <%= form_with url: daily_logs_path(habit_id: @habit.id), scope: :daily_log, class: "lp-habits__log", data: { turbo: false } do |form| %>
       <%= form.label :amount, t("habits.how_many"), class: "lp-habits__field-label" %>
       <%= form.number_field :amount,
-          value: @habit.today_log&.amount || 0,
+          value: format_amount(@habit.today_log&.amount || 0),
           min: 0,
-          step: :any,
+          step: @habit.quantity_input_step,
+          inputmode: @habit.quantity_inputmode,
           class: "lp-habits__input" %>
       <%= form.submit t("habits.save"), class: "lp-habits__btn is-primary is-wide" %>
     <% end %>
