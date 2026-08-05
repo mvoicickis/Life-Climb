@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LifePoints">
     <meta name="theme-color" content="<%= theme_color_for_request %>">
     <meta name="application-name" content="LifePoints">
     <meta name="mobile-web-app-capable" content="yes">
@@ -14,10 +15,12 @@
 
     <%= yield :head %>
 
-    <link rel="icon" href="/favicon.ico?v=7" sizes="any">
-    <link rel="icon" href="/icon.png?v=7" type="image/png" sizes="512x512">
-    <link rel="apple-touch-icon" href="/icon.png?v=7">
-    <link rel="icon" href="/icon.svg?v=7" type="image/svg+xml">
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="icon" href="/favicon.ico?v=8" sizes="any">
+    <link rel="icon" href="/icon-192.png?v=8" type="image/png" sizes="192x192">
+    <link rel="icon" href="/icon.png?v=8" type="image/png" sizes="512x512">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8" sizes="180x180">
+    <link rel="icon" href="/icon.svg?v=8" type="image/svg+xml">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
