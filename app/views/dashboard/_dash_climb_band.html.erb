@@ -10,9 +10,7 @@
   <div class="lp-dash-climb__top">
     <div class="lp-dash-climb__who">
       <%= link_to settings_path, class: "lp-dash-climb__avatar", aria: { label: t("nav.settings") } do %>
-        <%= image_tag current_user.character_image,
-              class: "lp-dash-climb__avatar-img",
-              alt: "" %>
+        <%= companion_image_tag class: "lp-dash-climb__avatar-img", alt: "" %>
       <% end %>
 
       <div class="lp-dash-climb__meta">
@@ -74,9 +72,7 @@
         style="--lp-trail: <%= trail_pct %>"
         data-battle-day-target="campArt"
       >
-        <%= image_tag current_user.character_image,
-              class: "lp-dash-climb__climber-img",
-              alt: "" %>
+        <%= companion_image_tag class: "lp-dash-climb__climber-img", alt: "" %>
       </div>
       <div class="lp-dash-climb__summit">
         <%= render "shared/lp_icon", name: "flag", class_name: "lp-icon is-inline lp-dash-climb__flag" %>

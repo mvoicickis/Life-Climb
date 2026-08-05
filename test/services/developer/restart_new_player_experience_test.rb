@@ -7,7 +7,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
 
   test "wipes strategy data and clears onboarding while keeping the account" do
     user = users(:one)
-    user.update_columns(developer: true, total_points: 120)
+    user.update_columns(developer: true, total_points: 120, character: "fox")
     action_points_before = user.total_points
 
     Onboarding::Run.call(
@@ -54,6 +54,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert User.exists?(user.id)
     assert user.read_attribute(:developer)
     assert_equal action_points_before, user.total_points
+    assert_nil user.character
   end
 
   test "wipes habits together with daily logs and completions" do

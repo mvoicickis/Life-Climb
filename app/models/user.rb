@@ -43,15 +43,20 @@ class User < ApplicationRecord
     greater_than_or_equal_to: 1,
     less_than_or_equal_to: 20
   }
-  validates :character, inclusion: { in: %w[man woman] }, allow_nil: true
+  validates :character, inclusion: { in: ->(_) { CHARACTERS } }, allow_nil: true,
+            if: :validate_character_value?
   validates :planning_version, inclusion: { in: [ 1, 2 ] }
   validates :locale, inclusion: {
     in: ->(_) { I18n.available_locales.map(&:to_s) }
   }, allow_nil: true
   validates :theme, inclusion: { in: ->(_) { THEMES } }
 
-  CHARACTERS = %w[man woman].freeze
+  # Current companion set. Legacy man/woman remain in DB until the user re-picks.
+  CHARACTERS = %w[birdie bee bear fox horse].freeze
+  LEGACY_CHARACTERS = %w[man woman].freeze
   THEMES = %w[light dark].freeze
+  ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
+  COMPANION_PICK_KEY = "companion_pick".freeze
 
   def admin?
     admin
@@ -93,7 +98,7 @@ class User < ApplicationRecord
   end
 
   def character_key
-    character.presence_in(CHARACTERS) || "man"
+    character.presence_in(CHARACTERS)
   end
 
   def theme_key
@@ -101,11 +106,34 @@ class User < ApplicationRecord
   end
 
   def character_chosen?
-    character.present?
+    character_key.present?
   end
 
   def character_image
-    "characters/character-#{character_key}.png"
+    key = character_key
+    return nil if key.blank?
+
+    "characters/character-#{key}.png"
+  end
+
+  def legacy_character?
+    LEGACY_CHARACTERS.include?(character.to_s)
+  end
+
+  def companion_pick_done?
+    Array(support_milestones_shown).map(&:to_s).include?(COMPANION_PICK_KEY)
+  end
+
+  # Soft prompt for onboarded users still on blank / man / woman.
+  def needs_companion_pick?
+    planning_v2? && onboarding_completed? && !character_chosen?
+  end
+
+  def mark_companion_pick_done!
+    shown = Array(support_milestones_shown).map(&:to_s)
+    return if shown.include?(COMPANION_PICK_KEY)
+
+    update!(support_milestones_shown: shown + [ COMPANION_PICK_KEY ])
   end
 
   def display_name
@@ -170,8 +198,6 @@ class User < ApplicationRecord
     support_prompts_muted
   end
 
-  ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
-
   def adventure_guide_done?
     Array(support_milestones_shown).map(&:to_s).include?(ADVENTURE_GUIDE_KEY)
   end
@@ -195,5 +221,16 @@ class User < ApplicationRecord
     focus_building&.goal&.life_area ||
       primary_goal&.life_area ||
       active_dream&.life_areas&.filled&.ordered&.first
+  end
+
+  private
+
+  # Keep legacy man/woman rows valid until re-pick; validate new writes only.
+  def validate_character_value?
+    return true if character.blank?
+    return true if will_save_change_to_character?
+    return true if CHARACTERS.include?(character.to_s)
+
+    false
   end
 end

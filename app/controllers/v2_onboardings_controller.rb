@@ -47,6 +47,7 @@ class V2OnboardingsController < ApplicationController
         redirect_to v2_onboarding_path(step: "character"), alert: t("v2_onboarding.need_character") and return
       end
       current_user.update!(character: key)
+      current_user.mark_companion_pick_done!
       redirect_to v2_onboarding_path(step: "category")
     when "category"
       category = draft["category"].to_s

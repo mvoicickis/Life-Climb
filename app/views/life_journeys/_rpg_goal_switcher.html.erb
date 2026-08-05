@@ -13,9 +13,7 @@
 <header class="lp-rpg-hud is-focus">
   <div class="lp-rpg-hud__left">
     <%= link_to settings_path, class: "lp-rpg-avatar", aria: { label: t("nav.settings") } do %>
-      <%= image_tag current_user.character_image,
-            class: "lp-rpg-avatar__img",
-            alt: "" %>
+      <%= companion_image_tag class: "lp-rpg-avatar__img", alt: "" %>
       <span class="lp-rpg-avatar__ring" aria-hidden="true"></span>
       <span class="lp-rpg-avatar__level"><%= alive.number %></span>
     <% end %>

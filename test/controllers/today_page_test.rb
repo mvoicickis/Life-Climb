@@ -36,7 +36,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     user = users(:one)
     user.update!(
       name: "Alex Climber",
-      character: "woman",
+      character: "fox",
       climb_streak_days: 4,
       climb_streak_on: Date.current
     )
@@ -66,10 +66,10 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-dash-climb", count: 1
-    assert_select ".lp-dash-climb__avatar-img[src*='character-woman']", count: 1
+    assert_select ".lp-dash-climb__avatar-img[src*='character-fox']", count: 1
     assert_select ".lp-dash-climb__name", text: "Alex Climber"
     assert_select ".lp-dash-climb__climber[style*='--lp-trail']", count: 1
-    assert_select ".lp-dash-climb__climber-img[src*='character-woman']", count: 1
+    assert_select ".lp-dash-climb__climber-img[src*='character-fox']", count: 1
     assert_select ".lp-dash-bar__fill[data-battle-day-target='goalBar']", count: 1
     assert_select ".lp-dash-climb__pct[data-battle-day-target='goalPct']", count: 1
     assert_select ".lp-dash-climb__label[data-battle-day-target='momentum']", count: 1

@@ -15,12 +15,42 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "One", user.display_name
   end
 
-  test "character defaults to man until chosen" do
+  test "character helpers signal no companion until one of the five is chosen" do
     user = users(:one)
     assert_nil user.character
-    assert_equal "man", user.character_key
-    assert_equal "characters/character-man.png", user.character_image
+    assert_nil user.character_key
+    assert_nil user.character_image
     refute user.character_chosen?
+    assert user.needs_companion_pick?
+
+    user.update!(character: "fox")
+    assert_equal "fox", user.character_key
+    assert_equal "characters/character-fox.png", user.character_image
+    assert user.character_chosen?
+    refute user.needs_companion_pick?
+  end
+
+  test "character validation accepts only the five companions" do
+    user = users(:one)
+    User::CHARACTERS.each do |key|
+      user.character = key
+      assert user.valid?, "#{key} should be valid"
+    end
+
+    user.character = "dragon"
+    refute user.valid?
+    assert_includes user.errors[:character], "is not included in the list"
+  end
+
+  test "legacy man or woman keeps working until re-pick without blocking other updates" do
+    user = users(:one)
+    user.update_columns(character: "woman", onboarding_completed_at: Time.current, planning_version: 2)
+    refute user.character_chosen?
+    assert user.legacy_character?
+    assert user.needs_companion_pick?
+
+    assert user.update(name: "Still Valid")
+    assert_equal "woman", user.reload.character
   end
 
   test "theme defaults to light and rejects unknown values" do
