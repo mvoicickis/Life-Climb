@@ -2,7 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
-// PWA Phase A — register only on secure contexts (HTTPS or localhost).
+// PWA Phase B — register only on secure contexts (HTTPS or localhost).
 if ("serviceWorker" in navigator) {
   const secure =
     window.isSecureContext ||
