@@ -5416,7 +5416,7 @@ html[data-theme="dark"] {
   border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--lp-item-color) 28%, transparent);
   border-left: 3px solid var(--lp-item-color);
-  background: color-mix(in srgb, var(--lp-item-color) 7%, rgba(18, 22, 30, 0.88));
+  background: color-mix(in srgb, var(--lp-item-color) 7%, var(--rpg-glass));
   padding: var(--lp-pad-card);
 }
 .lp-habits__card.is-off { opacity: 0.62; }
@@ -5528,7 +5528,7 @@ html[data-theme="dark"] {
   border-radius: 1.15rem;
   border: 1px solid color-mix(in srgb, var(--lp-item-color) 30%, transparent);
   border-left: 3px solid var(--lp-item-color);
-  background: color-mix(in srgb, var(--lp-item-color) 8%, rgba(18, 22, 30, 0.92));
+  background: color-mix(in srgb, var(--lp-item-color) 8%, var(--rpg-glass));
   padding: 1.15rem 1.1rem 1.25rem;
 }
 .lp-habits__detail-top {
@@ -8504,7 +8504,7 @@ button.lp-progress-heat__cell {
   border-radius: 1.1rem;
   background:
     linear-gradient(145deg, rgba(87, 211, 91, 0.1), transparent 55%),
-    rgba(23, 28, 34, 0.88);
+    var(--rpg-glass);
   color: var(--lp-ink);
   padding: 0.85rem 0.6rem;
   display: grid;
