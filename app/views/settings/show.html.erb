@@ -31,16 +31,76 @@
       <% end %>
     </div>
 
-    <div class="mt-6 border-t border-[var(--lp-border)] pt-5">
+    <div class="mt-6 border-t border-[var(--lp-border)] pt-5"
+         data-controller="companion-sheet">
       <h3 class="text-base font-semibold text-[var(--lp-ink)]"><%= t("settings.character_title") %></h3>
       <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.character_hint") %></p>
-      <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do %>
-        <%= render "shared/character_picker",
-              selected: current_user.character_key,
-              show_brand: false,
-              show_heading: false,
-              submit_label: t("settings.character_save") %>
-      <% end %>
+
+      <% companion_key = current_user.character_key
+         companion_label = companion_key.present? ? t("game_ui.character.#{companion_key}") : t("settings.character_choose") %>
+      <button type="button"
+              id="companion-trigger"
+              class="lp-companion-trigger mt-4"
+              data-companion-sheet-target="trigger"
+              data-action="companion-sheet#open"
+              aria-haspopup="dialog"
+              aria-controls="companion-sheet"
+              aria-expanded="false">
+        <% if companion_key.present? %>
+          <%= image_tag "characters/#{companion_key}.png",
+                alt: "",
+                class: "lp-companion-trigger__avatar" %>
+        <% else %>
+          <span class="lp-companion-trigger__avatar is-empty" aria-hidden="true">?</span>
+        <% end %>
+        <span class="lp-companion-trigger__copy">
+          <span class="lp-companion-trigger__name"><%= companion_label %></span>
+          <span class="lp-companion-trigger__change"><%= t("settings.character_change") %></span>
+        </span>
+      </button>
+
+      <div id="companion-sheet"
+           class="lp-companion-sheet"
+           data-companion-sheet-target="dialog"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="companion-sheet-title"
+           aria-hidden="true"
+           hidden>
+        <div class="lp-companion-sheet__backdrop"
+             data-companion-sheet-target="backdrop"
+             data-action="click->companion-sheet#closeOnBackdrop"></div>
+        <div class="lp-companion-sheet__panel"
+             data-companion-sheet-target="panel">
+          <div class="lp-companion-sheet__handle"
+               data-companion-sheet-target="handle"
+               data-action="pointerdown->companion-sheet#startDrag"
+               aria-hidden="true"></div>
+          <header class="lp-companion-sheet__header">
+            <div>
+              <h4 id="companion-sheet-title" class="lp-companion-sheet__title">
+                <%= t("game_ui.choose_character") %>
+              </h4>
+              <p class="lp-companion-sheet__subtitle"><%= t("settings.character_hint") %></p>
+            </div>
+            <button type="button"
+                    class="lp-companion-sheet__close"
+                    data-action="companion-sheet#close"
+                    aria-label="<%= t('settings.character_sheet_close') %>">×</button>
+          </header>
+
+          <%= form_with model: current_user,
+                url: settings_path,
+                method: :patch,
+                class: "lp-companion-sheet__form",
+                data: { turbo: false, action: "change->companion-sheet#pick" } do %>
+            <%= render "shared/character_grid",
+                  selected: companion_key,
+                  labelledby: "companion-sheet-title" %>
+            <button type="submit" class="sr-only"><%= t("settings.character_save") %></button>
+          <% end %>
+        </div>
+      </div>
     </div>
   </section>
 

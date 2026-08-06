@@ -471,6 +471,9 @@ es:
     character_hint: "Se muestra en Hoy, en la Montaña y en el sendero."
     character_updated: "Compañero actualizado."
     character_save: "Guardar compañero"
+    character_change: "Cambiar"
+    character_choose: "Elige compañero"
+    character_sheet_close: "Cerrar compañero"
   feedback:
     title: "Comentarios"
     subtitle: "Escríbeme directamente: ideas, errores o cómo se siente LifePoints."

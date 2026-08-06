@@ -471,6 +471,9 @@ de:
     character_hint: "Wird bei Heute, auf dem Berg und auf dem Pfad gezeigt."
     character_updated: "Begleiter aktualisiert."
     character_save: "Begleiter speichern"
+    character_change: "Ändern"
+    character_choose: "Begleiter wählen"
+    character_sheet_close: "Begleiter schließen"
   feedback:
     title: "Feedback"
     subtitle: "Schreib mir direkt — Ideen, Fehler oder wie sich LifePoints anfühlt."

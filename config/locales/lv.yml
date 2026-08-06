@@ -471,6 +471,9 @@ lv:
     character_hint: "Redzams Šodienā, Kalnā un uz takas."
     character_updated: "Pavadonis atjaunināts."
     character_save: "Saglabāt pavadoni"
+    character_change: "Mainīt"
+    character_choose: "Izvēlies pavadoni"
+    character_sheet_close: "Aizvērt pavadoni"
   feedback:
     title: "Atsauksmes"
     subtitle: "Raksti man tieši — idejas, kļūdas vai kā jūtas LifePoints."
