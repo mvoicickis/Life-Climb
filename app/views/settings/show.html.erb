@@ -118,6 +118,27 @@
     <p class="mt-3 text-sm text-[var(--lp-muted)]"
        hidden
        data-push-reminders-target="message"></p>
+
+    <% pref = current_user.notification_preference %>
+    <% notifications_status =
+         if pref&.vacation_active?
+           t("settings.notifications.status_paused")
+         elsif pref
+           t("settings.notifications.frequency.#{pref.frequency}")
+         else
+           t("settings.notifications.frequency.sometimes")
+         end %>
+    <div class="mt-5 border-t border-[var(--lp-border)] pt-4">
+      <%= link_to settings_notifications_path,
+            id: "you-row-notifications",
+            class: row_class do %>
+        <span><%= t("settings.notifications.row_label") %></span>
+        <span class="flex min-w-0 items-center gap-2">
+          <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]"><%= notifications_status %></span>
+          <%= chevron %>
+        </span>
+      <% end %>
+    </div>
   </section>
 
   <section class="lp-glass lp-glass--pad"

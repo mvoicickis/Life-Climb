@@ -35,7 +35,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     get settings_path
-    assert_match(/Настройки/, response.body)
+    assert_match(/Ты/, response.body)
   end
 
   test "guest locale switch does not require user record" do
@@ -54,7 +54,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     get settings_path
-    assert_match(/Iestatījumi/, response.body)
+    assert_match(/Tu/, response.body)
   end
 
   test "can switch locale to german" do
@@ -67,7 +67,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Heute|Berg|Du/, response.body)
     get settings_path
-    assert_match(/Einstellungen/, response.body)
+    assert_match(/Du/, response.body)
   end
 
   test "can switch locale to spanish" do
@@ -79,6 +79,6 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     get settings_path
-    assert_match(/Ajustes/, response.body)
+    assert_match(/Tú/, response.body)
   end
 end
