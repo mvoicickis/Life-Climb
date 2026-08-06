@@ -1,0 +1,23 @@
+<%# Soft one-time companion re-pick for blank / legacy man·woman users. %>
+<% return unless current_user&.needs_companion_pick? %>
+<% return if controller_name == "v2_onboardings" %>
+
+<section class="lp-companion-prompt lp-glass lp-glass--pad mx-auto mb-4 max-w-lg"
+         id="companion-pick-prompt"
+         aria-labelledby="companion-pick-prompt-title">
+  <p class="text-xs font-bold uppercase tracking-[0.14em] text-[var(--lp-green-deep)]">
+    <%= t("companion.prompt_kicker") %>
+  </p>
+  <h2 id="companion-pick-prompt-title" class="mt-1 text-xl font-semibold text-[var(--lp-ink)]">
+    <%= t("companion.prompt_title") %>
+  </h2>
+  <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("companion.prompt_lead") %></p>
+
+  <%= form_with url: settings_path, method: :patch, data: { turbo: false }, class: "mt-4" do %>
+    <%= render "shared/character_picker",
+          selected: current_user.character_key,
+          show_brand: false,
+          show_heading: false,
+          submit_label: t("companion.prompt_cta") %>
+  <% end %>
+</section>

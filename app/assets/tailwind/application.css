@@ -3436,7 +3436,8 @@ html[data-theme="dark"] {
 
 .lp-avatar-ring {
   border-radius: 999px;
-  box-shadow: 0 0 0 3px var(--lp-void), 0 0 0 5px var(--lp-lime), 0 0 28px rgba(34, 197, 94, 0.45);
+  /* Thin lime outline flush to the photo — no void spacer gap inside the ring */
+  box-shadow: 0 0 0 2px var(--lp-lime), 0 0 18px rgba(34, 197, 94, 0.4);
   animation: lp-breathe 4.2s ease-in-out infinite;
 }
 
