@@ -22,13 +22,17 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", edit_name_settings_path
     assert_select "a#you-row-life-area", count: 0
     assert_select "#you-character"
-    assert_select "#you-character input[name='user[character]'][value=birdie]"
-    assert_select "#you-character input[name='user[character]'][value=bee]"
-    assert_select "#you-character input[name='user[character]'][value=bear]"
-    assert_select "#you-character input[name='user[character]'][value=fox]"
-    assert_select "#you-character input[name='user[character]'][value=horse]"
-    assert_select "#you-character input[name='user[character]'][value=raven]"
-    assert_select "#you-character img[src*='characters/fox']"
+    assert_select "#companion-trigger", count: 1
+    assert_select "#you-character .lp-character-picker", count: 0
+    assert_select "#companion-sheet[hidden]"
+    assert_select "#companion-sheet .lp-character-grid", count: 1
+    assert_select "#companion-sheet input[name='user[character]'][value=birdie]"
+    assert_select "#companion-sheet input[name='user[character]'][value=bee]"
+    assert_select "#companion-sheet input[name='user[character]'][value=bear]"
+    assert_select "#companion-sheet input[name='user[character]'][value=fox]"
+    assert_select "#companion-sheet input[name='user[character]'][value=horse]"
+    assert_select "#companion-sheet input[name='user[character]'][value=raven]"
+    assert_select "#companion-sheet img[src*='characters/fox']"
     assert_select "#you-theme"
     assert_select "#you-theme .lp-theme-switch__btn.is-active", text: "Light"
     assert_select "html[data-theme=light]"
@@ -87,6 +91,13 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "characters/fox.png", user.character_image
     assert user.companion_pick_done?
     refute user.needs_companion_pick?
+
+    get settings_path
+    assert_response :success
+    assert_select "#companion-trigger .lp-companion-trigger__name", text: "Fox"
+    assert_select "#companion-trigger img[src*='characters/fox']"
+    assert_select "#you-character .lp-character-picker", count: 0
+    assert_select "#companion-sheet[hidden]"
   end
 
   test "legacy character users see companion re-pick prompt until they choose" do

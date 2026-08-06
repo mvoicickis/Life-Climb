@@ -3454,6 +3454,200 @@ html[data-theme="dark"] {
   outline-offset: 2px;
 }
 
+/* Settings: compact companion trigger + bottom sheet (share-sheet pattern) */
+body.companion-sheet-open {
+  overflow: hidden;
+}
+
+.lp-companion-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.lp-companion-trigger:hover,
+.lp-companion-trigger:focus-visible {
+  border-color: var(--lp-lime);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-lime) 28%, transparent);
+}
+
+.lp-companion-trigger__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px var(--lp-void), 0 0 0 3px color-mix(in srgb, var(--lp-lime) 70%, transparent);
+}
+
+.lp-companion-trigger__avatar.is-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+  background: var(--lp-track, #e2e8f0);
+  box-shadow: none;
+}
+
+.lp-companion-trigger__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.lp-companion-trigger__name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-companion-trigger__change {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-companion-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  pointer-events: none;
+}
+
+.lp-companion-sheet.is-open {
+  pointer-events: auto;
+}
+
+.lp-companion-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.lp-companion-sheet.is-open .lp-companion-sheet__backdrop {
+  opacity: 1;
+}
+
+.lp-companion-sheet__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 28rem);
+  max-height: min(92dvh, 40rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  border-radius: 1.5rem 1.5rem 0 0;
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+  border: 1px solid var(--lp-border);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
+  padding: 0.75rem 1.15rem 1.35rem;
+  transform: translateY(110%);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-companion-sheet.is-open .lp-companion-sheet__panel {
+  transform: translateY(0);
+}
+
+.lp-companion-sheet__panel.is-dragging {
+  transition: none;
+}
+
+.lp-companion-sheet__handle {
+  width: 2.5rem;
+  height: 0.28rem;
+  margin: 0.15rem auto 0.85rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-muted) 45%, transparent);
+  touch-action: none;
+  cursor: grab;
+}
+
+.lp-companion-sheet__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lp-companion-sheet__title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--lp-ink);
+}
+
+.lp-companion-sheet__subtitle {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
+.lp-companion-sheet__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -0.35rem -0.35rem 0 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-companion-sheet__close:hover,
+.lp-companion-sheet__close:focus-visible {
+  color: var(--lp-ink);
+  background: color-mix(in srgb, var(--lp-muted) 16%, transparent);
+  outline: none;
+}
+
+.lp-companion-sheet__form .lp-character-grid {
+  margin-top: 1rem;
+}
+
+.lp-companion-sheet__form .lp-character-pick {
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-companion-sheet__backdrop,
+  .lp-companion-sheet__panel {
+    transition: none;
+  }
+}
+
 .lp-gap-track {
   height: 0.75rem;
   border-radius: 999px;

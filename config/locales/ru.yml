@@ -477,6 +477,9 @@ ru:
     character_hint: "Показывается в Сегодня, на Горе и на тропе."
     character_updated: "Спутник обновлён."
     character_save: "Сохранить спутника"
+    character_change: "Сменить"
+    character_choose: "Выбери спутника"
+    character_sheet_close: "Закрыть выбор спутника"
   feedback:
     title: "Отзыв"
     subtitle: "Напиши мне напрямую — идеи, баги или как ощущается LifePoints."
