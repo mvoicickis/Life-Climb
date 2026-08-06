@@ -4169,7 +4169,8 @@ html[data-theme="dark"] {
   display: grid;
   place-items: center;
   text-decoration: none;
-  opacity: 0.88;
+  /* Light fill so dark/transparent companion edges stay readable at ~23px */
+  background: #f1f5f9;
   box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.22);
 }
 
@@ -4177,8 +4178,9 @@ html[data-theme="dark"] {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 18%;
-  background: #171c22;
+  /* Portraits are already centered in-orb — don't bias crop toward the top */
+  object-position: center center;
+  background: #f1f5f9;
 }
 
 .lp-dash-climb__meta {
@@ -4278,7 +4280,8 @@ html[data-theme="dark"] {
   box-shadow:
     0 0 0 2px #fff,
     0 4px 12px rgba(15, 23, 42, 0.28);
-  background: #171c22;
+  /* Light fill so dark/transparent companion edges stay readable at ~35px */
+  background: #f1f5f9;
   animation: lp-climb-idle 2.6s ease-in-out infinite;
 }
 
@@ -4301,7 +4304,7 @@ html[data-theme="dark"] {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center center;
 }
 
 .lp-dash-climb__summit {
