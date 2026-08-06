@@ -9,6 +9,14 @@ class SendWebPushJob < ApplicationJob
     return unless user
 
     message = payload.is_a?(Hash) ? payload.deep_stringify_keys : {}
+    gate = NotificationGate.allow?(user: user, kind: message["kind"])
+    unless gate.allowed?
+      Rails.logger.info(
+        "[NotificationGate] skip user=#{user.id} kind=#{message["kind"].inspect} reason=#{gate.reason}"
+      )
+      return
+    end
+
     json = message.to_json
 
     user.push_subscriptions.find_each do |subscription|
