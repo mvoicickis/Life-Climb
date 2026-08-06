@@ -1,6 +1,16 @@
 # Companion notification phrase bank (PR3). Emoji prefixes are added at render time.
 en:
   notifications:
+    actions:
+      quick_add: "Quick-add battle"
+      mark_done: "Mark done"
+      quick_add_ok: "Added “%{title}” for today."
+      mark_done_ok: "Marked “%{title}” done."
+      mark_done_created_ok: "Added and finished “%{title}”."
+      unauthorized: "This notification link expired. Open the app and try again."
+      need_journey: "Start a climb in the app first."
+      need_spine: "Add a path on your mountain first."
+      need_example: "No example battle found for this category."
     win:
       self:
         "0": "You just cleared a checkpoint. Real progress on you."

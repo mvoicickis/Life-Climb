@@ -32,23 +32,23 @@ class SendWebPushJob < ApplicationJob
     message["intensity"] = preference&.intensity.presence || "normal"
 
     kind = message["kind"].to_s
-    return unless Notifications::PhraseBank::TRIGGERS.include?(kind)
+    if Notifications::PhraseBank::TRIGGERS.include?(kind)
+      category = Onboarding::Categories.resolve_for(user: user, explicit: message["category"])
+      locale = user.locale.presence || I18n.default_locale
+      message["body"] = Notifications::PhraseBank.body_for(
+        kind: kind,
+        category: category,
+        locale: locale
+      )
+    end
 
-    category = resolve_category(user, message)
-    locale = user.locale.presence || I18n.default_locale
-    message["body"] = Notifications::PhraseBank.body_for(
-      kind: kind,
-      category: category,
-      locale: locale
-    )
-  end
-
-  def resolve_category(user, message)
-    raw = message["category"]
-    return raw if Onboarding::Categories.valid_id?(raw)
-
-    journey = user.primary_focused_journey || user.focused_journeys.first
-    Onboarding::Categories.id_for_journey(journey)
+    message["token"] = user.signed_id(purpose: :notification_action, expires_in: 30.days)
+    I18n.with_locale(user.locale.presence || I18n.default_locale) do
+      message["actions"] = [
+        { "action" => "quick_add", "title" => I18n.t("notifications.actions.quick_add") },
+        { "action" => "mark_done", "title" => I18n.t("notifications.actions.mark_done") }
+      ]
+    end
   end
 
   def send_to(subscription, message)
