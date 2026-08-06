@@ -19,7 +19,7 @@
              <%= "checked" if selected == key %>>
       <%= image_tag "characters/#{key}.png",
             alt: t("game_ui.character.#{key}"),
-            class: "lp-avatar-ring aspect-square w-full rounded-2xl object-cover" %>
+            class: "lp-avatar-ring aspect-square w-full rounded-full object-cover" %>
       <p class="mt-3 text-center text-sm font-bold text-[var(--lp-ink)]"><%= t("game_ui.character.#{key}") %></p>
     </label>
   <% end %>
