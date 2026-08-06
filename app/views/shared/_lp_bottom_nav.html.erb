@@ -1,4 +1,4 @@
-<%# Calm nav — Home · Journey · You %>
+<%# Calm nav — Home · Journey · You (SVG icons match dash nav stroke style) %>
 <% active = local_assigns.fetch(:active, :home).to_s %>
 <%
   journey_path_target =
@@ -9,29 +9,54 @@
 
 <nav class="lp-bottom-nav lp-bottom-nav--calm" aria-label="Primary">
   <%= link_to dashboard_path, class: "lp-bottom-nav__link #{'is-active' if active.in?(%w[home dashboard missions])}" do %>
-    <span class="lp-bottom-nav__icon" aria-hidden="true">🏠</span>
+    <span class="lp-bottom-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 10.5 L12 4 L20 10.5"/>
+        <path d="M6.5 9.5 V19.5 H17.5 V9.5"/>
+      </svg>
+    </span>
     <span><%= t("game_ui.nav.home") %></span>
   <% end %>
 
   <% if journey_path_target %>
     <%= link_to life_journey_path(journey_path_target), class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
-      <span class="lp-bottom-nav__icon" aria-hidden="true">⛰</span>
+      <span class="lp-bottom-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
+          <path d="M12 5.5 V8"/>
+        </svg>
+      </span>
       <span><%= t("game_ui.nav.journey") %></span>
     <% end %>
   <% elsif current_user&.planning_v2? %>
     <%= link_to new_life_journey_path, class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
-      <span class="lp-bottom-nav__icon" aria-hidden="true">⛰</span>
+      <span class="lp-bottom-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
+          <path d="M12 5.5 V8"/>
+        </svg>
+      </span>
       <span><%= t("game_ui.nav.journey") %></span>
     <% end %>
   <% else %>
     <%= link_to life_map_path, class: "lp-bottom-nav__link #{'is-active' if active == 'life'}" do %>
-      <span class="lp-bottom-nav__icon" aria-hidden="true">⛰</span>
+      <span class="lp-bottom-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
+          <path d="M12 5.5 V8"/>
+        </svg>
+      </span>
       <span><%= t("game_ui.nav.life") %></span>
     <% end %>
   <% end %>
 
   <%= link_to settings_path, class: "lp-bottom-nav__link #{'is-active' if active == 'profile'}" do %>
-    <span class="lp-bottom-nav__icon" aria-hidden="true">👤</span>
+    <span class="lp-bottom-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.2"/>
+        <path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/>
+      </svg>
+    </span>
     <span><%= t("game_ui.nav.you") %></span>
   <% end %>
 </nav>

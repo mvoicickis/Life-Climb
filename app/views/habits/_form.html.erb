@@ -108,7 +108,7 @@
       <%= form.number_field :goal,
           min: 0,
           step: :any,
-          placeholder: "e.g. 50",
+          placeholder: t("habits.example_number", n: 50),
           class: "lp-habits__input" %>
       <p class="lp-habits__hint"><%= t("habits.stretch_hint") %></p>
     </div>
@@ -118,11 +118,11 @@
       <p class="lp-habits__hint"><%= t("habits.range_hint") %></p>
       <div class="lp-habits-form__field">
         <%= form.label :min_value, t("habits.minimum"), class: "lp-habits__field-label" %>
-        <%= form.number_field :min_value, step: :any, placeholder: "e.g. 8", class: "lp-habits__input" %>
+        <%= form.number_field :min_value, step: :any, placeholder: t("habits.example_number", n: 8), class: "lp-habits__input" %>
       </div>
       <div class="lp-habits-form__field">
         <%= form.label :max_value, t("habits.maximum"), class: "lp-habits__field-label" %>
-        <%= form.number_field :max_value, step: :any, placeholder: "e.g. 9", class: "lp-habits__input" %>
+        <%= form.number_field :max_value, step: :any, placeholder: t("habits.example_number", n: 9), class: "lp-habits__input" %>
       </div>
     </div>
   </div>
@@ -149,7 +149,7 @@
 
   <div class="lp-habits-form__actions">
     <%= form.submit t("habits.save"), class: "lp-habits__btn is-primary" %>
-    <%= link_to t("habits.cancel"), habit.persisted? ? habits_path : dashboard_path,
+    <%= link_to t("habits.cancel"), habits_path,
         class: "lp-habits__btn is-quiet" %>
   </div>
 <% end %>
