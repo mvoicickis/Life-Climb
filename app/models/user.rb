@@ -26,6 +26,7 @@ class User < ApplicationRecord
   has_many :journey_targets, dependent: :destroy
   has_many :daily_todos, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_one :notification_preference, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
 
@@ -134,6 +135,11 @@ class User < ApplicationRecord
     return if shown.include?(COMPANION_PICK_KEY)
 
     update!(support_milestones_shown: shown + [ COMPANION_PICK_KEY ])
+  end
+
+  # Lazy-create prefs on first Notifications visit (not on User create).
+  def notification_preference!
+    notification_preference || create_notification_preference!
   end
 
   def display_name

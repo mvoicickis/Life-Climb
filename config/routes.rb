@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     post :test
   end
   namespace :settings do
+    resource :notifications, only: %i[ show update ], controller: "notifications"
     resource :two_factor, only: %i[ show create destroy ], controller: "two_factors" do
       post :confirm
       post :regenerate_backup_codes

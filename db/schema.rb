@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_120643) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_200000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -264,6 +264,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_120643) do
     t.index ["user_id"], name: "index_missions_on_user_id"
   end
 
+  create_table "notification_preferences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "frequency", default: "sometimes", null: false
+    t.string "intensity", default: "normal", null: false
+    t.integer "quiet_hours_end"
+    t.integer "quiet_hours_start"
+    t.boolean "stuck_notifications_enabled", default: true, null: false
+    t.string "time_zone"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.boolean "vacation_paused", default: false, null: false
+    t.date "vacation_until"
+    t.boolean "win_notifications_enabled", default: true, null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
   create_table "practice_tasks", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -449,6 +465,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_120643) do
   add_foreign_key "life_point_ledgers", "users"
   add_foreign_key "missions", "life_journeys"
   add_foreign_key "missions", "users"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "practice_tasks", "strategy_goals"
   add_foreign_key "practice_tasks", "users"
   add_foreign_key "push_subscriptions", "users"

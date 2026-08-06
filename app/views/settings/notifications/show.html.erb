@@ -1,0 +1,114 @@
+<% content_for :title, t("settings.notifications.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+<% hour_options = (0..23).map { |h| [ format("%02d:00", h), h ] } %>
+
+<div class="lp-home mx-auto max-w-lg"
+     data-controller="notification-timezone"
+     data-notification-timezone-url-value="<%= settings_notifications_path(format: :json) %>"
+     data-notification-timezone-current-value="<%= @preference.time_zone.to_s %>">
+  <header class="flex items-center gap-3">
+    <%= link_to settings_path, class: "rounded-xl border border-[var(--lp-border)] px-3 py-2 text-sm font-bold text-[var(--lp-ink)]" do %>
+      ← <%= t("settings.title") %>
+    <% end %>
+    <div class="min-w-0">
+      <h1 class="truncate lp-home__title"><%= t("settings.notifications.title") %></h1>
+      <p class="lp-home__subtitle"><%= t("settings.notifications.subtitle") %></p>
+    </div>
+  </header>
+
+  <section class="lp-glass lp-glass--pad mt-4">
+    <%= form_with model: @preference,
+          url: settings_notifications_path,
+          method: :patch,
+          class: "space-y-5",
+          data: { turbo: false } do |form| %>
+      <%= form.hidden_field :time_zone,
+            data: { notification_timezone_target: "field" } %>
+
+      <% if @preference.errors.any? %>
+        <div class="rounded-xl border border-[var(--lp-rose)]/40 bg-[var(--lp-elevated)] px-3 py-2 text-sm text-[var(--lp-rose)]" role="alert">
+          <%= @preference.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :frequency, t("settings.notifications.frequency_label"), class: "lp-auth-label" %>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.notifications.frequency_hint") %></p>
+        <%= form.select :frequency,
+              NotificationPreference::FREQUENCIES.map { |key| [ t("settings.notifications.frequency.#{key}"), key ] },
+              {},
+              class: "lp-input mt-2 w-full" %>
+      </div>
+
+      <div>
+        <%= form.label :intensity, t("settings.notifications.intensity_label"), class: "lp-auth-label" %>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.notifications.intensity_hint") %></p>
+        <%= form.select :intensity,
+              NotificationPreference::INTENSITIES.map { |key| [ t("settings.notifications.intensity.#{key}"), key ] },
+              {},
+              class: "lp-input mt-2 w-full" %>
+      </div>
+
+      <div>
+        <p class="lp-auth-label"><%= t("settings.notifications.quiet_hours_label") %></p>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.notifications.quiet_hours_hint") %></p>
+        <div class="mt-2 grid grid-cols-2 gap-3">
+          <div>
+            <%= form.label :quiet_hours_start, t("settings.notifications.quiet_hours_start"), class: "text-xs font-semibold text-[var(--lp-muted)]" %>
+            <%= form.select :quiet_hours_start,
+                  hour_options,
+                  { include_blank: t("settings.notifications.quiet_hours_none") },
+                  class: "lp-input mt-1 w-full" %>
+          </div>
+          <div>
+            <%= form.label :quiet_hours_end, t("settings.notifications.quiet_hours_end"), class: "text-xs font-semibold text-[var(--lp-muted)]" %>
+            <%= form.select :quiet_hours_end,
+                  hour_options,
+                  { include_blank: t("settings.notifications.quiet_hours_none") },
+                  class: "lp-input mt-1 w-full" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-[var(--lp-border)] pt-5">
+        <p class="lp-auth-label"><%= t("settings.notifications.vacation_label") %></p>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.notifications.vacation_hint") %></p>
+        <div class="mt-3">
+          <%= form.label :vacation_until, t("settings.notifications.vacation_until"), class: "text-xs font-semibold text-[var(--lp-muted)]" %>
+          <%= form.date_field :vacation_until, class: "lp-input mt-1 w-full" %>
+        </div>
+        <label class="mt-4 flex items-start gap-3 text-sm font-semibold text-[var(--lp-ink)]">
+          <%= form.check_box :vacation_paused, class: "mt-0.5" %>
+          <span>
+            <%= t("settings.notifications.vacation_paused") %>
+            <span class="mt-1 block font-normal text-[var(--lp-muted)]"><%= t("settings.notifications.vacation_paused_hint") %></span>
+          </span>
+        </label>
+      </div>
+
+      <div class="border-t border-[var(--lp-border)] pt-5">
+        <p class="lp-auth-label"><%= t("settings.notifications.triggers_label") %></p>
+        <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.notifications.triggers_hint") %></p>
+        <label class="mt-4 flex items-start gap-3 text-sm font-semibold text-[var(--lp-ink)]">
+          <%= form.check_box :win_notifications_enabled, class: "mt-0.5" %>
+          <span>
+            <%= t("settings.notifications.win_enabled") %>
+            <span class="mt-1 block font-normal text-[var(--lp-muted)]"><%= t("settings.notifications.win_hint") %></span>
+          </span>
+        </label>
+        <label class="mt-4 flex items-start gap-3 text-sm font-semibold text-[var(--lp-ink)]">
+          <%= form.check_box :stuck_notifications_enabled, class: "mt-0.5" %>
+          <span>
+            <%= t("settings.notifications.stuck_enabled") %>
+            <span class="mt-1 block font-normal text-[var(--lp-muted)]"><%= t("settings.notifications.stuck_hint") %></span>
+          </span>
+        </label>
+      </div>
+
+      <%= form.submit t("settings.save"), class: "lp-cta mt-2 w-full" %>
+    <% end %>
+  </section>
+</div>
+
+<%= render "shared/lp_dash_nav", active: :you %>
