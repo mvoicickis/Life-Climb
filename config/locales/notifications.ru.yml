@@ -1,6 +1,7 @@
 ru:
   notifications:
     actions:
+      morning_title: "LifePoints"
       quick_add: "Быстро добавить battle"
       mark_done: "Отметить готовым"
       quick_add_ok: "Добавлено «%{title}» на сегодня."

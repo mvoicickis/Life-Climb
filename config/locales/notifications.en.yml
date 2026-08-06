@@ -2,6 +2,7 @@
 en:
   notifications:
     actions:
+      morning_title: "LifePoints"
       quick_add: "Quick-add battle"
       mark_done: "Mark done"
       quick_add_ok: "Added “%{title}” for today."

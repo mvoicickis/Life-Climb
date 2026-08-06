@@ -1,0 +1,28 @@
+name: Morning nudge
+
+# Every 2 hours — app filters to each user's local 7–9am window.
+# Requires repo secrets: CRON_SECRET, APP_BASE_URL (e.g. https://lifepoints.onrender.com)
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+jobs:
+  morning-nudge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger morning nudges
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET}" ] || [ -z "${APP_BASE_URL}" ]; then
+            echo "Missing CRON_SECRET or APP_BASE_URL repo secrets."
+            exit 1
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            "${APP_BASE_URL%/}/notifications/morning_nudge"
