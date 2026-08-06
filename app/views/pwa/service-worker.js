@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v5"
+const CACHE_VERSION = "v6"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const OFFLINE_URL = "/offline.html"
 
@@ -7,6 +7,11 @@ const PRECACHE_URLS = [
   "/icon.png",
   "/icon-192.png",
   "/icon-maskable-512.png"
+]
+
+const DEFAULT_ACTIONS = [
+  { action: "quick_add", title: "Quick-add battle" },
+  { action: "mark_done", title: "Mark done" }
 ]
 
 // Intensity from push JSON (NotificationPreference). iOS/WebKit ignores
@@ -29,6 +34,11 @@ function intensityOptions(intensity) {
       // normal / missing / unknown — omit intensity options (browser defaults)
       return {}
   }
+}
+
+function notificationActions(data) {
+  if (Array.isArray(data.actions) && data.actions.length > 0) return data.actions
+  return DEFAULT_ACTIONS
 }
 
 self.addEventListener("install", (event) => {
@@ -84,8 +94,10 @@ self.addEventListener("push", (event) => {
     body: data.body || "",
     icon: data.icon || "/icon-192.png",
     badge: data.badge || "/icon-192.png",
+    actions: notificationActions(data),
     data: {
-      url: data.url || "/dashboard"
+      url: data.url || "/dashboard",
+      token: data.token || ""
     },
     ...intensityOptions(data.intensity)
   }
@@ -94,36 +106,84 @@ self.addEventListener("push", (event) => {
 })
 
 self.addEventListener("notificationclick", (event) => {
+  const action = event.action || ""
+  const data = (event.notification && event.notification.data) || {}
   event.notification.close()
-  const targetUrl = (event.notification.data && event.notification.data.url) || "/dashboard"
 
-  event.waitUntil(
-    (async () => {
-      const allClients = await self.clients.matchAll({
-        type: "window",
-        includeUncontrolled: true
-      })
+  if (action === "quick_add" || action === "mark_done") {
+    event.waitUntil(handleNotificationAction(action, data))
+    return
+  }
 
-      for (const client of allClients) {
-        if ("focus" in client) {
-          await client.focus()
-          if ("navigate" in client) {
-            try {
-              await client.navigate(targetUrl)
-            } catch (_error) {
-              // Some browsers disallow navigate; open below as fallback.
-            }
-          }
-          return
+  const targetUrl = data.url || "/dashboard"
+  event.waitUntil(openApp(targetUrl))
+})
+
+async function handleNotificationAction(action, data) {
+  const path =
+    action === "quick_add"
+      ? "/notifications/quick_add"
+      : "/notifications/mark_done"
+
+  try {
+    const response = await fetch(path, {
+      method: "POST",
+      credentials: "omit",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({ token: data.token || "" })
+    })
+    const payload = await response.json().catch(() => ({}))
+    const ok = response.ok && payload.ok
+    await self.registration.showNotification(
+      ok ? "LifePoints" : "LifePoints",
+      {
+        body: ok
+          ? payload.message || "Done."
+          : payload.error || "Could not update your battle.",
+        icon: "/icon-192.png",
+        badge: "/icon-192.png",
+        data: { url: data.url || "/dashboard", token: data.token || "" },
+        silent: true
+      }
+    )
+  } catch (_error) {
+    await self.registration.showNotification("LifePoints", {
+      body: "Could not update your battle.",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: { url: data.url || "/dashboard" },
+      silent: true
+    })
+  }
+}
+
+async function openApp(targetUrl) {
+  const allClients = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true
+  })
+
+  for (const client of allClients) {
+    if ("focus" in client) {
+      await client.focus()
+      if ("navigate" in client) {
+        try {
+          await client.navigate(targetUrl)
+        } catch (_error) {
+          // Some browsers disallow navigate; open below as fallback.
         }
       }
+      return
+    }
+  }
 
-      if (self.clients.openWindow) {
-        await self.clients.openWindow(targetUrl)
-      }
-    })()
-  )
-})
+  if (self.clients.openWindow) {
+    await self.clients.openWindow(targetUrl)
+  }
+}
 
 async function networkFirstNavigation(request) {
   try {

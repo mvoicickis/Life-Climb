@@ -1,5 +1,15 @@
 es:
   notifications:
+    actions:
+      quick_add: "Añadir battle"
+      mark_done: "Marcar hecha"
+      quick_add_ok: "Se añadió “%{title}” para hoy."
+      mark_done_ok: "“%{title}” marcada como hecha."
+      mark_done_created_ok: "Se añadió y terminó “%{title}”."
+      unauthorized: "Este enlace caducó. Abre la app e inténtalo de nuevo."
+      need_journey: "Empieza una subida en la app primero."
+      need_spine: "Añade un camino en tu montaña primero."
+      need_example: "No hay un ejemplo para esta categoría."
     win:
       self:
         "0": "Acabas de pasar un punto de control. Progreso real en ti."

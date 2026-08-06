@@ -49,5 +49,14 @@ module Onboarding
       else "other"
       end
     end
+
+    # Shared chain for push copy + notification actions:
+    # explicit category → focused journey → "other".
+    def self.resolve_for(user:, explicit: nil)
+      return explicit.to_s if valid_id?(explicit)
+
+      journey = user.primary_focused_journey || user.focused_journeys.first
+      id_for_journey(journey)
+    end
   end
 end

@@ -1,5 +1,15 @@
 lv:
   notifications:
+    actions:
+      quick_add: "Ātri pievienot battle"
+      mark_done: "Atzīmēt kā gatavu"
+      quick_add_ok: "Pievienots “%{title}” šodienai."
+      mark_done_ok: "“%{title}” atzīmēts kā gatavs."
+      mark_done_created_ok: "Pievienots un pabeigts “%{title}”."
+      unauthorized: "Šī saite beigusies. Atver lietotni un mēģini vēlreiz."
+      need_journey: "Vispirms sāc kāpumu lietotnē."
+      need_spine: "Vispirms pievieno ceļu savā kalnā."
+      need_example: "Šai kategorijai nav piemēra."
     win:
       self:
         "0": "Tu tikko sasniedzi kontrolpunktu. Īsts progress tevī."

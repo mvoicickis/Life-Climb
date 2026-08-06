@@ -153,4 +153,16 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal "Push works. Your climb reminders can reach you here.", payload["body"]
     assert_equal "normal", payload["intensity"]
   end
+
+  test "payload includes signed token and action buttons" do
+    SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
+    payload = JSON.parse(@last_kwargs[:message])
+
+    assert payload["token"].present?
+    assert_equal @user, User.find_signed(payload["token"], purpose: :notification_action)
+    assert_equal 2, payload["actions"].size
+    assert_equal "quick_add", payload["actions"][0]["action"]
+    assert_equal "mark_done", payload["actions"][1]["action"]
+    assert payload["actions"][0]["title"].present?
+  end
 end
