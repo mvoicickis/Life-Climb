@@ -615,11 +615,12 @@ es:
     choose_character_hint: "¿Quién sube contigo la montaña?"
     continue: "Continuar"
     character:
-      birdie: "Pajarito azul"
-      bee: "Abejorro"
+      birdie: "Pájaro"
+      bee: "Abeja"
       bear: "Oso"
       fox: "Zorro"
       horse: "Caballo"
+      raven: "Cuervo"
   support:
     title: "Apoyar LifePoints"
     subtitle: "Si LifePoints te ha ayudado a construir una vida mejor, puedes ayudarnos a construir un mejor LifePoints."

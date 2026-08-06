@@ -66,10 +66,10 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-dash-climb", count: 1
-    assert_select ".lp-dash-climb__avatar-img[src*='character-fox']", count: 1
+    assert_select ".lp-dash-climb__avatar-img[src*='fox']", count: 1
     assert_select ".lp-dash-climb__name", text: "Alex Climber"
     assert_select ".lp-dash-climb__climber[style*='--lp-trail']", count: 1
-    assert_select ".lp-dash-climb__climber-img[src*='character-fox']", count: 1
+    assert_select ".lp-dash-climb__climber-img[src*='fox']", count: 1
     assert_select ".lp-dash-bar__fill[data-battle-day-target='goalBar']", count: 1
     assert_select ".lp-dash-climb__pct[data-battle-day-target='goalPct']", count: 1
     assert_select ".lp-dash-climb__label[data-battle-day-target='momentum']", count: 1

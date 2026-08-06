@@ -6,8 +6,8 @@ Engineering plan to rebuild LifePoints Hotwire/Tailwind UI against the locked de
 
 1. Apply `.lp-game` shell on authenticated app layout (or Today-first), keep legacy studio theme only on unmigrated pages.
 2. CSS tokens already in [`app/assets/tailwind/application.css`](../../app/assets/tailwind/application.css) (`--lp-*`). Utilities: `.lp-glass`, `.lp-cta`, `.lp-avatar-ring`, `.lp-gap-track` / `.lp-gap-fill`, `.lp-bottom-nav`, `.lp-fab`.
-3. Add `users.character` string/enum: `man` | `woman` (nullable until onboarding).
-4. Serve avatars from `app/assets/images/characters/character-{man,woman}.png`.
+3. Add `users.character` string: one of `birdie` | `bee` | `bear` | `fox` | `horse` | `raven` (nullable until onboarding; legacy `man`/`woman` do not count as chosen).
+4. Serve companions from `app/assets/images/characters/{birdie,bee,bear,fox,horse,raven}.png`.
 5. Mount design partials: [`_character_picker`](../../app/views/shared/_character_picker.html.erb), [`_lp_bottom_nav`](../../app/views/shared/_lp_bottom_nav.html.erb).
 6. **Do not ship streak UI** — omit flame counters; use Overall Gap + Morale only.
 

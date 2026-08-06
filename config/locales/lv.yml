@@ -615,11 +615,12 @@ lv:
     choose_character_hint: "Kurš kāpj ar tevi kalnā?"
     continue: "Turpināt"
     character:
-      birdie: "Zilais putniņš"
-      bee: "Kamenene"
+      birdie: "Putniņš"
+      bee: "Bite"
       bear: "Lācis"
-      fox: "Lapis"
+      fox: "Lapsa"
       horse: "Zirgs"
+      raven: "Krauklis"
   support:
     title: "Atbalsti LifePoints"
     subtitle: "Ja LifePoints tev ir palīdzējis veidot labāku dzīvi, tu vari palīdzēt mums veidot labāku LifePoints."

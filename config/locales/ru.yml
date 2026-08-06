@@ -621,11 +621,12 @@ ru:
     choose_character_hint: "Кто поднимается с тобой на гору?"
     continue: "Продолжить"
     character:
-      birdie: "Синяя птичка"
-      bee: "Шмель"
+      birdie: "Птичка"
+      bee: "Пчела"
       bear: "Медведь"
       fox: "Лиса"
       horse: "Лошадь"
+      raven: "Ворон"
   support:
     title: "Поддержать LifePoints"
     subtitle: "Если LifePoints помог тебе строить лучшую жизнь, ты можешь помочь нам строить лучший LifePoints."

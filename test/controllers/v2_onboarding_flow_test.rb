@@ -39,7 +39,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select "input[name='user[character]'][value=bear]"
     assert_select "input[name='user[character]'][value=fox]"
     assert_select "input[name='user[character]'][value=horse]"
-    assert_select "img[src*='character-fox']"
+    assert_select "input[name='user[character]'][value=raven]"
+    assert_select "img[src*='fox.png']"
     assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "welcome"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
 
@@ -308,7 +309,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     user = User.find_by!(email_address: "birdie-climber@example.com")
     assert_equal "birdie", user.character
-    assert_equal "characters/character-birdie.png", user.character_image
+    assert_equal "characters/birdie.png", user.character_image
 
     patch v2_onboarding_url(step: "category"), params: { onboarding: { category: "relationships" } }
     patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Lead with calm" } }
@@ -319,7 +320,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     journey = user.reload.primary_focused_journey
     get life_journey_path(journey)
     assert_response :success
-    assert_select "#first-climb-coach img.lp-first-climb__climber-img[src*='character-birdie']"
+    assert_select "#first-climb-coach img.lp-first-climb__climber-img[src*='birdie']"
 
     # After first climb the Mountain HUD avatar uses the character image.
     post first_climbs_path, params: {
@@ -329,7 +330,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     }
     get life_journey_path(journey)
     assert_response :success
-    assert_select ".lp-rpg-avatar img[src*='character-birdie']"
+    assert_select ".lp-rpg-avatar img[src*='birdie']"
 
     # Settings can switch climber later.
     patch settings_path, params: { user: { character: "fox" } }
@@ -338,6 +339,6 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(journey)
     assert_response :success
-    assert_select ".lp-rpg-avatar img[src*='character-fox']"
+    assert_select ".lp-rpg-avatar img[src*='fox']"
   end
 end

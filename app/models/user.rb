@@ -52,7 +52,7 @@ class User < ApplicationRecord
   validates :theme, inclusion: { in: ->(_) { THEMES } }
 
   # Current companion set. Legacy man/woman remain in DB until the user re-picks.
-  CHARACTERS = %w[birdie bee bear fox horse].freeze
+  CHARACTERS = %w[birdie bee bear fox horse raven].freeze
   LEGACY_CHARACTERS = %w[man woman].freeze
   THEMES = %w[light dark].freeze
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
@@ -113,7 +113,7 @@ class User < ApplicationRecord
     key = character_key
     return nil if key.blank?
 
-    "characters/character-#{key}.png"
+    "characters/#{key}.png"
   end
 
   def legacy_character?

@@ -15,7 +15,7 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "One", user.display_name
   end
 
-  test "character helpers signal no companion until one of the five is chosen" do
+  test "character helpers signal no companion until one of the six is chosen" do
     user = users(:one)
     assert_nil user.character
     assert_nil user.character_key
@@ -25,12 +25,12 @@ class UserTest < ActiveSupport::TestCase
 
     user.update!(character: "fox")
     assert_equal "fox", user.character_key
-    assert_equal "characters/character-fox.png", user.character_image
+    assert_equal "characters/fox.png", user.character_image
     assert user.character_chosen?
     refute user.needs_companion_pick?
   end
 
-  test "character validation accepts only the five companions" do
+  test "character validation accepts only the six companions" do
     user = users(:one)
     User::CHARACTERS.each do |key|
       user.character = key
@@ -46,6 +46,8 @@ class UserTest < ActiveSupport::TestCase
     user = users(:one)
     user.update_columns(character: "woman", onboarding_completed_at: Time.current, planning_version: 2)
     refute user.character_chosen?
+    assert_nil user.character_key
+    assert_nil user.character_image
     assert user.legacy_character?
     assert user.needs_companion_pick?
 

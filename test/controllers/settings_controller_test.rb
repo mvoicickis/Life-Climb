@@ -27,7 +27,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-character input[name='user[character]'][value=bear]"
     assert_select "#you-character input[name='user[character]'][value=fox]"
     assert_select "#you-character input[name='user[character]'][value=horse]"
-    assert_select "#you-character img[src*='character-fox']"
+    assert_select "#you-character input[name='user[character]'][value=raven]"
+    assert_select "#you-character img[src*='fox.png']"
     assert_select "#you-theme"
     assert_select "#you-theme .lp-theme-switch__btn.is-active", text: "Light"
     assert_select "html[data-theme=light]"
@@ -83,7 +84,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     patch settings_path, params: { user: { character: "fox" } }
     assert_redirected_to settings_path(highlight: "character")
     assert_equal "fox", user.reload.character
-    assert_equal "characters/character-fox.png", user.character_image
+    assert_equal "characters/fox.png", user.character_image
     assert user.companion_pick_done?
     refute user.needs_companion_pick?
   end
@@ -102,6 +103,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#companion-pick-prompt"
     assert_select "#companion-pick-prompt input[name='user[character]'][value=fox]"
+    assert_select "#companion-pick-prompt input[name='user[character]'][value=raven]"
 
     patch settings_path, params: { user: { character: "bee" } }
     assert_redirected_to settings_path(highlight: "character")

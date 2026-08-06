@@ -615,11 +615,12 @@ de:
     choose_character_hint: "Wer steigt mit dir auf den Berg?"
     continue: "Weiter"
     character:
-      birdie: "Blauer Vogel"
-      bee: "Hummel"
+      birdie: "Vogel"
+      bee: "Biene"
       bear: "Bär"
       fox: "Fuchs"
       horse: "Pferd"
+      raven: "Rabe"
   support:
     title: "LifePoints unterstützen"
     subtitle: "Wenn LifePoints dir geholfen hat, ein besseres Leben aufzubauen, kannst du uns helfen, ein besseres LifePoints zu bauen."
