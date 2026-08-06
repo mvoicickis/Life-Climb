@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v4"
+const CACHE_VERSION = "v5"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const OFFLINE_URL = "/offline.html"
 
@@ -8,6 +8,28 @@ const PRECACHE_URLS = [
   "/icon-192.png",
   "/icon-maskable-512.png"
 ]
+
+// Intensity from push JSON (NotificationPreference). iOS/WebKit ignores
+// silent / vibrate / requireInteraction — options are dropped, not errors.
+function intensityOptions(intensity) {
+  switch (intensity) {
+    case "gentle":
+      return {
+        silent: true,
+        requireInteraction: false,
+        vibrate: []
+      }
+    case "persistent":
+      return {
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        silent: false
+      }
+    default:
+      // normal / missing / unknown — omit intensity options (browser defaults)
+      return {}
+  }
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -64,7 +86,8 @@ self.addEventListener("push", (event) => {
     badge: data.badge || "/icon-192.png",
     data: {
       url: data.url || "/dashboard"
-    }
+    },
+    ...intensityOptions(data.intensity)
   }
 
   event.waitUntil(self.registration.showNotification(title, options))
