@@ -54,7 +54,8 @@ module Notifications
       de = PhraseBank.phrases_for(kind: "win", category: "self", locale: :de)
       assert_equal 6, de.size
       refute_equal en, de
-      assert de[0].include?("Checkpoint") || de[0].include?("Schritt") || de[0].present?
+      assert de[0].present?
+      refute_equal en[0], de[0]
     end
 
     test "morning_nudge phrases exist for later PR5" do
