@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_213000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -268,6 +268,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_200000) do
     t.datetime "created_at", null: false
     t.string "frequency", default: "sometimes", null: false
     t.string "intensity", default: "normal", null: false
+    t.date "last_morning_nudge_sent_on"
     t.integer "quiet_hours_end"
     t.integer "quiet_hours_start"
     t.boolean "stuck_notifications_enabled", default: true, null: false

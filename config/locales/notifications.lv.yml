@@ -1,6 +1,7 @@
 lv:
   notifications:
     actions:
+      morning_title: "LifePoints"
       quick_add: "Ātri pievienot battle"
       mark_done: "Atzīmēt kā gatavu"
       quick_add_ok: "Pievienots “%{title}” šodienai."
