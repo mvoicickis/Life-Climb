@@ -3435,10 +3435,23 @@ html[data-theme="dark"] {
 }
 
 .lp-avatar-ring {
-  border-radius: 999px;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
   /* Thin lime outline flush to the photo — no void spacer gap inside the ring */
   box-shadow: 0 0 0 2px var(--lp-lime), 0 0 18px rgba(34, 197, 94, 0.4);
   animation: lp-breathe 4.2s ease-in-out infinite;
+}
+
+.lp-avatar-ring img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 0;
 }
 
 .lp-character-pick {
