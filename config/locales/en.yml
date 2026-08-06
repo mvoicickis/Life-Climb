@@ -71,6 +71,7 @@ en:
     climb_up: "%{pct}% up the mountain"
     climb_up_html: "%{pct}% up the mountain"
     battle_empty: "Nothing to fight yet — plan the next step on Mountain."
+    quest_empty: "No quests on Today yet — open a quest on Mountain."
     battle_empty_cta: "Continue on Mountain"
     battle_ready_count: "%{open} / %{total} battles ready"
     checklist_progress: "%{done} / %{total}"
@@ -157,6 +158,7 @@ en:
   progress:
     title: "Journey"
     subtitle: "How far have you come on your mountain?"
+    goal_label: "Journey goal"
     period_label: "Time range"
     periods:
       d7: "7 Days"
@@ -1809,6 +1811,13 @@ en:
     milestone_record: "New personal record"
     milestone_boost: "Big jump vs yesterday"
     milestone_streak: "%{count}-day streak"
+    toward_goal: "Toward goal"
+    zero_counts: "No number today? It counts as 0."
+    raise_title: "Nice! Want to raise your goal?"
+    raise_hit: "You hit %{value} %{unit}."
+    raise_confirm: "Raise it"
+    raise_keep: "Keep it"
+    example_number: "e.g. %{n}"
   settings:
     title: "You"
     subtitle: "Your account, invites, and support."

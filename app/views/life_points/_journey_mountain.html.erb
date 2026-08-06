@@ -1,13 +1,13 @@
 <%# locals: journey, strategy_goal, mountain, closer %>
 <% goal_title = strategy_goal&.title.presence || journey&.title || t("progress.lock_goal") %>
 <% stage_label = mountain.present? ? mountain[:label] : t("dash.mountain_waiting") %>
-<section class="lp-dash-hero lp-journey-hero" aria-label="<%= t('dash.goal_label') %>">
+<section class="lp-dash-hero lp-journey-hero" aria-label="<%= t('progress.goal_label') %>">
   <div class="lp-dash-hero__copy">
-    <p class="lp-dash-kicker"><%= t("dash.goal_label") %></p>
+    <p class="lp-dash-kicker"><%= t("progress.goal_label") %></p>
     <h2 class="lp-dash-hero__title" title="<%= goal_title %>"><%= goal_title %></h2>
     <div class="lp-dash-hero__progress">
       <p class="lp-dash-hero__pct"><%= closer %>%</p>
-      <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">
+      <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('progress.goal_label') %>">
         <div class="lp-dash-bar__fill" style="width: <%= closer %>%"></div>
       </div>
       <p class="lp-dash-hero__momentum"><%= dash_momentum_line(closer) %></p>

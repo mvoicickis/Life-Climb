@@ -142,7 +142,7 @@
   </section>
 
   <% if current_user.privileged_for_2fa? && !impersonating? %>
-    <section class="lp-glass p-5" id="you-two-factor">
+    <section class="lp-glass lp-glass--pad" id="you-two-factor">
       <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.settings_title") %></h2>
       <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.settings_card_body") %></p>
       <div class="mt-4">

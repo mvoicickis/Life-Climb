@@ -63,7 +63,7 @@
     <% if @habit.better_than_yesterday? && @habit.goal.present? %>
       <div class="lp-habits__progress">
         <div class="lp-habits__progress-labels">
-          <span>Toward goal</span>
+          <span><%= t("habits.toward_goal") %></span>
           <span><%= progress %>%</span>
         </div>
         <div class="lp-habits__progress-track">
@@ -72,18 +72,18 @@
       </div>
     <% end %>
 
-    <p class="lp-habits__hint">No number today? It counts as 0.</p>
+    <p class="lp-habits__hint"><%= t("habits.zero_counts") %></p>
 
     <% if @habit.show_goal_raise_prompt? %>
       <div class="lp-habits__raise">
-        <p class="lp-habits__raise-title">Nice! Want to raise your goal?</p>
+        <p class="lp-habits__raise-title"><%= t("habits.raise_title") %></p>
         <p class="lp-habits__meta">
-          You hit <%= format_amount(@habit.goal) %> <%= @habit.unit %>.
+          <%= t("habits.raise_hit", value: format_amount(@habit.goal), unit: @habit.unit) %>
         </p>
         <div class="lp-habits__raise-actions">
-          <%= button_to "Raise it", raise_goal_habit_path(@habit), method: :patch,
+          <%= button_to t("habits.raise_confirm"), raise_goal_habit_path(@habit), method: :patch,
               class: "lp-habits__btn is-primary" %>
-          <%= button_to "Keep it", decline_goal_raise_habit_path(@habit), method: :patch,
+          <%= button_to t("habits.raise_keep"), decline_goal_raise_habit_path(@habit), method: :patch,
               class: "lp-habits__btn is-quiet" %>
         </div>
       </div>
