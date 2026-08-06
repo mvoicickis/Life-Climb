@@ -12,6 +12,7 @@ class SettingsController < ApplicationController
 
   def update
     if current_user.update(settings_params)
+      current_user.mark_companion_pick_done! if updating?(:character) && current_user.character_chosen?
       redirect_to settings_path(highlight: highlight_key), notice: update_notice
     else
       render update_error_template, status: :unprocessable_entity

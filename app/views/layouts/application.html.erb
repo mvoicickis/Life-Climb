@@ -69,6 +69,9 @@
     <% end %>
 
     <main class="<%= authenticated? ? (content_for?(:lp_game) ? 'lp-main' : 'studio-main') : 'container mx-auto px-4 py-4 md:px-5 md:py-6' %>">
+      <% if authenticated? && !%w[v2_onboardings].include?(controller_name) %>
+        <%= render "shared/companion_pick_prompt" %>
+      <% end %>
       <% if flash[:notice] %>
         <div class="<%= authenticated? ? (content_for?(:lp_game) ? 'lp-flash lp-flash--notice' : 'studio-flash studio-flash--notice') : 'mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-800 md:text-base' %>" role="status" aria-live="polite">
           <%= flash[:notice] %>

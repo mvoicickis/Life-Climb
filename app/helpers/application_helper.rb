@@ -1,4 +1,11 @@
 module ApplicationHelper
+  # Renders the user's companion art, or nothing when none is chosen yet.
+  def companion_image_tag(user = current_user, **options)
+    return if user.blank? || user.character_image.blank?
+
+    image_tag user.character_image, **options
+  end
+
   # Stage label (e.g. "Camp set") lives on the mountain caption only —
   # never echo mountain[:label] here or the hero shows it twice.
   def dash_momentum_line(percent, mountain: nil)

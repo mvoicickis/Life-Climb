@@ -2,7 +2,7 @@
 
 module Developer
   # Full New Player Experience restart for the developer account.
-  # Wipes Strategy / journey data and habits (plus their logs/check-offs)
+  # Wipes Strategy / journey data, habits (plus logs/check-offs), and companion
   # so the app feels brand new.
   # Never deletes the User account or Action Points.
   class RestartNewPlayerExperience
@@ -29,11 +29,13 @@ module Developer
 
         shown = Array(@user.support_milestones_shown).map(&:to_s)
         shown.delete(User::ADVENTURE_GUIDE_KEY)
+        shown.delete(User::COMPANION_PICK_KEY)
 
         @user.update!(
           onboarding_completed_at: nil,
           planning_version: 2,
           strategy_points: 0,
+          character: nil,
           support_milestones_shown: shown
         )
       end
