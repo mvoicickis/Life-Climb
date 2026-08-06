@@ -13,5 +13,11 @@ module ActiveSupport
     fixtures :all
 
     include ClimbTestHelper
+
+    # Parallel workers share a process-global I18n.locale. A test that sets
+    # :lv/:de (or restores a polluted "previous" locale) can leave the next
+    # test asserting English strings against translated copy. Reset every run.
+    setup { I18n.locale = I18n.default_locale }
+    teardown { I18n.locale = I18n.default_locale }
   end
 end
