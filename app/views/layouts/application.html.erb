@@ -81,6 +81,10 @@
         </div>
       <% end %>
 
+      <% if authenticated? && content_for?(:lp_game) %>
+        <%= render "shared/companion_pick_prompt" %>
+      <% end %>
+
       <%= yield %>
     </main>
     <%= render "shared/feedback_fab", page: request.path unless controller_path.start_with?("admin") || controller_name == "feedbacks" %>
