@@ -32,7 +32,8 @@ module Notifications
     private
 
     def candidate_users
-      User.joins(:push_subscriptions).distinct
+      # Avoid SELECT DISTINCT users.* — Postgres can't DISTINCT on json columns.
+      User.where(id: PushSubscription.select(:user_id))
     end
 
     def notify!(user)
