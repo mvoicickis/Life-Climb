@@ -17,6 +17,7 @@ class SendWebPushJob < ApplicationJob
       return
     end
 
+    enrich_message!(user, message)
     json = message.to_json
 
     user.push_subscriptions.find_each do |subscription|
@@ -25,6 +26,30 @@ class SendWebPushJob < ApplicationJob
   end
 
   private
+
+  def enrich_message!(user, message)
+    preference = user.notification_preference
+    message["intensity"] = preference&.intensity.presence || "normal"
+
+    kind = message["kind"].to_s
+    return unless Notifications::PhraseBank::TRIGGERS.include?(kind)
+
+    category = resolve_category(user, message)
+    locale = user.locale.presence || I18n.default_locale
+    message["body"] = Notifications::PhraseBank.body_for(
+      kind: kind,
+      category: category,
+      locale: locale
+    )
+  end
+
+  def resolve_category(user, message)
+    raw = message["category"]
+    return raw if Onboarding::Categories.valid_id?(raw)
+
+    journey = user.primary_focused_journey || user.focused_journeys.first
+    Onboarding::Categories.id_for_journey(journey)
+  end
 
   def send_to(subscription, message)
     WebPush.payload_send(

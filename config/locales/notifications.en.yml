@@ -1,0 +1,96 @@
+# Companion notification phrase bank (PR3). Emoji prefixes are added at render time.
+en:
+  notifications:
+    win:
+      self:
+        "0": "You just cleared a checkpoint. Real progress on you."
+        "1": "Another step done. You're climbing."
+        "2": "Checkpoint cleared — that counts."
+        "3": "Nice — you moved forward today."
+        "4": "That's one more step up the mountain."
+        "5": "Progress. Simple as that."
+      career:
+        "0": "Another step up. Your career mountain got shorter."
+        "1": "Progress logged. Nice move."
+        "2": "Checkpoint cleared on the career climb."
+        "3": "You just moved your career forward."
+        "4": "Nice — that's progress at work."
+        "5": "One more step toward where you're headed."
+      money:
+        "0": "Checkpoint cleared. Your money goals are moving."
+        "1": "Nice — one more step toward it."
+        "2": "Progress made. Keep the momentum."
+        "3": "That's a real step on your money goal."
+        "4": "You just moved the needle."
+        "5": "Checkpoint cleared — good work."
+      relationships:
+        "0": "Progress made. Matters more than it feels right now."
+        "1": "Checkpoint cleared — good on you."
+        "2": "Step taken. Keep going."
+        "3": "Nice — that's real effort."
+        "4": "You showed up for this. That counts."
+        "5": "One more step forward."
+      growth:
+        "0": "You just leveled up. Keep climbing."
+        "1": "Checkpoint cleared. Growth in motion."
+        "2": "Nice — another step forward."
+        "3": "You're building something here."
+        "4": "Progress on the growth climb."
+        "5": "That's real movement. Keep going."
+      other:
+        "0": "Checkpoint cleared. Real win."
+        "1": "Progress made — nice one."
+        "2": "Step taken. Onward."
+        "3": "Nice work — that's progress."
+        "4": "You moved forward today."
+        "5": "Checkpoint cleared. Keep climbing."
+    stuck:
+      self:
+        "0": "No rush — want one small Battle today?"
+        "1": "Whenever works — I'm here."
+        "2": "Small step, any time you're ready."
+        "3": "One small thing, whenever suits you."
+        "4": "No pressure — just checking in."
+        "5": "Ready when you are."
+      career:
+        "0": "Whenever you're ready, one step is enough."
+        "1": "No pressure — pick it up when you can."
+        "2": "Still here whenever this fits."
+        "3": "One small step, whenever works."
+        "4": "No rush on this one."
+        "5": "Here whenever you want back in."
+      money:
+        "0": "Just a nudge — want to pick your next move?"
+        "1": "Whenever suits you — small step counts."
+        "2": "No rush, I'm here when ready."
+        "3": "One small step, any time."
+        "4": "No pressure — just a check-in."
+        "5": "Whenever you're ready, I'm here."
+      relationships:
+        "0": "No pressure. One small thing, if you're up for it."
+        "1": "Whenever feels right — no rush."
+        "2": "Still here, any time."
+        "3": "One small step, whenever it fits."
+        "4": "No rush — just checking in."
+        "5": "Here whenever you're ready."
+      growth:
+        "0": "Still here whenever you want to pick this up."
+        "1": "No rush — small steps count."
+        "2": "Whenever you're ready, I'm here."
+        "3": "One small thing, any time works."
+        "4": "No pressure — just a nudge."
+        "5": "Ready whenever you are."
+      other:
+        "0": "Whenever you're ready — I'm here."
+        "1": "No rush, small step any time."
+        "2": "Still here when it fits."
+        "3": "One small thing, whenever suits."
+        "4": "No pressure — just checking in."
+        "5": "Here when you want back in."
+    morning_nudge:
+      "0": "New day on the mountain. What's today's move?"
+      "1": "Morning! One Battle sets today's direction."
+      "2": "Fresh start today. What's the plan?"
+      "3": "New day, new step. What's today's Battle?"
+      "4": "Morning — one small move sets the tone."
+      "5": "Today's a clean slate. What's the plan?"

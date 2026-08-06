@@ -106,4 +106,51 @@ class SendWebPushJobTest < ActiveJob::TestCase
     SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
     assert_equal 1, @send_calls
   end
+
+  test "includes gentle intensity from preference in payload" do
+    @user.create_notification_preference!(intensity: "gentle")
+    SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
+
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "gentle", payload["intensity"]
+  end
+
+  test "defaults intensity to normal when no preference" do
+    assert_nil @user.notification_preference
+    SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
+
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "normal", payload["intensity"]
+  end
+
+  test "win kind replaces body from phrase bank for category" do
+    @user.create_notification_preference!(intensity: "persistent")
+    pool = Notifications::PhraseBank.phrases_for(kind: "win", category: "career", locale: :en)
+
+    SendWebPushJob.perform_now(
+      @user.id,
+      { "title" => "Win", "body" => "caller body", "kind" => "win", "category" => "career" }
+    )
+
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "persistent", payload["intensity"]
+    assert payload["body"].start_with?("🏔️ ")
+    assert_includes pool, payload["body"].delete_prefix("🏔️ ")
+  end
+
+  test "test kind keeps generic body from payload" do
+    @user.create_notification_preference!(intensity: "normal")
+    SendWebPushJob.perform_now(
+      @user.id,
+      {
+        "title" => "LifePoints",
+        "body" => "Push works. Your climb reminders can reach you here.",
+        "kind" => "test"
+      }
+    )
+
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "Push works. Your climb reminders can reach you here.", payload["body"]
+    assert_equal "normal", payload["intensity"]
+  end
 end
