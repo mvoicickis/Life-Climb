@@ -40,7 +40,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select "input[name='user[character]'][value=fox]"
     assert_select "input[name='user[character]'][value=horse]"
     assert_select "input[name='user[character]'][value=raven]"
-    assert_select "img[src*='fox.png']"
+    assert_select "img[src*='characters/fox']"
     assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "welcome"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
 

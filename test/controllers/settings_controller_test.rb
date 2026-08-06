@@ -28,7 +28,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-character input[name='user[character]'][value=fox]"
     assert_select "#you-character input[name='user[character]'][value=horse]"
     assert_select "#you-character input[name='user[character]'][value=raven]"
-    assert_select "#you-character img[src*='fox.png']"
+    assert_select "#you-character img[src*='characters/fox']"
     assert_select "#you-theme"
     assert_select "#you-theme .lp-theme-switch__btn.is-active", text: "Light"
     assert_select "html[data-theme=light]"
