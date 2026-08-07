@@ -15,6 +15,10 @@
         streak: @climb_streak,
         life_points: @life_points %>
 
+  <% if @next_action.present? %>
+    <%= render "shared/next_action", next_action: @next_action %>
+  <% end %>
+
   <% if flash[:human_win].present? %>
     <div class="lp-dash-human-win" role="status">
       <p class="lp-dash-human-win__body"><%= flash[:human_win] %></p>
