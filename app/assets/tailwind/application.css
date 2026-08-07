@@ -4508,6 +4508,9 @@ html[data-theme="dark"] {
   justify-content: space-between;
   gap: 0.4rem 0.65rem;
   padding: 0.45rem 0.65rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   color: var(--lp-ink);
 }
 
@@ -4524,7 +4527,7 @@ html[data-theme="dark"] {
 
 .lp-dash-next__title {
   margin: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-width: 0;
   font-family: var(--lp-font-display);
   font-size: 0.88rem;

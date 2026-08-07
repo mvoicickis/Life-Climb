@@ -84,6 +84,26 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-next", count: 0
   end
 
+  test "stylesheet keeps single-row truncation contract for long headlines" do
+    css = Rails.root.join("app/assets/tailwind/application.css").read
+    block = css[/\.lp-dash-next,\s*\.lp-dash-next\.lp-glass--pad\s*\{[^}]+\}/m]
+    title = css[/\.lp-dash-next__title\s*\{[^}]+\}/m]
+    cta = css[/\.lp-dash-next \.lp-cta\s*\{[^}]+\}/m]
+
+    assert_match(/flex-wrap:\s*nowrap/, block)
+    assert_match(/min-width:\s*0/, block)
+    assert_match(/max-width:\s*100%/, block)
+    assert_match(/width:\s*100%/, block)
+
+    assert_match(/flex:\s*1\s+1\s+0%/, title)
+    assert_match(/min-width:\s*0/, title)
+    assert_match(/text-overflow:\s*ellipsis/, title)
+    assert_match(/white-space:\s*nowrap/, title)
+
+    assert_match(/flex:\s*0\s+0\s+auto/, cta)
+    assert_match(/min-height:\s*2\.75rem/, cta)
+  end
+
   private
 
   def assert_banner_state(key)
