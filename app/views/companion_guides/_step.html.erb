@@ -1,0 +1,44 @@
+<%# locals: step (Strategy::CompanionGuide::Engine::Step) %>
+<% step = local_assigns.fetch(:step) %>
+
+<section class="space-y-4" aria-labelledby="companion-guide-question">
+  <header>
+    <h2 id="companion-guide-question" class="text-3xl font-semibold text-[var(--lp-ink)]">
+      <%= step.question %>
+    </h2>
+    <% if step.project_count.positive? || step.step_count.positive? %>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]">
+        <%= t("strategy.companion_guide.shell.progress",
+              projects: step.project_count,
+              steps: step.step_count) %>
+      </p>
+    <% end %>
+  </header>
+
+  <% case step.kind %>
+  <% when "set_effort_tier", "continue_step", "continue_project" %>
+    <div class="space-y-3" role="group" aria-label="<%= step.question %>">
+      <% Array(step.answer_options).each do |option| %>
+        <%= button_to option[:label],
+              companion_guide_path,
+              method: :post,
+              params: { value: option[:value] },
+              class: "lp-cta w-full",
+              form: { data: { turbo: false } } %>
+      <% end %>
+    </div>
+  <% else %>
+    <%= form_with url: companion_guide_path, method: :post, class: "space-y-4", data: { turbo: false } do %>
+      <div class="lp-glass space-y-2 p-4">
+        <%= text_field_tag :value, nil,
+              required: true,
+              maxlength: 120,
+              autofocus: true,
+              autocomplete: "off",
+              class: "lp-input w-full",
+              placeholder: t("strategy.companion_guide.shell.text_placeholder") %>
+      </div>
+      <%= submit_tag t("strategy.companion_guide.shell.continue"), class: "lp-cta w-full" %>
+    <% end %>
+  <% end %>
+</section>

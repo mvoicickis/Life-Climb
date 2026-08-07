@@ -57,6 +57,7 @@ module RequireOnboarding
       life_journeys
       strategy_goals
       first_climbs
+      companion_guides
       strategy_helps
       journey_completions
       journey_targets
