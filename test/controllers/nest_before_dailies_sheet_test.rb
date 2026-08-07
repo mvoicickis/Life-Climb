@@ -57,7 +57,8 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
     assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
     assert_select ".lp-climb-path__quest-add-input"
-    assert_select ".lp-climb-path__quest .lp-qs-detail__empty", text: /No objectives yet/i
+    # Empty + create_url: skip padded empty copy; add input is the affordance.
+    assert_select ".lp-climb-path__quest .lp-qs-detail__empty", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
