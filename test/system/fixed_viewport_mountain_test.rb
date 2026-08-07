@@ -47,7 +47,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     @current = @leaf
   end
 
-  test "short phone keeps Quest Space detail in the planning viewport" do
+  test "short phone keeps climb-path quests in the planning viewport" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -62,7 +62,9 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-first-climb-shell"
 
     assert_selector ".lp-rpg__stage.is-planning", visible: :all
-    assert_selector ".lp-rpg-sheet.is-planning.is-quest-space", visible: :all
+    assert_selector ".lp-rpg__stage-trail", visible: :all
+    assert_no_selector ".lp-rpg-sheet.is-quest-space"
+    assert_no_selector ".lp-rpg__stage-battle"
     assert_no_selector ".lp-rpg-breadcrumbs"
     assert_selector ".lp-climb-path__node", minimum: 2, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
@@ -74,10 +76,10 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i, wait: 5
+    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i, wait: 5
     assert_selector ".lp-qs-obj__text[value='Design battle card']", visible: :all, wait: 5
     assert_no_selector ".lp-rpg-camp-switch"
-    assert_selector ".lp-qs-detail__add-input", visible: :all
+    assert_selector ".lp-climb-path__quest-add-input", visible: :all
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_no_selector ".lp-rpg-section-head"
@@ -94,14 +96,13 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
-        const trail = document.querySelector('.lp-rpg__stage-sections');
-        const battle = document.querySelector('.lp-rpg__stage-battle');
-        const detail = document.querySelector('.lp-qs-detail.is-open');
-        const objective = document.querySelector('.lp-qs-detail.is-open .lp-qs-obj');
-        const add = document.querySelector('.lp-qs-detail.is-open .lp-qs-detail__add-input');
+        const trail = document.querySelector('.lp-rpg__stage-trail, .lp-rpg__stage-sections');
+        const stage = document.querySelector('.lp-rpg__stage.is-planning');
+        const quests = document.querySelector('.lp-climb-path__quests[open]');
+        const objective = document.querySelector('.lp-climb-path__quests[open] .lp-qs-obj');
+        const add = document.querySelector('.lp-climb-path__quests[open] .lp-climb-path__quest-add-input');
         objective?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const chrome = document.querySelector('.lp-rpg__chrome-top');
-        const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
         const visible = Array.from(document.querySelectorAll('.lp-climb-path__node')).filter((el) => {
           const r = el.getBoundingClientRect();
@@ -113,11 +114,11 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
         const objectiveRect = objective ? objective.getBoundingClientRect() : null;
         const addRect = add ? add.getBoundingClientRect() : null;
-        const battleRect = battle ? battle.getBoundingClientRect() : null;
-        const inBattle = (rect) => !!(rect && battleRect &&
+        const stageRect = stage ? stage.getBoundingClientRect() : null;
+        const inStage = (rect) => !!(rect && stageRect &&
           rect.height > 8 &&
-          rect.bottom > battleRect.top &&
-          rect.top < battleRect.bottom);
+          rect.bottom > stageRect.top &&
+          rect.top < stageRect.bottom);
         return {
           visible,
           innerHeight: window.innerHeight,
@@ -127,23 +128,23 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
           chromePad,
           stagePad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
-          battleH: battle ? Math.round(battle.getBoundingClientRect().height) : 0,
-          detailOpen: !!detail,
-          objectiveInBattle: inBattle(objectiveRect),
-          addInBattle: inBattle(addRect),
+          stageH: stage ? Math.round(stage.getBoundingClientRect().height) : 0,
+          questsOpen: !!quests,
+          objectiveInStage: inStage(objectiveRect),
+          addInStage: inStage(addRect),
           statsPresent: !!stats
         };
       })()
     JS
     assert_operator metrics["visible"], :>=, 1
     assert_operator metrics["trailH"], :>=, 28, "climb path trail too short at 568px: #{metrics.inspect}"
-    assert_operator metrics["battleH"], :>=, 88, "planning stage too short at 568px: #{metrics.inspect}"
+    assert_operator metrics["stageH"], :>=, 88, "planning stage too short at 568px: #{metrics.inspect}"
     # Lock is CSS overflow (not scrollY-after-scrollTo — headless Chrome can still bump scrollY).
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
-    assert_equal true, metrics["detailOpen"], "quest detail should be open: #{metrics.inspect}"
-    assert_equal true, metrics["objectiveInBattle"] || metrics["addInBattle"],
+    assert_equal true, metrics["questsOpen"], "climb-path quests should be open: #{metrics.inspect}"
+    assert_equal true, metrics["objectiveInStage"] || metrics["addInStage"],
                  "quest objectives or sticky add should stay in the planning stage: #{metrics.inspect}"
     assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
     assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"

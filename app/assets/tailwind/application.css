@@ -3237,11 +3237,6 @@
   --lp-rpg-veil-b: rgba(248, 250, 252, 0.22);
   --lp-rpg-veil-c: rgba(241, 245, 249, 0.78);
   --lp-rpg-scenic-filter: saturate(1.02) contrast(1.02) brightness(1.05);
-  /* Quest Space — follows theme (light surfaces + slate ink / dark purple + cream) */
-  --qs-ink: #0f172a;
-  --qs-ink-dim: #475569;
-  --qs-surface: #ffffff;
-  --qs-surface-alt: #f8f5fc;
 }
 
 html[data-theme="light"] {
@@ -3291,10 +3286,6 @@ html[data-theme="dark"] {
   --lp-rpg-veil-b: rgba(6, 10, 16, 0.24);
   --lp-rpg-veil-c: rgba(6, 10, 16, 0.84);
   --lp-rpg-scenic-filter: saturate(0.92) contrast(1.08) brightness(0.78);
-  --qs-ink: #efe6d8;
-  --qs-ink-dim: #8f8496;
-  --qs-surface: #1e1a2e;
-  --qs-surface-alt: #241f38;
 }
 
 .lp-game {
@@ -16536,7 +16527,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   min-height: 0;
   height: 100%;
   display: grid;
-  grid-template-rows: minmax(7.5rem, 0.42fr) auto minmax(12rem, 0.58fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: var(--lp-rpg-gap, 0.5rem);
   overflow: hidden;
 }
@@ -16565,23 +16556,6 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-}
-.lp-rpg__stage-battle {
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  box-sizing: border-box;
-}
-.lp-rpg__stage-battle > .lp-rpg-sheet {
-  flex: 1 1 auto;
-  min-height: 8.5rem;
-  max-height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 /* Destination carousel — one active world, peeks + arrows (Nintendo world select) */
@@ -17250,10 +17224,6 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   }
   .lp-rpg-context {
     margin-inline: 0.85rem;
-  }
-  .lp-rpg__stage-battle > .lp-rpg-sheet {
-    margin-inline: 0;
-    padding-bottom: 0.65rem;
   }
   .lp-rpg-destination-carousel__title {
     font-size: var(--lp-type-display-lg);
@@ -18233,11 +18203,6 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg-sheet.is-dominant .lp-rpg-camp-card__title {
   font-size: 0.92rem;
 }
-.lp-rpg__stage-battle .lp-rpg-sheet__body {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  max-height: 40%;
-}
 /* —— Focus polish: one column, one rhythm, less noise —— */
 .lp-rpg.is-focus-phase .lp-rpg-hud {
   position: relative;
@@ -18825,14 +18790,6 @@ a.lp-rpg-practice-cat {
   min-height: 0;
   overflow-y: auto;
 }
-.lp-rpg.is-focus-phase .lp-rpg__planning:has(.lp-rpg-sheet.is-category-focus),
-.lp-rpg.is-focus-phase .lp-rpg__planning:has(.lp-rpg-sheet.is-categories) {
-  grid-template-rows: minmax(3.5rem, auto) minmax(8.5rem, 1fr);
-}
-.lp-rpg.is-focus-phase .lp-rpg__stage-battle:has(.lp-rpg-sheet.is-category-focus),
-.lp-rpg.is-focus-phase .lp-rpg__stage-battle:has(.lp-rpg-sheet.is-categories) {
-  min-height: 8.5rem;
-}
 .lp-rpg.is-focus-phase .lp-rpg-practice-add,
 .lp-rpg.is-focus-phase .lp-rpg-node__add.is-practice-add {
   flex: 0 0 auto;
@@ -19263,9 +19220,6 @@ a.lp-rpg-practice-cat {
   }
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-camp-card__title {
     font-size: 0.8rem;
-  }
-  .lp-rpg.is-focus-phase .lp-rpg__stage-battle > .lp-rpg-sheet {
-    min-height: 0;
   }
 }
 
@@ -21077,339 +21031,33 @@ a.lp-rpg-camp-row {
   }
 }
 
-/* —— Quest Space (board + slide-in detail) —— */
-.lp-rpg-sheet.is-quest-space {
-  position: relative;
-  min-height: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
-}
-.lp-qs {
-  --qs-line: rgba(232, 182, 76, 0.15);
-  --qs-gold: #e8b64c;
-  --qs-gold-dim: #a9822f;
-  --qs-success: #5fbf7f;
-  --qs-danger: #e2604f;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
-  color: var(--qs-ink);
-}
-.lp-qs-board {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-height: 0;
-  flex: 1 1 auto;
-  overflow: auto;
-  padding: 0.15rem 0.1rem 0.5rem;
-  transition: opacity 0.2s ease;
-}
-.lp-qs-board[aria-hidden="true"] {
-  opacity: 0.35;
-  pointer-events: none;
-}
-.lp-qs-board__head {
-  padding: 0.35rem 0.25rem 0.55rem;
-  border-bottom: 1px solid var(--qs-line);
-}
-.lp-rpg.is-focus-phase .lp-qs-board {
-  gap: 0.6rem;
-  padding: 0.1rem 0.05rem 0.35rem;
-}
-.lp-rpg.is-focus-phase .lp-qs-board__head {
-  padding: 0.25rem 0.2rem 0.4rem;
-}
-.lp-rpg.is-focus-phase .lp-qs-board__title {
-  font-size: 1.15rem;
-}
-.lp-rpg.is-focus-phase .lp-qs-board__list {
-  gap: 0.5rem;
-  padding: 0.25rem 0.05rem;
-}
-.lp-rpg.is-focus-phase a.lp-qs-card {
-  padding: 0.72rem 0.78rem;
-  border-radius: 0.8rem;
-}
-.lp-rpg.is-focus-phase .lp-qs-card__top {
-  gap: 0.55rem;
-}
-.lp-rpg.is-focus-phase .lp-qs-card__icon {
-  width: 2.15rem;
-  height: 2.15rem;
-  font-size: 1rem;
-}
-.lp-qs-board__eyebrow {
-  margin: 0 0 0.25rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--qs-gold-dim);
-  font-weight: 700;
-}
-.lp-qs-board__title {
-  margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--qs-ink);
-}
-.lp-qs-board__sub {
-  margin: 0.3rem 0 0;
-  font-size: 0.8rem;
-  color: var(--qs-ink-dim);
-}
-.lp-qs-board__list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  padding: 0.35rem 0.1rem;
-}
-a.lp-qs-card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  background: linear-gradient(180deg, var(--qs-surface-alt), var(--qs-surface));
-  border: 1px solid var(--qs-line);
-  border-radius: 0.9rem;
-  padding: 0.9rem 0.95rem;
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-a.lp-qs-card.has-color {
-  --lp-item-color: var(--lp-muted, #9aa6b2);
-  border-left: 3px solid var(--lp-item-color);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lp-item-color) 12%, transparent);
-}
-a.lp-qs-card.has-color.is-teal { --lp-item-color: #2dd4bf; }
-a.lp-qs-card.has-color.is-coral { --lp-item-color: #e2604f; }
-a.lp-qs-card.has-color.is-amber { --lp-item-color: #f59e0b; }
-a.lp-qs-card.has-color.is-purple { --lp-item-color: #a78bfa; }
-a.lp-qs-card.has-color.is-blue { --lp-item-color: #60a5fa; }
-a.lp-qs-card.has-color.is-green { --lp-item-color: #57d35b; }
-a.lp-qs-card.has-color.is-pink { --lp-item-color: #f472b6; }
-a.lp-qs-card.has-color.is-gray { --lp-item-color: #9aa6b2; }
-a.lp-qs-card.has-color .lp-qs-card__icon {
-  border-color: color-mix(in srgb, var(--lp-item-color) 45%, transparent);
-  background: color-mix(in srgb, var(--lp-item-color) 14%, transparent);
-}
-a.lp-qs-card.has-color .lp-qs-card__bar-fill {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--lp-item-color) 70%, #000),
-    var(--lp-item-color)
-  );
-}
-a.lp-qs-card.has-color:hover,
-a.lp-qs-card.has-color:focus-visible {
-  border-color: color-mix(in srgb, var(--lp-item-color) 55%, transparent);
-}
-a.lp-qs-card:hover,
-a.lp-qs-card:focus-visible {
-  border-color: rgba(232, 182, 76, 0.4);
-  outline: none;
-}
-a.lp-qs-card:active {
-  transform: scale(0.98);
-}
-.lp-qs-card__top {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-.lp-qs-card__icon {
-  width: 2.55rem;
-  height: 2.55rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 1.15rem;
-  border-radius: 0.65rem;
-  background: rgba(232, 182, 76, 0.08);
-  border: 1px solid var(--qs-line);
-}
-.lp-qs-card__copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-.lp-qs-card__name {
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
-  font-size: 1.02rem;
-  font-weight: 700;
-  color: var(--qs-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.lp-qs-card__meta {
-  font-size: 0.74rem;
-  color: var(--qs-ink-dim);
-}
-.lp-qs-card__arrow {
-  margin-left: auto;
-  color: var(--qs-gold-dim);
-  font-size: 1.15rem;
-  flex-shrink: 0;
-}
-.lp-qs-card__bar {
-  height: 0.38rem;
-  border-radius: 0.3rem;
-  background: var(--qs-line);
-  margin-top: 0.75rem;
-  overflow: hidden;
-}
-.lp-qs-card__bar-fill {
-  display: block;
-  height: 100%;
-  border-radius: 0.3rem;
-  background: linear-gradient(90deg, var(--qs-gold-dim), var(--qs-gold));
-  transition: width 0.3s ease;
-}
-.lp-qs-new {
-  margin-top: 0.15rem;
-}
-.lp-qs-new > summary.lp-qs-new__btn {
-  list-style: none;
-  width: 100%;
-  padding: 0.85rem;
-  border-radius: 0.75rem;
-  border: 1px dashed var(--qs-gold-dim);
-  background: transparent;
-  color: var(--qs-gold);
-  font-size: 0.88rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+/* —— Quest objective rows (climb-path inline; class names kept for PR A streams) —— */
+.lp-qs-detail__empty,
+.lp-climb-path__quest-empty {
   text-align: center;
-  cursor: pointer;
-}
-.lp-qs-new > summary.lp-qs-new__btn::-webkit-details-marker { display: none; }
-.lp-qs-new > summary.lp-qs-new__btn:hover,
-.lp-qs-new[open] > summary.lp-qs-new__btn {
-  background: rgba(232, 182, 76, 0.08);
-}
-
-.lp-qs-detail {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  background: var(--qs-surface);
-  transform: translateX(100%);
-  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
-  pointer-events: none;
-}
-.lp-qs-detail.is-open {
-  transform: translateX(0);
-  pointer-events: auto;
-}
-.lp-qs-detail__head {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 0.65rem 0.7rem;
-  border-bottom: 1px solid var(--qs-line);
-  flex-shrink: 0;
-}
-.lp-qs-detail__head.has-color {
-  --lp-item-color: var(--lp-muted, #9aa6b2);
-  box-shadow: inset 3px 0 0 var(--lp-item-color);
-}
-.lp-qs-detail__head.has-color.is-teal { --lp-item-color: #2dd4bf; }
-.lp-qs-detail__head.has-color.is-coral { --lp-item-color: #e2604f; }
-.lp-qs-detail__head.has-color.is-amber { --lp-item-color: #f59e0b; }
-.lp-qs-detail__head.has-color.is-purple { --lp-item-color: #a78bfa; }
-.lp-qs-detail__head.has-color.is-blue { --lp-item-color: #60a5fa; }
-.lp-qs-detail__head.has-color.is-green { --lp-item-color: #57d35b; }
-.lp-qs-detail__head.has-color.is-pink { --lp-item-color: #f472b6; }
-.lp-qs-detail__head.has-color.is-gray { --lp-item-color: #9aa6b2; }
-.lp-qs-detail__back {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.65rem;
-  border: 1px solid var(--qs-line);
-  background: var(--qs-surface-alt);
-  color: var(--qs-gold);
-  font-size: 1rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.lp-qs-detail__head-copy { min-width: 0; flex: 1 1 auto; }
-.lp-qs-detail__edit {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.65rem;
-  border: 1px solid var(--qs-line);
-  background: var(--qs-surface-alt);
-  color: var(--qs-ink-dim);
-  font-size: 0.95rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  cursor: pointer;
-  padding: 0;
-}
-.lp-qs-detail__edit:hover,
-.lp-qs-detail__edit:focus-visible {
-  color: var(--qs-gold);
-  border-color: rgba(232, 182, 76, 0.4);
-  outline: none;
-}
-.lp-qs-detail__title {
-  margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--qs-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.lp-qs-detail__progress {
-  margin: 0.15rem 0 0;
-  font-size: 0.74rem;
-  color: var(--qs-ink-dim);
-}
-.lp-qs-detail__objectives {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 0.35rem 0.65rem 5.5rem;
-}
-.lp-qs-detail__empty {
-  text-align: center;
-  color: var(--qs-ink-dim);
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
   font-size: 0.82rem;
-  padding: 2rem 1rem;
+  padding: 0.85rem 0.35rem;
   margin: 0;
 }
 .lp-qs-obj {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.8rem 0.15rem;
-  border-bottom: 1px solid var(--qs-line);
+  gap: 0.55rem;
+  padding: 0.55rem 0.1rem;
+  border-bottom: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+}
+.lp-qs-obj:last-child {
+  border-bottom: none;
 }
 .lp-qs-obj__check {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 0.45rem;
-  border: 2px solid var(--qs-gold-dim);
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 0.4rem;
+  border: 2px solid color-mix(in srgb, var(--lp-rpg-green, #57d35b) 45%, transparent);
   background: transparent;
-  color: #14121f;
-  font-size: 0.85rem;
+  color: var(--lp-rpg-ink, #e2e8f0);
+  font-size: 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -21420,169 +21068,60 @@ a.lp-qs-card:active {
   user-select: none;
 }
 .lp-qs-obj__check.is-done {
-  background: var(--qs-success);
-  border-color: var(--qs-success);
+  background: var(--lp-rpg-green, #57d35b);
+  border-color: var(--lp-rpg-green, #57d35b);
+  color: #0b0f14;
 }
 .lp-qs-obj__main {
   flex: 1 1 auto;
   min-width: 0;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 .lp-qs-obj__text {
   width: 100%;
   min-width: 0;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   outline: none;
   background: transparent;
-  color: var(--qs-ink);
+  color: var(--lp-rpg-ink, #e2e8f0);
   border: none;
   padding: 0.1rem 0;
 }
 .lp-qs-obj__text.is-done {
-  color: var(--qs-ink-dim);
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
   text-decoration: line-through;
 }
 .lp-qs-obj__track {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 650;
-  color: var(--qs-ink-dim);
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
   cursor: pointer;
 }
 .lp-qs-obj__track-check {
-  width: 0.95rem;
-  height: 0.95rem;
-  accent-color: var(--qs-gold, #d4a017);
+  width: 0.9rem;
+  height: 0.9rem;
+  accent-color: var(--lp-rpg-green, #57d35b);
 }
 .lp-qs-obj__trash {
-  width: 2rem;
-  height: 2rem;
+  width: 1.85rem;
+  height: 1.85rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.45rem;
   background: transparent;
-  color: var(--qs-ink-dim);
-  font-size: 1rem;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+  font-size: 0.9rem;
   cursor: pointer;
   flex-shrink: 0;
   padding: 0;
 }
 .lp-qs-obj__trash:hover,
 .lp-qs-obj__trash:active {
-  color: var(--qs-danger);
-}
-.lp-qs-detail__add {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0.85rem 0.65rem 0.9rem;
-  background: linear-gradient(180deg, transparent, var(--qs-surface) 30%);
-}
-.lp-qs-detail__add-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  background: var(--qs-surface-alt);
-  border: 1px solid var(--qs-line);
-  border-radius: 0.75rem;
-  padding: 0.45rem 0.45rem 0.45rem 0.85rem;
-}
-.lp-qs-detail__add-plus {
-  color: var(--qs-gold);
-  font-size: 1rem;
-  font-weight: 700;
-  align-self: flex-start;
-  margin-top: 0.55rem;
-}
-.lp-qs-detail__add-fields {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: grid;
-  gap: 0.35rem;
-}
-.lp-qs-detail__add-input {
-  width: 100%;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--qs-ink);
-  font-size: 0.88rem;
-  padding: 0.35rem 0;
-}
-.lp-qs-detail__add-input::placeholder {
-  color: var(--qs-ink-dim);
-}
-.lp-qs-detail__add-track {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 650;
-  color: var(--qs-ink-dim);
-  cursor: pointer;
-}
-.lp-qs-detail__add-track-check {
-  width: 0.95rem;
-  height: 0.95rem;
-  accent-color: var(--qs-gold, #d4a017);
-}
-.lp-qs-detail__add-btn {
-  flex: 0 0 auto;
-  min-height: 2.35rem;
-  min-width: 3.4rem;
-  padding: 0.45rem 0.85rem;
-  border: 0;
-  border-radius: 0.6rem;
-  background: var(--qs-gold, #d4a017);
-  color: #14121f;
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.lp-qs-detail__add-btn:hover,
-.lp-qs-detail__add-btn:focus-visible {
-  filter: brightness(1.06);
-}
-.lp-qs-undo {
-  position: absolute;
-  left: 50%;
-  bottom: 0.85rem;
-  transform: translateX(-50%) translateY(140%);
-  z-index: 8;
-  max-width: 22rem;
-  width: calc(100% - 1.5rem);
-  background: var(--qs-surface-alt);
-  border: 1px solid var(--qs-line);
-  border-radius: 0.75rem;
-  padding: 0.7rem 0.95rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  font-size: 0.82rem;
-  color: var(--qs-ink);
-  transition: transform 0.25s ease;
-  pointer-events: none;
-}
-.lp-qs-undo.is-show {
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-.lp-qs-undo__link {
-  border: none;
-  background: transparent;
-  color: var(--qs-gold);
-  font-weight: 800;
-  font-size: 0.82rem;
-  cursor: pointer;
-  padding: 0;
+  color: #fca5a5;
 }
 
 /* Curated color swatches for leaf quest create/edit. */
@@ -22216,3 +21755,221 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path.is-empty .lp-climb-path__list::before {
   display: none;
 }
+
+/* —— Climb-path inline quests (folded Quest Space) —— */
+.lp-climb-path__quests {
+  grid-column: 1 / -1;
+  width: min(100%, 19rem);
+  margin-top: 0.15rem;
+  justify-self: inherit;
+}
+.lp-climb-path__node.is-right .lp-climb-path__quests {
+  justify-self: end;
+}
+.lp-climb-path__quests-summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 1.85rem;
+  padding: 0.2rem 0.35rem;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.82));
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.lp-climb-path__quests-summary::-webkit-details-marker { display: none; }
+.lp-climb-path__quests-chevron {
+  display: inline-block;
+  transition: transform 160ms ease;
+}
+.lp-climb-path__quests[open] > .lp-climb-path__quests-summary .lp-climb-path__quests-chevron {
+  transform: rotate(90deg);
+}
+.lp-climb-path__quests-body {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.15rem 0 0.35rem;
+}
+.lp-climb-path__quest {
+  position: relative;
+  padding: 0.55rem 0.65rem 0.65rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
+  box-shadow: var(--lp-rpg-glass-shadow, 0 10px 28px rgba(0, 0, 0, 0.22));
+}
+.lp-climb-path__quest.has-color {
+  border-left: 3px solid var(--lp-item-color, #9aa6b2);
+}
+.lp-climb-path__quest.has-color.is-teal { --lp-item-color: #2dd4bf; }
+.lp-climb-path__quest.has-color.is-coral { --lp-item-color: #e2604f; }
+.lp-climb-path__quest.has-color.is-amber { --lp-item-color: #f59e0b; }
+.lp-climb-path__quest.has-color.is-purple { --lp-item-color: #a78bfa; }
+.lp-climb-path__quest.has-color.is-blue { --lp-item-color: #60a5fa; }
+.lp-climb-path__quest.has-color.is-green { --lp-item-color: #57d35b; }
+.lp-climb-path__quest.has-color.is-pink { --lp-item-color: #f472b6; }
+.lp-climb-path__quest.has-color.is-gray { --lp-item-color: #9aa6b2; }
+.lp-climb-path__quest-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-bottom: 0.35rem;
+}
+.lp-climb-path__quest-copy { flex: 1 1 auto; min-width: 0; }
+.lp-climb-path__quest-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--lp-rpg-ink, #e2e8f0);
+  line-height: 1.25;
+}
+.lp-climb-path__quest-progress {
+  margin: 0.15rem 0 0;
+  font-size: 0.7rem;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+}
+.lp-climb-path__quest-edit {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.82));
+  cursor: pointer;
+}
+.lp-climb-path__quest-objectives { min-width: 0; }
+.lp-climb-path__quest-add {
+  margin-top: 0.45rem;
+}
+.lp-climb-path__quest-add-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.4rem 0.35rem 0.55rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: color-mix(in srgb, var(--lp-rpg-glass, rgba(17, 22, 28, 0.88)) 80%, transparent);
+}
+.lp-climb-path__quest-add-plus {
+  color: var(--lp-rpg-green, #57d35b);
+  font-weight: 800;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+}
+.lp-climb-path__quest-add-fields {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.lp-climb-path__quest-add-input,
+.lp-qs-detail__add-input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--lp-rpg-ink, #e2e8f0);
+  font-size: 0.84rem;
+  padding: 0.25rem 0;
+}
+.lp-climb-path__quest-add-input::placeholder,
+.lp-qs-detail__add-input::placeholder {
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+}
+.lp-climb-path__quest-add-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+  cursor: pointer;
+}
+.lp-climb-path__quest-add-btn,
+.lp-qs-detail__add-btn {
+  flex: 0 0 auto;
+  min-height: 2.1rem;
+  min-width: 3.1rem;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: var(--lp-rpg-green, #57d35b);
+  color: #0b0f14;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lp-climb-path__quest-undo {
+  display: none;
+  margin-top: 0.45rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: color-mix(in srgb, var(--lp-rpg-glass, rgba(17, 22, 28, 0.88)) 90%, transparent);
+  font-size: 0.78rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.lp-climb-path__quest-undo.is-show {
+  display: flex;
+}
+.lp-climb-path__quest-undo-link {
+  border: none;
+  background: transparent;
+  color: var(--lp-rpg-green, #57d35b);
+  font-weight: 800;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0;
+}
+.lp-climb-path__branch {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
+}
+.lp-climb-path__branch-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+.lp-climb-path__branch-meta {
+  font-size: 0.68rem;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+}
+.lp-climb-path__branch-arrow {
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+}
+.lp-climb-path__new-quest {
+  min-width: 0;
+}
+.lp-climb-path__new-quest-btn {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px dashed color-mix(in srgb, var(--lp-rpg-green, #57d35b) 45%, transparent);
+  background: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 10%, transparent);
+  color: var(--lp-rpg-green, #57d35b);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.lp-climb-path__new-quest-btn::-webkit-details-marker { display: none; }
+

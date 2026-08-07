@@ -31,20 +31,22 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty Path-level camp shows split-first UI without Add Practice" do
+  test "empty Path-level camp shows New Quest under climb path without board" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet.is-categories"
-    assert_select ".lp-climb-path__node", text: /Learn German/
+    assert_select ".lp-climb-path__node.is-selected", text: /Learn German/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
-    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-qs-board__title", count: 0
+    assert_select ".lp-rpg-practice-cats__hint", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__quest", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
-  test "nested leaf camp opens Quest Space detail with sticky add" do
+  test "nested leaf camp opens climb-path quest with sticky add" do
     nested = @camp.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Vocabulary", position: 0
@@ -52,25 +54,27 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: nested.id)
     assert_response :success
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/
-    assert_select ".lp-qs-detail__add-input"
-    assert_select ".lp-qs-detail__empty", text: /No objectives yet/i
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
+    assert_select ".lp-climb-path__quest-add-input"
+    assert_select ".lp-climb-path__quest .lp-qs-detail__empty", text: /No objectives yet/i
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
   end
 
-  test "Path focus shows Learn German in Project Sections carousel" do
+  test "Path focus shows Learn German on climb path" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
     assert_select ".lp-climb-path__node", text: /Learn German/
-    assert_select ".lp-climb-path__node", text: /Learn German/
+    assert_select ".lp-climb-path__node.is-current, .lp-climb-path__node.is-selected", text: /Learn German/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
+    assert_select ".lp-rpg-practice-cats__hint", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
   end
 
-  test "legacy Path-level camp with days opens Quest Space detail without Prepare New Quest" do
+  test "legacy Path-level camp with days shows climb-path quest without Prepare New Quest" do
     day = @user.strategy_goals.new(
       user: @user, life_area: @area, life_journey: @journey, parent: @camp,
       horizon: "day", title: "Do lessons", scheduled_on: Date.current, position: 0
@@ -80,7 +84,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Learn German/
+    assert_select ".lp-climb-path__quest-title", text: /Learn German/
     assert_select ".lp-qs-obj__text[value='Unit 1']"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end

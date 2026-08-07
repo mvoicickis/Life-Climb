@@ -45,14 +45,15 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage.is-planning"
     assert_select ".lp-rpg__planning"
     assert_select ".lp-rpg__stage-sections"
+    assert_select ".lp-rpg__stage-trail"
     assert_select ".lp-climb-path"
-    assert_select ".lp-rpg__stage-battle"
+    assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-rpg__chrome-bottom", count: 0
     assert_select ".lp-rpg-stats", count: 0
-    assert_select ".lp-rpg-sheet.is-planning"
+    assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-qs-detail.is-open"
-    assert_select ".lp-qs-detail__title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-context", count: 0
   end
@@ -117,9 +118,9 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 
-    assert_select ".lp-qs", minimum: 1
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
-    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-climb-path__quests[open]", minimum: 1
+    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0

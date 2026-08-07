@@ -27,7 +27,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty Path-level camp shows split-first instead of Add Practice" do
+  test "empty Path-level camp shows New Quest under climb path instead of Add Practice" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -35,18 +35,19 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet.is-categories"
-    assert_select ".lp-climb-path__node", text: /Resume/
+    assert_select ".lp-climb-path__node.is-selected", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-rpg-sheet.is-quest-space", count: 0
+    assert_select ".lp-rpg-practice-cats__hint", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__quest", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
-    assert_select ".lp-climb-path__node", text: /Resume/
   end
 
-  test "nested leaf with day children opens Quest Space detail without battle win" do
+  test "nested leaf with day children opens climb-path quest without battle win" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -60,8 +61,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-qs-detail.is-open"
-    assert_select ".lp-qs-detail__title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
     assert_select ".lp-qs-obj__text[value='Rewrite summary']"
     assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select "form[action=?]", battle_win_path(battle), count: 0
@@ -69,7 +70,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
   end
 
-  test "branch checkpoint sheet lists child camps as quest cards" do
+  test "branch checkpoint lists child camps as climb-path quest titles" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -85,24 +86,26 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: parent.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet.is-categories.is-quest-space"
+    assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
-    assert_select ".lp-climb-path__node", text: /Launch prep/
+    assert_select ".lp-climb-path__node.is-selected", text: /Launch prep/
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-qs-card__name", text: /Landing page/
-    assert_select ".lp-qs-card__name", text: /Payments/
-    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-climb-path__quest-title", text: /Landing page/
+    assert_select ".lp-climb-path__quest-title", text: /Payments/
+    assert_select ".lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-qs-card__name", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select "a.lp-qs-card[href*='focus_id=#{child.id}']"
+    assert_select "turbo-frame#quest_objectives_#{child.id}"
 
     # Sections carousel stays plan-level only — nested child is not a section card
     assert_select ".lp-climb-path__node", text: /Launch prep/
     assert_select ".lp-climb-path__node", text: /Landing page/, count: 0
   end
 
-  test "focusing a nested child opens Quest Space detail under its section" do
+  test "focusing a nested child shows climb-path quest under its section" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
@@ -121,7 +124,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-climb-path__node.is-selected", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Landing page/
+    assert_select ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Landing page/
     assert_select ".lp-qs-obj__text[value='Write headline']"
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
@@ -129,7 +132,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
 
-  test "path focus shows sections in carousel and drills into the active section" do
+  test "path focus shows sections in climb path and drills into the active section" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Landing page", position: 0
@@ -154,8 +157,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path__node.is-locked", text: /Launch prep/
     assert_select ".lp-climb-path__node.is-current, .lp-climb-path__node.is-selected", text: /Landing page/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-qs-card__name", text: /Steps/
-    assert_select ".lp-qs-detail.is-open", count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Steps/
+    assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 end

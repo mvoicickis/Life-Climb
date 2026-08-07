@@ -94,9 +94,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: nested.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i
+    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/i
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
     assert_select ".lp-climb-path__node.is-current", text: /Learn German/i
-    assert_select ".lp-rpg-sheet.is-quest-space"
+    assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_no_match(/Monthly Goals/i, response.body)
@@ -204,7 +205,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-climb-path__node.is-current", text: /Project One/i
     assert_select ".lp-climb-path__node", text: /Project Two/i
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quests[open]"
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
@@ -282,7 +284,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-climb-path__node", minimum: 3
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quests[open]"
     assert_select "#strategy-camp-notebook", count: 0
   end
 
@@ -305,8 +308,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
-    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
   end
@@ -393,7 +396,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-climb-path__node.is-selected, .lp-climb-path__node.is-locked", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
+    assert_select ".lp-rpg-practice-cats__hint", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_match(/Checkpoint added|Launch prep/i, flash[:notice].to_s + response.body)
   end
@@ -515,8 +518,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
     assert_response :success
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
-    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-climb-path__quest-title", text: /Steps/
+    assert_select ".lp-climb-path__quest-add-input"
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
@@ -529,8 +532,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    # Quest Space surfaces objectives on the checklist host, not day-quest cards.
-    assert_select ".lp-qs-detail.is-open"
+    # Climb-path quest surfaces objectives on the checklist host, not day-quest cards.
+    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Steps/
     assert_select ".lp-rpg-practice-folder__title", count: 0
   end
 
