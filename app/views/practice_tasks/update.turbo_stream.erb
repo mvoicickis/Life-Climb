@@ -1,0 +1,9 @@
+<%# frozen_string_literal: true %>
+<%= turbo_stream.update "quest_objectives_#{@folder.id}" do %>
+  <%= render "life_journeys/rpg_quest_objectives",
+        folder: @folder,
+        host: @practice,
+        tasks: @tasks,
+        create_url: @create_url,
+        qty_project: @qty_project %>
+<% end %>

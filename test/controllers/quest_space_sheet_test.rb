@@ -60,6 +60,8 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     assert_select "button.lp-qs-obj__check", count: 0
     assert_select "span.lp-qs-obj__check", minimum: 1
     assert_select ".lp-qs-detail__progress", text: /objectives done/
+    assert_select "turbo-frame#quest_objectives_#{@folder.id}"
+    assert_select "#quest_progress_#{@folder.id}"
     assert_select ".lp-rpg-practice-folder__plan-label", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-camp-folder__cta", count: 0

@@ -1,0 +1,6 @@
+<%# Progress line for quest_progress_<folder_id>. locals: folder, tasks %>
+<% folder = local_assigns.fetch(:folder) %>
+<% tasks = local_assigns.fetch(:tasks) %>
+<% done = tasks.count(&:completed?) %>
+<% total = tasks.size %>
+<%= t("strategy.rpg.objectives_done", done: done, total: total) %>

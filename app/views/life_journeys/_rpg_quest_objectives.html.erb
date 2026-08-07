@@ -1,0 +1,15 @@
+<%# Objectives list body inside quest_objectives_<folder_id> frame.
+    locals: folder, host, tasks, create_url, qty_project %>
+<% tasks = local_assigns.fetch(:tasks) %>
+<% create_url = local_assigns[:create_url] %>
+<% qty_project = local_assigns[:qty_project] %>
+<% if tasks.empty? %>
+  <p class="lp-qs-detail__empty"><%= t("strategy.rpg.objectives_empty_short") %></p>
+<% else %>
+  <% tasks.each do |task| %>
+    <%= render "life_journeys/rpg_quest_objective_row",
+          task: task,
+          create_url: create_url,
+          qty_project: qty_project %>
+  <% end %>
+<% end %>

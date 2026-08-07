@@ -90,6 +90,14 @@ export default class extends Controller {
       form.appendChild(track)
     }
 
+    form.addEventListener("turbo:submit-end", (e) => {
+      if (e.detail.success) {
+        input.value = ""
+        if (this.hasAddTrackTarget) this.addTrackTarget.checked = false
+      }
+      form.remove()
+    })
+
     document.body.appendChild(form)
     form.requestSubmit()
   }
@@ -145,8 +153,8 @@ export default class extends Controller {
       this.commitDelete()
     }, 5000)
 
-    // Destroy immediately; keep the promise so undo waits for it.
-    this.destroyPromise = this.postForm(snapshot.destroyUrl, {}, "delete", { navigate: false })
+    // Destroy via Turbo Stream so the list frame updates in place; await for undo.
+    this.destroyPromise = this.postForm(snapshot.destroyUrl, {}, "delete", { stream: true })
   }
 
   async undoDelete(event) {
@@ -182,13 +190,12 @@ export default class extends Controller {
     }
   }
 
-  postForm(url, fields, method, { navigate = true } = {}) {
+  postForm(url, fields, method, { stream = false } = {}) {
     if (!url) return null
     const form = document.createElement("form")
     form.method = "post"
     form.action = url
     form.style.display = "none"
-    if (!navigate) form.dataset.turbo = "false"
 
     const token = document.querySelector("meta[name='csrf-token']")?.content
     if (token) {
@@ -216,19 +223,25 @@ export default class extends Controller {
     })
 
     document.body.appendChild(form)
-    if (navigate === false) {
+    if (stream) {
       return fetch(url, {
         method: "POST",
         headers: {
           "X-CSRF-Token": token || "",
-          Accept: "text/html"
+          Accept: "text/vnd.turbo-stream.html, text/html, application/xhtml+xml"
         },
         body: new FormData(form),
-        credentials: "same-origin",
-        redirect: "manual"
+        credentials: "same-origin"
+      }).then(async (response) => {
+        const body = await response.text()
+        if (response.ok && body.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
+          window.Turbo.renderStreamMessage(body)
+        }
+        return response
       }).finally(() => form.remove())
     }
 
+    form.addEventListener("turbo:submit-end", () => form.remove())
     form.requestSubmit()
     return null
   }

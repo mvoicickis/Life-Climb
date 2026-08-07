@@ -24,7 +24,11 @@ class PracticeTasksController < ApplicationController
     end
 
     Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
-    redirect_to mountain_focus_path(practice), status: :see_other
+    assign_quest_stream!(practice)
+    respond_to do |format|
+      format.turbo_stream { render :create }
+      format.html { redirect_to mountain_focus_path(practice), status: :see_other }
+    end
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   rescue ActiveRecord::RecordInvalid => e
@@ -55,7 +59,11 @@ class PracticeTasksController < ApplicationController
       attrs[:title] = params.require(:title).to_s.strip if params.key?(:title)
       attrs[:track_quantity] = track_quantity_param_for(practice) if params.key?(:track_quantity)
       task.update!(attrs)
-      redirect_to mountain_focus_path(practice), status: :see_other
+      assign_quest_stream!(practice)
+      respond_to do |format|
+        format.turbo_stream { render :update }
+        format.html { redirect_to mountain_focus_path(practice), status: :see_other }
+      end
     else
       redirect_to dashboard_path, status: :see_other
     end
@@ -74,12 +82,24 @@ class PracticeTasksController < ApplicationController
     practice = task.strategy_goal
     task.destroy!
     Strategy::CascadeToDaily.call(user: current_user, life_area: practice.life_area)
-    redirect_to mountain_focus_path(practice), status: :see_other
+    assign_quest_stream!(practice)
+    respond_to do |format|
+      format.turbo_stream { render :destroy }
+      format.html { redirect_to mountain_focus_path(practice), status: :see_other }
+    end
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
   private
+
+  def assign_quest_stream!(practice)
+    @practice = practice
+    @folder = practice.parent
+    @tasks = practice.practice_tasks.ordered.to_a
+    @create_url = strategy_goal_practice_tasks_path(practice)
+    @qty_project = practice.quantified_path_project
+  end
 
   def complete_objective!(task, practice)
     project = practice.quantified_path_project
