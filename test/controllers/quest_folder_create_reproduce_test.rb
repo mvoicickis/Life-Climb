@@ -29,10 +29,11 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
     assert_select "#rpg-add-camp-#{@camp.id} form[action=?][data-turbo=false]", strategy_goals_path
-    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-qs-new__btn", count: 0
   end
 
-  test "HTML create nested quest opens Quest Space detail" do
+  test "HTML create nested quest shows climb-path quest inline" do
     assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
       post strategy_goals_path, params: {
         life_area_id: @area.id, life_journey_id: @journey.id,
@@ -42,11 +43,13 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     created = @camp.children.find_by!(title: "Vocabulary")
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
     follow_redirect!
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/
-    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
+    assert_select ".lp-climb-path__quest-add-input"
+    assert_select ".lp-qs-detail", count: 0
   end
 
-  test "turbo_stream create nested quest redirects so the sheet can refresh" do
+  test "turbo_stream create nested quest redirects so the climb path can refresh" do
     assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
       post strategy_goals_path,
            params: {
@@ -58,6 +61,8 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     created = @camp.children.find_by!(title: "Grammar")
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
     follow_redirect!
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Grammar/
+    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Grammar/
+    assert_select ".lp-qs-detail", count: 0
   end
 end

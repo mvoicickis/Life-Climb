@@ -65,7 +65,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", minimum: 1
     assert_select ".lp-climb-path"
     assert_select ".lp-climb-path__node", text: /First climb/
-    assert_select ".lp-rpg-sheet"
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-qs-board", count: 0
   end
 
   test "focusing a plan shows section carousel and nested camps for the active section" do
@@ -89,8 +90,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-climb-path__node.is-current", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-qs", 1
-    assert_select ".lp-qs-card__name", text: /Steps/
+    assert_select ".lp-qs-board", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Steps/
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 
@@ -112,8 +114,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-climb-path__node.is-current", text: /Resume/
-    assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
-    assert_select ".lp-qs-detail__add-input"
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Steps/
+    assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 

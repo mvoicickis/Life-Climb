@@ -42,11 +42,11 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     follow_redirect!
-    assert_select ".lp-qs-detail.is-open"
-    assert_select ".lp-qs-detail__title", text: /Camp/
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Camp/
     assert_select ".lp-qs-obj__text[value='Design layout']"
-    assert_select ".lp-qs-detail__add-input"
-    assert_select ".lp-qs-detail__add-btn", text: /\AAdd\z/
+    assert_select ".lp-climb-path__quest-add-input"
+    assert_select ".lp-climb-path__quest-add-btn", text: /\AAdd\z/
     assert_select ".lp-rpg-practice-folder__plan-hint", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
@@ -71,7 +71,7 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_select "button.lp-qs-obj__check", count: 0
     assert_select "span.lp-qs-obj__check[aria-label=?]", "Design layout — not done yet"
     assert_select ".lp-qs-obj__check[data-action]", count: 0
-    assert_select ".lp-qs-detail__add-btn"
+    assert_select ".lp-climb-path__quest-add-btn"
     assert_select "turbo-frame#quest_objectives_#{@camp.id}"
     assert_select "#quest_progress_#{@camp.id}"
 

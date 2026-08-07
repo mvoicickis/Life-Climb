@@ -101,6 +101,125 @@
             <% end %>
           </div>
 
+          <% leaf_folders = project ? project.children.select { |c| c.project? && !c.branch_checkpoint? }.sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
+          <% branch_folders = project ? project.children.select(&:branch_checkpoint?).sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
+          <% legacy_self_quest = project && leaf_folders.empty? && !project.branch_checkpoint? && project.children.any?(&:day?) %>
+          <% quest_folders = legacy_self_quest ? [ project ] : leaf_folders %>
+          <% show_quests = quest_folders.any? || branch_folders.any? || (playable && project&.split_eligible?) %>
+          <% if show_quests %>
+            <% folder_progs = quest_folders.map { |f| folder_objective_progress(f) } %>
+            <% quests_done = folder_progs.sum { |p| p[:done] } %>
+            <% quests_total = folder_progs.sum { |p| p[:total] } %>
+            <details class="lp-climb-path__quests"
+                     <%= "open" if selected %>>
+              <summary class="lp-climb-path__quests-summary">
+                <span class="lp-climb-path__quests-chevron" aria-hidden="true">▸</span>
+                <% if quest_folders.any? && quests_total.positive? %>
+                  <span class="lp-climb-path__quests-hint">
+                    <%= t("strategy.rpg.objectives_done_short", done: quests_done, total: quests_total) %>
+                  </span>
+                <% elsif quest_folders.any? %>
+                  <span class="lp-climb-path__quests-hint">
+                    <%= t("strategy.rpg.objectives_empty_short") %>
+                  </span>
+                <% elsif playable && project&.split_eligible? %>
+                  <span class="lp-climb-path__quests-hint">
+                    <%= t("strategy.rpg.new_quest") %>
+                  </span>
+                <% else %>
+                  <span class="lp-climb-path__quests-hint">
+                    <%= t("strategy.rpg.quest_folders_progress", done: branch_folders.count(&:completed?), total: branch_folders.size) %>
+                  </span>
+                <% end %>
+              </summary>
+
+              <div class="lp-climb-path__quests-body">
+                <% branch_folders.each do |branch| %>
+                  <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: branch.id),
+                        class: "lp-climb-path__branch",
+                        data: { turbo: true } do %>
+                    <span class="lp-climb-path__branch-title"><%= branch.title %></span>
+                    <span class="lp-climb-path__branch-meta">
+                      <%= t("strategy.rpg.quest_folders_progress",
+                            done: branch.children.select(&:project?).count(&:completed?),
+                            total: branch.children.select(&:project?).size) %>
+                    </span>
+                    <span class="lp-climb-path__branch-arrow" aria-hidden="true">›</span>
+                  <% end %>
+                <% end %>
+
+                <% quest_folders.each do |folder| %>
+                  <%= render "life_journeys/rpg_climb_path_quest",
+                        folder: folder,
+                        area: area,
+                        goal_id: goal&.id,
+                        plan_id: plan.id %>
+                <% end %>
+
+                <% if playable && project&.split_eligible? %>
+                  <details class="lp-climb-path__new-quest"
+                           id="rpg-add-camp-<%= project.id %>"
+                           data-controller="floating-create"
+                           data-action="toggle->floating-create#onToggle">
+                    <summary class="lp-climb-path__new-quest-btn"
+                             aria-label="<%= t('strategy.rpg.new_quest') %>">
+                      + <%= t("strategy.rpg.new_quest") %>
+                    </summary>
+                    <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+                      <button type="button"
+                              class="lp-rpg-float-create__backdrop"
+                              data-action="click->floating-create#close"
+                              tabindex="-1"
+                              aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+                      <div class="lp-rpg-float-create__card"
+                           data-floating-create-target="card"
+                           role="dialog"
+                           aria-modal="true"
+                           aria-labelledby="rpg-add-camp-title-<%= project.id %>">
+                        <header class="lp-rpg-float-create__head">
+                          <p class="lp-rpg-float-create__kicker"><%= project.title %></p>
+                          <h2 class="lp-rpg-float-create__heading" id="rpg-add-camp-title-<%= project.id %>">
+                            <%= t("strategy.rpg.new_quest") %>
+                          </h2>
+                        </header>
+                        <%= form_with url: strategy_goals_path,
+                              method: :post,
+                              class: "lp-rpg-float-create__form",
+                              data: { turbo: false } do %>
+                          <%= hidden_field_tag :life_area_id, area.id %>
+                          <%= hidden_field_tag :life_journey_id, @journey.id %>
+                          <%= hidden_field_tag :horizon, "project" %>
+                          <%= hidden_field_tag :parent_id, project.id %>
+                          <label class="lp-rpg-float-create__field">
+                            <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.quest_name_label") %></span>
+                            <%= text_field_tag :title, nil,
+                                  required: true,
+                                  maxlength: 120,
+                                  class: "lp-rpg-float-create__input",
+                                  placeholder: t("strategy.rpg.quest_name_placeholder"),
+                                  autocomplete: "off",
+                                  data: { floating_create_target: "title" } %>
+                          </label>
+                          <%= render "life_journeys/color_swatch_fields",
+                                form_id: "climb-new-quest-#{project.id}" %>
+                          <div class="lp-rpg-float-create__actions">
+                            <button type="button"
+                                    class="lp-rpg-float-create__btn is-cancel"
+                                    data-action="click->floating-create#close">
+                              <%= t("strategy.rpg.cancel") %>
+                            </button>
+                            <%= submit_tag t("strategy.rpg.new_quest"),
+                                  class: "lp-rpg-float-create__btn is-create" %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </details>
+                <% end %>
+              </div>
+            </details>
+          <% end %>
+
           <% if show_menu %>
             <div class="lp-climb-path__menu"
                  data-plan-card-menu-target="menu"

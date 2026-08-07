@@ -37,8 +37,10 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     assert_response :success
-    assert_select "a.lp-qs-card.has-color.is-purple", text: /Purple Volume/
+    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest.has-color.is-purple .lp-climb-path__quest-title", text: /Purple Volume/
     assert_select ".lp-color-swatches"
+    assert_select "a.lp-qs-card", count: 0
   end
 
   test "blank color_key stays nil with default card styling" do
@@ -55,8 +57,9 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     assert_response :success
-    assert_select "a.lp-qs-card", text: /Plain Volume/
-    assert_select "a.lp-qs-card.has-color", text: /Plain Volume/, count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Plain Volume/
+    assert_select ".lp-climb-path__quest.has-color", text: /Plain Volume/, count: 0
+    assert_select "a.lp-qs-card", count: 0
   end
 
   test "invalid color_key is rejected" do
@@ -116,7 +119,7 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
     assert_response :success
-    assert_select ".lp-qs-detail__head.has-color.is-coral"
+    assert_select ".lp-climb-path__quest.has-color.is-coral .lp-climb-path__quest-title", text: /Edit me/
     assert_select "#quest-edit-#{quest.id} .lp-color-swatch.is-coral input[checked]"
   end
 end

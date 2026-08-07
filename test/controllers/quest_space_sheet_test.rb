@@ -29,53 +29,76 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "board lists quest cards with New Quest" do
+  test "standalone quest board is gone; quests attach under climb path camp" do
     host = Strategy::EnsureFolderQuest.call(folder: @folder)
     host.practice_tasks.create!(user: @user, title: "Learn 15 words", position: 0, completed_at: Time.current)
     host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     assert_response :success
-    assert_select ".lp-rpg-sheet.is-quest-space"
-    assert_select ".lp-qs-board__title", text: /Your Quests/
-    assert_select ".lp-qs-card__name", text: /Vocabulary/
-    assert_select ".lp-qs-card__meta", text: /1 \/ 2 done/
-    assert_select ".lp-qs-new__btn", text: /New Quest/
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-rpg-sheet.is-quest-space", count: 0
+    assert_select ".lp-qs-board__title", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
+    assert_select "#quest_progress_#{@folder.id}", text: /1 \/ 2/
+    assert_select ".lp-climb-path__new-quest-btn", text: /New Quest/
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
-    assert_select ".lp-rpg-camp-folder__cta", count: 0
   end
 
-  test "focusing a quest opens detail with objectives and sticky add" do
+  test "focusing a quest folder shows inline objectives and add under climb path" do
     host = Strategy::EnsureFolderQuest.call(folder: @folder)
     host.practice_tasks.create!(user: @user, title: "Learn 15 words", position: 0)
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
     assert_response :success
-    assert_select ".lp-qs-detail.is-open"
-    assert_select ".lp-qs-detail__title", text: /Vocabulary/
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
     assert_select ".lp-qs-obj__text[value='Learn 15 words']"
-    assert_select ".lp-qs-detail__add-input"
-    assert_select ".lp-qs-detail__add-btn", text: /\AAdd\z/
+    assert_select ".lp-climb-path__quest-add-input"
+    assert_select ".lp-climb-path__quest-add-btn", text: /\AAdd\z/
     assert_select ".lp-qs-obj__check[data-action]", count: 0
     assert_select "button.lp-qs-obj__check", count: 0
     assert_select "span.lp-qs-obj__check", minimum: 1
-    assert_select ".lp-qs-detail__progress", text: /objectives done/
+    assert_select "#quest_progress_#{@folder.id}", text: /objectives done/
     assert_select "turbo-frame#quest_objectives_#{@folder.id}"
-    assert_select "#quest_progress_#{@folder.id}"
-    assert_select ".lp-rpg-practice-folder__plan-label", count: 0
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
-    assert_select ".lp-rpg-camp-folder__cta", count: 0
   end
 
-  test "empty path-level camp shows nest hint and New Quest" do
+  test "empty path-level camp shows New Quest under climb path without board" do
     empty = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Empty section", position: 1
     )
+    @section.complete!
     get life_journey_path(@journey, focus_id: empty.id)
     assert_response :success
-    assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
-    assert_select ".lp-qs-new__btn", text: /New Quest/
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-qs-board__title", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
+  end
+
+  test "locked camp without folders shows no quest UI" do
+    @section.complete!
+    locked = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Fogged", position: 1
+    )
+    # Ensure Resume is current via incomplete @folder's parent still current... 
+    # After completing @section, trail current moves; create an active current:
+    current = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Active", position: 0
+    )
+    # Reposition: completed section pos 0 done, current, then locked
+    @section.update!(position: 0)
+    current.update!(position: 1)
+    locked.update!(position: 2)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: current.id)
+    assert_response :success
+    assert_select ".lp-climb-path__node.is-locked", text: /Fogged/
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__quests", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
   end
 end

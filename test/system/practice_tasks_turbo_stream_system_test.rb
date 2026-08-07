@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# PR A: Quest Space objective mutations via Turbo Streams (detail stays open).
+# Quest objectives under climb path mutate via Turbo Streams (quests stay open).
 class PracticeTasksTurboStreamSystemTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -40,7 +40,7 @@ class PracticeTasksTurboStreamSystemTest < ApplicationSystemTestCase
     @host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
   end
 
-  test "add rename delete objectives via turbo streams without leaving detail" do
+  test "add rename delete objectives via turbo streams without leaving quests" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -48,14 +48,16 @@ class PracticeTasksTurboStreamSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
-    assert_selector ".lp-qs-detail.is-open", wait: 5
+    assert_selector ".lp-climb-path__quests[open]", wait: 5
+    assert_selector ".lp-climb-path__quest-title", text: /Vocabulary/i
     assert_selector "turbo-frame#quest_objectives_#{@vocab.id}", wait: 5
     assert_selector "#quest_progress_#{@vocab.id}", text: /0 \/ 2 objectives done/i
 
-    find(".lp-qs-detail__add-input", visible: :all).set("Review verbs")
-    find(".lp-qs-detail__add-btn", visible: :all).click
+    find(".lp-climb-path__quest-add-input", visible: :all).set("Review verbs")
+    find(".lp-climb-path__quest-add-btn", visible: :all).click
     assert_selector ".lp-qs-obj__text[value='Review verbs']", visible: :all, wait: 5
-    assert_selector ".lp-qs-detail.is-open"
+    assert_selector ".lp-climb-path__quests[open]"
+    assert_selector ".lp-climb-path__quest", text: /Vocabulary/i
     assert_selector "turbo-frame#quest_objectives_#{@vocab.id}"
     assert_selector "#quest_progress_#{@vocab.id}", text: /0 \/ 3 objectives done/i, wait: 5
     assert @host.practice_tasks.exists?(title: "Review verbs")
@@ -64,13 +66,13 @@ class PracticeTasksTurboStreamSystemTest < ApplicationSystemTestCase
     field.set("Review verbs daily")
     field.send_keys(:tab)
     assert_selector ".lp-qs-obj__text[value='Review verbs daily']", visible: :all, wait: 5
-    assert_selector ".lp-qs-detail.is-open"
+    assert_selector ".lp-climb-path__quests[open]"
     assert_equal "Review verbs daily", @host.practice_tasks.find_by!(title: "Review verbs daily").title
 
     row = find("[data-quest-space-row][data-title='Review verbs daily']", visible: :all)
     row.find(".lp-qs-obj__trash", visible: :all).click
     assert_no_selector ".lp-qs-obj__text[value='Review verbs daily']", wait: 5
-    assert_selector ".lp-qs-detail.is-open"
+    assert_selector ".lp-climb-path__quests[open]"
     assert_selector "turbo-frame#quest_objectives_#{@vocab.id}"
     assert_selector "#quest_progress_#{@vocab.id}", text: /0 \/ 2 objectives done/i, wait: 5
     assert_not @host.practice_tasks.exists?(title: "Review verbs daily")

@@ -43,7 +43,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     @host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
   end
 
-  test "board lists quests; open detail; back returns to board; status-only checks" do
+  test "climb path lists quests; focus_id opens objectives; status-only checks" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -52,34 +52,33 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
     assert_selector "#strategy-world.lp-rpg", wait: 5
-    assert_selector ".lp-qs-board__title", text: /Your Quests/i
-    assert_selector ".lp-qs-card__name", text: /Vocabulary/i
-    assert_selector ".lp-qs-card__name", text: /Grammar/i
-    assert_no_selector ".lp-qs-detail.is-open"
+    assert_no_selector ".lp-qs-board__title"
+    assert_selector ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]", wait: 5
+    assert_selector ".lp-climb-path__quest-title", text: /Vocabulary/i
+    assert_selector ".lp-climb-path__quest-title", text: /Grammar/i
+    assert_selector ".lp-climb-path__new-quest-btn", text: /New Quest/i
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-a.png")
 
-    find(".lp-qs-card", text: /Vocabulary/i).click
-    assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i, wait: 3
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
+    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Vocabulary/i, wait: 5
     assert_selector ".lp-qs-obj__text[value='Learn 15 new words']", visible: :all
     assert_selector ".lp-qs-obj__text[value='Flashcards']", visible: :all
-    assert_selector ".lp-qs-detail__add-input", visible: :all
-    assert_selector ".lp-qs-detail__add-btn", text: /\AAdd\z/, visible: :all
+    assert_selector ".lp-climb-path__quest-add-input", visible: :all
+    assert_selector ".lp-climb-path__quest-add-btn", text: /\AAdd\z/, visible: :all
     assert_no_selector "button.lp-qs-obj__check"
     assert_no_selector ".lp-rpg-practice-add", text: /Prepare New Quest/i
     assert_selector ".lp-climb-path__node", text: /Language skills/i, visible: :all
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
-    page.execute_script(<<~JS)
-      document.querySelector('.lp-qs-detail__back')?.click();
-    JS
-    assert_no_selector ".lp-qs-detail.is-open", wait: 3
-    assert_selector ".lp-qs-card__name", text: /Grammar/i
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
+    assert_selector ".lp-climb-path__quest-title", text: /Grammar/i, wait: 5
+    assert_selector ".lp-climb-path__quest-title", text: /Vocabulary/i
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
-    assert_selector ".lp-qs-detail.is-open", wait: 5
+    assert_selector ".lp-climb-path__quests[open]", wait: 5
     flash = @host.practice_tasks.find_by!(title: "Flashcards")
     page.execute_script(<<~JS)
       const el = document.querySelector(".lp-qs-obj__check");
@@ -87,10 +86,12 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       el?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     JS
     sleep 0.4
-    assert_not flash.reload.completed?, "Quest Space checkbox must stay read-only"
+    assert_not flash.reload.completed?, "Quest checkbox must stay read-only"
 
-    find(".lp-qs-detail__add-input", visible: :all).set("Review verbs")
-    find(".lp-qs-detail__add-btn", visible: :all).click
+    find(".lp-climb-path__quest", text: /Vocabulary/i)
+      .find(".lp-climb-path__quest-add-input", visible: :all).set("Review verbs")
+    find(".lp-climb-path__quest", text: /Vocabulary/i)
+      .find(".lp-climb-path__quest-add-btn", visible: :all).click
     assert_selector ".lp-qs-obj__text[value='Review verbs']", visible: :all, wait: 5
     assert @host.practice_tasks.exists?(title: "Review verbs")
 
@@ -105,10 +106,10 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
-    assert_selector ".lp-qs-new__btn", text: /New Quest/i, wait: 5
+    assert_selector ".lp-climb-path__new-quest-btn", text: /New Quest/i, wait: 5
 
     page.execute_script(<<~JS)
-      const trigger = document.querySelector(".lp-qs-new__btn");
+      const trigger = document.querySelector(".lp-climb-path__new-quest-btn");
       trigger?.scrollIntoView({ block: "center" });
       trigger?.click();
     JS
