@@ -6,7 +6,7 @@ module Strategy
     # (or branches) and advances the setup_flags cursor.
     class Engine
       Step = Struct.new(
-        :template_id, :kind, :question, :answer_options, :project_count, :step_count, :status,
+        :template_id, :kind, :question, :answer_options, :project_count, :step_count, :status, :notice,
         keyword_init: true
       ) do
         def completed?
@@ -19,6 +19,9 @@ module Strategy
           noop
         end
       end
+
+      NEEDS_PLAN = %w[set_effort_tier create_project create_day continue_step continue_project].freeze
+      NEEDS_PROJECT = %w[create_day continue_step].freeze
 
       def self.current(user:, journey:)
         new(user:, journey:).current
@@ -40,7 +43,10 @@ module Strategy
         data = Cursor.load(@journey)
         data = Cursor.start!(@journey, goal: goal) if data.blank?
 
-        build_step(data)
+        data, healed = sanitize_cursor!(data)
+        Cursor.save!(@journey, data) if healed
+
+        build_step(data, notice: healed ? tree_changed_notice : nil)
       end
 
       def answer!(value)
@@ -51,6 +57,9 @@ module Strategy
           @journey.reload
           data = Cursor.load(@journey)
           data = Cursor.start!(@journey, goal: goal) if data.blank?
+
+          data, healed = sanitize_cursor!(data)
+          Cursor.save!(@journey, data) if healed
 
           if data["status"] == "completed"
             return AnswerResult.new(ack: Copy.ack, next_step: build_step(data), noop: true)
@@ -87,6 +96,94 @@ module Strategy
       def resolve_goal
         area = @journey.life_area
         @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
+      end
+
+      def sanitize_cursor!(data)
+        data = data.stringify_keys
+        return [ data, false ] if data["status"] == "completed"
+
+        healed = false
+        template_id = data["template_id"].to_s
+        plan = find_owned_plan(data["plan_id"])
+        project = find_owned_project(data["project_id"])
+
+        if data["plan_id"].present? && plan.blank?
+          data = data.merge(
+            "template_id" => "create_plan",
+            "plan_id" => nil,
+            "project_id" => nil,
+            "project_count" => 0,
+            "step_count" => 0,
+            "answered_key" => nil
+          )
+          healed = true
+          template_id = "create_plan"
+          project = nil
+        elsif data["project_id"].present? && project.blank?
+          if plan.present? && NEEDS_PROJECT.include?(template_id)
+            data = data.merge(
+              "template_id" => "create_project",
+              "project_id" => nil,
+              "step_count" => 0,
+              "answered_key" => nil
+            )
+            healed = true
+            template_id = "create_project"
+          elsif plan.blank?
+            data = data.merge(
+              "template_id" => "create_plan",
+              "plan_id" => nil,
+              "project_id" => nil,
+              "project_count" => 0,
+              "step_count" => 0,
+              "answered_key" => nil
+            )
+            healed = true
+            template_id = "create_plan"
+          else
+            # Stale project id while on a plan-only step — drop the id only.
+            data = data.merge("project_id" => nil, "step_count" => 0)
+            healed = true
+          end
+        end
+
+        # Cursor points at a step that needs a parent that was never set / cleared.
+        if NEEDS_PLAN.include?(template_id) && data["plan_id"].blank?
+          data = data.merge(
+            "template_id" => "create_plan",
+            "project_id" => nil,
+            "project_count" => 0,
+            "step_count" => 0,
+            "answered_key" => nil
+          )
+          healed = true
+          template_id = "create_plan"
+        elsif NEEDS_PROJECT.include?(template_id) && data["project_id"].blank? && data["plan_id"].present?
+          data = data.merge(
+            "template_id" => "create_project",
+            "step_count" => 0,
+            "answered_key" => nil
+          )
+          healed = true
+        end
+
+        [ data, healed ]
+      end
+
+      def find_owned_plan(id)
+        return nil if id.blank?
+
+        @user.strategy_goals.for_kind("plan").find_by(id: id)
+      end
+
+      def find_owned_project(id)
+        return nil if id.blank?
+
+        @user.strategy_goals.for_kind("project").find_by(id: id)
+      end
+
+      def tree_changed_notice
+        I18n.t("strategy.companion_guide.shell.tree_changed")
       end
 
       def heal_answered_write_step(data, template)
@@ -157,7 +254,7 @@ module Strategy
         decision
       end
 
-      def build_step(data)
+      def build_step(data, notice: nil)
         data = data.stringify_keys
         if data["status"] == "completed"
           return Step.new(
@@ -167,7 +264,8 @@ module Strategy
             answer_options: nil,
             project_count: data["project_count"].to_i,
             step_count: data["step_count"].to_i,
-            status: "completed"
+            status: "completed",
+            notice: notice
           )
         end
 
@@ -179,7 +277,8 @@ module Strategy
           answer_options: answer_options_for(template),
           project_count: data["project_count"].to_i,
           step_count: data["step_count"].to_i,
-          status: data["status"]
+          status: data["status"],
+          notice: notice
         )
       end
 

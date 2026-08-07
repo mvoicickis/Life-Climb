@@ -176,6 +176,51 @@ class Strategy::CompanionGuide::EngineTest < ActiveSupport::TestCase
     assert_nil Strategy::CompanionGuide::Engine.current(user: @user, journey: @journey.reload)
   end
 
+  test "current heals to create_project when mid-flow project was deleted" do
+    answer!("Land interviews")
+    answer!("steady")
+    answer!("Polish resume")
+    answer!("Rewrite summary")
+
+    project = @goal.children.for_kind("plan").first.children.for_kind("project").first
+    project.destroy!
+
+    step = Strategy::CompanionGuide::Engine.current(user: @user, journey: @journey.reload)
+    assert_equal "create_project", step.template_id
+    assert_equal I18n.t("strategy.companion_guide.shell.tree_changed"), step.notice
+
+    cursor = Strategy::CompanionGuide::Cursor.load(@journey.reload)
+    assert_equal "create_project", cursor["template_id"]
+    assert_nil cursor["project_id"]
+    assert_equal @goal.children.for_kind("plan").first.id, cursor["plan_id"]
+  end
+
+  test "current heals to create_plan when plan was deleted" do
+    answer!("Land interviews")
+    answer!("steady")
+
+    @goal.children.for_kind("plan").destroy_all
+
+    step = Strategy::CompanionGuide::Engine.current(user: @user, journey: @journey.reload)
+    assert_equal "create_plan", step.template_id
+    assert step.notice.present?
+
+    cursor = Strategy::CompanionGuide::Cursor.load(@journey.reload)
+    assert_nil cursor["plan_id"]
+    assert_nil cursor["project_id"]
+  end
+
+  test "companion guide i18n keys exist in all app locales" do
+    %i[en de es lv ru].each do |locale|
+      I18n.with_locale(locale) do
+        assert I18n.t("strategy.companion_guide.questions.create_plan").present?, locale
+        assert I18n.t("strategy.companion_guide.errors.blank_title").present?, locale
+        assert I18n.t("strategy.companion_guide.shell.tree_changed").present?, locale
+        refute_match(/translation missing/i, I18n.t("strategy.companion_guide.acks.0"))
+      end
+    end
+  end
+
   private
 
   def answer!(value)

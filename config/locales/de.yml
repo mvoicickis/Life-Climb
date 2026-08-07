@@ -199,6 +199,51 @@ de:
           action:
             - "Den ersten kleinen Schritt tun"
             - "25 Minuten blocken und starten"
+    companion_guide:
+      questions:
+        create_plan: "Was ist der erste Plan auf diesem Berg?"
+        set_effort_tier: "Wie schwer fühlt sich dieser Plan an?"
+        create_project: "Benenne ein Projekt unter diesem Plan."
+        create_day: "Was ist ein konkreter Schritt für dieses Projekt?"
+        continue_step: "Noch einen Schritt dazu, oder weiter?"
+        continue_project: "Noch ein Projekt dazu, oder erstmal fertig?"
+      answers:
+        effort_tier:
+          light: "Leicht"
+          steady: "Stabil"
+          heavy: "Schwer"
+        continue:
+          repeat_step: "Noch einen Schritt"
+          advance_step: "Weiter"
+          repeat_project: "Noch ein Projekt"
+          advance_project: "Erstmal fertig"
+      acks:
+        "0": "Alles klar — festgehalten."
+        "1": "Gut. Auf der Karte."
+        "2": "Notiert. Mach weiter."
+        "3": "Klar. Als Nächstes."
+        "4": "Stark. Der Pfad nimmt Form an."
+        "5": "Passt. Bau weiter."
+      errors:
+        blank_title: "Gib ihm einen kurzen Namen."
+        bad_effort_tier: "Wähl leicht, stabil oder schwer."
+        bad_decision: "Sag, ob du weitermachst oder weitergehst."
+        missing_plan: "Fang zuerst mit einem Plan an."
+        missing_project: "Benenne zuerst ein Projekt."
+      shell:
+        title: "Bau mit deinem Guide"
+        kicker: "Begleiter-Guide"
+        continue: "Weiter"
+        text_placeholder: "Kurz einen Namen tippen…"
+        progress: "Projekte: %{projects} · Schritte hier: %{steps}"
+        done_title: "Erstmal fertig"
+        done_body: "Dein Plan ist auf dem Berg. Komm zurück, wenn du mehr dazu willst."
+        done_cta: "Zurück zum Berg"
+        need_journey: "Fokussier zuerst eine Reise, dann öffne den Guide."
+        need_goal: "Dein Berg braucht ein Ziel, bevor der Guide starten kann."
+        bad_answer: "Versuch die Antwort noch einmal."
+        tree_changed: "Auf dem Berg hat sich was bewegt — wir setzen an einer sicheren Stelle fort."
+        settings_link: "Begleiter-Guide testen"
     quantity:
       track: "Als Zahl verfolgen?"
       track_objective: "Fortschritt verfolgen (%{unit})?"

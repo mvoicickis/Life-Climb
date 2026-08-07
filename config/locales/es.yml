@@ -199,6 +199,51 @@ es:
           action:
             - "Dar el primer paso pequeño"
             - "Bloquear 25 minutos y empezar"
+    companion_guide:
+      questions:
+        create_plan: "¿Cuál es el primer plan en esta montaña?"
+        set_effort_tier: "¿Qué tan pesado se siente este plan?"
+        create_project: "Nombra un proyecto bajo este plan."
+        create_day: "¿Cuál es un paso concreto para este proyecto?"
+        continue_step: "¿Otro paso, o seguimos?"
+        continue_project: "¿Otro proyecto, o listo por ahora?"
+      answers:
+        effort_tier:
+          light: "Ligero"
+          steady: "Firme"
+          heavy: "Pesado"
+        continue:
+          repeat_step: "Otro paso"
+          advance_step: "Seguir"
+          repeat_project: "Otro proyecto"
+          advance_project: "Listo por ahora"
+      acks:
+        "0": "Listo — quedó anotado."
+        "1": "Bien. En el mapa."
+        "2": "Hecho. Sigue."
+        "3": "Claro. Lo siguiente."
+        "4": "Fuerte. El camino toma forma."
+        "5": "Anotado. Sigamos construyendo."
+      errors:
+        blank_title: "Ponle un nombre corto."
+        bad_effort_tier: "Elige ligero, firme o pesado."
+        bad_decision: "Elige si continúas o sigues adelante."
+        missing_plan: "Empieza primero con un plan."
+        missing_project: "Nombra primero un proyecto."
+      shell:
+        title: "Construye con tu guía"
+        kicker: "Guía compañero"
+        continue: "Continuar"
+        text_placeholder: "Escribe un nombre corto…"
+        progress: "Proyectos: %{projects} · Pasos en este: %{steps}"
+        done_title: "Listo por ahora"
+        done_body: "Tu plan está en la montaña. Vuelve cuando quieras añadir más."
+        done_cta: "Volver a la montaña"
+        need_journey: "Enfoca un viaje primero, luego abre la guía."
+        need_goal: "Tu montaña necesita una meta antes de que la guía pueda empezar."
+        bad_answer: "Intenta esa respuesta otra vez."
+        tree_changed: "Algo cambió en la montaña — retomamos desde un punto seguro."
+        settings_link: "Probar guía compañero (test)"
     quantity:
       track: "¿Seguirlo como un número?"
       track_objective: "¿Seguir progreso (%{unit})?"
