@@ -4498,20 +4498,23 @@ html[data-theme="dark"] {
   text-decoration: underline;
 }
 
-/* Compact NextAction banner — glass shell via .lp-glass; layout only here. */
-.lp-dash-next {
+/* Compact NextAction banner — glass shell via .lp-glass; layout only here.
+   Own padding beats .lp-glass--pad so Mountain/Today stay dense. */
+.lp-dash-next,
+.lp-dash-next.lp-glass--pad {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem 1rem;
+  gap: 0.4rem 0.65rem;
+  padding: 0.45rem 0.65rem;
   color: var(--lp-ink);
 }
 
 .lp-dash-next__face {
   flex: 0 0 auto;
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 999px;
   object-fit: cover;
   object-position: center 18%;
@@ -4521,19 +4524,24 @@ html[data-theme="dark"] {
 
 .lp-dash-next__title {
   margin: 0;
-  flex: 1 1 10rem;
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: var(--lp-font-display);
-  font-size: 1.05rem;
+  font-size: 0.88rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.2;
   color: var(--lp-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-dash-next .lp-cta {
   flex: 0 0 auto;
-  padding: 0.65rem 1.15rem;
-  font-size: 0.9rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
 }
 
 .lp-dash-project-check {
@@ -16498,9 +16506,9 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   box-sizing: border-box;
 }
 .lp-rpg__chrome-top {
-  padding-bottom: calc(var(--lp-rpg-gap, 0.5rem) + 0.1rem);
+  padding-bottom: var(--lp-rpg-gap, 0.5rem);
   display: grid;
-  gap: calc(var(--lp-rpg-gap, 0.5rem) + 0.15rem);
+  gap: 0.45rem;
 }
 .lp-rpg__chrome-bottom {
   padding-top: var(--lp-rpg-gap, 0.5rem);
@@ -16537,8 +16545,6 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
 }
 .lp-rpg__stage-trail.is-glance {
   max-height: 6rem;
@@ -21036,8 +21042,8 @@ a.lp-rpg-camp-row {
 .lp-climb-path__quest-empty {
   text-align: center;
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
-  font-size: 0.82rem;
-  padding: 0.85rem 0.35rem;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.25rem;
   margin: 0;
 }
 .lp-qs-obj {
@@ -21468,11 +21474,11 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path {
   position: relative;
   z-index: 1;
-  padding: 0.15rem 0.25rem 1.25rem;
+  padding: 0.15rem 0.25rem 0.75rem;
   box-sizing: border-box;
 }
 .lp-climb-path__kicker {
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.4rem;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -21482,9 +21488,9 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path__list {
   list-style: none;
   margin: 0;
-  padding: 0.35rem 0 0.75rem;
+  padding: 0.25rem 0 0.55rem;
   display: grid;
-  gap: 1.15rem;
+  gap: 0.7rem;
   position: relative;
 }
 .lp-climb-path__list::before {
@@ -21789,12 +21795,12 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 }
 .lp-climb-path__quests-body {
   display: grid;
-  gap: 0.55rem;
-  padding: 0.15rem 0 0.35rem;
+  gap: 0.4rem;
+  padding: 0.1rem 0 0.25rem;
 }
 .lp-climb-path__quest {
   position: relative;
-  padding: 0.55rem 0.65rem 0.65rem;
+  padding: 0.4rem 0.55rem 0.45rem;
   border-radius: 0.85rem;
   border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
   background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
@@ -21815,18 +21821,18 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
   display: flex;
   align-items: flex-start;
   gap: 0.45rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.2rem;
 }
 .lp-climb-path__quest-copy { flex: 1 1 auto; min-width: 0; }
 .lp-climb-path__quest-title {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: var(--lp-rpg-ink, #e2e8f0);
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .lp-climb-path__quest-progress {
-  margin: 0.15rem 0 0;
+  margin: 0.1rem 0 0;
   font-size: 0.7rem;
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
 }
@@ -21842,13 +21848,13 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 }
 .lp-climb-path__quest-objectives { min-width: 0; }
 .lp-climb-path__quest-add {
-  margin-top: 0.45rem;
+  margin-top: 0.3rem;
 }
 .lp-climb-path__quest-add-wrap {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.35rem 0.4rem 0.35rem 0.55rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.5rem;
   border-radius: 0.65rem;
   border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
   background: color-mix(in srgb, var(--lp-rpg-glass, rgba(17, 22, 28, 0.88)) 80%, transparent);
@@ -21893,7 +21899,7 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path__quest-add-btn,
 .lp-qs-detail__add-btn {
   flex: 0 0 auto;
-  min-height: 2.1rem;
+  min-height: 2.75rem;
   min-width: 3.1rem;
   padding: 0.35rem 0.7rem;
   border: 0;
