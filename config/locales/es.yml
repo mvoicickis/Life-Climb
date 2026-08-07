@@ -23,6 +23,22 @@ es:
     rename: "Renombrar"
     save_name: "Guardar nombre"
     renamed: "Renombrado."
+    next_action:
+      plan_route:
+        title: "Planifica tu ruta"
+        cta: "Empieza tu ascenso"
+      set_today:
+        title: "Define la batalla de hoy"
+        cta: "Añade el paso de hoy"
+      complete_battle:
+        title: "Gana la pelea de hoy: “%{title}”"
+        cta: "Luchar en Hoy"
+      confirm_camp:
+        title: "Revisa el campamento: “%{title}”"
+        cta: "Confirmar en Hoy"
+      day_won:
+        title: "Día ganado — sigue moviendo la montaña"
+        cta: "Volver al sendero"
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"
       fight_battle_cta: "Añadir la batalla de hoy"

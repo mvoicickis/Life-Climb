@@ -23,6 +23,22 @@ de:
     rename: "Umbenennen"
     save_name: "Name speichern"
     renamed: "Umbenannt."
+    next_action:
+      plan_route:
+        title: "Plane deine Route"
+        cta: "Starte deinen Aufstieg"
+      set_today:
+        title: "Lege den Kampf von heute fest"
+        cta: "Heutigen Schritt hinzufügen"
+      complete_battle:
+        title: "Gewinne den Kampf von heute: „%{title}“"
+        cta: "Auf Heute kämpfen"
+      confirm_camp:
+        title: "Lager prüfen: „%{title}“"
+        cta: "Auf Heute bestätigen"
+      day_won:
+        title: "Tag gewonnen — halte den Berg in Bewegung"
+        cta: "Zurück zum Pfad"
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"
       fight_battle_cta: "Heutige Schlacht hinzufügen"

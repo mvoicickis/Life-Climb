@@ -23,6 +23,22 @@ ru:
     rename: "Переименовать"
     save_name: "Сохранить имя"
     renamed: "Переименовано."
+    next_action:
+      plan_route:
+        title: "Спланируй маршрут"
+        cta: "Начни подъём"
+      set_today:
+        title: "Задай сегодняшнюю битву"
+        cta: "Добавь сегодняшний шаг"
+      complete_battle:
+        title: "Выиграй сегодняшний бой: «%{title}»"
+        cta: "Сразиться в Сегодня"
+      confirm_camp:
+        title: "Проверь лагерь: «%{title}»"
+        cta: "Подтверди в Сегодня"
+      day_won:
+        title: "День выигран — двигай гору дальше"
+        cta: "Назад на тропу"
     next_up:
       add_battle_cta: "Добавить сегодняшнюю битву"
       fight_battle_cta: "Добавить сегодняшнюю битву"
