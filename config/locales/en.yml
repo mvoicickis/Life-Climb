@@ -724,7 +724,6 @@ en:
         need_goal: "Your mountain needs a goal before the guide can start."
         bad_answer: "Try that answer again."
         tree_changed: "Something on the mountain moved — let’s pick up from a safe spot."
-        settings_link: "Try companion guide (test)"
     quantity:
       track: "Track this as a number?"
       track_objective: "Track progress (%{unit})?"

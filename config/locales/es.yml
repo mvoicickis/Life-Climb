@@ -243,7 +243,6 @@ es:
         need_goal: "Tu montaña necesita una meta antes de que la guía pueda empezar."
         bad_answer: "Intenta esa respuesta otra vez."
         tree_changed: "Algo cambió en la montaña — retomamos desde un punto seguro."
-        settings_link: "Probar guía compañero (test)"
     quantity:
       track: "¿Seguirlo como un número?"
       track_objective: "¿Seguir progreso (%{unit})?"

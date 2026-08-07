@@ -17073,6 +17073,23 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg-add.is-path > summary {
   min-height: 2.7rem;
 }
+/* Companion guide entry: same affordance as the old details/summary "+ Path". */
+a.lp-rpg-add.is-guide-entry {
+  list-style: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--rpg-green);
+  min-height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+a.lp-rpg-add.is-guide-entry.is-path {
+  min-height: 2.7rem;
+  width: 100%;
+}
 
 .lp-rpg-climb.is-hero {
   min-height: 0;

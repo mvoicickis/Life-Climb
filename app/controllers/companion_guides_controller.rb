@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-# Thin UI shell around Strategy::CompanionGuide::Engine.
-# Entry is temporary via Settings; Mountain/Today polish is PR4.
+# UI shell around Strategy::CompanionGuide::Engine.
+# Mountain "+ Path" is the real entry (new_plan: 1); FirstClimb owns empty spine.
 class CompanionGuidesController < ApplicationController
   before_action :require_planning_v2
   before_action :require_journey!
 
   def show
+    maybe_restart_for_new_plan!
     @step = Strategy::CompanionGuide::Engine.current(user: current_user, journey: @journey)
     if @step.blank?
       redirect_to fallback_path, alert: t("strategy.companion_guide.shell.need_goal"), status: :see_other
@@ -39,6 +40,13 @@ class CompanionGuidesController < ApplicationController
   end
 
   private
+
+  def maybe_restart_for_new_plan!
+    return unless params[:new_plan].present?
+
+    # Engine.restart! no-ops while in_progress — never wipes a live run.
+    Strategy::CompanionGuide::Engine.restart!(user: current_user, journey: @journey)
+  end
 
   def render_answer_error(message, attempted_value:)
     @error = message

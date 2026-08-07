@@ -311,7 +311,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path__quest-title", text: /Steps/i
     assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
-    assert_select ".lp-rpg-add.is-path", text: /Path|plan/i
+    assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
   end
 
   test "tapping a plan focuses missions under that checkpoint" do

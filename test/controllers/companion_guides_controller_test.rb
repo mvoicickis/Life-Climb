@@ -92,11 +92,65 @@ class CompanionGuidesControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("strategy.companion_guide.shell.need_journey"), flash[:alert]
   end
 
-  test "settings includes temporary companion guide link" do
+  test "settings does not include temporary companion guide link" do
     get settings_path
     assert_response :success
-    assert_select "a[href=?]", companion_guide_path
-    assert_match I18n.t("strategy.companion_guide.shell.settings_link"), response.body
+    assert_select "a[href=?]", companion_guide_path, count: 0
+    assert_select "a[href=?]", companion_guide_path(new_plan: 1), count: 0
+  end
+
+  test "mountain + Path links to companion guide with new_plan" do
+    # FirstClimb owns the empty spine; + Path appears once a Plan exists.
+    @user.strategy_goals.create!(
+      life_area: @journey.life_area,
+      life_journey: @journey,
+      parent: @goal,
+      horizon: "plan",
+      title: "Existing path",
+      position: 0
+    )
+
+    get life_journey_path(@journey)
+    assert_response :success
+    assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
+  end
+
+  test "new_plan after completed restarts guide without touching prior plans" do
+    walk_to_completed!
+    plan_count = @goal.children.for_kind("plan").count
+    project_count = @user.strategy_goals.for_kind("project").count
+    prior_plan_ids = @goal.children.for_kind("plan").pluck(:id).sort
+
+    get companion_guide_path(new_plan: 1)
+    assert_response :success
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.create_plan")
+
+    cursor = Strategy::CompanionGuide::Cursor.load(@journey.reload)
+    assert_equal "in_progress", cursor["status"]
+    assert_equal "create_plan", cursor["template_id"]
+    assert_nil cursor["plan_id"]
+
+    assert_equal plan_count, @goal.children.for_kind("plan").count
+    assert_equal project_count, @user.strategy_goals.for_kind("project").count
+    assert_equal prior_plan_ids, @goal.children.for_kind("plan").pluck(:id).sort
+  end
+
+  test "new_plan while in_progress does not reset the guide" do
+    post companion_guide_path, params: { value: "Land interviews" }
+    follow_redirect!
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.set_effort_tier")
+
+    plan = @goal.children.for_kind("plan").ordered.last
+    cursor_before = Strategy::CompanionGuide::Cursor.load(@journey.reload)
+
+    get companion_guide_path(new_plan: 1)
+    assert_response :success
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.set_effort_tier")
+
+    cursor_after = Strategy::CompanionGuide::Cursor.load(@journey.reload)
+    assert_equal cursor_before, cursor_after
+    assert_equal plan.id, cursor_after["plan_id"]
+    assert_equal "set_effort_tier", cursor_after["template_id"]
   end
 
   test "blank title re-renders same step with preserved value and specific error" do

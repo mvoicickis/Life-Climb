@@ -31,6 +31,13 @@ module Strategy
         new(user:, journey:).answer!(value)
       end
 
+      # Fresh guide run for "add another Plan". Only resets the cursor blob —
+      # never touches StrategyGoal rows from a prior completed run.
+      # No-ops (returns current) when a run is already in_progress.
+      def self.restart!(user:, journey:)
+        new(user:, journey:).restart!
+      end
+
       def initialize(user:, journey:)
         @user = user
         @journey = journey
@@ -47,6 +54,17 @@ module Strategy
         Cursor.save!(@journey, data) if healed
 
         build_step(data, notice: healed ? tree_changed_notice : nil)
+      end
+
+      def restart!
+        goal = resolve_goal
+        raise ArgumentError, I18n.t("strategy.need_goal") if goal.blank?
+
+        data = Cursor.load(@journey)
+        if data.blank? || data["status"] == "completed"
+          Cursor.start!(@journey, goal: goal)
+        end
+        current
       end
 
       def answer!(value)

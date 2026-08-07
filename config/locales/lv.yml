@@ -243,7 +243,6 @@ lv:
         need_goal: "Tavam kalnam vajag mērķi, pirms ceļvedis var sākt."
         bad_answer: "Pamēģini atbildi vēlreiz."
         tree_changed: "Kalnā kaut kas mainījās — turpinām no drošas vietas."
-        settings_link: "Izmēģināt pavadoni-ceļvedi (tests)"
     quantity:
       track: "Sekot kā skaitlim?"
       track_objective: "Sekot progresam (%{unit})?"
