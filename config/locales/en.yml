@@ -755,6 +755,22 @@ en:
       build: "Build"
       months: "Months"
       battle: "Battle"
+    next_action:
+      plan_route:
+        title: "Plan your route"
+        cta: "Start your climb"
+      set_today:
+        title: "Set today’s battle"
+        cta: "Add today’s move"
+      complete_battle:
+        title: "Win today’s fight: “%{title}”"
+        cta: "Fight on Today"
+      confirm_camp:
+        title: "Check camp: “%{title}”"
+        cta: "Confirm on Today"
+      day_won:
+        title: "Day won — keep the mountain moving"
+        cta: "Back to the trail"
     next_up:
       kicker: "Next up"
       create_goal_title: "Lock your season goal"

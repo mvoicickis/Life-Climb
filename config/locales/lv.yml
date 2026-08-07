@@ -23,6 +23,22 @@ lv:
     rename: "Pārdēvēt"
     save_name: "Saglabāt nosaukumu"
     renamed: "Pārdēvēts."
+    next_action:
+      plan_route:
+        title: "Ieplāno savu maršrutu"
+        cta: "Sāc savu kāpšanu"
+      set_today:
+        title: "Nosaki šodienas kauju"
+        cta: "Pievieno šodienas soli"
+      complete_battle:
+        title: "Uzvari šodienas cīņā: “%{title}”"
+        cta: "Cīnīties Šodienā"
+      confirm_camp:
+        title: "Pārbaudi nometni: “%{title}”"
+        cta: "Apstiprini Šodienā"
+      day_won:
+        title: "Diena uzvarēta — turi kalnu kustībā"
+        cta: "Atpakaļ uz taku"
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
       fight_battle_cta: "Pievienot šodienas kauju"
