@@ -65,7 +65,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", minimum: 1
     assert_select ".lp-climb-path"
     assert_select ".lp-climb-path__node", text: /First climb/
-    assert_select ".lp-rpg-sheet"
+    assert_select ".lp-rpg__stage-battle", count: 0
+    assert_select ".lp-qs-board", count: 0
   end
 
   test "focusing a plan shows section carousel and nested camps for the active section" do
