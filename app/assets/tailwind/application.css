@@ -16536,7 +16536,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   min-height: 0;
   height: 100%;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: minmax(7.5rem, 0.42fr) auto minmax(12rem, 0.58fr);
   gap: var(--lp-rpg-gap, 0.5rem);
   overflow: hidden;
 }
@@ -16546,19 +16546,25 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
 }
 .lp-rpg__stage-trail.is-glance {
   max-height: 6rem;
   overflow: hidden;
+  mask-image: none;
+  -webkit-mask-image: none;
 }
 .lp-rpg__stage-sections {
   min-height: 0;
   overflow: hidden;
 }
-.lp-rpg.is-focus-phase .lp-rpg__stage-sections {
-  /* Let section arrows sit outside the track without being clipped. */
+.lp-rpg.is-focus-phase .lp-rpg__stage-sections.lp-rpg__stage-trail {
   max-height: none;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .lp-rpg__stage-battle {
   min-height: 0;
@@ -21917,4 +21923,278 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
   font-size: 0.78rem;
   padding: 0.45rem 0.8rem;
   cursor: pointer;
+}
+
+/* ——— Vertical climb path (replaces horizontal section carousel) ——— */
+.lp-climb-path {
+  position: relative;
+  z-index: 1;
+  padding: 0.15rem 0.25rem 1.25rem;
+  box-sizing: border-box;
+}
+.lp-climb-path__kicker {
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+}
+.lp-climb-path__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0 0.75rem;
+  display: grid;
+  gap: 1.15rem;
+  position: relative;
+}
+.lp-climb-path__list::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.4rem;
+  bottom: 2.5rem;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--lp-rpg-green, #57d35b) 55%, transparent),
+    rgba(148, 163, 184, 0.28) 55%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.lp-climb-path__node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  width: min(100%, 19rem);
+}
+.lp-climb-path__node.is-left {
+  justify-self: start;
+  margin-inline-start: 0.15rem;
+}
+.lp-climb-path__node.is-right {
+  justify-self: end;
+  margin-inline-end: 0.15rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.lp-climb-path__node.is-right .lp-climb-path__pin {
+  order: 2;
+}
+.lp-climb-path__node.is-right .lp-climb-path__card {
+  order: 1;
+  text-align: right;
+}
+.lp-climb-path__node.is-right .lp-climb-path__link {
+  align-items: flex-end;
+}
+.lp-climb-path__node.is-right .lp-climb-path__menu-btn {
+  left: 0.35rem;
+  right: auto;
+}
+.lp-climb-path__pin {
+  width: 2.35rem;
+  height: 2.35rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.lp-climb-path__pin.is-current {
+  width: 3.35rem;
+  height: 3.35rem;
+}
+.lp-climb-path__mark {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 2px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.12));
+  background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.lp-climb-path__mark.is-done {
+  background: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 28%, #11161c);
+  border-color: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 70%, transparent);
+  color: #d8ffe0;
+  font-weight: 800;
+}
+.lp-climb-path__mark.is-current {
+  width: 3.1rem;
+  height: 3.1rem;
+  padding: 0;
+  overflow: hidden;
+  border-width: 2.5px;
+  border-color: var(--lp-rpg-gold, #d4a017);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-rpg-gold, #d4a017) 28%, transparent),
+    0 12px 28px rgba(0, 0, 0, 0.35);
+}
+.lp-climb-path__face {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  display: block;
+  background: #171c22;
+}
+.lp-climb-path__mark.is-locked {
+  opacity: 0.72;
+  filter: saturate(0.7);
+  background: rgba(15, 18, 24, 0.72);
+}
+.lp-climb-path__mark.is-new {
+  font-weight: 800;
+  color: var(--lp-rpg-gold, #d4a017);
+  border-style: dashed;
+}
+.lp-climb-path__card {
+  position: relative;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
+  box-shadow: var(--lp-rpg-glass-shadow, 0 14px 36px rgba(0, 0, 0, 0.28));
+}
+.lp-climb-path__card.is-current,
+.lp-climb-path__card.is-selected {
+  border-color: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-rpg-green, #57d35b) 22%, transparent),
+    var(--lp-rpg-glass-shadow, 0 14px 36px rgba(0, 0, 0, 0.28));
+}
+.lp-climb-path__card.is-locked {
+  opacity: 0.78;
+}
+.lp-climb-path__card.is-done {
+  opacity: 0.92;
+}
+.lp-climb-path__link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.18rem;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  padding-inline-end: 1.4rem;
+}
+.lp-climb-path__link.is-static {
+  cursor: default;
+  padding-inline-end: 1.4rem;
+}
+.lp-climb-path__badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.78));
+}
+.lp-climb-path__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--lp-rpg-ink, #f3f6f8);
+  max-width: 12.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-climb-path__meta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-rpg-muted, rgba(203, 213, 225, 0.74));
+}
+.lp-climb-path__meta.is-done {
+  color: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 75%, #fff);
+}
+.lp-climb-path__meta.is-locked {
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
+}
+.lp-climb-path__meta.is-quantity {
+  color: var(--lp-rpg-gold, #d4a017);
+}
+.lp-climb-path__menu-btn {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--lp-rpg-muted, rgba(203, 213, 225, 0.74));
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.lp-climb-path__menu-btn:focus-visible {
+  outline: 2px solid var(--lp-rpg-green, #57d35b);
+  outline-offset: 1px;
+}
+.lp-climb-path__menu {
+  min-width: 9.5rem;
+  padding: 0.35rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.12));
+  background: var(--lp-rpg-glass-strong, rgba(8, 12, 18, 0.94));
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+  display: grid;
+  gap: 0.15rem;
+  z-index: 100;
+}
+.lp-climb-path__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--lp-rpg-ink, #f3f6f8);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.55rem 0.6rem;
+  cursor: pointer;
+}
+.lp-climb-path__menu-item:hover,
+.lp-climb-path__menu-item:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+.lp-climb-path__menu-item.is-danger {
+  color: #fca5a5;
+}
+.lp-climb-path__new {
+  min-width: 0;
+}
+.lp-climb-path__new-btn {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.85rem;
+  border: 1px dashed color-mix(in srgb, var(--lp-rpg-gold, #d4a017) 45%, transparent);
+  background: color-mix(in srgb, var(--lp-rpg-gold, #d4a017) 10%, transparent);
+  color: var(--lp-rpg-gold, #d4a017);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.lp-climb-path__new-btn::-webkit-details-marker {
+  display: none;
+}
+.lp-climb-path.is-empty .lp-climb-path__list::before {
+  display: none;
 }

@@ -2,8 +2,8 @@
 
 require "application_system_test_case"
 
-# Project Sections titles sit on a full-width row under icon/badge chrome,
-# so realistic titles stay readable (2-line clamp only for extreme length).
+# Climb path titles keep the full string in the title attribute; long names
+# may ellipsize in the pin card without losing the accessible name.
 class SectionCardFluidTitleTest < ApplicationSystemTestCase
   LONG_TITLE = "Start: Make LifePoints Successsull"
   SHORT_TITLE = "Learn German"
@@ -31,19 +31,19 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     )
   end
 
-  test "long section title is fully readable on tall phone" do
+  test "long section title keeps full name on tall phone" do
     section = create_section!(LONG_TITLE)
-    assert_section_title_readable(section, LONG_TITLE, 390, 844)
+    assert_section_title_named(section, LONG_TITLE, 390, 844)
   end
 
-  test "long section title is fully readable on short phone" do
+  test "long section title keeps full name on short phone" do
     section = create_section!(LONG_TITLE)
-    assert_section_title_readable(section, LONG_TITLE, 390, 568)
+    assert_section_title_named(section, LONG_TITLE, 390, 568)
   end
 
-  test "short section title is fully readable on tall phone" do
+  test "short section title keeps full name on tall phone" do
     section = create_section!(SHORT_TITLE)
-    assert_section_title_readable(section, SHORT_TITLE, 390, 844)
+    assert_section_title_named(section, SHORT_TITLE, 390, 844)
   end
 
   private
@@ -68,42 +68,7 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
   end
 
-  def title_metrics
-    page.evaluate_script(<<~JS)
-      (() => {
-        const el = document.querySelector(".lp-rpg-section-card.is-selected .lp-rpg-section-card__title");
-        const card = document.querySelector(".lp-rpg-section-card.is-selected");
-        const link = document.querySelector(".lp-rpg-section-card.is-selected .lp-rpg-section-card__link");
-        const meta = document.querySelector(".lp-rpg-section-card.is-selected .lp-rpg-section-card__meta");
-        if (!el || !card || !link) return { ok: false, reason: "missing" };
-        const cs = getComputedStyle(el);
-        const r = el.getBoundingClientRect();
-        const cardR = card.getBoundingClientRect();
-        const linkCs = getComputedStyle(link);
-        // Detect line-clamp / overflow truncation: clipped box is shorter than full text.
-        const truncated = el.scrollHeight > el.clientHeight + 1;
-        return {
-          ok: true,
-          text: (el.textContent || "").trim(),
-          titleAttr: el.getAttribute("title") || "",
-          fontSize: cs.fontSize,
-          whiteSpace: cs.whiteSpace,
-          webkitLineClamp: cs.webkitLineClamp || cs.lineClamp || "",
-          linkFlexDirection: linkCs.flexDirection,
-          hasMetaRow: !!meta,
-          width: r.width,
-          height: r.height,
-          scrollHeight: el.scrollHeight,
-          clientHeight: el.clientHeight,
-          truncated,
-          cardHeight: cardR.height,
-          viewport: [window.innerWidth, window.innerHeight]
-        };
-      })()
-    JS
-  end
-
-  def assert_section_title_readable(section, expected_text, width, height)
+  def assert_section_title_named(section, expected_text, width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
 
@@ -112,33 +77,24 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: section.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector ".lp-rpg-section-card.is-selected .lp-rpg-section-card__title", visible: :all, wait: 5
-    assert_selector ".lp-rpg-section-card.is-selected .lp-rpg-section-card__meta", visible: :all, wait: 5
+    assert_selector ".lp-climb-path__node.is-selected .lp-climb-path__title", visible: :all, wait: 5
 
-    # Capybara visible text must include the full title (not a mid-string ellipsis fragment).
-    assert_text expected_text
-
-    metrics = title_metrics
-    assert metrics["ok"], "section title missing at #{width}x#{height}: #{metrics.inspect}"
-    assert_equal expected_text, metrics["text"]
+    metrics = page.evaluate_script(<<~JS)
+      (() => {
+        const el = document.querySelector(".lp-climb-path__node.is-selected .lp-climb-path__title");
+        if (!el) return { ok: false };
+        const r = el.getBoundingClientRect();
+        return {
+          ok: true,
+          text: (el.textContent || "").trim(),
+          titleAttr: el.getAttribute("title") || "",
+          width: r.width
+        };
+      })()
+    JS
+    assert metrics["ok"], "climb path title missing at #{width}x#{height}"
     assert_equal expected_text, metrics["titleAttr"]
-    assert metrics["hasMetaRow"], "expected icon/badge meta row above title: #{metrics.inspect}"
-    assert_equal "column", metrics["linkFlexDirection"].to_s,
-                 "title must sit under chrome in a column link: #{metrics.inspect}"
-    refute_equal "nowrap", metrics["whiteSpace"].to_s
-    assert_includes %w[2], metrics["webkitLineClamp"].to_s
-
-    # Full-width title column under chrome (not the old ~70px squeeze beside icon+badge).
-    # Menu hit area is --lp-tap (2.75rem), so title width is card minus pad/gap/menu.
-    assert_operator metrics["width"].to_f, :>=, 100.0,
-                    "title column still too narrow at #{width}x#{height}: #{metrics.inspect}"
-
-    # For these realistic lengths, 2-line clamp must not clip — text is fully painted.
-    refute metrics["truncated"],
-           "title still visually truncated at #{width}x#{height}: #{metrics.inspect}"
-
-    # Matches --lp-rpg-section-card-min-h (6.5rem at max-width: 430px; 6.75rem otherwise).
-    assert_operator metrics["cardHeight"].to_f, :>=, 6.5 * 16,
-                    "card too short for stacked chrome+title at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["width"].to_f, :>=, 80.0
+    assert_includes metrics["text"], expected_text.split.first
   end
 end

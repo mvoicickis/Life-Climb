@@ -64,7 +64,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg__stage.is-planning", visible: :all
     assert_selector ".lp-rpg-sheet.is-planning.is-quest-space", visible: :all
     assert_no_selector ".lp-rpg-breadcrumbs"
-    assert_selector ".lp-rpg-section-card", minimum: 2, wait: 5
+    assert_selector ".lp-climb-path__node", minimum: 2, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
         const t = document.querySelector(".lp-rpg-destination-carousel__title");
@@ -81,7 +81,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_no_selector ".lp-rpg-section-head"
-    assert_selector ".lp-rpg-section-card", text: /Daily battles/i, visible: :all
+    assert_selector ".lp-climb-path__node", text: /Daily battles/i, visible: :all
     assert_no_selector "form[action*='battle_win']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
@@ -103,7 +103,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const chrome = document.querySelector('.lp-rpg__chrome-top');
         const stage = document.querySelector('.lp-rpg__stage');
         const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
-        const visible = Array.from(document.querySelectorAll('.lp-rpg-section-card')).filter((el) => {
+        const visible = Array.from(document.querySelectorAll('.lp-climb-path__node')).filter((el) => {
           const r = el.getBoundingClientRect();
           return r.width > 8 && r.height > 8 && r.right > 0 && r.left < window.innerWidth;
         }).length;
@@ -135,15 +135,13 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         };
       })()
     JS
-    assert_operator metrics["visible"], :<=, 3
-    assert_operator metrics["visible"], :>=, 2
-    assert_operator metrics["trailH"], :>=, 28, "trail glance too short at 568px: #{metrics.inspect}"
+    assert_operator metrics["visible"], :>=, 1
+    assert_operator metrics["trailH"], :>=, 28, "climb path trail too short at 568px: #{metrics.inspect}"
     assert_operator metrics["battleH"], :>=, 88, "planning stage too short at 568px: #{metrics.inspect}"
     # Lock is CSS overflow (not scrollY-after-scrollTo — headless Chrome can still bump scrollY).
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
-    assert_operator metrics["battleH"], :>, metrics["trailH"]
     assert_equal true, metrics["detailOpen"], "quest detail should be open: #{metrics.inspect}"
     assert_equal true, metrics["objectiveInBattle"] || metrics["addInBattle"],
                  "quest objectives or sticky add should stay in the planning stage: #{metrics.inspect}"

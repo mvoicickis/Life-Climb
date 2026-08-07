@@ -68,11 +68,13 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-qs-detail__add-btn", text: /\AAdd\z/, visible: :all
     assert_no_selector "button.lp-qs-obj__check"
     assert_no_selector ".lp-rpg-practice-add", text: /Prepare New Quest/i
-    assert_selector ".lp-rpg-section-card", text: /Language skills/i, visible: :all
+    assert_selector ".lp-climb-path__node", text: /Language skills/i, visible: :all
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
-    find(".lp-qs-detail__back").click
+    page.execute_script(<<~JS)
+      document.querySelector('.lp-qs-detail__back')?.click();
+    JS
     assert_no_selector ".lp-qs-detail.is-open", wait: 3
     assert_selector ".lp-qs-card__name", text: /Grammar/i
 

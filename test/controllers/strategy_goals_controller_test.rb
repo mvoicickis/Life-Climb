@@ -95,7 +95,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
     assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Vocabulary/i
-    assert_select ".lp-rpg-section-card.is-current", text: /Learn German/i
+    assert_select ".lp-climb-path__node.is-current", text: /Learn German/i
     assert_select ".lp-rpg-sheet.is-quest-space"
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
@@ -198,12 +198,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_a_leaf.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-sections"
+    assert_select ".lp-climb-path"
     assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
-    assert_select ".lp-rpg-section-card.is-current", text: /Project One/i
-    assert_select ".lp-rpg-section-card", text: /Project Two/i
+    assert_select ".lp-climb-path__node.is-current", text: /Project One/i
+    assert_select ".lp-climb-path__node", text: /Project Two/i
     assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
@@ -227,7 +227,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Plan/i
-    assert_select ".lp-rpg-section-card", text: /Auth Mission/i
+    assert_select ".lp-climb-path__node", text: /Auth Mission/i
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
   end
 
@@ -281,7 +281,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
-    assert_select ".lp-rpg-section-card", minimum: 3
+    assert_select ".lp-climb-path__node", minimum: 3
     assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_select "#strategy-camp-notebook", count: 0
   end
@@ -359,8 +359,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_not @user.strategy_goals.exists?(id: junk.id)
 
     follow_redirect!
-    assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-current", text: /Keep me/
-    assert_select ".lp-rpg-section-card", text: /wewe/, count: 0
+    assert_select ".lp-climb-path__node.is-selected, .lp-climb-path__node.is-current", text: /Keep me/
+    assert_select ".lp-climb-path__node", text: /wewe/, count: 0
   end
 
   test "creating a checkpoint redirects with goal plan and focus so it stays visible" do
@@ -391,7 +391,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-selected, .lp-rpg-section-card.is-locked", text: /Launch prep/
+    assert_select ".lp-climb-path__node.is-selected, .lp-climb-path__node.is-locked", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0

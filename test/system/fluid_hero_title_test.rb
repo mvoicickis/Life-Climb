@@ -18,7 +18,7 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
       closer_percent: 20,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     plan = @goal.children.create!(

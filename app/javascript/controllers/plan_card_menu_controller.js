@@ -141,7 +141,7 @@ export default class extends Controller {
     menu.style.top = `${Math.round(rect.bottom + 4)}px`
     menu.style.left = "auto"
     menu.style.right = `${Math.round(window.innerWidth - rect.right)}px`
-    menu.style.zIndex = "80"
+    menu.style.zIndex = "100"
 
     requestAnimationFrame(() => {
       const menuRect = menu.getBoundingClientRect()

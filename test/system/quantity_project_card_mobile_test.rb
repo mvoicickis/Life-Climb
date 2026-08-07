@@ -50,19 +50,19 @@ class QuantityProjectCardMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @quant.id)
-    assert_selector ".lp-rpg-sections", wait: 5
-    assert_selector ".lp-rpg-section-card.is-current .lp-rpg-section-card__status.is-quantity",
+    assert_selector ".lp-climb-path", wait: 5
+    assert_selector ".lp-climb-path__node.is-current .lp-climb-path__meta.is-quantity",
                     text: /7\s*\/\s*700\s*pages/i, wait: 5
-    assert_selector ".lp-rpg-section-card", text: /Launch site/i
+    assert_selector ".lp-climb-path__node", text: /Launch site/i
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quantity-section-cards-mobile.png")
 
-    # Card geometry stays within the sections rail (no horizontal overflow blowout).
+    # Card stays inside the climb path scroll region (no horizontal blowout).
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const rail = document.querySelector(".lp-rpg-sections__rail");
-        const card = document.querySelector(".lp-rpg-section-card.is-current");
+        const rail = document.querySelector(".lp-climb-path");
+        const card = document.querySelector(".lp-climb-path__node.is-current");
         if (!rail || !card) return { ok: false };
         const rr = rail.getBoundingClientRect();
         const cr = card.getBoundingClientRect();
@@ -70,13 +70,13 @@ class QuantityProjectCardMobileTest < ApplicationSystemTestCase
           ok: true,
           cardWidth: Math.round(cr.width),
           railWidth: Math.round(rr.width),
-          withinRail: cr.left >= rr.left - 2 && cr.right <= rr.right + 24
+          withinRail: cr.left >= rr.left - 8 && cr.right <= rr.right + 8
         };
       })()
     JS
     assert metrics["ok"]
-    assert metrics["withinRail"], "quantified card should stay within sections rail"
+    assert metrics["withinRail"], "quantified card should stay within climb path"
     assert_operator metrics["cardWidth"], :>, 120
-    assert_operator metrics["cardWidth"], :<, metrics["railWidth"]
+    assert_operator metrics["cardWidth"], :<=, metrics["railWidth"] + 8
   end
 end

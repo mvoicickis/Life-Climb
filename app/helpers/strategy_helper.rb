@@ -8,6 +8,8 @@ module StrategyHelper
   }.freeze
 
   VISIBLE_PER_LEVEL = 3
+  # Vertical climb path: all done + current + this many locked ahead (DOM omit beyond).
+  CLIMB_PATH_LOCKED_AHEAD = 3
 
   # Center trail slots — slightly compressed so the climb reads as one trail.
   GOAL_SLOT = [ 50, 14 ].freeze
@@ -213,6 +215,25 @@ module StrategyHelper
     selected = selected_id.present? ? list.find { |n| n.id == selected_id } : nil
     rest = selected ? list.reject { |n| n.id == selected.id } : list
     (selected ? [ selected ] + rest : rest).first(limit)
+  end
+
+  # Display window for the vertical climb path. Does not mutate Strategy::Trail —
+  # full trail.nodes stay available for progress / battle focus.
+  def strategy_climb_path_nodes(trail, locked_ahead: CLIMB_PATH_LOCKED_AHEAD)
+    nodes = Array(trail&.nodes)
+    return nodes if nodes.empty?
+
+    ahead = [ locked_ahead.to_i, 0 ].max
+    current_index = nodes.index { |n| n.state == :current }
+    if current_index.nil?
+      # All done (or empty current): show everything completed, no locked peek.
+      return nodes.select { |n| n.state == :done }
+    end
+
+    locked_start = current_index + 1
+    locked_end = [ locked_start + ahead - 1, nodes.length - 1 ].min
+    keep_through = locked_start <= locked_end ? locked_end : current_index
+    nodes[0..keep_through]
   end
 
   def strategy_trail_wire(from_slot, to_slot)

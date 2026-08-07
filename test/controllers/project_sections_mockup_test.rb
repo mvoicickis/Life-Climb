@@ -29,35 +29,29 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "carousel matches mockup skeleton with New Project" do
+  test "climb path shows current card skeleton with New Project" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-rpg-sections__kicker", text: /Project Sections/i
-    assert_select ".lp-rpg-section-card.is-current.is-selected", text: /MVP/
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__top"
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__menu-btn"
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__icon"
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__badge", text: "1"
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__meter"
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__status", text: /Active/i
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__pct"
-    assert_select ".lp-rpg-sections__new-btn", text: /New Project/
+    assert_select ".lp-climb-path__kicker", text: /Project Sections/i
+    assert_select ".lp-climb-path__node.is-current.is-selected", text: /MVP/
+    assert_select ".lp-climb-path__node.is-current .lp-climb-path__menu-btn"
+    assert_select ".lp-climb-path__node.is-current .lp-climb-path__mark"
+    assert_select ".lp-climb-path__node.is-current .lp-climb-path__badge", text: "1"
+    assert_select ".lp-climb-path__node.is-current .lp-climb-path__meta", text: /Active/i
+    assert_select ".lp-climb-path__new-btn", text: /New Project/
   end
 
-  test "locked cards keep dimmed meter and show menu" do
+  test "locked cards stay non-navigable and show menu" do
     @locked.update!(title: "Today's Page")
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title", text: "Today's Page"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title[title=?]", "Today's Page"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
-    assert_select ".lp-rpg-sections__item.is-locked.is-menu-enabled .lp-rpg-section-card__menu-btn"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__status.is-locked", text: /Locked/i
-    assert_select ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link", count: 0
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__title", text: "Today's Page"
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__title[title=?]", "Today's Page"
+    assert_select ".lp-climb-path__node.is-locked.is-menu-enabled .lp-climb-path__menu-btn", minimum: 1
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__meta.is-locked", text: /Locked/i
+    assert_select ".lp-climb-path__node.is-locked a.lp-climb-path__link", count: 0
   end
 
   test "done cards have no menu" do
@@ -65,10 +59,10 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-rpg-section-card.is-done", text: /MVP/
-    assert_select ".lp-rpg-section-card.is-done .lp-rpg-section-card__menu-btn", count: 0
-    assert_select ".lp-rpg-section-card.is-current", text: /Launch/
-    assert_select ".lp-rpg-section-card.is-current .lp-rpg-section-card__menu-btn", minimum: 1
+    assert_select ".lp-climb-path__node.is-done", text: /MVP/
+    assert_select ".lp-climb-path__node.is-done .lp-climb-path__menu-btn", count: 0
+    assert_select ".lp-climb-path__node.is-current", text: /Launch/
+    assert_select ".lp-climb-path__node.is-current .lp-climb-path__menu-btn", minimum: 1
   end
 
   test "empty plan shows New Project card" do
@@ -78,8 +72,10 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: empty.id, focus_id: empty.id)
     assert_response :success
-    assert_select ".lp-rpg-sections.is-empty .lp-rpg-sections__new-btn", text: /New Project/
-    assert_select ".lp-rpg-section-card", count: 0
+    assert_select ".lp-climb-path.is-empty .lp-climb-path__new-btn", text: /New Project/
+    assert_select ".lp-climb-path__node.is-done", count: 0
+    assert_select ".lp-climb-path__node.is-current", count: 0
+    assert_select ".lp-climb-path__node.is-locked", count: 0
   end
 
   test "rename succeeds on a locked section" do
@@ -90,8 +86,8 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__title", text: "Today's Page"
-    assert_select ".lp-rpg-section-card.is-current", text: /MVP/
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__title", text: "Today's Page"
+    assert_select ".lp-climb-path__node.is-current", text: /MVP/
   end
 
   test "delete succeeds on a locked section" do
@@ -103,8 +99,8 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-section-card", text: /Launch/, count: 0
-    assert_select ".lp-rpg-section-card.is-current", text: /MVP/
+    assert_select ".lp-climb-path__node", text: /Launch/, count: 0
+    assert_select ".lp-climb-path__node.is-current", text: /MVP/
   end
 
   test "mid-list locked delete advances unlock queue without renumbering positions" do
@@ -126,15 +122,15 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-current", text: /MVP/
-    assert_select ".lp-rpg-section-card.is-locked", text: /Polish/
-    assert_select ".lp-rpg-section-card", text: /Launch/, count: 0
+    assert_select ".lp-climb-path__node.is-current", text: /MVP/
+    assert_select ".lp-climb-path__node.is-locked", text: /Polish/
+    assert_select ".lp-climb-path__node", text: /Launch/, count: 0
 
     @active.complete!
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-done", text: /MVP/
-    assert_select ".lp-rpg-section-card.is-current", text: /Polish/
+    assert_select ".lp-climb-path__node.is-done", text: /MVP/
+    assert_select ".lp-climb-path__node.is-current", text: /Polish/
     assert_equal position_c, section_c.reload.position
   end
 end
