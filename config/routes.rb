@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     end
   end
   resource :next_mountain, only: %i[ show update ], controller: "next_mountains"
+  resource :companion_guide, only: %i[ show create ], controller: "companion_guides"
   resource :focus, only: %i[ show update ], controller: "focus"
   resource :today_mission, only: :create, controller: "today_missions"
   resources :daily_todos, only: %i[ create destroy ] do

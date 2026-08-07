@@ -205,6 +205,10 @@
   <section class="lp-glass lp-glass--pad">
     <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("settings.account") %></h2>
     <div class="mt-3 space-y-2">
+      <%= link_to companion_guide_path, class: row_class, data: { turbo: false } do %>
+        <span><%= t("strategy.companion_guide.shell.settings_link") %></span>
+        <%= chevron %>
+      <% end %>
       <%= link_to new_password_path, class: row_class do %>
         <span><%= t("settings.change_password") %></span>
         <%= chevron %>
