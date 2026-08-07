@@ -243,7 +243,6 @@ de:
         need_goal: "Dein Berg braucht ein Ziel, bevor der Guide starten kann."
         bad_answer: "Versuch die Antwort noch einmal."
         tree_changed: "Auf dem Berg hat sich was bewegt — wir setzen an einer sicheren Stelle fort."
-        settings_link: "Begleiter-Guide testen"
     quantity:
       track: "Als Zahl verfolgen?"
       track_objective: "Fortschritt verfolgen (%{unit})?"

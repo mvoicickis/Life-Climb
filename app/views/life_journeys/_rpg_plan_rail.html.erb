@@ -136,25 +136,13 @@
           </li>
         <% end %>
         <li class="lp-rpg-plan-rail__item is-add">
-          <details class="lp-rpg-add is-path">
-            <summary aria-label="<%= t('strategy.rpg.add_plan') %>">
-              <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
-              <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_path") %></span>
-            </summary>
-            <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
-              <%= hidden_field_tag :life_area_id, area.id %>
-              <%= hidden_field_tag :life_journey_id, @journey.id %>
-              <%= hidden_field_tag :horizon, "plan" %>
-              <%= hidden_field_tag :parent_id, goal.id %>
-              <%= text_field_tag :title, nil,
-                    required: true,
-                    maxlength: 120,
-                    class: "lp-rpg-input",
-                    placeholder: t("strategy.plan_placeholder"),
-                    autocomplete: "off" %>
-              <%= submit_tag t("strategy.sheet.add_plan"), class: "lp-rpg-btn is-small" %>
-            <% end %>
-          </details>
+          <%= link_to companion_guide_path(new_plan: 1),
+                class: "lp-rpg-add is-path is-guide-entry",
+                data: { turbo: false },
+                aria: { label: t("strategy.rpg.add_plan") } do %>
+            <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
+            <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_path") %></span>
+          <% end %>
         </li>
       </ul>
 
@@ -226,21 +214,9 @@
 <% elsif goal %>
   <div class="lp-rpg-plan-rail is-empty">
     <p class="lp-rpg-panel__empty"><%= t("strategy.rpg.pick_path_hint") %></p>
-    <details class="lp-rpg-add is-path is-open-hint">
-      <summary><%= t("strategy.rpg.add_path") %></summary>
-      <%= form_with url: strategy_goals_path, method: :post, class: "lp-rpg-add__form", data: { turbo: false } do %>
-        <%= hidden_field_tag :life_area_id, area.id %>
-        <%= hidden_field_tag :life_journey_id, @journey.id %>
-        <%= hidden_field_tag :horizon, "plan" %>
-        <%= hidden_field_tag :parent_id, goal.id %>
-        <%= text_field_tag :title, nil,
-              required: true,
-              maxlength: 120,
-              class: "lp-rpg-input",
-              placeholder: t("strategy.plan_placeholder"),
-              autocomplete: "off" %>
-        <%= submit_tag t("strategy.sheet.add_plan"), class: "lp-rpg-btn is-small" %>
-      <% end %>
-    </details>
+    <%= link_to t("strategy.rpg.add_path"),
+          companion_guide_path(new_plan: 1),
+          class: "lp-rpg-add is-path is-open-hint is-guide-entry",
+          data: { turbo: false } %>
   </div>
 <% end %>
