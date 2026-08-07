@@ -26,18 +26,43 @@ lv:
     next_action:
       plan_route:
         title: "Ieplāno savu maršrutu"
+        titles:
+          - "Zīmēsim taku."
+          - "Nosauc pirmo lielo soli."
+          - "Tavs maršruts sākas ar skaidru plānu."
+          - "Izvēlies ceļu — tad kāpjam."
         cta: "Sāc savu kāpšanu"
       set_today:
         title: "Nosaki šodienas kauju"
+        titles:
+          - "Kas ir šodienas solis?"
+          - "Iedur šodienas karogu takā."
+          - "Viena maza kauja tur kāpšanu dzīvu."
+          - "Pasaki, ko pabeigsi pirms saulrieta."
         cta: "Pievieno šodienas soli"
       complete_battle:
         title: "Uzvari šodienas cīņā: “%{title}”"
+        titles:
+          - "Uzvari šodienas cīņā: “%{title}”."
+          - "Ņemies ar “%{title}” — tu to vari."
+          - "“%{title}” gaida. Viena skaidra uzvara."
+          - "Pabeidz “%{title}”, un taka iemirdzas."
         cta: "Cīnīties Šodienā"
       confirm_camp:
         title: "Pārbaudi nometni: “%{title}”"
+        titles:
+          - "Pārbaudi nometni: “%{title}”."
+          - "Vai “%{title}” ir gatavs, vai vēl kāpj?"
+          - "Ātra nometnes pārbaude: “%{title}”."
+          - "Godīgi: kā iet ar “%{title}”?"
         cta: "Apstiprini Šodienā"
       day_won:
         title: "Diena uzvarēta — turi kalnu kustībā"
+        titles:
+          - "Diena uzvarēta — kalns pakustējās."
+          - "Labi izdarīts. Taka ir tava."
+          - "Nometne klusa. Atgriezies stiprāks."
+          - "Šodienas cīņas beigušās. Atpūties uz grēdas."
         cta: "Atpakaļ uz taku"
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"

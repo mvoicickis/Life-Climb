@@ -4517,9 +4517,20 @@ html[data-theme="dark"] {
   color: var(--lp-ink);
 }
 
+.lp-dash-next__face {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center 18%;
+  background: #171c22;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.22);
+}
+
 .lp-dash-next__title {
   margin: 0;
-  flex: 1 1 12rem;
+  flex: 1 1 10rem;
   font-family: var(--lp-font-display);
   font-size: 1.05rem;
   font-weight: 800;

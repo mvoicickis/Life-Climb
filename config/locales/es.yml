@@ -26,18 +26,43 @@ es:
     next_action:
       plan_route:
         title: "Planifica tu ruta"
+        titles:
+          - "Vamos a trazar la ruta."
+          - "Nombra el primer gran paso."
+          - "Tu ruta empieza con un plan claro."
+          - "Elige el sendero — luego subimos."
         cta: "Empieza tu ascenso"
       set_today:
         title: "Define la batalla de hoy"
+        titles:
+          - "¿Cuál es el paso de hoy?"
+          - "Planta la bandera de hoy en el sendero."
+          - "Una batalla pequeña mantiene vivo el ascenso."
+          - "Di qué terminarás antes del anochecer."
         cta: "Añade el paso de hoy"
       complete_battle:
         title: "Gana la pelea de hoy: “%{title}”"
+        titles:
+          - "Gana la pelea de hoy: “%{title}”."
+          - "Afronta “%{title}” — tú puedes."
+          - "“%{title}” te espera. Una victoria clara."
+          - "Termina “%{title}” y el sendero se enciende."
         cta: "Luchar en Hoy"
       confirm_camp:
         title: "Revisa el campamento: “%{title}”"
+        titles:
+          - "Revisa el campamento: “%{title}”."
+          - "¿“%{title}” está listo, o sigue subiendo?"
+          - "Chequeo rápido del campamento: “%{title}”."
+          - "Con sinceridad: ¿cómo va “%{title}”?"
         cta: "Confirmar en Hoy"
       day_won:
         title: "Día ganado — sigue moviendo la montaña"
+        titles:
+          - "Día ganado — la montaña se movió."
+          - "Bien hecho. El sendero es tuyo."
+          - "El campamento está en calma. Vuelve más fuerte."
+          - "Las peleas de hoy terminaron. Descansa en la cresta."
         cta: "Volver al sendero"
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"
