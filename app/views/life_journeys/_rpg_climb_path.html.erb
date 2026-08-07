@@ -42,9 +42,7 @@
         <% zig = idx.even? ? "is-left" : "is-right" %>
         <li class="lp-climb-path__node is-<%= node.state %> <%= zig %> <%= 'is-selected' if selected %> <%= 'is-menu-enabled' if show_menu %>"
             data-section-id="<%= node.id %>"
-            <% if node.state == :current || selected %>
-              data-climb-path-target="<%= [ ('current' if node.state == :current), ('selected' if selected) ].compact.join(' ') %>"
-            <% end %>
+            data-climb-path-target="<%= [ 'node', ('current' if node.state == :current), ('selected' if selected) ].compact.join(' ') %>"
             <% if show_menu %>data-controller="plan-card-menu"<% end %>>
           <div class="lp-climb-path__pin is-<%= node.state %>" aria-hidden="true">
             <% if node.state == :done %>
@@ -90,7 +88,7 @@
             <% if playable %>
               <%= link_to life_journey_path(@journey, goal_id: goal&.id, plan_id: plan.id, focus_id: node.id),
                     class: "lp-climb-path__link",
-                    data: { turbo: true },
+                    data: { turbo: true, action: "click->climb-path#tap" },
                     aria: { current: selected ? "true" : nil } do %>
                 <%= card_body %>
               <% end %>
@@ -192,7 +190,7 @@
         </li>
       <% end %>
 
-      <li class="lp-climb-path__node is-new is-left">
+      <li class="lp-climb-path__node is-new is-left" data-climb-path-target="node">
         <div class="lp-climb-path__pin is-new" aria-hidden="true">
           <span class="lp-climb-path__mark is-new">+</span>
         </div>
