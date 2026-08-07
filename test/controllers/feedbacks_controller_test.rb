@@ -112,18 +112,18 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "/habits", Feedback.order(:id).last.page_context
   end
 
-  test "landing and today show feedback entry points" do
+  test "landing and today do not show inline feedback prompts or FAB" do
     get root_path
     assert_response :success
-    assert_select ".lp-feedback-fab"
-    assert_select ".lp-feedback-prompt[data-feedback-prompt-page-value=landing]"
+    assert_select ".lp-feedback-fab", count: 0
+    assert_select ".lp-feedback-prompt", count: 0
 
     sign_in_as users(:one)
     seed_climb!(users(:one))
     get dashboard_path
     assert_response :success
-    assert_select ".lp-feedback-fab"
-    assert_select ".lp-feedback-prompt[data-feedback-prompt-page-value=today]"
+    assert_select ".lp-feedback-fab", count: 0
+    assert_select ".lp-feedback-prompt", count: 0
   end
 
   test "admin inbox shows page context and rating" do
