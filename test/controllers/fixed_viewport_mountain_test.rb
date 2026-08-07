@@ -129,9 +129,10 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select "#rpg-add-checkpoint"
   end
 
-  test "stylesheet keeps content-sized trail inside fixed 100dvh shell" do
+  test "stylesheet keeps content-sized stage/planning/trail inside fixed 100dvh shell" do
     css = Rails.root.join("app/assets/tailwind/application.css").read
     shell = css[/\.lp-rpg\.is-focus-phase\s*\{[^}]+\}/m]
+    stage = css[/\.lp-rpg\.is-focus-phase \.lp-rpg__stage\.is-planning\s*\{[^}]+\}/m]
     planning = css[/\.lp-rpg__planning\s*\{[^}]+\}/m]
     trail = css[/\.lp-rpg__stage-trail\s*\{[^}]+\}/m]
     focus_trail = css[/\.lp-rpg\.is-focus-phase \.lp-rpg__stage-sections\.lp-rpg__stage-trail\s*\{[^}]+\}/m]
@@ -139,14 +140,24 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_match(/height:\s*100dvh/, shell)
     assert_match(/max-height:\s*100dvh/, shell)
     assert_match(/overflow:\s*hidden/, shell)
-    refute_match(/grid-template-rows:\s*minmax\(0,\s*1fr\)\s+auto/, planning)
-    assert_match(/display:\s*flex/, planning)
-    assert_match(/flex-direction:\s*column/, planning)
-    assert_match(/flex:\s*0\s+1\s+auto/, trail)
+    assert_match(/display:\s*flex/, shell)
+    assert_match(/flex-direction:\s*column/, shell)
+    refute_match(/grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)/, shell)
+
+    assert_match(/flex:\s*0\s+1\s+auto/, stage)
+    assert_match(/margin-top:\s*auto/, stage)
+    assert_match(/height:\s*max-content/, stage)
+
+    assert_match(/^\s*height:\s*auto;/m, planning)
+    assert_match(/max-height:\s*100%/, planning)
+    assert_match(/grid-template-rows:\s*minmax\(0,\s*1fr\)\s+auto/, planning)
+    refute_match(/^\s*height:\s*100%;/m, planning)
+
+    assert_match(/align-self:\s*start/, trail)
+    assert_match(/height:\s*max-content/, trail)
     assert_match(/max-height:\s*100%/, trail)
-    assert_match(/height:\s*fit-content/, trail)
     assert_match(/overflow-y:\s*auto/, trail)
+    assert_match(/height:\s*max-content/, focus_trail)
     assert_match(/max-height:\s*100%/, focus_trail)
-    refute_match(/max-height:\s*none/, focus_trail)
   end
 end
