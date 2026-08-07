@@ -26,18 +26,43 @@ de:
     next_action:
       plan_route:
         title: "Plane deine Route"
+        titles:
+          - "Lass uns die Route skizzieren."
+          - "Nenne den ersten großen Schritt."
+          - "Dein Weg beginnt mit einem klaren Plan."
+          - "Wähl den Pfad — dann steigen wir."
         cta: "Starte deinen Aufstieg"
       set_today:
         title: "Lege den Kampf von heute fest"
+        titles:
+          - "Was ist der Schritt von heute?"
+          - "Setz die Flagge von heute auf den Pfad."
+          - "Ein kleiner Kampf hält den Aufstieg lebendig."
+          - "Sag, was du vor Sonnenuntergang schaffst."
         cta: "Heutigen Schritt hinzufügen"
       complete_battle:
         title: "Gewinne den Kampf von heute: „%{title}“"
+        titles:
+          - "Gewinne den Kampf von heute: „%{title}“."
+          - "Nimm dir „%{title}“ vor — du schaffst das."
+          - "„%{title}“ wartet. Ein klarer Sieg."
+          - "Beende „%{title}“ und der Pfad leuchtet."
         cta: "Auf Heute kämpfen"
       confirm_camp:
         title: "Lager prüfen: „%{title}“"
+        titles:
+          - "Lager prüfen: „%{title}“."
+          - "Ist „%{title}“ fertig — oder noch im Aufstieg?"
+          - "Kurzer Lager-Check zu „%{title}“."
+          - "Ehrlich: wie steht’s um „%{title}“?"
         cta: "Auf Heute bestätigen"
       day_won:
         title: "Tag gewonnen — halte den Berg in Bewegung"
+        titles:
+          - "Tag gewonnen — der Berg hat sich bewegt."
+          - "Schön geschafft. Der Pfad gehört dir."
+          - "Lager ist ruhig. Komm stärker zurück."
+          - "Die Kämpfe von heute sind vorbei. Ruh dich auf dem Grat aus."
         cta: "Zurück zum Pfad"
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"

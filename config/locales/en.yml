@@ -758,18 +758,43 @@ en:
     next_action:
       plan_route:
         title: "Plan your route"
+        titles:
+          - "Let’s map the trail."
+          - "Name the first big step up."
+          - "Your route starts with one clear plan."
+          - "Pick the path — then we climb."
         cta: "Start your climb"
       set_today:
         title: "Set today’s battle"
+        titles:
+          - "What’s today’s move?"
+          - "Plant today’s flag on the trail."
+          - "One small battle keeps the climb alive."
+          - "Name what you’ll finish before sundown."
         cta: "Add today’s move"
       complete_battle:
         title: "Win today’s fight: “%{title}”"
+        titles:
+          - "Win today’s fight: “%{title}”."
+          - "Take on “%{title}” — you’ve got this."
+          - "“%{title}” is waiting. One clear win."
+          - "Finish “%{title}” and the trail lights up."
         cta: "Fight on Today"
       confirm_camp:
         title: "Check camp: “%{title}”"
+        titles:
+          - "Check camp: “%{title}”."
+          - "Is “%{title}” done, or still climbing?"
+          - "Quick camp check on “%{title}”."
+          - "Honest look: how’s “%{title}”?"
         cta: "Confirm on Today"
       day_won:
         title: "Day won — keep the mountain moving"
+        titles:
+          - "Day won — the mountain moved."
+          - "Nice finish. The trail is yours."
+          - "Camp’s quiet. Come back stronger."
+          - "Today’s fights are done. Rest on the ridge."
         cta: "Back to the trail"
     next_up:
       kicker: "Next up"

@@ -5,6 +5,7 @@ require "test_helper"
 class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
+    @user.update!(character: "fox")
     sign_in_as @user
     Onboarding::Run.call(
       user: @user,
@@ -42,7 +43,10 @@ class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-first-climb", count: 0
     assert_select ".lp-dash-next[data-next-action-key=complete_battle]", count: 1
-    assert_select ".lp-dash-next__title", text: /Send five emails/
+    title = css_select(".lp-dash-next__title").text
+    assert_match(/⚔️/, title)
+    assert_match(/Send five emails/, title)
+    assert_select ".lp-dash-next__face[src*='fox']", count: 1
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.complete_battle.cta")
   end
 

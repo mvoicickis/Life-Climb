@@ -5,6 +5,7 @@ require "test_helper"
 class NextActionBannerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
+    @user.update!(character: "fox")
     sign_in_as @user
     Onboarding::Run.call(
       user: @user,
@@ -25,8 +26,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-next[data-next-action-key=plan_route]", count: 1
-    assert_select ".lp-dash-next__title", text: I18n.t("strategy.next_action.plan_route.title")
+    assert_banner_state(:plan_route)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.plan_route.cta")
   end
 
@@ -36,8 +36,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-next[data-next-action-key=set_today]", count: 1
-    assert_select ".lp-dash-next__title", text: I18n.t("strategy.next_action.set_today.title")
+    assert_banner_state(:set_today)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.set_today.cta")
   end
 
@@ -47,7 +46,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-next[data-next-action-key=complete_battle]", count: 1
+    assert_banner_state(:complete_battle)
     assert_select ".lp-dash-next__title", text: /Send five emails/
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.complete_battle.cta")
   end
@@ -61,11 +60,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
 
-    assert_select ".lp-dash-next[data-next-action-key=confirm_camp]", count: 1
-    # Queue stores the practice parent (leaf camp) after a real complete.
-    assert_select ".lp-dash-next__title"
+    assert_banner_state(:confirm_camp)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.confirm_camp.cta")
-    assert_match(/Check camp/i, css_select(".lp-dash-next__title").text)
   end
 
   test "day_won banner when todos are done and no camp confirmation pending" do
@@ -75,8 +71,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-next[data-next-action-key=day_won]", count: 1
-    assert_select ".lp-dash-next__title", text: I18n.t("strategy.next_action.day_won.title")
+    assert_banner_state(:day_won)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.day_won.cta")
   end
 
@@ -90,6 +85,16 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def assert_banner_state(key)
+    prefix = Strategy::NextAction::Copy::PREFIXES.fetch(key)
+    assert_select ".lp-dash-next[data-next-action-key=#{key}]", count: 1
+    title = css_select(".lp-dash-next__title").text
+    assert title.start_with?(prefix.strip) || title.include?(prefix.strip),
+           "expected #{prefix.inspect} in #{title.inspect}"
+    assert_match(/🧭|📍|⚔️|🏕️|🏁/, title)
+    assert_select ".lp-dash-next__face[src*='fox']", count: 1
+  end
 
   def build_spine_without_cascade!
     plan = @user.strategy_goals.create!(

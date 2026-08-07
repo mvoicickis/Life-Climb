@@ -2,10 +2,15 @@
     locals: next_action (Strategy::NextAction::Result) %>
 <% next_action = local_assigns[:next_action] || @next_action %>
 <% if next_action.present? %>
+  <% headline = Strategy::NextAction::Copy.headline_for(
+        key: next_action.key,
+        title: next_action.todo_title.presence || next_action.project_title
+      ) %>
   <aside class="lp-glass lp-glass--pad lp-dash-next"
          data-next-action-key="<%= next_action.key %>"
-         aria-label="<%= next_action.title %>">
-    <p class="lp-dash-next__title"><%= next_action.title %></p>
+         aria-label="<%= headline %>">
+    <%= companion_image_tag class: "lp-dash-next__face", alt: "" %>
+    <p class="lp-dash-next__title"><%= headline %></p>
     <%= link_to next_action.cta_label, next_action.href, class: "lp-cta" %>
   </aside>
 <% end %>
