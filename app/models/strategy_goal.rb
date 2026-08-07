@@ -11,6 +11,7 @@ class StrategyGoal < ApplicationRecord
   LEGACY_KIND = { "year" => "goal" }.freeze
   REPEAT_KINDS = %w[none daily].freeze
   COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
+  EFFORT_TIERS = %w[light steady heavy].freeze
 
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
@@ -45,6 +46,7 @@ class StrategyGoal < ApplicationRecord
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :unit, length: { maximum: 40 }, allow_blank: true
   validates :color_key, inclusion: { in: COLOR_KEYS }, allow_nil: true
+  validates :effort_tier, inclusion: { in: EFFORT_TIERS }, allow_nil: true
   validate :scheduled_on_required_for_day
   validate :repeat_allowed_for_kind
   validate :due_on_rules
@@ -60,6 +62,7 @@ class StrategyGoal < ApplicationRecord
   before_validation :normalize_repeat
   before_validation :normalize_quantity_fields
   before_validation :normalize_color_key
+  before_validation :normalize_effort_tier
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -255,6 +258,12 @@ class StrategyGoal < ApplicationRecord
     return unless has_attribute?(:color_key)
 
     self.color_key = color_key.to_s.strip.presence
+  end
+
+  def normalize_effort_tier
+    return unless has_attribute?(:effort_tier)
+
+    self.effort_tier = effort_tier.to_s.strip.presence
   end
 
   def quantity_target_rules
