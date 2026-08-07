@@ -16530,15 +16530,18 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow: hidden;
 }
 /* Feedback prompt is yielded after the 100dvh shell — keep it out of flow
-   so it cannot stretch <main> and shift the mountain upward. */
+   so it cannot stretch <main> and shift the mountain upward. Sit at the
+   top so it does not cover bottom-packed climb CTAs/menus. */
 .lp-main:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) > .lp-feedback-prompt {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(4.85rem + env(safe-area-inset-bottom));
+  left: 0.65rem;
+  right: 0.65rem;
+  top: 0.5rem;
+  bottom: auto;
   z-index: 45;
-  max-height: min(40vh, 16rem);
+  max-height: min(34vh, 14rem);
   overflow: auto;
+  margin: 0;
 }
 
 .lp-rpg__chrome-top,
