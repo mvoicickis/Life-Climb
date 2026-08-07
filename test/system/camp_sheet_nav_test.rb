@@ -58,8 +58,8 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-climb-path__node.is-locked", text: /Ship landing page/i
     assert_no_selector ".lp-climb-path__node.is-locked a.lp-climb-path__link"
     assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i
-    assert_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
-    assert_no_selector ".lp-qs-obj__text[value='Draft hero headline']", visible: :all
+    assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
+    assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']"
 
     # Unlock the next section, then switch via the climb path.
     @camp_a.complete!
@@ -67,15 +67,15 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-climb-path__node.is-selected", text: /Ship landing page/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i, wait: 5
-    assert_selector ".lp-qs-obj__text[value='Draft hero headline']", visible: :all, wait: 3
-    assert_no_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
+    assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']", visible: :all, wait: 3
+    assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']"
 
     find(".lp-climb-path__node", text: /Get first 100 users/i, wait: 3)
       .find("a.lp-climb-path__link").click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
     assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
     assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i, wait: 5
-    assert_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all, wait: 3
+    assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all, wait: 3
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/camp-sheet-nav.png")

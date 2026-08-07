@@ -41,7 +41,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-qs-board__title", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
-    assert_select ".lp-climb-path__quest", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end

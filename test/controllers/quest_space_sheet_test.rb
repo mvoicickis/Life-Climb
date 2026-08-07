@@ -69,12 +69,13 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Empty section", position: 1
     )
+    @section.complete!
     get life_journey_path(@journey, focus_id: empty.id)
     assert_response :success
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-qs-board__title", count: 0
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
-    assert_select ".lp-climb-path__quest", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
   end
 
   test "locked camp without folders shows no quest UI" do

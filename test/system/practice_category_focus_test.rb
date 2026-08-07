@@ -88,8 +88,10 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     sleep 0.4
     assert_not flash.reload.completed?, "Quest checkbox must stay read-only"
 
-    find(".lp-climb-path__quest-add-input", visible: :all).set("Review verbs")
-    find(".lp-climb-path__quest-add-btn", visible: :all).click
+    find(".lp-climb-path__quest", text: /Vocabulary/i)
+      .find(".lp-climb-path__quest-add-input", visible: :all).set("Review verbs")
+    find(".lp-climb-path__quest", text: /Vocabulary/i)
+      .find(".lp-climb-path__quest-add-btn", visible: :all).click
     assert_selector ".lp-qs-obj__text[value='Review verbs']", visible: :all, wait: 5
     assert @host.practice_tasks.exists?(title: "Review verbs")
 

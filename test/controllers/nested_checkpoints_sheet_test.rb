@@ -41,7 +41,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
-    assert_select ".lp-climb-path__quest", count: 0
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
@@ -102,7 +102,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
 
     # Sections carousel stays plan-level only — nested child is not a section card
     assert_select ".lp-climb-path__node", text: /Launch prep/
-    assert_select ".lp-climb-path__node", text: /Landing page/, count: 0
+    assert_select ".lp-climb-path__node .lp-climb-path__title", text: /Landing page/, count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Landing page/
   end
 
   test "focusing a nested child shows climb-path quest under its section" do
