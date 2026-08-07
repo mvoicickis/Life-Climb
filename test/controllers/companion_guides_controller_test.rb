@@ -99,6 +99,76 @@ class CompanionGuidesControllerTest < ActionDispatch::IntegrationTest
     assert_match I18n.t("strategy.companion_guide.shell.settings_link"), response.body
   end
 
+  test "blank title re-renders same step with preserved value and specific error" do
+    get companion_guide_path
+    assert_response :success
+
+    assert_no_difference -> { @goal.children.for_kind("plan").count } do
+      post companion_guide_path, params: { value: "   " }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.create_plan")
+    assert_select "[data-companion-guide-error]", text: I18n.t("strategy.companion_guide.errors.blank_title")
+    assert_select "input[name=value][value=?]", "   "
+    assert_nil flash[:alert]
+  end
+
+  test "invalid tier re-renders with specific error and does not change plan" do
+    post companion_guide_path, params: { value: "Land interviews" }
+    follow_redirect!
+
+    plan = @goal.children.for_kind("plan").ordered.last
+    assert_nil plan.effort_tier
+
+    post companion_guide_path, params: { value: "extreme" }
+    assert_response :unprocessable_entity
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.set_effort_tier")
+    assert_select "[data-companion-guide-error]", text: I18n.t("strategy.companion_guide.errors.bad_effort_tier")
+    assert_nil plan.reload.effort_tier
+  end
+
+  test "invalid decision re-renders with specific error" do
+    post companion_guide_path, params: { value: "Land interviews" }
+    follow_redirect!
+    post companion_guide_path, params: { value: "steady" }
+    follow_redirect!
+    post companion_guide_path, params: { value: "Polish resume" }
+    follow_redirect!
+    post companion_guide_path, params: { value: "Rewrite summary" }
+    follow_redirect!
+
+    post companion_guide_path, params: { value: "maybe" }
+    assert_response :unprocessable_entity
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.continue_step")
+    assert_select "[data-companion-guide-error]", text: I18n.t("strategy.companion_guide.errors.bad_decision")
+  end
+
+  test "mid-flow project deletion heals on show and can continue" do
+    post companion_guide_path, params: { value: "Land interviews" }
+    follow_redirect!
+    post companion_guide_path, params: { value: "steady" }
+    follow_redirect!
+    post companion_guide_path, params: { value: "Polish resume" }
+    follow_redirect!
+    post companion_guide_path, params: { value: "Rewrite summary" }
+    follow_redirect!
+
+    project = @goal.children.for_kind("plan").first.children.for_kind("project").first
+    project.destroy!
+
+    get companion_guide_path
+    assert_response :success
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.create_project")
+    assert_select "[data-companion-guide-notice]"
+
+    post companion_guide_path, params: { value: "Fresh project" }
+    assert_redirected_to companion_guide_path
+    follow_redirect!
+    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.create_day")
+    assert @goal.children.for_kind("plan").first.children.for_kind("project").exists?(title: "Fresh project")
+  end
+
   private
 
   def walk_to_completed!

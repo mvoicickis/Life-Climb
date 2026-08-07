@@ -1,7 +1,12 @@
-<%# locals: step (Strategy::CompanionGuide::Engine::Step) %>
-<% step = local_assigns.fetch(:step) %>
+<%# locals: step; optional attempted_value, error from controller %>
+<% step = local_assigns.fetch(:step)
+   attempted_value = local_assigns[:attempted_value]
+   error = local_assigns[:error].presence || @error
+   attempted_value = attempted_value.nil? ? @attempted_value : attempted_value %>
 
-<section class="space-y-4" aria-labelledby="companion-guide-question">
+<section class="space-y-4"
+         aria-labelledby="companion-guide-question"
+         data-controller="companion-guide">
   <header>
     <h2 id="companion-guide-question" class="text-3xl font-semibold text-[var(--lp-ink)]">
       <%= step.question %>
@@ -15,6 +20,12 @@
     <% end %>
   </header>
 
+  <% if error.present? %>
+    <p class="text-sm font-semibold text-[var(--lp-rose)]" role="alert" data-companion-guide-error>
+      <%= error %>
+    </p>
+  <% end %>
+
   <% case step.kind %>
   <% when "set_effort_tier", "continue_step", "continue_project" %>
     <div class="space-y-3" role="group" aria-label="<%= step.question %>">
@@ -24,19 +35,33 @@
               method: :post,
               params: { value: option[:value] },
               class: "lp-cta w-full",
-              form: { data: { turbo: false } } %>
+              form: {
+                data: {
+                  turbo: false,
+                  controller: "companion-guide",
+                  action: "submit->companion-guide#disable"
+                }
+              } %>
       <% end %>
     </div>
   <% else %>
-    <%= form_with url: companion_guide_path, method: :post, class: "space-y-4", data: { turbo: false } do %>
+    <%= form_with url: companion_guide_path,
+          method: :post,
+          class: "space-y-4",
+          data: {
+            turbo: false,
+            controller: "companion-guide",
+            action: "submit->companion-guide#disable"
+          } do %>
       <div class="lp-glass space-y-2 p-4">
-        <%= text_field_tag :value, nil,
+        <%= text_field_tag :value, attempted_value,
               required: true,
               maxlength: 120,
               autofocus: true,
               autocomplete: "off",
               class: "lp-input w-full",
-              placeholder: t("strategy.companion_guide.shell.text_placeholder") %>
+              placeholder: t("strategy.companion_guide.shell.text_placeholder"),
+              aria: { invalid: error.present? } %>
       </div>
       <%= submit_tag t("strategy.companion_guide.shell.continue"), class: "lp-cta w-full" %>
     <% end %>

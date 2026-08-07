@@ -199,6 +199,51 @@ lv:
           action:
             - "Spert pirmo mazo soli"
             - "Bloķēt 25 minūtes un sākt"
+    companion_guide:
+      questions:
+        create_plan: "Kāds ir pirmais plāns šajā kalnā?"
+        set_effort_tier: "Cik smags šķiet šis plāns?"
+        create_project: "Nosauc projektu zem šī plāna."
+        create_day: "Kāds ir viens konkrēts solis šim projektam?"
+        continue_step: "Vēl vienu soli, vai iet tālāk?"
+        continue_project: "Vēl vienu projektu, vai pagaidām pietiek?"
+      answers:
+        effort_tier:
+          light: "Viegls"
+          steady: "Stabils"
+          heavy: "Smags"
+        continue:
+          repeat_step: "Vēl vienu soli"
+          advance_step: "Tālāk"
+          repeat_project: "Vēl vienu projektu"
+          advance_project: "Pagaidām pietiek"
+      acks:
+        "0": "Sapratu — ierakstīts."
+        "1": "Labi. Uz kartes."
+        "2": "Piezīme. Turpini."
+        "3": "Skaidrs. Tālāk."
+        "4": "Spēcīgi. Taka ieņem formu."
+        "5": "Pierakstīts. Turpinām būvēt."
+      errors:
+        blank_title: "Dod īsu nosaukumu."
+        bad_effort_tier: "Izvēlies viegls, stabils vai smags."
+        bad_decision: "Izvēlies, vai turpināt vai iet tālāk."
+        missing_plan: "Sāc ar plānu."
+        missing_project: "Vispirms nosauc projektu."
+      shell:
+        title: "Būvē ar savu ceļvedi"
+        kicker: "Pavadonis-ceļvedis"
+        continue: "Turpināt"
+        text_placeholder: "Ieraksti īsu nosaukumu…"
+        progress: "Projekti: %{projects} · Soļi šajā: %{steps}"
+        done_title: "Pagaidām pietiek"
+        done_body: "Tavs plāns ir kalnā. Atgriezies, kad gribi pievienot vairāk."
+        done_cta: "Atpakaļ uz kalnu"
+        need_journey: "Vispirms fokusē ceļojumu, tad atver ceļvedi."
+        need_goal: "Tavam kalnam vajag mērķi, pirms ceļvedis var sākt."
+        bad_answer: "Pamēģini atbildi vēlreiz."
+        tree_changed: "Kalnā kaut kas mainījās — turpinām no drošas vietas."
+        settings_link: "Izmēģināt pavadoni-ceļvedi (tests)"
     quantity:
       track: "Sekot kā skaitlim?"
       track_objective: "Sekot progresam (%{unit})?"

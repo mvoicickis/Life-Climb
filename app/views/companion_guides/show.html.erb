@@ -28,6 +28,14 @@
     </p>
   <% end %>
 
+  <% if @step.notice.present? %>
+    <p class="lp-glass rounded-xl px-4 py-3 text-sm text-[var(--lp-muted)]"
+       role="status"
+       data-companion-guide-notice>
+      <%= @step.notice %>
+    </p>
+  <% end %>
+
   <% if @step.completed? %>
     <section class="lp-glass space-y-4 p-5" aria-labelledby="companion-guide-done">
       <h2 id="companion-guide-done" class="text-2xl font-semibold text-[var(--lp-ink)]">
@@ -39,7 +47,7 @@
             class: "lp-cta inline-flex w-full items-center justify-center" %>
     </section>
   <% else %>
-    <%= render "step", step: @step %>
+    <%= render "step", step: @step, error: @error, attempted_value: @attempted_value %>
   <% end %>
 </div>
 
