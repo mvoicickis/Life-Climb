@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_080000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_221635) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -338,6 +338,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_080000) do
     t.decimal "current_amount", precision: 12, scale: 2, default: "0.0", null: false
     t.text "description"
     t.date "due_on"
+    t.string "effort_tier"
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"

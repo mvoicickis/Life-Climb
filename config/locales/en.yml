@@ -680,6 +680,37 @@ en:
           action:
             - "Take the first small step"
             - "Block 25 minutes and start"
+    companion_guide:
+      questions:
+        create_plan: "What’s the first plan on this mountain?"
+        set_effort_tier: "How heavy does this plan feel?"
+        create_project: "Name a project under this plan."
+        create_day: "What’s one concrete step for this project?"
+        continue_step: "Add another step, or move on?"
+        continue_project: "Add another project, or done for now?"
+      answers:
+        effort_tier:
+          light: "Light"
+          steady: "Steady"
+          heavy: "Heavy"
+        continue:
+          repeat_step: "Add another step"
+          advance_step: "Move on"
+          repeat_project: "Add another project"
+          advance_project: "Done for now"
+      acks:
+        "0": "Got it — locked in."
+        "1": "Nice. On the map."
+        "2": "Logged. Keep going."
+        "3": "Clear. Next up."
+        "4": "Solid. Trail’s taking shape."
+        "5": "Noted. Let’s keep building."
+      errors:
+        blank_title: "Give it a short name."
+        bad_effort_tier: "Pick light, steady, or heavy."
+        bad_decision: "Choose whether to continue or move on."
+        missing_plan: "Start with a plan first."
+        missing_project: "Name a project first."
     quantity:
       track: "Track this as a number?"
       track_objective: "Track progress (%{unit})?"
