@@ -60,9 +60,9 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
 
     # Path-focus place-checkpoint is hidden once camps exist; use Project Sections create.
     page.evaluate_script(<<~JS)
-      document.querySelector('.lp-rpg-sections__item.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
+      document.querySelector('.lp-climb-path__node.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
     JS
-    find(".lp-rpg-sections__new-btn", text: /New Project/i, wait: 5).click
+    find(".lp-climb-path__new-btn", text: /New Project/i, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
     assert_selector ".lp-rpg-float-create__heading", text: /New Project/i
     assert_selector "body > .lp-rpg-float-create input[name='title']"
@@ -82,16 +82,16 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
 
     page.evaluate_script(<<~JS)
-      document.querySelector('.lp-rpg-sections__item.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
+      document.querySelector('.lp-climb-path__node.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
     JS
-    find(".lp-rpg-sections__new-btn", text: /New Project/i, wait: 5).click
+    find(".lp-climb-path__new-btn", text: /New Project/i, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
 
     card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
     card.fill_in "title", with: "Notifications camp"
     card.find(".lp-rpg-float-create__btn.is-create").click
 
-    assert_selector ".lp-rpg-section-card", text: /Notifications camp/i, wait: 5
+    assert_selector ".lp-climb-path__node", text: /Notifications camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert @user.strategy_goals.for_kind("project").exists?(title: "Notifications camp", parent_id: @plan.id)
 

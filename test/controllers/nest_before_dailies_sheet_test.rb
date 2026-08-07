@@ -35,7 +35,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
     assert_select ".lp-rpg-sheet.is-categories"
-    assert_select ".lp-rpg-section-card", text: /Learn German/
+    assert_select ".lp-climb-path__node", text: /Learn German/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /Break this into smaller camps/i
@@ -63,8 +63,8 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
   test "Path focus shows Learn German in Project Sections carousel" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card", text: /Learn German/
-    assert_select ".lp-rpg-section-card", text: /Learn German/
+    assert_select ".lp-climb-path__node", text: /Learn German/
+    assert_select ".lp-climb-path__node", text: /Learn German/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0

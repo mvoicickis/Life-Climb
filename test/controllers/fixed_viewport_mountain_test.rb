@@ -45,7 +45,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage.is-planning"
     assert_select ".lp-rpg__planning"
     assert_select ".lp-rpg__stage-sections"
-    assert_select ".lp-rpg-sections"
+    assert_select ".lp-climb-path"
     assert_select ".lp-rpg__stage-battle"
     assert_select ".lp-rpg__chrome-bottom", count: 0
     assert_select ".lp-rpg-stats", count: 0
@@ -57,7 +57,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-context", count: 0
   end
 
-  test "project sections carousel lists all path-level camps" do
+  test "climb path lists done current and capped locked camps" do
     5.times do |i|
       camp = @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -68,14 +68,13 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card", count: 5
-    assert_select ".lp-rpg-section-card.is-done", minimum: 2
-    assert_select ".lp-rpg-section-card.is-current", minimum: 1
-    assert_select ".lp-rpg-section-card.is-locked", minimum: 1
+    assert_select ".lp-climb-path__node.is-done", count: 2
+    assert_select ".lp-climb-path__node.is-current", count: 1
+    assert_select ".lp-climb-path__node.is-locked", count: 2
     assert_match(/Project Sections/i, response.body)
   end
 
-  test "project sections carousel still renders with few camps" do
+  test "climb path still renders with few camps" do
     2.times do |i|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -85,9 +84,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card", count: 2
-    assert_select ".lp-rpg-section-card.is-current", minimum: 1
-    assert_select ".lp-rpg-section-card.is-current a.lp-rpg-section-card__link", minimum: 1
+    assert_select ".lp-climb-path__node.is-current", count: 1
+    assert_select ".lp-climb-path__node.is-current a.lp-climb-path__link", minimum: 1
   end
 
   test "planning center de-dupes progress and never exposes battle win" do
@@ -126,7 +124,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-rpg-section-card.is-selected", text: /Daily battles/
+    assert_select ".lp-climb-path__node.is-selected", text: /Daily battles/
     assert_select "#rpg-add-checkpoint"
   end
 end

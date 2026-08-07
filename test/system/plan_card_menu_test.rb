@@ -112,7 +112,10 @@ class PlanCardMenuTest < ApplicationSystemTestCase
 
     assert_selector ".lp-rpg-path", text: /Alpha Path/
     find(".lp-rpg-path__menu-btn", match: :first).click
-    click_button "Delete Plan"
+    assert_selector ".lp-rpg-path__menu:not([hidden])", wait: 3
+    page.execute_script(<<~JS)
+      document.querySelector('.lp-rpg-path__menu:not([hidden]) .lp-rpg-path__menu-item.is-danger')?.click();
+    JS
 
     assert_selector "dialog.lp-strategy-sheet[open]", text: /Delete Plan\?/
     assert_selector "dialog.lp-strategy-sheet[open]", text: /cannot be undone/i
@@ -122,7 +125,10 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector ".lp-rpg-path", text: /Alpha Path/
 
     find(".lp-rpg-path__menu-btn", match: :first).click
-    click_button "Delete Plan"
+    assert_selector ".lp-rpg-path__menu:not([hidden])", wait: 3
+    page.execute_script(<<~JS)
+      document.querySelector('.lp-rpg-path__menu:not([hidden]) .lp-rpg-path__menu-item.is-danger')?.click();
+    JS
     within("dialog.lp-strategy-sheet[open]") { click_button "Delete" }
 
     assert_selector "#strategy-world", wait: 5

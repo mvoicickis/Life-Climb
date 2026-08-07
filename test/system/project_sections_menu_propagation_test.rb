@@ -39,39 +39,42 @@ class ProjectSectionsMenuPropagationTest < ApplicationSystemTestCase
 
     path = life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     visit path
-    assert_selector ".lp-rpg-section-card.is-current .lp-rpg-section-card__menu-btn", wait: 5
+    assert_selector ".lp-climb-path__node.is-current .lp-climb-path__menu-btn", wait: 5
+    page.execute_script(<<~JS)
+      document.querySelector('.lp-climb-path__node.is-current')?.scrollIntoView({ block: 'center' });
+    JS
 
     before = page.current_path
 
     # 1) Click the ⋮ glyph itself
-    find(".lp-rpg-section-card.is-current .lp-rpg-section-card__menu-btn span", visible: :all).click
-    assert_selector ".lp-rpg-section-card__menu:not([hidden])", wait: 3
+    find(".lp-climb-path__node.is-current .lp-climb-path__menu-btn span", visible: :all).click
+    assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
     assert_equal before, page.current_path
     assert_includes page.current_url, "focus_id=#{@section.id}"
 
     page.send_keys(:escape)
-    assert_no_selector ".lp-rpg-section-card__menu:not([hidden])", wait: 3
+    assert_no_selector ".lp-climb-path__menu:not([hidden])", wait: 3
 
     # 2) Click the padded menu-button box (not only glyph center)
-    btn = find(".lp-rpg-section-card.is-current .lp-rpg-section-card__menu-btn")
+    btn = find(".lp-climb-path__node.is-current .lp-climb-path__menu-btn")
     page.execute_script(<<~JS, btn.native)
       const el = arguments[0];
       const r = el.getBoundingClientRect();
-      // Near the right edge of the button — the padded gap toward the flag icon
       const x = r.right - 2;
       const y = r.top + r.height / 2;
       const target = document.elementFromPoint(x, y);
       target?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y }));
     JS
-    assert_selector ".lp-rpg-section-card__menu:not([hidden])", wait: 3
+    assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
     assert_equal before, page.current_path
 
     # 3) Choosing Edit must not navigate
-    find(".lp-rpg-section-card__menu-item", text: /Edit/i).click
+    page.execute_script(<<~JS)
+      document.querySelector('.lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item:not(.is-danger)')?.click();
+    JS
     assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Edit Checkpoint/i, wait: 3
     assert_equal before, page.current_path
     assert_includes page.current_url, "focus_id=#{@section.id}"
-
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/project-sections-menu-propagation.png")
   end

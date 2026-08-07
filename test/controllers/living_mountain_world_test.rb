@@ -40,7 +40,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-rpg-sections"
+    assert_select ".lp-climb-path"
     assert_select ".lp-rpg-path", text: /Main trail/i
     assert_select "[data-controller*=strategy-rpg]"
   end
@@ -63,8 +63,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg-path", minimum: 1
-    assert_select ".lp-rpg-sections"
-    assert_select ".lp-rpg-section-card", text: /First climb/
+    assert_select ".lp-climb-path"
+    assert_select ".lp-climb-path__node", text: /First climb/
     assert_select ".lp-rpg-sheet"
   end
 
@@ -87,7 +87,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-climb-path__node.is-current", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-qs", 1
     assert_select ".lp-qs-card__name", text: /Steps/
@@ -111,7 +111,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
+    assert_select ".lp-climb-path__node.is-current", text: /Resume/
     assert_select ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/
     assert_select ".lp-qs-detail__add-input"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
@@ -138,14 +138,13 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: first.id)
     assert_response :success
-    assert_select ".lp-rpg-section-card.is-current", text: /Resume/
-    assert_select ".lp-rpg-section-card.is-current a.lp-rpg-section-card__link"
-    assert_select ".lp-rpg-section-card.is-locked", text: /Interviews/
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__meter-fill[style='width: 0%']"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__pct", text: "0%"
-    assert_select ".lp-rpg-section-card.is-locked .lp-rpg-section-card__menu-btn", minimum: 1
-    assert_select ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link", count: 0
-    assert_select ".lp-rpg-sections__new-btn", text: /New Project/
+    assert_select ".lp-climb-path__node.is-current", text: /Resume/
+    assert_select ".lp-climb-path__node.is-current a.lp-climb-path__link"
+    assert_select ".lp-climb-path__node.is-locked", text: /Interviews/
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__meta.is-locked", text: /Locked/i
+    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__menu-btn", minimum: 1
+    assert_select ".lp-climb-path__node.is-locked a.lp-climb-path__link", count: 0
+    assert_select ".lp-climb-path__new-btn", text: /New Project/
     assert_select ".lp-rpg-section-head", count: 0
   end
 
@@ -180,7 +179,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan_b.id)
     assert_response :success
     assert_select ".lp-rpg-path.is-focus", text: /Side path/
-    assert_select ".lp-rpg-section-card", text: /Launch camp/
+    assert_select ".lp-climb-path__node", text: /Launch camp/
     assert_select ".lp-rpg-destination-carousel__title", text: /#{@goal.title}/
 
     get life_journey_path(@journey, goal_id: other_goal.id)

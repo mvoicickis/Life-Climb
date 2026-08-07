@@ -54,9 +54,9 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a_leaf.id)
-    assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
-    assert_selector ".lp-rpg-section-card.is-locked", text: /Ship landing page/i
-    assert_no_selector ".lp-rpg-section-card.is-locked a.lp-rpg-section-card__link"
+    assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
+    assert_selector ".lp-climb-path__node.is-locked", text: /Ship landing page/i
+    assert_no_selector ".lp-climb-path__node.is-locked a.lp-climb-path__link"
     assert_selector ".lp-qs-detail.is-open .lp-qs-detail__title", text: /Steps/i
     assert_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
     assert_no_selector ".lp-qs-obj__text[value='Draft hero headline']", visible: :all
@@ -64,17 +64,17 @@ class CampSheetNavTest < ApplicationSystemTestCase
     # Unlock the next section, then switch via the carousel.
     @camp_a.complete!
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id)
-    assert_selector ".lp-rpg-section-card.is-selected", text: /Ship landing page/i, wait: 5
+    assert_selector ".lp-climb-path__node.is-selected", text: /Ship landing page/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     find(".lp-qs-card", text: /Steps/i).click
     assert_selector ".lp-qs-detail.is-open .lp-qs-obj__text[value='Draft hero headline']",
                     visible: :all, wait: 3
     assert_no_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
 
-    find(".lp-rpg-section-card", text: /Get first 100 users/i, wait: 3)
-      .find("a.lp-rpg-section-card__link").click
+    find(".lp-climb-path__node", text: /Get first 100 users/i, wait: 3)
+      .find("a.lp-climb-path__link").click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
-    assert_selector ".lp-rpg-section-card.is-selected", text: /Get first 100 users/i, wait: 5
+    assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
     find(".lp-qs-card", text: /Steps/i).click
     assert_selector ".lp-qs-detail.is-open .lp-qs-obj__text[value='Ask 5 friends for feedback']",
                     visible: :all, wait: 3
@@ -96,7 +96,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
-    assert_selector ".lp-rpg-section-card", text: /Empty camp/i, wait: 5
+    assert_selector ".lp-climb-path__node", text: /Empty camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_selector ".lp-rpg-practice-cats__hint", text: /smaller camps/i
     assert_selector ".lp-qs-new__btn", text: /New Quest/i

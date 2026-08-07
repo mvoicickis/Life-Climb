@@ -46,7 +46,7 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
-    assert_select ".lp-rpg-sections"
+    assert_select ".lp-climb-path"
     assert_match(/Project Sections|Add section|New section/i, response.body)
   end
 
@@ -59,7 +59,7 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg-path", text: /Find Job/i
-    assert_select ".lp-rpg-sections"
+    assert_select ".lp-climb-path"
     assert_select ".lp-rpg-world", count: 0
   end
 
