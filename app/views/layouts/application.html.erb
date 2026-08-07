@@ -87,6 +87,5 @@
 
       <%= yield %>
     </main>
-    <%= render "shared/feedback_fab", page: request.path unless controller_path.start_with?("admin") || controller_name == "feedbacks" %>
   </body>
 </html>
