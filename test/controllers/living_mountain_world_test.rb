@@ -43,6 +43,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path"
     assert_select ".lp-rpg-path", text: /Main trail/i
     assert_select "[data-controller*=strategy-rpg]"
+    assert_select ".lp-feedback-prompt", count: 0
   end
 
   test "resting mountain shows plan checkpoints on the trail" do
