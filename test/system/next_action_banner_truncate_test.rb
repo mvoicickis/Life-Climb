@@ -43,7 +43,7 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
   end
 
-  test "long complete_battle headline truncates on Today and Mountain without clipping CTA" do
+  test "long complete_battle headline truncates on Today without clipping CTA" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -56,8 +56,7 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
       assert_banner_truncates!(placement: "Today")
 
       visit life_journey_path(@journey)
-      assert_selector ".lp-dash-next[data-next-action-key=complete_battle]", wait: 5
-      assert_banner_truncates!(placement: "Mountain")
+      assert_no_selector ".lp-dash-next"
     end
   end
 

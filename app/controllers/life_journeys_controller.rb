@@ -175,11 +175,6 @@ class LifeJourneysController < ApplicationController
         :fight_today
       end
     @supporting_habits = @journey.habits.active.ordered.to_a
-    @next_action = Strategy::NextAction.for(
-      user: current_user,
-      session: session,
-      journey: @journey
-    )
   end
 
   def strategy_branch_for(focus, today_battle)

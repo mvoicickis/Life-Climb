@@ -22,7 +22,7 @@ class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "complete_battle banner appears on Mountain non-first-climb view" do
+  test "Mountain non-first-climb view never renders NextAction banner" do
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan",
       title: "Get interviews", position: 0
@@ -42,12 +42,8 @@ class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-first-climb", count: 0
-    assert_select ".lp-dash-next[data-next-action-key=complete_battle]", count: 1
-    title = css_select(".lp-dash-next__title").text
-    assert_match(/⚔️/, title)
-    assert_match(/Send five emails/, title)
-    assert_select ".lp-dash-next__face[src*='fox']", count: 1
-    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.complete_battle.cta")
+    assert_select ".lp-rpg__chrome-top", count: 1
+    assert_select ".lp-dash-next", count: 0
   end
 
   test "first-climb view shows coach without NextAction banner" do
