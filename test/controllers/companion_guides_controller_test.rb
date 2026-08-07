@@ -100,6 +100,16 @@ class CompanionGuidesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "mountain + Path links to companion guide with new_plan" do
+    # FirstClimb owns the empty spine; + Path appears once a Plan exists.
+    @user.strategy_goals.create!(
+      life_area: @journey.life_area,
+      life_journey: @journey,
+      parent: @goal,
+      horizon: "plan",
+      title: "Existing path",
+      position: 0
+    )
+
     get life_journey_path(@journey)
     assert_response :success
     assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
