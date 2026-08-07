@@ -42,13 +42,16 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
     assert_response :success
-    assert_select ".lp-qs-detail__add-track", text: /Track progress \(pages\)/i
-    assert_select "#qs-add-track"
+    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quest-title", text: /Volume 0/
+    assert_select ".lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
+    assert_select "#qs-add-track-#{@folder.id}"
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: plain_folder.id)
     assert_response :success
-    assert_select ".lp-qs-detail__add-track", count: 0
-    assert_select "#qs-add-track", count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Notes/
+    assert_select ".lp-climb-path__quest-add-track", count: 0
+    assert_select "#qs-add-track-#{plain_folder.id}", count: 0
   end
 
   test "opted-in objective under quantified project shows amount dialog and logs" do
