@@ -51,6 +51,18 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
+  test "create responds with turbo stream updating folder objectives" do
+    assert_difference -> { @practice.practice_tasks.count }, 1 do
+      post strategy_goal_practice_tasks_path(@practice),
+           params: { title: "Stream layout" },
+           as: :turbo_stream
+    end
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_includes response.body, "quest_objectives_#{@camp.id}"
+    assert_includes response.body, "quest_progress_#{@camp.id}"
+    assert_includes response.body, "Stream layout"
+  end
+
   test "quest detail checkboxes are status-only without complete action" do
     task = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
 
@@ -60,6 +72,8 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_select "span.lp-qs-obj__check[aria-label=?]", "Design layout — not done yet"
     assert_select ".lp-qs-obj__check[data-action]", count: 0
     assert_select ".lp-qs-detail__add-btn"
+    assert_select "turbo-frame#quest_objectives_#{@camp.id}"
+    assert_select "#quest_progress_#{@camp.id}"
 
     task.complete!
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
@@ -88,6 +102,16 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "New name", task.reload.title
   end
 
+  test "update title responds with turbo stream" do
+    task = @practice.practice_tasks.create!(user: @user, title: "Old name", position: 0)
+    patch practice_task_path(task), params: { title: "Stream name" }, as: :turbo_stream
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_includes response.body, "quest_objectives_#{@camp.id}"
+    assert_includes response.body, "Stream name"
+    refute_includes response.body, "quest_progress_#{@camp.id}"
+    assert_equal "Stream name", task.reload.title
+  end
+
   test "completing the last objective on Today finishes the host day" do
     first = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
     second = @practice.practice_tasks.create!(user: @user, title: "Polish header", position: 1)
@@ -111,5 +135,16 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
       delete practice_task_path(task)
     end
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+  end
+
+  test "destroy responds with turbo stream updating folder objectives" do
+    task = @practice.practice_tasks.create!(user: @user, title: "Temp stream", position: 0)
+    assert_difference -> { @practice.practice_tasks.count }, -1 do
+      delete practice_task_path(task), as: :turbo_stream
+    end
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_includes response.body, "quest_objectives_#{@camp.id}"
+    assert_includes response.body, "quest_progress_#{@camp.id}"
+    refute_includes response.body, "Temp stream"
   end
 end

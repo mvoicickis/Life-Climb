@@ -1,0 +1,44 @@
+<%# One Quest Space objective row. locals: task, create_url, qty_project %>
+<% task = local_assigns.fetch(:task) %>
+<% create_url = local_assigns[:create_url] %>
+<% qty_project = local_assigns[:qty_project] %>
+<div class="lp-qs-obj"
+     data-quest-space-row
+     data-title="<%= task.title %>"
+     data-position="<%= task.position %>"
+     data-completed="<%= task.completed? ? '1' : '0' %>"
+     data-create-url="<%= create_url %>"
+     data-destroy-url="<%= practice_task_path(task) %>">
+  <%# Status only — complete battles on Today, not on Mountain. %>
+  <span class="lp-qs-obj__check <%= 'is-done' if task.completed? %>"
+        role="img"
+        aria-label="<%= task.completed? ? t('strategy.rpg.objective_done_status', title: task.title) : t('strategy.rpg.objective_open_status', title: task.title) %>">
+    <%= "✓" if task.completed? %>
+  </span>
+  <div class="lp-qs-obj__main">
+    <input type="text"
+           class="lp-qs-obj__text <%= 'is-done' if task.completed? %>"
+           value="<%= task.title %>"
+           maxlength="120"
+           data-update-url="<%= practice_task_path(task) %>"
+           data-original-title="<%= task.title %>"
+           data-action="keydown->quest-space#saveTitle blur->quest-space#saveTitle"
+           aria-label="<%= t('strategy.rpg.objective_name') %>">
+    <% if qty_project %>
+      <label class="lp-qs-obj__track" for="qs-track-<%= task.id %>">
+        <%= check_box_tag "track_quantity_#{task.id}", "1", task.track_quantity?,
+              id: "qs-track-#{task.id}",
+              class: "lp-qs-obj__track-check",
+              data: {
+                update_url: practice_task_path(task),
+                action: "change->quest-space#saveTrackQuantity"
+              } %>
+        <span><%= t("strategy.quantity.track_objective", unit: qty_project.unit) %></span>
+      </label>
+    <% end %>
+  </div>
+  <button type="button"
+          class="lp-qs-obj__trash"
+          data-action="click->quest-space#deleteObjective"
+          aria-label="<%= t('strategy.rpg.delete_objective') %>">🗑</button>
+</div>
