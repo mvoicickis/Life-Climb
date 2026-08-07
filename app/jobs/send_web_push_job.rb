@@ -44,9 +44,17 @@ class SendWebPushJob < ApplicationJob
 
     message["token"] = user.signed_id(purpose: :notification_action, expires_in: 30.days)
     I18n.with_locale(user.locale.presence || I18n.default_locale) do
+      has_battle = user.daily_todos.for_day(Date.current).exists?
+      second_action =
+        if has_battle
+          { "action" => "mark_done", "title" => I18n.t("notifications.actions.mark_done") }
+        else
+          { "action" => "snooze", "title" => I18n.t("notifications.actions.snooze") }
+        end
+
       message["actions"] = [
         { "action" => "quick_add", "title" => I18n.t("notifications.actions.quick_add") },
-        { "action" => "mark_done", "title" => I18n.t("notifications.actions.mark_done") }
+        second_action
       ]
     end
   end

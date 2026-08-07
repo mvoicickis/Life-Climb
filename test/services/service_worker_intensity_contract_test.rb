@@ -28,6 +28,6 @@ class ServiceWorkerIntensityContractTest < ActiveSupport::TestCase
   end
 
   test "cache version bumped for intensity options" do
-    assert_match(/CACHE_VERSION = "v[6-9]"/, @source)
+    assert_match(/CACHE_VERSION = "v[7-9]"/, @source)
   end
 end

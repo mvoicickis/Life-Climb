@@ -21,6 +21,19 @@ class NotificationGateTest < ActiveSupport::TestCase
     assert_equal :vacation, result.reason
   end
 
+  test "skips when snoozed_until is in the future" do
+    @user.create_notification_preference!(snoozed_until: 2.hours.from_now)
+    result = NotificationGate.allow?(user: @user, kind: "test")
+    refute result.allowed?
+    assert_equal :snoozed, result.reason
+  end
+
+  test "allows when snoozed_until is in the past" do
+    @user.create_notification_preference!(snoozed_until: 1.hour.ago)
+    result = NotificationGate.allow?(user: @user, kind: "test")
+    assert result.allowed?
+  end
+
   test "skips when vacation_until is today or future" do
     @user.create_notification_preference!(vacation_until: Date.current)
     result = NotificationGate.allow?(user: @user, kind: "test")

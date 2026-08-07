@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module Battles
-  # Completes today's battle from a notification action — creates one first if needed.
+  # Completes today's battle from a notification action.
+  # Does not fabricate a battle when none exists — returns nothing_to_mark instead.
   class MarkDoneFromNotification
     class Error < StandardError; end
 
-    Result = Struct.new(:todo, :created, :title, keyword_init: true)
+    Result = Struct.new(:todo, :title, :nothing_to_mark, keyword_init: true)
 
     def self.call(user:, session:, category: nil)
       new(user: user, session: session, category: category).call
@@ -19,16 +20,12 @@ module Battles
 
     def call
       todo = completable_todo_for_today
-      created = false
-
       if todo.nil?
-        added = QuickAddToday.call(user: @user, category: @category)
-        todo = added.todo
-        created = true
+        return Result.new(todo: nil, title: nil, nothing_to_mark: true)
       end
 
       CompleteTodo.call(todo: todo, user: @user, session: @session)
-      Result.new(todo: todo.reload, created: created, title: todo.title)
+      Result.new(todo: todo.reload, title: todo.title, nothing_to_mark: false)
     end
 
     private

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v6"
+const CACHE_VERSION = "v7"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const OFFLINE_URL = "/offline.html"
 
@@ -11,8 +11,14 @@ const PRECACHE_URLS = [
 
 const DEFAULT_ACTIONS = [
   { action: "quick_add", title: "Quick-add battle" },
-  { action: "mark_done", title: "Mark done" }
+  { action: "snooze", title: "Remind me later" }
 ]
+
+const ACTION_PATHS = {
+  quick_add: "/notifications/quick_add",
+  mark_done: "/notifications/mark_done",
+  snooze: "/notifications/snooze"
+}
 
 // Intensity from push JSON (NotificationPreference). iOS/WebKit ignores
 // silent / vibrate / requireInteraction — options are dropped, not errors.
@@ -110,7 +116,7 @@ self.addEventListener("notificationclick", (event) => {
   const data = (event.notification && event.notification.data) || {}
   event.notification.close()
 
-  if (action === "quick_add" || action === "mark_done") {
+  if (ACTION_PATHS[action]) {
     event.waitUntil(handleNotificationAction(action, data))
     return
   }
@@ -120,10 +126,8 @@ self.addEventListener("notificationclick", (event) => {
 })
 
 async function handleNotificationAction(action, data) {
-  const path =
-    action === "quick_add"
-      ? "/notifications/quick_add"
-      : "/notifications/mark_done"
+  const path = ACTION_PATHS[action]
+  if (!path) return
 
   try {
     const response = await fetch(path, {

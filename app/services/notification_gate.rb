@@ -28,6 +28,7 @@ class NotificationGate
     return allow! if @preference.nil?
 
     return deny!(:vacation) if @preference.vacation_active?
+    return deny!(:snoozed) if @preference.snoozed?
     return deny!(:frequency_off) if @preference.frequency == "off"
 
     # PR5 hook: throttle often / sometimes / rarely here (last-sent / daily caps).

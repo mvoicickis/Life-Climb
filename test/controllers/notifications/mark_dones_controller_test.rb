@@ -18,18 +18,15 @@ module Notifications
       assert_response :success
       body = JSON.parse(response.body)
       assert body["ok"]
-      refute body["created"]
+      refute body["nothing_to_mark"]
       assert todo.reload.completed?
     end
 
-    test "creates category example then marks done when none incomplete" do
+    test "returns honest nothing_to_mark when no incomplete battle" do
       @user.daily_todos.for_day.update_all(completed_at: Time.current)
       @user.strategy_goals.where(horizon: "day", scheduled_on: Date.current).update_all(completed_at: Time.current)
       @user.daily_todos.for_day.incomplete.delete_all
-
-      self_examples = Array(I18n.t("strategy.first_climb.examples.self.action"))
-      career_examples = Array(I18n.t("strategy.first_climb.examples.career.action"))
-      refute_equal self_examples.sort, career_examples.sort
+      before_count = @user.daily_todos.for_day.count
 
       post notifications_mark_done_path,
            params: { token: @token, category: "self" },
@@ -37,9 +34,10 @@ module Notifications
       assert_response :success
       body = JSON.parse(response.body)
       assert body["ok"]
-      assert body["created"]
-      assert_includes self_examples, body["title"]
-      assert @user.daily_todos.for_day.where(title: body["title"]).first.completed?
+      assert body["nothing_to_mark"]
+      assert_equal I18n.t("notifications.actions.mark_done_none"), body["message"]
+      assert_equal before_count, @user.daily_todos.for_day.count
+      assert @user.daily_todos.for_day.incomplete.none?
     end
 
     test "rejects invalid token" do

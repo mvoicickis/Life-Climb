@@ -162,7 +162,24 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal @user, User.find_signed(payload["token"], purpose: :notification_action)
     assert_equal 2, payload["actions"].size
     assert_equal "quick_add", payload["actions"][0]["action"]
-    assert_equal "mark_done", payload["actions"][1]["action"]
     assert payload["actions"][0]["title"].present?
+  end
+
+  test "actions use mark_done when a Today battle exists" do
+    seed_climb!(@user, today_mission: "Ship it")
+    assert @user.daily_todos.for_day(Date.current).exists?
+
+    SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "win", "category" => "career" })
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal %w[quick_add mark_done], payload["actions"].map { |a| a["action"] }
+  end
+
+  test "actions use snooze when no Today battle exists" do
+    @user.daily_todos.delete_all
+    refute @user.daily_todos.for_day(Date.current).exists?
+
+    SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "morning" })
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal %w[quick_add snooze], payload["actions"].map { |a| a["action"] }
   end
 end
