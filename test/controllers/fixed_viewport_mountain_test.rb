@@ -128,4 +128,25 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path__node.is-selected", text: /Daily battles/
     assert_select "#rpg-add-checkpoint"
   end
+
+  test "stylesheet keeps content-sized trail inside fixed 100dvh shell" do
+    css = Rails.root.join("app/assets/tailwind/application.css").read
+    shell = css[/\.lp-rpg\.is-focus-phase\s*\{[^}]+\}/m]
+    planning = css[/\.lp-rpg__planning\s*\{[^}]+\}/m]
+    trail = css[/\.lp-rpg__stage-trail\s*\{[^}]+\}/m]
+    focus_trail = css[/\.lp-rpg\.is-focus-phase \.lp-rpg__stage-sections\.lp-rpg__stage-trail\s*\{[^}]+\}/m]
+
+    assert_match(/height:\s*100dvh/, shell)
+    assert_match(/max-height:\s*100dvh/, shell)
+    assert_match(/overflow:\s*hidden/, shell)
+    refute_match(/grid-template-rows:\s*minmax\(0,\s*1fr\)\s+auto/, planning)
+    assert_match(/display:\s*flex/, planning)
+    assert_match(/flex-direction:\s*column/, planning)
+    assert_match(/flex:\s*0\s+1\s+auto/, trail)
+    assert_match(/max-height:\s*100%/, trail)
+    assert_match(/height:\s*fit-content/, trail)
+    assert_match(/overflow-y:\s*auto/, trail)
+    assert_match(/max-height:\s*100%/, focus_trail)
+    refute_match(/max-height:\s*none/, focus_trail)
+  end
 end
