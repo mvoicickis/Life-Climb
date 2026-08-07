@@ -17,6 +17,10 @@ class NotificationPreference < ApplicationRecord
     vacation_paused? || (vacation_until.present? && vacation_until >= Date.current)
   end
 
+  def snoozed?
+    snoozed_until.present? && snoozed_until > Time.current
+  end
+
   private
 
   def time_zone_must_be_valid

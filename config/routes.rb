@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   namespace :notifications do
     resource :quick_add, only: :create, controller: "quick_adds"
     resource :mark_done, only: :create, controller: "mark_dones"
+    resource :snooze, only: :create, controller: "snoozes"
     resource :morning_nudge, only: :create, controller: "morning_nudges"
   end
   namespace :settings do

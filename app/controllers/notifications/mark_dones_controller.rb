@@ -8,20 +8,22 @@ module Notifications
         session: session,
         category: params[:category]
       )
-      message =
-        if result.created
-          I18n.t("notifications.actions.mark_done_created_ok", title: result.title)
-        else
-          I18n.t("notifications.actions.mark_done_ok", title: result.title)
-        end
+
+      if result.nothing_to_mark
+        return render json: {
+          ok: true,
+          nothing_to_mark: true,
+          message: I18n.t("notifications.actions.mark_done_none")
+        }
+      end
 
       render json: {
         ok: true,
-        message: message,
+        message: I18n.t("notifications.actions.mark_done_ok", title: result.title),
         title: result.title,
-        created: result.created
+        nothing_to_mark: false
       }
-    rescue Battles::QuickAddToday::Error, Battles::MarkDoneFromNotification::Error, ArgumentError => e
+    rescue Battles::MarkDoneFromNotification::Error, ArgumentError => e
       render json: { ok: false, error: e.message }, status: :unprocessable_entity
     rescue ActiveRecord::RecordInvalid => e
       render json: { ok: false, error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_entity

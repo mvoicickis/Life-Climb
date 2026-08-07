@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_080000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -271,6 +271,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_213000) do
     t.date "last_morning_nudge_sent_on"
     t.integer "quiet_hours_end"
     t.integer "quiet_hours_start"
+    t.datetime "snoozed_until"
     t.boolean "stuck_notifications_enabled", default: true, null: false
     t.string "time_zone"
     t.datetime "updated_at", null: false

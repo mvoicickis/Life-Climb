@@ -55,6 +55,17 @@ class NotificationPreferenceTest < ActiveSupport::TestCase
     refute pref.vacation_active?
   end
 
+  test "snoozed? is true only while snoozed_until is in the future" do
+    pref = users(:one).build_notification_preference
+    refute pref.snoozed?
+
+    pref.snoozed_until = 1.hour.from_now
+    assert pref.snoozed?
+
+    pref.snoozed_until = 1.minute.ago
+    refute pref.snoozed?
+  end
+
   test "notification_preference! creates once" do
     user = users(:two)
     assert_nil user.notification_preference
