@@ -55,6 +55,10 @@
             plans: plans,
             plan: plan,
             goal: @goal %>
+
+      <% if @next_action.present? %>
+        <%= render "shared/next_action", next_action: @next_action %>
+      <% end %>
     </div>
 
     <div class="lp-rpg__stage is-planning">
