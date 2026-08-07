@@ -21974,6 +21974,24 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
   gap: 0.65rem;
   width: min(100%, 19rem);
 }
+/* JS adds is-pending (like landing-pre); IO flips to is-visible. No-JS stays opaque. */
+.lp-climb-path__node.is-pending {
+  opacity: 0;
+  transform: translateY(0.75rem) scale(0.97);
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+.lp-climb-path__node.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-climb-path__node.is-pending,
+  .lp-climb-path__node.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
 .lp-climb-path__node.is-left {
   justify-self: start;
   margin-inline-start: 0.15rem;

@@ -41,10 +41,11 @@ class ClimbPathScrollTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camps[2].id)
     assert_selector ".lp-climb-path", wait: 5
     assert_selector ".lp-rpg__stage-trail", wait: 5
-    assert_selector ".lp-climb-path__node.is-done", minimum: 2
-    assert_selector ".lp-climb-path__node.is-current", wait: 5
+    # Entrance IO may leave off-screen nodes at opacity 0 until scrolled into view.
+    assert_selector ".lp-climb-path__node.is-done", minimum: 2, visible: :all
+    assert_selector ".lp-climb-path__node.is-current.is-visible", wait: 5
     assert_selector ".lp-climb-path__face", wait: 5
-    assert_selector ".lp-climb-path__node.is-locked", minimum: 1
+    assert_selector ".lp-climb-path__node.is-locked", minimum: 1, visible: :all
     assert_no_selector ".lp-rpg-sections__arrow"
     assert_no_selector ".lp-rpg-section-card"
 
