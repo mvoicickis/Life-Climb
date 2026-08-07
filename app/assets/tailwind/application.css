@@ -16460,10 +16460,32 @@ button.lp-strategy-overflow {
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  /* Flex column: chrome sizes to content; stage is content-sized and can
+     shrink (cap). margin-top:auto on stage parks free space above content. */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   padding-bottom: calc(4.85rem + env(safe-area-inset-bottom));
   box-sizing: border-box;
+}
+/* Scenic must not participate in the flex flow (fixed/absolute flex
+   children still confuse some engines' free-space distribution). */
+.lp-rpg.is-focus-phase > .lp-rpg-scenic,
+.lp-rpg.is-focus-phase > .lp-rpg-scenic__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  flex: 0 0 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+.lp-rpg.is-focus-phase > .lp-rpg__chrome-top {
+  flex: 0 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 5;
 }
 /* Scenic is nested inside .lp-rpg — theme veil keeps glass text readable */
 .lp-rpg.is-focus-phase .lp-rpg-scenic {
@@ -16494,6 +16516,29 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 }
 .lp-game:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) {
   height: 100dvh;
+  /* RPG shell already clears the fixed nav — avoid a second bottom void
+     that shifts the 100dvh mountain up and invents a gap above the nav. */
+  padding-bottom: 0;
+}
+.lp-main:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+/* Feedback prompt is yielded after the 100dvh shell — keep it out of flow
+   so it cannot stretch <main> and shift the mountain upward. */
+.lp-main:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) > .lp-feedback-prompt {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(4.85rem + env(safe-area-inset-bottom));
+  z-index: 45;
+  max-height: min(40vh, 16rem);
+  overflow: auto;
 }
 
 .lp-rpg__chrome-top,
@@ -16530,30 +16575,44 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   padding-inline: var(--lp-rpg-gutter, 0.85rem);
   box-sizing: border-box;
 }
-/* Planning Command Center — one briefing column (glance + plan) */
+/* Planning Command Center — content-sized stage/planning/trail.
+   Technique: keep parent 1fr tracks as MAX caps; children use
+   height: max-content + max-height: 100% + align-self: start so sparse
+   journeys do not reserve empty viewport below the last camp/CTA.
+   Dense journeys hit the cap and scroll on .lp-rpg__stage-trail only. */
 .lp-rpg__stage.is-planning {
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: none;
 }
-/* Trail is content-sized (not forced 1fr). Long climbs shrink into the
-   planning slot and scroll; habits stay auto-sized below. Shell stays 100dvh. */
-.lp-rpg__planning {
+.lp-rpg.is-focus-phase .lp-rpg__stage.is-planning {
+  /* Content-sized; flex-shrink caps against leftover shell space.
+     margin-top:auto puts free space above the climb, not below it. */
+  flex: 0 1 auto;
+  margin-top: auto;
+  width: 100%;
+  height: max-content;
   min-height: 0;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: stretch;
+  overflow: hidden;
+}
+.lp-rpg__planning {
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-content: start;
   gap: var(--lp-rpg-gap, 0.5rem);
   overflow: hidden;
 }
-.lp-rpg__planning > .lp-rpg-habits {
-  flex: 0 0 auto;
-}
 .lp-rpg__stage-trail {
-  flex: 0 1 auto;
+  align-self: start;
+  width: 100%;
   min-height: 0;
+  height: max-content;
   max-height: 100%;
-  height: fit-content;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -16570,10 +16629,11 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow: hidden;
 }
 .lp-rpg.is-focus-phase .lp-rpg__stage-sections.lp-rpg__stage-trail {
-  flex: 0 1 auto;
+  align-self: start;
+  width: 100%;
   min-height: 0;
+  height: max-content;
   max-height: 100%;
-  height: fit-content;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -19019,7 +19079,6 @@ a.lp-rpg-practice-cat {
   .lp-rpg.is-focus-phase {
     --lp-rpg-gutter: 0.7rem;
     --lp-rpg-gap: 0.28rem;
-    grid-template-rows: auto minmax(13rem, 1fr) auto;
     padding-bottom: calc(4.15rem + env(safe-area-inset-bottom));
   }
   .lp-rpg.is-focus-phase .lp-rpg__chrome-top {
@@ -19028,9 +19087,6 @@ a.lp-rpg-practice-cat {
   }
   .lp-rpg.is-focus-phase .lp-rpg__planning {
     gap: 0.35rem;
-  }
-  .lp-rpg__stage.is-planning {
-    grid-template-rows: minmax(0, 1fr);
   }
   .lp-rpg__stage-trail.is-glance {
     max-height: 3.55rem;
@@ -21490,7 +21546,7 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path {
   position: relative;
   z-index: 1;
-  padding: 0.15rem 0.25rem 0.75rem;
+  padding: 0.15rem 0.25rem 0.3rem;
   box-sizing: border-box;
 }
 .lp-climb-path__kicker {
@@ -21504,7 +21560,7 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path__list {
   list-style: none;
   margin: 0;
-  padding: 0.25rem 0 0.55rem;
+  padding: 0.25rem 0 0.2rem;
   display: grid;
   gap: 0.7rem;
   position: relative;
