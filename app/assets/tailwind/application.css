@@ -16534,16 +16534,26 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg__stage.is-planning {
   grid-template-rows: minmax(0, 1fr);
 }
+/* Trail is content-sized (not forced 1fr). Long climbs shrink into the
+   planning slot and scroll; habits stay auto-sized below. Shell stays 100dvh. */
 .lp-rpg__planning {
   min-height: 0;
   height: 100%;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: var(--lp-rpg-gap, 0.5rem);
   overflow: hidden;
 }
+.lp-rpg__planning > .lp-rpg-habits {
+  flex: 0 0 auto;
+}
 .lp-rpg__stage-trail {
+  flex: 0 1 auto;
   min-height: 0;
+  max-height: 100%;
+  height: fit-content;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -16560,7 +16570,10 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   overflow: hidden;
 }
 .lp-rpg.is-focus-phase .lp-rpg__stage-sections.lp-rpg__stage-trail {
-  max-height: none;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  height: fit-content;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
