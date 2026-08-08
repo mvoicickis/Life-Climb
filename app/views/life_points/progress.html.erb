@@ -34,6 +34,8 @@
         summary: @mountain_summary,
         journey: @journey %>
 
+  <%= render "life_points/journey_trends", trends: @journey_trends %>
+
   <div class="lp-progress__grid">
     <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
   </div>

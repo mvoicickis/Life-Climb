@@ -1,0 +1,12 @@
+<%# locals: battles %>
+<% comparison_key = "progress.trends.battles_#{battles[:comparison]}" %>
+<article class="lp-progress-card lp-journey-trends__card" aria-label="<%= t('progress.trends.battles_title') %>">
+  <header class="lp-progress-card__head">
+    <h3><%= t("progress.trends.battles_title") %></h3>
+    <p><%= t(comparison_key) %></p>
+  </header>
+  <div class="lp-journey-trends__chart">
+    <canvas data-journey-trends-target="battles"
+            aria-label="<%= t('progress.trends.battles_title') %>"></canvas>
+  </div>
+</article>
