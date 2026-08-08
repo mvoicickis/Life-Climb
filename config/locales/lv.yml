@@ -92,6 +92,8 @@ lv:
       destination_swipe_hint: "velc, lai mainītu galamērķi"
       edit_destination: "Rediģēt galamērķi"
       project_sections: "Projekta sadaļas"
+      path_your_path: "Tavs ceļš"
+      path_from_trackers: "No taviem Izsekojamiem"
       project_trackers:
         title: "Izsekojamie"
         add: "Pievienot vēl vienu Izsekojamo šim Projektam"

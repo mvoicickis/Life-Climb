@@ -21875,6 +21875,40 @@ a.lp-rpg-camp-row {
   text-transform: uppercase;
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
 }
+.lp-climb-path__from-trackers {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1)) 80%, transparent);
+}
+.lp-climb-path__trackers-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.15rem 0 0.2rem;
+  display: grid;
+  gap: 0.45rem;
+}
+.lp-climb-path__node.is-tracker {
+  width: min(100%, 19rem);
+  justify-self: start;
+  margin-inline-start: 0.15rem;
+  align-items: center;
+}
+.lp-climb-path__card.is-tracker {
+  padding: 0.45rem 0.65rem;
+}
+.lp-climb-path__card.is-tracker .lp-climb-path__link,
+.lp-climb-path__card.is-tracker .lp-climb-path__link.is-static {
+  min-height: 2.15rem;
+  padding-inline-end: 1.35rem;
+}
+.lp-climb-path__mark.is-current.is-compact {
+  width: 2.35rem;
+  height: 2.35rem;
+}
+.lp-climb-path__node.is-tracker .lp-climb-path__pin.is-current {
+  width: 2.55rem;
+  height: 2.55rem;
+}
 .lp-climb-path__list {
   list-style: none;
   margin: 0;
