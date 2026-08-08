@@ -89,4 +89,99 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /\A\s*Progress\s*\z/, count: 0
   end
+
+  test "journey trends show battles section and omit empty quantified habits" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Season", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Path", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    leaf = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "project", title: "Steps", position: 0
+    )
+    day = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: leaf, horizon: "day",
+      title: "Ship it", scheduled_on: Date.current, position: 0
+    )
+    @user.daily_todos.create!(
+      title: "Ship it",
+      aspect_key: @area.key,
+      scheduled_on: Date.current,
+      strategy_goal: day,
+      completed_at: Time.current,
+      position: 0
+    )
+
+    get life_points_path
+    assert_response :success
+    assert_match(/Your climb trends/i, response.body)
+    assert_match(/Battles per week/i, response.body)
+    assert_match(/More Battles this week than last|About the same as last week|A bit quieter than last week/i, response.body)
+    assert_select ".lp-journey-trends"
+    assert_select "[data-controller='journey-trends']"
+    assert_select ".lp-journey-trends__quantified", count: 0
+    assert_select ".lp-journey-trends__habits", count: 0
+    assert_select "canvas[data-journey-trends-target='quantified']", count: 0
+    assert_match(/See activity details/i, response.body)
+    assert_match(/Weekly activity/i, response.body)
+  end
+
+  test "journey trends render quantified graphs and linked habit week" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Season", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Path", position: 0
+    )
+    pages = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
+      title: "Read the book", position: 0, target_amount: 100, unit: "pages"
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
+      title: "Save cash", position: 1, target_amount: 500, unit: "€"
+    )
+    @user.strategy_quantity_logs.create!(
+      strategy_goal: pages, amount: 12, unit: "pages", logged_on: Date.current
+    )
+    @user.habits.create!(
+      name: "Linked stretch",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      unit: "times",
+      show_on_home: true,
+      position: 1,
+      stat_type: "growth",
+      life_journey: @journey
+    )
+    @user.habits.create!(
+      name: "Unlinked walk",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      unit: "times",
+      show_on_home: true,
+      position: 2,
+      stat_type: "growth"
+    )
+
+    get life_points_path
+    assert_response :success
+    assert_match(/Project totals/i, response.body)
+    assert_match(/Read the book/i, response.body)
+    assert_match(/Save cash/i, response.body)
+    assert_match(/Target 100 pages/i, response.body)
+    assert_match(/Target 500 €/i, response.body)
+    assert_select "canvas[data-journey-trends-target='quantified']", count: 2
+    assert_match(/Habits this week/i, response.body)
+    assert_match(/Linked stretch/i, response.body)
+    assert_no_match(/Unlinked walk/i, response.body)
+    assert_select ".lp-journey-habits__row", count: 1
+    assert_select ".lp-journey-habits__day", count: 7
+  end
 end

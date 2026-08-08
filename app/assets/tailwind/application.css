@@ -8060,6 +8060,7 @@ html[data-theme="dark"] {
 
 .lp-journey-points,
 .lp-journey-summary,
+.lp-journey-trends,
 .lp-journey-activity {
   margin-top: var(--lp-space-1);
 }
@@ -8169,6 +8170,91 @@ html[data-theme="dark"] {
 
 .lp-journey-summary__link a:hover {
   text-decoration: underline;
+}
+
+.lp-journey-trends {
+  margin-top: var(--lp-space-4);
+  display: grid;
+  gap: var(--lp-space-3);
+}
+
+.lp-journey-trends__card {
+  margin: 0;
+}
+
+.lp-journey-trends__card h3,
+.lp-journey-trends__card h4,
+.lp-journey-trends__quantified h3,
+.lp-journey-trends__habits h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.lp-journey-trends__quantified,
+.lp-journey-trends__habits {
+  display: grid;
+  gap: var(--lp-space-3);
+}
+
+.lp-journey-trends__chart {
+  position: relative;
+  height: 160px;
+  margin-top: 0.35rem;
+}
+
+.lp-journey-habits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-journey-habits__row {
+  border-radius: 1.1rem;
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.85rem 1rem;
+}
+
+.lp-journey-habits__name {
+  margin: 0 0 0.55rem;
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+}
+
+.lp-journey-habits__days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.lp-journey-habits__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-journey-habits__mark {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(143, 163, 153, 0.45);
+  background: transparent;
+}
+
+.lp-journey-habits__day.is-done .lp-journey-habits__mark {
+  border-color: var(--lp-green, #22c55e);
+  background: var(--lp-green, #22c55e);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16);
 }
 
 .lp-journey-activity {

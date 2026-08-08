@@ -1,0 +1,27 @@
+<%# locals: habits %>
+<section class="lp-journey-trends__habits" aria-label="<%= t('progress.trends.habits_title') %>">
+  <header class="lp-journey-section__head">
+    <h3><%= t("progress.trends.habits_title") %></h3>
+    <p><%= t("progress.trends.habits_hint") %></p>
+  </header>
+
+  <ul class="lp-journey-habits">
+    <% habits.each do |habit| %>
+      <li class="lp-journey-habits__row">
+        <p class="lp-journey-habits__name"><%= habit[:name] %></p>
+        <ol class="lp-journey-habits__days" aria-label="<%= habit[:name] %>">
+          <% habit[:days].each do |day| %>
+            <li class="lp-journey-habits__day <%= "is-done" if day[:done] %>"
+                title="<%= day[:label] %>">
+              <span class="lp-journey-habits__mark" aria-hidden="true"></span>
+              <span class="sr-only">
+                <%= day[:label] %>:
+                <%= day[:done] ? t("progress.trends.habit_done") : t("progress.trends.habit_missed") %>
+              </span>
+            </li>
+          <% end %>
+        </ol>
+      </li>
+    <% end %>
+  </ul>
+</section>

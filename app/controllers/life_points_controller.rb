@@ -29,6 +29,10 @@ class LifePointsController < ApplicationController
     @action_points = current_user.action_points
     @strategy_points = current_user.strategy_points
     @mountain_summary = @progress[:mountain_summary]
+    @journey_trends =
+      if @journey
+        Progress::JourneyTrends.call(user: current_user, journey: @journey)
+      end
     render "life_points/progress"
   end
 

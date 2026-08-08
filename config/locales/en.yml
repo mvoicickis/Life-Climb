@@ -247,6 +247,20 @@ en:
     empty_categories: "Complete battles to see category mix."
     empty_projects: "Start a journey to track project progress."
     close: "Close"
+    trends:
+      title: "Your climb trends"
+      hint: "Battles, Project totals, and Habits on this Journey."
+      battles_title: "Battles per week"
+      battles_up: "More Battles this week than last"
+      battles_flat: "About the same as last week"
+      battles_down: "A bit quieter than last week"
+      quantified_title: "Project totals"
+      quantified_hint: "Cumulative progress toward each Project target."
+      target_line: "Target %{target} %{unit}"
+      habits_title: "Habits this week"
+      habits_hint: "Habits linked to this Journey."
+      habit_done: "done"
+      habit_missed: "missed"
 
   dashboard_v2:
     area: "Focus"

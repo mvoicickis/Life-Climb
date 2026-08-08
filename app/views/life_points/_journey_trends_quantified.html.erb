@@ -1,0 +1,26 @@
+<%# locals: series_list %>
+<section class="lp-journey-trends__quantified" aria-label="<%= t('progress.trends.quantified_title') %>">
+  <header class="lp-journey-section__head">
+    <h3><%= t("progress.trends.quantified_title") %></h3>
+    <p><%= t("progress.trends.quantified_hint") %></p>
+  </header>
+
+  <% series_list.each do |series| %>
+    <article class="lp-progress-card lp-journey-trends__card"
+             aria-label="<%= series[:title] %>">
+      <header class="lp-progress-card__head">
+        <h4><%= series[:title] %></h4>
+        <p>
+          <%= t("progress.trends.target_line",
+                target: number_with_precision(series[:target], strip_insignificant_zeros: true),
+                unit: series[:unit]) %>
+        </p>
+      </header>
+      <div class="lp-journey-trends__chart">
+        <canvas data-journey-trends-target="quantified"
+                data-project-id="<%= series[:project_id] %>"
+                aria-label="<%= series[:title] %>"></canvas>
+      </div>
+    </article>
+  <% end %>
+</section>
