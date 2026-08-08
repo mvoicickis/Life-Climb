@@ -163,9 +163,6 @@ class LifeJourneysController < ApplicationController
     @open_sheet = params[:sheet].present?
     @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
     @force_notebook = params[:notebook].present?
-    @open_project_trackers =
-      @focus&.path_level_camp? &&
-      (@focus.tracker_linked? || params[:sheet].to_s == "trackers")
     if @focus&.path_level_camp?
       linked = @focus.linked_habits.to_a
       @project_tracker_sparklines = linked.to_h { |habit| [ habit.id, habit.sparkline_amounts(days: 14) ] }
