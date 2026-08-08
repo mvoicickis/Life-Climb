@@ -1,11 +1,15 @@
-<%# locals: areas, unfiled, sparklines %>
+<%# locals: areas, unfiled, series %>
 <% areas = Array(local_assigns[:areas]) %>
 <% unfiled = Array(local_assigns[:unfiled]) %>
-<% sparklines = local_assigns[:sparklines] || {} %>
+<% series = Array(local_assigns[:series]) %>
 <% return unless areas.any? || unfiled.any? %>
 
-<section class="lp-journey-stats" aria-label="<%= t('progress.stats.title') %>"
-         data-controller="journey-stats">
+<%= tag.section class: "lp-journey-stats",
+      aria: { label: t("progress.stats.title") },
+      data: {
+        controller: "journey-stats",
+        journey_stats_series_value: series
+      } do %>
   <header class="lp-journey-section__head">
     <h2><%= t("progress.stats.title") %></h2>
     <p><%= t("progress.stats.hint") %></p>
@@ -36,11 +40,9 @@
       </header>
 
       <% if trackers.any? %>
-        <ul class="lp-journey-stats__grid">
+        <ul class="lp-journey-stats__list">
           <% trackers.each do |habit| %>
-            <%= render "life_points/journey_stat_card",
-                  habit: habit,
-                  values: sparklines[habit.id] || habit.sparkline_amounts(days: 14) %>
+            <%= render "life_points/journey_stat_card", habit: habit %>
           <% end %>
         </ul>
       <% else %>
@@ -54,11 +56,9 @@
       <header class="lp-journey-stats__area-head">
         <h3 class="lp-journey-stats__area-name"><%= t("habits.unfiled_title") %></h3>
       </header>
-      <ul class="lp-journey-stats__grid">
+      <ul class="lp-journey-stats__list">
         <% unfiled.each do |habit| %>
-          <%= render "life_points/journey_stat_card",
-                habit: habit,
-                values: sparklines[habit.id] || habit.sparkline_amounts(days: 14) %>
+          <%= render "life_points/journey_stat_card", habit: habit %>
         <% end %>
       </ul>
     </section>
@@ -128,4 +128,4 @@
       <% end %>
     </div>
   </dialog>
-</section>
+<% end %>

@@ -1,23 +1,21 @@
-<%# locals: habit, values %>
+<%# locals: habit %>
 <% habit = local_assigns.fetch(:habit) %>
-<% values = Array(local_assigns[:values]) %>
-<li class="lp-journey-stats__card">
+<li class="lp-journey-stats__card lp-progress-card">
   <div class="lp-journey-stats__card-top">
     <%= link_to habit.name, habit_path(habit), class: "lp-journey-stats__name" %>
     <span class="lp-journey-stats__unit"><%= habit.unit %></span>
+    <% if habit.tracker_state_label.present? %>
+      <span class="lp-areas__state is-<%= habit.state.presence || 'unset' %>">
+        <%= habit.tracker_state_label %>
+      </span>
+    <% end %>
   </div>
 
-  <% if habit.tracker_state_label.present? %>
-    <span class="lp-areas__state is-<%= habit.state.presence || 'unset' %>">
-      <%= habit.tracker_state_label %>
-    </span>
-  <% end %>
-
-  <% if values.any? %>
-    <div class="lp-journey-stats__spark" aria-label="<%= t('habits.sparkline_label') %>">
-      <%= render "habits/sparkline", values: values %>
-    </div>
-  <% end %>
+  <div class="lp-journey-stats__chart" aria-label="<%= t('progress.stats.chart_label', name: habit.name) %>">
+    <canvas data-journey-stats-target="chart"
+            data-habit-id="<%= habit.id %>"
+            aria-label="<%= habit.name %>"></canvas>
+  </div>
 
   <%= button_to t("progress.stats.hide"),
         habit_path(habit, return_to: "journey"),

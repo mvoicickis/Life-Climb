@@ -133,6 +133,20 @@ class Habit < ApplicationRecord
     end
   end
 
+  # Labeled daily points for Journey “Your stats” Chart.js line charts.
+  def dashboard_chart_series(days: 14)
+    amounts = sparkline_amounts(days: days)
+    start = Date.current - (days - 1)
+    amounts.each_with_index.map do |value, index|
+      date = start + index
+      {
+        date: date.iso8601,
+        label: I18n.l(date, format: "%b %-d"),
+        value: value.to_f
+      }
+    end
+  end
+
   def completed_today?
     completions.exists?(completed_on: Date.current)
   end
