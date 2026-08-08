@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_221635) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -342,6 +342,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_221635) do
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"
+    t.datetime "manually_completed_at"
     t.integer "parent_id"
     t.integer "position", default: 0, null: false
     t.string "repeat", default: "none", null: false

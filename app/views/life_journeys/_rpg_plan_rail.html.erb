@@ -32,13 +32,16 @@
               data-controller="plan-card-menu"
               data-plan-id="<%= p.id %>">
             <%= link_to life_journey_path(@journey, goal_id: goal.id, plan_id: p.id),
-                  class: "lp-rpg-path is-#{accent} #{'is-focus' if focused} #{'is-done' if p.completed?}",
+                  class: "lp-rpg-path is-#{accent} #{'is-focus' if focused} #{'is-done' if p.completed?} #{'is-manual' if p.manually_completed?}",
                   data: { turbo: true },
                   aria: { current: focused ? "true" : nil } do %>
               <span class="lp-rpg-path__title" title="<%= p.title %>"><%= p.title %></span>
               <% if focused %>
                 <span class="lp-rpg-path__pct"
                       data-strategy-celebrate-target="progressBar"><%= p.progress_percent.to_i %>%</span>
+              <% end %>
+              <% if p.manually_completed? %>
+                <span class="lp-rpg-path__manual"><%= t("strategy.rpg.manually_closed") %></span>
               <% end %>
             <% end %>
             <button type="button"
@@ -61,6 +64,19 @@
                 <span aria-hidden="true">✏</span>
                 <%= t("strategy.rpg.edit_plan") %>
               </button>
+              <% if p.manually_completed? %>
+                <%= button_to t("strategy.rpg.reopen"),
+                      strategy_goal_manual_completion_path(p),
+                      method: :delete,
+                      class: "lp-rpg-path__menu-item",
+                      form: { class: "lp-rpg-path__menu-form", data: { turbo: false } } %>
+              <% elsif !p.completed? || p.progress_percent.to_i < 100 %>
+                <%= button_to t("strategy.rpg.mark_complete"),
+                      strategy_goal_manual_completion_path(p),
+                      method: :post,
+                      class: "lp-rpg-path__menu-item",
+                      form: { class: "lp-rpg-path__menu-form", data: { turbo: false } } %>
+              <% end %>
               <button type="button"
                       class="lp-rpg-path__menu-item is-danger"
                       role="menuitem"

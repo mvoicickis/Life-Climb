@@ -116,6 +116,40 @@ class Strategy::SyncCompletionTest < ActiveSupport::TestCase
     assert_not goal.reload.completed?
   end
 
+  test "sticky manual project complete survives resync when percent is below 100" do
+    goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
+    plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
+    # Quantified path project: complete stamp does not force Progress % to 100.
+    project = @user.strategy_goals.create!(
+      life_area: @area, parent: plan, horizon: "project", title: "Revenue",
+      position: 0, target_amount: 100, unit: "€", current_amount: 40
+    )
+    open = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "B", position: 1)
+
+    project.manually_complete!
+    assert_equal 40, Strategy::Progress.percent(project.reload)
+
+    Strategy::SyncCompletion.resync!(node: open)
+
+    assert project.reload.manually_completed?
+    assert project.completed?
+    assert_equal 40, Strategy::Progress.percent(project)
+  end
+
+  test "sticky children satisfy plan auto-complete without sticky on the plan" do
+    goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
+    plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
+    a = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "A", position: 0)
+    b = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "B", position: 1)
+
+    a.manually_complete!
+    b.manually_complete!
+    Strategy::SyncCompletion.resync!(node: b)
+
+    assert plan.reload.completed?
+    assert_nil plan.manually_completed_at
+  end
+
   test "companion guide create_project reopens an already-complete plan" do
     journey = @user.life_journeys.create!(
       life_area: @area,
