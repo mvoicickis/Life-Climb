@@ -159,6 +159,18 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
       stat_type: "growth",
       life_journey: @journey
     )
+    pages_habit = @user.habits.create!(
+      name: "Income",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      unit: "€",
+      show_on_home: true,
+      position: 2,
+      stat_type: "growth",
+      life_journey: @journey
+    )
+    @user.daily_logs.create!(habit: pages_habit, logged_on: Date.current, amount: 45)
     @user.habits.create!(
       name: "Unlinked walk",
       points: 5,
@@ -166,7 +178,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
       active: true,
       unit: "times",
       show_on_home: true,
-      position: 2,
+      position: 3,
       stat_type: "growth"
     )
 
@@ -180,8 +192,12 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select "canvas[data-journey-trends-target='quantified']", count: 2
     assert_match(/Habits this week/i, response.body)
     assert_match(/Linked stretch/i, response.body)
+    assert_match(/Income/i, response.body)
     assert_no_match(/Unlinked walk/i, response.body)
-    assert_select ".lp-journey-habits__row", count: 1
-    assert_select ".lp-journey-habits__day", count: 7
+    assert_select ".lp-journey-habits__row", count: 2
+    assert_select ".lp-journey-habits__row.is-quantity", count: 1
+    assert_select ".lp-journey-habits__day", count: 14
+    assert_select ".lp-journey-habits__amount", text: "45"
+    assert_select ".lp-journey-habits__unit", text: "€"
   end
 end
