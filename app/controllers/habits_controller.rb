@@ -113,12 +113,14 @@ class HabitsController < ApplicationController
     if raw[:points].present?
       raw[:points] = raw[:points].to_i.clamp(1, 50)
     end
-    raw[:life_journey_id] = raw[:life_journey_id].presence
-    raw[:identity_label] = raw[:identity_label].presence
-    raw[:area_id] = raw[:area_id].presence
-    raw[:state] = raw[:state].presence
-    raw[:state_label_good] = raw[:state_label_good].presence
-    raw[:state_label_attention] = raw[:state_label_attention].presence
+    # Only normalize keys the client actually submitted — partial updates
+    # (Tracker state chips) must not blank out area_id / journey / labels.
+    raw[:life_journey_id] = raw[:life_journey_id].presence if raw.key?(:life_journey_id)
+    raw[:identity_label] = raw[:identity_label].presence if raw.key?(:identity_label)
+    raw[:area_id] = raw[:area_id].presence if raw.key?(:area_id)
+    raw[:state] = raw[:state].presence if raw.key?(:state)
+    raw[:state_label_good] = raw[:state_label_good].presence if raw.key?(:state_label_good)
+    raw[:state_label_attention] = raw[:state_label_attention].presence if raw.key?(:state_label_attention)
     raw
   end
 

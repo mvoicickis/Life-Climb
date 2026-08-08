@@ -37,12 +37,29 @@ class HabitsAreasUiTest < ActionDispatch::IntegrationTest
     get habit_path(@habit)
     assert_response :success
     assert_no_match(/Create a Project to improve this/i, response.body)
+    assert_select "form[data-controller='tracker-state']"
+    assert_select "form[data-action='change->tracker-state#select']"
+    assert_select "[data-tracker-state-target='choice']", count: 3
 
     @habit.update!(state: "attention")
     get habit_path(@habit)
     assert_response :success
     assert_match(/Create a Project to improve this/i, response.body)
     assert_select "form[action=?]", habit_improvement_projects_path(@habit)
+  end
+
+  test "chip submit saves state without requiring a second control" do
+    @habit.update!(area: @area, state: "good")
+    patch habit_path(@habit), params: {
+      return_to: "show",
+      habit: {
+        state: "attention",
+        state_label_good: @habit.state_label_good,
+        state_label_attention: @habit.state_label_attention
+      }
+    }
+    assert_redirected_to habit_path(@habit)
+    assert_equal "attention", @habit.reload.state
   end
 
   test "assigning area from edit keeps habit valid" do
