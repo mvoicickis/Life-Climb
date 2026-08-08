@@ -6,9 +6,6 @@
 <% focus = local_assigns[:focus] %>
 <% all_nodes = trail&.nodes || [] %>
 <% path_nodes = strategy_climb_path_nodes(trail) %>
-<% tracker_nodes = all_nodes.select { |n| n.record&.tracker_linked? } %>
-<% planned_nodes = path_nodes.reject { |n| n.record&.tracker_linked? } %>
-<% show_tracker_cluster = tracker_nodes.any? %>
 <% area = @journey.life_area %>
 
 <% selected_section_id =
@@ -34,12 +31,10 @@
   <section class="lp-climb-path <%= 'is-empty' if all_nodes.empty? %>"
            data-controller="climb-path"
            aria-label="<%= t('strategy.rpg.project_sections') %>">
-    <p class="lp-climb-path__kicker">
-      <%= show_tracker_cluster ? t("strategy.rpg.path_your_path") : t("strategy.rpg.project_sections") %>
-    </p>
+    <p class="lp-climb-path__kicker"><%= t("strategy.rpg.project_sections") %></p>
 
     <ol class="lp-climb-path__list">
-      <% planned_nodes.each_with_index do |node, idx| %>
+      <% path_nodes.each_with_index do |node, idx| %>
         <% playable = node.state != :locked %>
         <% selected = selected_section_id == node.id %>
         <% project = node.record %>
@@ -76,7 +71,7 @@
             <% end %>
 
             <% card_body = capture do %>
-              <span class="lp-climb-path__badge" aria-hidden="true"><%= idx + 1 %></span>
+              <span class="lp-climb-path__badge" aria-hidden="true"><%= node.position.to_i + 1 %></span>
               <span class="lp-climb-path__title" title="<%= node.title %>"><%= node.title %></span>
               <% if playable %>
                 <% if project&.manually_completed? %>
@@ -408,21 +403,5 @@
         </details>
       </li>
     </ol>
-
-    <% if show_tracker_cluster %>
-      <div class="lp-climb-path__from-trackers"
-           aria-label="<%= t('strategy.rpg.path_from_trackers') %>">
-        <p class="lp-climb-path__kicker"><%= t("strategy.rpg.path_from_trackers") %></p>
-        <ul class="lp-climb-path__trackers-list">
-          <% tracker_nodes.each do |node| %>
-            <%= render "life_journeys/rpg_climb_path_tracker_project",
-                  node: node,
-                  selected: selected_section_id == node.id,
-                  goal: goal,
-                  plan: plan %>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
   </section>
 <% end %>

@@ -405,8 +405,6 @@ en:
       checkpoint_added: "Checkpoint added · %{title}"
       practice_categories: "Practice categories"
       project_sections: "Project Sections"
-      path_your_path: "Your path"
-      path_from_trackers: "From your trackers"
       project_trackers:
         title: "Trackers"
         add: "Add another Tracker to this Project"
