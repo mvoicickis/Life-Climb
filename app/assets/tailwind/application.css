@@ -22062,6 +22062,8 @@ a.lp-rpg-camp-row {
   justify-self: inherit;
 }
 .lp-climb-path__node.is-right .lp-climb-path__quests {
+  /* Pin/card use order 1–2 on the right zigzag; keep quests after both. */
+  order: 3;
   justify-self: end;
 }
 .lp-climb-path__quests-summary {
@@ -22088,15 +22090,17 @@ a.lp-rpg-camp-row {
 .lp-climb-path__quests-body {
   display: grid;
   gap: 0.4rem;
-  padding: 0.1rem 0 0.25rem;
+  margin: 0.05rem 0 0.15rem 0.7rem;
+  padding: 0.15rem 0 0.2rem 0.7rem;
+  border-left: 1.5px solid color-mix(in srgb, var(--lp-rpg-green, #57d35b) 35%, rgba(148, 163, 184, 0.28));
 }
 .lp-climb-path__quest {
   position: relative;
   padding: 0.4rem 0.55rem 0.45rem;
-  border-radius: 0.85rem;
-  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
-  background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
-  box-shadow: var(--lp-rpg-glass-shadow, 0 10px 28px rgba(0, 0, 0, 0.22));
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1)) 80%, transparent);
+  background: color-mix(in srgb, var(--lp-rpg-glass, rgba(17, 22, 28, 0.88)) 82%, transparent);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
 }
 .lp-climb-path__quest.has-color {
   border-left: 3px solid var(--lp-item-color, #9aa6b2);
