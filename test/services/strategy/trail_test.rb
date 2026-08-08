@@ -90,8 +90,9 @@ class StrategyTrailTest < ActiveSupport::TestCase
     )
     improve = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
-      title: "Improve Income", position: 1, habit: habit
+      title: "Improve Income", position: 1
     )
+    HabitProjectLink.create!(habit: habit, strategy_goal: improve)
     later = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
       title: "Later camp", position: 2

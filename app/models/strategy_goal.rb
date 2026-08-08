@@ -23,9 +23,10 @@ class StrategyGoal < ApplicationRecord
   belongs_to :user
   belongs_to :life_area
   belongs_to :life_journey, optional: true
-  belongs_to :habit, optional: true
   belongs_to :parent, class_name: "StrategyGoal", optional: true
   has_many :children, class_name: "StrategyGoal", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
+  has_many :habit_project_links, dependent: :destroy, inverse_of: :strategy_goal
+  has_many :linked_habits, through: :habit_project_links, source: :habit
   has_many :practice_tasks, dependent: :destroy
   # Open Today rows are purged below; completed history is nullified (AP already awarded).
   has_many :daily_todos, dependent: :nullify
@@ -58,7 +59,6 @@ class StrategyGoal < ApplicationRecord
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
   validate :quantity_target_rules
-  validate :habit_link_rules
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
@@ -136,6 +136,15 @@ class StrategyGoal < ApplicationRecord
   # Camp hanging directly under a Path (plan).
   def path_level_camp?
     project? && parent&.plan?
+  end
+
+  # Path Project linked to one or more Trackers (via habit_project_links).
+  def tracker_linked?
+    if association(:habit_project_links).loaded?
+      habit_project_links.any?
+    else
+      habit_project_links.exists?
+    end
   end
 
   # Nested leaf camp — the layer that holds daily practices.
@@ -305,20 +314,6 @@ class StrategyGoal < ApplicationRecord
 
     errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
     errors.add(:unit, :blank) if self.unit.blank?
-  end
-
-  def habit_link_rules
-    return unless has_attribute?(:habit_id)
-    return if habit_id.blank?
-
-    unless path_level_camp?
-      errors.add(:habit_id, :invalid)
-      return
-    end
-
-    return if user&.habits&.exists?(id: habit_id)
-
-    errors.add(:habit_id, :invalid)
   end
 
   def assign_goal_due_on

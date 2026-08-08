@@ -5605,6 +5605,87 @@ html[data-theme="dark"] {
   color: #22c55e;
 }
 
+.lp-project-trackers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-project-trackers__card {
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: color-mix(in srgb, var(--lp-rpg-glass, rgba(17, 22, 28, 0.88)) 88%, transparent);
+}
+
+.lp-project-trackers__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.lp-project-trackers__name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--lp-rpg-ink, #f3f6f8);
+  text-decoration: none;
+}
+
+.lp-project-trackers__name:hover,
+.lp-project-trackers__name:focus-visible {
+  text-decoration: underline;
+}
+
+.lp-project-trackers__unit {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.82));
+}
+
+.lp-project-trackers__spark .lp-tracker-spark {
+  height: 36px;
+}
+
+.lp-project-trackers__add {
+  margin-top: 0.85rem;
+}
+
+.lp-project-trackers__add-btn {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.15rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--lp-rpg-green, #57d35b);
+}
+
+.lp-project-trackers__add-btn::-webkit-details-marker { display: none; }
+
+.lp-project-trackers__form {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.55rem;
+  padding: 0.65rem 0.1rem 0.2rem;
+}
+
+.lp-project-trackers__field {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.lp-project-trackers__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.82));
+}
+
 .lp-tracker-state {
   margin-top: var(--lp-space-4);
   padding: var(--lp-pad-card);

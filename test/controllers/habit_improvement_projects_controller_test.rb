@@ -16,19 +16,20 @@ class HabitImprovementProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "creates path-level project linked to habit on attention" do
     assert_difference -> { @user.strategy_goals.for_kind("project").count }, 1 do
-      post habit_improvement_projects_path(@habit)
+      assert_difference -> { HabitProjectLink.where(habit_id: @habit.id).count }, 1 do
+        post habit_improvement_projects_path(@habit)
+      end
     end
-    project = @user.strategy_goals.for_kind("project").order(:id).last
-    assert_equal @habit.id, project.habit_id
+    project = @habit.improvement_projects.sole
     assert project.path_level_camp?
     assert_equal @journey.id, project.life_journey_id
-    assert_redirected_to life_journey_path(@journey, focus_id: project.id)
+    assert_redirected_to life_journey_path(@journey, focus_id: project.id, sheet: "trackers")
   end
 
   test "uses primary journey when habit has no mountain link" do
     @habit.update!(life_journey: nil)
     post habit_improvement_projects_path(@habit)
-    project = @user.strategy_goals.for_kind("project").order(:id).last
+    project = @habit.improvement_projects.sole
     assert_equal @journey.id, project.life_journey_id
   end
 
@@ -42,11 +43,11 @@ class HabitImprovementProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "second tap redirects to existing project without duplicating" do
     post habit_improvement_projects_path(@habit)
-    project = @user.strategy_goals.where(habit_id: @habit.id).sole
+    project = @habit.improvement_projects.sole
 
-    assert_no_difference -> { @user.strategy_goals.where(habit_id: @habit.id).count } do
+    assert_no_difference -> { HabitProjectLink.where(habit_id: @habit.id).count } do
       post habit_improvement_projects_path(@habit)
     end
-    assert_redirected_to life_journey_path(@journey, focus_id: project.id)
+    assert_redirected_to life_journey_path(@journey, focus_id: project.id, sheet: "trackers")
   end
 end

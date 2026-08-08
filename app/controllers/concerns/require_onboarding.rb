@@ -82,6 +82,7 @@ module RequireOnboarding
       today_actions
       areas
       habit_improvement_projects
+      strategy_goal_habit_links
     ].include?(controller_name)
   end
 end
