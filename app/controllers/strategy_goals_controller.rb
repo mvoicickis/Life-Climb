@@ -38,6 +38,7 @@ class StrategyGoalsController < ApplicationController
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
+      Strategy::SyncCompletion.resync!(node: goal) if goal.plan? || goal.project?
       if celebration[:amount].to_i.positive?
         flash[:sp_gained] = celebration[:amount]
         flash[:climb_boss] = true if celebration[:amount].to_i >= 50
@@ -57,6 +58,7 @@ class StrategyGoalsController < ApplicationController
     goal = current_user.strategy_goals.find(params[:id])
     area_id = goal.life_area_id
     parent_id = goal.parent_id
+    parent = goal.parent
     removed_id = goal.id
     was_plan = goal.plan?
     was_project = goal.project?
@@ -68,6 +70,7 @@ class StrategyGoalsController < ApplicationController
     next_plan_id = was_plan ? next_sibling_plan_id(goal) : nil
     next_focus_id = was_project ? next_sibling_project_id(goal) : nil
     goal.destroy!
+    Strategy::SyncCompletion.resync!(node: parent) if was_plan || was_project
     prepare_world_for_area!(area_id, focus_id: next_focus_id || parent_id)
     @removed_id = removed_id
     respond_to do |format|
@@ -96,6 +99,7 @@ class StrategyGoalsController < ApplicationController
       goal.title = params[:title].to_s.strip
     end
 
+    quantity_touched = goal.path_level_camp? && params.key?(:track_quantity)
     apply_quantity_params!(goal) if goal.path_level_camp?
     apply_color_key_params!(goal) if goal.project?
 
@@ -114,6 +118,7 @@ class StrategyGoalsController < ApplicationController
 
     if goal.save
       Strategy::CascadeToDaily.call(user: current_user, life_area: goal.life_area) if goal.day?
+      Strategy::SyncCompletion.resync!(node: goal) if quantity_touched
       @updated = goal
       prepare_world_for!(goal, focus_id: focus_id)
       respond_to do |format|

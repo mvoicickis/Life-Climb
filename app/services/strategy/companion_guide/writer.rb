@@ -39,6 +39,7 @@ module Strategy
 
         goal = find_goal!
         plan = create_child!(parent: goal, horizon: "plan", title: title)
+        Strategy::SyncCompletion.resync!(node: plan)
         @cursor.merge("plan_id" => plan.id, "goal_id" => goal.id)
       end
 
@@ -59,6 +60,7 @@ module Strategy
 
         plan = find_plan!
         project = create_child!(parent: plan, horizon: "project", title: title)
+        Strategy::SyncCompletion.resync!(node: project)
         @cursor.merge(
           "project_id" => project.id,
           "project_count" => @cursor["project_count"].to_i + 1,
