@@ -264,6 +264,7 @@ en:
     stats:
       title: "Your stats"
       hint: "Trackers by Area — last 14 days on Journey."
+      chart_label: "%{name} — last 14 days"
       empty_area: "No Trackers in this Area yet."
       add_tracker: "+ Add a Tracker"
       add_tracker_title: "Add a Tracker"

@@ -452,6 +452,7 @@ es:
     stats:
       title: "Tus stats"
       hint: "Trackers por Área — últimos 14 días en el Viaje."
+      chart_label: "%{name} — últimos 14 días"
       empty_area: "Aún no hay Trackers en esta Área."
       add_tracker: "+ Añadir un Tracker"
       add_tracker_title: "Añadir un Tracker"

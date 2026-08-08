@@ -452,6 +452,7 @@ lv:
     stats:
       title: "Tavi stats"
       hint: "Trackeri pēc jomas — pēdējās 14 dienas Ceļojumā."
+      chart_label: "%{name} — pēdējās 14 dienas"
       empty_area: "Šajā jomā vēl nav Trackeru."
       add_tracker: "+ Pievienot Tracker"
       add_tracker_title: "Pievienot Tracker"

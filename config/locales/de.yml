@@ -452,6 +452,7 @@ de:
     stats:
       title: "Deine Stats"
       hint: "Tracker nach Bereich — letzte 14 Tage auf der Reise."
+      chart_label: "%{name} — letzte 14 Tage"
       empty_area: "Noch keine Tracker in diesem Bereich."
       add_tracker: "+ Tracker hinzufügen"
       add_tracker_title: "Tracker hinzufügen"

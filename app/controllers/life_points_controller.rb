@@ -48,7 +48,14 @@ class LifePointsController < ApplicationController
       )
     end
     visible.concat(@stats_unfiled)
-    @stats_sparklines = visible.to_h { |habit| [ habit.id, habit.sparkline_amounts(days: 14) ] }
+    @stats_series = visible.map do |habit|
+      {
+        habit_id: habit.id,
+        title: habit.name,
+        unit: habit.unit.to_s,
+        days: habit.dashboard_chart_series(days: 14)
+      }
+    end
     @show_journey_stats = @stats_areas.any? || @stats_unfiled.any?
   end
 

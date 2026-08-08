@@ -8638,44 +8638,34 @@ html[data-theme="dark"] {
   cursor: not-allowed;
 }
 
-.lp-journey-stats__grid {
+.lp-journey-stats__list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.65rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-@media (max-width: 340px) {
-  .lp-journey-stats__grid {
-    grid-template-columns: 1fr;
-  }
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .lp-journey-stats__card {
-  border-radius: 1.1rem;
-  border: 1px solid var(--lp-border);
-  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding: 0.75rem 0.85rem;
+  margin: 0;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.55rem;
   min-width: 0;
 }
 
 .lp-journey-stats__card-top {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.35rem 0.45rem;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
   min-width: 0;
 }
 
 .lp-journey-stats__name {
-  font-size: 0.9rem;
-  font-weight: 750;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--lp-ink);
   text-decoration: none;
   overflow: hidden;
@@ -8689,17 +8679,15 @@ html[data-theme="dark"] {
 }
 
 .lp-journey-stats__unit {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--lp-muted);
 }
 
-.lp-journey-stats__spark {
-  color: var(--lp-green, #22c55e);
-}
-
-.lp-journey-stats__spark .lp-tracker-spark {
-  height: 32px;
+.lp-journey-stats__chart {
+  position: relative;
+  height: 160px;
+  margin-top: 0.15rem;
 }
 
 .lp-journey-stats__hide {

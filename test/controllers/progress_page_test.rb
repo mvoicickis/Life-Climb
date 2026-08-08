@@ -212,7 +212,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Achievements/i, response.body)
   end
 
-  test "your stats shows area tracker with sparkline and state chip" do
+  test "your stats shows area tracker with labeled chart and state chip" do
     @user.habits.destroy_all
     area = @user.areas.create!(name: "Health", position: 1)
     habit = @user.habits.create!(
@@ -239,8 +239,12 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Steps/i, response.body)
     assert_match(/Moving/i, response.body)
     assert_select ".lp-areas__state.is-good", text: /Moving/
-    assert_select ".lp-journey-stats__spark svg.lp-tracker-spark"
-    assert_select "[data-controller='journey-stats']"
+    assert_select ".lp-journey-stats__list"
+    assert_select ".lp-journey-stats__chart canvas[data-journey-stats-target='chart'][data-habit-id='#{habit.id}']"
+    assert_select "[data-controller='journey-stats'][data-journey-stats-series-value]"
+    assert_match(/#{Regexp.escape(I18n.l(Date.current, format: "%b %-d"))}/, response.body)
+    assert_select ".lp-journey-stats svg.lp-tracker-spark", count: 0
+    assert_select ".lp-journey-stats__spark", count: 0
   end
 
   test "hide removes tracker from journey stats but keeps habit" do
