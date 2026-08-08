@@ -57,4 +57,20 @@ class Trackers::CreateImprovementProjectTest < ActiveSupport::TestCase
     project = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
     assert_equal other.id, project.life_journey_id
   end
+
+  test "reuses existing habit-linked project instead of creating a duplicate" do
+    first = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
+    assert_no_difference -> { @user.strategy_goals.where(habit_id: @habit.id).count } do
+      second = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
+      assert_equal first.id, second.id
+    end
+  end
+
+  test "idempotent reuse works even when tracker is no longer attention" do
+    first = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
+    @habit.update!(state: "good")
+
+    second = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
+    assert_equal first.id, second.id
+  end
 end

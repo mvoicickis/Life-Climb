@@ -39,4 +39,14 @@ class HabitImprovementProjectsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to habit_path(@habit)
   end
+
+  test "second tap redirects to existing project without duplicating" do
+    post habit_improvement_projects_path(@habit)
+    project = @user.strategy_goals.where(habit_id: @habit.id).sole
+
+    assert_no_difference -> { @user.strategy_goals.where(habit_id: @habit.id).count } do
+      post habit_improvement_projects_path(@habit)
+    end
+    assert_redirected_to life_journey_path(@journey, focus_id: project.id)
+  end
 end

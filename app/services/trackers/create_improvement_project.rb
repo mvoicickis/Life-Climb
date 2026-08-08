@@ -2,7 +2,7 @@
 
 module Trackers
   # Creates a path-level Project under the Habit's Mountain (or primary Journey)
-  # and links it via strategy_goals.habit_id.
+  # and links it via strategy_goals.habit_id. Idempotent per habit.
   class CreateImprovementProject
     class Error < StandardError; end
 
@@ -16,6 +16,9 @@ module Trackers
     end
 
     def call
+      existing = existing_project
+      return existing if existing
+
       raise Error, I18n.t("areas.improve.need_attention") unless @habit.attention?
 
       journey = resolve_journey
@@ -41,6 +44,11 @@ module Trackers
     end
 
     private
+
+    def existing_project
+      projects = @user.strategy_goals.where(habit_id: @habit.id, horizon: "project").ordered.to_a
+      projects.find { |project| project.completed_at.blank? } || projects.first
+    end
 
     def resolve_journey
       @habit.life_journey ||
