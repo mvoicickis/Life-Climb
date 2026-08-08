@@ -16952,6 +16952,22 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   word-break: break-word;
   overflow-wrap: break-word;
 }
+.lp-rpg-path__manual {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--lp-rpg-muted, #9aa6b2);
+}
+.lp-rpg-path__menu-form {
+  margin: 0;
+  display: block;
+}
+.lp-rpg-path__menu-form .lp-rpg-path__menu-item {
+  width: 100%;
+  text-align: inherit;
+}
 .lp-rpg-path__pct {
   font-size: 0.68rem;
   font-weight: 700;
@@ -21635,6 +21651,18 @@ a.lp-rpg-camp-row {
 }
 .lp-climb-path__meta.is-done {
   color: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 75%, #fff);
+}
+.lp-climb-path__meta.is-manual {
+  color: var(--lp-rpg-muted, rgba(203, 213, 225, 0.74));
+  font-weight: 700;
+}
+.lp-climb-path__menu-form {
+  margin: 0;
+  display: block;
+}
+.lp-climb-path__menu-form .lp-climb-path__menu-item {
+  width: 100%;
+  text-align: inherit;
 }
 .lp-climb-path__meta.is-locked {
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));

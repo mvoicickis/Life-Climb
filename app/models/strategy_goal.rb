@@ -82,6 +82,10 @@ class StrategyGoal < ApplicationRecord
     completed_at.present?
   end
 
+  def manually_completed?
+    manually_completed_at.present?
+  end
+
   def kind
     LEGACY_KIND.fetch(horizon.to_s, horizon.to_s)
   end
@@ -217,6 +221,19 @@ class StrategyGoal < ApplicationRecord
 
   def reopen!
     update!(completed_at: nil) if completed_at.present?
+  end
+
+  # Sticky override — survives SyncCompletion.resync! when real % < 100.
+  def manually_complete!
+    touch_time = Time.current
+    update!(
+      completed_at: completed_at.presence || touch_time,
+      manually_completed_at: touch_time
+    )
+  end
+
+  def manually_reopen!
+    update!(completed_at: nil, manually_completed_at: nil)
   end
 
   private

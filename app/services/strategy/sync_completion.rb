@@ -3,6 +3,7 @@
 module Strategy
   # After a project is marked done/reopened — or after structural mutations —
   # stamp or clear ancestors (nested branch checkpoints → plan → goal).
+  # Sticky manual completes (manually_completed_at) are never auto-reopened.
   class SyncCompletion
     def self.call(project:)
       new(project).call
@@ -29,6 +30,7 @@ module Strategy
 
     def self.align_project_stamp!(project)
       return unless project&.project?
+      return if project.manually_completed?
 
       if Strategy::Progress.percent(project) >= 100
         project.complete!
@@ -65,6 +67,8 @@ module Strategy
     end
 
     def sync_branch!(branch)
+      return if branch.manually_completed?
+
       projects = StrategyGoal.where(parent_id: branch.id, horizon: "project").to_a
       if projects.any? && projects.all? { |p| p.completed_at.present? }
         branch.complete!
@@ -74,8 +78,10 @@ module Strategy
     end
 
     def sync_plan!(plan)
+      return if plan.manually_completed?
+
       projects = StrategyGoal.where(parent_id: plan.id, horizon: "project").to_a
-      if projects.any? && projects.all? { |p| Strategy::Progress.percent(p) >= 100 }
+      if projects.any? && projects.all? { |p| project_satisfies_plan?(p) }
         plan.complete!
       else
         plan.reopen!
@@ -84,13 +90,24 @@ module Strategy
 
     def sync_goal!(goal)
       return if goal.blank?
+      return if goal.manually_completed?
 
       plans = StrategyGoal.where(parent_id: goal.id, horizon: %w[plan]).to_a
-      if plans.any? && plans.all? { |plan| Strategy::Progress.percent(plan) >= 100 }
+      if plans.any? && plans.all? { |plan| plan_satisfies_goal?(plan) }
         goal.complete!
       else
         goal.reopen!
       end
+    end
+
+    private
+
+    def project_satisfies_plan?(project)
+      project.manually_completed? || Strategy::Progress.percent(project) >= 100
+    end
+
+    def plan_satisfies_goal?(plan)
+      plan.manually_completed? || Strategy::Progress.percent(plan) >= 100
     end
   end
 end

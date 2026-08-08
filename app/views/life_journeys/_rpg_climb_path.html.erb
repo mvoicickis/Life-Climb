@@ -38,9 +38,10 @@
         <% playable = node.state != :locked %>
         <% selected = selected_section_id == node.id %>
         <% project = node.record %>
-        <% show_menu = node.state != :done && project.present? %>
+        <%# Keep ⋮ on done nodes so sticky Reopen stays reachable. %>
+        <% show_menu = project.present? && node.state != :locked %>
         <% zig = idx.even? ? "is-left" : "is-right" %>
-        <li class="lp-climb-path__node is-<%= node.state %> <%= zig %> <%= 'is-selected' if selected %> <%= 'is-menu-enabled' if show_menu %>"
+        <li class="lp-climb-path__node is-<%= node.state %> <%= zig %> <%= 'is-selected' if selected %> <%= 'is-menu-enabled' if show_menu %> <%= 'is-manual' if project&.manually_completed? %>"
             data-section-id="<%= node.id %>"
             data-climb-path-target="<%= [ 'node', ('current' if node.state == :current), ('selected' if selected) ].compact.join(' ') %>"
             <% if show_menu %>data-controller="plan-card-menu"<% end %>>
@@ -73,7 +74,13 @@
               <span class="lp-climb-path__badge" aria-hidden="true"><%= node.position.to_i + 1 %></span>
               <span class="lp-climb-path__title" title="<%= node.title %>"><%= node.title %></span>
               <% if playable %>
-                <% if project&.quantified? %>
+                <% if project&.manually_completed? %>
+                  <% pct = project.progress_percent.to_i %>
+                  <% if pct < 100 %>
+                    <span class="lp-climb-path__meta is-manual"><%= pct %>%</span>
+                  <% end %>
+                  <span class="lp-climb-path__meta is-manual"><%= t("strategy.rpg.manually_closed") %></span>
+                <% elsif project&.quantified? %>
                   <span class="lp-climb-path__meta is-quantity"><%= strategy_quantity_progress_label(project) %></span>
                 <% elsif node.state == :current %>
                   <span class="lp-climb-path__meta"><%= t("strategy.rpg.section_active") %></span>
@@ -232,6 +239,19 @@
                 <span aria-hidden="true">✎</span>
                 <%= t("strategy.rpg.edit_checkpoint") %>
               </button>
+              <% if project.manually_completed? %>
+                <%= button_to t("strategy.rpg.reopen"),
+                      strategy_goal_manual_completion_path(project),
+                      method: :delete,
+                      class: "lp-climb-path__menu-item",
+                      form: { class: "lp-climb-path__menu-form", data: { turbo: false } } %>
+              <% elsif !project.completed? || project.progress_percent.to_i < 100 %>
+                <%= button_to t("strategy.rpg.mark_complete"),
+                      strategy_goal_manual_completion_path(project),
+                      method: :post,
+                      class: "lp-climb-path__menu-item",
+                      form: { class: "lp-climb-path__menu-form", data: { turbo: false } } %>
+              <% end %>
               <button type="button"
                       class="lp-climb-path__menu-item is-danger"
                       role="menuitem"
