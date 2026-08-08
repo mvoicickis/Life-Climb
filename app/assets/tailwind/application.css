@@ -8590,6 +8590,176 @@ html[data-theme="dark"] {
   white-space: nowrap;
 }
 
+.lp-journey-stats {
+  margin-top: var(--lp-space-4);
+  display: grid;
+  gap: var(--lp-space-3);
+}
+
+.lp-journey-stats__area {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-journey-stats__area-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.lp-journey-stats__area-name {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.lp-journey-stats__reorder {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.lp-journey-stats__move {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  color: var(--lp-ink);
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.lp-journey-stats__move:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.lp-journey-stats__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 340px) {
+  .lp-journey-stats__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lp-journey-stats__card {
+  border-radius: 1.1rem;
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.75rem 0.85rem;
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.lp-journey-stats__card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.45rem;
+  min-width: 0;
+}
+
+.lp-journey-stats__name {
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.lp-journey-stats__name:hover {
+  color: var(--lp-green, #22c55e);
+}
+
+.lp-journey-stats__unit {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-journey-stats__spark {
+  color: var(--lp-green, #22c55e);
+}
+
+.lp-journey-stats__spark .lp-tracker-spark {
+  height: 32px;
+}
+
+.lp-journey-stats__hide {
+  justify-self: start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lp-journey-stats__empty {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.88rem;
+}
+
+.lp-journey-stats__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.lp-progress-dialog__inner--form {
+  text-align: left;
+}
+
+.lp-progress-dialog__inner--form h3 {
+  text-align: left;
+}
+
+.lp-progress-dialog__inner--form > p {
+  text-align: left;
+}
+
+.lp-journey-stats__form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-journey-stats__field {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-journey-stats__form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
 .lp-journey-activity {
   margin-top: 1.25rem;
   padding-top: 0.35rem;

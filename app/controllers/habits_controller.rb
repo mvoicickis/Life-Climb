@@ -39,9 +39,16 @@ class HabitsController < ApplicationController
     @habit.active = true if @habit.active.nil?
     @habit.stat_type = "growth" if @habit.stat_type.blank?
     clear_targets_unless_configured!
+    return_to = params[:return_to].to_s
 
     if @habit.save
-      redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
+      if return_to == "journey"
+        redirect_to life_points_path, notice: t("progress.stats.created")
+      else
+        redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
+      end
+    elsif return_to == "journey"
+      redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -56,11 +63,21 @@ class HabitsController < ApplicationController
     return_to = params[:return_to].to_s
 
     if @habit.save
-      if return_to == "show"
+      if return_to == "journey"
+        notice =
+          if @habit.saved_change_to_hidden_from_dashboard? && @habit.hidden_from_dashboard?
+            t("progress.stats.hidden")
+          else
+            "Saved."
+          end
+        redirect_to life_points_path, notice: notice
+      elsif return_to == "show"
         redirect_to habit_path(@habit), notice: "Saved."
       else
         redirect_to habits_path, notice: "Saved."
       end
+    elsif return_to == "journey"
+      redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
     elsif return_to == "show"
       @sparkline = @habit.sparkline_amounts(days: 14)
       @improvement_projects = @habit.improvement_projects.for_kind("project").ordered.includes(:life_journey)
@@ -107,7 +124,7 @@ class HabitsController < ApplicationController
     raw = params.require(:habit).permit(
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
       :stat_type, :goal, :min_value, :max_value, :life_journey_id, :identity_label,
-      :area_id, :state, :state_label_good, :state_label_attention
+      :area_id, :state, :state_label_good, :state_label_attention, :hidden_from_dashboard
     )
     # Clamp client-supplied LP rewards — habits are not a free AP faucet.
     if raw[:points].present?

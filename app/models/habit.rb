@@ -51,6 +51,7 @@ class Habit < ApplicationRecord
   scope :ordered, -> { order(:position, :name) }
   scope :filed, -> { where.not(area_id: nil) }
   scope :unfiled, -> { where(area_id: nil) }
+  scope :visible_on_dashboard, -> { where(hidden_from_dashboard: false) }
 
   def growth?
     stat_type == "growth"

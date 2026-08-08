@@ -1,0 +1,131 @@
+<%# locals: areas, unfiled, sparklines %>
+<% areas = Array(local_assigns[:areas]) %>
+<% unfiled = Array(local_assigns[:unfiled]) %>
+<% sparklines = local_assigns[:sparklines] || {} %>
+<% return unless areas.any? || unfiled.any? %>
+
+<section class="lp-journey-stats" aria-label="<%= t('progress.stats.title') %>"
+         data-controller="journey-stats">
+  <header class="lp-journey-section__head">
+    <h2><%= t("progress.stats.title") %></h2>
+    <p><%= t("progress.stats.hint") %></p>
+  </header>
+
+  <% areas.each_with_index do |area, index| %>
+    <% trackers = area.habits.select { |habit| habit.active? && !habit.hidden_from_dashboard? }
+                             .sort_by { |habit| [ habit.position, habit.name.to_s ] } %>
+    <section class="lp-journey-stats__area" aria-label="<%= area.name %>">
+      <header class="lp-journey-stats__area-head">
+        <h3 class="lp-journey-stats__area-name"><%= area.name %></h3>
+        <% if areas.size > 1 %>
+          <div class="lp-journey-stats__reorder">
+            <%= button_to t("progress.stats.move_up"),
+                  move_area_path(area, direction: "up", return_to: "journey"),
+                  method: :patch,
+                  class: "lp-journey-stats__move",
+                  disabled: index.zero?,
+                  aria: { label: t("progress.stats.move_up") } %>
+            <%= button_to t("progress.stats.move_down"),
+                  move_area_path(area, direction: "down", return_to: "journey"),
+                  method: :patch,
+                  class: "lp-journey-stats__move",
+                  disabled: index >= areas.size - 1,
+                  aria: { label: t("progress.stats.move_down") } %>
+          </div>
+        <% end %>
+      </header>
+
+      <% if trackers.any? %>
+        <ul class="lp-journey-stats__grid">
+          <% trackers.each do |habit| %>
+            <%= render "life_points/journey_stat_card",
+                  habit: habit,
+                  values: sparklines[habit.id] || habit.sparkline_amounts(days: 14) %>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="lp-journey-stats__empty"><%= t("progress.stats.empty_area") %></p>
+      <% end %>
+    </section>
+  <% end %>
+
+  <% if unfiled.any? %>
+    <section class="lp-journey-stats__area" aria-label="<%= t('habits.unfiled_title') %>">
+      <header class="lp-journey-stats__area-head">
+        <h3 class="lp-journey-stats__area-name"><%= t("habits.unfiled_title") %></h3>
+      </header>
+      <ul class="lp-journey-stats__grid">
+        <% unfiled.each do |habit| %>
+          <%= render "life_points/journey_stat_card",
+                habit: habit,
+                values: sparklines[habit.id] || habit.sparkline_amounts(days: 14) %>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <div class="lp-journey-stats__actions">
+    <button type="button"
+            class="lp-habits__btn is-primary"
+            data-action="journey-stats#open">
+      <%= t("progress.stats.add_tracker") %>
+    </button>
+  </div>
+
+  <dialog class="lp-progress-dialog" data-journey-stats-target="dialog">
+    <div class="lp-progress-dialog__inner lp-progress-dialog__inner--form">
+      <h3><%= t("progress.stats.add_tracker_title") %></h3>
+      <p><%= t("progress.stats.add_tracker_hint") %></p>
+
+      <%= form_with model: Habit.new,
+            url: habits_path,
+            class: "lp-journey-stats__form",
+            data: { turbo: false } do |form| %>
+        <%= hidden_field_tag :return_to, "journey" %>
+        <%= form.hidden_field :points, value: 5 %>
+        <%= form.hidden_field :frequency, value: "daily" %>
+        <%= form.hidden_field :active, value: true %>
+        <%= form.hidden_field :show_on_home, value: true %>
+        <%= form.hidden_field :stat_type, value: "growth" %>
+
+        <label class="lp-journey-stats__field">
+          <span><%= t("habits.name_label") %></span>
+          <%= form.text_field :name,
+                required: true,
+                maxlength: 120,
+                placeholder: t("habits.name_placeholder"),
+                class: "lp-habits__input" %>
+        </label>
+
+        <label class="lp-journey-stats__field">
+          <span><%= t("habits.unit_label") %></span>
+          <%= form.text_field :unit,
+                required: true,
+                maxlength: 40,
+                value: "times",
+                placeholder: t("habits.unit_placeholder"),
+                class: "lp-habits__input" %>
+        </label>
+
+        <label class="lp-journey-stats__field">
+          <span><%= t("habits.area_label") %></span>
+          <%= form.collection_select :area_id,
+                areas,
+                :id,
+                :name,
+                { include_blank: t("habits.area_none") },
+                { class: "lp-habits__input" } %>
+        </label>
+
+        <div class="lp-journey-stats__form-actions">
+          <%= form.submit t("progress.stats.create"), class: "lp-dash-cta" %>
+          <button type="button"
+                  class="lp-habits__btn is-quiet"
+                  data-action="journey-stats#close">
+            <%= t("progress.close") %>
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
+</section>

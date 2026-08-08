@@ -33,7 +33,23 @@ class LifePointsController < ApplicationController
       if @journey
         Progress::JourneyTrends.call(user: current_user, journey: @journey)
       end
+    load_journey_stats
     render "life_points/progress"
+  end
+
+  def load_journey_stats
+    @stats_areas = current_user.areas.ordered.includes(:habits)
+    @stats_unfiled = current_user.habits.active.unfiled.visible_on_dashboard.ordered.to_a
+    visible = []
+    @stats_areas.each do |area|
+      visible.concat(
+        area.habits.select { |habit| habit.active? && !habit.hidden_from_dashboard? }
+                  .sort_by { |habit| [ habit.position, habit.name.to_s ] }
+      )
+    end
+    visible.concat(@stats_unfiled)
+    @stats_sparklines = visible.to_h { |habit| [ habit.id, habit.sparkline_amounts(days: 14) ] }
+    @show_journey_stats = @stats_areas.any? || @stats_unfiled.any?
   end
 
   def show_legacy

@@ -39,4 +39,13 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :not_found
   end
+
+  test "move swaps adjacent areas and can return to journey" do
+    a = @user.areas.create!(name: "A", position: 1)
+    b = @user.areas.create!(name: "B", position: 2)
+
+    patch move_area_path(b), params: { direction: "up", return_to: "journey" }
+    assert_redirected_to life_points_path
+    assert_equal [ b.id, a.id ], @user.areas.ordered.pluck(:id)
+  end
 end

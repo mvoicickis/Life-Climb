@@ -153,6 +153,10 @@
         <span><%= t("habits.show_on_today") %></span>
       </label>
       <label class="lp-habits-form__flag">
+        <%= form.check_box :hidden_from_dashboard, class: "lp-habits-form__checkbox" %>
+        <span><%= t("habits.hide_from_journey") %></span>
+      </label>
+      <label class="lp-habits-form__flag">
         <%= form.check_box :active, class: "lp-habits-form__checkbox" %>
         <span><%= t("habits.active") %></span>
       </label>

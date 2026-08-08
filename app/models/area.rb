@@ -15,6 +15,26 @@ class Area < ApplicationRecord
 
   scope :ordered, -> { order(:position, :id) }
 
+  def move!(direction)
+    siblings = user.areas.ordered.to_a
+    index = siblings.index(self)
+    return false if index.nil?
+
+    swap_with =
+      case direction.to_s
+      when "up" then index.positive? ? siblings[index - 1] : nil
+      when "down" then index < siblings.length - 1 ? siblings[index + 1] : nil
+      end
+    return false if swap_with.nil?
+
+    other_position = swap_with.position
+    transaction do
+      swap_with.update!(position: position)
+      update!(position: other_position)
+    end
+    true
+  end
+
   private
 
   def assign_next_position

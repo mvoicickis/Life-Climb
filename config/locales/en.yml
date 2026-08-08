@@ -261,6 +261,19 @@ en:
       habits_hint: "Habits linked to this Journey."
       habit_done: "done"
       habit_missed: "missed"
+    stats:
+      title: "Your stats"
+      hint: "Trackers by Area — last 14 days on Journey."
+      empty_area: "No Trackers in this Area yet."
+      add_tracker: "+ Add a Tracker"
+      add_tracker_title: "Add a Tracker"
+      add_tracker_hint: "Name it, pick a unit, and optionally file it under an Area."
+      create: "Add Tracker"
+      hide: "Hide"
+      hidden: "Hidden from Journey stats."
+      created: "Tracker added."
+      move_up: "↑"
+      move_down: "↓"
 
   dashboard_v2:
     area: "Focus"
@@ -1940,6 +1953,7 @@ en:
     minimum: "Minimum"
     maximum: "Maximum"
     show_on_today: "Show on Today"
+    hide_from_journey: "Hide from Journey stats"
     active: "On"
     milestone_record: "New personal record"
     milestone_boost: "Big jump vs yesterday"
@@ -1964,6 +1978,8 @@ en:
     remove_confirm: "Remove this Area? Trackers stay — they become unfiled."
     empty: "No Areas yet. Add one to file Trackers under."
     empty_trackers: "No Trackers in this Area yet."
+    moved: "Area order updated."
+    move_failed: "Couldn’t move that Area."
     improve:
       cta: "Create a Project to improve this"
       hint: "Adds a Project on your Mountain, linked to this Tracker."

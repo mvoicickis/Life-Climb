@@ -36,6 +36,13 @@
 
   <%= render "life_points/journey_trends", trends: @journey_trends %>
 
+  <% if @show_journey_stats %>
+    <%= render "life_points/journey_stats",
+          areas: @stats_areas,
+          unfiled: @stats_unfiled,
+          sparklines: @stats_sparklines %>
+  <% end %>
+
   <div class="lp-progress__grid">
     <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
   </div>
