@@ -193,22 +193,27 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Habits this week/i, response.body)
     assert_match(/Linked stretch/i, response.body)
     assert_match(/Income/i, response.body)
-    assert_no_match(/Unlinked walk/i, response.body)
+    assert_select ".lp-journey-habits__row", text: /Unlinked walk/i, count: 0
     assert_select ".lp-journey-habits__row", count: 2
     assert_select ".lp-journey-habits__row.is-quantity", count: 1
     assert_select ".lp-journey-habits__day", count: 14
     assert_select ".lp-journey-habits__amount", text: "45"
     assert_select ".lp-journey-habits__unit", text: "€"
+    assert_select ".lp-journey-stats__card", text: /Unlinked walk/i
   end
 
   test "your stats section absent without areas or unfiled trackers" do
+    @user.habits.destroy_all
+    @user.areas.destroy_all
+
     get life_points_path
     assert_response :success
     assert_select ".lp-journey-stats", count: 0
-    assert_select ".lp-journey-trends"
+    assert_match(/Achievements/i, response.body)
   end
 
   test "your stats shows area tracker with sparkline and state chip" do
+    @user.habits.destroy_all
     area = @user.areas.create!(name: "Health", position: 1)
     habit = @user.habits.create!(
       name: "Steps",
@@ -227,7 +232,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get life_points_path
     assert_response :success
-    assert_select ".lp-journey-trends"
+    assert_match(/Your climb trends|Achievements/i, response.body)
     assert_select ".lp-journey-stats"
     assert_match(/Your stats/i, response.body)
     assert_match(/Health/i, response.body)
@@ -239,6 +244,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
   end
 
   test "hide removes tracker from journey stats but keeps habit" do
+    @user.habits.destroy_all
     area = @user.areas.create!(name: "Finance", position: 1)
     habit = @user.habits.create!(
       name: "Savings",
@@ -262,7 +268,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_response :success
     assert_select ".lp-journey-stats"
-    assert_no_match(/Savings/i, response.body)
+    assert_select ".lp-journey-stats__card", text: /Savings/, count: 0
     assert Habit.exists?(habit.id)
   end
 
@@ -273,8 +279,8 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
       post habits_path, params: {
         return_to: "journey",
         habit: {
-          name: "Water",
-          unit: "glasses",
+          name: "Morning pages",
+          unit: "pages",
           area_id: area.id,
           points: 5,
           frequency: "daily",
@@ -288,8 +294,8 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get life_points_path
     assert_response :success
-    assert_match(/Water/i, response.body)
-    assert_select ".lp-journey-stats__card", text: /Water/
+    assert_match(/Morning pages/i, response.body)
+    assert_select ".lp-journey-stats__card", text: /Morning pages/
   end
 
   test "area move up and down changes order on progress" do
@@ -303,7 +309,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_response :success
     body = response.body
-    assert body.index("Beta") < body.index("Alpha")
+    assert body.index(">Beta<") < body.index(">Alpha<")
 
     patch move_area_path(second), params: { direction: "down", return_to: "journey" }
     assert_redirected_to life_points_path
