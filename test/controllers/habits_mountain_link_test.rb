@@ -75,29 +75,16 @@ class HabitsMountainLinkTest < ActionDispatch::IntegrationTest
     assert_nil @user.habits.find_by(name: "Stolen link")
   end
 
-  test "Mountain shows linked supporting habits only" do
-    linked = @user.habits.create!(
+  test "Mountain does not render supporting habits section" do
+    @user.habits.create!(
       name: "Linked stretch", unit: "minutes", points: 5, frequency: "daily",
       active: true, show_on_home: true, stat_type: "growth", life_journey: @journey
-    )
-    @user.habits.create!(
-      name: "General water", unit: "glasses", points: 5, frequency: "daily",
-      active: true, show_on_home: true, stat_type: "growth"
-    )
-    inactive = @user.habits.create!(
-      name: "Old linked", unit: "times", points: 5, frequency: "daily",
-      active: false, show_on_home: true, stat_type: "growth", life_journey: @journey
     )
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg-habits", minimum: 1
-    assert_select ".lp-rpg-habits__title", text: /Supporting habits/i
-    assert_select ".lp-rpg-habits__name", text: linked.name
-    assert_select ".lp-rpg-habits__name", text: "General water", count: 0
-    assert_select ".lp-rpg-habits__name", text: inactive.name, count: 0
-    assert_select ".lp-rpg-habits a[href=?]", habits_path
-    assert_select ".lp-rpg-habits a[href=?]", habit_path(linked)
+    assert_select ".lp-rpg-habits", count: 0
+    assert_select ".lp-rpg-habits__title", text: /Supporting habits/i, count: 0
   end
 
   test "Today shows all on_home habits regardless of journey link" do
