@@ -107,7 +107,10 @@ class LifeJourneysController < ApplicationController
       return
     end
 
-    @goals = current_user.strategy_goals.for_area(area.id).ordered.includes(:parent, children: { children: :children })
+    @goals = current_user.strategy_goals
+      .for_area(area.id)
+      .ordered
+      .includes(:parent, :habit_project_links, :linked_habits, children: { children: :children })
     @root_goals = @goals.for_kind("goal").roots.to_a
     @goal = select_strategy_goal
     @year_due = @goal&.due_on.presence || Strategy::YearCycle.default_goal_due
@@ -160,6 +163,18 @@ class LifeJourneysController < ApplicationController
     @open_sheet = params[:sheet].present?
     @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
     @force_notebook = params[:notebook].present?
+    @open_project_trackers =
+      @focus&.path_level_camp? &&
+      (@focus.tracker_linked? || params[:sheet].to_s == "trackers")
+    if @focus&.path_level_camp?
+      linked = @focus.linked_habits.to_a
+      @project_tracker_sparklines = linked.to_h { |habit| [ habit.id, habit.sparkline_amounts(days: 14) ] }
+      linked_ids = linked.map(&:id)
+      @linkable_habits_for_focus = current_user.habits.active.ordered.reject { |h| linked_ids.include?(h.id) }
+    else
+      @project_tracker_sparklines = {}
+      @linkable_habits_for_focus = []
+    end
     @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
     @first_climb_needed = @goal.present? && @goal.children.none?(&:plan?)
     @notebook_guide =

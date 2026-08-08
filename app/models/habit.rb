@@ -17,11 +17,10 @@ class Habit < ApplicationRecord
   belongs_to :area, optional: true
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
+  has_many :habit_project_links, dependent: :destroy, inverse_of: :habit
   has_many :improvement_projects,
-           class_name: "StrategyGoal",
-           foreign_key: :habit_id,
-           dependent: :nullify,
-           inverse_of: :habit
+           through: :habit_project_links,
+           source: :strategy_goal
 
   validates :name, presence: true, length: { maximum: 120 }
   validates :identity_label, length: { maximum: 120 }, allow_nil: true

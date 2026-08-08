@@ -227,6 +227,16 @@
             </details>
           <% end %>
 
+          <% if selected && project&.path_level_camp? && project.tracker_linked? %>
+            <% linked_habits = project.linked_habits.sort_by { |h| [ h.position.to_i, h.name.to_s ] } %>
+            <%= render "life_journeys/rpg_project_trackers_sheet",
+                  project: project,
+                  habits: linked_habits,
+                  sparklines: @project_tracker_sparklines || {},
+                  linkable_habits: @linkable_habits_for_focus || [],
+                  open: true %>
+          <% end %>
+
           <% if show_menu %>
             <div class="lp-climb-path__menu"
                  data-plan-card-menu-target="menu"

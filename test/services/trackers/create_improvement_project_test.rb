@@ -31,7 +31,7 @@ class Trackers::CreateImprovementProjectTest < ActiveSupport::TestCase
 
     project = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
     assert project.path_level_camp?
-    assert_equal @habit.id, project.habit_id
+    assert_includes project.linked_habits, @habit
     assert project.parent.plan?
     assert_equal @journey.id, project.life_journey_id
   end
@@ -60,7 +60,7 @@ class Trackers::CreateImprovementProjectTest < ActiveSupport::TestCase
 
   test "reuses existing habit-linked project instead of creating a duplicate" do
     first = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
-    assert_no_difference -> { @user.strategy_goals.where(habit_id: @habit.id).count } do
+    assert_no_difference -> { HabitProjectLink.where(habit_id: @habit.id).count } do
       second = Trackers::CreateImprovementProject.call(user: @user, habit: @habit)
       assert_equal first.id, second.id
     end

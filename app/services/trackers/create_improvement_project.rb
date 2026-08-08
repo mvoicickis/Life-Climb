@@ -2,7 +2,7 @@
 
 module Trackers
   # Creates a path-level Project under the Habit's Mountain (or primary Journey)
-  # and links it via strategy_goals.habit_id. Idempotent per habit.
+  # and links it via habit_project_links. Idempotent per habit.
   class CreateImprovementProject
     class Error < StandardError; end
 
@@ -36,9 +36,9 @@ module Trackers
         parent: plan,
         horizon: "project",
         title: I18n.t("areas.improve.project_title", name: @habit.name.to_s.truncate(80)),
-        habit: @habit,
         position: position
       )
+      HabitProjectLink.create!(habit: @habit, strategy_goal: project)
       Strategy::SyncCompletion.resync!(node: project)
       project
     end
@@ -46,7 +46,7 @@ module Trackers
     private
 
     def existing_project
-      projects = @user.strategy_goals.where(habit_id: @habit.id, horizon: "project").ordered.to_a
+      projects = @habit.improvement_projects.for_kind("project").ordered.to_a
       projects.find { |project| project.completed_at.blank? } || projects.first
     end
 

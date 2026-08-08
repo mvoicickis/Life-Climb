@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_183000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -144,6 +144,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
     t.index ["life_area_id"], name: "index_goals_on_life_area_id"
     t.index ["user_id", "position"], name: "index_goals_on_user_id_and_position"
     t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "habit_project_links", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "habit_id", null: false
+    t.integer "strategy_goal_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["habit_id", "strategy_goal_id"], name: "index_habit_project_links_on_habit_and_project", unique: true
+    t.index ["habit_id"], name: "index_habit_project_links_on_habit_id"
+    t.index ["strategy_goal_id"], name: "index_habit_project_links_on_strategy_goal_id"
   end
 
   create_table "habits", force: :cascade do |t|
@@ -354,7 +364,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
     t.text "description"
     t.date "due_on"
     t.string "effort_tier"
-    t.integer "habit_id"
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"
@@ -368,7 +377,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
     t.string "unit"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index ["habit_id"], name: "index_strategy_goals_on_habit_id"
     t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
     t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
@@ -476,6 +484,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
   add_foreign_key "goals", "dreams"
   add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
+  add_foreign_key "habit_project_links", "habits"
+  add_foreign_key "habit_project_links", "strategy_goals"
   add_foreign_key "habits", "areas"
   add_foreign_key "habits", "life_journeys"
   add_foreign_key "habits", "users"
@@ -495,7 +505,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"
   add_foreign_key "steps", "users"
-  add_foreign_key "strategy_goals", "habits"
   add_foreign_key "strategy_goals", "life_areas"
   add_foreign_key "strategy_goals", "life_journeys"
   add_foreign_key "strategy_goals", "strategy_goals", column: "parent_id"

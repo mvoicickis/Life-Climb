@@ -1,0 +1,97 @@
+<%# locals: project, habits, sparklines, linkable_habits, open %>
+<% project = local_assigns.fetch(:project) %>
+<% habits = Array(local_assigns[:habits]) %>
+<% sparklines = local_assigns[:sparklines] || {} %>
+<% linkable_habits = Array(local_assigns[:linkable_habits]) %>
+<% open_sheet = local_assigns.fetch(:open, false) %>
+
+<dialog class="lp-strategy-sheet is-project-trackers"
+        id="project-trackers-<%= project.id %>"
+        <% if open_sheet %>
+          data-controller="climb-reward"
+          data-climb-reward-auto-value="true"
+        <% end %>>
+  <div class="lp-strategy-sheet__panel">
+    <header class="lp-strategy-sheet__head">
+      <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.project") %></p>
+      <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.project_trackers.title") %></h2>
+      <p class="lp-strategy-sheet__desc"><%= project.title %></p>
+      <button type="button"
+              class="lp-strategy-sheet__close"
+              data-action="click->climb-reward#dismiss"
+              aria-label="<%= t('strategy.sheet.close') %>">×</button>
+    </header>
+
+    <ul class="lp-project-trackers">
+      <% habits.each do |habit| %>
+        <li class="lp-project-trackers__card">
+          <div class="lp-project-trackers__head">
+            <%= link_to habit_path(habit), class: "lp-project-trackers__name" do %>
+              <%= habit.name %>
+            <% end %>
+            <span class="lp-project-trackers__unit"><%= habit.unit %></span>
+            <% if habit.tracker_state_label.present? %>
+              <span class="lp-areas__state is-<%= habit.state.presence || 'unset' %>">
+                <%= habit.tracker_state_label %>
+              </span>
+            <% end %>
+          </div>
+          <% values = sparklines[habit.id] || habit.sparkline_amounts(days: 14) %>
+          <% if values&.any? %>
+            <div class="lp-project-trackers__spark" aria-label="<%= t('habits.sparkline_label') %>">
+              <%= render "habits/sparkline", values: values %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <details class="lp-project-trackers__add">
+      <summary class="lp-project-trackers__add-btn">
+        + <%= t("strategy.rpg.project_trackers.add") %>
+      </summary>
+
+      <% if linkable_habits.any? %>
+        <%= form_with url: strategy_goal_habit_links_path(project),
+              method: :post,
+              class: "lp-project-trackers__form",
+              data: { turbo: false } do %>
+          <label class="lp-project-trackers__field">
+            <span class="lp-project-trackers__label"><%= t("strategy.rpg.project_trackers.pick_existing") %></span>
+            <%= select_tag :habit_id,
+                  options_from_collection_for_select(linkable_habits, :id, :name),
+                  include_blank: t("strategy.rpg.project_trackers.pick_blank"),
+                  required: true,
+                  class: "lp-rpg-input" %>
+          </label>
+          <%= submit_tag t("strategy.rpg.project_trackers.link_existing"),
+                class: "lp-strategy-sheet__btn is-save" %>
+        <% end %>
+      <% end %>
+
+      <%= form_with url: strategy_goal_habit_links_path(project),
+            method: :post,
+            class: "lp-project-trackers__form",
+            data: { turbo: false } do %>
+        <label class="lp-project-trackers__field">
+          <span class="lp-project-trackers__label"><%= t("strategy.rpg.project_trackers.new_name") %></span>
+          <%= text_field_tag :name, nil,
+                required: true,
+                maxlength: 120,
+                class: "lp-rpg-input",
+                placeholder: t("strategy.rpg.project_trackers.new_name_placeholder"),
+                autocomplete: "off" %>
+        </label>
+        <label class="lp-project-trackers__field">
+          <span class="lp-project-trackers__label"><%= t("strategy.rpg.project_trackers.new_unit") %></span>
+          <%= text_field_tag :unit, "times",
+                maxlength: 40,
+                class: "lp-rpg-input",
+                autocomplete: "off" %>
+        </label>
+        <%= submit_tag t("strategy.rpg.project_trackers.create_and_link"),
+              class: "lp-strategy-sheet__btn is-save" %>
+      <% end %>
+    </details>
+  </div>
+</dialog>

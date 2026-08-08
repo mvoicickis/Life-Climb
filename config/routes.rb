@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   end
   resources :strategy_goals, only: %i[ create update destroy ] do
     resources :practice_tasks, only: %i[ create ]
+    resources :habit_links, only: :create, controller: "strategy_goal_habit_links"
     resource :manual_completion, only: %i[ create destroy ], controller: "strategy_goal_completions"
   end
   resources :practice_tasks, only: %i[ update destroy ]

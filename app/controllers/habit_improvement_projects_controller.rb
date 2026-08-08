@@ -5,7 +5,7 @@ class HabitImprovementProjectsController < ApplicationController
     habit = current_user.habits.find(params[:habit_id])
     project = Trackers::CreateImprovementProject.call(user: current_user, habit: habit)
     journey = project.life_journey
-    redirect_to life_journey_path(journey, focus_id: project.id),
+    redirect_to life_journey_path(journey, focus_id: project.id, sheet: "trackers"),
                 notice: t("areas.improve.created", title: project.title),
                 status: :see_other
   rescue Trackers::CreateImprovementProject::Error => e
