@@ -29,7 +29,7 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "five item nav and mountain supporting habits look clean on mobile" do
+  test "five item nav looks clean on mobile and Mountain omits supporting habits" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -46,13 +46,9 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habits-nav-five-mobile.png")
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
-    assert_selector ".lp-rpg-habits", wait: 5
-    assert_selector ".lp-rpg-habits__name", text: /Meditate/
-    assert_selector ".lp-rpg-habits__name", text: /Pages read/
-    assert_selector ".lp-rpg-habits__name", text: /Steps/, count: 0
-    page.execute_script("document.querySelector('.lp-rpg-habits')?.scrollIntoView({block: 'center'})")
-    sleep 0.3
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-supporting-habits-mobile.png")
+    assert_selector ".lp-climb-path", wait: 5
+    assert_no_selector ".lp-rpg-habits"
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-no-supporting-habits-mobile.png")
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5

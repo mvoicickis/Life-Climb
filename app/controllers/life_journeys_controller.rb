@@ -174,7 +174,6 @@ class LifeJourneysController < ApplicationController
       else
         :fight_today
       end
-    @supporting_habits = @journey.habits.active.ordered.to_a
   end
 
   def strategy_branch_for(focus, today_battle)
