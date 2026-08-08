@@ -91,7 +91,11 @@ Rails.application.routes.draw do
   post "support/dismiss", to: "supports#dismiss_moment", as: :dismiss_support_moment
   resource :about, only: :show, controller: "abouts"
 
-  resources :areas, only: %i[ index create update destroy ]
+  resources :areas, only: %i[ index create update destroy ] do
+    member do
+      patch :move
+    end
+  end
   resources :habits do
     resources :improvement_projects, only: :create, controller: "habit_improvement_projects"
     member do
