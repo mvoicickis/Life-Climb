@@ -92,6 +92,8 @@ es:
       destination_swipe_hint: "desliza para cambiar de destino"
       edit_destination: "Editar destino"
       project_sections: "Secciones del proyecto"
+      path_your_path: "Tu camino"
+      path_from_trackers: "Desde tus Trackers"
       project_trackers:
         title: "Trackers"
         add: "Añadir otro Tracker a este Proyecto"
