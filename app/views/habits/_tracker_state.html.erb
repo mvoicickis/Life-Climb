@@ -7,20 +7,31 @@
     <p><%= t("habits.state_hint") %></p>
   </header>
 
-  <%= form_with model: habit, url: habit_path(habit), method: :patch, class: "lp-tracker-state__form", data: { turbo: false } do |form| %>
+  <%= form_with model: habit,
+        url: habit_path(habit),
+        method: :patch,
+        class: "lp-tracker-state__form",
+        data: {
+          turbo: false,
+          controller: "tracker-state",
+          action: "change->tracker-state#select"
+        } do |form| %>
     <%= hidden_field_tag :return_to, "show" %>
 
     <fieldset class="lp-tracker-state__choices">
       <legend class="sr-only"><%= t("habits.state_section") %></legend>
-      <label class="lp-tracker-state__choice <%= 'is-active' if habit.state == 'good' %>">
+      <label class="lp-tracker-state__choice <%= 'is-active' if habit.state == 'good' %>"
+             data-tracker-state-target="choice">
         <%= form.radio_button :state, "good", class: "sr-only" %>
         <span><%= habit.state_label_good.presence || t("habits.state_fallback_good") %></span>
       </label>
-      <label class="lp-tracker-state__choice <%= 'is-active' if habit.state == 'attention' %>">
+      <label class="lp-tracker-state__choice <%= 'is-active' if habit.state == 'attention' %>"
+             data-tracker-state-target="choice">
         <%= form.radio_button :state, "attention", class: "sr-only" %>
         <span><%= habit.state_label_attention.presence || t("habits.state_fallback_attention") %></span>
       </label>
-      <label class="lp-tracker-state__choice <%= 'is-active' if habit.state.blank? %>">
+      <label class="lp-tracker-state__choice <%= 'is-active' if habit.state.blank? %>"
+             data-tracker-state-target="choice">
         <%= form.radio_button :state, "", class: "sr-only", checked: habit.state.blank? %>
         <span><%= t("habits.state_unset") %></span>
       </label>

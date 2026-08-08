@@ -5650,7 +5650,8 @@ html[data-theme="dark"] {
   cursor: pointer;
 }
 
-.lp-tracker-state__choice.is-active {
+.lp-tracker-state__choice.is-active,
+.lp-tracker-state__choice:has(input:checked) {
   border-color: rgba(34, 197, 94, 0.45);
   background: rgba(34, 197, 94, 0.12);
   color: #15803d;
