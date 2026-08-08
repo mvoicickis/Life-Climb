@@ -122,26 +122,47 @@ module Progress
           memo[habit_id] << date
         end
 
-      log_dates = DailyLog
+      log_amounts = DailyLog
         .where(habit_id: habit_ids, logged_on: week_span)
-        .pluck(:habit_id, :logged_on)
-        .each_with_object(Hash.new { |h, k| h[k] = Set.new }) do |(habit_id, date), memo|
-          memo[habit_id] << date
+        .pluck(:habit_id, :logged_on, :amount)
+        .each_with_object(Hash.new { |h, k| h[k] = {} }) do |(habit_id, date, amount), memo|
+          memo[habit_id][date] = amount
         end
 
       habits.map do |habit|
-        done_dates = habit.quantity_checkin? ? log_dates[habit.id] : completion_dates[habit.id]
-        {
-          habit_id: habit.id,
-          name: habit.name,
-          days: week_days.map do |date|
-            {
-              date: date.iso8601,
-              label: I18n.l(date, format: :chart_day),
-              done: done_dates.include?(date)
-            }
-          end
-        }
+        if habit.quantity_checkin?
+          amounts = log_amounts[habit.id]
+          {
+            habit_id: habit.id,
+            name: habit.name,
+            quantity: true,
+            unit: habit.unit.to_s,
+            days: week_days.map do |date|
+              amount = amounts[date]
+              {
+                date: date.iso8601,
+                label: I18n.l(date, format: :chart_day),
+                done: amounts.key?(date),
+                amount: amount
+              }
+            end
+          }
+        else
+          done_dates = completion_dates[habit.id]
+          {
+            habit_id: habit.id,
+            name: habit.name,
+            quantity: false,
+            unit: habit.unit.to_s,
+            days: week_days.map do |date|
+              {
+                date: date.iso8601,
+                label: I18n.l(date, format: :chart_day),
+                done: done_dates.include?(date)
+              }
+            end
+          }
+        end
       end
     end
 

@@ -183,13 +183,19 @@ class Progress::JourneyTrendsTest < ActiveSupport::TestCase
     assert_not_includes names, "Unlinked"
 
     stretch = data[:habits].find { |h| h[:habit_id] == linked.id }
+    assert_equal false, stretch[:quantity]
     assert_equal 7, stretch[:days].size
     assert stretch[:days][0][:done]
     assert_not stretch[:days][1][:done]
+    assert_nil stretch[:days][0][:amount]
 
     pages = data[:habits].find { |h| h[:habit_id] == quantity.id }
+    assert_equal true, pages[:quantity]
+    assert_equal "pages", pages[:unit]
     assert_not pages[:days][0][:done]
     assert pages[:days][1][:done]
+    assert_equal 12, pages[:days][1][:amount]
+    assert_nil pages[:days][0][:amount]
   end
 
   private

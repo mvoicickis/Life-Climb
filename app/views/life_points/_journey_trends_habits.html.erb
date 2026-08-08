@@ -7,18 +7,42 @@
 
   <ul class="lp-journey-habits">
     <% habits.each do |habit| %>
-      <li class="lp-journey-habits__row">
-        <p class="lp-journey-habits__name"><%= habit[:name] %></p>
+      <li class="lp-journey-habits__row <%= "is-quantity" if habit[:quantity] %>">
+        <p class="lp-journey-habits__name">
+          <%= habit[:name] %>
+          <% if habit[:quantity] && habit[:unit].present? %>
+            <span class="lp-journey-habits__unit"><%= habit[:unit] %></span>
+          <% end %>
+        </p>
         <ol class="lp-journey-habits__days" aria-label="<%= habit[:name] %>">
           <% habit[:days].each do |day| %>
-            <li class="lp-journey-habits__day <%= "is-done" if day[:done] %>"
-                title="<%= day[:label] %>">
-              <span class="lp-journey-habits__mark" aria-hidden="true"></span>
-              <span class="sr-only">
-                <%= day[:label] %>:
-                <%= day[:done] ? t("progress.trends.habit_done") : t("progress.trends.habit_missed") %>
-              </span>
-            </li>
+            <% if habit[:quantity] %>
+              <li class="lp-journey-habits__day is-quantity <%= "is-done" if day[:done] %>"
+                  title="<%= day[:label] %><%= day[:done] ? ": #{format_amount(day[:amount])} #{habit[:unit]}" : "" %>">
+                <% if day[:done] %>
+                  <span class="lp-journey-habits__amount"><%= format_amount(day[:amount]) %></span>
+                <% else %>
+                  <span class="lp-journey-habits__mark" aria-hidden="true"></span>
+                <% end %>
+                <span class="sr-only">
+                  <%= day[:label] %>:
+                  <% if day[:done] %>
+                    <%= format_amount(day[:amount]) %> <%= habit[:unit] %>
+                  <% else %>
+                    <%= t("progress.trends.habit_missed") %>
+                  <% end %>
+                </span>
+              </li>
+            <% else %>
+              <li class="lp-journey-habits__day <%= "is-done" if day[:done] %>"
+                  title="<%= day[:label] %>">
+                <span class="lp-journey-habits__mark" aria-hidden="true"></span>
+                <span class="sr-only">
+                  <%= day[:label] %>:
+                  <%= day[:done] ? t("progress.trends.habit_done") : t("progress.trends.habit_missed") %>
+                </span>
+              </li>
+            <% end %>
           <% end %>
         </ol>
       </li>
