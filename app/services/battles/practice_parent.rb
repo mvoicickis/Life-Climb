@@ -19,7 +19,7 @@ module Battles
       return leaf if leaf
 
       position = @project.children.maximum(:position).to_i
-      @project.children.create!(
+      nested = @project.children.create!(
         user: @user,
         life_area: @project.life_area,
         life_journey_id: @project.life_journey_id,
@@ -27,6 +27,8 @@ module Battles
         title: I18n.t("strategy.first_climb.nested_camp_title"),
         position: position
       )
+      Strategy::SyncCompletion.resync!(node: nested)
+      nested
     end
   end
 end
