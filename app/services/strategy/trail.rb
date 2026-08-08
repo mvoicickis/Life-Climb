@@ -75,13 +75,18 @@ module Strategy
     def build_nodes(projects)
       return [] if projects.empty?
 
-      current_index = projects.index { |p| !p.completed? } || projects.length
+      # Sequential lock ignores Tracker improvement Projects (habit_id) so they
+      # never block the Path queue — and so they never sit as :locked themselves.
+      current_index =
+        projects.index { |p| !p.completed? && p.habit_id.blank? } || projects.length
       count = projects.length
 
       projects.each_with_index.map do |project, index|
         state =
           if project.completed?
             :done
+          elsif project.habit_id.present?
+            :current
           elsif index == current_index
             :current
           elsif index < current_index

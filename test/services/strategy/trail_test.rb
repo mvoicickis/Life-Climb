@@ -81,4 +81,35 @@ class StrategyTrailTest < ActiveSupport::TestCase
     assert_includes trail.visible_nodes.map(&:state), :current
     assert_equal 5, trail.nodes.size
   end
+
+  test "habit-linked improvement project skips sequential lock" do
+    habit = habits(:one)
+    first = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Planned camp", position: 0
+    )
+    improve = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Improve Income", position: 1, habit: habit
+    )
+    later = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Later camp", position: 2
+    )
+
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    by_id = trail.nodes.index_by(&:id)
+
+    assert_equal :current, by_id[first.id].state
+    assert_equal :current, by_id[improve.id].state
+    assert_equal :locked, by_id[later.id].state
+
+    first.complete!
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    by_id = trail.nodes.index_by(&:id)
+
+    assert_equal :done, by_id[first.id].state
+    assert_equal :current, by_id[improve.id].state
+    assert_equal :current, by_id[later.id].state
+  end
 end
