@@ -10,13 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_135707) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
     t.datetime "updated_at", null: false
     t.text "value"
     t.index ["key"], name: "index_app_settings_on_key", unique: true
+  end
+
+  create_table "areas", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "position"], name: "index_areas_on_user_id_and_position"
+    t.index ["user_id"], name: "index_areas_on_user_id"
   end
 
   create_table "buildings", force: :cascade do |t|
@@ -138,6 +148,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
 
   create_table "habits", force: :cascade do |t|
     t.boolean "active", default: true, null: false
+    t.integer "area_id"
     t.datetime "created_at", null: false
     t.text "description"
     t.string "frequency", default: "daily", null: false
@@ -152,9 +163,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
     t.integer "position", default: 0, null: false
     t.boolean "show_on_home", default: true, null: false
     t.string "stat_type", default: "growth", null: false
+    t.string "state"
+    t.string "state_label_attention"
+    t.string "state_label_good"
     t.string "unit", default: "times", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["area_id"], name: "index_habits_on_area_id"
     t.index ["life_journey_id"], name: "index_habits_on_life_journey_id"
     t.index ["user_id", "position"], name: "index_habits_on_user_id_and_position"
     t.index ["user_id"], name: "index_habits_on_user_id"
@@ -339,6 +354,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
     t.text "description"
     t.date "due_on"
     t.string "effort_tier"
+    t.integer "habit_id"
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"
@@ -352,6 +368,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
     t.string "unit"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["habit_id"], name: "index_strategy_goals_on_habit_id"
     t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
     t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
@@ -441,6 +458,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
   end
 
+  add_foreign_key "areas", "users"
   add_foreign_key "buildings", "steps"
   add_foreign_key "buildings", "users"
   add_foreign_key "completions", "habits"
@@ -458,6 +476,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
   add_foreign_key "goals", "dreams"
   add_foreign_key "goals", "life_areas"
   add_foreign_key "goals", "users"
+  add_foreign_key "habits", "areas"
   add_foreign_key "habits", "life_journeys"
   add_foreign_key "habits", "users"
   add_foreign_key "journey_targets", "life_journeys"
@@ -476,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004134) do
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "goals"
   add_foreign_key "steps", "users"
+  add_foreign_key "strategy_goals", "habits"
   add_foreign_key "strategy_goals", "life_areas"
   add_foreign_key "strategy_goals", "life_journeys"
   add_foreign_key "strategy_goals", "strategy_goals", column: "parent_id"

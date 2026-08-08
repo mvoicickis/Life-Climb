@@ -19,48 +19,59 @@
     <%= link_to t("dashboard.add"), new_habit_path, class: "lp-habits__add" %>
   </header>
 
-  <% if @habits.any? %>
-    <ul class="lp-habits__list">
-      <% @habits.each do |habit| %>
-        <% status = habit.status %>
-        <li class="lp-habits__card has-color is-amber <%= 'is-off' unless habit.active? %>">
-          <div class="lp-habits__card-main">
-            <div class="lp-habits__card-copy">
-              <% if habit.identity_label.present? %>
-                <p class="lp-habit-identity"><%= habit.identity_label %></p>
-              <% end %>
-              <%= link_to habit.name, habit_path(habit), class: "lp-habits__name" %>
-              <p class="lp-habits__meta">
-                <%= habit.unit %> · <%= habit.evaluation_label %>
-                <% if habit.show_on_home? %> · <%= t("habits.on_today") %><% end %>
-                <% unless habit.active? %> · <%= t("habits.off") %><% end %>
-              </p>
-              <% if habit.life_journey.present? %>
-                <p class="lp-habits__mountain">
-                  <%= t("habits.linked_mountain", title: habit.life_journey.title) %>
+  <%= render "habits/areas_section", areas: @areas %>
+
+  <section class="lp-habits__unfiled" aria-label="<%= t('habits.unfiled_title') %>">
+    <header class="lp-habits__section-head">
+      <h2><%= t("habits.unfiled_title") %></h2>
+      <p><%= t("habits.unfiled_hint") %></p>
+    </header>
+
+    <% if @unfiled_habits.any? %>
+      <ul class="lp-habits__list">
+        <% @unfiled_habits.each do |habit| %>
+          <% status = habit.status %>
+          <li class="lp-habits__card has-color is-amber <%= 'is-off' unless habit.active? %>">
+            <div class="lp-habits__card-main">
+              <div class="lp-habits__card-copy">
+                <% if habit.identity_label.present? %>
+                  <p class="lp-habit-identity"><%= habit.identity_label %></p>
+                <% end %>
+                <%= link_to habit.name, habit_path(habit), class: "lp-habits__name" %>
+                <p class="lp-habits__meta">
+                  <%= habit.unit %> · <%= habit.evaluation_label %>
+                  <% if habit.show_on_home? %> · <%= t("habits.on_today") %><% end %>
+                  <% unless habit.active? %> · <%= t("habits.off") %><% end %>
                 </p>
-              <% end %>
-              <p class="lp-habits__status is-<%= status_tone(status) %>">
-                <%= status_full_text(status) %>
-              </p>
+                <% if habit.life_journey.present? %>
+                  <p class="lp-habits__mountain">
+                    <%= t("habits.linked_mountain", title: habit.life_journey.title) %>
+                  </p>
+                <% end %>
+                <p class="lp-habits__status is-<%= status_tone(status) %>">
+                  <%= status_full_text(status) %>
+                </p>
+              </div>
+              <div class="lp-habits__card-actions">
+                <%= link_to t("habits.edit"), edit_habit_path(habit), class: "lp-habits__btn is-quiet" %>
+                <%= button_to t("habits.delete"), habit_path(habit), method: :delete,
+                      data: { turbo_confirm: t("habits.delete_confirm") },
+                      class: "lp-habits__btn is-danger" %>
+              </div>
             </div>
-            <div class="lp-habits__card-actions">
-              <%= link_to t("habits.edit"), edit_habit_path(habit), class: "lp-habits__btn is-quiet" %>
-              <%= button_to t("habits.delete"), habit_path(habit), method: :delete,
-                    data: { turbo_confirm: t("habits.delete_confirm") },
-                    class: "lp-habits__btn is-danger" %>
-            </div>
-          </div>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <div class="lp-habits__empty">
-      <p class="lp-habits__empty-title"><%= t("habits.empty_title") %></p>
-      <p class="lp-habits__empty-body"><%= t("habits.empty_body") %></p>
-      <%= link_to t("habits.empty_cta"), new_habit_path, class: "lp-habits__add is-block" %>
-    </div>
-  <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% elsif @habits.empty? %>
+      <div class="lp-habits__empty">
+        <p class="lp-habits__empty-title"><%= t("habits.empty_title") %></p>
+        <p class="lp-habits__empty-body"><%= t("habits.empty_body") %></p>
+        <%= link_to t("habits.empty_cta"), new_habit_path, class: "lp-habits__add is-block" %>
+      </div>
+    <% else %>
+      <p class="lp-habits__empty-body"><%= t("habits.unfiled_empty") %></p>
+    <% end %>
+  </section>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :habits %>

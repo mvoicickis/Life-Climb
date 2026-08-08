@@ -1,0 +1,15 @@
+<%# locals: values %>
+<%
+  values = Array(values).map(&:to_f)
+  max = [ values.max.to_f, 1 ].max
+  min = values.min.to_f
+  span = [ max - min, 1 ].max
+  points = values.each_with_index.map { |v, i|
+    x = values.size <= 1 ? 0 : (i.to_f / (values.size - 1)) * 100
+    y = 26 - (((v - min) / span) * 22)
+    "#{x.round(2)},#{y.round(2)}"
+  }.join(" ")
+%>
+<svg class="lp-tracker-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+  <polyline fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="<%= points %>"></polyline>
+</svg>

@@ -1,0 +1,59 @@
+<%# locals: areas %>
+<section id="areas" class="lp-areas" aria-label="<%= t('areas.title') %>">
+  <header class="lp-areas__head">
+    <div>
+      <h2 class="lp-areas__title"><%= t("areas.title") %></h2>
+      <p class="lp-areas__hint"><%= t("areas.hint") %></p>
+    </div>
+  </header>
+
+  <%= form_with model: Area.new, url: areas_path, class: "lp-areas__create", data: { turbo: false } do |form| %>
+    <%= form.label :name, t("areas.name_label"), class: "lp-habits__field-label" %>
+    <div class="lp-areas__create-row">
+      <%= form.text_field :name,
+          placeholder: t("areas.name_placeholder"),
+          class: "lp-habits__input",
+          required: true,
+          maxlength: 200 %>
+      <%= form.submit t("areas.add"), class: "lp-habits__btn is-primary" %>
+    </div>
+  <% end %>
+
+  <% if areas.any? %>
+    <ul class="lp-areas__list">
+      <% areas.each do |area| %>
+        <li class="lp-areas__card">
+          <div class="lp-areas__card-head">
+            <h3 class="lp-areas__name"><%= area.name %></h3>
+            <%= button_to t("areas.remove"), area_path(area), method: :delete,
+                  data: { turbo_confirm: t("areas.remove_confirm") },
+                  class: "lp-habits__btn is-danger is-tiny" %>
+          </div>
+
+          <% trackers = area.habits.ordered %>
+          <% if trackers.any? %>
+            <ul class="lp-areas__trackers">
+              <% trackers.each do |habit| %>
+                <li class="lp-areas__tracker">
+                  <%= link_to habit_path(habit), class: "lp-areas__tracker-link" do %>
+                    <span class="lp-areas__tracker-name"><%= habit.name %></span>
+                    <span class="lp-areas__tracker-meta"><%= habit.unit %></span>
+                    <% if habit.tracker_state_label.present? %>
+                      <span class="lp-areas__state is-<%= habit.state.presence || 'unset' %>">
+                        <%= habit.tracker_state_label %>
+                      </span>
+                    <% end %>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="lp-areas__empty"><%= t("areas.empty_trackers") %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-areas__empty"><%= t("areas.empty") %></p>
+  <% end %>
+</section>

@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :habits, dependent: :destroy
+  has_many :areas, dependent: :destroy
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
   has_many :feedbacks, dependent: :destroy
