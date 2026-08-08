@@ -38,8 +38,8 @@
         <% playable = node.state != :locked %>
         <% selected = selected_section_id == node.id %>
         <% project = node.record %>
-        <%# Keep ⋮ on done nodes so sticky Reopen stays reachable. %>
-        <% show_menu = project.present? && node.state != :locked %>
+        <%# Done nodes hide ⋮ unless sticky — Reopen must stay reachable. %>
+        <% show_menu = project.present? && (node.state != :done || project.manually_completed?) %>
         <% zig = idx.even? ? "is-left" : "is-right" %>
         <li class="lp-climb-path__node is-<%= node.state %> <%= zig %> <%= 'is-selected' if selected %> <%= 'is-menu-enabled' if show_menu %> <%= 'is-manual' if project&.manually_completed? %>"
             data-section-id="<%= node.id %>"
