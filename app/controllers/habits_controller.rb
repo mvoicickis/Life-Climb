@@ -1,9 +1,12 @@
 class HabitsController < ApplicationController
   before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
   before_action :load_journeys, only: %i[ new create edit update ]
+  before_action :load_areas, only: %i[ index new create edit update show ]
 
   def index
-    @habits = current_user.habits.ordered.includes(:life_journey)
+    @habits = current_user.habits.ordered.includes(:life_journey, :area)
+    @areas = current_user.areas.ordered.includes(habits: :area)
+    @unfiled_habits = @habits.select { |habit| habit.area_id.blank? }
   end
 
   def show
@@ -15,6 +18,8 @@ class HabitsController < ApplicationController
       elsif insights.big_boost?(@habit)
         I18n.t("habits.milestone_boost")
       end
+    @sparkline = @habit.sparkline_amounts(days: 14)
+    @improvement_projects = @habit.improvement_projects.for_kind("project").ordered.includes(:life_journey)
   end
 
   def new
@@ -48,9 +53,18 @@ class HabitsController < ApplicationController
   def update
     @habit.assign_attributes(habit_params)
     clear_targets_unless_configured!
+    return_to = params[:return_to].to_s
 
     if @habit.save
-      redirect_to habits_path, notice: "Saved."
+      if return_to == "show"
+        redirect_to habit_path(@habit), notice: "Saved."
+      else
+        redirect_to habits_path, notice: "Saved."
+      end
+    elsif return_to == "show"
+      @sparkline = @habit.sparkline_amounts(days: 14)
+      @improvement_projects = @habit.improvement_projects.for_kind("project").ordered.includes(:life_journey)
+      render :show, status: :unprocessable_entity
     else
       render :edit, status: :unprocessable_entity
     end
@@ -85,10 +99,15 @@ class HabitsController < ApplicationController
     @journeys = current_user.life_journeys.active.order(:title, :id)
   end
 
+  def load_areas
+    @areas = current_user.areas.ordered
+  end
+
   def habit_params
     raw = params.require(:habit).permit(
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
-      :stat_type, :goal, :min_value, :max_value, :life_journey_id, :identity_label
+      :stat_type, :goal, :min_value, :max_value, :life_journey_id, :identity_label,
+      :area_id, :state, :state_label_good, :state_label_attention
     )
     # Clamp client-supplied LP rewards — habits are not a free AP faucet.
     if raw[:points].present?
@@ -96,6 +115,10 @@ class HabitsController < ApplicationController
     end
     raw[:life_journey_id] = raw[:life_journey_id].presence
     raw[:identity_label] = raw[:identity_label].presence
+    raw[:area_id] = raw[:area_id].presence
+    raw[:state] = raw[:state].presence
+    raw[:state_label_good] = raw[:state_label_good].presence
+    raw[:state_label_attention] = raw[:state_label_attention].presence
     raw
   end
 

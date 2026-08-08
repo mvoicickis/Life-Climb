@@ -80,6 +80,8 @@ module RequireOnboarding
       finished_products
       buildings
       today_actions
+      areas
+      habit_improvement_projects
     ].include?(controller_name)
   end
 end

@@ -5454,6 +5454,225 @@ html[data-theme="dark"] {
   font-size: 0.9rem;
   color: var(--lp-muted);
 }
+
+.lp-areas {
+  margin: 0 0 var(--lp-space-4);
+  padding: var(--lp-pad-card);
+  border-radius: 1.15rem;
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: grid;
+  gap: var(--lp-space-3);
+}
+
+.lp-areas__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.lp-areas__hint,
+.lp-areas__empty {
+  margin: 0.25rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.88rem;
+}
+
+.lp-areas__create-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.lp-areas__list,
+.lp-areas__trackers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-areas__card {
+  border-radius: 0.95rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 0.75rem 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.lp-areas__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.lp-areas__name {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.lp-areas__tracker-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+}
+
+.lp-areas__tracker-link:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.lp-areas__tracker-name {
+  font-weight: 750;
+  font-size: 0.92rem;
+}
+
+.lp-areas__tracker-meta {
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+}
+
+.lp-areas__state {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(143, 163, 153, 0.35);
+  color: var(--lp-muted);
+}
+
+.lp-areas__state.is-good {
+  color: #15803d;
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.lp-areas__state.is-attention {
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.lp-habits__section-head {
+  margin: 0 0 var(--lp-space-3);
+}
+
+.lp-habits__section-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.lp-habits__section-head p {
+  margin: 0.25rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.88rem;
+}
+
+.lp-habits__unfiled {
+  margin-top: var(--lp-space-2);
+}
+
+.lp-habits__btn.is-tiny {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+}
+
+.lp-tracker-spark-wrap {
+  margin: 0.75rem 0 1rem;
+}
+
+.lp-tracker-spark {
+  display: block;
+  width: 100%;
+  height: 44px;
+  color: #22c55e;
+}
+
+.lp-tracker-state {
+  margin-top: var(--lp-space-4);
+  padding: var(--lp-pad-card);
+  border-radius: 1.15rem;
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  display: grid;
+  gap: var(--lp-space-3);
+}
+
+.lp-tracker-state__head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.lp-tracker-state__head p {
+  margin: 0.25rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.88rem;
+}
+
+.lp-tracker-state__choices {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.lp-tracker-state__choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.35rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--lp-border);
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.lp-tracker-state__choice.is-active {
+  border-color: rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.lp-tracker-state__labels {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-tracker-state__improve,
+.lp-tracker-state__projects {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lp-tracker-state__projects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .lp-habits__back {
   display: inline-block;
   margin-bottom: var(--lp-space-3);

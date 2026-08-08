@@ -10,11 +10,18 @@ class Habit < ApplicationRecord
   DECIMAL_QUANTITY_SYMBOLS = %w[€ $ £ ¥].freeze
   # Stored keys; UI labels come from I18n (habits.growth_title / habits.range_title)
   STAT_TYPES = %w[growth standard].freeze
+  TRACKER_STATES = %w[good attention].freeze
 
   belongs_to :user
   belongs_to :life_journey, optional: true
+  belongs_to :area, optional: true
   has_many :completions, dependent: :destroy
   has_many :daily_logs, dependent: :destroy
+  has_many :improvement_projects,
+           class_name: "StrategyGoal",
+           foreign_key: :habit_id,
+           dependent: :nullify,
+           inverse_of: :habit
 
   validates :name, presence: true, length: { maximum: 120 }
   validates :identity_label, length: { maximum: 120 }, allow_nil: true
@@ -27,18 +34,24 @@ class Habit < ApplicationRecord
   validates :goal, numericality: { greater_than: 0 }, allow_nil: true
   validates :min_value, numericality: true, allow_nil: true
   validates :max_value, numericality: true, allow_nil: true
+  validates :state, inclusion: { in: TRACKER_STATES }, allow_nil: true
+  validates :state_label_good, :state_label_attention, length: { maximum: 80 }, allow_nil: true
   validate :healthy_range_bounds
   validate :max_not_below_min
   validate :life_journey_belongs_to_user
+  validate :area_belongs_to_user
 
   before_validation :normalize_unit
   before_validation :normalize_stat_fields
   before_validation :normalize_identity_label
+  before_validation :normalize_tracker_state
   before_create :assign_next_position
 
   scope :active, -> { where(active: true) }
   scope :on_home, -> { where(show_on_home: true) }
   scope :ordered, -> { order(:position, :name) }
+  scope :filed, -> { where.not(area_id: nil) }
+  scope :unfiled, -> { where(area_id: nil) }
 
   def growth?
     stat_type == "growth"
@@ -85,6 +98,39 @@ class Habit < ApplicationRecord
 
   def evaluation_label
     healthy_range? ? I18n.t("habits.range_title") : I18n.t("habits.growth_title")
+  end
+
+  def filed?
+    area_id.present?
+  end
+
+  def attention?
+    filed? && state.to_s == "attention"
+  end
+
+  def tracker_state_label
+    return nil unless filed?
+
+    case state.to_s
+    when "attention"
+      state_label_attention.presence || I18n.t("habits.state_fallback_attention")
+    when "good"
+      state_label_good.presence || I18n.t("habits.state_fallback_good")
+    else
+      I18n.t("habits.state_unset")
+    end
+  end
+
+  # Daily amounts for a compact sparkline (binary habits count as 1 when done).
+  def sparkline_amounts(days: 14)
+    span = (Date.current - (days - 1))..Date.current
+    if quantity_checkin?
+      by_date = daily_logs.where(logged_on: span).pluck(:logged_on, :amount).to_h
+      span.map { |date| by_date[date].to_f }
+    else
+      done = completions.where(completed_on: span).pluck(:completed_on)
+      span.map { |date| done.include?(date) ? 1.0 : 0.0 }
+    end
   end
 
   def completed_today?
@@ -249,5 +295,23 @@ class Habit < ApplicationRecord
     return if user&.life_journeys&.exists?(id: life_journey_id)
 
     errors.add(:life_journey_id, :invalid)
+  end
+
+  def area_belongs_to_user
+    return if area_id.blank?
+    return if user&.areas&.exists?(id: area_id)
+
+    errors.add(:area_id, :invalid)
+  end
+
+  def normalize_tracker_state
+    self.state_label_good = state_label_good.to_s.strip.presence
+    self.state_label_attention = state_label_attention.to_s.strip.presence
+    self.state = state.to_s.strip.presence
+    self.state = nil unless TRACKER_STATES.include?(state)
+
+    return if area_id.present?
+
+    self.state = nil
   end
 end

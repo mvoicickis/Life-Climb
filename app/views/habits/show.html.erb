@@ -41,6 +41,19 @@
 
     <p class="lp-habits__status-lead"><%= status_full_text(status) %></p>
 
+    <% if @habit.filed? && @habit.tracker_state_label.present? %>
+      <p class="lp-areas__state is-<%= @habit.state.presence || 'unset' %>">
+        <%= @habit.tracker_state_label %>
+      </p>
+    <% end %>
+
+    <% if @sparkline&.any? %>
+      <div class="lp-tracker-spark-wrap" aria-label="<%= t('habits.sparkline_label') %>">
+        <p class="lp-habits__stat-label"><%= t("habits.sparkline_label") %></p>
+        <%= render "habits/sparkline", values: @sparkline %>
+      </div>
+    <% end %>
+
     <div class="lp-habits__stats">
       <div>
         <p class="lp-habits__stat-label"><%= t("habits.today") %></p>
@@ -109,6 +122,8 @@
       <%= link_to t("habits.edit"), edit_habit_path(@habit), class: "lp-habits__btn is-quiet" %>
     </div>
   </article>
+
+  <%= render "habits/tracker_state", habit: @habit, projects: @improvement_projects %>
 
   <%= render "shared/share_sheet" %>
 </div>

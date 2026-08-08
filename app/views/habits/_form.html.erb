@@ -1,5 +1,6 @@
 <%
   journeys = local_assigns.fetch(:journeys) { @journeys || [] }
+  areas = local_assigns.fetch(:areas) { @areas || [] }
   target_enabled = habit.healthy_range? || habit.goal.present?
   initial_type = habit.stat_type.presence || "growth"
 %>
@@ -48,6 +49,17 @@
         <option value="<%= idea %>"></option>
       <% end %>
     </datalist>
+  </div>
+
+  <div class="lp-habits-form__field">
+    <%= form.label :area_id, t("habits.area_label"), class: "lp-habits__field-label" %>
+    <%= form.collection_select :area_id,
+          areas,
+          :id,
+          :name,
+          { include_blank: t("habits.area_none") },
+          class: "lp-habits__input is-select" %>
+    <p class="lp-habits__hint"><%= t("habits.area_hint") %></p>
   </div>
 
   <div class="lp-habits-form__field">
