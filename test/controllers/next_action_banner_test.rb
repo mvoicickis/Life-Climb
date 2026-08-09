@@ -111,6 +111,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     block = css[/\.lp-dash-next,\s*\.lp-dash-next\.lp-glass--pad\s*\{[^}]+\}/m]
     title = css[/\.lp-dash-next__title\s*\{[^}]+\}/m]
     cta = css[/\.lp-dash-next \.lp-cta\s*\{[^}]+\}/m]
+    progress = css[/\.lp-dash-next__progress\s*\{[^}]+\}/m]
 
     assert_match(/flex-wrap:\s*nowrap/, block)
     assert_match(/min-width:\s*0/, block)
@@ -124,6 +125,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
     assert_match(/flex:\s*0\s+0\s+auto/, cta)
     assert_match(/min-height:\s*2\.75rem/, cta)
+    assert_match(/font-weight:\s*700/, progress)
   end
 
   private

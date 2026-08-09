@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# Long companion-voice headlines must truncate — not shove the CTA off-screen.
+# Long companion-voice headlines must truncate — progress strip stays readable.
 class NextActionBannerTruncateTest < ApplicationSystemTestCase
   LONG_TODO = "Rewrite the quarterly stakeholder update deck for board review"
   LONG_HEADLINE =
@@ -43,7 +43,7 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
   end
 
-  test "long complete_battle headline truncates on Today without clipping CTA" do
+  test "long complete_battle headline truncates on Today with commitment progress" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -53,6 +53,8 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     with_fixed_next_action_headline(LONG_HEADLINE) do
       visit dashboard_path
       assert_selector ".lp-dash-next[data-next-action-key=complete_battle]", wait: 5
+      assert_selector "[data-commitment-progress]", wait: 5
+      assert_no_selector ".lp-dash-next a.lp-cta"
       assert_banner_truncates!(placement: "Today")
 
       visit life_journey_path(@journey)
@@ -76,19 +78,15 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
       (() => {
         const banner = document.querySelector('.lp-dash-next');
         const title = document.querySelector('.lp-dash-next__title');
-        const cta = document.querySelector('.lp-dash-next a.lp-cta');
-        if (!banner || !title || !cta) return null;
+        const progress = document.querySelector('.lp-dash-next__progress');
+        if (!banner || !title || !progress) return null;
         const bs = getComputedStyle(banner);
         const ts = getComputedStyle(title);
-        const cs = getComputedStyle(cta);
         const br = banner.getBoundingClientRect();
-        const cr = cta.getBoundingClientRect();
+        const pr = progress.getBoundingClientRect();
         return {
           flexWrap: bs.flexWrap,
           bannerMinWidth: bs.minWidth,
-          bannerMaxWidth: bs.maxWidth,
-          bannerWidth: bs.width,
-          titleFlex: ts.flex,
           titleFlexGrow: ts.flexGrow,
           titleFlexShrink: ts.flexShrink,
           titleFlexBasis: ts.flexBasis,
@@ -97,9 +95,8 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
           titleTextOverflow: ts.textOverflow,
           titleWhiteSpace: ts.whiteSpace,
           titleScrollWider: title.scrollWidth > title.clientWidth + 1,
-          ctaMinHeight: parseFloat(cs.minHeight),
-          ctaRight: cr.right,
-          ctaLeft: cr.left,
+          progressLeft: pr.left,
+          progressRight: pr.right,
           bannerRight: br.right,
           bannerLeft: br.left,
           vw: window.innerWidth
@@ -110,7 +107,6 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     assert metrics.present?, "#{placement}: NextAction banner missing"
     assert_equal "nowrap", metrics["flexWrap"], "#{placement}: must stay single-row"
     assert_equal "0px", metrics["bannerMinWidth"], "#{placement}: banner min-width"
-    # max-width: 100% resolves to a px value; banner must not exceed the viewport.
     assert_operator metrics["bannerRight"] - metrics["bannerLeft"], :<=, metrics["vw"] + 1
     assert_operator metrics["titleFlexGrow"].to_f, :>=, 1.0
     assert_operator metrics["titleFlexShrink"].to_f, :>=, 1.0
@@ -120,10 +116,8 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     assert_equal "ellipsis", metrics["titleTextOverflow"]
     assert_equal "nowrap", metrics["titleWhiteSpace"]
     assert metrics["titleScrollWider"], "#{placement}: long title should overflow and ellipsis"
-    assert_in_delta 44.0, metrics["ctaMinHeight"], 1.0, "#{placement}: CTA ≥44px"
-    assert_operator metrics["ctaLeft"], :>=, metrics["bannerLeft"] - 1
-    assert_operator metrics["ctaRight"], :<=, metrics["bannerRight"] + 1
-    assert_operator metrics["ctaRight"], :<=, metrics["vw"] + 1
-    assert_operator metrics["ctaLeft"], :>=, -1
+    assert_operator metrics["progressLeft"], :>=, metrics["bannerLeft"] - 1
+    assert_operator metrics["progressRight"], :<=, metrics["bannerRight"] + 1
+    assert_operator metrics["progressRight"], :<=, metrics["vw"] + 1
   end
 end
