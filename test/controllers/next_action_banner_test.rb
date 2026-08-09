@@ -91,6 +91,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-commitment-gap__link[href=?]", life_journey_path(@journey),
                   text: /Open Mountain/i
     assert_select "[data-commitment-progress]", count: 0
+    assert_select "input[type=time].lp-input", minimum: 1
+    assert_select "input.lp-commitment-gap__qty-check[type=checkbox]", count: 1
   end
 
   test "Drop to Easy from commitment_gap returns to Today and sets Easy" do
