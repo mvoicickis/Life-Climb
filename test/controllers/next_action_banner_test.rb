@@ -71,7 +71,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select "[data-commitment-progress]", minimum: 1
   end
 
-  test "commitment_gap banner shows stuck tone, gap copy, fix links, and Drop to Easy" do
+  test "commitment_gap panel shows chips, quiet Drop to Easy, and Mountain only when camps short" do
     @user.habits.active.on_home.update_all(show_on_home: false)
     @journey.update!(
       commitment_key: "medium",
@@ -83,13 +83,13 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-next.is-stuck[data-next-action-key=commitment_gap][data-next-action-tone=stuck]", count: 1
-    assert_select ".lp-dash-next__title", text: /Medium needs 3 Today habits/
-    assert_select ".lp-dash-next__title", text: /Medium needs 3 planned camps/
-    assert_select "a.lp-cta[href=?]", habits_path, text: I18n.t("settings.commitment.eligibility.open_habits")
-    assert_select "a.lp-cta[href=?]", life_journey_path(@journey), text: I18n.t("settings.commitment.eligibility.open_mountain")
-    assert_select "form.lp-dash-next__drop[action=?]", commitment_settings_path
-    assert_match(/Drop to Easy/, response.body)
+    assert_select "#commitment-gap-panel.is-stuck[data-next-action-key=commitment_gap]", count: 1
+    assert_select "[data-battles-count]", text: "0/3"
+    assert_select "[data-habits-count]", text: /\d+\/3/
+    assert_select "a.lp-cta", count: 0
+    assert_select ".lp-commitment-gap__link", text: /Drop to Easy/i
+    assert_select "a.lp-commitment-gap__link[href=?]", life_journey_path(@journey),
+                  text: /Open Mountain/i
     assert_select "[data-commitment-progress]", count: 0
   end
 

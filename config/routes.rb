@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   resource :two_factor_session, only: %i[ new create destroy ]
 
   root "pages#home"
-  resource :dashboard, only: :show, controller: "dashboard"
+  resource :dashboard, only: :show, controller: "dashboard" do
+    resource :quick_battles, only: :create, controller: "dashboard/quick_battles"
+  end
   resource :today_commitment, only: [], controller: "today_commitments" do
     patch :level_up
     patch :decline
