@@ -54,4 +54,3 @@ class V2OnboardingCommitmentTest < ActionDispatch::IntegrationTest
     assert_equal 1, journey.commitment_battle_count
   end
 end
-

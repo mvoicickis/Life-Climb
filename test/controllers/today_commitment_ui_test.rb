@@ -161,4 +161,3 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     assert_equal "medium", @journey.reload.commitment_key
   end
 end
-
