@@ -4850,6 +4850,14 @@ html[data-theme="dark"] {
   padding: 0.25rem 0.15rem 0.25rem 2rem;
 }
 
+.lp-dash-tcard__objective-track {
+  display: inline;
+  margin-left: 0.35rem;
+  font-style: normal;
+  font-size: 0.78em;
+  color: var(--lp-muted, #64748b);
+}
+
 .lp-dash-tcard__objective-title {
   font-size: 0.85rem;
   font-weight: 700;
