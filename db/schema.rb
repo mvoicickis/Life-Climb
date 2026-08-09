@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_093802) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_110758) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -232,6 +232,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_093802) do
     t.datetime "activated_at"
     t.text "approach"
     t.json "approaches", default: [], null: false
+    t.integer "commitment_battle_count", default: 1, null: false
+    t.integer "commitment_habit_count", default: 1, null: false
+    t.string "commitment_key", default: "easy", null: false
+    t.date "commitment_level_up_declined_on"
+    t.date "commitment_met_on"
+    t.integer "commitment_met_streak_days", default: 0, null: false
+    t.string "commitment_name", default: "Easy", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.text "current_reality", null: false

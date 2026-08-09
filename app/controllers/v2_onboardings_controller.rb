@@ -4,9 +4,9 @@ class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
   # Simplified MVP adventure start — category picker, then mountain goal.
-  STEPS = %w[welcome character category mountain deadline forge how].freeze
+  STEPS = %w[welcome character category mountain commitment deadline forge how].freeze
   # User-facing setup progress (forge/how are post-create transitions).
-  SETUP_STEPS = %w[welcome character category mountain deadline].freeze
+  SETUP_STEPS = %w[welcome character category mountain commitment deadline].freeze
   DEFAULT_AREA_KEY = "self".freeze
 
   def show
@@ -66,17 +66,28 @@ class V2OnboardingsController < ApplicationController
         redirect_to v2_onboarding_path(step: "mountain"), alert: t("v2_onboarding.need_mountain") and return
       end
       session[:v2_onboarding] = draft.merge("title" => title)
+      redirect_to v2_onboarding_path(step: "commitment")
+    when "commitment"
+      key = if ActiveModel::Type::Boolean.new.cast(params[:skip])
+        "easy"
+      else
+        draft["commitment_key"].to_s.presence || "easy"
+      end
+      key = "easy" unless Today::Commitment::PRESETS.key?(key)
+      session[:v2_onboarding] = draft.merge("commitment_key" => key)
       redirect_to v2_onboarding_path(step: "deadline")
     when "deadline"
       begin
         area_key = draft["area_key"].presence || Onboarding::Categories.area_key_for(draft["category"]) || DEFAULT_AREA_KEY
         due_on = parse_due_on(draft["due_on"]) || Strategy::YearCycle.default_goal_due
+        commitment_key = draft["commitment_key"].presence || "easy"
         Onboarding::Run.call(
           user: current_user,
           area_key: area_key,
           title: draft["title"],
           onboarding_category: draft["category"],
           due_on: due_on,
+          commitment_key: commitment_key,
           route_mission: true
         )
         session.delete(:v2_onboarding)
@@ -106,7 +117,7 @@ class V2OnboardingsController < ApplicationController
   private
 
   def onboarding_params
-    params.fetch(:onboarding, {}).permit(:title, :category, :area_key, :due_on)
+    params.fetch(:onboarding, {}).permit(:title, :category, :area_key, :due_on, :commitment_key)
   end
 
   def parse_due_on(raw)
@@ -137,6 +148,7 @@ class V2OnboardingsController < ApplicationController
     when "welcome", "character" then false
     when "category" then !current_user.character_chosen?
     when "mountain" then !current_user.character_chosen? || category_missing?
+    when "commitment" then @draft["title"].blank? || !current_user.character_chosen? || category_missing?
     when "deadline" then @draft["title"].blank? || !current_user.character_chosen? || category_missing?
     when "forge" then !current_user.onboarding_completed?
     when "how" then !current_user.onboarding_completed?
@@ -148,9 +160,9 @@ class V2OnboardingsController < ApplicationController
     if current_user.onboarding_completed?
       return "forge"
     end
-    return "character" if !current_user.character_chosen? && @step.in?(%w[category mountain deadline])
-    return "category" if category_missing? && @step.in?(%w[mountain deadline])
-    return "mountain" if @draft["title"].blank? && @step == "deadline"
+    return "character" if !current_user.character_chosen? && @step.in?(%w[category mountain commitment deadline])
+    return "category" if category_missing? && @step.in?(%w[mountain commitment deadline])
+    return "mountain" if @draft["title"].blank? && @step.in?(%w[commitment deadline])
     return "welcome" if @draft["title"].blank? && !@step.in?(%w[welcome character category mountain])
 
     "mountain"

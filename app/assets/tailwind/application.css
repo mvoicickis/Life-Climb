@@ -4622,6 +4622,16 @@ html[data-theme="dark"] {
   letter-spacing: -0.02em;
 }
 
+.lp-dash-header__stats {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  flex: 0 1 auto;
+  max-width: 58%;
+}
+
 .lp-dash-header__pill {
   display: inline-flex;
   align-items: center;
@@ -4646,6 +4656,148 @@ html[data-theme="dark"] {
   width: 1px;
   height: 1rem;
   background: rgba(143, 163, 153, 0.45);
+}
+
+.lp-dash-header__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-elevated);
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: var(--lp-ink);
+  white-space: nowrap;
+}
+
+.lp-dash-header__badge.is-tier {
+  border-color: rgba(87, 211, 91, 0.35);
+  color: #57d35b;
+}
+
+.lp-dash-header__badge.is-shield.is-ready {
+  border-color: rgba(96, 165, 250, 0.4);
+  color: #93c5fd;
+}
+
+.lp-dash-next__progress {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-dash-level-up {
+  margin: 0.65rem 0 0.85rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(87, 211, 91, 0.35);
+  background: rgba(87, 211, 91, 0.08);
+  padding: 0.85rem;
+}
+
+.lp-dash-level-up__title {
+  margin: 0;
+  font-weight: 800;
+  color: #57d35b;
+}
+
+.lp-dash-level-up__body {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--lp-ink);
+}
+
+.lp-dash-level-up__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.lp-adventure__commitment-cards {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.lp-adventure__commitment-card {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  border: 1.5px solid var(--lp-border);
+  background: var(--lp-elevated);
+  cursor: pointer;
+}
+
+.lp-adventure__commitment-card.is-selected,
+.lp-adventure__commitment-card:has(:checked) {
+  border-color: rgba(87, 211, 91, 0.55);
+  box-shadow: 0 0 0 1px rgba(87, 211, 91, 0.25);
+}
+
+.lp-adventure__commitment-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lp-adventure__commitment-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+}
+
+.lp-adventure__commitment-meta {
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__skip {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  background: transparent;
+  border: 0;
+  color: var(--lp-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.lp-settings-commitment__presets {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lp-settings-commitment__btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid var(--lp-border);
+  background: var(--lp-elevated);
+  color: var(--lp-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lp-settings-commitment__btn.is-active {
+  border-color: rgba(87, 211, 91, 0.55);
+  color: #57d35b;
+}
+
+.lp-settings-commitment__counts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .lp-dash-timeline {

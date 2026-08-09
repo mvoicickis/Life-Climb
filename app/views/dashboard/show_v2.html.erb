@@ -13,12 +13,35 @@
   <%= render "dashboard/dash_header",
         closer: @closer,
         streak: @climb_streak,
-        life_points: @life_points %>
+        life_points: @life_points,
+        day_shield: @day_shield,
+        commitment: @commitment %>
 
   <% if @next_action.present? %>
     <%= render "shared/next_action",
           next_action: @next_action,
-          day_shield: @day_shield %>
+          commitment: @commitment %>
+  <% end %>
+
+  <% if @commitment_level_up && @journey.present? %>
+    <% next_key = @journey.commitment_key.to_s == "easy" ? "medium" : "hard" %>
+    <% next_preset = Today::Commitment::PRESETS[next_key] %>
+    <div class="lp-dash-level-up" role="status" data-commitment-level-up="true">
+      <p class="lp-dash-level-up__title"><%= t("dash.commitment.level_up_title") %></p>
+      <p class="lp-dash-level-up__body">
+        <%= t("dash.commitment.level_up_body", name: next_preset[:name]) %>
+      </p>
+      <div class="lp-dash-level-up__actions">
+        <%= button_to t("dash.commitment.level_up_accept", name: next_preset[:name]),
+              level_up_today_commitment_path,
+              method: :patch,
+              class: "lp-habits__btn is-primary" %>
+        <%= button_to t("dash.commitment.level_up_keep", name: @journey.commitment_name),
+              decline_today_commitment_path,
+              method: :patch,
+              class: "lp-habits__btn is-quiet" %>
+      </div>
+    </div>
   <% end %>
 
   <% if flash[:human_win].present? %>

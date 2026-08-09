@@ -6,11 +6,16 @@ Rails.application.routes.draw do
 
   root "pages#home"
   resource :dashboard, only: :show, controller: "dashboard"
+  resource :today_commitment, only: [], controller: "today_commitments" do
+    patch :level_up
+    patch :decline
+  end
   resource :life_map, only: :show, controller: "life_maps"
   resource :missions, only: :show, controller: "missions"
   resource :settings, only: %i[ show update ] do
     get "name/edit", to: "settings#edit_name", as: :edit_name, on: :collection
     get "today_count/edit", to: "settings#edit_today_count", as: :edit_today_count, on: :collection
+    patch :commitment, action: :update_commitment
   end
   resource :push_config, only: :show, controller: "push_configs"
   resource :push_subscription, only: %i[ create destroy ], controller: "push_subscriptions" do

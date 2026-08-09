@@ -85,7 +85,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     assert_match(/16:00/, response.body)
   end
 
-  test "companion banner shows shield-ready line when streak is at risk" do
+  test "header shows shield badge when streak is at risk (banner no longer carries shield line)" do
     @user.update!(
       climb_streak_days: 5,
       climb_streak_on: Date.current - 1,
@@ -97,7 +97,9 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
       get dashboard_path
       assert_response :success
       assert_select "[data-next-action-key='streak_at_risk']", count: 1
-      assert_select ".lp-dash-next__shield", text: /Shield ready/i
+      assert_select ".lp-dash-next__shield", count: 0
+      assert_select "[data-day-shield='ready']", minimum: 1
+      assert_select "[data-commitment-progress]", minimum: 1
     end
   end
 

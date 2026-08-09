@@ -52,7 +52,11 @@
               <%= form_with url: daily_logs_path(habit_id: habit.id),
                     scope: :daily_log,
                     class: "lp-dash-tcard__qty",
-                    data: { turbo: false } do |form| %>
+                    data: {
+                      turbo: false,
+                      controller: "quantity-win",
+                      action: "input->quantity-win#sync"
+                    } do |form| %>
                 <%= hidden_field_tag :return_to, "today" %>
                 <%= form.number_field :amount,
                       value: (today_log ? format_amount(today_log.amount) : nil),
@@ -61,8 +65,12 @@
                       inputmode: habit.quantity_inputmode,
                       required: true,
                       class: "lp-dash-tcard__amount",
+                      data: { quantity_win_target: "amount" },
                       aria: { label: t("habits.how_many") } %>
-                <%= form.submit t("dash.timeline.win"), class: "lp-dash-tcard__win" %>
+                <%= form.submit t("dash.timeline.win"),
+                      class: "lp-dash-tcard__win",
+                      disabled: today_log.blank?,
+                      data: { quantity_win_target: "submit" } %>
               <% end %>
             <% end %>
           </div>

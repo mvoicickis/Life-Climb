@@ -439,6 +439,19 @@ ru:
     shield:
       ready_line: "Щит готов — сегодня закрывает одно пропущенное окно."
       used_on_card: "Щит закрыл этот пропуск"
+    commitment:
+      tier_label: "Дневное обязательство"
+      progress: "Битвы %{battles_done} из %{battles_total} · Привычки %{habits_done} из %{habits_total}"
+      survived: "День выдержан — обязательство выполнено"
+      shield_ready: "Щит готов — сегодня закрывает одно пропущенное окно"
+      shield_used: "Щит уже использован сегодня"
+      shield_ready_short: "Готов"
+      shield_used_short: "Использован"
+      level_up_title: "Ты готов к более сложному дню"
+      level_up_body: "Перейти на %{name}?"
+      level_up_accept: "Перейти на %{name}"
+      level_up_keep: "Оставить %{name}"
+      level_up_done: "Обязательство: %{name}."
   climb:
     streak:
       chip: "%{count} дн."
@@ -728,6 +741,17 @@ ru:
     character_hint: "Показывается в Сегодня, на Горе и на тропе."
     character_updated: "Спутник обновлён."
     character_save: "Сохранить спутника"
+    commitment:
+      title: "Дневное обязательство"
+      hint: "Сколько битв со временем и зелёных привычек считаются выдержанным днём на горе."
+      preset_label: "%{name} — %{habits} привычек + %{battles} битв"
+      custom_title: "Своё"
+      name_label: "Название"
+      habits_label: "Привычки"
+      battles_label: "Битвы"
+      save_custom: "Сохранить своё"
+      updated: "Дневное обязательство обновлено."
+      need_journey: "Сначала начни гору."
     notifications:
       row_label: "Уведомления"
       title: "Уведомления"
@@ -975,6 +999,15 @@ ru:
     need_mountain: "Назови цель, которой хочешь достичь."
     need_character: "Выбери спутника для подъёма."
     continue: "Продолжить"
+    commitment_kicker: "Насколько жёстко сегодня?"
+    commitment_title: "Выбери дневное обязательство"
+    commitment_lead: "Выигрывай столько битв со временем и зелёных привычек каждый день. Потом можно изменить."
+    commitment_counts: "%{habits} привычек + %{battles} битв"
+    commitment_skip: "Пропустить пока"
+    commitment_presets:
+      easy: "Лёгкий"
+      medium: "Средний"
+      hard: "Сложный"
     deadline_kicker: "Финишная черта помогает"
     deadline_title: "У твоего подъёма есть мягкая финишная черта."
     deadline_lead: "%{date} — контрольная точка, а не жёсткий срок."

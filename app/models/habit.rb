@@ -160,6 +160,25 @@ class Habit < ApplicationRecord
     completions.exists?(completed_on: Date.current)
   end
 
+  # Daily survival green for commitment tiers — not sticky tracker state.
+  # Binary: completed. Quantity: HabitStatusEvaluator tone :good, with a
+  # first-day-friendly growth path when there is no stretch goal yet.
+  def survived_today?(date = Date.current)
+    if binary_checkin?
+      return completions.exists?(completed_on: date)
+    end
+
+    amount = amount_or_zero(date)
+    if growth? && goal.blank? && logged_on?(date) && amount.positive?
+      return true
+    end
+
+    return false unless logged_on?(date) || amount.positive?
+
+    status = HabitStatusEvaluator.new(self, on: date).call
+    %i[better perfect].include?(status)
+  end
+
   def completion_for(date)
     completions.find_by(completed_on: date)
   end

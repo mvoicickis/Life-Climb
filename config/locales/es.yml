@@ -435,6 +435,19 @@ es:
     shield:
       ready_line: "Escudo listo — bloquea una ventana perdida hoy."
       used_on_card: "El escudo bloqueó este fallo"
+    commitment:
+      tier_label: "Compromiso diario"
+      progress: "Batallas %{battles_done} de %{battles_total} · Hábitos %{habits_done} de %{habits_total}"
+      survived: "Día sobrevivido — compromiso cumplido"
+      shield_ready: "Escudo listo — bloquea una ventana perdida hoy"
+      shield_used: "Escudo ya usado hoy"
+      shield_ready_short: "Listo"
+      shield_used_short: "Usado"
+      level_up_title: "Estás listo para un día más duro"
+      level_up_body: "¿Pasar a %{name}?"
+      level_up_accept: "Pasar a %{name}"
+      level_up_keep: "Mantener %{name}"
+      level_up_done: "Compromiso fijado en %{name}."
   climb:
     streak:
       chip: "%{count} días"
@@ -718,6 +731,17 @@ es:
     character_hint: "Se muestra en Hoy, en la Montaña y en el sendero."
     character_updated: "Compañero actualizado."
     character_save: "Guardar compañero"
+    commitment:
+      title: "Compromiso diario"
+      hint: "Cuántas batallas con hora y hábitos en verde cuentan como sobrevivir Hoy en tu montaña."
+      preset_label: "%{name} — %{habits} hábitos + %{battles} batallas"
+      custom_title: "Personalizado"
+      name_label: "Nombre"
+      habits_label: "Hábitos"
+      battles_label: "Batallas"
+      save_custom: "Guardar personalizado"
+      updated: "Compromiso diario actualizado."
+      need_journey: "Empieza una montaña primero."
     notifications:
       row_label: "Notificaciones"
       title: "Notificaciones"
@@ -965,6 +989,15 @@ es:
     need_mountain: "Nombra la meta que quieres alcanzar."
     need_character: "Elige tu compañero para la subida."
     continue: "Continuar"
+    commitment_kicker: "¿Qué tan duro hoy?"
+    commitment_title: "Elige tu compromiso diario"
+    commitment_lead: "Gana tantas batallas con hora y hábitos en verde cada día. Puedes cambiarlo luego."
+    commitment_counts: "%{habits} hábitos + %{battles} batallas"
+    commitment_skip: "Omitir por ahora"
+    commitment_presets:
+      easy: "Fácil"
+      medium: "Medio"
+      hard: "Difícil"
     deadline_kicker: "Una meta final ayuda"
     deadline_title: "Tu subida tiene una meta final suave."
     deadline_lead: "%{date} — un punto de control, no una fecha límite."
