@@ -64,6 +64,38 @@ de:
           - "Lager ist ruhig. Komm stärker zurück."
           - "Die Kämpfe von heute sind vorbei. Ruh dich auf dem Grat aus."
         cta: "Zurück zum Pfad"
+      battle_overdue:
+        title: "Der Tag ist fast vorbei — beende „%{title}“"
+        titles:
+          - "Der Tag ist fast vorbei — beende „%{title}“."
+          - "Noch Zeit — schließ „%{title}“ ab, bevor du ruhst."
+          - "„%{title}“ ist noch offen. Ein letzter Schub heute."
+          - "Lass „%{title}“ nicht über Nacht liegen."
+        cta: "Auf Heute beenden"
+      streak_at_risk:
+        title: "Dein %{count}-Tage-Aufstieg braucht heute einen Sieg"
+        titles:
+          - "Dein %{count}-Tage-Aufstieg braucht heute einen Sieg."
+          - "%{count}-Tage-Serie — ein kleiner Sieg hält sie am Leben."
+          - "Halte den %{count}-Tage-Aufstieg mit einem Abschluss."
+          - "Schütz deinen %{count}-Tage-Aufstieg — gewinn heute etwas."
+        cta: "Auf Heute gewinnen"
+      project_unlocked:
+        title: "Neues Projekt offen: „%{title}“"
+        titles:
+          - "Neues Projekt offen: „%{title}“."
+          - "Du hast „%{title}“ freigeschaltet — schau rein."
+          - "„%{title}“ ist bereit auf dem Pfad."
+          - "Frischer Boden: „%{title}“ ist gerade aufgegangen."
+        cta: "Auf dem Berg öffnen"
+      quest_stalled:
+        title: "Stille Quest: „%{title}“ braucht einen Schritt"
+        titles:
+          - "Stille Quest: „%{title}“ braucht einen Schritt."
+          - "„%{title}“ wurde still — ein Schritt startet neu."
+          - "Komm zu „%{title}“ zurück, wenn du kannst."
+          - "„%{title}“ wartet auf ein bisschen Fortschritt."
+        cta: "Auf Heute öffnen"
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"
       fight_battle_cta: "Heutige Schlacht hinzufügen"

@@ -2,12 +2,15 @@
     locals: next_action (Strategy::NextAction::Result) %>
 <% next_action = local_assigns[:next_action] || @next_action %>
 <% if next_action.present? %>
+  <% tone = (next_action.tone.presence || :steady).to_s %>
   <% headline = Strategy::NextAction::Copy.headline_for(
         key: next_action.key,
-        title: next_action.todo_title.presence || next_action.project_title
+        title: next_action.todo_title.presence || next_action.project_title,
+        count: next_action.streak_days
       ) %>
-  <aside class="lp-glass lp-glass--pad lp-dash-next"
+  <aside class="lp-glass lp-glass--pad lp-dash-next is-<%= tone %>"
          data-next-action-key="<%= next_action.key %>"
+         data-next-action-tone="<%= tone %>"
          aria-label="<%= headline %>">
     <%= companion_image_tag class: "lp-dash-next__face", alt: "" %>
     <p class="lp-dash-next__title"><%= headline %></p>

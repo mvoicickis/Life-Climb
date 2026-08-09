@@ -4547,6 +4547,24 @@ html[data-theme="dark"] {
   font-size: 0.82rem;
 }
 
+.lp-dash-next.is-urgent {
+  border-left: 3px solid rgba(245, 158, 11, 0.85);
+  background:
+    linear-gradient(90deg, rgba(245, 158, 11, 0.12), transparent 42%),
+    var(--rpg-glass, rgba(23, 28, 34, 0.78));
+}
+
+.lp-dash-next.is-discovery {
+  border-left: 3px solid rgba(34, 197, 94, 0.8);
+  background:
+    linear-gradient(90deg, rgba(34, 197, 94, 0.12), transparent 42%),
+    var(--rpg-glass, rgba(23, 28, 34, 0.78));
+}
+
+.lp-dash-next.is-steady {
+  border-left: 3px solid rgba(143, 163, 153, 0.35);
+}
+
 .lp-dash-project-check {
   border-radius: 1.15rem;
   border: 1px solid var(--lp-border);

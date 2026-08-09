@@ -64,6 +64,38 @@ es:
           - "El campamento está en calma. Vuelve más fuerte."
           - "Las peleas de hoy terminaron. Descansa en la cresta."
         cta: "Volver al sendero"
+      battle_overdue:
+        title: "El día casi acaba — termina “%{title}”"
+        titles:
+          - "El día casi acaba — termina “%{title}”."
+          - "Aún hay tiempo — cierra “%{title}” antes de descansar."
+          - "“%{title}” sigue abierto. Un empujón más hoy."
+          - "No dejes “%{title}” para mañana."
+        cta: "Terminar en Hoy"
+      streak_at_risk:
+        title: "Tu subida de %{count} días necesita una victoria hoy"
+        titles:
+          - "Tu subida de %{count} días necesita una victoria hoy."
+          - "Racha de %{count} días — una pequeña victoria la mantiene."
+          - "Sigue la subida de %{count} días con un cierre."
+          - "Protege tus %{count} días — gana algo hoy."
+        cta: "Ganar en Hoy"
+      project_unlocked:
+        title: "Nuevo proyecto abierto: “%{title}”"
+        titles:
+          - "Nuevo proyecto abierto: “%{title}”."
+          - "Desbloqueaste “%{title}” — échale un vistazo."
+          - "“%{title}” está listo en el camino."
+          - "Terreno nuevo: “%{title}” acaba de abrirse."
+        cta: "Abrir en Montaña"
+      quest_stalled:
+        title: "Misión en silencio: “%{title}” necesita un paso"
+        titles:
+          - "Misión en silencio: “%{title}” necesita un paso."
+          - "“%{title}” se quedó quieta — un paso la reinicia."
+          - "Vuelve a “%{title}” cuando puedas."
+          - "“%{title}” espera un poco de progreso."
+        cta: "Abrir en Hoy"
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"
       fight_battle_cta: "Añadir la batalla de hoy"

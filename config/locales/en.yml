@@ -887,6 +887,38 @@ en:
           - "Camp’s quiet. Come back stronger."
           - "Today’s fights are done. Rest on the ridge."
         cta: "Back to the trail"
+      battle_overdue:
+        title: "Day’s almost done — finish “%{title}”"
+        titles:
+          - "Day’s almost done — finish “%{title}”."
+          - "Still time — wrap up “%{title}” before you rest."
+          - "“%{title}” is still open. One push left today."
+          - "Don’t leave “%{title}” hanging overnight."
+        cta: "Finish on Today"
+      streak_at_risk:
+        title: "Your %{count}-day climb needs a win today"
+        titles:
+          - "Your %{count}-day climb needs a win today."
+          - "%{count}-day streak — one small win keeps it alive."
+          - "Keep the %{count}-day climb going with one finish."
+          - "Protect your %{count}-day climb — win something today."
+        cta: "Win on Today"
+      project_unlocked:
+        title: "New project open: “%{title}”"
+        titles:
+          - "New project open: “%{title}”."
+          - "You unlocked “%{title}” — take a look."
+          - "“%{title}” is ready on the path."
+          - "Fresh ground: “%{title}” just opened."
+        cta: "Open on Mountain"
+      quest_stalled:
+        title: "Quiet quest: “%{title}” needs a touch"
+        titles:
+          - "Quiet quest: “%{title}” needs a touch."
+          - "“%{title}” went quiet — one step restarts it."
+          - "Come back to “%{title}” when you can."
+          - "“%{title}” is waiting for a little progress."
+        cta: "Open on Today"
     next_up:
       kicker: "Next up"
       create_goal_title: "Lock your season goal"

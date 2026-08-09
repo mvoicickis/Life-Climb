@@ -5,14 +5,28 @@ module Strategy
     # Companion-voice headlines for the NextAction banner. Separate from
     # Notifications::PhraseBank (different trigger context) but same sample style.
     class Copy
-      KEYS = %i[plan_route set_today complete_battle confirm_camp day_won].freeze
+      KEYS = %i[
+        plan_route
+        set_today
+        complete_battle
+        confirm_camp
+        day_won
+        battle_overdue
+        streak_at_risk
+        project_unlocked
+        quest_stalled
+      ].freeze
 
       PREFIXES = {
         plan_route: "🧭 ",
         set_today: "📍 ",
         complete_battle: "⚔️ ",
         confirm_camp: "🏕️ ",
-        day_won: "🏁 "
+        day_won: "🏁 ",
+        battle_overdue: "⚠️ ",
+        streak_at_risk: "🔥 ",
+        project_unlocked: "✨ ",
+        quest_stalled: "🌑 "
       }.freeze
 
       def self.phrases_for(key:, locale: I18n.locale)
@@ -24,10 +38,13 @@ module Strategy
         end
       end
 
-      def self.headline_for(key:, title: nil, locale: I18n.locale)
+      def self.headline_for(key:, title: nil, count: nil, locale: I18n.locale)
         key = key.to_sym
         phrase = phrases_for(key:, locale:).sample.to_s
-        phrase = I18n.interpolate(phrase, title: title.to_s) if phrase.include?("%{title}")
+        vars = {}
+        vars[:title] = title.to_s if phrase.include?("%{title}")
+        vars[:count] = count if phrase.include?("%{count}") && !count.nil?
+        phrase = I18n.interpolate(phrase, **vars) if vars.any?
         "#{PREFIXES.fetch(key)}#{phrase}"
       end
     end
