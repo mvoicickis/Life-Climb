@@ -4931,7 +4931,24 @@ html[data-theme="dark"] {
 .lp-adventure__commitment-card.is-disabled {
   opacity: 0.55;
   cursor: not-allowed;
-  pointer-events: none;
+}
+
+.lp-adventure__commitment-card.is-disabled.is-nudge {
+  opacity: 0.9;
+  animation: lp-commitment-lock-nudge 400ms ease;
+}
+
+.lp-adventure__commitment-card.is-nudge .lp-adventure__commitment-lock {
+  color: var(--lp-ink);
+  font-weight: 750;
+}
+
+@keyframes lp-commitment-lock-nudge {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
 }
 
 .lp-adventure__commitment-radio {
@@ -4958,6 +4975,7 @@ html[data-theme="dark"] {
   font-weight: 650;
   color: var(--lp-muted);
   line-height: 1.35;
+  transition: color 180ms ease, font-weight 180ms ease;
 }
 
 .lp-adventure__skip {

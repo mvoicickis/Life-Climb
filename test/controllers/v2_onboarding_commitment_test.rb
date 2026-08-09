@@ -42,6 +42,17 @@ class V2OnboardingCommitmentTest < ActionDispatch::IntegrationTest
     assert_select "input[name='onboarding[commitment_key]'][value=medium][disabled]"
     assert_select "input[name='onboarding[commitment_key]'][value=hard][disabled]"
     assert_match(/Needs 3 Today habits and 3 planned camps/i, response.body)
+    assert_select "[data-controller=commitment-lock]"
+    assert_select ".lp-adventure__commitment-card.is-disabled", minimum: 2
+  end
+
+  test "Continue with Easy selected advances to deadline" do
+    patch v2_onboarding_url(step: "commitment"), params: { onboarding: { commitment_key: "easy" } }
+    assert_redirected_to v2_onboarding_path(step: "deadline")
+
+    patch v2_onboarding_url(step: "deadline")
+    journey = User.find_by!(email_address: "commit-skip@example.com").primary_focused_journey
+    assert_equal "easy", journey.commitment_key
   end
 
   test "cheating Medium in session is forced to Easy at deadline" do
