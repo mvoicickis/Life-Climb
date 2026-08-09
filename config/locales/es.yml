@@ -96,6 +96,12 @@ es:
           - "Vuelve a “%{title}” cuando puedas."
           - "“%{title}” espera un poco de progreso."
         cta: "Abrir en Hoy"
+      commitment_gap:
+        title: "Tu compromiso necesita más preparación"
+        titles:
+          - "Tu compromiso necesita más preparación."
+        cta: "Abrir Hábitos"
+        drop_easy: "Bajar a Fácil"
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"
       fight_battle_cta: "Añadir la batalla de hoy"

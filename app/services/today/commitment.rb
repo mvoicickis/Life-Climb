@@ -69,6 +69,29 @@ module Today
       eligibility(user:, key:, journey:).eligible?
     end
 
+    # Shared Settings flash / NextAction banner copy for an Eligibility gap.
+    def self.gap_alert(elig, name: nil)
+      name = name.presence || PRESETS.dig(elig.key, :name) || elig.key.to_s.capitalize
+      parts = []
+      if elig.missing_habits
+        parts << I18n.t(
+          "settings.commitment.eligibility.habits",
+          name: name,
+          need: elig.habit_need,
+          have: elig.habit_have
+        )
+      end
+      if elig.missing_camps
+        parts << I18n.t(
+          "settings.commitment.eligibility.camps",
+          name: name,
+          need: elig.camp_need,
+          have: elig.camp_have
+        )
+      end
+      parts.join(" ")
+    end
+
     def self.eligibility_for_counts(user:, journey:, habit_count:, battle_count:, key: "custom")
       habit_need = habit_count.to_i
       camp_need = battle_count.to_i

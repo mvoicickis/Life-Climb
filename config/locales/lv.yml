@@ -96,6 +96,12 @@ lv:
           - "Atgriezies pie “%{title}”, kad vari."
           - "“%{title}” gaida nelielu progresu."
         cta: "Atvērt Šodienā"
+      commitment_gap:
+        title: "Tavam solījumam vajag vairāk iestatījumu"
+        titles:
+          - "Tavam solījumam vajag vairāk iestatījumu."
+        cta: "Atvērt Habitus"
+        drop_easy: "Pāriet uz Vieglu"
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
       fight_battle_cta: "Pievienot šodienas kauju"

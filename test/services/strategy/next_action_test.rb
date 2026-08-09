@@ -111,6 +111,62 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     assert_equal 100, result.urgency
   end
 
+  test "commitment_gap fires for ineligible current Medium with both gap sentences" do
+    force_ineligible_medium!
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :commitment_gap, result.key
+    assert_equal :stuck, result.tone
+    assert_match(/Medium needs 3 Today habits/i, result.title)
+    assert_match(/Medium needs 3 planned camps/i, result.title)
+    assert result.drop_easy
+    labels = Array(result.fix_links).map { |link| link[:label] }
+    assert_includes labels, I18n.t("settings.commitment.eligibility.open_habits")
+    assert_includes labels, I18n.t("settings.commitment.eligibility.open_mountain")
+  end
+
+  test "commitment_gap never fires on Easy" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    build_spine_and_cascade!(title: "Send five emails")
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_not_equal :commitment_gap, result.key
+  end
+
+  test "commitment_gap fires for ineligible custom counts" do
+    @journey.update!(
+      commitment_key: "custom",
+      commitment_name: "Beast Mode",
+      commitment_habit_count: 4,
+      commitment_battle_count: 4
+    )
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :commitment_gap, result.key
+    assert_match(/Beast Mode needs 4 Today habits/i, result.title)
+    assert_match(/Beast Mode needs 4 planned camps/i, result.title)
+  end
+
+  test "commitment_gap short-circuits above battle_overdue and streak_at_risk" do
+    force_ineligible_medium!
+    build_spine_and_cascade!(title: "Send five emails")
+    @user.update!(climb_streak_days: 5, climb_streak_on: Date.current - 1)
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 20, 0, 0)
+
+    overdue = Strategy::NextAction.new(user: @user, journey: @journey).send(:signal_battle_overdue)
+    streak = Strategy::NextAction.new(user: @user, journey: @journey).send(:signal_streak_at_risk)
+    assert overdue, "precondition: battle_overdue would fire"
+    assert streak, "precondition: streak_at_risk would fire"
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :commitment_gap, result.key
+    assert_equal :stuck, result.tone
+  end
+
   test "project_unlocked when previous sibling completed recently" do
     @user.update!(climb_streak_days: 0, climb_streak_on: nil)
     plan = @user.strategy_goals.create!(
@@ -257,5 +313,23 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     @user.daily_todos.for_day(Date.current).find_each do |todo|
       todo.update!(completed_at: Time.current)
     end
+  end
+
+  def force_ineligible_medium!
+    @user.habits.active.on_home.update_all(show_on_home: false)
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+    elig = Today::Commitment.eligibility_for_counts(
+      user: @user,
+      journey: @journey,
+      habit_count: 3,
+      battle_count: 3,
+      key: "medium"
+    )
+    assert_not elig.eligible?, "precondition: Medium must be structurally ineligible"
   end
 end

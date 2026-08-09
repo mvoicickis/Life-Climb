@@ -40,10 +40,10 @@ class SettingsController < ApplicationController
       end
     rescue Today::Commitment::IneligibleError => e
       redirect_to settings_path(highlight: "commitment"),
-                  alert: commitment_ineligible_alert(e.eligibility) and return
+                  alert: Today::Commitment.gap_alert(e.eligibility) and return
     end
 
-    redirect_to settings_path(highlight: "commitment"), notice: t("settings.commitment.updated")
+    redirect_to commitment_redirect_path, notice: t("settings.commitment.updated")
   end
 
   def reorder
@@ -116,25 +116,10 @@ class SettingsController < ApplicationController
     params.fetch(:user, {}).key?(attribute)
   end
 
-  def commitment_ineligible_alert(elig)
-    parts = []
-    name = Today::Commitment::PRESETS.dig(elig.key, :name) || elig.key.to_s.capitalize
-    if elig.missing_habits
-      parts << t(
-        "settings.commitment.eligibility.habits",
-        name: name,
-        need: elig.habit_need,
-        have: elig.habit_have
-      )
+  def commitment_redirect_path
+    case params[:return_to].to_s
+    when "today" then dashboard_path
+    else settings_path(highlight: "commitment")
     end
-    if elig.missing_camps
-      parts << t(
-        "settings.commitment.eligibility.camps",
-        name: name,
-        need: elig.camp_need,
-        have: elig.camp_have
-      )
-    end
-    parts.join(" ")
   end
 end

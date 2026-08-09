@@ -195,6 +195,17 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     assert_equal 3, @journey.commitment_habit_count
   end
 
+  test "gap_alert joins habit and camp sentences like Settings flash" do
+    @user.habits.active.on_home.update_all(show_on_home: false)
+    elig = Today::Commitment.eligibility(user: @user, key: "medium", journey: @journey)
+    alert = Today::Commitment.gap_alert(elig)
+    assert_equal(
+      "Medium needs #{elig.habit_need} Today habits — you have #{elig.habit_have}. " \
+      "Medium needs #{elig.camp_need} planned camps — you have #{elig.camp_have}.",
+      alert
+    )
+  end
+
   private
 
   def seed_today_habits!(count)
