@@ -1,0 +1,77 @@
+<%# locals: timeline, open_count, total_count, upcoming, handoff %>
+<%
+  timeline = local_assigns.fetch(:timeline)
+  upcoming = local_assigns[:upcoming]
+  handoff = local_assigns[:handoff] || @strategy_handoff
+  empty = timeline.segments.empty? && timeline.unscheduled.empty?
+%>
+
+<section class="lp-dash-timeline"
+         aria-label="<%= t('dash.timeline.title') %>"
+         data-controller="today-timeline"
+         data-today-timeline-index-value="<%= timeline.now_segment_index.to_i %>"
+         data-today-timeline-ratio-value="<%= timeline.now_ratio.to_f %>">
+  <% if empty %>
+    <div class="lp-dash-timeline__empty">
+      <p><%= t("dash.battle_empty") %></p>
+      <p>
+        <%= link_to (handoff&.dig(:label) || t("dash.battle_empty_cta")),
+              (handoff&.dig(:href) || (@journey ? life_journey_path(@journey) : new_life_journey_path)),
+              class: "lp-dash-timeline__empty-link" %>
+      </p>
+      <% if upcoming %>
+        <p class="lp-dash-timeline__upcoming">
+          <% if upcoming[:tomorrow] %>
+            <%= t("dash.tomorrow_set", title: upcoming[:title]) %>
+          <% else %>
+            <%= t("dash.next_battle_set", title: upcoming[:title], date: l(upcoming[:scheduled_on], format: :short)) %>
+          <% end %>
+        </p>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="lp-dash-timeline__rail" data-today-timeline-target="rail">
+      <div class="lp-dash-now" data-today-timeline-target="now" aria-hidden="true">
+        <span class="lp-dash-now__dot"></span>
+        <span class="lp-dash-now__line"></span>
+      </div>
+
+      <% timeline.segments.each do |segment| %>
+        <% if segment.type == :free %>
+          <div class="lp-dash-timeline__free"
+               data-today-timeline-target="segment"
+               data-segment-index="<%= segment.index %>"
+               data-starts-at="<%= segment.starts_at&.iso8601 %>"
+               data-ends-at="<%= segment.ends_at&.iso8601 %>">
+            <% hours = segment.minutes / 60 %>
+            <% mins = segment.minutes % 60 %>
+            <% if hours.positive? && mins.zero? %>
+              <%= t("dash.timeline.hours_free", count: hours) %>
+            <% elsif hours.positive? %>
+              <%= t("dash.timeline.hours_minutes_free", hours: hours, minutes: mins) %>
+            <% else %>
+              <%= t("dash.timeline.minutes_free", count: mins) %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="lp-dash-timeline__item"
+               data-today-timeline-target="segment"
+               data-segment-index="<%= segment.index %>"
+               data-starts-at="<%= segment.starts_at&.iso8601 %>"
+               data-ends-at="<%= segment.ends_at&.iso8601 %>">
+            <%= render "dashboard/dash_timeline_card", todo: segment.todo %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if timeline.unscheduled.any? %>
+      <div class="lp-dash-timeline__unscheduled" aria-label="<%= t('dash.timeline.unscheduled') %>">
+        <h3 class="lp-dash-timeline__unscheduled-title"><%= t("dash.timeline.unscheduled") %></h3>
+        <% timeline.unscheduled.each do |todo| %>
+          <%= render "dashboard/dash_timeline_card", todo: todo %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</section>

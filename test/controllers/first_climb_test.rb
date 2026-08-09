@@ -49,13 +49,13 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert Strategy::HierarchyReady.call(user: @user, journey: @journey)
 
     # One real action only — scaffolding "Plan Your Route" mission is retired.
-    assert_select ".lp-dash-section.is-battles .lp-dash-battle__list > .lp-dash-battle__item", count: 1
-    assert_select ".lp-dash-section.is-battles .lp-dash-battle__name", text: "Study chapter 1 for 20 minutes"
+    assert_select ".lp-dash-tcard__title", text: "Study chapter 1 for 20 minutes"
+    assert_select ".lp-dash-timeline .lp-dash-tcard", count: 1
     assert_no_match(/Plan Your Route/i, response.body)
 
-    # Character-first climb band (not the old mountain hero).
-    assert_select ".lp-dash-climb", count: 1
-    assert_select ".lp-dash-climb__climber[data-battle-day-target='campArt']", count: 1
+    # Compact Today header (not the old mountain hero).
+    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-header__avatar", count: 1
     assert_select ".lp-dash-hero", count: 0
   end
 

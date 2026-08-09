@@ -404,6 +404,37 @@ es:
       done_notice: "Proyecto listo — “%{title}”. Montaña ahora %{percent}%."
       not_yet_notice: "Batalla ganada. Afila la próxima pelea mientras el proyecto sigue abierto."
       invalid: "Esa revisión de proyecto no es válida."
+    timeline:
+      title: "Línea de tiempo de hoy"
+      win: "Ganar"
+      unscheduled: "Sin hora"
+      unscheduled_label: "Sin hora fijada"
+      set_time: "Fijar hora"
+      save_time: "Guardar hora"
+      cancel: "Cancelar"
+      start_time: "Inicio"
+      end_time: "Fin"
+      time_saved: "Hora guardada."
+      time_save_failed: "No se pudo guardar la hora."
+      need_both_times: "Añade hora de inicio y de fin."
+      end_after_start: "La hora de fin debe ser después del inicio."
+      stats_pill: "Racha y puntos de acción"
+      hours_free:
+        one: "%{count}h libre"
+        other: "%{count}h libres"
+      minutes_free:
+        one: "%{count}m libre"
+        other: "%{count}m libres"
+      hours_minutes_free: "%{hours}h %{minutes}m libres"
+      ledger_miss: "Perdiste “%{title}” (−%{amount} AP)"
+      ledger_shielded: "El escudo bloqueó un fallo en “%{title}”"
+    anytime:
+      title: "Cuando sea"
+      hint: "Hábitos — gánalos cuando quieras hoy."
+      empty: "Aún no hay hábitos en Hoy — añádelos en Hábitos."
+    shield:
+      ready_line: "Escudo listo — bloquea una ventana perdida hoy."
+      used_on_card: "El escudo bloqueó este fallo"
   climb:
     streak:
       chip: "%{count} días"

@@ -62,7 +62,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-climb__pct", text: /#{expected}/
+    assert_select ".lp-dash-header .lp-dash-bar__fill[style=?]", "width: #{expected}%"
 
     get life_points_path
     assert_response :success

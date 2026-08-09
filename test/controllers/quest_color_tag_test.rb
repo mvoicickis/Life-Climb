@@ -76,7 +76,7 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  test "Today checklist shell and objectives inherit parent quest color" do
+  test "Today quest cards show folder title and nested objectives" do
     quest = @section.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Teal Volume", position: 0, color_key: "teal"
@@ -88,12 +88,12 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist.has-color.is-teal .lp-dash-battle__name", text: "Teal Volume"
-    assert_select ".lp-dash-checklist__obj.has-color.is-teal .lp-dash-checklist__obj-name", text: /Do a lesson/
-    assert_select ".lp-dash-checklist__obj.has-color.is-teal .lp-dash-checklist__obj-name", text: /Review notes/
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Teal Volume"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: /Do a lesson/
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: /Review notes/
   end
 
-  test "uncolored quest checklist uses Quests section purple default" do
+  test "uncolored quest still renders as a quest card on Today" do
     quest = @section.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Plain Volume", position: 0
@@ -104,8 +104,8 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist.has-color.is-purple .lp-dash-battle__name", text: "Plain Volume"
-    assert_select ".lp-dash-checklist__obj.has-color.is-purple", minimum: 1
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Plain Volume"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective", minimum: 1
   end
 
   test "quest detail edit dialog can update color_key" do

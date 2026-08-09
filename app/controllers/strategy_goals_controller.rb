@@ -38,6 +38,7 @@ class StrategyGoalsController < ApplicationController
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
+      apply_cascaded_todo_times!(goal) if goal.day?
       Strategy::SyncCompletion.resync!(node: goal) if goal.plan? || goal.project?
       if celebration[:amount].to_i.positive?
         flash[:sp_gained] = celebration[:amount]
@@ -262,6 +263,19 @@ class StrategyGoalsController < ApplicationController
     return unless params.key?(:color_key)
 
     goal.color_key = params[:color_key].to_s.strip.presence
+  end
+
+  # Optional Today window — stored on the cascaded DailyTodo, not on strategy_goals.
+  def apply_cascaded_todo_times!(goal)
+    start_time = params[:start_time].presence
+    end_time = params[:end_time].presence
+    return if start_time.blank? && end_time.blank?
+
+    date = goal.scheduled_on.presence || Date.current
+    todo = current_user.daily_todos.find_by(strategy_goal_id: goal.id, scheduled_on: date)
+    return if todo.blank?
+
+    todo.update(start_time: start_time, end_time: end_time)
   end
 
   def parse_due_on(kind, parent)

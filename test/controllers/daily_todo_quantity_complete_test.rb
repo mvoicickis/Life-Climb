@@ -26,7 +26,7 @@ class DailyTodoQuantityCompleteTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
   end
 
-  test "today battle list shows amount dialog for quantified battles only" do
+  test "today timeline shows amount input for quantified battles only" do
     plain = @user.strategy_goals.create!(
       life_area: @area,
       parent: @project.parent,
@@ -45,18 +45,13 @@ class DailyTodoQuantityCompleteTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#qty-complete-#{@todo.id}"
-    assert_select "#qty-complete-#{@todo.id} .lp-strategy-sheet__title", text: /How many pages/i
-    assert_select "li[data-controller='quantity-complete'] form[action=?][data-action=?]",
-                  complete_daily_todo_path(@todo),
-                  "submit->quantity-complete#intercept"
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__amount", @todo.id.to_s
+    assert_select ".lp-dash-tcard[data-todo-id=?] form.lp-dash-tcard__qty[action=?]",
+                  @todo.id.to_s,
+                  complete_daily_todo_path(@todo)
 
-    assert_select "#qty-complete-#{plain_todo.id}", count: 0
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__amount", plain_todo.id.to_s, count: 0
     assert_select "form[action=?]", complete_daily_todo_path(plain_todo)
-    assert_select "form[action=?][data-action=?]",
-                  complete_daily_todo_path(plain_todo),
-                  "submit->quantity-complete#intercept",
-                  count: 0
   end
 
   test "completing a quantified battle logs amount and updates current_amount" do

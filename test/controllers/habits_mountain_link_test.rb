@@ -103,9 +103,9 @@ class HabitsMountainLinkTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: linked.name
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: general.name
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Hidden linked", count: 0
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: linked.name
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: general.name
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Hidden linked", count: 0
   end
 
   test "primary nav includes Habits entry" do

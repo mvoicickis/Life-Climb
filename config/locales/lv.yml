@@ -404,6 +404,37 @@ lv:
       done_notice: "Projekts gatavs — “%{title}”. Kalns tagad %{percent}%."
       not_yet_notice: "Kauja uzvarēta. Padari nākamo kauju asāku, kamēr projekts vēl atvērts."
       invalid: "Šī projekta pārbaude nav derīga."
+    timeline:
+      title: "Šodienas laika līnija"
+      win: "Uzvarēt"
+      unscheduled: "Bez laika"
+      unscheduled_label: "Laiks nav iestatīts"
+      set_time: "Iestatīt laiku"
+      save_time: "Saglabāt laiku"
+      cancel: "Atcelt"
+      start_time: "Sākums"
+      end_time: "Beigas"
+      time_saved: "Laiks saglabāts."
+      time_save_failed: "Neizdevās saglabāt laiku."
+      need_both_times: "Pievieno gan sākuma, gan beigu laiku."
+      end_after_start: "Beigu laikam jābūt pēc sākuma."
+      stats_pill: "Sērija un darba punkti"
+      hours_free:
+        one: "%{count}h brīvs"
+        other: "%{count}h brīvs"
+      minutes_free:
+        one: "%{count}m brīvs"
+        other: "%{count}m brīvs"
+      hours_minutes_free: "%{hours}h %{minutes}m brīvs"
+      ledger_miss: "Izlaists “%{title}” (−%{amount} AP)"
+      ledger_shielded: "Vairogs bloķēja izlaidumu: “%{title}”"
+    anytime:
+      title: "Jebkurā laikā"
+      hint: "Ieradumi — uzvari tos jebkurā brīdī šodien."
+      empty: "Šodienā vēl nav ieradumu — pievieno Habitos."
+    shield:
+      ready_line: "Vairogs gatavs — šodien bloķē vienu izlaistu logu."
+      used_on_card: "Vairogs bloķēja šo izlaidumu"
   climb:
     streak:
       chip: "%{count} dienas"

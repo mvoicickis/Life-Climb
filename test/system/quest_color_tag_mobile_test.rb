@@ -39,7 +39,7 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-battle", wait: 5
+    assert_selector ".lp-dash-timeline", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     assert_selector ".lp-climb-path__quests[open]", wait: 5
@@ -50,11 +50,10 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-mountain-mobile.png")
 
     visit dashboard_path
-    assert_selector ".lp-dash-checklist.has-color.is-purple", text: /Purple Volume/, wait: 5
-    assert_selector ".lp-dash-checklist__obj.has-color.is-purple", text: /Do a lesson/
-    assert_selector ".lp-dash-checklist__obj.has-color.is-purple", text: /Review notes/
-    # Quests section defaults to purple; custom color_key overrides (Purple Volume above).
-    assert_selector ".lp-dash-checklist.has-color.is-purple", text: /Plain Volume/
+    assert_selector ".lp-dash-tcard.is-quest", text: /Purple Volume/, wait: 5
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: /Do a lesson/
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: /Review notes/
+    assert_selector ".lp-dash-tcard.is-quest", text: /Plain Volume/
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-today-mobile.png")
   end
 end

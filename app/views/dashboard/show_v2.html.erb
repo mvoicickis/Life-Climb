@@ -10,13 +10,15 @@
   data-battle-day-ap-gained-value="<%= flash[:ap_gained].to_i %>"
   data-battle-day-boss-value="<%= flash[:climb_boss].present? %>"
 >
-  <%= render "dashboard/dash_climb_band",
+  <%= render "dashboard/dash_header",
         closer: @closer,
         streak: @climb_streak,
         life_points: @life_points %>
 
   <% if @next_action.present? %>
-    <%= render "shared/next_action", next_action: @next_action %>
+    <%= render "shared/next_action",
+          next_action: @next_action,
+          day_shield: @day_shield %>
   <% end %>
 
   <% if flash[:human_win].present? %>
@@ -34,21 +36,15 @@
           strategy_goal: @strategy_goal,
           first_climb: @first_climb_needed %>
   <% else %>
-    <%= render "dashboard/dash_battle",
-          todos: @daily_todos,
-          open_todos: @open_todos,
-          done_todos: @done_todos,
-          mission: @mission,
-          include_mission: @include_mission_in_battle,
+    <%= render "dashboard/dash_timeline",
+          timeline: @timeline,
           open_count: @battle_open_count,
           total_count: @battle_total_count,
-          day_full: @battle_day_full,
-          aspect_key: @journey.life_area.key,
           upcoming: @upcoming_battle,
-          habits: @habits %>
+          handoff: @strategy_handoff %>
+    <%= render "dashboard/dash_anytime", habits: @habits %>
   <% end %>
 
-  <%# Secondary coaching only after the fight is clear — never above the battle. %>
   <% if !@show_plan_route && @project_check %>
     <%= render "dashboard/dash_project_check", project: @project_check %>
   <% elsif !@show_plan_route && @battle_angle_project && @battle_angles.any? %>

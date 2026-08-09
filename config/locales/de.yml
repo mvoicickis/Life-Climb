@@ -404,6 +404,37 @@ de:
       done_notice: "Projekt fertig — „%{title}“. Berg jetzt %{percent}%."
       not_yet_notice: "Kampf gewonnen. Schärfe den nächsten Kampf, solange das Projekt offen ist."
       invalid: "Dieser Projekt-Check ist ungültig."
+    timeline:
+      title: "Zeitlinie von heute"
+      win: "Gewinnen"
+      unscheduled: "Ohne Zeit"
+      unscheduled_label: "Keine Zeit gesetzt"
+      set_time: "Zeit setzen"
+      save_time: "Zeit speichern"
+      cancel: "Abbrechen"
+      start_time: "Start"
+      end_time: "Ende"
+      time_saved: "Zeit gespeichert."
+      time_save_failed: "Zeit konnte nicht gespeichert werden."
+      need_both_times: "Bitte Start- und Endzeit angeben."
+      end_after_start: "Die Endzeit muss nach der Startzeit liegen."
+      stats_pill: "Serie und Aktionspunkte"
+      hours_free:
+        one: "%{count} Std. frei"
+        other: "%{count} Std. frei"
+      minutes_free:
+        one: "%{count} Min. frei"
+        other: "%{count} Min. frei"
+      hours_minutes_free: "%{hours} Std. %{minutes} Min. frei"
+      ledger_miss: "„%{title}“ verpasst (−%{amount} AP)"
+      ledger_shielded: "Schild hat einen Fehlversuch bei „%{title}“ blockiert"
+    anytime:
+      title: "Jederzeit"
+      hint: "Gewohnheiten — heute jederzeit gewinnen."
+      empty: "Noch keine Gewohnheiten auf Heute — unter Gewohnheiten hinzufügen."
+    shield:
+      ready_line: "Schild bereit — blockiert heute ein verpasstes Fenster."
+      used_on_card: "Schild hat diesen Fehlversuch blockiert"
   climb:
     streak:
       chip: "%{count} Tage"

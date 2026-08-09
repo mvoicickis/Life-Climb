@@ -41,10 +41,9 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist .lp-dash-battle__name", text: "Volume 0"
-    assert_select ".lp-dash-checklist__progress", text: /0\s*\/\s*1/
-    assert_select ".lp-dash-checklist__obj-name", text: "Do a lesson"
-    assert_select ".lp-dash-check.is-locked", minimum: 1
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
     assert_select "form[action=?]", complete_daily_todo_path(todo), count: 0
   end
 
@@ -121,8 +120,8 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist__obj form[action=?]", practice_task_path(task)
-    assert_select ".lp-dash-checklist__obj [data-controller='quantity-complete']", count: 0
+    assert_select ".lp-dash-tcard.is-quest form[action=?]", practice_task_path(task)
+    assert_select ".lp-dash-tcard.is-quest [data-controller='quantity-complete']", count: 0
   end
 
   private

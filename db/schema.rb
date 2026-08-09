@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_190800) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_090000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -72,9 +72,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_190800) do
     t.string "aspect_key", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.time "end_time"
     t.integer "lp_reward", default: 30, null: false
+    t.datetime "miss_settled_at"
     t.integer "position", default: 0, null: false
     t.date "scheduled_on", null: false
+    t.time "start_time"
     t.integer "strategy_goal_id"
     t.string "tag"
     t.string "title", null: false
@@ -445,6 +448,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_190800) do
     t.date "climb_streak_frozen_on"
     t.date "climb_streak_on"
     t.datetime "created_at", null: false
+    t.date "day_shield_on"
+    t.integer "day_shields_available", default: 1, null: false
     t.boolean "developer", default: false, null: false
     t.string "email_address", null: false
     t.integer "focus_building_id"

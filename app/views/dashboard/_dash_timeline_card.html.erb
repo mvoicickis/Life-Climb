@@ -1,0 +1,185 @@
+<%# locals: todo %>
+<%
+  todo = local_assigns.fetch(:todo)
+  quest = todo.quest?
+  day = todo.strategy_goal
+  tasks = quest ? (day&.practice_tasks&.sort_by { |t| [ t.position.to_i, t.id ] } || []) : []
+  shell_ready = !quest || tasks.all?(&:completed?)
+  qty_project = (!quest && day&.quantified_path_project) || nil
+  icon = quest ? "map" : "sword"
+  card_class = [
+    "lp-dash-tcard",
+    ("is-done" if todo.completed?),
+    ("is-missed" if todo.missed?),
+    ("is-shielded-miss" if todo.miss_shielded?),
+    ("is-quest" if quest)
+  ].compact.join(" ")
+%>
+<article class="<%= card_class %>"
+         data-todo-id="<%= todo.id %>"
+         data-battle-day-target="item"
+         data-open="<%= todo.completed? ? 'false' : 'true' %>"
+         data-lp="<%= todo.lp_reward %>">
+  <div class="lp-dash-tcard__row">
+    <span class="lp-dash-tcard__icon" aria-hidden="true">
+      <%= render "shared/lp_icon", name: icon, class_name: "lp-icon is-inline" %>
+    </span>
+    <div class="lp-dash-tcard__copy">
+      <p class="lp-dash-tcard__title"><%= todo.title %></p>
+      <p class="lp-dash-tcard__meta">
+        <% if todo.timed? %>
+          <span><%= todo.time_range_label %></span>
+        <% else %>
+          <span><%= t("dash.timeline.unscheduled_label") %></span>
+        <% end %>
+        <span class="lp-dash-tcard__ap">+<%= todo.lp_reward %> <%= t("dash.action_points_short") %></span>
+      </p>
+    </div>
+
+    <% if todo.miss_shielded? %>
+      <span class="lp-dash-tcard__shield" title="<%= t('dash.shield.used_on_card') %>">
+        <%= render "shared/lp_icon", name: "shield", class_name: "lp-icon is-inline" %>
+      </span>
+    <% end %>
+
+    <% if todo.completed? %>
+      <%= button_to t("dash.timeline.win"),
+            complete_daily_todo_path(todo),
+            method: :post,
+            class: "lp-dash-tcard__win is-done",
+            aria: { label: "Undo #{todo.title}" } %>
+    <% elsif quest && !shell_ready %>
+      <span class="lp-dash-tcard__win is-locked" aria-label="<%= t('dash.checklist_locked', title: todo.title) %>">
+        <%= t("dash.timeline.win") %>
+      </span>
+    <% elsif qty_project %>
+      <%= form_with url: complete_daily_todo_path(todo),
+            method: :post,
+            class: "lp-dash-tcard__qty",
+            data: { turbo: false } do %>
+        <%= number_field_tag :amount, nil,
+              min: 0,
+              step: :any,
+              required: true,
+              class: "lp-dash-tcard__amount",
+              aria: { label: t("strategy.quantity.how_many", unit: qty_project.unit) },
+              placeholder: qty_project.unit %>
+        <%= submit_tag t("dash.timeline.win"), class: "lp-dash-tcard__win" %>
+      <% end %>
+    <% else %>
+      <%= button_to t("dash.timeline.win"),
+            complete_daily_todo_path(todo),
+            method: :post,
+            class: "lp-dash-tcard__win",
+            aria: { label: "#{t('dash.timeline.win')} #{todo.title}" } %>
+    <% end %>
+  </div>
+
+  <% if quest && tasks.any? %>
+    <% qty_project_for_quest = day&.quantified_path_project %>
+    <ul class="lp-dash-tcard__objectives">
+      <% tasks.each do |task| %>
+        <% track = task.tracks_quantity? && qty_project_for_quest && !task.completed? %>
+        <li class="lp-dash-tcard__objective <%= 'is-done' if task.completed? %>"
+            <% if track %>data-controller="quantity-complete"<% end %>>
+          <span class="lp-dash-tcard__objective-title">
+            <%= task.title %>
+            <% if task.track_quantity? && qty_project_for_quest %>
+              <em class="lp-dash-tcard__objective-track"><%= t("strategy.quantity.track_objective_badge", unit: qty_project_for_quest.unit) %></em>
+            <% end %>
+          </span>
+          <%= button_to t("dash.timeline.win"),
+                practice_task_path(task),
+                method: :patch,
+                params: { completed: task.completed? ? "0" : "1" },
+                form: (track ? {
+                  data: {
+                    quantity_complete_target: "form",
+                    action: "submit->quantity-complete#intercept"
+                  }
+                } : {}),
+                class: "lp-dash-tcard__win is-nested #{'is-done' if task.completed?}",
+                aria: { label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}") } %>
+          <% if track %>
+            <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
+                    id="qty-obj-<%= task.id %>"
+                    data-quantity-complete-target="dialog"
+                    data-action="click->quantity-complete#backdropClose">
+              <div class="lp-strategy-sheet__panel">
+                <header class="lp-strategy-sheet__head">
+                  <p class="lp-strategy-sheet__kind"><%= task.title %></p>
+                  <h2 class="lp-strategy-sheet__title">
+                    <%= t("strategy.quantity.how_many", unit: qty_project_for_quest.unit) %>
+                  </h2>
+                  <button type="button"
+                          class="lp-strategy-sheet__close"
+                          data-action="click->quantity-complete#close"
+                          aria-label="<%= t('strategy.sheet.close') %>">×</button>
+                </header>
+                <form class="lp-strategy-sheet__form lp-quantity-complete__form"
+                      data-action="submit->quantity-complete#confirm">
+                  <label class="lp-quantity-complete__field" for="qty-obj-input-<%= task.id %>">
+                    <span class="lp-quantity-complete__label"><%= qty_project_for_quest.unit %></span>
+                    <%= number_field_tag :dialog_amount, nil,
+                          id: "qty-obj-input-#{task.id}",
+                          class: "lp-rpg-input lp-quantity-complete__input",
+                          min: "0.01",
+                          step: "any",
+                          inputmode: "decimal",
+                          required: true,
+                          autocomplete: "off",
+                          placeholder: "0",
+                          data: { quantity_complete_target: "amount" } %>
+                  </label>
+                  <div class="lp-strategy-sheet__footer is-split">
+                    <button type="button"
+                            class="lp-strategy-sheet__btn is-cancel"
+                            data-action="click->quantity-complete#close">
+                      <%= t("strategy.rpg.cancel") %>
+                    </button>
+                    <button type="submit" class="lp-strategy-sheet__btn is-save">
+                      <%= t("strategy.quantity.log_confirm") %>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </dialog>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% unless todo.timed? || todo.completed? %>
+    <div class="lp-dash-tcard__set-time" data-controller="set-time">
+      <button type="button"
+              class="lp-dash-tcard__set-time-btn"
+              data-set-time-target="trigger"
+              data-action="set-time#open">
+        <%= t("dash.timeline.set_time") %>
+      </button>
+      <div class="lp-dash-tcard__set-time-panel" data-set-time-target="panel" hidden>
+        <%= form_with model: todo,
+              url: daily_todo_path(todo),
+              method: :patch,
+              class: "lp-dash-tcard__set-time-form",
+              data: { turbo: false } do |form| %>
+          <label>
+            <span><%= t("dash.timeline.start_time") %></span>
+            <%= form.time_field :start_time, required: true, class: "lp-dash-tcard__time-input" %>
+          </label>
+          <label>
+            <span><%= t("dash.timeline.end_time") %></span>
+            <%= form.time_field :end_time, required: true, class: "lp-dash-tcard__time-input" %>
+          </label>
+          <div class="lp-dash-tcard__set-time-actions">
+            <%= form.submit t("dash.timeline.save_time"), class: "lp-dash-tcard__win" %>
+            <button type="button" class="lp-dash-tcard__set-time-cancel" data-action="set-time#close">
+              <%= t("dash.timeline.cancel") %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</article>

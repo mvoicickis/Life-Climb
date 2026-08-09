@@ -31,7 +31,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
 
-    # Uncolored quest → section default purple
+    # Uncolored quest → still renders as a quest card
     @plain_quest = @section.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Plain Volume", position: 2
@@ -56,31 +56,32 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today renders Battles Quests and Habits sections with the right items" do
+  test "Today renders timeline battles/quests and Anytime habits without section headers" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-section.is-battles .lp-dash-section__label", text: /Battles/i
-    assert_select ".lp-dash-section.is-quests .lp-dash-section__label", text: /Quests/i
-    assert_select ".lp-dash-section.is-habits .lp-dash-section__label", text: /Habits/i
+    assert_select ".lp-dash-timeline", count: 1
+    assert_select ".lp-dash-anytime", count: 1
+    assert_select ".lp-dash-section.is-battles", count: 0
+    assert_select ".lp-dash-section.is-quests", count: 0
+    assert_select ".lp-dash-section.is-habits", count: 0
 
-    assert_select ".lp-dash-section.is-battles .lp-dash-battle__name", text: "Ship auth"
-    assert_select ".lp-dash-section.is-battles .lp-dash-battle__name", text: "Write tests"
-    assert_select ".lp-dash-section.is-quests .lp-dash-battle__name", text: "Purple Volume"
-    assert_select ".lp-dash-section.is-quests .lp-dash-battle__name", text: "Plain Volume"
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Meditate"
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Pages read"
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Hidden steps", count: 0
+    assert_select ".lp-dash-tcard__title", text: "Ship auth"
+    assert_select ".lp-dash-tcard__title", text: "Write tests"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Purple Volume"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Plain Volume"
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate"
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Pages read"
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Hidden steps", count: 0
   end
 
-  test "section colors apply and custom quest color overrides" do
+  test "quest cards nest objectives with Win controls" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-section.is-battles .lp-dash-battle__item.has-color.is-teal", minimum: 1
-    assert_select ".lp-dash-section.is-quests .lp-dash-checklist.has-color.is-coral .lp-dash-battle__name", text: "Purple Volume"
-    assert_select ".lp-dash-section.is-quests .lp-dash-checklist.has-color.is-purple .lp-dash-battle__name", text: "Plain Volume"
-    assert_select ".lp-dash-section.is-habits .lp-dash-habit.has-color.is-amber", minimum: 2
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: "Review notes"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
   end
 
   test "binary habit completes from Today and quantity habit logs from Today" do
@@ -94,7 +95,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_equal 7, @pages.reload.today_amount.to_i
   end
 
-  test "plain battle still completes from Battles section" do
+  test "plain battle still completes from timeline" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
       post complete_daily_todo_path(todo)

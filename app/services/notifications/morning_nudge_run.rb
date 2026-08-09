@@ -19,6 +19,7 @@ module Notifications
 
       candidate_users.find_each do |user|
         considered += 1
+        Today::DayShield.reconcile!(user: user)
         if notify!(user)
           sent += 1
         else

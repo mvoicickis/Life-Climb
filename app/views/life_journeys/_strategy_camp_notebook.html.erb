@@ -165,6 +165,16 @@
                         class: "lp-input w-full",
                         placeholder: t("strategy.battle_placeholder"),
                         autocomplete: "off" %>
+                  <div class="lp-camp-notebook__times">
+                    <label>
+                      <span><%= t("dash.timeline.start_time") %></span>
+                      <%= time_field_tag :start_time, nil, class: "lp-input" %>
+                    </label>
+                    <label>
+                      <span><%= t("dash.timeline.end_time") %></span>
+                      <%= time_field_tag :end_time, nil, class: "lp-input" %>
+                    </label>
+                  </div>
                   <%= submit_tag t("strategy.sheet.add_battle"), class: "lp-camp-notebook__submit" %>
                 <% end %>
               </details>

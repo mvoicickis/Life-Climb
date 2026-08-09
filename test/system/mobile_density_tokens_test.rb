@@ -29,14 +29,12 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-battle", wait: 5
+    assert_selector ".lp-dash-timeline", wait: 5
 
-    battle_pad = computed(".lp-dash-battle", "padding-top")
-    row_pad = computed(".lp-dash-battle__item", "padding-bottom")
-    assert_in_delta 12.0, battle_pad, 1.5, "battle card should use --lp-pad-card (~0.75rem)"
-    assert_in_delta 10.4, row_pad, 1.5, "fight rows should use --lp-pad-row-y (~0.65rem)"
-    check_h = computed(".lp-dash-check", "min-height")
-    assert_in_delta 44.0, check_h, 1.0, "check hit area must stay ~2.75rem"
+    win_h = computed(".lp-dash-tcard__win", "min-height")
+    assert_in_delta 44.0, win_h, 1.0, "Win hit area must stay ≥44px"
+    assert_selector ".lp-dash-header"
+    assert_selector ".lp-dash-anytime"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-today-mobile.png")
 
     visit habits_path
