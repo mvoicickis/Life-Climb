@@ -24,7 +24,7 @@ module Battles
       category = Onboarding::Categories.resolve_for(user: @user, explicit: @explicit_category)
       title = @forced_title.presence || example_title_for(category)
 
-      project = path_project_for(journey)
+      project = Strategy::PathProject.ensure!(user: @user, journey: journey, title: title)
       raise Error, I18n.t("notifications.actions.need_spine") if project.blank?
 
       parent = PracticeParent.call(user: @user, project: project)
@@ -51,18 +51,6 @@ module Battles
       raise Error, I18n.t("notifications.actions.need_example") if examples.empty?
 
       examples.sample
-    end
-
-    def path_project_for(journey)
-      area = journey.life_area
-      goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
-      return if goal.blank?
-
-      plan = goal.children.for_kind("plan").ordered.first
-      return if plan.blank?
-
-      plan.children.for_kind("project").ordered.find(&:path_level_camp?) ||
-        plan.children.for_kind("project").ordered.first
     end
 
     def next_position(parent)

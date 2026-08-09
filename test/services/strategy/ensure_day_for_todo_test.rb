@@ -48,4 +48,34 @@ class Strategy::EnsureDayForTodoTest < ActiveSupport::TestCase
     end
     assert_equal 1, @user.daily_todos.where(title: "Orphan MVP battle", scheduled_on: Date.current).count
   end
+
+  test "attaches orphan under last-touched incomplete path Project" do
+    journey = @journey
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.for_kind("plan").ordered.first
+    first = plan.children.for_kind("project").ordered.first
+    second = plan.children.create!(
+      user: @user, life_area: journey.life_area, life_journey: journey,
+      horizon: "project", title: "Second camp", position: first.position.to_i + 5
+    )
+    leaf = Battles::PracticeParent.call(user: @user, project: second)
+    recent = leaf.children.create!(
+      user: @user, life_area: journey.life_area, life_journey: journey,
+      horizon: "day", title: "Recent under second", scheduled_on: Date.yesterday, position: 0
+    )
+    recent.update_columns(updated_at: Time.current + 1.minute)
+
+    orphan = @user.daily_todos.create!(
+      title: "Orphan on second",
+      aspect_key: "career",
+      scheduled_on: Date.current,
+      position: 99,
+      lp_reward: GameRules::BATTLE_TODO_LP
+    )
+
+    day = Strategy::EnsureDayForTodo.call(todo: orphan)
+    path = day.parent
+    path = path.parent while path && !path.path_level_camp?
+    assert_equal second.id, path.id
+  end
 end

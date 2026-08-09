@@ -34,7 +34,7 @@ module Strategy
         )
       end
 
-      project = plan.children.for_kind("project").ordered.first
+      project = PathProject.resolve(user: @user, journey: @journey)
       if project.nil?
         return payload(
           label: I18n.t("dash.strategy_handoff.add_project", plan: plan.title),
@@ -42,7 +42,7 @@ module Strategy
         )
       end
 
-      if project.children.for_kind("day").none?
+      if Strategy::Progress.battles_under(project).none?
         return payload(
           label: I18n.t("dash.strategy_handoff.add_battle", project: project.title),
           href: helpers.life_journey_path(@journey, focus_id: project.id)
