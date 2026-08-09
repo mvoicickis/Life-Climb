@@ -115,6 +115,8 @@ es:
         need_room: "¿Necesitas más espacio para planear? Abrir Montaña"
         need_title: "Pon primero el nombre de la batalla."
         need_end_time: "Elige cuándo termina."
+        close_reveal: "Cerrar"
+        unfiled_tracker_nudge: "Guardado en Unfiled Trackers — asígnalo a un Area cuando quieras."
     next_up:
       add_battle_cta: "Añadir la batalla de hoy"
       fight_battle_cta: "Añadir la batalla de hoy"
@@ -437,6 +439,8 @@ es:
       time_save_failed: "No se pudo guardar la hora."
       need_both_times: "Añade hora de inicio y de fin."
       end_after_start: "La hora de fin debe ser después del inicio."
+      remove: "Quitar"
+      remove_confirm: "¿Quitar esta batalla de Today?"
       stats_pill: "Racha y puntos de acción"
       hours_free:
         one: "%{count}h libre"

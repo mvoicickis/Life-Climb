@@ -34,19 +34,20 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
          params: {
            source: "commitment_gap",
            open_reveal: "habit",
-           habit: { name: "Water" }
+           habit: { name: "Water", quantity_checkin: "0" }
          },
          as: :turbo_stream
     assert_response :success
     assert_equal 1, @user.habits.active.on_home.count
     assert_match(%r{data-habits-count[^>]*>1/3}, response.body)
     assert_match(/data-commitment-gap-open-value="habit"/, response.body)
+    assert_no_match(/Unfiled Trackers/, response.body)
 
     post habits_path,
          params: {
            source: "commitment_gap",
            open_reveal: "habit",
-           habit: { name: "Walk" }
+           habit: { name: "Walk", quantity_checkin: "0" }
          },
          as: :turbo_stream
     assert_equal 2, @user.habits.active.on_home.count
@@ -56,10 +57,43 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
          params: {
            source: "commitment_gap",
            open_reveal: "habit",
-           habit: { name: "Read" }
+           habit: { name: "Read", quantity_checkin: "0" }
          },
          as: :turbo_stream
     assert_equal 3, @user.habits.active.on_home.count
     assert_match(%r{data-habits-count[^>]*>3/3}, response.body)
   end
+
+  test "quantity habit from gap sets unit, nudges unfiled, and refreshes anytime surface" do
+    # Spine present so surface renders Anytime (not first-climb plan-route).
+    seed_climb!(@user, today_mission: "Ship one thing")
+    @user.habits.active.on_home.update_all(show_on_home: false)
+    @journey = @user.reload.primary_focused_journey
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+
+    post habits_path,
+         params: {
+           source: "commitment_gap",
+           open_reveal: "habit",
+           habit: { name: "Daily steps", quantity_checkin: "1", unit: "steps" }
+         },
+         as: :turbo_stream
+    assert_response :success
+
+    habit = @user.habits.active.on_home.order(:id).last
+    assert_equal "Daily steps", habit.name
+    assert habit.quantity_checkin?
+    assert_equal "steps", habit.unit
+    assert_nil habit.area_id
+    assert_match(/Unfiled Trackers/, response.body)
+    assert_match(/today-battle-surface/, response.body)
+    assert_match(/lp-dash-anytime/, response.body)
+    assert_match(/Daily steps/, response.body)
+  end
 end
+

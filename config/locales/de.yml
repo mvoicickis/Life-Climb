@@ -115,6 +115,8 @@ de:
         need_room: "Brauchst mehr Planungsraum? Mountain öffnen"
         need_title: "Benenne zuerst den Kampf."
         need_end_time: "Wähle, wann er endet."
+        close_reveal: "Schließen"
+        unfiled_tracker_nudge: "Unter Unfiled Trackers gespeichert — jederzeit einer Area zuordnen."
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"
       fight_battle_cta: "Heutige Schlacht hinzufügen"
@@ -437,6 +439,8 @@ de:
       time_save_failed: "Zeit konnte nicht gespeichert werden."
       need_both_times: "Bitte Start- und Endzeit angeben."
       end_after_start: "Die Endzeit muss nach der Startzeit liegen."
+      remove: "Entfernen"
+      remove_confirm: "Diesen Kampf von Today entfernen?"
       stats_pill: "Serie und Aktionspunkte"
       hours_free:
         one: "%{count} Std. frei"

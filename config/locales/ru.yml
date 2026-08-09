@@ -115,6 +115,8 @@ ru:
         need_room: "Нужно больше места для плана? Открыть Гору"
         need_title: "Сначала назови битву."
         need_end_time: "Выбери, когда она закончится."
+        close_reveal: "Закрыть"
+        unfiled_tracker_nudge: "Сохранено в Unfiled Trackers — можно добавить в Area в любой момент."
     next_up:
       add_battle_cta: "Добавить сегодняшнюю битву"
       fight_battle_cta: "Добавить сегодняшнюю битву"
@@ -437,6 +439,8 @@ ru:
       time_save_failed: "Не удалось сохранить время."
       need_both_times: "Укажи и начало, и конец."
       end_after_start: "Конец должен быть позже начала."
+      remove: "Убрать"
+      remove_confirm: "Убрать эту битву из Today?"
       stats_pill: "Серия и очки действий"
       hours_free:
         one: "%{count} ч свободно"

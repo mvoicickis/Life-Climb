@@ -12,6 +12,8 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     @user = users(:one)
     @user.update!(character: "fox")
     page.driver.browser.manage.window.resize_to(390, 844)
+    # complete_battle yields to battle_overdue after 18:00 — pin morning for a stable key.
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0)
 
     Onboarding::Run.call(
       user: @user,
@@ -42,6 +44,8 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
   end
+
+  teardown { travel_back }
 
   test "long complete_battle headline truncates on Today with commitment progress" do
     visit new_session_path

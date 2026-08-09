@@ -82,16 +82,9 @@
     <ul class="lp-dash-tcard__objectives">
       <% tasks.each do |task| %>
         <% track = task.tracks_quantity? && qty_project_for_quest && !task.completed? %>
-        <li class="lp-dash-tcard__objective <%= 'is-done' if task.completed? %>"
+        <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %>"
             <% if track %>data-controller="quantity-complete"<% end %>>
-          <span class="lp-dash-tcard__objective-title">
-            <%= task.title %>
-            <% if task.track_quantity? && qty_project_for_quest %>
-              <em class="lp-dash-tcard__objective-track"><%= t("strategy.quantity.track_objective_badge", unit: qty_project_for_quest.unit) %></em>
-            <% end %>
-          </span>
-          <%= button_to t("dash.timeline.win"),
-                practice_task_path(task),
+          <%= button_to practice_task_path(task),
                 method: :patch,
                 params: { completed: task.completed? ? "0" : "1" },
                 form: (track ? {
@@ -100,8 +93,16 @@
                     action: "submit->quantity-complete#intercept"
                   }
                 } : {}),
-                class: "lp-dash-tcard__win is-nested #{'is-done' if task.completed?}",
-                aria: { label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}") } %>
+                class: "lp-dash-check #{'is-on' if task.completed?}",
+                aria: { label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}") } do %>
+            <span aria-hidden="true"></span>
+          <% end %>
+          <span class="lp-dash-checklist__obj-name">
+            <%= task.title %>
+            <% if task.track_quantity? && qty_project_for_quest %>
+              <em class="lp-dash-checklist__obj-track"><%= t("strategy.quantity.track_objective_badge", unit: qty_project_for_quest.unit) %></em>
+            <% end %>
+          </span>
           <% if track %>
             <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
                     id="qty-obj-<%= task.id %>"
@@ -150,6 +151,16 @@
         </li>
       <% end %>
     </ul>
+  <% end %>
+
+  <% unless todo.completed? %>
+    <div class="lp-dash-tcard__remove">
+      <%= button_to t("dash.timeline.remove"),
+            daily_todo_path(todo),
+            method: :delete,
+            class: "lp-dash-tcard__remove-btn",
+            form: { data: { turbo_confirm: t("dash.timeline.remove_confirm") } } %>
+    </div>
   <% end %>
 
   <% unless todo.completed? %>

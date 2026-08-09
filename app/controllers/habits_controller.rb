@@ -46,7 +46,13 @@ class HabitsController < ApplicationController
 
     if @habit.save
       if params[:source].to_s == "commitment_gap"
-        refresh_commitment_gap_context!(open_reveal: params[:open_reveal].presence || "habit")
+        notice = if @habit.quantity_checkin?
+          t("strategy.next_action.commitment_gap.unfiled_tracker_nudge")
+        end
+        refresh_commitment_gap_context!(
+          open_reveal: params[:open_reveal].presence || "habit",
+          gap_notice: notice
+        )
         respond_to do |format|
           format.turbo_stream { render_commitment_gap_stream }
           format.html { redirect_to dashboard_path, notice: "Added. Start logging today — small steps count." }

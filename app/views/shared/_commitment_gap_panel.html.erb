@@ -1,4 +1,4 @@
-<%# locals: next_action, commitment, open_reveal (optional), planned_battles (optional) %>
+<%# locals: next_action, commitment, open_reveal (optional), planned_battles (optional), gap_notice (optional) %>
 <% elig = next_action.eligibility
    journey = current_user.primary_focused_journey
    habit_have = elig&.habit_have.to_i
@@ -8,6 +8,7 @@
    open = local_assigns[:open_reveal].to_s
    planned = Array(local_assigns[:planned_battles])
    planned = current_user.daily_todos.for_day(Date.current).incomplete.ordered.to_a if planned.empty?
+   gap_notice = local_assigns[:gap_notice].presence || @gap_notice
    default_end = (Time.current + 1.hour).strftime("%H:%M")
    aria = t("strategy.next_action.commitment_gap.title")
 %>
@@ -27,10 +28,14 @@
           <span class="lp-commitment-gap__count" data-battles-count="true"><%= battle_done %>/<%= battle_need %></span>
         </div>
         <button type="button"
-                class="lp-commitment-gap__plus"
+                class="lp-commitment-gap__plus<%= ' is-open' if open == 'battle' %>"
+                data-commitment-gap-target="battlePlus"
                 data-action="commitment-gap#toggleBattle"
-                aria-label="<%= t("strategy.next_action.commitment_gap.add_battle") %>">
-          +
+                data-add-label="<%= t("strategy.next_action.commitment_gap.add_battle") %>"
+                data-close-label="<%= t("strategy.next_action.commitment_gap.close_reveal") %>"
+                aria-expanded="<%= open == 'battle' %>"
+                aria-label="<%= open == 'battle' ? t("strategy.next_action.commitment_gap.close_reveal") : t("strategy.next_action.commitment_gap.add_battle") %>">
+          <%= open == "battle" ? "×" : "+" %>
         </button>
       </div>
       <div class="lp-commitment-gap__reveal"
@@ -60,6 +65,11 @@
               <li>
                 <%= render "shared/lp_icon", name: "sword", class_name: "lp-icon is-inline" %>
                 <span><%= todo.title %> — <%= t("strategy.next_action.commitment_gap.planned_not_won") %></span>
+                <%= button_to t("dash.timeline.remove"),
+                      daily_todo_path(todo),
+                      method: :delete,
+                      class: "lp-commitment-gap__link",
+                      form: { data: { turbo_confirm: t("dash.timeline.remove_confirm") } } %>
               </li>
             <% end %>
           </ul>
@@ -75,10 +85,14 @@
           <span class="lp-commitment-gap__count" data-habits-count="true"><%= habit_have %>/<%= habit_need %></span>
         </div>
         <button type="button"
-                class="lp-commitment-gap__plus"
+                class="lp-commitment-gap__plus<%= ' is-open' if open == 'habit' %>"
+                data-commitment-gap-target="habitPlus"
                 data-action="commitment-gap#toggleHabit"
-                aria-label="<%= t("strategy.next_action.commitment_gap.add_habit") %>">
-          +
+                data-add-label="<%= t("strategy.next_action.commitment_gap.add_habit") %>"
+                data-close-label="<%= t("strategy.next_action.commitment_gap.close_reveal") %>"
+                aria-expanded="<%= open == 'habit' %>"
+                aria-label="<%= open == 'habit' ? t("strategy.next_action.commitment_gap.close_reveal") : t("strategy.next_action.commitment_gap.add_habit") %>">
+          <%= open == "habit" ? "×" : "+" %>
         </button>
       </div>
       <div class="lp-commitment-gap__reveal"
@@ -86,18 +100,49 @@
            <%= "hidden" unless open == "habit" %>>
         <%= form_with url: habits_path,
               method: :post,
-              class: "lp-commitment-gap__form is-habit",
+              class: "lp-commitment-gap__form is-habit-stack",
               data: { turbo: true } do %>
           <input type="hidden" name="source" value="commitment_gap">
           <input type="hidden" name="open_reveal" value="habit">
-          <%= text_field_tag "habit[name]", nil,
-                placeholder: t("strategy.next_action.commitment_gap.habit_placeholder"),
-                class: "lp-input",
-                autocomplete: "off",
-                required: true,
-                maxlength: 80 %>
-          <%= submit_tag t("strategy.next_action.commitment_gap.add"),
-                class: "lp-habits__btn is-primary" %>
+          <div class="lp-commitment-gap__form is-habit">
+            <%= text_field_tag "habit[name]", nil,
+                  placeholder: t("strategy.next_action.commitment_gap.habit_placeholder"),
+                  class: "lp-input",
+                  autocomplete: "off",
+                  required: true,
+                  maxlength: 80 %>
+            <%= submit_tag t("strategy.next_action.commitment_gap.add"),
+                  class: "lp-habits__btn is-primary" %>
+          </div>
+          <label class="lp-commitment-gap__qty-toggle">
+            <input type="hidden" name="habit[quantity_checkin]" value="0">
+            <input type="checkbox"
+                   name="habit[quantity_checkin]"
+                   value="1"
+                   data-commitment-gap-quantity
+                   data-action="change->commitment-gap#toggleQuantity">
+            <span>
+              <span class="lp-commitment-gap__qty-title"><%= t("habits.quantity_checkin") %></span>
+              <span class="lp-commitment-gap__hint"><%= t("habits.quantity_checkin_hint") %></span>
+            </span>
+          </label>
+          <div class="lp-commitment-gap__unit"
+               data-commitment-gap-target="quantityUnit"
+               hidden>
+            <%= text_field_tag "habit[unit]", nil,
+                  list: "gap-count-ideas",
+                  placeholder: t("habits.unit_placeholder"),
+                  class: "lp-input w-full",
+                  autocomplete: "off" %>
+            <datalist id="gap-count-ideas">
+              <% Habit::UNIT_IDEAS.each do |idea| %>
+                <option value="<%= idea %>"></option>
+              <% end %>
+            </datalist>
+          </div>
+        <% end %>
+        <% if gap_notice.present? %>
+          <p class="lp-commitment-gap__notice" role="status"><%= gap_notice %></p>
         <% end %>
       </div>
     </div>
