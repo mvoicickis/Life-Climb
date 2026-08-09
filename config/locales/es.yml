@@ -613,6 +613,8 @@ es:
     unit_label: "¿Qué estás contando?"
     unit_placeholder: "repeticiones, horas, páginas, pasos…"
     note_label: "Nota (opcional)"
+    quantity_checkin: "Registrar un número cada día"
+    quantity_checkin_hint: "Desactivado = un toque en Ganar en Hoy."
     enable_target: "Activar un objetivo"
     enable_target_hint: "Desactivado = solo registrar números y comparar con ayer."
     judge_legend: "¿Cómo debemos valorar el día de hoy?"

@@ -13,7 +13,7 @@
     <ul class="lp-dash-anytime__list">
       <% habits.each do |habit| %>
         <% done = habit.completed_today? %>
-        <% amount = habit.today_amount %>
+        <% today_log = habit.today_log %>
         <li id="<%= dom_id(habit, :today) %>"
             class="lp-dash-tcard is-habit <%= 'is-done' if done || habit.met_habit_goal? %>">
           <div class="lp-dash-tcard__row">
@@ -27,8 +27,8 @@
               <p class="lp-dash-tcard__title"><%= habit.name %></p>
               <p class="lp-dash-tcard__meta">
                 <span><%= habit.unit %></span>
-                <% unless habit.binary_checkin? %>
-                  <span><%= format_amount(amount) %> <%= habit.unit %></span>
+                <% if habit.quantity_checkin? && today_log %>
+                  <span><%= format_amount(today_log.amount) %> <%= habit.unit %></span>
                 <% end %>
               </p>
             </div>
@@ -55,10 +55,11 @@
                     data: { turbo: false } do |form| %>
                 <%= hidden_field_tag :return_to, "today" %>
                 <%= form.number_field :amount,
-                      value: format_amount(amount),
+                      value: (today_log ? format_amount(today_log.amount) : nil),
                       min: 0,
                       step: habit.quantity_input_step,
                       inputmode: habit.quantity_inputmode,
+                      required: true,
                       class: "lp-dash-tcard__amount",
                       aria: { label: t("habits.how_many") } %>
                 <%= form.submit t("dash.timeline.win"), class: "lp-dash-tcard__win" %>

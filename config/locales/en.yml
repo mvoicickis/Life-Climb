@@ -2003,6 +2003,8 @@ en:
     state_label_attention: "Your word for “needs attention”"
     save_state: "Save state"
     sparkline_label: "Last 14 days"
+    quantity_checkin: "Log a number each day"
+    quantity_checkin_hint: "Off = one-tap Win on Today."
     enable_target: "Enable a target"
     enable_target_hint: "Off = just log numbers and compare with yesterday."
     judge_legend: "How should we judge today?"

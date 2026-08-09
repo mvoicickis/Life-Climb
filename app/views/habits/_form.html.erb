@@ -51,6 +51,14 @@
     </datalist>
   </div>
 
+  <label class="lp-habits-form__toggle">
+    <span>
+      <span class="lp-habits-form__toggle-title"><%= t("habits.quantity_checkin") %></span>
+      <span class="lp-habits__meta"><%= t("habits.quantity_checkin_hint") %></span>
+    </span>
+    <%= form.check_box :quantity_checkin, class: "lp-habits-form__checkbox" %>
+  </label>
+
   <div class="lp-habits-form__field">
     <%= form.label :area_id, t("habits.area_label"), class: "lp-habits__field-label" %>
     <%= form.collection_select :area_id,

@@ -19,7 +19,7 @@ class DailyLogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal BigDecimal("8"), habit.reload.today_amount
   end
 
-  test "blank amount becomes zero" do
+  test "blank amount still coerces to zero if posted without HTML required" do
     user = users(:one)
     habit = habits(:one)
     seed_climb!(user)
@@ -27,5 +27,16 @@ class DailyLogsControllerTest < ActionDispatch::IntegrationTest
 
     post daily_logs_path(habit_id: habit.id), params: { daily_log: { amount: "" } }
     assert_equal BigDecimal("0"), habit.reload.today_amount
+  end
+
+  test "explicit zero amount saves normally" do
+    user = users(:one)
+    habit = habits(:one)
+    seed_climb!(user)
+    sign_in_as user
+
+    post daily_logs_path(habit_id: habit.id), params: { daily_log: { amount: "0" } }
+    assert_equal BigDecimal("0"), habit.reload.today_amount
+    assert habit.daily_logs.exists?(logged_on: Date.current, amount: 0)
   end
 end

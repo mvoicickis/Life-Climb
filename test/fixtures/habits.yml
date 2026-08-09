@@ -9,6 +9,7 @@ one:
   show_on_home: true
   position: 1
   stat_type: growth
+  quantity_checkin: true
 
 two:
   user: two
@@ -21,3 +22,4 @@ two:
   show_on_home: true
   position: 1
   stat_type: growth
+  quantity_checkin: true
