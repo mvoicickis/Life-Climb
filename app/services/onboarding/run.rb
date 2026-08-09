@@ -71,6 +71,9 @@ module Onboarding
           closer_percent: @closer_percent
         )
         key = Today::Commitment::PRESETS.key?(@commitment_key) ? @commitment_key : "easy"
+        unless Today::Commitment.eligible_for?(user: @user, key: key, journey: journey)
+          key = "easy"
+        end
         Today::Commitment.apply_preset!(journey, key)
         Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
 

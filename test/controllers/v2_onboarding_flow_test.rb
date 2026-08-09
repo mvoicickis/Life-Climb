@@ -91,13 +91,13 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Pick your daily commitment/i, response.body)
     assert_match(/Step 5 of 6/i, response.body)
     assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "mountain"), text: /Back/i
-    assert_select "input[name='onboarding[commitment_key]'][value=easy]"
-    assert_select "input[name='onboarding[commitment_key]'][value=medium]"
-    assert_select "input[name='onboarding[commitment_key]'][value=hard]"
+    assert_select "input[name='onboarding[commitment_key]'][value=easy]:not([disabled])"
+    assert_select "input[name='onboarding[commitment_key]'][value=medium][disabled]"
+    assert_select "input[name='onboarding[commitment_key]'][value=hard][disabled]"
     assert_select ".lp-adventure__skip", text: /Skip for now/i
 
     patch v2_onboarding_url(step: "commitment"), params: {
-      onboarding: { commitment_key: "medium" }
+      onboarding: { commitment_key: "easy" }
     }
     assert_redirected_to v2_onboarding_path(step: "deadline")
     follow_redirect!
@@ -136,9 +136,9 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal "career", user.life_areas.v2_selected.first.key
     journey = user.primary_focused_journey
     assert_equal "Become a Ruby Developer", journey.title
-    assert_equal "medium", journey.commitment_key
-    assert_equal 3, journey.commitment_habit_count
-    assert_equal 3, journey.commitment_battle_count
+    assert_equal "easy", journey.commitment_key
+    assert_equal 1, journey.commitment_habit_count
+    assert_equal 1, journey.commitment_battle_count
     assert_equal "pending", journey.setup_flag("route")
     assert_equal "career", journey.setup_flag("onboarding_category")
     goal = user.strategy_goals.for_kind("goal").roots.first

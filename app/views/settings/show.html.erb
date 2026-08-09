@@ -73,19 +73,51 @@
     <section class="lp-glass lp-glass--pad<%= ' lp-you-row--flash' if highlight == 'commitment' %>" id="you-commitment">
       <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.commitment.title") %></h2>
       <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.commitment.hint") %></p>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]">
+        <%= link_to t("settings.commitment.eligibility.open_habits"), habits_path, class: "underline underline-offset-2" %>
+        ·
+        <%= link_to t("settings.commitment.eligibility.open_mountain"), life_journey_path(@commitment_journey), class: "underline underline-offset-2" %>
+      </p>
 
       <div class="lp-settings-commitment__presets mt-4">
         <% Today::Commitment::PRESETS.each do |key, preset| %>
-          <% active = @commitment_journey.commitment_key == key %>
-          <%= button_to t("settings.commitment.preset_label",
-                name: t("v2_onboarding.commitment_presets.#{key}"),
-                habits: preset[:habit_count],
-                battles: preset[:battle_count]),
-                commitment_settings_path,
-                method: :patch,
-                params: { commitment_key: key },
-                class: "lp-settings-commitment__btn#{' is-active' if active}",
-                form: { data: { turbo: false } } %>
+          <% active = @commitment_journey.commitment_key == key
+             elig = Today::Commitment.eligibility(user: current_user, key: key, journey: @commitment_journey)
+             blocked = !elig.eligible? && !active %>
+          <% if blocked %>
+            <div class="lp-settings-commitment__btn is-disabled" aria-disabled="true">
+              <span>
+                <%= t("settings.commitment.preset_label",
+                      name: t("v2_onboarding.commitment_presets.#{key}"),
+                      habits: preset[:habit_count],
+                      battles: preset[:battle_count]) %>
+              </span>
+              <span class="lp-settings-commitment__lock">
+                <% if elig.missing_habits %>
+                  <%= t("settings.commitment.eligibility.habits",
+                        name: t("v2_onboarding.commitment_presets.#{key}"),
+                        need: elig.habit_need,
+                        have: elig.habit_have) %>
+                <% end %>
+                <% if elig.missing_camps %>
+                  <%= t("settings.commitment.eligibility.camps",
+                        name: t("v2_onboarding.commitment_presets.#{key}"),
+                        need: elig.camp_need,
+                        have: elig.camp_have) %>
+                <% end %>
+              </span>
+            </div>
+          <% else %>
+            <%= button_to t("settings.commitment.preset_label",
+                  name: t("v2_onboarding.commitment_presets.#{key}"),
+                  habits: preset[:habit_count],
+                  battles: preset[:battle_count]),
+                  commitment_settings_path,
+                  method: :patch,
+                  params: { commitment_key: key },
+                  class: "lp-settings-commitment__btn#{' is-active' if active}",
+                  form: { data: { turbo: false } } %>
+          <% end %>
         <% end %>
       </div>
 

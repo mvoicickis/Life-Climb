@@ -457,6 +457,9 @@ de:
       level_up_accept: "Zu %{name} wechseln"
       level_up_keep: "%{name} behalten"
       level_up_done: "Commitment auf %{name} gesetzt."
+      eligibility:
+        habits: "%{name} braucht %{need} Heute-Gewohnheiten — du hast %{have}."
+        camps: "%{name} braucht %{need} geplante Camps — du hast %{have}."
   climb:
     streak:
       chip: "%{count} Tage"
@@ -751,6 +754,11 @@ de:
       save_custom: "Eigenes speichern"
       updated: "Tägliches Commitment aktualisiert."
       need_journey: "Starte zuerst einen Berg."
+      eligibility:
+        habits: "%{name} braucht %{need} Heute-Gewohnheiten — du hast %{have}."
+        camps: "%{name} braucht %{need} geplante Camps — du hast %{have}."
+        open_habits: "Habits öffnen"
+        open_mountain: "Mountain öffnen"
     notifications:
       row_label: "Benachrichtigungen"
       title: "Benachrichtigungen"
@@ -1003,6 +1011,7 @@ de:
     commitment_lead: "Gewinne so viele zeitgebundene Kämpfe und grüne Gewohnheiten pro Tag. Später änderbar."
     commitment_counts: "%{habits} Gewohnheiten + %{battles} Kämpfe"
     commitment_skip: "Erstmal überspringen"
+    commitment_locked: "Braucht %{habits} Heute-Gewohnheiten und %{camps} geplante Camps — nach dem Setup freischaltbar."
     commitment_presets:
       easy: "Leicht"
       medium: "Mittel"

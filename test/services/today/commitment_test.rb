@@ -16,6 +16,58 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     assert_equal 1, @journey.commitment_battle_count
   end
 
+  test "camp_capacity counts nested leaf and bare path camps; ignores completed and nil journey" do
+    assert_equal 0, Today::Commitment.camp_capacity(nil)
+
+    # seed_climb! creates one incomplete nested leaf under a path camp → 1
+    assert_equal 1, Today::Commitment.camp_capacity(@journey)
+
+    goal = @user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+    plan = goal.children.for_kind("plan").ordered.first
+
+    path_a = plan.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "project", title: "Bare path A", position: 10
+    )
+    path_b = plan.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "project", title: "Bare path B", position: 11
+    )
+    assert path_a.path_level_camp?
+    assert path_b.path_level_camp?
+    assert_equal 3, Today::Commitment.camp_capacity(@journey)
+
+    leaf = path_a.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "project", title: "Nested under A", position: 0
+    )
+    assert leaf.nested_leaf_camp?
+    # path_a no longer bare; leaf counts instead → still 3 (seed leaf + path_b + new leaf)
+    assert_equal 3, Today::Commitment.camp_capacity(@journey)
+
+    leaf.update!(completed_at: Time.current)
+    assert_equal 2, Today::Commitment.camp_capacity(@journey)
+  end
+
+  test "eligible_for Easy always; Medium needs 3 habits and 3 camps" do
+    assert Today::Commitment.eligible_for?(user: @user, key: "easy", journey: @journey)
+    assert Today::Commitment.eligible_for?(user: @user, key: "easy", journey: nil)
+
+    elig = Today::Commitment.eligibility(user: @user, key: "medium", journey: @journey)
+    assert_not elig.eligible?
+    assert elig.missing_habits
+    assert elig.missing_camps
+
+    seed_today_habits!(3)
+    elig = Today::Commitment.eligibility(user: @user, key: "medium", journey: @journey)
+    assert_not elig.eligible?
+    assert_not elig.missing_habits
+    assert elig.missing_camps
+
+    ensure_camp_capacity!(3)
+    assert Today::Commitment.eligible_for?(user: @user, key: "medium", journey: @journey)
+  end
+
   test "counts only timed completed battles and requires full N/N" do
     habit = @user.habits.create!(
       name: "Water", unit: "glasses", points: 5, frequency: "daily",
@@ -32,7 +84,13 @@ class Today::CommitmentTest < ActiveSupport::TestCase
       completed_at: Time.current, position: 2
     )
 
-    Today::Commitment.apply_preset!(@journey, "medium")
+    # Selection gate is separate — set Medium counts directly to assert progress math.
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
     progress = Today::Commitment.progress(user: @user, journey: @journey)
 
     assert_equal 1, progress.habit_done
@@ -56,11 +114,60 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     assert_equal 0, progress.battle_done
   end
 
-  test "touch_met_streak increments on consecutive met days and suggests level up" do
-    habit = @user.habits.create!(
-      name: "Water", unit: "glasses", points: 5, frequency: "daily",
-      active: true, show_on_home: true, quantity_checkin: false
+  test "apply_preset and level_up refuse ineligible upgrades; same-tier reapply allowed" do
+    assert_raises(Today::Commitment::IneligibleError) do
+      Today::Commitment.apply_preset!(@journey, "medium")
+    end
+    assert_equal "easy", @journey.reload.commitment_key
+
+    Today::Commitment.apply_preset!(@journey, "easy")
+    assert_equal "easy", @journey.reload.commitment_key
+
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
     )
+    Today::Commitment.apply_preset!(@journey, "medium")
+    assert_equal "medium", @journey.reload.commitment_key
+
+    assert_not Today::Commitment.level_up_preset!(@journey)
+    assert_equal "medium", @journey.reload.commitment_key
+  end
+
+  test "no demotion when habits drop after already on Medium" do
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+    @user.habits.active.on_home.destroy_all
+    @journey.update!(updated_at: Time.current)
+    assert_equal "medium", @journey.reload.commitment_key
+    assert_equal 3, @journey.commitment_habit_count
+  end
+
+  test "suggest_level_up false when next tier ineligible despite streak; true when eligible" do
+    seed_today_habits!(1)
+    @journey.update!(
+      commitment_met_streak_days: 3,
+      commitment_met_on: Date.current,
+      commitment_level_up_declined_on: nil
+    )
+    assert_not Today::Commitment.suggest_level_up?(journey: @journey)
+
+    seed_today_habits!(3)
+    ensure_camp_capacity!(3)
+    assert Today::Commitment.suggest_level_up?(journey: @journey.reload)
+  end
+
+  test "touch_met_streak increments on consecutive met days and suggests level up when eligible" do
+    seed_today_habits!(3)
+    ensure_camp_capacity!(3)
+
+    habit = @user.habits.active.on_home.where(quantity_checkin: false).first!
     3.times do |offset|
       date = Date.current - (2 - offset)
       habit.completions.find_or_create_by!(completed_on: date) do |completion|
@@ -70,7 +177,7 @@ class Today::CommitmentTest < ActiveSupport::TestCase
       @user.daily_todos.create!(
         title: "Fight #{date}", scheduled_on: date, aspect_key: "career",
         completed_at: Time.zone.parse("#{date} 10:00"),
-        start_time: "09:00", end_time: "10:00", position: offset + 1
+        start_time: "09:00", end_time: "10:00", position: 200 + offset
       )
       Today::Commitment.touch_met_streak!(user: @user, journey: @journey.reload, date: date)
     end
@@ -86,5 +193,30 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     assert Today::Commitment.level_up_preset!(@journey)
     assert_equal "medium", @journey.reload.commitment_key
     assert_equal 3, @journey.commitment_habit_count
+  end
+
+  private
+
+  def seed_today_habits!(count)
+    have = @user.habits.active.on_home.count
+    (have + 1).upto(count) do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
+  end
+
+  def ensure_camp_capacity!(needed)
+    while Today::Commitment.camp_capacity(@journey) < needed
+      goal = @user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+      plan = goal.children.for_kind("plan").ordered.first
+      plan.children.create!(
+        user: @user, life_area: @journey.life_area, life_journey: @journey,
+        horizon: "project",
+        title: "Bare camp #{SecureRandom.hex(3)}",
+        position: plan.children.maximum(:position).to_i + 1
+      )
+    end
   end
 end

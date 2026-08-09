@@ -35,14 +35,23 @@ class V2OnboardingCommitmentTest < ActionDispatch::IntegrationTest
     assert_equal 1, journey.commitment_battle_count
   end
 
-  test "choosing Medium persists on journey after deadline" do
+  test "Medium and Hard radios are disabled when ineligible; Easy stays selectable" do
+    get v2_onboarding_path(step: "commitment")
+    assert_response :success
+    assert_select "input[name='onboarding[commitment_key]'][value=easy]:not([disabled])"
+    assert_select "input[name='onboarding[commitment_key]'][value=medium][disabled]"
+    assert_select "input[name='onboarding[commitment_key]'][value=hard][disabled]"
+    assert_match(/Needs 3 Today habits and 3 planned camps/i, response.body)
+  end
+
+  test "cheating Medium in session is forced to Easy at deadline" do
     patch v2_onboarding_url(step: "commitment"), params: { onboarding: { commitment_key: "medium" } }
     patch v2_onboarding_url(step: "deadline")
 
     journey = User.find_by!(email_address: "commit-skip@example.com").primary_focused_journey
-    assert_equal "medium", journey.commitment_key
-    assert_equal "Medium", journey.commitment_name
-    assert_equal 3, journey.commitment_habit_count
-    assert_equal 3, journey.commitment_battle_count
+    assert_equal "easy", journey.commitment_key
+    assert_equal 1, journey.commitment_habit_count
+    assert_equal 1, journey.commitment_battle_count
   end
 end
+

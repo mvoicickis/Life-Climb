@@ -71,11 +71,60 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "level up accept moves Easy to Medium and decline suppresses for the day" do
+  test "level up prompt hidden when next tier ineligible despite streak" do
     habit = @user.habits.create!(
       name: "Water", unit: "glasses", points: 5, frequency: "daily",
       active: true, show_on_home: true, quantity_checkin: false
     )
+    habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: habit.points)
+    @user.daily_todos.create!(
+      title: "Timed fight", scheduled_on: Date.current, aspect_key: "career",
+      completed_at: Time.current, start_time: "09:00", end_time: "10:00", position: 1
+    )
+    @journey.update!(
+      commitment_key: "easy",
+      commitment_name: "Easy",
+      commitment_habit_count: 1,
+      commitment_battle_count: 1,
+      commitment_met_streak_days: 2,
+      commitment_met_on: Date.yesterday,
+      commitment_level_up_declined_on: nil
+    )
+
+    get dashboard_path
+    assert_response :success
+    assert_equal 3, @journey.reload.commitment_met_streak_days
+    assert_select "[data-commitment-level-up]", count: 0
+  end
+
+  test "level up accept moves Easy to Medium when eligible and decline suppresses for the day" do
+    3.times do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.create!(
+      user: @user, life_area: @journey.life_area, life_journey: @journey,
+      horizon: "plan", title: "More plans", position: 5
+    )
+    2.times do |n|
+      plan.children.create!(
+        user: @user, life_area: @journey.life_area, life_journey: @journey,
+        horizon: "project", title: "Bare #{n}", position: n
+      )
+    end
+    # Onboarding::Run may not seed camps — ensure capacity via path camps above + any existing.
+    while Today::Commitment.camp_capacity(@journey) < 3
+      plan.children.create!(
+        user: @user, life_area: @journey.life_area, life_journey: @journey,
+        horizon: "project", title: "Bare extra #{SecureRandom.hex(2)}",
+        position: plan.children.maximum(:position).to_i + 1
+      )
+    end
+
+    habit = @user.habits.active.on_home.where(quantity_checkin: false).first!
     habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: habit.points)
     @user.daily_todos.create!(
       title: "Timed fight", scheduled_on: Date.current, aspect_key: "career",
@@ -112,3 +161,4 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     assert_equal "medium", @journey.reload.commitment_key
   end
 end
+

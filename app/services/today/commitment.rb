@@ -11,6 +11,15 @@ module Today
 
     LEVEL_UP_DAYS = 3
 
+    class IneligibleError < StandardError
+      attr_reader :eligibility
+
+      def initialize(eligibility)
+        @eligibility = eligibility
+        super("Commitment tier ineligible")
+      end
+    end
+
     Progress = Struct.new(
       :habit_required, :habit_done, :battle_required, :battle_done,
       :habit_green_ids, :battle_ids, :met, :journey,
@@ -18,6 +27,16 @@ module Today
     ) do
       def met?
         met
+      end
+    end
+
+    Eligibility = Struct.new(
+      :eligible, :key, :habit_have, :habit_need, :camp_have, :camp_need,
+      :missing_habits, :missing_camps,
+      keyword_init: true
+    ) do
+      def eligible?
+        eligible
       end
     end
 
@@ -33,12 +52,82 @@ module Today
       new(user: journey.user, journey:, date:).suggest_level_up?
     end
 
+    def self.eligibility(user:, key:, journey: nil)
+      key = key.to_s
+      return ineligible_unknown(key) unless PRESETS.key?(key)
+
+      eligibility_for_counts(
+        user: user,
+        journey: journey,
+        habit_count: PRESETS[key][:habit_count],
+        battle_count: PRESETS[key][:battle_count],
+        key: key
+      )
+    end
+
+    def self.eligible_for?(user:, key:, journey: nil)
+      eligibility(user:, key:, journey:).eligible?
+    end
+
+    def self.eligibility_for_counts(user:, journey:, habit_count:, battle_count:, key: "custom")
+      habit_need = habit_count.to_i
+      camp_need = battle_count.to_i
+      habit_have = user.habits.active.on_home.count
+      camp_have = camp_capacity(journey)
+
+      easy = PRESETS.fetch("easy")
+      bootstrap = habit_need <= easy[:habit_count] && camp_need <= easy[:battle_count]
+
+      missing_habits = !bootstrap && habit_have < habit_need
+      missing_camps = !bootstrap && camp_have < camp_need
+      eligible = bootstrap || (!missing_habits && !missing_camps)
+
+      Eligibility.new(
+        eligible: eligible,
+        key: key.to_s,
+        habit_have: habit_have,
+        habit_need: habit_need,
+        camp_have: camp_have,
+        camp_need: camp_need,
+        missing_habits: missing_habits,
+        missing_camps: missing_camps
+      )
+    end
+
+    # Incomplete day-capable camps under the journey spine.
+    # Nested leaf camps count; path-level camps with no nested project child count as 1.
+    def self.camp_capacity(journey)
+      return 0 if journey.blank?
+
+      user = journey.user
+      goal = user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      return 0 if goal.blank?
+
+      capacity = 0
+      each_project_under(goal) do |node|
+        next if node.completed?
+
+        if node.nested_leaf_camp?
+          capacity += 1
+        elsif node.path_level_camp? && node.children.none?(&:project?)
+          capacity += 1
+        end
+      end
+      capacity
+    end
+
     def self.apply_preset!(journey, key)
-      preset = PRESETS[key.to_s]
+      key = key.to_s
+      preset = PRESETS[key]
       raise ArgumentError, "unknown commitment key #{key.inspect}" unless preset
 
+      unless key == "easy" || key == journey.commitment_key.to_s
+        elig = eligibility(user: journey.user, key: key, journey: journey)
+        raise IneligibleError, elig unless elig.eligible?
+      end
+
       journey.update!(
-        commitment_key: key.to_s,
+        commitment_key: key,
         commitment_name: preset[:name],
         commitment_habit_count: preset[:habit_count],
         commitment_battle_count: preset[:battle_count],
@@ -53,9 +142,12 @@ module Today
       else nil
       end
       return false if next_key.blank?
+      return false unless eligible_for?(user: journey.user, key: next_key, journey: journey)
 
       apply_preset!(journey, next_key)
       true
+    rescue IneligibleError
+      false
     end
 
     def self.decline_level_up!(journey, date: Date.current)
@@ -63,13 +155,31 @@ module Today
     end
 
     def self.apply_custom!(journey, name:, habit_count:, battle_count:)
+      habit_count = habit_count.to_i.clamp(0, 20)
+      battle_count = battle_count.to_i.clamp(0, 20)
+      elig = eligibility_for_counts(
+        user: journey.user,
+        journey: journey,
+        habit_count: habit_count,
+        battle_count: battle_count,
+        key: "custom"
+      )
+      raise IneligibleError, elig unless elig.eligible?
+
       journey.update!(
         commitment_key: "custom",
         commitment_name: name.to_s.strip.presence || "Custom",
-        commitment_habit_count: habit_count.to_i.clamp(0, 20),
-        commitment_battle_count: battle_count.to_i.clamp(0, 20),
+        commitment_habit_count: habit_count,
+        commitment_battle_count: battle_count,
         commitment_level_up_declined_on: nil
       )
+    end
+
+    def self.next_level_key(journey)
+      case journey.commitment_key.to_s
+      when "easy" then "medium"
+      when "medium" then "hard"
+      end
     end
 
     def initialize(user:, journey:, date: Date.current)
@@ -134,8 +244,39 @@ module Today
       return false if @journey.commitment_level_up_declined_on == @date
       return false if @journey.commitment_met_streak_days.to_i < LEVEL_UP_DAYS
 
+      next_key = self.class.next_level_key(@journey)
+      return false if next_key.blank?
+      return false unless self.class.eligible_for?(user: @user, key: next_key, journey: @journey)
+
       true
     end
+
+    # Walk Goal → Plan → Project spine (and nested project camps).
+    def self.each_project_under(node, &block)
+      node.children.ordered.each do |child|
+        if child.project?
+          yield child
+          each_project_under(child, &block)
+        elsif child.plan?
+          each_project_under(child, &block)
+        end
+      end
+    end
+    private_class_method :each_project_under
+
+    def self.ineligible_unknown(key)
+      Eligibility.new(
+        eligible: false,
+        key: key,
+        habit_have: 0,
+        habit_need: 0,
+        camp_have: 0,
+        camp_need: 0,
+        missing_habits: true,
+        missing_camps: true
+      )
+    end
+    private_class_method :ineligible_unknown
 
     private
 

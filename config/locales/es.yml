@@ -457,6 +457,9 @@ es:
       level_up_accept: "Pasar a %{name}"
       level_up_keep: "Mantener %{name}"
       level_up_done: "Compromiso fijado en %{name}."
+      eligibility:
+        habits: "%{name} necesita %{need} hábitos en Hoy — tienes %{have}."
+        camps: "%{name} necesita %{need} campamentos planificados — tienes %{have}."
   climb:
     streak:
       chip: "%{count} días"
@@ -751,6 +754,11 @@ es:
       save_custom: "Guardar personalizado"
       updated: "Compromiso diario actualizado."
       need_journey: "Empieza una montaña primero."
+      eligibility:
+        habits: "%{name} necesita %{need} hábitos en Hoy — tienes %{have}."
+        camps: "%{name} necesita %{need} campamentos planificados — tienes %{have}."
+        open_habits: "Abrir Hábitos"
+        open_mountain: "Abrir Montaña"
     notifications:
       row_label: "Notificaciones"
       title: "Notificaciones"
@@ -1003,6 +1011,7 @@ es:
     commitment_lead: "Gana tantas batallas con hora y hábitos en verde cada día. Puedes cambiarlo luego."
     commitment_counts: "%{habits} hábitos + %{battles} batallas"
     commitment_skip: "Omitir por ahora"
+    commitment_locked: "Necesita %{habits} hábitos en Hoy y %{camps} campamentos planificados — se desbloquea después de la configuración."
     commitment_presets:
       easy: "Fácil"
       medium: "Medio"

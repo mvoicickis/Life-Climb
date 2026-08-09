@@ -4738,6 +4738,12 @@ html[data-theme="dark"] {
   box-shadow: 0 0 0 1px rgba(87, 211, 91, 0.25);
 }
 
+.lp-adventure__commitment-card.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .lp-adventure__commitment-radio {
   position: absolute;
   opacity: 0;
@@ -4754,6 +4760,14 @@ html[data-theme="dark"] {
   font-size: 0.85rem;
   font-weight: 650;
   color: var(--lp-muted);
+}
+
+.lp-adventure__commitment-lock {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+  line-height: 1.35;
 }
 
 .lp-adventure__skip {
@@ -4791,6 +4805,21 @@ html[data-theme="dark"] {
 .lp-settings-commitment__btn.is-active {
   border-color: rgba(87, 211, 91, 0.55);
   color: #57d35b;
+}
+
+.lp-settings-commitment__btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.lp-settings-commitment__lock {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+  line-height: 1.35;
 }
 
 .lp-settings-commitment__counts {

@@ -461,6 +461,9 @@ ru:
       level_up_accept: "Перейти на %{name}"
       level_up_keep: "Оставить %{name}"
       level_up_done: "Обязательство: %{name}."
+      eligibility:
+        habits: "%{name}: нужно %{need} привычек на Сегодня — у тебя %{have}."
+        camps: "%{name}: нужно %{need} запланированных лагерей — у тебя %{have}."
   climb:
     streak:
       chip: "%{count} дн."
@@ -761,6 +764,11 @@ ru:
       save_custom: "Сохранить своё"
       updated: "Дневное обязательство обновлено."
       need_journey: "Сначала начни гору."
+      eligibility:
+        habits: "%{name}: нужно %{need} привычек на Сегодня — у тебя %{have}."
+        camps: "%{name}: нужно %{need} запланированных лагерей — у тебя %{have}."
+        open_habits: "Открыть Привычки"
+        open_mountain: "Открыть Гору"
     notifications:
       row_label: "Уведомления"
       title: "Уведомления"
@@ -1013,6 +1021,7 @@ ru:
     commitment_lead: "Выигрывай столько битв со временем и зелёных привычек каждый день. Потом можно изменить."
     commitment_counts: "%{habits} привычек + %{battles} битв"
     commitment_skip: "Пропустить пока"
+    commitment_locked: "Нужно %{habits} привычек на Сегодня и %{camps} запланированных лагерей — откроется после настройки."
     commitment_presets:
       easy: "Лёгкий"
       medium: "Средний"
