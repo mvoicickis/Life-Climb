@@ -432,6 +432,15 @@ ru:
       hours_minutes_free: "%{hours} ч %{minutes} мин свободно"
       ledger_miss: "Пропуск «%{title}» (−%{amount} AP)"
       ledger_shielded: "Щит закрыл пропуск «%{title}»"
+    add_step:
+      cta: "Добавить шаг"
+      title_label: "Шаг"
+      placeholder: "Какой следующий шаг?"
+      save: "Сохранить шаг"
+      need_title: "Сначала назови шаг."
+      need_journey: "Начни гору, прежде чем добавлять шаги."
+      need_spine: "Сначала построй путь на горе."
+      already_linked: "У этой битвы уже есть место для чеклиста."
     anytime:
       title: "В любое время"
       hint: "Привычки — отмечай их когда угодно сегодня."

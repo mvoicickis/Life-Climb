@@ -72,6 +72,36 @@ class DailyTodosController < ApplicationController
     redirect_to dashboard_path
   end
 
+  # Today entry for checklist steps when the battle has no strategy_goal yet.
+  def create_step
+    todo = current_user.daily_todos.find(params[:id])
+    title = params.require(:title).to_s.strip
+    if title.blank?
+      redirect_to dashboard_path, alert: t("dash.add_step.need_title"), status: :see_other
+      return
+    end
+
+    day = nil
+    ActiveRecord::Base.transaction do
+      day = Strategy::EnsureDayForTodo.call(todo: todo)
+      position = (day.practice_tasks.maximum(:position) || -1) + 1
+      day.practice_tasks.create!(
+        user: current_user,
+        title: title,
+        position: position
+      )
+    end
+
+    Strategy::CascadeToDaily.call(user: current_user, life_area: day.life_area)
+    redirect_to dashboard_path, status: :see_other
+  rescue Strategy::EnsureDayForTodo::Error => e
+    redirect_to dashboard_path, alert: e.message, status: :see_other
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to dashboard_path,
+                alert: e.record.errors.full_messages.to_sentence.presence || t("strategy.rpg.objective_add_failed"),
+                status: :see_other
+  end
+
   private
 
   def todo_time_params

@@ -3,7 +3,8 @@
   todo = local_assigns.fetch(:todo)
   quest = todo.quest?
   day = todo.strategy_goal
-  tasks = quest ? (day&.practice_tasks&.sort_by { |t| [ t.position.to_i, t.id ] } || []) : []
+  tasks = day&.practice_tasks&.sort_by { |t| [ t.position.to_i, t.id ] } || []
+  tasks = [] unless quest
   shell_ready = !quest || tasks.all?(&:completed?)
   qty_project = (!quest && day&.quantified_path_project) || nil
   icon = quest ? "map" : "sword"
@@ -14,6 +15,7 @@
     ("is-shielded-miss" if todo.miss_shielded?),
     ("is-quest" if quest)
   ].compact.join(" ")
+  add_step_url = day ? strategy_goal_practice_tasks_path(day) : create_step_daily_todo_path(todo)
 %>
 <article class="<%= card_class %>"
          data-todo-id="<%= todo.id %>"
@@ -150,6 +152,43 @@
     </ul>
   <% end %>
 
+  <% unless todo.completed? %>
+    <div class="lp-dash-tcard__add-step" data-controller="add-step">
+      <button type="button"
+              class="lp-dash-tcard__add-step-btn"
+              data-add-step-target="trigger"
+              data-action="add-step#open">
+        <%= t("dash.add_step.cta") %>
+      </button>
+      <div class="lp-dash-tcard__add-step-panel" data-add-step-target="panel" hidden>
+        <%= form_with url: add_step_url,
+              method: :post,
+              class: "lp-dash-tcard__add-step-form",
+              data: { turbo: false } do %>
+          <% if day %>
+            <%= hidden_field_tag :return_to, "today" %>
+          <% end %>
+          <label>
+            <span class="sr-only"><%= t("dash.add_step.title_label") %></span>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  class: "lp-dash-tcard__add-step-input",
+                  placeholder: t("dash.add_step.placeholder"),
+                  autocomplete: "off",
+                  data: { add_step_target: "title" } %>
+          </label>
+          <div class="lp-dash-tcard__add-step-actions">
+            <%= submit_tag t("dash.add_step.save"), class: "lp-dash-tcard__win" %>
+            <button type="button" class="lp-dash-tcard__add-step-cancel" data-action="add-step#close">
+              <%= t("dash.timeline.cancel") %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <% unless todo.timed? || todo.completed? %>
     <div class="lp-dash-tcard__set-time" data-controller="set-time">
       <button type="button"
@@ -166,7 +205,10 @@
               data: { turbo: false } do |form| %>
           <label>
             <span><%= t("dash.timeline.start_time") %></span>
-            <%= form.time_field :start_time, required: true, class: "lp-dash-tcard__time-input" %>
+            <%= form.time_field :start_time,
+                  value: (todo.start_time || Time.current).strftime("%H:%M"),
+                  required: true,
+                  class: "lp-dash-tcard__time-input" %>
           </label>
           <label>
             <span><%= t("dash.timeline.end_time") %></span>

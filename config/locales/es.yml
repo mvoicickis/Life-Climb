@@ -428,6 +428,15 @@ es:
       hours_minutes_free: "%{hours}h %{minutes}m libres"
       ledger_miss: "Perdiste “%{title}” (−%{amount} AP)"
       ledger_shielded: "El escudo bloqueó un fallo en “%{title}”"
+    add_step:
+      cta: "Añadir paso"
+      title_label: "Paso"
+      placeholder: "¿Cuál es el siguiente paso?"
+      save: "Guardar paso"
+      need_title: "Ponle nombre al paso primero."
+      need_journey: "Empieza una montaña antes de añadir pasos."
+      need_spine: "Construye tu ruta antes de añadir pasos."
+      already_linked: "Esa batalla ya tiene un hogar de checklist."
     anytime:
       title: "Cuando sea"
       hint: "Hábitos — gánalos cuando quieras hoy."

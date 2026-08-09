@@ -27,12 +27,12 @@ class PracticeTasksController < ApplicationController
     assign_quest_stream!(practice)
     respond_to do |format|
       format.turbo_stream { render :create }
-      format.html { redirect_to mountain_focus_path(practice), status: :see_other }
+      format.html { redirect_to after_create_path(practice), status: :see_other }
     end
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   rescue ActiveRecord::RecordInvalid => e
-    redirect_to mountain_focus_path(practice),
+    redirect_to after_create_path(practice),
                 alert: e.record.errors.full_messages.to_sentence.presence || t("strategy.rpg.objective_add_failed"),
                 status: :see_other
   end
@@ -184,6 +184,14 @@ class PracticeTasksController < ApplicationController
 
   def shift_siblings_from!(practice, position)
     practice.practice_tasks.where("position >= ?", position).update_all("position = position + 1")
+  end
+
+  def return_to_today?
+    params[:return_to].to_s == "today"
+  end
+
+  def after_create_path(practice)
+    return_to_today? ? dashboard_path : mountain_focus_path(practice)
   end
 
   def mountain_focus_path(practice)

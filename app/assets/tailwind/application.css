@@ -5016,12 +5016,15 @@ html[data-theme="dark"] {
   min-width: 0;
 }
 
-.lp-dash-tcard__set-time {
+.lp-dash-tcard__set-time,
+.lp-dash-tcard__add-step {
   padding-left: 2rem;
 }
 
 .lp-dash-tcard__set-time-btn,
-.lp-dash-tcard__set-time-cancel {
+.lp-dash-tcard__set-time-cancel,
+.lp-dash-tcard__add-step-btn,
+.lp-dash-tcard__add-step-cancel {
   background: none;
   border: 0;
   padding: 0;
@@ -5032,6 +5035,31 @@ html[data-theme="dark"] {
   text-underline-offset: 0.15em;
   cursor: pointer;
   min-height: 44px;
+}
+
+.lp-dash-tcard__add-step-form {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.lp-dash-tcard__add-step-input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-border);
+  background: transparent;
+  color: var(--lp-ink);
+  padding: 0.35rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.lp-dash-tcard__add-step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .lp-dash-tcard__set-time-form {

@@ -428,6 +428,15 @@ de:
       hours_minutes_free: "%{hours} Std. %{minutes} Min. frei"
       ledger_miss: "„%{title}“ verpasst (−%{amount} AP)"
       ledger_shielded: "Schild hat einen Fehlversuch bei „%{title}“ blockiert"
+    add_step:
+      cta: "Schritt hinzufügen"
+      title_label: "Schritt"
+      placeholder: "Was ist der nächste Schritt?"
+      save: "Schritt speichern"
+      need_title: "Benenne zuerst den Schritt."
+      need_journey: "Starte einen Berg, bevor du Schritte hinzufügst."
+      need_spine: "Baue zuerst deinen Bergpfad."
+      already_linked: "Dieser Kampf hat bereits eine Checklisten-Heimat."
     anytime:
       title: "Jederzeit"
       hint: "Gewohnheiten — heute jederzeit gewinnen."

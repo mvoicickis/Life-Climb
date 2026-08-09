@@ -428,6 +428,15 @@ lv:
       hours_minutes_free: "%{hours}h %{minutes}m brīvs"
       ledger_miss: "Izlaists “%{title}” (−%{amount} AP)"
       ledger_shielded: "Vairogs bloķēja izlaidumu: “%{title}”"
+    add_step:
+      cta: "Pievienot soli"
+      title_label: "Solis"
+      placeholder: "Kāds ir nākamais solis?"
+      save: "Saglabāt soli"
+      need_title: "Vispirms nosauc soli."
+      need_journey: "Sāc kalnu, pirms pievieno soļus."
+      need_spine: "Izveido kalna ceļu, pirms pievieno soļus."
+      already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
       title: "Jebkurā laikā"
       hint: "Ieradumi — uzvari tos jebkurā brīdī šodien."
