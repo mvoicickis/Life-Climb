@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   resources :daily_todos, only: %i[ create update destroy ] do
     member do
       post :complete
+      post :create_step
     end
   end
   resource :battle_completion, only: :create, controller: "battle_completions"

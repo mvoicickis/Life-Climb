@@ -92,6 +92,15 @@ en:
       hours_minutes_free: "%{hours}h %{minutes}m free"
       ledger_miss: "Missed “%{title}” (−%{amount} AP)"
       ledger_shielded: "Shield blocked a miss on “%{title}”"
+    add_step:
+      cta: "Add step"
+      title_label: "Step"
+      placeholder: "What’s the next step?"
+      save: "Save step"
+      need_title: "Name the step first."
+      need_journey: "Start a mountain before adding steps."
+      need_spine: "Build your mountain path before adding steps."
+      already_linked: "That battle already has a checklist home."
     anytime:
       title: "Anytime"
       hint: "Habits — win them whenever today."
