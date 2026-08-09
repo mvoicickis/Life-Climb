@@ -48,4 +48,3 @@ class Area < ApplicationRecord
     Habit.where(area_id: id).update_all(state: nil, updated_at: Time.current)
   end
 end
-

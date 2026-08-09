@@ -84,7 +84,7 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Fogged", position: 1
     )
-    # Ensure Resume is current via incomplete @folder's parent still current... 
+    # Ensure Resume is current via incomplete @folder's parent still current...
     # After completing @section, trail current moves; create an active current:
     current = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
