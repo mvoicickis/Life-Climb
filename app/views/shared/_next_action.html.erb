@@ -1,6 +1,6 @@
 <%# Persistent "what next" banner from Strategy::NextAction.
     locals: next_action, day_shield (optional), commitment (optional),
-            open_reveal (optional), planned_battles (optional) %>
+            open_reveal (optional), planned_battles (optional), gap_notice (optional) %>
 <% next_action = local_assigns[:next_action] || @next_action %>
 <% commitment = local_assigns[:commitment] || @commitment %>
 <% if next_action.present? %>
@@ -11,7 +11,8 @@
           next_action: next_action,
           commitment: commitment,
           open_reveal: local_assigns[:open_reveal] || @open_reveal,
-          planned_battles: local_assigns[:planned_battles] || @planned_battles %>
+          planned_battles: local_assigns[:planned_battles] || @planned_battles,
+          gap_notice: local_assigns[:gap_notice] || @gap_notice %>
   <% else %>
     <% headline = Strategy::NextAction::Copy.headline_for(
           key: next_action.key,

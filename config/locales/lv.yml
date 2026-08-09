@@ -115,6 +115,8 @@ lv:
         need_room: "Vajag vairāk vietas plānošanai? Atvērt Kalnu"
         need_title: "Vispirms nosauc cīņu."
         need_end_time: "Izvēlies beigu laiku."
+        close_reveal: "Aizvērt"
+        unfiled_tracker_nudge: "Saglabāts pie Unfiled Trackers — jebkurā brīdī ievieto Area."
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
       fight_battle_cta: "Pievienot šodienas kauju"
@@ -437,6 +439,8 @@ lv:
       time_save_failed: "Neizdevās saglabāt laiku."
       need_both_times: "Pievieno gan sākuma, gan beigu laiku."
       end_after_start: "Beigu laikam jābūt pēc sākuma."
+      remove: "Noņemt"
+      remove_confirm: "Noņemt šo kauju no Today?"
       stats_pill: "Sērija un darba punkti"
       hours_free:
         one: "%{count}h brīvs"

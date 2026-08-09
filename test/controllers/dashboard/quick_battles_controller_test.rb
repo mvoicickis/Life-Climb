@@ -51,6 +51,26 @@ class Dashboard::QuickBattlesControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{data-battles-count[^>]*>0/3}, response.body)
   end
 
+  test "zero-spine create turbo-updates surface from plan-route to timeline" do
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    assert goal.children.for_kind("plan").none?, "precondition: no plans"
+
+    post dashboard_quick_battles_path,
+         params: {
+           title: "Ship auth",
+           end_time: (Time.current + 1.hour).strftime("%H:%M"),
+           open_reveal: "battle"
+         },
+         as: :turbo_stream
+    assert_response :success
+
+    assert_match(/today-battle-surface/, response.body)
+    assert_match(/Ship auth/, response.body)
+    assert_match(/lp-dash-timeline/, response.body)
+    assert_no_match(/is-first-climb/, response.body)
+    assert_match(/planned, not won yet/, response.body)
+  end
+
   test "rejects blank end_time without creating an untimed battle" do
     before = @user.daily_todos.for_day(Date.current).count
 

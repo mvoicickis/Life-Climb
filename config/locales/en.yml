@@ -82,6 +82,8 @@ en:
       time_save_failed: "Couldn’t save that time."
       need_both_times: "Add both a start and end time."
       end_after_start: "End time must be after start time."
+      remove: "Remove"
+      remove_confirm: "Remove this battle from Today?"
       stats_pill: "Streak and Action Points"
       hours_free:
         one: "%{count}h free"
@@ -994,6 +996,8 @@ en:
         need_room: "Need more room to plan? Open Mountain"
         need_title: "Name the battle first."
         need_end_time: "Pick when it ends."
+        close_reveal: "Close"
+        unfiled_tracker_nudge: "Logged under Unfiled Trackers — file into an Area anytime."
     next_up:
       kicker: "Next up"
       create_goal_title: "Lock your season goal"

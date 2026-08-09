@@ -4662,6 +4662,41 @@ html[data-theme="dark"] {
   min-width: 0;
 }
 
+.lp-commitment-gap__form.is-habit-stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.lp-commitment-gap__plus.is-open {
+  border-color: rgba(143, 163, 153, 0.7);
+}
+
+.lp-commitment-gap__qty-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--lp-muted);
+  cursor: pointer;
+}
+
+.lp-commitment-gap__qty-title {
+  display: block;
+  font-weight: 700;
+  color: var(--lp-ink);
+}
+
+.lp-commitment-gap__unit[hidden] {
+  display: none !important;
+}
+
+.lp-commitment-gap__notice {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
 .lp-commitment-gap__time-row {
   display: flex;
   flex-wrap: wrap;
@@ -4686,6 +4721,7 @@ html[data-theme="dark"] {
 .lp-commitment-gap__planned li {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.35rem;
   font-size: 0.75rem;
   color: var(--lp-muted);
@@ -5172,31 +5208,29 @@ html[data-theme="dark"] {
 .lp-dash-tcard__objectives {
   list-style: none;
   margin: 0;
-  padding: 0.15rem 0 0;
+  padding: 0.15rem 0 0 2rem;
   display: grid;
   gap: 0.4rem;
 }
 
-.lp-dash-tcard__objective {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.25rem 0.15rem 0.25rem 2rem;
+.lp-dash-tcard__objectives .lp-dash-checklist__obj {
+  padding: 0.15rem 0;
 }
 
-.lp-dash-tcard__objective-track {
-  display: inline;
-  margin-left: 0.35rem;
-  font-style: normal;
-  font-size: 0.78em;
-  color: var(--lp-muted, #64748b);
+.lp-dash-tcard__remove {
+  padding: 0.15rem 0 0 2rem;
 }
 
-.lp-dash-tcard__objective-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  min-width: 0;
+.lp-dash-tcard__remove-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--lp-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
 }
 
 .lp-dash-tcard__set-time,

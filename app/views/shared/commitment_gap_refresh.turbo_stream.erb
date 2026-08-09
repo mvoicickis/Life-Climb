@@ -3,5 +3,9 @@
         next_action: @next_action,
         commitment: @commitment,
         open_reveal: @open_reveal,
-        planned_battles: @planned_battles %>
+        planned_battles: @planned_battles,
+        gap_notice: @gap_notice %>
+<% end %>
+<%= turbo_stream.update "today-battle-surface" do %>
+  <%= render "dashboard/today_battle_surface" %>
 <% end %>
