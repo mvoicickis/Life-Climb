@@ -74,6 +74,9 @@ class V2OnboardingsController < ApplicationController
         draft["commitment_key"].to_s.presence || "easy"
       end
       key = "easy" unless Today::Commitment::PRESETS.key?(key)
+      unless Today::Commitment.eligible_for?(user: current_user, key: key, journey: nil)
+        key = "easy"
+      end
       session[:v2_onboarding] = draft.merge("commitment_key" => key)
       redirect_to v2_onboarding_path(step: "deadline")
     when "deadline"

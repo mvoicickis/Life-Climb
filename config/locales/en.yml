@@ -121,6 +121,9 @@ en:
       level_up_accept: "Move to %{name}"
       level_up_keep: "Keep %{name}"
       level_up_done: "Commitment set to %{name}."
+      eligibility:
+        habits: "%{name} needs %{need} Today habits — you have %{have}."
+        camps: "%{name} needs %{need} planned camps — you have %{have}."
     climb_up: "%{pct}% up the mountain"
     climb_up_html: "%{pct}% up the mountain"
     battle_empty: "Nothing to fight yet — plan the next step on Mountain."
@@ -1361,6 +1364,7 @@ en:
     commitment_lead: "Win this many timed battles and green habits each day. You can change it later."
     commitment_counts: "%{habits} habits + %{battles} battles"
     commitment_skip: "Skip for now"
+    commitment_locked: "Needs %{habits} Today habits and %{camps} planned camps — unlock after setup."
     commitment_presets:
       easy: "Easy"
       medium: "Medium"
@@ -2181,6 +2185,11 @@ en:
       save_custom: "Save custom"
       updated: "Daily commitment updated."
       need_journey: "Start a mountain first."
+      eligibility:
+        habits: "%{name} needs %{need} Today habits — you have %{have}."
+        camps: "%{name} needs %{need} planned camps — you have %{have}."
+        open_habits: "Open Habits"
+        open_mountain: "Open Mountain"
     visibility_title: "What appears on Today"
     visibility_hint: "Turn items on or off. Drag to change order."
     on_today: "On Today"

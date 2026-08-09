@@ -183,12 +183,25 @@
       <%= form_with url: v2_onboarding_path(step: "commitment"), method: :patch, class: "lp-adventure__form lp-adventure__commitment", data: { turbo: false } do %>
         <div class="lp-adventure__commitment-cards" role="radiogroup" aria-label="<%= t("v2_onboarding.commitment_title") %>">
           <% Today::Commitment::PRESETS.each do |key, preset| %>
-            <label class="lp-adventure__commitment-card<%= ' is-selected' if selected_key == key %>">
-              <%= radio_button_tag "onboarding[commitment_key]", key, selected_key == key, class: "lp-adventure__commitment-radio" %>
+            <% elig = Today::Commitment.eligibility(user: current_user, key: key, journey: nil)
+               disabled = !elig.eligible?
+               checked = (!disabled && selected_key == key) || (key == "easy" && !Today::Commitment.eligible_for?(user: current_user, key: selected_key, journey: nil)) %>
+            <label class="lp-adventure__commitment-card<%= ' is-selected' if checked %><%= ' is-disabled' if disabled %>">
+              <%= radio_button_tag "onboarding[commitment_key]", key, checked,
+                    class: "lp-adventure__commitment-radio",
+                    disabled: disabled,
+                    data: { commitment_eligible: elig.eligible? } %>
               <span class="lp-adventure__commitment-name"><%= t("v2_onboarding.commitment_presets.#{key}") %></span>
               <span class="lp-adventure__commitment-meta">
                 <%= t("v2_onboarding.commitment_counts", habits: preset[:habit_count], battles: preset[:battle_count]) %>
               </span>
+              <% if disabled %>
+                <span class="lp-adventure__commitment-lock">
+                  <%= t("v2_onboarding.commitment_locked",
+                        habits: preset[:habit_count],
+                        camps: preset[:battle_count]) %>
+                </span>
+              <% end %>
             </label>
           <% end %>
         </div>

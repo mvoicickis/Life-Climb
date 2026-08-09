@@ -457,6 +457,9 @@ lv:
       level_up_accept: "Pāriet uz %{name}"
       level_up_keep: "Paturēt %{name}"
       level_up_done: "Solījums iestatīts uz %{name}."
+      eligibility:
+        habits: "%{name} vajag %{need} Šodienas ieradumus — tev ir %{have}."
+        camps: "%{name} vajag %{need} plānotas nometnes — tev ir %{have}."
   climb:
     streak:
       chip: "%{count} dienas"
@@ -751,6 +754,11 @@ lv:
       save_custom: "Saglabāt pielāgoto"
       updated: "Dienas solījums atjaunināts."
       need_journey: "Vispirms sāc kalnu."
+      eligibility:
+        habits: "%{name} vajag %{need} Šodienas ieradumus — tev ir %{have}."
+        camps: "%{name} vajag %{need} plānotas nometnes — tev ir %{have}."
+        open_habits: "Atvērt Habitus"
+        open_mountain: "Atvērt Kalnu"
     notifications:
       row_label: "Paziņojumi"
       title: "Paziņojumi"
@@ -1003,6 +1011,7 @@ lv:
     commitment_lead: "Katru dienu uzvari tik daudz laika cīņu un zaļu ieradumu. Vēlāk varēsi mainīt."
     commitment_counts: "%{habits} ieradumi + %{battles} cīņas"
     commitment_skip: "Pagaidām izlaist"
+    commitment_locked: "Vajag %{habits} Šodienas ieradumus un %{camps} plānotas nometnes — atbloķē pēc iestatīšanas."
     commitment_presets:
       easy: "Viegls"
       medium: "Vidējs"
