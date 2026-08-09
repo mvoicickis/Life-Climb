@@ -31,7 +31,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>">
+  <body class="lp-min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>">
     <%= render "shared/admin_banners" %>
     <% if authenticated? && content_for?(:lp_game) %>
       <% unless content_for?(:lp_hide_top_nav) %>

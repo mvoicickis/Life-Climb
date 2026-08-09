@@ -3288,6 +3288,12 @@ html[data-theme="dark"] {
   --lp-rpg-scenic-filter: saturate(0.92) contrast(1.08) brightness(0.78);
 }
 
+/* Body shell height — vh fallback then dvh (same pattern as .lp-game). */
+.lp-min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 .lp-game {
   --lp-level-goal: #57d35b;
   --lp-level-plan: #3b82f6;
@@ -3473,8 +3479,8 @@ html[data-theme="dark"] {
   padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom));
   background: rgba(245, 246, 243, 0.94);
   border-top: 1px solid rgba(34, 197, 94, 0.12);
-  backdrop-filter: blur(12px);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .lp-bottom-nav--calm {
@@ -3541,6 +3547,7 @@ html[data-theme="dark"] {
   border-bottom: 1px solid var(--lp-border);
   background: var(--lp-glass);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 30;
@@ -4687,8 +4694,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-commitment-gap__plus {
-  width: 2rem;
-  height: 2rem;
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -4741,8 +4750,9 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-commitment-gap__qty-toggle {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
+  min-height: var(--lp-tap, 2.75rem);
   font-size: 0.78rem;
   color: var(--lp-muted);
   cursor: pointer;
@@ -4850,13 +4860,16 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-commitment-gap__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--lp-tap, 2.75rem);
+  padding-inline: 0.35rem;
   font-size: 0.7rem;
   color: var(--lp-muted);
   text-decoration: underline;
   text-underline-offset: 2px;
   background: none;
   border: 0;
-  padding: 0;
   cursor: pointer;
 }
 
@@ -5476,7 +5489,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   background: transparent;
   color: var(--lp-ink);
   padding: 0.35rem 0.5rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 650;
 }
 
@@ -6605,6 +6618,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-habits__btn.is-tiny {
+  min-height: 0;
   padding: 0.25rem 0.55rem;
   font-size: 0.72rem;
 }
@@ -6839,6 +6853,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: var(--lp-tap, 2.75rem);
   border-radius: 0.65rem;
   font-size: 0.78rem;
   font-weight: 750;
@@ -12933,7 +12948,8 @@ button.lp-strategy-overflow {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: var(--rpg-card, #171c22);
-  padding: var(--lp-sheet-space-3) var(--lp-sheet-space-3) var(--lp-sheet-space-4);
+  padding: var(--lp-sheet-space-3) var(--lp-sheet-space-3)
+    max(var(--lp-sheet-space-4), env(safe-area-inset-bottom, 0px));
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   transform-origin: center center;
 }
