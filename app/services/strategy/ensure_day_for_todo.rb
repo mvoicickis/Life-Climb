@@ -21,7 +21,7 @@ module Strategy
       journey = @user.primary_focused_journey || @user.focused_journeys.first
       raise Error, I18n.t("dash.add_step.need_journey") if journey.blank?
 
-      project = path_project_for(journey)
+      project = PathProject.ensure!(user: @user, journey: journey, title: @todo.title)
       raise Error, I18n.t("dash.add_step.need_spine") if project.blank?
 
       parent = Battles::PracticeParent.call(user: @user, project: project)
@@ -53,18 +53,6 @@ module Strategy
         raise Error, I18n.t("dash.add_step.already_linked")
       end
       # linked.id == @todo.id → already linked (retry / double-submit)
-    end
-
-    def path_project_for(journey)
-      area = journey.life_area
-      goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
-      return if goal.blank?
-
-      plan = goal.children.for_kind("plan").ordered.first
-      return if plan.blank?
-
-      plan.children.for_kind("project").ordered.find(&:path_level_camp?) ||
-        plan.children.for_kind("project").ordered.first
     end
 
     def next_position(parent)
