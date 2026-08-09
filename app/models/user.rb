@@ -59,6 +59,7 @@ class User < ApplicationRecord
   THEMES = %w[light dark].freeze
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
   COMPANION_PICK_KEY = "companion_pick".freeze
+  DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
 
   def admin?
     admin
@@ -218,6 +219,17 @@ class User < ApplicationRecord
     return if shown.include?(ADVENTURE_GUIDE_KEY)
 
     update!(support_milestones_shown: shown + [ ADVENTURE_GUIDE_KEY ])
+  end
+
+  def day_shield_tip_done?
+    Array(support_milestones_shown).map(&:to_s).include?(DAY_SHIELD_TIP_KEY)
+  end
+
+  def mark_day_shield_tip_done!
+    shown = Array(support_milestones_shown).map(&:to_s)
+    return if shown.include?(DAY_SHIELD_TIP_KEY)
+
+    update!(support_milestones_shown: shown + [ DAY_SHIELD_TIP_KEY ])
   end
 
   def alive_level

@@ -466,6 +466,8 @@ es:
       empty: "Aún no hay hábitos en Hoy — añádelos en Hábitos."
     shield:
       ready_line: "Escudo listo — bloquea una ventana perdida hoy."
+      tip_title: "Tu escudo diario"
+      tip_dismiss: "Entendido"
       used_on_card: "El escudo bloqueó este fallo"
     commitment:
       tier_label: "Compromiso diario"

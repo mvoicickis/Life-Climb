@@ -4887,6 +4887,86 @@ html[data-theme="dark"] {
   padding: 0.85rem;
 }
 
+.lp-dash-level-up.is-shield-tip {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.lp-dash-level-up.is-shield-tip .lp-dash-level-up__title {
+  color: #38bdf8;
+}
+
+/* Click-time Win juice (juicy_feedback_controller) */
+.lp-dash-tcard.is-juicy,
+.lp-dash-checklist__obj.is-juicy {
+  animation: lp-juicy-bounce 500ms ease;
+}
+
+@keyframes lp-juicy-bounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.03); }
+  65% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+.lp-juicy-burst {
+  pointer-events: none;
+  position: absolute;
+  right: 2.5rem;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: 20;
+}
+
+.lp-juicy-burst span {
+  position: absolute;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 0.1rem;
+  animation: lp-juicy-burst var(--d) ease-out forwards;
+}
+
+@keyframes lp-juicy-burst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(0.35); opacity: 0; }
+}
+
+.lp-juicy-ap {
+  pointer-events: none;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.35rem;
+  z-index: 21;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #57d35b;
+  opacity: 0;
+  transform: translateY(0.35rem);
+  transition: opacity 160ms ease, transform 420ms ease;
+}
+
+.lp-juicy-ap.is-shown {
+  opacity: 1;
+  transform: translateY(-1.1rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash-tcard.is-juicy,
+  .lp-dash-checklist__obj.is-juicy {
+    animation: none;
+  }
+
+  .lp-juicy-burst { display: none; }
+
+  .lp-juicy-ap,
+  .lp-juicy-ap.is-shown {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
 .lp-dash-level-up__title {
   margin: 0;
   font-weight: 800;
@@ -5105,6 +5185,7 @@ html[data-theme="dark"] {
 }
 
 .lp-dash-tcard {
+  position: relative;
   border-radius: 1rem;
   border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
@@ -6078,6 +6159,7 @@ html[data-theme="dark"] {
 }
 
 .lp-dash-checklist__obj {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.55rem;

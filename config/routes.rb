@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     patch :level_up
     patch :decline
   end
+  resource :day_shield_tip, only: :destroy
   resource :life_map, only: :show, controller: "life_maps"
   resource :missions, only: :show, controller: "missions"
   resource :settings, only: %i[ show update ] do

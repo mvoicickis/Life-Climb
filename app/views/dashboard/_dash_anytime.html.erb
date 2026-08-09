@@ -40,13 +40,25 @@
                       completion_path(completion),
                       method: :delete,
                       class: "lp-dash-tcard__win is-done",
-                      aria: { label: "Undo #{habit.name}" } %>
+                      aria: { label: "Undo #{habit.name}" },
+                      form: {
+                        data: {
+                          controller: "juicy-feedback",
+                          action: "submit->juicy-feedback#play"
+                        }
+                      } %>
               <% else %>
                 <%= button_to t("dash.timeline.win"),
                       completions_path(habit_id: habit.id),
                       method: :post,
                       class: "lp-dash-tcard__win",
-                      aria: { label: "#{t('dash.timeline.win')} #{habit.name}" } %>
+                      aria: { label: "#{t('dash.timeline.win')} #{habit.name}" },
+                      form: {
+                        data: {
+                          controller: "juicy-feedback",
+                          action: "submit->juicy-feedback#play"
+                        }
+                      } %>
               <% end %>
             <% else %>
               <%= form_with url: daily_logs_path(habit_id: habit.id),
@@ -54,8 +66,8 @@
                     class: "lp-dash-tcard__qty",
                     data: {
                       turbo: false,
-                      controller: "quantity-win",
-                      action: "input->quantity-win#sync"
+                      controller: "quantity-win juicy-feedback",
+                      action: "input->quantity-win#sync submit->juicy-feedback#play"
                     } do |form| %>
                 <%= hidden_field_tag :return_to, "today" %>
                 <%= form.number_field :amount,

@@ -11,7 +11,16 @@ export default class extends Controller {
   }
 
   connect() {
-    if (this.celebrateValue || this.apGainedValue > 0) {
+    // Click-time juicy_feedback already celebrated battle Win — skip reload juice.
+    let suppress = false
+    try {
+      suppress = window.sessionStorage.getItem("lpJuicySuppressCelebrate") === "1"
+      if (suppress) window.sessionStorage.removeItem("lpJuicySuppressCelebrate")
+    } catch (_err) {
+      suppress = false
+    }
+
+    if (!suppress && (this.celebrateValue || this.apGainedValue > 0)) {
       window.requestAnimationFrame(() => this.celebrate())
     }
   }

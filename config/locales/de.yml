@@ -466,6 +466,8 @@ de:
       empty: "Noch keine Gewohnheiten auf Heute — unter Gewohnheiten hinzufügen."
     shield:
       ready_line: "Schild bereit — blockiert heute ein verpasstes Fenster."
+      tip_title: "Dein Tages-Schild"
+      tip_dismiss: "Verstanden"
       used_on_card: "Schild hat diesen Fehlversuch blockiert"
     commitment:
       tier_label: "Tägliches Commitment"
