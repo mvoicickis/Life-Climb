@@ -58,7 +58,12 @@
       <%= form_with url: complete_daily_todo_path(todo),
             method: :post,
             class: "lp-dash-tcard__qty",
-            data: { turbo: false } do %>
+            data: {
+              turbo: false,
+              controller: "juicy-feedback",
+              action: "submit->juicy-feedback#play",
+              juicy_feedback_suppress_reload_celebrate_value: true
+            } do %>
         <%= number_field_tag :amount, nil,
               min: 0,
               step: :any,
@@ -73,7 +78,14 @@
             complete_daily_todo_path(todo),
             method: :post,
             class: "lp-dash-tcard__win",
-            aria: { label: "#{t('dash.timeline.win')} #{todo.title}" } %>
+            aria: { label: "#{t('dash.timeline.win')} #{todo.title}" },
+            form: {
+              data: {
+                controller: "juicy-feedback",
+                action: "submit->juicy-feedback#play",
+                juicy_feedback_suppress_reload_celebrate_value: true
+              }
+            } %>
     <% end %>
   </div>
 
@@ -87,12 +99,16 @@
           <%= button_to practice_task_path(task),
                 method: :patch,
                 params: { completed: task.completed? ? "0" : "1" },
-                form: (track ? {
+                form: {
                   data: {
-                    quantity_complete_target: "form",
-                    action: "submit->quantity-complete#intercept"
+                    controller: "juicy-feedback",
+                    action: [
+                      ("submit->quantity-complete#intercept" if track),
+                      "submit->juicy-feedback#play"
+                    ].compact.join(" "),
+                    **(track ? { quantity_complete_target: "form" } : {})
                   }
-                } : {}),
+                },
                 class: "lp-dash-check #{'is-on' if task.completed?}",
                 aria: { label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}") } do %>
             <span aria-hidden="true"></span>

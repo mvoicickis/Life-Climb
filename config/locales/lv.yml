@@ -466,6 +466,8 @@ lv:
       empty: "Šodienā vēl nav ieradumu — pievieno Habitos."
     shield:
       ready_line: "Vairogs gatavs — šodien bloķē vienu izlaistu logu."
+      tip_title: "Tavs dienas vairogs"
+      tip_dismiss: "Sapratu"
       used_on_card: "Vairogs bloķēja šo izlaidumu"
     commitment:
       tier_label: "Dienas solījums"

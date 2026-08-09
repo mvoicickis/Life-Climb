@@ -109,6 +109,8 @@ en:
       empty: "No habits on Today yet — add one under Habits."
     shield:
       ready_line: "Shield ready — blocks one missed window today."
+      tip_title: "Your daily shield"
+      tip_dismiss: "Got it"
       used_on_card: "Shield blocked this miss"
     commitment:
       tier_label: "Daily commitment"
