@@ -5,7 +5,7 @@ require "test_helper"
 class NextActionBannerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
-    @user.update!(character: "fox")
+    @user.update!(character: "fox", climb_streak_days: 0, climb_streak_on: nil)
     sign_in_as @user
     Onboarding::Run.call(
       user: @user,
@@ -20,13 +20,18 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0)
+  end
+
+  teardown do
+    travel_back
   end
 
   test "plan_route banner on Today when goal has no plans" do
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:plan_route)
+    assert_banner_state(:plan_route, tone: :steady)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.plan_route.cta")
   end
 
@@ -36,19 +41,31 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:set_today)
+    assert_banner_state(:set_today, tone: :steady)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.set_today.cta")
   end
 
-  test "complete_battle banner includes todo title" do
+  test "complete_battle banner includes todo title with steady tone before overdue hour" do
     build_spine_and_cascade!(title: "Send five emails")
 
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:complete_battle)
+    assert_banner_state(:complete_battle, tone: :steady)
     assert_select ".lp-dash-next__title", text: /Send five emails/
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.complete_battle.cta")
+  end
+
+  test "battle_overdue banner uses urgent tone after overdue hour" do
+    build_spine_and_cascade!(title: "Send five emails")
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 19, 0, 0)
+
+    get dashboard_path
+    assert_response :success
+
+    assert_banner_state(:battle_overdue, tone: :urgent)
+    assert_select ".lp-dash-next__title", text: /Send five emails/
+    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.battle_overdue.cta")
   end
 
   test "confirm_camp banner when ProjectCheckQueue has a pending project" do
@@ -60,7 +77,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
 
-    assert_banner_state(:confirm_camp)
+    assert_banner_state(:confirm_camp, tone: :steady)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.confirm_camp.cta")
   end
 
@@ -71,7 +88,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:day_won)
+    assert_banner_state(:day_won, tone: :steady)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.day_won.cta")
   end
 
@@ -106,13 +123,13 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def assert_banner_state(key)
+  def assert_banner_state(key, tone: :steady)
     prefix = Strategy::NextAction::Copy::PREFIXES.fetch(key)
-    assert_select ".lp-dash-next[data-next-action-key=#{key}]", count: 1
+    assert_select ".lp-dash-next.is-#{tone}[data-next-action-key=#{key}][data-next-action-tone=#{tone}]", count: 1
     title = css_select(".lp-dash-next__title").text
     assert title.start_with?(prefix.strip) || title.include?(prefix.strip),
            "expected #{prefix.inspect} in #{title.inspect}"
-    assert_match(/🧭|📍|⚔️|🏕️|🏁/, title)
+    assert_match(/🧭|📍|⚔️|🏕️|🏁|⚠️|🔥|✨|🌑/, title)
     assert_select ".lp-dash-next__face[src*='fox']", count: 1
   end
 

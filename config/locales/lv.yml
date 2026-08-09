@@ -64,6 +64,38 @@ lv:
           - "Nometne klusa. Atgriezies stiprāks."
           - "Šodienas cīņas beigušās. Atpūties uz grēdas."
         cta: "Atpakaļ uz taku"
+      battle_overdue:
+        title: "Diena gandrīz beigusies — pabeidz “%{title}”"
+        titles:
+          - "Diena gandrīz beigusies — pabeidz “%{title}”."
+          - "Vēl ir laiks — aizver “%{title}” pirms atpūtas."
+          - "“%{title}” vēl ir atvērts. Viens pēdējais grūdiens."
+          - "Neatstāj “%{title}” uz nakti."
+        cta: "Pabeigt Šodienā"
+      streak_at_risk:
+        title: "Tavam %{count} dienu kāpienam šodien vajag uzvaru"
+        titles:
+          - "Tavam %{count} dienu kāpienam šodien vajag uzvaru."
+          - "%{count} dienu sērija — viena maza uzvara to tur dzīvu."
+          - "Turi %{count} dienu kāpienu ar vienu pabeigšanu."
+          - "Aizsargā savas %{count} dienas — šodien kaut ko uzvari."
+        cta: "Uzvarēt Šodienā"
+      project_unlocked:
+        title: "Jauns projekts atvērts: “%{title}”"
+        titles:
+          - "Jauns projekts atvērts: “%{title}”."
+          - "Tu atslēdzi “%{title}” — ieskaties."
+          - "“%{title}” ir gatavs uz takas."
+          - "Svaiga zeme: “%{title}” tikko atvērās."
+        cta: "Atvērt Kalnā"
+      quest_stalled:
+        title: "Klusa misija: “%{title}” vajag pieskārienu"
+        titles:
+          - "Klusa misija: “%{title}” vajag pieskārienu."
+          - "“%{title}” apklusa — viens solis to atsāk."
+          - "Atgriezies pie “%{title}”, kad vari."
+          - "“%{title}” gaida nelielu progresu."
+        cta: "Atvērt Šodienā"
     next_up:
       add_battle_cta: "Pievienot šodienas kauju"
       fight_battle_cta: "Pievienot šodienas kauju"
