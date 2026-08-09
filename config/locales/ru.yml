@@ -404,6 +404,41 @@ ru:
       done_notice: "Проект готов — «%{title}». Гора сейчас %{percent}%."
       not_yet_notice: "Битва выиграна. Сделай следующий бой точнее, пока проект ещё открыт."
       invalid: "Эта проверка проекта недействительна."
+    timeline:
+      title: "Лента сегодня"
+      win: "Победа"
+      unscheduled: "Без времени"
+      unscheduled_label: "Время не задано"
+      set_time: "Задать время"
+      save_time: "Сохранить время"
+      cancel: "Отмена"
+      start_time: "Начало"
+      end_time: "Конец"
+      time_saved: "Время сохранено."
+      time_save_failed: "Не удалось сохранить время."
+      need_both_times: "Укажи и начало, и конец."
+      end_after_start: "Конец должен быть позже начала."
+      stats_pill: "Серия и очки действий"
+      hours_free:
+        one: "%{count} ч свободно"
+        few: "%{count} ч свободно"
+        many: "%{count} ч свободно"
+        other: "%{count} ч свободно"
+      minutes_free:
+        one: "%{count} мин свободно"
+        few: "%{count} мин свободно"
+        many: "%{count} мин свободно"
+        other: "%{count} мин свободно"
+      hours_minutes_free: "%{hours} ч %{minutes} мин свободно"
+      ledger_miss: "Пропуск «%{title}» (−%{amount} AP)"
+      ledger_shielded: "Щит закрыл пропуск «%{title}»"
+    anytime:
+      title: "В любое время"
+      hint: "Привычки — отмечай их когда угодно сегодня."
+      empty: "На Сегодня ещё нет привычек — добавь в Привычках."
+    shield:
+      ready_line: "Щит готов — сегодня закрывает одно пропущенное окно."
+      used_on_card: "Щит закрыл этот пропуск"
   climb:
     streak:
       chip: "%{count} дн."

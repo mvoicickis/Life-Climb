@@ -58,29 +58,30 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "mobile Today shows three readable sections with several items each" do
+  test "mobile Today shows timeline cards and Anytime habits" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-battle", wait: 5
+    assert_selector ".lp-dash-timeline", wait: 5
 
-    assert_selector ".lp-dash-section.is-battles", text: /Battles/i
-    assert_selector ".lp-dash-section.is-battles .lp-dash-battle__name", text: "Ship auth"
-    assert_selector ".lp-dash-section.is-battles .lp-dash-battle__name", text: "Write tests"
-    assert_selector ".lp-dash-section.is-battles .lp-dash-battle__name", text: "Review PR"
+    assert_selector ".lp-dash-tcard__title", text: "Ship auth"
+    assert_selector ".lp-dash-tcard__title", text: "Write tests"
+    assert_selector ".lp-dash-tcard__title", text: "Review PR"
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: /Volume One/
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: /Volume Two/
+    assert_no_selector ".lp-dash-section.is-battles"
+    assert_no_selector ".lp-dash-section.is-quests"
+    assert_no_selector ".lp-dash-section.is-habits"
 
-    assert_selector ".lp-dash-section.is-quests", text: /Quests/i
-    assert_selector ".lp-dash-section.is-quests .lp-dash-checklist.has-color.is-coral", text: /Volume One/
-    assert_selector ".lp-dash-section.is-quests .lp-dash-checklist.has-color.is-purple", text: /Volume Two/
+    assert_selector ".lp-dash-anytime", text: /Anytime/i
+    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Meditate/
+    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Pages read/
+    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Steps/
 
-    assert_selector ".lp-dash-section.is-habits", text: /Habits/i
-    assert_selector ".lp-dash-section.is-habits .lp-dash-habit.has-color.is-amber", text: /Meditate/
-    assert_selector ".lp-dash-section.is-habits .lp-dash-habit.has-color.is-amber", text: /Pages read/
-    assert_selector ".lp-dash-section.is-habits .lp-dash-habit.has-color.is-amber", text: /Steps/
-
+    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-three-sections-mobile.png")
-    page.execute_script("document.querySelector('.lp-dash-section.is-habits')?.scrollIntoView({block: 'center'})")
+    page.execute_script("document.querySelector('.lp-dash-anytime')?.scrollIntoView({block: 'center'})")
     sleep 0.3
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-three-sections-habits-mobile.png")
   end

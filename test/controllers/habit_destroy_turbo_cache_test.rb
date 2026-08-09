@@ -28,6 +28,6 @@ class HabitDestroyTurboCacheTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Temp stretch", count: 0
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Temp stretch", count: 0
   end
 end

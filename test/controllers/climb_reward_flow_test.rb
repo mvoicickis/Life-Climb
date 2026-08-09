@@ -43,13 +43,13 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_select "#climb-reward", count: 0
-    assert_select ".lp-climb-streak"
-    assert_select ".lp-dash-battle__ring"
+    assert_select ".lp-dash-header__pill", count: 1
+    assert_select ".lp-dash-timeline", count: 1
     assert_match(/data-battle-day-celebrate-value="true"/, response.body)
     assert_match(/data-battle-day-ap-gained-value="#{ap}"/, response.body)
   end
 
-  test "when all items are done footer shows next action not battle won" do
+  test "when all items are done day is marked won without old battle footer" do
     # Clear leftover onboarding mission so the day can fully clear via checkboxes.
     @user.missions.for_day.primary.incomplete.find_each do |mission|
       Missions::Complete.call(user: @user, mission: mission)
@@ -59,8 +59,7 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
 
-    assert_select ".lp-dash-battle__next", count: 1
-    assert_select ".lp-dash-battle__next-kicker"
+    assert_select ".lp-dash.is-battle-won", count: 1
     assert_select ".lp-dash-battle__won", count: 0
     assert_no_match(/Battle won\. Keep going/i, response.body)
     assert_select ".lp-dash-cta", count: 0

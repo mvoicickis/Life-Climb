@@ -1,0 +1,72 @@
+<%# Habits block — unified card chrome, outside timeline gap/miss logic.
+    locals: habits %>
+<% habits = Array(local_assigns.fetch(:habits) { @habits || [] }) %>
+<section class="lp-dash-anytime" aria-label="<%= t('dash.anytime.title') %>">
+  <header class="lp-dash-anytime__head">
+    <h2><%= t("dash.anytime.title") %></h2>
+    <p><%= t("dash.anytime.hint") %></p>
+  </header>
+
+  <% if habits.blank? %>
+    <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
+  <% else %>
+    <ul class="lp-dash-anytime__list">
+      <% habits.each do |habit| %>
+        <% done = habit.completed_today? %>
+        <% amount = habit.today_amount %>
+        <li id="<%= dom_id(habit, :today) %>"
+            class="lp-dash-tcard is-habit <%= 'is-done' if done || habit.met_habit_goal? %>">
+          <div class="lp-dash-tcard__row">
+            <span class="lp-dash-tcard__icon" aria-hidden="true">
+              <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
+            </span>
+            <div class="lp-dash-tcard__copy">
+              <% if habit.identity_label.present? %>
+                <p class="lp-habit-identity"><%= habit.identity_label %></p>
+              <% end %>
+              <p class="lp-dash-tcard__title"><%= habit.name %></p>
+              <p class="lp-dash-tcard__meta">
+                <span><%= habit.unit %></span>
+                <% unless habit.binary_checkin? %>
+                  <span><%= format_amount(amount) %> <%= habit.unit %></span>
+                <% end %>
+              </p>
+            </div>
+
+            <% if habit.binary_checkin? %>
+              <% if done %>
+                <% completion = habit.completion_for(Date.current) %>
+                <%= button_to t("dash.timeline.win"),
+                      completion_path(completion),
+                      method: :delete,
+                      class: "lp-dash-tcard__win is-done",
+                      aria: { label: "Undo #{habit.name}" } %>
+              <% else %>
+                <%= button_to t("dash.timeline.win"),
+                      completions_path(habit_id: habit.id),
+                      method: :post,
+                      class: "lp-dash-tcard__win",
+                      aria: { label: "#{t('dash.timeline.win')} #{habit.name}" } %>
+              <% end %>
+            <% else %>
+              <%= form_with url: daily_logs_path(habit_id: habit.id),
+                    scope: :daily_log,
+                    class: "lp-dash-tcard__qty",
+                    data: { turbo: false } do |form| %>
+                <%= hidden_field_tag :return_to, "today" %>
+                <%= form.number_field :amount,
+                      value: format_amount(amount),
+                      min: 0,
+                      step: habit.quantity_input_step,
+                      inputmode: habit.quantity_inputmode,
+                      class: "lp-dash-tcard__amount",
+                      aria: { label: t("habits.how_many") } %>
+                <%= form.submit t("dash.timeline.win"), class: "lp-dash-tcard__win" %>
+              <% end %>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

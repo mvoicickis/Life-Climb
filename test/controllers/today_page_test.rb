@@ -3,7 +3,7 @@
 require "test_helper"
 
 class TodayPageTest < ActionDispatch::IntegrationTest
-  test "today renders for hierarchy-ready user with closing ring" do
+  test "today renders for hierarchy-ready user with timeline header" do
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(
@@ -28,17 +28,19 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert Strategy::HierarchyReady.call(user: user)
     get dashboard_path
     assert_response :success, -> { "body=#{response.body.to_s[0, 2000]}" }
-    assert_select ".lp-dash-battle"
-    assert_select ".lp-dash-battle__ring"
+    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-timeline", count: 1
+    assert_select ".lp-dash-tcard__title", text: "Battle"
   end
 
-  test "today climb band shows avatar, percent, battle, and streak" do
+  test "today header shows avatar, progress bar, streak, and AP" do
     user = users(:one)
     user.update!(
       name: "Alex Climber",
       character: "fox",
       climb_streak_days: 4,
-      climb_streak_on: Date.current
+      climb_streak_on: Date.current,
+      total_points: 120
     )
     sign_in_as user
     Onboarding::Run.call(
@@ -60,42 +62,17 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     user.strategy_goals.create!(life_area: area, life_journey: journey, parent: leaf, horizon: "day", title: "Battle", scheduled_on: Date.current, position: 0)
     Strategy::CascadeToDaily.call(user: user, life_area: area)
 
-    # Seed a known mountain percent via completed project progress when available;
-    # otherwise assert the band wires whatever @closer the controller computes.
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-climb", count: 1
-    assert_select ".lp-dash-climb__avatar-img[src*='fox']", count: 1
-    assert_select ".lp-dash-climb__name", text: "Alex Climber"
-    assert_select ".lp-dash-climb__climber[style*='--lp-trail']", count: 1
-    assert_select ".lp-dash-climb__climber-img[src*='fox']", count: 1
-    assert_select ".lp-dash-bar__fill[data-battle-day-target='goalBar']", count: 1
-    assert_select ".lp-dash-climb__pct[data-battle-day-target='goalPct']", count: 1
-    assert_select ".lp-dash-climb__label[data-battle-day-target='momentum']", count: 1
-    assert_select ".lp-dash-climb__climber[data-battle-day-target='campArt']", count: 1
-    assert_select ".lp-dash-climb__path", count: 1
-    assert_select ".lp-dash-climb__path-lit", count: 1
-    assert_select ".lp-dash-climb__path[stroke-dasharray]", count: 1
-
-    climber_style = css_select(".lp-dash-climb__climber").first["style"].to_s
-    assert_match(/--lp-trail:\s*(\d+)/, climber_style)
-    trail_pct = climber_style[/\d+/].to_i
-    closer = css_select(".lp-dash-climb__pct").first.text.to_i
-    assert_equal [ closer, 6 ].max, trail_pct, "climber should be inset at least 6% on the trail"
-    assert_select ".lp-dash-bar__fill[style=?]", "width: #{closer}%"
-    assert_select ".lp-dash-climb__path-lit[stroke-dasharray=?]", "#{closer} 100"
-    assert_select ".lp-dash-climb__pct", text: closer.to_s
-    assert_select ".lp-dash-climb__label", text: /#{closer}%\s*up the mountain/i
-
-    # Battle card still sits below the climb band, unchanged.
-    assert_select ".lp-dash-battle", count: 1
-    assert_select ".lp-dash-battle__title", text: /Today.?s battle/i
-    assert_select ".lp-dash-battle__sub", text: /Win today.?s battle/i
+    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-header__avatar-img[src*='fox']", count: 1
+    assert_select ".lp-dash-header__name", text: "Alex Climber"
+    assert_select ".lp-dash-bar__fill", count: 1
+    assert_select ".lp-dash-header__pill [data-battle-day-target='lpTotal']", text: /120/
+    assert_select ".lp-dash-timeline", count: 1
     assert_select ".lp-dash-hero", count: 0
-
-    assert_select ".lp-climb-streak.is-compact", count: 1
-    assert_match(/4-day|4 dienas/i, response.body)
+    assert_select ".lp-dash-climb", count: 0
   end
 
   test "today renders while mountain spine is still incomplete" do

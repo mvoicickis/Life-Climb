@@ -70,7 +70,18 @@ class DashboardController < ApplicationController
       @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
     @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
     Climb::Streak.reconcile!(user: current_user)
+    Today::DayShield.reconcile!(user: current_user)
+    Today::MissSettlement.apply!(user: current_user)
+    @daily_todos = current_user.daily_todos
+      .for_day(Date.current)
+      .includes(:life_point_ledgers, strategy_goal: [ :practice_tasks, :parent ])
+      .ordered
+    @open_todos = @daily_todos.reject(&:completed?)
+    @done_todos = @daily_todos.select(&:completed?)
+    @life_points = current_user.reload.life_points
     @climb_streak = Climb::Streak.status(user: current_user)
+    @day_shield = Today::DayShield.status(user: current_user)
+    @timeline = Today::Timeline.build(user: current_user, todos: @daily_todos)
     @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
     @next_action = Strategy::NextAction.for(
       user: current_user,

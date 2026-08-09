@@ -53,7 +53,7 @@ Rails.application.routes.draw do
   resource :companion_guide, only: %i[ show create ], controller: "companion_guides"
   resource :focus, only: %i[ show update ], controller: "focus"
   resource :today_mission, only: :create, controller: "today_missions"
-  resources :daily_todos, only: %i[ create destroy ] do
+  resources :daily_todos, only: %i[ create update destroy ] do
     member do
       post :complete
     end

@@ -2,13 +2,24 @@
 
 class DailyTodosController < ApplicationController
   # Freeform battles are planned on Strategy and synced to Today.
-  # Today only completes / undoes / removes already-fed battles.
+  # Today completes / undoes / removes / sets times on already-fed battles.
   def create
     journey = current_user.primary_focused_journey
     redirect_to(
       (journey ? life_journey_path(journey) : dashboard_path),
       alert: t("dash.battle_plan_on_strategy")
     )
+  end
+
+  def update
+    todo = current_user.daily_todos.find(params[:id])
+    if todo.update(todo_time_params)
+      redirect_to dashboard_path, notice: t("dash.timeline.time_saved"), status: :see_other
+    else
+      redirect_to dashboard_path,
+                  alert: todo.errors.full_messages.to_sentence.presence || t("dash.timeline.time_save_failed"),
+                  status: :see_other
+    end
   end
 
   def complete
@@ -62,6 +73,10 @@ class DailyTodosController < ApplicationController
   end
 
   private
+
+  def todo_time_params
+    params.require(:daily_todo).permit(:start_time, :end_time)
+  end
 
   def valid_quantity_amount?(raw)
     return false if raw.blank?

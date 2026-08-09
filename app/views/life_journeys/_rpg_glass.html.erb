@@ -116,6 +116,16 @@
                     class: "lp-rpg-input",
                     placeholder: t("strategy.battle_placeholder"),
                     autocomplete: "off" %>
+              <div class="lp-rpg-add__times">
+                <label class="lp-rpg-add__time">
+                  <span><%= t("dash.timeline.start_time") %></span>
+                  <%= time_field_tag :start_time, nil, class: "lp-rpg-input" %>
+                </label>
+                <label class="lp-rpg-add__time">
+                  <span><%= t("dash.timeline.end_time") %></span>
+                  <%= time_field_tag :end_time, nil, class: "lp-rpg-input" %>
+                </label>
+              </div>
               <%= submit_tag t("strategy.sheet.add_battle"), class: "lp-rpg-btn is-small" %>
             <% end %>
           </details>

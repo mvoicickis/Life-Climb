@@ -33,23 +33,22 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-battle", wait: 5
+    assert_selector ".lp-dash-timeline", wait: 5
 
-    assert_selector ".lp-dash-checklist .lp-dash-battle__name", text: "Volume 0"
-    assert_selector ".lp-dash-checklist__progress", text: /0\s*\/\s*2/
-    assert_selector ".lp-dash-check.is-locked"
-    assert_selector ".lp-dash-checklist__obj-name", text: "Do a lesson"
-    assert_selector ".lp-dash-checklist__obj-name", text: "Review notes"
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked"
+    assert_selector ".lp-dash-tcard__objective-title", text: "Do a lesson"
+    assert_selector ".lp-dash-tcard__objective-title", text: "Review notes"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-checklist-shell-mobile.png")
 
-    find("button.lp-dash-check[aria-label='Complete Do a lesson']").click
-    assert_selector ".lp-dash-checklist__progress", text: /1\s*\/\s*2/, wait: 5
+    find("button.lp-dash-tcard__win[aria-label='Complete Do a lesson']").click
+    assert_selector ".lp-dash-tcard__objective.is-done", text: /Do a lesson/, wait: 5
     assert_not @host.reload.completed?
 
-    find("button.lp-dash-check[aria-label='Complete Review notes']").click
-    assert_selector ".lp-dash-battle__done", text: /Volume 0/i, visible: :all, wait: 5
+    find("button.lp-dash-tcard__win[aria-label='Complete Review notes']").click
+    assert_selector ".lp-dash-tcard.is-quest.is-done .lp-dash-tcard__title", text: /Volume 0/i, wait: 5
     assert @first.reload.completed?
     assert @second.reload.completed?
     assert @host.reload.completed?

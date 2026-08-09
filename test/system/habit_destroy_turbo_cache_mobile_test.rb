@@ -25,8 +25,8 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-section.is-habits", wait: 5
-    assert_selector ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Temp stretch"
+    assert_selector ".lp-dash-anytime", wait: 5
+    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Temp stretch"
 
     within(".lp-dash-nav") { click_link "Habits" }
     assert_selector ".lp-habits", wait: 5
@@ -39,9 +39,9 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     assert_selector "[data-controller='turbo-cache'][data-turbo-cache-clear-value='true']", visible: :all
 
     within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-section.is-habits", wait: 5
-    assert_no_selector ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Temp stretch"
-    assert_selector ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Keep me"
+    assert_selector ".lp-dash-anytime", wait: 5
+    assert_no_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Temp stretch"
+    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Keep me"
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-destroy-today-fresh-nav.png")
   end

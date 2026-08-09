@@ -43,7 +43,7 @@ class LifepointsTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav__link", text: /Today/i
     assert_selector ".lp-dash-nav__link", text: /Mountain/i
     assert_text user.display_name
-    assert_selector ".lp-dash-battle, .lp-dash-climb", wait: 5
-    assert_text(/Today's battle|Action Points|up the mountain/i)
+    assert_selector ".lp-dash-header, .lp-dash-timeline", wait: 5
+    assert_text(/Anytime|Unscheduled|Win|Action Points|AP/i)
   end
 end

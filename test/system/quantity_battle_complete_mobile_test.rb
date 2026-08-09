@@ -27,34 +27,20 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     @todo = @user.daily_todos.find_by!(strategy_goal_id: @day.id, scheduled_on: Date.current)
   end
 
-  test "mobile quantified checkbox opens amount dialog then logs progress" do
+  test "mobile quantified battle uses amount input then Win" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-battle", wait: 5
+    assert_selector ".lp-dash-timeline", wait: 5
 
-    assert_selector ".lp-dash-check", minimum: 1
-    assert_no_selector "dialog.lp-quantity-complete[open]"
-    # Checkbox-only flow: no batch Complete Today control.
-    assert_no_selector "form[action='#{battle_completion_path}']"
-
-    find("li[data-controller='quantity-complete'] button.lp-dash-check").click
-    assert_selector "dialog.lp-quantity-complete[open]", wait: 3
-    assert_selector "dialog.lp-quantity-complete[open] .lp-strategy-sheet__title",
-                    text: /How many pages/i
-
-    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/quantity-battle-amount-dialog-mobile.png")
-
-    within("dialog.lp-quantity-complete[open]") do
-      fill_in "dialog_amount", with: "12"
-      click_button I18n.t("strategy.quantity.log_confirm")
+    card = find(".lp-dash-tcard[data-todo-id='#{@todo.id}']")
+    within(card) do
+      find(".lp-dash-tcard__amount").set("12")
+      click_button "Win"
     end
 
-    assert_selector ".lp-dash-battle", wait: 5
-    assert_no_selector "dialog.lp-quantity-complete[open]"
-    assert_selector ".lp-dash-battle__done", text: /Read chapter/i, visible: :all, wait: 5
+    assert_selector ".lp-dash-tcard.is-done[data-todo-id='#{@todo.id}']", wait: 5
 
     @project.reload
     @todo.reload
@@ -64,7 +50,7 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     assert_equal BigDecimal("12"), log.amount
   end
 
-  test "mobile non-quantified checkbox still completes in one tap" do
+  test "mobile non-quantified Win still completes in one tap" do
     plain = @user.strategy_goals.create!(
       life_area: @area,
       parent: @project.parent,
@@ -84,11 +70,10 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-battle", wait: 5
+    assert_selector ".lp-dash-timeline", wait: 5
 
-    find("button.lp-dash-check[aria-label='Complete Ship PR']").click
-    assert_no_selector "dialog.lp-quantity-complete[open]"
-    assert_selector ".lp-dash-battle__done", text: /Ship PR/i, visible: :all, wait: 5
+    find("button.lp-dash-tcard__win[aria-label='Win Ship PR']").click
+    assert_selector ".lp-dash-tcard.is-done[data-todo-id='#{plain_todo.id}']", wait: 5
     assert plain_todo.reload.completed?
     assert_equal BigDecimal("7"), @project.reload.current_amount
     assert_nil StrategyQuantityLog.find_by(daily_todo_id: plain_todo.id)

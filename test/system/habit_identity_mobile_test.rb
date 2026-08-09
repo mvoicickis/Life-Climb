@@ -31,14 +31,14 @@ class HabitIdentityMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-section.is-habits", wait: 5
+    assert_selector ".lp-dash-anytime", wait: 5
 
-    assert_selector ".lp-dash-section.is-habits .lp-habit-identity", text: "I am a reader"
-    assert_selector ".lp-dash-section.is-habits .lp-habit-identity", text: "I am someone who moves"
-    assert_selector ".lp-dash-section.is-habits .lp-dash-battle__name", text: "Meditate"
-    assert_selector ".lp-dash-section.is-habits .lp-habit-identity", count: 2
+    assert_selector ".lp-dash-anytime .lp-habit-identity", text: "I am a reader"
+    assert_selector ".lp-dash-anytime .lp-habit-identity", text: "I am someone who moves"
+    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate"
+    assert_selector ".lp-dash-anytime .lp-habit-identity", count: 2
 
-    page.execute_script("document.querySelector('.lp-dash-section.is-habits')?.scrollIntoView({block: 'center'})")
+    page.execute_script("document.querySelector('.lp-dash-anytime')?.scrollIntoView({block: 'center'})")
     sleep 0.3
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-identity-today-mobile.png")
 

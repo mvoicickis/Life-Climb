@@ -1,0 +1,39 @@
+<%# Compact Today header — avatar, progress, streak+AP pill.
+    locals: closer, streak, life_points %>
+<% closer = local_assigns.fetch(:closer) { @closer }.to_i.clamp(0, 100) %>
+<% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
+<% life_points = local_assigns.fetch(:life_points) { @life_points } %>
+<% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
+
+<header class="lp-dash-header" aria-label="<%= t('dash.goal_label') %>">
+  <div class="lp-dash-header__who">
+    <%= link_to settings_path, class: "lp-dash-header__avatar", aria: { label: t("nav.settings") } do %>
+      <%= companion_image_tag class: "lp-dash-header__avatar-img", alt: "" %>
+    <% end %>
+    <div class="lp-dash-header__meta">
+      <p class="lp-dash-header__name"><%= current_user.display_name %></p>
+      <div
+        class="lp-dash-bar lp-dash-bar--thin"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="<%= closer %>"
+        aria-label="<%= t('dash.goal_label') %>"
+      >
+        <div class="lp-dash-bar__fill" style="width: <%= closer %>%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-dash-header__pill" aria-label="<%= t('dash.timeline.stats_pill') %>">
+    <span class="lp-dash-header__stat">
+      <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
+      <span><%= streak_days %></span>
+    </span>
+    <span class="lp-dash-header__divider" aria-hidden="true"></span>
+    <span class="lp-dash-header__stat">
+      <%= render "shared/lp_icon", name: "bolt", class_name: "lp-icon is-inline" %>
+      <span data-battle-day-target="lpTotal"><%= number_with_delimiter(life_points) %></span>
+    </span>
+  </div>
+</header>

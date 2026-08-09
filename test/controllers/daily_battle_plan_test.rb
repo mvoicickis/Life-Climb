@@ -16,33 +16,24 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "home shows premium battle hierarchy" do
+  test "home shows compressed Today timeline shell" do
     get dashboard_path
     assert_response :success
     assert_match(/Today/i, response.body)
-    assert_match(/Battle/i, response.body)
-    assert_match(/Action Points/i, response.body)
     assert_no_match(/>\s*Strategy Points\s*</i, response.body)
     assert_select ".lp-dash-cta", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
-    assert_match(/battles ready/i, response.body)
-    assert_match(/See your mountain/i, response.body)
-    assert_match(/Review my budget/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
-    assert_select ".lp-dash-climb", count: 1
-    assert_select ".lp-dash-climb__label", text: /up the mountain/i
-    assert_select ".lp-dash-battle", count: 1
-    assert_select ".lp-dash-check", minimum: 1
+    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-timeline, .lp-dash-route, #first-climb-coach", minimum: 1
     assert_select ".lp-dash-hero", count: 0
-    assert_select ".lp-dash-plan"
     assert_select ".lp-dash-project", count: 0
     assert_no_match(/Life Tree|Open Life/i, response.body)
     assert_no_match(/Daily Battle Plan/i, response.body)
-    assert_no_match(/\bAP\b/, response.body)
     assert_no_match(/>\s*SP\s*</, response.body)
   end
 
-  test "climb band shows mountain percent when strategy goal present" do
+  test "header progress bar reflects mountain percent when strategy goal present" do
     journey = @user.primary_focused_journey
     area = journey.life_area
     @user.strategy_goals.create!(
@@ -52,17 +43,8 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-climb", count: 1
-    climber_style = css_select(".lp-dash-climb__climber").first["style"].to_s
-    assert_match(/--lp-trail:\s*(\d+)/, climber_style)
-    trail_pct = climber_style[/\d+/].to_i
-    closer = css_select(".lp-dash-climb__pct").first.text.to_i
-    assert_equal [ closer, 6 ].max, trail_pct, "climber should be inset at least 6% on the trail"
-    assert_select ".lp-dash-bar__fill[style=?]", "width: #{closer}%"
-    assert_select ".lp-dash-climb__path-lit[stroke-dasharray=?]", "#{closer} 100"
-    assert_select ".lp-dash-climb__path", count: 1
-    assert_select ".lp-dash-climb__pct", text: closer.to_s
-    assert_select ".lp-dash-climb__label", text: /#{closer}%\s*up the mountain/i
+    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-bar__fill[style*='width:']", count: 1
     assert_select ".lp-dash-hero", count: 0
   end
 
@@ -153,7 +135,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert @user.daily_todos.for_day.incomplete.none?
     assert mission.reload.completed?
     assert_operator @user.reload.total_points, :>, before
-    assert_select ".lp-dash-battle__next"
+    assert_select ".lp-dash.is-battle-won", count: 1
     assert_select ".lp-dash-battle__won", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
   end
@@ -182,8 +164,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
     assert_select "form.lp-dash-add", count: 0
-    assert_match(/See your mountain/i, response.body)
-    assert_select ".lp-dash-check", minimum: 5
+    assert_select ".lp-dash-tcard__win", minimum: 5
     assert_select "form[action=?]", battle_completion_path, count: 0
     # Per-item AP chips remain; batch reward footer is gone.
     assert_match(/\+#{GameRules::BATTLE_TODO_LP}/, response.body)

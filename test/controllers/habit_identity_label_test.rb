@@ -43,7 +43,7 @@ class HabitIdentityLabelTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "#today_habit_#{habit.id} .lp-habit-identity", text: "I am a reader"
-    assert_select "#today_habit_#{habit.id} .lp-dash-battle__name", text: "Read"
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__title", text: "Read"
 
     get new_habit_path
     assert_response :success
@@ -65,7 +65,7 @@ class HabitIdentityLabelTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{habit.id} .lp-dash-battle__name", text: "Meditate"
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__title", text: "Meditate"
     assert_select "#today_habit_#{habit.id} .lp-habit-identity", count: 0
   end
 
