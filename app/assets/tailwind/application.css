@@ -3630,6 +3630,74 @@ html[data-theme="dark"] {
   color: var(--lp-muted);
 }
 
+/* ——— Normalize native control box chrome (time/date/number/gap checkbox) ———
+   Scoped by type+class so text .lp-input stays untouched.
+   color-scheme and OS picker popovers are intentionally unchanged.
+   Firefox: box shell normalizes; calendar-picker-indicator is WebKit/Blink-only
+   (native glyph may remain — accepted). */
+input[type="time"].lp-dash-tcard__time-input,
+input[type="time"].lp-input,
+input[type="date"].lp-input,
+input[type="time"].lp-rpg-input,
+input[type="date"].lp-rpg-input {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.25rem;
+  color-scheme: inherit;
+}
+
+input[type="time"].lp-dash-tcard__time-input::-webkit-calendar-picker-indicator,
+input[type="time"].lp-input::-webkit-calendar-picker-indicator,
+input[type="date"].lp-input::-webkit-calendar-picker-indicator,
+input[type="time"].lp-rpg-input::-webkit-calendar-picker-indicator,
+input[type="date"].lp-rpg-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.85;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1rem 1rem;
+  /* Flat clock/calendar glyph in muted ink — same language as app icons */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b95a5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+  filter: none;
+}
+
+input[type="date"].lp-input::-webkit-calendar-picker-indicator,
+input[type="date"].lp-rpg-input::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b95a5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M3 11h18'/%3E%3C/svg%3E");
+}
+
+input[type="time"].lp-dash-tcard__time-input:hover::-webkit-calendar-picker-indicator,
+input[type="time"].lp-input:hover::-webkit-calendar-picker-indicator,
+input[type="time"].lp-rpg-input:hover::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2357d35b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+  opacity: 1;
+}
+
+input[type="date"].lp-input:hover::-webkit-calendar-picker-indicator,
+input[type="date"].lp-rpg-input:hover::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2357d35b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M3 11h18'/%3E%3C/svg%3E");
+  opacity: 1;
+}
+
+input[type="number"].lp-dash-tcard__amount,
+input[type="number"].lp-rpg-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"].lp-dash-tcard__amount::-webkit-outer-spin-button,
+input[type="number"].lp-dash-tcard__amount::-webkit-inner-spin-button,
+input[type="number"].lp-rpg-input::-webkit-outer-spin-button,
+input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
 .lp-flash {
   margin: 0.75rem 1rem 0;
   border-radius: 1rem;
@@ -4678,6 +4746,47 @@ html[data-theme="dark"] {
   font-size: 0.78rem;
   color: var(--lp-muted);
   cursor: pointer;
+}
+
+/* Custom checkbox chrome — same language as .lp-dash-check (not OS accent). */
+.lp-commitment-gap__qty-check {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0.15rem 0 0;
+  flex-shrink: 0;
+  border-radius: 0.35rem;
+  border: 1.5px solid rgba(87, 211, 91, 0.5);
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+}
+
+.lp-commitment-gap__qty-check::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  transform: scale(0);
+  transition: transform 120ms ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%230b0f14' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.lp-commitment-gap__qty-check:checked {
+  border-color: var(--lp-green, #57d35b);
+  background: var(--lp-green, #57d35b);
+}
+
+.lp-commitment-gap__qty-check:checked::before {
+  transform: scale(1);
+}
+
+.lp-commitment-gap__qty-check:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--lp-green, #57d35b) 55%, white);
+  outline-offset: 2px;
 }
 
 .lp-commitment-gap__qty-title {
