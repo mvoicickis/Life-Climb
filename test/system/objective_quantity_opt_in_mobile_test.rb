@@ -41,13 +41,13 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-tcard.is-quest", wait: 5
 
-    assert_selector ".lp-dash-tcard__objective[data-controller='quantity-complete']", text: /Read chapter 3/
-    assert_no_selector ".lp-dash-tcard__objective[data-controller='quantity-complete']", text: /Review notes/
+    assert_selector ".lp-dash-checklist__obj[data-controller='quantity-complete']", text: /Read chapter 3/
+    assert_no_selector ".lp-dash-checklist__obj[data-controller='quantity-complete']", text: /Review notes/
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/objective-quantity-optin-today-mobile.png")
 
-    find("button.lp-dash-tcard__win[aria-label='Complete Read chapter 3']").click
+    find("button.lp-dash-check[aria-label='Complete Read chapter 3']").click
     assert_selector "dialog.lp-quantity-complete[open]", wait: 3
     assert_selector "dialog.lp-quantity-complete[open] .lp-strategy-sheet__title", text: /How many pages/i
     page.save_screenshot("/opt/cursor/artifacts/screenshots/objective-quantity-dialog-mobile.png")
@@ -57,11 +57,11 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
       click_button I18n.t("strategy.quantity.log_confirm")
     end
 
-    assert_selector ".lp-dash-tcard__objective.is-done", text: /Read chapter 3/, wait: 5
+    assert_selector ".lp-dash-checklist__obj.is-done", text: /Read chapter 3/, wait: 5
     assert_equal BigDecimal("19"), @section.reload.current_amount
     assert @tracked.reload.completed?
 
-    find("button.lp-dash-tcard__win[aria-label='Complete Review notes']").click
+    find("button.lp-dash-check[aria-label='Complete Review notes']").click
     assert_no_selector "dialog.lp-quantity-complete[open]"
     assert_selector ".lp-dash-tcard.is-quest.is-done", text: /Volume 0/i, wait: 5
     assert @plain.reload.completed?

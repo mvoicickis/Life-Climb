@@ -89,8 +89,8 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Teal Volume"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: /Do a lesson/
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: /Review notes/
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: /Do a lesson/
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: /Review notes/
   end
 
   test "uncolored quest still renders as a quest card on Today" do
@@ -105,7 +105,7 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Plain Volume"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective", minimum: 1
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj", minimum: 1
   end
 
   test "quest detail edit dialog can update color_key" do

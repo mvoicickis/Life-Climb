@@ -96,4 +96,3 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
     assert_match(/Daily steps/, response.body)
   end
 end
-

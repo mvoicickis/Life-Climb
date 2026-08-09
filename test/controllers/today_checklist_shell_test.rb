@@ -42,7 +42,7 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: "Do a lesson"
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
     assert_select "form[action=?]", complete_daily_todo_path(todo), count: 0
   end

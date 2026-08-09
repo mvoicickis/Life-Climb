@@ -65,10 +65,10 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard__objective[data-controller='quantity-complete'] form[action=?]",
+    assert_select ".lp-dash-checklist__obj[data-controller='quantity-complete'] form[action=?]",
                   practice_task_path(tracked)
     assert_select "#qty-obj-#{tracked.id}"
-    assert_select ".lp-dash-tcard__objective[data-controller='quantity-complete'] form[action=?]",
+    assert_select ".lp-dash-checklist__obj[data-controller='quantity-complete'] form[action=?]",
                   practice_task_path(plain),
                   count: 0
 

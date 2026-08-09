@@ -79,8 +79,8 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: "Do a lesson"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__objective-title", text: "Review notes"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: "Review notes"
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
   end
 
