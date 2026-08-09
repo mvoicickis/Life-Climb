@@ -17,11 +17,13 @@
         day_shield: @day_shield,
         commitment: @commitment %>
 
-  <% if @next_action.present? %>
-    <%= render "shared/next_action",
-          next_action: @next_action,
-          commitment: @commitment %>
-  <% end %>
+  <div id="next-action-slot">
+    <% if @next_action.present? %>
+      <%= render "shared/next_action",
+            next_action: @next_action,
+            commitment: @commitment %>
+    <% end %>
+  </div>
 
   <% if @commitment_level_up && @journey.present? %>
     <% next_key = @journey.commitment_key.to_s == "easy" ? "medium" : "hard" %>

@@ -30,6 +30,7 @@ module Strategy
       :streak_days,
       :fix_links,
       :drop_easy,
+      :eligibility,
       keyword_init: true
     )
 
@@ -261,7 +262,8 @@ module Strategy
         urgency: signal.urgency,
         streak_days: signal.streak_days,
         fix_links: signal.fix_links,
-        drop_easy: signal.key == :commitment_gap
+        drop_easy: signal.key == :commitment_gap,
+        eligibility: signal.eligibility
       )
     end
 

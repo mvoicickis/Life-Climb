@@ -1,0 +1,119 @@
+<%# locals: next_action, commitment, open_reveal (optional), planned_battles (optional) %>
+<% elig = next_action.eligibility
+   journey = current_user.primary_focused_journey
+   habit_have = elig&.habit_have.to_i
+   habit_need = elig&.habit_need.to_i
+   battle_done = commitment&.battle_done.to_i
+   battle_need = commitment&.battle_required.to_i
+   open = local_assigns[:open_reveal].to_s
+   planned = Array(local_assigns[:planned_battles])
+   planned = current_user.daily_todos.for_day(Date.current).incomplete.ordered.to_a if planned.empty?
+   default_end = (Time.current + 1.hour).strftime("%H:%M")
+   aria = t("strategy.next_action.commitment_gap.title")
+%>
+<aside id="commitment-gap-panel"
+       class="lp-glass lp-glass--pad lp-dash-next is-stuck lp-commitment-gap"
+       data-controller="commitment-gap"
+       data-commitment-gap-open-value="<%= open %>"
+       data-next-action-key="commitment_gap"
+       data-next-action-tone="stuck"
+       aria-label="<%= aria %>">
+  <div class="lp-commitment-gap__pillars">
+    <div class="lp-commitment-gap__pillar">
+      <div class="lp-commitment-gap__row">
+        <div class="lp-commitment-gap__chip" data-battles-chip="true">
+          <%= render "shared/lp_icon", name: "sword", class_name: "lp-icon is-inline" %>
+          <span class="lp-commitment-gap__label"><%= t("strategy.next_action.commitment_gap.battles") %></span>
+          <span class="lp-commitment-gap__count" data-battles-count="true"><%= battle_done %>/<%= battle_need %></span>
+        </div>
+        <button type="button"
+                class="lp-commitment-gap__plus"
+                data-action="commitment-gap#toggleBattle"
+                aria-label="<%= t("strategy.next_action.commitment_gap.add_battle") %>">
+          +
+        </button>
+      </div>
+      <div class="lp-commitment-gap__reveal"
+           data-commitment-gap-target="battleReveal"
+           <%= "hidden" unless open == "battle" %>>
+        <%= form_with url: dashboard_quick_battles_path,
+              method: :post,
+              class: "lp-commitment-gap__form",
+              data: { turbo: true } do %>
+          <input type="hidden" name="open_reveal" value="battle">
+          <%= text_field_tag :title, nil,
+                placeholder: t("strategy.next_action.commitment_gap.battle_placeholder"),
+                class: "lp-input w-full",
+                autocomplete: "off",
+                required: true,
+                maxlength: 80 %>
+          <div class="lp-commitment-gap__time-row">
+            <span class="lp-commitment-gap__hint"><%= t("strategy.next_action.commitment_gap.starts_now_ends") %></span>
+            <%= time_field_tag :end_time, default_end, required: true, class: "lp-input" %>
+            <%= submit_tag t("strategy.next_action.commitment_gap.plan_it"),
+                  class: "lp-habits__btn is-primary" %>
+          </div>
+        <% end %>
+        <% if planned.any? %>
+          <ul class="lp-commitment-gap__planned">
+            <% planned.each do |todo| %>
+              <li>
+                <%= render "shared/lp_icon", name: "sword", class_name: "lp-icon is-inline" %>
+                <span><%= todo.title %> — <%= t("strategy.next_action.commitment_gap.planned_not_won") %></span>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="lp-commitment-gap__pillar">
+      <div class="lp-commitment-gap__row">
+        <div class="lp-commitment-gap__chip" data-habits-chip="true">
+          <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
+          <span class="lp-commitment-gap__label"><%= t("strategy.next_action.commitment_gap.habits") %></span>
+          <span class="lp-commitment-gap__count" data-habits-count="true"><%= habit_have %>/<%= habit_need %></span>
+        </div>
+        <button type="button"
+                class="lp-commitment-gap__plus"
+                data-action="commitment-gap#toggleHabit"
+                aria-label="<%= t("strategy.next_action.commitment_gap.add_habit") %>">
+          +
+        </button>
+      </div>
+      <div class="lp-commitment-gap__reveal"
+           data-commitment-gap-target="habitReveal"
+           <%= "hidden" unless open == "habit" %>>
+        <%= form_with url: habits_path,
+              method: :post,
+              class: "lp-commitment-gap__form is-habit",
+              data: { turbo: true } do %>
+          <input type="hidden" name="source" value="commitment_gap">
+          <input type="hidden" name="open_reveal" value="habit">
+          <%= text_field_tag "habit[name]", nil,
+                placeholder: t("strategy.next_action.commitment_gap.habit_placeholder"),
+                class: "lp-input",
+                autocomplete: "off",
+                required: true,
+                maxlength: 80 %>
+          <%= submit_tag t("strategy.next_action.commitment_gap.add"),
+                class: "lp-habits__btn is-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-commitment-gap__footer">
+    <%= button_to t("strategy.next_action.commitment_gap.drop_easy"),
+          commitment_settings_path,
+          method: :patch,
+          params: { commitment_key: "easy", return_to: "today" },
+          class: "lp-commitment-gap__link",
+          form: { class: "lp-commitment-gap__drop", data: { turbo: false } } %>
+    <% if elig&.missing_camps && journey.present? %>
+      <%= link_to t("strategy.next_action.commitment_gap.need_room"),
+            life_journey_path(journey),
+            class: "lp-commitment-gap__link" %>
+    <% end %>
+  </div>
+</aside>

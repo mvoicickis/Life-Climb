@@ -1,4 +1,6 @@
 class HabitsController < ApplicationController
+  include CommitmentGapRefresh
+
   before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
   before_action :load_journeys, only: %i[ new create edit update ]
   before_action :load_areas, only: %i[ index new create edit update show ]
@@ -43,13 +45,28 @@ class HabitsController < ApplicationController
     return_to = params[:return_to].to_s
 
     if @habit.save
-      if return_to == "journey"
+      if params[:source].to_s == "commitment_gap"
+        refresh_commitment_gap_context!(open_reveal: params[:open_reveal].presence || "habit")
+        respond_to do |format|
+          format.turbo_stream { render_commitment_gap_stream }
+          format.html { redirect_to dashboard_path, notice: "Added. Start logging today — small steps count." }
+        end
+      elsif return_to == "journey"
         redirect_to life_points_path, notice: t("progress.stats.created")
       else
         redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
       end
     elsif return_to == "journey"
       redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
+    elsif params[:source].to_s == "commitment_gap"
+      refresh_commitment_gap_context!(open_reveal: "habit")
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:alert] = @habit.errors.full_messages.to_sentence
+          render_commitment_gap_stream
+        end
+        format.html { render :new, status: :unprocessable_entity }
+      end
     else
       render :new, status: :unprocessable_entity
     end
