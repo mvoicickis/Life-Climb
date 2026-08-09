@@ -96,6 +96,12 @@ de:
           - "Komm zu „%{title}“ zurück, wenn du kannst."
           - "„%{title}“ wartet auf ein bisschen Fortschritt."
         cta: "Auf Heute öffnen"
+      commitment_gap:
+        title: "Dein Commitment braucht mehr Setup"
+        titles:
+          - "Dein Commitment braucht mehr Setup."
+        cta: "Habits öffnen"
+        drop_easy: "Auf Leicht wechseln"
     next_up:
       add_battle_cta: "Heutige Schlacht hinzufügen"
       fight_battle_cta: "Heutige Schlacht hinzufügen"

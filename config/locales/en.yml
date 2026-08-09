@@ -975,6 +975,12 @@ en:
           - "Come back to “%{title}” when you can."
           - "“%{title}” is waiting for a little progress."
         cta: "Open on Today"
+      commitment_gap:
+        title: "Your commitment needs more setup"
+        titles:
+          - "Your commitment needs more setup."
+        cta: "Open Habits"
+        drop_easy: "Drop to Easy"
     next_up:
       kicker: "Next up"
       create_goal_title: "Lock your season goal"

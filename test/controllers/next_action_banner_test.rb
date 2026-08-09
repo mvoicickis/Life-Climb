@@ -71,6 +71,43 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select "[data-commitment-progress]", minimum: 1
   end
 
+  test "commitment_gap banner shows stuck tone, gap copy, fix links, and Drop to Easy" do
+    @user.habits.active.on_home.update_all(show_on_home: false)
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select ".lp-dash-next.is-stuck[data-next-action-key=commitment_gap][data-next-action-tone=stuck]", count: 1
+    assert_select ".lp-dash-next__title", text: /Medium needs 3 Today habits/
+    assert_select ".lp-dash-next__title", text: /Medium needs 3 planned camps/
+    assert_select "a.lp-cta[href=?]", habits_path, text: I18n.t("settings.commitment.eligibility.open_habits")
+    assert_select "a.lp-cta[href=?]", life_journey_path(@journey), text: I18n.t("settings.commitment.eligibility.open_mountain")
+    assert_select "form.lp-dash-next__drop[action=?]", commitment_settings_path
+    assert_match(/Drop to Easy/, response.body)
+    assert_select "[data-commitment-progress]", count: 0
+  end
+
+  test "Drop to Easy from commitment_gap returns to Today and sets Easy" do
+    @user.habits.active.on_home.update_all(show_on_home: false)
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+
+    patch commitment_settings_path, params: { commitment_key: "easy", return_to: "today" }
+    assert_redirected_to dashboard_path
+    assert_equal "easy", @journey.reload.commitment_key
+    assert_equal 1, @journey.commitment_habit_count
+  end
+
   test "confirm_camp banner when ProjectCheckQueue has a pending project" do
     build_spine_and_cascade!(title: "Send five emails")
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Send five emails")

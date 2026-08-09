@@ -32,6 +32,17 @@ class SettingsCommitmentEligibilityTest < ActionDispatch::IntegrationTest
     assert_equal "easy", @journey.reload.commitment_key
   end
 
+  test "ineligible flash matches Today::Commitment.gap_alert exactly" do
+    elig = Today::Commitment.eligibility(user: @user, key: "medium", journey: @journey)
+    expected = Today::Commitment.gap_alert(elig)
+    assert_match(/Medium needs 3 Today habits — you have/i, expected)
+    assert_match(/Medium needs 3 planned camps — you have/i, expected)
+
+    patch commitment_settings_path, params: { commitment_key: "medium" }
+    assert_redirected_to settings_path(highlight: "commitment")
+    assert_equal expected, flash[:alert]
+  end
+
   test "eligible Medium applies from Settings" do
     3.times do |n|
       @user.habits.create!(

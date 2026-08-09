@@ -4,7 +4,8 @@ module Strategy
   # Single "what should this person do right now?" resolver for Mountain,
   # Today, and (later) notifications.
   #
-  # Priority: scored companion signals (overdue / streak / unlock / stalled),
+  # Priority: commitment_gap short-circuit (structurally stuck on current tier),
+  # then scored companion signals (overdue / streak / unlock / stalled),
   # then the legacy structural chain with a steady tone.
   #
   # Today authority is DailyTodo (for_day), matching Today / mark-done / morning
@@ -14,6 +15,7 @@ module Strategy
     UNLOCK_WINDOW_DAYS = 3
     QUEST_STALL_DAYS = 3
 
+    # Scored signals only. commitment_gap short-circuits before best_signal.
     SIGNAL_ORDER = %i[battle_overdue streak_at_risk project_unlocked quest_stalled].freeze
 
     Result = Struct.new(
@@ -26,6 +28,8 @@ module Strategy
       :tone,
       :urgency,
       :streak_days,
+      :fix_links,
+      :drop_easy,
       keyword_init: true
     )
 
@@ -37,6 +41,9 @@ module Strategy
       :project_title,
       :href,
       :streak_days,
+      :eligibility,
+      :gap_name,
+      :fix_links,
       keyword_init: true
     )
 
@@ -53,6 +60,10 @@ module Strategy
 
     def call
       return nil if @journey.blank? || @goal.blank?
+
+      if (gap = signal_commitment_gap)
+        return result_from(gap)
+      end
 
       signal = best_signal
       return result_from(signal) if signal
@@ -74,6 +85,46 @@ module Strategy
 
     def todays_todos
       @todays_todos ||= @user.daily_todos.for_day(Date.current).ordered.to_a
+    end
+
+    # Structural short-circuit — not part of scored candidates.
+    def signal_commitment_gap
+      elig = Today::Commitment.eligibility_for_counts(
+        user: @user,
+        journey: @journey,
+        habit_count: @journey.commitment_habit_count,
+        battle_count: @journey.commitment_battle_count,
+        key: @journey.commitment_key
+      )
+      return nil if elig.eligible?
+
+      name = Today::Commitment::PRESETS.dig(@journey.commitment_key.to_s, :name) ||
+             @journey.commitment_name.to_s.presence ||
+             @journey.commitment_key.to_s.capitalize
+
+      links = []
+      if elig.missing_habits
+        links << {
+          label: I18n.t("settings.commitment.eligibility.open_habits"),
+          href: helpers.habits_path
+        }
+      end
+      if elig.missing_camps
+        links << {
+          label: I18n.t("settings.commitment.eligibility.open_mountain"),
+          href: helpers.life_journey_path(@journey)
+        }
+      end
+
+      Signal.new(
+        key: :commitment_gap,
+        urgency: 0,
+        tone: :stuck,
+        eligibility: elig,
+        gap_name: name,
+        fix_links: links,
+        href: links.first&.fetch(:href, helpers.dashboard_path) || helpers.dashboard_path
+      )
     end
 
     def best_signal
@@ -187,6 +238,8 @@ module Strategy
       title_key = "strategy.next_action.#{signal.key}.title"
       title =
         case signal.key
+        when :commitment_gap
+          Today::Commitment.gap_alert(signal.eligibility, name: signal.gap_name)
         when :battle_overdue, :quest_stalled
           I18n.t(title_key, title: signal.todo_title)
         when :project_unlocked
@@ -206,7 +259,9 @@ module Strategy
         project_title: signal.project_title,
         tone: signal.tone,
         urgency: signal.urgency,
-        streak_days: signal.streak_days
+        streak_days: signal.streak_days,
+        fix_links: signal.fix_links,
+        drop_easy: signal.key == :commitment_gap
       )
     end
 
