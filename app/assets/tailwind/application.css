@@ -4498,6 +4498,13 @@ html[data-theme="dark"] {
   text-decoration: underline;
 }
 
+/* Turbo replace target for NextAction / commitment_gap panel.
+   Must shrink inside .lp-dash grid or long nowrap titles blow past the viewport. */
+#next-action-slot {
+  min-width: 0;
+  max-width: 100%;
+}
+
 /* Compact NextAction banner — glass shell via .lp-glass; layout only here.
    Own padding beats .lp-glass--pad so Mountain/Today stay dense. */
 .lp-dash-next,
