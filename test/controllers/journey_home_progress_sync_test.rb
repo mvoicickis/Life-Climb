@@ -84,7 +84,8 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_in_delta 45.0, @journey.gap_percent.to_f, 0.01
 
     get dashboard_path
-    assert_match(/>55</, response.body)
+    assert_select ".lp-dash-header .lp-dash-bar__fill[style=?]", "width: 55%"
+    assert_select ".lp-dash-bar[aria-valuenow=?]", "55"
 
     get life_points_path
     assert_response :success
