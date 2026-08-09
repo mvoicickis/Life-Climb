@@ -81,6 +81,8 @@ class DashboardController < ApplicationController
     @life_points = current_user.reload.life_points
     @climb_streak = Climb::Streak.status(user: current_user)
     @day_shield = Today::DayShield.status(user: current_user)
+    @commitment = Today::Commitment.touch_met_streak!(user: current_user, journey: @journey)
+    @commitment_level_up = Today::Commitment.suggest_level_up?(journey: @journey)
     @timeline = Today::Timeline.build(user: current_user, todos: @daily_todos)
     @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
     @next_action = Strategy::NextAction.for(

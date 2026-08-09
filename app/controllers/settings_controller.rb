@@ -2,6 +2,7 @@ class SettingsController < ApplicationController
   def show
     @home_habits = current_user.home_board_habits
     @all_habits = current_user.habits.active.ordered
+    @commitment_journey = current_user.primary_focused_journey
   end
 
   def edit_name
@@ -17,6 +18,27 @@ class SettingsController < ApplicationController
     else
       render update_error_template, status: :unprocessable_entity
     end
+  end
+
+  def update_commitment
+    journey = current_user.primary_focused_journey
+    unless journey
+      redirect_to settings_path, alert: t("settings.commitment.need_journey") and return
+    end
+
+    preset = params[:commitment_key].to_s
+    if Today::Commitment::PRESETS.key?(preset)
+      Today::Commitment.apply_preset!(journey, preset)
+    else
+      Today::Commitment.apply_custom!(
+        journey,
+        name: params[:commitment_name],
+        habit_count: params[:commitment_habit_count],
+        battle_count: params[:commitment_battle_count]
+      )
+    end
+
+    redirect_to settings_path(highlight: "commitment"), notice: t("settings.commitment.updated")
   end
 
   def reorder

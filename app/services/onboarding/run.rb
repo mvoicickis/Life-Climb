@@ -10,7 +10,7 @@ module Onboarding
 
     def self.call(user:, title: nil, area_key: DEFAULT_AREA_KEY, ideal_scene: nil, current_reality: nil,
                   next_win: nil, today_mission: nil, closer_percent: 5, route_mission: false,
-                  onboarding_category: nil, due_on: nil)
+                  onboarding_category: nil, due_on: nil, commitment_key: nil)
       new(
         user:,
         area_key:,
@@ -22,11 +22,12 @@ module Onboarding
         closer_percent:,
         route_mission:,
         onboarding_category:,
-        due_on:
+        due_on:,
+        commitment_key:
       ).call
     end
 
-    def initialize(user:, area_key:, title:, ideal_scene:, current_reality:, next_win:, today_mission:, closer_percent:, route_mission:, onboarding_category: nil, due_on: nil)
+    def initialize(user:, area_key:, title:, ideal_scene:, current_reality:, next_win:, today_mission:, closer_percent:, route_mission:, onboarding_category: nil, due_on: nil, commitment_key: nil)
       @user = user
       @area_key = area_key.to_s.presence || DEFAULT_AREA_KEY
       @title = title.to_s.strip
@@ -38,6 +39,7 @@ module Onboarding
       @route_mission = route_mission
       @onboarding_category = onboarding_category.to_s.presence
       @due_on = due_on
+      @commitment_key = commitment_key.to_s.presence || "easy"
     end
 
     def call
@@ -68,6 +70,8 @@ module Onboarding
           next_win: @next_win,
           closer_percent: @closer_percent
         )
+        key = Today::Commitment::PRESETS.key?(@commitment_key) ? @commitment_key : "easy"
+        Today::Commitment.apply_preset!(journey, key)
         Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
 
         if @route_mission || Onboarding::Categories.valid_id?(@onboarding_category)

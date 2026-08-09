@@ -435,6 +435,19 @@ de:
     shield:
       ready_line: "Schild bereit — blockiert heute ein verpasstes Fenster."
       used_on_card: "Schild hat diesen Fehlversuch blockiert"
+    commitment:
+      tier_label: "Tägliches Commitment"
+      progress: "Kämpfe %{battles_done} von %{battles_total} · Gewohnheiten %{habits_done} von %{habits_total}"
+      survived: "Tag überstanden — Commitment erfüllt"
+      shield_ready: "Schild bereit — blockiert heute ein verpasstes Fenster"
+      shield_used: "Schild heute schon genutzt"
+      shield_ready_short: "Bereit"
+      shield_used_short: "Genutzt"
+      level_up_title: "Du bist bereit für einen härteren Tag"
+      level_up_body: "Wechsel zu %{name}?"
+      level_up_accept: "Zu %{name} wechseln"
+      level_up_keep: "%{name} behalten"
+      level_up_done: "Commitment auf %{name} gesetzt."
   climb:
     streak:
       chip: "%{count} Tage"
@@ -718,6 +731,17 @@ de:
     character_hint: "Wird bei Heute, auf dem Berg und auf dem Pfad gezeigt."
     character_updated: "Begleiter aktualisiert."
     character_save: "Begleiter speichern"
+    commitment:
+      title: "Tägliches Commitment"
+      hint: "Wie viele zeitgebundene Kämpfe und grüne Gewohnheiten gelten als überstandener Tag."
+      preset_label: "%{name} — %{habits} Gewohnheiten + %{battles} Kämpfe"
+      custom_title: "Eigenes"
+      name_label: "Name"
+      habits_label: "Gewohnheiten"
+      battles_label: "Kämpfe"
+      save_custom: "Eigenes speichern"
+      updated: "Tägliches Commitment aktualisiert."
+      need_journey: "Starte zuerst einen Berg."
     notifications:
       row_label: "Benachrichtigungen"
       title: "Benachrichtigungen"
@@ -965,6 +989,15 @@ de:
     need_mountain: "Nenne das Ziel, das du erreichen willst."
     need_character: "Wähle deinen Begleiter für den Aufstieg."
     continue: "Weiter"
+    commitment_kicker: "Wie hart heute?"
+    commitment_title: "Wähle dein tägliches Commitment"
+    commitment_lead: "Gewinne so viele zeitgebundene Kämpfe und grüne Gewohnheiten pro Tag. Später änderbar."
+    commitment_counts: "%{habits} Gewohnheiten + %{battles} Kämpfe"
+    commitment_skip: "Erstmal überspringen"
+    commitment_presets:
+      easy: "Leicht"
+      medium: "Mittel"
+      hard: "Hart"
     deadline_kicker: "Eine Ziellinie hilft"
     deadline_title: "Dein Aufstieg hat eine sanfte Ziellinie."
     deadline_lead: "%{date} — ein Checkpoint, keine Deadline."

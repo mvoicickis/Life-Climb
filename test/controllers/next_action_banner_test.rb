@@ -42,7 +42,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_banner_state(:set_today, tone: :steady)
-    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.set_today.cta")
+    assert_select "a.lp-cta", count: 0
+    assert_select "[data-commitment-progress]", minimum: 1
   end
 
   test "complete_battle banner includes todo title with steady tone before overdue hour" do
@@ -53,7 +54,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
     assert_banner_state(:complete_battle, tone: :steady)
     assert_select ".lp-dash-next__title", text: /Send five emails/
-    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.complete_battle.cta")
+    assert_select "a.lp-cta", count: 0
+    assert_select "[data-commitment-progress]", minimum: 1
   end
 
   test "battle_overdue banner uses urgent tone after overdue hour" do
@@ -65,7 +67,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
     assert_banner_state(:battle_overdue, tone: :urgent)
     assert_select ".lp-dash-next__title", text: /Send five emails/
-    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.battle_overdue.cta")
+    assert_select "a.lp-cta", count: 0
+    assert_select "[data-commitment-progress]", minimum: 1
   end
 
   test "confirm_camp banner when ProjectCheckQueue has a pending project" do
@@ -78,7 +81,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_banner_state(:confirm_camp, tone: :steady)
-    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.confirm_camp.cta")
+    assert_select "a.lp-cta", count: 0
+    assert_select "[data-commitment-progress]", minimum: 1
   end
 
   test "day_won banner when todos are done and no camp confirmation pending" do
@@ -90,6 +94,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
     assert_banner_state(:day_won, tone: :steady)
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.day_won.cta")
+    assert_select "[data-commitment-progress]", minimum: 1
   end
 
   test "banner absent when journey has no goal" do

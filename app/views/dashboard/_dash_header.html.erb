@@ -1,9 +1,15 @@
-<%# Compact Today header — avatar, progress, streak+AP pill.
-    locals: closer, streak, life_points %>
+<%# Compact Today header — avatar, progress, streak+AP + commitment badges.
+    locals: closer, streak, life_points, day_shield, commitment %>
 <% closer = local_assigns.fetch(:closer) { @closer }.to_i.clamp(0, 100) %>
 <% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
 <% life_points = local_assigns.fetch(:life_points) { @life_points } %>
+<% day_shield = local_assigns[:day_shield] || @day_shield %>
+<% commitment = local_assigns[:commitment] || @commitment %>
 <% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
+<% tier_name = commitment&.journey&.commitment_name.presence ||
+               (local_assigns[:journey] || @journey)&.commitment_name.presence ||
+               "Easy" %>
+<% shield_ready = day_shield.respond_to?(:available) ? day_shield.available : Today::DayShield.available?(user: current_user) %>
 
 <header class="lp-dash-header" aria-label="<%= t('dash.goal_label') %>">
   <div class="lp-dash-header__who">
@@ -25,15 +31,27 @@
     </div>
   </div>
 
-  <div class="lp-dash-header__pill" aria-label="<%= t('dash.timeline.stats_pill') %>">
-    <span class="lp-dash-header__stat">
-      <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
-      <span><%= streak_days %></span>
+  <div class="lp-dash-header__stats" aria-label="<%= t('dash.timeline.stats_pill') %>">
+    <div class="lp-dash-header__pill">
+      <span class="lp-dash-header__stat">
+        <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
+        <span><%= streak_days %></span>
+      </span>
+      <span class="lp-dash-header__divider" aria-hidden="true"></span>
+      <span class="lp-dash-header__stat">
+        <%= render "shared/lp_icon", name: "bolt", class_name: "lp-icon is-inline" %>
+        <span data-battle-day-target="lpTotal"><%= number_with_delimiter(life_points) %></span>
+      </span>
+    </div>
+
+    <span class="lp-dash-header__badge is-tier" data-commitment-tier="<%= tier_name %>" title="<%= t('dash.commitment.tier_label') %>">
+      <%= tier_name %>
     </span>
-    <span class="lp-dash-header__divider" aria-hidden="true"></span>
-    <span class="lp-dash-header__stat">
-      <%= render "shared/lp_icon", name: "bolt", class_name: "lp-icon is-inline" %>
-      <span data-battle-day-target="lpTotal"><%= number_with_delimiter(life_points) %></span>
+    <span class="lp-dash-header__badge is-shield <%= 'is-ready' if shield_ready %>"
+          data-day-shield="<%= shield_ready ? 'ready' : 'used' %>"
+          title="<%= shield_ready ? t('dash.commitment.shield_ready') : t('dash.commitment.shield_used') %>">
+      <%= render "shared/lp_icon", name: "shield", class_name: "lp-icon is-inline" %>
+      <span><%= shield_ready ? t("dash.commitment.shield_ready_short") : t("dash.commitment.shield_used_short") %></span>
     </span>
   </div>
 </header>

@@ -51,6 +51,7 @@ module RequireOnboarding
     # Completing Today actions must not bounce mid-fight when the spine is still growing.
     %w[
       dashboard
+      today_commitments
       battle_completions
       daily_todos
       mission_completions

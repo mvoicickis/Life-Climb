@@ -69,6 +69,50 @@
     </div>
   </section>
 
+  <% if @commitment_journey %>
+    <section class="lp-glass lp-glass--pad<%= ' lp-you-row--flash' if highlight == 'commitment' %>" id="you-commitment">
+      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.commitment.title") %></h2>
+      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.commitment.hint") %></p>
+
+      <div class="lp-settings-commitment__presets mt-4">
+        <% Today::Commitment::PRESETS.each do |key, preset| %>
+          <% active = @commitment_journey.commitment_key == key %>
+          <%= button_to t("settings.commitment.preset_label",
+                name: t("v2_onboarding.commitment_presets.#{key}"),
+                habits: preset[:habit_count],
+                battles: preset[:battle_count]),
+                commitment_settings_path,
+                method: :patch,
+                params: { commitment_key: key },
+                class: "lp-settings-commitment__btn#{' is-active' if active}",
+                form: { data: { turbo: false } } %>
+        <% end %>
+      </div>
+
+      <%= form_with url: commitment_settings_path, method: :patch, class: "lp-settings-commitment__custom mt-5", data: { turbo: false } do %>
+        <p class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("settings.commitment.custom_title") %></p>
+        <label class="lp-adventure__label mt-3" for="commitment_name"><%= t("settings.commitment.name_label") %></label>
+        <%= text_field_tag :commitment_name, @commitment_journey.commitment_name,
+              id: "commitment_name",
+              maxlength: 40,
+              class: "lp-input w-full" %>
+        <div class="lp-settings-commitment__counts">
+          <div>
+            <label class="lp-adventure__label" for="commitment_habit_count"><%= t("settings.commitment.habits_label") %></label>
+            <%= number_field_tag :commitment_habit_count, @commitment_journey.commitment_habit_count,
+                  id: "commitment_habit_count", min: 0, max: 20, class: "lp-input w-full" %>
+          </div>
+          <div>
+            <label class="lp-adventure__label" for="commitment_battle_count"><%= t("settings.commitment.battles_label") %></label>
+            <%= number_field_tag :commitment_battle_count, @commitment_journey.commitment_battle_count,
+                  id: "commitment_battle_count", min: 0, max: 20, class: "lp-input w-full" %>
+          </div>
+        </div>
+        <%= submit_tag t("settings.commitment.save_custom"), class: "lp-cta mt-4" %>
+      <% end %>
+    </section>
+  <% end %>
+
   <section class="lp-glass lp-glass--pad"
            id="you-reminders"
            data-controller="push-reminders"

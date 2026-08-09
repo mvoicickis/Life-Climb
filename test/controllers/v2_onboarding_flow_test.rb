@@ -33,7 +33,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to v2_onboarding_path(step: "character")
     follow_redirect!
     assert_match(/Choose your companion/i, response.body)
-    assert_match(/Step 2 of 5/i, response.body)
+    assert_match(/Step 2 of 6/i, response.body)
     assert_select "input[name='user[character]'][value=birdie]"
     assert_select "input[name='user[character]'][value=bee]"
     assert_select "input[name='user[character]'][value=bear]"
@@ -48,7 +48,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to v2_onboarding_path(step: "category")
     follow_redirect!
     assert_match(/Where should this climb begin/i, response.body)
-    assert_match(/Step 3 of 5/i, response.body)
+    assert_match(/Step 3 of 6/i, response.body)
     assert_select ".lp-adventure__categories"
     assert_select "form[data-controller='onboarding-category']" do
       assert_select "input[type=submit]", count: 0
@@ -66,7 +66,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to v2_onboarding_path(step: "mountain")
     follow_redirect!
     assert_match(/one goal you.?re working toward/i, response.body)
-    assert_match(/Step 4 of 5/i, response.body)
+    assert_match(/Step 4 of 6/i, response.body)
     assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "category"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
     assert_select ".lp-adventure__picked", text: /Career/i
@@ -86,14 +86,27 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "mountain"), params: {
       onboarding: { title: "Become a Ruby Developer" }
     }
+    assert_redirected_to v2_onboarding_path(step: "commitment")
+    follow_redirect!
+    assert_match(/Pick your daily commitment/i, response.body)
+    assert_match(/Step 5 of 6/i, response.body)
+    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "mountain"), text: /Back/i
+    assert_select "input[name='onboarding[commitment_key]'][value=easy]"
+    assert_select "input[name='onboarding[commitment_key]'][value=medium]"
+    assert_select "input[name='onboarding[commitment_key]'][value=hard]"
+    assert_select ".lp-adventure__skip", text: /Skip for now/i
+
+    patch v2_onboarding_url(step: "commitment"), params: {
+      onboarding: { commitment_key: "medium" }
+    }
     assert_redirected_to v2_onboarding_path(step: "deadline")
     follow_redirect!
     assert_match(/Your climb has a soft finish line/i, response.body)
     assert_match(/One year from today/i, response.body)
     assert_match(/#{Regexp.escape(due_label)}/, response.body)
     assert_match(/Become a Ruby Developer/i, response.body)
-    assert_match(/Step 5 of 5/i, response.body)
-    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "mountain"), text: /Back/i
+    assert_match(/Step 6 of 6/i, response.body)
+    assert_select "a.lp-adventure__back[href=?]", v2_onboarding_path(step: "commitment"), text: /Back/i
     assert_select ".lp-adventure__progress-track"
     assert_select "form[data-turbo='false']"
     assert_select "[data-controller='onboarding-deadline']"
@@ -123,6 +136,9 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal "career", user.life_areas.v2_selected.first.key
     journey = user.primary_focused_journey
     assert_equal "Become a Ruby Developer", journey.title
+    assert_equal "medium", journey.commitment_key
+    assert_equal 3, journey.commitment_habit_count
+    assert_equal 3, journey.commitment_battle_count
     assert_equal "pending", journey.setup_flag("route")
     assert_equal "career", journey.setup_flag("onboarding_category")
     goal = user.strategy_goals.for_kind("goal").roots.first

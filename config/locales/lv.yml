@@ -435,6 +435,19 @@ lv:
     shield:
       ready_line: "Vairogs gatavs — šodien bloķē vienu izlaistu logu."
       used_on_card: "Vairogs bloķēja šo izlaidumu"
+    commitment:
+      tier_label: "Dienas solījums"
+      progress: "Cīņas %{battles_done} no %{battles_total} · Ieradumi %{habits_done} no %{habits_total}"
+      survived: "Diena izturēta — solījums izpildīts"
+      shield_ready: "Vairogs gatavs — šodien bloķē vienu izlaistu logu"
+      shield_used: "Vairogs jau izmantots šodien"
+      shield_ready_short: "Gatavs"
+      shield_used_short: "Izmantots"
+      level_up_title: "Tu esi gatavs grūtākai dienai"
+      level_up_body: "Pāriet uz %{name}?"
+      level_up_accept: "Pāriet uz %{name}"
+      level_up_keep: "Paturēt %{name}"
+      level_up_done: "Solījums iestatīts uz %{name}."
   climb:
     streak:
       chip: "%{count} dienas"
@@ -718,6 +731,17 @@ lv:
     character_hint: "Redzams Šodienā, Kalnā un uz takas."
     character_updated: "Pavadonis atjaunināts."
     character_save: "Saglabāt pavadoni"
+    commitment:
+      title: "Dienas solījums"
+      hint: "Cik laika cīņu un zaļu ieradumu skaitās kā izturēta šodiena uz tava kalna."
+      preset_label: "%{name} — %{habits} ieradumi + %{battles} cīņas"
+      custom_title: "Pielāgots"
+      name_label: "Nosaukums"
+      habits_label: "Ieradumi"
+      battles_label: "Cīņas"
+      save_custom: "Saglabāt pielāgoto"
+      updated: "Dienas solījums atjaunināts."
+      need_journey: "Vispirms sāc kalnu."
     notifications:
       row_label: "Paziņojumi"
       title: "Paziņojumi"
@@ -965,6 +989,15 @@ lv:
     need_mountain: "Nosauc mērķi, ko vēlies sasniegt."
     need_character: "Izvēlies pavadoni kāpienam."
     continue: "Turpināt"
+    commitment_kicker: "Cik grūti šodien?"
+    commitment_title: "Izvēlies dienas solījumu"
+    commitment_lead: "Katru dienu uzvari tik daudz laika cīņu un zaļu ieradumu. Vēlāk varēsi mainīt."
+    commitment_counts: "%{habits} ieradumi + %{battles} cīņas"
+    commitment_skip: "Pagaidām izlaist"
+    commitment_presets:
+      easy: "Viegls"
+      medium: "Vidējs"
+      hard: "Grūts"
     deadline_kicker: "Finiša līnija palīdz"
     deadline_title: "Tavam kāpienam ir maiga finiša līnija."
     deadline_lead: "%{date} — kontrolpunkts, nevis termiņš."

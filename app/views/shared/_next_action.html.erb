@@ -1,7 +1,7 @@
 <%# Persistent "what next" banner from Strategy::NextAction.
-    locals: next_action (Strategy::NextAction::Result), day_shield (optional) %>
+    locals: next_action, day_shield (optional), commitment (optional) %>
 <% next_action = local_assigns[:next_action] || @next_action %>
-<% day_shield = local_assigns[:day_shield] || @day_shield %>
+<% commitment = local_assigns[:commitment] || @commitment %>
 <% if next_action.present? %>
   <% tone = (next_action.tone.presence || :steady).to_s %>
   <% headline = Strategy::NextAction::Copy.headline_for(
@@ -9,8 +9,7 @@
         title: next_action.todo_title.presence || next_action.project_title,
         count: next_action.streak_days
       ) %>
-  <% shield_ready = next_action.key.to_sym == :streak_at_risk &&
-                    (day_shield&.available || Today::DayShield.available?(user: current_user)) %>
+  <% hollow_today_cta = next_action.href.to_s == dashboard_path %>
   <aside class="lp-glass lp-glass--pad lp-dash-next is-<%= tone %>"
          data-next-action-key="<%= next_action.key %>"
          data-next-action-tone="<%= tone %>"
@@ -18,10 +17,22 @@
     <%= companion_image_tag class: "lp-dash-next__face", alt: "" %>
     <div class="lp-dash-next__copy">
       <p class="lp-dash-next__title"><%= headline %></p>
-      <% if shield_ready %>
-        <p class="lp-dash-next__shield"><%= t("dash.shield.ready_line") %></p>
+      <% if commitment.present? %>
+        <p class="lp-dash-next__progress" data-commitment-progress="true">
+          <% if commitment.met? %>
+            <%= t("dash.commitment.survived") %>
+          <% else %>
+            <%= t("dash.commitment.progress",
+                  battles_done: commitment.battle_done,
+                  battles_total: commitment.battle_required,
+                  habits_done: commitment.habit_done,
+                  habits_total: commitment.habit_required) %>
+          <% end %>
+        </p>
       <% end %>
     </div>
-    <%= link_to next_action.cta_label, next_action.href, class: "lp-cta" %>
+    <% unless hollow_today_cta %>
+      <%= link_to next_action.cta_label, next_action.href, class: "lp-cta" %>
+    <% end %>
   </aside>
 <% end %>
