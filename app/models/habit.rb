@@ -44,6 +44,7 @@ class Habit < ApplicationRecord
   before_validation :normalize_stat_fields
   before_validation :normalize_identity_label
   before_validation :normalize_tracker_state
+  before_validation :infer_quantity_checkin_unless_explicit, on: :create
   before_create :assign_next_position
 
   scope :active, -> { where(active: true) }
@@ -61,11 +62,19 @@ class Habit < ApplicationRecord
     stat_type == "standard"
   end
 
-  # Today UX: quantity loggers (pages/steps/hours/goals) vs one-tap checkbox dailies.
-  def quantity_checkin?
-    standard? || goal.present? || !%w[times].include?(unit.to_s.downcase)
+  # Legacy heuristic — used for migration backfill and creates that omit the toggle.
+  def self.infer_quantity_checkin?(stat_type:, goal:, unit:)
+    stat_type.to_s == "standard" ||
+      goal.present? ||
+      !%w[times].include?(unit.to_s.downcase)
   end
 
+  def quantity_checkin=(value)
+    @quantity_checkin_explicit = true
+    super
+  end
+
+  # Today UX: quantity loggers vs one-tap Win. Stored on quantity_checkin column.
   def binary_checkin?
     !quantity_checkin?
   end
@@ -262,6 +271,15 @@ class Habit < ApplicationRecord
 
   def normalize_unit
     self.unit = unit.to_s.strip.downcase.presence || "times"
+  end
+
+  def infer_quantity_checkin_unless_explicit
+    return if @quantity_checkin_explicit
+
+    write_attribute(
+      :quantity_checkin,
+      self.class.infer_quantity_checkin?(stat_type: stat_type, goal: goal, unit: unit)
+    )
   end
 
   def normalize_identity_label

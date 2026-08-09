@@ -36,15 +36,17 @@ class StrategyGoalHabitLinksController < ApplicationController
   end
 
   def create_and_link!(project)
+    unit = params[:unit].presence || "times"
     habit = current_user.habits.create!(
       name: params[:name].to_s.strip,
-      unit: params[:unit].presence || "times",
+      unit: unit,
       points: 5,
       frequency: "daily",
       active: true,
       show_on_home: true,
       stat_type: "growth",
-      life_journey: project.life_journey
+      life_journey: project.life_journey,
+      quantity_checkin: Habit.infer_quantity_checkin?(stat_type: "growth", goal: nil, unit: unit)
     )
     HabitProjectLink.create!(habit: habit, strategy_goal: project)
     habit

@@ -613,6 +613,8 @@ de:
     unit_label: "Was zählst du?"
     unit_placeholder: "Wiederholungen, Stunden, Seiten, Schritte…"
     note_label: "Notiz (optional)"
+    quantity_checkin: "Jeden Tag eine Zahl erfassen"
+    quantity_checkin_hint: "Aus = ein Tipp auf Gewinnen bei Heute."
     enable_target: "Ziel aktivieren"
     enable_target_hint: "Aus = nur Zahlen erfassen und mit gestern vergleichen."
     judge_legend: "Wie sollen wir den heutigen Tag bewerten?"

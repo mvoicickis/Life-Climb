@@ -613,6 +613,8 @@ lv:
     unit_label: "Ko tu skaiti?"
     unit_placeholder: "atkārtojumi, stundas, lapas, soļi…"
     note_label: "Piezīme (neobligāti)"
+    quantity_checkin: "Katru dienu ieraksti skaitli"
+    quantity_checkin_hint: "Izslēgts = viens pieskāriens Uzvarēt Šodienā."
     enable_target: "Iespējot mērķi"
     enable_target_hint: "Izslēgts = tikai ieraksti skaitļus un salīdzini ar vakardienu."
     judge_legend: "Kā vērtēt šodienu?"
