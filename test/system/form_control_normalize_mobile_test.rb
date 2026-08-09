@@ -48,6 +48,13 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
         const time = document.querySelector("#commitment-gap-panel input[type='time'].lp-input");
         const check = document.querySelector("input.lp-commitment-gap__qty-check");
         const amount = document.querySelector("input[type='number'].lp-dash-tcard__amount");
+        const plus = document.querySelector("[data-commitment-gap-target='habitPlus']");
+        const toggle = document.querySelector(".lp-commitment-gap__qty-toggle");
+        const link = Array.from(document.querySelectorAll(".lp-commitment-gap__link"))
+          .find((el) => el.offsetParent !== null && el.getBoundingClientRect().height > 0)
+          || document.querySelector(".lp-commitment-gap__footer .lp-commitment-gap__link");
+        const body = document.body;
+        const bottomNav = document.querySelector(".lp-bottom-nav, .lp-dash-nav");
         const pick = (el, keys) => {
           if (!el) return null;
           const cs = getComputedStyle(el);
@@ -56,6 +63,8 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
           out.appearance = cs.appearance || cs.webkitAppearance;
           return out;
         };
+        const box = (el) => el ? el.getBoundingClientRect() : null;
+        const navCs = bottomNav ? getComputedStyle(bottomNav) : null;
         return {
           ua: navigator.userAgent,
           time: pick(time, ["paddingRight", "borderRadius", "borderColor", "backgroundColor", "color"]),
@@ -66,6 +75,12 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
           amount: amount && {
             appearance: getComputedStyle(amount).appearance || getComputedStyle(amount).webkitAppearance
           },
+          plusHeight: box(plus)?.height,
+          toggleHeight: box(toggle)?.height,
+          linkHeight: box(link)?.height,
+          bodyMinHeight: getComputedStyle(body).minHeight,
+          bodyClass: body.className,
+          bottomNavBackdrop: navCs && (navCs.webkitBackdropFilter || navCs.backdropFilter),
           colorScheme: getComputedStyle(document.documentElement).colorScheme,
           htmlTheme: document.documentElement.getAttribute("data-theme")
         };
@@ -81,7 +96,12 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
     assert_equal "none", metrics["check"]["appearance"].to_s.downcase
     assert metrics["check"]["checked"]
     check_w = metrics["check"]["width"].to_s.to_f
-    assert_in_delta 19.2, check_w, 2.0, "expected ~1.2rem checkbox width"
+    assert_in_delta 19.2, check_w, 2.0, "expected ~1.2rem checkbox visual width"
+    assert_operator metrics["plusHeight"].to_f, :>=, 44.0, "plus tap target"
+    assert_operator metrics["toggleHeight"].to_f, :>=, 44.0, "qty label tap target"
+    assert metrics["linkHeight"].to_f.positive?, "expected a visible gap link"
+    assert_operator metrics["linkHeight"].to_f, :>=, 44.0, "gap link tap target"
+    assert_includes metrics["bodyClass"].to_s, "lp-min-h-screen"
     assert metrics["colorScheme"].to_s.present?
     assert metrics["amount"], "expected Anytime quantity amount field"
     assert_includes %w[textfield none], metrics["amount"]["appearance"].to_s.downcase.presence || "textfield"
