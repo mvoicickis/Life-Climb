@@ -427,7 +427,6 @@ de:
       invalid: "Dieser Projekt-Check ist ungültig."
     timeline:
       title: "Zeitlinie von heute"
-      win: "Gewinnen"
       unscheduled: "Ohne Zeit"
       unscheduled_label: "Keine Zeit gesetzt"
       set_time: "Zeit setzen"

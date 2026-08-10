@@ -36,11 +36,11 @@
             <% if habit.binary_checkin? %>
               <% if done %>
                 <% completion = habit.completion_for(Date.current) %>
-                <%= button_to t("dash.timeline.win"),
+                <%= button_to t("dash.timeline.undo"),
                       completion_path(completion),
                       method: :delete,
                       class: "lp-dash-tcard__win is-done",
-                      aria: { label: "Undo #{habit.name}" },
+                      aria: { label: "#{t('dash.timeline.undo')} #{habit.name}" },
                       form: {
                         data: {
                           controller: "juicy-feedback",
@@ -48,11 +48,11 @@
                         }
                       } %>
               <% else %>
-                <%= button_to t("dash.timeline.win"),
+                <%= button_to t("dash.timeline.did_it"),
                       completions_path(habit_id: habit.id),
                       method: :post,
-                      class: "lp-dash-tcard__win",
-                      aria: { label: "#{t('dash.timeline.win')} #{habit.name}" },
+                      class: "lp-dash-tcard__win lp-dash-tcard__win--primary",
+                      aria: { label: "#{t('dash.timeline.did_it')} #{habit.name}" },
                       form: {
                         data: {
                           controller: "juicy-feedback",
@@ -79,8 +79,8 @@
                       class: "lp-dash-tcard__amount",
                       data: { quantity_win_target: "amount" },
                       aria: { label: t("habits.how_many") } %>
-                <%= form.submit t("dash.timeline.win"),
-                      class: "lp-dash-tcard__win",
+                <%= form.submit t("dash.timeline.log"),
+                      class: "lp-dash-tcard__win lp-dash-tcard__win--primary",
                       disabled: today_log.blank?,
                       data: { quantity_win_target: "submit" } %>
               <% end %>

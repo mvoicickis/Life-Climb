@@ -427,7 +427,6 @@ es:
       invalid: "Esa revisión de proyecto no es válida."
     timeline:
       title: "Línea de tiempo de hoy"
-      win: "Ganar"
       unscheduled: "Sin hora"
       unscheduled_label: "Sin hora fijada"
       set_time: "Fijar hora"

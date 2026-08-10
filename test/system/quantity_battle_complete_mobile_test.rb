@@ -27,7 +27,7 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     @todo = @user.daily_todos.find_by!(strategy_goal_id: @day.id, scheduled_on: Date.current)
   end
 
-  test "mobile quantified battle uses amount input then Win" do
+  test "mobile quantified battle uses amount input then Log it" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -37,7 +37,7 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     card = find(".lp-dash-tcard[data-todo-id='#{@todo.id}']")
     within(card) do
       find(".lp-dash-tcard__amount").set("12")
-      click_button "Win"
+      click_button "Log it"
     end
 
     assert_selector ".lp-dash-tcard.is-done[data-todo-id='#{@todo.id}']", wait: 5
@@ -50,7 +50,7 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     assert_equal BigDecimal("12"), log.amount
   end
 
-  test "mobile non-quantified Win still completes in one tap" do
+  test "mobile non-quantified I did it still completes in one tap" do
     plain = @user.strategy_goals.create!(
       life_area: @area,
       parent: @project.parent,
@@ -72,7 +72,7 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-timeline", wait: 5
 
-    find("button.lp-dash-tcard__win[aria-label='Win Ship PR']").click
+    find("button.lp-dash-tcard__win[aria-label='I did it Ship PR']").click
     assert_selector ".lp-dash-tcard.is-done[data-todo-id='#{plain_todo.id}']", wait: 5
     assert plain_todo.reload.completed?
     assert_equal BigDecimal("7"), @project.reload.current_amount
