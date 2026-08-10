@@ -17,10 +17,17 @@
         day_shield: @day_shield,
         commitment: @commitment %>
 
+  <div id="next-action-slot">
+    <% if @next_action.present? %>
+      <%= render "shared/next_action",
+            next_action: @next_action,
+            commitment: @commitment %>
+    <% end %>
+  </div>
+
   <% unless current_user.day_shield_tip_done? %>
-    <div class="lp-dash-level-up is-shield-tip" role="status" data-day-shield-tip="true">
-      <p class="lp-dash-level-up__title"><%= t("dash.shield.tip_title") %></p>
-      <p class="lp-dash-level-up__body"><%= t("dash.shield.ready_line") %></p>
+    <div class="lp-dash-level-up is-shield-tip is-compact" role="status" data-day-shield-tip="true">
+      <p class="lp-dash-level-up__body"><%= t("dash.shield.tip_line") %></p>
       <div class="lp-dash-level-up__actions">
         <%= button_to t("dash.shield.tip_dismiss"),
               day_shield_tip_path,
@@ -29,14 +36,6 @@
       </div>
     </div>
   <% end %>
-
-  <div id="next-action-slot">
-    <% if @next_action.present? %>
-      <%= render "shared/next_action",
-            next_action: @next_action,
-            commitment: @commitment %>
-    <% end %>
-  </div>
 
   <% if @commitment_level_up && @journey.present? %>
     <% next_key = @journey.commitment_key.to_s == "easy" ? "medium" : "hard" %>

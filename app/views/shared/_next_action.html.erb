@@ -5,7 +5,7 @@
 <% commitment = local_assigns[:commitment] || @commitment %>
 <% if next_action.present? %>
   <% tone = (next_action.tone.presence || :steady).to_s %>
-  <% gap = next_action.key.to_s == "commitment_gap" %>
+  <% gap = %w[commitment_gap setup_gap].include?(next_action.key.to_s) %>
   <% if gap %>
     <%= render "shared/commitment_gap_panel",
           next_action: next_action,

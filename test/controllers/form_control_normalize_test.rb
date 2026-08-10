@@ -28,13 +28,22 @@ class FormControlNormalizeTest < ActionDispatch::IntegrationTest
   end
 
   test "gap panel ships custom qty checkbox class and time input shell class" do
-    @user.habits.active.on_home.update_all(show_on_home: false)
     @journey.update!(
       commitment_key: "medium",
       commitment_name: "Medium",
       commitment_habit_count: 3,
       commitment_battle_count: 3
     )
+    3.times do |n|
+      @user.habits.create!(
+        name: "Gap habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+      @user.daily_todos.create!(
+        title: "Timed #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "09:00", end_time: "10:00", position: 20 + n
+      )
+    end
 
     get dashboard_path
     assert_response :success

@@ -15,7 +15,7 @@ class FirstClimbsController < ApplicationController
     if result.created?
       flash[:first_climb] = true
       flash[:human_win] = I18n.t("strategy.first_climb.human_ready", action: result.battle.title) if result.battle
-      redirect_to dashboard_path, notice: I18n.t("strategy.first_climb.ready_notice"), status: :see_other
+      redirect_to dashboard_path, status: :see_other
     else
       # Idempotent retry (double-submit / refresh): land on Today without recreating.
       redirect_to dashboard_path, status: :see_other

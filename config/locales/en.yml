@@ -110,6 +110,7 @@ en:
     shield:
       ready_line: "Shield ready — blocks one missed window today."
       tip_title: "Your daily shield"
+      tip_line: "Your shield is ready — it can save one missed window today."
       tip_dismiss: "Got it"
       used_on_card: "Shield blocked this miss"
     commitment:
@@ -979,6 +980,23 @@ en:
           - "Come back to “%{title}” when you can."
           - "“%{title}” is waiting for a little progress."
         cta: "Open on Today"
+      setup_gap:
+        titles:
+          - "One more thing so today can count."
+          - "Let’s set today up so you can win."
+        cta: "Do it on Today"
+        habits_title: "Add a habit for today"
+        habits_body: "You need %{need} on Today. You have %{have}. Add one little habit — then you can check it off."
+        battles_title:
+          one: "Plan today’s fight"
+          other: "Plan today’s fights"
+        battles_body:
+          one: "You need %{count} fight today. You have %{have}. Add one you can finish."
+          other: "You need %{count} fights today. You have %{have}. Add one you can finish."
+        set_time_title: "Give this fight a time"
+        set_time_body: "“%{title}” needs a start and end time. Only timed fights count toward your day."
+        set_time_cta: "Save time"
+        set_time_hint: "Pick when you’ll start and finish."
       commitment_gap:
         title: "Your commitment needs more setup"
         titles:

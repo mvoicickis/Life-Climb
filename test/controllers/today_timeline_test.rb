@@ -86,6 +86,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
   end
 
   test "header shows shield badge when streak is at risk (banner no longer carries shield line)" do
+    @todo.update!(start_time: "11:00", end_time: "12:00")
     @user.update!(
       climb_streak_days: 5,
       climb_streak_on: Date.current - 1,
