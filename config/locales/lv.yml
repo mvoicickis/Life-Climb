@@ -427,7 +427,6 @@ lv:
       invalid: "Šī projekta pārbaude nav derīga."
     timeline:
       title: "Šodienas laika līnija"
-      win: "Uzvarēt"
       unscheduled: "Bez laika"
       unscheduled_label: "Laiks nav iestatīts"
       set_time: "Iestatīt laiku"

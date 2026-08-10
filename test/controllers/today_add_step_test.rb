@@ -39,7 +39,7 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__add-step-btn", @todo.id.to_s
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menuitem", @todo.id.to_s, text: /Add step/
 
     assert_difference -> { PracticeTask.count }, 1 do
       post strategy_goal_practice_tasks_path(@todo.strategy_goal), params: {
@@ -56,7 +56,7 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-checklist__obj-name",
                   @todo.id.to_s, text: /Outline the auth flow/
     assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win.is-locked", @todo.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__add-step-btn", @todo.id.to_s
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menuitem", @todo.id.to_s, text: /Add step/
   end
 
   test "complete and undo step uses practice_tasks update and unlocks shell when done" do

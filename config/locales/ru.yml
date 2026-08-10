@@ -427,7 +427,6 @@ ru:
       invalid: "Эта проверка проекта недействительна."
     timeline:
       title: "Лента сегодня"
-      win: "Победа"
       unscheduled: "Без времени"
       unscheduled_label: "Время не задано"
       set_time: "Задать время"

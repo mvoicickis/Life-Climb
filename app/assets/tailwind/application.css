@@ -5314,7 +5314,25 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0.7rem 0.8rem;
   display: grid;
   gap: 0.55rem;
-  min-height: 44px;
+  min-height: var(--lp-tap);
+}
+
+.lp-dash-timeline .lp-dash-tcard {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border-left: 4px solid var(--lp-border);
+  border-radius: 0 12px 12px 0;
+}
+
+.lp-dash-timeline .lp-dash-tcard.is-needs-time {
+  border-left-color: var(--lp-gold);
+}
+
+.lp-dash-timeline .lp-dash-tcard.is-ready {
+  border-left-color: var(--lp-green);
 }
 
 .lp-dash-tcard.is-missed {
@@ -5324,7 +5342,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-tcard.is-shielded-miss {
   opacity: 0.82;
-  border-color: rgba(245, 158, 11, 0.45);
+  border-color: color-mix(in srgb, var(--lp-gold) 45%, transparent);
 }
 
 .lp-dash-tcard.is-done {
@@ -5342,11 +5360,26 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   flex: 0 0 auto;
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--lp-green, #22c55e);
+  color: var(--lp-green);
 }
 
 .lp-dash-tcard__copy {
   flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lp-dash-timeline .lp-dash-tcard__copy {
+  padding: var(--lp-pad-card) 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.lp-dash-tcard__head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
   min-width: 0;
 }
 
@@ -5355,9 +5388,17 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-size: 0.95rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+  color: var(--lp-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.lp-dash-timeline .lp-dash-tcard__title {
+  font-size: 1rem;
+  font-weight: 700;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .lp-dash-tcard__meta {
@@ -5374,9 +5415,129 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   color: var(--lp-ink);
 }
 
+.lp-dash-timeline .lp-dash-tcard__ap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  background: color-mix(in srgb, var(--lp-gold) 16%, transparent);
+  color: var(--lp-gold);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+}
+
+.lp-dash-tcard__timechip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--lp-tap);
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--lp-gold) 14%, transparent);
+  color: var(--lp-gold);
+  border: 1px solid color-mix(in srgb, var(--lp-gold) 45%, transparent);
+}
+
+.lp-dash-tcard__timechip.is-set {
+  background: transparent;
+  color: var(--lp-mint);
+  border-color: transparent;
+  padding-left: 0;
+  cursor: default;
+  min-height: 0;
+}
+
+.lp-dash-tcard__timechip.is-muted {
+  background: transparent;
+  color: var(--lp-muted);
+  border-color: transparent;
+  padding-left: 0;
+  cursor: default;
+  min-height: 0;
+  font-weight: 650;
+}
+
+.lp-dash-tcard__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: var(--lp-pad-card) 0.9rem var(--lp-pad-card) 0;
+  flex: 0 0 auto;
+}
+
+.lp-dash-tcard__menu {
+  position: relative;
+}
+
+.lp-dash-tcard__menu-summary {
+  list-style: none;
+  width: var(--lp-tap);
+  height: var(--lp-tap);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lp-muted);
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.lp-dash-tcard__menu-summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-dash-tcard__menulist {
+  position: absolute;
+  right: 0;
+  top: calc(var(--lp-tap) + 4px);
+  z-index: 20;
+  min-width: 170px;
+  background: var(--lp-elevated, var(--lp-paper));
+  border: 1px solid var(--lp-border);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.lp-dash-tcard__menuitem,
+.lp-dash-tcard__menu-form .lp-dash-tcard__menuitem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--lp-ink);
+  font-size: 0.875rem;
+  font-weight: 650;
+  min-height: var(--lp-tap);
+  padding: 0 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.lp-dash-tcard__menu-form {
+  margin: 0;
+  width: 100%;
+}
+
+.lp-dash-tcard__menuitem:hover,
+.lp-dash-tcard__menuitem:focus-visible {
+  background: var(--lp-track, var(--lp-mist));
+}
+
+.lp-dash-tcard__menuitem.is-danger {
+  color: var(--lp-gold);
+}
+
 .lp-dash-tcard__shield {
   flex: 0 0 auto;
-  color: #f59e0b;
+  color: var(--lp-gold);
 }
 
 .lp-dash-tcard__win {
@@ -5385,17 +5546,52 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   min-height: 44px;
   padding: 0.45rem 0.85rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(34, 197, 94, 0.45);
-  background: color-mix(in srgb, var(--lp-green, #22c55e) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lp-green) 45%, transparent);
+  background: color-mix(in srgb, var(--lp-green) 18%, transparent);
   color: var(--lp-ink);
   font-size: 0.82rem;
   font-weight: 800;
   cursor: pointer;
 }
 
+.lp-dash-tcard__win--primary {
+  min-width: 104px;
+  min-height: var(--lp-tap);
+  white-space: nowrap;
+  background: var(--lp-green);
+  color: var(--lp-forest-deep);
+  border: none;
+  border-bottom: 4px solid var(--lp-green-deep);
+  font-size: 0.94rem;
+  font-weight: 700;
+  transition: transform 90ms ease, border-bottom-width 90ms ease;
+}
+
+.lp-dash-tcard__win--primary:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+
+.lp-dash-tcard__win--primary:disabled {
+  background: var(--lp-track, var(--lp-mist));
+  color: var(--lp-muted);
+  border-bottom-color: var(--lp-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash-tcard__win--primary {
+    transition: none;
+  }
+
+  .lp-dash-tcard__win--primary:active {
+    transform: none;
+    border-bottom-width: 4px;
+  }
+}
+
 .lp-dash-tcard__win.is-done {
-  border-color: rgba(143, 163, 153, 0.4);
-  background: rgba(143, 163, 153, 0.12);
+  border-color: color-mix(in srgb, var(--lp-muted) 40%, transparent);
+  background: color-mix(in srgb, var(--lp-muted) 12%, transparent);
 }
 
 .lp-dash-tcard__win.is-locked {
@@ -5429,7 +5625,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-tcard__objectives {
   list-style: none;
   margin: 0;
-  padding: 0.15rem 0 0 2rem;
+  padding: 0;
   display: grid;
   gap: 0.4rem;
 }
@@ -5438,31 +5634,13 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0.15rem 0;
 }
 
-.lp-dash-tcard__remove {
-  padding: 0.15rem 0 0 2rem;
+.lp-dash-tcard__add-step-panel,
+.lp-dash-tcard__set-time-panel {
+  margin-top: 0.15rem;
 }
 
-.lp-dash-tcard__remove-btn {
-  background: none;
-  border: 0;
-  padding: 0;
-  color: var(--lp-muted);
-  font-size: 0.72rem;
-  font-weight: 650;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-  cursor: pointer;
-}
-
-.lp-dash-tcard__set-time,
-.lp-dash-tcard__add-step {
-  padding-left: 2rem;
-}
-
-.lp-dash-tcard__set-time-btn,
-.lp-dash-tcard__set-time-cancel,
-.lp-dash-tcard__add-step-btn,
-.lp-dash-tcard__add-step-cancel {
+.lp-dash-tcard__add-step-cancel,
+.lp-dash-tcard__set-time-cancel {
   background: none;
   border: 0;
   padding: 0;
@@ -5472,7 +5650,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   text-decoration: underline;
   text-underline-offset: 0.15em;
   cursor: pointer;
-  min-height: 44px;
+  min-height: var(--lp-tap);
 }
 
 .lp-dash-tcard__add-step-form {

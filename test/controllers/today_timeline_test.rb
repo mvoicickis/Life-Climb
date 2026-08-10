@@ -67,22 +67,60 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
   test "inline Set time moves an unscheduled todo into the timeline" do
     assert_not @todo.timed?
 
-    get dashboard_path
-    assert_response :success
-    assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__set-time-btn", @todo.id.to_s
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0) do
+      get dashboard_path
+      assert_response :success
+      assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s
+      assert_select ".lp-dash-tcard.is-needs-time[data-todo-id=?]", @todo.id.to_s
+      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__timechip", @todo.id.to_s
+      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win--primary", @todo.id.to_s
+      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menu", @todo.id.to_s
+      assert_match(/I did it/, response.body)
 
-    patch daily_todo_path(@todo), params: {
-      daily_todo: { start_time: "16:00", end_time: "16:45" }
-    }
-    assert_redirected_to dashboard_path
-    assert @todo.reload.timed?
+      patch daily_todo_path(@todo), params: {
+        daily_todo: { start_time: "16:00", end_time: "16:45" }
+      }
+      assert_redirected_to dashboard_path
+      assert @todo.reload.timed?
 
-    get dashboard_path
-    assert_response :success
-    assert_select ".lp-dash-timeline__item .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s
-    assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s, count: 0
-    assert_match(/16:00/, response.body)
+      get dashboard_path
+      assert_response :success
+      assert_select ".lp-dash-timeline__item .lp-dash-tcard.is-ready[data-todo-id=?]", @todo.id.to_s
+      assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s, count: 0
+      assert_match(/16:00/, response.body)
+      assert_match(/counts today/, response.body)
+    end
+  end
+
+  test "untimed battle shows actionable timechip before overdue hour" do
+    assert_not @todo.timed?
+    travel_to Time.zone.local(
+      Date.current.year, Date.current.month, Date.current.day,
+      Strategy::NextAction::OVERDUE_AFTER_HOUR - 1, 0, 0
+    ) do
+      get dashboard_path
+      assert_response :success
+      assert_select ".lp-dash-tcard.is-needs-time[data-todo-id=?]", @todo.id.to_s
+      assert_select ".lp-dash-tcard[data-todo-id=?] button.lp-dash-tcard__timechip", @todo.id.to_s
+      assert_match(/Add a time so it counts/, response.body)
+      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win--primary", @todo.id.to_s
+    end
+  end
+
+  test "untimed battle hides actionable timechip at overdue hour" do
+    assert_not @todo.timed?
+    travel_to Time.zone.local(
+      Date.current.year, Date.current.month, Date.current.day,
+      Strategy::NextAction::OVERDUE_AFTER_HOUR, 0, 0
+    ) do
+      get dashboard_path
+      assert_response :success
+      assert_select ".lp-dash-tcard.is-needs-time[data-todo-id=?]", @todo.id.to_s, count: 0
+      assert_select ".lp-dash-tcard[data-todo-id=?] button.lp-dash-tcard__timechip", @todo.id.to_s, count: 0
+      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__timechip.is-muted", @todo.id.to_s
+      assert_match(/No time set/, response.body)
+      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win--primary", @todo.id.to_s
+    end
   end
 
   test "header shows shield badge when streak is at risk (banner no longer carries shield line)" do

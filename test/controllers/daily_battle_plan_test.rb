@@ -167,6 +167,6 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-tcard__win", minimum: 5
     assert_select "form[action=?]", battle_completion_path, count: 0
     # Per-item AP chips remain; batch reward footer is gone.
-    assert_match(/\+#{GameRules::BATTLE_TODO_LP}/, response.body)
+    assert_match(/#{GameRules::BATTLE_TODO_LP}\s*AP/, response.body)
   end
 end
