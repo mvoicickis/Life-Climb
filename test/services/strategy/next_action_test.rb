@@ -41,6 +41,8 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   end
 
   test "plan_route when goal has no plan children" do
+    clear_setup_gap!
+
     result = Strategy::NextAction.for(user: @user, journey: @journey)
 
     assert_equal :plan_route, result.key
@@ -53,6 +55,9 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "set_today when plans exist but no daily_todos for today" do
     build_spine_without_cascade!
+    seed_today_habits!(@journey.commitment_habit_count)
+    # Zero battles needed so setup_gap stays quiet and legacy set_today can fire.
+    @journey.update!(commitment_battle_count: 0)
 
     result = Strategy::NextAction.for(user: @user, journey: @journey)
 
@@ -64,6 +69,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "complete_battle when an incomplete daily_todo exists for today before overdue hour" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
 
     result = Strategy::NextAction.for(user: @user, journey: @journey)
 
@@ -78,6 +84,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "battle_overdue wins after overdue hour with open todos" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 19, 0, 0)
 
     result = Strategy::NextAction.for(user: @user, journey: @journey)
@@ -90,6 +97,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "streak_at_risk when climb was yesterday and nothing completed today" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     @user.update!(climb_streak_days: 5, climb_streak_on: Date.current - 1)
 
     result = Strategy::NextAction.for(user: @user, journey: @journey)
@@ -102,6 +110,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "battle_overdue beats streak_at_risk after overdue hour" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     @user.update!(climb_streak_days: 5, climb_streak_on: Date.current - 1)
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 20, 0, 0)
 
@@ -111,18 +120,17 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     assert_equal 100, result.urgency
   end
 
-  test "commitment_gap fires for ineligible current Medium with both gap sentences" do
-    force_ineligible_medium!
+  test "commitment_gap fires for ineligible Medium when today setup is clear but camps short" do
+    force_ineligible_medium_camps_only!
 
     result = Strategy::NextAction.for(user: @user, journey: @journey)
 
     assert_equal :commitment_gap, result.key
     assert_equal :stuck, result.tone
-    assert_match(/Medium needs 3 Today habits/i, result.title)
     assert_match(/Medium needs 3 planned camps/i, result.title)
+    assert_no_match(/Today habits/i, result.title)
     assert result.drop_easy
     labels = Array(result.fix_links).map { |link| link[:label] }
-    assert_includes labels, I18n.t("settings.commitment.eligibility.open_habits")
     assert_includes labels, I18n.t("settings.commitment.eligibility.open_mountain")
   end
 
@@ -135,7 +143,14 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     assert_not_equal :commitment_gap, result.key
   end
 
-  test "commitment_gap fires for ineligible custom counts" do
+  test "commitment_gap fires for ineligible custom counts when setup is clear" do
+    seed_today_habits!(4)
+    4.times do |n|
+      @user.daily_todos.create!(
+        title: "Fight #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "09:00", end_time: "10:00", position: n + 1
+      )
+    end
     @journey.update!(
       commitment_key: "custom",
       commitment_name: "Beast Mode",
@@ -146,13 +161,13 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     result = Strategy::NextAction.for(user: @user, journey: @journey)
 
     assert_equal :commitment_gap, result.key
-    assert_match(/Beast Mode needs 4 Today habits/i, result.title)
     assert_match(/Beast Mode needs 4 planned camps/i, result.title)
   end
 
   test "commitment_gap short-circuits above battle_overdue and streak_at_risk" do
-    force_ineligible_medium!
+    force_ineligible_medium_camps_only!
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     @user.update!(climb_streak_days: 5, climb_streak_on: Date.current - 1)
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 20, 0, 0)
 
@@ -160,6 +175,8 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     streak = Strategy::NextAction.new(user: @user, journey: @journey).send(:signal_streak_at_risk)
     assert overdue, "precondition: battle_overdue would fire"
     assert streak, "precondition: streak_at_risk would fire"
+    assert_nil Today::Commitment.setup_gap(user: @user, journey: @journey),
+               "precondition: setup_gap must stay quiet so commitment_gap can win"
 
     result = Strategy::NextAction.for(user: @user, journey: @journey)
 
@@ -167,8 +184,80 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     assert_equal :stuck, result.tone
   end
 
+  test "setup_gap fires for Easy with zero habits and one untimed battle" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    @user.habits.active.on_home.destroy_all
+    @user.daily_todos.create!(
+      title: "First fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :setup_gap, result.key
+    assert_equal :stuck, result.tone
+    assert_equal :habits, result.setup_gap.kind
+    assert_not result.drop_easy
+  end
+
+  test "setup_gap set_time when habit exists and battle is untimed" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    seed_today_habits!(1)
+    todo = @user.daily_todos.create!(
+      title: "Untimed fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :setup_gap, result.key
+    assert_equal :set_time, result.setup_gap.kind
+    assert_equal todo.id, result.setup_gap.todo.id
+  end
+
+  test "fully set up Easy falls through to complete_battle" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :complete_battle, result.key
+    assert_not_equal :setup_gap, result.key
+    assert_not_equal :commitment_gap, result.key
+  end
+
+  test "setup_gap short-circuits above battle_overdue and streak_at_risk" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    @user.habits.active.on_home.destroy_all
+    build_spine_and_cascade!(title: "Send five emails")
+    @user.update!(climb_streak_days: 5, climb_streak_on: Date.current - 1)
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 20, 0, 0)
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :setup_gap, result.key
+    assert_equal :habits, result.setup_gap.kind
+  end
+
+  test "setup_gap short-circuits above commitment_gap when Medium lacks habits" do
+    @user.habits.active.on_home.destroy_all
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+
+    result = Strategy::NextAction.for(user: @user, journey: @journey)
+
+    assert_equal :setup_gap, result.key
+    assert_equal :habits, result.setup_gap.kind
+  end
+
   test "project_unlocked when previous sibling completed recently" do
     @user.update!(climb_streak_days: 0, climb_streak_on: nil)
+    clear_setup_gap!
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan",
       title: "Get interviews", position: 0
@@ -195,6 +284,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   test "quest_stalled when open quest has been quiet for stall days" do
     @user.update!(climb_streak_days: 0, climb_streak_on: nil)
     build_spine_and_cascade!(title: "Checklist quest")
+    clear_setup_gap!
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Checklist quest")
     day = todo.strategy_goal
     task = day.practice_tasks.create!(user: @user, title: "Write outline", position: 0)
@@ -212,6 +302,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "confirm_camp when todos are done and ProjectCheckQueue has a pending project" do
     project = build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     complete_all_todos!
 
     session = {}
@@ -228,6 +319,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "day_won when todos are done and no pending camp confirmation" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     complete_all_todos!
 
     result = Strategy::NextAction.for(user: @user, journey: @journey, session: {})
@@ -240,6 +332,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
 
   test "day_won when todos are done and session is nil" do
     project = build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     complete_all_todos!
     # Without session, ProjectCheckQueue cannot surface — fall through to day_won.
     session = {}
@@ -254,6 +347,8 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   # Follow-up note: Mountain may still show a strategy day with scheduled_on == today
   # while DailyTodo is empty (CascadeToDaily not run). Resolver trusts DailyTodo.
   test "disagreement note: strategy day without cascaded todo yields set_today" do
+    seed_today_habits!(@journey.commitment_habit_count)
+    @journey.update!(commitment_battle_count: 0)
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan",
       title: "Get interviews", position: 0
@@ -279,6 +374,37 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   end
 
   private
+
+  def clear_setup_gap!
+    seed_today_habits!(@journey.commitment_habit_count)
+    need = @journey.commitment_battle_count.to_i
+    todos = @user.daily_todos.for_day(Date.current).ordered.to_a
+    while todos.size < need
+      todos << @user.daily_todos.create!(
+        title: "Setup fight #{todos.size + 1}",
+        scheduled_on: Date.current,
+        aspect_key: "career",
+        start_time: "09:00",
+        end_time: "10:00",
+        position: 500 + todos.size
+      )
+    end
+    @user.daily_todos.for_day(Date.current).find_each do |todo|
+      next if todo.timed?
+
+      todo.update!(start_time: "09:00", end_time: "10:00")
+    end
+  end
+
+  def seed_today_habits!(count)
+    have = @user.habits.active.on_home.count
+    (have + 1).upto(count) do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
+  end
 
   def build_spine_without_cascade!
     plan = @user.strategy_goals.create!(
@@ -315,14 +441,20 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     end
   end
 
-  def force_ineligible_medium!
-    @user.habits.active.on_home.update_all(show_on_home: false)
+  def force_ineligible_medium_camps_only!
     @journey.update!(
       commitment_key: "medium",
       commitment_name: "Medium",
       commitment_habit_count: 3,
       commitment_battle_count: 3
     )
+    seed_today_habits!(3)
+    3.times do |n|
+      @user.daily_todos.create!(
+        title: "Timed #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "09:00", end_time: "10:00", position: 50 + n
+      )
+    end
     elig = Today::Commitment.eligibility_for_counts(
       user: @user,
       journey: @journey,
@@ -331,5 +463,8 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
       key: "medium"
     )
     assert_not elig.eligible?, "precondition: Medium must be structurally ineligible"
+    assert elig.missing_camps
+    assert_not elig.missing_habits
+    assert_nil Today::Commitment.setup_gap(user: @user, journey: @journey)
   end
 end

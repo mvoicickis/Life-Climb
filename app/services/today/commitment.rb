@@ -40,8 +40,73 @@ module Today
       end
     end
 
+    # What is missing right now so today can be won on the current tier counts.
+    # No bootstrap exemption — separate from tier eligibility / apply_preset!.
+    SetupGap = Struct.new(
+      :kind, # :habits | :battles | :set_time
+      :habit_have, :habit_need,
+      :battle_have, :battle_need,
+      :timed_have,
+      :todo,
+      keyword_init: true
+    )
+
     def self.progress(user:, journey:, date: Date.current)
       new(user:, journey:, date:).progress
+    end
+
+    # One next setup step so #progress can become met on this tier. Priority:
+    # habits → battle count → set time (set_time skipped at/after overdue hour).
+    def self.setup_gap(user:, journey:, date: Date.current)
+      return nil if user.blank? || journey.blank?
+
+      habit_need = journey.commitment_habit_count.to_i
+      battle_need = journey.commitment_battle_count.to_i
+      habit_have = user.habits.active.on_home.count
+      todos = user.daily_todos.for_day(date).ordered.to_a
+      battle_have = todos.size
+      timed_have = todos.count(&:timed?)
+
+      if habit_have < habit_need
+        return SetupGap.new(
+          kind: :habits,
+          habit_have: habit_have,
+          habit_need: habit_need,
+          battle_have: battle_have,
+          battle_need: battle_need,
+          timed_have: timed_have
+        )
+      end
+
+      if battle_have < battle_need
+        return SetupGap.new(
+          kind: :battles,
+          habit_have: habit_have,
+          habit_need: habit_need,
+          battle_have: battle_have,
+          battle_need: battle_need,
+          timed_have: timed_have
+        )
+      end
+
+      if timed_have < battle_need &&
+          Time.current.hour < Strategy::NextAction::OVERDUE_AFTER_HOUR
+        untimed = todos.find { |todo| !todo.timed? && !todo.completed? } ||
+                  todos.find { |todo| !todo.timed? }
+        if untimed
+          return SetupGap.new(
+            kind: :set_time,
+            habit_have: habit_have,
+            habit_need: habit_need,
+            battle_have: battle_have,
+            battle_need: battle_need,
+            timed_have: timed_have,
+            todo: untimed
+          )
+        end
+      end
+
+      nil
     end
 
     def self.touch_met_streak!(user:, journey:, date: Date.current)

@@ -38,4 +38,17 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     assert_select "[data-next-action-key=commitment_gap]", count: 0
     assert_select ".lp-dash-header, .lp-dash", minimum: 1
   end
+
+  test "Easy with zero habits shows setup_gap not commitment_gap" do
+    @user.habits.active.on_home.destroy_all
+    @user.daily_todos.create!(
+      title: "First fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    get dashboard_path
+    assert_response :success
+    assert_select "[data-next-action-key=commitment_gap]", count: 0
+    assert_select "#commitment-gap-panel[data-next-action-key=setup_gap]", count: 1
+  end
 end

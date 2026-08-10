@@ -29,6 +29,14 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
 
   test "turbo habit create from commitment_gap updates habits chip and stays open" do
     assert_equal 0, @user.habits.active.on_home.count
+    # Enough timed fights so setup_gap stays quiet once habits hit 3;
+    # camps remain short → commitment_gap panel keeps the habits chip.
+    3.times do |n|
+      @user.daily_todos.create!(
+        title: "Timed #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "09:00", end_time: "10:00", position: 10 + n
+      )
+    end
 
     post habits_path,
          params: {
@@ -62,6 +70,7 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
          as: :turbo_stream
     assert_equal 3, @user.habits.active.on_home.count
     assert_match(%r{data-habits-count[^>]*>3/3}, response.body)
+    assert_match(/data-next-action-key="commitment_gap"/, response.body)
   end
 
   test "quantity habit from gap sets unit, nudges unfiled, and refreshes anytime surface" do

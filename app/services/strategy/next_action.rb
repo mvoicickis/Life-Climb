@@ -4,9 +4,10 @@ module Strategy
   # Single "what should this person do right now?" resolver for Mountain,
   # Today, and (later) notifications.
   #
-  # Priority: commitment_gap short-circuit (structurally stuck on current tier),
-  # then scored companion signals (overdue / streak / unlock / stalled),
-  # then the legacy structural chain with a steady tone.
+  # Priority: setup_gap (today unwinnable on current counts), then
+  # commitment_gap (structurally stuck on current tier), then scored companion
+  # signals (overdue / streak / unlock / stalled), then the legacy structural
+  # chain with a steady tone.
   #
   # Today authority is DailyTodo (for_day), matching Today / mark-done / morning
   # nudge — not strategy day nodes with scheduled_on.
@@ -31,6 +32,7 @@ module Strategy
       :fix_links,
       :drop_easy,
       :eligibility,
+      :setup_gap,
       keyword_init: true
     )
 
@@ -45,6 +47,7 @@ module Strategy
       :eligibility,
       :gap_name,
       :fix_links,
+      :setup_gap,
       keyword_init: true
     )
 
@@ -61,6 +64,10 @@ module Strategy
 
     def call
       return nil if @journey.blank? || @goal.blank?
+
+      if (setup = signal_setup_gap)
+        return result_from(setup)
+      end
 
       if (gap = signal_commitment_gap)
         return result_from(gap)
@@ -86,6 +93,21 @@ module Strategy
 
     def todays_todos
       @todays_todos ||= @user.daily_todos.for_day(Date.current).ordered.to_a
+    end
+
+    # Today-winnability short-circuit — separate from tier eligibility.
+    def signal_setup_gap
+      gap = Today::Commitment.setup_gap(user: @user, journey: @journey)
+      return nil if gap.nil?
+
+      Signal.new(
+        key: :setup_gap,
+        urgency: 0,
+        tone: :stuck,
+        setup_gap: gap,
+        todo_title: gap.todo&.title,
+        href: helpers.dashboard_path
+      )
     end
 
     # Structural short-circuit — not part of scored candidates.
@@ -239,6 +261,8 @@ module Strategy
       title_key = "strategy.next_action.#{signal.key}.title"
       title =
         case signal.key
+        when :setup_gap
+          setup_gap_title(signal.setup_gap)
         when :commitment_gap
           Today::Commitment.gap_alert(signal.eligibility, name: signal.gap_name)
         when :battle_overdue, :quest_stalled
@@ -263,8 +287,29 @@ module Strategy
         streak_days: signal.streak_days,
         fix_links: signal.fix_links,
         drop_easy: signal.key == :commitment_gap,
-        eligibility: signal.eligibility
+        eligibility: signal.eligibility,
+        setup_gap: signal.setup_gap
       )
+    end
+
+    def setup_gap_title(gap)
+      case gap.kind
+      when :habits
+        I18n.t(
+          "strategy.next_action.setup_gap.habits_title"
+        )
+      when :battles
+        I18n.t(
+          "strategy.next_action.setup_gap.battles_title",
+          count: gap.battle_need
+        )
+      when :set_time
+        I18n.t(
+          "strategy.next_action.setup_gap.set_time_title"
+        )
+      else
+        I18n.t("strategy.next_action.setup_gap.titles").first
+      end
     end
 
     def legacy_result_with_tone(tone)

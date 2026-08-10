@@ -206,6 +206,108 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     )
   end
 
+  test "setup_gap nil when habits and timed battles cover the tier" do
+    seed_today_habits!(1)
+    @user.daily_todos.create!(
+      title: "Timed fight", scheduled_on: Date.current, aspect_key: "career",
+      start_time: "09:00", end_time: "10:00", position: 1
+    )
+
+    assert_nil Today::Commitment.setup_gap(user: @user, journey: @journey)
+  end
+
+  test "setup_gap habits when on_home habits are short" do
+    @user.habits.active.on_home.destroy_all
+    @user.daily_todos.create!(
+      title: "Loose fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    gap = Today::Commitment.setup_gap(user: @user, journey: @journey)
+    assert_equal :habits, gap.kind
+    assert_equal 0, gap.habit_have
+    assert_equal 1, gap.habit_need
+  end
+
+  test "setup_gap battles when todo count is short" do
+    seed_today_habits!(1)
+    @user.daily_todos.for_day(Date.current).destroy_all
+
+    gap = Today::Commitment.setup_gap(user: @user, journey: @journey)
+    assert_equal :battles, gap.kind
+    assert_equal 0, gap.battle_have
+    assert_equal 1, gap.battle_need
+  end
+
+  test "setup_gap set_time when an untimed todo blocks the battle target" do
+    seed_today_habits!(1)
+    @user.daily_todos.for_day(Date.current).destroy_all
+    todo = @user.daily_todos.create!(
+      title: "Untimed fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0) do
+      gap = Today::Commitment.setup_gap(user: @user, journey: @journey)
+      assert_equal :set_time, gap.kind
+      assert_equal todo.id, gap.todo.id
+    end
+  end
+
+  test "setup_gap prefers habits over set_time when both apply" do
+    @user.habits.active.on_home.destroy_all
+    @user.daily_todos.create!(
+      title: "Untimed fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    gap = Today::Commitment.setup_gap(user: @user, journey: @journey)
+    assert_equal :habits, gap.kind
+  end
+
+  test "setup_gap skips set_time at or after overdue hour" do
+    seed_today_habits!(1)
+    @user.daily_todos.create!(
+      title: "Untimed fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    travel_to Time.zone.local(
+      Date.current.year, Date.current.month, Date.current.day,
+      Strategy::NextAction::OVERDUE_AFTER_HOUR, 0, 0
+    ) do
+      assert_nil Today::Commitment.setup_gap(user: @user, journey: @journey)
+    end
+  end
+
+  test "setup_gap still returns habits after overdue hour" do
+    @user.habits.active.on_home.destroy_all
+
+    travel_to Time.zone.local(
+      Date.current.year, Date.current.month, Date.current.day,
+      Strategy::NextAction::OVERDUE_AFTER_HOUR + 2, 0, 0
+    ) do
+      gap = Today::Commitment.setup_gap(user: @user, journey: @journey)
+      assert_equal :habits, gap.kind
+    end
+  end
+
+  test "setup_gap nil when timed count already meets need despite extra untimed" do
+    seed_today_habits!(1)
+    @user.daily_todos.create!(
+      title: "Timed fight", scheduled_on: Date.current, aspect_key: "career",
+      start_time: "09:00", end_time: "10:00", position: 1
+    )
+    @user.daily_todos.create!(
+      title: "Extra untimed", scheduled_on: Date.current, aspect_key: "career",
+      position: 2
+    )
+
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0) do
+      assert_nil Today::Commitment.setup_gap(user: @user, journey: @journey)
+    end
+  end
+
   private
 
   def seed_today_habits!(count)

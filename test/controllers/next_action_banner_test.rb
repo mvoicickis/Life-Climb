@@ -28,6 +28,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
   end
 
   test "plan_route banner on Today when goal has no plans" do
+    clear_setup_gap!
+
     get dashboard_path
     assert_response :success
 
@@ -37,6 +39,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   test "set_today banner when spine exists without daily todos" do
     build_spine_without_cascade!
+    seed_today_habits!(@journey.commitment_habit_count)
+    @journey.update!(commitment_battle_count: 0)
 
     get dashboard_path
     assert_response :success
@@ -48,6 +52,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   test "complete_battle banner includes todo title with steady tone before overdue hour" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
 
     get dashboard_path
     assert_response :success
@@ -60,6 +65,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   test "battle_overdue banner uses urgent tone after overdue hour" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 19, 0, 0)
 
     get dashboard_path
@@ -72,13 +78,19 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
   end
 
   test "commitment_gap panel shows chips, quiet Drop to Easy, and Mountain only when camps short" do
-    @user.habits.active.on_home.update_all(show_on_home: false)
     @journey.update!(
       commitment_key: "medium",
       commitment_name: "Medium",
       commitment_habit_count: 3,
       commitment_battle_count: 3
     )
+    seed_today_habits!(3)
+    3.times do |n|
+      @user.daily_todos.create!(
+        title: "Timed #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "09:00", end_time: "10:00", position: 40 + n
+      )
+    end
 
     get dashboard_path
     assert_response :success
@@ -93,6 +105,56 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select "[data-commitment-progress]", count: 0
     assert_select "input[type=time].lp-input", minimum: 1
     assert_select "input.lp-commitment-gap__qty-check[type=checkbox]", count: 1
+  end
+
+  test "setup_gap panel on Easy hides Drop to Easy and shows habit form" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    @user.habits.active.on_home.destroy_all
+    @user.daily_todos.create!(
+      title: "First fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#commitment-gap-panel.is-stuck[data-next-action-key=setup_gap]", count: 1
+    assert_select ".lp-commitment-gap__link", text: /Drop to Easy/i, count: 0
+    assert_select "form[action=?]", habits_path, minimum: 1
+    assert_select "[data-commitment-progress]", minimum: 1
+  end
+
+  test "setup_gap set_time form posts to daily_todo_path" do
+    Today::Commitment.apply_preset!(@journey, "easy")
+    seed_today_habits!(1)
+    todo = @user.daily_todos.create!(
+      title: "Untimed fight", scheduled_on: Date.current, aspect_key: "career",
+      position: 1
+    )
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#commitment-gap-panel[data-next-action-key=setup_gap]", count: 1
+    assert_select "form[action=?]", daily_todo_path(todo)
+    assert_select "input[name='daily_todo[start_time]']", count: 1
+    assert_select "input[name='daily_todo[end_time]']", count: 1
+  end
+
+  test "setup_gap on Medium keeps Drop to Easy" do
+    @journey.update!(
+      commitment_key: "medium",
+      commitment_name: "Medium",
+      commitment_habit_count: 3,
+      commitment_battle_count: 3
+    )
+    @user.habits.active.on_home.destroy_all
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#commitment-gap-panel[data-next-action-key=setup_gap]", count: 1
+    assert_select ".lp-commitment-gap__link", text: /Drop to Easy/i, count: 1
   end
 
   test "Drop to Easy from commitment_gap returns to Today and sets Easy" do
@@ -112,6 +174,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   test "confirm_camp banner when ProjectCheckQueue has a pending project" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Send five emails")
 
     post complete_daily_todo_path(todo)
@@ -126,6 +189,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   test "day_won banner when todos are done and no camp confirmation pending" do
     build_spine_and_cascade!(title: "Send five emails")
+    clear_setup_gap!
     complete_all_todos!
 
     get dashboard_path
@@ -177,6 +241,37 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
            "expected #{prefix.inspect} in #{title.inspect}"
     assert_match(/🧭|📍|⚔️|🏕️|🏁|⚠️|🔥|✨|🌑/, title)
     assert_select ".lp-dash-next__face[src*='fox']", count: 1
+  end
+
+  def clear_setup_gap!
+    seed_today_habits!(@journey.commitment_habit_count)
+    need = @journey.commitment_battle_count.to_i
+    todos = @user.daily_todos.for_day(Date.current).ordered.to_a
+    while todos.size < need
+      todos << @user.daily_todos.create!(
+        title: "Setup fight #{todos.size + 1}",
+        scheduled_on: Date.current,
+        aspect_key: "career",
+        start_time: "09:00",
+        end_time: "10:00",
+        position: 500 + todos.size
+      )
+    end
+    @user.daily_todos.for_day(Date.current).find_each do |todo|
+      next if todo.timed?
+
+      todo.update!(start_time: "09:00", end_time: "10:00")
+    end
+  end
+
+  def seed_today_habits!(count)
+    have = @user.habits.active.on_home.count
+    (have + 1).upto(count) do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
   end
 
   def build_spine_without_cascade!

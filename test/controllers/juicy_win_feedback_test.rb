@@ -88,7 +88,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "[data-day-shield-tip='true']", count: 1
-    assert_match(/Shield ready — blocks one missed window today/, response.body)
+    assert_match(/Your shield is ready — it can save one missed window today/, response.body)
 
     delete day_shield_tip_path
     assert_redirected_to dashboard_path

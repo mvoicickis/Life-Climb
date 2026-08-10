@@ -25,12 +25,27 @@ class Dashboard::QuickBattlesControllerTest < ActionDispatch::IntegrationTest
       commitment_habit_count: 3,
       commitment_battle_count: 3
     )
+    # Clear setup_gap habits pillar so quick-battle turbo keeps the commitment_gap panel.
+    3.times do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0)
   end
 
   teardown { travel_back }
 
   test "creates timed battle for current_user only and does not bump battles chip" do
+    # Two timed fights already → after create, setup_gap is quiet (3/3) and
+    # commitment_gap (camps short) keeps the progress chip at 0/3.
+    2.times do |n|
+      @user.daily_todos.create!(
+        title: "Prior #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "08:00", end_time: "09:00", position: n
+      )
+    end
     end_time = (Time.current + 1.hour).strftime("%H:%M")
 
     assert_difference -> { @user.daily_todos.for_day(Date.current).count }, 1 do
@@ -54,6 +69,12 @@ class Dashboard::QuickBattlesControllerTest < ActionDispatch::IntegrationTest
   test "zero-spine create turbo-updates surface from plan-route to timeline" do
     goal = @user.strategy_goals.for_kind("goal").roots.first
     assert goal.children.for_kind("plan").none?, "precondition: no plans"
+    2.times do |n|
+      @user.daily_todos.create!(
+        title: "Prior #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "08:00", end_time: "09:00", position: n
+      )
+    end
 
     post dashboard_quick_battles_path,
          params: {
