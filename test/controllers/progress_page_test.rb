@@ -28,7 +28,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Action Points/i, response.body)
     assert_match(/Planning points/i, response.body)
     assert_match(/Mountain Summary/i, response.body)
-    assert_match(/See activity details/i, response.body)
+    assert_match(/See weekly activity/i, response.body)
     assert_match(/Activity/i, response.body)
     assert_match(/7 Days/i, response.body)
     assert_match(/Weekly activity/i, response.body)
@@ -126,7 +126,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-journey-trends__quantified", count: 0
     assert_select ".lp-journey-trends__habits", count: 0
     assert_select "canvas[data-journey-trends-target='quantified']", count: 0
-    assert_match(/See activity details/i, response.body)
+    assert_match(/See weekly activity/i, response.body)
     assert_match(/Weekly activity/i, response.body)
   end
 

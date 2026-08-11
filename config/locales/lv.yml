@@ -524,7 +524,7 @@ lv:
     open_strategy: "Atvērt Kalnu →"
     lock_goal: "Noformulē sezonas mērķi Stratēģijā, lai sāktu kāpšanu."
     activity_title: "Aktivitāte"
-    activity_hint: "Papildu detaļas šim periodam."
+    activity_hint: "How this period went — Battles, Action Points, and insights."  # TODO: translate
     achievements_title: "Sasniegumi"
     kpi:
       life_points: "Darba punkti"
@@ -534,8 +534,8 @@ lv:
     achievements_empty: "Uzvari šodienas kauju vai pabeidz Taku ceļvedi, lai nopelnītu pirmo žetonu."
     achievements_earned: "Nopelnīts"
     achievements_locked: "Vēl nav nopelnīts"
-    details_summary: "Skatīt aktivitātes detaļas"
-    details_hint: "Diagrammas un filtri — neobligāti."
+    details_summary: "See weekly activity"  # TODO: translate
+    details_hint: "Heatmap for the last 6 months — optional."  # TODO: translate
     achievements:
       adventure_guide: "Taku ceļvedis"
       adventure_guide_hint: "Tu iemācījies, kā Mērķi, Plāni, Projekti un Kaujas sader kopā."

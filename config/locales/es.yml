@@ -524,7 +524,7 @@ es:
     open_strategy: "Abrir Montaña →"
     lock_goal: "Fija tu meta de temporada en Estrategia para empezar el ascenso."
     activity_title: "Actividad"
-    activity_hint: "Detalle de apoyo para este período."
+    activity_hint: "How this period went — Battles, Action Points, and insights."  # TODO: translate
     achievements_title: "Logros"
     kpi:
       life_points: "Puntos de acción"
@@ -534,8 +534,8 @@ es:
     achievements_empty: "Gana la batalla de hoy o termina la Guía del sendero para ganar tu primera insignia."
     achievements_earned: "Ganado"
     achievements_locked: "Aún no ganado"
-    details_summary: "Ver detalles de actividad"
-    details_hint: "Gráficos y filtros — opcionales."
+    details_summary: "See weekly activity"  # TODO: translate
+    details_hint: "Heatmap for the last 6 months — optional."  # TODO: translate
     achievements:
       adventure_guide: "Guía del sendero"
       adventure_guide_hint: "Aprendiste cómo encajan Metas, Planes, Proyectos y Batallas."
