@@ -20231,7 +20231,11 @@ a.lp-rpg-add.is-guide-entry.is-path {
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--lp-rpg-ink);
-  text-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  /* Light default: pale halo so dark ink lifts off the scenic photo. */
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.95),
+    0 0 18px rgba(255, 255, 255, 0.88),
+    0 0 40px rgba(248, 250, 252, 0.72);
   text-align: center;
   overflow: hidden;
   display: -webkit-box;
@@ -20241,6 +20245,83 @@ a.lp-rpg-add.is-guide-entry.is-path {
   text-overflow: ellipsis;
   white-space: normal;
   word-break: break-word;
+}
+/* Dark bloom is for light-on-dark ink only — do not share with light theme. */
+html[data-theme="dark"] .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
+  text-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+/*
+ * Light-theme Mountain contrast: local text scrims only.
+ * Soft radial/linear behind title, Sections kicker, and peek titles —
+ * not a global veil bump (path cards / scenic stay untouched).
+ */
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title-row {
+  position: relative;
+  isolation: isolate;
+}
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title-row::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.4rem -0.9rem -0.55rem;
+  border-radius: 1.35rem;
+  background: radial-gradient(
+    68% 78% at 50% 42%,
+    rgba(248, 250, 252, 0.86) 0%,
+    rgba(248, 250, 252, 0.58) 42%,
+    rgba(248, 250, 252, 0) 74%
+  );
+  pointer-events: none;
+}
+/* Peeks: parent opacity would fade scrim+ink together and cap contrast below 4.5:1.
+   Keep scale + edge mask for hierarchy; composite at full opacity with muted ink + scrim. */
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek {
+  opacity: 1;
+}
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek:hover,
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek:focus-visible {
+  opacity: 1;
+}
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek-title {
+  position: relative;
+  z-index: 0;
+  color: var(--lp-charcoal, #334155);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+}
+html:not([data-theme="dark"]) .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek-title::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.2rem -0.4rem;
+  border-radius: 0.55rem;
+  background: radial-gradient(
+    90% 120% at 50% 50%,
+    rgba(248, 250, 252, 0.9) 0%,
+    rgba(248, 250, 252, 0.62) 55%,
+    rgba(248, 250, 252, 0) 78%
+  );
+  pointer-events: none;
+}
+html:not([data-theme="dark"]) .lp-climb-path__kicker {
+  position: relative;
+  z-index: 0;
+  color: var(--lp-charcoal, #334155);
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.88);
+}
+html:not([data-theme="dark"]) .lp-climb-path__kicker::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.2rem -0.55rem -0.25rem -0.35rem;
+  border-radius: 0.55rem;
+  background: linear-gradient(
+    90deg,
+    rgba(248, 250, 252, 0.88) 0%,
+    rgba(248, 250, 252, 0.72) 55%,
+    rgba(248, 250, 252, 0) 100%
+  );
+  pointer-events: none;
 }
 .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__icon {
   opacity: 0.55;
