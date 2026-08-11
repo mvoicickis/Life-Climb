@@ -1,6 +1,10 @@
 // Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
 import "controllers"
+import { ensureCapture } from "pwa_install_prompt"
+
+// Capture beforeinstallprompt early so Settings and Today share one deferred event.
+ensureCapture()
 
 // PWA Phase B — register only on secure contexts (HTTPS or localhost).
 if ("serviceWorker" in navigator) {

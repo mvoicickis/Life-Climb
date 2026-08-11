@@ -37,6 +37,33 @@
     </div>
   <% end %>
 
+  <% if current_user.install_offer_eligible? %>
+    <div class="lp-dash-level-up is-install-tip is-compact"
+         hidden
+         role="status"
+         data-controller="pwa-install"
+         data-pwa-install-surface-value="tip"
+         data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
+         data-pwa-install-installed-url-value="<%= install_offer_path %>"
+         data-pwa-install-dismissed-message-value="<%= t('dash.install_offer.dismissed') %>"
+         data-install-offer-tip="true">
+      <p class="lp-dash-level-up__title" data-pwa-install-target="title"><%= t("dash.install_offer.headline") %></p>
+      <p class="lp-dash-level-up__body" data-pwa-install-target="body"><%= t("dash.install_offer.body") %></p>
+      <div class="lp-dash-level-up__actions" data-pwa-install-target="actions">
+        <button type="button"
+                class="lp-habits__btn is-primary"
+                data-action="click->pwa-install#install">
+          <%= t("dash.install_offer.cta") %>
+        </button>
+        <button type="button"
+                class="lp-habits__btn is-quiet"
+                data-action="click->pwa-install#dismiss">
+          <%= t("dash.install_offer.dismiss") %>
+        </button>
+      </div>
+    </div>
+  <% end %>
+
   <% if @commitment_level_up && @journey.present? %>
     <% next_key = @journey.commitment_key.to_s == "easy" ? "medium" : "hard" %>
     <% next_preset = Today::Commitment::PRESETS[next_key] %>

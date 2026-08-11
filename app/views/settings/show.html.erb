@@ -215,6 +215,25 @@
         </span>
       <% end %>
     </div>
+
+    <div class="mt-3"
+         id="you-row-install-offer"
+         data-controller="pwa-install"
+         data-pwa-install-surface-value="settings"
+         data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
+         data-pwa-install-installed-url-value="<%= install_offer_path %>"
+         data-pwa-install-browser-menu-message-value="<%= t('settings.install_offer.browser_menu') %>">
+      <button type="button"
+              class="<%= row_class %> w-full text-left"
+              data-pwa-install-target="row"
+              data-action="click->pwa-install#install">
+        <span><%= t("settings.install_offer.row_label") %></span>
+        <%= chevron %>
+      </button>
+      <p class="mt-2 text-sm text-[var(--lp-muted)]"
+         hidden
+         data-pwa-install-target="message"></p>
+    </div>
   </section>
 
   <section class="lp-glass lp-glass--pad"
