@@ -36,6 +36,8 @@
 
   <%= render "life_points/journey_trends", trends: @journey_trends %>
 
+  <%= render "life_points/patterns", findings: @pattern_findings, user: current_user %>
+
   <% if @show_journey_stats %>
     <%= render "life_points/journey_stats",
           areas: @stats_areas,

@@ -10648,6 +10648,45 @@ button.lp-progress-heat__cell {
   line-height: 1.4;
 }
 
+.lp-patterns {
+  margin: 0.85rem 0 1.1rem;
+}
+
+.lp-patterns__list {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-patterns__item {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.15rem 0;
+}
+
+.lp-patterns__observation {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--lp-ink);
+}
+
+.lp-patterns__cta {
+  justify-self: start;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--lp-green, #57d35b);
+  text-decoration: none;
+}
+
+.lp-patterns__cta:hover,
+.lp-patterns__cta:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
 .lp-progress-empty {
   margin: 0.85rem 0 0;
   color: var(--lp-muted);

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_063000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_124100) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -319,6 +319,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_063000) do
     t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
   end
 
+  create_table "pattern_snapshots", force: :cascade do |t|
+    t.date "computed_on", null: false
+    t.datetime "created_at", null: false
+    t.json "findings", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "computed_on"], name: "index_pattern_snapshots_on_user_id_and_computed_on", unique: true
+    t.index ["user_id"], name: "index_pattern_snapshots_on_user_id"
+  end
+
   create_table "practice_tasks", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -516,6 +526,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_063000) do
   add_foreign_key "missions", "life_journeys"
   add_foreign_key "missions", "users"
   add_foreign_key "notification_preferences", "users"
+  add_foreign_key "pattern_snapshots", "users"
   add_foreign_key "practice_tasks", "strategy_goals"
   add_foreign_key "practice_tasks", "users"
   add_foreign_key "push_subscriptions", "users"

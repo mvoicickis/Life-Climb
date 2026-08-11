@@ -33,6 +33,7 @@ class LifePointsController < ApplicationController
       if @journey
         Progress::JourneyTrends.call(user: current_user, journey: @journey)
       end
+    @pattern_findings = Patterns::Detector.call(user: current_user)
     load_journey_stats
     render "life_points/progress"
   end
