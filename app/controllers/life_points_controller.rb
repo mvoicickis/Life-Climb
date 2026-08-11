@@ -14,6 +14,12 @@ class LifePointsController < ApplicationController
   def show_journey
     period = params[:period].presence || "7d"
     @progress = Progress::Dashboard.call(user: current_user, period: period)
+
+    if turbo_frame_request?
+      render partial: "life_points/progress_activity", locals: { progress: @progress }
+      return
+    end
+
     @journey = current_user.primary_focused_journey
     @strategy_goal =
       if @journey

@@ -10014,6 +10014,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-progress-filters__chip {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--lp-tap, 2.75rem);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: var(--rpg-glass);

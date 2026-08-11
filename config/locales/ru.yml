@@ -532,7 +532,7 @@ ru:
     open_strategy: "Открыть гору →"
     lock_goal: "Задай сезонную цель в Стратегии, чтобы начать подъём."
     activity_title: "Активность"
-    activity_hint: "Дополнительные детали за этот период."
+    activity_hint: "How this period went — Battles, Action Points, and insights."  # TODO: translate
     achievements_title: "Достижения"
     kpi:
       life_points: "Очки действий"
@@ -542,8 +542,8 @@ ru:
     achievements_empty: "Выиграй сегодняшнюю битву или пройди Проводник тропы, чтобы получить первый значок."
     achievements_earned: "Заработано"
     achievements_locked: "Ещё не заработано"
-    details_summary: "Смотреть детали активности"
-    details_hint: "Графики и фильтры — по желанию."
+    details_summary: "See weekly activity"  # TODO: translate
+    details_hint: "Heatmap for the last 6 months — optional."  # TODO: translate
     achievements:
       adventure_guide: "Проводник тропы"
       adventure_guide_hint: "Ты узнал, как связаны Цели, Планы, Проекты и Битвы."

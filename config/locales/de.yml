@@ -524,7 +524,7 @@ de:
     open_strategy: "Berg öffnen →"
     lock_goal: "Lege dein Saisonziel in Strategie fest, um den Aufstieg zu starten."
     activity_title: "Aktivität"
-    activity_hint: "Zusätzliche Details für diesen Zeitraum."
+    activity_hint: "How this period went — Battles, Action Points, and insights."  # TODO: translate
     achievements_title: "Erfolge"
     kpi:
       life_points: "Aktionspunkte"
@@ -534,8 +534,8 @@ de:
     achievements_empty: "Gewinne den Kampf von heute oder schließe den Pfadführer ab, um dein erstes Abzeichen zu verdienen."
     achievements_earned: "Verdient"
     achievements_locked: "Noch nicht verdient"
-    details_summary: "Aktivitätsdetails ansehen"
-    details_hint: "Diagramme und Filter — optional."
+    details_summary: "See weekly activity"  # TODO: translate
+    details_hint: "Heatmap for the last 6 months — optional."  # TODO: translate
     achievements:
       adventure_guide: "Pfadführer"
       adventure_guide_hint: "Du hast gelernt, wie Ziele, Pläne, Projekte und Kämpfe zusammenpassen."

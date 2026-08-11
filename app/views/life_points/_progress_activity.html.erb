@@ -1,0 +1,26 @@
+<%# locals: progress %>
+<%= turbo_frame_tag "progress_activity",
+      data: {
+        controller: "progress-charts",
+        progress_charts_growth_value: progress[:growth],
+        progress_charts_categories_value: progress[:categories]
+      } do %>
+  <section class="lp-journey-activity" aria-label="<%= t('progress.activity_title') %>">
+    <header class="lp-journey-section__head">
+      <h2><%= t("progress.activity_title") %></h2>
+      <p><%= t("progress.activity_hint") %></p>
+    </header>
+
+    <%= render "life_points/progress_filters", progress: progress %>
+    <%= render "life_points/progress_kpis", kpis: progress[:kpis] %>
+
+    <div class="lp-progress__grid lp-progress__grid--charts">
+      <%= render "life_points/progress_growth" %>
+      <%= render "life_points/progress_categories", categories: progress[:categories] %>
+    </div>
+
+    <div class="lp-progress__grid">
+      <%= render "life_points/progress_insights", insights: progress[:insights] %>
+    </div>
+  </section>
+<% end %>
