@@ -119,6 +119,12 @@ en:
       tip_line: "Your shield is ready — it can save one missed window today."
       tip_dismiss: "Got it"
       used_on_card: "Shield blocked this miss"
+    install_offer:
+      headline: "Morning nudge on your home screen"
+      body: "LifePoints opens like an app — and the morning nudge lands right there."
+      cta: "Add to home screen"
+      dismiss: "Not now"
+      dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Daily commitment"
       progress: "Battles %{battles_done} of %{battles_total} · Habits %{habits_done} of %{habits_total}"
@@ -2170,6 +2176,9 @@ en:
     reminders_denied: "Notifications were blocked. Allow them in browser settings, then try again."
     reminders_unsupported: "Push notifications are not supported in this browser."
     reminders_error: "Something went wrong. Try again."
+    install_offer:
+      row_label: "Add to home screen"
+      browser_menu: "Your browser will offer this from its own menu."
     notifications:
       row_label: "Notifications"
       title: "Notifications"

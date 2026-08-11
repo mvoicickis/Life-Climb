@@ -468,6 +468,13 @@ de:
       tip_title: "Dein Tages-Schild"
       tip_dismiss: "Verstanden"
       used_on_card: "Schild hat diesen Fehlversuch blockiert"
+    # TODO: translate
+    install_offer:
+      headline: "Morning nudge on your home screen"
+      body: "LifePoints opens like an app — and the morning nudge lands right there."
+      cta: "Add to home screen"
+      dismiss: "Not now"
+      dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Tägliches Commitment"
       progress: "Kämpfe %{battles_done} von %{battles_total} · Gewohnheiten %{habits_done} von %{habits_total}"
@@ -733,6 +740,10 @@ de:
   settings:
     title: "Du"
     subtitle: "Gestalte Heute so, dass es einfach und motivierend bleibt."
+    # TODO: translate
+    install_offer:
+      row_label: "Add to home screen"
+      browser_menu: "Your browser will offer this from its own menu."
     language_title: "Sprache"
     language_hint: "Wähle die Sprache für Buttons, Beschriftungen und Meldungen."
     theme_title: "Darstellung"

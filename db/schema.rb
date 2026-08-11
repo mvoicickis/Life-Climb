@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_110758) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_063000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -462,6 +462,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_110758) do
     t.string "email_address", null: false
     t.integer "focus_building_id"
     t.integer "home_stat_count", default: 6, null: false
+    t.integer "install_offer_dismiss_count", default: 0, null: false
+    t.datetime "install_offer_dismissed_at"
+    t.datetime "install_offer_installed_at"
     t.string "locale"
     t.string "name"
     t.datetime "onboarding_completed_at"

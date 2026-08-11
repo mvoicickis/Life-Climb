@@ -472,6 +472,13 @@ ru:
       tip_title: "Твой дневной щит"
       tip_dismiss: "Понятно"
       used_on_card: "Щит закрыл этот пропуск"
+    # TODO: translate
+    install_offer:
+      headline: "Morning nudge on your home screen"
+      body: "LifePoints opens like an app — and the morning nudge lands right there."
+      cta: "Add to home screen"
+      dismiss: "Not now"
+      dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Дневное обязательство"
       progress: "Битвы %{battles_done} из %{battles_total} · Привычки %{habits_done} из %{habits_total}"
@@ -743,6 +750,10 @@ ru:
   settings:
     title: "Ты"
     subtitle: "Сделай «Сегодня» простым и мотивирующим."
+    # TODO: translate
+    install_offer:
+      row_label: "Add to home screen"
+      browser_menu: "Your browser will offer this from its own menu."
     language_title: "Язык"
     language_hint: "Выбери язык кнопок, подписей и сообщений."
     theme_title: "Оформление"

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     patch :decline
   end
   resource :day_shield_tip, only: :destroy
+  resource :install_offer, only: %i[ destroy update ]
   resource :life_map, only: :show, controller: "life_maps"
   resource :missions, only: :show, controller: "missions"
   resource :settings, only: %i[ show update ] do

@@ -60,6 +60,8 @@ class User < ApplicationRecord
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
   COMPANION_PICK_KEY = "companion_pick".freeze
   DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
+  INSTALL_OFFER_MAX_ASKS = 2
+  INSTALL_OFFER_RESHOW_AFTER = 30.days
 
   def admin?
     admin
@@ -230,6 +232,37 @@ class User < ApplicationRecord
     return if shown.include?(DAY_SHIELD_TIP_KEY)
 
     update!(support_milestones_shown: shown + [ DAY_SHIELD_TIP_KEY ])
+  end
+
+  # Any completed DailyTodo counts as a Battle win (Today authority).
+  def battle_won_once?
+    daily_todos.where.not(completed_at: nil).exists?
+  end
+
+  def install_offer_eligible?
+    return false unless battle_won_once?
+    return false if install_offer_installed_at.present?
+    return true if install_offer_dismiss_count.zero?
+    return false if install_offer_dismiss_count >= INSTALL_OFFER_MAX_ASKS
+
+    install_offer_dismissed_at.present? &&
+      install_offer_dismissed_at <= INSTALL_OFFER_RESHOW_AFTER.ago
+  end
+
+  def mark_install_offer_dismissed!
+    return if install_offer_installed_at.present?
+    return if install_offer_dismiss_count >= INSTALL_OFFER_MAX_ASKS
+
+    update!(
+      install_offer_dismiss_count: install_offer_dismiss_count + 1,
+      install_offer_dismissed_at: Time.current
+    )
+  end
+
+  def mark_install_offer_installed!
+    return if install_offer_installed_at.present?
+
+    update!(install_offer_installed_at: Time.current)
   end
 
   def alive_level

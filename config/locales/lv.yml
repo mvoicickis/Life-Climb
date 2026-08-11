@@ -468,6 +468,13 @@ lv:
       tip_title: "Tavs dienas vairogs"
       tip_dismiss: "Sapratu"
       used_on_card: "Vairogs bloķēja šo izlaidumu"
+    # TODO: translate
+    install_offer:
+      headline: "Morning nudge on your home screen"
+      body: "LifePoints opens like an app — and the morning nudge lands right there."
+      cta: "Add to home screen"
+      dismiss: "Not now"
+      dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Dienas solījums"
       progress: "Cīņas %{battles_done} no %{battles_total} · Ieradumi %{habits_done} no %{habits_total}"
@@ -733,6 +740,10 @@ lv:
   settings:
     title: "Tu"
     subtitle: "Veido Šodien tā, lai tas paliek vienkāršs un motivējošs."
+    # TODO: translate
+    install_offer:
+      row_label: "Add to home screen"
+      browser_menu: "Your browser will offer this from its own menu."
     language_title: "Valoda"
     language_hint: "Izvēlies valodu pogām, etiķetēm un ziņojumiem."
     theme_title: "Izskats"

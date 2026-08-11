@@ -5018,6 +5018,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   color: #38bdf8;
 }
 
+.lp-dash-level-up.is-install-tip .lp-dash-level-up__title {
+  color: var(--lp-ink);
+}
+
 /* Click-time Win juice (juicy_feedback_controller) */
 .lp-dash-tcard.is-juicy,
 .lp-dash-checklist__obj.is-juicy {
