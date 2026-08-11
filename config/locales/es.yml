@@ -568,6 +568,20 @@ es:
       habit_done: "hecho"
       habit_missed: "faltó"
     close: "Cerrar"
+    patterns:
+      # TODO: translate
+      title: "Your patterns"
+      hint: "From your own Battle history."
+      completion_rate:
+        high: "You've finished %{rate}% of Battles you set in the last 30 days."
+        neutral: "You've finished %{rate}% of Battles you set in the last 30 days."
+        low: "You've finished %{rate}% of Battles you set in the last 30 days. A lighter Today plan can help."
+      weekday_gap:
+        observation: "%{worst}s are your hardest day — %{worst_rate}% done, against %{best_rate}% on %{best}s."
+      cta:
+        open_mountain: "Open Mountain"
+        open_today: "Open Today"
+        plan_day: "Plan %{day}"
     stats:
       title: "Tus stats"
       hint: "Trackers por Área — últimos 14 días en el Viaje."

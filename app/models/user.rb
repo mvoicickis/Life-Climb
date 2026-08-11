@@ -26,6 +26,7 @@ class User < ApplicationRecord
   has_many :missions, dependent: :destroy
   has_many :journey_targets, dependent: :destroy
   has_many :daily_todos, dependent: :destroy
+  has_many :pattern_snapshots, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_one :notification_preference, dependent: :destroy
 

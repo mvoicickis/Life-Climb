@@ -1,0 +1,22 @@
+<%# locals: findings, user %>
+<% if findings.present? %>
+  <section class="lp-patterns" aria-label="<%= t('progress.patterns.title') %>">
+    <header class="lp-journey-section__head">
+      <h2><%= t("progress.patterns.title") %></h2>
+      <p><%= t("progress.patterns.hint") %></p>
+    </header>
+
+    <ul class="lp-patterns__list">
+      <% findings.each do |finding| %>
+        <li class="lp-patterns__item" data-pattern-key="<%= finding.key %>">
+          <p class="lp-patterns__observation"><%= finding.observation %></p>
+          <% if finding.action_label.present? %>
+            <%= link_to finding.action_label,
+                  finding.action_path(user: user),
+                  class: "lp-patterns__cta" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
