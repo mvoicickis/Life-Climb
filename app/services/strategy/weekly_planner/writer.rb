@@ -28,7 +28,8 @@ module Strategy
         skipped = []
 
         items.each do |item|
-          title = item["title"].to_s.strip
+          title = ItemTitle.extract(item.is_a?(Hash) ? item : { "title" => item })
+          title = title.to_s.strip
           raise ArgumentError, I18n.t("strategy.weekly_planner.errors.blank_title") if title.blank?
 
           dates = parse_dates(item["selected_dates"])

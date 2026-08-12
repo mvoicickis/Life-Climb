@@ -70,28 +70,58 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
       follow_redirect!
       assert_match(/Which days suit you/i, response.body)
       assert_match(/Item 1 of 1/i, response.body)
+      assert_no_match(/=>/, response.body)
+      assert_no_match(/\{"title"/, response.body)
 
       date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
       post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
       assert_redirected_to life_journey_path(@journey)
       follow_redirect!
-      assert_match(/1 day set for Ship landing/i, flash[:notice].to_s + response.body)
+      notice = flash[:notice].to_s + response.body
+      assert_match(/1 thing set across 1 day slot/i, notice)
+      assert_no_match(/=>/, notice)
+      assert_no_match(/\{"title"/, notice)
 
       assert_equal 1, @user.strategy_goals.for_kind("day").where(title: "Ship landing").count
       assert @user.daily_todos.for_day(date).exists?(title: "Ship landing")
     end
   end
 
-  test "done flash uses singular day and pronoun for count 1" do
+  test "continue with nested items title params stores plain string titles" do
+    travel_to Date.new(2026, 8, 10) do
+      post weekly_planner_path(plan_id: @plan.id), params: {
+        intent: "continue",
+        items: [ { title: "Get a job" } ]
+      }
+      assert_redirected_to weekly_planner_path(plan_id: @plan.id)
+      follow_redirect!
+      assert_response :success
+      assert_match(/Get a job/, response.body)
+      assert_no_match(/=>/, response.body)
+      assert_no_match(/\{"title"/, response.body)
+
+      cursor = Strategy::WeeklyPlanner::Cursor.load(@journey.reload)
+      assert_equal "Get a job", cursor["items"].first["title"]
+
+      date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
+      post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
+      assert_redirected_to life_journey_path(@journey)
+      goal = @user.strategy_goals.for_kind("day").where(scheduled_on: date).order(:id).last
+      assert_equal "Get a job", goal.title
+      refute_includes goal.title, "=>"
+    end
+  end
+
+  test "done flash summarizes counts without listing titles" do
     travel_to Date.new(2026, 8, 10) do
       post weekly_planner_path(plan_id: @plan.id), params: { intent: "continue", items: [ "One day only" ] }
       follow_redirect!
       date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
       post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
       assert_redirected_to life_journey_path(@journey)
-      assert_match(/1 day set for One day only/i, flash[:notice].to_s)
-      assert_match(/it’ll show on Today/i, flash[:notice].to_s)
-      assert_no_match(/1 days|they’ll/i, flash[:notice].to_s)
+      assert_match(/1 thing set across 1 day slot/i, flash[:notice].to_s)
+      assert_match(/They’ll show on Today/i, flash[:notice].to_s)
+      assert_no_match(/One day only/, flash[:notice].to_s)
     end
   end
 
