@@ -107,4 +107,24 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
                     text: /Plan this week/i
     end
   end
+
+  test "free-text field is required so empty submit is caught in the browser" do
+    travel_to Date.new(2026, 8, 10) do
+      get weekly_planner_path(plan_id: @plan.id)
+      assert_response :success
+      assert_select "input[name=value][required]"
+    end
+  end
+
+  test "blank answer re-renders pick_source with a visible alert error" do
+    travel_to Date.new(2026, 8, 10) do
+      get weekly_planner_path(plan_id: @plan.id)
+      post weekly_planner_path(plan_id: @plan.id), params: { value: "   " }
+      assert_response :unprocessable_entity
+      assert_match(/What do you want to work on this week/i, response.body)
+      assert_select "[data-weekly-planner-error][role=alert][aria-live=assertive]",
+                    text: /short name/i
+      assert_select "[data-weekly-planner-error].lp-flash.lp-flash--alert"
+    end
+  end
 end
