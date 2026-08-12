@@ -3344,7 +3344,10 @@ html[data-theme="dark"] {
   display: grid;
   gap: var(--lp-space-4);
   width: 100%;
-  padding: var(--lp-space-3) var(--lp-space-4) calc(6rem + env(safe-area-inset-bottom, 0px));
+  max-width: 100%;
+  min-width: 0;
+  /* Clear fixed .lp-dash-nav (+ home-indicator). Do not override with Tailwind pb-*. */
+  padding: var(--lp-space-3) var(--lp-space-4) calc(6.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 .lp-home__title {
@@ -4204,6 +4207,20 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   position: relative;
   display: grid;
   gap: var(--lp-space-3);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Match #next-action-slot — shrink timeline cards inside the .lp-dash grid. */
+#today-battle-surface,
+.lp-dash-timeline,
+.lp-dash-timeline__rail,
+.lp-dash-timeline__item,
+.lp-dash-timeline__unscheduled,
+.lp-dash-anytime {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .lp-dash__top {
@@ -5319,6 +5336,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: grid;
   gap: 0.55rem;
   min-height: var(--lp-tap);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .lp-dash-timeline .lp-dash-tcard {
@@ -5329,6 +5348,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0;
   border-left: 4px solid var(--lp-border);
   border-radius: 0 12px 12px 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .lp-dash-timeline .lp-dash-tcard.is-needs-time {
@@ -5402,7 +5423,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-size: 1rem;
   font-weight: 700;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0%;
 }
 
 .lp-dash-tcard__meta {
@@ -5559,7 +5580,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-dash-tcard__win--primary {
-  min-width: 104px;
+  min-width: min(104px, 100%);
   min-height: var(--lp-tap);
   white-space: nowrap;
   background: var(--lp-green);
@@ -10301,8 +10322,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-progress-heatmap {
   box-sizing: border-box;
-  width: min(100%, 25rem);
-  max-width: 25rem;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   overflow: hidden;
   justify-self: start;
@@ -10329,7 +10350,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-progress-heatboard__frame {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--day-col) minmax(0, 1fr);
   align-items: flex-start;
   gap: 0.3rem;
   width: 100%;
@@ -10339,7 +10361,6 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-progress-heatboard__days {
   display: grid;
-  flex: 0 0 var(--day-col);
   grid-template-rows: repeat(7, var(--cell));
   gap: var(--gap);
   align-items: center;
@@ -10357,9 +10378,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-progress-heatboard__scroll {
-  flex: 1 1 0%;
-  width: auto;
   min-width: 0;
+  width: 100%;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
@@ -16178,6 +16198,9 @@ button.lp-strategy-overflow {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: 0.35rem 1rem 0.85rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .lp-journey-details__summary {
@@ -23945,3 +23968,44 @@ a.lp-rpg-camp-row {
   color: var(--lp-muted);
   font-weight: 500;
 }
+
+/* Floating feedback FAB — restored after testing-phase removal (#263). */
+.lp-feedback-fab {
+  position: fixed;
+  right: 0.85rem;
+  bottom: calc(4.4rem + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem 0.45rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(18, 22, 30, 0.92);
+  border: 1px solid rgba(87, 211, 91, 0.35);
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 750;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+/* Mountain: keep FAB off the bottom tab bar. */
+body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
+  top: max(0.7rem, env(safe-area-inset-top, 0px));
+  bottom: auto;
+  right: max(0.7rem, env(safe-area-inset-right, 0px));
+}
+.lp-landing-body .lp-feedback-fab {
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+.lp-feedback-fab__icon {
+  display: grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: rgba(87, 211, 91, 0.18);
+  color: var(--lp-green, #57d35b);
+  font-weight: 800;
+}
+.lp-feedback-fab__text { letter-spacing: 0.01em; }

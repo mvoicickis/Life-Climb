@@ -1,0 +1,12 @@
+<%# Floating feedback entry — every layout. locals: page (optional) %>
+<%
+  page = local_assigns[:page].presence || request.path
+  href = new_feedback_path(page: page)
+%>
+<%= link_to href,
+      class: "lp-feedback-fab",
+      data: { turbo: false },
+      aria: { label: t("feedback.fab_label") } do %>
+  <span class="lp-feedback-fab__icon" aria-hidden="true">?</span>
+  <span class="lp-feedback-fab__text"><%= t("feedback.fab_short") %></span>
+<% end %>

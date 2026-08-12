@@ -1036,7 +1036,10 @@ en:
           - "Day’s almost done — finish “%{title}”."
           - "Still time — wrap up “%{title}” before you rest."
           - "“%{title}” is still open. One push left today."
-          - "Don’t leave “%{title}” hanging overnight."
+          # Shipped: action-first. Avoid deficit “don’t leave hanging”.
+          # Alt B: "You’ve got time — knock out “%{title}” before bed."
+          # Alt C: "Close the day with “%{title}”. Small finish, clear trail."
+          - "Finish “%{title}” tonight — one win closes the day."
         cta: "Finish on Today"
       streak_at_risk:
         title: "Your %{count}-day climb needs a win today"
@@ -2390,6 +2393,8 @@ en:
   feedback:
     title: "Feedback"
     subtitle: "Tell us what feels good, what’s confusing, or what to fix. Takes a minute."
+    fab_label: "Send feedback"
+    fab_short: "Feedback"
     page_label: "Page / context"
     page_unknown: "Not sure — that’s okay"
     rating_label: "How was this? (optional)"

@@ -70,7 +70,8 @@ es:
           - "El día casi acaba — termina “%{title}”."
           - "Aún hay tiempo — cierra “%{title}” antes de descansar."
           - "“%{title}” sigue abierto. Un empujón más hoy."
-          - "No dejes “%{title}” para mañana."
+          # TODO: translate
+          - "Finish “%{title}” tonight — one win closes the day."
         cta: "Terminar en Hoy"
       streak_at_risk:
         title: "Tu subida de %{count} días necesita una victoria hoy"
@@ -903,6 +904,9 @@ es:
       stuck_hint: "Un aviso suave cuando no has avanzado en un tiempo."
   feedback:
     title: "Comentarios"
+    # TODO: translate
+    fab_label: "Send feedback"
+    fab_short: "Feedback"
     subtitle: "Escríbeme directamente: ideas, errores o cómo se siente LifePoints."
     open: "Abrir →"
     write: "Escribir →"

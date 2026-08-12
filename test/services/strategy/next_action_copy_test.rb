@@ -70,6 +70,10 @@ class Strategy::NextAction::CopyTest < ActiveSupport::TestCase
     assert_includes overdue, "Ship it"
     assert overdue.start_with?("⚠️ ")
 
+    phrases = Strategy::NextAction::Copy.phrases_for(key: :battle_overdue, locale: :en)
+    refute phrases.any? { |p| p.match?(/hanging overnight|Don’t leave|Don't leave/i) },
+           "battle_overdue should not use deficit overnight framing"
+
     streak = Strategy::NextAction::Copy.headline_for(key: :streak_at_risk, count: 7, locale: :en)
     assert_includes streak, "7"
     assert streak.start_with?("🔥 ")
