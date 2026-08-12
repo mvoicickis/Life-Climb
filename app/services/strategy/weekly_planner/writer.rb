@@ -23,11 +23,13 @@ module Strategy
         raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_count") if count < 1
 
         dates = parse_dates(@cursor["selected_dates"])
-        raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates") if dates.size != count
+        if dates.size != count
+          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates", count: count)
+        end
 
         eligible = Definition.eligible_dates(@user)
         unless dates.all? { |d| eligible.include?(d) }
-          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates")
+          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates", count: count)
         end
 
         project = find_project!

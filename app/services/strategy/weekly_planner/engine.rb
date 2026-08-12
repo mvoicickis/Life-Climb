@@ -317,7 +317,7 @@ module Strategy
         dates = parse_day_values(value)
         count = data["sitting_count"].to_i
         if dates.size != count || dates.any? { |d| !eligible.include?(d) }
-          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates")
+          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates", count: count)
         end
 
         updated = data.merge(

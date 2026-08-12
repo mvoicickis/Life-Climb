@@ -107,10 +107,10 @@ class Strategy::WeeklyPlanner::EngineTest < ActiveSupport::TestCase
       answer!("Focus work")
       answer!("1")
       error = assert_raises(ArgumentError) { answer!([ (Date.current - 1).iso8601 ]) }
-      assert_match(/open days|sittings/i, error.message)
+      assert_match(/Pick 1 day to continue/i, error.message)
 
       error = assert_raises(ArgumentError) { answer!([ (Date.current.end_of_week + 1).iso8601 ]) }
-      assert_match(/open days|sittings/i, error.message)
+      assert_match(/Pick 1 day to continue/i, error.message)
     end
   end
 

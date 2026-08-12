@@ -97,7 +97,7 @@ class Strategy::WeeklyPlanner::WriterTest < ActiveSupport::TestCase
         }
       )
     end
-    assert_match(/open days|sittings/i, error.message)
+    assert_match(/Pick 1 day to continue/i, error.message)
   end
 
   test "rejects count mismatch" do
@@ -114,6 +114,6 @@ class Strategy::WeeklyPlanner::WriterTest < ActiveSupport::TestCase
         }
       )
     end
-    assert_match(/open days|sittings/i, error.message)
+    assert_match(/Pick 2 days to continue/i, error.message)
   end
 end
