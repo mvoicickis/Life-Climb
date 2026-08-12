@@ -16,6 +16,7 @@ module Strategy
         :item_index,
         :item_progress,
         :suggestions,
+        :already_this_week,
         :eligible_dates,
         :weekday_hint,
         :framing_line,
@@ -461,6 +462,7 @@ module Strategy
             item_index: data["item_index"],
             item_progress: nil,
             suggestions: nil,
+            already_this_week: nil,
             eligible_dates: Definition.eligible_dates(@user),
             weekday_hint: nil,
             framing_line: nil,
@@ -500,6 +502,7 @@ module Strategy
           item_index: index,
           item_progress: progress,
           suggestions: suggestions_for(template, project, items),
+          already_this_week: already_this_week_for(template),
           eligible_dates: eligible,
           weekday_hint: weekday_hint_for(template),
           framing_line: framing_for(template),
@@ -507,6 +510,23 @@ module Strategy
           created_count: nil,
           skipped: []
         )
+      end
+
+      def already_this_week_for(template)
+        return nil unless template.kind == "build_items"
+
+        range = Date.current.beginning_of_week..Date.current.end_of_week
+        counts = @user.daily_todos
+          .where(scheduled_on: range)
+          .group(:title)
+          .count("DISTINCT scheduled_on")
+
+        counts.filter_map do |title, days|
+          label = ItemTitle.extract(title).presence
+          next if label.blank?
+
+          { title: label, days: days.to_i }
+        end.sort_by { |row| [ -row[:days], row[:title].downcase ] }
       end
 
       def question_for(template, current)
@@ -593,6 +613,7 @@ module Strategy
           item_index: 0,
           item_progress: nil,
           suggestions: nil,
+          already_this_week: nil,
           eligible_dates: [],
           weekday_hint: nil,
           framing_line: nil,
