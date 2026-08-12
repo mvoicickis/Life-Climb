@@ -71,7 +71,7 @@ module Strategy
           next unless row.respond_to?(:stringify_keys)
 
           s = row.stringify_keys
-          title = s["title"].to_s.presence
+          title = ItemTitle.extract(s["title"]).presence
           date = s["date"].to_s.presence
           next if title.blank? || date.blank?
 
@@ -95,10 +95,17 @@ module Strategy
 
       def self.normalize_items(raw)
         Array(raw).filter_map do |row|
-          next unless row.respond_to?(:to_h) || row.is_a?(Hash)
+          next unless row.respond_to?(:to_h) || row.is_a?(Hash) || row.is_a?(ActionController::Parameters)
 
-          h = row.respond_to?(:stringify_keys) ? row.stringify_keys : row.to_h.stringify_keys
-          title = h["title"].to_s.strip.presence
+          h =
+            if row.is_a?(ActionController::Parameters)
+              row.to_unsafe_h.stringify_keys
+            elsif row.respond_to?(:stringify_keys)
+              row.stringify_keys
+            else
+              row.to_h.stringify_keys
+            end
+          title = ItemTitle.extract(h["title"]).presence
           next if title.blank?
 
           dates = Array(h["selected_dates"]).map { |d| d.to_s.presence }.compact

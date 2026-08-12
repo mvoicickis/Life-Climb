@@ -55,6 +55,26 @@ class Strategy::WeeklyPlanner::WriterTest < ActiveSupport::TestCase
     assert @user.daily_todos.for_day(dates[1]).exists?(title: "Ship landing")
   end
 
+  test "writes plain string titles even when cursor title was a Hash dump" do
+    today = Date.current
+    dumped = { "title" => "Get a job" }.to_s
+    result = Strategy::WeeklyPlanner::Writer.call(
+      user: @user,
+      journey: @journey,
+      cursor: {
+        "items" => [ { "title" => dumped, "selected_dates" => [ today.iso8601 ] } ],
+        "project_id" => @project.id
+      }
+    )
+
+    assert_equal 1, result["created_count"]
+    goal = @user.strategy_goals.for_kind("day").where(scheduled_on: today).order(:id).last
+    assert_equal "Get a job", goal.title
+    refute_includes goal.title, "=>"
+    todo = @user.daily_todos.find_by!(strategy_goal_id: goal.id)
+    assert_equal "Get a job", todo.title
+  end
+
   test "does not mutate practice task rows when sourcing a title" do
     leaf = practice_leaf_for!(@project)
     host = Strategy::EnsureFolderQuest.call(folder: leaf)

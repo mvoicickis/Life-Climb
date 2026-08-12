@@ -316,34 +316,25 @@ module Strategy
       end
 
       def normalize_build_payload(value)
-        if value.is_a?(Hash)
-          h = value.stringify_keys
+        if value.is_a?(Hash) || value.is_a?(ActionController::Parameters)
+          h = value.is_a?(ActionController::Parameters) ? value.to_unsafe_h.stringify_keys : value.stringify_keys
           items = h["items"]
           if items.present?
-            normalized = Array(items).map do |row|
-              if row.is_a?(Hash)
-                row.stringify_keys["title"].to_s
-              else
-                row.to_s
-              end
-            end
+            normalized = Array(items).map { |row| ItemTitle.extract(row) }
             return { "action" => "continue", "items" => normalized }
           end
           {
             "action" => h["action"].to_s.presence || "continue",
-            "title" => h["title"].to_s,
+            "title" => ItemTitle.extract(h["title"]),
             "index" => h["index"]
           }
         else
-          { "action" => "continue", "title" => value.to_s }
+          { "action" => "continue", "title" => ItemTitle.extract(value) }
         end
       end
 
       def resolve_item_entry(raw, project:)
-        if raw.is_a?(Hash)
-          raw = raw.stringify_keys["title"].presence || raw.stringify_keys["value"]
-        end
-        text = raw.to_s.strip
+        text = ItemTitle.extract(raw)
         raise ArgumentError, I18n.t("strategy.weekly_planner.errors.blank_title") if text.blank?
 
         task_id = nil
@@ -458,7 +449,7 @@ module Strategy
       def build_step(data, plan:, project:, notice: nil)
         data = data.stringify_keys
         if data["status"] == "completed"
-          titles = Array(data["items"]).map { |i| i["title"] }.compact
+          titles = Array(data["items"]).map { |i| ItemTitle.extract(i["title"]) }.compact_blank
           return Step.new(
             template_id: data["template_id"],
             kind: "completed",
@@ -504,7 +495,7 @@ module Strategy
           question: question_for(template, current),
           status: data["status"],
           notice: notice,
-          title: current&.dig("title"),
+          title: current && ItemTitle.extract(current["title"]),
           items: items,
           item_index: index,
           item_progress: progress,
@@ -520,7 +511,7 @@ module Strategy
 
       def question_for(template, current)
         if template.kind == "pick_days" && current
-          I18n.t(template.question_key, title: current["title"])
+          I18n.t(template.question_key, title: ItemTitle.extract(current["title"]))
         else
           I18n.t(template.question_key)
         end
@@ -529,7 +520,7 @@ module Strategy
       def suggestions_for(template, project, items)
         return nil unless template.kind == "build_items"
 
-        taken = items.map { |i| i["title"].to_s.downcase }
+        taken = items.map { |i| ItemTitle.extract(i["title"]).downcase }
         incomplete_tasks_for(project).filter_map do |task|
           next if taken.include?(task.title.to_s.downcase)
 
@@ -622,13 +613,15 @@ module Strategy
       end
 
       def done_flash_for(data)
-        count = data["created_count"].to_i
-        titles = Array(data["items"]).map { |i| i["title"] }.compact
-        title = titles.size == 1 ? titles.first : titles.join(", ")
+        items = Array(data["items"])
+        things = items.size
+        slots = data["created_count"].to_i
+        things_label = I18n.t("strategy.weekly_planner.shell.done_things", count: things)
+        slots_label = I18n.t("strategy.weekly_planner.shell.done_slots", count: slots)
         base = I18n.t(
           "strategy.weekly_planner.shell.done_flash",
-          count: count,
-          title: title
+          things: things_label,
+          slots: slots_label
         )
         skipped = Array(data["skipped"])
         return base if skipped.empty?
@@ -643,7 +636,7 @@ module Strategy
           I18n.t(
             "strategy.weekly_planner.shell.skip_one",
             day: day,
-            title: row["title"]
+            title: ItemTitle.extract(row["title"])
           )
         end
         "#{base} #{skip_bits.join(' ')}"

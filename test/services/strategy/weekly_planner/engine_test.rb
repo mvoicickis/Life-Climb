@@ -75,11 +75,25 @@ class Strategy::WeeklyPlanner::EngineTest < ActiveSupport::TestCase
       result = answer!({ action: "pick_days", dates: [ d2.iso8601 ] })
       assert result.next_step.completed?
       assert_equal "completed", Strategy::WeeklyPlanner::Cursor.load(@journey.reload)["status"]
+      assert_match(/2 things set across 2 day slots/i, result.ack)
 
       assert_equal 1, @user.strategy_goals.for_kind("day").where(title: "Polish resume").count
       assert_equal 1, @user.strategy_goals.for_kind("day").where(title: "Ship landing").count
       assert @user.daily_todos.for_day(d1).exists?(title: "Polish resume")
       assert @user.daily_todos.for_day(d2).exists?(title: "Ship landing")
+    end
+  end
+
+  test "continue with ActionController::Parameters items does not dump hash into title" do
+    travel_to Date.new(2026, 8, 10) do
+      params_items = [ ActionController::Parameters.new("title" => "Get a job") ]
+      answer!({ action: "continue", items: params_items })
+      step = Strategy::WeeklyPlanner::Engine.current(user: @user, journey: @journey, plan_id: @plan.id)
+      assert_equal "Get a job", step.title
+      refute_includes step.title, "=>"
+
+      cursor = Strategy::WeeklyPlanner::Cursor.load(@journey.reload)
+      assert_equal "Get a job", cursor["items"].first["title"]
     end
   end
 

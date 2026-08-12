@@ -891,12 +891,17 @@ en:
           other: "Only %{count} open days left this week."
         pick_some: "Pick at least one day."
         done_title: "Days set"
-        done_body:
-          one: "%{count} day set for %{title} — it’ll show on Today."
-          other: "%{count} days set for %{title} — they’ll show on Today."
-        done_flash:
-          one: "%{count} day set for %{title} — it’ll show on Today."
-          other: "%{count} days set for %{title} — they’ll show on Today."
+        done_things:
+          one: "%{count} thing set"
+          other: "%{count} things set"
+        done_slots:
+          one: "%{count} day slot"
+          other: "%{count} day slots"
+        # Shipped: things + day slots (not calendar "days" — slots are item×day placements).
+        # Alt B: "%{things} planned on %{slots}. They’ll show on Today."
+        # Alt C: "Planned %{things} (%{slots}). They’ll show on Today."
+        done_body: "%{things} across %{slots}. They’ll show on Today."
+        done_flash: "%{things} across %{slots}. They’ll show on Today."
         skip_one: "%{day} was full, so %{title} wasn’t added that day."
         done_cta: "Back to Mountain"
         need_journey: "Focus a journey first, then plan the week."

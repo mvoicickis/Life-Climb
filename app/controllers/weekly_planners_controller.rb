@@ -36,9 +36,7 @@ class WeeklyPlannersController < ApplicationController
 
     if result.next_step.completed?
       redirect_to life_journey_path(@journey),
-                  notice: result.ack.presence || t("strategy.weekly_planner.shell.done_flash",
-                                                   count: result.next_step.created_count.to_i,
-                                                   title: result.next_step.title.to_s),
+                  notice: result.ack.presence || default_done_flash(result.next_step),
                   status: :see_other
     else
       flash[:weekly_planner_ack] = result.ack if result.ack.present?
@@ -68,7 +66,8 @@ class WeeklyPlannersController < ApplicationController
     when "continue"
       items = params[:items]
       if items.present?
-        { action: "continue", items: Array(items) }
+        titles = Array(items).map { |row| Strategy::WeeklyPlanner::ItemTitle.extract(row) }
+        { action: "continue", items: titles }
       else
         { action: "continue" }
       end
@@ -78,6 +77,16 @@ class WeeklyPlannersController < ApplicationController
 
       { action: "add_item", title: params[:value].to_s }
     end
+  end
+
+  def default_done_flash(step)
+    things = Array(step.items).size
+    slots = step.created_count.to_i
+    t(
+      "strategy.weekly_planner.shell.done_flash",
+      things: t("strategy.weekly_planner.shell.done_things", count: things),
+      slots: t("strategy.weekly_planner.shell.done_slots", count: slots)
+    )
   end
 
   def maybe_restart_for_new_week!
