@@ -51,8 +51,10 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
 
     visit dashboard_path
     assert_selector ".lp-dash-tcard.is-quest", text: /Purple Volume/, wait: 5
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: /Do a lesson/
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: /Review notes/
+    assert_selector ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: /Do a lesson/
+    find(".lp-dash-tcard.is-quest .lp-dash-quest-next__open", match: :first).click
+    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: /Do a lesson/
+    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: /Review notes/
     assert_selector ".lp-dash-tcard.is-quest", text: /Plain Volume/
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-today-mobile.png")
   end

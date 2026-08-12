@@ -1,0 +1,87 @@
+<%# Full practice_task list for a quest sheet (or tests).
+    locals: todo, day, tasks, turbo: (default true — sheet uses Turbo Stream) %>
+<%
+  tasks = Array(local_assigns.fetch(:tasks))
+  day = local_assigns.fetch(:day)
+  todo = local_assigns.fetch(:todo)
+  turbo = local_assigns.fetch(:turbo, true)
+  qty_project = day&.quantified_path_project
+  stream_params = turbo ? { respond_with: "today_quest_stream" } : {}
+%>
+<ul class="lp-dash-tcard__objectives" data-quest-objectives="<%= todo.id %>">
+  <% tasks.each do |task| %>
+    <% track = task.tracks_quantity? && qty_project && !task.completed? %>
+    <li class="lp-dash-checklist__obj <%= 'is-done' if task.completed? %>"
+        <% if track %>data-controller="quantity-complete"<% end %>>
+      <%= button_to practice_task_path(task),
+            method: :patch,
+            params: { completed: task.completed? ? "0" : "1" }.merge(stream_params),
+            form: {
+              data: {
+                turbo: turbo,
+                controller: "juicy-feedback",
+                action: [
+                  ("submit->quantity-complete#intercept" if track),
+                  "submit->juicy-feedback#play"
+                ].compact.join(" "),
+                **(track ? { quantity_complete_target: "form" } : {})
+              }
+            },
+            class: "lp-dash-check #{'is-on' if task.completed?}",
+            aria: { label: (task.completed? ? "Undo #{task.title}" : "Complete #{task.title}") } do %>
+        <span aria-hidden="true"></span>
+      <% end %>
+      <span class="lp-dash-checklist__obj-name">
+        <%= task.title %>
+        <% if task.track_quantity? && qty_project %>
+          <em class="lp-dash-checklist__obj-track"><%= t("strategy.quantity.track_objective_badge", unit: qty_project.unit) %></em>
+        <% end %>
+      </span>
+      <% if track %>
+        <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
+                id="qty-obj-<%= task.id %>"
+                data-quantity-complete-target="dialog"
+                data-action="click->quantity-complete#backdropClose">
+          <div class="lp-strategy-sheet__panel">
+            <header class="lp-strategy-sheet__head">
+              <p class="lp-strategy-sheet__kind"><%= task.title %></p>
+              <h2 class="lp-strategy-sheet__title">
+                <%= t("strategy.quantity.how_many", unit: qty_project.unit) %>
+              </h2>
+              <button type="button"
+                      class="lp-strategy-sheet__close"
+                      data-action="click->quantity-complete#close"
+                      aria-label="<%= t('strategy.sheet.close') %>">×</button>
+            </header>
+            <form class="lp-strategy-sheet__form lp-quantity-complete__form"
+                  data-action="submit->quantity-complete#confirm">
+              <label class="lp-quantity-complete__field" for="qty-obj-input-<%= task.id %>">
+                <span class="lp-quantity-complete__label"><%= qty_project.unit %></span>
+                <%= number_field_tag :dialog_amount, nil,
+                      id: "qty-obj-input-#{task.id}",
+                      class: "lp-rpg-input lp-quantity-complete__input",
+                      min: "0.01",
+                      step: "any",
+                      inputmode: "decimal",
+                      required: true,
+                      autocomplete: "off",
+                      placeholder: "0",
+                      data: { quantity_complete_target: "amount" } %>
+              </label>
+              <div class="lp-strategy-sheet__footer is-split">
+                <button type="button"
+                        class="lp-strategy-sheet__btn is-cancel"
+                        data-action="click->quantity-complete#close">
+                  <%= t("strategy.rpg.cancel") %>
+                </button>
+                <button type="submit" class="lp-strategy-sheet__btn is-save">
+                  <%= t("strategy.quantity.log_confirm") %>
+                </button>
+              </div>
+            </form>
+          </div>
+        </dialog>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

@@ -5659,6 +5659,86 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0.15rem 0;
 }
 
+.lp-dash-quest-next {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.lp-dash-quest-next__row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.lp-dash-quest-next__meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.lp-dash-quest-next__meta:hover .lp-dash-quest-next__step,
+.lp-dash-quest-next__meta:focus-visible .lp-dash-quest-next__step {
+  color: var(--lp-ink);
+}
+
+.lp-dash-quest-next__step {
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--lp-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.lp-dash-quest-next__progress {
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
+.lp-dash-quest-next__open {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-ink) 6%, transparent);
+  color: var(--lp-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-dash-quest-next__open:hover,
+.lp-dash-quest-next__open:focus-visible {
+  color: var(--lp-ink);
+  background: color-mix(in srgb, var(--lp-ink) 12%, transparent);
+}
+
+.lp-dash-quest-sheet__body {
+  padding: 0 1rem 1.1rem;
+}
+
+.lp-dash-quest-sheet .lp-dash-tcard__objectives {
+  gap: 0.55rem;
+}
+
 .lp-dash-tcard__add-step-panel,
 .lp-dash-tcard__set-time-panel {
   margin-top: 0.15rem;

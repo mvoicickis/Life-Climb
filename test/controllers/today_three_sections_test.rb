@@ -83,13 +83,43 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Hidden steps", count: 0
   end
 
-  test "quest cards nest objectives with Win controls" do
+  test "quest cards show next step on the card and all steps in the sheet" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: "Do a lesson"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: "Review notes"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__progress", text: /0 \/ 2/
+    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  text: "Review notes"
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
+  end
+
+  test "three-step quest keeps one compact next-step name and three sheet names" do
+    host = Strategy::EnsureFolderQuest.call(folder: @quest)
+    host.practice_tasks.create!(user: @user, title: "Drill vocab", position: 2)
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: host.id)
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step", todo.id.to_s, count: 1
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
+                  todo.id.to_s, text: "Do a lesson"
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
+                  todo.id.to_s, text: "Review notes", count: 0
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
+                  todo.id.to_s, text: "Drill vocab", count: 0
+    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  todo.id.to_s, count: 3
+    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  todo.id.to_s, text: "Do a lesson"
+    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  todo.id.to_s, text: "Review notes"
+    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  todo.id.to_s, text: "Drill vocab"
   end
 
   test "binary habit completes from Today and quantity habit logs from Today" do

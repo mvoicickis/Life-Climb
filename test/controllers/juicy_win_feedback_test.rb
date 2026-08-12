@@ -78,8 +78,11 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-checklist__obj form[data-controller='juicy-feedback']", minimum: 1
-    assert_select ".lp-dash-checklist__obj form[data-juicy-feedback-suppress-reload-celebrate-value='true']", count: 0
+    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj form[data-controller='juicy-feedback']",
+                  minimum: 1
+    assert_select ".lp-dash-quest-next form[data-controller='juicy-feedback']", minimum: 1
+    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj form[data-juicy-feedback-suppress-reload-celebrate-value='true']",
+                  count: 0
   end
 
   test "shield tip shows once and dismiss marks milestone" do

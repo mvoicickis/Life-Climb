@@ -1,0 +1,18 @@
+<%# Keep the quest sheet open: replace compact next + sheet list + actions, not the card. %>
+<%= turbo_stream.replace dom_id(@todo, :quest_next) do %>
+  <div id="<%= dom_id(@todo, :quest_next) %>" class="lp-dash-quest-next">
+    <%= render "dashboard/dash_quest_next", todo: @todo, day: @day, tasks: @tasks %>
+  </div>
+<% end %>
+<%= turbo_stream.replace dom_id(@todo, :quest_sheet_body) do %>
+  <div id="<%= dom_id(@todo, :quest_sheet_body) %>" class="lp-dash-quest-sheet__body">
+    <%= render "dashboard/dash_quest_objectives",
+          todo: @todo,
+          day: @day,
+          tasks: @tasks,
+          turbo: true %>
+  </div>
+<% end %>
+<%= turbo_stream.replace dom_id(@todo, :quest_actions) do %>
+  <%= render "dashboard/dash_quest_actions", todo: @todo, shell_ready: @shell_ready %>
+<% end %>

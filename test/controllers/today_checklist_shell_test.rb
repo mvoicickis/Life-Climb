@@ -4,6 +4,7 @@ require "test_helper"
 
 class TodayChecklistShellTest < ActionDispatch::IntegrationTest
   include ClimbTestHelper
+  include ActionView::RecordIdentifier
 
   setup do
     @user = users(:one)
@@ -42,7 +43,9 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-checklist__obj-name", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: "Do a lesson"
+    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
+                  text: "Do a lesson"
     assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
     assert_select "form[action=?]", complete_daily_todo_path(todo), count: 0
   end
@@ -122,6 +125,36 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-tcard.is-quest form[action=?]", practice_task_path(task)
     assert_select ".lp-dash-tcard.is-quest [data-controller='quantity-complete']", count: 0
+  end
+
+  test "sheet step complete responds with turbo stream and keeps compact next updated" do
+    first = @host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
+    second = @host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @host.id)
+
+    patch practice_task_path(first),
+          params: { completed: "1", respond_with: "today_quest_stream" },
+          as: :turbo_stream
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html", response.media_type
+    assert first.reload.completed?
+    assert_not todo.reload.completed?
+
+    assert_match(/turbo-stream[^>]*target="#{dom_id(todo, :quest_next)}"/, response.body)
+    assert_match(/turbo-stream[^>]*target="#{dom_id(todo, :quest_sheet_body)}"/, response.body)
+    assert_match(/Review notes/, response.body)
+    assert_match(/1 \/ 2/, response.body)
+  end
+
+  test "compact row complete still redirects" do
+    first = @host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
+    @host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+
+    patch practice_task_path(first), params: { completed: "1" }
+    assert_redirected_to dashboard_path
+    assert first.reload.completed?
   end
 
   private

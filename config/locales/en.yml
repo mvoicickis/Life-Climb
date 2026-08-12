@@ -162,6 +162,8 @@ en:
     checklist_objectives: "Objectives"
     checklist_finish_objectives: "Finish the objectives first."
     checklist_locked: "%{title} — finish objectives first"
+    quest_steps:
+      open: "All steps for %{title}"
     battle_done_summary:
       one: "%{count} won today"
       other: "%{count} won today"

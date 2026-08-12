@@ -479,6 +479,8 @@ es:
     checklist_objectives: "Objetivos"
     checklist_finish_objectives: "Primero termina los objetivos."
     checklist_locked: "%{title} — primero termina los objetivos"
+    quest_steps:
+      open: "Todos los pasos de %{title}"
     battle_next_kicker: "Bien — sigue moviendo la subida."
     battle_next_coaching: "Una pregunta rápida abajo mantiene tu montaña clara."
     project_check:

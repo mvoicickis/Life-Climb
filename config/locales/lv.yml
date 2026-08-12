@@ -479,6 +479,8 @@ lv:
     checklist_objectives: "Mērķi"
     checklist_finish_objectives: "Vispirms izpildi mērķus."
     checklist_locked: "%{title} — vispirms izpildi mērķus"
+    quest_steps:
+      open: "Visi soļi: %{title}"
     battle_next_kicker: "Forši — turi kāpienu."
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
     project_check:
