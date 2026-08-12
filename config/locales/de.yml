@@ -315,6 +315,49 @@ de:
         need_goal: "Dein Berg braucht ein Ziel, bevor der Guide starten kann."
         bad_answer: "Versuch die Antwort noch einmal."
         tree_changed: "Auf dem Berg hat sich was bewegt — wir setzen an einer sicheren Stelle fort."
+    # TODO: translate
+    weekly_planner:
+      questions:
+        pick_source: "What do you want to work on this week?"
+        pick_count: "How many sittings this week?"
+        pick_days: "Which days suit you?"
+      answers:
+        something_else: "Something else…"
+      hints:
+        weekday: "You often finish more on %{day}s."
+      acks:
+        locked: "Got it — locked in."
+      errors:
+        blank_title: "Give it a short name."
+        bad_source: "Pick one of the listed items, or name something else."
+        bad_count: "Pick a sitting count that fits this week."
+        bad_dates: "Pick exactly the sittings you chose, from the open days."
+        missing_project: "Add a project on this path first."
+      shell:
+        title: "Plan this week"
+        menu_item: "Plan this week"
+        kicker: "Weekly planner"
+        continue: "Continue"
+        text_placeholder: "Name the work"
+        framing: "We’ll schedule sittings under your current Project — your checklist item stays where it is."
+        cap_note: "Only %{count} open days left this week."
+        pick_exact:
+          one: "Pick %{count} day."
+          other: "Pick %{count} days."
+        done_title: "Sittings set"
+        done_body: "%{count} sittings set for %{title} — they’ll show on Today those days."
+        done_flash: "%{count} sittings set for %{title} — they’ll show on Today those days."
+        done_cta: "Back to Mountain"
+        need_journey: "Focus a journey first, then plan the week."
+        need_plan: "Add a path on the mountain first."
+        need_project_title: "This path needs a project"
+        need_project_body: "Place a checkpoint on the path, then come back to plan sittings."
+        bad_answer: "Try that answer again."
+        tree_changed: "Something on the mountain moved — let’s pick up from a safe spot."
+        week_exhausted_title: "No open days left this week"
+        week_exhausted_body: "Your days are full. Head back to the mountain — next week opens fresh room."
+        week_nearly_done_title: "This week’s almost wrapped"
+        week_nearly_done_body: "Fresh sittings open Monday — back to the mountain for now."
     quantity:
       track: "Als Zahl verfolgen?"
       track_objective: "Fortschritt verfolgen (%{unit})?"
