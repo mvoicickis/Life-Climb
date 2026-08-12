@@ -525,9 +525,19 @@ lv:
       need_spine: "Izveido kalna ceļu, pirms pievieno soļus."
       already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
-      title: "Jebkurā laikā"
-      hint: "Ieradumi — uzvari tos jebkurā brīdī šodien."
-      empty: "Šodienā vēl nav ieradumu — pievieno Habitos."
+      # TODO: translate
+      title: "Habits"
+      hint: "Log as many times as you like"
+      empty: "No habits on Today yet — add one under Habits."
+      add: "Add"
+      add_placeholder: "Add"
+      add_aria: "Add %{unit}"
+      quick_add: "Quick add %{n} %{unit}"
+      undo_add: "Undo"
+      set_total: "Set total"
+      save_total: "Save total"
+      amount_of_target: "%{amount} of %{target} %{unit}"
+      over_by: "+%{amount}"
     shield:
       ready_line: "Vairogs gatavs — šodien bloķē vienu izlaistu logu."
       tip_title: "Tavs dienas vairogs"
@@ -542,7 +552,8 @@ lv:
       dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Dienas solījums"
-      progress: "Cīņas %{battles_done} no %{battles_total} · Ieradumi %{habits_done} no %{habits_total}"
+      # TODO: translate
+      progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
       survived: "Diena izturēta — solījums izpildīts"
       shield_ready: "Vairogs gatavs — šodien bloķē vienu izlaistu logu"
       shield_used: "Vairogs jau izmantots šodien"
@@ -730,6 +741,15 @@ lv:
     goal: "Mērķis %{value}"
     healthy_range: "Veselīgais diapazons"
     how_many: "Cik šodien?"
+    # TODO: translate
+    log_added: "Added %{delta}. %{total} %{unit} today."
+    log_set: "Saved %{total} %{unit}."
+    log_undone: "Undid last add. %{total} %{unit} today."
+    log_need_add: "Enter how many to add."
+    log_need_total: "Enter today’s total."
+    log_bad_mode: "That log didn’t go through — try Add again."
+    log_undo_missing: "Nothing to undo for this habit."
+    goal_hit: "You hit your goal!"
     save: "Saglabāt"
     cancel: "Atcelt"
     edit: "Rediģēt"

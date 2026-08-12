@@ -246,13 +246,19 @@ class Habit < ApplicationRecord
     today_log&.goal || suggested_goal_for_today
   end
 
+  # Display-only progress vs today's target. Growth may exceed 100%.
+  # Binary is 0/100. Standard/healthy-range returns nil (no percentage).
   def goal_progress_percent
-    return 0 unless growth?
+    if binary_checkin?
+      return completed_today? ? 100 : 0
+    end
+
+    return nil if standard?
 
     target = todays_goal_value
     return 0 if target.blank? || target <= 0
 
-    [ ((today_amount / target) * 100).round, 100 ].min
+    ((today_amount / target) * 100).round
   end
 
   def met_habit_goal?

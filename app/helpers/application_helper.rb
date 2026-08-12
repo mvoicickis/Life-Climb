@@ -156,6 +156,24 @@ module ApplicationHelper
     amount == amount.to_i ? amount.to_i.to_s : amount.to_s("F")
   end
 
+  # Server-side undo snapshot after additive habit log (not client-forgeable).
+  def habit_log_undo_for(habit)
+    bag = session[DailyLogsController::UNDO_SESSION_KEY]
+    return nil unless bag.is_a?(Hash)
+
+    entry = bag.stringify_keys[habit.id.to_s]
+    return nil unless entry.is_a?(Hash)
+    return nil unless entry["on"] == Date.current.iso8601
+
+    entry
+  end
+
+  def habit_progress_bar_width(progress)
+    return 0 if progress.nil?
+
+    [ progress.to_i, 100 ].min
+  end
+
   def home_grid_style(count)
     cols = case count
     when 1 then 1

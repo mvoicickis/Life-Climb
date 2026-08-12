@@ -56,7 +56,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today renders timeline battles/quests and Anytime habits without section headers" do
+  test "Today renders habits above timeline battles without old section headers" do
     get dashboard_path
     assert_response :success
 
@@ -65,6 +65,14 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-section.is-battles", count: 0
     assert_select ".lp-dash-section.is-quests", count: 0
     assert_select ".lp-dash-section.is-habits", count: 0
+    assert_select ".lp-dash-anytime h2", text: "Habits"
+
+    body = response.body
+    habits_idx = body.index('class="lp-dash-anytime"')
+    timeline_idx = body.index('class="lp-dash-timeline"')
+    assert habits_idx
+    assert timeline_idx
+    assert_operator habits_idx, :<, timeline_idx, "habits section should render above timeline"
 
     assert_select ".lp-dash-tcard__title", text: "Ship auth"
     assert_select ".lp-dash-tcard__title", text: "Write tests"
@@ -90,9 +98,13 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert @binary.reload.completed_today?
 
     post daily_logs_path(habit_id: @pages.id),
-         params: { return_to: "today", daily_log: { amount: 7 } }
+         params: { mode: "add", return_to: "today", daily_log: { amount: 7 } }
     assert_redirected_to dashboard_path
     assert_equal 7, @pages.reload.today_amount.to_i
+
+    post daily_logs_path(habit_id: @pages.id),
+         params: { mode: "add", return_to: "today", daily_log: { amount: 3 } }
+    assert_equal 10, @pages.reload.today_amount.to_i
   end
 
   test "plain battle still completes from timeline" do

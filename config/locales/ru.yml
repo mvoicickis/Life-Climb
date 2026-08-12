@@ -529,9 +529,19 @@ ru:
       need_spine: "Сначала построй путь на горе."
       already_linked: "У этой битвы уже есть место для чеклиста."
     anytime:
-      title: "В любое время"
-      hint: "Привычки — отмечай их когда угодно сегодня."
-      empty: "На Сегодня ещё нет привычек — добавь в Привычках."
+      # TODO: translate
+      title: "Habits"
+      hint: "Log as many times as you like"
+      empty: "No habits on Today yet — add one under Habits."
+      add: "Add"
+      add_placeholder: "Add"
+      add_aria: "Add %{unit}"
+      quick_add: "Quick add %{n} %{unit}"
+      undo_add: "Undo"
+      set_total: "Set total"
+      save_total: "Save total"
+      amount_of_target: "%{amount} of %{target} %{unit}"
+      over_by: "+%{amount}"
     shield:
       ready_line: "Щит готов — сегодня закрывает одно пропущенное окно."
       tip_title: "Твой дневной щит"
@@ -546,7 +556,8 @@ ru:
       dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Дневное обязательство"
-      progress: "Битвы %{battles_done} из %{battles_total} · Привычки %{habits_done} из %{habits_total}"
+      # TODO: translate
+      progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
       survived: "День выдержан — обязательство выполнено"
       shield_ready: "Щит готов — сегодня закрывает одно пропущенное окно"
       shield_used: "Щит уже использован сегодня"
@@ -740,6 +751,15 @@ ru:
     goal: "Цель %{value}"
     healthy_range: "Здоровый диапазон"
     how_many: "Сколько сегодня?"
+    # TODO: translate
+    log_added: "Added %{delta}. %{total} %{unit} today."
+    log_set: "Saved %{total} %{unit}."
+    log_undone: "Undid last add. %{total} %{unit} today."
+    log_need_add: "Enter how many to add."
+    log_need_total: "Enter today’s total."
+    log_bad_mode: "That log didn’t go through — try Add again."
+    log_undo_missing: "Nothing to undo for this habit."
+    goal_hit: "You hit your goal!"
     save: "Сохранить"
     cancel: "Отмена"
     edit: "Изменить"

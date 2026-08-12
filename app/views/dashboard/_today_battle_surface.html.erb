@@ -7,11 +7,11 @@
         strategy_goal: @strategy_goal,
         first_climb: @first_climb_needed %>
 <% else %>
+  <%= render "dashboard/dash_anytime", habits: @habits %>
   <%= render "dashboard/dash_timeline",
         timeline: @timeline,
         open_count: @battle_open_count,
         total_count: @battle_total_count,
         upcoming: @upcoming_battle,
         handoff: @strategy_handoff %>
-  <%= render "dashboard/dash_anytime", habits: @habits %>
 <% end %>

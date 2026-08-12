@@ -73,14 +73,14 @@
       </div>
     </div>
 
-    <% if @habit.better_than_yesterday? && @habit.goal.present? %>
+    <% if progress && @habit.better_than_yesterday? && @habit.goal.present? %>
       <div class="lp-habits__progress">
         <div class="lp-habits__progress-labels">
           <span><%= t("habits.toward_goal") %></span>
           <span><%= progress %>%</span>
         </div>
         <div class="lp-habits__progress-track">
-          <div class="lp-habits__progress-fill" style="width: <%= progress %>%"></div>
+          <div class="lp-habits__progress-fill" style="width: <%= habit_progress_bar_width(progress) %>%"></div>
         </div>
       </div>
     <% end %>
@@ -103,6 +103,7 @@
     <% end %>
 
     <%= form_with url: daily_logs_path(habit_id: @habit.id), scope: :daily_log, class: "lp-habits__log", data: { turbo: false } do |form| %>
+      <%= hidden_field_tag :mode, "set" %>
       <%= form.label :amount, t("habits.how_many"), class: "lp-habits__field-label" %>
       <%= form.number_field :amount,
           value: format_amount(@habit.today_log&.amount || 0),
