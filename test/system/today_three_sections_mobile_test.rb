@@ -74,7 +74,7 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     assert_no_selector ".lp-dash-section.is-quests"
     assert_no_selector ".lp-dash-section.is-habits"
 
-    assert_selector ".lp-dash-anytime", text: /Anytime/i
+    assert_selector ".lp-dash-anytime", text: /Habits/i
     assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Meditate/
     assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Pages read/
     assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Steps/

@@ -525,9 +525,19 @@ es:
       need_spine: "Construye tu ruta antes de añadir pasos."
       already_linked: "Esa batalla ya tiene un hogar de checklist."
     anytime:
-      title: "Cuando sea"
-      hint: "Hábitos — gánalos cuando quieras hoy."
-      empty: "Aún no hay hábitos en Hoy — añádelos en Hábitos."
+      # TODO: translate
+      title: "Habits"
+      hint: "Log as many times as you like"
+      empty: "No habits on Today yet — add one under Habits."
+      add: "Add"
+      add_placeholder: "Add"
+      add_aria: "Add %{unit}"
+      quick_add: "Quick add %{n} %{unit}"
+      undo_add: "Undo"
+      set_total: "Set total"
+      save_total: "Save total"
+      amount_of_target: "%{amount} of %{target} %{unit}"
+      over_by: "+%{amount}"
     shield:
       ready_line: "Escudo listo — bloquea una ventana perdida hoy."
       tip_title: "Tu escudo diario"
@@ -542,7 +552,8 @@ es:
       dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Compromiso diario"
-      progress: "Batallas %{battles_done} de %{battles_total} · Hábitos %{habits_done} de %{habits_total}"
+      # TODO: translate
+      progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
       survived: "Día sobrevivido — compromiso cumplido"
       shield_ready: "Escudo listo — bloquea una ventana perdida hoy"
       shield_used: "Escudo ya usado hoy"
@@ -730,6 +741,15 @@ es:
     goal: "Meta %{value}"
     healthy_range: "Rango saludable"
     how_many: "¿Cuánto hoy?"
+    # TODO: translate
+    log_added: "Added %{delta}. %{total} %{unit} today."
+    log_set: "Saved %{total} %{unit}."
+    log_undone: "Undid last add. %{total} %{unit} today."
+    log_need_add: "Enter how many to add."
+    log_need_total: "Enter today’s total."
+    log_bad_mode: "That log didn’t go through — try Add again."
+    log_undo_missing: "Nothing to undo for this habit."
+    goal_hit: "You hit your goal!"
     save: "Guardar"
     cancel: "Cancelar"
     edit: "Editar"

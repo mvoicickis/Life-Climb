@@ -525,9 +525,19 @@ de:
       need_spine: "Baue zuerst deinen Bergpfad."
       already_linked: "Dieser Kampf hat bereits eine Checklisten-Heimat."
     anytime:
-      title: "Jederzeit"
-      hint: "Gewohnheiten — heute jederzeit gewinnen."
-      empty: "Noch keine Gewohnheiten auf Heute — unter Gewohnheiten hinzufügen."
+      # TODO: translate
+      title: "Habits"
+      hint: "Log as many times as you like"
+      empty: "No habits on Today yet — add one under Habits."
+      add: "Add"
+      add_placeholder: "Add"
+      add_aria: "Add %{unit}"
+      quick_add: "Quick add %{n} %{unit}"
+      undo_add: "Undo"
+      set_total: "Set total"
+      save_total: "Save total"
+      amount_of_target: "%{amount} of %{target} %{unit}"
+      over_by: "+%{amount}"
     shield:
       ready_line: "Schild bereit — blockiert heute ein verpasstes Fenster."
       tip_title: "Dein Tages-Schild"
@@ -542,7 +552,8 @@ de:
       dismissed: "Alright. I'll be in Settings if you change your mind."
     commitment:
       tier_label: "Tägliches Commitment"
-      progress: "Kämpfe %{battles_done} von %{battles_total} · Gewohnheiten %{habits_done} von %{habits_total}"
+      # TODO: translate
+      progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
       survived: "Tag überstanden — Commitment erfüllt"
       shield_ready: "Schild bereit — blockiert heute ein verpasstes Fenster"
       shield_used: "Schild heute schon genutzt"
@@ -730,6 +741,15 @@ de:
     goal: "Ziel %{value}"
     healthy_range: "Gesunder Bereich"
     how_many: "Wie viel heute?"
+    # TODO: translate
+    log_added: "Added %{delta}. %{total} %{unit} today."
+    log_set: "Saved %{total} %{unit}."
+    log_undone: "Undid last add. %{total} %{unit} today."
+    log_need_add: "Enter how many to add."
+    log_need_total: "Enter today’s total."
+    log_bad_mode: "That log didn’t go through — try Add again."
+    log_undo_missing: "Nothing to undo for this habit."
+    goal_hit: "You hit your goal!"
     save: "Speichern"
     cancel: "Abbrechen"
     edit: "Bearbeiten"

@@ -28,16 +28,22 @@
       </div>
     </div>
 
-    <div class="mt-5">
-      <div class="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wide opacity-70">
-        <span>Goal bar</span>
-        <span><%= progress %>%</span>
+    <% if progress %>
+      <div class="mt-5">
+        <div class="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wide opacity-70">
+          <span>Goal bar</span>
+          <span><%= progress %>%</span>
+        </div>
+        <div class="h-4 overflow-hidden rounded-full bg-black/10">
+          <div class="h-full rounded-full transition-all <%= vs_yesterday_bar_class(status) %>" style="width: <%= habit_progress_bar_width(progress) %>%"></div>
+        </div>
+        <p class="mt-2 text-sm font-semibold"><%= tracker.status_label %></p>
       </div>
-      <div class="h-4 overflow-hidden rounded-full bg-black/10">
-        <div class="h-full rounded-full transition-all <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
+    <% else %>
+      <div class="mt-5">
+        <p class="mt-2 text-sm font-semibold"><%= tracker.status_label %></p>
       </div>
-      <p class="mt-2 text-sm font-semibold"><%= tracker.status_label %></p>
-    </div>
+    <% end %>
 
     <%= form_with url: daily_logs_path(habit_id: tracker.id), scope: :daily_log, class: "mt-5 space-y-3", data: { turbo: false } do |form| %>
       <div class="grid gap-3 sm:grid-cols-2">

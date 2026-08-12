@@ -5734,9 +5734,12 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-dash-anytime {
-  margin-top: 1.25rem;
+  margin-top: 0;
+  margin-bottom: 0.35rem;
   display: grid;
   gap: 0.65rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .lp-dash-anytime__head h2 {
@@ -5758,6 +5761,143 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0;
   display: grid;
   gap: 0.55rem;
+}
+
+.lp-dash-tcard.is-habit.is-hit {
+  border-color: rgba(87, 211, 91, 0.4);
+}
+
+.lp-dash-tcard.is-habit.is-over {
+  border-color: rgba(245, 181, 68, 0.45);
+}
+
+.lp-dash-habit__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.lp-dash-habit__title-row .lp-dash-tcard__title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lp-dash-habit__pct {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--lp-green, #57d35b);
+}
+
+.lp-dash-habit__pct.is-zero,
+.lp-dash-tcard.is-habit.is-over .lp-dash-habit__pct {
+  color: var(--lp-muted);
+}
+
+.lp-dash-tcard.is-habit.is-over .lp-dash-habit__pct {
+  color: #f5b544;
+}
+
+.lp-dash-habit__bar {
+  height: 5px;
+  margin-top: 0.45rem;
+  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.lp-dash-habit__bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--lp-green, #57d35b);
+}
+
+.lp-dash-habit__bar i.is-over {
+  background: linear-gradient(90deg, var(--lp-green, #57d35b), #f5b544);
+}
+
+.lp-dash-habit__controls {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.lp-dash-habit__quick {
+  min-width: 2.5rem;
+  min-height: 44px;
+  padding: 0 0.65rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-border);
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lp-dash-habit__undo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--lp-border);
+}
+
+.lp-dash-habit__undo p {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
+.lp-dash-habit__undo-btn {
+  border: 0;
+  background: transparent;
+  color: var(--lp-green, #57d35b);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  min-height: 2.4rem;
+  padding: 0 0.15rem;
+}
+
+.lp-dash-habit__set {
+  margin-top: 0.45rem;
+}
+
+.lp-dash-habit__set > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  min-height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.lp-dash-habit__set > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-dash-habit__set-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
 }
 
 .lp-rpg-add__times,

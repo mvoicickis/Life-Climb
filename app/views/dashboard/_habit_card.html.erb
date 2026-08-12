@@ -16,9 +16,9 @@
     <p class="home-card-value font-black"><%= format_amount(tracker.today_amount) %></p>
     <p class="today-delta"><%= amount_delta_label(tracker) %></p>
 
-    <% if tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
+    <% if progress && tracker.better_than_yesterday? && tracker.todays_goal_value.to_d > 0 %>
       <div class="today-mini-bar" aria-hidden="true">
-        <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= progress %>%"></div>
+        <div class="today-mini-bar-fill <%= vs_yesterday_bar_class(status) %>" style="width: <%= habit_progress_bar_width(progress) %>%"></div>
       </div>
     <% end %>
   </div>

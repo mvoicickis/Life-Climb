@@ -18,6 +18,7 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
       active: true,
       show_on_home: true,
       stat_type: "growth",
+      goal: 25,
       quantity_checkin: true
     )
   end
@@ -26,33 +27,44 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today_habit_#{@habit.id} .lp-dash-tcard__amount", count: 1
+    assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty .lp-dash-tcard__amount", count: 1
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty", count: 1
     assert_select "#today_habit_#{@habit.id} form[action=?]",
                   completions_path(habit_id: @habit.id),
                   count: 0
   end
 
-  test "unlogged quantity habit renders blank required amount input" do
+  test "unlogged quantity habit renders blank required amount input with mode add" do
     get dashboard_path
     assert_response :success
 
-    input = css_select("#today_habit_#{@habit.id} .lp-dash-tcard__amount").first
+    input = css_select("#today_habit_#{@habit.id} form.lp-dash-tcard__qty .lp-dash-tcard__amount").first
     assert input
     assert_equal "required", input["required"]
     value = input["value"].to_s
     assert value.blank? || value == "", "expected blank value, got #{value.inspect}"
+    assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty input[name=mode][value=add]", count: 1
+    assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty input[name=mode][value=set]", count: 0
   end
 
-  test "logged quantity habit prefills real amount including zero" do
-    @habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 7)
+  test "logged quantity habit keeps add input blank and shows running total in meta" do
+    @habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 7, goal: 25)
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{@habit.id} .lp-dash-tcard__amount[value=?]", "7"
 
-    @habit.daily_logs.find_by!(logged_on: Date.current).update!(amount: 0)
+    input = css_select("#today_habit_#{@habit.id} form.lp-dash-tcard__qty .lp-dash-tcard__amount").first
+    assert input
+    value = input["value"].to_s
+    assert value.blank? || value == "", "expected blank add field, got #{value.inspect}"
+    assert_match(/7 of 25/, response.body)
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__pct", text: "28%"
+  end
+
+  test "plus one form posts mode add only" do
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{@habit.id} .lp-dash-tcard__amount[value=?]", "0"
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 1
+    # button_to wraps a form; ensure no set mode on the quick-add path
+    assert_select "#today_habit_#{@habit.id} form input[name=mode][value=add]", minimum: 1
   end
 end

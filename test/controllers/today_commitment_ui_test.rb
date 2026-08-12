@@ -32,6 +32,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
 
     assert_select "[data-commitment-tier]", text: /Easy/i
     assert_select "[data-day-shield]"
+    assert_select "[data-commitment-progress]", text: /Habits/i
     assert_select "[data-commitment-progress]", text: /Battles/i
     assert_select "a.lp-cta", text: "Win on Today", count: 0
     assert_no_match(/>\s*Win on Today\s*</, response.body)
