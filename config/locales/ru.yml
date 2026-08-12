@@ -479,6 +479,8 @@ ru:
     checklist_objectives: "Цели"
     checklist_finish_objectives: "Сначала выполни цели."
     checklist_locked: "%{title} — сначала выполни цели"
+    quest_steps:
+      open: "Все шаги для %{title}"
     battle_next_kicker: "Отлично — продолжай подъём."
     battle_next_coaching: "Один быстрый вопрос ниже держит гору честной."
     project_check:

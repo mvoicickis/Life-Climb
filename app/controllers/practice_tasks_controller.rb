@@ -53,7 +53,7 @@ class PracticeTasksController < ApplicationController
         reopen_checklist_day_if_needed!(practice)
       end
       Journeys::SyncClimbFromToday.call(user: current_user)
-      redirect_to dashboard_path, status: :see_other
+      respond_today_quest_completion!(practice)
     elsif params.key?(:title) || params.key?(:track_quantity)
       attrs = {}
       attrs[:title] = params.require(:title).to_s.strip if params.key?(:title)
@@ -99,6 +99,28 @@ class PracticeTasksController < ApplicationController
     @tasks = practice.practice_tasks.ordered.to_a
     @create_url = strategy_goal_practice_tasks_path(practice)
     @qty_project = practice.quantified_path_project
+  end
+
+  # Sheet ticks use Turbo Stream so the dialog stays open; compact-row ticks redirect.
+  # When the last step auto-finishes the battle, fall back to a full redirect so
+  # celebrate / AP flash still run on a fresh Today paint.
+  def respond_today_quest_completion!(practice)
+    todo = linked_today_todo(practice)
+    want_stream = params[:respond_with].to_s == "today_quest_stream"
+
+    if want_stream && request.format.turbo_stream? && todo.present? && !todo.completed?
+      assign_today_quest_stream!(practice, todo)
+      render :complete_today
+    else
+      redirect_to dashboard_path, status: :see_other
+    end
+  end
+
+  def assign_today_quest_stream!(practice, todo)
+    @todo = todo
+    @day = practice
+    @tasks = practice.practice_tasks.ordered.to_a
+    @shell_ready = @tasks.all?(&:completed?)
   end
 
   def complete_objective!(task, practice)

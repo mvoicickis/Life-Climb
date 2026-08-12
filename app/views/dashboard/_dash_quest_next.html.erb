@@ -1,0 +1,103 @@
+<%# Compact next unfinished step for a quest card.
+    locals: todo, day, tasks %>
+<%
+  todo = local_assigns.fetch(:todo)
+  day = local_assigns.fetch(:day)
+  tasks = Array(local_assigns.fetch(:tasks))
+  next_task = tasks.find { |t| !t.completed? }
+  done_count = tasks.count(&:completed?)
+  total = tasks.size
+  progress = t("strategy.rpg.objectives_done_short", done: done_count, total: total)
+  qty_project = day&.quantified_path_project
+%>
+<% if next_task %>
+  <% track = next_task.tracks_quantity? && qty_project && !next_task.completed? %>
+  <div class="lp-dash-quest-next__row <%= 'is-qty' if track %>"
+       <% if track %>data-controller="quantity-complete"<% end %>>
+    <%= button_to practice_task_path(next_task),
+          method: :patch,
+          params: { completed: "1" },
+          form: {
+            data: {
+              turbo: false,
+              controller: "juicy-feedback",
+              action: [
+                ("submit->quantity-complete#intercept" if track),
+                "submit->juicy-feedback#play"
+              ].compact.join(" "),
+              **(track ? { quantity_complete_target: "form" } : {})
+            }
+          },
+          class: "lp-dash-check",
+          aria: { label: "Complete #{next_task.title}" } do %>
+      <span aria-hidden="true"></span>
+    <% end %>
+    <button type="button"
+            class="lp-dash-quest-next__meta"
+            data-action="quest-steps#open"
+            aria-haspopup="dialog"
+            aria-controls="<%= dom_id(todo, :quest_sheet) %>">
+      <span class="lp-dash-quest-next__step"><%= next_task.title %></span>
+      <span class="lp-dash-quest-next__progress"><%= progress %></span>
+    </button>
+    <button type="button"
+            class="lp-dash-quest-next__open"
+            data-action="quest-steps#open"
+            aria-label="<%= t('dash.quest_steps.open', title: todo.title) %>"
+            aria-haspopup="dialog"
+            aria-controls="<%= dom_id(todo, :quest_sheet) %>">›</button>
+    <% if track %>
+      <dialog class="lp-strategy-sheet is-project lp-quantity-complete"
+              id="qty-next-<%= next_task.id %>"
+              data-quantity-complete-target="dialog"
+              data-action="click->quantity-complete#backdropClose">
+        <div class="lp-strategy-sheet__panel">
+          <header class="lp-strategy-sheet__head">
+            <p class="lp-strategy-sheet__kind"><%= next_task.title %></p>
+            <h2 class="lp-strategy-sheet__title">
+              <%= t("strategy.quantity.how_many", unit: qty_project.unit) %>
+            </h2>
+            <button type="button"
+                    class="lp-strategy-sheet__close"
+                    data-action="click->quantity-complete#close"
+                    aria-label="<%= t('strategy.sheet.close') %>">×</button>
+          </header>
+          <form class="lp-strategy-sheet__form lp-quantity-complete__form"
+                data-action="submit->quantity-complete#confirm">
+            <label class="lp-quantity-complete__field" for="qty-next-input-<%= next_task.id %>">
+              <span class="lp-quantity-complete__label"><%= qty_project.unit %></span>
+              <%= number_field_tag :dialog_amount, nil,
+                    id: "qty-next-input-#{next_task.id}",
+                    class: "lp-rpg-input lp-quantity-complete__input",
+                    min: "0.01",
+                    step: "any",
+                    inputmode: "decimal",
+                    required: true,
+                    autocomplete: "off",
+                    placeholder: "0",
+                    data: { quantity_complete_target: "amount" } %>
+            </label>
+            <div class="lp-strategy-sheet__footer is-split">
+              <button type="button"
+                      class="lp-strategy-sheet__btn is-cancel"
+                      data-action="click->quantity-complete#close">
+                <%= t("strategy.rpg.cancel") %>
+              </button>
+              <button type="submit" class="lp-strategy-sheet__btn is-save">
+                <%= t("strategy.quantity.log_confirm") %>
+              </button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+    <% end %>
+  </div>
+<% elsif tasks.any? %>
+  <button type="button"
+          class="lp-dash-quest-next__meta is-all-done"
+          data-action="quest-steps#open"
+          aria-haspopup="dialog"
+          aria-controls="<%= dom_id(todo, :quest_sheet) %>">
+    <span class="lp-dash-quest-next__progress"><%= progress %></span>
+  </button>
+<% end %>

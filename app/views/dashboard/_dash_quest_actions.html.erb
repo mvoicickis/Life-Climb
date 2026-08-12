@@ -1,0 +1,67 @@
+<%# Win / locked / undo controls for a quest timeline card.
+    locals: todo, shell_ready, before_overdue: (optional, for menu) %>
+<%
+  todo = local_assigns.fetch(:todo)
+  shell_ready = local_assigns.fetch(:shell_ready)
+  before_overdue = local_assigns.fetch(:before_overdue) do
+    Time.current.hour < Strategy::NextAction::OVERDUE_AFTER_HOUR
+  end
+%>
+<div id="<%= dom_id(todo, :quest_actions) %>" class="lp-dash-tcard__actions">
+  <% unless todo.completed? %>
+    <details class="lp-dash-tcard__menu"
+             data-tcard-menu-target="details"
+             data-action="toggle->tcard-menu#toggled">
+      <summary class="lp-dash-tcard__menu-summary" aria-label="<%= t('dash.timeline.more_actions') %>">
+        <%= render "shared/lp_icon", name: "dots", class_name: "lp-icon is-inline" %>
+      </summary>
+      <div class="lp-dash-tcard__menulist">
+        <% if !todo.timed? && before_overdue %>
+          <button type="button"
+                  class="lp-dash-tcard__menuitem"
+                  data-action="set-time#open click->tcard-menu#close">
+            <%= t("dash.timeline.set_time") %>
+          </button>
+        <% end %>
+        <button type="button"
+                class="lp-dash-tcard__menuitem"
+                data-action="add-step#open click->tcard-menu#close">
+          <%= t("dash.add_step.cta") %>
+        </button>
+        <%= button_to t("dash.timeline.remove"),
+              daily_todo_path(todo),
+              method: :delete,
+              class: "lp-dash-tcard__menuitem is-danger",
+              form: {
+                class: "lp-dash-tcard__menu-form",
+                data: { turbo_confirm: t("dash.timeline.remove_confirm") }
+              } %>
+      </div>
+    </details>
+  <% end %>
+
+  <% if todo.completed? %>
+    <%= button_to t("dash.timeline.undo"),
+          complete_daily_todo_path(todo),
+          method: :post,
+          class: "lp-dash-tcard__win is-done",
+          aria: { label: "#{t('dash.timeline.undo')} #{todo.title}" } %>
+  <% elsif !shell_ready %>
+    <span class="lp-dash-tcard__win is-locked" aria-label="<%= t('dash.checklist_locked', title: todo.title) %>">
+      <%= t("dash.timeline.locked") %>
+    </span>
+  <% else %>
+    <%= button_to t("dash.timeline.did_it"),
+          complete_daily_todo_path(todo),
+          method: :post,
+          class: "lp-dash-tcard__win lp-dash-tcard__win--primary",
+          aria: { label: "#{t('dash.timeline.did_it')} #{todo.title}" },
+          form: {
+            data: {
+              controller: "juicy-feedback",
+              action: "submit->juicy-feedback#play",
+              juicy_feedback_suppress_reload_celebrate_value: true
+            }
+          } %>
+  <% end %>
+</div>

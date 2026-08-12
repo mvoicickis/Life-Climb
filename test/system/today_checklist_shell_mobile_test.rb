@@ -37,17 +37,28 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
 
     assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
     assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked"
-    assert_selector ".lp-dash-checklist__obj-name", text: "Do a lesson"
-    assert_selector ".lp-dash-checklist__obj-name", text: "Review notes"
+    assert_selector ".lp-dash-quest-next__step", text: "Do a lesson"
+    assert_selector ".lp-dash-quest-next__progress", text: /0 \/ 2/
+
+    find(".lp-dash-quest-next__open").click
+    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: "Do a lesson"
+    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: "Review notes"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-checklist-shell-mobile.png")
 
-    find("button.lp-dash-check[aria-label='Complete Do a lesson']").click
-    assert_selector ".lp-dash-checklist__obj.is-done", text: /Do a lesson/, wait: 5
+    within("dialog.lp-dash-quest-sheet[open]") do
+      find("button.lp-dash-check[aria-label='Complete Do a lesson']").click
+    end
+    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj.is-done",
+                    text: /Do a lesson/, wait: 5
+    assert_selector ".lp-dash-quest-next__step", text: "Review notes", wait: 5
     assert_not @host.reload.completed?
 
-    find("button.lp-dash-check[aria-label='Complete Review notes']").click
+    within("dialog.lp-dash-quest-sheet[open]") do
+      find("button.lp-dash-check[aria-label='Complete Review notes']").click
+    end
+    # Last step finishes the battle — full redirect for celebrate.
     assert_selector ".lp-dash-tcard.is-quest.is-done .lp-dash-tcard__title", text: /Volume 0/i, wait: 5
     assert @first.reload.completed?
     assert @second.reload.completed?

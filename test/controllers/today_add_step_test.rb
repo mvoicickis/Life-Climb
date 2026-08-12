@@ -53,7 +53,9 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert @todo.reload.quest?
     assert_select ".lp-dash-tcard.is-quest[data-todo-id=?]", @todo.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-checklist__obj-name",
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
+                  @todo.id.to_s, text: /Outline the auth flow/
+    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
                   @todo.id.to_s, text: /Outline the auth flow/
     assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win.is-locked", @todo.id.to_s
     assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menuitem", @todo.id.to_s, text: /Add step/
@@ -107,7 +109,9 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_select ".lp-dash-tcard.is-quest[data-todo-id=?]", orphan.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-checklist__obj-name",
+    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
+                  orphan.id.to_s, text: /First checklist step/
+    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
                   orphan.id.to_s, text: /First checklist step/
   end
 

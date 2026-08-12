@@ -26,7 +26,9 @@ class PracticeTasksTodayCheckboxTest < ActionDispatch::IntegrationTest
   test "Today renders nested step as checklist checkbox not Win button" do
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist__obj", text: /make todays page more nice/
+    assert_select ".lp-dash-quest-next__step", text: /make todays page more nice/
+    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj",
+                  text: /make todays page more nice/
     assert_select ".lp-dash-check", minimum: 1
     assert_select ".lp-dash-tcard__win.is-nested", count: 0
   end
@@ -37,8 +39,8 @@ class PracticeTasksTodayCheckboxTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-checklist__obj.is-done .lp-dash-checklist__obj-name",
+    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj.is-done .lp-dash-checklist__obj-name",
                   text: /make todays page more nice/
-    assert_select ".lp-dash-check.is-on", minimum: 1
+    assert_select "dialog.lp-dash-quest-sheet .lp-dash-check.is-on", minimum: 1
   end
 end
