@@ -70,7 +70,8 @@ de:
           - "Der Tag ist fast vorbei — beende „%{title}“."
           - "Noch Zeit — schließ „%{title}“ ab, bevor du ruhst."
           - "„%{title}“ ist noch offen. Ein letzter Schub heute."
-          - "Lass „%{title}“ nicht über Nacht liegen."
+          # TODO: translate
+          - "Finish “%{title}” tonight — one win closes the day."
         cta: "Auf Heute beenden"
       streak_at_risk:
         title: "Dein %{count}-Tage-Aufstieg braucht heute einen Sieg"
@@ -903,6 +904,9 @@ de:
       stuck_hint: "Ein sanfter Nudge, wenn du eine Weile nichts gemacht hast."
   feedback:
     title: "Feedback"
+    # TODO: translate
+    fab_label: "Send feedback"
+    fab_short: "Feedback"
     subtitle: "Schreib mir direkt — Ideen, Fehler oder wie sich LifePoints anfühlt."
     open: "Öffnen →"
     write: "Schreiben →"

@@ -70,7 +70,8 @@ lv:
           - "Diena gandrīz beigusies — pabeidz “%{title}”."
           - "Vēl ir laiks — aizver “%{title}” pirms atpūtas."
           - "“%{title}” vēl ir atvērts. Viens pēdējais grūdiens."
-          - "Neatstāj “%{title}” uz nakti."
+          # TODO: translate
+          - "Finish “%{title}” tonight — one win closes the day."
         cta: "Pabeigt Šodienā"
       streak_at_risk:
         title: "Tavam %{count} dienu kāpienam šodien vajag uzvaru"
@@ -903,6 +904,9 @@ lv:
       stuck_hint: "Maigs atgādinājums, ja kādu laiku neesi kustējies."
   feedback:
     title: "Atsauksmes"
+    # TODO: translate
+    fab_label: "Send feedback"
+    fab_short: "Feedback"
     subtitle: "Raksti man tieši — idejas, kļūdas vai kā jūtas LifePoints."
     open: "Atvērt →"
     write: "Rakstīt →"

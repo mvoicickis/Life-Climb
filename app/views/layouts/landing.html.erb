@@ -30,5 +30,6 @@
 
   <body class="lp-landing-body lp-min-h-screen antialiased">
     <%= yield %>
+    <%= render "shared/feedback_fab", page: request.path %>
   </body>
 </html>
