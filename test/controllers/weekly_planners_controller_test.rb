@@ -41,14 +41,14 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "free-text happy path creates sittings and redirects to mountain" do
+  test "free-text happy path creates days and redirects to mountain" do
     travel_to Date.new(2026, 8, 10) do
       get weekly_planner_path(plan_id: @plan.id)
       post weekly_planner_path(plan_id: @plan.id), params: { value: "Ship landing" }
       assert_redirected_to weekly_planner_path(plan_id: @plan.id)
 
       follow_redirect!
-      assert_match(/How many sittings/i, response.body)
+      assert_match(/How many days this week/i, response.body)
 
       post weekly_planner_path(plan_id: @plan.id), params: { value: "2" }
       follow_redirect!
@@ -58,12 +58,28 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
       post weekly_planner_path(plan_id: @plan.id), params: { dates: dates.map(&:iso8601) }
       assert_redirected_to life_journey_path(@journey)
       follow_redirect!
-      assert_match(/2 sittings set for Ship landing/i, flash[:notice].to_s + response.body)
+      assert_match(/2 days set for Ship landing/i, flash[:notice].to_s + response.body)
 
       assert_equal 2, @user.strategy_goals.for_kind("day").where(title: "Ship landing").count
       dates.each do |date|
         assert @user.daily_todos.for_day(date).exists?(title: "Ship landing")
       end
+    end
+  end
+
+  test "done flash uses singular day and pronoun for count 1" do
+    travel_to Date.new(2026, 8, 10) do
+      get weekly_planner_path(plan_id: @plan.id)
+      post weekly_planner_path(plan_id: @plan.id), params: { value: "One day only" }
+      follow_redirect!
+      post weekly_planner_path(plan_id: @plan.id), params: { value: "1" }
+      follow_redirect!
+      date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
+      post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
+      assert_redirected_to life_journey_path(@journey)
+      assert_match(/1 day set for One day only/i, flash[:notice].to_s)
+      assert_match(/it’ll show on Today/i, flash[:notice].to_s)
+      assert_no_match(/1 days|they’ll/i, flash[:notice].to_s)
     end
   end
 
