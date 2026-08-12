@@ -39,6 +39,27 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
       assert_match(/What do you want to work on this week/i, response.body)
       assert_match(/Name the work/i, response.body)
       assert_match(/Continue/i, response.body)
+      assert_select ".lp-weekly-planner__already", count: 0
+    end
+  end
+
+  test "show lists already scheduled titles for this week" do
+    travel_to Date.new(2026, 8, 10) do
+      [ Date.new(2026, 8, 10), Date.new(2026, 8, 11) ].each_with_index do |day, i|
+        @user.daily_todos.create!(
+          title: "Improve German",
+          scheduled_on: day,
+          position: i,
+          aspect_key: @area.key,
+          lp_reward: GameRules::BATTLE_TODO_LP
+        )
+      end
+
+      get weekly_planner_path(plan_id: @plan.id)
+      assert_response :success
+      assert_select ".lp-weekly-planner__already"
+      assert_match(/Already this week/i, response.body)
+      assert_match(/Improve German · 2 days/i, response.body)
     end
   end
 

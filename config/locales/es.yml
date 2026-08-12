@@ -335,6 +335,7 @@ es:
       shell:
         title: "Plan this week"
         menu_item: "Plan this week"
+        # TODO: translate
         kicker: "This week"
         continue: "Continue"
         add: "Add"
@@ -342,6 +343,11 @@ es:
         items_label: "This week’s work"
         text_placeholder: "Name the work"
         suggestions_label: "From your checklist"
+        # TODO: translate
+        already_this_week: "Already this week"
+        already_item:
+          one: "%{title} · %{count} day"
+          other: "%{title} · %{count} days"
         framing: "We’ll put these under your current Project — your checklist item stays where it is."
         continue_with_count:
           one: "Continue with %{count} item"

@@ -881,6 +881,12 @@ en:
         items_label: "This week’s work"
         text_placeholder: "Name the work"
         suggestions_label: "From your checklist"
+        # Heading drafts: A (shipped) "Already this week" · B "On your week" · C "Scheduled already"
+        already_this_week: "Already this week"
+        # Line drafts: A (shipped) "title · N day(s)" · B "title — N day(s)" · C "title on N day(s)"
+        already_item:
+          one: "%{title} · %{count} day"
+          other: "%{title} · %{count} days"
         framing: "We’ll put these under your current Project — your checklist item stays where it is."
         continue_with_count:
           one: "Continue with %{count} item"

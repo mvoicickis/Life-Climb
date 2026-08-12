@@ -97,6 +97,41 @@ class Strategy::WeeklyPlanner::EngineTest < ActiveSupport::TestCase
     end
   end
 
+  test "build_items lists already-scheduled titles with day counts" do
+    travel_to Date.new(2026, 8, 10) do # Monday
+      [ Date.new(2026, 8, 10), Date.new(2026, 8, 11), Date.new(2026, 8, 12), Date.new(2026, 8, 13) ].each_with_index do |day, i|
+        @user.daily_todos.create!(
+          title: "Improve German",
+          scheduled_on: day,
+          position: i,
+          aspect_key: @area.key,
+          lp_reward: GameRules::BATTLE_TODO_LP
+        )
+      end
+      @user.daily_todos.create!(
+        title: "Ship landing",
+        scheduled_on: Date.new(2026, 8, 12),
+        position: 10,
+        aspect_key: @area.key,
+        lp_reward: GameRules::BATTLE_TODO_LP
+      )
+
+      step = Strategy::WeeklyPlanner::Engine.current(user: @user, journey: @journey, plan_id: @plan.id)
+      assert_equal "build_items", step.kind
+      assert_equal [
+        { title: "Improve German", days: 4 },
+        { title: "Ship landing", days: 1 }
+      ], step.already_this_week
+    end
+  end
+
+  test "build_items already_this_week is empty when nothing is scheduled" do
+    travel_to Date.new(2026, 8, 10) do
+      step = Strategy::WeeklyPlanner::Engine.current(user: @user, journey: @journey, plan_id: @plan.id)
+      assert_equal [], step.already_this_week
+    end
+  end
+
   test "resumes mid-loop at the same item index" do
     travel_to Date.new(2026, 8, 10) do
       answer!({ action: "continue", items: [ "Alpha", "Beta", "Gamma" ] })

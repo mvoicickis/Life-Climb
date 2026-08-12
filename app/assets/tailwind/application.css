@@ -9602,7 +9602,9 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-journey-points__grid {
   display: grid;
   gap: var(--lp-space-3);
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .lp-journey-points__card {
@@ -9710,10 +9712,15 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin-top: var(--lp-space-4);
   display: grid;
   gap: var(--lp-space-3);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .lp-journey-trends__card {
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .lp-journey-trends__card h3,
@@ -9734,8 +9741,16 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-journey-trends__chart {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 160px;
   margin-top: 0.35rem;
+}
+
+.lp-journey-trends__chart canvas {
+  display: block;
+  max-width: 100% !important;
 }
 
 .lp-journey-habits {
@@ -9827,11 +9842,17 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin-top: var(--lp-space-4);
   display: grid;
   gap: var(--lp-space-3);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .lp-journey-stats__area {
   display: grid;
   gap: 0.65rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .lp-journey-stats__area-head {
@@ -9917,10 +9938,19 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   color: var(--lp-muted);
 }
 
+/* Chart.js needs a definite-width parent (responsive + maintainAspectRatio: false). */
 .lp-journey-stats__chart {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 160px;
   margin-top: 0.15rem;
+}
+
+.lp-journey-stats__chart canvas {
+  display: block;
+  max-width: 100% !important;
 }
 
 .lp-journey-stats__hide {
@@ -10236,7 +10266,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 @media (min-width: 640px) {
   .lp-progress-categories__body {
-    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     align-items: center;
     gap: 1rem;
     margin-top: 0.85rem;
@@ -14538,6 +14568,14 @@ button.lp-strategy-overflow {
 .lp-admin__chart {
   height: 11rem;
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.lp-admin__chart canvas {
+  display: block;
+  max-width: 100% !important;
 }
 
 .lp-admin__chart.is-tall {
@@ -23911,6 +23949,39 @@ a.lp-rpg-camp-row {
 
 
 /* Weekly planner — item list + day multi-select */
+.lp-weekly-planner__already {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--lp-ink) 10%, transparent);
+  background: color-mix(in srgb, var(--lp-glass, #fff) 72%, transparent);
+  min-width: 0;
+  max-width: 100%;
+}
+.lp-weekly-planner__already-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+.lp-weekly-planner__already-list {
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.lp-weekly-planner__already-item {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 650;
+  color: var(--lp-ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .lp-weekly-planner__items {
   list-style: none;
   margin: 0;

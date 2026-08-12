@@ -48,6 +48,22 @@
          data-weekly-planner-items-continue-one-value="<%= t('strategy.weekly_planner.shell.continue_with_count.one') %>"
          data-weekly-planner-items-continue-other-value="<%= t('strategy.weekly_planner.shell.continue_with_count.other') %>">
 
+      <% already = Array(step.already_this_week) %>
+      <% if already.any? %>
+        <aside class="lp-weekly-planner__already" aria-label="<%= t('strategy.weekly_planner.shell.already_this_week') %>">
+          <p class="lp-weekly-planner__already-title"><%= t("strategy.weekly_planner.shell.already_this_week") %></p>
+          <ul class="lp-weekly-planner__already-list">
+            <% already.each do |row| %>
+              <li class="lp-weekly-planner__already-item">
+                <%= t("strategy.weekly_planner.shell.already_item",
+                      title: row[:title],
+                      count: row[:days]) %>
+              </li>
+            <% end %>
+          </ul>
+        </aside>
+      <% end %>
+
       <ul class="lp-weekly-planner__items space-y-2"
           data-weekly-planner-items-target="list"
           data-weekly-planner-items-empty="<%= items.empty? %>"
