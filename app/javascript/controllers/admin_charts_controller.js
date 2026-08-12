@@ -1,9 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
-import { Chart, registerables } from "chart.js"
-
-Chart.register(...registerables)
+import "chart.js"
 
 // Lightweight line charts for Admin dashboard / statistics.
+// Chart.js is pinned as UMD (chart.umd.js) — side-effect import + window.Chart.
 export default class extends Controller {
   static targets = ["users", "points", "battles"]
   static values = {
@@ -12,8 +11,14 @@ export default class extends Controller {
     battles: Array
   }
 
+  get Chart() {
+    return window.Chart
+  }
+
   connect() {
     this.charts = []
+    if (!this.Chart) return
+
     this.renderLine(this.hasUsersTarget && this.usersTarget, this.usersValue, "#166534")
     this.renderLine(this.hasPointsTarget && this.pointsTarget, this.pointsValue, "#0f766e")
     this.renderLine(this.hasBattlesTarget && this.battlesTarget, this.battlesValue, "#b45309")
@@ -27,7 +32,7 @@ export default class extends Controller {
   renderLine(canvas, rows, color) {
     if (!canvas || !rows?.length) return
 
-    const chart = new Chart(canvas.getContext("2d"), {
+    const chart = new this.Chart(canvas.getContext("2d"), {
       type: "line",
       data: {
         labels: rows.map((r) => r.label),

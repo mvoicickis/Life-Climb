@@ -8,6 +8,15 @@
 <section class="space-y-4"
          aria-labelledby="weekly-planner-question"
          data-controller="companion-guide">
+  <% if error.present? %>
+    <p class="lp-flash lp-flash--alert rounded-xl px-4 py-3 text-sm font-bold"
+       role="alert"
+       aria-live="assertive"
+       data-weekly-planner-error>
+      <%= error %>
+    </p>
+  <% end %>
+
   <header>
     <h2 id="weekly-planner-question" class="text-3xl font-semibold text-[var(--lp-ink)]">
       <%= step.question %>
@@ -25,12 +34,6 @@
       <p class="mt-2 text-sm text-[var(--lp-muted)]" data-weekly-planner-hint><%= step.weekday_hint %></p>
     <% end %>
   </header>
-
-  <% if error.present? %>
-    <p class="text-sm font-semibold text-[var(--lp-rose)]" role="alert" data-weekly-planner-error>
-      <%= error %>
-    </p>
-  <% end %>
 
   <% case step.kind %>
   <% when "pick_source" %>
@@ -64,6 +67,7 @@
           <%= t("strategy.weekly_planner.answers.something_else") %>
         </p>
         <%= text_field_tag :value, attempted_value,
+              required: true,
               maxlength: 120,
               autocomplete: "off",
               class: "lp-input w-full",
