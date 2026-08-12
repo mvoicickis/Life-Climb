@@ -23887,25 +23887,38 @@ a.lp-rpg-camp-row {
 .lp-climb-path__new-quest-btn::-webkit-details-marker { display: none; }
 
 
-/* Weekly planner — count chips + day multi-select */
-.lp-weekly-planner__counts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
+/* Weekly planner — item list + day multi-select */
+.lp-weekly-planner__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.lp-weekly-planner__count {
-  min-width: 3.25rem;
-  min-height: 3.25rem;
-  padding: 0.65rem 0.9rem;
+.lp-weekly-planner__item {
   border-radius: 0.9rem;
+}
+.lp-weekly-planner__remove {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--lp-muted);
+}
+.lp-weekly-planner__remove:hover {
+  color: var(--lp-ink);
+}
+.lp-weekly-planner__suggestion {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--lp-ink) 14%, transparent);
   background: color-mix(in srgb, var(--lp-glass, #fff) 88%, transparent);
   color: var(--lp-ink);
-  font-size: 1.05rem;
-  font-weight: 750;
+  font-size: 0.9rem;
+  font-weight: 650;
   cursor: pointer;
 }
-.lp-weekly-planner__count:hover {
+.lp-weekly-planner__suggestion:hover {
   border-color: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 55%, transparent);
 }
 .lp-weekly-planner__days {

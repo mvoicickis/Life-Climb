@@ -3,7 +3,8 @@
    attempted_value = local_assigns[:attempted_value]
    error = local_assigns[:error].presence || @error
    attempted_value = attempted_value.nil? ? @attempted_value : attempted_value
-   plan_id = params[:plan_id] %>
+   plan_id = params[:plan_id]
+   items = Array(step.items) %>
 
 <section class="space-y-4"
          aria-labelledby="weekly-planner-question"
@@ -18,13 +19,18 @@
   <% end %>
 
   <header>
+    <% if step.item_progress.present? %>
+      <p class="text-sm font-semibold text-[var(--lp-muted)]" data-weekly-planner-progress>
+        <%= step.item_progress %>
+      </p>
+    <% end %>
     <h2 id="weekly-planner-question" class="text-3xl font-semibold text-[var(--lp-ink)]">
       <%= step.question %>
     </h2>
     <% if step.framing_line.present? %>
       <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= step.framing_line %></p>
     <% end %>
-    <% if step.title.present? && step.kind != "pick_source" %>
+    <% if step.title.present? && step.kind == "pick_days" %>
       <p class="mt-2 text-sm font-semibold text-[var(--lp-ink)]"><%= step.title %></p>
     <% end %>
     <% if step.cap_note.present? %>
@@ -36,62 +42,104 @@
   </header>
 
   <% case step.kind %>
-  <% when "pick_source" %>
-    <div class="space-y-3" role="group" aria-label="<%= step.question %>">
-      <% Array(step.source_options).each do |option| %>
-        <%= button_to option[:label],
-              weekly_planner_path(plan_id: plan_id),
-              method: :post,
-              params: { value: option[:value] },
-              class: "lp-cta w-full",
-              form: {
-                data: {
-                  turbo: false,
-                  controller: "companion-guide",
-                  action: "submit->companion-guide#disable"
-                }
-              } %>
+  <% when "build_items" %>
+    <div class="space-y-4"
+         data-controller="weekly-planner-items"
+         data-weekly-planner-items-continue-one-value="<%= t('strategy.weekly_planner.shell.continue_with_count.one') %>"
+         data-weekly-planner-items-continue-other-value="<%= t('strategy.weekly_planner.shell.continue_with_count.other') %>">
+
+      <ul class="lp-weekly-planner__items space-y-2"
+          data-weekly-planner-items-target="list"
+          data-weekly-planner-items-empty="<%= items.empty? %>"
+          aria-label="<%= t('strategy.weekly_planner.shell.items_label') %>">
+        <% items.each_with_index do |item, index| %>
+          <li class="lp-weekly-planner__item lp-glass flex items-center justify-between gap-3 px-3 py-2"
+              data-weekly-planner-items-target="row"
+              data-title="<%= item['title'] %>">
+            <span class="min-w-0 flex-1 font-semibold text-[var(--lp-ink)]"><%= item["title"] %></span>
+            <%= button_to t("strategy.weekly_planner.shell.remove"),
+                  weekly_planner_path(plan_id: plan_id),
+                  method: :post,
+                  params: { intent: "remove_item", index: index },
+                  class: "lp-weekly-planner__remove text-sm font-bold text-[var(--lp-muted)]",
+                  form: {
+                    data: {
+                      turbo: false,
+                      action: "submit->weekly-planner-items#remove"
+                    }
+                  } %>
+          </li>
+        <% end %>
+      </ul>
+
+      <%= form_with url: weekly_planner_path(plan_id: plan_id),
+            method: :post,
+            class: "space-y-3",
+            data: {
+              turbo: false,
+              weekly_planner_items_target: "addForm",
+              action: "submit->weekly-planner-items#add"
+            } do %>
+        <%= hidden_field_tag :intent, "add_item" %>
+        <div class="flex gap-2">
+          <%= text_field_tag :value, attempted_value,
+                maxlength: 120,
+                autocomplete: "off",
+                class: "lp-input w-full",
+                placeholder: t("strategy.weekly_planner.shell.text_placeholder"),
+                data: { weekly_planner_items_target: "input" },
+                aria: { invalid: error.present?, label: t("strategy.weekly_planner.shell.text_placeholder") } %>
+          <%= submit_tag t("strategy.weekly_planner.shell.add"),
+                class: "lp-cta shrink-0",
+                data: { weekly_planner_items_target: "addButton" } %>
+        </div>
       <% end %>
-    </div>
 
-    <%= form_with url: weekly_planner_path(plan_id: plan_id),
-          method: :post,
-          class: "space-y-4",
-          data: {
-            turbo: false,
-            controller: "companion-guide",
-            action: "submit->companion-guide#disable"
-          } do %>
-      <div class="lp-glass space-y-2 p-4">
-        <p class="text-sm font-semibold text-[var(--lp-ink)]">
-          <%= t("strategy.weekly_planner.answers.something_else") %>
-        </p>
-        <%= text_field_tag :value, attempted_value,
-              required: true,
-              maxlength: 120,
-              autocomplete: "off",
-              class: "lp-input w-full",
-              placeholder: t("strategy.weekly_planner.shell.text_placeholder"),
-              aria: { invalid: error.present? } %>
-      </div>
-      <%= submit_tag t("strategy.weekly_planner.shell.continue"), class: "lp-cta w-full" %>
-    <% end %>
+      <% suggestions = Array(step.suggestions) %>
+      <% if suggestions.any? %>
+        <div class="space-y-2">
+          <p class="text-sm font-semibold text-[var(--lp-muted)]">
+            <%= t("strategy.weekly_planner.shell.suggestions_label") %>
+          </p>
+          <div class="flex flex-wrap gap-2" role="group" aria-label="<%= t('strategy.weekly_planner.shell.suggestions_label') %>">
+            <% suggestions.each do |option| %>
+              <%= button_to "+ #{option[:label]}",
+                    weekly_planner_path(plan_id: plan_id),
+                    method: :post,
+                    params: { intent: "add_item", value: option[:value] },
+                    class: "lp-weekly-planner__suggestion",
+                    form: {
+                      data: {
+                        turbo: false,
+                        action: "submit->weekly-planner-items#suggest"
+                      }
+                    } %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
-  <% when "pick_count" %>
-    <div class="lp-weekly-planner__counts" role="group" aria-label="<%= step.question %>">
-      <% Array(step.count_options).each do |option| %>
-        <%= button_to option[:label],
-              weekly_planner_path(plan_id: plan_id),
-              method: :post,
-              params: { value: option[:value] },
-              class: "lp-weekly-planner__count",
-              form: {
-                data: {
-                  turbo: false,
-                  controller: "companion-guide",
-                  action: "submit->companion-guide#disable"
-                }
-              } %>
+      <%= form_with url: weekly_planner_path(plan_id: plan_id),
+            method: :post,
+            class: "space-y-3",
+            data: {
+              turbo: false,
+              controller: "companion-guide",
+              weekly_planner_items_target: "continueForm",
+              action: "submit->companion-guide#disable submit->weekly-planner-items#prepareContinue"
+            } do %>
+        <%= hidden_field_tag :intent, "continue" %>
+        <div data-weekly-planner-items-target="hiddenFields">
+          <% items.each do |item| %>
+            <input type="hidden" name="items[][title]" value="<%= item['title'] %>">
+          <% end %>
+        </div>
+        <%= submit_tag(
+              items.empty? ? t("strategy.weekly_planner.shell.continue") : t("strategy.weekly_planner.shell.continue_with_count", count: items.size),
+              class: "lp-cta w-full",
+              disabled: items.empty?,
+              data: { weekly_planner_items_target: "continueButton" }
+            ) %>
       <% end %>
     </div>
 
@@ -117,7 +165,7 @@
         <% end %>
       </div>
       <p class="text-sm text-[var(--lp-muted)]">
-        <%= t("strategy.weekly_planner.shell.pick_exact", count: step.sitting_count.to_i) %>
+        <%= t("strategy.weekly_planner.shell.pick_some") %>
       </p>
       <%= submit_tag t("strategy.weekly_planner.shell.continue"), class: "lp-cta w-full" %>
     <% end %>

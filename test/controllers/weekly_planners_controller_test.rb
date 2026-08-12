@@ -32,47 +32,59 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
     @journey.update!(commitment_battle_count: 3)
   end
 
-  test "show renders pick_source" do
+  test "show renders build_items" do
     travel_to Date.new(2026, 8, 10) do
       get weekly_planner_path(plan_id: @plan.id)
       assert_response :success
       assert_match(/What do you want to work on this week/i, response.body)
-      assert_match(/Something else/i, response.body)
+      assert_match(/Name the work/i, response.body)
+      assert_match(/Continue/i, response.body)
+    end
+  end
+
+  test "step 1 add_item without JS re-renders the item in the list" do
+    travel_to Date.new(2026, 8, 10) do
+      get weekly_planner_path(plan_id: @plan.id)
+      post weekly_planner_path(plan_id: @plan.id), params: {
+        intent: "add_item",
+        value: "Install Linux"
+      }
+      assert_redirected_to weekly_planner_path(plan_id: @plan.id)
+      follow_redirect!
+      assert_response :success
+      assert_match(/Install Linux/i, response.body)
+      assert_match(/Continue with 1 item/i, response.body)
+      assert_select "[data-weekly-planner-items-target='row']", text: /Install Linux/
     end
   end
 
   test "free-text happy path creates days and redirects to mountain" do
     travel_to Date.new(2026, 8, 10) do
-      get weekly_planner_path(plan_id: @plan.id)
-      post weekly_planner_path(plan_id: @plan.id), params: { value: "Ship landing" }
-      assert_redirected_to weekly_planner_path(plan_id: @plan.id)
-
+      post weekly_planner_path(plan_id: @plan.id), params: {
+        intent: "add_item",
+        value: "Ship landing"
+      }
       follow_redirect!
-      assert_match(/How many days this week/i, response.body)
-
-      post weekly_planner_path(plan_id: @plan.id), params: { value: "2" }
+      post weekly_planner_path(plan_id: @plan.id), params: { intent: "continue" }
+      assert_redirected_to weekly_planner_path(plan_id: @plan.id)
       follow_redirect!
       assert_match(/Which days suit you/i, response.body)
+      assert_match(/Item 1 of 1/i, response.body)
 
-      dates = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first(2)
-      post weekly_planner_path(plan_id: @plan.id), params: { dates: dates.map(&:iso8601) }
+      date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
+      post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
       assert_redirected_to life_journey_path(@journey)
       follow_redirect!
-      assert_match(/2 days set for Ship landing/i, flash[:notice].to_s + response.body)
+      assert_match(/1 day set for Ship landing/i, flash[:notice].to_s + response.body)
 
-      assert_equal 2, @user.strategy_goals.for_kind("day").where(title: "Ship landing").count
-      dates.each do |date|
-        assert @user.daily_todos.for_day(date).exists?(title: "Ship landing")
-      end
+      assert_equal 1, @user.strategy_goals.for_kind("day").where(title: "Ship landing").count
+      assert @user.daily_todos.for_day(date).exists?(title: "Ship landing")
     end
   end
 
   test "done flash uses singular day and pronoun for count 1" do
     travel_to Date.new(2026, 8, 10) do
-      get weekly_planner_path(plan_id: @plan.id)
-      post weekly_planner_path(plan_id: @plan.id), params: { value: "One day only" }
-      follow_redirect!
-      post weekly_planner_path(plan_id: @plan.id), params: { value: "1" }
+      post weekly_planner_path(plan_id: @plan.id), params: { intent: "continue", items: [ "One day only" ] }
       follow_redirect!
       date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
       post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
@@ -119,28 +131,7 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
     travel_to Date.new(2026, 8, 10) do
       get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
       assert_response :success
-      assert_select "a[href=?]", weekly_planner_path(plan_id: @plan.id, new_week: 1),
-                    text: /Plan this week/i
-    end
-  end
-
-  test "free-text field is required so empty submit is caught in the browser" do
-    travel_to Date.new(2026, 8, 10) do
-      get weekly_planner_path(plan_id: @plan.id)
-      assert_response :success
-      assert_select "input[name=value][required]"
-    end
-  end
-
-  test "blank answer re-renders pick_source with a visible alert error" do
-    travel_to Date.new(2026, 8, 10) do
-      get weekly_planner_path(plan_id: @plan.id)
-      post weekly_planner_path(plan_id: @plan.id), params: { value: "   " }
-      assert_response :unprocessable_entity
-      assert_match(/What do you want to work on this week/i, response.body)
-      assert_select "[data-weekly-planner-error][role=alert][aria-live=assertive]",
-                    text: /short name/i
-      assert_select "[data-weekly-planner-error].lp-flash.lp-flash--alert"
+      assert_select "a[href=?]", weekly_planner_path(plan_id: @plan.id, new_week: 1)
     end
   end
 end

@@ -12,13 +12,16 @@ module Strategy
         :status,
         :notice,
         :title,
-        :source_options,
-        :count_options,
+        :items,
+        :item_index,
+        :item_progress,
+        :suggestions,
         :eligible_dates,
-        :sitting_count,
         :weekday_hint,
         :framing_line,
         :cap_note,
+        :created_count,
+        :skipped,
         keyword_init: true
       ) do
         def completed?
@@ -66,9 +69,9 @@ module Strategy
         plan = resolve_plan
         return nil if plan.blank?
 
-        eligible = Definition.eligible_dates(@user)
-        return build_week_nearly_done_step if Definition.week_nearly_done?(eligible)
-        return build_week_exhausted_step if eligible.empty?
+        base_eligible = Definition.eligible_dates(@user)
+        return build_week_nearly_done_step if Definition.week_nearly_done?(base_eligible)
+        return build_week_exhausted_step if base_eligible.empty?
 
         project = resolve_project(plan)
         return build_need_project_step if project.blank?
@@ -77,11 +80,15 @@ module Strategy
         data = Cursor.start!(@journey, plan: plan) if data.blank?
         data = ensure_plan_project!(data, plan, project)
 
-        data, healed = sanitize_cursor!(data, plan, project, eligible)
+        data, healed = sanitize_cursor!(data, plan, project)
         Cursor.save!(@journey, data) if healed
 
-        build_step(data, plan: plan, project: project, eligible: eligible,
-                   notice: healed ? I18n.t("strategy.weekly_planner.shell.tree_changed") : nil)
+        notice =
+          if healed
+            I18n.t("strategy.weekly_planner.shell.tree_changed")
+          end
+
+        build_step(data, plan: plan, project: project, notice: notice)
       end
 
       def restart!
@@ -99,11 +106,11 @@ module Strategy
         plan = resolve_plan
         raise ArgumentError, I18n.t("strategy.weekly_planner.shell.need_plan") if plan.blank?
 
-        eligible = Definition.eligible_dates(@user)
-        if Definition.week_nearly_done?(eligible)
+        base_eligible = Definition.eligible_dates(@user)
+        if Definition.week_nearly_done?(base_eligible)
           return AnswerResult.new(ack: nil, next_step: build_week_nearly_done_step, noop: true)
         end
-        if eligible.empty?
+        if base_eligible.empty?
           return AnswerResult.new(ack: nil, next_step: build_week_exhausted_step, noop: true)
         end
 
@@ -116,38 +123,38 @@ module Strategy
           data = Cursor.start!(@journey, plan: plan) if data.blank?
           data = ensure_plan_project!(data, plan, project)
 
-          data, healed = sanitize_cursor!(data, plan, project, eligible)
+          data, healed = sanitize_cursor!(data, plan, project)
           Cursor.save!(@journey, data) if healed
 
           if data["status"] == "completed"
             return AnswerResult.new(
-              ack: I18n.t("strategy.weekly_planner.shell.done_flash",
-                          count: data["sitting_count"].to_i,
-                          title: data["title"].to_s),
-              next_step: build_step(data, plan: plan, project: project, eligible: eligible),
+              ack: ack_for(data),
+              next_step: build_step(data, plan: plan, project: project),
               noop: true
             )
           end
 
           template = Definition.template(data["template_id"])
           key = Cursor.cursor_key(data)
+          action = answer_action(value)
 
-          if data["answered_key"] == key
+          # Idempotent double-submit: only skip when the same continue/days write already landed.
+          if data["answered_key"] == key && %w[continue pick_days].include?(action)
             data = heal_answered_write_step(data, template)
             Cursor.save!(@journey, data)
             return AnswerResult.new(
               ack: I18n.t("strategy.weekly_planner.acks.locked"),
-              next_step: build_step(data, plan: plan, project: project, eligible: eligible),
+              next_step: build_step(data, plan: plan, project: project),
               noop: true
             )
           end
 
-          data = apply_answer!(data, template, value, plan: plan, project: project, eligible: eligible)
-          data["answered_key"] = key
+          data = apply_answer!(data, template, value, plan: plan, project: project)
+          data["answered_key"] = key if %w[continue pick_days].include?(answer_action(value))
           Cursor.save!(@journey, data)
           AnswerResult.new(
             ack: ack_for(data),
-            next_step: build_step(data, plan: plan, project: project, eligible: eligible),
+            next_step: build_step(data, plan: plan, project: project),
             noop: false
           )
         end
@@ -189,56 +196,36 @@ module Strategy
         )
       end
 
-      def sanitize_cursor!(data, plan, project, eligible)
+      def sanitize_cursor!(data, plan, project)
         data = data.stringify_keys
         return [ data, false ] if data["status"] == "completed"
 
         healed = false
-        template_id = data["template_id"].to_s
 
-        if data["plan_id"].present? && data["plan_id"] != plan.id
-          data = {
-            "version" => Cursor::VERSION,
-            "status" => "in_progress",
-            "template_id" => "pick_source",
-            "plan_id" => plan.id,
-            "project_id" => project.id,
-            "title" => nil,
-            "source_practice_task_id" => nil,
-            "sitting_count" => nil,
-            "selected_dates" => [],
-            "answered_key" => nil
-          }
+        if Cursor.legacy?(data) || (data["plan_id"].present? && data["plan_id"] != plan.id)
+          data = Cursor.blank_payload(plan_id: plan.id, project_id: project.id)
           return [ data, true ]
         end
 
-        max = Definition.max_sittings(@journey, eligible)
-        if data["sitting_count"].present? && data["sitting_count"].to_i > max && max >= 1
-          data = data.merge(
-            "template_id" => "pick_count",
-            "sitting_count" => nil,
-            "selected_dates" => [],
-            "answered_key" => nil
-          )
-          healed = true
-          template_id = "pick_count"
-        end
+        template_id = data["template_id"].to_s
+        items = Array(data["items"])
 
-        if %w[pick_count pick_days].include?(template_id) && data["title"].blank?
+        if template_id == "pick_days" && items.empty?
           data = data.merge(
-            "template_id" => "pick_source",
-            "sitting_count" => nil,
-            "selected_dates" => [],
+            "template_id" => "build_items",
+            "item_index" => 0,
             "answered_key" => nil
           )
           healed = true
-        elsif template_id == "pick_days" && data["sitting_count"].blank?
-          data = data.merge(
-            "template_id" => "pick_count",
-            "selected_dates" => [],
-            "answered_key" => nil
-          )
-          healed = true
+        elsif template_id == "pick_days"
+          index = data["item_index"].to_i
+          if index.negative? || index >= items.size
+            data = data.merge("item_index" => 0, "answered_key" => nil)
+            healed = true
+          end
+        elsif template_id != "build_items"
+          data = Cursor.blank_payload(plan_id: plan.id, project_id: project.id)
+          return [ data, true ]
         end
 
         [ data.merge("project_id" => project.id, "plan_id" => plan.id), healed ]
@@ -248,83 +235,175 @@ module Strategy
         return data unless Definition.write_kind?(template.kind)
         return data unless data["template_id"] == template.id
 
-        nxt = Definition.next_after_write(template.id)
-        return data if nxt.blank?
+        if template.kind == "build_items" && data["items"].present?
+          return data.merge("template_id" => "pick_days", "item_index" => 0)
+        end
 
-        data.merge("template_id" => nxt)
+        if template.kind == "pick_days"
+          items = Array(data["items"])
+          index = data["item_index"].to_i
+          current = items[index]
+          if current && Array(current["selected_dates"]).any?
+            if index + 1 < items.size
+              return data.merge("item_index" => index + 1)
+            elsif data["status"] != "completed"
+              # Already wrote — leave completed if Writer ran; otherwise stay.
+              return data
+            end
+          end
+        end
+
+        data
       end
 
-      def apply_answer!(data, template, value, plan:, project:, eligible:)
+      def answer_action(value)
+        if value.is_a?(Hash)
+          value.stringify_keys["action"].to_s.presence || "continue"
+        else
+          "pick_days"
+        end
+      end
+
+      def apply_answer!(data, template, value, plan:, project:)
         case template.kind
-        when "pick_source"
-          apply_pick_source!(data, value, project: project)
-        when "pick_count"
-          apply_pick_count!(data, value, eligible: eligible)
+        when "build_items"
+          apply_build_items!(data, value, project: project)
         when "pick_days"
-          apply_pick_days!(data, value, plan: plan, project: project, eligible: eligible)
+          apply_pick_days!(data, value, plan: plan, project: project)
         else
           raise ArgumentError, "unknown write kind: #{template.kind}"
         end
       end
 
-      def apply_pick_source!(data, value, project:)
-        raw = value.to_s.strip
-        raise ArgumentError, I18n.t("strategy.weekly_planner.errors.blank_title") if raw.blank?
+      def apply_build_items!(data, value, project:)
+        payload = normalize_build_payload(value)
+        items = Array(data["items"]).map(&:dup)
 
-        title = nil
+        case payload["action"]
+        when "add_item"
+          entry = resolve_item_entry(payload["title"], project: project)
+          items << entry
+          data.merge(
+            "items" => items,
+            "template_id" => "build_items",
+            "item_index" => 0,
+            "answered_key" => nil
+          )
+        when "remove_item"
+          index = payload["index"].to_i
+          items.delete_at(index) if index >= 0 && index < items.size
+          data.merge(
+            "items" => items,
+            "template_id" => "build_items",
+            "item_index" => 0,
+            "answered_key" => nil
+          )
+        when "continue"
+          if payload["items"]
+            items = payload["items"].map { |row| resolve_item_entry(row, project: project) }
+          end
+          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.need_items") if items.empty?
+
+          data.merge(
+            "items" => items,
+            "template_id" => "pick_days",
+            "item_index" => 0,
+            "answered_key" => nil
+          )
+        else
+          raise ArgumentError, I18n.t("strategy.weekly_planner.shell.bad_answer")
+        end
+      end
+
+      def normalize_build_payload(value)
+        if value.is_a?(Hash)
+          h = value.stringify_keys
+          items = h["items"]
+          if items.present?
+            normalized = Array(items).map do |row|
+              if row.is_a?(Hash)
+                row.stringify_keys["title"].to_s
+              else
+                row.to_s
+              end
+            end
+            return { "action" => "continue", "items" => normalized }
+          end
+          {
+            "action" => h["action"].to_s.presence || "continue",
+            "title" => h["title"].to_s,
+            "index" => h["index"]
+          }
+        else
+          { "action" => "continue", "title" => value.to_s }
+        end
+      end
+
+      def resolve_item_entry(raw, project:)
+        if raw.is_a?(Hash)
+          raw = raw.stringify_keys["title"].presence || raw.stringify_keys["value"]
+        end
+        text = raw.to_s.strip
+        raise ArgumentError, I18n.t("strategy.weekly_planner.errors.blank_title") if text.blank?
+
         task_id = nil
+        title = text
 
-        if (match = raw.match(/\Atask:(\d+)\z/))
+        if (match = text.match(/\Atask:(\d+)\z/))
           task = incomplete_tasks_for(project).find { |t| t.id == match[1].to_i }
           raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_source") if task.blank?
 
           title = task.title
           task_id = task.id
         else
-          title = raw.delete_prefix("other:").strip
+          title = text.delete_prefix("other:").strip
           raise ArgumentError, I18n.t("strategy.weekly_planner.errors.blank_title") if title.blank?
         end
 
-        data.merge(
+        {
           "title" => title,
           "source_practice_task_id" => task_id,
-          "template_id" => Definition.next_after_write("pick_source"),
-          "sitting_count" => nil,
           "selected_dates" => []
-        )
+        }
       end
 
-      def apply_pick_count!(data, value, eligible:)
-        begin
-          count = Integer(value.to_s.strip)
-        rescue ArgumentError, TypeError
-          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_count")
+      def apply_pick_days!(data, value, plan:, project:)
+        items = Array(data["items"]).map(&:dup)
+        index = data["item_index"].to_i
+        current = items[index]
+        raise ArgumentError, I18n.t("strategy.weekly_planner.errors.need_items") if current.blank?
+
+        dates = parse_day_values(value.is_a?(Hash) ? value.stringify_keys["dates"] : value)
+        reserved = Definition.reserved_counts(items, before_index: index)
+        eligible = Definition.eligible_dates(@user, reserved: reserved)
+
+        if dates.empty? || dates.any? { |d| !eligible.include?(d) }
+          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates")
         end
 
-        max = Definition.max_sittings(@journey, eligible)
-        unless count.between?(1, max)
-          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_count")
-        end
-
-        data.merge(
-          "sitting_count" => count,
-          "template_id" => Definition.next_after_write("pick_count"),
-          "selected_dates" => []
-        )
-      end
-
-      def apply_pick_days!(data, value, plan:, project:, eligible:)
-        dates = parse_day_values(value)
-        count = data["sitting_count"].to_i
-        if dates.size != count || dates.any? { |d| !eligible.include?(d) }
-          raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates", count: count)
-        end
-
+        items[index] = current.merge("selected_dates" => dates.map(&:iso8601))
         updated = data.merge(
-          "selected_dates" => dates.map(&:iso8601),
+          "items" => items,
           "plan_id" => plan.id,
           "project_id" => project.id
         )
+
+        if index + 1 < items.size
+          next_reserved = Definition.reserved_counts(items, before_index: index + 1)
+          next_eligible = Definition.eligible_dates(@user, reserved: next_reserved)
+          if next_eligible.empty?
+            # Remaining items cannot be placed — write what we have.
+            return Writer.call(user: @user, journey: @journey, cursor: updated.merge(
+              "items" => items.first(index + 1)
+            ))
+          end
+
+          return updated.merge(
+            "template_id" => "pick_days",
+            "item_index" => index + 1
+          )
+        end
+
         Writer.call(user: @user, journey: @journey, cursor: updated)
       end
 
@@ -364,71 +443,98 @@ module Strategy
         days.find { |d| Strategy::EnsureFolderQuest.checklist_host?(d) } || days.first
       end
 
-      def build_step(data, plan:, project:, eligible:, notice: nil)
+      def eligible_for_data(data)
+        items = Array(data["items"])
+        index = data["item_index"].to_i
+        reserved =
+          if data["template_id"].to_s == "pick_days"
+            Definition.reserved_counts(items, before_index: index)
+          else
+            {}
+          end
+        Definition.eligible_dates(@user, reserved: reserved)
+      end
+
+      def build_step(data, plan:, project:, notice: nil)
         data = data.stringify_keys
         if data["status"] == "completed"
+          titles = Array(data["items"]).map { |i| i["title"] }.compact
           return Step.new(
             template_id: data["template_id"],
             kind: "completed",
             question: nil,
             status: "completed",
             notice: notice,
-            title: data["title"],
-            sitting_count: data["sitting_count"].to_i,
-            eligible_dates: eligible,
-            source_options: nil,
-            count_options: nil,
+            title: titles.join(", "),
+            items: data["items"],
+            item_index: data["item_index"],
+            item_progress: nil,
+            suggestions: nil,
+            eligible_dates: Definition.eligible_dates(@user),
             weekday_hint: nil,
             framing_line: nil,
-            cap_note: nil
+            cap_note: nil,
+            created_count: data["created_count"],
+            skipped: data["skipped"]
           )
         end
 
         template = Definition.template(data["template_id"])
-        max = Definition.max_sittings(@journey, eligible)
+        eligible = eligible_for_data(data)
+        items = Array(data["items"])
+        index = data["item_index"].to_i
+        current = items[index]
 
-        if template.kind == "pick_count" && max < 1
+        if template.kind == "pick_days" && eligible.empty?
           return build_week_exhausted_step
         end
+
+        progress =
+          if template.kind == "pick_days" && items.size.positive?
+            I18n.t(
+              "strategy.weekly_planner.shell.item_progress",
+              n: index + 1,
+              total: items.size
+            )
+          end
 
         Step.new(
           template_id: template.id,
           kind: template.kind,
-          question: question_for(template, data),
+          question: question_for(template, current),
           status: data["status"],
           notice: notice,
-          title: data["title"],
-          source_options: source_options_for(template, project),
-          count_options: count_options_for(template, max),
+          title: current&.dig("title"),
+          items: items,
+          item_index: index,
+          item_progress: progress,
+          suggestions: suggestions_for(template, project, items),
           eligible_dates: eligible,
-          sitting_count: data["sitting_count"],
           weekday_hint: weekday_hint_for(template),
           framing_line: framing_for(template),
-          cap_note: cap_note_for(template, max, eligible)
+          cap_note: cap_note_for(template, eligible),
+          created_count: nil,
+          skipped: []
         )
       end
 
-      def question_for(template, data)
-        if template.kind == "pick_days"
-          I18n.t(template.question_key, count: data["sitting_count"].to_i)
+      def question_for(template, current)
+        if template.kind == "pick_days" && current
+          I18n.t(template.question_key, title: current["title"])
         else
           I18n.t(template.question_key)
         end
       end
 
-      def source_options_for(template, project)
-        return nil unless template.kind == "pick_source"
+      def suggestions_for(template, project, items)
+        return nil unless template.kind == "build_items"
 
-        incomplete_tasks_for(project).map do |task|
+        taken = items.map { |i| i["title"].to_s.downcase }
+        incomplete_tasks_for(project).filter_map do |task|
+          next if taken.include?(task.title.to_s.downcase)
+
           { value: "task:#{task.id}", label: task.title }
         end
-      end
-
-      def count_options_for(template, max)
-        return nil unless template.kind == "pick_count"
-        return [] if max < 1
-
-        (1..max).map { |n| { value: n.to_s, label: n.to_s } }
       end
 
       def weekday_hint_for(template)
@@ -445,82 +551,102 @@ module Strategy
       end
 
       def framing_for(template)
-        return nil unless template.kind == "pick_source"
+        return nil unless template.kind == "build_items"
 
         I18n.t("strategy.weekly_planner.shell.framing")
       end
 
-      def cap_note_for(template, max, eligible)
-        return nil unless template.kind == "pick_count"
-        return nil unless max < @journey.commitment_battle_count.to_i && max == eligible.size
+      def cap_note_for(template, eligible)
+        return nil unless template.kind == "pick_days"
+        return nil unless eligible.size.positive?
 
-        I18n.t("strategy.weekly_planner.shell.cap_note", count: max)
+        week_days = (Date.current..Date.current.end_of_week).count
+        return nil unless eligible.size < week_days
+
+        I18n.t("strategy.weekly_planner.shell.cap_note", count: eligible.size)
       end
 
       def build_week_nearly_done_step
-        Step.new(
-          template_id: nil,
+        terminal_step(
           kind: "week_nearly_done",
           question: I18n.t("strategy.weekly_planner.shell.week_nearly_done_title"),
-          status: "week_nearly_done",
-          notice: I18n.t("strategy.weekly_planner.shell.week_nearly_done_body"),
-          title: nil,
-          source_options: nil,
-          count_options: nil,
-          eligible_dates: [],
-          sitting_count: nil,
-          weekday_hint: nil,
-          framing_line: nil,
-          cap_note: nil
+          notice: I18n.t("strategy.weekly_planner.shell.week_nearly_done_body")
         )
       end
 
       def build_week_exhausted_step
-        Step.new(
-          template_id: nil,
+        terminal_step(
           kind: "week_exhausted",
           question: I18n.t("strategy.weekly_planner.shell.week_exhausted_title"),
-          status: "week_exhausted",
-          notice: I18n.t("strategy.weekly_planner.shell.week_exhausted_body"),
-          title: nil,
-          source_options: nil,
-          count_options: nil,
-          eligible_dates: [],
-          sitting_count: nil,
-          weekday_hint: nil,
-          framing_line: nil,
-          cap_note: nil
+          notice: I18n.t("strategy.weekly_planner.shell.week_exhausted_body")
         )
       end
 
       def build_need_project_step
-        Step.new(
-          template_id: nil,
+        terminal_step(
           kind: "week_exhausted",
           question: I18n.t("strategy.weekly_planner.shell.need_project_title"),
-          status: "week_exhausted",
-          notice: I18n.t("strategy.weekly_planner.shell.need_project_body"),
+          notice: I18n.t("strategy.weekly_planner.shell.need_project_body")
+        )
+      end
+
+      def terminal_step(kind:, question:, notice:)
+        Step.new(
+          template_id: nil,
+          kind: kind,
+          question: question,
+          status: kind,
+          notice: notice,
           title: nil,
-          source_options: nil,
-          count_options: nil,
+          items: [],
+          item_index: 0,
+          item_progress: nil,
+          suggestions: nil,
           eligible_dates: [],
-          sitting_count: nil,
           weekday_hint: nil,
           framing_line: nil,
-          cap_note: nil
+          cap_note: nil,
+          created_count: nil,
+          skipped: []
         )
       end
 
       def ack_for(data)
         if data["status"] == "completed"
-          I18n.t(
-            "strategy.weekly_planner.shell.done_flash",
-            count: data["sitting_count"].to_i,
-            title: data["title"].to_s
-          )
+          done_flash_for(data)
+        elsif data["template_id"] == "build_items"
+          nil
         else
           I18n.t("strategy.weekly_planner.acks.locked")
         end
+      end
+
+      def done_flash_for(data)
+        count = data["created_count"].to_i
+        titles = Array(data["items"]).map { |i| i["title"] }.compact
+        title = titles.size == 1 ? titles.first : titles.join(", ")
+        base = I18n.t(
+          "strategy.weekly_planner.shell.done_flash",
+          count: count,
+          title: title
+        )
+        skipped = Array(data["skipped"])
+        return base if skipped.empty?
+
+        skip_bits = skipped.map do |row|
+          date = begin
+            Date.iso8601(row["date"].to_s)
+          rescue ArgumentError, TypeError
+            nil
+          end
+          day = date ? I18n.l(date, format: "%A") : row["date"]
+          I18n.t(
+            "strategy.weekly_planner.shell.skip_one",
+            day: day,
+            title: row["title"]
+          )
+        end
+        "#{base} #{skip_bits.join(' ')}"
       end
     end
   end
