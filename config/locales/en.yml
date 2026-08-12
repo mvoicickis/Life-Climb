@@ -859,12 +859,8 @@ en:
         tree_changed: "Something on the mountain moved — let’s pick up from a safe spot."
     weekly_planner:
       questions:
-        # Shipped: Option A (days). See PR for B (times) / C (work-on-it) full sets.
-        pick_source: "What do you want to work on this week?"
-        pick_count: "How many days this week?"
+        build_items: "What do you want to work on this week?"
         pick_days: "Which days suit you?"
-      answers:
-        something_else: "Something else…"
       hints:
         weekday: "You often finish more on %{day}s."
       acks:
@@ -872,27 +868,28 @@ en:
       errors:
         blank_title: "Give it a short name."
         bad_source: "Pick one of the listed items, or name something else."
-        bad_count: "Pick a number that fits this week."
-        # Keep in sync with shell.pick_exact wording (“Pick N day(s)”).
-        # Shipped A. B: "Choose %{count} day(s) from the list."
-        # C: "Select %{count} day(s), then continue."
-        bad_dates:
-          one: "Pick %{count} day to continue."
-          other: "Pick %{count} days to continue."
+        need_items: "Add at least one item to continue."
+        bad_dates: "Pick at least one open day to continue."
         missing_project: "Add a project on this path first."
       shell:
         title: "Plan this week"
         menu_item: "Plan this week"
         kicker: "This week"
         continue: "Continue"
+        add: "Add"
+        remove: "Remove"
+        items_label: "This week’s work"
         text_placeholder: "Name the work"
+        suggestions_label: "From your checklist"
         framing: "We’ll put these under your current Project — your checklist item stays where it is."
+        continue_with_count:
+          one: "Continue with %{count} item"
+          other: "Continue with %{count} items"
+        item_progress: "Item %{n} of %{total}"
         cap_note:
           one: "Only %{count} open day left this week."
           other: "Only %{count} open days left this week."
-        pick_exact:
-          one: "Pick %{count} day."
-          other: "Pick %{count} days."
+        pick_some: "Pick at least one day."
         done_title: "Days set"
         done_body:
           one: "%{count} day set for %{title} — it’ll show on Today."
@@ -900,6 +897,7 @@ en:
         done_flash:
           one: "%{count} day set for %{title} — it’ll show on Today."
           other: "%{count} days set for %{title} — they’ll show on Today."
+        skip_one: "%{day} was full, so %{title} wasn’t added that day."
         done_cta: "Back to Mountain"
         need_journey: "Focus a journey first, then plan the week."
         need_plan: "Add a path on the mountain first."

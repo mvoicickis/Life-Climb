@@ -19,14 +19,14 @@ class WeeklyPlannersController < ApplicationController
   end
 
   def create
-    unless params.key?(:value) || params.key?("value") || params.key?(:dates) || params.key?("dates")
+    value = planner_answer_value
+    if value.nil?
       return render_answer_error(
         t("strategy.weekly_planner.shell.bad_answer"),
         attempted_value: ""
       )
     end
 
-    value = params.key?(:dates) || params.key?("dates") ? Array(params[:dates]) : params[:value]
     result = Strategy::WeeklyPlanner::Engine.answer!(
       user: current_user,
       journey: @journey,
@@ -37,11 +37,11 @@ class WeeklyPlannersController < ApplicationController
     if result.next_step.completed?
       redirect_to life_journey_path(@journey),
                   notice: result.ack.presence || t("strategy.weekly_planner.shell.done_flash",
-                                                   count: result.next_step.sitting_count.to_i,
+                                                   count: result.next_step.created_count.to_i,
                                                    title: result.next_step.title.to_s),
                   status: :see_other
     else
-      flash[:weekly_planner_ack] = result.ack
+      flash[:weekly_planner_ack] = result.ack if result.ack.present?
       redirect_to weekly_planner_path(plan_id: params[:plan_id]), status: :see_other
     end
   rescue ArgumentError => e
@@ -52,6 +52,33 @@ class WeeklyPlannersController < ApplicationController
   end
 
   private
+
+  def planner_answer_value
+    intent = params[:intent].to_s.presence
+
+    if params.key?(:dates) || params.key?("dates")
+      return { action: "pick_days", dates: Array(params[:dates]) }
+    end
+
+    case intent
+    when "add_item"
+      { action: "add_item", title: params[:value].to_s }
+    when "remove_item"
+      { action: "remove_item", index: params[:index] }
+    when "continue"
+      items = params[:items]
+      if items.present?
+        { action: "continue", items: Array(items) }
+      else
+        { action: "continue" }
+      end
+    else
+      # Legacy / suggestion button_to with value=task:ID or free text.
+      return nil unless params.key?(:value) || params.key?("value")
+
+      { action: "add_item", title: params[:value].to_s }
+    end
+  end
 
   def maybe_restart_for_new_week!
     return unless params[:new_week].present?

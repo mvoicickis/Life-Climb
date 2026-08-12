@@ -49,7 +49,7 @@
       </h2>
       <p class="text-sm text-[var(--lp-muted)]">
         <%= t("strategy.weekly_planner.shell.done_body",
-              count: @step.sitting_count.to_i,
+              count: @step.created_count.to_i,
               title: @step.title.to_s) %>
       </p>
       <%= link_to t("strategy.weekly_planner.shell.done_cta"),
