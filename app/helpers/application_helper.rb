@@ -151,9 +151,14 @@ module ApplicationHelper
     InviteShareMessage.body(landing_url: share_landing_url)
   end
 
+  # Accepts Numeric or string (e.g. session undo snapshots store decimals as text).
   def format_amount(amount)
-    amount = 0 if amount.blank?
-    amount == amount.to_i ? amount.to_i.to_s : amount.to_s("F")
+    return "0" if amount.blank?
+
+    number = amount.is_a?(Numeric) ? amount.to_d : BigDecimal(amount.to_s)
+    number == number.to_i ? number.to_i.to_s : number.to_s("F")
+  rescue ArgumentError
+    "0"
   end
 
   # Server-side undo snapshot after additive habit log (not client-forgeable).
