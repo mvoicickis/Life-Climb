@@ -23886,3 +23886,49 @@ a.lp-rpg-camp-row {
 }
 .lp-climb-path__new-quest-btn::-webkit-details-marker { display: none; }
 
+
+/* Weekly planner — count chips + day multi-select */
+.lp-weekly-planner__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.lp-weekly-planner__count {
+  min-width: 3.25rem;
+  min-height: 3.25rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--lp-ink) 14%, transparent);
+  background: color-mix(in srgb, var(--lp-glass, #fff) 88%, transparent);
+  color: var(--lp-ink);
+  font-size: 1.05rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.lp-weekly-planner__count:hover {
+  border-color: color-mix(in srgb, var(--lp-rpg-green, #57d35b) 55%, transparent);
+}
+.lp-weekly-planner__days {
+  display: grid;
+  gap: 0.55rem;
+}
+.lp-weekly-planner__day {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--lp-ink) 12%, transparent);
+  background: color-mix(in srgb, var(--lp-glass, #fff) 88%, transparent);
+  cursor: pointer;
+}
+.lp-weekly-planner__day input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.lp-weekly-planner__day-date {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--lp-muted);
+  font-weight: 500;
+}

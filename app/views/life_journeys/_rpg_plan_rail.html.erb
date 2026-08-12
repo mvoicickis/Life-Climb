@@ -57,6 +57,12 @@
                  data-plan-card-menu-target="menu"
                  role="menu"
                  hidden>
+              <%= link_to weekly_planner_path(plan_id: p.id, new_week: 1),
+                    class: "lp-rpg-path__menu-item",
+                    role: "menuitem",
+                    data: { turbo: false } do %>
+                <%= t("strategy.weekly_planner.shell.menu_item") %>
+              <% end %>
               <button type="button"
                       class="lp-rpg-path__menu-item"
                       role="menuitem"

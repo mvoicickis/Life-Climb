@@ -857,6 +857,58 @@ en:
         need_goal: "Your mountain needs a goal before the guide can start."
         bad_answer: "Try that answer again."
         tree_changed: "Something on the mountain moved — let’s pick up from a safe spot."
+    weekly_planner:
+      questions:
+        # Option A (shipped). B: "Pick one thing to put on this week’s sittings."
+        # C: "Choose a focus for the sittings you’ll schedule."
+        pick_source: "What do you want to work on this week?"
+        # Option A (shipped). B: "How often will you sit with it?"
+        # C: "Pick a sitting count that fits this week."
+        pick_count: "How many sittings this week?"
+        # Option A uses count via pick_exact; question stays calm.
+        # B: "Pick %{count} days for those sittings." C: "Choose the days you’ll show up."
+        pick_days: "Which days suit you?"
+      answers:
+        something_else: "Something else…"
+      hints:
+        weekday: "You often finish more on %{day}s."
+      acks:
+        locked: "Got it — locked in."
+      errors:
+        blank_title: "Give it a short name."
+        bad_source: "Pick one of the listed items, or name something else."
+        bad_count: "Pick a sitting count that fits this week."
+        bad_dates: "Pick exactly the sittings you chose, from the open days."
+        missing_project: "Add a project on this path first."
+      shell:
+        title: "Plan this week"
+        menu_item: "Plan this week"
+        kicker: "Weekly planner"
+        continue: "Continue"
+        text_placeholder: "Name the work"
+        framing: "We’ll schedule sittings under your current Project — your checklist item stays where it is."
+        cap_note: "Only %{count} open days left this week."
+        pick_exact:
+          one: "Pick %{count} day."
+          other: "Pick %{count} days."
+        done_title: "Sittings set"
+        done_body: "%{count} sittings set for %{title} — they’ll show on Today those days."
+        done_flash: "%{count} sittings set for %{title} — they’ll show on Today those days."
+        done_cta: "Back to Mountain"
+        need_journey: "Focus a journey first, then plan the week."
+        need_plan: "Add a path on the mountain first."
+        need_project_title: "This path needs a project"
+        need_project_body: "Place a checkpoint on the path, then come back to plan sittings."
+        bad_answer: "Try that answer again."
+        tree_changed: "Something on the mountain moved — let’s pick up from a safe spot."
+        week_exhausted_title: "No open days left this week"
+        week_exhausted_body: "Your days are full. Head back to the mountain — next week opens fresh room."
+        # Sunday edge (last day of week, <2 eligible). Draft options:
+        # A (shipped): week nearly wrapped, fresh sittings Monday.
+        # B: "Only the tail of the week is left. Catch the next week from Monday."
+        # C: "The week’s winding down. Come back Monday to plan sittings with more room."
+        week_nearly_done_title: "This week’s almost wrapped"
+        week_nearly_done_body: "Fresh sittings open Monday — back to the mountain for now."
     quantity:
       track: "Track this as a number?"
       track_objective: "Track progress (%{unit})?"
