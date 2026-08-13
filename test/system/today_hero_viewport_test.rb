@@ -27,12 +27,23 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
 
     assert_selector ".lp-dash-hero", wait: 5
     assert_selector ".lp-dash-hero__big"
-    assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit", minimum: 1
+    assert_selector ".lp-dash-hero__segs i", count: 10
+    assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit.is-slot", minimum: 1
+    assert_selector ".lp-dash-anytime .lp-dash-habit__quick", minimum: 2
 
     hero_h = page.evaluate_script("document.querySelector('.lp-dash-hero').getBoundingClientRect().height")
     assert hero_h < 280, "hero height should stay compact (got #{hero_h})"
 
+    card_h = page.evaluate_script(<<~JS)
+      document.querySelector('.lp-dash-anytime .lp-dash-tcard.is-habit.is-slot').getBoundingClientRect().height
+    JS
+    # Baseline was ~190px; tap floor keeps buttons at var(--lp-tap) (~44px).
+    # Report honestly — do not assert a mockup 105px target.
+    assert card_h < 190, "habit slot should be denser than ~190px baseline (got #{card_h})"
+    puts "MEASURED_HABIT_SLOT_HEIGHT_375=#{card_h.round}"
+
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-hero-375x600.png")
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-rpg-habit-slot-375.png")
   end
 end

@@ -7,7 +7,7 @@ class DailyLogsController < ApplicationController
   def create
     mode = params[:mode].to_s
     unless MODES.include?(mode)
-      redirect_to after_log_path, alert: t("habits.log_bad_mode")
+      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_bad_mode"))
       return
     end
 
@@ -23,7 +23,7 @@ class DailyLogsController < ApplicationController
   def create_add!
     delta = parse_amount(daily_log_params[:amount])
     unless delta&.positive?
-      redirect_to after_log_path, alert: t("habits.log_need_add")
+      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_need_add"))
       return
     end
 
@@ -38,14 +38,15 @@ class DailyLogsController < ApplicationController
       Today::OvershootBonus.sync!(user: current_user)
       redirect_to after_log_path, **redirect_flash_for_add(delta: delta, log: @daily_log)
     else
-      redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
+      redirect_to after_log_path(fallback_habit: true),
+                  alert: log_failure_alert(@daily_log.errors.full_messages.to_sentence)
     end
   end
 
   def create_set!
     amount = parse_amount(daily_log_params[:amount])
     if amount.nil? || amount.negative?
-      redirect_to after_log_path, alert: t("habits.log_need_total")
+      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_need_total"))
       return
     end
 
@@ -59,21 +60,22 @@ class DailyLogsController < ApplicationController
       Today::OvershootBonus.sync!(user: current_user)
       redirect_to after_log_path, notice: notice_for_set(@daily_log)
     else
-      redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
+      redirect_to after_log_path(fallback_habit: true),
+                  alert: log_failure_alert(@daily_log.errors.full_messages.to_sentence)
     end
   end
 
   def create_undo!
     entry = undo_entry
     unless entry
-      redirect_to after_log_path, alert: t("habits.log_undo_missing")
+      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_undo_missing"))
       return
     end
 
     previous = parse_amount(entry["previous"])
     if previous.nil? || previous.negative?
       clear_undo!
-      redirect_to after_log_path, alert: t("habits.log_undo_missing")
+      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_undo_missing"))
       return
     end
 
@@ -87,8 +89,16 @@ class DailyLogsController < ApplicationController
       Today::OvershootBonus.sync!(user: current_user)
       redirect_to after_log_path, notice: notice_for_undo(@daily_log)
     else
-      redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
+      redirect_to after_log_path(fallback_habit: true),
+                  alert: log_failure_alert(@daily_log.errors.full_messages.to_sentence)
     end
+  end
+
+  # Optimistic +N pop may already have played client-side; failure must be unmistakable.
+  def log_failure_alert(message)
+    return message unless params[:return_to].to_s == "today"
+
+    "#{t('dash.anytime.log_failed_title')} — #{message}"
   end
 
   def after_log_path(fallback_habit: false)

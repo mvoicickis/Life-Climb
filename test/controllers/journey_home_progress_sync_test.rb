@@ -85,7 +85,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-hero__track", count: 1
+    assert_select ".lp-dash-hero__segs", count: 1
 
     get life_points_path
     assert_response :success

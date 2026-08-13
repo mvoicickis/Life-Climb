@@ -53,11 +53,12 @@
     </div>
   </div>
 
-  <div class="lp-dash-hero__track" role="progressbar"
+  <div class="lp-dash-hero__segs" role="progressbar"
        aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= bar_width %>"
        aria-label="<%= t('dash.hero.of_day') %>">
-    <i class="<%= 'is-over' if over %>" style="width: <%= bar_width %>%"></i>
-    <% if over %><span class="lp-dash-hero__mark" aria-hidden="true"></span><% end %>
+    <% habit_progress_segments(display_pct, count: 10).each do |klass| %>
+      <i class="<%= klass %>"></i>
+    <% end %>
   </div>
 
   <p class="lp-dash-hero__cheer is-<%= cheer_result.css %>">
