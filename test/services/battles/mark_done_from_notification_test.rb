@@ -20,6 +20,33 @@ module Battles
       assert_equal todo.id, result.todo.id
     end
 
+    test "mark-done awards once and skips on re-complete after undo" do
+      todo = @user.daily_todos.for_day.incomplete.ordered.find do |t|
+        day = t.strategy_goal
+        next false if day.blank?
+        next false if day.practice_tasks.any?
+        next false if day.quantified_path_project.present?
+
+        true
+      end
+      assert todo, "need a non-quantity battle todo for mark-done"
+
+      points_before = @user.reload.life_points
+      MarkDoneFromNotification.call(user: @user, session: @session)
+      assert todo.reload.completed?
+      assert_equal points_before + GameRules::BATTLE_TODO_LP, @user.reload.life_points
+      assert_equal 1, LifePointLedger.where(source: todo).where("amount > 0").count
+
+      Battles::UncompleteTodo.call(todo: todo, user: @user)
+      assert_nil todo.reload.completed_at
+
+      assert_no_difference -> { @user.reload.life_points } do
+        MarkDoneFromNotification.call(user: @user, session: @session)
+      end
+      assert todo.reload.completed?
+      assert_equal 1, LifePointLedger.where(source: todo).where("amount > 0").count
+    end
+
     test "returns nothing_to_mark without fabricating a battle" do
       @user.daily_todos.for_day.find_each do |todo|
         todo.update!(completed_at: Time.current)

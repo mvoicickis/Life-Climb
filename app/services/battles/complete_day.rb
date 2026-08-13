@@ -44,14 +44,16 @@ module Battles
             todo.strategy_goal.complete!
             completed_battles << todo.strategy_goal
           end
-          LifePoints::Award.call(
-            user: @user,
-            amount: todo.lp_reward,
-            reason: I18n.t("battle.lp_reason", title: todo.title),
-            source: todo
-          )
+          unless WinAlreadyPaid.for_todo?(todo)
+            LifePoints::Award.call(
+              user: @user,
+              amount: todo.lp_reward,
+              reason: I18n.t("battle.lp_reason", title: todo.title),
+              source: todo
+            )
+            awarded += todo.lp_reward.to_i
+          end
           Gap::ApplyProgress.call(journey: journey, tier: :todo)
-          awarded += todo.lp_reward.to_i
         end
 
         if include_mission
