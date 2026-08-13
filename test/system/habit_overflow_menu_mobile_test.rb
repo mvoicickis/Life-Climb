@@ -98,6 +98,25 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
       JS
       assert_operator tap["h"], :>=, tap["min"] - 1, "sheet buttons must meet --lp-tap @#{width}"
 
+      # Regression after #314: sheet was right-anchored to the ⋯ and ran past the
+      # left viewport edge. Assert the open sheet stays fully on screen.
+      bounds = page.evaluate_script(<<~JS)
+        (() => {
+          const sheet = document.querySelector("#today_habit_#{@habit.id} .lp-dash-habit__sheet");
+          const r = sheet.getBoundingClientRect();
+          return {
+            left: r.left,
+            right: r.right,
+            width: r.width,
+            vw: window.innerWidth
+          };
+        })()
+      JS
+      assert_operator bounds["left"], :>=, -0.5, "sheet left must stay in viewport @#{width} (got #{bounds['left']})"
+      assert_operator bounds["right"], :<=, bounds["vw"] + 0.5,
+                      "sheet right must stay in viewport @#{width} (right=#{bounds['right']} vw=#{bounds['vw']})"
+      assert_operator bounds["width"], :>, 120, "sheet should have usable width @#{width}"
+
       page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-menu-open-#{width}.png")
 
       # Second tap on ⋯ closes (native details + tcard-menu).

@@ -16859,7 +16859,12 @@ button.lp-strategy-overflow {
   }
 }
 
-.lp-dash-habit__menu { position: relative; flex: none; z-index: 1; }
+.lp-dash-habit__menu {
+  /* static so the absolute sheet uses the slot card as containing block */
+  position: static;
+  flex: none;
+  z-index: 1;
+}
 .lp-dash-habit__menu[open] { z-index: 30; }
 .lp-dash-habit__dots {
   list-style: none;
@@ -16883,14 +16888,16 @@ button.lp-strategy-overflow {
   transform: translateY(2px);
   box-shadow: none;
 }
+/* Full-width inside the card — not a 16rem popup from the ⋯ (that ran off the left
+   edge at 320/375 because the trigger sits on the right). */
 .lp-dash-habit__sheet {
   position: absolute;
-  right: 0;
-  /* Open below the ⋯ (battle-menu pattern) so the sheet does not cover the habit title/segs. */
+  left: 0.65rem;
+  right: 0.65rem;
   top: calc(100% + 6px);
   z-index: 20;
-  width: min(16rem, calc(100vw - 2rem));
-  max-width: 16rem;
+  width: auto;
+  max-width: none;
   max-height: min(70vh, 22rem);
   overflow-x: hidden;
   overflow-y: auto;
@@ -16904,6 +16911,7 @@ button.lp-strategy-overflow {
   box-shadow:
     inset 0 1px 0 var(--lp-edge),
     0 14px 32px rgba(0, 0, 0, 0.55);
+  box-sizing: border-box;
 }
 .lp-dash-habit__sheet-title {
   margin: 0 0 0.45rem;
