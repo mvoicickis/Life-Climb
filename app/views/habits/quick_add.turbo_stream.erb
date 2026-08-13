@@ -1,0 +1,7 @@
+<%= turbo_stream.replace dom_id(@habit, :today_quick) do %>
+  <%= render "dashboard/dash_habit_quick", habit: @habit %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@habit, :today_sheet) do %>
+  <%= render "dashboard/dash_habit_sheet", habit: @habit %>
+<% end %>

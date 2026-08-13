@@ -1,0 +1,110 @@
+<%# locals: habit %>
+<% amount = habit.today_amount
+   target = habit.todays_goal_value
+   progress = habit.goal_progress_percent
+   over = progress.is_a?(Numeric) && progress > 100
+   hit = progress.is_a?(Numeric) && progress >= 100
+   done = habit.completed_today?
+   undo = habit.quantity_checkin? ? habit_log_undo_for(habit) : nil
+   quick = habit.quantity_checkin? ? habit.quick_add_value : nil %>
+<li id="<%= dom_id(habit, :today) %>"
+    class="lp-dash-tcard is-habit is-compact is-slot <%= 'is-done' if done || habit.met_habit_goal? %> <%= 'is-over' if over %> <%= 'is-hit' if hit && !over %>"
+    data-controller="tcard-menu">
+  <div class="lp-dash-habit__r1">
+    <span class="lp-dash-habit__sig" aria-hidden="true"><%= habit_sigil(habit) %></span>
+    <div class="lp-dash-habit__nm">
+      <% if habit.identity_label.present? %>
+        <p class="lp-habit-identity"><%= habit.identity_label %></p>
+      <% end %>
+      <b class="lp-dash-tcard__title"><%= habit.name %></b>
+      <em class="lp-dash-tcard__meta">
+        <% if habit.quantity_checkin? && target.present? && habit.growth? %>
+          <%= t("dash.anytime.amount_of_target",
+                amount: format_amount(amount),
+                target: format_amount(target),
+                unit: habit.unit) %>
+          <% if over %>
+            · <%= t("dash.anytime.over_by", amount: format_amount(amount - target)) %>
+          <% end %>
+        <% elsif habit.quantity_checkin? %>
+          <%= format_amount(amount) %> <%= habit.unit %>
+          <% if habit.standard? && habit.range_summary.present? %>
+            · <%= habit.range_summary %>
+          <% end %>
+        <% else %>
+          <%= habit.unit %>
+        <% end %>
+      </em>
+    </div>
+    <% if progress.is_a?(Numeric) && habit.quantity_checkin? && target.present? %>
+      <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if amount.to_d.zero? %>"><%= progress %>%</span>
+    <% elsif habit.binary_checkin? && done %>
+      <span class="lp-dash-habit__pc lp-dash-habit__pct">100%</span>
+    <% end %>
+  </div>
+
+  <% if progress.is_a?(Numeric) && (habit.binary_checkin? || (habit.quantity_checkin? && target.present?)) %>
+    <div class="lp-dash-habit__segs" aria-hidden="true">
+      <% habit_progress_segments(progress, count: 16).each do |klass| %>
+        <i class="<%= klass %>"></i>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="lp-dash-habit__r2">
+    <% if habit.binary_checkin? %>
+      <% if done %>
+        <% completion = habit.completion_for(Date.current) %>
+        <%= button_to t("dash.timeline.undo"),
+              completion_path(completion),
+              method: :delete,
+              class: "lp-dash-habit__qb",
+              aria: { label: "#{t('dash.timeline.undo')} #{habit.name}" },
+              form: {
+                data: {
+                  controller: "juicy-feedback",
+                  action: "submit->juicy-feedback#play"
+                }
+              } %>
+      <% else %>
+        <%= button_to t("dash.timeline.did_it"),
+              completions_path(habit_id: habit.id),
+              method: :post,
+              class: "lp-dash-habit__qb is-big",
+              aria: { label: "#{t('dash.timeline.did_it')} #{habit.name}" },
+              data: {
+                controller: "pressable",
+                action: "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+              },
+              form: {
+                data: {
+                  controller: "juicy-feedback",
+                  action: "submit->juicy-feedback#play"
+                }
+              } %>
+      <% end %>
+    <% else %>
+      <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
+    <% end %>
+
+    <details class="lp-dash-habit__menu" data-tcard-menu-target="details"
+             data-action="toggle->tcard-menu#toggled">
+      <summary class="lp-dash-habit__dots"
+               data-controller="pressable"
+               data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+               aria-label="<%= t('dash.timeline.more_actions') %>">⋯</summary>
+      <button type="button"
+              class="lp-dash-habit__scrim"
+              data-action="click->tcard-menu#close"
+              tabindex="-1"
+              aria-label="<%= t('dash.timeline.cancel') %>"></button>
+      <%= render "dashboard/dash_habit_sheet",
+            habit: habit,
+            amount: amount,
+            target: target,
+            progress: progress,
+            undo: undo,
+            quick: quick %>
+    </details>
+  </div>
+</li>

@@ -33,6 +33,7 @@ class Habit < ApplicationRecord
   validates :goal, numericality: { greater_than: 0 }, allow_nil: true
   validates :min_value, numericality: true, allow_nil: true
   validates :max_value, numericality: true, allow_nil: true
+  validates :quick_add_amount, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 1_000_000 }, allow_nil: true
   validates :state, inclusion: { in: TRACKER_STATES }, allow_nil: true
   validates :state_label_good, :state_label_attention, length: { maximum: 80 }, allow_nil: true
   validate :healthy_range_bounds
@@ -265,11 +266,25 @@ class Habit < ApplicationRecord
     growth? && goal.present? && today_amount >= goal
   end
 
-  # Today quick-add pair for growth quantity habits (mockup adaptive steps).
-  def quick_add_steps
-    return [ 1 ] if standard? || binary_checkin?
+  # Target used to size the fallback quick-add and the four ⋯ chips.
+  def quick_add_target
+    return nil if binary_checkin?
+    return todays_goal_value if growth?
 
-    Habits::QuickAddSteps.call(target: todays_goal_value)
+    min_value.presence || max_value
+  end
+
+  # Amount the Today + button adds. Stored value wins; otherwise derived.
+  def quick_add_value
+    return nil if binary_checkin?
+
+    quick_add_amount.presence || Habits::QuickAdd.derived(target: quick_add_target)
+  end
+
+  def quick_add_suggestions
+    return [] if binary_checkin?
+
+    Habits::QuickAdd.suggestions(target: quick_add_target)
   end
 
   def show_goal_raise_prompt?

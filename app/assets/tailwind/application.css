@@ -16779,11 +16779,6 @@ button.lp-strategy-overflow {
   margin: 0;
   min-width: 0;
 }
-/* One quick-add: size to content; ⋯ stays fixed. Dual buttons still share the row. */
-.lp-dash-habit__r2.is-single-quick > form {
-  flex: 0 1 auto;
-  min-width: 0;
-}
 .lp-dash-habit__qb {
   flex: 1;
   width: 100%;
@@ -16795,19 +16790,13 @@ button.lp-strategy-overflow {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 0 rgba(0, 0, 0, 0.5);
   color: var(--lp-ink);
   font-weight: 800;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
   transition: transform 80ms ease, box-shadow 80ms ease, filter 80ms ease;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-}
-.lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb {
-  flex: 0 0 auto;
-  width: auto;
-  min-width: 4.5rem; /* content floor; height still var(--lp-tap) */
-  padding-inline: 0.9rem;
 }
 .lp-dash-habit__qb.is-big {
   background: linear-gradient(180deg, #3fa84a, #25752c);
@@ -16860,12 +16849,18 @@ button.lp-strategy-overflow {
 }
 
 .lp-dash-habit__menu {
-  /* static so the absolute sheet uses the slot card as containing block */
   position: static;
   flex: none;
   z-index: 1;
 }
-.lp-dash-habit__menu[open] { z-index: 30; }
+.lp-dash-habit__menu[open] {
+  position: relative;
+  z-index: 62;
+}
+.lp-dash-habit__menu[open] .lp-dash-habit__dots {
+  position: relative;
+  z-index: 62;
+}
 .lp-dash-habit__dots {
   list-style: none;
   min-height: var(--lp-tap);
@@ -16888,43 +16883,191 @@ button.lp-strategy-overflow {
   transform: translateY(2px);
   box-shadow: none;
 }
-/* Full-width inside the card — not a 16rem popup from the ⋯ (that ran off the left
-   edge at 320/375 because the trigger sits on the right). */
+.lp-dash-habit__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(3, 6, 9, 0.72);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
 .lp-dash-habit__sheet {
-  position: absolute;
-  left: 0.65rem;
-  right: 0.65rem;
-  top: calc(100% + 6px);
-  z-index: 20;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 61;
   width: auto;
   max-width: none;
-  max-height: min(70vh, 22rem);
+  max-height: min(85dvh, 36rem);
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 0.7rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  background: linear-gradient(180deg, #1a2330, #121821);
+  padding: 0.55rem 0.9rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+  border-radius: 1.25rem 1.25rem 0 0;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-bottom: 0;
+  background: linear-gradient(180deg, #141c26, #0a0f15);
   color: #f3f6f8;
   --lp-ink: #f3f6f8;
   --lp-muted: #9aa6b2;
   box-shadow:
-    inset 0 1px 0 var(--lp-edge),
-    0 14px 32px rgba(0, 0, 0, 0.55);
+    0 -12px 40px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
+}
+.lp-dash-habit__grab {
+  width: 38px;
+  height: 4px;
+  border-radius: 3px;
+  margin: 0 auto 0.75rem;
+  background: rgba(148, 163, 184, 0.35);
+}
+.lp-dash-habit__shd {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+.lp-dash-habit__shd .lp-dash-habit__sig {
+  width: 2.125rem;
+  height: 2.125rem;
+  font-size: 1rem;
+}
+.lp-dash-habit__shd-txt { flex: 1; min-width: 0; }
+.lp-dash-habit__shd-txt b {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.lp-dash-habit__shd-txt em {
+  display: block;
+  margin-top: 0.1rem;
+  font-style: normal;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  font-variant-numeric: tabular-nums;
+}
+.lp-dash-habit__shd-pc {
+  flex: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--lp-green);
+  font-variant-numeric: tabular-nums;
+}
+.lp-dash-habit__shbar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin-bottom: 0.95rem;
+  padding: 1px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+.lp-dash-habit__shbar i {
+  flex: 1;
+  min-width: 0;
+  border-radius: 1px;
+  background: rgba(148, 163, 184, 0.08);
+}
+.lp-dash-habit__shbar i.f {
+  background: linear-gradient(180deg, var(--lp-teal), var(--lp-green));
+}
+.lp-dash-habit__shbar i.o {
+  background: linear-gradient(180deg, var(--lp-amber), var(--lp-hot));
+}
+.lp-dash-habit__lbl {
+  margin: 0 0 0.45rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--lp-muted);
+}
+.lp-dash-habit__chips {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.55rem;
+}
+.lp-dash-habit__chips > form {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+}
+.lp-dash-habit__chip {
+  flex: 1;
+  width: 100%;
+  min-height: var(--lp-tap);
+  border-radius: 9px;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(124, 147, 171, 0.1), rgba(0, 0, 0, 0.28));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: inset 0 1px 0 var(--lp-edge);
+  color: var(--lp-muted);
+  font-weight: 800;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+.lp-dash-habit__chip.is-on {
+  background: linear-gradient(180deg, #3fa84a, #25752c);
+  border-color: rgba(87, 211, 91, 0.5);
+  color: #eafff0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 10px rgba(87, 211, 91, 0.15);
+}
+.lp-dash-habit__custom {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0 0 0.9rem;
+}
+.lp-dash-habit__custom-input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--lp-tap);
+  border-radius: 9px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.32));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+  color: var(--lp-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.lp-dash-habit__custom-input::placeholder {
+  color: rgba(148, 163, 184, 0.35);
+  font-weight: 600;
+}
+.lp-dash-habit__use {
+  flex: none;
+  min-height: var(--lp-tap);
+  border-radius: 9px;
+  padding: 0 1.05rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, #3d5570, #25384d);
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  color: var(--lp-ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 2px 0 rgba(0, 0, 0, 0.5);
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+.lp-dash-habit__minor {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
 }
 .lp-dash-habit__sheet-title {
   margin: 0 0 0.45rem;
   font-size: 0.85rem;
   font-weight: 800;
   color: #f3f6f8;
-}
-.lp-dash-habit__sheet-steps {
-  margin: 0 0 0.55rem;
-  font-size: 0.72rem;
-  font-weight: 650;
-  color: var(--lp-muted);
-  font-variant-numeric: tabular-nums;
 }
 .lp-dash-habit__sheet-label {
   display: block;
@@ -16974,7 +17117,13 @@ button.lp-strategy-overflow {
   width: 100%;
   margin: 0;
 }
-.lp-dash-habit__sheet-btn.is-undo { color: var(--lp-green); }
+.lp-dash-habit__sheet-btn.is-undo { color: var(--lp-amber); }
+.lp-dash-habit__sheet-btn.is-quiet {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.14);
+  color: var(--lp-muted);
+  text-align: center;
+}
 .lp-dash-anytime__head {
   display: flex;
   flex-wrap: wrap;

@@ -48,7 +48,9 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
       assert_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]", wait: 2
       assert_selector "#today_habit_#{@habit.id} .lp-dash-habit__sheet", text: /Enter exact amount/
       assert_selector "#today_habit_#{@habit.id} .lp-dash-habit__sheet", text: /Set total/
-      assert_selector "#today_habit_#{@habit.id} .lp-dash-habit__sheet", text: /Uses \+5 and \+15/
+      assert_selector "#today_habit_#{@habit.id} .lp-dash-habit__sheet", text: /Quick add button/i
+      assert_selector "#today_habit_#{@habit.id} .lp-dash-habit__chip", count: 4
+      assert_no_selector "#today_habit_#{@habit.id} .lp-dash-habit__sheet", text: /Uses \+/
 
       assert title.visible?, "habit title must stay visible while menu is open @#{width}"
       assert segs.visible?, "progress segs must stay visible while menu is open @#{width}"
@@ -117,6 +119,13 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
                       "sheet right must stay in viewport @#{width} (right=#{bounds['right']} vw=#{bounds['vw']})"
       assert_operator bounds["width"], :>, 120, "sheet should have usable width @#{width}"
 
+      if width == 375
+        find("#today_habit_#{@habit.id} .lp-dash-habit__chip", text: "+10").click
+        assert_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]", wait: 3
+        assert_selector "#today_quick_habit_#{@habit.id} button[aria-label='Add 10 reps']", wait: 3
+        assert_selector "#today_habit_#{@habit.id} .lp-dash-habit__chip.is-on", text: "+10"
+      end
+
       page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-menu-open-#{width}.png")
 
       # Second tap on ⋯ closes (native details + tcard-menu).
@@ -125,9 +134,9 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
 
       dots.click
       assert_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
-      # Outside tap — prefer a real page control over synthetic coordinates (sticky chrome
-      # can sit at 4,4 and confuse elementFromPoint in this shell).
-      find(".lp-dash-anytime__head h2", match: :first).click
+      page.execute_script(<<~JS)
+        document.querySelector("#today_habit_#{@habit.id} .lp-dash-habit__scrim").click()
+      JS
       assert_no_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
 
       dots.click
