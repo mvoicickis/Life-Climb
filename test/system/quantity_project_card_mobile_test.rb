@@ -53,7 +53,12 @@ class QuantityProjectCardMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-climb-path", wait: 5
     assert_selector ".lp-climb-path__node.is-current .lp-climb-path__meta.is-quantity",
                     text: /7\s*\/\s*700\s*pages/i, wait: 5
-    assert_selector ".lp-climb-path__node", text: /Launch site/i
+    page.execute_script(<<~JS)
+      const node = [...document.querySelectorAll(".lp-climb-path__node")]
+        .find((el) => /Launch site/i.test(el.textContent || ""));
+      node?.scrollIntoView({ block: "center" });
+    JS
+    assert_selector ".lp-climb-path__node", text: /Launch site/i, wait: 5
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quantity-section-cards-mobile.png")

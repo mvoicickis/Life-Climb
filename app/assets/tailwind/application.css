@@ -16411,6 +16411,9 @@ button.lp-strategy-overflow {
   box-shadow: 0 10px 22px rgba(87, 211, 91, 0.28);
 }
 
+.lp-destination-coach:not([open]) {
+  display: none;
+}
 .lp-destination-coach {
   width: 100%;
   max-width: none;
