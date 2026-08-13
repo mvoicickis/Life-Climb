@@ -43,6 +43,43 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
                   count: 0
   end
 
+  # Regression: #311 moved exact/set/undo into a ⋯ <details> sheet wired to tcard-menu.
+  # Prior tests only checked that an exact form existed somewhere on the card, so a
+  # clipped/empty menu still passed. Assert the menu shell + required sheet contents.
+  test "habit overflow menu renders exact amount, set total, and undo when applicable" do
+    get dashboard_path
+    assert_response :success
+
+    card = "#today_habit_#{@habit.id}"
+    assert_select "#{card}[data-controller~=tcard-menu]", count: 1
+    assert_select "#{card} details.lp-dash-habit__menu[data-tcard-menu-target=details]", count: 1
+    assert_select "#{card} summary.lp-dash-habit__dots", count: 1
+    assert_select "#{card} .lp-dash-habit__sheet", count: 1
+
+    assert_select "#{card} .lp-dash-habit__sheet-label", text: /Enter exact amount/
+    assert_select "#{card} form.lp-dash-habit__exact-form.lp-dash-tcard__qty", count: 1
+    assert_select "#{card} form.lp-dash-habit__exact-form input[name=mode][value=add]", count: 1
+    assert_select "#{card} form.lp-dash-habit__exact-form .lp-dash-tcard__amount", count: 1
+
+    assert_select "#{card} .lp-dash-habit__sheet-label", text: /Set total/
+    assert_select "#{card} form.lp-dash-habit__set-form", count: 1
+    assert_select "#{card} form.lp-dash-habit__set-form input[name=mode][value=set]", count: 1
+    assert_select "#{card} form.lp-dash-habit__set-form .lp-dash-tcard__amount", count: 1
+
+    assert_select "#{card} .lp-dash-habit__sheet-steps", text: /Uses \+5 and \+15/
+    assert_select "#{card} .lp-dash-habit__sheet-btn.is-undo", count: 0
+
+    post daily_logs_path(habit_id: @habit.id),
+         params: { mode: "add", return_to: "today", daily_log: { amount: "5" } }
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_response :success
+
+    assert_select "#{card} .lp-dash-habit__sheet-btn.is-undo", text: /Undo/
+    assert_select "#{card} form.lp-dash-habit__exact-form", count: 1
+    assert_select "#{card} form.lp-dash-habit__set-form", count: 1
+  end
+
   test "standard quantity habit shows a single +1 quick-add" do
     @habit.update!(stat_type: "standard", goal: nil, min_value: 10, max_value: 20)
     get dashboard_path

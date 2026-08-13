@@ -19,12 +19,24 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
       active: true, show_on_home: true, stat_type: "growth", goal: 10,
       quantity_checkin: true
     )
+    # Match FormControlNormalizeTest: enough habits/battles to clear setup_gap so
+    # commitment_gap (with battlePlus / habitPlus) is the stuck panel.
     @journey.update!(
       commitment_key: "medium",
       commitment_name: "Medium",
       commitment_habit_count: 3,
       commitment_battle_count: 3
     )
+    3.times do |n|
+      @user.habits.create!(
+        name: "Gap habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+      @user.daily_todos.create!(
+        title: "Timed #{n}", scheduled_on: Date.current, aspect_key: "career",
+        start_time: "09:00", end_time: "10:00", position: 20 + n
+      )
+    end
   end
 
   test "Chrome computed styles normalize time checkbox and number chrome" do
@@ -34,7 +46,7 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
     click_button "Sign in"
 
     visit dashboard_path
-    assert_selector "#commitment-gap-panel", wait: 5
+    assert_selector "#commitment-gap-panel[data-next-action-key=commitment_gap]", wait: 5
 
     find("[data-commitment-gap-target='battlePlus']").click
     assert_selector "#commitment-gap-panel input[type='time'].lp-input", wait: 3
