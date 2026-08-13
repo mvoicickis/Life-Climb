@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Destination create dialog + swipe navigation (arrows/dots use Turbo links).
+// Destination coach + swipe navigation (arrows/dots use Turbo links).
 export default class extends Controller {
   static targets = ["button", "createDialog", "saveButton", "prevLink", "nextLink"]
 
@@ -16,7 +16,8 @@ export default class extends Controller {
 
   swipeStart(event) {
     if (event.pointerType === "mouse" && event.button !== 0) return
-    if (event.target.closest("a, button, input, textarea, summary, dialog")) return
+    if (event.target.closest("input, textarea, dialog, summary")) return
+    if (event.target.closest(".lp-rpg-destination-menu, .lp-rpg-destination-menu__btn")) return
     this._swipeX = event.clientX
     this._swipeY = event.clientY
   }
@@ -47,6 +48,7 @@ export default class extends Controller {
     if (!this.hasCreateDialogTarget) return
 
     this.createDialogTarget.showModal()
+    this.resetCoach()
     this.bindDialogKeyboardGuards()
     const input = this.createDialogTarget.querySelector("input[name='title'], input, textarea")
     if (input) {
@@ -87,10 +89,18 @@ export default class extends Controller {
     if (!this.hasCreateDialogTarget || !this.createDialogTarget.open) return
     const primary =
       (this.hasSaveButtonTarget && this.saveButtonTarget) ||
-      this.createDialogTarget.querySelector(".lp-strategy-sheet__btn.is-save, .lp-strategy-sheet__footer")
+      this.createDialogTarget.querySelector(".lp-first-climb__cta, .lp-strategy-sheet__btn.is-save, .lp-strategy-sheet__footer")
     if (!primary) return
     requestAnimationFrame(() => {
       primary.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" })
     })
+  }
+
+  resetCoach() {
+    const coach = this.application.getControllerForElementAndIdentifier(
+      this.createDialogTarget,
+      "destination-coach"
+    )
+    coach?.reset()
   }
 }

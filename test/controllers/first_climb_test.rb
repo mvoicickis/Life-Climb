@@ -35,6 +35,7 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_difference -> { @user.strategy_goals.for_kind("day").count }, +1 do
       post first_climbs_path, params: {
         life_journey_id: @journey.id,
+        goal_id: @goal.id,
         plan_title: "Get certified",
         today_action: "Study chapter 1 for 20 minutes"
       }
@@ -68,6 +69,7 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
   test "double submit creates only one plan project battle tree" do
     params = {
       life_journey_id: @journey.id,
+      goal_id: @goal.id,
       plan_title: "Get certified",
       today_action: "Study chapter 1 for 20 minutes"
     }
@@ -105,10 +107,34 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_equal 0, @user.daily_todos.for_day(Date.current).where(title: "A second accidental battle").count
   end
 
+  test "title param creates a new destination and hangs the plan under it" do
+    Strategy::FirstClimb.call(
+      user: @user,
+      journey: @journey,
+      goal: @goal,
+      plan_title: "Get certified",
+      today_action: "Study chapter 1 for 20 minutes"
+    )
+
+    post first_climbs_path, params: {
+      life_journey_id: @journey.id,
+      title: "Family Peak",
+      plan_title: "Weekend dinners",
+      today_action: "Text the family group"
+    }
+
+    assert_redirected_to dashboard_path
+    family = @user.strategy_goals.for_kind("goal").roots.find_by!(title: "Family Peak")
+    refute_equal @goal.id, family.id
+    assert_equal "Weekend dinners", family.children.for_kind("plan").first.title
+    assert_equal [ "Get certified" ], @goal.reload.children.for_kind("plan").map(&:title)
+  end
+
   test "first climb form disables submit on click via stimulus hook" do
     get dashboard_path
     assert_response :success
     assert_select "form.lp-first-climb__form[data-controller='first-climb']"
+    assert_select "form.lp-first-climb__form input[name=goal_id][value=?]", @goal.id.to_s
     assert_select "form.lp-first-climb__form[data-action*='submit->first-climb#disable']"
     assert_select ".lp-first-climb__cta[data-first-climb-target='submit']"
   end

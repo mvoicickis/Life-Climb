@@ -9,30 +9,34 @@ module Strategy
       end
     end
 
-    def self.call(user:, journey:, plan_title:, today_action:)
-      new(user:, journey:, plan_title:, today_action:).call
+    def self.call(user:, journey:, plan_title:, today_action:, goal: nil, goal_title: nil)
+      new(user:, journey:, plan_title:, today_action:, goal:, goal_title:).call
     end
 
-    def initialize(user:, journey:, plan_title:, today_action:)
+    def initialize(user:, journey:, plan_title:, today_action:, goal: nil, goal_title: nil)
       @user = user
       @journey = journey
       @plan_title = plan_title.to_s.strip
       @today_action = today_action.to_s.strip
+      @goal = goal
+      @goal_title = goal_title.to_s.strip.presence
     end
 
     def call
       raise ArgumentError, I18n.t("strategy.first_climb.need_plan") if @plan_title.blank?
       raise ArgumentError, I18n.t("strategy.first_climb.need_action") if @today_action.blank?
+      raise ArgumentError, I18n.t("strategy.need_goal") if @goal.blank? && @goal_title.blank?
 
       area = @journey.life_area
-      goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
-      raise ArgumentError, I18n.t("strategy.need_goal") if goal.blank?
+      raise ArgumentError, I18n.t("strategy.need_goal") if area.blank?
 
       result = nil
-      # with_lock reloads + row-locks the goal so two near-simultaneous posts
+      goal = resolve_goal!(area)
+      # Lock the destination we will climb so two near-simultaneous posts
       # cannot both pass the empty-spine check before either commits.
       goal.with_lock do
         @journey.reload
+        goal.reload
         if already_climbed?(goal)
           result = existing_result_for(goal)
         else
@@ -78,11 +82,30 @@ module Strategy
     private
 
     def already_climbed?(goal)
-      route_done? || goal.children.for_kind("plan").exists?
+      goal.children.for_kind("plan").exists?
     end
 
-    def route_done?
-      (@journey.setup_flags.presence || {}).stringify_keys[Onboarding::Run::ROUTE_FLAG] == "done"
+    def resolve_goal!(area)
+      if @goal_title.present?
+        create_root_goal!(area)
+      elsif @goal.present?
+        @goal
+      else
+        raise ArgumentError, I18n.t("strategy.need_goal")
+      end
+    end
+
+    def create_root_goal!(area)
+      scope = @user.strategy_goals.where(life_area_id: area.id).for_kind("goal").roots
+      position = scope.maximum(:position).to_i + 1
+      @user.strategy_goals.create!(
+        life_area: area,
+        life_journey: @journey,
+        parent: nil,
+        horizon: "goal",
+        title: @goal_title,
+        position: position
+      )
     end
 
     def existing_result_for(goal)
@@ -111,8 +134,10 @@ module Strategy
     end
 
     def mark_route_done!
-      flags = (@journey.setup_flags.presence || {}).stringify_keys.merge(Onboarding::Run::ROUTE_FLAG => "done")
-      @journey.update!(setup_flags: flags)
+      flags = (@journey.setup_flags.presence || {}).stringify_keys
+      return if flags[Onboarding::Run::ROUTE_FLAG] == "done"
+
+      @journey.update!(setup_flags: flags.merge(Onboarding::Run::ROUTE_FLAG => "done"))
 
       # Retire the scaffolding "Plan Your Route" mission now — otherwise Today
       # still lists it beside the real first-climb action (retire_plan_route_if_needed!
