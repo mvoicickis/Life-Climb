@@ -52,9 +52,13 @@
                 <%= link_to t("nav.admin"), admin_root_path %>
               <% end %>
             <% else %>
+              <% show_habits_and_journey_nav = false %>
               <%= link_to t("nav.building"), building_path %>
               <%= link_to t("nav.finished"), finished_products_path %>
-              <%= link_to t("nav.life_points"), life_points_path %>
+              <%# Journey / LifePoints — hidden. Page still lives at life_points_path. %>
+              <% if show_habits_and_journey_nav %>
+                <%= link_to t("nav.life_points"), life_points_path %>
+              <% end %>
               <%= link_to t("nav.settings"), settings_path %>
               <% if current_user.admin? && !impersonating? %>
                 <%= link_to t("nav.admin"), admin_root_path %>

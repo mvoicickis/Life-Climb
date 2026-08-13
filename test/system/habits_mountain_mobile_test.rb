@@ -29,16 +29,17 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "five item nav looks clean on mobile and Mountain omits supporting habits" do
+  test "three item nav looks clean on mobile and Mountain omits supporting habits" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
 
-    assert_selector ".lp-dash-nav__link", text: /Habits/i
+    assert_no_selector ".lp-dash-nav__link", text: /Habits/i
+    assert_no_selector ".lp-dash-nav__link", text: /Journey/i
     links = all(".lp-dash-nav__link")
-    assert_equal 5, links.size
+    assert_equal 3, links.size
     widths = links.map { |el| el.native.size.width }
     assert widths.all? { |w| w >= 48 }, "nav links should stay tappable without collapsing"
     assert widths.sum <= 390, "nav row should fit the mobile viewport without overflow"
@@ -52,7 +53,7 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5
-    assert_selector ".lp-dash-nav__link.is-active", text: /Habits/i
+    assert_no_selector ".lp-dash-nav__link.is-active", text: /Habits/i
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habits-page-mobile.png")
   end
 end

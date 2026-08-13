@@ -1,8 +1,11 @@
-<%# Primary nav — Mountain · Today · Habits · Journey · You %>
+<%# Primary nav — Mountain · Today · You
+    Habits and Journey tabs are hidden (pages/routes still exist).
+    Flip show_habits_and_journey_nav to true to restore both tabs. %>
 <% active = local_assigns.fetch(:active, :today).to_s %>
 <% active = "mountain" if active == "strategy" %>
 <%
   strategy_journey = current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first
+  show_habits_and_journey_nav = false
 %>
 
 <nav class="lp-dash-nav" aria-label="Primary">
@@ -38,24 +41,30 @@
     <span><%= t("dash.nav.today") %></span>
   <% end %>
 
-  <%= link_to habits_path, class: "lp-dash-nav__link #{'is-active' if active == 'habits'}" do %>
-    <span class="lp-dash-nav__icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 5.5 H16 A2.5 2.5 0 0 1 18.5 8 V16 A2.5 2.5 0 0 1 16 18.5 H8 A2.5 2.5 0 0 1 5.5 16 V8 A2.5 2.5 0 0 1 8 5.5 Z"/>
-        <path d="M8.8 12.1 L11 14.2 L15.3 9.6"/>
-      </svg>
-    </span>
-    <span><%= t("dash.nav.habits") %></span>
+  <%# Habits tab — hidden. Page still lives at habits_path. %>
+  <% if show_habits_and_journey_nav %>
+    <%= link_to habits_path, class: "lp-dash-nav__link #{'is-active' if active == 'habits'}" do %>
+      <span class="lp-dash-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 5.5 H16 A2.5 2.5 0 0 1 18.5 8 V16 A2.5 2.5 0 0 1 16 18.5 H8 A2.5 2.5 0 0 1 5.5 16 V8 A2.5 2.5 0 0 1 8 5.5 Z"/>
+          <path d="M8.8 12.1 L11 14.2 L15.3 9.6"/>
+        </svg>
+      </span>
+      <span><%= t("dash.nav.habits") %></span>
+    <% end %>
   <% end %>
 
-  <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
-    <span class="lp-dash-nav__icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 17 L9 11 L13 14.5 L20 7"/>
-        <path d="M15 7 H20 V12"/>
-      </svg>
-    </span>
-    <span><%= t("dash.nav.journey") %></span>
+  <%# Journey (progress) tab — hidden. Page still lives at life_points_path. %>
+  <% if show_habits_and_journey_nav %>
+    <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
+      <span class="lp-dash-nav__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 17 L9 11 L13 14.5 L20 7"/>
+          <path d="M15 7 H20 V12"/>
+        </svg>
+      </span>
+      <span><%= t("dash.nav.journey") %></span>
+    <% end %>
   <% end %>
 
   <%= link_to settings_path, class: "lp-dash-nav__link #{'is-active' if active == 'you'}" do %>

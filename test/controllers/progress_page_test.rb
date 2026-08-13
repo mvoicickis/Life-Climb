@@ -34,7 +34,11 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Weekly activity/i, response.body)
     assert_match(/Achievements/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
-    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_select ".lp-dash-nav__link", text: /Mountain/i
+    assert_select ".lp-dash-nav__link", text: /Today/i
+    assert_select ".lp-dash-nav__link", text: /You/i
+    assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
+    assert_select ".lp-dash-nav__link", text: /Journey/i, count: 0
     assert_no_match(/Climb progress/i, response.body)
     assert_select ".lp-progress-donut__center span", text: /Action Points|AP/i
   end
@@ -82,13 +86,13 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/period=30d.*is-active|is-active.*30 Days/i, response.body)
   end
 
-  test "nav labels are mountain today journey you" do
+  test "nav labels are mountain today you" do
     get life_points_path
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /Mountain/i
-    assert_select ".lp-dash-nav__link", text: /Habits/i
-    assert_select ".lp-dash-nav__link", text: /Journey/i
     assert_select ".lp-dash-nav__link", text: /You/i
+    assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
+    assert_select ".lp-dash-nav__link", text: /Journey/i, count: 0
     assert_select ".lp-dash-nav__link", text: /\A\s*Progress\s*\z/, count: 0
   end
 

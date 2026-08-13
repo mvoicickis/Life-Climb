@@ -28,7 +28,7 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-anytime", wait: 5
     assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Temp stretch"
 
-    within(".lp-dash-nav") { click_link "Habits" }
+    visit habits_path
     assert_selector ".lp-habits", wait: 5
     card = find(".lp-habits__card", text: "Temp stretch")
     accept_confirm do
