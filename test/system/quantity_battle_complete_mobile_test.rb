@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "application_system_test_case"
+require "timeout"
 
 class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
   include ClimbTestHelper
@@ -40,13 +41,14 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
       click_button "Log it"
     end
 
+    # Juicy feedback delays submit ~500ms; wait for the server round-trip.
+    wait_until_completed!(@todo)
+    visit dashboard_path
     assert_selector ".lp-dash-done-fold", wait: 5
     open_done_fold!
     assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-done[data-todo-id='#{@todo.id}']", wait: 5
 
     @project.reload
-    @todo.reload
-    assert @todo.completed?
     assert_equal BigDecimal("19"), @project.current_amount
     log = StrategyQuantityLog.find_by!(daily_todo_id: @todo.id)
     assert_equal BigDecimal("12"), log.amount
@@ -75,10 +77,11 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-timeline", wait: 5
 
     find("button.lp-dash-tcard__win[aria-label='I did it Ship PR']").click
+    wait_until_completed!(plain_todo)
+    visit dashboard_path
     assert_selector ".lp-dash-done-fold", wait: 5
     open_done_fold!
     assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-done[data-todo-id='#{plain_todo.id}']", wait: 5
-    assert plain_todo.reload.completed?
     assert_equal BigDecimal("7"), @project.reload.current_amount
     assert_nil StrategyQuantityLog.find_by(daily_todo_id: plain_todo.id)
   end
@@ -89,5 +92,15 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     return if page.has_css?(".lp-dash-done-fold[open]", wait: 0)
 
     find(".lp-dash-done-fold__summary").click
+  end
+
+  def wait_until_completed!(record)
+    Timeout.timeout(12) do
+      loop do
+        break if record.reload.completed?
+
+        sleep 0.1
+      end
+    end
   end
 end
