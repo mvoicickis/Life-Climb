@@ -92,6 +92,10 @@
     </div>
   <% end %>
 
+  <%= render "dashboard/dash_overshoot_bonus",
+        percent: @day_percent,
+        awarded_ap: @overshoot_bonus&.awarded_ap %>
+
   <div id="today-battle-surface">
     <%= render "dashboard/today_battle_surface" %>
   </div>

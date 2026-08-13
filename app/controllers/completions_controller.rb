@@ -4,6 +4,7 @@ class CompletionsController < ApplicationController
     @completion = current_user.completions.build(habit: @habit, completed_on: Date.current)
 
     if @completion.save
+      Today::OvershootBonus.sync!(user: current_user)
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to dashboard_path, notice: "+#{@habit.points} points!" }
@@ -16,6 +17,7 @@ class CompletionsController < ApplicationController
   def destroy
     completion = current_user.completions.find(params[:id])
     completion.destroy!
+    Today::OvershootBonus.sync!(user: current_user)
     redirect_to dashboard_path, notice: t("habits.undone"), status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, status: :see_other

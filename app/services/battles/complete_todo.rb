@@ -54,6 +54,7 @@ module Battles
         session: @session,
         project_ids: Strategy::ProjectCheckQueue.from_battles([ day ].compact)
       )
+      Today::OvershootBonus.sync!(user: @user)
 
       Result.new(streak: streak, personal_best_new: pb.new_record)
     end

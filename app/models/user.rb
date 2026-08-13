@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :today_actions, dependent: :destroy
   has_many :finished_products, dependent: :destroy
   has_many :life_point_ledgers, dependent: :destroy
+  has_many :day_overshoot_bonuses, class_name: "DayOvershootBonus", dependent: :destroy
   has_many :strategy_point_ledgers, dependent: :destroy
   has_many :strategy_goals, dependent: :destroy
   has_many :strategy_quantity_logs, dependent: :destroy

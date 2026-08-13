@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_124100) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_100206) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -86,6 +86,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_124100) do
     t.index ["strategy_goal_id"], name: "index_daily_todos_on_strategy_goal_id"
     t.index ["user_id", "scheduled_on", "aspect_key"], name: "index_daily_todos_on_user_id_and_scheduled_on_and_aspect_key"
     t.index ["user_id"], name: "index_daily_todos_on_user_id"
+  end
+
+  create_table "day_overshoot_bonuses", force: :cascade do |t|
+    t.integer "awarded_ap", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.date "on_date", null: false
+    t.integer "peak_percent", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "on_date"], name: "index_day_overshoot_bonuses_on_user_id_and_on_date", unique: true
+    t.index ["user_id"], name: "index_day_overshoot_bonuses_on_user_id"
   end
 
   create_table "dreams", force: :cascade do |t|
@@ -502,6 +513,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_124100) do
   add_foreign_key "daily_logs", "users"
   add_foreign_key "daily_todos", "strategy_goals"
   add_foreign_key "daily_todos", "users"
+  add_foreign_key "day_overshoot_bonuses", "users"
   add_foreign_key "dreams", "users"
   add_foreign_key "feedbacks", "users"
   add_foreign_key "finished_products", "buildings"

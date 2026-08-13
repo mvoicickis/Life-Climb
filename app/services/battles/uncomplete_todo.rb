@@ -35,6 +35,7 @@ module Battles
           day.practice_tasks.find_each(&:reopen!)
         end
       end
+      Today::OvershootBonus.sync!(user: @user)
       true
     end
   end

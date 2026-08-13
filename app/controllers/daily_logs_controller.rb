@@ -35,6 +35,7 @@ class DailyLogsController < ApplicationController
     if @daily_log.save
       store_undo!(previous_amount: previous, delta: delta)
       award_rhythm_points_if_won!
+      Today::OvershootBonus.sync!(user: current_user)
       redirect_to after_log_path, notice: notice_for_add(delta: delta, log: @daily_log)
     else
       redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
@@ -55,6 +56,7 @@ class DailyLogsController < ApplicationController
     if @daily_log.save
       clear_undo!
       award_rhythm_points_if_won!
+      Today::OvershootBonus.sync!(user: current_user)
       redirect_to after_log_path, notice: notice_for_set(@daily_log)
     else
       redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
@@ -82,6 +84,7 @@ class DailyLogsController < ApplicationController
     if @daily_log.save
       clear_undo!
       award_rhythm_points_if_won!
+      Today::OvershootBonus.sync!(user: current_user)
       redirect_to after_log_path, notice: notice_for_undo(@daily_log)
     else
       redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence

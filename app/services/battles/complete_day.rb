@@ -60,6 +60,8 @@ module Battles
         end
       end
 
+      Today::OvershootBonus.sync!(user: @user)
+
       Result.new(
         ok: true,
         awarded: awarded,
