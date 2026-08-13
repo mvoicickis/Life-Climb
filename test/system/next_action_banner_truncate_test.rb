@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# Long companion-voice headlines must truncate — progress strip stays readable.
+# Long companion-voice headlines must wrap — never clip mid-word with ellipsis.
 class NextActionBannerTruncateTest < ApplicationSystemTestCase
   LONG_TODO = "Rewrite the quarterly stakeholder update deck for board review"
   LONG_HEADLINE =
@@ -43,11 +43,12 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
       title: LONG_TODO, scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    clear_setup_gap!
   end
 
   teardown { travel_back }
 
-  test "long complete_battle headline truncates on Today with commitment progress" do
+  test "long complete_battle headline wraps on Today with commitment progress" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -59,7 +60,7 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
       assert_selector ".lp-dash-next[data-next-action-key=complete_battle]", wait: 5
       assert_selector "[data-commitment-progress]", wait: 5
       assert_no_selector ".lp-dash-next a.lp-cta"
-      assert_banner_truncates!(placement: "Today")
+      assert_banner_wraps!(placement: "Today")
 
       visit life_journey_path(@journey)
       assert_no_selector ".lp-dash-next"
@@ -67,6 +68,33 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
   end
 
   private
+
+  def clear_setup_gap!
+    have = @user.habits.active.on_home.count
+    (have + 1).upto(@journey.commitment_habit_count.to_i) do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
+    need = @journey.commitment_battle_count.to_i
+    todos = @user.daily_todos.for_day(Date.current).ordered.to_a
+    while todos.size < need
+      todos << @user.daily_todos.create!(
+        title: "Setup fight #{todos.size + 1}",
+        scheduled_on: Date.current,
+        aspect_key: "career",
+        start_time: "09:00",
+        end_time: "10:00",
+        position: 500 + todos.size
+      )
+    end
+    @user.daily_todos.for_day(Date.current).find_each do |todo|
+      next if todo.timed?
+
+      todo.update!(start_time: "09:00", end_time: "10:00")
+    end
+  end
 
   def with_fixed_next_action_headline(headline)
     singleton = Strategy::NextAction::Copy.singleton_class
@@ -77,7 +105,7 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     singleton.define_method(:headline_for, original)
   end
 
-  def assert_banner_truncates!(placement:)
+  def assert_banner_wraps!(placement:)
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const banner = document.querySelector('.lp-dash-next');
@@ -91,14 +119,10 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
         return {
           flexWrap: bs.flexWrap,
           bannerMinWidth: bs.minWidth,
-          titleFlexGrow: ts.flexGrow,
-          titleFlexShrink: ts.flexShrink,
-          titleFlexBasis: ts.flexBasis,
-          titleMinWidth: ts.minWidth,
-          titleOverflow: ts.overflow,
           titleTextOverflow: ts.textOverflow,
           titleWhiteSpace: ts.whiteSpace,
           titleScrollWider: title.scrollWidth > title.clientWidth + 1,
+          titleText: title.textContent.trim(),
           progressLeft: pr.left,
           progressRight: pr.right,
           bannerRight: br.right,
@@ -109,17 +133,13 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     JS
 
     assert metrics.present?, "#{placement}: NextAction banner missing"
-    assert_equal "nowrap", metrics["flexWrap"], "#{placement}: must stay single-row"
+    assert_equal "wrap", metrics["flexWrap"], "#{placement}: banner should allow wrap"
     assert_equal "0px", metrics["bannerMinWidth"], "#{placement}: banner min-width"
     assert_operator metrics["bannerRight"] - metrics["bannerLeft"], :<=, metrics["vw"] + 1
-    assert_operator metrics["titleFlexGrow"].to_f, :>=, 1.0
-    assert_operator metrics["titleFlexShrink"].to_f, :>=, 1.0
-    assert_includes [ "0%", "0px" ], metrics["titleFlexBasis"], "#{placement}: title flex-basis 0%"
-    assert_equal "0px", metrics["titleMinWidth"]
-    assert_equal "hidden", metrics["titleOverflow"]
-    assert_equal "ellipsis", metrics["titleTextOverflow"]
-    assert_equal "nowrap", metrics["titleWhiteSpace"]
-    assert metrics["titleScrollWider"], "#{placement}: long title should overflow and ellipsis"
+    assert_equal "normal", metrics["titleWhiteSpace"]
+    refute_equal "ellipsis", metrics["titleTextOverflow"]
+    refute metrics["titleScrollWider"], "#{placement}: title should wrap, not overflow with ellipsis"
+    assert_includes metrics["titleText"], "board review"
     assert_operator metrics["progressLeft"], :>=, metrics["bannerLeft"] - 1
     assert_operator metrics["progressRight"], :<=, metrics["bannerRight"] + 1
     assert_operator metrics["progressRight"], :<=, metrics["vw"] + 1

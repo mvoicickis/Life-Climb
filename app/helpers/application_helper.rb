@@ -194,17 +194,25 @@ module ApplicationHelper
     end
   end
 
-  # Soft emoji sigil from unit / name — no DB column yet.
+  # Soft emoji sigil from unit + name keywords — no DB column yet.
+  # More specific categories win (language before generic "study").
   def habit_sigil(habit)
-    key = "#{habit.unit} #{habit.name}".downcase
-    return "🥾" if key.match?(/step|walk|hike/)
-    return "📖" if key.match?(/page|read|book|study/)
-    return "💪" if key.match?(/rep|push|pull|squat|lift|workout|exercise/)
-    return "🗣" if key.match?(/duo|speak|german|language|word/)
-    return "💧" if key.match?(/glass|water|drink/)
-    return "⏱" if key.match?(/minute|min|hour|time/)
-    return "💰" if key.match?(/money|€|\$|£|spend|budget/)
-    return "🛏" if key.match?(/sleep/)
+    name = habit.name.to_s.downcase
+    unit = habit.unit.to_s.downcase
+    blob = "#{unit} #{name}"
+
+    return "🗣" if name.match?(/german|spanish|french|italian|language|duolingo|\bduo\b|speak|vocab|anki/) ||
+                   unit.match?(/duo|word|phrase|lesson|flashcard/)
+    return "🥾" if blob.match?(/step|walk|hike|run|jog|mile|km\b/)
+    return "💪" if blob.match?(/rep|push.?up|pull.?up|squat|lift|workout|exercise|gym|plank|burpee/)
+    return "🧘" if blob.match?(/meditat|breath|mindful|yoga|zen/)
+    return "💧" if blob.match?(/water|hydrat|glass of|\bdrink\b/)
+    return "🛏" if blob.match?(/sleep|bedtime|\brest\b|\bnaps?\b/)
+    return "✍️" if blob.match?(/writ|journal|essay|draft|blog/)
+    return "📖" if blob.match?(/page|read|book|\bstudy\b/)
+    return "💰" if blob.match?(/money|€|\$|£|spend|budget|save/)
+    return "⏱" if unit.match?(/\bmins?\b|\bminutes?\b|\bhours?\b/) ||
+                   name.match?(/\bminute|\bhour\b|\btimer\b/)
 
     "✦"
   end

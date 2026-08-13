@@ -10,15 +10,22 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     @user = users(:one)
     seed_climb!(@user, today_mission: "Viewport battle")
     @user.habits.destroy_all
-    2.times do |i|
-      @user.habits.create!(
-        name: "Habit #{i + 1}", unit: "reps", points: 5, frequency: "daily",
-        active: true, show_on_home: true, stat_type: "growth", goal: 20, quantity_checkin: true
-      )
-    end
+    @user.habits.create!(
+      name: "Study", unit: "pages", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth", goal: 2, quantity_checkin: true
+    )
+    @user.habits.create!(
+      name: "German Study", unit: "duo units", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth", goal: 5, quantity_checkin: true
+    )
+    @user.habits.create!(
+      name: "Push-Ups", unit: "reps", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "standard",
+      min_value: 10, max_value: 20, quantity_checkin: true
+    )
   end
 
-  test "hero and habits visible at 375x600" do
+  test "hero and habits visible at 375 and 320" do
     page.driver.browser.manage.window.resize_to(375, 600)
     visit new_session_path
     fill_in "Email", with: @user.email_address
@@ -27,23 +34,64 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
 
     assert_selector ".lp-dash-hero", wait: 5
     assert_selector ".lp-dash-hero__big"
-    assert_selector ".lp-dash-hero__segs i", count: 10
-    assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit.is-slot", minimum: 1
-    assert_selector ".lp-dash-anytime .lp-dash-habit__quick", minimum: 2
+    assert_selector ".lp-dash-hero__segs i", count: 14
+    assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit.is-slot", minimum: 3
+    assert_selector ".lp-dash-anytime .lp-dash-habit__r2.is-single-quick", minimum: 1
+    assert_selector ".lp-dash-anytime .lp-dash-habit__r2:not(.is-single-quick)", minimum: 1
 
-    hero_h = page.evaluate_script("document.querySelector('.lp-dash-hero').getBoundingClientRect().height")
-    assert hero_h < 280, "hero height should stay compact (got #{hero_h})"
-
-    card_h = page.evaluate_script(<<~JS)
-      document.querySelector('.lp-dash-anytime .lp-dash-tcard.is-habit.is-slot').getBoundingClientRect().height
+    metrics = page.evaluate_script(<<~JS)
+      (() => {
+        const card = document.querySelector('.lp-dash-anytime .lp-dash-tcard.is-habit.is-slot');
+        const single = document.querySelector('.lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb');
+        const dualForm = document.querySelector('.lp-dash-habit__r2:not(.is-single-quick) > form');
+        const qs = single ? getComputedStyle(single) : null;
+        return {
+          heroH: document.querySelector('.lp-dash-hero').getBoundingClientRect().height,
+          cardH: card.getBoundingClientRect().height,
+          cardW: card.getBoundingClientRect().width,
+          qbMinH: qs ? qs.minHeight : null,
+          qbH: single ? single.getBoundingClientRect().height : null,
+          singleW: single ? single.getBoundingClientRect().width : null,
+          dualFormW: dualForm ? dualForm.getBoundingClientRect().width : null,
+          sigils: [...document.querySelectorAll('.lp-dash-habit__sig')].map((el) => el.textContent.trim())
+        };
+      })()
     JS
-    # Baseline was ~190px; tap floor keeps buttons at var(--lp-tap) (~44px).
-    # Report honestly — do not assert a mockup 105px target.
-    assert card_h < 190, "habit slot should be denser than ~190px baseline (got #{card_h})"
-    puts "MEASURED_HABIT_SLOT_HEIGHT_375=#{card_h.round}"
+
+    assert metrics["heroH"] < 280, "hero height should stay compact (got #{metrics['heroH']})"
+    assert metrics["cardH"] < 190, "habit slot denser than ~190px (got #{metrics['cardH']})"
+    assert_equal "44px", metrics["qbMinH"], "quick button keeps var(--lp-tap) height"
+    assert_operator metrics["qbH"], :>=, 43.5
+    assert_operator metrics["singleW"], :<, metrics["cardW"] * 0.55,
+                    "single quick-add must not stretch full card width"
+    assert_operator metrics["dualFormW"], :>, metrics["cardW"] * 0.3,
+                    "dual quick-adds still share the row"
+    assert_includes metrics["sigils"], "📖"
+    assert_includes metrics["sigils"], "🗣"
+    assert_includes metrics["sigils"], "💪"
+    puts "MEASURED_HABIT_SLOT_HEIGHT_375=#{metrics['cardH'].round}"
+    puts "MEASURED_SINGLE_QUICK_WIDTH_375=#{metrics['singleW'].round}"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-hero-375x600.png")
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-rpg-habit-slot-375.png")
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-rpg-layout-375.png")
+
+    page.driver.browser.manage.window.resize_to(320, 600)
+    visit dashboard_path
+    assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit.is-slot", minimum: 3
+    assert_selector ".lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb", minimum: 1
+    narrow = page.evaluate_script(<<~JS)
+      (() => {
+        const card = document.querySelector('.lp-dash-anytime .lp-dash-tcard.is-habit.is-slot');
+        const single = document.querySelector('.lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb');
+        return {
+          cardW: card.getBoundingClientRect().width,
+          singleW: single.getBoundingClientRect().width,
+          qbH: single.getBoundingClientRect().height
+        };
+      })()
+    JS
+    assert_operator narrow["singleW"], :<, narrow["cardW"] * 0.6
+    assert_operator narrow["qbH"], :>=, 43.5
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-rpg-layout-320.png")
   end
 end

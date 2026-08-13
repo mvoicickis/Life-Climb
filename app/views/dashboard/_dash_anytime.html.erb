@@ -62,13 +62,13 @@
 
           <% if progress.is_a?(Numeric) && (habit.binary_checkin? || (habit.quantity_checkin? && target.present?)) %>
             <div class="lp-dash-habit__segs" aria-hidden="true">
-              <% habit_progress_segments(progress, count: 12).each do |klass| %>
+              <% habit_progress_segments(progress, count: 16).each do |klass| %>
                 <i class="<%= klass %>"></i>
               <% end %>
             </div>
           <% end %>
 
-          <div class="lp-dash-habit__r2">
+          <div class="lp-dash-habit__r2<%= ' is-single-quick' if habit.quantity_checkin? && steps.length == 1 %>">
             <% if habit.binary_checkin? %>
               <% if done %>
                 <% completion = habit.completion_for(Date.current) %>

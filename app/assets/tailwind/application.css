@@ -4617,8 +4617,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-next,
 .lp-dash-next.lp-glass--pad {
   display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.4rem 0.65rem;
   padding: 0.45rem 0.65rem;
@@ -4632,6 +4632,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   flex: 0 0 auto;
   width: 1.75rem;
   height: 1.75rem;
+  margin-top: 0.1rem;
   border-radius: 999px;
   object-fit: cover;
   object-position: center 18%;
@@ -4641,21 +4642,20 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-next__title {
   margin: 0;
-  flex: 1 1 0%;
   min-width: 0;
   font-family: var(--lp-font-display);
   font-size: 0.88rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.2;
+  line-height: 1.25;
   color: var(--lp-ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .lp-dash-next .lp-cta {
   flex: 0 0 auto;
+  align-self: center;
   min-height: 2.75rem;
   padding: 0.45rem 0.9rem;
   font-size: 0.82rem;
@@ -5129,12 +5129,16 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin: 0;
   font-weight: 800;
   color: #57d35b;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .lp-dash-level-up__body {
   margin: 0.25rem 0 0;
   font-size: 0.9rem;
   color: var(--lp-ink);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .lp-dash-level-up__actions {
@@ -16449,11 +16453,11 @@ button.lp-strategy-overflow {
   font-weight: 700;
   margin-top: 0.05rem;
 }
-/* Climb hero: 10-segment RPG track */
+/* Climb hero: denser notches so the track reads as discrete resource segments */
 .lp-dash-hero__segs {
   display: flex;
-  gap: 2px;
-  height: 11px;
+  gap: 3px;
+  height: 13px;
   margin-bottom: 0.7rem;
   padding: 2px;
   border-radius: 5px;
@@ -16463,6 +16467,7 @@ button.lp-strategy-overflow {
 }
 .lp-dash-hero__segs i {
   flex: 1;
+  min-width: 0;
   border-radius: 2px;
   background: rgba(148, 163, 184, 0.09);
 }
@@ -16508,6 +16513,8 @@ button.lp-strategy-overflow {
   font-weight: 650;
   color: var(--lp-ink);
   line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .lp-dash-notice__dismiss {
   flex: none;
@@ -16618,8 +16625,8 @@ button.lp-strategy-overflow {
 
 .lp-dash-habit__segs {
   display: flex;
-  gap: 1.5px;
-  height: 5px;
+  gap: 2px;
+  height: 8px;
   margin-bottom: 0.45rem;
   padding: 1px;
   border-radius: 3px;
@@ -16628,7 +16635,8 @@ button.lp-strategy-overflow {
 }
 .lp-dash-habit__segs i {
   flex: 1;
-  border-radius: 1px;
+  min-width: 0;
+  border-radius: 1.5px;
   background: rgba(148, 163, 184, 0.08);
 }
 .lp-dash-habit__segs i.f {
@@ -16644,9 +16652,14 @@ button.lp-strategy-overflow {
   gap: 0.4rem;
 }
 .lp-dash-habit__r2 > form {
-  flex: 1;
+  flex: 1 1 0;
   display: flex;
   margin: 0;
+  min-width: 0;
+}
+/* One quick-add: size to content; ⋯ stays fixed. Dual buttons still share the row. */
+.lp-dash-habit__r2.is-single-quick > form {
+  flex: 0 1 auto;
   min-width: 0;
 }
 .lp-dash-habit__qb {
@@ -16667,6 +16680,12 @@ button.lp-strategy-overflow {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+}
+.lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 4.5rem; /* content floor; height still var(--lp-tap) */
+  padding-inline: 0.9rem;
 }
 .lp-dash-habit__qb.is-big {
   background: linear-gradient(180deg, #3fa84a, #25752c);
