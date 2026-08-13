@@ -43,7 +43,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-hero__track", count: 1
+    assert_select ".lp-dash-hero__segs", count: 1
   end
 
   test "completing a battle checkbox asks project check without moving mountain percent" do

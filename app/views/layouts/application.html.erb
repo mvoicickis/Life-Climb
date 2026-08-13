@@ -76,7 +76,10 @@
       <% end %>
 
       <% if flash[:alert] %>
-        <div class="<%= authenticated? ? (content_for?(:lp_game) ? 'lp-flash lp-flash--alert' : 'studio-flash studio-flash--alert') : 'mb-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm font-bold text-rose-800 md:text-base' %>" role="alert" aria-live="assertive">
+        <div class="<%= authenticated? ? (content_for?(:lp_game) ? 'lp-flash lp-flash--alert' : 'studio-flash studio-flash--alert') : 'mb-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm font-bold text-rose-800 md:text-base' %>"
+             role="alert"
+             aria-live="assertive"
+             data-lp-log-failed="<%= content_for?(:lp_game) %>">
           <%= flash[:alert] %>
         </div>
       <% end %>

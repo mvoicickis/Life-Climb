@@ -68,7 +68,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-hero", count: 1
     assert_select ".lp-dash-hero__avatar-img[src*='fox']", count: 1
     assert_select ".lp-dash-hero__name", text: "Alex Climber"
-    assert_select ".lp-dash-hero__track", count: 1
+    assert_select ".lp-dash-hero__segs", count: 1
     assert_select ".lp-dash-hero [data-battle-day-target='lpTotal']", text: /120/
     assert_select ".lp-dash-timeline", count: 1
     assert_select ".lp-dash-header", count: 0

@@ -265,6 +265,13 @@ class Habit < ApplicationRecord
     growth? && goal.present? && today_amount >= goal
   end
 
+  # Today quick-add pair for growth quantity habits (mockup adaptive steps).
+  def quick_add_steps
+    return [ 1 ] if standard? || binary_checkin?
+
+    Habits::QuickAddSteps.call(target: todays_goal_value)
+  end
+
   def show_goal_raise_prompt?
     met_habit_goal? && goal_raise_declined_on != Date.current
   end

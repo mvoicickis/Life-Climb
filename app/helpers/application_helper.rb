@@ -179,6 +179,36 @@ module ApplicationHelper
     [ progress.to_i, 100 ].min
   end
 
+  # Discrete notches for RPG progress bars (hero 10, habit 12).
+  def habit_progress_segments(percent, count:)
+    p = percent.nil? ? 0 : percent.to_i
+    over = p > 100
+    capped = [ p, 100 ].min
+    Array.new(count) do |i|
+      threshold = ((i + 1) * 100.0 / count)
+      if capped >= threshold
+        over ? "o" : "f"
+      else
+        ""
+      end
+    end
+  end
+
+  # Soft emoji sigil from unit / name — no DB column yet.
+  def habit_sigil(habit)
+    key = "#{habit.unit} #{habit.name}".downcase
+    return "🥾" if key.match?(/step|walk|hike/)
+    return "📖" if key.match?(/page|read|book|study/)
+    return "💪" if key.match?(/rep|push|pull|squat|lift|workout|exercise/)
+    return "🗣" if key.match?(/duo|speak|german|language|word/)
+    return "💧" if key.match?(/glass|water|drink/)
+    return "⏱" if key.match?(/minute|min|hour|time/)
+    return "💰" if key.match?(/money|€|\$|£|spend|budget/)
+    return "🛏" if key.match?(/sleep/)
+
+    "✦"
+  end
+
   def home_grid_style(count)
     cols = case count
     when 1 then 1

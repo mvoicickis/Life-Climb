@@ -63,7 +63,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     # Today hero shows DayPercent, not mountain closer — Progress page holds journey %.
-    assert_select ".lp-dash-hero__track", count: 1
+    assert_select ".lp-dash-hero__segs", count: 1
     assert_select "[data-battle-day-target='lpTotal']", minimum: 1
 
     get life_points_path

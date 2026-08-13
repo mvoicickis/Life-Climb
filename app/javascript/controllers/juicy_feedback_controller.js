@@ -8,7 +8,8 @@ const SUPPRESS_KEY = "lpJuicySuppressCelebrate"
 export default class extends Controller {
   static values = {
     suppressReloadCelebrate: { type: Boolean, default: false },
-    delay: { type: Number, default: 500 }
+    delay: { type: Number, default: 500 },
+    popAmount: { type: Number, default: 0 }
   }
 
   play(event) {
@@ -30,11 +31,13 @@ export default class extends Controller {
 
     const host = this.element.closest(".lp-dash-tcard, .lp-dash-checklist__obj") || this.element
     const amount = this.resolvedAmount(host)
+    const popAmount = this.resolvedPopAmount()
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     if (!reduceMotion) {
       this.bounce(host)
       this.burst(host)
+      if (popAmount > 0) this.floatHabitPop(host, popAmount)
     }
     if (amount > 0) this.floatAp(host, amount)
 
@@ -62,6 +65,23 @@ export default class extends Controller {
     const raw = host?.dataset?.lp || this.element.dataset.lp || "0"
     const n = Number.parseInt(raw, 10)
     return Number.isFinite(n) && n > 0 ? n : 0
+  }
+
+  resolvedPopAmount() {
+    if (this.popAmountValue > 0) return this.popAmountValue
+    const raw = this.element.dataset.popAmount || "0"
+    const n = Number.parseFloat(raw)
+    return Number.isFinite(n) && n > 0 ? n : 0
+  }
+
+  floatHabitPop(host, amount) {
+    const chip = document.createElement("span")
+    chip.className = "lp-habit-pop"
+    chip.setAttribute("aria-hidden", "true")
+    const label = Number.isInteger(amount) ? amount.toLocaleString() : String(amount)
+    chip.textContent = `+${label}`
+    host.appendChild(chip)
+    window.setTimeout(() => chip.remove(), 900)
   }
 
   bounce(host) {

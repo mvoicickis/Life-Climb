@@ -12,7 +12,7 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     @user.habits.destroy_all
     @habit = @user.habits.create!(
       name: "Push-Ups",
-      unit: "times",
+      unit: "reps",
       points: 5,
       frequency: "daily",
       active: true,
@@ -23,15 +23,32 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "quantity habit with unit times shows number input not Win-only" do
+  test "growth quantity habit shows dual adaptive quick-adds and exact amount in menu" do
     get dashboard_path
     assert_response :success
+
+    assert_equal [ 5, 15 ], @habit.quick_add_steps
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 2
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__qb.is-big", count: 1
+    assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 5 reps"
+    assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 15 reps"
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__segs i", count: 12
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__sig", count: 1
 
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty .lp-dash-tcard__amount", count: 1
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty", count: 1
     assert_select "#today_habit_#{@habit.id} form[action=?]",
                   completions_path(habit_id: @habit.id),
                   count: 0
+  end
+
+  test "standard quantity habit shows a single +1 quick-add" do
+    @habit.update!(stat_type: "standard", goal: nil)
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 1
+    assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 1 reps"
   end
 
   test "unlogged quantity habit renders blank required amount input with mode add" do
@@ -60,11 +77,25 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__pct", text: "28%"
   end
 
-  test "plus one form posts mode add only" do
+  test "plus forms post mode add only" do
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 1
-    # button_to wraps a form; ensure no set mode on the quick-add path
-    assert_select "#today_habit_#{@habit.id} form input[name=mode][value=add]", minimum: 1
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 2
+    assert_select "#today_habit_#{@habit.id} form input[name=mode][value=add]", minimum: 2
+  end
+
+  test "failed today add shows unmistakable alert after optimistic pop path" do
+    post daily_logs_path(habit_id: @habit.id),
+         params: {
+           mode: "add",
+           return_to: "today",
+           daily_log: { amount: "" }
+         }
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-flash--alert[role=alert][data-lp-log-failed=true]",
+                  text: /That log didn’t save/
+    assert_match(/Enter how many to add/, response.body)
   end
 end
