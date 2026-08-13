@@ -515,6 +515,7 @@ ru:
     timeline:
       title: "Лента сегодня"
       unscheduled: "Без времени"
+      done_today: "Done today"
       unscheduled_label: "Время не задано"
       set_time: "Задать время"
       save_time: "Сохранить время"

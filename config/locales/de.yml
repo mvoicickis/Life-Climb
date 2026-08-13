@@ -515,6 +515,7 @@ de:
     timeline:
       title: "Zeitlinie von heute"
       unscheduled: "Ohne Zeit"
+      done_today: "Done today"
       unscheduled_label: "Keine Zeit gesetzt"
       set_time: "Zeit setzen"
       save_time: "Zeit speichern"

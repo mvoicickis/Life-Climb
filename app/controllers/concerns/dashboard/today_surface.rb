@@ -65,7 +65,7 @@ module Dashboard
         @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
       end
 
-      @timeline = Today::Timeline.build(user: current_user, todos: @daily_todos)
+      @timeline = Today::Timeline.build(user: current_user, todos: @open_todos)
       @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
     end
 

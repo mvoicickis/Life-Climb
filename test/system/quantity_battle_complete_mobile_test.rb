@@ -40,7 +40,9 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
       click_button "Log it"
     end
 
-    assert_selector ".lp-dash-tcard.is-done[data-todo-id='#{@todo.id}']", wait: 5
+    assert_selector ".lp-dash-done-fold", wait: 5
+    open_done_fold!
+    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-done[data-todo-id='#{@todo.id}']", wait: 5
 
     @project.reload
     @todo.reload
@@ -73,9 +75,19 @@ class QuantityBattleCompleteMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-timeline", wait: 5
 
     find("button.lp-dash-tcard__win[aria-label='I did it Ship PR']").click
-    assert_selector ".lp-dash-tcard.is-done[data-todo-id='#{plain_todo.id}']", wait: 5
+    assert_selector ".lp-dash-done-fold", wait: 5
+    open_done_fold!
+    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-done[data-todo-id='#{plain_todo.id}']", wait: 5
     assert plain_todo.reload.completed?
     assert_equal BigDecimal("7"), @project.reload.current_amount
     assert_nil StrategyQuantityLog.find_by(daily_todo_id: plain_todo.id)
+  end
+
+  private
+
+  def open_done_fold!
+    return if page.has_css?(".lp-dash-done-fold[open]", wait: 0)
+
+    find(".lp-dash-done-fold__summary").click
   end
 end
