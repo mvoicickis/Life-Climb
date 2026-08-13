@@ -50,4 +50,42 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg"
   end
+
+  test "BattleWins after Today undo awards nothing" do
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: @battle.id)
+
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
+    assert_equal GameRules::BATTLE_TODO_LP, LifePointLedger.where(source: todo).where("amount > 0").sum(:amount)
+
+    Battles::UncompleteTodo.call(todo: todo, user: @user)
+    assert_nil todo.reload.completed_at
+    refute @battle.reload.completed?
+
+    assert_no_difference -> { @user.reload.life_points } do
+      post battle_win_path(@battle)
+    end
+
+    assert @battle.reload.completed?
+    assert_equal 0, flash[:ap_gained].to_i
+    assert_equal 0, LifePointLedger.where(source: @battle).where("amount > 0").count
+    assert_equal 1, LifePointLedger.where(source: todo).where("amount > 0").count
+  end
+
+  test "BattleWins after mountain win does not double via Completing linked todo" do
+    post battle_win_path(@battle)
+    assert @battle.reload.completed?
+
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day.find_by(strategy_goal_id: @battle.id)
+    skip "no linked daily todo" if todo.blank?
+
+    Battles::UncompleteTodo.call(todo: todo, user: @user) if todo.completed?
+    @battle.reopen! if @battle.reload.completed?
+    todo.update!(completed_at: nil) if todo.reload.completed?
+
+    assert_no_difference -> { @user.reload.life_points } do
+      Battles::CompleteTodo.call(todo: todo.reload, user: @user, session: {})
+    end
+  end
 end

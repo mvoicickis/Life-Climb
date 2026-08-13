@@ -157,10 +157,10 @@ class PracticeTasksController < ApplicationController
 
     # Checklist quantity (if any) already logged on opted-in objectives — no second prompt.
     result = Battles::CompleteTodo.call(todo: todo, user: current_user, session: session)
-    flash[:ap_gained] = todo.lp_reward.to_i
+    flash[:ap_gained] = result.awarded
     flash[:battle_celebrate] = true
     maybe_milestone_climb_reward!(
-      awarded: todo.lp_reward.to_i,
+      awarded: result.awarded,
       streak: result.streak,
       personal_best: result.personal_best_new
     )

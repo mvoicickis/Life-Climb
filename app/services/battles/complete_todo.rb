@@ -3,7 +3,7 @@
 module Battles
   # Completes one DailyTodo the same way Today's checkbox does (AP, juice, day finish).
   class CompleteTodo
-    Result = Struct.new(:streak, :personal_best_new, keyword_init: true)
+    Result = Struct.new(:streak, :personal_best_new, :awarded, keyword_init: true)
 
     def self.call(todo:, user:, session:, amount: nil)
       new(todo: todo, user: user, session: session, amount: amount).call
@@ -27,6 +27,9 @@ module Battles
         raise ArgumentError, "Amount required" unless valid_amount?(@amount)
       end
 
+      already_paid = WinAlreadyPaid.for_todo?(@todo)
+      awarded = already_paid ? 0 : @todo.lp_reward.to_i
+
       ActiveRecord::Base.transaction do
         if project
           Strategy::Quantity::Log.call(
@@ -39,24 +42,26 @@ module Battles
         end
         @todo.update!(completed_at: Time.current)
         finish_linked_strategy_goal!
-        LifePoints::Award.call(
-          user: @user,
-          amount: @todo.lp_reward,
-          reason: I18n.t("battle.lp_reason", title: @todo.title),
-          source: @todo
-        )
+        unless already_paid
+          LifePoints::Award.call(
+            user: @user,
+            amount: @todo.lp_reward,
+            reason: I18n.t("battle.lp_reason", title: @todo.title),
+            source: @todo
+          )
+        end
         Gap::ApplyProgress.call(journey: @user.primary_focused_journey, tier: :todo)
       end
 
       streak = Climb::Streak.touch!(user: @user)
-      pb = Climb::PersonalBest.record!(user: @user, awarded: @todo.lp_reward.to_i)
+      pb = Climb::PersonalBest.record!(user: @user, awarded: awarded)
       Strategy::ProjectCheckQueue.enqueue(
         session: @session,
         project_ids: Strategy::ProjectCheckQueue.from_battles([ day ].compact)
       )
       Today::OvershootBonus.sync!(user: @user)
 
-      Result.new(streak: streak, personal_best_new: pb.new_record)
+      Result.new(streak: streak, personal_best_new: pb.new_record, awarded: awarded)
     end
 
     private

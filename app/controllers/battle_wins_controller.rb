@@ -11,23 +11,28 @@ class BattleWinsController < ApplicationController
       redirect_to mountain_return_path(journey, battle), status: :see_other and return
     end
 
+    todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+    already_paid = Battles::WinAlreadyPaid.for_battle?(battle, todo: todo)
+    awarded = already_paid ? 0 : amount
+
     ActiveRecord::Base.transaction do
       battle.complete!
-      todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
       if todo && !todo.completed?
         todo.update!(completed_at: Time.current)
       end
-      LifePoints::Award.call(
-        user: current_user,
-        amount: amount,
-        reason: I18n.t("battle.lp_reason", title: battle.title),
-        source: battle
-      )
+      unless already_paid
+        LifePoints::Award.call(
+          user: current_user,
+          amount: amount,
+          reason: I18n.t("battle.lp_reason", title: battle.title),
+          source: battle
+        )
+      end
       Gap::ApplyProgress.call(journey: journey, tier: :todo) if journey
     end
 
     streak = Climb::Streak.touch!(user: current_user)
-    pb = Climb::PersonalBest.record!(user: current_user, awarded: amount)
+    pb = Climb::PersonalBest.record!(user: current_user, awarded: awarded)
     Strategy::ProjectCheckQueue.enqueue(
       session: session,
       project_ids: Strategy::ProjectCheckQueue.from_battles([ battle ])
@@ -35,15 +40,15 @@ class BattleWinsController < ApplicationController
     Journeys::SyncClimbFromToday.call(user: current_user) if journey
     Today::OvershootBonus.sync!(user: current_user)
 
-    flash[:ap_gained] = amount
+    flash[:ap_gained] = awarded
     flash[:battle_celebrate] = true
     # Ordinary Mountain battle wins stay light; Climb Reward is for milestones only.
-    if pb.new_record || streak.earned_freeze
+    if awarded.positive? && (pb.new_record || streak.earned_freeze)
       flash[:climb_boss] = true
       goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
       flash[:climb_reward] = Climb::Reward.for_battle(
         user: current_user,
-        awarded: amount,
+        awarded: awarded,
         goal: goal,
         streak_days: streak.days,
         personal_best: pb.new_record,
@@ -53,7 +58,7 @@ class BattleWinsController < ApplicationController
     end
 
     redirect_to mountain_return_path(journey, battle),
-                notice: I18n.t("battle.completed_notice", lp: amount),
+                notice: I18n.t("battle.completed_notice", lp: awarded),
                 status: :see_other
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
