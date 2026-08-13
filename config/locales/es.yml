@@ -515,6 +515,7 @@ es:
     timeline:
       title: "Línea de tiempo de hoy"
       unscheduled: "Sin hora"
+      done_today: "Done today"
       unscheduled_label: "Sin hora fijada"
       set_time: "Fijar hora"
       save_time: "Guardar hora"

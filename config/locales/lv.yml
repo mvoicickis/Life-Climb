@@ -515,6 +515,7 @@ lv:
     timeline:
       title: "Šodienas laika līnija"
       unscheduled: "Bez laika"
+      done_today: "Done today"
       unscheduled_label: "Laiks nav iestatīts"
       set_time: "Iestatīt laiku"
       save_time: "Saglabāt laiku"

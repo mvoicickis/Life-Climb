@@ -77,6 +77,7 @@ en:
       log: "Log it"
       unscheduled: "Unscheduled"
       unscheduled_label: "No time set"
+      done_today: "Done today"
       timechip_add: "Add a time so it counts"
       timechip_set: "%{range} · counts today"
       more_actions: "More actions"

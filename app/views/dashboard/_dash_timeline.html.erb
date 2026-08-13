@@ -1,9 +1,13 @@
-<%# locals: timeline, open_count, total_count, upcoming, handoff %>
+<%# locals: timeline, open_count, total_count, upcoming, handoff, done_todos %>
 <%
   timeline = local_assigns.fetch(:timeline)
   upcoming = local_assigns[:upcoming]
   handoff = local_assigns[:handoff] || @strategy_handoff
-  empty = timeline.segments.empty? && timeline.unscheduled.empty?
+  done_todos = Array(local_assigns.fetch(:done_todos) { @done_todos || [] })
+  open_empty = timeline.segments.empty? && timeline.unscheduled.empty?
+  empty = open_empty && done_todos.empty?
+  # Collapsed when work remains; expanded when the day is all wins (avoids an empty-looking page).
+  done_fold_open = open_empty && done_todos.any?
 %>
 
 <section class="lp-dash-timeline"
@@ -30,48 +34,65 @@
       <% end %>
     </div>
   <% else %>
-    <div class="lp-dash-timeline__rail" data-today-timeline-target="rail">
-      <div class="lp-dash-now" data-today-timeline-target="now" aria-hidden="true">
-        <span class="lp-dash-now__dot"></span>
-        <span class="lp-dash-now__line"></span>
+    <% unless open_empty %>
+      <div class="lp-dash-timeline__rail" data-today-timeline-target="rail">
+        <div class="lp-dash-now" data-today-timeline-target="now" aria-hidden="true">
+          <span class="lp-dash-now__dot"></span>
+          <span class="lp-dash-now__line"></span>
+        </div>
+
+        <% timeline.segments.each do |segment| %>
+          <% if segment.type == :free %>
+            <div class="lp-dash-timeline__free"
+                 data-today-timeline-target="segment"
+                 data-segment-index="<%= segment.index %>"
+                 data-starts-at="<%= segment.starts_at&.iso8601 %>"
+                 data-ends-at="<%= segment.ends_at&.iso8601 %>">
+              <% hours = segment.minutes / 60 %>
+              <% mins = segment.minutes % 60 %>
+              <% if hours.positive? && mins.zero? %>
+                <%= t("dash.timeline.hours_free", count: hours) %>
+              <% elsif hours.positive? %>
+                <%= t("dash.timeline.hours_minutes_free", hours: hours, minutes: mins) %>
+              <% else %>
+                <%= t("dash.timeline.minutes_free", count: mins) %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="lp-dash-timeline__item"
+                 data-today-timeline-target="segment"
+                 data-segment-index="<%= segment.index %>"
+                 data-starts-at="<%= segment.starts_at&.iso8601 %>"
+                 data-ends-at="<%= segment.ends_at&.iso8601 %>">
+              <%= render "dashboard/dash_timeline_card", todo: segment.todo %>
+            </div>
+          <% end %>
+        <% end %>
       </div>
 
-      <% timeline.segments.each do |segment| %>
-        <% if segment.type == :free %>
-          <div class="lp-dash-timeline__free"
-               data-today-timeline-target="segment"
-               data-segment-index="<%= segment.index %>"
-               data-starts-at="<%= segment.starts_at&.iso8601 %>"
-               data-ends-at="<%= segment.ends_at&.iso8601 %>">
-            <% hours = segment.minutes / 60 %>
-            <% mins = segment.minutes % 60 %>
-            <% if hours.positive? && mins.zero? %>
-              <%= t("dash.timeline.hours_free", count: hours) %>
-            <% elsif hours.positive? %>
-              <%= t("dash.timeline.hours_minutes_free", hours: hours, minutes: mins) %>
-            <% else %>
-              <%= t("dash.timeline.minutes_free", count: mins) %>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="lp-dash-timeline__item"
-               data-today-timeline-target="segment"
-               data-segment-index="<%= segment.index %>"
-               data-starts-at="<%= segment.starts_at&.iso8601 %>"
-               data-ends-at="<%= segment.ends_at&.iso8601 %>">
-            <%= render "dashboard/dash_timeline_card", todo: segment.todo %>
-          </div>
-        <% end %>
+      <% if timeline.unscheduled.any? %>
+        <div class="lp-dash-timeline__unscheduled" aria-label="<%= t('dash.timeline.unscheduled') %>">
+          <h3 class="lp-dash-timeline__unscheduled-title"><%= t("dash.timeline.unscheduled") %></h3>
+          <% timeline.unscheduled.each do |todo| %>
+            <%= render "dashboard/dash_timeline_card", todo: todo %>
+          <% end %>
+        </div>
       <% end %>
-    </div>
+    <% end %>
 
-    <% if timeline.unscheduled.any? %>
-      <div class="lp-dash-timeline__unscheduled" aria-label="<%= t('dash.timeline.unscheduled') %>">
-        <h3 class="lp-dash-timeline__unscheduled-title"><%= t("dash.timeline.unscheduled") %></h3>
-        <% timeline.unscheduled.each do |todo| %>
-          <%= render "dashboard/dash_timeline_card", todo: todo %>
-        <% end %>
-      </div>
+    <% if done_todos.any? %>
+      <details class="lp-dash-done-fold"<%= " open".html_safe if done_fold_open %>>
+        <summary class="lp-dash-done-fold__summary">
+          <span class="lp-dash-done-fold__label"><%= t("dash.timeline.done_today") %></span>
+          <em class="lp-dash-done-fold__count"><%= done_todos.size %></em>
+          <span class="lp-dash-done-fold__chev" aria-hidden="true"></span>
+        </summary>
+        <div class="lp-dash-done-fold__list">
+          <% done_todos.each do |todo| %>
+            <%= render "dashboard/dash_timeline_card", todo: todo %>
+          <% end %>
+        </div>
+      </details>
     <% end %>
   <% end %>
 </section>

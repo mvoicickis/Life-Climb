@@ -59,7 +59,11 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
       find("button.lp-dash-check[aria-label='Complete Review notes']").click
     end
     # Last step finishes the battle — full redirect for celebrate.
-    assert_selector ".lp-dash-tcard.is-quest.is-done .lp-dash-tcard__title", text: /Volume 0/i, wait: 5
+    assert_selector ".lp-dash-done-fold, .lp-dash-tcard.is-quest.is-done", wait: 10
+    visit dashboard_path unless page.has_css?(".lp-dash-done-fold", wait: 0)
+    assert_selector ".lp-dash-done-fold", wait: 5
+    find(".lp-dash-done-fold__summary").click unless page.has_css?(".lp-dash-done-fold[open]", wait: 0)
+    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-quest.is-done .lp-dash-tcard__title", text: /Volume 0/i, wait: 5
     assert @first.reload.completed?
     assert @second.reload.completed?
     assert @host.reload.completed?

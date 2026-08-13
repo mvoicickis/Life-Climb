@@ -59,7 +59,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     post complete_daily_todo_path(todo)
     follow_redirect!
 
-    assert_select ".lp-dash-tcard[data-todo-id=?] form[action=?]", todo.id, complete_daily_todo_path(todo)
+    assert_select ".lp-dash-done-fold .lp-dash-tcard[data-todo-id=?] form[action=?]", todo.id, complete_daily_todo_path(todo)
     assert_select ".lp-dash-tcard[data-todo-id=?] form[data-juicy-feedback-suppress-reload-celebrate-value='true']",
                   todo.id, count: 0
   end

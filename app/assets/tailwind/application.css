@@ -5336,6 +5336,118 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-weight: 800;
 }
 
+/* Completed battles fold — RPG summary line; rows stay Undo-capable but quiet */
+.lp-dash-done-fold {
+  margin-top: 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: linear-gradient(180deg, rgba(18, 24, 33, 0.55), rgba(14, 20, 27, 0.35));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.lp-dash-done-fold__summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--lp-tap);
+  padding: 0 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.lp-dash-done-fold__summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-dash-done-fold__label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-dash-done-fold__count {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--lp-muted);
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 6px;
+  padding: 0.12rem 0.45rem;
+}
+
+.lp-dash-done-fold__chev {
+  margin-left: auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid var(--lp-muted);
+  border-bottom: 2px solid var(--lp-muted);
+  transform: rotate(45deg);
+  opacity: 0.7;
+  transition: transform 120ms ease;
+}
+
+.lp-dash-done-fold[open] .lp-dash-done-fold__chev {
+  transform: rotate(-135deg);
+  margin-top: 0.2rem;
+}
+
+.lp-dash-done-fold__list {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0 0.55rem 0.65rem;
+}
+
+.lp-dash-done-fold .lp-dash-tcard {
+  opacity: 0.62;
+  border-left-color: rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 32, 0.45);
+}
+
+.lp-dash-done-fold .lp-dash-tcard__copy {
+  padding: 0.45rem 0.7rem;
+  gap: 0.25rem;
+}
+
+.lp-dash-done-fold .lp-dash-tcard__title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-dash-done-fold .lp-dash-tcard__ap {
+  font-size: 0.68rem;
+}
+
+.lp-dash-done-fold .lp-dash-tcard__timechip,
+.lp-dash-done-fold .lp-dash-quest-next {
+  display: none;
+}
+
+.lp-dash-done-fold .lp-dash-tcard__actions {
+  padding: 0.35rem 0.55rem;
+}
+
+.lp-dash-done-fold .lp-dash-tcard__win.is-done {
+  min-height: var(--lp-tap);
+  min-width: var(--lp-tap);
+  font-size: 0.78rem;
+  opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash-done-fold__chev {
+    transition: none;
+  }
+}
+
 .lp-dash-timeline__empty {
   padding: 0.85rem 0.2rem;
   color: var(--lp-muted);
