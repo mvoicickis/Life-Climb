@@ -43,7 +43,7 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
   end
 
   test "standard quantity habit shows a single +1 quick-add" do
-    @habit.update!(stat_type: "standard", goal: nil)
+    @habit.update!(stat_type: "standard", goal: nil, min_value: 10, max_value: 20)
     get dashboard_path
     assert_response :success
 
