@@ -16650,6 +16650,10 @@ button.lp-strategy-overflow {
   background: linear-gradient(180deg, var(--lp-elev-slot), var(--lp-slot));
   border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: inset 0 1px 0 var(--lp-edge), 0 2px 8px rgba(0, 0, 0, 0.4);
+  /* Slots stay dark RPG chrome even on the light theme — force readable ink. */
+  color: #f3f6f8;
+  --lp-ink: #f3f6f8;
+  --lp-muted: #9aa6b2;
 }
 /* Absolute habit sheet opens past the card edge — without this it clips to a grey slab
    that covers the title/segs and hides the menu items (#311 regression). */
@@ -16887,11 +16891,16 @@ button.lp-strategy-overflow {
   z-index: 20;
   width: min(16rem, calc(100vw - 2rem));
   max-width: 16rem;
-  padding: 0.75rem;
+  max-height: min(70vh, 22rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.7rem;
   border-radius: 0.85rem;
   border: 1px solid rgba(148, 163, 184, 0.28);
-  background: linear-gradient(180deg, var(--lp-elev-slot), var(--lp-slot));
-  color: var(--lp-ink);
+  background: linear-gradient(180deg, #1a2330, #121821);
+  color: #f3f6f8;
+  --lp-ink: #f3f6f8;
+  --lp-muted: #9aa6b2;
   box-shadow:
     inset 0 1px 0 var(--lp-edge),
     0 14px 32px rgba(0, 0, 0, 0.55);
@@ -16900,6 +16909,7 @@ button.lp-strategy-overflow {
   margin: 0 0 0.45rem;
   font-size: 0.85rem;
   font-weight: 800;
+  color: #f3f6f8;
 }
 .lp-dash-habit__sheet-steps {
   margin: 0 0 0.55rem;

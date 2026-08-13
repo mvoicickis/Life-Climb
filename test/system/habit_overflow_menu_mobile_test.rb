@@ -53,6 +53,25 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
       assert title.visible?, "habit title must stay visible while menu is open @#{width}"
       assert segs.visible?, "progress segs must stay visible while menu is open @#{width}"
 
+      contrast = page.evaluate_script(<<~JS)
+        (() => {
+          const title = document.querySelector("#today_habit_#{@habit.id} .lp-dash-tcard__title");
+          const label = document.querySelector("#today_habit_#{@habit.id} .lp-dash-habit__sheet-label");
+          const parse = (c) => {
+            const m = String(c).match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/);
+            if (!m) return null;
+            const [r, g, b] = m.slice(1).map(Number);
+            return (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+          };
+          return {
+            title: parse(getComputedStyle(title).color),
+            label: parse(getComputedStyle(label).color)
+          };
+        })()
+      JS
+      assert_operator contrast["title"], :>=, 0.55, "habit title must stay light-on-dark @#{width}"
+      assert_operator contrast["label"], :>=, 0.35, "sheet labels must stay readable on dark sheet @#{width}"
+
       overflow = page.evaluate_script(<<~JS)
         getComputedStyle(document.getElementById("today_habit_#{@habit.id}")).overflow
       JS
