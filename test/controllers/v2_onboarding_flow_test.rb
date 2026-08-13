@@ -341,6 +341,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     # After first climb the Mountain HUD avatar uses the character image.
     post first_climbs_path, params: {
       life_journey_id: journey.id,
+      goal_id: user.strategy_goals.for_kind("goal").roots.first.id,
       plan_title: "Build trust",
       today_action: "Call one friend"
     }

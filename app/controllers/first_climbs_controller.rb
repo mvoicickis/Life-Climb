@@ -9,7 +9,9 @@ class FirstClimbsController < ApplicationController
       user: current_user,
       journey: journey,
       plan_title: params.require(:plan_title),
-      today_action: params.require(:today_action)
+      today_action: params.require(:today_action),
+      goal: find_destination_goal(journey),
+      goal_title: params[:title].to_s.strip.presence
     )
 
     if result.created?
@@ -38,5 +40,15 @@ class FirstClimbsController < ApplicationController
 
   def journey_for_redirect
     current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+  end
+
+  def find_destination_goal(journey)
+    id = params[:goal_id].presence
+    return if id.blank?
+
+    current_user.strategy_goals.for_kind("goal").roots.find_by(
+      id: id,
+      life_journey_id: journey.id
+    )
   end
 end

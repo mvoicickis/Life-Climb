@@ -16411,6 +16411,71 @@ button.lp-strategy-overflow {
   box-shadow: 0 10px 22px rgba(87, 211, 91, 0.28);
 }
 
+.lp-destination-coach:not([open]) {
+  display: none;
+}
+.lp-destination-coach {
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f3f6f8;
+}
+.lp-destination-coach::backdrop {
+  background: rgba(3, 6, 9, 0.72);
+}
+.lp-destination-coach .lp-first-climb-shell {
+  min-height: 100dvh;
+  width: 100%;
+}
+.lp-destination-coach .lp-first-climb {
+  position: relative;
+}
+.lp-first-climb__cancel {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.75rem;
+  margin: 0;
+  padding: 0.25rem 0.15rem;
+  border: 0;
+  background: transparent;
+  color: #9aa6b2;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lp-first-climb__cancel:hover,
+.lp-first-climb__cancel:focus-visible {
+  color: #f3f6f8;
+  outline: none;
+}
+.lp-first-climb__nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-top: 0.35rem;
+}
+.lp-first-climb__nav .lp-first-climb__cta {
+  flex: 1;
+  margin-top: 0.2rem;
+}
+.lp-first-climb__back {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
 .lp-dash-route.is-first-climb {
   padding: 0;
   border: 0;
@@ -19743,6 +19808,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   margin: 0 auto;
   box-sizing: border-box;
   overflow: visible;
+  touch-action: pan-y pinch-zoom;
 }
 .lp-rpg-destination-carousel__active.is-menu-open {
   z-index: 6;
@@ -20590,6 +20656,32 @@ a.lp-rpg-add.is-guide-entry.is-path {
   transform: scale(1.15);
 }
 
+.lp-rpg-destination-add {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(18, 24, 33, 0.35);
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.lp-rpg-destination-add.is-solo {
+  margin: 0.4rem auto 0.1rem;
+}
+.lp-rpg-destination-add:hover,
+.lp-rpg-destination-add:focus-visible {
+  border-color: rgba(87, 211, 91, 0.5);
+  color: #eafff0;
+  outline: none;
+}
+
 .lp-rpg-destination-swipe-hint {
   margin: 0 0 0.35rem;
   text-align: center;
@@ -20601,6 +20693,9 @@ a.lp-rpg-add.is-guide-entry.is-path {
 }
 
 .lp-rpg-destination-carousel {
+  touch-action: pan-y;
+}
+.lp-rpg-destination-carousel__stage {
   touch-action: pan-y;
 }
 
@@ -22345,16 +22440,14 @@ a.lp-rpg-practice-cat {
   .lp-rpg.is-focus-phase .lp-rpg-summit__kicker {
     display: none;
   }
-  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek,
-  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__nav {
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__peek {
     display: none;
-  }
-  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel {
-    grid-template-columns: minmax(0, 1fr);
   }
   /*
    * Peeks are display:none here — force stage to one column even for .is-multi,
    * or auto-placement parks .active in the leftover 14% track (edge-clipped title).
+   * Dots stay visible so the DESTINO pager still works on short phones.
+   * Arrows stay on the 3-column carousel grid when width >= 360px.
    */
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__stage,
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel.is-multi .lp-rpg-destination-carousel__stage {
@@ -22373,9 +22466,6 @@ a.lp-rpg-practice-cat {
     font-size: clamp(1.25rem, 4.8vw + 0.4rem, 2.1rem);
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__icon {
-    display: none;
-  }
-  .lp-rpg.is-focus-phase .lp-rpg-destination-dots {
     display: none;
   }
   .lp-rpg.is-focus-phase .lp-rpg-destination__new {
@@ -22506,6 +22596,17 @@ a.lp-rpg-practice-cat {
   }
   .lp-rpg.is-focus-phase .lp-rpg-sheet.is-dominant .lp-rpg-camp-card__title {
     font-size: 0.8rem;
+  }
+}
+
+/* Narrow phones: dots are the pager; arrows need ~360px so the title can breathe. */
+@media (max-width: 359.98px) {
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__nav {
+    display: none;
+  }
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel,
+  .lp-rpg.is-focus-phase .lp-rpg-destination-carousel.is-multi {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

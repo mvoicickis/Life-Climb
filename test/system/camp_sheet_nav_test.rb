@@ -70,7 +70,13 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']", visible: :all, wait: 3
     assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']"
 
-    find(".lp-climb-path__node", text: /Get first 100 users/i, wait: 3)
+    # The previous node can sit above the trail viewport (opacity 0 until IO).
+    page.execute_script(<<~JS)
+      const node = [...document.querySelectorAll(".lp-climb-path__node")]
+        .find((el) => /Get first 100 users/i.test(el.textContent || ""));
+      node?.scrollIntoView({ block: "center" });
+    JS
+    find(".lp-climb-path__node", text: /Get first 100 users/i, wait: 5)
       .find("a.lp-climb-path__link").click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
     assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5

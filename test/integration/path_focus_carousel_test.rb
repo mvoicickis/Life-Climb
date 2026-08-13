@@ -90,6 +90,6 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-destination-dots__dot[href=?]",
                   life_journey_path(@journey, goal_id: @other.id)
     assert_select ".lp-rpg-destination-swipe-hint", text: /swipe to change destination/i
-    assert_select ".lp-rpg-destination-carousel[data-action*='destination-switcher#swipeStart']"
+    assert_select ".lp-rpg-destination[data-action*='destination-switcher#swipeStart']"
   end
 end

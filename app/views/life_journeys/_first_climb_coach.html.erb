@@ -26,6 +26,7 @@
           action: "submit->first-climb#disable"
         } do %>
     <%= hidden_field_tag :life_journey_id, journey.id %>
+    <%= hidden_field_tag :goal_id, goal.id %>
 
     <label class="lp-first-climb__label" for="first-climb-plan">
       <span class="lp-first-climb__step">1</span>

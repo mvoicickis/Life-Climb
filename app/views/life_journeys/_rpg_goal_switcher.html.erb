@@ -22,11 +22,12 @@
   <div class="lp-rpg-summit">
     <p class="lp-rpg-summit__kicker"><%= t("strategy.rpg.destination") %></p>
 
-    <div class="lp-rpg-destination" data-controller="destination-switcher">
+    <div class="lp-rpg-destination"
+         data-controller="destination-switcher"
+         data-action="pointerdown->destination-switcher#swipeStart pointerup->destination-switcher#swipeEnd pointercancel->destination-switcher#swipeCancel">
       <% if root_goals.any? && goal %>
         <nav class="lp-rpg-destination-carousel <%= 'is-multi' if multi %>"
-             aria-label="<%= t('strategy.rpg.destinations') %>"
-             data-action="pointerdown->destination-switcher#swipeStart pointerup->destination-switcher#swipeEnd pointercancel->destination-switcher#swipeCancel">
+             aria-label="<%= t('strategy.rpg.destinations') %>">
           <div class="lp-rpg-destination-carousel__nav is-prev">
             <% if prev_goal %>
               <%= link_to life_journey_path(@journey, goal_id: prev_goal.id),
@@ -166,7 +167,7 @@
 
         <% if multi %>
           <div class="lp-rpg-destination-dots" role="tablist" aria-label="<%= t('strategy.rpg.destinations') %>">
-            <% root_goals.each_with_index do |g, i| %>
+            <% root_goals.each do |g| %>
               <% active = goal.id == g.id %>
               <%= link_to life_journey_path(@journey, goal_id: g.id),
                     class: "lp-rpg-destination-dots__dot #{'is-active' if active}",
@@ -178,8 +179,19 @@
                 <span class="lp-rpg-destination-dots__pip" aria-hidden="true"></span>
               <% end %>
             <% end %>
+            <button type="button"
+                    class="lp-rpg-destination-add"
+                    data-action="click->destination-switcher#openCreate"
+                    aria-haspopup="dialog"
+                    aria-label="<%= t('strategy.rpg.new_destination') %>">+</button>
           </div>
           <p class="lp-rpg-destination-swipe-hint"><%= t("strategy.rpg.destination_swipe_hint") %></p>
+        <% else %>
+          <button type="button"
+                  class="lp-rpg-destination-add is-solo"
+                  data-action="click->destination-switcher#openCreate"
+                  aria-haspopup="dialog"
+                  aria-label="<%= t('strategy.rpg.new_destination') %>">+</button>
         <% end %>
       <% else %>
         <button type="button"
@@ -195,44 +207,7 @@
         <p class="lp-rpg-summit__tagline"><%= t("strategy.promise") %></p>
       <% end %>
 
-      <dialog class="lp-strategy-sheet is-goal"
-              id="destination-create"
-              data-destination-switcher-target="createDialog">
-        <div class="lp-strategy-sheet__panel">
-          <header class="lp-strategy-sheet__head">
-            <p class="lp-strategy-sheet__kind"><%= t("strategy.horizons.goal") %></p>
-            <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.create_destination_title") %></h2>
-            <button type="button"
-                    class="lp-strategy-sheet__close"
-                    data-action="click->destination-switcher#closeCreate"
-                    aria-label="<%= t('strategy.sheet.close') %>">×</button>
-          </header>
-          <div class="lp-strategy-sheet__actions">
-            <div class="lp-strategy-sheet__edit">
-              <%= form_with url: strategy_goals_path, method: :post,
-                    class: "lp-strategy-sheet__form",
-                    data: { turbo: false } do %>
-                <%= hidden_field_tag :life_area_id, @journey.life_area_id %>
-                <%= hidden_field_tag :life_journey_id, @journey.id %>
-                <%= hidden_field_tag :horizon, "goal" %>
-                <%= text_field_tag :title, nil,
-                      required: true,
-                      maxlength: 120,
-                      id: "destination-create-title",
-                      class: "lp-rpg-input",
-                      autocomplete: "off",
-                      placeholder: t("strategy.goal_placeholder"),
-                      aria: { label: t("strategy.rpg.create_destination_title") } %>
-                <div class="lp-strategy-sheet__footer">
-                  <%= submit_tag t("strategy.rpg.create_destination_cta"),
-                        class: "lp-strategy-sheet__btn is-save",
-                        data: { destination_switcher_target: "saveButton" } %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </dialog>
+      <%= render "life_journeys/destination_coach", journey: @journey %>
     </div>
   </div>
 

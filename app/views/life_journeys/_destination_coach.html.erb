@@ -1,0 +1,131 @@
+<%# New-destination coach — 3 steps, one visible. locals: journey %>
+<% journey = local_assigns.fetch(:journey)
+   category = Onboarding::Categories.id_for_journey(journey)
+   plan_examples = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: []))
+   action_examples = Array(I18n.t("strategy.first_climb.examples.#{category}.action", default: [])) %>
+
+<dialog id="destination-coach"
+        class="lp-destination-coach"
+        data-controller="destination-coach"
+        data-destination-switcher-target="createDialog"
+        aria-label="<%= t('strategy.rpg.destination_coach.title') %>">
+  <div class="lp-first-climb-shell">
+    <div class="lp-first-climb-shell__sky" aria-hidden="true"></div>
+    <section class="lp-first-climb">
+      <button type="button"
+              class="lp-first-climb__cancel"
+              data-action="click->destination-switcher#closeCreate"
+              aria-label="<%= t('strategy.rpg.destination_coach.cancel') %>"><%= t("strategy.rpg.destination_coach.cancel") %></button>
+      <p class="lp-first-climb__kicker"><%= t("strategy.rpg.destination_coach.kicker") %></p>
+      <h2 class="lp-first-climb__title"><%= t("strategy.rpg.destination_coach.title") %></h2>
+      <div class="lp-first-climb__climber" aria-hidden="true">
+        <%= companion_image_tag class: "lp-first-climb__climber-img", alt: "" %>
+      </div>
+      <p class="lp-first-climb__lead"><%= t("strategy.rpg.destination_coach.lead") %></p>
+
+      <%= form_with url: first_climbs_path,
+            method: :post,
+            class: "lp-first-climb__form",
+            data: {
+              turbo: false,
+              controller: "first-climb",
+              action: "submit->first-climb#disable"
+            } do %>
+        <%= hidden_field_tag :life_journey_id, journey.id %>
+
+        <div data-destination-coach-target="panel" data-destination-coach-step="1">
+          <label class="lp-first-climb__label" for="destination-coach-title">
+            <span class="lp-first-climb__step">1</span>
+            <%= t("strategy.rpg.destination_coach.name_label") %>
+          </label>
+          <%= text_field_tag :title, nil,
+                id: "destination-coach-title",
+                required: true,
+                maxlength: 120,
+                autocomplete: "off",
+                class: "lp-input w-full lp-first-climb__input",
+                placeholder: t("strategy.rpg.destination_coach.name_placeholder"),
+                aria: { label: t("strategy.rpg.destination_coach.name_label") } %>
+          <p class="lp-first-climb__hint"><%= t("strategy.rpg.destination_coach.name_hint") %></p>
+        </div>
+
+        <div data-destination-coach-target="panel" data-destination-coach-step="2" hidden>
+          <label class="lp-first-climb__label" for="destination-coach-plan">
+            <span class="lp-first-climb__step">2</span>
+            <%= t("strategy.first_climb.plan_label") %>
+          </label>
+          <%= text_field_tag :plan_title, nil,
+                id: "destination-coach-plan",
+                required: true,
+                maxlength: 120,
+                autocomplete: "off",
+                class: "lp-input w-full lp-first-climb__input",
+                data: { first_climb_target: "planInput" },
+                placeholder: plan_examples.first.presence || t("strategy.first_climb.plan_placeholder") %>
+          <% if plan_examples.any? %>
+            <div class="lp-first-climb__chips" role="group" aria-label="<%= t('strategy.first_climb.plan_examples_label') %>">
+              <% plan_examples.each do |example| %>
+                <button type="button"
+                        class="lp-first-climb__chip"
+                        data-action="first-climb#fill"
+                        data-first-climb-field-param="plan"
+                        data-first-climb-value-param="<%= example %>">
+                  <%= example %>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+          <p class="lp-first-climb__hint"><%= t("strategy.first_climb.plan_hint") %></p>
+        </div>
+
+        <div data-destination-coach-target="panel" data-destination-coach-step="3" hidden>
+          <label class="lp-first-climb__label" for="destination-coach-action">
+            <span class="lp-first-climb__step">3</span>
+            <%= t("strategy.first_climb.action_label") %>
+          </label>
+          <%= text_field_tag :today_action, nil,
+                id: "destination-coach-action",
+                required: true,
+                maxlength: 120,
+                autocomplete: "off",
+                class: "lp-input w-full lp-first-climb__input",
+                data: { first_climb_target: "actionInput" },
+                placeholder: action_examples.first.presence || t("strategy.first_climb.action_placeholder") %>
+          <% if action_examples.any? %>
+            <div class="lp-first-climb__chips" role="group" aria-label="<%= t('strategy.first_climb.action_examples_label') %>">
+              <% action_examples.each do |example| %>
+                <button type="button"
+                        class="lp-first-climb__chip"
+                        data-action="first-climb#fill"
+                        data-first-climb-field-param="action"
+                        data-first-climb-value-param="<%= example %>">
+                  <%= example %>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+          <p class="lp-first-climb__hint"><%= t("strategy.first_climb.action_hint") %></p>
+        </div>
+
+        <div class="lp-first-climb__nav">
+          <button type="button"
+                  class="lp-first-climb__back"
+                  data-destination-coach-target="back"
+                  data-action="destination-coach#back"
+                  hidden><%= t("strategy.rpg.destination_coach.back") %></button>
+          <button type="button"
+                  class="lp-first-climb__cta"
+                  data-destination-coach-target="continue"
+                  data-action="destination-coach#continue"><%= t("strategy.rpg.destination_coach.continue") %></button>
+          <%= submit_tag t("strategy.first_climb.cta"),
+                class: "lp-first-climb__cta",
+                hidden: true,
+                data: {
+                  destination_coach_target: "submit",
+                  first_climb_target: "submit"
+                } %>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</dialog>
