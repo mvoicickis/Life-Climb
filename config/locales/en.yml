@@ -3,6 +3,7 @@ en:
     formats:
       chart_day: "%a"
       long: "%b %-d"
+      dash_weekday: "%A"
   app_name: "LifePoints"
   companion:
     prompt_kicker: "New companions"
@@ -219,6 +220,19 @@ en:
       kicker: "Today's Goal"
       closer: "Do today’s fight. Finish real work to climb your mountain."
       mountain_alt: "Mountain path toward your goal"
+      of_day: "Of your day"
+      mix: "%{habits} habits · %{battles} battles"
+      cheer:
+        idle: "Nothing logged yet. Any amount counts."
+        moving: "You're moving. Keep going."
+        good_ground: "Good ground covered today."
+        close: "Close to the mark now."
+        met: "Day met. Anything more is bonus."
+        over: "Past your mark by %{over}%. That extra counts."
+      toast_hit: "%{name} at %{percent}% — target cleared."
+      toast_progress: "%{percent}% of %{name}."
+      menu_edit: "Edit habit"
+      menu_undo: "Undo last add"
     battle:
       title: "Today's Battle"
       subtitle: "Win today. Move your life forward."

@@ -33,7 +33,7 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
 
     win_h = computed(".lp-dash-tcard__win", "min-height")
     assert_in_delta 44.0, win_h, 1.0, "Win hit area must stay ≥44px"
-    assert_selector ".lp-dash-header"
+    assert_selector ".lp-dash-hero"
     assert_selector ".lp-dash-anytime"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-today-mobile.png")
 

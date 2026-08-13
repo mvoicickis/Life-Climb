@@ -1,0 +1,24 @@
+<%# Reusable toast above bottom nav. locals: title, body, undo_habit_id (optional) %>
+<% title = local_assigns.fetch(:title) %>
+<% body = local_assigns[:body] %>
+<% undo_habit_id = local_assigns[:undo_habit_id] %>
+<div class="lp-toast"
+     role="status"
+     data-controller="lp-toast"
+     data-lp-toast-duration-value="3200">
+  <span class="lp-toast__ic" aria-hidden="true"><%= local_assigns.fetch(:icon) { "✓" } %></span>
+  <div class="lp-toast__tx">
+    <span><%= title %></span>
+    <% if body.present? %>
+      <em><%= body %></em>
+    <% end %>
+  </div>
+  <% if undo_habit_id.present? %>
+    <%= button_to t("dash.anytime.undo_add"),
+          daily_logs_path(habit_id: undo_habit_id),
+          method: :post,
+          params: { mode: "undo", return_to: "today" },
+          class: "lp-toast__undo",
+          form: { data: { turbo: false } } %>
+  <% end %>
+</div>

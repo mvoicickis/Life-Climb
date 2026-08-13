@@ -486,6 +486,21 @@ es:
       title: "%{percent}% of your day · +%{bonus} bonus AP"
       title_no_ap: "%{percent}% of your day"
       body: "You went past everything you set today. That extra counts."
+    # TODO: translate
+    hero:
+      of_day: "Of your day"
+      mix: "%{habits} habits · %{battles} battles"
+      cheer:
+        idle: "Nothing logged yet. Any amount counts."
+        moving: "You're moving. Keep going."
+        good_ground: "Good ground covered today."
+        close: "Close to the mark now."
+        met: "Day met. Anything more is bonus."
+        over: "Past your mark by %{over}%. That extra counts."
+      toast_hit: "%{name} at %{percent}% — target cleared."
+      toast_progress: "%{percent}% of %{name}."
+      menu_edit: "Edit habit"
+      menu_undo: "Undo last add"
     battle_next_kicker: "Bien — sigue moviendo la subida."
     battle_next_coaching: "Una pregunta rápida abajo mantiene tu montaña clara."
     project_check:

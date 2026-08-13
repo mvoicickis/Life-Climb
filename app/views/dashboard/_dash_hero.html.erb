@@ -1,49 +1,73 @@
-<%# locals: journey, strategy_goal, mountain, closer, adventure_year: nil, streak: nil %>
-<% goal_title = strategy_goal&.title.presence || journey.title %>
-<% stage_label = mountain.present? ? mountain[:label] : t("dash.mountain_waiting") %>
-<% due_on = strategy_goal&.due_on.presence || Strategy::YearCycle.default_goal_due %>
-<% year = local_assigns[:adventure_year].presence || due_on.year %>
+<%# Today climb hero — DayPercent all day; overshoot absorbed (no separate card).
+    locals: day_percent, habits_count, battles_count, streak, life_points, commitment, journey %>
+<% percent = local_assigns[:day_percent] %>
+<% habits_count = local_assigns.fetch(:habits_count) { Array(@habits).size } %>
+<% battles_count = local_assigns.fetch(:battles_count) { Array(@daily_todos).size } %>
 <% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
-<section class="lp-dash-hero" aria-label="<%= t('dash.goal_label') %>">
-  <div class="lp-dash-hero__copy">
-    <p class="lp-dash-kicker"><%= t("dash.mountain_label") %></p>
-    <h2 class="lp-dash-hero__title" title="<%= goal_title %>"><%= goal_title %></h2>
-    <p class="lp-dash-hero__year"><%= t("dash.year_adventure", date: l(due_on, format: :long), year: year) %></p>
-    <div class="lp-dash-hero__progress">
-      <p class="lp-dash-hero__pct">
-        <span data-battle-day-target="goalPct"><%= closer %></span>%
+<% life_points = local_assigns.fetch(:life_points) { @life_points } %>
+<% commitment = local_assigns[:commitment] || @commitment %>
+<% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
+<% tier_name = commitment&.journey&.commitment_name.presence ||
+               (local_assigns[:journey] || @journey)&.commitment_name.presence ||
+               "Easy" %>
+<% display_pct = percent.nil? ? 0 : percent.to_i %>
+<% over = percent.is_a?(Numeric) && percent > 100 %>
+<% hit = percent.is_a?(Numeric) && percent >= 100 && !over %>
+<% cheer = Today::DayCheer.new(percent: percent) %>
+<% cheer_result = cheer.call %>
+<% bar_width = [ display_pct, 100 ].min %>
+
+<header class="lp-dash-hero<%= ' is-over' if over %><%= ' is-hit' if hit %>"
+        data-day-percent="<%= percent.nil? ? '' : display_pct %>"
+        <%= 'data-day-overshoot=true'.html_safe if over %>
+        aria-label="<%= t('dash.hero.of_day') %>">
+  <div class="lp-dash-hero__row">
+    <%= link_to settings_path, class: "lp-dash-hero__avatar", aria: { label: t("nav.settings") } do %>
+      <%= companion_image_tag class: "lp-dash-hero__avatar-img", alt: "" %>
+    <% end %>
+    <div class="lp-dash-hero__who">
+      <p class="lp-dash-hero__name"><%= current_user.display_name %></p>
+      <p class="lp-dash-hero__meta">
+        <span><%= l(Date.current, format: :dash_weekday).upcase %></span>
+        <span aria-hidden="true"> · </span>
+        <span data-commitment-tier="<%= tier_name %>"><%= tier_name.upcase %></span>
       </p>
-      <div class="lp-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= closer %>" aria-label="<%= t('dash.goal_label') %>">
-        <div class="lp-dash-bar__fill" data-battle-day-target="goalBar" style="width: <%= closer %>%"></div>
-      </div>
-      <p class="lp-dash-hero__momentum" data-battle-day-target="momentum"><%= dash_momentum_line(closer, mountain: mountain) %></p>
-      <%= render "shared/climb_streak_chip", status: streak %>
+    </div>
+    <div class="lp-dash-hero__stat is-fire" title="<%= t('dash.timeline.stats_pill') %>">
+      <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
+      <span><%= streak_days %></span>
+    </div>
+    <div class="lp-dash-hero__stat is-ap" title="<%= t('dash.action_points_label') %>">
+      <%= render "shared/lp_icon", name: "bolt", class_name: "lp-icon is-inline" %>
+      <span data-battle-day-target="lpTotal"><%= number_with_delimiter(life_points) %></span>
     </div>
   </div>
-  <div class="lp-dash-hero__art" aria-hidden="true">
-    <div class="lp-dash-hero__mountain is-<%= mountain&.dig(:stage) || 'empty' %>"
-         style="--lp-camp: <%= closer.to_i %>"
-         data-battle-day-target="campArt">
-      <svg class="lp-dash-hero__mountain-art" viewBox="0 0 200 120" role="img">
-        <defs>
-          <linearGradient id="lp-dash-mtn" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#166534"/>
-            <stop offset="100%" stop-color="#0f766e"/>
-          </linearGradient>
-        </defs>
-        <path d="M10 120 L100 28 L190 120 Z" fill="url(#lp-dash-mtn)"/>
-        <path d="M82 55 L100 28 L118 55 L110 52 L100 68 L90 52 Z" fill="#f8fafc" opacity="0.9"/>
-        <path class="lp-dash-hero__trail" d="M48 112 C68 98, 78 88, 96 72" fill="none" stroke="#fef3c7" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 5"/>
-        <g class="lp-dash-hero__camp" style="transform: translate(0, <%= -closer.to_i * 0.35 %>px)">
-          <path d="M70 98 L80 84 L90 98 Z" fill="#d97706"/>
-        </g>
-        <g class="lp-dash-hero__flags">
-          <path d="M112 78 L112 62" stroke="#166534" stroke-width="1.5"/>
-          <path d="M112 62 L124 66 L112 70 Z" fill="#84cc16"/>
-        </g>
-        <circle class="lp-dash-hero__glow" cx="100" cy="28" r="10" fill="#fef08a" opacity="0.5"/>
-      </svg>
-      <p class="lp-dash-hero__mountain-caption"><%= stage_label %></p>
+
+  <div class="lp-dash-hero__climb">
+    <p class="lp-dash-hero__big<%= ' is-over' if over %><%= ' is-hit' if hit %>">
+      <span class="lp-dash-hero__num"><%= display_pct %></span><span class="lp-dash-hero__pct">%</span>
+    </p>
+    <div class="lp-dash-hero__lab">
+      <b><%= t("dash.hero.of_day") %></b>
+      <em><%= t("dash.hero.mix", habits: habits_count, battles: battles_count) %></em>
     </div>
   </div>
-</section>
+
+  <div class="lp-dash-hero__track" role="progressbar"
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= bar_width %>"
+       aria-label="<%= t('dash.hero.of_day') %>">
+    <i class="<%= 'is-over' if over %>" style="width: <%= bar_width %>%"></i>
+    <% if over %><span class="lp-dash-hero__mark" aria-hidden="true"></span><% end %>
+  </div>
+
+  <p class="lp-dash-hero__cheer is-<%= cheer_result.css %>">
+    <span class="lp-dash-hero__cheer-ic" aria-hidden="true">
+      <% if cheer_result.band == :idle %>○
+      <% elsif cheer_result.band == :met %>★
+      <% elsif cheer_result.band == :over %>✦
+      <% else %>▲
+      <% end %>
+    </span>
+    <%= cheer.message %>
+  </p>
+</header>

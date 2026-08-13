@@ -43,7 +43,7 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_select "#climb-reward", count: 0
-    assert_select ".lp-dash-header__pill", count: 1
+    assert_select ".lp-dash-hero__stat", minimum: 1
     assert_select ".lp-dash-timeline", count: 1
     assert_match(/data-battle-day-celebrate-value="true"/, response.body)
     assert_match(/data-battle-day-ap-gained-value="#{ap}"/, response.body)
