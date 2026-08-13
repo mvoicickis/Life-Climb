@@ -41,7 +41,8 @@ class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
     assert_response :success
 
-    assert_select ".lp-first-climb", count: 0
+    assert_select "#first-climb-coach", count: 0
+    assert_select "dialog#destination-coach", count: 1
     assert_select ".lp-rpg__chrome-top", count: 1
     assert_select ".lp-dash-next", count: 0
   end
