@@ -16,6 +16,10 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     )
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
+    # seed_climb! resets milestones — keep shield tip dismissed so install can take the second notice seat.
+    @user.update!(
+      support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY, User::DAY_SHIELD_TIP_KEY ]
+    )
     @journey = @user.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -42,20 +46,24 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
   test "tip markup present after first win and outside next-action slot" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     todo.update!(completed_at: Time.current)
+    # Keep stack slots free for next-action + install (level-up would take the second seat).
+    @journey.update!(commitment_key: "hard", commitment_met_streak_days: 0)
     assert @user.install_offer_eligible?
 
     get dashboard_path
     assert_response :success
 
+    assert_select "[data-commitment-level-up]", count: 0
+    assert_select "[data-day-shield-tip]", count: 0
     assert_select "[data-install-offer-tip='true']", count: 1
     assert_select "#next-action-slot [data-install-offer-tip]", count: 0
     assert_match(/Morning nudge on your home screen/, response.body)
-    assert_select ".lp-dash-next, #commitment-gap-panel", minimum: 0
   end
 
   test "tip still allows next-action to render" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     todo.update!(completed_at: Time.current)
+    @journey.update!(commitment_key: "hard", commitment_met_streak_days: 0)
 
     get dashboard_path
     assert_response :success

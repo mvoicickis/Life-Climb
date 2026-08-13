@@ -36,7 +36,7 @@ class DailyLogsController < ApplicationController
       store_undo!(previous_amount: previous, delta: delta)
       award_rhythm_points_if_won!
       Today::OvershootBonus.sync!(user: current_user)
-      redirect_to after_log_path, notice: notice_for_add(delta: delta, log: @daily_log)
+      redirect_to after_log_path, **redirect_flash_for_add(delta: delta, log: @daily_log)
     else
       redirect_to after_log_path(fallback_habit: true), alert: @daily_log.errors.full_messages.to_sentence
     end
@@ -173,6 +173,31 @@ class DailyLogsController < ApplicationController
       total: format_num(log.amount),
       unit: log.habit.unit
     )
+  end
+
+  def redirect_flash_for_add(delta:, log:)
+    if params[:return_to].to_s == "today"
+      habit = log.habit
+      progress = habit.goal_progress_percent
+      body =
+        if progress.is_a?(Numeric) && progress >= 100
+          I18n.t("dash.hero.toast_hit", name: habit.name, percent: progress.to_i)
+        elsif progress.is_a?(Numeric)
+          I18n.t("dash.hero.toast_progress", name: habit.name, percent: progress.to_i)
+        end
+      {
+        flash: {
+          lp_toast: {
+            icon: (progress.is_a?(Numeric) && progress >= 100) ? "✦" : "✓",
+            title: notice_for_add(delta: delta, log: log),
+            body: body,
+            undo_habit_id: habit.id
+          }
+        }
+      }
+    else
+      { notice: notice_for_add(delta: delta, log: log) }
+    end
   end
 
   def notice_for_set(log)

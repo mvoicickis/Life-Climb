@@ -1,10 +1,14 @@
-<%# Habits block — above battles; additive logging; outside timeline miss logic.
+<%# Compact habit cards (~95px) — toast + ⋯ menu for rare actions.
     locals: habits %>
 <% habits = Array(local_assigns.fetch(:habits) { @habits || [] }) %>
 <section class="lp-dash-anytime" aria-label="<%= t('dash.anytime.title') %>">
   <header class="lp-dash-anytime__head">
     <h2><%= t("dash.anytime.title") %></h2>
-    <p><%= t("dash.anytime.hint") %></p>
+    <% done_n = habits.count { |h| h.met_habit_goal? || (h.goal_progress_percent.is_a?(Numeric) && h.goal_progress_percent >= 100) || h.completed_today? } %>
+    <% if habits.any? %>
+      <em class="lp-dash-anytime__count"><%= done_n %>/<%= habits.size %></em>
+    <% end %>
+    <p class="lp-dash-anytime__hint"><%= t("dash.anytime.hint") %></p>
   </header>
 
   <% if habits.blank? %>
@@ -13,7 +17,6 @@
     <ul class="lp-dash-anytime__list">
       <% habits.each do |habit| %>
         <% done = habit.completed_today? %>
-        <% today_log = habit.today_log %>
         <% amount = habit.today_amount %>
         <% target = habit.todays_goal_value %>
         <% progress = habit.goal_progress_percent %>
@@ -21,50 +24,47 @@
         <% hit = progress.is_a?(Numeric) && progress >= 100 %>
         <% undo = habit.quantity_checkin? ? habit_log_undo_for(habit) : nil %>
         <li id="<%= dom_id(habit, :today) %>"
-            class="lp-dash-tcard is-habit <%= 'is-done' if done || habit.met_habit_goal? %> <%= 'is-over' if over %> <%= 'is-hit' if hit && !over %>">
-          <div class="lp-dash-tcard__row">
-            <span class="lp-dash-tcard__icon" aria-hidden="true">
-              <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
-            </span>
-            <div class="lp-dash-tcard__copy">
+            class="lp-dash-tcard is-habit is-compact <%= 'is-done' if done || habit.met_habit_goal? %> <%= 'is-over' if over %> <%= 'is-hit' if hit && !over %>"
+            data-controller="tcard-menu">
+          <div class="lp-dash-habit__r1">
+            <div class="lp-dash-habit__nm">
               <% if habit.identity_label.present? %>
                 <p class="lp-habit-identity"><%= habit.identity_label %></p>
               <% end %>
-              <div class="lp-dash-habit__title-row">
-                <p class="lp-dash-tcard__title"><%= habit.name %></p>
-                <% if progress.is_a?(Numeric) && habit.quantity_checkin? && target.present? %>
-                  <span class="lp-dash-habit__pct <%= 'is-zero' if amount.to_d.zero? %>"><%= progress %>%</span>
-                <% elsif habit.binary_checkin? && done %>
-                  <span class="lp-dash-habit__pct">100%</span>
-                <% end %>
-              </div>
-              <p class="lp-dash-tcard__meta">
+              <b class="lp-dash-tcard__title"><%= habit.name %></b>
+              <em class="lp-dash-tcard__meta">
                 <% if habit.quantity_checkin? && target.present? && habit.growth? %>
-                  <span>
-                    <%= t("dash.anytime.amount_of_target",
-                          amount: format_amount(amount),
-                          target: format_amount(target),
-                          unit: habit.unit) %>
-                    <% if over %>
-                      · <%= t("dash.anytime.over_by", amount: format_amount(amount - target)) %>
-                    <% end %>
-                  </span>
+                  <%= t("dash.anytime.amount_of_target",
+                        amount: format_amount(amount),
+                        target: format_amount(target),
+                        unit: habit.unit) %>
+                  <% if over %>
+                    · <%= t("dash.anytime.over_by", amount: format_amount(amount - target)) %>
+                  <% end %>
                 <% elsif habit.quantity_checkin? %>
-                  <span><%= format_amount(amount) %> <%= habit.unit %></span>
+                  <%= format_amount(amount) %> <%= habit.unit %>
                   <% if habit.standard? && habit.range_summary.present? %>
-                    <span>· <%= habit.range_summary %></span>
+                    · <%= habit.range_summary %>
                   <% end %>
                 <% else %>
-                  <span><%= habit.unit %></span>
+                  <%= habit.unit %>
                 <% end %>
-              </p>
-              <% if progress.is_a?(Numeric) && habit.quantity_checkin? && target.present? %>
-                <div class="lp-dash-habit__bar" aria-hidden="true">
-                  <i class="<%= 'is-over' if over %>" style="width: <%= habit_progress_bar_width(progress) %>%"></i>
-                </div>
-              <% end %>
+              </em>
             </div>
+            <% if progress.is_a?(Numeric) && habit.quantity_checkin? && target.present? %>
+              <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if amount.to_d.zero? %>"><%= progress %>%</span>
+            <% elsif habit.binary_checkin? && done %>
+              <span class="lp-dash-habit__pc lp-dash-habit__pct">100%</span>
+            <% end %>
+          </div>
 
+          <% if progress.is_a?(Numeric) && habit.quantity_checkin? && target.present? %>
+            <div class="lp-dash-habit__mini" aria-hidden="true">
+              <i class="<%= 'is-over' if over %>" style="width: <%= habit_progress_bar_width(progress) %>%"></i>
+            </div>
+          <% end %>
+
+          <div class="lp-dash-habit__r2">
             <% if habit.binary_checkin? %>
               <% if done %>
                 <% completion = habit.completion_for(Date.current) %>
@@ -93,92 +93,89 @@
                       } %>
               <% end %>
             <% else %>
-              <div class="lp-dash-habit__controls">
-                <%= button_to "+1",
-                      daily_logs_path(habit_id: habit.id),
-                      method: :post,
-                      params: {
-                        mode: "add",
-                        return_to: "today",
-                        daily_log: { amount: 1 }
-                      },
-                      class: "lp-dash-habit__quick",
-                      aria: { label: t("dash.anytime.quick_add", n: 1, unit: habit.unit) },
-                      form: {
-                        data: {
-                          turbo: false,
-                          controller: "juicy-feedback",
-                          action: "submit->juicy-feedback#play"
-                        }
-                      } %>
-                <%= form_with url: daily_logs_path(habit_id: habit.id),
-                      scope: :daily_log,
-                      class: "lp-dash-tcard__qty",
-                      data: {
-                        turbo: false,
-                        controller: "quantity-win juicy-feedback",
-                        action: "input->quantity-win#sync submit->juicy-feedback#play"
-                      } do |form| %>
-                  <%= hidden_field_tag :mode, "add" %>
-                  <%= hidden_field_tag :return_to, "today" %>
-                  <%= form.number_field :amount,
-                        value: nil,
-                        min: habit.decimal_quantity_unit? ? "0.01" : 1,
-                        step: habit.quantity_input_step,
-                        inputmode: habit.quantity_inputmode,
-                        required: true,
-                        placeholder: t("dash.anytime.add_placeholder"),
-                        class: "lp-dash-tcard__amount",
-                        data: { quantity_win_target: "amount" },
-                        aria: { label: t("dash.anytime.add_aria", unit: habit.unit) } %>
-                  <%= form.submit t("dash.anytime.add"),
-                        class: "lp-dash-tcard__win lp-dash-tcard__win--primary",
-                        disabled: true,
-                        data: { quantity_win_target: "submit" } %>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-
-          <% if undo %>
-            <div class="lp-dash-habit__undo" role="status">
-              <p>
-                <%= t("habits.log_added",
-                      delta: format_amount(undo["delta"]),
-                      total: format_amount(amount),
-                      unit: habit.unit) %>
-              </p>
-              <%= button_to t("dash.anytime.undo_add"),
+              <%= button_to "+1",
                     daily_logs_path(habit_id: habit.id),
                     method: :post,
-                    params: { mode: "undo", return_to: "today" },
-                    class: "lp-dash-habit__undo-btn",
-                    form: { data: { turbo: false } } %>
-            </div>
-          <% end %>
-
-          <% if habit.quantity_checkin? %>
-            <details class="lp-dash-habit__set">
-              <summary><%= t("dash.anytime.set_total") %></summary>
+                    params: {
+                      mode: "add",
+                      return_to: "today",
+                      daily_log: { amount: 1 }
+                    },
+                    class: "lp-dash-habit__quick",
+                    aria: { label: t("dash.anytime.quick_add", n: 1, unit: habit.unit) },
+                    form: {
+                      data: {
+                        turbo: false,
+                        controller: "juicy-feedback",
+                        action: "submit->juicy-feedback#play"
+                      }
+                    } %>
               <%= form_with url: daily_logs_path(habit_id: habit.id),
                     scope: :daily_log,
-                    class: "lp-dash-habit__set-form",
-                    data: { turbo: false } do |form| %>
-                <%= hidden_field_tag :mode, "set" %>
+                    class: "lp-dash-tcard__qty",
+                    data: {
+                      turbo: false,
+                      controller: "quantity-win juicy-feedback",
+                      action: "input->quantity-win#sync submit->juicy-feedback#play"
+                    } do |form| %>
+                <%= hidden_field_tag :mode, "add" %>
                 <%= hidden_field_tag :return_to, "today" %>
                 <%= form.number_field :amount,
-                      value: format_amount(amount),
-                      min: 0,
+                      value: nil,
+                      min: habit.decimal_quantity_unit? ? "0.01" : 1,
                       step: habit.quantity_input_step,
                       inputmode: habit.quantity_inputmode,
                       required: true,
+                      placeholder: t("dash.anytime.add_placeholder"),
                       class: "lp-dash-tcard__amount",
-                      aria: { label: t("dash.anytime.set_total") } %>
-                <%= form.submit t("dash.anytime.save_total"),
-                      class: "lp-dash-tcard__win lp-dash-tcard__win--primary" %>
+                      data: { quantity_win_target: "amount" },
+                      aria: { label: t("dash.anytime.add_aria", unit: habit.unit) } %>
+                <%= form.submit t("dash.anytime.add"),
+                      class: "lp-dash-tcard__win lp-dash-tcard__win--primary",
+                      disabled: true,
+                      data: { quantity_win_target: "submit" } %>
               <% end %>
+            <% end %>
+
+            <details class="lp-dash-habit__menu" data-tcard-menu-target="details"
+                     data-action="toggle->tcard-menu#toggled">
+              <summary class="lp-dash-habit__dots" aria-label="<%= t('dash.timeline.more_actions') %>">⋯</summary>
+              <div class="lp-dash-habit__sheet">
+                <p class="lp-dash-habit__sheet-title"><%= habit.name %></p>
+                <% if habit.quantity_checkin? %>
+                  <%= form_with url: daily_logs_path(habit_id: habit.id),
+                        scope: :daily_log,
+                        class: "lp-dash-habit__set-form",
+                        data: { turbo: false } do |form| %>
+                    <%= hidden_field_tag :mode, "set" %>
+                    <%= hidden_field_tag :return_to, "today" %>
+                    <label class="lp-dash-habit__sheet-label"><%= t("dash.anytime.set_total") %></label>
+                    <%= form.number_field :amount,
+                          value: format_amount(amount),
+                          min: 0,
+                          step: habit.quantity_input_step,
+                          inputmode: habit.quantity_inputmode,
+                          required: true,
+                          class: "lp-dash-tcard__amount",
+                          aria: { label: t("dash.anytime.set_total") } %>
+                    <%= form.submit t("dash.anytime.save_total"),
+                          class: "lp-dash-habit__sheet-btn" %>
+                  <% end %>
+                  <% if undo %>
+                    <%= button_to t("dash.hero.menu_undo"),
+                          daily_logs_path(habit_id: habit.id),
+                          method: :post,
+                          params: { mode: "undo", return_to: "today" },
+                          class: "lp-dash-habit__sheet-btn is-undo",
+                          form: { data: { turbo: false } } %>
+                  <% end %>
+                <% end %>
+                <%= link_to t("dash.hero.menu_edit"),
+                      habit_path(habit),
+                      class: "lp-dash-habit__sheet-btn" %>
+              </div>
             </details>
-          <% end %>
+          </div>
         </li>
       <% end %>
     </ul>

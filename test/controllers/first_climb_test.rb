@@ -53,10 +53,9 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-timeline .lp-dash-tcard", count: 1
     assert_no_match(/Plan Your Route/i, response.body)
 
-    # Compact Today header (not the old mountain hero).
-    assert_select ".lp-dash-header", count: 1
-    assert_select ".lp-dash-header__avatar", count: 1
-    assert_select ".lp-dash-hero", count: 0
+    # Today climb hero (replaces compact header).
+    assert_select ".lp-dash-hero", count: 1
+    assert_select ".lp-dash-hero__avatar", count: 1
   end
 
   test "today dead-end shows first-climb coach when spine empty" do

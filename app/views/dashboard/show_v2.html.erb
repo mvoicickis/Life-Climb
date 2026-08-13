@@ -1,6 +1,15 @@
 <% content_for :title, t("game_ui.home_title") %>
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
+<%
+  @notice_stack = Today::NoticeStack.call(
+    next_action: @next_action.present?,
+    human_win: flash[:human_win].present?,
+    level_up: @commitment_level_up && @journey.present?,
+    shield_tip: !current_user.day_shield_tip_done?,
+    install_offer: current_user.install_offer_eligible?
+  )
+%>
 
 <div
   class="lp-dash<%= ' is-battle-won' if @battle_open_count.to_i.zero? && (@daily_todos.any? || @mission.present?) %>"
@@ -10,34 +19,36 @@
   data-battle-day-ap-gained-value="<%= flash[:ap_gained].to_i %>"
   data-battle-day-boss-value="<%= flash[:climb_boss].present? %>"
 >
-  <%= render "dashboard/dash_header",
-        closer: @closer,
+  <%= render "dashboard/dash_hero",
+        day_percent: @day_percent,
+        habits_count: Array(@habits).size,
+        battles_count: Array(@daily_todos).size,
         streak: @climb_streak,
         life_points: @life_points,
-        day_shield: @day_shield,
-        commitment: @commitment %>
+        commitment: @commitment,
+        journey: @journey %>
 
-  <div id="next-action-slot">
-    <% if @next_action.present? %>
+  <% if @notice_stack.include?(:next_action) %>
+    <div id="next-action-slot">
       <%= render "shared/next_action",
             next_action: @next_action,
             commitment: @commitment %>
-    <% end %>
-  </div>
+    </div>
+  <% else %>
+    <div id="next-action-slot" hidden></div>
+  <% end %>
 
-  <% unless current_user.day_shield_tip_done? %>
-    <div class="lp-dash-level-up is-shield-tip is-compact" role="status" data-day-shield-tip="true">
-      <p class="lp-dash-level-up__body"><%= t("dash.shield.tip_line") %></p>
-      <div class="lp-dash-level-up__actions">
-        <%= button_to t("dash.shield.tip_dismiss"),
-              day_shield_tip_path,
-              method: :delete,
-              class: "lp-habits__btn is-primary" %>
-      </div>
+  <% if @notice_stack.include?(:shield_tip) %>
+    <div class="lp-dash-notice is-shield-tip" role="status" data-day-shield-tip="true">
+      <p class="lp-dash-notice__body"><%= t("dash.shield.tip_line") %></p>
+      <%= button_to t("dash.shield.tip_dismiss"),
+            day_shield_tip_path,
+            method: :delete,
+            class: "lp-dash-notice__dismiss" %>
     </div>
   <% end %>
 
-  <% if current_user.install_offer_eligible? %>
+  <% if @notice_stack.include?(:install_offer) %>
     <div class="lp-dash-level-up is-install-tip is-compact"
          hidden
          role="status"
@@ -64,7 +75,7 @@
     </div>
   <% end %>
 
-  <% if @commitment_level_up && @journey.present? %>
+  <% if @notice_stack.include?(:level_up) %>
     <% next_key = @journey.commitment_key.to_s == "easy" ? "medium" : "hard" %>
     <% next_preset = Today::Commitment::PRESETS[next_key] %>
     <div class="lp-dash-level-up" role="status" data-commitment-level-up="true">
@@ -85,16 +96,12 @@
     </div>
   <% end %>
 
-  <% if flash[:human_win].present? %>
+  <% if @notice_stack.include?(:human_win) %>
     <div class="lp-dash-human-win" role="status">
       <p class="lp-dash-human-win__body"><%= flash[:human_win] %></p>
       <p class="lp-dash-human-win__next"><%= t("strategy.first_climb.human_next") %></p>
     </div>
   <% end %>
-
-  <%= render "dashboard/dash_overshoot_bonus",
-        percent: @day_percent,
-        awarded_ap: @overshoot_bonus&.awarded_ap %>
 
   <div id="today-battle-surface">
     <%= render "dashboard/today_battle_surface" %>
@@ -119,6 +126,15 @@
     </p>
   </aside>
 </div>
+
+<% if flash[:lp_toast].present? %>
+  <% toast = flash[:lp_toast] %>
+  <%= render "shared/lp_toast",
+        icon: toast[:icon] || toast["icon"],
+        title: toast[:title] || toast["title"],
+        body: toast[:body] || toast["body"],
+        undo_habit_id: toast[:undo_habit_id] || toast["undo_habit_id"] %>
+<% end %>
 
 <%= render "shared/lp_dash_nav", active: :today %>
 <%= render "shared/climb_reward", reward: flash[:climb_reward] if flash[:climb_reward].present? %>

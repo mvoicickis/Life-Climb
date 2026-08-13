@@ -24,16 +24,15 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-cta", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
     assert_match(/lp-dash-nav/i, response.body)
-    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-hero", count: 1
     assert_select ".lp-dash-timeline, .lp-dash-route, #first-climb-coach", minimum: 1
-    assert_select ".lp-dash-hero", count: 0
     assert_select ".lp-dash-project", count: 0
     assert_no_match(/Life Tree|Open Life/i, response.body)
     assert_no_match(/Daily Battle Plan/i, response.body)
     assert_no_match(/>\s*SP\s*</, response.body)
   end
 
-  test "header progress bar reflects mountain percent when strategy goal present" do
+  test "hero shows day percent track when strategy goal present" do
     journey = @user.primary_focused_journey
     area = journey.life_area
     @user.strategy_goals.create!(
@@ -43,9 +42,8 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-header", count: 1
-    assert_select ".lp-dash-bar__fill[style*='width:']", count: 1
-    assert_select ".lp-dash-hero", count: 0
+    assert_select ".lp-dash-hero", count: 1
+    assert_select ".lp-dash-hero__track", count: 1
   end
 
   test "completing a battle checkbox asks project check without moving mountain percent" do

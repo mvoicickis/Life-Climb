@@ -28,12 +28,12 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert Strategy::HierarchyReady.call(user: user)
     get dashboard_path
     assert_response :success, -> { "body=#{response.body.to_s[0, 2000]}" }
-    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-hero", count: 1
     assert_select ".lp-dash-timeline", count: 1
     assert_select ".lp-dash-tcard__title", text: "Battle"
   end
 
-  test "today header shows avatar, progress bar, streak, and AP" do
+  test "today header shows avatar, day percent, streak, and AP" do
     user = users(:one)
     user.update!(
       name: "Alex Climber",
@@ -65,14 +65,13 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-header", count: 1
-    assert_select ".lp-dash-header__avatar-img[src*='fox']", count: 1
-    assert_select ".lp-dash-header__name", text: "Alex Climber"
-    assert_select ".lp-dash-bar__fill", count: 1
-    assert_select ".lp-dash-header__pill [data-battle-day-target='lpTotal']", text: /120/
+    assert_select ".lp-dash-hero", count: 1
+    assert_select ".lp-dash-hero__avatar-img[src*='fox']", count: 1
+    assert_select ".lp-dash-hero__name", text: "Alex Climber"
+    assert_select ".lp-dash-hero__track", count: 1
+    assert_select ".lp-dash-hero [data-battle-day-target='lpTotal']", text: /120/
     assert_select ".lp-dash-timeline", count: 1
-    assert_select ".lp-dash-hero", count: 0
-    assert_select ".lp-dash-climb", count: 0
+    assert_select ".lp-dash-header", count: 0
   end
 
   test "today renders while mountain spine is still incomplete" do

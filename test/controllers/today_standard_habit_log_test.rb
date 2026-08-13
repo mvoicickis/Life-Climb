@@ -2,8 +2,7 @@
 
 require "test_helper"
 
-# Regression: after #305 additive logging, Today shows an undo strip that formats
-# session-stored delta/total strings. A GET /dashboard after logging must not 500.
+# Regression: after #305 additive logging + Today redesign toast, dashboard must not 500.
 class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
   include ClimbTestHelper
 
@@ -39,8 +38,9 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_select "#today_habit_#{@habit.id}"
-    assert_select ".lp-dash-habit__undo", text: /Added/
-    assert_select ".lp-dash-habit__undo", text: /8 hours today/
+    assert_select ".lp-toast", text: /Added/
+    assert_select ".lp-toast", text: /8 hours today/
+    assert_select ".lp-dash-habit__undo", count: 0
   end
 
   test "logging a growth quantity habit then loading Today does not 500" do
@@ -62,6 +62,31 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select "#today_habit_#{growth.id} .lp-dash-habit__undo", text: /Added/
+    assert_select "#today_habit_#{growth.id}"
+    assert_select ".lp-toast", text: /Added/
+    assert_select ".lp-dash-habit__sheet-btn.is-undo", text: /Undo/
+  end
+
+  test "toast undo and menu undo both use session snapshot" do
+    growth = @user.habits.create!(
+      name: "Pages",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      goal: 10,
+      quantity_checkin: true
+    )
+
+    post daily_logs_path(habit_id: growth.id),
+         params: { mode: "add", return_to: "today", daily_log: { amount: "3" } }
+    follow_redirect!
+
+    post daily_logs_path(habit_id: growth.id),
+         params: { mode: "undo", return_to: "today" }
+    assert_redirected_to dashboard_path
+    assert_equal BigDecimal("0"), growth.reload.today_amount
   end
 end

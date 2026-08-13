@@ -28,7 +28,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-header", count: 1
+    assert_select ".lp-dash-hero", count: 1
     assert_select ".lp-dash-timeline", count: 1
     assert_select ".lp-dash-anytime", count: 1
     assert_select ".lp-dash-anytime .lp-dash-tcard.is-habit .lp-dash-tcard__title", text: "Meditate"
@@ -123,7 +123,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "header shows shield badge when streak is at risk (banner no longer carries shield line)" do
+  test "streak at risk next-action still shows without header shield badge" do
     @todo.update!(start_time: "11:00", end_time: "12:00")
     @user.update!(
       climb_streak_days: 5,
@@ -137,7 +137,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_select "[data-next-action-key='streak_at_risk']", count: 1
       assert_select ".lp-dash-next__shield", count: 0
-      assert_select "[data-day-shield='ready']", minimum: 1
+      assert_select ".lp-dash-hero", count: 1
       assert_select "[data-commitment-progress]", minimum: 1
     end
   end

@@ -119,9 +119,9 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
     within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-header", visible: :all, wait: 5
-    assert_selector ".lp-dash-header__avatar-img", visible: :all
+    assert_selector ".lp-dash-hero", visible: :all, wait: 5
+    assert_selector ".lp-dash-hero__avatar-img", visible: :all
     assert_selector ".lp-dash-timeline", visible: :all
-    assert_no_selector ".lp-dash-hero"
+    assert_no_selector ".lp-dash-climb"
   end
 end
