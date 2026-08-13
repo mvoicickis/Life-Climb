@@ -32,8 +32,9 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__qb.is-big", count: 1
     assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 5 reps"
     assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 15 reps"
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__segs i", count: 12
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__segs i", count: 16
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__sig", count: 1
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__r2:not(.is-single-quick)", count: 1
 
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty .lp-dash-tcard__amount", count: 1
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty", count: 1
@@ -49,6 +50,7 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
 
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 1
     assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 1 reps"
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__r2.is-single-quick", count: 1
   end
 
   test "unlogged quantity habit renders blank required amount input with mode add" do

@@ -56,7 +56,7 @@
   <div class="lp-dash-hero__segs" role="progressbar"
        aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= bar_width %>"
        aria-label="<%= t('dash.hero.of_day') %>">
-    <% habit_progress_segments(display_pct, count: 10).each do |klass| %>
+    <% habit_progress_segments(display_pct, count: 14).each do |klass| %>
       <i class="<%= klass %>"></i>
     <% end %>
   </div>
