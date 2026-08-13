@@ -21,7 +21,7 @@ class HabitsAreasUiTest < ActionDispatch::IntegrationTest
     assert_match(/Finance/i, response.body)
     assert_match(/Unfiled Trackers/i, response.body)
     assert_match(@habit.name, response.body)
-    assert_select ".lp-dash-nav__link", text: /Habits/i
+    assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
     assert_select ".lp-dash-nav__link", text: /\A\s*Areas\s*\z/, count: 0
   end
 

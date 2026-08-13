@@ -95,9 +95,9 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-nav__link", text: /Heute/i
     assert_select ".lp-dash-nav__link", text: /Berg/i
-    assert_select ".lp-dash-nav__link", text: /Gewohnheiten/i
-    assert_select ".lp-dash-nav__link", text: /Reise/i
     assert_select ".lp-dash-nav__link", text: /Du/i
+    assert_select ".lp-dash-nav__link", text: /Gewohnheiten/i, count: 0
+    assert_select ".lp-dash-nav__link", text: /Reise/i, count: 0
     assert_match(/Reise/, response.body)
     assert_match(/Berg-Zusammenfassung/, response.body)
     assert_match(/Aktionspunkte/, response.body)

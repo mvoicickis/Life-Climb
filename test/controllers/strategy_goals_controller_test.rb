@@ -497,11 +497,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_life_journey_path
   end
 
-  test "journey tab still renders after strategy mountain ships" do
+  test "journey page still renders after strategy mountain ships" do
     get life_points_path
     assert_response :success
     assert_match(/Journey/i, response.body)
-    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_select ".lp-dash-nav"
+    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i, count: 0
   end
 
   test "creating a daily practice persists repeat on the model" do

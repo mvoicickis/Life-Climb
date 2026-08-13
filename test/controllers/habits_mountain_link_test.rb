@@ -108,19 +108,19 @@ class HabitsMountainLinkTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Hidden linked", count: 0
   end
 
-  test "primary nav includes Habits entry" do
+  test "primary nav omits Habits and Journey tabs" do
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /Today/i
-    assert_select ".lp-dash-nav__link", text: /Habits/i
-    assert_select ".lp-dash-nav__link", text: /Journey/i
     assert_select ".lp-dash-nav__link", text: /You/i
-    assert_select ".lp-dash-nav a[href=?]", habits_path
+    assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
+    assert_select ".lp-dash-nav__link", text: /Journey/i, count: 0
+    assert_select ".lp-dash-nav a[href=?]", habits_path, count: 0
 
     get habits_path
     assert_response :success
-    assert_select ".lp-dash-nav__link.is-active", text: /Habits/i
     assert_select ".lp-habits", minimum: 1
+    assert_select ".lp-dash-nav__link.is-active", text: /Habits/i, count: 0
   end
 end

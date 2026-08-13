@@ -1,4 +1,5 @@
 <nav class="studio-nav" aria-label="Main">
+  <% show_habits_and_journey_nav = false %>
   <div class="studio-nav__inner">
     <%= link_to dashboard_path, class: "studio-brand" do %>
       <%= render "shared/lp_brand_mark", size: 28, class_name: "studio-brand__mark" %>
@@ -9,7 +10,10 @@
       <%= link_to t("nav.today"), dashboard_path, class: studio_nav_class(current_page?(dashboard_path)) %>
       <%= link_to t("nav.building"), building_path, class: studio_nav_class(current_page?(building_path) || request.path.start_with?("/buildings")) %>
       <%= link_to t("nav.finished"), finished_products_path, class: studio_nav_class(current_page?(finished_products_path) || request.path.start_with?("/finished_products")) %>
-      <%= link_to t("nav.life_points"), life_points_path, class: studio_nav_class(current_page?(life_points_path)) %>
+      <%# Journey / LifePoints tab — hidden. Page still lives at life_points_path. %>
+      <% if show_habits_and_journey_nav %>
+        <%= link_to t("nav.life_points"), life_points_path, class: studio_nav_class(current_page?(life_points_path)) %>
+      <% end %>
 
       <div class="relative" data-controller="dropdown">
         <button type="button"
@@ -27,7 +31,10 @@
           <%= link_to t("nav.settings"), settings_path, class: "app-menu-item", role: "menuitem" %>
           <%= link_to t("about.title"), about_path, class: "app-menu-item", role: "menuitem" %>
           <%= link_to t("support.title"), support_path, class: "app-menu-item", role: "menuitem" %>
-          <%= link_to t("nav.stats"), habits_path, class: "app-menu-item", role: "menuitem" %>
+          <%# Stats → Habits — hidden. Page still lives at habits_path. %>
+          <% if show_habits_and_journey_nav %>
+            <%= link_to t("nav.stats"), habits_path, class: "app-menu-item", role: "menuitem" %>
+          <% end %>
           <%= link_to t("nav.feedback"), new_feedback_path, class: "app-menu-item", role: "menuitem" %>
           <% if current_user.admin? && !impersonating? %>
             <%= link_to t("nav.admin"), admin_root_path, class: "app-menu-item", role: "menuitem" %>
@@ -52,8 +59,11 @@
     <%= link_to finished_products_path, class: studio_tab_class(current_page?(finished_products_path) || request.path.start_with?("/finished_products")) do %>
       <span><%= t("nav.finished") %></span>
     <% end %>
-    <%= link_to life_points_path, class: studio_tab_class(current_page?(life_points_path)) do %>
-      <span><%= t("nav.life_points") %></span>
+    <%# Journey / LifePoints tab — hidden. Page still lives at life_points_path. %>
+    <% if show_habits_and_journey_nav %>
+      <%= link_to life_points_path, class: studio_tab_class(current_page?(life_points_path)) do %>
+        <span><%= t("nav.life_points") %></span>
+      <% end %>
     <% end %>
   </div>
 </nav>
