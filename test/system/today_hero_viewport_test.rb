@@ -36,24 +36,22 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-hero__big"
     assert_selector ".lp-dash-hero__segs i", count: 14
     assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit.is-slot", minimum: 3
-    assert_selector ".lp-dash-anytime .lp-dash-habit__r2.is-single-quick", minimum: 1
-    assert_selector ".lp-dash-anytime .lp-dash-habit__r2:not(.is-single-quick)", minimum: 1
+    assert_selector ".lp-dash-anytime .lp-dash-habit__r2.is-single-quick", count: 0
+    assert_selector ".lp-dash-anytime .lp-dash-habit__qb.is-big", minimum: 3
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const card = document.querySelector('.lp-dash-anytime .lp-dash-tcard.is-habit.is-slot');
-        const single = document.querySelector('.lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb');
-        const dualForm = document.querySelector('.lp-dash-habit__r2:not(.is-single-quick) > form');
-        const qs = single ? getComputedStyle(single) : null;
+        const qb = document.querySelector('.lp-dash-habit__r2 .lp-dash-habit__qb.is-big');
+        const qs = qb ? getComputedStyle(qb) : null;
         return {
           heroH: document.querySelector('.lp-dash-hero').getBoundingClientRect().height,
           cardH: card.getBoundingClientRect().height,
           cardW: card.getBoundingClientRect().width,
           qbMinH: qs ? qs.minHeight : null,
-          qbH: single ? single.getBoundingClientRect().height : null,
-          singleW: single ? single.getBoundingClientRect().width : null,
-          dualFormW: dualForm ? dualForm.getBoundingClientRect().width : null,
-          sigils: [...document.querySelectorAll('.lp-dash-habit__sig')].map((el) => el.textContent.trim())
+          qbH: qb ? qb.getBoundingClientRect().height : null,
+          qbW: qb ? qb.getBoundingClientRect().width : null,
+          sigils: [...document.querySelectorAll('.lp-dash-tcard.is-habit .lp-dash-habit__r1 .lp-dash-habit__sig')].map((el) => el.textContent.trim())
         };
       })()
     JS
@@ -62,15 +60,13 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     assert metrics["cardH"] < 190, "habit slot denser than ~190px (got #{metrics['cardH']})"
     assert_equal "44px", metrics["qbMinH"], "quick button keeps var(--lp-tap) height"
     assert_operator metrics["qbH"], :>=, 43.5
-    assert_operator metrics["singleW"], :<, metrics["cardW"] * 0.55,
-                    "single quick-add must not stretch full card width"
-    assert_operator metrics["dualFormW"], :>, metrics["cardW"] * 0.3,
-                    "dual quick-adds still share the row"
+    assert_operator metrics["qbW"], :>=, metrics["cardW"] * 0.6,
+                    "single quick-add must stretch across the card (got #{metrics['qbW']} of #{metrics['cardW']})"
     assert_includes metrics["sigils"], "📖"
     assert_includes metrics["sigils"], "🗣"
     assert_includes metrics["sigils"], "💪"
     puts "MEASURED_HABIT_SLOT_HEIGHT_375=#{metrics['cardH'].round}"
-    puts "MEASURED_SINGLE_QUICK_WIDTH_375=#{metrics['singleW'].round}"
+    puts "MEASURED_SINGLE_QUICK_WIDTH_375=#{metrics['qbW'].round}"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-rpg-layout-375.png")
@@ -78,19 +74,19 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(320, 600)
     visit dashboard_path
     assert_selector ".lp-dash-anytime .lp-dash-tcard.is-habit.is-slot", minimum: 3
-    assert_selector ".lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb", minimum: 1
+    assert_selector ".lp-dash-habit__r2 .lp-dash-habit__qb.is-big", minimum: 1
     narrow = page.evaluate_script(<<~JS)
       (() => {
         const card = document.querySelector('.lp-dash-anytime .lp-dash-tcard.is-habit.is-slot');
-        const single = document.querySelector('.lp-dash-habit__r2.is-single-quick .lp-dash-habit__qb');
+        const qb = document.querySelector('.lp-dash-habit__r2 .lp-dash-habit__qb.is-big');
         return {
           cardW: card.getBoundingClientRect().width,
-          singleW: single.getBoundingClientRect().width,
-          qbH: single.getBoundingClientRect().height
+          qbW: qb.getBoundingClientRect().width,
+          qbH: qb.getBoundingClientRect().height
         };
       })()
     JS
-    assert_operator narrow["singleW"], :<, narrow["cardW"] * 0.6
+    assert_operator narrow["qbW"], :>=, narrow["cardW"] * 0.6
     assert_operator narrow["qbH"], :>=, 43.5
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-rpg-layout-320.png")
   end

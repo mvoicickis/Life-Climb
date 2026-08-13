@@ -23,18 +23,18 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "growth quantity habit shows dual adaptive quick-adds and exact amount in menu" do
+  test "growth quantity habit shows one derived quick-add and exact amount in menu" do
     get dashboard_path
     assert_response :success
 
-    assert_equal [ 5, 15 ], @habit.quick_add_steps
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 2
+    assert_equal 5, @habit.quick_add_value
+    assert_equal [ 5, 10, 25, 50 ], @habit.quick_add_suggestions
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__qb.is-big", count: 1
     assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 5 reps"
-    assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 15 reps"
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__segs i", count: 16
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__sig", count: 1
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__r2:not(.is-single-quick)", count: 1
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__sig", count: 2
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__r2.is-single-quick", count: 0
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 0
 
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty .lp-dash-tcard__amount", count: 1
     assert_select "#today_habit_#{@habit.id} form.lp-dash-tcard__qty", count: 1
@@ -43,10 +43,9 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
                   count: 0
   end
 
-  # Regression: #311 moved exact/set/undo into a ⋯ <details> sheet wired to tcard-menu.
-  # Prior tests only checked that an exact form existed somewhere on the card, so a
-  # clipped/empty menu still passed. Assert the menu shell + required sheet contents.
-  test "habit overflow menu renders exact amount, set total, and undo when applicable" do
+  # Regression: #311 moved exact/set/undo into a ⋯ sheet. Assert the menu shell +
+  # chips, custom Use, and quieter exact/set (undo when a session snapshot exists).
+  test "habit overflow menu renders chips, exact amount, set total, and undo when applicable" do
     get dashboard_path
     assert_response :success
 
@@ -55,6 +54,12 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_select "#{card} details.lp-dash-habit__menu[data-tcard-menu-target=details]", count: 1
     assert_select "#{card} summary.lp-dash-habit__dots", count: 1
     assert_select "#{card} .lp-dash-habit__sheet", count: 1
+    assert_select "#{card} .lp-dash-habit__grab", count: 1
+    assert_select "#{card} .lp-dash-habit__chip", count: 4
+    assert_select "#{card} .lp-dash-habit__chip.is-on", text: "+5"
+    assert_select "#{card} .lp-dash-habit__chip[aria-pressed=true]", count: 1
+    assert_select "#{card} .lp-dash-habit__custom-input", count: 1
+    assert_select "#{card} .lp-dash-habit__use", count: 1
 
     assert_select "#{card} .lp-dash-habit__sheet-label", text: /Enter exact amount/
     assert_select "#{card} form.lp-dash-habit__exact-form.lp-dash-tcard__qty", count: 1
@@ -65,8 +70,7 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_select "#{card} form.lp-dash-habit__set-form", count: 1
     assert_select "#{card} form.lp-dash-habit__set-form input[name=mode][value=set]", count: 1
     assert_select "#{card} form.lp-dash-habit__set-form .lp-dash-tcard__amount", count: 1
-
-    assert_select "#{card} .lp-dash-habit__sheet-steps", text: /Uses \+5 and \+15/
+    assert_select "#{card} .lp-dash-habit__sheet-steps", count: 0
     assert_select "#{card} .lp-dash-habit__sheet-btn.is-undo", count: 0
 
     post daily_logs_path(habit_id: @habit.id),
@@ -80,14 +84,64 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_select "#{card} form.lp-dash-habit__set-form", count: 1
   end
 
-  test "standard quantity habit shows a single +1 quick-add" do
+  test "chip PATCH turbo stream updates sheet and card button without redirect" do
+    patch habit_path(@habit),
+          params: {
+            return_to: "today",
+            quick_add_sheet: "1",
+            habit: { quick_add_amount: 10 }
+          },
+          as: :turbo_stream
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_nil response.redirect_url
+    assert_equal 10, @habit.reload.quick_add_amount
+
+    assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_quick)}"/, response.body)
+    assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_sheet)}"/, response.body)
+    assert_includes response.body, "Add 10 reps"
+    assert_includes response.body, "+10"
+    assert_match(/lp-dash-habit__chip is-on/, response.body)
+  end
+
+  test "HTML chip PATCH still persists and redirects to Today" do
+    patch habit_path(@habit),
+          params: {
+            return_to: "today",
+            quick_add_sheet: "1",
+            habit: { quick_add_amount: 25 }
+          }
+    assert_redirected_to dashboard_path
+    assert_equal 25, @habit.reload.quick_add_amount
+  end
+
+  test "custom amount Use PATCH turbo stream persists and stays on the stream" do
+    patch habit_path(@habit),
+          params: {
+            return_to: "today",
+            quick_add_sheet: "1",
+            habit: { quick_add_amount: 7 }
+          },
+          as: :turbo_stream
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_equal 7, @habit.reload.quick_add_amount
+    assert_includes response.body, "Add 7 reps"
+    assert_no_match(/lp-dash-habit__chip is-on/, response.body)
+  end
+
+  test "standard quantity habit shows a single derived quick-add from the range" do
     @habit.update!(stat_type: "standard", goal: nil, min_value: 10, max_value: 20)
     get dashboard_path
     assert_response :success
 
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 1
-    assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 1 reps"
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__r2.is-single-quick", count: 1
+    assert_equal 5, @habit.quick_add_value
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__qb.is-big", count: 1
+    assert_select "#today_habit_#{@habit.id} button[aria-label=?]", "Add 5 reps"
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__r2.is-single-quick", count: 0
+    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__chip", count: 4
   end
 
   test "unlogged quantity habit renders blank required amount input with mode add" do
@@ -116,11 +170,10 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_select "#today_habit_#{@habit.id} .lp-dash-habit__pct", text: "28%"
   end
 
-  test "plus forms post mode add only" do
+  test "plus form posts mode add only" do
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{@habit.id} .lp-dash-habit__quick", count: 2
-    assert_select "#today_habit_#{@habit.id} form input[name=mode][value=add]", minimum: 2
+    assert_select "#today_habit_#{@habit.id} #today_quick_habit_#{@habit.id} input[name=mode][value=add]", count: 1
   end
 
   test "failed today add shows unmistakable alert after optimistic pop path" do

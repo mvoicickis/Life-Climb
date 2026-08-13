@@ -4,6 +4,7 @@ class HabitsController < ApplicationController
   before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
   before_action :load_journeys, only: %i[ new create edit update ]
   before_action :load_areas, only: %i[ index new create edit update show ]
+  skip_before_action :load_journeys, :load_areas, if: :today_quick_add_sheet?
 
   def index
     @habits = current_user.habits.ordered.includes(:life_journey, :area)
@@ -82,12 +83,18 @@ class HabitsController < ApplicationController
   end
 
   def update
+    sheet = today_quick_add_sheet?
     @habit.assign_attributes(habit_params)
-    clear_targets_unless_configured!
+    clear_targets_unless_configured! unless sheet
     return_to = params[:return_to].to_s
 
     if @habit.save
-      if return_to == "journey"
+      if sheet
+        respond_to do |format|
+          format.turbo_stream { render :quick_add }
+          format.html { redirect_to dashboard_path }
+        end
+      elsif return_to == "journey"
         notice =
           if @habit.saved_change_to_hidden_from_dashboard? && @habit.hidden_from_dashboard?
             t("progress.stats.hidden")
@@ -99,6 +106,12 @@ class HabitsController < ApplicationController
         redirect_to habit_path(@habit), notice: "Saved."
       else
         redirect_to habits_path, notice: "Saved."
+      end
+    elsif sheet
+      @habit.reload
+      respond_to do |format|
+        format.turbo_stream { render :quick_add, status: :unprocessable_entity }
+        format.html { redirect_to dashboard_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other }
       end
     elsif return_to == "journey"
       redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
@@ -136,6 +149,10 @@ class HabitsController < ApplicationController
     @habit = current_user.habits.find(params[:id])
   end
 
+  def today_quick_add_sheet?
+    params[:return_to].to_s == "today" && params[:quick_add_sheet].present?
+  end
+
   def load_journeys
     @journeys = current_user.life_journeys.active.order(:title, :id)
   end
@@ -149,7 +166,7 @@ class HabitsController < ApplicationController
       :name, :description, :points, :frequency, :active, :unit, :show_on_home, :position,
       :stat_type, :goal, :min_value, :max_value, :life_journey_id, :identity_label,
       :area_id, :state, :state_label_good, :state_label_attention, :hidden_from_dashboard,
-      :quantity_checkin
+      :quantity_checkin, :quick_add_amount
     )
     # Clamp client-supplied LP rewards — habits are not a free AP faucet.
     if raw[:points].present?
