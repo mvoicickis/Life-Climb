@@ -16317,6 +16317,45 @@ button.lp-strategy-overflow {
   line-height: 1.3;
 }
 
+.lp-dash-overshoot {
+  margin: 0.75rem 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, #f5b544 50%, #e2e8f0);
+  background: linear-gradient(180deg, color-mix(in srgb, #f5b544 14%, #fff), color-mix(in srgb, #f5b544 2%, #fff));
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.lp-dash-overshoot__mark {
+  flex: 0 0 auto;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: #d97706;
+}
+
+.lp-dash-overshoot__copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.lp-dash-overshoot__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #b45309;
+  line-height: 1.3;
+}
+
+.lp-dash-overshoot__body {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+  line-height: 1.4;
+}
+
 .lp-dash-human-win__next {
   margin: 0.35rem 0 0;
   font-size: 0.82rem;

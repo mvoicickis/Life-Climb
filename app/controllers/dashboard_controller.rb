@@ -41,6 +41,14 @@ class DashboardController < ApplicationController
       session: session,
       journey: @journey
     )
+    # Read-only overshoot display — never sync! / award on GET.
+    day_pct = Today::DayPercent.call(
+      user: current_user,
+      habits: @habits,
+      todos: @daily_todos
+    )
+    @day_percent = day_pct.percent
+    @overshoot_bonus = current_user.day_overshoot_bonuses.find_by(on_date: Date.current)
     render "dashboard/show_v2"
   end
 end

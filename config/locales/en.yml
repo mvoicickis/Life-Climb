@@ -164,6 +164,10 @@ en:
     checklist_locked: "%{title} — finish objectives first"
     quest_steps:
       open: "All steps for %{title}"
+    overshoot:
+      title: "%{percent}% of your day · +%{bonus} bonus AP"
+      title_no_ap: "%{percent}% of your day"
+      body: "You went past everything you set today. That extra counts."
     battle_done_summary:
       one: "%{count} won today"
       other: "%{count} won today"
@@ -2874,6 +2878,7 @@ en:
       building: "Shipped building: %{title}"
       finished: "Finished Product: %{title}"
       rhythm: "Number: %{title}"
+      overshoot: "Day overshoot · %{percent}%"
       decay: "Life softens when you stay away"
   today:
     need_building: "Start with a building first."

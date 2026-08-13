@@ -481,6 +481,11 @@ de:
     checklist_locked: "%{title} — zuerst die Ziele erledigen"
     quest_steps:
       open: "Alle Schritte für %{title}"
+    # TODO: translate
+    overshoot:
+      title: "%{percent}% of your day · +%{bonus} bonus AP"
+      title_no_ap: "%{percent}% of your day"
+      body: "You went past everything you set today. That extra counts."
     battle_next_kicker: "Gut — halte den Aufstieg am Laufen."
     battle_next_coaching: "Ein kurzer Check darunter hält deinen Berg ehrlich."
     project_check:
