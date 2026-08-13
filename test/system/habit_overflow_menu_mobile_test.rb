@@ -81,12 +81,20 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
 
       page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-menu-open-#{width}.png")
 
+      # Second tap on ⋯ closes (native details + tcard-menu).
       dots.click
       assert_no_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
 
       dots.click
       assert_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
-      page.execute_script("document.elementFromPoint(4, 4).dispatchEvent(new PointerEvent('pointerdown', {bubbles:true}))")
+      # Outside tap — prefer a real page control over synthetic coordinates (sticky chrome
+      # can sit at 4,4 and confuse elementFromPoint in this shell).
+      find(".lp-dash-anytime__head h2", match: :first).click
+      assert_no_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
+
+      dots.click
+      assert_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
+      page.send_keys(:escape)
       assert_no_selector "#today_habit_#{@habit.id} details.lp-dash-habit__menu[open]"
     end
   end
