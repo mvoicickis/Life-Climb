@@ -4,6 +4,7 @@ require "application_system_test_case"
 
 # Density token pass — mobile confirmation @ 390x844.
 class MobileDensityTokensTest < ApplicationSystemTestCase
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do

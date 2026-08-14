@@ -4,6 +4,7 @@ require "application_system_test_case"
 
 # Today redesign — hero + habits fit a short phone viewport.
 class TodayHeroViewportTest < ApplicationSystemTestCase
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do

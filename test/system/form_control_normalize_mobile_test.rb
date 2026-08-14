@@ -3,6 +3,7 @@
 require "application_system_test_case"
 
 class FormControlNormalizeMobileTest < ApplicationSystemTestCase
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do
