@@ -18,7 +18,8 @@ module Today
     end
 
     def call
-      parts = habit_parts + battle_parts
+      parts = battle_parts
+      parts += habit_parts if GameRules.habits_enabled?
       return Result.new(percent: nil, parts_count: 0) if parts.empty?
 
       Result.new(
