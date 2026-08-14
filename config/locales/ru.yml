@@ -159,6 +159,12 @@ ru:
       destination_swipe_hint: "свайпни, чтобы сменить цель"
       edit_destination: "Изменить цель"
       project_sections: "Разделы проекта"
+      what_gets_me_there: "What gets me there"
+      add_project: "Add a project"
+      empty_projects_invite: "Add a project to this path."
+      project_battles_won: "%{count} battles won"
+      project_battles_planned: "%{count} battles planned"
+      objectives_menu: "Objectives"
       project_trackers:
         title: "Трекеры"
         add: "Добавить ещё один Трекер в этот Проект"

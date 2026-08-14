@@ -30,7 +30,7 @@ class ClimbPathMountainTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "climb path caps locked nodes at three and keeps all done plus current" do
+  test "mountain lists every path project without a three-camp window" do
     8.times do |i|
       camp = @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -41,33 +41,32 @@ class ClimbPathMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-climb-path"
-    assert_select ".lp-climb-path__node.is-done", count: 2
-    assert_select ".lp-climb-path__node.is-current", count: 1
-    assert_select ".lp-climb-path__node.is-locked", count: 3
-    assert_select ".lp-climb-path__node.is-locked", text: /Camp 7/, count: 0
-    assert_select ".lp-climb-path__face[src*='fox']", minimum: 1
+    assert_select ".lp-climb-path.is-list"
+    assert_select ".lp-climb-path__kicker", text: /What gets me there/
+    8.times do |i|
+      assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp #{i}"
+    end
+    assert_select ".lp-climb-path__node.is-locked", count: 0
+    assert_select ".lp-climb-path__face", count: 0
+    assert_select "a.lp-climb-path__link", count: 0
+    assert_select ".lp-climb-path__quests", count: 0
   end
 
-  test "current and done climb nodes keep turbo focus links" do
-    first = @plan.children.create!(
+  test "project cards are not tap-to-focus links" do
+    @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Cleared camp", position: 0
-    )
-    first.complete!
-    current = @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Active camp", position: 1
+      horizon: "project", title: "Active camp", position: 0
     )
     @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Fogged camp", position: 2
+      horizon: "project", title: "Later camp", position: 1
     )
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: current.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-done a.lp-climb-path__link[href*='focus_id=#{first.id}']"
-    assert_select ".lp-climb-path__node.is-current a.lp-climb-path__link[href*='focus_id=#{current.id}']"
-    assert_select ".lp-climb-path__node.is-locked a.lp-climb-path__link", count: 0
+    assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Active camp"
+    assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Later camp"
+    assert_select "a.lp-climb-path__link", count: 0
+    assert_select ".lp-climb-path__menu-item", text: /Objectives/
   end
 end

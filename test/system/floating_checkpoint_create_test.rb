@@ -18,7 +18,7 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
       closer_percent: 40,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -58,13 +58,12 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
     assert_no_selector ".lp-first-climb-shell"
 
-    # Path-focus place-checkpoint is hidden once camps exist; use Project Sections create.
     page.evaluate_script(<<~JS)
-      document.querySelector('.lp-climb-path__node.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
+      document.querySelector('.lp-climb-path__add')?.scrollIntoView({ inline: 'end', block: 'nearest' });
     JS
-    find(".lp-climb-path__new-btn", text: /New Project/i, wait: 5).click
+    find(".lp-climb-path__new-btn", text: /Add a project/i, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-    assert_selector ".lp-rpg-float-create__heading", text: /New Project/i
+    assert_selector ".lp-rpg-float-create__heading", text: /Add a project/i
     assert_selector "body > .lp-rpg-float-create input[name='title']"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
@@ -82,9 +81,9 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
 
     page.evaluate_script(<<~JS)
-      document.querySelector('.lp-climb-path__node.is-new')?.scrollIntoView({ inline: 'end', block: 'nearest' });
+      document.querySelector('.lp-climb-path__add')?.scrollIntoView({ inline: 'end', block: 'nearest' });
     JS
-    find(".lp-climb-path__new-btn", text: /New Project/i, wait: 5).click
+    find(".lp-climb-path__new-btn", text: /Add a project/i, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
 
     card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")

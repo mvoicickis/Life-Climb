@@ -23,98 +23,98 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "MVP", position: 0
     )
-    @locked = @plan.children.create!(
+    @later = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch", position: 1
     )
   end
 
-  test "climb path shows current card skeleton with New Project" do
+  test "climb path shows every project card and add control" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-climb-path__kicker", text: /Project Sections/i
-    assert_select ".lp-climb-path__node.is-current.is-selected", text: /MVP/
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__menu-btn"
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__mark"
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__badge", text: "1"
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__meta", text: /Active/i
-    assert_select ".lp-climb-path__new-btn", text: /New Project/
+    assert_select ".lp-climb-path__kicker", text: /What gets me there/i
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__title", text: "MVP"
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__menu-btn"
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title", text: "Launch"
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__menu-btn"
+    assert_select ".lp-climb-path__new-btn", text: /Add a project/
+    assert_select "a.lp-climb-path__link", count: 0
+    assert_select ".lp-climb-path__node.is-locked", count: 0
   end
 
-  test "locked cards stay non-navigable and show menu" do
-    @locked.update!(title: "Today's Page")
+  test "later cards stay equal peers with a menu and no tap link" do
+    @later.update!(title: "Today's Page")
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__title", text: "Today's Page"
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__title[title=?]", "Today's Page"
-    assert_select ".lp-climb-path__node.is-locked.is-menu-enabled .lp-climb-path__menu-btn", minimum: 1
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__meta.is-locked", text: /Locked/i
-    assert_select ".lp-climb-path__node.is-locked a.lp-climb-path__link", count: 0
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title", text: "Today's Page"
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title[title=?]", "Today's Page"
+    assert_select "#climb-path-project-#{@later.id}.is-menu-enabled .lp-climb-path__menu-btn", minimum: 1
+    assert_select ".lp-climb-path__meta.is-locked", count: 0
+    assert_select "a.lp-climb-path__link", count: 0
   end
 
-  test "done cards have no menu" do
+  test "done cards keep the menu" do
     @active.complete!
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
 
-    assert_select ".lp-climb-path__node.is-done", text: /MVP/
-    assert_select ".lp-climb-path__node.is-done .lp-climb-path__menu-btn", count: 0
-    assert_select ".lp-climb-path__node.is-current", text: /Launch/
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__menu-btn", minimum: 1
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__title", text: /MVP/
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__menu-btn"
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title", text: /Launch/
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__menu-btn"
   end
 
-  test "empty plan shows New Project card" do
+  test "empty plan shows an invitation and add control" do
     empty = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Empty path", position: 1
     )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: empty.id, focus_id: empty.id)
     assert_response :success
-    assert_select ".lp-climb-path.is-empty .lp-climb-path__new-btn", text: /New Project/
-    assert_select ".lp-climb-path__node.is-done", count: 0
-    assert_select ".lp-climb-path__node.is-current", count: 0
-    assert_select ".lp-climb-path__node.is-locked", count: 0
+    assert_select ".lp-climb-path.is-empty .lp-climb-path__new-btn", text: /Add a project/
+    assert_select "#climb-path-empty", text: /Add a project to this path/
+    assert_select ".lp-climb-path__project", count: 0
   end
 
-  test "rename succeeds on a locked section" do
-    patch strategy_goal_path(@locked), params: { title: "Today's Page" }
+  test "rename succeeds on a later section" do
+    patch strategy_goal_path(@later), params: { title: "Today's Page" }
     assert_response :redirect
-    assert_equal "Today's Page", @locked.reload.title
-    assert_not @locked.completed?
+    assert_equal "Today's Page", @later.reload.title
+    assert_not @later.completed?
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__title", text: "Today's Page"
-    assert_select ".lp-climb-path__node.is-current", text: /MVP/
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title", text: "Today's Page"
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__title", text: /MVP/
   end
 
-  test "delete succeeds on a locked section" do
+  test "delete succeeds on a later section" do
     assert_difference -> { @plan.children.where(horizon: "project").count }, -1 do
-      delete strategy_goal_path(@locked)
+      delete strategy_goal_path(@later)
     end
     assert_response :redirect
-    assert_not StrategyGoal.exists?(@locked.id)
+    assert_not StrategyGoal.exists?(@later.id)
 
     follow_redirect!
     assert_response :success
     assert_select ".lp-climb-path__node", text: /Launch/, count: 0
-    assert_select ".lp-climb-path__node.is-current", text: /MVP/
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__title", text: /MVP/
   end
 
-  test "mid-list locked delete advances unlock queue without renumbering positions" do
+  test "mid-list delete keeps remaining positions" do
     section_c = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Polish", position: 2
     )
     position_a = @active.position
-    position_b = @locked.position
+    position_b = @later.position
     position_c = section_c.position
 
-    delete strategy_goal_path(@locked)
+    delete strategy_goal_path(@later)
     assert_response :redirect
-    assert_not StrategyGoal.exists?(@locked.id)
+    assert_not StrategyGoal.exists?(@later.id)
 
     assert_equal position_a, @active.reload.position
     assert_equal position_c, section_c.reload.position
@@ -122,15 +122,9 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-current", text: /MVP/
-    assert_select ".lp-climb-path__node.is-locked", text: /Polish/
+    assert_select "#climb-path-project-#{@active.id} .lp-climb-path__title", text: /MVP/
+    assert_select "#climb-path-project-#{section_c.id} .lp-climb-path__title", text: /Polish/
     assert_select ".lp-climb-path__node", text: /Launch/, count: 0
-
-    @active.complete!
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @active.id)
-    assert_response :success
-    assert_select ".lp-climb-path__node.is-done", text: /MVP/
-    assert_select ".lp-climb-path__node.is-current", text: /Polish/
-    assert_equal position_c, section_c.reload.position
+    assert_select ".lp-climb-path__node.is-locked", count: 0
   end
 end

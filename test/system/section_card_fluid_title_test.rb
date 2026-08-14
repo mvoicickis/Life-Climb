@@ -21,7 +21,7 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
       closer_percent: 40,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -77,11 +77,11 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: section.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector ".lp-climb-path__node.is-selected .lp-climb-path__title", visible: :all, wait: 5
+    assert_selector "#climb-path-project-#{section.id} .lp-climb-path__title", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const el = document.querySelector(".lp-climb-path__node.is-selected .lp-climb-path__title");
+        const el = document.querySelector("#climb-path-project-#{section.id} .lp-climb-path__title");
         if (!el) return { ok: false };
         const r = el.getBoundingClientRect();
         return {

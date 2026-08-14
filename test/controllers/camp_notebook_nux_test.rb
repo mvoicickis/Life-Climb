@@ -47,7 +47,7 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg"
     assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
     assert_select ".lp-climb-path"
-    assert_match(/Project Sections|Add section|New section/i, response.body)
+    assert_match(/What gets me there|Add a project/i, response.body)
   end
 
   test "after first plan the mountain shows project sections carousel" do

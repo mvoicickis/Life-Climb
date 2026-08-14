@@ -107,11 +107,11 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal :current, states[@project_b.id]
   end
 
-  test "climb path keeps menu on manually closed done node for reopen" do
+  test "climb path keeps menu on a manually closed project for reopen" do
     post strategy_goal_manual_completion_path(@project_a)
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project_a.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-done.is-manual .lp-climb-path__menu-btn"
-    assert_match I18n.t("strategy.rpg.manually_closed"), response.body
+    assert_select "#climb-path-project-#{@project_a.id} .lp-climb-path__menu-btn"
+    assert_select "#climb-path-project-#{@project_a.id} .lp-climb-path__menu-item", text: I18n.t("strategy.rpg.reopen")
   end
 end

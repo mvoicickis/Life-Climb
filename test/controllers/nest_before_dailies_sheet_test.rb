@@ -34,14 +34,14 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
   test "empty Path-level camp does not show New Quest nested-folder form" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-selected", text: /Learn German/
+    assert_select "#climb-path-project-#{@camp.id} .lp-climb-path__title", text: /Learn German/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-qs-board__title", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
     assert_select ".lp-climb-path__new-quest-btn", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
@@ -55,9 +55,13 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
+    assert_select ".lp-climb-path__quests", count: 0
+    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+
+    get objectives_strategy_goal_path(@camp)
+    assert_response :success
     assert_select ".lp-climb-path__quest-title", text: /Learn German/
     assert_select ".lp-qs-obj__text[value='Unit 1']"
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
   test "creating a nested project under Path-level camp is rejected" do

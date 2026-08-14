@@ -25,7 +25,7 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "standalone quest board is gone; quests attach under climb path camp" do
+  test "standalone quest board is gone; quests open from the project menu" do
     host = Strategy::EnsureFolderQuest.call(folder: @section)
     host.practice_tasks.create!(user: @user, title: "Learn 15 words", position: 0, completed_at: Time.current)
     host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
@@ -35,20 +35,23 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-qs-board__title", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Resume/
-    assert_select "#quest_progress_#{@section.id}", text: /1 \/ 2/
+    assert_select ".lp-climb-path__quests", count: 0
+    assert_select "#climb-path-project-#{@section.id} [data-action='click->plan-card-menu#objectives']"
     assert_select ".lp-climb-path__new-quest-btn", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+
+    get objectives_strategy_goal_path(@section)
+    assert_response :success
+    assert_select ".lp-climb-path__quest-title", text: /Resume/
+    assert_select "#quest_progress_#{@section.id}", text: /1 \/ 2/
   end
 
-  test "focusing a path camp shows inline objectives and add under climb path" do
+  test "objectives sheet shows inline objectives and add" do
     host = Strategy::EnsureFolderQuest.call(folder: @section)
     host.practice_tasks.create!(user: @user, title: "Learn 15 words", position: 0)
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    get objectives_strategy_goal_path(@section)
     assert_response :success
-    assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-climb-path__quest-title", text: /Resume/
     assert_select ".lp-qs-obj__text[value='Learn 15 words']"
     assert_select ".lp-climb-path__quest-add-input"
@@ -60,7 +63,7 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#quest_objectives_#{@section.id}"
   end
 
-  test "empty path-level camp does not show New Quest" do
+  test "empty path-level camp does not show New Quest on the card" do
     empty = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Empty section", position: 1
@@ -71,10 +74,11 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-qs-board__title", count: 0
     assert_select ".lp-climb-path__new-quest-btn", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
+    assert_select ".lp-climb-path__quests", count: 0
+    assert_select "#climb-path-project-#{empty.id} [data-action='click->plan-card-menu#objectives']"
   end
 
-  test "locked camp without days shows no quest UI" do
+  test "later camp without days is still a peer card with no inline quest" do
     @section.complete!
     locked = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
@@ -90,8 +94,10 @@ class QuestSpaceSheetTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: current.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-locked", text: /Fogged/
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__quests", count: 0
+    assert_select "#climb-path-project-#{locked.id} .lp-climb-path__title", text: /Fogged/
+    assert_select ".lp-climb-path__node.is-locked", count: 0
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-climb-path__new-quest-btn", count: 0
+    assert_select "#climb-path-project-#{locked.id} [data-action='click->plan-card-menu#objectives']"
   end
 end

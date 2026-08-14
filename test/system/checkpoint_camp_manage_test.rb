@@ -18,7 +18,7 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
       closer_percent: 40,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -50,21 +50,19 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @first.id)
-    assert_selector ".lp-climb-path__node.is-selected.is-current", text: /Daily battles/i, wait: 5
-    assert_selector ".lp-climb-path__node.is-selected .lp-climb-path__menu-btn"
-    assert_selector ".lp-climb-path__node.is-locked", text: /wewe/i
-    assert_selector ".lp-climb-path__node.is-locked .lp-climb-path__menu-btn"
+    assert_selector "#climb-path-project-#{@first.id}", text: /Daily battles/i, wait: 5
+    assert_selector "#climb-path-project-#{@first.id} .lp-climb-path__menu-btn"
+    assert_selector "#climb-path-project-#{@junk.id}", text: /wewe/i
+    assert_selector "#climb-path-project-#{@junk.id} .lp-climb-path__menu-btn"
 
-    # Delete while still locked — scroll pin clear of the tab bar first.
     before_path = page.current_path
     page.execute_script(<<~JS)
-      document.querySelector('.lp-climb-path__node.is-locked')?.scrollIntoView({ block: 'center' });
+      document.querySelector('#climb-path-project-#{@junk.id}')?.scrollIntoView({ block: 'center' });
     JS
-    find(".lp-climb-path__node.is-locked .lp-climb-path__menu-btn").click
+    find("#climb-path-project-#{@junk.id} .lp-climb-path__menu-btn").click
     assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
     assert_equal before_path, page.current_path
-    assert_includes page.current_url, "focus_id=#{@first.id}"
-    assert_selector ".lp-climb-path__node.is-locked", text: /wewe/i
+    assert_selector "#climb-path-project-#{@junk.id}", text: /wewe/i
 
     page.execute_script(<<~JS)
       document.querySelector('.lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item.is-danger')?.click();
@@ -74,7 +72,7 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
 
     assert_no_selector ".lp-climb-path__node", text: /wewe/i, wait: 5
     assert_not @user.strategy_goals.exists?(id: @junk.id)
-    assert_selector ".lp-climb-path__node.is-selected, .lp-climb-path__node.is-current", text: /Daily battles/i
+    assert_selector "#climb-path-project-#{@first.id}", text: /Daily battles/i
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-camp-manage.png")

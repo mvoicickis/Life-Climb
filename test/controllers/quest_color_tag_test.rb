@@ -37,9 +37,9 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
     assert_response :success
-    assert_select ".lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest.has-color.is-purple .lp-climb-path__quest-title", text: /Purple Volume/
-    assert_select ".lp-color-swatches"
+    assert_select "#climb-path-project-#{quest.id} .lp-climb-path__project.has-color.is-purple"
+    assert_select "#climb-path-project-#{quest.id} .lp-climb-path__title", text: /Purple Volume/
+    assert_select "#section-edit-#{quest.id} .lp-color-swatches"
     assert_select "a.lp-qs-card", count: 0
   end
 
@@ -61,8 +61,8 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
     assert_response :success
-    assert_select ".lp-climb-path__quest-title", text: /Plain Volume/
-    assert_select ".lp-climb-path__quest.has-color", text: /Plain Volume/, count: 0
+    assert_select "#climb-path-project-#{quest.id} .lp-climb-path__title", text: /Plain Volume/
+    assert_select "#climb-path-project-#{quest.id} .lp-climb-path__project.has-color", count: 0
     assert_select "a.lp-qs-card", count: 0
   end
 
@@ -134,7 +134,8 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
     assert_response :success
-    assert_select ".lp-climb-path__quest.has-color.is-coral .lp-climb-path__quest-title", text: /Edit me/
-    assert_select "#quest-edit-#{quest.id} .lp-color-swatch.is-coral input[checked]"
+    assert_select "#climb-path-project-#{quest.id} .lp-climb-path__project.has-color.is-coral"
+    assert_select "#climb-path-project-#{quest.id} .lp-climb-path__title", text: /Edit me/
+    assert_select "#section-edit-#{quest.id} .lp-color-swatch.is-coral input[checked]"
   end
 end

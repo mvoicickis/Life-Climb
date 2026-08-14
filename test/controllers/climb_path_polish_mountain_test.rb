@@ -37,20 +37,20 @@ class ClimbPathPolishMountainTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Active", position: 1
     )
-    @locked = @plan.children.create!(
+    @later = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Fogged", position: 2
     )
   end
 
-  test "climb path nodes expose node target; playable links wire tap haptic" do
+  test "climb path nodes expose node target; cards are not tap links" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_response :success
 
     assert_select ".lp-climb-path__node[data-climb-path-target*='node']", minimum: 3
-    assert_select ".lp-climb-path__node.is-done a.lp-climb-path__link[data-action*='climb-path#tap']"
-    assert_select ".lp-climb-path__node.is-current a.lp-climb-path__link[data-action*='climb-path#tap']"
-    assert_select ".lp-climb-path__node.is-locked a.lp-climb-path__link[data-action*='climb-path#tap']", count: 0
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__link.is-static"
+    assert_select "a.lp-climb-path__link", count: 0
+    assert_select "#climb-path-project-#{@done.id} .lp-climb-path__title", text: "Cleared"
+    assert_select "#climb-path-project-#{@current.id} .lp-climb-path__title", text: "Active"
+    assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title", text: "Fogged"
   end
 end

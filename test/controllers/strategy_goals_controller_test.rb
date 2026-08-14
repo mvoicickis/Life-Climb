@@ -88,13 +88,16 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-climb-path__quest-title", text: /Learn German/i
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__node.is-current", text: /Learn German/i
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Learn German/i
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select "#strategy-camp-notebook", count: 0
     assert_no_match(/Today.?s Focus/i, response.body)
     assert_no_match(/Monthly Goals/i, response.body)
+
+    get objectives_strategy_goal_path(project)
+    assert_response :success
+    assert_select ".lp-climb-path__quest-title", text: /Learn German/i
   end
 
   test "month horizon is rejected" do
@@ -197,10 +200,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
-    assert_select ".lp-climb-path__node.is-current", text: /Project One/i
+    assert_select ".lp-climb-path__node", text: /Project One/i
     assert_select ".lp-climb-path__node", text: /Project Two/i
-    assert_select ".lp-climb-path__quest-title"
-    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
@@ -278,8 +280,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-climb-path__node", minimum: 3
-    assert_select ".lp-climb-path__quest-title"
-    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end
 
@@ -302,10 +303,14 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-climb-path__quest-title"
-    assert_select ".lp-climb-path__quest-add-input"
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
+
+    get objectives_strategy_goal_path(project)
+    assert_response :success
+    assert_select ".lp-climb-path__quest-title"
+    assert_select ".lp-climb-path__quest-add-input"
   end
 
   test "tapping a plan focuses missions under that checkpoint" do
@@ -356,7 +361,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_not @user.strategy_goals.exists?(id: junk.id)
 
     follow_redirect!
-    assert_select ".lp-climb-path__node.is-selected, .lp-climb-path__node.is-current", text: /Keep me/
+    assert_select "#climb-path-project-#{keep.id} .lp-climb-path__title", text: /Keep me/
     assert_select ".lp-climb-path__node", text: /wewe/, count: 0
   end
 
@@ -388,7 +393,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-climb-path__node.is-selected, .lp-climb-path__node.is-locked", text: /Launch prep/
+    assert_select "#climb-path-project-#{created.id} .lp-climb-path__title", text: /Launch prep/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
@@ -522,8 +527,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    # Climb-path quest surfaces objectives on the checklist host, not day-quest cards.
-    assert_select ".lp-climb-path__quests[open]"
+    assert_select ".lp-climb-path__quests", count: 0
+
+    get objectives_strategy_goal_path(nested)
+    assert_response :success
     assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-rpg-practice-folder__title", count: 0
   end

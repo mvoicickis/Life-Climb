@@ -18,7 +18,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
       closer_percent: 40,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -46,7 +46,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
   end
 
-  test "climb path and quest titles change focused objectives" do
+  test "⋮ Objectives opens each project's quest sheet" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -54,40 +54,31 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a_leaf.id)
-    assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
-    assert_selector ".lp-climb-path__node.is-locked", text: /Ship landing page/i
-    assert_no_selector ".lp-climb-path__node.is-locked a.lp-climb-path__link"
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Get first 100 users|Ship landing page/i
-    assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
-    assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']"
+    assert_selector "#climb-path-project-#{@camp_a.id}", text: /Get first 100 users/i, wait: 5
+    assert_selector "#climb-path-project-#{@camp_b.id}", text: /Ship landing page/i
+    assert_no_selector "a.lp-climb-path__link"
+    assert_no_selector ".lp-climb-path__node.is-locked"
 
-    # Unlock the next section, then switch via the climb path.
-    @camp_a.complete!
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id)
-    assert_selector ".lp-climb-path__node.is-selected", text: /Ship landing page/i, wait: 5
-    assert_no_selector ".lp-rpg-section-head"
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Get first 100 users|Ship landing page/i, wait: 5
-    assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']", visible: :all, wait: 3
-    assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']"
+    open_project_objectives(@camp_a)
+    within("dialog#section-objectives-#{@camp_a.id}") do
+      assert_selector ".lp-climb-path__quest-title", text: /Get first 100 users/i
+      assert_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
+      assert_no_selector ".lp-qs-obj__text[value='Draft hero headline']"
+    end
+    find("dialog#section-objectives-#{@camp_a.id} .lp-strategy-sheet__close").click
 
-    # The previous node can sit above the trail viewport (opacity 0 until IO).
-    page.execute_script(<<~JS)
-      const node = [...document.querySelectorAll(".lp-climb-path__node")]
-        .find((el) => /Get first 100 users/i.test(el.textContent || ""));
-      node?.scrollIntoView({ block: "center" });
-    JS
-    find(".lp-climb-path__node", text: /Get first 100 users/i, wait: 5)
-      .find("a.lp-climb-path__link").click
-    assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
-    assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Get first 100 users|Ship landing page/i, wait: 5
-    assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all, wait: 3
+    open_project_objectives(@camp_b)
+    within("dialog#section-objectives-#{@camp_b.id}") do
+      assert_selector ".lp-climb-path__quest-title", text: /Ship landing page/i, wait: 5
+      assert_selector ".lp-qs-obj__text[value='Draft hero headline']", visible: :all, wait: 3
+      assert_no_selector ".lp-qs-obj__text[value='Ask 5 friends for feedback']"
+    end
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/camp-sheet-nav.png")
   end
 
-  test "empty camp shows New Quest under climb path after switch" do
+  test "empty camp has no New Quest on the card" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -102,11 +93,13 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
-    assert_selector ".lp-climb-path__node.is-selected", text: /Empty camp/i, wait: 5
+    assert_selector "#climb-path-project-#{empty.id}", text: /Empty camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_no_selector ".lp-rpg-practice-cats__hint"
     assert_no_selector ".lp-qs-board__title"
     assert_no_selector ".lp-climb-path__new-quest-btn"
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
+    assert_no_selector "#climb-path-project-#{empty.id} .lp-climb-path__quest-add"
+    assert_selector "#climb-path-project-#{empty.id} [data-action='click->plan-card-menu#objectives']", visible: :all
   end
 end
