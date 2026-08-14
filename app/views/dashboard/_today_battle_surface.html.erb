@@ -7,6 +7,10 @@
         strategy_goal: @strategy_goal,
         first_climb: @first_climb_needed %>
 <% else %>
+  <%# Battle day strip sits directly under the hero, above habits (it is about
+      battles, not habits). Kept inside #today-battle-surface so it still
+      turbo-refreshes on a win. Its own markup/logic is unchanged (#327). %>
+  <%= render "dashboard/dash_day_strip", todos: @daily_todos %>
   <%= render "dashboard/dash_anytime", habits: @habits %>
   <%= render "dashboard/dash_timeline",
         timeline: @timeline,
