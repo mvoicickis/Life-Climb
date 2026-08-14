@@ -52,7 +52,7 @@ module Strategy
         else
           StrategyGoal.where(parent_id: node.id).ordered.to_a
         end
-      kids.select { |child| child.kind == kind }
+      kids.select { |child| child.kind == kind && !child.holding? }
     end
     private_class_method :child_nodes
 

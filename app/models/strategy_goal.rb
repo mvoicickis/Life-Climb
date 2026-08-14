@@ -39,6 +39,8 @@ class StrategyGoal < ApplicationRecord
            inverse_of: :source_day
 
   before_destroy :destroy_open_daily_todos, prepend: true
+  before_destroy :reparent_descendant_battles_to_holding!, prepend: true
+  before_destroy :prevent_user_destroy_of_holding, prepend: true
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
   validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
@@ -59,6 +61,8 @@ class StrategyGoal < ApplicationRecord
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
   validate :quantity_target_rules
+  validate :holding_shape
+  validate :holding_plan_accepts_only_holding_camp
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
@@ -79,6 +83,15 @@ class StrategyGoal < ApplicationRecord
   scope :incomplete, -> { where(completed_at: nil) }
   scope :for_day, ->(date = Date.current) { where(horizon: "day", scheduled_on: date) }
   scope :battles, -> { where(horizon: "day") }
+  scope :not_holding, -> { where(holding: false) }
+
+  def self.with_holding_destroy
+    prior = Thread.current[:strategy_goal_allow_holding_destroy]
+    Thread.current[:strategy_goal_allow_holding_destroy] = true
+    yield
+  ensure
+    Thread.current[:strategy_goal_allow_holding_destroy] = prior
+  end
 
   def completed?
     completed_at.present?
@@ -285,7 +298,7 @@ class StrategyGoal < ApplicationRecord
   def normalize_color_key
     return unless has_attribute?(:color_key)
 
-    self.color_key = color_key.to_s.strip.presence
+    self.color_key = holding? ? nil : color_key.to_s.strip.presence
   end
 
   def normalize_effort_tier
@@ -296,6 +309,12 @@ class StrategyGoal < ApplicationRecord
 
   def quantity_target_rules
     return unless has_attribute?(:target_amount)
+
+    if holding?
+      errors.add(:target_amount, :invalid) if self.target_amount.present?
+      errors.add(:unit, :invalid) if self.unit.present?
+      return
+    end
 
     if self.target_amount.blank?
       errors.add(:unit, :invalid) if self.unit.present?
@@ -375,12 +394,91 @@ class StrategyGoal < ApplicationRecord
   end
 
   # Daily practices hang under nested camps, not directly under a Path-level camp.
+  # Holding camps are the exception: loose battles sit on the holding camp itself.
   def day_requires_nested_camp
     return unless day?
     return if parent.blank?
+    return if parent.holding?
     return unless parent.path_level_camp?
 
     errors.add(:base, I18n.t("strategy.rpg.day_needs_nested_camp"))
+  end
+
+  def holding_shape
+    return unless holding?
+
+    if plan?
+      errors.add(:parent_id, :invalid) unless parent&.goal?
+      return
+    end
+
+    if project? && parent&.plan? && parent.holding?
+      return
+    end
+
+    errors.add(:holding, :invalid)
+  end
+
+  def holding_plan_accepts_only_holding_camp
+    return unless parent&.holding? && parent.plan?
+    return if holding? && project?
+
+    errors.add(:parent_id, :invalid)
+  end
+
+  def prevent_user_destroy_of_holding
+    return unless holding?
+    return if destroyed_by_association
+    return if Thread.current[:strategy_goal_allow_holding_destroy]
+
+    throw :abort
+  end
+
+  # Snapshot → move → reset cached children → verify. Do not reorder.
+  def reparent_descendant_battles_to_holding!
+    return unless project?
+    return if holding?
+    return if Thread.current[:strategy_goal_allow_holding_destroy]
+
+    snapshot_ids = Strategy::Progress.battles_under(self).map(&:id)
+    return if snapshot_ids.empty?
+
+    camp = holding_camp_for_reparent!
+    StrategyGoal.where(id: snapshot_ids).find_each do |battle|
+      battle.update!(parent: camp)
+    end
+
+    children.reset
+    descendant_project_ids_for_reset.each do |folder_id|
+      folder = StrategyGoal.find_by(id: folder_id)
+      folder&.association(:children)&.reset
+    end
+
+    leftover = Strategy::Progress.battles_under(reload).map(&:id) & snapshot_ids
+    return if leftover.empty?
+
+    raise "holding reparent left battles #{leftover.join(',')}"
+  end
+
+  def holding_camp_for_reparent!
+    journey = life_journey ||
+              user.life_journeys.find_by(id: life_journey_id) ||
+              user.life_journeys.find_by(life_area_id: life_area_id) ||
+              user.primary_focused_journey
+    Strategy::HoldingProject.ensure!(user: user, journey: journey)
+  end
+
+  def descendant_project_ids_for_reset
+    ids = []
+    frontier = [ id ]
+    while frontier.any?
+      kids = StrategyGoal.where(parent_id: frontier, horizon: "project").pluck(:id)
+      break if kids.empty?
+
+      ids.concat(kids)
+      frontier = kids
+    end
+    ids
   end
 
   def root_must_be_goal

@@ -3,7 +3,7 @@
 class StrategyGoalHabitLinksController < ApplicationController
   def create
     project = current_user.strategy_goals.find(params[:strategy_goal_id])
-    unless project.path_level_camp?
+    unless project.path_level_camp? && !project.holding?
       return redirect_to project_trackers_path(project),
                          alert: t("strategy.rpg.project_trackers.need_project"),
                          status: :see_other

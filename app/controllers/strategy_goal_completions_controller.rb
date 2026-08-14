@@ -5,6 +5,7 @@
 class StrategyGoalCompletionsController < ApplicationController
   before_action :require_planning_v2
   before_action :set_goal
+  before_action :reject_holding
 
   def create
     unless @goal.plan? || @goal.project?
@@ -30,6 +31,13 @@ class StrategyGoalCompletionsController < ApplicationController
 
   def set_goal
     @goal = current_user.strategy_goals.find(params[:strategy_goal_id])
+  end
+
+  def reject_holding
+    return unless @goal.holding?
+
+    redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
+    throw :abort
   end
 
   def mountain_return_path

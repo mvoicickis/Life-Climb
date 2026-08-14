@@ -16,7 +16,7 @@
      else "base"
      end %>
 <% root_goals = @root_goals || [] %>
-<% plans = @goal ? @goal.children.select(&:plan?).sort_by { |p| [ p.position.to_i, p.id ] } : [] %>
+<% plans = @goal ? @goal.children.select { |c| c.plan? && !c.holding? }.sort_by { |p| [ p.position.to_i, p.id ] } : [] %>
 <% plan = @plan %>
 <% current_project = @current_project %>
 <% alive = current_user.alive_level %>

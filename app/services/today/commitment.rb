@@ -342,7 +342,9 @@ module Today
     # Walk Goal → Plan → Project spine (and nested project camps).
     def self.each_project_under(node, &block)
       node.children.ordered.each do |child|
-        if child.project?
+        if child.holding?
+          next
+        elsif child.project?
           yield child
           each_project_under(child, &block)
         elsif child.plan?

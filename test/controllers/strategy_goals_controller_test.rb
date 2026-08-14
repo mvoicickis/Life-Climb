@@ -567,4 +567,26 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert todo.reload.completed?
     assert @user.daily_todos.exists?(strategy_goal_id: practice.id, scheduled_on: Date.current + 1.day)
   end
+
+  test "update and destroy reject holding nodes" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    camp = Strategy::HoldingProject.ensure!(user: @user, journey: @journey)
+    plan = camp.parent
+    assert_equal goal.id, plan.parent_id
+
+    patch strategy_goal_path(camp), params: { title: "Visible now" }
+    assert_redirected_to %r{/}
+    assert_equal I18n.t("strategy.holding.project_title"), camp.reload.title
+
+    delete strategy_goal_path(camp)
+    assert StrategyGoal.exists?(camp.id)
+
+    patch strategy_goal_path(plan), params: { title: "Visible plan" }
+    assert_equal I18n.t("strategy.holding.plan_title"), plan.reload.title
+
+    delete strategy_goal_path(plan)
+    assert StrategyGoal.exists?(plan.id)
+  end
 end

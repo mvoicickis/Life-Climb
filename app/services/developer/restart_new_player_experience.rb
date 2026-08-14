@@ -19,7 +19,7 @@ module Developer
         # Quantity logs FK to daily_todos — must go first (delete_all skips nullify callbacks).
         @user.strategy_quantity_logs.delete_all
         @user.daily_todos.delete_all
-        @user.strategy_goals.destroy_all
+        StrategyGoal.with_holding_destroy { @user.strategy_goals.destroy_all }
         @user.life_journeys.destroy_all
         # Journeys first: LifeArea has_many :life_journeys, dependent: :restrict_with_error
         @user.life_areas.destroy_all

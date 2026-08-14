@@ -24,10 +24,14 @@ module Battles
       category = Onboarding::Categories.resolve_for(user: @user, explicit: @explicit_category)
       title = @forced_title.presence || example_title_for(category)
 
-      project = Strategy::PathProject.ensure!(user: @user, journey: journey, title: title)
-      raise Error, I18n.t("notifications.actions.need_spine") if project.blank?
-
-      parent = PracticeParent.call(user: @user, project: project)
+      project = Strategy::PathProject.resolve(user: @user, journey: journey)
+      parent =
+        if project
+          PracticeParent.call(user: @user, project: project)
+        else
+          Strategy::HoldingProject.ensure!(user: @user, journey: journey)
+        end
+      raise Error, I18n.t("notifications.actions.need_spine") if parent.blank?
       battle = @user.strategy_goals.create!(
         life_area: journey.life_area,
         life_journey: journey,
@@ -42,6 +46,8 @@ module Battles
       todo = @user.daily_todos.find_by!(strategy_goal_id: battle.id, scheduled_on: Date.current)
 
       Result.new(todo: todo, battle: battle, title: title, category: category)
+    rescue Strategy::HoldingProject::Error => e
+      raise Error, e.message
     end
 
     private

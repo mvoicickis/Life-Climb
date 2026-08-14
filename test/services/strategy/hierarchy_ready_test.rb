@@ -42,4 +42,15 @@ class StrategyHierarchyReadyTest < ActiveSupport::TestCase
     assert Strategy::HierarchyReady.call(user: @user, goal: @goal)
     assert Strategy::HierarchyReady.call(user: @user, journey: @journey)
   end
+
+  test "holding plan and camp alone do not make the hierarchy ready" do
+    Strategy::HoldingProject.ensure!(user: @user, journey: @journey)
+    camp = @user.strategy_goals.find_by!(holding: true, horizon: "project")
+    camp.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Loose", scheduled_on: Date.current, position: 0
+    )
+
+    refute Strategy::HierarchyReady.call(user: @user, goal: @goal)
+  end
 end

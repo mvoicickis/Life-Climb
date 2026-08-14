@@ -1255,6 +1255,9 @@ en:
     bad_area: "Unknown life section."
     start_section: "Start a strategy for this part of life."
     need_goal: "Create your goal first."
+    holding:
+      plan_title: "lp.holding.plan"
+      project_title: "lp.holding.project"
     celebrate:
       goal: "Goal locked · planning +%{sp}"
       first_plan: "First plan · planning +%{sp}"

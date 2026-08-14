@@ -10,6 +10,9 @@ de:
     prompt_lead: "Wähle einen Begleiter. Du siehst ihn bei Heute und auf dem Berg."
     prompt_cta: "Begleiter speichern"
   strategy:
+    holding:
+      plan_title: "lp.holding.plan"
+      project_title: "lp.holding.project"
     add_another_plan: "Weiteren Plan hinzufügen"
     add_another_project: "Weiteres Projekt hinzufügen"
     add_another_battle: "Weitere Schlacht hinzufügen"

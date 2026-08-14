@@ -57,7 +57,7 @@ module Trackers
     end
 
     def resolve_plan(goal, journey)
-      plans = goal.children.for_kind("plan").ordered.to_a
+      plans = goal.children.for_kind("plan").not_holding.ordered.to_a
       open = plans.find { |plan| plan.completed_at.blank? }
       return open if open
       return plans.first if plans.any?

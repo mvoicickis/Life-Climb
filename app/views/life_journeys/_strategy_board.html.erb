@@ -45,7 +45,7 @@
         <%# Primary create lives in Next Up %>
 
       <% elsif @level == "plans" %>
-        <% plans = @children.select(&:plan?) %>
+        <% plans = @children.select { |c| c.plan? && !c.holding? } %>
         <% if plans.any? %>
           <div class="lp-strategy__board-head">
             <h2 class="lp-strategy__board-title"><%= t("strategy.questions.plan") %></h2>
@@ -72,7 +72,7 @@
         <% end %>
 
       <% elsif @level == "projects" %>
-        <% projects = @children.select(&:project?) %>
+        <% projects = @children.select { |c| c.project? && !c.holding? } %>
         <div class="lp-strategy__board-head">
           <h2 class="lp-strategy__board-title"><%= @focus.title %></h2>
           <% unless focus_create %>

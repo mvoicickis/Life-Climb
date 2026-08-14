@@ -10,7 +10,7 @@ class Strategy::PathProjectTest < ActiveSupport::TestCase
     @journey = seed_goal_only!
   end
 
-  test "ensure! creates Plan and path Project named from battle title when spine missing" do
+  test "ensure! uses the holding camp when no visible path Project exists" do
     assert_nil Strategy::PathProject.resolve(user: @user, journey: @journey)
 
     project = Strategy::PathProject.ensure!(
@@ -19,11 +19,12 @@ class Strategy::PathProjectTest < ActiveSupport::TestCase
       title: "Ship LifePoints MVP"
     )
 
+    assert project.holding?
     assert project.path_level_camp?
-    assert_equal "Ship LifePoints MVP", project.title
-    assert_equal "Ship LifePoints MVP", project.parent.title
+    assert project.parent.holding?
     assert project.parent.plan?
-    assert_nil project.completed_at
+    refute_equal "Ship LifePoints MVP", project.title
+    refute_equal "Ship LifePoints MVP", project.parent.title
   end
 
   test "resolve returns the only incomplete path Project" do

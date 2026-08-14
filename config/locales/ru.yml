@@ -10,6 +10,9 @@ ru:
     prompt_lead: "Выбери одного спутника. Ты увидишь его в Сегодня и на горе."
     prompt_cta: "Сохранить спутника"
   strategy:
+    holding:
+      plan_title: "lp.holding.plan"
+      project_title: "lp.holding.project"
     add_another_plan: "Добавить ещё один план"
     add_another_project: "Добавить ещё один проект"
     add_another_battle: "Добавить ещё одну битву"

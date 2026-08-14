@@ -2,7 +2,7 @@
 <% mountain ||= @mountain || { stage: :empty, progress: 0, flags: 0, label: "" } %>
 <% stage = mountain[:stage].to_s %>
 <% camp = strategy_camp_percent(mountain) %>
-<% plans = @goal ? @goal.children.select(&:plan?).sort_by(&:position) : [] %>
+<% plans = @goal ? @goal.children.select { |c| c.plan? && !c.holding? }.sort_by(&:position) : [] %>
 <% selected_plan = @branch_plan || plans.first %>
 <% other_plans = plans.reject { |p| selected_plan && p.id == selected_plan.id } %>
 <% visible_other_plans = other_plans.first(StrategyHelper::PILL_SLOTS.length) %>

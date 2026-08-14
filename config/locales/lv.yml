@@ -10,6 +10,9 @@ lv:
     prompt_lead: "Izvēlies vienu pavadoni. Tu viņu redzēsi Šodienā un kalnā."
     prompt_cta: "Saglabāt pavadoni"
   strategy:
+    holding:
+      plan_title: "lp.holding.plan"
+      project_title: "lp.holding.project"
     add_another_plan: "Pievienot vēl vienu plānu"
     add_another_project: "Pievienot vēl vienu projektu"
     add_another_battle: "Pievienot vēl vienu kauju"

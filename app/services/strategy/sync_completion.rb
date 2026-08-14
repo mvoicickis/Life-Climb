@@ -12,7 +12,7 @@ module Strategy
     # Structural mutations (create/destroy Project or Plan, raise quantified
     # target). Accepts project, plan, or goal and reuses the same sync rules.
     def self.resync!(node:)
-      return if node.blank?
+      return if node.blank? || node.holding?
 
       case node.kind
       when "project"
@@ -30,6 +30,7 @@ module Strategy
 
     def self.align_project_stamp!(project)
       return unless project&.project?
+      return if project.holding?
       return if project.manually_completed?
 
       if Strategy::Progress.percent(project) >= 100
@@ -67,9 +68,10 @@ module Strategy
     end
 
     def sync_branch!(branch)
+      return if branch.holding?
       return if branch.manually_completed?
 
-      projects = StrategyGoal.where(parent_id: branch.id, horizon: "project").to_a
+      projects = StrategyGoal.where(parent_id: branch.id, horizon: "project").not_holding.to_a
       if projects.any? && projects.all? { |p| p.completed_at.present? }
         branch.complete!
       else
@@ -78,9 +80,10 @@ module Strategy
     end
 
     def sync_plan!(plan)
+      return if plan.holding?
       return if plan.manually_completed?
 
-      projects = StrategyGoal.where(parent_id: plan.id, horizon: "project").to_a
+      projects = StrategyGoal.where(parent_id: plan.id, horizon: "project").not_holding.to_a
       if projects.any? && projects.all? { |p| project_satisfies_plan?(p) }
         plan.complete!
       else
@@ -92,7 +95,7 @@ module Strategy
       return if goal.blank?
       return if goal.manually_completed?
 
-      plans = StrategyGoal.where(parent_id: goal.id, horizon: %w[plan]).to_a
+      plans = StrategyGoal.where(parent_id: goal.id, horizon: %w[plan]).not_holding.to_a
       if plans.any? && plans.all? { |plan| plan_satisfies_goal?(plan) }
         goal.complete!
       else

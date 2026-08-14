@@ -10,6 +10,9 @@ es:
     prompt_lead: "Elige un compañero. Lo verás en Hoy y en la montaña."
     prompt_cta: "Guardar compañero"
   strategy:
+    holding:
+      plan_title: "lp.holding.plan"
+      project_title: "lp.holding.project"
     add_another_plan: "Añadir otro plan"
     add_another_project: "Añadir otro proyecto"
     add_another_battle: "Añadir otra batalla"

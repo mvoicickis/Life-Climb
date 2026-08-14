@@ -21,10 +21,14 @@ module Strategy
       journey = @user.primary_focused_journey || @user.focused_journeys.first
       raise Error, I18n.t("dash.add_step.need_journey") if journey.blank?
 
-      project = PathProject.ensure!(user: @user, journey: journey, title: @todo.title)
-      raise Error, I18n.t("dash.add_step.need_spine") if project.blank?
-
-      parent = Battles::PracticeParent.call(user: @user, project: project)
+      project = PathProject.resolve(user: @user, journey: journey)
+      parent =
+        if project
+          Battles::PracticeParent.call(user: @user, project: project)
+        else
+          HoldingProject.ensure!(user: @user, journey: journey)
+        end
+      raise Error, I18n.t("dash.add_step.need_spine") if parent.blank?
 
       day = @user.strategy_goals.where(horizon: "day").find_or_create_by!(
         scheduled_on: @todo.scheduled_on,
@@ -39,6 +43,8 @@ module Strategy
 
       link_todo!(day)
       day
+    rescue HoldingProject::Error => e
+      raise Error, e.message
     end
 
     private

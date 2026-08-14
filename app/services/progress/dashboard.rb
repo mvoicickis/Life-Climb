@@ -355,8 +355,8 @@ module Progress
       goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
       return empty_mountain_summary(journey) unless goal
 
-      plans = goal.children.select(&:plan?)
-      projects = plans.flat_map { |plan| plan.children.select(&:project?) }
+      plans = goal.children.select { |c| c.plan? && !c.holding? }
+      projects = plans.flat_map { |plan| plan.children.select { |c| c.project? && !c.holding? } }
       plans_done = plans.count(&:completed?)
       projects_done = projects.count(&:completed?)
       current = plans.find { |plan| Strategy::Progress.percent(plan) < 100 } || plans.first

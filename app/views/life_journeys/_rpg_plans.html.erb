@@ -12,7 +12,7 @@
   <% if @goal && plans.any? %>
     <ul class="lp-rpg-plan-list">
       <% plans.each_with_index do |plan, idx| %>
-        <% kids = plan.children.select(&:project?) %>
+        <% kids = plan.children.select { |c| c.project? && !c.holding? } %>
         <% done = kids.count(&:completed?) %>
         <% pct = plan.progress_percent.to_i %>
         <% accent = accents[idx % accents.size] %>
