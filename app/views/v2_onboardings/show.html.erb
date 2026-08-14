@@ -197,13 +197,15 @@
                     data: { commitment_eligible: elig.eligible? } %>
               <span class="lp-adventure__commitment-name"><%= t("v2_onboarding.commitment_presets.#{key}") %></span>
               <span class="lp-adventure__commitment-meta">
-                <%= t("v2_onboarding.commitment_counts", habits: preset[:habit_count], battles: preset[:battle_count]) %>
+                <%= habits_enabled? ? t("v2_onboarding.commitment_counts", habits: preset[:habit_count], battles: preset[:battle_count]) : t("v2_onboarding.commitment_counts_battles_only", battles: preset[:battle_count]) %>
               </span>
               <% if disabled %>
                 <span class="lp-adventure__commitment-lock">
-                  <%= t("v2_onboarding.commitment_locked",
-                        habits: preset[:habit_count],
-                        camps: preset[:battle_count]) %>
+                  <% if habits_enabled? %>
+                    <%= t("v2_onboarding.commitment_locked", habits: preset[:habit_count], camps: preset[:battle_count]) %>
+                  <% else %>
+                    <%= t("v2_onboarding.commitment_locked_battles_only", camps: preset[:battle_count]) %>
+                  <% end %>
                 </span>
               <% end %>
             </label>

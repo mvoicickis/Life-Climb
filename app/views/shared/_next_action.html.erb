@@ -31,12 +31,16 @@
           <p class="lp-dash-next__progress" data-commitment-progress="true">
             <% if commitment.met? %>
               <%= t("dash.commitment.survived") %>
-            <% else %>
+            <% elsif habits_enabled? %>
               <%= t("dash.commitment.progress",
                     battles_done: commitment.battle_done,
                     battles_total: commitment.battle_required,
                     habits_done: commitment.habit_done,
                     habits_total: commitment.habit_required) %>
+            <% else %>
+              <%= t("dash.commitment.progress_battles_only",
+                    battles_done: commitment.battle_done,
+                    battles_total: commitment.battle_required) %>
             <% end %>
           </p>
         <% end %>

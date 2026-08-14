@@ -1,4 +1,9 @@
 module ApplicationHelper
+  # Single switch for hiding Habits from the UI (see GameRules.habits_enabled?).
+  def habits_enabled?
+    GameRules.habits_enabled?
+  end
+
   # Skip rendering when no companion is chosen yet (nil character_image).
   def companion_image_tag(user = current_user, **options)
     return if user.blank? || user.character_image.blank?

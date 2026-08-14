@@ -33,7 +33,36 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-tcard__title", text: "Battle"
   end
 
+  test "Today hides the habits section, nag, and habit count while habits are disabled" do
+    user = users(:one)
+    sign_in_as user
+    Onboarding::Run.call(
+      user: user, area_key: "career", title: "Ship", ideal_scene: "Live",
+      current_reality: "Building", next_win: "Launch", today_mission: "Write tests",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.create!(life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0)
+    plan = user.strategy_goals.create!(life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Plan", position: 0)
+    project = user.strategy_goals.create!(life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Project", position: 0)
+    leaf = practice_leaf_for!(project)
+    user.strategy_goals.create!(life_area: area, life_journey: journey, parent: leaf, horizon: "day", title: "Battle", scheduled_on: Date.current, position: 0)
+    Strategy::CascadeToDaily.call(user: user, life_area: area)
+    # A real habit exists but must be hidden, not merely absent.
+    user.habits.create!(name: "Read", unit: "pages", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth", goal: 10)
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-dash-anytime", count: 0
+    assert_no_match(/Add a habit/i, response.body)
+    assert_no_match(/\d+\s+habits/i, response.body)
+    assert_select ".lp-dash-hero__lab em", text: /battle/i
+  end
+
   test "battle day strip renders above the habits section" do
+    enable_habits!
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(

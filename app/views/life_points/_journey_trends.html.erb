@@ -30,7 +30,7 @@
       <%= render "life_points/journey_trends_quantified", series_list: trends[:quantified] %>
     <% end %>
 
-    <% if trends[:habits].present? %>
+    <% if trends[:habits].present? && habits_enabled? %>
       <%= render "life_points/journey_trends_habits", habits: trends[:habits] %>
     <% end %>
   <% end %>

@@ -60,7 +60,8 @@ module Today
     def self.setup_gap(user:, journey:, date: Date.current)
       return nil if user.blank? || journey.blank?
 
-      habit_need = journey.commitment_habit_count.to_i
+      # Habits hidden -> requirement treated as 0 so the day is battles-only.
+      habit_need = GameRules.habits_enabled? ? journey.commitment_habit_count.to_i : 0
       battle_need = journey.commitment_battle_count.to_i
       habit_have = user.habits.active.on_home.count
       todos = user.daily_todos.for_day(date).ordered.to_a
@@ -158,7 +159,8 @@ module Today
     end
 
     def self.eligibility_for_counts(user:, journey:, habit_count:, battle_count:, key: "custom")
-      habit_need = habit_count.to_i
+      # Habits hidden -> requirement treated as 0 so eligibility is battles-only.
+      habit_need = GameRules.habits_enabled? ? habit_count.to_i : 0
       camp_need = battle_count.to_i
       habit_have = user.habits.active.on_home.count
       camp_have = camp_capacity(journey)
@@ -281,7 +283,8 @@ module Today
       todos = @user.daily_todos.for_day(@date).to_a
       timed_done = todos.select { |todo| todo.timed? && todo.completed? }
 
-      habit_required = @journey.commitment_habit_count.to_i
+      # Habits hidden -> requirement treated as 0 so "met" is battles-only.
+      habit_required = GameRules.habits_enabled? ? @journey.commitment_habit_count.to_i : 0
       battle_required = @journey.commitment_battle_count.to_i
       habit_done = [ green.size, habit_required ].min
       battle_done = [ timed_done.size, battle_required ].min

@@ -3,6 +3,7 @@
 require "test_helper"
 
 class V2OnboardingCommitmentTest < ActionDispatch::IntegrationTest
+  setup { enable_habits! }
   setup do
     post registration_url, params: {
       user: {

@@ -5,6 +5,7 @@ require "application_system_test_case"
 # Regression: #311 habit ⋯ sheet was clipped by overflow:hidden on the slot card,
 # rendering as an empty grey box that covered the title/progress.
 class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do

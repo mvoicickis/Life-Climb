@@ -49,7 +49,7 @@
     </p>
     <div class="lp-dash-hero__lab">
       <b><%= t("dash.hero.of_day") %></b>
-      <em><%= t("dash.hero.mix", habits: habits_count, battles: battles_count) %></em>
+      <em><%= habits_enabled? ? t("dash.hero.mix", habits: habits_count, battles: battles_count) : t("dash.hero.battles_only", count: battles_count) %></em>
     </div>
   </div>
 

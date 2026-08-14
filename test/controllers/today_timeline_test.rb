@@ -25,6 +25,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
   end
 
   test "Today renders compressed timeline and Anytime without section headers" do
+    enable_habits!
     get dashboard_path
     assert_response :success
 

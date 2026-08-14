@@ -3,6 +3,7 @@
 require "test_helper"
 
 class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
+  setup { enable_habits! }
   setup do
     @user = users(:one)
     @user.update!(character: "fox", climb_streak_days: 0, climb_streak_on: nil)

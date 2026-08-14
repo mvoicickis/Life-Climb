@@ -40,6 +40,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
   end
 
   test "Easy with zero habits shows setup_gap not commitment_gap" do
+    enable_habits!
     @user.habits.active.on_home.destroy_all
     @user.daily_todos.create!(
       title: "First fight", scheduled_on: Date.current, aspect_key: "career",

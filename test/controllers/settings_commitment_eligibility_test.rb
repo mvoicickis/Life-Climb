@@ -3,6 +3,7 @@
 require "test_helper"
 
 class SettingsCommitmentEligibilityTest < ActionDispatch::IntegrationTest
+  setup { enable_habits! }
   setup do
     @user = users(:one)
     @user.update!(character: "fox")

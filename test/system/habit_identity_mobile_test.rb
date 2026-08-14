@@ -3,6 +3,7 @@
 require "application_system_test_case"
 
 class HabitIdentityMobileTest < ApplicationSystemTestCase
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do

@@ -74,8 +74,10 @@
       <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.commitment.title") %></h2>
       <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.commitment.hint") %></p>
       <p class="mt-2 text-sm text-[var(--lp-muted)]">
-        <%= link_to t("settings.commitment.eligibility.open_habits"), habits_path, class: "underline underline-offset-2" %>
-        ·
+        <% if habits_enabled? %>
+          <%= link_to t("settings.commitment.eligibility.open_habits"), habits_path, class: "underline underline-offset-2" %>
+          ·
+        <% end %>
         <%= link_to t("settings.commitment.eligibility.open_mountain"), life_journey_path(@commitment_journey), class: "underline underline-offset-2" %>
       </p>
 
@@ -83,14 +85,14 @@
         <% Today::Commitment::PRESETS.each do |key, preset| %>
           <% active = @commitment_journey.commitment_key == key
              elig = Today::Commitment.eligibility(user: current_user, key: key, journey: @commitment_journey)
-             blocked = !elig.eligible? && !active %>
+             blocked = !elig.eligible? && !active
+             preset_label = habits_enabled? ?
+               t("settings.commitment.preset_label", name: t("v2_onboarding.commitment_presets.#{key}"), habits: preset[:habit_count], battles: preset[:battle_count]) :
+               t("settings.commitment.preset_label_battles_only", name: t("v2_onboarding.commitment_presets.#{key}"), battles: preset[:battle_count]) %>
           <% if blocked %>
             <div class="lp-settings-commitment__btn is-disabled" aria-disabled="true">
               <span>
-                <%= t("settings.commitment.preset_label",
-                      name: t("v2_onboarding.commitment_presets.#{key}"),
-                      habits: preset[:habit_count],
-                      battles: preset[:battle_count]) %>
+                <%= preset_label %>
               </span>
               <span class="lp-settings-commitment__lock">
                 <% if elig.missing_habits %>
@@ -108,10 +110,7 @@
               </span>
             </div>
           <% else %>
-            <%= button_to t("settings.commitment.preset_label",
-                  name: t("v2_onboarding.commitment_presets.#{key}"),
-                  habits: preset[:habit_count],
-                  battles: preset[:battle_count]),
+            <%= button_to preset_label,
                   commitment_settings_path,
                   method: :patch,
                   params: { commitment_key: key },
@@ -129,11 +128,13 @@
               maxlength: 40,
               class: "lp-input w-full" %>
         <div class="lp-settings-commitment__counts">
-          <div>
-            <label class="lp-adventure__label" for="commitment_habit_count"><%= t("settings.commitment.habits_label") %></label>
-            <%= number_field_tag :commitment_habit_count, @commitment_journey.commitment_habit_count,
-                  id: "commitment_habit_count", min: 0, max: 20, class: "lp-input w-full" %>
-          </div>
+          <% if habits_enabled? %>
+            <div>
+              <label class="lp-adventure__label" for="commitment_habit_count"><%= t("settings.commitment.habits_label") %></label>
+              <%= number_field_tag :commitment_habit_count, @commitment_journey.commitment_habit_count,
+                    id: "commitment_habit_count", min: 0, max: 20, class: "lp-input w-full" %>
+            </div>
+          <% end %>
           <div>
             <label class="lp-adventure__label" for="commitment_battle_count"><%= t("settings.commitment.battles_label") %></label>
             <%= number_field_tag :commitment_battle_count, @commitment_journey.commitment_battle_count,
