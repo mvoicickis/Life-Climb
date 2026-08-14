@@ -511,6 +511,7 @@ de:
     hero:
       of_day: "Of your day"
       mix: "%{habits} habits · %{battles} battles"
+      battles_only: "%{count} battles"
       cheer:
         idle: "Nothing logged yet. Any amount counts."
         moving: "You're moving. Keep going."
@@ -605,6 +606,7 @@ de:
       tier_label: "Tägliches Commitment"
       # TODO: translate
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
+      progress_battles_only: "Battles %{battles_done} of %{battles_total}"
       survived: "Tag überstanden — Commitment erfüllt"
       shield_ready: "Schild bereit — blockiert heute ein verpasstes Fenster"
       shield_used: "Schild heute schon genutzt"
@@ -932,6 +934,7 @@ de:
       title: "Tägliches Commitment"
       hint: "Wie viele zeitgebundene Kämpfe und grüne Gewohnheiten gelten als überstandener Tag."
       preset_label: "%{name} — %{habits} Gewohnheiten + %{battles} Kämpfe"
+      preset_label_battles_only: "%{name} — %{battles} Kämpfe"
       custom_title: "Eigenes"
       name_label: "Name"
       habits_label: "Gewohnheiten"
@@ -1198,8 +1201,10 @@ de:
     commitment_title: "Wähle dein tägliches Commitment"
     commitment_lead: "Gewinne so viele zeitgebundene Kämpfe und grüne Gewohnheiten pro Tag. Später änderbar."
     commitment_counts: "%{habits} Gewohnheiten + %{battles} Kämpfe"
+    commitment_counts_battles_only: "%{battles} Kämpfe"
     commitment_skip: "Erstmal überspringen"
     commitment_locked: "Braucht %{habits} Heute-Gewohnheiten und %{camps} geplante Camps — nach dem Setup freischaltbar."
+    commitment_locked_battles_only: "Braucht %{camps} geplante Camps — nach dem Setup freischaltbar."
     commitment_presets:
       easy: "Leicht"
       medium: "Mittel"

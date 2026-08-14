@@ -148,6 +148,7 @@ en:
     commitment:
       tier_label: "Daily commitment"
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
+      progress_battles_only: "Battles %{battles_done} of %{battles_total}"
       survived: "Day survived — commitment met"
       shield_ready: "Shield ready — blocks one missed window today"
       shield_used: "Shield already used today"
@@ -230,6 +231,7 @@ en:
       mountain_alt: "Mountain path toward your goal"
       of_day: "Of your day"
       mix: "%{habits} habits · %{battles} battles"
+      battles_only: "%{count} battles"
       cheer:
         idle: "Nothing logged yet. Any amount counts."
         moving: "You're moving. Keep going."
@@ -1556,8 +1558,10 @@ en:
     commitment_title: "Pick your daily commitment"
     commitment_lead: "Win this many timed battles and green habits each day. You can change it later."
     commitment_counts: "%{habits} habits + %{battles} battles"
+    commitment_counts_battles_only: "%{battles} battles"
     commitment_skip: "Skip for now"
     commitment_locked: "Needs %{habits} Today habits and %{camps} planned camps — unlock after setup."
+    commitment_locked_battles_only: "Needs %{camps} planned camps — unlock after setup."
     commitment_presets:
       easy: "Easy"
       medium: "Medium"
@@ -2383,6 +2387,7 @@ en:
       title: "Daily commitment"
       hint: "How many timed battles and green habits count as surviving Today on your mountain."
       preset_label: "%{name} — %{habits} habits + %{battles} battles"
+      preset_label_battles_only: "%{name} — %{battles} battles"
       custom_title: "Custom"
       name_label: "Name"
       habits_label: "Habits"

@@ -511,6 +511,7 @@ lv:
     hero:
       of_day: "Of your day"
       mix: "%{habits} habits · %{battles} battles"
+      battles_only: "%{count} battles"
       cheer:
         idle: "Nothing logged yet. Any amount counts."
         moving: "You're moving. Keep going."
@@ -605,6 +606,7 @@ lv:
       tier_label: "Dienas solījums"
       # TODO: translate
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
+      progress_battles_only: "Battles %{battles_done} of %{battles_total}"
       survived: "Diena izturēta — solījums izpildīts"
       shield_ready: "Vairogs gatavs — šodien bloķē vienu izlaistu logu"
       shield_used: "Vairogs jau izmantots šodien"
@@ -932,6 +934,7 @@ lv:
       title: "Dienas solījums"
       hint: "Cik laika cīņu un zaļu ieradumu skaitās kā izturēta šodiena uz tava kalna."
       preset_label: "%{name} — %{habits} ieradumi + %{battles} cīņas"
+      preset_label_battles_only: "%{name} — %{battles} cīņas"
       custom_title: "Pielāgots"
       name_label: "Nosaukums"
       habits_label: "Ieradumi"
@@ -1198,8 +1201,10 @@ lv:
     commitment_title: "Izvēlies dienas solījumu"
     commitment_lead: "Katru dienu uzvari tik daudz laika cīņu un zaļu ieradumu. Vēlāk varēsi mainīt."
     commitment_counts: "%{habits} ieradumi + %{battles} cīņas"
+    commitment_counts_battles_only: "%{battles} cīņas"
     commitment_skip: "Pagaidām izlaist"
     commitment_locked: "Vajag %{habits} Šodienas ieradumus un %{camps} plānotas nometnes — atbloķē pēc iestatīšanas."
+    commitment_locked_battles_only: "Vajag %{camps} plānotas nometnes — atbloķē pēc iestatīšanas."
     commitment_presets:
       easy: "Viegls"
       medium: "Vidējs"

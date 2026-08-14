@@ -511,6 +511,7 @@ ru:
     hero:
       of_day: "Of your day"
       mix: "%{habits} habits · %{battles} battles"
+      battles_only: "%{count} battles"
       cheer:
         idle: "Nothing logged yet. Any amount counts."
         moving: "You're moving. Keep going."
@@ -609,6 +610,7 @@ ru:
       tier_label: "Дневное обязательство"
       # TODO: translate
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
+      progress_battles_only: "Battles %{battles_done} of %{battles_total}"
       survived: "День выдержан — обязательство выполнено"
       shield_ready: "Щит готов — сегодня закрывает одно пропущенное окно"
       shield_used: "Щит уже использован сегодня"
@@ -942,6 +944,7 @@ ru:
       title: "Дневное обязательство"
       hint: "Сколько битв со временем и зелёных привычек считаются выдержанным днём на горе."
       preset_label: "%{name} — %{habits} привычек + %{battles} битв"
+      preset_label_battles_only: "%{name} — %{battles} битв"
       custom_title: "Своё"
       name_label: "Название"
       habits_label: "Привычки"
@@ -1208,8 +1211,10 @@ ru:
     commitment_title: "Выбери дневное обязательство"
     commitment_lead: "Выигрывай столько битв со временем и зелёных привычек каждый день. Потом можно изменить."
     commitment_counts: "%{habits} привычек + %{battles} битв"
+    commitment_counts_battles_only: "%{battles} битв"
     commitment_skip: "Пропустить пока"
     commitment_locked: "Нужно %{habits} привычек на Сегодня и %{camps} запланированных лагерей — откроется после настройки."
+    commitment_locked_battles_only: "Нужно %{camps} запланированных лагерей — откроется после настройки."
     commitment_presets:
       easy: "Лёгкий"
       medium: "Средний"
