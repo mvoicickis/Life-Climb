@@ -18,7 +18,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       closer_percent: 20,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -113,6 +113,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
     assert_no_selector ".lp-climb-path__new-quest-btn"
-    assert_selector "#climb-path-project-#{@lang.id} [data-action='click->plan-card-menu#objectives']"
+    assert_no_selector "#climb-path-project-#{@lang.id} .lp-climb-path__quest-add"
+    assert_selector "#climb-path-project-#{@lang.id} [data-action='click->plan-card-menu#objectives']", visible: :all
   end
 end

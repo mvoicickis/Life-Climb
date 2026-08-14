@@ -25415,6 +25415,11 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
   width: 100%;
   max-width: none;
 }
+.lp-climb-path.is-list .lp-climb-path__node.is-pending,
+.lp-climb-path.is-list .lp-climb-path__node.is-visible {
+  opacity: 1;
+  transform: none;
+}
 .lp-climb-path.is-list .lp-climb-path__title {
   max-width: none;
   white-space: normal;

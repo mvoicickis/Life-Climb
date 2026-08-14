@@ -56,7 +56,12 @@ export default class extends Controller {
     const nodes = this.nodeTargets
     if (!nodes.length) return
 
-    if (this.prefersReducedMotion() || !("IntersectionObserver" in window)) {
+    // Flat list cards must paint immediately. Trail pins still fade in on scroll.
+    if (
+      this.element.classList.contains("is-list") ||
+      this.prefersReducedMotion() ||
+      !("IntersectionObserver" in window)
+    ) {
       nodes.forEach((el) => {
         el.classList.remove("is-pending")
         el.classList.add("is-visible")

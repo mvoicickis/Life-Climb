@@ -18,7 +18,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
       closer_percent: 40,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -99,6 +99,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_no_selector ".lp-qs-board__title"
     assert_no_selector ".lp-climb-path__new-quest-btn"
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
-    assert_selector "#climb-path-project-#{empty.id} [data-action='click->plan-card-menu#objectives']"
+    assert_no_selector "#climb-path-project-#{empty.id} .lp-climb-path__quest-add"
+    assert_selector "#climb-path-project-#{empty.id} [data-action='click->plan-card-menu#objectives']", visible: :all
   end
 end

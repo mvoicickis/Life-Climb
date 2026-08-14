@@ -24,13 +24,12 @@ class StrategyGoalHabitLinksControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "project with linked trackers opens trackers sheet" do
+  test "linked trackers stay off the closed Mountain card" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
     assert_response :success
-    assert_select "#project-trackers-#{@project.id}"
-    assert_select ".lp-project-trackers__name", text: /Income/
-    assert_select ".lp-tracker-spark", minimum: 1
-    assert_select ".lp-project-trackers__add-btn", text: /Add another Tracker/i
+    assert_select "#climb-path-project-#{@project.id} .lp-climb-path__title"
+    assert_select "#project-trackers-#{@project.id}", count: 0
+    assert_select ".lp-project-trackers__add-btn", count: 0
   end
 
   test "project without linked trackers has no trackers sheet" do
@@ -60,12 +59,12 @@ class StrategyGoalHabitLinksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(@journey, focus_id: @project.id, sheet: "trackers")
   end
 
-  test "renders multiple linked trackers in the sheet" do
+  test "Mountain no longer opens a trackers sheet from focus" do
     HabitProjectLink.create!(habit: @unlinked, strategy_goal: @project)
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id, sheet: "trackers")
     assert_response :success
-    assert_select ".lp-project-trackers__card", count: 2
-    assert_select ".lp-project-trackers__name", text: /Income/
-    assert_select ".lp-project-trackers__name", text: /Push-Ups/
+    assert_select "#climb-path-project-#{@project.id}"
+    assert_select ".lp-project-trackers__card", count: 0
+    assert_select "#project-trackers-#{@project.id}", count: 0
   end
 end
