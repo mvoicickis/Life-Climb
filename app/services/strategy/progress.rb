@@ -4,7 +4,7 @@ module Strategy
   # Mountain % is project-gated, not battle-count.
   # Goal = average of plans. Plan = average of direct project percents.
   # Quantified path-level project = current_amount / target_amount (replaces binary/avg).
-  # Leaf project = binary (completed_at). Branch project = recursive avg of child projects.
+  # Path-level project = binary (completed_at). Leftover nested folders average child projects.
   # Battles never move year %.
   class Progress
     def self.percent(node)

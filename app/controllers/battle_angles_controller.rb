@@ -13,16 +13,15 @@ class BattleAnglesController < ApplicationController
       redirect_to dashboard_path, alert: t("dash.battle_angles.invalid_angle") and return
     end
 
-    parent = Battles::PracticeParent.call(user: current_user, project: project)
     tomorrow = Date.current + 1.day
     battle = current_user.strategy_goals.new(
       life_area: project.life_area,
       life_journey_id: project.life_journey_id,
-      parent: parent,
+      parent: project,
       horizon: "day",
       title: title,
       scheduled_on: tomorrow,
-      position: next_position(parent)
+      position: next_position(project)
     )
 
     if battle.save

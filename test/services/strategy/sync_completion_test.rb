@@ -41,7 +41,7 @@ class Strategy::SyncCompletionTest < ActiveSupport::TestCase
     assert_not goal.completed?
   end
 
-  test "adding a nested project under a complete path project reopens the branch" do
+  test "adding a sibling path project under a complete plan reopens plan and goal" do
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
     path = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Camp", position: 0)
@@ -51,12 +51,13 @@ class Strategy::SyncCompletionTest < ActiveSupport::TestCase
     assert path.reload.completed?
     assert plan.reload.completed?
 
-    nested = Battles::PracticeParent.call(user: @user, project: path)
+    extra = @user.strategy_goals.create!(
+      life_area: @area, parent: plan, horizon: "project", title: "Extra camp", position: 1
+    )
+    Strategy::SyncCompletion.resync!(node: extra)
 
-    assert_not path.reload.completed?
-    assert_equal 0, Strategy::Progress.percent(path)
     assert_not plan.reload.completed?
-    assert_equal nested.parent_id, path.id
+    assert_not goal.reload.completed?
   end
 
   test "raising quantified target above current amount reopens project plan and goal" do

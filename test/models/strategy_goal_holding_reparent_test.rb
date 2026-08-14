@@ -12,16 +12,12 @@ class StrategyGoalHoldingReparentTest < ActiveSupport::TestCase
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.for_kind("plan").not_holding.ordered.first
     @project = @plan.children.for_kind("project").not_holding.ordered.first
-    @quest = @project.children.for_kind("project").ordered.first
   end
 
-  test "destroying a path project keeps a completed battle two levels down on holding" do
-    day = @quest.children.for_kind("day").ordered.first
+  test "destroying a path project keeps a completed battle on holding" do
+    day = @project.children.for_kind("day").ordered.first
     day.update!(completed_at: Time.current)
     day_id = day.id
-
-    @project.children.includes(:children).to_a
-    Strategy::Progress.battles_under(@project)
 
     points_before = @user.reload.total_points
     @project.destroy!
@@ -30,7 +26,6 @@ class StrategyGoalHoldingReparentTest < ActiveSupport::TestCase
     holding = Strategy::HoldingProject.ensure!(user: @user, journey: @journey)
     assert kept.completed?
     assert_equal holding.id, kept.parent_id
-    assert_not StrategyGoal.exists?(@quest.id)
     assert_equal points_before, @user.reload.total_points
   end
 

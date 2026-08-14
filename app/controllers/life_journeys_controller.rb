@@ -285,28 +285,12 @@ class LifeJourneysController < ApplicationController
       }
     end
 
-    # Inside a checkpoint: leaf → battles; branch → child checkpoints.
-    # Path-level camps must nest a smaller camp before dailies.
+    # Inside a path-level camp: days hang here directly.
     if @focus&.project?
-      if @focus.branch_checkpoint? || (@focus.path_level_camp? && @focus.children.none?(&:day?))
-        return mountain_ready_next_up if @mountain_ready
-
-        return {
-          key: :add_project,
-          title: I18n.t("strategy.questions.project"),
-          hint: I18n.t("strategy.next_up.add_project_hint"),
-          cta: I18n.t("strategy.rpg.add_child_checkpoint"),
-          placeholder: I18n.t("strategy.rpg.split_checkpoint_placeholder"),
-          examples: [ I18n.t("strategy.next_up.example_project") ],
-          form: { horizon: "project", parent_id: @focus.id }
-        }
-      end
-
-      # Legacy Path-level camps with days: no new dailies at this layer.
-      return mountain_ready_next_up if @focus.path_level_camp?
-
       battles = @children.select(&:day?)
       if battles.empty?
+        return mountain_ready_next_up if @mountain_ready
+
         return {
           key: :add_battle,
           title: I18n.t("strategy.questions.battle"),

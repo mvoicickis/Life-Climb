@@ -79,22 +79,16 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
-      parent_id: project.id, horizon: "project", title: "Vocabulary"
-    }
-    nested = @user.strategy_goals.for_kind("project").find_by!(title: "Vocabulary")
-
-    post strategy_goals_path, params: {
-      life_area_id: @area.id, life_journey_id: @journey.id,
-      parent_id: nested.id, horizon: "day", scheduled_on: Date.current.to_s,
+      parent_id: project.id, horizon: "day", scheduled_on: Date.current.to_s,
       title: "Learn 20 words"
     }
     assert @user.daily_todos.for_day(Date.current).exists?(title: "Learn 20 words")
     assert_operator @user.reload.strategy_points, :>=, 725 # includes strategy complete 500
 
-    get life_journey_path(@journey, focus_id: nested.id)
+    get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/i
+    assert_select ".lp-climb-path__quest-title", text: /Learn German/i
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
     assert_select ".lp-climb-path__node.is-current", text: /Learn German/i
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
@@ -162,7 +156,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert battle.reload.completed?
 
     follow_redirect!
-    assert_match(/Is .*Steps.* finished/i, response.body)
+    assert_match(/Is .*Project.* finished/i, response.body)
 
     post project_completions_path, params: { project_id: project_leaf.id, decision: "done" }
     assert project_leaf.reload.completed?
@@ -205,7 +199,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path", text: /Plan Beta/i
     assert_select ".lp-climb-path__node.is-current", text: /Project One/i
     assert_select ".lp-climb-path__node", text: /Project Two/i
-    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-climb-path__quests[open]"
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
@@ -284,7 +278,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg-path", text: /Main Plan/i
     assert_select ".lp-climb-path__node", minimum: 3
-    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-climb-path__quests[open]"
     assert_select "#strategy-camp-notebook", count: 0
   end
@@ -308,7 +302,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
-    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
@@ -517,11 +511,6 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     )
     nested = practice_leaf_for!(project)
 
-    get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: nested.id)
-    assert_response :success
-    assert_select ".lp-climb-path__quest-title", text: /Steps/
-    assert_select ".lp-climb-path__quest-add-input"
-
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
       parent_id: nested.id, horizon: "day", scheduled_on: Date.current.to_s,
@@ -535,7 +524,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     # Climb-path quest surfaces objectives on the checklist host, not day-quest cards.
     assert_select ".lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Steps/
+    assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-rpg-practice-folder__title", count: 0
   end
 

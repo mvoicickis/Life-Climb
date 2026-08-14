@@ -79,7 +79,7 @@ module Battles
         title: "Later camp",
         position: first.position.to_i + 10
       )
-      leaf = PracticeParent.call(user: @user, project: second)
+      leaf = second
       recent = leaf.children.create!(
         user: @user,
         life_area: journey.life_area,

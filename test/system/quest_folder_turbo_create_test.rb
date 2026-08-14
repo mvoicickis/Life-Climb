@@ -2,7 +2,6 @@
 
 require "application_system_test_case"
 
-# Regression: Turbo form posts used to hit a no-op stream (record saved, sheet unchanged).
 class QuestFolderTurboCreateTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -27,30 +26,13 @@ class QuestFolderTurboCreateTest < ApplicationSystemTestCase
     )
   end
 
-  test "Turbo create shows the new Quest under climb path" do
+  test "nested quest form is gone from the climb path" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    find(".lp-climb-path__new-quest-btn", text: /New Quest/i).click
-    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-
-    card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
-    card.fill_in "title", with: "Vocabulary"
-    # Force Turbo Drive to own the submit (the bug path when data-turbo=false is absent).
-    page.execute_script(<<~JS)
-      document.querySelector("body > .lp-rpg-float-create form")?.removeAttribute("data-turbo");
-    JS
-    card.find(".lp-rpg-float-create__btn.is-create").click
-
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Vocabulary/i, wait: 5
-    assert_no_selector ".lp-qs-detail"
-    assert @user.strategy_goals.for_kind("project").exists?(title: "Vocabulary", parent_id: @camp.id),
-           "Quest should be saved"
-
-    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-folder-turbo-create-fixed.png")
+    assert_no_selector ".lp-climb-path__new-quest-btn"
   end
 end

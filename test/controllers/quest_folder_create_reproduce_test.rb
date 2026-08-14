@@ -25,32 +25,26 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "New Quest form disables turbo" do
+  test "empty path camp does not render nested New Quest form" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
-    assert_select "#rpg-add-camp-#{@camp.id} form[action=?][data-turbo=false]", strategy_goals_path
-    assert_select ".lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__new-quest-btn", count: 0
     assert_select ".lp-qs-new__btn", count: 0
   end
 
-  test "HTML create nested quest shows climb-path quest inline" do
-    assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
+  test "HTML create nested quest is rejected" do
+    assert_no_difference -> { @camp.children.where(horizon: "project").count } do
       post strategy_goals_path, params: {
         life_area_id: @area.id, life_journey_id: @journey.id,
         parent_id: @camp.id, horizon: "project", title: "Vocabulary"
       }
     end
-    created = @camp.children.find_by!(title: "Vocabulary")
-    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
-    follow_redirect!
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
-    assert_select ".lp-climb-path__quest-add-input"
-    assert_select ".lp-qs-detail", count: 0
+    assert_response :redirect
+    assert_nil @camp.children.find_by(title: "Vocabulary")
   end
 
-  test "turbo_stream create nested quest redirects so the climb path can refresh" do
-    assert_difference -> { @camp.children.where(horizon: "project").count }, 1 do
+  test "turbo_stream create nested quest is rejected" do
+    assert_no_difference -> { @camp.children.where(horizon: "project").count } do
       post strategy_goals_path,
            params: {
              life_area_id: @area.id, life_journey_id: @journey.id,
@@ -58,11 +52,7 @@ class QuestFolderCreateReproduceTest < ActionDispatch::IntegrationTest
            },
            as: :turbo_stream
     end
-    created = @camp.children.find_by!(title: "Grammar")
-    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id)
-    follow_redirect!
-    assert_select ".lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Grammar/
-    assert_select ".lp-qs-detail", count: 0
+    assert_response :redirect
+    assert_nil @camp.children.find_by(title: "Grammar")
   end
 end

@@ -14,17 +14,15 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
-    @section = @plan.children.create!(
+    @colored = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "MVP", position: @plan.children.maximum(:position).to_i + 1
+      horizon: "project", title: "Purple Volume",
+      position: @plan.children.maximum(:position).to_i + 1, color_key: "purple"
     )
-    @colored = @section.children.create!(
+    @plain = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Purple Volume", position: 0, color_key: "purple"
-    )
-    @plain = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Plain Volume", position: 1
+      horizon: "project", title: "Plain Volume",
+      position: @plan.children.maximum(:position).to_i + 1
     )
     host = Strategy::EnsureFolderQuest.call(folder: @colored)
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
@@ -41,10 +39,10 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-timeline", wait: 5
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @colored.id)
     assert_selector ".lp-climb-path__quests[open]", wait: 5
     assert_selector ".lp-climb-path__quest.has-color.is-purple .lp-climb-path__quest-title", text: /Purple Volume/
-    assert_selector ".lp-climb-path__quest-title", text: /Plain Volume/
+    assert_selector ".lp-climb-path__node", text: /Plain Volume/
     assert_no_selector ".lp-climb-path__quest.has-color", text: /Plain Volume/
     assert_no_selector "a.lp-qs-card"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-mountain-mobile.png")

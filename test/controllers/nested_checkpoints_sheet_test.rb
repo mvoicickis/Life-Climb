@@ -27,7 +27,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty Path-level camp shows New Quest under climb path instead of Add Practice" do
+  test "empty Path-level camp does not offer nested New Quest" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
@@ -40,29 +40,28 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__new-quest-btn", count: 0
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
   end
 
-  test "nested leaf with day children opens climb-path quest without battle win" do
+  test "path camp with day children opens climb-path quest without battle win" do
     project = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume", position: 0
     )
-    project_leaf = practice_leaf_for!(project)
-    battle = project_leaf.children.create!(
+    battle = project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Update CV", scheduled_on: Date.current, position: 0
     )
     battle.practice_tasks.create!(user: @user, title: "Rewrite summary", position: 0)
 
-    get life_journey_path(@journey, focus_id: project_leaf.id)
+    get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
+    assert_select ".lp-climb-path__quest-title", text: /Resume/
     assert_select ".lp-qs-obj__text[value='Rewrite summary']"
     assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select "form[action=?]", battle_win_path(battle), count: 0
@@ -70,18 +69,18 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
   end
 
-  test "branch checkpoint lists child camps as climb-path quest titles" do
+  test "sibling path camps appear as climb-path nodes not nested quests" do
     parent = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 0
     )
-    child = parent.children.create!(
+    sibling = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Landing page", position: 0
+      horizon: "project", title: "Landing page", position: 1
     )
     parent.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Payments", position: 1
+      horizon: "day", title: "Draft outline", scheduled_on: Date.current, position: 0
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: parent.id)
@@ -90,47 +89,12 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet.is-branch", count: 0
     assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
     assert_select ".lp-climb-path__node.is-selected", text: /Launch prep/
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-climb-path__quest-title", text: /Landing page/
-    assert_select ".lp-climb-path__quest-title", text: /Payments/
-    assert_select ".lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__node", text: /Landing page/
+    assert_select ".lp-climb-path__new-quest-btn", count: 0
     assert_select ".lp-qs-card__name", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select "turbo-frame#quest_objectives_#{child.id}"
-
-    # Sections carousel stays plan-level only — nested child is not a section card
-    assert_select ".lp-climb-path__node", text: /Launch prep/
-    assert_select ".lp-climb-path__node .lp-climb-path__title", text: /Landing page/, count: 0
-    assert_select ".lp-climb-path__quest-title", text: /Landing page/
-  end
-
-  test "focusing a nested child shows climb-path quest under its section" do
-    parent = @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Launch prep", position: 0
-    )
-    child = parent.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Landing page", position: 0
-    )
-    day = child.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Draft hero", scheduled_on: Date.current, position: 0
-    )
-    day.practice_tasks.create!(user: @user, title: "Write headline", position: 0)
-
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: child.id)
-    assert_response :success
-    assert_select ".lp-climb-path__node.is-selected", text: /Launch prep/
-    assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Landing page/
-    assert_select ".lp-qs-obj__text[value='Write headline']"
-    assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_select ".lp-rpg-sheet.is-branch", count: 0
-    assert_select ".lp-rpg-sheet-rail.is-camps", count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Launch prep/
+    assert sibling.path_level_camp?
   end
 
   test "path focus shows sections in climb path and drills into the active section" do
@@ -138,18 +102,13 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Landing page", position: 0
     )
-    project_leaf = practice_leaf_for!(project)
-    project_leaf.children.create!(
+    project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Write hero copy", scheduled_on: Date.current, position: 0
     )
-    branch = @plan.children.create!(
+    @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch prep", position: 1
-    )
-    branch.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Payments", position: 0
     )
 
     get life_journey_path(@journey, focus_id: @plan.id)
@@ -158,7 +117,7 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path__node.is-locked", text: /Launch prep/
     assert_select ".lp-climb-path__node.is-current, .lp-climb-path__node.is-selected", text: /Landing page/
     assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-climb-path__quest-title", text: /Steps/
+    assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end

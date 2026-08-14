@@ -41,6 +41,8 @@ module Strategy
         next if battle.parent.holding?
         next if battle.parent.completed?
 
+        # After flatten, battle.parent is the path-level camp.
+
         battle.parent_id
       end.uniq
     end

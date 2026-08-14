@@ -54,11 +54,8 @@ class Progress::JourneyTrendsTest < ActiveSupport::TestCase
     other_project = @user.strategy_goals.create!(
       life_area: @area, life_journey: other_journey, parent: other_plan, horizon: "project", title: "Other camp", position: 0
     )
-    other_leaf = @user.strategy_goals.create!(
-      life_area: @area, life_journey: other_journey, parent: other_project, horizon: "project", title: "Steps", position: 0
-    )
     other_day = @user.strategy_goals.create!(
-      life_area: @area, life_journey: other_journey, parent: other_leaf,
+      life_area: @area, life_journey: other_journey, parent: other_project,
       horizon: "day", title: "Other battle", scheduled_on: Date.current, position: 0
     )
 
@@ -205,12 +202,8 @@ class Progress::JourneyTrendsTest < ActiveSupport::TestCase
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
       title: "#{title} camp", position: @plan.children.count
     )
-    leaf = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "project",
-      title: "Steps", position: 0
-    )
     @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: leaf, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
       title: title, scheduled_on: Date.current, position: 0
     )
   end

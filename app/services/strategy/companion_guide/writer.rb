@@ -3,7 +3,7 @@
 module Strategy
   module CompanionGuide
     # Progressive create/update for guide answers. Mirrors FirstClimb#create_child!
-    # shape without calling FirstClimb. Days go through Battles::PracticeParent.
+    # shape without calling FirstClimb. Days hang on the path-level project.
     class Writer
       def self.call(user:, journey:, kind:, value:, cursor:)
         new(user:, journey:, kind:, value:, cursor:).call
@@ -73,9 +73,8 @@ module Strategy
         raise ArgumentError, I18n.t("strategy.companion_guide.errors.blank_title") if title.blank?
 
         project = find_project!
-        leaf = Battles::PracticeParent.call(user: @user, project: project)
         create_child!(
-          parent: leaf,
+          parent: project,
           horizon: "day",
           title: title,
           scheduled_on: Date.current

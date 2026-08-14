@@ -182,8 +182,7 @@ module Today
       )
     end
 
-    # Incomplete day-capable camps under the journey spine.
-    # Nested leaf camps count; path-level camps with no nested project child count as 1.
+    # Incomplete path-level camps under the journey spine (holding excluded).
     def self.camp_capacity(journey)
       return 0 if journey.blank?
 
@@ -194,12 +193,9 @@ module Today
       capacity = 0
       each_project_under(goal) do |node|
         next if node.completed?
+        next unless node.path_level_camp?
 
-        if node.nested_leaf_camp?
-          capacity += 1
-        elsif node.path_level_camp? && node.children.none?(&:project?)
-          capacity += 1
-        end
+        capacity += 1
       end
       capacity
     end

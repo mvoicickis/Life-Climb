@@ -16,12 +16,9 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "MVP", position: @plan.children.maximum(:position).to_i + 1
+      horizon: "project", title: "Volume 0", position: @plan.children.maximum(:position).to_i + 1
     )
-    @folder = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume 0", position: 0
-    )
+    @folder = @section
     @host = Strategy::EnsureFolderQuest.call(folder: @folder)
     @first = @host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     @second = @host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)

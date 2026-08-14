@@ -119,7 +119,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 
     assert_select ".lp-climb-path__quests[open]", minimum: 1
-    assert_select ".lp-climb-path__quest-title", text: /Steps/i
+    assert_select ".lp-climb-path__quest-title"
     assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-folder__cta", count: 0

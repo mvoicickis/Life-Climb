@@ -106,11 +106,8 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
     )
-    leaf = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project, horizon: "project", title: "Steps", position: 0
-    )
     day = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: leaf, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
       title: "Ship it", scheduled_on: Date.current, position: 0
     )
     @user.daily_todos.create!(

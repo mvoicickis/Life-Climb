@@ -65,13 +65,11 @@ class Strategy::Quantity::LogTest < ActiveSupport::TestCase
     assert @goal.reload.completed?
   end
 
-  test "progress replaces child-average when target_amount is set" do
-    # Nested leaf stays incomplete — quantified path % still follows amount/target.
-    assert_equal 0, Strategy::Progress.percent(@leaf)
+  test "progress follows amount/target on the quantified path camp" do
+    assert_equal 0, Strategy::Progress.percent(@project)
     Strategy::Quantity::Log.call(project: @project, amount: 350, user: @user)
 
     assert_equal 50, Strategy::Progress.percent(@project.reload)
-    assert_equal 0, Strategy::Progress.percent(@leaf.reload)
   end
 
   test "rejects non-quantified project" do

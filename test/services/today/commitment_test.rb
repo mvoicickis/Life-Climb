@@ -16,10 +16,10 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     assert_equal 1, @journey.commitment_battle_count
   end
 
-  test "camp_capacity counts nested leaf and bare path camps; ignores completed and nil journey" do
+  test "camp_capacity counts incomplete path camps and ignores completed and nil journey" do
     assert_equal 0, Today::Commitment.camp_capacity(nil)
 
-    # seed_climb! creates one incomplete nested leaf under a path camp → 1
+    # seed_climb! creates one incomplete path camp → 1
     assert_equal 1, Today::Commitment.camp_capacity(@journey)
 
     goal = @user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
@@ -37,15 +37,7 @@ class Today::CommitmentTest < ActiveSupport::TestCase
     assert path_b.path_level_camp?
     assert_equal 3, Today::Commitment.camp_capacity(@journey)
 
-    leaf = path_a.children.create!(
-      user: @user, life_area: @journey.life_area, life_journey: @journey,
-      horizon: "project", title: "Nested under A", position: 0
-    )
-    assert leaf.nested_leaf_camp?
-    # path_a no longer bare; leaf counts instead → still 3 (seed leaf + path_b + new leaf)
-    assert_equal 3, Today::Commitment.camp_capacity(@journey)
-
-    leaf.update!(completed_at: Time.current)
+    path_a.update!(completed_at: Time.current)
     assert_equal 2, Today::Commitment.camp_capacity(@journey)
   end
 

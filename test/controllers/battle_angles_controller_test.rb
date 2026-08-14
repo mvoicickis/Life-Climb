@@ -40,7 +40,7 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
 
     post complete_daily_todo_path(todo)
     follow_redirect!
-    assert_match(/Is .*Steps.* finished/i, response.body)
+    assert_match(/Is .*Cut spend.* finished/i, response.body)
 
     post project_completions_path, params: { project_id: @project_leaf.id, decision: "not_yet" }
     assert_redirected_to dashboard_path

@@ -30,17 +30,18 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Language skills", position: 0
     )
-    @vocab = @lang.children.create!(
+    @vocab = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Vocabulary", position: 0
+      horizon: "project", title: "Vocabulary", position: 1
     )
-    @grammar = @lang.children.create!(
+    @grammar = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Grammar", position: 1
+      horizon: "project", title: "Grammar", position: 2
     )
     @host = Strategy::EnsureFolderQuest.call(folder: @vocab)
     @host.practice_tasks.create!(user: @user, title: "Learn 15 new words", position: 0)
     @host.practice_tasks.create!(user: @user, title: "Flashcards", position: 1)
+    Strategy::EnsureFolderQuest.call(folder: @grammar)
   end
 
   test "climb path lists quests; focus_id opens objectives; status-only checks" do
@@ -50,19 +51,16 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     assert_selector "#strategy-world.lp-rpg", wait: 5
     assert_no_selector ".lp-qs-board__title"
     assert_selector ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]", wait: 5
     assert_selector ".lp-climb-path__quest-title", text: /Vocabulary/i
-    assert_selector ".lp-climb-path__quest-title", text: /Grammar/i
-    assert_selector ".lp-climb-path__new-quest-btn", text: /New Quest/i
+    assert_no_selector ".lp-climb-path__new-quest-btn"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-a.png")
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Vocabulary/i, wait: 5
     assert_selector ".lp-qs-obj__text[value='Learn 15 new words']", visible: :all
     assert_selector ".lp-qs-obj__text[value='Flashcards']", visible: :all
     assert_selector ".lp-climb-path__quest-add-input", visible: :all
@@ -73,9 +71,8 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/practice-cats-level-b.png")
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @grammar.id)
     assert_selector ".lp-climb-path__quest-title", text: /Grammar/i, wait: 5
-    assert_selector ".lp-climb-path__quest-title", text: /Vocabulary/i
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     assert_selector ".lp-climb-path__quests[open]", wait: 5
@@ -98,7 +95,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-space-add-btn-mobile.png")
   end
 
-  test "New Quest Cancel closes the portaled floating card" do
+  test "empty path camp does not offer nested New Quest" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -106,17 +103,6 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @lang.id)
-    assert_selector ".lp-climb-path__new-quest-btn", text: /New Quest/i, wait: 5
-
-    page.execute_script(<<~JS)
-      const trigger = document.querySelector(".lp-climb-path__new-quest-btn");
-      trigger?.scrollIntoView({ block: "center" });
-      trigger?.click();
-    JS
-    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-    assert_selector ".lp-rpg-float-create__heading", text: /New Quest/i
-
-    find("body > .lp-rpg-float-create .lp-rpg-float-create__btn.is-cancel", text: /Cancel/i).click
-    assert_no_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+    assert_no_selector ".lp-climb-path__new-quest-btn"
   end
 end

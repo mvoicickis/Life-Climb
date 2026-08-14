@@ -51,7 +51,7 @@ class StrategyHandoffTest < ActiveSupport::TestCase
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
       title: "Second camp", position: 1
     )
-    leaf = Battles::PracticeParent.call(user: @user, project: second)
+    leaf = second
     day = leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey, horizon: "day",
       title: "Touch second", scheduled_on: Date.current, position: 0
@@ -96,13 +96,13 @@ class StrategyHandoffTest < ActiveSupport::TestCase
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
       title: "Auth", position: 0
     )
-    leaf = Battles::PracticeParent.call(user: @user, project: project)
+    leaf = project
     leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey, horizon: "day",
       title: "Nested fight", scheduled_on: Date.current, position: 0
     )
 
-    assert project.children.for_kind("day").none?, "precondition: no direct day children on path camp"
+    assert project.children.for_kind("day").any?
     assert Strategy::Progress.battles_under(project).any?
 
     handoff = Strategy::Handoff.for(user: @user, journey: @journey)

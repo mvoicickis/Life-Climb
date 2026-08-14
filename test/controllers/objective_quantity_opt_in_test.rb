@@ -19,10 +19,7 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
       position: @plan.children.maximum(:position).to_i + 1,
       target_amount: 700, unit: "pages", current_amount: 10
     )
-    @folder = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume 0", position: 0
-    )
+    @folder = @section
     @host = Strategy::EnsureFolderQuest.call(folder: @folder)
     assert @section.quantified?
     assert_equal @section, @host.quantified_path_project
@@ -34,24 +31,20 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
       horizon: "project", title: "Plain camp",
       position: @plan.children.maximum(:position).to_i + 1
     )
-    plain_folder = plain.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Notes", position: 0
-    )
-    Strategy::EnsureFolderQuest.call(folder: plain_folder)
+    Strategy::EnsureFolderQuest.call(folder: plain)
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
     assert_response :success
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Volume 0/
+    assert_select ".lp-climb-path__quest-title", text: /Read Atomic Habits/
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
     assert_select "#qs-add-track-#{@folder.id}"
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: plain_folder.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: plain.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-title", text: /Notes/
+    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-title", text: /Plain camp/
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-add-track", count: 0
-    assert_select "#qs-add-track-#{plain_folder.id}", count: 0
+    assert_select "#qs-add-track-#{plain.id}", count: 0
   end
 
   test "opted-in objective under quantified project shows amount dialog and logs" do
@@ -162,11 +155,7 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
       horizon: "project", title: "Plain camp",
       position: @plan.children.maximum(:position).to_i + 1
     )
-    plain_folder = plain.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Notes", position: 0
-    )
-    host = Strategy::EnsureFolderQuest.call(folder: plain_folder)
+    host = Strategy::EnsureFolderQuest.call(folder: plain)
 
     post strategy_goal_practice_tasks_path(host),
          params: { title: "Do a lesson", track_quantity: "1" }

@@ -20,10 +20,7 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
       position: @plan.children.maximum(:position).to_i + 1,
       target_amount: 700, unit: "pages", current_amount: 7
     )
-    @folder = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume 0", position: 0
-    )
+    @folder = @section
     @host = Strategy::EnsureFolderQuest.call(folder: @folder)
     @tracked = @host.practice_tasks.create!(
       user: @user, title: "Read chapter 3", position: 0, track_quantity: true
@@ -71,14 +68,14 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
     visit dashboard_path unless page.has_css?(".lp-dash-done-fold", wait: 0)
     assert_selector ".lp-dash-done-fold", wait: 5
     find(".lp-dash-done-fold__summary").click unless page.has_css?(".lp-dash-done-fold[open]", wait: 0)
-    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-quest.is-done", text: /Volume 0/i, wait: 5
+    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-quest.is-done", text: /Read Atomic Habits/i, wait: 5
     assert @plain.reload.completed?
     assert @host.reload.completed?
     assert_equal BigDecimal("19"), @section.reload.current_amount
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
     assert_selector ".lp-climb-path__quests[open]", wait: 5
-    assert_selector ".lp-climb-path__quest-title", text: /Volume 0/i
+    assert_selector ".lp-climb-path__quest-title", text: /Read Atomic Habits/i
     assert_selector ".lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
     page.save_screenshot("/opt/cursor/artifacts/screenshots/objective-quantity-toggle-mountain-mobile.png")
   end

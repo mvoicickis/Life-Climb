@@ -21,7 +21,6 @@ module Strategy
         raise ArgumentError, I18n.t("strategy.weekly_planner.errors.blank_title") if items.empty?
 
         project = find_project!
-        leaf = Battles::PracticeParent.call(user: @user, project: project)
 
         reserved = Hash.new(0)
         created_goals = []
@@ -49,7 +48,7 @@ module Strategy
             end
 
             goal = create_child!(
-              parent: leaf,
+              parent: project,
               horizon: "day",
               title: title,
               scheduled_on: date

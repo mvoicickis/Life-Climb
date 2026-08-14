@@ -27,11 +27,7 @@ class PracticeTasksTurboStreamSystemTest < ApplicationSystemTestCase
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Learn German", position: 0
     )
-    @lang = @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Language skills", position: 0
-    )
-    @vocab = @lang.children.create!(
+    @vocab = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Vocabulary", position: 0
     )

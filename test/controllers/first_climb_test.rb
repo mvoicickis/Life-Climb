@@ -96,13 +96,10 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     projects = plans.first.children.select(&:project?)
     assert_equal 1, projects.size
 
-    nested = projects.first.children.select(&:project?)
-    assert_equal 1, nested.size
-    assert_equal I18n.t("strategy.first_climb.nested_camp_title"), nested.first.title
-
-    battles = nested.first.children.select(&:day?)
+    battles = projects.first.children.select(&:day?)
     assert_equal 1, battles.size
     assert_equal "Study chapter 1 for 20 minutes", battles.first.title
+    assert_equal projects.first.id, battles.first.parent_id
     assert_equal 1, @user.daily_todos.for_day(Date.current).where(title: "Study chapter 1 for 20 minutes").count
     assert_equal 0, @user.daily_todos.for_day(Date.current).where(title: "A second accidental battle").count
   end

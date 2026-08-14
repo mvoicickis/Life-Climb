@@ -37,13 +37,16 @@ class StrategyGoalQuantityTest < ActiveSupport::TestCase
     assert_not @checkpoint.valid?
   end
 
-  test "nested leaf camp cannot hold a quantity target" do
-    leaf = practice_leaf_for!(@checkpoint)
-    leaf.target_amount = 100
-    leaf.unit = "pages"
+  test "days cannot hold a quantity target" do
+    day = @user.strategy_goals.create!(
+      life_area: @area, parent: @checkpoint, horizon: "day",
+      title: "Battle", scheduled_on: Date.current, position: 0
+    )
+    day.target_amount = 100
+    day.unit = "pages"
 
-    assert_not leaf.valid?
-    assert leaf.errors[:target_amount].any?
+    assert_not day.valid?
+    assert day.errors[:target_amount].any?
   end
 
   test "non-project horizons reject target_amount" do
@@ -52,23 +55,21 @@ class StrategyGoalQuantityTest < ActiveSupport::TestCase
     assert_not @plan.valid?
   end
 
-  test "leaf branch XOR rules remain unchanged with quantity fields" do
-    nested = practice_leaf_for!(@checkpoint)
+  test "nested project under a quantified path camp is rejected" do
     @user.strategy_goals.create!(
-      life_area: @area, parent: nested, horizon: "day",
+      life_area: @area, parent: @checkpoint, horizon: "day",
       title: "Battle", scheduled_on: Date.current, position: 0
     )
 
     too_late = @user.strategy_goals.build(
-      life_area: @area, parent: nested, horizon: "project", title: "Too late", position: 1
+      life_area: @area, parent: @checkpoint, horizon: "project", title: "Too late", position: 1
     )
     assert_not too_late.valid?
-    assert_includes too_late.errors[:base],
-                    "Remove or finish steps on this checkpoint before splitting it."
+    assert too_late.errors[:parent_id].any?
 
     @checkpoint.update!(target_amount: 50, unit: "emails")
     assert @checkpoint.reload.quantified?
-    assert nested.reload.leaf_checkpoint?
+    assert @checkpoint.leaf_checkpoint?
   end
 
   test "quantified_path_project walks from day to path-level target" do

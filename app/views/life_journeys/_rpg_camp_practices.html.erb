@@ -7,7 +7,7 @@
 <% tasks_by_practice = days.any? ? PracticeTask.where(strategy_goal_id: days.map(&:id)).ordered.group_by(&:strategy_goal_id) : {} %>
 <% all_open = days.reject(&:completed?) %>
 <% all_done = days.select(&:completed?) %>
-<% can_prepare = cat.nested_leaf_camp? %>
+<% can_prepare = cat.path_level_camp? %>
 
 <div class="lp-rpg-camp-folder__body lp-rpg-camp-workspace is-<%= accent %>"
      data-controller="camp-workspace"
