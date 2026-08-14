@@ -16696,7 +16696,7 @@ button.lp-strategy-overflow {
   flex: 1;
   min-width: 0;
   border-radius: 2px;
-  background: color-mix(in srgb, var(--lp-muted) 22%, transparent);
+  background: color-mix(in srgb, var(--lp-muted) 40%, transparent);
 }
 .lp-dash-hero__segs i.f {
   background: linear-gradient(180deg, var(--lp-teal), var(--lp-green));
