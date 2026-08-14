@@ -40,10 +40,10 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-timeline", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @colored.id)
-    assert_selector ".lp-climb-path__quests[open]", wait: 5
-    assert_selector ".lp-climb-path__quest.has-color.is-purple .lp-climb-path__quest-title", text: /Purple Volume/
-    assert_selector ".lp-climb-path__node", text: /Plain Volume/
-    assert_no_selector ".lp-climb-path__quest.has-color", text: /Plain Volume/
+    assert_selector "#climb-path-project-#{@colored.id} .lp-climb-path__project.has-color.is-purple", wait: 5
+    assert_selector "#climb-path-project-#{@colored.id} .lp-climb-path__title", text: /Purple Volume/
+    assert_selector "#climb-path-project-#{@plain.id}", text: /Plain Volume/
+    assert_no_selector "#climb-path-project-#{@plain.id} .lp-climb-path__project.has-color"
     assert_no_selector "a.lp-qs-card"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-mountain-mobile.png")
 

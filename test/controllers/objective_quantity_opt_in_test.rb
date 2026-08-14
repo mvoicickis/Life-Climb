@@ -33,17 +33,16 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
     )
     Strategy::EnsureFolderQuest.call(folder: plain)
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
+    get objectives_strategy_goal_path(@folder)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
     assert_select ".lp-climb-path__quest-title", text: /Read Atomic Habits/
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
+    assert_select ".lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
     assert_select "#qs-add-track-#{@folder.id}"
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: plain.id)
+    get objectives_strategy_goal_path(plain)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-title", text: /Plain camp/
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest-add-track", count: 0
+    assert_select ".lp-climb-path__quest-title", text: /Plain camp/
+    assert_select ".lp-climb-path__quest-add-track", count: 0
     assert_select "#qs-add-track-#{plain.id}", count: 0
   end
 

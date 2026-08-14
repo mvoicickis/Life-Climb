@@ -11,7 +11,7 @@ class StrategyClimbPathNodesHelperTest < ActionView::TestCase
     assert_empty strategy_climb_path_nodes(nil)
   end
 
-  test "includes all done and current plus capped locked ahead" do
+  test "returns every node including locked ones beyond the old three-camp cap" do
     nodes = [
       Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),
       Node.new(id: 2, title: "B", state: :done, pct: 100, position: 1, record: nil, y: 70),
@@ -25,28 +25,11 @@ class StrategyClimbPathNodesHelperTest < ActionView::TestCase
     trail = Strategy::Trail::Result.new(nodes: nodes, visible_nodes: [], current_node: nodes[2])
 
     path = strategy_climb_path_nodes(trail)
-    assert_equal 6, path.size
-    assert_equal %i[done done current locked locked locked], path.map(&:state)
-    assert_equal [ 1, 2, 3, 4, 5, 6 ], path.map(&:id)
-    refute_includes path.map(&:id), 7
-    refute_includes path.map(&:id), 8
+    assert_equal 8, path.size
+    assert_equal [ 1, 2, 3, 4, 5, 6, 7, 8 ], path.map(&:id)
   end
 
-  test "respects custom locked_ahead" do
-    nodes = [
-      Node.new(id: 1, title: "Now", state: :current, pct: 10, position: 0, record: nil, y: 50),
-      Node.new(id: 2, title: "L1", state: :locked, pct: 0, position: 1, record: nil, y: 40),
-      Node.new(id: 3, title: "L2", state: :locked, pct: 0, position: 2, record: nil, y: 30),
-      Node.new(id: 4, title: "L3", state: :locked, pct: 0, position: 3, record: nil, y: 20)
-    ]
-    trail = Strategy::Trail::Result.new(nodes: nodes, visible_nodes: [], current_node: nodes[0])
-
-    path = strategy_climb_path_nodes(trail, locked_ahead: 1)
-    assert_equal 2, path.size
-    assert_equal [ 1, 2 ], path.map(&:id)
-  end
-
-  test "when all done returns only done nodes" do
+  test "when all done returns every done node" do
     nodes = [
       Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),
       Node.new(id: 2, title: "B", state: :done, pct: 100, position: 1, record: nil, y: 60)
@@ -57,15 +40,43 @@ class StrategyClimbPathNodesHelperTest < ActionView::TestCase
     assert_equal %i[done done], path.map(&:state)
   end
 
-  test "fewer locked than cap returns all locked" do
-    nodes = [
-      Node.new(id: 1, title: "Now", state: :current, pct: 10, position: 0, record: nil, y: 50),
-      Node.new(id: 2, title: "L1", state: :locked, pct: 0, position: 1, record: nil, y: 40)
-    ]
-    trail = Strategy::Trail::Result.new(nodes: nodes, visible_nodes: nodes, current_node: nodes[0])
+  test "quantified meta has a ratio; battle counts never do" do
+    user = users(:one)
+    Onboarding::Run.call(
+      user: user, area_key: "career", title: "Ship",
+      ideal_scene: "Live", current_reality: "Building", next_win: "Launch",
+      today_mission: "Write tests", closer_percent: 20, route_mission: true
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.create!(
+      user: user, life_area: area, life_journey: journey,
+      horizon: "plan", title: "Main", position: 0
+    )
+    quant = plan.children.create!(
+      user: user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Save", position: 0,
+      target_amount: 600, unit: "€", current_amount: 340
+    )
+    battles = plan.children.create!(
+      user: user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Hunt", position: 1
+    )
+    2.times do |i|
+      day = battles.children.create!(
+        user: user, life_area: area, life_journey: journey,
+        horizon: "day", title: "Day #{i}", scheduled_on: Date.current, position: i
+      )
+      day.update_columns(completed_at: Time.current) if i.zero?
+    end
 
-    path = strategy_climb_path_nodes(trail)
-    assert_equal 2, path.size
-    assert_equal [ 1, 2 ], path.map(&:id)
+    quant_meta = strategy_project_card_meta(quant)
+    assert_match(/340 \/ 600/, quant_meta[:label])
+    assert_in_delta 340.0 / 600.0, quant_meta[:ratio], 0.001
+
+    battle_meta = strategy_project_card_meta(battles)
+    assert_equal I18n.t("strategy.rpg.project_battles_won", count: 1), battle_meta[:label]
+    assert_nil battle_meta[:ratio]
   end
 end

@@ -159,6 +159,12 @@ de:
       destination_swipe_hint: "wischen, um das Ziel zu wechseln"
       edit_destination: "Ziel bearbeiten"
       project_sections: "Projektabschnitte"
+      what_gets_me_there: "What gets me there"
+      add_project: "Add a project"
+      empty_projects_invite: "Add a project to this path."
+      project_battles_won: "%{count} battles won"
+      project_battles_planned: "%{count} battles planned"
+      objectives_menu: "Objectives"
       project_trackers:
         title: "Tracker"
         add: "Weiteren Tracker zu diesem Projekt hinzufügen"

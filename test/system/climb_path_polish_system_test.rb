@@ -71,7 +71,7 @@ class ClimbPathPolishSystemTest < ApplicationSystemTestCase
     assert_equal 0, metrics["stuck"]
   end
 
-  test "tap haptic feature-detects vibrate present and absent without throwing" do
+  test "project cards are not tap-to-focus links" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -79,64 +79,9 @@ class ClimbPathPolishSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
-    assert_selector ".lp-climb-path__node.is-current a.lp-climb-path__link[data-action*='climb-path#tap']", wait: 5
-
-    result = page.evaluate_script(<<~JS)
-      (() => {
-        const link = document.querySelector(
-          ".lp-climb-path__node.is-current a.lp-climb-path__link[data-action*='climb-path#tap']"
-        );
-        if (!link) return { ok: false, reason: "missing link" };
-
-        link.addEventListener("click", (e) => e.preventDefault(), true);
-
-        const calls = [];
-        const original = navigator.vibrate;
-        try {
-          Object.defineProperty(navigator, "vibrate", {
-            configurable: true,
-            writable: true,
-            value: (ms) => { calls.push(ms); return true; }
-          });
-          link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-          const withVibrate = calls.slice();
-
-          calls.length = 0;
-          Object.defineProperty(navigator, "vibrate", {
-            configurable: true,
-            writable: true,
-            value: undefined
-          });
-          let threw = false;
-          try {
-            link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-          } catch (e) {
-            threw = true;
-          }
-
-          return {
-            ok: true,
-            withVibrate,
-            withoutCalls: calls.length,
-            threw
-          };
-        } finally {
-          if (original === undefined) {
-            try { delete navigator.vibrate; } catch (_) {}
-          } else {
-            Object.defineProperty(navigator, "vibrate", {
-              configurable: true,
-              writable: true,
-              value: original
-            });
-          }
-        }
-      })()
-    JS
-
-    assert result["ok"], result.inspect
-    assert_includes result["withVibrate"], 12
-    assert_equal 0, result["withoutCalls"]
-    assert_equal false, result["threw"]
+    assert_selector ".lp-climb-path.is-list", wait: 5
+    assert_no_selector "a.lp-climb-path__link"
+    assert_selector "#climb-path-project-#{@current.id} .lp-climb-path__title", text: /Active camp/
+    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Next camp/
   end
 end

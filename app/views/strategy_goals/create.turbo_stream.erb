@@ -1,0 +1,14 @@
+<%= turbo_stream.append "climb-path-projects" do %>
+  <%= render "life_journeys/rpg_project_card",
+        project: @created,
+        goal: @goal,
+        plan: @plan,
+        area: @created.life_area %>
+<% end %>
+<%= turbo_stream.remove "climb-path-empty" %>
+<%= turbo_stream.replace "rpg-add-section-#{@plan.id}" do %>
+  <%= render "life_journeys/rpg_add_project",
+        plan: @plan,
+        area: @created.life_area,
+        goal: @goal %>
+<% end %>

@@ -49,11 +49,27 @@ class StrategyGoalsController < ApplicationController
         flash[:climb_boss] = true if celebration[:amount].to_i >= 50
       end
 
-      # Always redirect — Turbo form posts used to hit a no-op turbo_stream that
-      # saved the record but left the Quest Folders sheet unchanged.
-      redirect_to strategy_redirect_path(**create_redirect_params(goal)),
-                  notice: create_notice(goal, celebration),
-                  status: :see_other
+      if goal.project? && parent&.plan?
+        respond_to do |format|
+          format.turbo_stream do
+            @created = goal
+            @plan = parent
+            @goal = goal.root_goal
+            @journey = current_user.life_journeys.active.find_by(id: goal.life_journey_id) ||
+                       current_user.primary_focused_journey
+            render :create
+          end
+          format.html do
+            redirect_to strategy_redirect_path(**create_redirect_params(goal)),
+                        notice: create_notice(goal, celebration),
+                        status: :see_other
+          end
+        end
+      else
+        redirect_to strategy_redirect_path(**create_redirect_params(goal)),
+                    notice: create_notice(goal, celebration),
+                    status: :see_other
+      end
     else
       fail_redirect(goal.errors.full_messages.to_sentence, focus_id: parent&.id)
     end
@@ -146,6 +162,20 @@ class StrategyGoalsController < ApplicationController
     else
       fail_redirect(goal.errors.full_messages.to_sentence, area_id: goal.life_area_id, focus_id: focus_id)
     end
+  end
+
+  def objectives
+    folder = current_user.strategy_goals.find(params[:id])
+    unless folder.project? && folder.path_level_camp? && !folder.holding?
+      return fail_redirect(t("strategy.bad_parent"), area_id: folder.life_area_id, focus_id: folder.parent_id)
+    end
+
+    @folder = folder
+    @area = folder.life_area
+    @root_goal = folder.root_goal
+    @journey = folder.life_journey ||
+               current_user.life_journeys.active.find_by(life_area_id: folder.life_area_id) ||
+               current_user.primary_focused_journey
   end
 
   private

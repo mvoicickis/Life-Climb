@@ -25095,6 +25095,14 @@ a.lp-rpg-camp-row {
 .lp-climb-path__quest.has-color.is-green { --lp-item-color: #57d35b; }
 .lp-climb-path__quest.has-color.is-pink { --lp-item-color: #f472b6; }
 .lp-climb-path__quest.has-color.is-gray { --lp-item-color: #9aa6b2; }
+.lp-climb-path__project.has-color.is-teal { --lp-item-color: #2dd4bf; }
+.lp-climb-path__project.has-color.is-coral { --lp-item-color: #e2604f; }
+.lp-climb-path__project.has-color.is-amber { --lp-item-color: #f59e0b; }
+.lp-climb-path__project.has-color.is-purple { --lp-item-color: #a78bfa; }
+.lp-climb-path__project.has-color.is-blue { --lp-item-color: #60a5fa; }
+.lp-climb-path__project.has-color.is-green { --lp-item-color: #57d35b; }
+.lp-climb-path__project.has-color.is-pink { --lp-item-color: #f472b6; }
+.lp-climb-path__project.has-color.is-gray { --lp-item-color: #9aa6b2; }
 .lp-climb-path__quest-head {
   display: flex;
   align-items: flex-start;
@@ -25393,3 +25401,74 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
   font-weight: 800;
 }
 .lp-feedback-fab__text { letter-spacing: 0.01em; }
+
+/* Flat Mountain project list */
+.lp-climb-path.is-list .lp-climb-path__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+.lp-climb-path.is-list .lp-climb-path__list::before { display: none; }
+.lp-climb-path.is-list .lp-climb-path__node {
+  display: block;
+  width: 100%;
+  max-width: none;
+}
+.lp-climb-path.is-list .lp-climb-path__title {
+  max-width: none;
+  white-space: normal;
+}
+.lp-climb-path__project {
+  position: relative;
+  background: var(--lp-rpg-glass, rgba(17, 22, 28, 0.88));
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.12));
+  border-left: 5px solid var(--lp-rpg-glass-border, rgba(148, 163, 184, 0.45));
+  border-radius: 0.9rem;
+  padding: 0.8rem 2.4rem 0.85rem 0.95rem;
+}
+.lp-climb-path__project.has-color {
+  border-left-color: var(--lp-item-color);
+}
+.lp-climb-path.is-list .lp-climb-path__project .lp-climb-path__menu-btn {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.35rem;
+}
+.lp-climb-path__track {
+  height: 5px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--lp-rpg-glass-border, rgba(148, 163, 184, 0.45)) 70%, transparent);
+  margin-top: 0.55rem;
+  overflow: hidden;
+}
+.lp-climb-path__fill {
+  height: 100%;
+  border-radius: 99px;
+  width: var(--pct, 0%);
+  background: var(--lp-item-color, var(--lp-rpg-glass-border, rgba(148, 163, 184, 0.7)));
+}
+.lp-climb-path__invite-copy {
+  margin: 0 0 0.7rem;
+  font-size: 0.88rem;
+  color: var(--lp-rpg-muted, rgba(203, 213, 225, 0.8));
+}
+.lp-climb-path__invite {
+  display: block;
+  width: 100%;
+  text-align: center;
+  border: 1px dashed var(--lp-rpg-glass-border, rgba(148, 163, 184, 0.45));
+  border-radius: 0.9rem;
+  padding: 0.8rem 0.9rem;
+  background: transparent;
+  color: var(--lp-rpg-muted, rgba(203, 213, 225, 0.8));
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lp-climb-path.is-list .lp-climb-path__new {
+  width: 100%;
+}
+.lp-climb-path.is-list .lp-climb-path__new-btn {
+  list-style: none;
+}

@@ -46,19 +46,20 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__planning"
     assert_select ".lp-rpg__stage-sections"
     assert_select ".lp-rpg__stage-trail"
-    assert_select ".lp-climb-path"
+    assert_select ".lp-climb-path.is-list"
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: "Resume"
+    assert_select "#climb-path-project-#{project.id} [data-action='click->plan-card-menu#objectives']"
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-rpg__chrome-bottom", count: 0
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-rpg-sheet.is-quest-space", count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Steps|#{Regexp.escape(project_leaf.title)}/
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-context", count: 0
   end
 
-  test "climb path lists done current and capped locked camps" do
+  test "climb path lists every camp without a lock window" do
     5.times do |i|
       camp = @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -69,10 +70,11 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-done", count: 2
-    assert_select ".lp-climb-path__node.is-current", count: 1
-    assert_select ".lp-climb-path__node.is-locked", count: 2
-    assert_match(/Project Sections/i, response.body)
+    5.times do |i|
+      assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp #{i}"
+    end
+    assert_select ".lp-climb-path__node.is-locked", count: 0
+    assert_select ".lp-climb-path__kicker", text: /What gets me there/
   end
 
   test "climb path still renders with few camps" do
@@ -85,8 +87,9 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-current", count: 1
-    assert_select ".lp-climb-path__node.is-current a.lp-climb-path__link", minimum: 1
+    assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp 0"
+    assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp 1"
+    assert_select "a.lp-climb-path__link", count: 0
   end
 
   test "planning center de-dupes progress and never exposes battle win" do
@@ -118,15 +121,18 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 
-    assert_select ".lp-climb-path__quests[open]", minimum: 1
-    assert_select ".lp-climb-path__quest-title"
-    assert_select ".lp-climb-path__quest-add-input"
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Daily battles/
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select ".lp-climb-path__node.is-selected", text: /Daily battles/
     assert_select "#rpg-add-checkpoint"
+
+    get objectives_strategy_goal_path(project)
+    assert_response :success
+    assert_select ".lp-climb-path__quest-title", text: /Daily battles/
+    assert_select ".lp-climb-path__quest-add-input"
   end
 
   test "stylesheet keeps content-sized stage/planning/trail inside fixed 100dvh shell" do

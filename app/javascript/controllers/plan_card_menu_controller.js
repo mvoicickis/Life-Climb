@@ -4,7 +4,7 @@ const OPEN_EVENT = "lp-rpg-path-menu:open"
 
 // Plan card ⋮ menu — Edit / Delete use the shared LifePoints dialog.
 export default class extends Controller {
-  static targets = ["button", "menu", "editDialog", "deleteDialog", "saveButton"]
+  static targets = ["button", "menu", "editDialog", "deleteDialog", "objectivesDialog", "saveButton"]
 
   connect() {
     this._onPointer = (event) => this.onPointerDown(event)
@@ -19,6 +19,7 @@ export default class extends Controller {
     this.close()
     this.closeEdit()
     this.closeDelete()
+    this.closeObjectives()
     window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
 
@@ -72,6 +73,28 @@ export default class extends Controller {
     event?.preventDefault()
     if (!this.hasDeleteDialogTarget) return
     if (this.deleteDialogTarget.open) this.deleteDialogTarget.close()
+  }
+
+  objectives(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    this.close()
+    this.closeEdit()
+    this.closeDelete()
+    if (!this.hasObjectivesDialogTarget) return
+
+    const frame = this.objectivesDialogTarget.querySelector("turbo-frame")
+    const src = frame?.dataset?.src
+    if (frame && src && frame.getAttribute("src") !== src) {
+      frame.setAttribute("src", src)
+    }
+    this.objectivesDialogTarget.showModal()
+  }
+
+  closeObjectives(event) {
+    event?.preventDefault()
+    if (!this.hasObjectivesDialogTarget) return
+    if (this.objectivesDialogTarget.open) this.objectivesDialogTarget.close()
   }
 
   bindDialogKeyboardGuards() {

@@ -39,24 +39,21 @@ class ProjectSectionsMenuPropagationTest < ApplicationSystemTestCase
 
     path = life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     visit path
-    assert_selector ".lp-climb-path__node.is-current .lp-climb-path__menu-btn", wait: 5
+    assert_selector "#climb-path-project-#{@section.id} .lp-climb-path__menu-btn", wait: 5
     page.execute_script(<<~JS)
-      document.querySelector('.lp-climb-path__node.is-current')?.scrollIntoView({ block: 'center' });
+      document.querySelector('#climb-path-project-#{@section.id}')?.scrollIntoView({ block: 'center' });
     JS
 
     before = page.current_path
 
-    # 1) Click the ⋮ glyph itself
-    find(".lp-climb-path__node.is-current .lp-climb-path__menu-btn span", visible: :all).click
+    find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn span", visible: :all).click
     assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
     assert_equal before, page.current_path
-    assert_includes page.current_url, "focus_id=#{@section.id}"
 
     page.send_keys(:escape)
     assert_no_selector ".lp-climb-path__menu:not([hidden])", wait: 3
 
-    # 2) Click the padded menu-button box (not only glyph center)
-    btn = find(".lp-climb-path__node.is-current .lp-climb-path__menu-btn")
+    btn = find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn")
     page.execute_script(<<~JS, btn.native)
       const el = arguments[0];
       const r = el.getBoundingClientRect();

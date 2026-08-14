@@ -66,13 +66,13 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-climb-path__node .lp-climb-path__meta.is-quantity",
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta.is-quantity",
                   text: /500\s*\/\s*15000\s*€/
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__meta.is-quantity", minimum: 1
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__meta", text: /Active/i, count: 0
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__track"
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta", text: /Active/i, count: 0
   end
 
-  test "section card keeps DONE ACTIVE LOCKED display for non-quantified projects" do
+  test "non-quantified project shows a count-up battle line, never Active or a bar" do
     project = @plan.children.select(&:project?).sort_by { |p| [ p.position.to_i, p.id ] }
                  .find { |p| !p.completed? }
     assert project.present?
@@ -80,8 +80,10 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__meta", text: /Active/i
-    assert_select ".lp-climb-path__node.is-current .lp-climb-path__meta.is-quantity", count: 0
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta", text: /battles (won|planned)/
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta.is-quantity", count: 0
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__track", count: 0
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta", text: /Active/i, count: 0
   end
 
   test "editing quantified project updates target and unit without resetting current_amount" do

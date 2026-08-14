@@ -51,23 +51,22 @@ class QuantityProjectCardMobileTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @quant.id)
     assert_selector ".lp-climb-path", wait: 5
-    assert_selector ".lp-climb-path__node.is-current .lp-climb-path__meta.is-quantity",
+    assert_selector "#climb-path-project-#{@quant.id} .lp-climb-path__meta.is-quantity",
                     text: /7\s*\/\s*700\s*pages/i, wait: 5
+    assert_selector "#climb-path-project-#{@quant.id} .lp-climb-path__track"
     page.execute_script(<<~JS)
-      const node = [...document.querySelectorAll(".lp-climb-path__node")]
-        .find((el) => /Launch site/i.test(el.textContent || ""));
-      node?.scrollIntoView({ block: "center" });
+      document.querySelector("#climb-path-project-#{@plain.id}")?.scrollIntoView({ block: "center" });
     JS
-    assert_selector ".lp-climb-path__node", text: /Launch site/i, wait: 5
+    assert_selector "#climb-path-project-#{@plain.id}", text: /Launch site/i, wait: 5
+    assert_no_selector "#climb-path-project-#{@plain.id} .lp-climb-path__track"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quantity-section-cards-mobile.png")
 
-    # Card stays inside the climb path scroll region (no horizontal blowout).
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const rail = document.querySelector(".lp-climb-path");
-        const card = document.querySelector(".lp-climb-path__node.is-current");
+        const card = document.querySelector("#climb-path-project-#{@quant.id}");
         if (!rail || !card) return { ok: false };
         const rr = rail.getBoundingClientRect();
         const cr = card.getBoundingClientRect();

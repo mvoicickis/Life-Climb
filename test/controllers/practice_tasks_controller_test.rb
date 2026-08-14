@@ -39,7 +39,11 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     follow_redirect!
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
+    assert_select "#climb-path-project-#{@camp.id} .lp-climb-path__title", text: /MVP/
+    assert_select ".lp-climb-path__quests", count: 0
+
+    get objectives_strategy_goal_path(@camp)
+    assert_response :success
     assert_select ".lp-climb-path__quest-title", text: /MVP/
     assert_select ".lp-qs-obj__text[value='Design layout']"
     assert_select ".lp-climb-path__quest-add-input"
@@ -63,7 +67,7 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
   test "quest detail checkboxes are status-only without complete action" do
     task = @practice.practice_tasks.create!(user: @user, title: "Design layout", position: 0)
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    get objectives_strategy_goal_path(@camp)
     assert_response :success
     assert_select "button.lp-qs-obj__check", count: 0
     assert_select "span.lp-qs-obj__check[aria-label=?]", "Design layout — not done yet"
@@ -73,7 +77,7 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_select "#quest_progress_#{@camp.id}"
 
     task.complete!
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    get objectives_strategy_goal_path(@camp)
     assert_select "span.lp-qs-obj__check.is-done[aria-label=?]", "Design layout — done"
   end
 

@@ -74,9 +74,11 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
     assert_equal BigDecimal("19"), @section.reload.current_amount
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
-    assert_selector ".lp-climb-path__quests[open]", wait: 5
-    assert_selector ".lp-climb-path__quest-title", text: /Read Atomic Habits/i
-    assert_selector ".lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
+    open_project_objectives(@folder)
+    within("dialog#section-objectives-#{@folder.id}") do
+      assert_selector ".lp-climb-path__quest-title", text: /Read Atomic Habits/i
+      assert_selector ".lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
+    end
     page.save_screenshot("/opt/cursor/artifacts/screenshots/objective-quantity-toggle-mountain-mobile.png")
   end
 end

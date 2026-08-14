@@ -1,0 +1,63 @@
+<%# Ghost add-project control. locals: plan, area, goal %>
+<% plan = local_assigns.fetch(:plan) %>
+<% area = local_assigns.fetch(:area) %>
+<% goal = local_assigns[:goal] %>
+
+<div class="lp-climb-path__add" id="rpg-add-section-<%= plan.id %>" data-climb-path-target="node">
+  <details class="lp-climb-path__new"
+           data-controller="floating-create"
+           data-action="toggle->floating-create#onToggle">
+    <summary class="lp-climb-path__new-btn lp-climb-path__invite"
+             aria-label="<%= t('strategy.rpg.add_project') %>">
+      + <%= t("strategy.rpg.add_project") %>
+    </summary>
+    <div class="lp-rpg-float-create" data-floating-create-target="shell" hidden>
+      <button type="button"
+              class="lp-rpg-float-create__backdrop"
+              data-action="click->floating-create#close"
+              tabindex="-1"
+              aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+      <div class="lp-rpg-float-create__card"
+           data-floating-create-target="card"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="rpg-add-section-title-<%= plan.id %>">
+        <header class="lp-rpg-float-create__head">
+          <p class="lp-rpg-float-create__kicker"><%= t("strategy.rpg.what_gets_me_there") %></p>
+          <h2 class="lp-rpg-float-create__heading" id="rpg-add-section-title-<%= plan.id %>">
+            <%= t("strategy.rpg.add_project") %>
+          </h2>
+        </header>
+        <%= form_with url: strategy_goals_path,
+              method: :post,
+              class: "lp-rpg-float-create__form" do %>
+          <%= hidden_field_tag :life_area_id, area.id %>
+          <%= hidden_field_tag :life_journey_id, @journey.id %>
+          <%= hidden_field_tag :horizon, "project" %>
+          <%= hidden_field_tag :parent_id, plan.id %>
+          <label class="lp-rpg-float-create__field">
+            <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.checkpoint_name") %></span>
+            <%= text_field_tag :title, nil,
+                  required: true,
+                  maxlength: 120,
+                  class: "lp-rpg-float-create__input",
+                  placeholder: t("strategy.rpg.checkpoint_name_placeholder"),
+                  autocomplete: "off",
+                  data: { floating_create_target: "title" } %>
+          </label>
+          <%= render "life_journeys/quantity_track_fields",
+                form_id: "rpg-add-section-#{plan.id}" %>
+          <div class="lp-rpg-float-create__actions">
+            <button type="button"
+                    class="lp-rpg-float-create__btn is-cancel"
+                    data-action="click->floating-create#close">
+              <%= t("strategy.rpg.cancel") %>
+            </button>
+            <%= submit_tag t("strategy.rpg.add_project"),
+                  class: "lp-rpg-float-create__btn is-create" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </details>
+</div>

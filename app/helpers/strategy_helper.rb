@@ -8,8 +8,6 @@ module StrategyHelper
   }.freeze
 
   VISIBLE_PER_LEVEL = 3
-  # Vertical climb path: all done + current + this many locked ahead (DOM omit beyond).
-  CLIMB_PATH_LOCKED_AHEAD = 3
 
   # Center trail slots — slightly compressed so the climb reads as one trail.
   GOAL_SLOT = [ 50, 14 ].freeze
@@ -217,23 +215,9 @@ module StrategyHelper
     (selected ? [ selected ] + rest : rest).first(limit)
   end
 
-  # Display window for the vertical climb path. Does not mutate Strategy::Trail —
-  # full trail.nodes stay available for progress / battle focus.
-  def strategy_climb_path_nodes(trail, locked_ahead: CLIMB_PATH_LOCKED_AHEAD)
-    nodes = Array(trail&.nodes)
-    return nodes if nodes.empty?
-
-    ahead = [ locked_ahead.to_i, 0 ].max
-    current_index = nodes.index { |n| n.state == :current }
-    if current_index.nil?
-      # All done (or empty current): show everything completed, no locked peek.
-      return nodes.select { |n| n.state == :done }
-    end
-
-    locked_start = current_index + 1
-    locked_end = [ locked_start + ahead - 1, nodes.length - 1 ].min
-    keep_through = locked_start <= locked_end ? locked_end : current_index
-    nodes[0..keep_through]
+  # Full plan list for Mountain. Holding is already omitted by Strategy::Trail.
+  def strategy_climb_path_nodes(trail)
+    Array(trail&.nodes)
   end
 
   def strategy_trail_wire(from_slot, to_slot)
@@ -296,10 +280,43 @@ module StrategyHelper
     "#{format_strategy_quantity(project.current_amount)} / #{format_strategy_quantity(project.target_amount)} #{project.unit}"
   end
 
+  # Card meta: quantified gets a real ratio; battles only count up (no bar).
+  def strategy_project_card_meta(project)
+    return if project.blank?
+
+    if project.quantified?
+      target = project.target_amount.to_d
+      ratio = target.positive? ? (project.current_amount.to_d / target).clamp(0, 1).to_f : nil
+      return { label: strategy_quantity_progress_label(project), ratio: ratio }
+    end
+
+    days = project_battle_days(project)
+    return if days.empty?
+
+    won = days.count(&:completed?)
+    if won.positive?
+      { label: I18n.t("strategy.rpg.project_battles_won", count: won), ratio: nil }
+    else
+      { label: I18n.t("strategy.rpg.project_battles_planned", count: days.size), ratio: nil }
+    end
+  end
+
   def format_strategy_quantity(value)
     n = value.to_d
     return n.to_i.to_s if n == n.to_i
 
     format("%.1f", n)
+  end
+
+  private
+
+  def project_battle_days(project)
+    days =
+      if project.association(:children).loaded?
+        project.children.select(&:day?)
+      else
+        project.children.where(horizon: "day").to_a
+      end
+    days.reject { |day| Strategy::EnsureFolderQuest.checklist_host?(day) }
   end
 end

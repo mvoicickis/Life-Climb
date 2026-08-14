@@ -43,8 +43,8 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_selector ".lp-climb-path", wait: 5
-    assert_selector ".lp-climb-path__quests[open]", wait: 5
     assert_selector ".lp-climb-path__new-btn", wait: 5
+    assert_selector "#climb-path-project-#{@camp.id} .lp-climb-path__title", text: /Duolingo/
 
     metrics = measure_mountain_layout!
     File.write("/tmp/sparse-climb-after.json", JSON.pretty_generate(metrics))
@@ -56,7 +56,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_in_delta metrics["vh"], metrics["rootHeight"], 2.0
     assert_equal "auto", metrics["trailOverflowY"]
-    assert metrics["questsOpen"], "selected camp quests must stay open: #{metrics.inspect}"
+    refute metrics["questsOpen"], "project cards stay closed on the list: #{metrics.inspect}"
 
     # No large empty reserved zone inside stage/trail below the last CTA.
     assert_operator metrics["emptyBelowInTrail"], :<=, 40,
@@ -74,7 +74,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
   end
 
   test "dense climb path still scrolls inside the fixed 100dvh shell" do
-    # Path helper shows all done + current + a small locked cap — seed many dones.
+    # Path lists every camp — seed many so the trail must scroll.
     @camp.update!(position: 8)
     8.times do |i|
       done = @plan.children.create!(
@@ -97,8 +97,8 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    # Entrance animation may leave off-screen nodes at opacity 0.
-    assert_selector ".lp-climb-path__node.is-done", minimum: 6, wait: 5, visible: :all
+    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Done Camp 1/, wait: 5, visible: :all
+    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Locked Camp 1/, visible: :all
 
     metrics = measure_mountain_layout!
     File.write("/tmp/dense-climb-after.json", JSON.pretty_generate(metrics))

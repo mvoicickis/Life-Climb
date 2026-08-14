@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "project_objectives_#{@folder.id}" do %>
+  <%= render "life_journeys/rpg_climb_path_quest",
+        folder: @folder,
+        area: @area,
+        goal_id: @root_goal&.id,
+        plan_id: @folder.parent_id %>
+<% end %>

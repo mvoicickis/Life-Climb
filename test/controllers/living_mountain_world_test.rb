@@ -89,11 +89,10 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-current", text: /Resume/
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-qs-board", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title"
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", 0
   end
 
@@ -114,14 +113,17 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-current", text: /Resume/
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title"
-    assert_select ".lp-climb-path__quest-add-input"
+    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Resume/
+    assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
+
+    get objectives_strategy_goal_path(project)
+    assert_response :success
+    assert_select ".lp-climb-path__quest-title", text: /Resume/
+    assert_select ".lp-climb-path__quest-add-input"
   end
 
-  test "locked sections stay visible in the carousel but are not drillable links" do
+  test "later sections stay visible as equal cards and are not drillable links" do
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Find Job", position: 0
@@ -142,13 +144,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: first.id)
     assert_response :success
-    assert_select ".lp-climb-path__node.is-current", text: /Resume/
-    assert_select ".lp-climb-path__node.is-current a.lp-climb-path__link"
-    assert_select ".lp-climb-path__node.is-locked", text: /Interviews/
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__meta.is-locked", text: /Locked/i
-    assert_select ".lp-climb-path__node.is-locked .lp-climb-path__menu-btn", minimum: 1
-    assert_select ".lp-climb-path__node.is-locked a.lp-climb-path__link", count: 0
-    assert_select ".lp-climb-path__new-btn", text: /New Project/
+    assert_select "#climb-path-project-#{first.id} .lp-climb-path__title", text: /Resume/
+    assert_select "#climb-path-project-#{locked.id} .lp-climb-path__title", text: /Interviews/
+    assert_select "#climb-path-project-#{locked.id} .lp-climb-path__menu-btn", minimum: 1
+    assert_select "a.lp-climb-path__link", count: 0
+    assert_select ".lp-climb-path__meta.is-locked", count: 0
+    assert_select ".lp-climb-path__new-btn", text: /Add a project/
     assert_select ".lp-rpg-section-head", count: 0
   end
 

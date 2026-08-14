@@ -31,7 +31,7 @@ class ClimbPathScrollTest < ApplicationSystemTestCase
     end
   end
 
-  test "vertical climb path scrolls and keeps current companion pin" do
+  test "vertical climb path lists every camp and scrolls to add" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -39,13 +39,13 @@ class ClimbPathScrollTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camps[2].id)
-    assert_selector ".lp-climb-path", wait: 5
+    assert_selector ".lp-climb-path.is-list", wait: 5
     assert_selector ".lp-rpg__stage-trail", wait: 5
-    # Entrance IO may leave off-screen nodes at opacity 0 until scrolled into view.
-    assert_selector ".lp-climb-path__node.is-done", minimum: 2, visible: :all
-    assert_selector ".lp-climb-path__node.is-current.is-visible", wait: 5
-    assert_selector ".lp-climb-path__face", wait: 5
-    assert_selector ".lp-climb-path__node.is-locked", minimum: 1, visible: :all
+    6.times do |i|
+      assert_selector ".lp-climb-path__project .lp-climb-path__title", text: "Camp #{i + 1}", visible: :all
+    end
+    assert_no_selector ".lp-climb-path__face"
+    assert_no_selector ".lp-climb-path__node.is-locked"
     assert_no_selector ".lp-rpg-sections__arrow"
     assert_no_selector ".lp-rpg-section-card"
 

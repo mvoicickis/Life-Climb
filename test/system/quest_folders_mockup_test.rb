@@ -49,12 +49,15 @@ class QuestFoldersMockupTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Mountain page/i, wait: 5
-    assert_selector "#quest_progress_#{@camp.id}", text: /3 \/ 5 objectives done/i
-    assert_selector "turbo-frame#quest_objectives_#{@camp.id}"
-    assert_selector ".lp-qs-obj__text[value='Design mountain layout']", visible: :all
-    assert_selector ".lp-qs-obj__check.is-done", minimum: 3, visible: :all
-    assert_selector ".lp-climb-path__quest-add-input", visible: :all
+    open_project_objectives(@camp)
+    within("dialog#section-objectives-#{@camp.id}") do
+      assert_selector ".lp-climb-path__quest-title", text: /Mountain page/i, wait: 5
+      assert_selector "#quest_progress_#{@camp.id}", text: /3 \/ 5 objectives done/i
+      assert_selector "turbo-frame#quest_objectives_#{@camp.id}"
+      assert_selector ".lp-qs-obj__text[value='Design mountain layout']", visible: :all
+      assert_selector ".lp-qs-obj__check.is-done", minimum: 3, visible: :all
+      assert_selector ".lp-climb-path__quest-add-input", visible: :all
+    end
     assert_no_selector ".lp-qs-board"
     assert_no_selector ".lp-qs-detail"
     assert_no_selector ".lp-rpg-practice-folder__plan-title", text: /Plan for Today/i

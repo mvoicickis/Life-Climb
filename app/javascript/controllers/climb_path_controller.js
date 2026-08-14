@@ -21,8 +21,6 @@ export default class extends Controller {
     this._parallaxRaf = null
     this._onScroll = () => this.queueParallax()
 
-    // Position first so IntersectionObserver sees the focused node in view.
-    this.scrollToFocus({ behavior: "auto" })
     this.setupEntrance()
     this.setupParallax()
   }
