@@ -15,16 +15,17 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
-    @leaf = @section.children.find(&:project?)
+    @leaf = @section
 
     @leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Write tests", scheduled_on: Date.current, position: 1
     )
 
-    quest = @section.children.create!(
+    quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume", position: 2
+      horizon: "project", title: "Volume",
+      position: @plan.children.maximum(:position).to_i + 1
     )
     host = Strategy::EnsureFolderQuest.call(folder: quest)
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)

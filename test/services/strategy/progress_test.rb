@@ -90,46 +90,19 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
     assert_equal 100, Strategy::Progress.percent(leaf.reload)
   end
 
-  test "branch checkpoint percent averages direct children recursively at depth 3+" do
+  test "plan percent averages sibling path camps" do
     goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
-    root = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Root", position: 0)
-    left = @user.strategy_goals.create!(life_area: @area, parent: root, horizon: "project", title: "Left", position: 0)
-    right = @user.strategy_goals.create!(life_area: @area, parent: root, horizon: "project", title: "Right", position: 1)
-    deep_a = @user.strategy_goals.create!(life_area: @area, parent: left, horizon: "project", title: "Deep A", position: 0)
-    deep_b = @user.strategy_goals.create!(life_area: @area, parent: left, horizon: "project", title: "Deep B", position: 1)
-    # right stays a leaf (no children) — complete it for 100%
+    camp_a = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "A", position: 0)
+    camp_b = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "B", position: 1)
 
-    deep_a.complete!
-    # left = avg(100, 0) = 50; right = 0; root = avg(50, 0) = 25
-    assert_equal 100, Strategy::Progress.percent(deep_a.reload)
-    assert_equal 0, Strategy::Progress.percent(deep_b.reload)
-    assert_equal 50, Strategy::Progress.percent(left.reload)
-    assert_equal 0, Strategy::Progress.percent(right.reload)
-    assert_equal 25, Strategy::Progress.percent(root.reload)
+    camp_a.complete!
+    assert_equal 100, Strategy::Progress.percent(camp_a.reload)
+    assert_equal 0, Strategy::Progress.percent(camp_b.reload)
+    assert_equal 50, Strategy::Progress.percent(plan.reload)
 
-    right.complete!
-    # left = 50; right = 100; root = avg(50, 100) = 75
-    assert_equal 75, Strategy::Progress.percent(root.reload)
-
-    deep_b.complete!
-    # left = 100; right = 100; root = 100
-    assert_equal 100, Strategy::Progress.percent(left.reload)
-    assert_equal 100, Strategy::Progress.percent(root.reload)
-  end
-
-  test "plan percent averages nested branch project percents not flattened leaves" do
-    goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
-    plan = @user.strategy_goals.create!(life_area: @area, parent: goal, horizon: "plan", title: "P", position: 0)
-    branch = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Branch", position: 0)
-    leaf = @user.strategy_goals.create!(life_area: @area, parent: plan, horizon: "project", title: "Leaf", position: 1)
-    child_a = @user.strategy_goals.create!(life_area: @area, parent: branch, horizon: "project", title: "A", position: 0)
-    child_b = @user.strategy_goals.create!(life_area: @area, parent: branch, horizon: "project", title: "B", position: 1)
-
-    child_a.complete!
-    # If flattened wrongly: 3 leaves with 1 done → 33. Nested: branch=50, leaf=0 → plan=25
-    assert_equal 50, Strategy::Progress.percent(branch.reload)
-    assert_equal 25, Strategy::Progress.percent(plan.reload)
+    camp_b.complete!
+    assert_equal 100, Strategy::Progress.percent(plan.reload)
   end
 
   test "quantified path-level project percent uses amount over target" do
@@ -140,8 +113,7 @@ class Strategy::ProgressTest < ActiveSupport::TestCase
       position: 0, target_amount: 700, unit: "pages", current_amount: 70
     )
     leaf = practice_leaf_for!(project)
-    # Nested leaf incomplete — quantity still drives path-level %.
-    assert_equal 0, Strategy::Progress.percent(leaf)
+    assert_equal 10, Strategy::Progress.percent(leaf)
     assert_equal 10, Strategy::Progress.percent(project)
     assert_equal 10, Strategy::Progress.percent(plan)
 

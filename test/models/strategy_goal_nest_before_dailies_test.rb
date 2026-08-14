@@ -15,51 +15,29 @@ class StrategyGoalNestBeforeDailiesTest < ActiveSupport::TestCase
     )
   end
 
-  test "path_level_camp and nested_leaf_camp helpers" do
+  test "path-level camp is not a nested leaf" do
     assert @camp.path_level_camp?
     assert_not @camp.nested_leaf_camp?
-
-    nested = @user.strategy_goals.create!(
-      life_area: @area, parent: @camp, horizon: "project", title: "Vocabulary", position: 0
-    )
-    assert nested.nested_leaf_camp?
-    assert_not nested.path_level_camp?
-    assert_not @camp.reload.nested_leaf_camp?
-    assert @camp.branch_checkpoint?
+    assert_not @camp.branch_checkpoint?
+    assert_not @camp.split_eligible?
   end
 
-  test "day under Path-level camp is rejected on create" do
-    day = @user.strategy_goals.build(
-      life_area: @area, parent: @camp, horizon: "day",
-      title: "Do lessons", scheduled_on: Date.current, position: 0
-    )
-
-    assert_not day.valid?
-    assert_includes day.errors[:base], I18n.t("strategy.rpg.day_needs_nested_camp")
-  end
-
-  test "day under nested camp is accepted" do
-    nested = @user.strategy_goals.create!(
-      life_area: @area, parent: @camp, horizon: "project", title: "Vocabulary", position: 0
-    )
+  test "day under Path-level camp is accepted" do
     day = @user.strategy_goals.create!(
-      life_area: @area, parent: nested, horizon: "day",
+      life_area: @area, parent: @camp, horizon: "day",
       title: "Do lessons", scheduled_on: Date.current, position: 0
     )
 
     assert day.persisted?
-    assert_equal nested.id, day.parent_id
+    assert_equal @camp.id, day.parent_id
   end
 
-  test "existing day under Path-level camp can still update" do
-    day = @user.strategy_goals.new(
-      life_area: @area, parent: @camp, horizon: "day",
-      title: "Legacy lesson", scheduled_on: Date.current, position: 0
+  test "nested project under Path-level camp is rejected" do
+    nested = @user.strategy_goals.build(
+      life_area: @area, parent: @camp, horizon: "project", title: "Vocabulary", position: 0
     )
-    day.save!(validate: false)
 
-    day.update!(title: "Legacy lesson renamed", scheduled_on: Date.current + 1.day)
-    assert_equal "Legacy lesson renamed", day.reload.title
-    assert_equal Date.current + 1.day, day.scheduled_on
+    assert_not nested.valid?
+    assert nested.errors[:parent_id].any?
   end
 end

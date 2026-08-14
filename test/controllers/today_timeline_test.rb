@@ -14,7 +14,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
-    @leaf = @section.children.find(&:project?)
+    @leaf = @section
     @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Ship auth")
 
     @user.habits.destroy_all

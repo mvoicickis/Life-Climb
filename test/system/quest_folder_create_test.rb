@@ -32,7 +32,7 @@ class QuestFolderCreateTest < ApplicationSystemTestCase
     )
   end
 
-  test "New Quest create shows the quest inline under climb path" do
+  test "empty path camp does not offer nested New Quest" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -40,27 +40,6 @@ class QuestFolderCreateTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    assert_selector ".lp-climb-path__new-quest-btn", text: /New Quest/i, wait: 5
-
-    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-folder-create-before.png")
-
-    find(".lp-climb-path__new-quest-btn", text: /New Quest/i).click
-    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-    assert_selector ".lp-rpg-float-create__heading", text: /New Quest/i
-
-    card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
-    card.fill_in "title", with: "Vocabulary"
-    card.find(".lp-rpg-float-create__btn.is-create").click
-
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-folder-create-after.png")
-
-    assert @user.strategy_goals.for_kind("project").exists?(title: "Vocabulary", parent_id: @camp.id),
-           "Quest should be saved"
-    created = @camp.children.find_by!(title: "Vocabulary")
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Vocabulary/i, wait: 5
-    assert_selector ".lp-climb-path__quest-add-input", visible: :all
-    assert_no_selector ".lp-qs-detail"
-    assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: created.id), wait: 5
+    assert_no_selector ".lp-climb-path__new-quest-btn"
   end
 end

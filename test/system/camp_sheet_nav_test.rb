@@ -57,7 +57,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
     assert_selector ".lp-climb-path__node.is-locked", text: /Ship landing page/i
     assert_no_selector ".lp-climb-path__node.is-locked a.lp-climb-path__link"
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i
+    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Get first 100 users|Ship landing page/i
     assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all
     assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']"
 
@@ -66,7 +66,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_b.id)
     assert_selector ".lp-climb-path__node.is-selected", text: /Ship landing page/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i, wait: 5
+    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Get first 100 users|Ship landing page/i, wait: 5
     assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Draft hero headline']", visible: :all, wait: 3
     assert_no_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']"
 
@@ -80,7 +80,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
       .find("a.lp-climb-path__link").click
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a.id), wait: 5
     assert_selector ".lp-climb-path__node.is-selected", text: /Get first 100 users/i, wait: 5
-    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Steps/i, wait: 5
+    assert_selector ".lp-climb-path__quests[open] .lp-climb-path__quest-title", text: /Get first 100 users|Ship landing page/i, wait: 5
     assert_selector ".lp-climb-path__quests[open] .lp-qs-obj__text[value='Ask 5 friends for feedback']", visible: :all, wait: 3
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
@@ -106,7 +106,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-section-head"
     assert_no_selector ".lp-rpg-practice-cats__hint"
     assert_no_selector ".lp-qs-board__title"
-    assert_selector ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/i
+    assert_no_selector ".lp-climb-path__new-quest-btn"
     assert_no_selector ".lp-rpg-practice-focus.is-entered", visible: true
   end
 end

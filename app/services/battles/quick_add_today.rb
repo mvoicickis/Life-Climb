@@ -25,12 +25,7 @@ module Battles
       title = @forced_title.presence || example_title_for(category)
 
       project = Strategy::PathProject.resolve(user: @user, journey: journey)
-      parent =
-        if project
-          PracticeParent.call(user: @user, project: project)
-        else
-          Strategy::HoldingProject.ensure!(user: @user, journey: journey)
-        end
+      parent = project || Strategy::HoldingProject.ensure!(user: @user, journey: journey)
       raise Error, I18n.t("notifications.actions.need_spine") if parent.blank?
       battle = @user.strategy_goals.create!(
         life_area: journey.life_area,

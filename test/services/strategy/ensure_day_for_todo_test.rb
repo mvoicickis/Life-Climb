@@ -58,7 +58,7 @@ class Strategy::EnsureDayForTodoTest < ActiveSupport::TestCase
       user: @user, life_area: journey.life_area, life_journey: journey,
       horizon: "project", title: "Second camp", position: first.position.to_i + 5
     )
-    leaf = Battles::PracticeParent.call(user: @user, project: second)
+    leaf = second
     recent = leaf.children.create!(
       user: @user, life_area: journey.life_area, life_journey: journey,
       horizon: "day", title: "Recent under second", scheduled_on: Date.yesterday, position: 0

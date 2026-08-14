@@ -78,7 +78,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     assert battle.reload.completed?
     assert_equal 0, goal.reload.progress_percent
-    assert_match(/Is .*Steps.* finished/i, response.body)
+    assert_match(/Is .*Cut spend.* finished/i, response.body)
     assert_match(/Yes, project done/i, response.body)
 
     post project_completions_url, params: { project_id: project_leaf.id, decision: "done" }

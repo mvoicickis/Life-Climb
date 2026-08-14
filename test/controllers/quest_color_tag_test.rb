@@ -13,19 +13,15 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
-    @section = @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "MVP", position: @plan.children.maximum(:position).to_i + 1
-    )
   end
 
-  test "creating a leaf quest with color_key persists and shows on Mountain" do
+  test "creating a path camp with color_key persists and shows on Mountain" do
     assert_difference -> { @user.strategy_goals.for_kind("project").count }, 1 do
       post strategy_goals_path, params: {
         life_area_id: @area.id,
         life_journey_id: @journey.id,
         horizon: "project",
-        parent_id: @section.id,
+        parent_id: @plan.id,
         title: "Purple Volume",
         color_key: "purple"
       }
@@ -35,7 +31,11 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     assert_equal "purple", quest.color_key
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    quest.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Checklist", scheduled_on: Date.current, position: 0
+    )
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
     assert_response :success
     assert_select ".lp-climb-path__quests[open]"
     assert_select ".lp-climb-path__quest.has-color.is-purple .lp-climb-path__quest-title", text: /Purple Volume/
@@ -48,14 +48,18 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
       life_area_id: @area.id,
       life_journey_id: @journey.id,
       horizon: "project",
-      parent_id: @section.id,
+      parent_id: @plan.id,
       title: "Plain Volume",
       color_key: ""
     }
     quest = @user.strategy_goals.for_kind("project").find_by!(title: "Plain Volume")
     assert_nil quest.color_key
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    quest.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Checklist", scheduled_on: Date.current, position: 0
+    )
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: quest.id)
     assert_response :success
     assert_select ".lp-climb-path__quest-title", text: /Plain Volume/
     assert_select ".lp-climb-path__quest.has-color", text: /Plain Volume/, count: 0
@@ -68,7 +72,7 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
         life_area_id: @area.id,
         life_journey_id: @journey.id,
         horizon: "project",
-        parent_id: @section.id,
+        parent_id: @plan.id,
         title: "Neon Volume",
         color_key: "neon"
       }
@@ -76,10 +80,11 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  test "Today quest cards show folder title and nested objectives" do
-    quest = @section.children.create!(
+  test "Today quest cards show path camp title and nested objectives" do
+    quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Teal Volume", position: 0, color_key: "teal"
+      horizon: "project", title: "Teal Volume",
+      position: @plan.children.maximum(:position).to_i + 1, color_key: "teal"
     )
     host = Strategy::EnsureFolderQuest.call(folder: quest)
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
@@ -97,9 +102,10 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
   end
 
   test "uncolored quest still renders as a quest card on Today" do
-    quest = @section.children.create!(
+    quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Plain Volume", position: 0
+      horizon: "project", title: "Plain Volume",
+      position: @plan.children.maximum(:position).to_i + 1
     )
     host = Strategy::EnsureFolderQuest.call(folder: quest)
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
@@ -113,9 +119,14 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
   end
 
   test "quest detail edit dialog can update color_key" do
-    quest = @section.children.create!(
+    quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Edit me", position: 0
+      horizon: "project", title: "Edit me",
+      position: @plan.children.maximum(:position).to_i + 1
+    )
+    quest.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Checklist", scheduled_on: Date.current, position: 0
     )
 
     patch strategy_goal_path(quest), params: { title: "Edit me", color_key: "coral" }

@@ -422,12 +422,11 @@ module Strategy
         host.practice_tasks.incomplete.ordered
       end
 
-      # Read-only — do not create nested camps or checklist hosts while presenting.
+      # Read-only — the path-level camp holds days after flatten.
       def existing_practice_leaf(project)
-        return project if project.parent&.project?
-
-        kids = project.children.select { |c| c.project? && !c.holding? }
-        kids.find(&:leaf_checkpoint?) || kids.first
+        node = project
+        node = node.parent while node.parent&.project?
+        node
       end
 
       def existing_checklist_host(leaf)

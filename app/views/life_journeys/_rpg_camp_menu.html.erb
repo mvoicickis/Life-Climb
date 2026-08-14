@@ -56,8 +56,6 @@
             <%= render "life_journeys/quantity_track_fields",
                   project: project,
                   form_id: "camp-edit-#{project.id}" %>
-          <% end %>
-          <% if project.nested_leaf_camp? %>
             <%= render "life_journeys/color_swatch_fields",
                   selected: project.tagged_color_key,
                   form_id: "camp-edit-#{project.id}" %>

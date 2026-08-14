@@ -3,8 +3,8 @@
 class StrategyGoal < ApplicationRecord
   include TextLimits
 
-  # Guided tree: Goal → Plans → Projects → Battles.
-  # Projects may nest (branch checkpoints) or take days (leaf). Never both.
+  # Guided tree: Goal → Plans → path Projects → Battles.
+  # Path-level projects hold days only. Nested projects are not allowed.
   # Legacy month/week rows are migrated away; year maps to goal.
   KINDS = %w[goal plan project day].freeze
   LEGACY_KINDS = %w[month week].freeze
@@ -16,7 +16,7 @@ class StrategyGoal < ApplicationRecord
   ALLOWED_CHILDREN = {
     "goal" => %w[plan],
     "plan" => %w[project],
-    "project" => %w[project day],
+    "project" => %w[day],
     "day" => []
   }.freeze
 
@@ -56,7 +56,6 @@ class StrategyGoal < ApplicationRecord
   validate :due_on_rules
   validate :parent_kind_matches
   validate :parent_leaf_branch_xor
-  validate :day_requires_nested_camp, on: :create
   validate :child_fits_parent_window
   validate :root_must_be_goal
   validate :legacy_kinds_readonly, on: :create
@@ -137,7 +136,7 @@ class StrategyGoal < ApplicationRecord
     ALLOWED_CHILDREN.fetch(kind, [])
   end
 
-  # Branch = has nested checkpoints. Leaf = takes dailies (or empty, ready for either).
+  # Leftover nested folders from before flatten. New trees never branch.
   def branch_checkpoint?
     project? && children.any?(&:project?)
   end
@@ -160,7 +159,7 @@ class StrategyGoal < ApplicationRecord
     end
   end
 
-  # Nested leaf camp — the layer that holds daily practices.
+  # Leftover nested folder that held days before flatten. Always false after migration.
   def nested_leaf_camp?
     project? && parent&.project? && leaf_checkpoint?
   end
@@ -188,8 +187,9 @@ class StrategyGoal < ApplicationRecord
     nil
   end
 
+  # Nested quest folders are gone. Path camps take days, never nested projects.
   def split_eligible?
-    project? && children.none?(&:day?)
+    false
   end
 
   # True when this Practice has objectives and every one is checked off.
@@ -391,17 +391,6 @@ class StrategyGoal < ApplicationRecord
     elsif day? && siblings.any?(&:project?)
       errors.add(:base, I18n.t("strategy.rpg.checkpoint_branch_no_days"))
     end
-  end
-
-  # Daily practices hang under nested camps, not directly under a Path-level camp.
-  # Holding camps are the exception: loose battles sit on the holding camp itself.
-  def day_requires_nested_camp
-    return unless day?
-    return if parent.blank?
-    return if parent.holding?
-    return unless parent.path_level_camp?
-
-    errors.add(:base, I18n.t("strategy.rpg.day_needs_nested_camp"))
   end
 
   def holding_shape

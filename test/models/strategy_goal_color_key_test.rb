@@ -16,23 +16,17 @@ class StrategyGoalColorKeyTest < ActiveSupport::TestCase
   end
 
   test "accepts curated color keys and blanks to nil" do
-    quest = @user.strategy_goals.create!(
-      life_area: @area, parent: @section, horizon: "project",
-      title: "Purple quest", position: 0, color_key: "purple"
-    )
-    assert_equal "purple", quest.tagged_color_key
+    @section.update!(color_key: "purple")
+    assert_equal "purple", @section.tagged_color_key
 
-    quest.update!(color_key: "  ")
-    assert_nil quest.reload.color_key
-    assert_nil quest.tagged_color_key
+    @section.update!(color_key: "  ")
+    assert_nil @section.reload.color_key
+    assert_nil @section.tagged_color_key
   end
 
   test "rejects invalid color keys" do
-    quest = @user.strategy_goals.build(
-      life_area: @area, parent: @section, horizon: "project",
-      title: "Bad", position: 0, color_key: "neon"
-    )
-    assert_not quest.valid?
-    assert_includes quest.errors[:color_key], "is not included in the list"
+    @section.color_key = "neon"
+    assert_not @section.valid?
+    assert_includes @section.errors[:color_key], "is not included in the list"
   end
 end

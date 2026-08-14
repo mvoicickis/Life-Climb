@@ -31,7 +31,7 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty Path-level camp shows New Quest under climb path without board" do
+  test "empty Path-level camp does not show New Quest nested-folder form" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_response :success
     assert_select ".lp-climb-path__node.is-selected", text: /Learn German/
@@ -40,47 +40,17 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-qs-board__title", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
+    assert_select ".lp-climb-path__new-quest-btn", count: 0
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quest", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
-  test "nested leaf camp opens climb-path quest with sticky add" do
-    nested = @camp.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Vocabulary", position: 0
-    )
-
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: nested.id)
-    assert_response :success
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Vocabulary/
-    assert_select ".lp-climb-path__quest-add-input"
-    # Empty + create_url: skip padded empty copy; add input is the affordance.
-    assert_select ".lp-climb-path__quest .lp-qs-detail__empty", count: 0
-    assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
-    assert_select ".lp-rpg-camp-switch", count: 0
-    assert_select ".lp-rpg-breadcrumbs", count: 0
-  end
-
-  test "Path focus shows Learn German on climb path" do
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
-    assert_response :success
-    assert_select ".lp-climb-path__node", text: /Learn German/
-    assert_select ".lp-climb-path__node.is-current, .lp-climb-path__node.is-selected", text: /Learn German/
-    assert_select ".lp-rpg-section-head", count: 0
-    assert_select ".lp-rpg-practice-cats__hint", count: 0
-    assert_select ".lp-climb-path__node.is-selected .lp-climb-path__new-quest-btn", text: /New Quest/
-    assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-  end
-
-  test "legacy Path-level camp with days shows climb-path quest without Prepare New Quest" do
-    day = @user.strategy_goals.new(
+  test "Path-level camp with days shows climb-path quest" do
+    day = @user.strategy_goals.create!(
       user: @user, life_area: @area, life_journey: @journey, parent: @camp,
       horizon: "day", title: "Do lessons", scheduled_on: Date.current, position: 0
     )
-    day.save!(validate: false)
     day.practice_tasks.create!(user: @user, title: "Unit 1", position: 0)
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
@@ -90,14 +60,22 @@ class NestBeforeDailiesSheetTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
   end
 
-  test "creating a day under Path-level camp redirects with nest message" do
+  test "creating a nested project under Path-level camp is rejected" do
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: @camp.id, horizon: "project", title: "Vocabulary"
+    }
+    assert_response :redirect
+    assert_equal 0, @camp.children.where(horizon: "project").count
+  end
+
+  test "creating a day under Path-level camp succeeds" do
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
       parent_id: @camp.id, horizon: "day", scheduled_on: Date.current.to_s,
       title: "Do lessons"
     }
     assert_response :redirect
-    assert_match(/smaller camp|daily practices/i, flash[:alert].to_s)
-    assert_equal 0, @user.strategy_goals.where(horizon: "day", title: "Do lessons").count
+    assert @user.strategy_goals.exists?(horizon: "day", title: "Do lessons", parent_id: @camp.id)
   end
 end

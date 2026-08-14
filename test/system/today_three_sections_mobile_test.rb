@@ -15,7 +15,7 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
-    @leaf = @section.children.find(&:project?)
+    @leaf = @section
 
     @leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
@@ -26,17 +26,19 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
       horizon: "day", title: "Review PR", scheduled_on: Date.current, position: 2
     )
 
-    quest = @section.children.create!(
+    quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume One", position: 1, color_key: "coral"
+      horizon: "project", title: "Volume One",
+      position: @plan.children.maximum(:position).to_i + 1, color_key: "coral"
     )
     host = Strategy::EnsureFolderQuest.call(folder: quest)
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
 
-    quest2 = @section.children.create!(
+    quest2 = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume Two", position: 2
+      horizon: "project", title: "Volume Two",
+      position: @plan.children.maximum(:position).to_i + 1
     )
     host2 = Strategy::EnsureFolderQuest.call(folder: quest2)
     host2.practice_tasks.create!(user: @user, title: "Sketch UI", position: 0)

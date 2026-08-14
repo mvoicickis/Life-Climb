@@ -69,8 +69,7 @@ class Strategy::CompanionGuide::EngineTest < ActiveSupport::TestCase
     assert_equal [ "Do one mock interview" ], days_b.map(&:title)
 
     days_a.each do |day|
-      assert day.parent.project?, "day should hang under nested camp"
-      assert day.parent.parent_id == projects[0].id
+      assert_equal projects[0].id, day.parent_id, "day should hang on the path camp"
     end
   end
 
@@ -228,7 +227,6 @@ class Strategy::CompanionGuide::EngineTest < ActiveSupport::TestCase
   end
 
   def days_under(project)
-    nested = project.children.for_kind("project")
-    StrategyGoal.where(parent_id: nested.select(:id), horizon: "day").ordered.to_a
+    project.children.for_kind("day").ordered.to_a
   end
 end

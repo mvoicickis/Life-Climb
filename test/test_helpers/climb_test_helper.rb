@@ -2,22 +2,10 @@
 
 # Seeds a v2 player who can reach Today / Mountain without hierarchy redirects.
 module ClimbTestHelper
-  # Days hang under nested camps. Returns +camp+ when already nested; otherwise
-  # creates (or reuses) a "Steps" leaf under a Path-level camp.
+  # Days hang on the path-level camp. Returns +camp+ so existing call sites
+  # that create children on the leaf keep working after flatten.
   def practice_leaf_for!(camp, title: "Steps")
-    return camp if camp.project? && camp.parent&.project?
-
-    existing = camp.children.find { |child| child.project? && child.title == title }
-    return existing if existing
-
-    camp.children.create!(
-      user: camp.user,
-      life_area: camp.life_area,
-      life_journey: camp.life_journey,
-      horizon: "project",
-      title: title,
-      position: camp.children.maximum(:position).to_i
-    )
+    camp
   end
 
   def seed_climb!(
@@ -48,11 +36,7 @@ module ClimbTestHelper
       user: user, life_area: journey.life_area, life_journey: journey,
       horizon: "project", title: "Auth", position: 0
     )
-    nested = project.children.create!(
-      user: user, life_area: journey.life_area, life_journey: journey,
-      horizon: "project", title: "First steps", position: 0
-    )
-    nested.children.create!(
+    project.children.create!(
       user: user, life_area: journey.life_area, life_journey: journey,
       horizon: "day", title: today_mission, scheduled_on: Date.current, position: 0
     )

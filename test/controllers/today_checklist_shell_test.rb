@@ -16,12 +16,9 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "MVP", position: @plan.children.maximum(:position).to_i + 1
+      horizon: "project", title: "Volume 0", position: @plan.children.maximum(:position).to_i + 1
     )
-    @folder = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Volume 0", position: 0
-    )
+    @folder = @section
     @host = Strategy::EnsureFolderQuest.call(folder: @folder)
   end
 

@@ -69,8 +69,7 @@ class CompanionGuidesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, projects.size
     assert_equal "Polish resume", projects.first.title
 
-    nested_ids = projects.first.children.for_kind("project").select(:id)
-    days = StrategyGoal.where(parent_id: nested_ids, horizon: "day").ordered
+    days = projects.first.children.for_kind("day").ordered
     assert_equal [ "Rewrite summary" ], days.map(&:title)
   end
 

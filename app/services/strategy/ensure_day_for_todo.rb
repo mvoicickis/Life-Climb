@@ -22,12 +22,7 @@ module Strategy
       raise Error, I18n.t("dash.add_step.need_journey") if journey.blank?
 
       project = PathProject.resolve(user: @user, journey: journey)
-      parent =
-        if project
-          Battles::PracticeParent.call(user: @user, project: project)
-        else
-          HoldingProject.ensure!(user: @user, journey: journey)
-        end
+      parent = project || HoldingProject.ensure!(user: @user, journey: journey)
       raise Error, I18n.t("dash.add_step.need_spine") if parent.blank?
 
       day = @user.strategy_goals.where(horizon: "day").find_or_create_by!(

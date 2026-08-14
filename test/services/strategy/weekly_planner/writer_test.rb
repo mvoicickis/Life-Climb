@@ -159,6 +159,6 @@ class Strategy::WeeklyPlanner::WriterTest < ActiveSupport::TestCase
   private
 
   def practice_leaf_for!(project)
-    Battles::PracticeParent.call(user: @user, project: project)
+    project
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Strategy
-  # Idempotent host day under a leaf Quest Folder for the invisible checklist.
+  # Idempotent host day under a path-level camp for the invisible checklist.
   # Safe to call many times / under parallel requests (row lock + find-first).
   class EnsureFolderQuest
     HOST_TITLE = "Checklist"
@@ -34,8 +34,8 @@ module Strategy
         existing = host_day
         next existing if existing
 
-        # Days belong under nested leaf folders (not path-level camps).
-        next nil unless @folder.nested_leaf_camp? || (@folder.project? && @folder.parent&.project?)
+        # Days hang on path-level camps.
+        next nil unless @folder.path_level_camp?
 
         created = true
         @folder.children.create!(

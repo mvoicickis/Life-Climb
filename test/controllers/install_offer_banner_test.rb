@@ -25,7 +25,7 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
-    @leaf = @section.children.find(&:project?)
+    @leaf = @section
 
     @leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,

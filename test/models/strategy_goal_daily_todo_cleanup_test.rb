@@ -20,11 +20,8 @@ class StrategyGoalDailyTodoCleanupTest < ActiveSupport::TestCase
     @section = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Section", position: 0
     )
-    @quest = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: @section, horizon: "project", title: "Quest", position: 0
-    )
     @day = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: @quest, horizon: "day", title: "Checklist",
+      life_area: @area, life_journey: @journey, parent: @section, horizon: "day", title: "Checklist",
       scheduled_on: Date.current, position: 0
     )
   end
@@ -67,7 +64,7 @@ class StrategyGoalDailyTodoCleanupTest < ActiveSupport::TestCase
     assert_equal "Done battle", todo.title
   end
 
-  test "destroying a quest reparents the day and keeps its open DailyTodo" do
+  test "destroying a path camp reparents the day and keeps its open DailyTodo" do
     todo = @user.daily_todos.create!(
       title: "Quest shell",
       aspect_key: "career",
@@ -79,7 +76,7 @@ class StrategyGoalDailyTodoCleanupTest < ActiveSupport::TestCase
     )
 
     assert_no_difference -> { @user.daily_todos.incomplete.count } do
-      @quest.destroy!
+      @section.destroy!
     end
     assert DailyTodo.exists?(todo.id)
     assert StrategyGoal.exists?(@day.id)
@@ -88,7 +85,7 @@ class StrategyGoalDailyTodoCleanupTest < ActiveSupport::TestCase
     assert_equal @day.id, todo.reload.strategy_goal_id
   end
 
-  test "destroying a quest keeps open and completed DailyTodos on surviving days" do
+  test "destroying a path camp keeps open and completed DailyTodos on surviving days" do
     open_todo = @user.daily_todos.create!(
       title: "Open shell",
       aspect_key: "career",
@@ -99,7 +96,7 @@ class StrategyGoalDailyTodoCleanupTest < ActiveSupport::TestCase
       tag: "strategy"
     )
     done_day = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: @quest, horizon: "day", title: "Done sibling",
+      life_area: @area, life_journey: @journey, parent: @section, horizon: "day", title: "Done sibling",
       scheduled_on: Date.current, position: 1
     )
     done_todo = @user.daily_todos.create!(
@@ -113,7 +110,7 @@ class StrategyGoalDailyTodoCleanupTest < ActiveSupport::TestCase
       completed_at: Time.current
     )
 
-    @quest.destroy!
+    @section.destroy!
 
     assert DailyTodo.exists?(open_todo.id)
     assert DailyTodo.exists?(done_todo.id)

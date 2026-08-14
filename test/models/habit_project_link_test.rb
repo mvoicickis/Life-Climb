@@ -30,11 +30,12 @@ class HabitProjectLinkTest < ActiveSupport::TestCase
     assert @project.tracker_linked?
   end
 
-  test "rejects link on non path-level project" do
-    nested = @user.strategy_goals.create!(
-      life_area: @area, parent: @project, horizon: "project", title: "Quest", position: 0
+  test "rejects link on a day" do
+    day = @user.strategy_goals.create!(
+      life_area: @area, parent: @project, horizon: "day",
+      title: "Battle", scheduled_on: Date.current, position: 0
     )
-    link = HabitProjectLink.new(habit: @habit, strategy_goal: nested)
+    link = HabitProjectLink.new(habit: @habit, strategy_goal: day)
     assert_not link.valid?
     assert link.errors[:strategy_goal_id].any?
   end

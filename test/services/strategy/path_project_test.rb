@@ -39,7 +39,7 @@ class Strategy::PathProjectTest < ActiveSupport::TestCase
     first = create_path_project!(plan, "First camp", position: 0)
     second = create_path_project!(plan, "Second camp", position: 1)
 
-    leaf = Battles::PracticeParent.call(user: @user, project: second)
+    leaf = second
     day = leaf.children.create!(
       user: @user,
       life_area: @journey.life_area,

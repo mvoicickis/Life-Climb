@@ -27,11 +27,7 @@ class PracticeTaskTest < ActiveSupport::TestCase
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "MVP", position: 0
     )
-    @camp = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Camp", position: 0
-    )
-    @practice = @camp.children.create!(
+    @practice = @section.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Finish page", scheduled_on: Date.current, position: 0
     )
@@ -58,7 +54,7 @@ class PracticeTaskTest < ActiveSupport::TestCase
   end
 
   test "rejects non-day parents" do
-    task = PracticeTask.new(user: @user, strategy_goal: @camp, title: "Nope", position: 0)
+    task = PracticeTask.new(user: @user, strategy_goal: @section, title: "Nope", position: 0)
     assert_not task.valid?
     assert_includes task.errors[:strategy_goal], "is invalid"
   end

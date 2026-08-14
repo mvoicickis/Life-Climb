@@ -14,7 +14,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
-    @leaf = @section.children.find(&:project?)
+    @leaf = @section
 
     # Extra plain battle
     @leaf.children.create!(
@@ -22,19 +22,21 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
       horizon: "day", title: "Write tests", scheduled_on: Date.current, position: 1
     )
 
-    # Quest checklist (custom color)
-    @quest = @section.children.create!(
+    # Quest checklist (custom color) — sibling path camp after flatten
+    @quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Purple Volume", position: 1, color_key: "coral"
+      horizon: "project", title: "Purple Volume",
+      position: @plan.children.maximum(:position).to_i + 1, color_key: "coral"
     )
     host = Strategy::EnsureFolderQuest.call(folder: @quest)
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
 
     # Uncolored quest → still renders as a quest card
-    @plain_quest = @section.children.create!(
+    @plain_quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Plain Volume", position: 2
+      horizon: "project", title: "Plain Volume",
+      position: @plan.children.maximum(:position).to_i + 1
     )
     plain_host = Strategy::EnsureFolderQuest.call(folder: @plain_quest)
     plain_host.practice_tasks.create!(user: @user, title: "Open notes", position: 0)

@@ -29,10 +29,7 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "MVP", position: 0
     )
-    @camp = @section.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Camp", position: 0
-    )
+    @camp = @section
     @practice = Strategy::EnsureFolderQuest.call(folder: @camp)
   end
 
@@ -43,7 +40,7 @@ class PracticeTasksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     follow_redirect!
     assert_select ".lp-climb-path__node.is-selected .lp-climb-path__quests[open]"
-    assert_select ".lp-climb-path__quest-title", text: /Camp/
+    assert_select ".lp-climb-path__quest-title", text: /MVP/
     assert_select ".lp-qs-obj__text[value='Design layout']"
     assert_select ".lp-climb-path__quest-add-input"
     assert_select ".lp-climb-path__quest-add-btn", text: /\AAdd\z/

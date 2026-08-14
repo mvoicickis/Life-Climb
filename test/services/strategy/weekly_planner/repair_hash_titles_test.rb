@@ -86,7 +86,7 @@ class Strategy::WeeklyPlanner::RepairHashTitlesTest < ActiveSupport::TestCase
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Repair project #{scheduled_on}", position: 0
     )
-    leaf = Battles::PracticeParent.call(user: @user, project: project)
+    leaf = project
     @user.strategy_goals.create!(
       life_area: @area,
       life_journey: @journey,

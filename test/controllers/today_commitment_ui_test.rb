@@ -47,11 +47,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "project", title: "Auth", position: 0
     )
-    nested = project.children.create!(
-      user: @user, life_area: @journey.life_area, life_journey: @journey,
-      horizon: "project", title: "Steps", position: 0
-    )
-    nested.children.create!(
+    project.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "day", title: "Send emails", scheduled_on: Date.current, position: 0
     )
