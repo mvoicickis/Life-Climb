@@ -135,6 +135,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
   end
 
   test "journey trends render quantified graphs and linked habit week" do
+    enable_habits!
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Season", position: 0
     )
@@ -217,6 +218,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
   end
 
   test "your stats shows area tracker with labeled chart and state chip" do
+    enable_habits!
     @user.habits.destroy_all
     area = @user.areas.create!(name: "Health", position: 1)
     habit = @user.habits.create!(
@@ -252,6 +254,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
   end
 
   test "hide removes tracker from journey stats but keeps habit" do
+    enable_habits!
     @user.habits.destroy_all
     area = @user.areas.create!(name: "Finance", position: 1)
     habit = @user.habits.create!(
@@ -281,6 +284,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
   end
 
   test "create tracker from journey dialog returns to progress" do
+    enable_habits!
     area = @user.areas.create!(name: "Home", position: 1)
 
     assert_difference -> { @user.habits.count }, 1 do
@@ -307,6 +311,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
   end
 
   test "area move up and down changes order on progress" do
+    enable_habits!
     first = @user.areas.create!(name: "Alpha", position: 1)
     second = @user.areas.create!(name: "Beta", position: 2)
 

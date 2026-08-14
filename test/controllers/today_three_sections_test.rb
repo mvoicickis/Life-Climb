@@ -59,6 +59,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
   end
 
   test "Today renders habits above timeline battles without old section headers" do
+    enable_habits!
     get dashboard_path
     assert_response :success
 

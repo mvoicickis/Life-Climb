@@ -66,6 +66,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
   end
 
   test "habit Win wires juicy-feedback without suppress or data-lp" do
+    enable_habits!
     get dashboard_path
     assert_response :success
 

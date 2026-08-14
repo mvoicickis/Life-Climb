@@ -22,6 +22,7 @@ class FormControlNormalizeTest < ActionDispatch::IntegrationTest
   end
 
   test "Today quantity amount uses spinner-normalized class" do
+    enable_habits!
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-anytime input[type=number].lp-dash-tcard__amount", minimum: 1

@@ -3,6 +3,7 @@
 require "test_helper"
 
 class Today::CommitmentTest < ActiveSupport::TestCase
+  setup { enable_habits! }
   setup do
     @user = users(:one)
     @journey = seed_climb!(@user)

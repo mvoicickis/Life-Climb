@@ -3,6 +3,7 @@
 require "test_helper"
 
 class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do

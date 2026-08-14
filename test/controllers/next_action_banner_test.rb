@@ -78,6 +78,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
   end
 
   test "commitment_gap panel shows chips, quiet Drop to Easy, and Mountain only when camps short" do
+    enable_habits!
     @journey.update!(
       commitment_key: "medium",
       commitment_name: "Medium",
@@ -108,6 +109,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
   end
 
   test "setup_gap panel on Easy hides Drop to Easy and shows habit form" do
+    enable_habits!
     Today::Commitment.apply_preset!(@journey, "easy")
     @user.habits.active.on_home.destroy_all
     @user.daily_todos.create!(

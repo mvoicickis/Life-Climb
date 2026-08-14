@@ -12,6 +12,7 @@ class Today::DayPercentTest < ActiveSupport::TestCase
   end
 
   test "averages growth uncapped, binary, and battles; excludes standard" do
+    enable_habits!
     @user.habits.create!(
       name: "Push-Ups", unit: "reps", points: 5, frequency: "daily",
       active: true, show_on_home: true, stat_type: "growth", goal: 25, quantity_checkin: true
@@ -42,5 +43,19 @@ class Today::DayPercentTest < ActiveSupport::TestCase
     result = Today::DayPercent.call(user: @user)
     assert_nil result.percent
     assert_equal 0, result.parts_count
+  end
+
+  test "battles-only while habits are hidden (default): habits never lower the percent" do
+    todos = @user.daily_todos.for_day(Date.current)
+    todos.update_all(completed_at: Time.current)
+    # A low-progress habit would drag a habits-inclusive average below 100.
+    @user.habits.create!(
+      name: "Read", unit: "pages", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth", goal: 10, quantity_checkin: true
+    ).tap { |h| @user.daily_logs.create!(habit: h, logged_on: Date.current, amount: 1, goal: 10) }
+
+    result = Today::DayPercent.call(user: @user)
+    assert_equal todos.count, result.parts_count, "only battles should count"
+    assert_equal 100, result.percent
   end
 end

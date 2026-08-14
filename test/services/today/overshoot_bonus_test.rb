@@ -3,6 +3,7 @@
 require "test_helper"
 
 class Today::OvershootBonusTest < ActiveSupport::TestCase
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do

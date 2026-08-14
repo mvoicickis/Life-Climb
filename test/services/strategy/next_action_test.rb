@@ -185,6 +185,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   end
 
   test "setup_gap fires for Easy with zero habits and one untimed battle" do
+    enable_habits!
     Today::Commitment.apply_preset!(@journey, "easy")
     @user.habits.active.on_home.destroy_all
     @user.daily_todos.create!(
@@ -228,6 +229,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   end
 
   test "setup_gap short-circuits above battle_overdue and streak_at_risk" do
+    enable_habits!
     Today::Commitment.apply_preset!(@journey, "easy")
     @user.habits.active.on_home.destroy_all
     build_spine_and_cascade!(title: "Send five emails")
@@ -241,6 +243,7 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   end
 
   test "setup_gap short-circuits above commitment_gap when Medium lacks habits" do
+    enable_habits!
     @user.habits.active.on_home.destroy_all
     @journey.update!(
       commitment_key: "medium",

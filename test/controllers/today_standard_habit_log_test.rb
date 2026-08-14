@@ -4,6 +4,7 @@ require "test_helper"
 
 # Regression: after #305 additive logging + Today redesign toast, dashboard must not 500.
 class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do
