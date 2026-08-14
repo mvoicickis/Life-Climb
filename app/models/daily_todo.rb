@@ -35,6 +35,15 @@ class DailyTodo < ApplicationRecord
     strategy_goal&.practice_tasks&.any?
   end
 
+  # Path project shown on Today. Holding (and missing parent) stay invisible.
+  def visible_path_project
+    project = strategy_goal&.parent
+    return nil unless project&.project?
+    return nil if project.holding?
+
+    project
+  end
+
   def window_start_at
     combine_date_and_time(start_time)
   end
