@@ -1,6 +1,9 @@
 <% content_for :title, t("game_ui.home_title") %>
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
+<% content_for :head do %>
+  <meta name="view-transition" content="same-origin">
+<% end %>
 <%
   @notice_stack = Today::NoticeStack.call(
     next_action: @next_action.present?,
