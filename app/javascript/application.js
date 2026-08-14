@@ -2,9 +2,11 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import { ensureCapture } from "pwa_install_prompt"
+import { startNavTransition } from "nav_transition"
 
 // Capture beforeinstallprompt early so Settings and Today share one deferred event.
 ensureCapture()
+startNavTransition()
 
 // PWA Phase B — register only on secure contexts (HTTPS or localhost).
 if ("serviceWorker" in navigator) {

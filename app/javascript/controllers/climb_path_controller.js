@@ -20,14 +20,48 @@ export default class extends Controller {
     this.scenic = document.querySelector(".lp-rpg-scenic")
     this._parallaxRaf = null
     this._onScroll = () => this.queueParallax()
+    this._persistTrail = () => this.persistTrailScroll()
 
     this.setupEntrance()
     this.setupParallax()
+    this.restoreTrailScroll()
+    this.scrollRoot?.addEventListener("scroll", this._persistTrail, { passive: true })
+    document.addEventListener("turbo:before-visit", this._persistTrail)
   }
 
   disconnect() {
+    this.persistTrailScroll()
+    this.scrollRoot?.removeEventListener("scroll", this._persistTrail)
+    document.removeEventListener("turbo:before-visit", this._persistTrail)
     this.teardownEntrance()
     this.teardownParallax()
+  }
+
+  trailScrollKey() {
+    return "lp-mountain-trail-scroll"
+  }
+
+  persistTrailScroll() {
+    if (!this.scrollRoot) return
+    try {
+      sessionStorage.setItem(this.trailScrollKey(), String(this.scrollRoot.scrollTop))
+    } catch (_) {
+      /* private mode */
+    }
+  }
+
+  restoreTrailScroll() {
+    if (!this.scrollRoot) return
+    let raw = null
+    try {
+      raw = sessionStorage.getItem(this.trailScrollKey())
+    } catch (_) {
+      return
+    }
+    if (raw == null) return
+    const top = Number.parseFloat(raw)
+    if (Number.isNaN(top)) return
+    this.scrollRoot.scrollTop = top
   }
 
   scrollToFocus({ behavior } = {}) {

@@ -1,6 +1,9 @@
 <% content_for :title, t("strategy.page_title") %>
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
+<% content_for :head do %>
+  <meta name="view-transition" content="same-origin">
+<% end %>
 <% sp_gained = flash[:sp_gained].to_i %>
 <% ap_gained = flash[:ap_gained].to_i %>
 <% boss = flash[:climb_boss].present? %>

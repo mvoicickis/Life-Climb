@@ -25518,3 +25518,61 @@ body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
 .lp-climb-path.is-list .lp-climb-path__new-btn {
   list-style: none;
 }
+
+/* Mountain ↔ Today one-surface slide. Live DOM is never transformed —
+   only View Transition snapshots — so a leftover data-lp-nav cannot hide the page. */
+.lp-dash,
+#strategy-world {
+  view-transition-name: lp-surface;
+}
+.lp-dash-nav {
+  view-transition-name: lp-nav;
+}
+::view-transition-old(lp-surface),
+::view-transition-new(lp-surface) {
+  animation: none;
+}
+html[data-lp-nav="forward"] ::view-transition-old(lp-surface) {
+  animation:
+    lp-vt-old-forward 0.46s cubic-bezier(.22, .9, .28, 1) both,
+    lp-vt-fade-out 0.3s ease both;
+}
+html[data-lp-nav="forward"] ::view-transition-new(lp-surface) {
+  animation:
+    lp-vt-new-forward 0.46s cubic-bezier(.22, .9, .28, 1) both,
+    lp-vt-fade-in 0.3s ease both;
+}
+html[data-lp-nav="back"] ::view-transition-old(lp-surface) {
+  animation:
+    lp-vt-old-back 0.46s cubic-bezier(.22, .9, .28, 1) both,
+    lp-vt-fade-out 0.3s ease both;
+}
+html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
+  animation:
+    lp-vt-new-back 0.46s cubic-bezier(.22, .9, .28, 1) both,
+    lp-vt-fade-in 0.3s ease both;
+}
+@keyframes lp-vt-old-forward {
+  to { transform: translateX(-26%); }
+}
+@keyframes lp-vt-new-forward {
+  from { transform: translateX(100%); }
+}
+@keyframes lp-vt-old-back {
+  to { transform: translateX(26%); }
+}
+@keyframes lp-vt-new-back {
+  from { transform: translateX(-100%); }
+}
+@keyframes lp-vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes lp-vt-fade-in {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(lp-surface),
+  ::view-transition-new(lp-surface) {
+    animation: none !important;
+  }
+}
