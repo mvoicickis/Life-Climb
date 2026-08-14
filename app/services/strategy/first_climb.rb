@@ -82,7 +82,7 @@ module Strategy
     private
 
     def already_climbed?(goal)
-      goal.children.for_kind("plan").exists?
+      goal.children.for_kind("plan").not_holding.exists?
     end
 
     def resolve_goal!(area)
@@ -109,8 +109,8 @@ module Strategy
     end
 
     def existing_result_for(goal)
-      plan = goal.children.for_kind("plan").ordered.first
-      project = plan&.children&.for_kind("project")&.ordered&.first
+      plan = goal.children.for_kind("plan").not_holding.ordered.first
+      project = plan&.children&.for_kind("project")&.not_holding&.ordered&.first
       nested = project&.children&.for_kind("project")&.ordered&.first
       battle =
         nested&.children&.for_kind("day")&.ordered&.first ||

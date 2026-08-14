@@ -168,7 +168,7 @@ module Strategy
         goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
         return nil if goal.blank?
 
-        plans = goal.children.select(&:plan?).sort_by { |p| [ p.position.to_i, p.id ] }
+        plans = goal.children.select { |p| p.plan? && !p.holding? }.sort_by { |p| [ p.position.to_i, p.id ] }
         return nil if plans.empty?
 
         if @plan_id.present?
@@ -426,7 +426,7 @@ module Strategy
       def existing_practice_leaf(project)
         return project if project.parent&.project?
 
-        kids = project.children.select(&:project?)
+        kids = project.children.select { |c| c.project? && !c.holding? }
         kids.find(&:leaf_checkpoint?) || kids.first
       end
 

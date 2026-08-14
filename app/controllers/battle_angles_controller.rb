@@ -4,7 +4,7 @@
 class BattleAnglesController < ApplicationController
   def create
     project = current_user.strategy_goals.find(params[:project_id])
-    unless project.project? && project.completed_at.blank?
+    unless project.project? && project.completed_at.blank? && !project.holding?
       redirect_to dashboard_path, alert: t("dash.battle_angles.invalid") and return
     end
 

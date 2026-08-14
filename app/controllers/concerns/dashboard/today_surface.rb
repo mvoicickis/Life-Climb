@@ -22,7 +22,7 @@ module Dashboard
       @done_todos = @daily_todos.select(&:completed?)
       @strategy_goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
       retire_plan_route_if_needed!
-      @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").none?
+      @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").not_holding.none?
       @show_plan_route = @first_climb_needed || plan_route_pending?
       @include_mission_in_battle = !@show_plan_route && @mission.present? && @mission.status == "pending"
       @battle_reward = @open_todos.sum { |t| t.lp_reward.to_i }

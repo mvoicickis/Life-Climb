@@ -126,10 +126,11 @@ class LifeJourneysController < ApplicationController
     if @focus&.month? || @focus&.week?
       @focus = @focus.ancestor_chain.reverse.find { |n| n.project? || n.plan? || n.goal? } || @goal
     end
+    @focus = @goal if @focus&.holding?
 
     @focus ||= @goal
     @level = strategy_level_for(@focus)
-    @children = @focus ? @focus.children.sort_by { |c| [ c.position.to_i, c.id ] } : []
+    @children = @focus ? @focus.children.reject(&:holding?).sort_by { |c| [ c.position.to_i, c.id ] } : []
     @siblings = strategy_siblings(@focus)
     @today_battles = today_battles_for(@focus || @goal)
     @today_battle = @today_battles.find { |b| b.completed_at.blank? } || @today_battles.first
@@ -160,6 +161,7 @@ class LifeJourneysController < ApplicationController
       else
         @focus
       end
+    @sheet_node = @focus if @sheet_node&.holding?
     @open_sheet = params[:sheet].present?
     @open_peek = !@open_sheet && (params[:peek].present? || params[:node_id].present?)
     @force_notebook = params[:notebook].present?
@@ -173,7 +175,7 @@ class LifeJourneysController < ApplicationController
       @linkable_habits_for_focus = []
     end
     @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
-    @first_climb_needed = @goal.present? && @goal.children.none?(&:plan?)
+    @first_climb_needed = @goal.present? && @goal.children.none? { |c| c.plan? && !c.holding? }
     @notebook_guide =
       if @first_climb_needed
         nil
@@ -193,19 +195,19 @@ class LifeJourneysController < ApplicationController
       if focus&.plan?
         focus
       elsif focus&.project? || focus&.day?
-        focus.ancestor_chain.reverse.find(&:plan?)
+        focus.ancestor_chain.reverse.find { |n| n.plan? && !n.holding? }
       end
     project =
-      if focus&.project?
+      if focus&.project? && !focus.holding?
         focus
       elsif focus&.day?
-        focus.parent
+        focus.parent unless focus.parent&.holding?
       end
 
     # Keep Goal summit map clean: don't auto-place a Project tent from today's battle.
     # Plan can still light from today's climb so the trail reads "where am I".
     if plan.nil? && today_battle&.parent && (focus.blank? || focus.goal?)
-      plan = today_battle.ancestor_chain.reverse.find(&:plan?)
+      plan = today_battle.ancestor_chain.reverse.find { |n| n.plan? && !n.holding? }
     end
 
     [ plan, project ]
@@ -334,7 +336,7 @@ class LifeJourneysController < ApplicationController
     end
 
     if @level == "plans"
-      plans = @children.select(&:plan?)
+      plans = @children.select { |c| c.plan? && !c.holding? }
       if plans.empty?
         return {
           key: :add_plan,
@@ -359,7 +361,7 @@ class LifeJourneysController < ApplicationController
     end
 
     if @level == "projects" && @focus&.plan?
-      projects = @children.select(&:project?)
+      projects = @children.select { |c| c.project? && !c.holding? }
       if projects.empty?
         return {
           key: :add_project,
@@ -419,10 +421,10 @@ class LifeJourneysController < ApplicationController
 
   def guided_step
     return 1 if @goal.blank?
-    return 2 if @goal.children.for_kind("plan").none?
+    return 2 if @goal.children.for_kind("plan").not_holding.none?
 
-    plan_ids = @goal.children.for_kind("plan").select(:id)
-    return 3 if StrategyGoal.where(parent_id: plan_ids).for_kind("project").none?
+    plan_ids = @goal.children.for_kind("plan").not_holding.select(:id)
+    return 3 if StrategyGoal.where(parent_id: plan_ids).for_kind("project").not_holding.none?
     return 4 if Strategy::Progress.battles_under(@goal).none?
 
     5
@@ -453,7 +455,7 @@ class LifeJourneysController < ApplicationController
   end
 
   def select_strategy_plan
-    plans = @goal ? @goal.children.select(&:plan?).sort_by { |p| [ p.position.to_i, p.id ] } : []
+    plans = @goal ? @goal.children.select { |c| c.plan? && !c.holding? }.sort_by { |p| [ p.position.to_i, p.id ] } : []
     return nil if plans.empty?
 
     if params[:plan_id].present?
@@ -498,7 +500,7 @@ class LifeJourneysController < ApplicationController
   def strategy_crumbs(node)
     return [] if node.blank?
 
-    ([ node ] + node.ancestor_chain.reverse).reverse.map do |n|
+    ([ node ] + node.ancestor_chain.reverse).reverse.reject(&:holding?).map do |n|
       { id: n.id, title: n.title, kind: n.kind }
     end
   end
@@ -508,7 +510,7 @@ class LifeJourneysController < ApplicationController
     return [] unless focus&.plan? || focus&.project?
     return [] if focus.parent_id.blank?
 
-    @goals.select { |g| g.parent_id == focus.parent_id && g.kind == focus.kind }
+    @goals.select { |g| g.parent_id == focus.parent_id && g.kind == focus.kind && !g.holding? }
   end
 
   def prepare_climb!

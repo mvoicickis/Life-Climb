@@ -7,6 +7,9 @@ class ProjectCompletionsController < ApplicationController
     unless project.project?
       redirect_to dashboard_path, alert: t("dash.project_check.invalid") and return
     end
+    if project.holding?
+      redirect_to dashboard_path, alert: t("dash.project_check.invalid") and return
+    end
 
     Strategy::ProjectCheckQueue.dequeue(session: session, project_id: project.id)
 

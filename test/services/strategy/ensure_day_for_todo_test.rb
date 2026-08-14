@@ -78,4 +78,29 @@ class Strategy::EnsureDayForTodoTest < ActiveSupport::TestCase
     path = path.parent while path && !path.path_level_camp?
     assert_equal second.id, path.id
   end
+
+  test "empty spine attaches orphan to the holding camp" do
+    @user = users(:two)
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Empty mountain",
+      ideal_scene: "Done",
+      current_reality: "Start",
+      today_mission: "Anything",
+      closer_percent: 10,
+      route_mission: true
+    )
+    orphan = @user.daily_todos.create!(
+      title: "Loose orphan",
+      aspect_key: "career",
+      scheduled_on: Date.current,
+      position: 0,
+      lp_reward: GameRules::BATTLE_TODO_LP
+    )
+
+    day = Strategy::EnsureDayForTodo.call(todo: orphan)
+    assert day.parent.holding?
+    refute_equal "Loose orphan", day.parent.title
+  end
 end

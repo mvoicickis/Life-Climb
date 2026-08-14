@@ -108,8 +108,8 @@
             <% end %>
           </div>
 
-          <% leaf_folders = project ? project.children.select { |c| c.project? && !c.branch_checkpoint? }.sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
-          <% branch_folders = project ? project.children.select(&:branch_checkpoint?).sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
+          <% leaf_folders = project ? project.children.select { |c| c.project? && !c.holding? && !c.branch_checkpoint? }.sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
+          <% branch_folders = project ? project.children.select { |c| c.branch_checkpoint? && !c.holding? }.sort_by { |c| [ c.position.to_i, c.id ] } : [] %>
           <% legacy_self_quest = project && leaf_folders.empty? && !project.branch_checkpoint? && project.children.any?(&:day?) %>
           <% quest_folders = legacy_self_quest ? [ project ] : leaf_folders %>
           <% show_quests = quest_folders.any? || branch_folders.any? || (playable && project&.split_eligible?) %>
@@ -148,8 +148,8 @@
                     <span class="lp-climb-path__branch-title"><%= branch.title %></span>
                     <span class="lp-climb-path__branch-meta">
                       <%= t("strategy.rpg.quest_folders_progress",
-                            done: branch.children.select(&:project?).count(&:completed?),
-                            total: branch.children.select(&:project?).size) %>
+                            done: branch.children.select { |c| c.project? && !c.holding? }.count(&:completed?),
+                            total: branch.children.select { |c| c.project? && !c.holding? }.size) %>
                     </span>
                     <span class="lp-climb-path__branch-arrow" aria-hidden="true">›</span>
                   <% end %>

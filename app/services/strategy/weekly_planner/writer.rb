@@ -98,7 +98,7 @@ module Strategy
       end
 
       def find_project!
-        project = @user.strategy_goals.for_kind("project").find_by(id: @cursor["project_id"])
+        project = @user.strategy_goals.for_kind("project").not_holding.find_by(id: @cursor["project_id"])
         raise ArgumentError, I18n.t("strategy.weekly_planner.errors.missing_project") if project.blank?
 
         project

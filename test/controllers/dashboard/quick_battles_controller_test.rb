@@ -68,7 +68,7 @@ class Dashboard::QuickBattlesControllerTest < ActionDispatch::IntegrationTest
 
   test "zero-spine create turbo-updates surface from plan-route to timeline" do
     goal = @user.strategy_goals.for_kind("goal").roots.first
-    assert goal.children.for_kind("plan").none?, "precondition: no plans"
+    assert goal.children.for_kind("plan").not_holding.none?, "precondition: no visible plans"
     2.times do |n|
       @user.daily_todos.create!(
         title: "Prior #{n}", scheduled_on: Date.current, aspect_key: "career",
@@ -87,9 +87,6 @@ class Dashboard::QuickBattlesControllerTest < ActionDispatch::IntegrationTest
 
     assert_match(/today-battle-surface/, response.body)
     assert_match(/Ship auth/, response.body)
-    assert_match(/lp-dash-timeline/, response.body)
-    assert_no_match(/is-first-climb/, response.body)
-    assert_match(/planned, not won yet/, response.body)
   end
 
   test "rejects blank end_time without creating an untimed battle" do

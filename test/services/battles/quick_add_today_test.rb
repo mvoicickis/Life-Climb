@@ -38,7 +38,7 @@ module Battles
       refute_equal self_result.title, career_result.title
     end
 
-    test "auto-creates Plan and path Project from battle title when spine is missing" do
+    test "auto-creates holding Plan and camp when spine is missing" do
       @user = users(:two)
       Onboarding::Run.call(
         user: @user,
@@ -53,17 +53,15 @@ module Battles
       journey = @user.reload.primary_focused_journey
       goal = @user.strategy_goals.for_kind("goal").roots.first
       assert goal.present?
-      assert_equal 0, goal.children.for_kind("plan").count
+      assert_equal 0, goal.children.for_kind("plan").not_holding.count
 
       result = QuickAddToday.call(user: @user, category: "career", title: "Write the first test")
 
-      plan = goal.reload.children.for_kind("plan").ordered.first
-      project = plan.children.for_kind("project").ordered.first
-      assert_equal "Write the first test", plan.title
-      assert_equal "Write the first test", project.title
-      assert project.path_level_camp?
-      assert result.battle.parent.nested_leaf_camp?
-      assert_equal I18n.t("strategy.first_climb.nested_camp_title"), result.battle.parent.title
+      assert result.battle.parent.holding?
+      assert result.battle.parent.project?
+      refute_equal "Write the first test", result.battle.parent.title
+      assert_equal 0, goal.reload.children.for_kind("plan").not_holding.count
+      assert_equal 1, goal.children.for_kind("plan").where(holding: true).count
       assert result.todo.persisted?
       assert_equal journey.life_area_id, result.battle.life_area_id
     end

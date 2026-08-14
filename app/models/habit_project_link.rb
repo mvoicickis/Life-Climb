@@ -12,7 +12,7 @@ class HabitProjectLink < ApplicationRecord
 
   def strategy_goal_must_be_path_project
     return if strategy_goal.blank?
-    return if strategy_goal.path_level_camp?
+    return if strategy_goal.path_level_camp? && !strategy_goal.holding?
 
     errors.add(:strategy_goal_id, :invalid)
   end

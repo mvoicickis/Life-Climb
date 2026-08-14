@@ -1,5 +1,5 @@
 <%# Camp notebook — working area for Plan → Projects → Battles. Progressive disclosure, no tabs. %>
-<% plans = @goal ? @goal.children.select(&:plan?).sort_by(&:position) : [] %>
+<% plans = @goal ? @goal.children.select { |c| c.plan? && !c.holding? }.sort_by(&:position) : [] %>
 <% open_plan = @branch_plan %>
 <% open_project = @branch_project %>
 <% area = @journey.life_area %>
@@ -91,7 +91,7 @@
 
   <%# One panel per plan: projects list with expand-to-battles %>
   <% plans.each do |plan| %>
-    <% projects = plan.children.select(&:project?).sort_by(&:position) %>
+    <% projects = plan.children.select { |c| c.project? && !c.holding? }.sort_by(&:position) %>
     <div class="lp-camp-notebook__panel is-plan"
          data-strategy-notebook-target="planPanel"
          data-plan-id="<%= plan.id %>"

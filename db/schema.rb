@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_183500) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
   create_table "app_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -398,6 +398,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_183500) do
     t.text "description"
     t.date "due_on"
     t.string "effort_tier"
+    t.boolean "holding", default: false, null: false
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"
@@ -412,6 +413,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_183500) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
+    t.index ["life_journey_id", "horizon"], name: "index_strategy_goals_one_holding_per_journey_horizon", unique: true, where: "holding = TRUE"
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
     t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
     t.index ["parent_id"], name: "index_strategy_goals_on_parent_id"

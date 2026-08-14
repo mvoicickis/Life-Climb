@@ -65,9 +65,9 @@ module Strategy
       kids = @plan.children
       projects =
         if kids.respond_to?(:select)
-          kids.select(&:project?)
+          kids.select { |p| p.project? && !p.holding? }
         else
-          Array(kids).select { |c| c.respond_to?(:project?) ? c.project? : c.horizon.to_s == "project" }
+          Array(kids).select { |c| c.respond_to?(:project?) ? (c.project? && !c.holding?) : c.horizon.to_s == "project" }
         end
       projects.sort_by { |p| [ p.position.to_i, p.id ] }
     end

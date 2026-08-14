@@ -16,7 +16,7 @@ module Strategy
       ids = Array(session[SESSION_KEY]).map(&:to_i)
       return if ids.empty?
 
-      project = user.strategy_goals.where(id: ids, horizon: "project").incomplete.ordered.first
+      project = user.strategy_goals.where(id: ids, horizon: "project").not_holding.incomplete.ordered.first
       unless project
         session.delete(SESSION_KEY)
         return
@@ -38,6 +38,7 @@ module Strategy
       Array(battles).filter_map do |battle|
         next unless battle&.day?
         next if battle.parent.blank? || !battle.parent.project?
+        next if battle.parent.holding?
         next if battle.parent.completed?
 
         battle.parent_id

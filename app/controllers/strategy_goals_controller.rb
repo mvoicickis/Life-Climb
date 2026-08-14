@@ -20,6 +20,10 @@ class StrategyGoalsController < ApplicationController
       return fail_redirect(t("strategy.bad_parent"))
     end
 
+    if parent&.holding? && !(kind == "day" && parent.project?)
+      return fail_redirect(t("strategy.bad_parent"))
+    end
+
     goal = current_user.strategy_goals.new(
       life_area: @life_area,
       life_journey_id: params[:life_journey_id].presence || parent&.life_journey_id,
@@ -57,6 +61,9 @@ class StrategyGoalsController < ApplicationController
 
   def destroy
     goal = current_user.strategy_goals.find(params[:id])
+    if goal.holding?
+      return fail_redirect(t("strategy.bad_parent"), area_id: goal.life_area_id, focus_id: goal.parent_id)
+    end
     area_id = goal.life_area_id
     parent_id = goal.parent_id
     parent = goal.parent
@@ -94,6 +101,9 @@ class StrategyGoalsController < ApplicationController
 
   def update
     goal = current_user.strategy_goals.find(params[:id])
+    if goal.holding?
+      return fail_redirect(t("strategy.bad_parent"), area_id: goal.life_area_id, focus_id: goal.parent_id)
+    end
     schedule_only = goal.day? && params.key?(:scheduled_on) && !params.key?(:title)
 
     if params.key?(:title)
@@ -166,7 +176,7 @@ class StrategyGoalsController < ApplicationController
     parent = plan.parent
     return if parent.blank?
 
-    siblings = parent.children.select(&:plan?).sort_by { |p| [ p.position.to_i, p.id ] }
+    siblings = parent.children.select { |c| c.plan? && !c.holding? }.sort_by { |p| [ p.position.to_i, p.id ] }
     index = siblings.index { |p| p.id == plan.id }
     return if index.nil?
 
@@ -181,7 +191,7 @@ class StrategyGoalsController < ApplicationController
     parent = project.parent
     return if parent.blank?
 
-    siblings = parent.children.select(&:project?).sort_by { |p| [ p.position.to_i, p.id ] }
+    siblings = parent.children.select { |c| c.project? && !c.holding? }.sort_by { |p| [ p.position.to_i, p.id ] }
     index = siblings.index { |p| p.id == project.id }
     return if index.nil?
 
@@ -407,6 +417,7 @@ class StrategyGoalsController < ApplicationController
     if @focus&.month? || @focus&.week?
       @focus = @focus.ancestor_chain.reverse.find { |n| n.project? || n.plan? || n.goal? } || @goal
     end
+    @focus = @goal if @focus&.holding?
     @branch_plan, @branch_project = branch_for(@focus)
     @today_battles = today_battles_for(@focus || @goal)
     @today_battle = @today_battles.find { |b| b.completed_at.blank? } || @today_battles.first
@@ -423,7 +434,7 @@ class StrategyGoalsController < ApplicationController
     @notebook_guide =
       if @goal.blank?
         nil
-      elsif @goal.children.select(&:plan?).empty?
+      elsif @goal.children.select { |c| c.plan? && !c.holding? }.empty?
         :add_first_plan
       elsif !@mountain_ready
         :keep_building

@@ -2,11 +2,9 @@
 
 module Strategy
   # Shared spine resolver for QuickAdd / EnsureDayForTodo / Handoff.
-  # Picks an incomplete path-level Project (last-touched day ancestry when ambiguous),
-  # or auto-creates a minimal Plan + path Project named from a battle title.
+  # Picks an incomplete visible path-level Project (last-touched day ancestry
+  # when ambiguous), or the hidden holding camp when none exist.
   class PathProject
-    TITLE_MAX = 60
-
     def self.resolve(user:, journey:)
       new(user:, journey:).resolve
     end
@@ -35,39 +33,11 @@ module Strategy
       candidates.first
     end
 
-    def ensure!(title)
+    def ensure!(_title)
       found = resolve
       return found if found
 
-      goal = root_goal
-      return nil if goal.blank?
-
-      name = title.to_s.strip.truncate(TITLE_MAX)
-      return nil if name.blank?
-
-      plan = goal.children.for_kind("plan").ordered.first
-      if plan.nil?
-        plan = goal.children.create!(
-          user: @user,
-          life_area: @journey.life_area,
-          life_journey: @journey,
-          horizon: "plan",
-          title: name,
-          position: next_child_position(goal)
-        )
-        Strategy::SyncCompletion.resync!(node: plan)
-      end
-
-      project = plan.children.create!(
-        user: @user,
-        life_area: @journey.life_area,
-        life_journey: @journey,
-        horizon: "project",
-        title: name,
-        position: next_child_position(plan)
-      )
-      Strategy::SyncCompletion.resync!(node: project)
-      project
+      HoldingProject.ensure!(user: @user, journey: @journey)
     end
 
     private
@@ -81,8 +51,8 @@ module Strategy
     end
 
     def incomplete_path_projects(goal)
-      goal.children.for_kind("plan").ordered.flat_map do |plan|
-        plan.children.for_kind("project").ordered.select do |project|
+      goal.children.for_kind("plan").not_holding.ordered.flat_map do |plan|
+        plan.children.for_kind("project").not_holding.ordered.select do |project|
           project.path_level_camp? && project.completed_at.blank?
         end
       end
@@ -100,15 +70,11 @@ module Strategy
     def path_camp_ancestor(node)
       current = node
       while current
-        return current if current.path_level_camp?
+        return current if current.path_level_camp? && !current.holding?
 
         current = current.parent
       end
       nil
-    end
-
-    def next_child_position(parent)
-      parent.children.maximum(:position).to_i + 1
     end
   end
 end

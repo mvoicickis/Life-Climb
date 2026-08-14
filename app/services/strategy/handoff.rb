@@ -26,7 +26,7 @@ module Strategy
         )
       end
 
-      plan = goal.children.for_kind("plan").ordered.first
+      plan = goal.children.for_kind("plan").not_holding.ordered.first
       if plan.nil?
         return payload(
           label: I18n.t("dash.strategy_handoff.add_plan", goal: goal.title),

@@ -59,6 +59,7 @@ module Progress
     def quantified_series
       projects = @user.strategy_goals
         .where(life_journey_id: @journey.id, horizon: "project")
+        .not_holding
         .includes(:parent)
         .select(&:quantified?)
         .sort_by { |p| [ p.position.to_i, p.id ] }

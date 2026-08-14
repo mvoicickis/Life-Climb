@@ -67,12 +67,12 @@ module StrategyHelper
   end
 
   def strategy_delete_confirm(node)
-    plans = node.goal? ? node.children.count { |c| c.plan? } : 0
+    plans = node.goal? ? node.children.count { |c| c.plan? && !c.holding? } : 0
     projects =
       if node.goal?
-        node.children.select(&:plan?).sum { |p| p.children.count { |c| c.project? } }
+        node.children.select { |c| c.plan? && !c.holding? }.sum { |p| p.children.count { |c| c.project? && !c.holding? } }
       elsif node.plan?
-        node.children.count { |c| c.project? }
+        node.children.count { |c| c.project? && !c.holding? }
       else
         0
       end
@@ -107,7 +107,7 @@ module StrategyHelper
   end
 
   def strategy_projects_count(plan)
-    plan.children.count { |c| c.project? }
+    plan.children.count { |c| c.project? && !c.holding? }
   end
 
   def strategy_battles_count(project)
@@ -254,9 +254,9 @@ module StrategyHelper
 
     flags = []
     flags << { kind: "goal", title: goal.title, node: goal } if goal.completed?
-    goal.children.select(&:plan?).sort_by(&:position).each do |plan|
+    goal.children.select { |c| c.plan? && !c.holding? }.sort_by(&:position).each do |plan|
       flags << { kind: "plan", title: plan.title, node: plan } if plan.completed?
-      plan.children.select(&:project?).sort_by(&:position).each do |project|
+      plan.children.select { |c| c.project? && !c.holding? }.sort_by(&:position).each do |project|
         flags << { kind: "project", title: project.title, node: project } if project.completed?
         project.children.select(&:day?).select(&:completed?).sort_by(&:position).each do |battle|
           flags << { kind: "battle", title: battle.title, node: battle }

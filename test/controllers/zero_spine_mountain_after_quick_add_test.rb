@@ -26,7 +26,7 @@ class ZeroSpineMountainAfterQuickAddTest < ActionDispatch::IntegrationTest
 
   teardown { travel_back }
 
-  test "after zero-spine quick-add Mountain shows Plan Project nested camp and battle" do
+  test "after zero-spine quick-add the battle is held invisibly and Mountain stays first-climb" do
     post dashboard_quick_battles_path,
          params: {
            title: "Outline MVP spine",
@@ -36,26 +36,17 @@ class ZeroSpineMountainAfterQuickAddTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     goal = @user.strategy_goals.for_kind("goal").roots.first
-    plan = goal.children.for_kind("plan").ordered.first
-    project = plan.children.for_kind("project").ordered.first
     todo = @user.daily_todos.for_day(Date.current).order(:id).last
     day = todo.strategy_goal
 
-    assert_equal "Outline MVP spine", plan.title
-    assert_equal "Outline MVP spine", project.title
-    assert project.path_level_camp?
-    assert day.parent.project?
+    assert day.parent.holding?
     assert_equal "Outline MVP spine", day.title
+    assert_equal 0, goal.children.for_kind("plan").not_holding.count
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/Outline MVP spine/, response.body)
-    # Drill into plan focus — titles must still resolve from DB.
-    get life_journey_path(@journey, focus_id: plan.id)
-    assert_response :success
-    assert_match(/Outline MVP spine/, response.body)
-    get life_journey_path(@journey, focus_id: project.id)
-    assert_response :success
-    assert_match(/Outline MVP spine/, response.body)
+    refute_includes response.body, I18n.t("strategy.holding.plan_title")
+    refute_includes response.body, I18n.t("strategy.holding.project_title")
+    assert_select ".lp-rpg.is-first-climb"
   end
 end

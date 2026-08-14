@@ -16,8 +16,8 @@ module Strategy
     def call
       return payload(stage: :empty, progress: 0, flags: 0) if @goal.blank?
 
-      plans = @goal.children.select(&:plan?)
-      projects = plans.flat_map { |p| p.children.select(&:project?) }
+      plans = @goal.children.select { |c| c.plan? && !c.holding? }
+      projects = plans.flat_map { |p| p.children.select { |c| c.project? && !c.holding? } }
       completed_projects = projects.count(&:completed?)
       progress = @goal.progress_percent.to_i
 

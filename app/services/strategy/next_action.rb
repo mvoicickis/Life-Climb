@@ -195,7 +195,7 @@ module Strategy
     end
 
     def signal_project_unlocked
-      plan = @goal.children.for_kind("plan").ordered.first
+      plan = @goal.children.for_kind("plan").not_holding.ordered.first
       return nil if plan.blank?
 
       trail = Strategy::Trail.for(plan: plan)
@@ -322,7 +322,7 @@ module Strategy
     end
 
     def legacy_resolve
-      return plan_route if @goal.children.for_kind("plan").none?
+      return plan_route if @goal.children.for_kind("plan").not_holding.none?
 
       todos = todays_todos
       return set_today if todos.empty?
