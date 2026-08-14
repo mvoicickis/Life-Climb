@@ -33,6 +33,41 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-tcard__title", text: "Battle"
   end
 
+  test "battle day strip renders above the habits section" do
+    user = users(:one)
+    sign_in_as user
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Write tests",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.create!(life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0)
+    plan = user.strategy_goals.create!(life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Plan", position: 0)
+    project = user.strategy_goals.create!(life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Project", position: 0)
+    leaf = practice_leaf_for!(project)
+    user.strategy_goals.create!(life_area: area, life_journey: journey, parent: leaf, horizon: "day", title: "Battle", scheduled_on: Date.current, position: 0)
+    Strategy::CascadeToDaily.call(user: user, life_area: area)
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-dash-daystrip", count: 1
+    assert_select ".lp-dash-anytime", count: 1
+
+    strip_at = response.body.index("lp-dash-daystrip")
+    habits_at = response.body.index("lp-dash-anytime")
+    assert strip_at, "battle day strip should render"
+    assert habits_at, "habits section should render"
+    assert_operator strip_at, :<, habits_at,
+                    "battle day strip should appear before the habits section in the DOM"
+  end
+
   test "today header shows avatar, day percent, streak, and AP" do
     user = users(:one)
     user.update!(
