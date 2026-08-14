@@ -157,15 +157,8 @@
             </dialog>
           </li>
         <% end %>
-        <li class="lp-rpg-plan-rail__item is-add">
-          <%= link_to companion_guide_path(new_plan: 1),
-                class: "lp-rpg-add is-path is-guide-entry",
-                data: { turbo: false },
-                aria: { label: t("strategy.rpg.add_plan") } do %>
-            <span class="lp-rpg-add__label lp-rpg-add__label--short" aria-hidden="true">+</span>
-            <span class="lp-rpg-add__label lp-rpg-add__label--long"><%= t("strategy.rpg.add_path") %></span>
-          <% end %>
-        </li>
+        <%# "+ Add path" removed: one Plan per journey. The first Plan is still
+            created from the empty-state below (and by FirstClimb/onboarding). %>
       </ul>
 
       <div class="lp-rpg-plan-rail__nav is-next">

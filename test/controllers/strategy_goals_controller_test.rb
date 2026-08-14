@@ -6,6 +6,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
     sign_in_as @user
+    allow_extra_climbs!(@user)
     Onboarding::Run.call(
       user: @user,
       area_key: "career",
@@ -305,7 +306,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
-    assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
+    # One Plan per journey: the "+ Add path" entry is gone from the rail.
+    assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1), count: 0
 
     get objectives_strategy_goal_path(project)
     assert_response :success

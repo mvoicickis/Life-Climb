@@ -141,6 +141,8 @@ de:
         halfway_ridge: "Halber Kamm"
         final_ascent: "Letzter Aufstieg"
     rpg:
+      one_destination_only: "Du konzentrierst dich auf einen Berg nach dem anderen. Bearbeite dieses Ziel, statt ein neues hinzuzufügen."
+      one_plan_only: "Ein Plan pro Berg hält alles einfach. Bearbeite deinen aktuellen Plan, statt einen neuen hinzuzufügen."
       destination: "Ziel"
       destinations: "Deine Ziele"
       destination_prev: "Vorheriges Ziel"

@@ -5,6 +5,7 @@ require "application_system_test_case"
 class PlanCardMenuTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
+    allow_extra_climbs!(@user)
     Onboarding::Run.call(
       user: @user,
       area_key: "career",

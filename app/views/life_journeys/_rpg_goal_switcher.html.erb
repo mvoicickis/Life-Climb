@@ -1,14 +1,10 @@
-<%# Destination carousel — one active world + peeks + arrows + dots + swipe. locals: root_goals, goal, progress, mountain, alive, streak %>
+<%# Destination header — one destination per journey (no switching UI). locals: root_goals, goal, progress, mountain, alive, streak %>
 <% root_goals = local_assigns.fetch(:root_goals, []) %>
 <% goal = local_assigns[:goal] %>
 <% progress = local_assigns.fetch(:progress, 0) %>
 <% mountain = local_assigns.fetch(:mountain, {}) %>
 <% alive = local_assigns[:alive] || current_user.alive_level %>
 <% streak = local_assigns[:streak] || strategy_climb_streak_status %>
-<% goal_index = goal ? root_goals.index { |g| g.id == goal.id } : nil %>
-<% prev_goal = goal_index&.positive? ? root_goals[goal_index - 1] : nil %>
-<% next_goal = goal_index && goal_index < root_goals.size - 1 ? root_goals[goal_index + 1] : nil %>
-<% multi = root_goals.size > 1 %>
 
 <header class="lp-rpg-hud is-focus">
   <div class="lp-rpg-hud__left">
@@ -26,39 +22,12 @@
          data-controller="destination-switcher"
          data-action="pointerdown->destination-switcher#swipeStart pointerup->destination-switcher#swipeEnd pointercancel->destination-switcher#swipeCancel">
       <% if root_goals.any? && goal %>
-        <nav class="lp-rpg-destination-carousel <%= 'is-multi' if multi %>"
+        <%# One destination per journey: static, no prev/next/dots/swipe and no
+            "New Destination" create. Rename + companion avatar + XP/streak/SP
+            chips + celebrate mounts are unchanged. %>
+        <div class="lp-rpg-destination-carousel is-single"
              aria-label="<%= t('strategy.rpg.destinations') %>">
-          <div class="lp-rpg-destination-carousel__nav is-prev">
-            <% if prev_goal %>
-              <%= link_to life_journey_path(@journey, goal_id: prev_goal.id),
-                    class: "lp-rpg-destination-carousel__arrow is-prev",
-                    data: {
-                      turbo: true,
-                      destination_switcher_target: "prevLink"
-                    },
-                    aria: { label: t("strategy.rpg.destination_prev") } do %>
-                <span aria-hidden="true">‹</span>
-              <% end %>
-            <% else %>
-              <span class="lp-rpg-destination-carousel__arrow is-prev is-disabled" aria-hidden="true">
-                <span aria-hidden="true">‹</span>
-              </span>
-            <% end %>
-          </div>
-
           <div class="lp-rpg-destination-carousel__stage">
-            <% if prev_goal %>
-              <%= link_to life_journey_path(@journey, goal_id: prev_goal.id),
-                    class: "lp-rpg-destination-carousel__peek is-prev",
-                    data: { turbo: true },
-                    tabindex: -1,
-                    aria: { hidden: true } do %>
-                <span class="lp-rpg-destination-carousel__peek-title"><%= prev_goal.title %></span>
-              <% end %>
-            <% else %>
-              <span class="lp-rpg-destination-carousel__peek is-prev is-empty" aria-hidden="true"></span>
-            <% end %>
-
             <div class="lp-rpg-destination-carousel__active"
                  data-controller="plan-card-menu"
                  aria-current="true">
@@ -87,13 +56,6 @@
                         data-action="click->plan-card-menu#edit">
                   <span aria-hidden="true">✎</span>
                   <%= t("strategy.rpg.edit_destination") %>
-                </button>
-                <button type="button"
-                        class="lp-rpg-destination-menu__item"
-                        role="menuitem"
-                        data-action="click->plan-card-menu#close click->destination-switcher#openCreate">
-                  <span aria-hidden="true">+</span>
-                  <%= t("strategy.rpg.new_destination") %>
                 </button>
               </div>
 
@@ -132,67 +94,8 @@
                 </div>
               </dialog>
             </div>
-
-            <% if next_goal %>
-              <%= link_to life_journey_path(@journey, goal_id: next_goal.id),
-                    class: "lp-rpg-destination-carousel__peek is-next",
-                    data: { turbo: true },
-                    tabindex: -1,
-                    aria: { hidden: true } do %>
-                <span class="lp-rpg-destination-carousel__peek-title"><%= next_goal.title %></span>
-              <% end %>
-            <% else %>
-              <span class="lp-rpg-destination-carousel__peek is-next is-empty" aria-hidden="true"></span>
-            <% end %>
           </div>
-
-          <div class="lp-rpg-destination-carousel__nav is-next">
-            <% if next_goal %>
-              <%= link_to life_journey_path(@journey, goal_id: next_goal.id),
-                    class: "lp-rpg-destination-carousel__arrow is-next",
-                    data: {
-                      turbo: true,
-                      destination_switcher_target: "nextLink"
-                    },
-                    aria: { label: t("strategy.rpg.destination_next") } do %>
-                <span aria-hidden="true">›</span>
-              <% end %>
-            <% else %>
-              <span class="lp-rpg-destination-carousel__arrow is-next is-disabled" aria-hidden="true">
-                <span aria-hidden="true">›</span>
-              </span>
-            <% end %>
-          </div>
-        </nav>
-
-        <% if multi %>
-          <div class="lp-rpg-destination-dots" role="tablist" aria-label="<%= t('strategy.rpg.destinations') %>">
-            <% root_goals.each do |g| %>
-              <% active = goal.id == g.id %>
-              <%= link_to life_journey_path(@journey, goal_id: g.id),
-                    class: "lp-rpg-destination-dots__dot #{'is-active' if active}",
-                    data: { turbo: true },
-                    aria: {
-                      label: g.title,
-                      current: active ? "true" : nil
-                    } do %>
-                <span class="lp-rpg-destination-dots__pip" aria-hidden="true"></span>
-              <% end %>
-            <% end %>
-            <button type="button"
-                    class="lp-rpg-destination-add"
-                    data-action="click->destination-switcher#openCreate"
-                    aria-haspopup="dialog"
-                    aria-label="<%= t('strategy.rpg.new_destination') %>">+</button>
-          </div>
-          <p class="lp-rpg-destination-swipe-hint"><%= t("strategy.rpg.destination_swipe_hint") %></p>
-        <% else %>
-          <button type="button"
-                  class="lp-rpg-destination-add is-solo"
-                  data-action="click->destination-switcher#openCreate"
-                  aria-haspopup="dialog"
-                  aria-label="<%= t('strategy.rpg.new_destination') %>">+</button>
-        <% end %>
+        </div>
       <% else %>
         <button type="button"
                 class="lp-rpg-destination-carousel__active is-empty"

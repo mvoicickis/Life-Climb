@@ -8,6 +8,7 @@ class StrategyGoalQuantityTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
     @area = life_areas(:one_self)
+    allow_extra_climbs!(@user)
     @goal = @user.strategy_goals.create!(life_area: @area, horizon: "goal", title: "G", position: 0)
     @plan = @user.strategy_goals.create!(
       life_area: @area, parent: @goal, horizon: "plan", title: "P", position: 0

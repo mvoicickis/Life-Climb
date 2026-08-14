@@ -78,6 +78,19 @@ class User < ApplicationRecord
     planning_version.to_i >= 2
   end
 
+  # Premium seam. Today every user is limited to one destination (root goal)
+  # and one non-holding Plan per journey. When the paid multi-goal feature
+  # ships, make these return true for entitled users (e.g. a subscription
+  # check). The limit is enforced by StrategyGoal validations keyed on these
+  # methods, so relaxing it needs no schema migration.
+  def extra_destinations_allowed?
+    false
+  end
+
+  def extra_plans_allowed?
+    false
+  end
+
   def selected_life_areas
     planning_v2? ? life_areas.v2_selected : (active_dream&.life_areas&.tree || life_areas.none)
   end
