@@ -141,6 +141,8 @@ lv:
         halfway_ridge: "Pusceļa grēda"
         final_ascent: "Pēdējais kāpiens"
     rpg:
+      one_destination_only: "Tu kāp vienā kalnā vienlaikus. Rediģē šo mērķi, nevis pievieno jaunu."
+      one_plan_only: "Viens plāns katram kalnam viss paliek vienkārši. Rediģē pašreizējo plānu, nevis pievieno jaunu."
       destination: "Galamērķis"
       destinations: "Tavi galamērķi"
       destination_prev: "Iepriekšējais galamērķis"

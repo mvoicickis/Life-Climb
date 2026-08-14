@@ -141,6 +141,8 @@ es:
         halfway_ridge: "Cresta a mitad de camino"
         final_ascent: "Ascenso final"
     rpg:
+      one_destination_only: "Subes una montaña a la vez. Edita este destino en lugar de añadir otro."
+      one_plan_only: "Un plan por montaña lo mantiene simple. Edita tu plan actual en lugar de añadir otro."
       destination: "Destino"
       destinations: "Tus destinos"
       destination_prev: "Destino anterior"

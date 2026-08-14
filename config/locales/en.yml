@@ -486,6 +486,8 @@ en:
     title: "Build your mountain"
     promise: "One mountain. Today’s battle."
     rpg:
+      one_destination_only: "You’re climbing one mountain at a time. Edit this destination instead of adding another."
+      one_plan_only: "One plan per mountain keeps things simple. Edit your current plan instead of adding another."
       world_label: "Your life mountain"
       life_goal: "LIFE GOAL"
       destination: "Destination"
