@@ -5283,6 +5283,42 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin-top: 0.35rem;
 }
 
+.lp-dash-daystrip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.lp-dash-daystrip__bar {
+  height: 6px;
+  border-radius: 99px;
+  flex: 1 1 0%;
+  min-width: 0;
+  background: var(--lp-border);
+}
+
+.lp-dash-daystrip__bar.has-color {
+  background: var(--lp-item-color);
+}
+
+.lp-dash-daystrip__bar.is-won {
+  background: var(--lp-ink);
+}
+
+.lp-dash-daystrip__label {
+  flex: 0 0 auto;
+  margin-left: 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+  white-space: nowrap;
+}
+
 .lp-dash-timeline__rail {
   position: relative;
   display: grid;

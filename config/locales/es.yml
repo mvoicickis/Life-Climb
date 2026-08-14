@@ -535,6 +535,7 @@ es:
       title: "Línea de tiempo de hoy"
       unscheduled: "Sin hora"
       done_today: "Done today"
+      won_of_total: "%{won} of %{total} won"
       unscheduled_label: "Sin hora fijada"
       set_time: "Fijar hora"
       save_time: "Guardar hora"

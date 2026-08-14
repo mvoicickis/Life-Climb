@@ -78,6 +78,7 @@ en:
       unscheduled: "Unscheduled"
       unscheduled_label: "No time set"
       done_today: "Done today"
+      won_of_total: "%{won} of %{total} won"
       timechip_add: "Add a time so it counts"
       timechip_set: "%{range} · counts today"
       more_actions: "More actions"
