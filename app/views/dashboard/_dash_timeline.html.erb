@@ -34,7 +34,6 @@
       <% end %>
     </div>
   <% else %>
-    <%= render "dashboard/dash_day_strip", todos: local_assigns.fetch(:todos) { @daily_todos } %>
     <% unless open_empty %>
       <div class="lp-dash-timeline__rail" data-today-timeline-target="rail">
         <div class="lp-dash-now" data-today-timeline-target="now" aria-hidden="true">
