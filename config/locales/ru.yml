@@ -535,6 +535,7 @@ ru:
       title: "Лента сегодня"
       unscheduled: "Без времени"
       done_today: "Done today"
+      won_of_total: "%{won} of %{total} won"
       unscheduled_label: "Время не задано"
       set_time: "Задать время"
       save_time: "Сохранить время"

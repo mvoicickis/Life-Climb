@@ -535,6 +535,7 @@ de:
       title: "Zeitlinie von heute"
       unscheduled: "Ohne Zeit"
       done_today: "Done today"
+      won_of_total: "%{won} of %{total} won"
       unscheduled_label: "Keine Zeit gesetzt"
       set_time: "Zeit setzen"
       save_time: "Zeit speichern"

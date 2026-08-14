@@ -1,0 +1,19 @@
+<%# locals: todos %>
+<% todos = Array(local_assigns.fetch(:todos) { @daily_todos }) %>
+<% if todos.any? %>
+  <% won = todos.count(&:completed?) %>
+  <div class="lp-dash-daystrip"
+       aria-label="<%= t("dash.timeline.won_of_total", won: won, total: todos.size) %>">
+    <% todos.each do |todo| %>
+      <% key = todo.completed? ? todo.visible_path_project&.tagged_color_key : nil %>
+      <% classes = [ "lp-dash-daystrip__bar" ] %>
+      <% classes << "has-color is-#{key}" if key %>
+      <% classes << "is-won" if todo.completed? && key.blank? %>
+      <span class="<%= classes.join(" ") %>"
+            data-todo-id="<%= todo.id %>"></span>
+    <% end %>
+    <span class="lp-dash-daystrip__label">
+      <%= t("dash.timeline.won_of_total", won: won, total: todos.size) %>
+    </span>
+  </div>
+<% end %>
