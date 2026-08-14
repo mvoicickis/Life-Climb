@@ -62,6 +62,8 @@ class StrategyGoal < ApplicationRecord
   validate :quantity_target_rules
   validate :holding_shape
   validate :holding_plan_accepts_only_holding_camp
+  validate :one_destination_per_journey, on: :create
+  validate :one_plan_per_goal, on: :create
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
@@ -413,6 +415,37 @@ class StrategyGoal < ApplicationRecord
     return if holding? && project?
 
     errors.add(:parent_id, :invalid)
+  end
+
+  # One destination (root goal) per journey unless the user is entitled to
+  # more (Premium seam on User#extra_destinations_allowed?). App-level rule,
+  # not a DB constraint, so it can be gated per user without a migration.
+  def one_destination_per_journey
+    return unless goal? && parent_id.nil?
+    return if user&.extra_destinations_allowed?
+
+    siblings = StrategyGoal.for_kind("goal").roots
+      .where(user_id: user_id, life_journey_id: life_journey_id)
+      .where.not(id: id)
+    return unless siblings.exists?
+
+    errors.add(:base, I18n.t("strategy.rpg.one_destination_only"))
+  end
+
+  # One non-holding Plan per goal unless the user is entitled to more. The
+  # #323 holding Plan is skipped, so it never collides with the rule.
+  def one_plan_per_goal
+    return unless plan?
+    return if holding?
+    return if parent_id.blank?
+    return if user&.extra_plans_allowed?
+
+    siblings = StrategyGoal.for_kind("plan").not_holding
+      .where(parent_id: parent_id)
+      .where.not(id: id)
+    return unless siblings.exists?
+
+    errors.add(:base, I18n.t("strategy.rpg.one_plan_only"))
   end
 
   def prevent_user_destroy_of_holding

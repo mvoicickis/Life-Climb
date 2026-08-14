@@ -7,6 +7,11 @@ class CompanionGuidesController < ApplicationController
   before_action :require_journey!
 
   def show
+    if new_plan_blocked?
+      redirect_to life_journey_path(@journey), alert: t("strategy.rpg.one_plan_only"), status: :see_other
+      return
+    end
+
     maybe_restart_for_new_plan!
     @step = Strategy::CompanionGuide::Engine.current(user: current_user, journey: @journey)
     if @step.blank?
@@ -37,9 +42,27 @@ class CompanionGuidesController < ApplicationController
       e.message.presence || t("strategy.companion_guide.shell.bad_answer"),
       attempted_value: params[:value].to_s
     )
+  rescue ActiveRecord::RecordInvalid
+    # One-goal/one-plan rule rejected an extra Plan mid-run. Send the climber
+    # back to the mountain instead of surfacing a 500.
+    redirect_to fallback_path, alert: t("strategy.rpg.one_plan_only"), status: :see_other
   end
 
   private
+
+  # "+ Add path" is closed while the user is limited to one Plan. Block the
+  # restart entry so the guide never starts a run the model would reject.
+  def new_plan_blocked?
+    return false if params[:new_plan].blank?
+    return false if current_user.extra_plans_allowed?
+
+    goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+    return false if goal.blank?
+    return false unless goal.children.for_kind("plan").not_holding.exists?
+
+    # A live run may still be building its first Plan — let it continue.
+    Strategy::CompanionGuide::Cursor.load(@journey)["status"] != "in_progress"
+  end
 
   def maybe_restart_for_new_plan!
     return unless params[:new_plan].present?
