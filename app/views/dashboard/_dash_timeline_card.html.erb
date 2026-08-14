@@ -7,11 +7,14 @@
   tasks = [] unless quest
   shell_ready = !quest || tasks.all?(&:completed?)
   qty_project = (!quest && day&.quantified_path_project) || nil
+  project = todo.visible_path_project
+  color_key = project&.tagged_color_key
   icon = quest ? "map" : "sword"
   before_overdue = Time.current.hour < Strategy::NextAction::OVERDUE_AFTER_HOUR
   needs_time_chip = !todo.completed? && !todo.timed? && before_overdue
   card_class = [
     "lp-dash-tcard",
+    ("has-color is-#{color_key}" if color_key),
     ("is-done" if todo.completed?),
     ("is-missed" if todo.missed?),
     ("is-shielded-miss" if todo.miss_shielded?),
@@ -34,7 +37,15 @@
       <span class="lp-dash-tcard__icon" aria-hidden="true">
         <%= render "shared/lp_icon", name: icon, class_name: "lp-icon is-inline" %>
       </span>
-      <p class="lp-dash-tcard__title"><%= todo.title %></p>
+      <div class="lp-dash-tcard__titles">
+        <p class="lp-dash-tcard__title"><%= todo.title %></p>
+        <% if project %>
+          <p class="lp-dash-tcard__project">
+            <span class="lp-dash-tcard__project-dot" aria-hidden="true"></span>
+            <%= project.title %>
+          </p>
+        <% end %>
+      </div>
       <span class="lp-dash-tcard__ap">
         <%= render "shared/lp_icon", name: "bolt", class_name: "lp-icon is-inline" %>
         <span><%= todo.lp_reward %> <%= t("dash.action_points_short") %></span>

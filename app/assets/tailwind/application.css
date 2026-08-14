@@ -5407,7 +5407,6 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-done-fold .lp-dash-tcard {
   opacity: 0.62;
-  border-left-color: rgba(148, 163, 184, 0.28);
   background: rgba(15, 23, 32, 0.45);
 }
 
@@ -5477,18 +5476,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   align-items: stretch;
   gap: 0;
   padding: 0;
-  border-left: 4px solid var(--lp-border);
+  border-left: 5px solid var(--lp-item-color, var(--lp-border));
   border-radius: 0 12px 12px 0;
   min-width: 0;
   width: 100%;
-}
-
-.lp-dash-timeline .lp-dash-tcard.is-needs-time {
-  border-left-color: var(--lp-gold);
-}
-
-.lp-dash-timeline .lp-dash-tcard.is-ready {
-  border-left-color: var(--lp-green);
 }
 
 .lp-dash-tcard.is-missed {
@@ -5550,11 +5541,34 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   white-space: nowrap;
 }
 
+.lp-dash-tcard__titles {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
 .lp-dash-timeline .lp-dash-tcard__title {
   font-size: 1rem;
   font-weight: 700;
   min-width: 0;
-  flex: 1 1 0%;
+}
+
+.lp-dash-tcard__project {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.15rem 0 0;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--lp-muted);
+}
+
+.lp-dash-tcard__project-dot {
+  flex: 0 0 auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--lp-item-color, var(--lp-border));
 }
 
 .lp-dash-tcard__meta {
@@ -17325,7 +17339,6 @@ button.lp-strategy-overflow {
 /* Battle row polish toward mockup density */
 .lp-dash-timeline .lp-dash-tcard {
   border-radius: 0;
-  border-left: none;
   border-right: none;
   background: transparent;
   box-shadow: none;
@@ -25087,22 +25100,14 @@ a.lp-rpg-camp-row {
 .lp-climb-path__quest.has-color {
   border-left: 3px solid var(--lp-item-color, #9aa6b2);
 }
-.lp-climb-path__quest.has-color.is-teal { --lp-item-color: #2dd4bf; }
-.lp-climb-path__quest.has-color.is-coral { --lp-item-color: #e2604f; }
-.lp-climb-path__quest.has-color.is-amber { --lp-item-color: #f59e0b; }
-.lp-climb-path__quest.has-color.is-purple { --lp-item-color: #a78bfa; }
-.lp-climb-path__quest.has-color.is-blue { --lp-item-color: #60a5fa; }
-.lp-climb-path__quest.has-color.is-green { --lp-item-color: #57d35b; }
-.lp-climb-path__quest.has-color.is-pink { --lp-item-color: #f472b6; }
-.lp-climb-path__quest.has-color.is-gray { --lp-item-color: #9aa6b2; }
-.lp-climb-path__project.has-color.is-teal { --lp-item-color: #2dd4bf; }
-.lp-climb-path__project.has-color.is-coral { --lp-item-color: #e2604f; }
-.lp-climb-path__project.has-color.is-amber { --lp-item-color: #f59e0b; }
-.lp-climb-path__project.has-color.is-purple { --lp-item-color: #a78bfa; }
-.lp-climb-path__project.has-color.is-blue { --lp-item-color: #60a5fa; }
-.lp-climb-path__project.has-color.is-green { --lp-item-color: #57d35b; }
-.lp-climb-path__project.has-color.is-pink { --lp-item-color: #f472b6; }
-.lp-climb-path__project.has-color.is-gray { --lp-item-color: #9aa6b2; }
+.has-color.is-teal { --lp-item-color: #2dd4bf; }
+.has-color.is-coral { --lp-item-color: #e2604f; }
+.has-color.is-amber { --lp-item-color: #f59e0b; }
+.has-color.is-purple { --lp-item-color: #a78bfa; }
+.has-color.is-blue { --lp-item-color: #60a5fa; }
+.has-color.is-green { --lp-item-color: #57d35b; }
+.has-color.is-pink { --lp-item-color: #f472b6; }
+.has-color.is-gray { --lp-item-color: #9aa6b2; }
 .lp-climb-path__quest-head {
   display: flex;
   align-items: flex-start;
