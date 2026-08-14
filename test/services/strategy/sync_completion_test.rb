@@ -6,6 +6,7 @@ class Strategy::SyncCompletionTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
     @area = life_areas(:one_self)
+    allow_extra_climbs!(@user)
   end
 
   test "adding a project to a complete plan drops percent and reopens plan and goal" do

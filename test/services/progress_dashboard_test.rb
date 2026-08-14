@@ -5,6 +5,7 @@ require "test_helper"
 class ProgressDashboardTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
+    allow_extra_climbs!(@user)
     Onboarding::Run.call(
       user: @user,
       area_key: "career",

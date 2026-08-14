@@ -98,8 +98,8 @@ class CompanionGuidesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", companion_guide_path(new_plan: 1), count: 0
   end
 
-  test "mountain + Path links to companion guide with new_plan" do
-    # FirstClimb owns the empty spine; + Path appears once a Plan exists.
+  test "mountain no longer shows a + Path link once a Plan exists" do
+    # One Plan per journey: the "+ Add path" entry is removed from the rail.
     @user.strategy_goals.create!(
       life_area: @journey.life_area,
       life_journey: @journey,
@@ -111,26 +111,22 @@ class CompanionGuidesControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1)
+    assert_select "a.lp-rpg-add.is-path.is-guide-entry[href=?]", companion_guide_path(new_plan: 1), count: 0
   end
 
-  test "new_plan after completed restarts guide without touching prior plans" do
+  test "new_plan after completed is blocked by the one-plan rule" do
     walk_to_completed!
     plan_count = @goal.children.for_kind("plan").count
-    project_count = @user.strategy_goals.for_kind("project").count
     prior_plan_ids = @goal.children.for_kind("plan").pluck(:id).sort
 
     get companion_guide_path(new_plan: 1)
-    assert_response :success
-    assert_select "#companion-guide-question", text: I18n.t("strategy.companion_guide.questions.create_plan")
+    assert_redirected_to life_journey_path(@journey)
+    assert_equal I18n.t("strategy.rpg.one_plan_only"), flash[:alert]
 
+    # No fresh run started and no extra Plan created.
     cursor = Strategy::CompanionGuide::Cursor.load(@journey.reload)
-    assert_equal "in_progress", cursor["status"]
-    assert_equal "create_plan", cursor["template_id"]
-    assert_nil cursor["plan_id"]
-
+    refute_equal "create_plan", cursor["template_id"]
     assert_equal plan_count, @goal.children.for_kind("plan").count
-    assert_equal project_count, @user.strategy_goals.for_kind("project").count
     assert_equal prior_plan_ids, @goal.children.for_kind("plan").pluck(:id).sort
   end
 

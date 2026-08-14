@@ -104,7 +104,7 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_equal 0, @user.daily_todos.for_day(Date.current).where(title: "A second accidental battle").count
   end
 
-  test "title param creates a new destination and hangs the plan under it" do
+  test "title param cannot create a second destination (one-goal rule)" do
     Strategy::FirstClimb.call(
       user: @user,
       journey: @journey,
@@ -113,17 +113,18 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
       today_action: "Study chapter 1 for 20 minutes"
     )
 
-    post first_climbs_path, params: {
-      life_journey_id: @journey.id,
-      title: "Family Peak",
-      plan_title: "Weekend dinners",
-      today_action: "Text the family group"
-    }
+    assert_no_difference -> { @user.strategy_goals.for_kind("goal").roots.count } do
+      post first_climbs_path, params: {
+        life_journey_id: @journey.id,
+        title: "Family Peak",
+        plan_title: "Weekend dinners",
+        today_action: "Text the family group"
+      }
+    end
 
-    assert_redirected_to dashboard_path
-    family = @user.strategy_goals.for_kind("goal").roots.find_by!(title: "Family Peak")
-    refute_equal @goal.id, family.id
-    assert_equal "Weekend dinners", family.children.for_kind("plan").first.title
+    assert_redirected_to life_journey_path(@journey)
+    assert flash[:alert].present?
+    assert_nil @user.strategy_goals.for_kind("goal").roots.find_by(title: "Family Peak")
     assert_equal [ "Get certified" ], @goal.reload.children.for_kind("plan").map(&:title)
   end
 

@@ -6,6 +6,7 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
     sign_in_as @user
+    allow_extra_climbs!(@user)
     Onboarding::Run.call(
       user: @user, area_key: "career", title: "Ship LifePoints",
       ideal_scene: "App live", current_reality: "Building", next_win: "Launch",

@@ -6,6 +6,7 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
     sign_in_as @user
+    allow_extra_climbs!(@user)
     Onboarding::Run.call(
       user: @user,
       area_key: "career",
@@ -65,7 +66,8 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-xp:not(.is-quiet)", count: 0
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-streak", count: 0
     assert_select ".lp-rpg-destination-menu__btn"
-    assert_select ".lp-rpg-destination-menu__item[data-action*='destination-switcher#openCreate']"
+    # "New Destination" create is removed (one destination per journey).
+    assert_select ".lp-rpg-destination-menu__item[data-action*='destination-switcher#openCreate']", count: 0
     assert_select ".lp-rpg-destination__new", count: 0
     assert_select ".lp-rpg-summit__pct", count: 0
   end
@@ -80,16 +82,15 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-path-focus__title", text: /Find a job/i, count: 0
   end
 
-  test "destination dots and swipe hint render for multiple destinations" do
+  test "no destination dots or swipe UI even with multiple destinations in data" do
     get life_journey_path(@journey, goal_id: @goal.id)
     assert_response :success
 
-    assert_select ".lp-rpg-destination-dots .lp-rpg-destination-dots__dot", count: 2
-    assert_select ".lp-rpg-destination-dots__dot.is-active[href=?]",
-                  life_journey_path(@journey, goal_id: @goal.id)
-    assert_select ".lp-rpg-destination-dots__dot[href=?]",
-                  life_journey_path(@journey, goal_id: @other.id)
-    assert_select ".lp-rpg-destination-swipe-hint", text: /swipe to change destination/i
-    assert_select ".lp-rpg-destination[data-action*='destination-switcher#swipeStart']"
+    # Switching UI is gone: one static destination is shown regardless of data.
+    assert_select ".lp-rpg-destination-carousel.is-single"
+    assert_select ".lp-rpg-destination-dots", count: 0
+    assert_select ".lp-rpg-destination-carousel__arrow", count: 0
+    assert_select ".lp-rpg-destination-carousel__peek", count: 0
+    assert_select ".lp-rpg-destination-swipe-hint", count: 0
   end
 end
