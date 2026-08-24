@@ -8,7 +8,7 @@ class StrategyGoalCompletionsController < ApplicationController
   before_action :reject_holding
 
   def create
-    unless @goal.plan? || @goal.project?
+    unless @goal.plan? || @goal.project? || @goal.goal?
       return redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
     end
 
@@ -46,6 +46,8 @@ class StrategyGoalCompletionsController < ApplicationController
     return fallback_path if journey.blank?
 
     case @goal.kind
+    when "goal"
+      life_journey_path(journey, goal_id: @goal.id)
     when "plan"
       life_journey_path(journey, goal_id: @goal.parent_id, plan_id: @goal.id)
     when "project"

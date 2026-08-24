@@ -46,6 +46,12 @@ module MountainTrailHelper
 
   FOOT_BASE_Y = 0.94
   FOOT_TOP_Y = 0.28
+  SIGN_MIN_GAP = 0.09
+  SIGN_FLOOR_Y = 0.72
+
+  def mountain_trail_project_accent(project)
+    project&.trail_accent_hex || mountain_trail_accent(project&.tagged_color_key)
+  end
 
   def mountain_trail_photo_url(journey)
     if journey&.mountain_photo&.attached?
@@ -121,7 +127,7 @@ module MountainTrailHelper
   # Segment rail: one bar per camp with fill % and accent.
   def mountain_trail_segments(projects)
     projects.map do |project|
-      accent = mountain_trail_accent(project.tagged_color_key)
+      accent = mountain_trail_project_accent(project)
       pct =
         if project.quantified? && project.target_amount.to_d.positive?
           ((project.current_amount.to_d / project.target_amount.to_d) * 100).clamp(0, 100).round
@@ -137,11 +143,63 @@ module MountainTrailHelper
     end
   end
 
+  # Layout slots with anti-overlap spreading (mockup MIN_GAP pass).
+  def mountain_trail_layout(projects)
+    raw = projects.each_with_index.map do |project, index|
+      slot = mountain_trail_slot(project, index: index, total: projects.size)
+      { project: project, x: slot[:x], y: slot[:y], anchor_y: slot[:y] }
+    end
+    return {} if raw.empty?
+
+    by_height = raw.sort_by { |entry| -entry[:y] }
+    next_top = SIGN_FLOOR_Y
+    by_height.each do |entry|
+      wanted = [ entry[:y], next_top ].min
+      entry[:y] = wanted.round(4)
+      next_top = wanted - SIGN_MIN_GAP
+    end
+    raw.index_by { |entry| entry[:project].id }
+  end
+
+  def mountain_trail_layout_slot(project, projects:)
+    layout = mountain_trail_layout(projects)
+    layout[project.id] || begin
+      slot = mountain_trail_slot(project, index: 0, total: [ projects.size, 1 ].max)
+      { x: slot[:x], y: slot[:y], anchor_y: slot[:y] }
+    end
+  end
+
+  # Current camp: lowest on trail (highest y) with an open battle — mockup Duolingo node.
+  def mountain_trail_current_project(projects)
+    eligible = projects.reject(&:completed?).reject(&:pages_mode?).select do |project|
+      project.children.any? { |c| c.day? && !c.holding? && !c.completed? }
+    end
+    return nil if eligible.empty?
+
+    layout = mountain_trail_layout(projects)
+    eligible.max_by { |p| layout.dig(p.id, :y).to_f }
+  end
+
+  def mountain_trail_first_open_battle(project)
+    project.children
+      .select { |c| c.day? && !c.holding? && !c.completed? }
+      .min_by { |c| [ c.position.to_i, c.id ] }
+  end
+
+  def mountain_trail_fire_level(project)
+    return 0 if project.completed? || project.pages_mode?
+
+    total = project.children.count { |c| c.day? && !c.holding? }
+    return 2 if total >= 6
+    return 1 if total >= 3
+
+    0
+  end
+
   def mountain_trail_camp_state(project, projects:)
     return :done if project.completed?
 
-    open = projects.reject(&:completed?)
-    current = open.min_by { |p| [ p.position.to_i, p.id ] }
+    current = mountain_trail_current_project(projects)
     current&.id == project.id ? :current : :open
   end
 
@@ -233,9 +291,24 @@ module MountainTrailHelper
   end
 
   def mountain_trail_companion_slot(projects)
+    current = mountain_trail_current_project(projects)
+    if current
+      layout = mountain_trail_layout(projects)
+      slot = layout[current.id]
+      return { x: slot[:x], y: [ slot[:y] + 0.035, 0.91 ].min } if slot
+    end
+
     frac = mountain_trail_climb_fraction(projects)
     y = FOOT_BASE_Y - frac * (FOOT_BASE_Y - FOOT_TOP_Y)
     mountain_trail_point_on_curve(y)
+  end
+
+  # Momentum 0..1 for embers / hero saturation (mockup energy).
+  def mountain_trail_energy(projects)
+    open = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } }
+    won = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && c.completed? } }
+    total = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? } }
+    [ (won * 0.5 + total * 0.15) / 6.0, 1.0 ].min + (open.positive? ? 0.05 : 0)
   end
 
   private

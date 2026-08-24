@@ -1,0 +1,10 @@
+<%= turbo_stream.append "strategy-world" do %>
+  <meta data-rpg-refresh="1">
+<% end %>
+<% if @awarded.to_i.positive? %>
+  <%= turbo_stream.update "trail-toast-host" do %>
+    <%= render "life_journeys/trail_toast",
+          title: t("strategy.rpg.trail.quick_win_toast", title: @battle.title),
+          restore: false %>
+  <% end %>
+<% end %>

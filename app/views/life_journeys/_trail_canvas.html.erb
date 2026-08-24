@@ -25,6 +25,8 @@
 <% climb_frac = mountain_trail_climb_fraction(projects) %>
 <% footprints = mountain_trail_footprints(projects) %>
 <% companion_slot = mountain_trail_companion_slot(projects) %>
+<% current_project = mountain_trail_current_project(projects) %>
+<% trail_energy = mountain_trail_energy(projects) %>
 <% open_battle_count = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } } %>
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
@@ -38,6 +40,9 @@
          data-trail-canvas-create-url-value="<%= strategy_goals_path %>"
          data-trail-canvas-csrf-value="<%= form_authenticity_token %>"
          data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
+         data-trail-canvas-goal-id-value="<%= goal&.id.to_i %>"
+         data-trail-canvas-goal-update-url-value="<%= goal ? strategy_goal_path(goal) : '' %>"
+         data-trail-canvas-journey-update-url-value="<%= life_journey_path(journey) %>"
          data-trail-canvas-journey-id-value="<%= journey.id %>"
          data-trail-canvas-life-area-id-value="<%= area.id %>"
          data-trail-canvas-curve-value="<%= mountain_trail_curve_json %>"
@@ -46,6 +51,7 @@
          data-trail-ambient-camps-done-value="<%= camps_done %>"
          data-trail-ambient-camps-total-value="<%= projects.size %>"
          data-trail-ambient-open-battles-value="<%= open_battle_count %>"
+         data-trail-ambient-energy-value="<%= trail_energy.round(3) %>"
          <% if show_tour %>
          data-trail-coach-ack-value="<%= tour_ack %>"
          data-trail-coach-url-value="<%= mountain_trail_tour_path %>"
@@ -53,7 +59,14 @@
          data-trail-coach-has-battles-value="<%= any_battles %>"
          data-trail-coach-has-wins-value="<%= any_wins %>"
          <% end %>
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>">
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>;">
+
+  <div class="lp-trail__clouds" data-trail-canvas-target="clouds" aria-hidden="true">
+    <span class="lp-trail__cloud is-1"></span>
+    <span class="lp-trail__cloud is-2"></span>
+    <span class="lp-trail__cloud is-3"></span>
+    <span class="lp-trail__cloud is-4"></span>
+  </div>
 
   <%# Dark glass HUD over photo (mockup) %>
   <div class="lp-trail-hud" data-trail-ignore>
@@ -115,9 +128,13 @@
   <div class="lp-trail__scroll" data-trail-canvas-target="scroll">
     <div class="lp-trail__surface"
          data-trail-canvas-target="surface"
-         data-action="click->trail-canvas#surfaceClick">
-      <div class="lp-trail__photo-wrap" aria-hidden="true">
-        <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async">
+         data-action="click->trail-canvas#surfaceClick dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+      <div class="lp-trail__photo-wrap lp-trail__photo-drop"
+           aria-hidden="true"
+           data-trail-canvas-target="photoWrap"
+           data-action="dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+        <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async" data-trail-canvas-target="photo">
+        <div class="lp-trail__rim" aria-hidden="true"></div>
         <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
         <div class="lp-trail__night"></div>
         <div class="lp-trail__haze"></div>
@@ -174,8 +191,16 @@
                 aria-expanded="false"
                 aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
           <span class="lp-trail__pennant">
-            <span class="lp-trail__peak-title lp-rpg-destination-carousel__title"><%= peak_title %></span>
-            <span class="lp-trail__peak-tagline"><%= peak_tagline %></span>
+            <span class="lp-trail__peak-title lp-rpg-destination-carousel__title"
+                  contenteditable="plaintext-only"
+                  spellcheck="false"
+                  data-trail-canvas-target="peakTitle"
+                  data-action="blur->trail-canvas#commitPeakTitle keydown->trail-canvas#peakTitleKey"><%= peak_title %></span>
+            <span class="lp-trail__peak-tagline"
+                  contenteditable="plaintext-only"
+                  spellcheck="false"
+                  data-trail-canvas-target="peakTagline"
+                  data-action="blur->trail-canvas#commitPeakTagline"><%= peak_tagline %></span>
           </span>
           <span class="lp-trail__pole" aria-hidden="true"></span>
         </button>
@@ -204,6 +229,16 @@
                     data-action="click->trail-canvas#editDestination">
               <%= t("strategy.rpg.edit_destination") %>
             </button>
+            <%= button_to t("strategy.rpg.trail.mark_reached"),
+                  strategy_goal_manual_completion_path(goal),
+                  method: :post,
+                  class: "lp-trail__peak-item",
+                  form: { class: "lp-trail__photo-form", data: { turbo_confirm: t("strategy.rpg.trail.mark_reached_confirm") } } %>
+            <%= button_to t("strategy.rpg.trail.delete_destination"),
+                  strategy_goal_path(goal),
+                  method: :delete,
+                  class: "lp-trail__peak-item is-danger",
+                  form: { class: "lp-trail__photo-form", data: { turbo_confirm: t("strategy.rpg.trail.delete_destination_confirm") } } %>
           <% end %>
         </div>
       </div>
@@ -216,7 +251,8 @@
                 project: project,
                 index: index,
                 total: projects.size,
-                projects: projects %>
+                projects: projects,
+                current_project: current_project %>
         <% end %>
       </div>
 
@@ -287,6 +323,8 @@
               data-turbo="true"
               data-action="submit->trail-canvas#submitPlant"
               data-controller="quantity-track">
+          <input type="hidden" name="accent_hex" value="" data-trail-canvas-target="accentHex">
+          <input type="hidden" name="camp_mode" value="battles" data-trail-canvas-target="campMode">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
           <input type="hidden" name="life_area_id" value="<%= area.id %>">
           <input type="hidden" name="life_journey_id" value="<%= journey.id %>">
@@ -371,6 +409,17 @@
             <span class="lp-trail-plant__advanced-chev" aria-hidden="true">⌄</span>
           </button>
           <div class="lp-trail-plant__advanced" data-trail-canvas-target="advanced" hidden>
+            <fieldset class="lp-trail-plant__mode">
+              <legend class="sr-only"><%= t("strategy.rpg.trail.camp_mode_label") %></legend>
+              <label class="lp-trail-plant__mode-opt">
+                <input type="radio" name="camp_mode_pick" value="battles" checked data-action="change->trail-canvas#pickCampMode">
+                <span><%= t("strategy.rpg.trail.camp_mode_battles") %></span>
+              </label>
+              <label class="lp-trail-plant__mode-opt">
+                <input type="radio" name="camp_mode_pick" value="pages" data-action="change->trail-canvas#pickCampMode">
+                <span><%= t("strategy.rpg.trail.camp_mode_pages") %></span>
+              </label>
+            </fieldset>
             <%= render "life_journeys/quantity_track_fields", form_id: "trail-plant-qty" %>
           </div>
           <div class="lp-trail-plant__actions">

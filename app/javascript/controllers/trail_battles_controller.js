@@ -1,8 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Daily toggle + title parsing + camp rename inside trail battle sheet.
+// Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
-  static targets = ["titleField", "repeatField", "dailyToggle", "renameDialog", "renameField"]
+  static targets = [
+    "titleField", "repeatField", "dailyToggle", "renameDialog", "renameField", "sessionToast"
+  ]
+
+  static values = { sessionWins: { type: Number, default: 0 } }
 
   parseDraft(event) {
     if (!this.hasTitleFieldTarget || !this.hasRepeatFieldTarget) return
@@ -76,5 +80,51 @@ export default class extends Controller {
 
   stashCampDelete() {
     // Session stash is written server-side in destroy; toast handled by turbo stream.
+  }
+
+  battleWon(event) {
+    const { success } = event.detail || {}
+    if (!success) return
+
+    this.sessionWinsValue += 1
+    this.showSessionToast(this.sessionWinsValue)
+  }
+
+  battleAdded(event) {
+    const { success } = event.detail || {}
+    if (!success) return
+
+    if (this.hasTitleFieldTarget) {
+      this.titleFieldTarget.value = ""
+      this.titleFieldTarget.focus()
+    }
+    if (this.hasDailyToggleTarget) {
+      this.dailyToggleTarget.checked = false
+      this.toggleDaily()
+    }
+  }
+
+  stashBattleDelete() {
+    // Session stash is written server-side in destroy; undo toast handled by turbo stream.
+  }
+
+  showSessionToast(count) {
+    if (!this.hasSessionToastTarget || count <= 0) return
+
+    const template =
+      this.sessionToastTarget.dataset.template ||
+      this.element.dataset.sessionWinTemplate ||
+      "%{count} won this session"
+    this.sessionToastTarget.textContent = template.replace("%{count}", String(count))
+    this.sessionToastTarget.hidden = false
+
+    window.clearTimeout(this._sessionToastTimer)
+    this._sessionToastTimer = window.setTimeout(() => {
+      if (this.hasSessionToastTarget) this.sessionToastTarget.hidden = true
+    }, 3200)
+  }
+
+  disconnect() {
+    if (this._sessionToastTimer) window.clearTimeout(this._sessionToastTimer)
   }
 }
