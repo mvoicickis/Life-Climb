@@ -12,8 +12,16 @@
 <% alive = local_assigns[:alive] || current_user.alive_level %>
 <% camps_done = mountain_trail_camps_done(projects) %>
 <% dormant = mountain_trail_dormant?(projects) %>
-<% today_battles = (@today_battles || []).select { |b| b.completed_at.blank? }.first(3) %>
+<% all_today = (@today_battles || []) %>
+<% today_battles = all_today.select { |b| b.completed_at.blank? }.first(3) %>
+<% won_today = all_today.count { |b| b.completed_at.present? } %>
+<% today_card = mountain_trail_today_card(open_battles: today_battles, won_today: won_today) %>
 <% peak_title = goal&.title.presence || journey.title %>
+<% peak_tagline = mountain_trail_peak_tagline(goal) %>
+<% day_count = mountain_trail_day_count(journey) %>
+<% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
+<% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) %>
+<% summit_glow = (camps_done.to_f / [ projects.size, 1 ].max) %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %>"
          id="mountain-trail"
@@ -25,9 +33,11 @@
          data-trail-canvas-journey-id-value="<%= journey.id %>"
          data-trail-canvas-life-area-id-value="<%= area.id %>"
          data-trail-canvas-curve-value="<%= mountain_trail_curve_json %>"
-         data-trail-ambient-dormant-value="<%= dormant %>">
+         data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
+         data-trail-ambient-dormant-value="<%= dormant %>"
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>">
 
-  <%# Cream HUD over photo %>
+  <%# Dark glass HUD over photo (mockup) %>
   <div class="lp-trail-hud" data-trail-ignore>
     <div class="lp-trail-hud__pill">
       <%= link_to settings_path, class: "lp-trail-hud__avatar lp-rpg-avatar", aria: { label: t("nav.settings") } do %>
@@ -72,7 +82,10 @@
         <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async">
         <div class="lp-trail__night"></div>
         <div class="lp-trail__haze"></div>
+        <div class="lp-trail__haze-band is-1"></div>
+        <div class="lp-trail__haze-band is-2"></div>
         <div class="lp-trail__warm"></div>
+        <div class="lp-trail__summit-glow"></div>
       </div>
 
       <div class="lp-trail__ambient" aria-hidden="true">
@@ -94,7 +107,6 @@
       </div>
 
       <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>">
-        <span class="lp-trail__pole" aria-hidden="true"></span>
         <button type="button"
                 class="lp-trail__flag"
                 data-action="click->trail-canvas#togglePeakMenu"
@@ -103,7 +115,9 @@
                 aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
           <span class="lp-trail__pennant">
             <span class="lp-trail__peak-title lp-rpg-destination-carousel__title"><%= peak_title %></span>
+            <span class="lp-trail__peak-tagline"><%= peak_tagline %></span>
           </span>
+          <span class="lp-trail__pole" aria-hidden="true"></span>
         </button>
         <div class="lp-trail__peak-menu" data-trail-canvas-target="peakMenu" role="menu" hidden>
           <label class="lp-trail__peak-item">
@@ -164,22 +178,38 @@
         <% end %>
       </div>
 
-      <div class="lp-trail-base" aria-hidden="true">
-        <span class="lp-trail-base__tent"></span>
-        <span class="lp-trail-base__tent is-2"></span>
-        <span class="lp-trail-base__fire"></span>
+      <div class="lp-trail-base" aria-hidden="true"
+           style="--lp-base-x: <%= MountainTrailHelper::TRAIL_CURVE.last[1] %>; --lp-base-y: 0.95">
+        <div class="lp-trail-base__icons">
+          <span class="lp-trail-base__tent"></span>
+          <span class="lp-trail-base__tent is-2"></span>
+          <span class="lp-trail-base__fire"></span>
+        </div>
+        <span class="lp-trail-base__pill"><%= t("strategy.rpg.trail.base_camp_day", day: day_count) %></span>
       </div>
 
-      <% if today_battles.any? %>
-        <a href="<%= dashboard_path %>" class="lp-trail-today" data-trail-ignore>
-          <p class="lp-trail-today__kicker"><%= t("strategy.rpg.today") %></p>
-          <ul class="lp-trail-today__list">
-            <% today_battles.each do |battle| %>
-              <li><%= battle.title %></li>
+      <a href="<%= dashboard_path %>"
+         class="lp-trail-today <%= 'is-busy' if today_card[:busy] %>"
+         data-trail-ignore>
+        <span class="lp-trail-today__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <% if today_card[:busy] %>
+              <path d="M12 3 4.5 6v6.2c0 4.4 3.1 7.6 7.5 8.8 4.4-1.2 7.5-4.4 7.5-8.8V6Z"/>
+            <% else %>
+              <path d="M12 3 4.5 6v6.2c0 4.4 3.1 7.6 7.5 8.8 4.4-1.2 7.5-4.4 7.5-8.8V6Z"/>
+              <path d="M9.2 12.1 11.2 14.1 15.2 9.8"/>
             <% end %>
-          </ul>
-        </a>
-      <% end %>
+          </svg>
+        </span>
+        <span class="lp-trail-today__copy">
+          <span class="lp-trail-today__headline"><%= today_card[:headline] %></span>
+          <span class="lp-trail-today__sub"><%= today_card[:sub] %></span>
+        </span>
+        <% if today_card[:badge] %>
+          <span class="lp-trail-today__badge"><%= today_card[:count] %></span>
+        <% end %>
+        <span class="lp-trail-today__chev" aria-hidden="true">›</span>
+      </a>
 
       <div class="lp-trail-plant"
            data-trail-canvas-target="plantForm"
@@ -195,7 +225,8 @@
               action="<%= strategy_goals_path %>"
               method="post"
               data-turbo="true"
-              data-action="submit->trail-canvas#submitPlant">
+              data-action="submit->trail-canvas#submitPlant"
+              data-controller="quantity-track">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
           <input type="hidden" name="life_area_id" value="<%= area.id %>">
           <input type="hidden" name="life_journey_id" value="<%= journey.id %>">
@@ -204,23 +235,67 @@
           <input type="hidden" name="trail_x" value="" data-trail-canvas-target="plantX">
           <input type="hidden" name="trail_y" value="" data-trail-canvas-target="plantY">
           <h3 class="lp-trail-plant__title"><%= t("strategy.rpg.trail.plant_kicker") %></h3>
-          <p class="lp-trail-plant__sub"><%= t("strategy.rpg.trail.plant_hint") %></p>
+          <p class="lp-trail-plant__sub"><%= t("strategy.rpg.trail.plant_hint", destination: peak_title) %></p>
           <input type="text"
                  name="title"
                  required
                  maxlength="120"
                  class="lp-trail-plant__field"
-                 placeholder="<%= t('strategy.rpg.checkpoint_name_placeholder') %>"
+                 placeholder="<%= t('strategy.rpg.trail.plant_placeholder') %>"
                  autocomplete="off"
                  data-trail-canvas-target="plantTitle">
+          <% if plant_starters.any? %>
+            <div class="lp-trail-plant__starters" role="group" aria-label="<%= t('strategy.rpg.trail.starters_label') %>">
+              <% plant_starters.each do |starter| %>
+                <button type="button"
+                        class="lp-trail-plant__starter"
+                        data-action="click->trail-canvas#pickStarter"
+                        data-starter="<%= starter %>">
+                  <%= starter %>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+          <p class="lp-trail-plant__flag-label"><%= t("strategy.rpg.trail.flag_colour") %></p>
           <div class="lp-trail__plant-colors" role="radiogroup" aria-label="<%= t('strategy.rpg.quest_color_label') %>">
             <% StrategyGoal::COLOR_KEYS.each_with_index do |key, i| %>
               <label class="lp-trail__swatch is-<%= key %>">
-                <input type="radio" name="color_key" value="<%= key %>" class="sr-only" <%= "checked" if i.zero? %>>
+                <input type="radio"
+                       name="color_key"
+                       value="<%= key %>"
+                       class="sr-only"
+                       data-action="change->trail-canvas#colorPicked"
+                       data-hue="<%= { 'teal' => 174, 'coral' => 18, 'amber' => 40, 'purple' => 263, 'blue' => 228, 'green' => 145, 'pink' => 340, 'gray' => 30 }[key] %>"
+                       <%= "checked" if i.zero? %>>
                 <span class="lp-trail__swatch-dot" aria-hidden="true"></span>
+                <span class="lp-trail__swatch-check" aria-hidden="true">✓</span>
                 <span class="sr-only"><%= t("strategy.rpg.quest_colors.#{key}") %></span>
               </label>
             <% end %>
+          </div>
+          <label class="lp-trail-plant__hue">
+            <span class="sr-only"><%= t("strategy.rpg.trail.flag_colour") %></span>
+            <input type="range"
+                   min="0"
+                   max="359"
+                   value="174"
+                   class="lp-trail-plant__hue-range"
+                   data-trail-canvas-target="hueRange"
+                   data-action="input->trail-canvas#hueSlide">
+          </label>
+          <button type="button"
+                  class="lp-trail-plant__advanced-toggle"
+                  data-action="click->trail-canvas#toggleAdvanced"
+                  aria-expanded="false">
+            <span aria-hidden="true">⚙</span>
+            <span class="lp-trail-plant__advanced-copy">
+              <strong><%= t("strategy.rpg.trail.count_something") %></strong>
+              <small><%= t("strategy.rpg.trail.count_something_hint") %></small>
+            </span>
+            <span class="lp-trail-plant__advanced-chev" aria-hidden="true">⌄</span>
+          </button>
+          <div class="lp-trail-plant__advanced" data-trail-canvas-target="advanced" hidden>
+            <%= render "life_journeys/quantity_track_fields", form_id: "trail-plant-qty" %>
           </div>
           <div class="lp-trail-plant__actions">
             <button type="button"
@@ -241,11 +316,13 @@
            data-trail-canvas-target="placingBanner"
            hidden
            aria-hidden="true">
-        <p><%= t("strategy.rpg.trail.placing_hint") %></p>
+        <p data-trail-canvas-target="placingText"><%= t("strategy.rpg.trail.placing_hint", name: "…") %></p>
         <button type="button" data-action="click->trail-canvas#cancelPlacing"><%= t("strategy.rpg.cancel") %></button>
       </div>
     </div>
   </div>
+
+  <div class="lp-trail__tab-fade" aria-hidden="true"></div>
 
   <div class="lp-trail-sheet"
        data-trail-camp-sheet-target="sheet"
@@ -290,6 +367,57 @@
     </div>
   </div>
 
+  <%# Quantity log sheet for quantified camps %>
+  <div class="lp-trail-log"
+       data-trail-canvas-target="logSheet"
+       hidden
+       aria-hidden="true">
+    <button type="button"
+            class="lp-trail-log__backdrop"
+            data-action="click->trail-canvas#closeLog"
+            aria-label="<%= t('strategy.rpg.trail.log_sheet.cancel') %>"></button>
+    <form class="lp-trail-log__panel"
+          action="<%= strategy_quantity_logs_path %>"
+          method="post"
+          data-action="submit->trail-canvas#submitLog">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <input type="hidden" name="project_id" value="" data-trail-canvas-target="logProjectId">
+      <input type="hidden" name="battle_id" value="" data-trail-canvas-target="logBattleId">
+      <input type="hidden" name="life_journey_id" value="<%= journey.id %>">
+      <div class="lp-trail-log__head">
+        <span class="lp-trail-log__icon" aria-hidden="true">📈</span>
+        <div>
+          <p class="lp-trail-log__title" data-trail-canvas-target="logTitle"><%= t("strategy.rpg.trail.log_sheet.title") %></p>
+          <p class="lp-trail-log__prompt" data-trail-canvas-target="logPrompt"></p>
+        </div>
+      </div>
+      <div class="lp-trail-log__meter">
+        <button type="button" class="lp-trail-log__step" data-action="click->trail-canvas#logMinus" aria-label="−">−</button>
+        <input type="text"
+               name="amount"
+               inputmode="decimal"
+               class="lp-trail-log__amount"
+               value="1"
+               required
+               data-trail-canvas-target="logAmount">
+        <button type="button" class="lp-trail-log__step" data-action="click->trail-canvas#logPlus" aria-label="+">+</button>
+      </div>
+      <div class="lp-trail-log__quick" data-trail-canvas-target="logQuick">
+        <% [ 1, 5, 10, 25 ].each do |n| %>
+          <button type="button" class="lp-trail-log__chip" data-action="click->trail-canvas#logQuick" data-amount="<%= n %>"><%= n %></button>
+        <% end %>
+      </div>
+      <div class="lp-trail-log__actions">
+        <button type="button" class="lp-trail-log__cancel" data-action="click->trail-canvas#closeLog">
+          <%= t("strategy.rpg.trail.log_sheet.cancel") %>
+        </button>
+        <button type="submit" class="lp-trail-log__submit">
+          <%= t("strategy.rpg.trail.log_sheet.confirm") %>
+        </button>
+      </div>
+    </form>
+  </div>
+
   <%# Visually hidden legacy list for objectives/edit menus + system tests. %>
   <details class="lp-trail__list-fallback sr-only" data-trail-ignore>
     <summary class="lp-trail__list-summary"><%= t("strategy.rpg.trail.list_fallback") %></summary>
@@ -310,6 +438,10 @@
         </header>
         <%= form_with url: strategy_goal_path(goal), method: :patch, class: "lp-strategy-sheet__form", data: { turbo: false } do %>
           <%= text_field_tag :title, goal.title, required: true, maxlength: 120, class: "lp-strategy-sheet__input" %>
+          <%= text_field_tag :description, goal.description,
+                maxlength: 200,
+                class: "lp-strategy-sheet__input",
+                placeholder: t("strategy.rpg.trail.peak_tagline_default") %>
           <%= submit_tag t("strategy.rpg.save"), class: "lp-strategy-sheet__submit" %>
         <% end %>
       </div>

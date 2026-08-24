@@ -56,6 +56,7 @@ Rails.application.routes.draw do
   end
   resources :practice_tasks, only: %i[ update destroy ]
   resources :first_climbs, only: :create
+  resources :strategy_quantity_logs, only: :create
   resources :journey_targets, only: %i[ destroy ] do
     member do
       post :log

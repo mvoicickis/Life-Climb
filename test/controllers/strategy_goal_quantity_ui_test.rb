@@ -116,12 +116,13 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
   test "path-focus Place first checkpoint form includes quantity track toggle" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    # V4 plant form is title + color only (no quantity toggle on the phone canvas).
     assert_select ".lp-trail-plant"
     assert_select ".lp-trail-plant input[name='title']"
     assert_select ".lp-trail__plant-colors input[name='color_key']", minimum: 1
+    assert_select ".lp-trail-plant input[name='track_quantity']"
+    assert_select ".lp-trail-plant input[name='target_amount']"
+    assert_select ".lp-trail-plant input[name='unit']"
     assert_select "#rpg-add-checkpoint", count: 0
-    assert_select ".lp-trail-plant input[name='track_quantity']", count: 0
   end
 
   test "path-focus Place first checkpoint accepts and saves quantity fields" do
