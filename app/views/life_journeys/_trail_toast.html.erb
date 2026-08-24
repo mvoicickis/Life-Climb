@@ -1,0 +1,19 @@
+<%# Mountain undo toast. locals: title, restore (bool) %>
+<% title = local_assigns.fetch(:title) %>
+<% restore = local_assigns.fetch(:restore, false) %>
+<div class="lp-toast is-trail"
+     role="status"
+     data-controller="lp-toast"
+     data-lp-toast-duration-value="5000">
+  <span class="lp-toast__ic" aria-hidden="true">↩</span>
+  <div class="lp-toast__tx">
+    <span><%= title %></span>
+  </div>
+  <% if restore %>
+    <%= button_to t("strategy.rpg.trail.undo"),
+          strategy_goal_restores_path,
+          method: :post,
+          class: "lp-toast__undo",
+          form: { data: { turbo: false } } %>
+  <% end %>
+</div>

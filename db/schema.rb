@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_103302) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_24_190100) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -433,6 +433,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_103302) do
     t.datetime "manually_completed_at"
     t.integer "parent_id"
     t.integer "position", default: 0, null: false
+    t.string "quantity_kind", default: "none", null: false
+    t.decimal "range_max", precision: 12, scale: 2
+    t.decimal "range_min", precision: 12, scale: 2
     t.string "repeat", default: "none", null: false
     t.date "scheduled_on"
     t.decimal "target_amount", precision: 12, scale: 2
@@ -520,6 +523,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_103302) do
     t.datetime "install_offer_dismissed_at"
     t.datetime "install_offer_installed_at"
     t.string "locale"
+    t.integer "mountain_trail_tour_ack", default: 0, null: false
     t.string "name"
     t.datetime "onboarding_completed_at"
     t.json "otp_backup_codes_digest", default: [], null: false

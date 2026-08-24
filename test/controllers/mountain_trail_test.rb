@@ -55,9 +55,44 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{holding.id}", count: 0
     assert_select ".lp-trail-hud"
     assert_select ".lp-trail-segments"
+    assert_select ".lp-trail__stars"
+    assert_select ".lp-trail__footprints"
+    assert_select ".lp-trail__companion"
+    assert_select ".lp-trail__backlight"
+    assert_select ".lp-trail-coach"
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
     assert_select ".lp-rpg-scenic", count: 0
     assert_match(/mountain_trail_default|mountain_photo/, response.body)
+  end
+
+  test "battle sheet includes daily toggle and checkbox rows" do
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current, position: 0
+    )
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__check"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-plant__wheel", count: 0
+    assert_select ".lp-trail-plant__wheel"
+  end
+
+  test "planting quantified range project persists quantity_kind" do
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id, life_journey_id: @journey.id,
+        parent_id: @plan.id, horizon: "project", title: "Sleep band",
+        color_key: "blue", trail_x: 0.5, trail_y: 0.6,
+        track_quantity: "1", quantity_kind: "range",
+        range_min: "6", range_max: "8", unit: "hours"
+      }
+    end
+    camp = @user.strategy_goals.for_kind("project").order(:id).last
+    assert_equal "range", camp.quantity_kind
+    assert_equal 6, camp.range_min.to_i
+    assert_equal 8, camp.range_max.to_i
+    assert camp.quantified?
   end
 
   test "mountain v4 phone includes cream tabs journey and today card hooks" do

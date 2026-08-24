@@ -103,6 +103,10 @@ module Progress
           title: project.title,
           unit: project.unit.to_s,
           target: project.target_amount.to_f,
+          quantity_kind: project.try(:quantity_kind_value) || "up",
+          range_min: project.try(:range_min)&.to_f,
+          range_max: project.try(:range_max)&.to_f,
+          lower_is_better: project.try(:quantity_down?) || false,
           weeks: weeks
         }
       end

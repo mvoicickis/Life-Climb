@@ -31,4 +31,18 @@ class MountainTrailHelperTest < ActionView::TestCase
   test "peak tagline falls back to default" do
     assert_equal I18n.t("strategy.rpg.trail.peak_tagline_default"), mountain_trail_peak_tagline(nil)
   end
+
+  test "climb fraction is zero with no projects" do
+    assert_in_delta 0.0, mountain_trail_climb_fraction([]), 0.001
+  end
+
+  test "point on curve returns x within trail bounds" do
+    point = mountain_trail_point_on_curve(0.55)
+    assert point[:x].between?(0.4, 0.7)
+    assert_in_delta 0.55, point[:y], 0.001
+  end
+
+  test "footprints empty when no progress" do
+    assert_empty mountain_trail_footprints([])
+  end
 end

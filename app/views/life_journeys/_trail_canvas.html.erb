@@ -22,11 +22,19 @@
 <% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
 <% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) %>
 <% summit_glow = (camps_done.to_f / [ projects.size, 1 ].max) %>
+<% climb_frac = mountain_trail_climb_fraction(projects) %>
+<% footprints = mountain_trail_footprints(projects) %>
+<% companion_slot = mountain_trail_companion_slot(projects) %>
+<% open_battle_count = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } } %>
+<% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
+<% any_wins = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
+<% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
+<% show_tour = tour_ack < 7 %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
-         data-controller="trail-canvas trail-camp-sheet trail-ambient"
+         data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %>"
          data-trail-canvas-create-url-value="<%= strategy_goals_path %>"
          data-trail-canvas-csrf-value="<%= form_authenticity_token %>"
          data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
@@ -35,7 +43,17 @@
          data-trail-canvas-curve-value="<%= mountain_trail_curve_json %>"
          data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
          data-trail-ambient-dormant-value="<%= dormant %>"
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>">
+         data-trail-ambient-camps-done-value="<%= camps_done %>"
+         data-trail-ambient-camps-total-value="<%= projects.size %>"
+         data-trail-ambient-open-battles-value="<%= open_battle_count %>"
+         <% if show_tour %>
+         data-trail-coach-ack-value="<%= tour_ack %>"
+         data-trail-coach-url-value="<%= mountain_trail_tour_path %>"
+         data-trail-coach-camps-value="<%= projects.size %>"
+         data-trail-coach-has-battles-value="<%= any_battles %>"
+         data-trail-coach-has-wins-value="<%= any_wins %>"
+         <% end %>
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>">
 
   <%# Dark glass HUD over photo (mockup) %>
   <div class="lp-trail-hud" data-trail-ignore>
@@ -74,21 +92,48 @@
     <% end %>
   </div>
 
+  <% if show_tour %>
+    <aside class="lp-trail-coach"
+           data-trail-coach-target="chip"
+           data-trail-ignore>
+      <span class="lp-trail-coach__icon" data-trail-coach-target="icon" aria-hidden="true">⛳</span>
+      <div class="lp-trail-coach__copy">
+        <p class="lp-trail-coach__step" data-trail-coach-target="step">Step 2 of 7</p>
+        <p class="lp-trail-coach__text" data-trail-coach-target="text"></p>
+      </div>
+      <div class="lp-trail-coach__actions">
+        <button type="button" class="lp-trail-coach__ack" data-action="click->trail-coach#ack">
+          <%= t("strategy.rpg.trail.coach.got_it") %>
+        </button>
+        <button type="button" class="lp-trail-coach__skip" data-action="click->trail-coach#skip">
+          <%= t("strategy.rpg.trail.coach.skip") %>
+        </button>
+      </div>
+    </aside>
+  <% end %>
+
   <div class="lp-trail__scroll" data-trail-canvas-target="scroll">
     <div class="lp-trail__surface"
          data-trail-canvas-target="surface"
          data-action="click->trail-canvas#surfaceClick">
       <div class="lp-trail__photo-wrap" aria-hidden="true">
         <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async">
+        <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
         <div class="lp-trail__night"></div>
         <div class="lp-trail__haze"></div>
         <div class="lp-trail__haze-band is-1"></div>
         <div class="lp-trail__haze-band is-2"></div>
         <div class="lp-trail__warm"></div>
         <div class="lp-trail__summit-glow"></div>
+        <div class="lp-trail__snow" data-trail-ambient-target="snow"></div>
       </div>
 
       <div class="lp-trail__ambient" aria-hidden="true">
+        <div class="lp-trail__stars" data-trail-ambient-target="stars">
+          <% MountainTrailHelper::MOUNTAIN_STARS.each do |sx, sy, sop| %>
+            <span class="lp-trail__star" style="left: <%= sx %>%; top: <%= sy %>%; opacity: <%= sop %>"></span>
+          <% end %>
+        </div>
         <div class="lp-trail__sun-corona"></div>
         <div class="lp-trail__sun-rays"></div>
         <div class="lp-trail__sun" data-trail-ambient-target="sun"></div>
@@ -104,6 +149,21 @@
           <span class="lp-trail__ember"></span>
           <span class="lp-trail__ember"></span>
         </div>
+        <div class="lp-trail__lightning" data-trail-ambient-target="lightning"></div>
+      </div>
+
+      <div class="lp-trail__footprints" aria-hidden="true" data-trail-ambient-target="footprints">
+        <% footprints.each do |fp| %>
+          <span class="lp-trail__foot"
+                style="left: <%= (fp[:x] * 100).round(2) %>%; top: <%= (fp[:y] * 100).round(2) %>%; opacity: <%= fp[:opacity] %>"></span>
+        <% end %>
+      </div>
+
+      <div class="lp-trail__companion <%= 'is-walk' if climb_frac.positive? && climb_frac < 1 %>"
+           aria-hidden="true"
+           data-trail-ambient-target="companion"
+           style="left: <%= (companion_slot[:x] * 100).round(2) %>%; top: <%= (companion_slot[:y] * 100).round(2) %>%">
+        <%= companion_image_tag class: "lp-trail__companion-img", alt: "" %>
       </div>
 
       <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>">
@@ -257,6 +317,22 @@
             </div>
           <% end %>
           <p class="lp-trail-plant__flag-label"><%= t("strategy.rpg.trail.flag_colour") %></p>
+          <div class="lp-trail-plant__wheel-wrap">
+            <button type="button"
+                    class="lp-trail-plant__wheel"
+                    data-trail-canvas-target="colorWheel"
+                    data-action="pointerdown->trail-canvas#wheelPointer"
+                    aria-label="<%= t('strategy.rpg.trail.flag_colour') %>"></button>
+            <div class="lp-trail-plant__tones" role="group" aria-label="<%= t('strategy.rpg.trail.composer.tones') %>">
+              <% %w[soft mid bold].each_with_index do |tone, ti| %>
+                <button type="button"
+                        class="lp-trail-plant__tone <%= 'is-active' if ti == 1 %>"
+                        data-tone="<%= tone %>"
+                        data-action="click->trail-canvas#pickTone"
+                        aria-label="<%= tone %>"></button>
+              <% end %>
+            </div>
+          </div>
           <div class="lp-trail__plant-colors" role="radiogroup" aria-label="<%= t('strategy.rpg.quest_color_label') %>">
             <% StrategyGoal::COLOR_KEYS.each_with_index do |key, i| %>
               <label class="lp-trail__swatch is-<%= key %>">
@@ -323,6 +399,14 @@
   </div>
 
   <div class="lp-trail__tab-fade" aria-hidden="true"></div>
+
+  <div id="trail-toast-host" class="lp-trail-toast-host" aria-live="polite">
+    <% if flash[:trail_undo].present? %>
+      <%= render "life_journeys/trail_toast",
+            title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
+            restore: true %>
+    <% end %>
+  </div>
 
   <div class="lp-trail-sheet"
        data-trail-camp-sheet-target="sheet"

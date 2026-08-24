@@ -1,3 +1,10 @@
 <%= turbo_stream.append "strategy-world" do %>
   <meta data-rpg-refresh="1">
 <% end %>
+<% if flash[:trail_undo].present? %>
+  <%= turbo_stream.update "trail-toast-host" do %>
+    <%= render "life_journeys/trail_toast",
+          title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
+          restore: true %>
+  <% end %>
+<% end %>

@@ -36,6 +36,17 @@ module MountainTrailHelper
     "gray" => "#57534e"
   }.freeze
 
+  # Fixed star map from MountainV4 mockup: [x%, y%, opacity].
+  MOUNTAIN_STARS = [
+    [ 8, 10, 0.9 ], [ 15, 25, 0.6 ], [ 22, 8, 0.8 ], [ 30, 30, 0.5 ], [ 38, 14, 0.7 ],
+    [ 45, 26, 0.55 ], [ 52, 9, 0.85 ], [ 60, 22, 0.6 ], [ 68, 12, 0.75 ], [ 76, 28, 0.5 ],
+    [ 83, 16, 0.8 ], [ 90, 9, 0.65 ], [ 12, 35, 0.4 ], [ 70, 35, 0.45 ], [ 50, 4, 0.9 ],
+    [ 25, 4, 0.7 ], [ 85, 4, 0.55 ], [ 5, 20, 0.5 ], [ 95, 20, 0.45 ]
+  ].freeze
+
+  FOOT_BASE_Y = 0.94
+  FOOT_TOP_Y = 0.28
+
   def mountain_trail_photo_url(journey)
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo.variant(resize_to_limit: [ 1200, 1800 ]))
@@ -190,6 +201,41 @@ module MountainTrailHelper
   def mountain_trail_peak_tagline(goal)
     goal&.description.to_s.strip.presence ||
       I18n.t("strategy.rpg.trail.peak_tagline_default")
+  end
+
+  # Fraction of climb behind the companion (camps completed / total).
+  def mountain_trail_climb_fraction(projects)
+    total = projects.size
+    return 0.0 if total <= 0
+
+    mountain_trail_camps_done(projects).to_f / total
+  end
+
+  # Point on the traced trail curve for a y-fraction (0..1 down the photo).
+  def mountain_trail_point_on_curve(y_frac)
+    y = y_frac.to_f.clamp(TRAIL_CURVE.first[0], TRAIL_CURVE.last[0])
+    { x: trail_x_for_y(y), y: y }
+  end
+
+  # Footprint dots from base up to the companion climb fraction.
+  def mountain_trail_footprints(projects, count: 8)
+    frac = mountain_trail_climb_fraction(projects)
+    return [] if frac <= 0.02
+
+    end_y = FOOT_BASE_Y - frac * (FOOT_BASE_Y - FOOT_TOP_Y)
+    steps = [ (count * frac).ceil, 1 ].max
+    (0...steps).map do |i|
+      t = (i + 1).to_f / steps
+      y = FOOT_BASE_Y - t * (FOOT_BASE_Y - end_y)
+      point = mountain_trail_point_on_curve(y)
+      point.merge(opacity: (0.25 + t * 0.55).round(2))
+    end
+  end
+
+  def mountain_trail_companion_slot(projects)
+    frac = mountain_trail_climb_fraction(projects)
+    y = FOOT_BASE_Y - frac * (FOOT_BASE_Y - FOOT_TOP_Y)
+    mountain_trail_point_on_curve(y)
   end
 
   private

@@ -46,7 +46,19 @@ module Strategy
           new_total = @project.current_amount.to_d + @amount
           @project.update!(current_amount: new_total)
 
-          if new_total >= @project.target_amount.to_d
+          should_complete =
+            if @project.quantity_range?
+              max = @project.range_max.to_d
+              max.positive? && new_total >= max
+            elsif @project.quantity_down?
+              # Down camps do not auto-complete on sum — climber decides.
+              false
+            else
+              target = @project.target_amount.to_d
+              target.positive? && new_total >= target
+            end
+
+          if should_complete
             @project.complete!
             Strategy::SyncCompletion.call(project: @project)
           end

@@ -94,6 +94,7 @@ class StrategyGoalsController < ApplicationController
       end
     next_plan_id = was_plan ? next_sibling_plan_id(goal) : nil
     next_focus_id = was_project ? next_sibling_project_id(goal) : nil
+    stash_destroyed_goal!(goal) if goal.day? || goal.project?
     goal.destroy!
     Strategy::SyncCompletion.resync!(node: parent) if was_plan || was_project
     prepare_world_for_area!(area_id, focus_id: next_focus_id || parent_id)
@@ -293,14 +294,39 @@ class StrategyGoalsController < ApplicationController
   # Path-level project quantity targets. Only applied when the form includes
   # track_quantity (section create/edit). Never touches current_amount.
   def apply_quantity_params!(goal)
-    return unless params.key?(:track_quantity)
+    return unless params.key?(:track_quantity) || params.key?(:quantity_kind)
 
-    if ActiveModel::Type::Boolean.new.cast(params[:track_quantity])
-      goal.target_amount = params[:target_amount].presence
-      goal.unit = params[:unit].to_s.strip.presence
-    else
+    kind = params[:quantity_kind].to_s.presence || "none"
+    tracking = ActiveModel::Type::Boolean.new.cast(params[:track_quantity]) ||
+               %w[up down range].include?(kind)
+
+    unless tracking
+      goal.quantity_kind = "none" if goal.has_attribute?(:quantity_kind)
       goal.target_amount = nil
       goal.unit = nil
+      goal.range_min = nil if goal.has_attribute?(:range_min)
+      goal.range_max = nil if goal.has_attribute?(:range_max)
+      return
+    end
+
+    kind = "up" if kind == "none" && tracking
+    kind = "none" unless StrategyGoal::QUANTITY_KINDS.include?(kind)
+    goal.quantity_kind = kind if goal.has_attribute?(:quantity_kind)
+    goal.unit = params[:unit].to_s.strip.presence
+
+    case kind
+    when "range"
+      goal.range_min = params[:range_min].presence
+      goal.range_max = params[:range_max].presence
+      goal.target_amount = goal.range_max
+    when "up", "down"
+      goal.target_amount = params[:target_amount].presence
+      goal.range_min = nil if goal.has_attribute?(:range_min)
+      goal.range_max = nil if goal.has_attribute?(:range_max)
+    else
+      goal.target_amount = nil
+      goal.range_min = nil if goal.has_attribute?(:range_min)
+      goal.range_max = nil if goal.has_attribute?(:range_max)
     end
   end
 
@@ -330,6 +356,38 @@ class StrategyGoalsController < ApplicationController
     return if todo.blank?
 
     todo.update(start_time: start_time, end_time: end_time)
+  end
+
+  # Short-lived undo snapshot for Mountain toast (flat node only; 5s TTL).
+  def stash_destroyed_goal!(goal)
+    session[:last_destroyed_goal] = {
+      "user_id" => current_user.id,
+      "stamped_at" => Time.current.to_i,
+      "attrs" => {
+        "title" => goal.title,
+        "horizon" => goal.horizon,
+        "parent_id" => goal.parent_id,
+        "life_area_id" => goal.life_area_id,
+        "life_journey_id" => goal.life_journey_id,
+        "user_id" => goal.user_id,
+        "position" => goal.position,
+        "scheduled_on" => goal.scheduled_on,
+        "repeat" => goal.repeat,
+        "color_key" => goal.color_key,
+        "trail_x" => goal.trail_x,
+        "trail_y" => goal.trail_y,
+        "target_amount" => goal.target_amount,
+        "unit" => goal.unit,
+        "quantity_kind" => (goal.has_attribute?(:quantity_kind) ? goal.quantity_kind : "none"),
+        "range_min" => (goal.has_attribute?(:range_min) ? goal.range_min : nil),
+        "range_max" => (goal.has_attribute?(:range_max) ? goal.range_max : nil),
+        "holding" => false
+      }
+    }
+    flash[:trail_undo] = {
+      title: I18n.t("strategy.rpg.trail.deleted_toast", title: goal.title),
+      restore: true
+    }
   end
 
   def parse_due_on(kind, parent)

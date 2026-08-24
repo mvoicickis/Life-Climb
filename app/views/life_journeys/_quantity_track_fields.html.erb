@@ -2,9 +2,12 @@
 <% project = local_assigns[:project] %>
 <% form_id = local_assigns.fetch(:form_id, "qty") %>
 <% quantified = project&.quantified? %>
+<% kind = project&.try(:quantity_kind_value).presence || (quantified ? "up" : "none") %>
 <% toggle_id = "#{form_id}-track" %>
 <% amount_id = "#{form_id}-amount" %>
 <% unit_id = "#{form_id}-unit" %>
+<% min_id = "#{form_id}-min" %>
+<% max_id = "#{form_id}-max" %>
 
 <div class="lp-quantity-track" data-controller="quantity-track">
   <label class="lp-quantity-track__toggle" for="<%= toggle_id %>">
@@ -22,20 +25,57 @@
   <div class="lp-quantity-track__fields"
        data-quantity-track-target="fields"
        <%= "hidden" unless quantified %>>
-    <label class="lp-rpg-float-create__field" for="<%= amount_id %>">
-      <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.target_label") %></span>
-      <%= number_field_tag :target_amount,
-            project&.target_amount,
-            id: amount_id,
-            class: "lp-rpg-float-create__input lp-quantity-track__input",
-            min: "0.01",
-            step: "any",
-            inputmode: "decimal",
-            placeholder: t("strategy.quantity.target_placeholder"),
-            autocomplete: "off",
-            data: { quantity_required: true },
-            required: quantified %>
-    </label>
+    <div class="lp-quantity-track__kinds" role="radiogroup" aria-label="<%= t('strategy.rpg.trail.composer.metric_label') %>">
+      <% %w[up down range].each do |k| %>
+        <label class="lp-quantity-track__kind">
+          <%= radio_button_tag :quantity_kind, k, kind == k,
+                id: "#{form_id}-kind-#{k}",
+                data: { action: "change->trail-canvas#metricKindChanged change->quantity-track#toggle" } %>
+          <span><%= t("strategy.rpg.trail.composer.metric_#{k}") %></span>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="lp-quantity-track__updown" data-quantity-panel="updown" <%= "hidden" if kind == "range" %>>
+      <label class="lp-rpg-float-create__field" for="<%= amount_id %>">
+        <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.target_label") %></span>
+        <%= number_field_tag :target_amount,
+              project&.target_amount,
+              id: amount_id,
+              class: "lp-rpg-float-create__input lp-quantity-track__input",
+              min: "0.01",
+              step: "any",
+              inputmode: "decimal",
+              placeholder: t("strategy.quantity.target_placeholder"),
+              autocomplete: "off",
+              data: { quantity_required: true },
+              required: quantified && kind != "range" %>
+      </label>
+    </div>
+
+    <div class="lp-quantity-track__range" data-quantity-panel="range" <%= "hidden" unless kind == "range" %>>
+      <label class="lp-rpg-float-create__field" for="<%= min_id %>">
+        <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.trail.composer.range_min") %></span>
+        <%= number_field_tag :range_min,
+              project&.try(:range_min),
+              id: min_id,
+              class: "lp-rpg-float-create__input lp-quantity-track__input",
+              step: "any",
+              inputmode: "decimal",
+              autocomplete: "off" %>
+      </label>
+      <label class="lp-rpg-float-create__field" for="<%= max_id %>">
+        <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.trail.composer.range_max") %></span>
+        <%= number_field_tag :range_max,
+              project&.try(:range_max),
+              id: max_id,
+              class: "lp-rpg-float-create__input lp-quantity-track__input",
+              step: "any",
+              inputmode: "decimal",
+              autocomplete: "off" %>
+      </label>
+    </div>
+
     <label class="lp-rpg-float-create__field" for="<%= unit_id %>">
       <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.unit_label") %></span>
       <%= text_field_tag :unit,
