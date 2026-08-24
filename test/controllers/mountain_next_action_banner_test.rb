@@ -49,12 +49,12 @@ class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-next", count: 0
   end
 
-  test "first-climb view shows coach without NextAction banner" do
+  test "first-climb view shows destination overlay without NextAction banner" do
     get life_journey_path(@journey)
     assert_response :success
 
-    assert_select "#first-climb-coach", count: 1
-    assert_select ".lp-first-climb", count: 1
+    assert_select ".lp-trail-destination", count: 1
+    assert_select "#first-climb-coach", count: 0
     assert_select ".lp-dash-next", count: 0
   end
 end

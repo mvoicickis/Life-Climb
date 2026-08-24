@@ -156,6 +156,11 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     get life_journey_path(journey)
     assert_response :success
     assert_match(/Become a Ruby Developer/i, response.body)
+    assert_select ".lp-trail-destination"
+    assert_select ".lp-trail-destination__title", text: /Where do you want to be/i
+
+    get dashboard_path
+    assert_response :success
     assert_select "#first-climb-coach"
     assert_select ".lp-first-climb__chip", text: "Get certified"
     assert_select ".lp-first-climb__chip", text: "Study chapter 1 for 20 minutes"
@@ -200,9 +205,21 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(journey)
     assert_response :success
+    assert_select ".lp-trail-destination"
+
+    get dashboard_path
+    assert_response :success
     assert_select ".lp-first-climb__chip", text: "Clear the biggest blocker"
     assert_select ".lp-first-climb__chip", text: "Take the first small step"
     assert_select ".lp-first-climb__chip", text: "Get certified", count: 0
+
+    post life_journey_plant_destinations_path, params: {
+      life_journey_id: journey.id,
+      goal_id: user.strategy_goals.for_kind("goal").roots.first.id,
+      title: "Finish the messy garage"
+    }
+    follow_redirect!
+    assert_select ".lp-trail-plant__starter--icon", minimum: 1
   end
 
   test "deadline override date persists and invalid dates fall back to one year" do
@@ -336,7 +353,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     journey = user.reload.primary_focused_journey
     get life_journey_path(journey)
     assert_response :success
-    assert_select "#first-climb-coach img.lp-first-climb__climber-img[src*='birdie']"
+    assert_select ".lp-trail-hud__avatar img[src*='birdie']"
 
     # After first climb the Mountain HUD avatar uses the character image.
     post first_climbs_path, params: {
