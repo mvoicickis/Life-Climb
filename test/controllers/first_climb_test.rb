@@ -22,13 +22,30 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "new climber sees first-climb coach instead of crowded mountain chrome" do
+  test "new climber sees destination overlay on mountain trail" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "#first-climb-coach"
-    assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
-    assert_select "#strategy-camp-notebook", count: 0
-    assert_select ".lp-world-hud__chip.is-sp", count: 0
+    assert_select ".lp-trail-destination__title", text: /Where do you want to be/i
+    assert_select ".lp-trail-destination__cta[value=?]", "Plant my flag →"
+    assert_select "#mountain-trail"
+    assert_select "#first-climb-coach", count: 0
+  end
+
+  test "plant destination scaffolds plan and opens trail" do
+    assert_difference -> { @user.strategy_goals.for_kind("plan").count }, +1 do
+      post life_journey_plant_destinations_path, params: {
+        life_journey_id: @journey.id,
+        goal_id: @goal.id,
+        title: "Run a 10k"
+      }
+    end
+
+    plan = @goal.reload.children.for_kind("plan").not_holding.first
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id)
+    follow_redirect!
+    assert_select "#mountain-trail"
+    assert_select ".lp-trail-destination", count: 0
+    assert_equal 0, plan.children.for_kind("project").count
   end
 
   test "first climb scaffolds plan project battle and opens today fight" do
@@ -153,7 +170,7 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert_select "#first-climb-action[data-first-climb-target='actionInput']"
   end
 
-  test "onboarding category flag drives first-climb chips" do
+  test "onboarding category flag still drives mountain destination overlay" do
     flags = (@journey.setup_flags.presence || {}).stringify_keys.merge(
       Onboarding::Categories::CATEGORY_FLAG => "self"
     )
@@ -161,8 +178,16 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-first-climb__chip", text: "Get consistent sleep"
-    assert_select ".lp-first-climb__chip", text: "Set a bedtime alarm"
-    assert_select ".lp-first-climb__chip", text: "Get certified", count: 0
+    assert_select ".lp-trail-destination"
+    assert_select ".lp-trail-plant__starter--icon", text: /Get strong/i, count: 0
+
+    post life_journey_plant_destinations_path, params: {
+      life_journey_id: @journey.id,
+      goal_id: @goal.id,
+      title: @goal.title
+    }
+    plan = @goal.reload.children.for_kind("plan").not_holding.first
+    follow_redirect!
+    assert_select ".lp-trail-plant__starter--icon", minimum: 1
   end
 end

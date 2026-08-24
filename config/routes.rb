@@ -56,6 +56,7 @@ Rails.application.routes.draw do
   end
   resources :practice_tasks, only: %i[ update destroy ]
   resources :first_climbs, only: :create
+  post "life_journey_plant_destinations", to: "life_journey_plant_destinations#create", as: :life_journey_plant_destinations
   resources :strategy_quantity_logs, only: :create
   resources :strategy_goal_restores, only: :create
   resource :mountain_trail_tour, only: :update, controller: "mountain_trail_tours"

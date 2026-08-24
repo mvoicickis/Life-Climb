@@ -3,10 +3,14 @@ import { Controller } from "@hotwired/stimulus"
 // Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
   static targets = [
-    "titleField", "repeatField", "dailyToggle", "renameDialog", "renameField", "sessionToast"
+    "titleField", "repeatField", "dailyToggle", "renameDialog", "renameField", "sessionToast", "addRow"
   ]
 
   static values = { sessionWins: { type: Number, default: 0 } }
+
+  connect() {
+    this.styleDailyRow()
+  }
 
   parseDraft(event) {
     if (!this.hasTitleFieldTarget || !this.hasRepeatFieldTarget) return
@@ -32,6 +36,12 @@ export default class extends Controller {
   toggleDaily() {
     if (!this.hasRepeatFieldTarget || !this.hasDailyToggleTarget) return
     this.repeatFieldTarget.value = this.dailyToggleTarget.checked ? "daily" : "none"
+    this.styleDailyRow()
+  }
+
+  styleDailyRow() {
+    if (!this.hasAddRowTarget || !this.hasDailyToggleTarget) return
+    this.addRowTarget.classList.toggle("is-daily-on", this.dailyToggleTarget.checked)
   }
 
   editCamp(event) {

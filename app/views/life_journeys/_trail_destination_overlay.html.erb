@@ -1,0 +1,33 @@
+<%# Mockup Step 1 — single destination question on the bare mountain. %>
+<% goal = local_assigns.fetch(:goal) %>
+<% journey = local_assigns.fetch(:journey) %>
+
+<div class="lp-trail-destination"
+     data-trail-ignore
+     data-controller="trail-destination">
+  <div class="lp-trail-destination__panel">
+    <p class="lp-trail-destination__step"><%= t("strategy.rpg.trail.destination_overlay.step") %></p>
+    <h2 class="lp-trail-destination__title"><%= t("strategy.rpg.trail.destination_overlay.title") %></h2>
+    <p class="lp-trail-destination__lead"><%= t("strategy.rpg.trail.destination_overlay.lead") %></p>
+
+    <%= form_with url: life_journey_plant_destinations_path,
+          method: :post,
+          class: "lp-trail-destination__form",
+          data: { action: "submit->trail-destination#disable" } do %>
+      <%= hidden_field_tag :life_journey_id, journey.id %>
+      <%= hidden_field_tag :goal_id, goal.id %>
+      <%= text_field_tag :title,
+            goal.title,
+            required: true,
+            maxlength: 120,
+            autofocus: true,
+            autocomplete: "off",
+            class: "lp-trail-destination__input",
+            placeholder: t("strategy.rpg.trail.destination_overlay.placeholder"),
+            data: { trail_destination_target: "input", action: "input->trail-destination#syncButton" } %>
+      <%= submit_tag t("strategy.rpg.trail.destination_overlay.cta"),
+            class: "lp-trail-destination__cta",
+            data: { trail_destination_target: "submit" } %>
+    <% end %>
+  </div>
+</div>

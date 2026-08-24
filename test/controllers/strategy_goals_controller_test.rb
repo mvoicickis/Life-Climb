@@ -82,9 +82,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "#first-climb-coach"
-    assert_select ".lp-first-climb__goal", text: /Become a Rails developer/i
-    assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
+    assert_select ".lp-trail-destination"
+    assert_select "#mountain-trail"
+    assert_select "#first-climb-coach", count: 0
     assert_select ".lp-strategy-mountain", count: 0
   end
 

@@ -27,6 +27,7 @@ export default class extends Controller {
     "logPrompt",
     "logAmount",
     "logQuick",
+    "logVerdict",
     "accentHex",
     "campMode",
     "peakTitle",
@@ -55,6 +56,7 @@ export default class extends Controller {
     this._presetSpot = null
     this._placing = false
     this._pendingPlant = null
+    this._logContext = null
     this._drag = null
     this._moved = false
     this._longPressTimer = null
@@ -498,6 +500,13 @@ export default class extends Controller {
       this.logPromptTarget.dataset.rangeMax = btn.dataset.rangeMax || ""
     }
     if (this.hasLogAmountTarget) this.logAmountTarget.value = "1"
+    this._logContext = {
+      kind: btn.dataset.quantityKind || "up",
+      rangeMin: Number.parseFloat(btn.dataset.rangeMin),
+      rangeMax: Number.parseFloat(btn.dataset.rangeMax),
+      lastLog: Number.parseFloat(btn.dataset.lastLog)
+    }
+    this.updateLogVerdict()
     this.logSheetTarget.hidden = false
     this.logSheetTarget.setAttribute("aria-hidden", "false")
     this.logSheetTarget.classList.add("is-open")
@@ -518,6 +527,7 @@ export default class extends Controller {
     if (!this.hasLogAmountTarget) return
     const n = Number.parseFloat(this.logAmountTarget.value) || 0
     this.logAmountTarget.value = String(Math.max(0.01, Math.round((n - 1) * 100) / 100))
+    this.updateLogVerdict()
   }
 
   logPlus(event) {
@@ -525,6 +535,7 @@ export default class extends Controller {
     if (!this.hasLogAmountTarget) return
     const n = Number.parseFloat(this.logAmountTarget.value) || 0
     this.logAmountTarget.value = String(Math.round((n + 1) * 100) / 100)
+    this.updateLogVerdict()
   }
 
   logQuick(event) {
@@ -532,6 +543,67 @@ export default class extends Controller {
     if (!this.hasLogAmountTarget) return
     const amount = event.currentTarget?.dataset?.amount
     if (amount) this.logAmountTarget.value = amount
+    this.updateLogVerdict()
+  }
+
+  logAmountInput() {
+    this.updateLogVerdict()
+  }
+
+  updateLogVerdict() {
+    if (!this.hasLogVerdictTarget || !this.hasLogAmountTarget || !this._logContext) return
+
+    const val = Number.parseFloat(this.logAmountTarget.value)
+    if (!Number.isFinite(val)) {
+      this.logVerdictTarget.hidden = true
+      return
+    }
+
+    const { kind, rangeMin, rangeMax, lastLog } = this._logContext
+    let text
+    let tone = "neutral"
+
+    if (kind === "range" && Number.isFinite(rangeMin) && Number.isFinite(rangeMax)) {
+      if (val < rangeMin) {
+        text = this.verdictTemplate("below")
+        tone = "bad"
+      } else if (val > rangeMax) {
+        text = this.verdictTemplate("above")
+        tone = "bad"
+      } else {
+        text = this.verdictTemplate("in_range")
+        tone = "good"
+      }
+    } else if (!Number.isFinite(lastLog)) {
+      text = this.verdictTemplate("first")
+      tone = "neutral"
+    } else if (val === lastLog) {
+      text = this.verdictTemplate("same", { prev: lastLog })
+      tone = "warn"
+    } else {
+      const better = kind === "down" ? val < lastLog : val > lastLog
+      text = this.verdictTemplate(better ? (kind === "down" ? "down_from" : "up_from") : (kind === "down" ? "up_from" : "down_from"), { prev: lastLog })
+      tone = better ? "good" : "bad"
+    }
+
+    this.logVerdictTarget.textContent = text
+    this.logVerdictTarget.dataset.tone = tone
+    this.logVerdictTarget.hidden = false
+  }
+
+  verdictTemplate(key, vars = {}) {
+    if (!this.hasLogSheetTarget) return ""
+    const map = {
+      first: "logVerdictFirst",
+      in_range: "logVerdictInRange",
+      below: "logVerdictBelow",
+      above: "logVerdictAbove",
+      same: "logVerdictSame",
+      up_from: "logVerdictUpFrom",
+      down_from: "logVerdictDownFrom"
+    }
+    const raw = this.logSheetTarget.dataset[map[key]] || ""
+    return raw.replace("%{prev}", String(vars.prev ?? ""))
   }
 
   async submitLog(event) {
