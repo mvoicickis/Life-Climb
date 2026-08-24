@@ -61,7 +61,8 @@ class NestedCheckpointsSheetTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: project.id)
     assert_response :success
     assert_select ".lp-climb-path__quests", count: 0
-    assert_select "form[action=?]", battle_win_path(battle), count: 0
+    # V4 trail camp sheet owns battle wins on Mountain.
+    assert_select ".lp-trail-sheet form[action=?]", battle_win_path(battle)
 
     get objectives_strategy_goal_path(project)
     assert_response :success

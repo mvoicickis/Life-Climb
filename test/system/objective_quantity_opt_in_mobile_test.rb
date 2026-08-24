@@ -76,6 +76,7 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @folder.id)
     open_project_objectives(@folder)
     within("dialog#section-objectives-#{@folder.id}") do
+      open_mountain_list_fallback!
       assert_selector ".lp-climb-path__quest-title", text: /Read Atomic Habits/i
       assert_selector ".lp-climb-path__quest-add-track", text: /Track progress \(pages\)/i
     end

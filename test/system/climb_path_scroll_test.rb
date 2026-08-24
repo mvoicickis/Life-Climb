@@ -39,6 +39,7 @@ class ClimbPathScrollTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camps[2].id)
+    open_mountain_list_fallback!
     assert_selector ".lp-climb-path.is-list", wait: 5
     assert_selector ".lp-rpg__stage-trail", wait: 5
     6.times do |i|

@@ -12,3 +12,23 @@
         area: @created.life_area,
         goal: @goal %>
 <% end %>
+<% if @created.project? && !@created.holding? %>
+  <%= turbo_stream.append "trail-camps" do %>
+    <%= render "life_journeys/trail_camp",
+          project: @created,
+          index: [ @plan.children.count { |c| c.project? && !c.holding? } - 1, 0 ].max,
+          total: [ @plan.children.count { |c| c.project? && !c.holding? }, 1 ].max %>
+  <% end %>
+  <%= turbo_stream.append "trail-sheet-body" do %>
+    <div class="lp-trail-sheet__camp"
+         id="trail-sheet-camp-<%= @created.id %>"
+         data-camp-panel="<%= @created.id %>"
+         hidden>
+      <%= render "life_journeys/trail_camp_battles",
+            project: @created,
+            goal: @goal,
+            plan: @plan,
+            area: @created.life_area %>
+    </div>
+  <% end %>
+<% end %>

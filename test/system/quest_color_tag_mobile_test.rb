@@ -40,6 +40,7 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-timeline", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @colored.id)
+    open_mountain_list_fallback!
     assert_selector "#climb-path-project-#{@colored.id} .lp-climb-path__project.has-color.is-purple", wait: 5
     assert_selector "#climb-path-project-#{@colored.id} .lp-climb-path__title", text: /Purple Volume/
     assert_selector "#climb-path-project-#{@plain.id}", text: /Plain Volume/

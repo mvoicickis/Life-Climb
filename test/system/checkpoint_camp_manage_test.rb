@@ -50,19 +50,21 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @first.id)
-    assert_selector "#climb-path-project-#{@first.id}", text: /Daily battles/i, wait: 5
-    assert_selector "#climb-path-project-#{@first.id} .lp-climb-path__menu-btn"
-    assert_selector "#climb-path-project-#{@junk.id}", text: /wewe/i
-    assert_selector "#climb-path-project-#{@junk.id} .lp-climb-path__menu-btn"
+    open_mountain_list_fallback!
+    assert_selector "#climb-path-project-#{@first.id}", text: /Daily battles/i, visible: :all, wait: 5
+    assert_selector "#climb-path-project-#{@first.id} .lp-climb-path__menu-btn", visible: :all
+    assert_selector "#climb-path-project-#{@junk.id}", text: /wewe/i, visible: :all
+    assert_selector "#climb-path-project-#{@junk.id} .lp-climb-path__menu-btn", visible: :all
 
     before_path = page.current_path
     page.execute_script(<<~JS)
       document.querySelector('#climb-path-project-#{@junk.id}')?.scrollIntoView({ block: 'center' });
     JS
-    find("#climb-path-project-#{@junk.id} .lp-climb-path__menu-btn").click
+    menu = find("#climb-path-project-#{@junk.id} .lp-climb-path__menu-btn", visible: :all)
+    page.execute_script("arguments[0].click()", menu.native)
     assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
     assert_equal before_path, page.current_path
-    assert_selector "#climb-path-project-#{@junk.id}", text: /wewe/i
+    assert_selector "#climb-path-project-#{@junk.id}", text: /wewe/i, visible: :all
 
     page.execute_script(<<~JS)
       document.querySelector('.lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item.is-danger')?.click();
@@ -70,9 +72,9 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
     assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Delete Checkpoint/i, wait: 3
     within("dialog[open]") { click_button "Delete" }
 
-    assert_no_selector ".lp-climb-path__node", text: /wewe/i, wait: 5
+    assert_no_selector "#trail-camp-#{@junk.id}", wait: 5
     assert_not @user.strategy_goals.exists?(id: @junk.id)
-    assert_selector "#climb-path-project-#{@first.id}", text: /Daily battles/i
+    assert_selector "#trail-camp-#{@first.id}", text: /Daily battles/i
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-camp-manage.png")

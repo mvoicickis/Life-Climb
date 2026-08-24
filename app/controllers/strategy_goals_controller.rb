@@ -38,6 +38,7 @@ class StrategyGoalsController < ApplicationController
     )
     apply_quantity_params!(goal) if kind == "project" && parent&.plan?
     apply_color_key_params!(goal) if kind == "project"
+    apply_trail_params!(goal) if kind == "project"
 
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
@@ -129,6 +130,7 @@ class StrategyGoalsController < ApplicationController
     quantity_touched = goal.path_level_camp? && params.key?(:track_quantity)
     apply_quantity_params!(goal) if goal.path_level_camp?
     apply_color_key_params!(goal) if goal.project?
+    apply_trail_params!(goal) if goal.project?
 
     if goal.day? && params.key?(:scheduled_on)
       goal.scheduled_on = parse_day_schedule_param(params[:scheduled_on])
@@ -303,6 +305,14 @@ class StrategyGoalsController < ApplicationController
     return unless params.key?(:color_key)
 
     goal.color_key = params[:color_key].to_s.strip.presence
+  end
+
+  # Mountain V4 camp placement (0–1 fractions on the photo trail).
+  def apply_trail_params!(goal)
+    return unless params.key?(:trail_x) || params.key?(:trail_y)
+
+    goal.trail_x = params[:trail_x].presence
+    goal.trail_y = params[:trail_y].presence
   end
 
   # Optional Today window — stored on the cascaded DailyTodo, not on strategy_goals.

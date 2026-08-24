@@ -51,6 +51,8 @@ class StrategyGoal < ApplicationRecord
   validates :unit, length: { maximum: 40 }, allow_blank: true
   validates :color_key, inclusion: { in: COLOR_KEYS }, allow_nil: true
   validates :effort_tier, inclusion: { in: EFFORT_TIERS }, allow_nil: true
+  validates :trail_x, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
+  validates :trail_y, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
   validate :scheduled_on_required_for_day
   validate :repeat_allowed_for_kind
   validate :due_on_rules
@@ -64,12 +66,14 @@ class StrategyGoal < ApplicationRecord
   validate :holding_plan_accepts_only_holding_camp
   validate :one_destination_per_journey, on: :create
   validate :one_plan_per_goal, on: :create
+  validate :trail_coords_shape
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
   before_validation :normalize_quantity_fields
   before_validation :normalize_color_key
   before_validation :normalize_effort_tier
+  before_validation :normalize_trail_coords
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
 
   scope :ordered, -> { order(:position, :id) }
@@ -307,6 +311,34 @@ class StrategyGoal < ApplicationRecord
     return unless has_attribute?(:effort_tier)
 
     self.effort_tier = effort_tier.to_s.strip.presence
+  end
+
+  # Trail placement is only for visible path projects. Holding / other kinds clear coords.
+  def normalize_trail_coords
+    return unless has_attribute?(:trail_x)
+
+    unless project? && !holding?
+      self.trail_x = nil
+      self.trail_y = nil
+      return
+    end
+
+    self.trail_x = trail_x.presence
+    self.trail_y = trail_y.presence
+  end
+
+  def trail_coords_shape
+    return unless has_attribute?(:trail_x)
+    return if trail_x.blank? && trail_y.blank?
+    return if project? && !holding? && trail_x.present? && trail_y.present?
+
+    if holding? || !project?
+      errors.add(:trail_x, :invalid) if trail_x.present?
+      errors.add(:trail_y, :invalid) if trail_y.present?
+    elsif trail_x.blank? ^ trail_y.blank?
+      errors.add(:trail_x, :blank) if trail_x.blank?
+      errors.add(:trail_y, :blank) if trail_y.blank?
+    end
   end
 
   def quantity_target_rules

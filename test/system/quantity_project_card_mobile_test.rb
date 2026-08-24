@@ -50,6 +50,7 @@ class QuantityProjectCardMobileTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @quant.id)
+    open_mountain_list_fallback!
     assert_selector ".lp-climb-path", wait: 5
     assert_selector "#climb-path-project-#{@quant.id} .lp-climb-path__meta.is-quantity",
                     text: /7\s*\/\s*700\s*pages/i, wait: 5

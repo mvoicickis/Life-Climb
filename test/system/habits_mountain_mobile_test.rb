@@ -47,6 +47,7 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habits-nav-five-mobile.png")
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
+    open_mountain_list_fallback!
     assert_selector ".lp-climb-path", wait: 5
     assert_no_selector ".lp-rpg-habits"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-no-supporting-habits-mobile.png")

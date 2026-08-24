@@ -46,9 +46,11 @@ class QuestFoldersMockupTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#strategy-world", wait: 5
+    open_mountain_list_fallback!
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+    open_mountain_list_fallback!
     open_project_objectives(@camp)
     within("dialog#section-objectives-#{@camp.id}") do
       assert_selector ".lp-climb-path__quest-title", text: /Mountain page/i, wait: 5

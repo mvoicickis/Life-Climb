@@ -36,6 +36,37 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Today.?s Focus/i, response.body)
   end
 
+  test "creates a path project with trail coords" do
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      horizon: "goal", title: "Trail goal"
+    }
+    goal = @user.strategy_goals.for_kind("goal").last
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: goal.id, horizon: "plan", title: "Main trail"
+    }
+    plan = @user.strategy_goals.for_kind("plan").last
+
+    assert_difference -> { plan.children.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: plan.id,
+        horizon: "project",
+        title: "Planted camp",
+        trail_x: 0.45,
+        trail_y: 0.62,
+        color_key: "teal"
+      }, as: :turbo_stream
+    end
+
+    camp = plan.children.for_kind("project").find_by!(title: "Planted camp")
+    assert_in_delta 0.45, camp.trail_x, 0.0001
+    assert_in_delta 0.62, camp.trail_y, 0.0001
+    assert_equal "teal", camp.color_key
+  end
+
   test "goal defaults due_on to one year from today and awards goal SP" do
     post strategy_goals_path, params: {
       life_area_id: @area.id,
@@ -185,30 +216,30 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan_a, horizon: "project", title: "Project Two", position: 1
     )
-    project_a_leaf = practice_leaf_for!(project_a)
     battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project_a_leaf, horizon: "day",
+      life_area: @area, life_journey: @journey, parent: project_a, horizon: "day",
       title: "Battle One", scheduled_on: Date.current, position: 0
     )
     @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan_b, horizon: "project", title: "Lone Project", position: 0
     )
 
-    get life_journey_path(@journey, focus_id: project_a_leaf.id)
+    get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
     assert_select ".lp-rpg"
-    assert_select ".lp-climb-path"
+    assert_select "#mountain-trail"
+    assert_select "#trail-camps"
     assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
     assert_select ".lp-rpg-path", text: /Plan Alpha/i
     assert_select ".lp-rpg-path", text: /Plan Beta/i
-    assert_select ".lp-climb-path__node", text: /Project One/i
-    assert_select ".lp-climb-path__node", text: /Project Two/i
+    assert_select "#trail-camp-#{project_a.id}", text: /Project One/i
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
-    assert_select "form[action=?]", battle_win_path(battle), count: 0
+    # Battle win lives in the trail camp sheet (not a separate quest board).
+    assert_select "#trail-sheet-camp-#{project_a.id} form[action=?]", battle_win_path(battle)
     assert_select ".lp-rpg-camp-folder__cta", count: 0
   end
 

@@ -65,7 +65,8 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-sheet.is-quest-space"
     assert_no_selector ".lp-rpg__stage-battle"
     assert_no_selector ".lp-rpg-breadcrumbs"
-    assert_selector ".lp-climb-path__project", minimum: 4, wait: 5
+    open_mountain_list_fallback!
+    assert_selector ".lp-climb-path__project", minimum: 4, visible: :all, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
         const t = document.querySelector(".lp-rpg-destination-carousel__title");
@@ -75,12 +76,14 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
     assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_selector "#climb-path-project-#{@current.id} .lp-climb-path__title", text: /Daily battles/i
+    assert_selector "#climb-path-project-#{@current.id} .lp-climb-path__title", text: /Daily battles/i, visible: :all
     assert_no_selector ".lp-rpg-camp-switch"
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
     assert_no_selector ".lp-rpg-section-head"
-    assert_no_selector "form[action*='battle_win']"
+    # Battle win lives in the V4 camp sheet, not the old stage battle pane.
+    assert_selector "#trail-sheet-body form[action*='battle_win']", visible: :all
+    assert_no_selector ".lp-rpg__stage-battle form[action*='battle_win']"
 
     open_project_objectives(@current)
     within("dialog#section-objectives-#{@current.id}") do
