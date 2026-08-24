@@ -26,7 +26,14 @@ export default class extends Controller {
     "logTitle",
     "logPrompt",
     "logAmount",
-    "logQuick"
+    "logQuick",
+    "accentHex",
+    "campMode",
+    "peakTitle",
+    "peakTagline",
+    "photoWrap",
+    "photo",
+    "clouds"
   ]
 
   static values = {
@@ -34,6 +41,9 @@ export default class extends Controller {
     journeyId: Number,
     planId: Number,
     lifeAreaId: Number,
+    goalId: Number,
+    goalUpdateUrl: String,
+    journeyUpdateUrl: String,
     csrf: String,
     curve: { type: Array, default: [] },
     quantityLogUrl: String
@@ -51,12 +61,15 @@ export default class extends Controller {
     this._onPointerMove = (event) => this.onCampPointerMove(event)
     this._onPointerUp = (event) => this.onCampPointerUp(event)
     this.bindFab()
+    this.bindScrollParallax()
+    this.syncAccentFromHue()
   }
 
   disconnect() {
     this.clearLongPress()
     this.unbindDrag()
     this.unbindFab()
+    this.unbindScrollParallax()
   }
 
   bindFab() {
@@ -211,6 +224,7 @@ export default class extends Controller {
     const nearest = this.nearestColorKey(hue)
     const input = this.plantFormTarget.querySelector(`input[name='color_key'][value='${nearest}']`)
     if (input) input.checked = true
+    this.syncAccentFromHue()
   }
 
   nearestColorKey(hue) {
@@ -290,7 +304,41 @@ export default class extends Controller {
     btn.parentElement?.querySelectorAll(".lp-trail-plant__tone").forEach((el) => {
       el.classList.toggle("is-active", el === btn)
     })
-    // Tone is visual only — color_key stays the snapped enum.
+    this.syncAccentFromHue(btn.dataset.tone)
+  }
+
+  pickCampMode(event) {
+    if (!this.hasCampModeTarget) return
+    this.campModeTarget.value = event.currentTarget?.value || "battles"
+    const track = this.plantFormTarget?.querySelector("input[name='track_quantity'][type='checkbox']")
+    if (this.campModeTarget.value === "pages" && track) {
+      track.checked = true
+      track.dispatchEvent(new Event("change", { bubbles: true }))
+    }
+  }
+
+  syncAccentFromHue(toneName) {
+    if (!this.hasHueRangeTarget || !this.hasAccentHexTarget) return
+    const hue = Number.parseFloat(this.hueRangeTarget.value) || 174
+    const tone = toneName ||
+      this.plantFormTarget?.querySelector(".lp-trail-plant__tone.is-active")?.dataset?.tone ||
+      "mid"
+    const map = { soft: [78, 72], mid: [62, 48], bold: [45, 26] }
+    const [s, l] = map[tone] || map.mid
+    const hex = this.hslToHex(hue, s, l)
+    this.accentHexTarget.value = hex
+    if (this.hasColorWheelTarget) {
+      this.colorWheelTarget.style.setProperty("--lp-trail-picked", hex)
+    }
+  }
+
+  hslToHex(h, s, l) {
+    s /= 100
+    l /= 100
+    const k = (n) => (n + h / 30) % 12
+    const a = s * Math.min(l, 1 - l)
+    const f = (n) => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))))
+    return "#" + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, "0")).join("")
   }
 
   enterPlacing(name = "…") {
@@ -369,7 +417,19 @@ export default class extends Controller {
     body.set("color_key", color)
     body.set("trail_x", String(x))
     body.set("trail_y", String(y))
-    if (quantity?.track) {
+    if (this.hasAccentHexTarget && this.accentHexTarget.value) {
+      body.set("accent_hex", this.accentHexTarget.value)
+    }
+    if (this.hasCampModeTarget) {
+      body.set("camp_mode", this.campModeTarget.value || "battles")
+      if (this.campModeTarget.value === "pages") {
+        body.set("track_quantity", "1")
+        body.set("quantity_kind", quantity?.kind || "up")
+        if (quantity?.target) body.set("target_amount", String(quantity.target))
+        if (quantity?.unit) body.set("unit", String(quantity.unit || "pages"))
+      }
+    }
+    if (quantity?.track && this.campModeTarget?.value !== "pages") {
       body.set("track_quantity", "1")
       body.set("quantity_kind", quantity.kind || "up")
       if (quantity.target) body.set("target_amount", String(quantity.target))
@@ -597,6 +657,140 @@ export default class extends Controller {
       event.stopPropagation()
       this._moved = false
     }
+  }
+
+  async quickComplete(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const btn = event.currentTarget
+    const url = btn.dataset.quickWinUrl
+    if (!url) return
+
+    btn.classList.add("is-busy")
+    const token = this.csrfToken()
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html",
+          "X-CSRF-Token": token,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        credentials: "same-origin"
+      })
+      const text = await response.text()
+      if (window.Turbo?.renderStreamMessage) window.Turbo.renderStreamMessage(text)
+    } catch (_e) {
+      window.location.reload()
+    } finally {
+      btn.classList.remove("is-busy")
+    }
+  }
+
+  peakTitleKey(event) {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      event.currentTarget?.blur()
+    }
+  }
+
+  async commitPeakTitle(event) {
+    const el = event.currentTarget
+    const title = (el.textContent || "").trim()
+    if (!title || !this.goalUpdateUrlValue) return
+    await this.patchGoal({ title })
+  }
+
+  async commitPeakTagline(event) {
+    const text = (event.currentTarget.textContent || "").trim()
+    if (!this.goalUpdateUrlValue) return
+    await this.patchGoal({ description: text })
+  }
+
+  async patchGoal(fields) {
+    const token = this.csrfToken()
+    const body = new FormData()
+    Object.entries(fields).forEach(([k, v]) => body.set(k, v))
+    body.set("_method", "patch")
+    if (token) body.set("authenticity_token", token)
+    try {
+      await fetch(this.goalUpdateUrlValue, {
+        method: "POST",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html, text/html",
+          "X-CSRF-Token": token,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body,
+        credentials: "same-origin"
+      })
+    } catch (_e) { /* inline edit is best-effort */ }
+  }
+
+  photoDragOver(event) {
+    event.preventDefault()
+    this.photoWrapTarget?.classList.add("is-dragover")
+  }
+
+  photoDragLeave(event) {
+    event.preventDefault()
+    this.photoWrapTarget?.classList.remove("is-dragover")
+  }
+
+  async photoDrop(event) {
+    event.preventDefault()
+    this.photoWrapTarget?.classList.remove("is-dragover")
+    const file = event.dataTransfer?.files?.[0]
+    if (!file || !this.journeyUpdateUrlValue) return
+
+    const body = new FormData()
+    body.set("mountain_photo_intent", "upload")
+    body.set("life_journey[mountain_photo]", file)
+    body.set("_method", "patch")
+    const token = this.csrfToken()
+    if (token) body.set("authenticity_token", token)
+
+    try {
+      const response = await fetch(this.journeyUpdateUrlValue, {
+        method: "POST",
+        headers: {
+          Accept: "text/html",
+          "X-CSRF-Token": token,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body,
+        credentials: "same-origin"
+      })
+      if (response.redirected) {
+        window.location.href = response.url
+      } else {
+        window.location.reload()
+      }
+    } catch (_e) {
+      window.location.reload()
+    }
+  }
+
+  bindScrollParallax() {
+    if (!this.hasScrollTarget) return
+    this._onScrollParallax = () => {
+      if (this._parallaxRaf) return
+      this._parallaxRaf = requestAnimationFrame(() => {
+        this._parallaxRaf = null
+        const y = this.scrollTarget.scrollTop || 0
+        if (this.hasCloudsTarget) {
+          this.cloudsTarget.style.transform = `translate3d(0, ${-(y * 0.32)}px, 0)`
+        }
+      })
+    }
+    this.scrollTarget.addEventListener("scroll", this._onScrollParallax, { passive: true })
+  }
+
+  unbindScrollParallax() {
+    if (this.hasScrollTarget && this._onScrollParallax) {
+      this.scrollTarget.removeEventListener("scroll", this._onScrollParallax)
+    }
+    if (this._parallaxRaf) cancelAnimationFrame(this._parallaxRaf)
   }
 
   openPlant(x, y, { chooseSpot = false } = {}) {

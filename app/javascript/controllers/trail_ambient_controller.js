@@ -10,7 +10,8 @@ export default class extends Controller {
     dormant: Boolean,
     campsDone: { type: Number, default: 0 },
     campsTotal: { type: Number, default: 0 },
-    openBattles: { type: Number, default: 0 }
+    openBattles: { type: Number, default: 0 },
+    energy: { type: Number, default: 0 }
   }
 
   connect() {
@@ -23,6 +24,7 @@ export default class extends Controller {
     this.tick()
     this._timer = window.setInterval(() => this.tick(), 60_000)
     this.scheduleLightning()
+    this.syncEmberIntensity()
   }
 
   disconnect() {
@@ -87,6 +89,7 @@ export default class extends Controller {
     const showEmbers = !isDay || hrs >= 17
     this.toggleMist(misty)
     this.toggleEmbers(showEmbers)
+    this.syncEmberIntensity()
 
     if (this.hasCompanionTarget) {
       const windy = windOpacity > 0.15
@@ -144,6 +147,21 @@ export default class extends Controller {
     root.style.setProperty("--lp-trail-wind-opacity", "0")
     root.classList.toggle("is-mist", this.dormantValue)
     root.classList.remove("is-embers")
+    this.syncEmberIntensity()
+  }
+
+  syncEmberIntensity() {
+    const energy = Math.min(1, Math.max(0, this.energyValue))
+    this.element.style.setProperty("--lp-trail-energy", energy.toFixed(3))
+
+    if (!this.hasEmbersTarget) return
+    const embers = this.embersTarget.querySelectorAll(".lp-trail__ember")
+    const active = Math.max(1, Math.round(2 + energy * 6))
+    embers.forEach((ember, index) => {
+      const on = index < active
+      ember.style.opacity = on ? String(0.25 + energy * 0.75) : "0"
+      ember.style.animationPlayState = on ? "running" : "paused"
+    })
   }
 
   toggleMist(on) {

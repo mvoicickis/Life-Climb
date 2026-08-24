@@ -8,7 +8,7 @@ class BattleWinsController < ApplicationController
     amount = GameRules::BATTLE_TODO_LP
 
     if battle.completed?
-      redirect_to mountain_return_path(journey, battle), status: :see_other and return
+      respond_to_quick_win(journey, battle, awarded: 0) and return
     end
 
     todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
@@ -42,7 +42,6 @@ class BattleWinsController < ApplicationController
 
     flash[:ap_gained] = awarded
     flash[:battle_celebrate] = true
-    # Ordinary Mountain battle wins stay light; Climb Reward is for milestones only.
     if awarded.positive? && (pb.new_record || streak.earned_freeze)
       flash[:climb_boss] = true
       goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
@@ -57,14 +56,31 @@ class BattleWinsController < ApplicationController
       )
     end
 
-    redirect_to mountain_return_path(journey, battle),
-                notice: I18n.t("battle.completed_notice", lp: awarded),
-                status: :see_other
+    respond_to_quick_win(journey, battle, awarded: awarded)
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
   private
+
+  def respond_to_quick_win(journey, battle, awarded:)
+    respond_to do |format|
+      format.turbo_stream do
+        @journey = journey
+        @battle = battle
+        @awarded = awarded
+        render :create, status: :ok
+      end
+      format.html do
+        redirect_to mountain_return_path(journey, battle),
+                    notice: I18n.t("battle.completed_notice", lp: awarded),
+                    status: :see_other
+      end
+      format.any do
+        redirect_to mountain_return_path(journey, battle), status: :see_other
+      end
+    end
+  end
 
   def mountain_return_path(journey, battle)
     project = battle.parent

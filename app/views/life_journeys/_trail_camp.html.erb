@@ -1,28 +1,40 @@
-<%# Camp marker on the V4 trail. locals: project, index, total, projects %>
+<%# Camp marker on the V4 trail. locals: project, index, total, projects, current_project %>
 <% project = local_assigns.fetch(:project) %>
 <% index = local_assigns.fetch(:index, 0) %>
 <% total = local_assigns.fetch(:total, 1) %>
 <% projects = local_assigns[:projects] || [ project ] %>
-<% slot = mountain_trail_slot(project, index: index, total: total) %>
+<% current_project = local_assigns[:current_project] %>
+<% layout = mountain_trail_layout_slot(project, projects: projects) %>
 <% color_key = project.tagged_color_key %>
-<% accent = mountain_trail_accent(color_key) %>
+<% accent = mountain_trail_project_accent(project) %>
 <% meta = strategy_project_card_meta(project) %>
 <% state = mountain_trail_camp_state(project, projects: projects) %>
 <% label = mountain_trail_camp_label(project) %>
+<% fire = mountain_trail_fire_level(project) %>
+<% open_battle = state == :current ? mountain_trail_first_open_battle(project) : nil %>
+<% fog = [ 0, (0.62 - layout[:y].to_f) * 0.4 ].max.round(3) %>
 
 <button type="button"
-        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %>"
+        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= "is-fire-#{fire}" if fire.positive? %> <%= 'is-pages' if project.pages_mode? %>"
         id="trail-camp-<%= project.id %>"
-        style="--lp-trail-x: <%= slot[:x] %>; --lp-trail-y: <%= slot[:y] %>; --lp-trail-accent: <%= accent %>;"
+        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-anchor-y: <%= layout[:anchor_y] %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>;"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
-        data-trail-x="<%= slot[:x] %>"
-        data-trail-y="<%= slot[:y] %>"
+        data-trail-x="<%= layout[:x] %>"
+        data-trail-y="<%= layout[:y] %>"
         data-accent="<%= accent %>"
         data-update-url="<%= strategy_goal_path(project) %>"
         data-action="pointerdown->trail-canvas#campPointerDown click->trail-canvas#campClick click->trail-camp-sheet#open"
         aria-label="<%= project.title %>">
   <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+  <% if open_battle %>
+    <span class="lp-trail-camp__quick"
+          data-action="click->trail-canvas#quickComplete"
+          data-battle-id="<%= open_battle.id %>"
+          data-quick-win-url="<%= battle_win_path(open_battle) %>"
+          title="<%= t('strategy.rpg.trail.quick_complete') %>"
+          aria-label="<%= t('strategy.rpg.trail.quick_complete') %>">✓</span>
+  <% end %>
   <span class="lp-trail-camp__sign">
     <span class="lp-trail-camp__label">
       <span class="lp-trail-camp__grain" aria-hidden="true"></span>
@@ -30,9 +42,9 @@
       <span class="lp-trail-camp__body">
         <span class="lp-trail-camp__title"><%= project.title %></span>
         <span class="lp-trail-camp__meta"><%= label %></span>
-        <% if meta&.dig(:ratio) %>
+        <% if meta&.dig(:ratio) || project.pages_mode? %>
           <span class="lp-trail__camp-bar" aria-hidden="true">
-            <span class="lp-trail__camp-fill" style="--pct: <%= (meta[:ratio] * 100).round %>%"></span>
+            <span class="lp-trail__camp-fill" style="--pct: <%= ((meta&.dig(:ratio) || 0) * 100).round %>%"></span>
           </span>
         <% end %>
       </span>

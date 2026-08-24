@@ -11,6 +11,7 @@ class StrategyGoal < ApplicationRecord
   LEGACY_KIND = { "year" => "goal" }.freeze
   REPEAT_KINDS = %w[none daily].freeze
   COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
+  CAMP_MODES = %w[battles pages].freeze
   QUANTITY_KINDS = %w[none up down range].freeze
   EFFORT_TIERS = %w[light steady heavy].freeze
 
@@ -51,6 +52,8 @@ class StrategyGoal < ApplicationRecord
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :unit, length: { maximum: 40 }, allow_blank: true
   validates :color_key, inclusion: { in: COLOR_KEYS }, allow_nil: true
+  validates :accent_hex, format: { with: /\A#[0-9A-Fa-f]{6}\z/ }, allow_nil: true
+  validates :camp_mode, inclusion: { in: CAMP_MODES }
   validates :effort_tier, inclusion: { in: EFFORT_TIERS }, allow_nil: true
   validates :trail_x, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
   validates :trail_y, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
@@ -73,6 +76,8 @@ class StrategyGoal < ApplicationRecord
   before_validation :normalize_repeat
   before_validation :normalize_quantity_fields
   before_validation :normalize_color_key
+  before_validation :normalize_accent_hex
+  before_validation :normalize_camp_mode
   before_validation :normalize_effort_tier
   before_validation :normalize_trail_coords
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
@@ -175,6 +180,21 @@ class StrategyGoal < ApplicationRecord
   def tagged_color_key
     key = color_key.to_s.presence
     COLOR_KEYS.include?(key) ? key : nil
+  end
+
+  def pages_mode?
+    camp_mode.to_s == "pages"
+  end
+
+  def battles_mode?
+    !pages_mode?
+  end
+
+  def trail_accent_hex
+    hex = accent_hex.to_s.strip
+    return hex if hex.match?(/\A#[0-9A-Fa-f]{6}\z/i)
+
+    MountainTrailHelper::ACCENT_HEX.fetch(tagged_color_key.to_s, "#57534e")
   end
 
   # Path-level project with a numeric target (pages, €, emails, …).
@@ -330,6 +350,31 @@ class StrategyGoal < ApplicationRecord
     return unless has_attribute?(:color_key)
 
     self.color_key = holding? ? nil : color_key.to_s.strip.presence
+  end
+
+  def normalize_accent_hex
+    return unless has_attribute?(:accent_hex)
+
+    raw = accent_hex.to_s.strip
+    self.accent_hex = raw.match?(/\A#[0-9A-Fa-f]{6}\z/i) ? raw.downcase : nil
+  end
+
+  def normalize_camp_mode
+    return unless has_attribute?(:camp_mode)
+
+    mode = camp_mode.to_s.presence || "battles"
+    self.camp_mode = CAMP_MODES.include?(mode) ? mode : "battles"
+    self.camp_mode = "battles" unless project?
+    return unless project? && pages_mode?
+
+    if has_attribute?(:quantity_kind)
+      kind = quantity_kind.to_s
+      self.quantity_kind = "up" if kind.blank? || kind == "none"
+    end
+    self.unit = unit.presence || "pages" if has_attribute?(:unit)
+    if has_attribute?(:target_amount) && (target_amount.blank? || target_amount.to_d.zero?)
+      self.target_amount = 100
+    end
   end
 
   def normalize_effort_tier

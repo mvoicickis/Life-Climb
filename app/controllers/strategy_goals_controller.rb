@@ -38,6 +38,7 @@ class StrategyGoalsController < ApplicationController
     )
     apply_quantity_params!(goal) if kind == "project" && parent&.plan?
     apply_color_key_params!(goal) if kind == "project"
+    apply_camp_mode_params!(goal) if kind == "project"
     apply_trail_params!(goal) if kind == "project"
 
     if goal.save
@@ -135,6 +136,7 @@ class StrategyGoalsController < ApplicationController
     quantity_touched = goal.path_level_camp? && params.key?(:track_quantity)
     apply_quantity_params!(goal) if goal.path_level_camp?
     apply_color_key_params!(goal) if goal.project?
+    apply_camp_mode_params!(goal) if goal.project?
     apply_trail_params!(goal) if goal.project?
 
     if goal.day? && params.key?(:scheduled_on)
@@ -330,11 +332,21 @@ class StrategyGoalsController < ApplicationController
     end
   end
 
-  # Leaf-quest accent. Only applied when the form includes color_key.
+  # Leaf-quest accent. color_key and/or free accent_hex from the V4 composer.
   def apply_color_key_params!(goal)
+    if params.key?(:accent_hex)
+      goal.accent_hex = params[:accent_hex].to_s.strip.presence
+    end
     return unless params.key?(:color_key)
 
     goal.color_key = params[:color_key].to_s.strip.presence
+  end
+
+  def apply_camp_mode_params!(goal)
+    return unless params.key?(:camp_mode)
+
+    mode = params[:camp_mode].to_s
+    goal.camp_mode = StrategyGoal::CAMP_MODES.include?(mode) ? mode : "battles"
   end
 
   # Mountain V4 camp placement (0–1 fractions on the photo trail).
@@ -374,6 +386,8 @@ class StrategyGoalsController < ApplicationController
         "scheduled_on" => goal.scheduled_on,
         "repeat" => goal.repeat,
         "color_key" => goal.color_key,
+        "accent_hex" => (goal.has_attribute?(:accent_hex) ? goal.accent_hex : nil),
+        "camp_mode" => (goal.has_attribute?(:camp_mode) ? goal.camp_mode : "battles"),
         "trail_x" => goal.trail_x,
         "trail_y" => goal.trail_y,
         "target_amount" => goal.target_amount,
@@ -431,6 +445,10 @@ class StrategyGoalsController < ApplicationController
   def next_position(parent, kind)
     scope = current_user.strategy_goals.where(life_area_id: @life_area.id).for_kind(kind)
     scope = parent ? scope.where(parent_id: parent.id) : scope.roots
+    if kind == "day" && params[:add_position].to_s == "top"
+      min = scope.minimum(:position)
+      return min.nil? ? 0 : min.to_i - 1
+    end
     scope.maximum(:position).to_i + 1
   end
 
