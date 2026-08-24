@@ -67,6 +67,10 @@ module RequireOnboarding
       journey_targets
       project_completions
       battle_wins
+      battle_reopens
+      strategy_quantity_logs
+      strategy_goal_restores
+      mountain_trail_tours
       settings
       push_subscriptions
       push_configs

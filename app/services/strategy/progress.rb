@@ -30,10 +30,29 @@ module Strategy
 
     def self.project_percent(node)
       if node.quantified?
-        target = node.target_amount.to_d
-        return 0 if target <= 0
+        if node.quantity_range?
+          # Range camps: fill by how close the running total sits inside the band.
+          min = node.range_min.to_d
+          max = node.range_max.to_d
+          return 0 if max <= min
 
-        ((node.current_amount.to_d / target) * 100).clamp(0, 100).round
+          current = node.current_amount.to_d
+          return 100 if current >= min && current <= max
+          return ((current / max) * 100).clamp(0, 99).round if current < min
+
+          100
+        elsif node.quantity_down?
+          target = node.target_amount.to_d
+          return 0 if target <= 0
+
+          # Down metrics: progress toward the ceiling (logging counts as work done).
+          ((node.current_amount.to_d / target) * 100).clamp(0, 100).round
+        else
+          target = node.target_amount.to_d
+          return 0 if target <= 0
+
+          ((node.current_amount.to_d / target) * 100).clamp(0, 100).round
+        end
       else
         child_projects = child_nodes(node, "project")
         if child_projects.any?

@@ -19,6 +19,7 @@ export default class extends Controller {
     "editDialog",
     "advanced",
     "hueRange",
+    "colorWheel",
     "logSheet",
     "logProjectId",
     "logBattleId",
@@ -239,9 +240,57 @@ export default class extends Controller {
     const track = form.querySelector("input[name='track_quantity'][type='checkbox']")
     const tracked = track?.checked
     if (!tracked) return null
+    const kind = form.querySelector("input[name='quantity_kind']:checked")?.value || "up"
     const target = form.querySelector("input[name='target_amount']")?.value
     const unit = form.querySelector("input[name='unit']")?.value
-    return { track: true, target, unit }
+    const rangeMin = form.querySelector("input[name='range_min']")?.value
+    const rangeMax = form.querySelector("input[name='range_max']")?.value
+    return { track: true, kind, target, unit, rangeMin, rangeMax }
+  }
+
+  metricKindChanged(event) {
+    const form = event.currentTarget?.closest("form") || this.plantFormTarget
+    if (!form) return
+    const kind = form.querySelector("input[name='quantity_kind']:checked")?.value || "up"
+    form.querySelectorAll("[data-quantity-panel]").forEach((panel) => {
+      const show = kind === "range" ? panel.dataset.quantityPanel === "range" : panel.dataset.quantityPanel === "updown"
+      panel.hidden = !show
+    })
+  }
+
+  wheelPointer(event) {
+    event.preventDefault()
+    const wheel = event.currentTarget
+    const move = (e) => this.pickWheelHue(wheel, e)
+    const up = () => {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+    this.pickWheelHue(wheel, event)
+  }
+
+  pickWheelHue(wheel, event) {
+    const rect = wheel.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    const angle = Math.atan2(event.clientY - cy, event.clientX - cx)
+    let deg = (angle * 180) / Math.PI + 90
+    if (deg < 0) deg += 360
+    if (this.hasHueRangeTarget) {
+      this.hueRangeTarget.value = String(Math.round(deg) % 360)
+      this.hueSlide({ currentTarget: this.hueRangeTarget })
+    }
+  }
+
+  pickTone(event) {
+    event.preventDefault()
+    const btn = event.currentTarget
+    btn.parentElement?.querySelectorAll(".lp-trail-plant__tone").forEach((el) => {
+      el.classList.toggle("is-active", el === btn)
+    })
+    // Tone is visual only — color_key stays the snapped enum.
   }
 
   enterPlacing(name = "…") {
@@ -322,8 +371,11 @@ export default class extends Controller {
     body.set("trail_y", String(y))
     if (quantity?.track) {
       body.set("track_quantity", "1")
+      body.set("quantity_kind", quantity.kind || "up")
       if (quantity.target) body.set("target_amount", String(quantity.target))
       if (quantity.unit) body.set("unit", String(quantity.unit))
+      if (quantity.rangeMin) body.set("range_min", String(quantity.rangeMin))
+      if (quantity.rangeMax) body.set("range_max", String(quantity.rangeMax))
     }
     this.appendContext(body)
     const token = this.csrfToken()
@@ -369,7 +421,21 @@ export default class extends Controller {
     }
     if (this.hasLogPromptTarget) {
       const unit = btn.dataset.unit || ""
-      this.logPromptTarget.textContent = unit ? `How much toward ${unit}?` : "How much?"
+      const kind = btn.dataset.quantityKind || "up"
+      const min = Number.parseFloat(btn.dataset.rangeMin)
+      const max = Number.parseFloat(btn.dataset.rangeMax)
+      let prompt
+      if (kind === "range" && Number.isFinite(min) && Number.isFinite(max)) {
+        prompt = `Healthy range ${min}–${max}${unit ? ` ${unit}` : ""}`
+      } else if (kind === "down") {
+        prompt = unit ? `How much (stay under ${unit})?` : "How much (stay under)?"
+      } else {
+        prompt = unit ? `How much toward ${unit}?` : "How much?"
+      }
+      this.logPromptTarget.textContent = prompt
+      this.logPromptTarget.dataset.kind = kind
+      this.logPromptTarget.dataset.rangeMin = btn.dataset.rangeMin || ""
+      this.logPromptTarget.dataset.rangeMax = btn.dataset.rangeMax || ""
     }
     if (this.hasLogAmountTarget) this.logAmountTarget.value = "1"
     this.logSheetTarget.hidden = false

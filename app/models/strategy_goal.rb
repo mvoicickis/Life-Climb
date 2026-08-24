@@ -11,6 +11,7 @@ class StrategyGoal < ApplicationRecord
   LEGACY_KIND = { "year" => "goal" }.freeze
   REPEAT_KINDS = %w[none daily].freeze
   COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
+  QUANTITY_KINDS = %w[none up down range].freeze
   EFFORT_TIERS = %w[light steady heavy].freeze
 
   ALLOWED_CHILDREN = {
@@ -178,7 +179,31 @@ class StrategyGoal < ApplicationRecord
 
   # Path-level project with a numeric target (pages, €, emails, …).
   def quantified?
-    path_level_camp? && target_amount.present? && target_amount.to_d.positive?
+    return false unless path_level_camp?
+
+    kind = quantity_kind_value
+    return true if %w[up down].include?(kind) && target_amount.present? && target_amount.to_d.positive?
+    return true if kind == "range" && range_min.present? && range_max.present?
+
+    # Legacy rows before quantity_kind existed.
+    kind == "none" && target_amount.present? && target_amount.to_d.positive?
+  end
+
+  def quantity_kind_value
+    raw = has_attribute?(:quantity_kind) ? quantity_kind.to_s : "none"
+    QUANTITY_KINDS.include?(raw) ? raw : "none"
+  end
+
+  def quantity_up?
+    quantity_kind_value == "up" || (quantity_kind_value == "none" && quantified?)
+  end
+
+  def quantity_down?
+    quantity_kind_value == "down"
+  end
+
+  def quantity_range?
+    quantity_kind_value == "range"
   end
 
   # Walk up from a day/battle (or nested camp) to the quantified path-level project.
@@ -347,26 +372,47 @@ class StrategyGoal < ApplicationRecord
     if holding?
       errors.add(:target_amount, :invalid) if self.target_amount.present?
       errors.add(:unit, :invalid) if self.unit.present?
+      errors.add(:quantity_kind, :invalid) if has_attribute?(:quantity_kind) && quantity_kind_value != "none"
       return
     end
 
-    if self.target_amount.blank?
-      errors.add(:unit, :invalid) if self.unit.present?
-      return
+    kind = quantity_kind_value
+    if kind == "none"
+      if self.target_amount.blank?
+        errors.add(:unit, :invalid) if self.unit.present?
+        return
+      end
+      # Legacy up via target_amount alone.
+      kind = "up"
     end
 
     unless project?
-      errors.add(:target_amount, :invalid)
+      errors.add(:target_amount, :invalid) if self.target_amount.present?
+      errors.add(:quantity_kind, :invalid) if kind != "none"
       return
     end
 
     unless path_level_camp?
-      errors.add(:target_amount, :invalid)
+      errors.add(:target_amount, :invalid) if self.target_amount.present?
+      errors.add(:quantity_kind, :invalid) if kind != "none"
       return
     end
 
-    errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
     errors.add(:unit, :blank) if self.unit.blank?
+
+    case kind
+    when "up", "down"
+      errors.add(:target_amount, :blank) if self.target_amount.blank?
+      if self.target_amount.present?
+        errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
+      end
+    when "range"
+      errors.add(:range_min, :blank) if range_min.blank?
+      errors.add(:range_max, :blank) if range_max.blank?
+      if range_min.present? && range_max.present? && range_min.to_d > range_max.to_d
+        errors.add(:range_max, :invalid)
+      end
+    end
   end
 
   def assign_goal_due_on

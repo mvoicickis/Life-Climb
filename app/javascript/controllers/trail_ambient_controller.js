@@ -1,23 +1,35 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Sun/moon arc + mist/ember toggles driven by local clock.
+// Sun/moon arc, stars, snow, backlight, lightning, companion wind — local clock.
 export default class extends Controller {
-  static targets = ["sun", "moon", "mist", "embers"]
-  static values = { dormant: Boolean }
+  static targets = [
+    "sun", "moon", "mist", "embers", "stars", "snow",
+    "backlight", "lightning", "footprints", "companion"
+  ]
+  static values = {
+    dormant: Boolean,
+    campsDone: { type: Number, default: 0 },
+    campsTotal: { type: Number, default: 0 },
+    openBattles: { type: Number, default: 0 }
+  }
 
   connect() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    this._reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (this._reduced) {
       this.applyStatic()
       return
     }
 
     this.tick()
     this._timer = window.setInterval(() => this.tick(), 60_000)
+    this.scheduleLightning()
   }
 
   disconnect() {
     if (this._timer) window.clearInterval(this._timer)
+    if (this._lightningTimer) window.clearTimeout(this._lightningTimer)
     this._timer = null
+    this._lightningTimer = null
   }
 
   tick() {
@@ -28,6 +40,8 @@ export default class extends Controller {
       ? (hrs - 6) / 12
       : (hrs >= 18 ? (hrs - 18) / 12 : (hrs + 6) / 12)
 
+    // Light elevation: 1 at noon, 0 at the horizon.
+    const sunElev = isDay ? Math.sin(cycleFrac * Math.PI) : 0
     const x = 8 + cycleFrac * 84
     const y = 28 - Math.sin(cycleFrac * Math.PI) * 18
 
@@ -35,9 +49,22 @@ export default class extends Controller {
     root.classList.toggle("is-day", isDay)
     root.classList.toggle("is-night", !isDay)
     root.classList.toggle("is-dormant", this.dormantValue)
+    root.classList.toggle("is-stars", !isDay)
+    root.classList.toggle("is-snow", this.isSnowSeason(now))
+
+    const backlightSize = Math.round(300 + (1 - sunElev) * 260)
+    const windOpacity = (!isDay && this.openBattlesValue > 0 && !this.dormantValue)
+      ? Math.min(0.55, 0.18 + this.openBattlesValue * 0.06)
+      : 0
+
+    root.style.setProperty("--lp-trail-backlight-size", `${backlightSize}px`)
+    root.style.setProperty("--lp-trail-backlight", isDay
+      ? (0.18 + sunElev * 0.35).toFixed(3)
+      : "0.08")
+    root.style.setProperty("--lp-trail-wind-opacity", windOpacity.toFixed(3))
+    root.style.setProperty("--lp-trail-stars", (!isDay ? (0.35 + Math.sin(cycleFrac * Math.PI) * 0.55) : 0).toFixed(3))
 
     if (isDay) {
-      // Park sun near peak during day (mockup).
       root.style.setProperty("--lp-trail-sun-x", "56.6%")
       root.style.setProperty("--lp-trail-sun-y", "20%")
       root.style.setProperty("--lp-trail-night", "0")
@@ -56,11 +83,43 @@ export default class extends Controller {
       root.style.setProperty("--lp-trail-warm", "0")
     }
 
-    // Mist when dormant (no open battles) or dawn/dusk; embers at night.
     const misty = this.dormantValue || (!isDay && cycleFrac < 0.2) || (isDay && (cycleFrac < 0.08 || cycleFrac > 0.92))
     const showEmbers = !isDay || hrs >= 17
     this.toggleMist(misty)
     this.toggleEmbers(showEmbers)
+
+    if (this.hasCompanionTarget) {
+      const windy = windOpacity > 0.15
+      this.companionTarget.classList.toggle("is-wind", windy)
+    }
+  }
+
+  isSnowSeason(date = new Date()) {
+    const m = date.getMonth() + 1
+    return m === 11 || m === 12 || m === 1 || m === 2
+  }
+
+  scheduleLightning() {
+    if (this._reduced) return
+    const delay = 45_000 + Math.random() * 45_000
+    this._lightningTimer = window.setTimeout(() => {
+      this.flashLightning()
+      this.scheduleLightning()
+    }, delay)
+  }
+
+  flashLightning() {
+    const now = new Date()
+    const hrs = now.getHours()
+    const isNight = hrs < 6 || hrs >= 18
+    if (!isNight || this.dormantValue || this.openBattlesValue <= 0) return
+    if (!this.hasLightningTarget) return
+
+    this.lightningTarget.classList.remove("is-flash")
+    // Force reflow so the animation can restart.
+    void this.lightningTarget.offsetWidth
+    this.lightningTarget.classList.add("is-flash")
+    window.setTimeout(() => this.lightningTarget.classList.remove("is-flash"), 700)
   }
 
   applyStatic() {
@@ -70,6 +129,8 @@ export default class extends Controller {
     root.classList.toggle("is-day", isDay)
     root.classList.toggle("is-night", !isDay)
     root.classList.toggle("is-dormant", this.dormantValue)
+    root.classList.toggle("is-stars", !isDay)
+    root.classList.toggle("is-snow", this.isSnowSeason())
     root.style.setProperty("--lp-trail-sun-x", "56.6%")
     root.style.setProperty("--lp-trail-sun-y", "20%")
     root.style.setProperty("--lp-trail-moon-x", "72%")
@@ -77,6 +138,10 @@ export default class extends Controller {
     root.style.setProperty("--lp-trail-night", isDay ? "0" : "0.28")
     root.style.setProperty("--lp-trail-warm", "0")
     root.style.setProperty("--lp-trail-mist", this.dormantValue ? "0.4" : "0")
+    root.style.setProperty("--lp-trail-backlight-size", "360px")
+    root.style.setProperty("--lp-trail-backlight", isDay ? "0.3" : "0.08")
+    root.style.setProperty("--lp-trail-stars", isDay ? "0" : "0.55")
+    root.style.setProperty("--lp-trail-wind-opacity", "0")
     root.classList.toggle("is-mist", this.dormantValue)
     root.classList.remove("is-embers")
   }
