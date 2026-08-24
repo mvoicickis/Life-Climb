@@ -62,8 +62,8 @@
               data-unit="<%= project.unit %>"
               data-quantity-kind="<%= project.quantity_kind_value %>"
               data-range-min="<%= project.try(:range_min) %>"
-              data-range-max="<%= project.try(:range_max) %>">
-        <%= t("strategy.rpg.trail.log_pages") %>
+              data-range-max="<%= project.try(:range_max) %>"
+              data-last-log="<%= mountain_trail_last_log_amount(project) %>">
       </button>
     </div>
   <% else %>
@@ -85,7 +85,7 @@
       <%= hidden_field_tag :scheduled_on, Date.current %>
       <%= hidden_field_tag :add_position, "top" %>
       <%= hidden_field_tag :repeat, "none", data: { trail_battles_target: "repeatField" } %>
-      <div class="lp-trail-battles__add-row">
+      <div class="lp-trail-battles__add-row" data-trail-battles-target="addRow">
         <label class="lp-trail-battles__field">
           <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
           <%= text_field_tag :title, nil,
@@ -124,6 +124,7 @@
                       data-quantity-kind="<%= project.try(:quantity_kind).presence || 'up' %>"
                       data-range-min="<%= project.try(:range_min) %>"
                       data-range-max="<%= project.try(:range_max) %>"
+                      data-last-log="<%= mountain_trail_last_log_amount(project) %>"
                       aria-label="<%= t('strategy.rpg.trail.win_battle') %>">
                 <span class="lp-trail-battles__box" aria-hidden="true"></span>
                 <span class="lp-trail-battles__name"><%= battle.title %></span>

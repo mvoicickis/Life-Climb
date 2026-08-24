@@ -6,7 +6,10 @@
 <% journey = local_assigns[:journey] || @journey %>
 <% area = journey.life_area %>
 <% projects = mountain_trail_projects(trail) %>
-<% ghosts = mountain_trail_ghosts(projects) %>
+<% destination_overlay = local_assigns[:destination_overlay] %>
+<% layout_map = projects.any? ? mountain_trail_layout(projects) : {} %>
+<% ghosts = mountain_trail_ghosts(projects, layout: layout_map, current_project: current_project) %>
+<% icon_starters = mountain_trail_plant_starters %>
 <% segments = mountain_trail_segments(projects) %>
 <% photo_url = mountain_trail_photo_url(journey) %>
 <% alive = local_assigns[:alive] || current_user.alive_level %>
@@ -20,7 +23,7 @@
 <% peak_tagline = mountain_trail_peak_tagline(goal) %>
 <% day_count = mountain_trail_day_count(journey) %>
 <% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
-<% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) %>
+<% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) unless destination_overlay %>
 <% summit_glow = (camps_done.to_f / [ projects.size, 1 ].max) %>
 <% climb_frac = mountain_trail_climb_fraction(projects) %>
 <% footprints = mountain_trail_footprints(projects) %>
@@ -31,7 +34,7 @@
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
-<% show_tour = tour_ack < 7 %>
+<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %>"
          id="mountain-trail"
@@ -60,6 +63,10 @@
          data-trail-coach-has-wins-value="<%= any_wins %>"
          <% end %>
          style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>;">
+
+  <% if destination_overlay && goal %>
+    <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
+  <% end %>
 
   <div class="lp-trail__clouds" data-trail-canvas-target="clouds" aria-hidden="true">
     <span class="lp-trail__cloud is-1"></span>
@@ -342,7 +349,20 @@
                  placeholder="<%= t('strategy.rpg.trail.plant_placeholder') %>"
                  autocomplete="off"
                  data-trail-canvas-target="plantTitle">
-          <% if plant_starters.any? %>
+          <% if icon_starters.any? && !destination_overlay %>
+            <div class="lp-trail-plant__starters lp-trail-plant__starters--icons" role="group" aria-label="<%= t('strategy.rpg.trail.starters_label') %>">
+              <% icon_starters.each do |starter| %>
+                <button type="button"
+                        class="lp-trail-plant__starter lp-trail-plant__starter--icon"
+                        style="--starter-color: <%= starter[:color] %>"
+                        data-action="click->trail-canvas#pickStarter"
+                        data-starter="<%= starter[:label] %>">
+                  <span aria-hidden="true"><%= starter[:icon] %></span>
+                  <span><%= starter[:label] %></span>
+                </button>
+              <% end %>
+            </div>
+          <% elsif plant_starters&.any? %>
             <div class="lp-trail-plant__starters" role="group" aria-label="<%= t('strategy.rpg.trail.starters_label') %>">
               <% plant_starters.each do |starter| %>
                 <button type="button"
@@ -503,6 +523,13 @@
   <%# Quantity log sheet for quantified camps %>
   <div class="lp-trail-log"
        data-trail-canvas-target="logSheet"
+       data-log-verdict-first="<%= t('strategy.rpg.trail.log_verdict.first') %>"
+       data-log-verdict-in-range="<%= t('strategy.rpg.trail.log_verdict.in_range') %>"
+       data-log-verdict-below="<%= t('strategy.rpg.trail.log_verdict.below') %>"
+       data-log-verdict-above="<%= t('strategy.rpg.trail.log_verdict.above') %>"
+       data-log-verdict-same="<%= t('strategy.rpg.trail.log_verdict.same') %>"
+       data-log-verdict-up-from="<%= t('strategy.rpg.trail.log_verdict.up_from') %>"
+       data-log-verdict-down-from="<%= t('strategy.rpg.trail.log_verdict.down_from') %>"
        hidden
        aria-hidden="true">
     <button type="button"
@@ -522,6 +549,10 @@
         <div>
           <p class="lp-trail-log__title" data-trail-canvas-target="logTitle"><%= t("strategy.rpg.trail.log_sheet.title") %></p>
           <p class="lp-trail-log__prompt" data-trail-canvas-target="logPrompt"></p>
+          <p class="lp-trail-log__verdict"
+             data-trail-canvas-target="logVerdict"
+             hidden
+             aria-live="polite"></p>
         </div>
       </div>
       <div class="lp-trail-log__meter">
@@ -532,7 +563,8 @@
                class="lp-trail-log__amount"
                value="1"
                required
-               data-trail-canvas-target="logAmount">
+               data-trail-canvas-target="logAmount"
+               data-action="input->trail-canvas#logAmountInput change->trail-canvas#logAmountInput">
         <button type="button" class="lp-trail-log__step" data-action="click->trail-canvas#logPlus" aria-label="+">+</button>
       </div>
       <div class="lp-trail-log__quick" data-trail-canvas-target="logQuick">

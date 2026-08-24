@@ -24,11 +24,13 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "mountain opens first-climb coach when spine is empty" do
+  test "mountain opens destination overlay when spine is empty" do
     get life_journey_path(@journey)
     assert_response :success
     assert_select ".lp-rpg.is-first-climb"
-    assert_select "#first-climb-coach"
+    assert_select ".lp-trail-destination"
+    assert_select "#mountain-trail"
+    assert_select "#first-climb-coach", count: 0
     assert_select ".lp-rpg-glass", count: 0
   end
 

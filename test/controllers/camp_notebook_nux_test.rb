@@ -23,11 +23,12 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     @goal = @user.strategy_goals.for_kind("goal").roots.first
   end
 
-  test "new climber lands on first-climb coach instead of crowded mountain" do
+  test "new climber lands on destination overlay instead of crowded mountain chrome" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "#first-climb-coach"
-    assert_select ".lp-first-climb__cta[value=?]", "Start my climb"
+    assert_select ".lp-trail-destination"
+    assert_select "#mountain-trail"
+    assert_select "#first-climb-coach", count: 0
     assert_select "#strategy-camp-notebook", count: 0
     assert_select ".lp-rpg-glass", count: 0
   end

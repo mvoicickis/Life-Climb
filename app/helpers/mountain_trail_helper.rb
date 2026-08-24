@@ -48,6 +48,19 @@ module MountainTrailHelper
   FOOT_TOP_Y = 0.28
   SIGN_MIN_GAP = 0.09
   SIGN_FLOOR_Y = 0.72
+  PEAK_BAND_Y = 0.26
+  GHOST_HEIGHT = 0.055
+  SIGN_HEIGHT = 0.088
+  GHOST_MIN_SPAN = SIGN_HEIGHT + GHOST_HEIGHT + 0.012
+
+  PLANT_ICON_STARTERS = [
+    { icon: "💪", key: "strong", color: "#e8590c" },
+    { icon: "📖", key: "read", color: "#4c6ef5" },
+    { icon: "💰", key: "save", color: "#0f9488" },
+    { icon: "😴", key: "sleep", color: "#7950f2" },
+    { icon: "🥗", key: "eat", color: "#22c55e" },
+    { icon: "🗣", key: "language", color: "#e64980" }
+  ].freeze
 
   def mountain_trail_project_accent(project)
     project&.trail_accent_hex || mountain_trail_accent(project&.tagged_color_key)
@@ -89,35 +102,33 @@ module MountainTrailHelper
     ACCENT_HEX.fetch(color_key.to_s, "#57534e")
   end
 
-  def mountain_trail_ghosts(projects)
-    slots = projects.each_with_index.map do |project, i|
-      mountain_trail_slot(project, index: i, total: projects.size)
-    end
-    ys = slots.map { |s| s[:y] }.sort
-    ghosts = []
-
-    if ys.empty?
+  def mountain_trail_ghosts(projects, layout: nil, current_project: nil)
+    if projects.empty?
       return [ { x: trail_x_for_y(0.55), y: 0.55 } ]
     end
 
-    if ys.first - TRAIL_Y_MIN > 0.14
-      y = ((TRAIL_Y_MIN + ys.first) / 2.0).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
-      ghosts << { x: trail_x_for_y(y), y: y }
+    layout ||= mountain_trail_layout(projects)
+    occupied = projects.filter_map { |p| layout.dig(p.id, :y)&.to_f }.sort
+    blocked = [ PEAK_BAND_Y + 0.04 ]
+    if current_project && layout[current_project.id]
+      camp_y = layout[current_project.id][:y].to_f
+      blocked.concat([ camp_y + 0.035, camp_y + 0.08 ])
     end
 
-    ys.each_cons(2) do |a, b|
-      next unless (b - a) > 0.16
+    bounds = [ PEAK_BAND_Y ].concat(occupied).concat(blocked).concat([ SIGN_FLOOR_Y ]).sort.uniq
+    gaps = []
+    bounds.each_cons(2) do |low, high|
+      span = high - low
+      bottom = low + GHOST_HEIGHT + 0.012
+      next unless span > GHOST_MIN_SPAN
+      next unless bottom <= high - SIGN_HEIGHT - 0.012
 
-      y = ((a + b) / 2.0).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
-      ghosts << { x: trail_x_for_y(y), y: y }
+      gaps << { y: bottom, span: span }
     end
 
-    if TRAIL_Y_MAX - ys.last > 0.14
-      y = ((ys.last + TRAIL_Y_MAX) / 2.0).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
-      ghosts << { x: trail_x_for_y(y), y: y }
+    gaps.sort_by { |g| -g[:span] }.first(projects.size >= 2 ? 2 : 3).map do |g|
+      { x: trail_x_for_y(g[:y]), y: g[:y].clamp(TRAIL_Y_MIN, TRAIL_Y_MAX) }
     end
-
-    ghosts.first(3)
   end
 
   def mountain_trail_curve_json
@@ -156,16 +167,42 @@ module MountainTrailHelper
     by_height.each do |entry|
       wanted = [ entry[:y], next_top ].min
       entry[:y] = wanted.round(4)
+      entry[:leader_h] = (wanted - entry[:anchor_y].to_f).abs.round(4)
       next_top = wanted - SIGN_MIN_GAP
     end
     raw.index_by { |entry| entry[:project].id }
+  end
+
+  def mountain_trail_camp_shadow(layout, light_x: PEAK_X)
+    dx = ((layout[:x].to_f - light_x.to_f) * 0.12).clamp(-0.04, 0.04)
+    y = layout[:y].to_f
+    stretch = 1.0 + (0.62 - y) * 0.2
+    {
+      dx: dx.round(4),
+      width: (0.024 + (stretch - 1) * 0.014).round(4),
+      opacity: (0.28 + (1 - y) * 0.1).round(3)
+    }
+  end
+
+  def mountain_trail_plant_starters
+    PLANT_ICON_STARTERS.map do |entry|
+      entry.merge(
+        label: I18n.t("strategy.rpg.trail.icon_starters.#{entry[:key]}")
+      )
+    end
+  end
+
+  def mountain_trail_last_log_amount(project)
+    return nil if project.blank?
+
+    project.strategy_quantity_logs.order(logged_on: :desc, id: :desc).limit(1).pick(:amount)
   end
 
   def mountain_trail_layout_slot(project, projects:)
     layout = mountain_trail_layout(projects)
     layout[project.id] || begin
       slot = mountain_trail_slot(project, index: 0, total: [ projects.size, 1 ].max)
-      { x: slot[:x], y: slot[:y], anchor_y: slot[:y] }
+      { x: slot[:x], y: slot[:y], anchor_y: slot[:y], leader_h: 0 }
     end
   end
 

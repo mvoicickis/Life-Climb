@@ -3182,5 +3182,191 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   .lp-trail__clouds {
     display: none;
   }
+
+  .lp-trail-ghost,
+  .lp-trail__haze-band,
+  .lp-trail__cloud {
+    animation: none !important;
+  }
 }
 
+/* ——— Mockup polish pass ——— */
+@keyframes lp-trail-land-in {
+  0% { opacity: 0; transform: translateY(-10px); background: #e4f3f1; }
+  60% { background: #e4f3f1; }
+  100% { opacity: 1; transform: translateY(0); background: transparent; }
+}
+
+@keyframes lp-trail-ghost-breathe {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 1; }
+}
+
+@keyframes lp-trail-haze-drift {
+  0%, 100% { transform: translateX(-14px); }
+  50% { transform: translateX(14px); }
+}
+
+@keyframes lp-trail-cloud-drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(40px); }
+}
+
+.lp-trail__cloud {
+  animation: lp-trail-cloud-drift 48s ease-in-out infinite alternate;
+}
+
+.lp-trail__haze-band.is-1 {
+  animation: lp-trail-haze-drift 22s ease-in-out infinite;
+}
+
+.lp-trail__haze-band.is-2 {
+  animation: lp-trail-haze-drift 28s ease-in-out infinite reverse;
+}
+
+.lp-trail-ghost__chip {
+  animation: lp-trail-ghost-breathe 3.2s ease-in-out infinite;
+}
+
+.lp-trail-battles__row.is-flash {
+  animation: lp-trail-land-in 0.45s ease both;
+}
+
+.lp-trail-battles__add-row.is-daily-on {
+  background: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 14%, transparent);
+  border-radius: 0.65rem;
+  padding: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--lp-trail-accent, #0f9488) 35%, transparent);
+}
+
+.lp-trail-battles__add-row.is-daily-on .lp-trail-battles__input {
+  border-color: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 45%, transparent);
+}
+
+.lp-trail-camp.has-leader .lp-trail-camp__leader {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 2px;
+  height: calc(var(--lp-trail-leader-h, 0) * var(--lp-trail-photo-h, 800px));
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent, rgba(74, 48, 22, 0.35));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-camp__shadow {
+  transform: translate(calc(-50% + var(--lp-trail-shadow-dx, 0) * 100vw), 0);
+  width: calc(var(--lp-trail-shadow-w, 0.024) * 100vw);
+  max-width: 42px;
+  opacity: var(--lp-trail-shadow-o, 0.28);
+}
+
+.lp-trail-log__verdict {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.lp-trail-log__verdict[data-tone="good"] { color: #16a34a; }
+.lp-trail-log__verdict[data-tone="bad"] { color: #dc2626; }
+.lp-trail-log__verdict[data-tone="warn"] { color: #d97706; }
+.lp-trail-log__verdict[data-tone="neutral"] { color: #5a635b; }
+
+.lp-trail-plant__starters--icons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.lp-trail-plant__starter--icon {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-color: color-mix(in srgb, var(--starter-color, #0f9488) 35%, #e6e3da);
+  background: color-mix(in srgb, var(--starter-color, #0f9488) 8%, #fbfaf7);
+}
+
+.lp-trail-plant__starter--icon span:first-child {
+  font-size: 1rem;
+}
+
+.lp-trail-destination {
+  position: absolute;
+  inset: 0;
+  z-index: 44;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 22px 18px 30px;
+  background: linear-gradient(180deg, rgba(12, 18, 14, 0.55), rgba(12, 18, 14, 0.88));
+  backdrop-filter: blur(3px);
+  animation: lp-trail-toast-in 0.25s ease both;
+  pointer-events: auto;
+}
+
+.lp-trail-destination__step {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.lp-trail-destination__title {
+  margin: 8px 0 0;
+  font-family: var(--lp-trail-display);
+  font-size: clamp(1.35rem, 5vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.lp-trail-destination__lead {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.lp-trail-destination__input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 18px;
+  border: none;
+  border-radius: 15px;
+  padding: 15px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #12201a;
+  background: #fff;
+}
+
+.lp-trail-destination__cta {
+  width: 100%;
+  margin-top: 11px;
+  padding: 15px 0;
+  border: 0;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22);
+}
+
+.lp-trail-destination__cta.is-ready {
+  background: #22c55e;
+}
+
+.lp-trail-destination__cta:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@keyframes lp-trail-toast-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

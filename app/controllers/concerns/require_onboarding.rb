@@ -60,6 +60,7 @@ module RequireOnboarding
       strategy_goals
       strategy_goal_completions
       first_climbs
+      life_journey_plant_destinations
       companion_guides
       weekly_planners
       strategy_helps
