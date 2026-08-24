@@ -55,6 +55,9 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_in_delta metrics["vh"], metrics["rootHeight"], 2.0
     assert_equal "auto", metrics["photoOverflowY"]
     assert metrics["trailPresent"]
+    # Photo surface is taller than the fixed shell viewport, so the scroller can pan.
+    assert_operator metrics["surfaceH"], :>, metrics["photoClientH"],
+                    "photo surface should exceed the trail viewport: #{metrics.inspect}"
     assert_operator metrics["photoScrollH"], :>, metrics["photoClientH"],
                     "photo trail should scroll internally: #{metrics.inspect}"
     assert_operator metrics["gapTrailToNav"], :<=, 40,
@@ -96,6 +99,8 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_equal "auto", metrics["photoOverflowY"]
+    assert_operator metrics["surfaceH"], :>, metrics["photoClientH"],
+                    "photo surface should exceed the trail viewport: #{metrics.inspect}"
     assert_operator metrics["photoScrollH"], :>, metrics["photoClientH"] + 8,
                     "dense photo trail must scroll: #{metrics.inspect}"
     assert_operator metrics["campCount"], :>=, 10
@@ -128,6 +133,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
         const trailShell = document.querySelector('.lp-rpg__stage-trail');
         const mountain = document.querySelector('#mountain-trail');
         const photo = document.querySelector('.lp-trail__scroll');
+        const surface = document.querySelector('.lp-trail__surface');
         const nav = document.querySelector('.lp-dash-nav');
         if (!root || !stage || !trailShell || !mountain || !photo || !nav) return null;
         const rs = getComputedStyle(root);
@@ -135,6 +141,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
         const stageRect = stage.getBoundingClientRect();
         const trailRect = trailShell.getBoundingClientRect();
         const photoRect = photo.getBoundingClientRect();
+        const surfaceRect = surface?.getBoundingClientRect();
         const navRect = nav.getBoundingClientRect();
         return {
           vw: window.innerWidth,
@@ -149,6 +156,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
           stageH: Math.round(stageRect.height),
           trailH: Math.round(trailRect.height),
           photoH: Math.round(photoRect.height),
+          surfaceH: surfaceRect ? Math.round(surfaceRect.height) : 0,
           photoScrollH: photo.scrollHeight,
           photoClientH: photo.clientHeight,
           stageBottom: Math.round(stageRect.bottom),

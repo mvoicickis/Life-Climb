@@ -26,8 +26,6 @@
   --lp-trail-warm: 0;
 
   position: relative;
-  display: flex;
-  flex-direction: column;
   width: 100%;
   max-width: var(--lp-trail-phone);
   margin-inline: auto;
@@ -49,11 +47,46 @@
   height: 100%;
 }
 
-.lp-trail__scroll {
-  position: relative;
-  z-index: 0;
+/*
+  V4 photo trail needs the opposite of the content-sized climb list:
+  fill leftover shell space, then scroll the photo inside #mountain-trail.
+*/
+.lp-rpg.is-focus-phase:has(#mountain-trail) .lp-rpg__stage.is-planning {
   flex: 1 1 auto;
+  margin-top: 0;
+  height: auto;
   min-height: 0;
+  max-height: 100%;
+}
+
+.lp-rpg.is-focus-phase:has(#mountain-trail) .lp-rpg__planning {
+  height: 100%;
+  max-height: 100%;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.lp-rpg.is-focus-phase:has(#mountain-trail) .lp-rpg__stage-trail {
+  position: relative;
+  align-self: stretch;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lp-rpg.is-focus-phase:has(#mountain-trail) #mountain-trail.lp-trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+}
+
+.lp-trail__scroll {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -893,9 +926,11 @@
   text-transform: uppercase;
 }
 .lp-trail__list-fallback {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 6;
-  flex: 0 0 auto;
   margin: 0;
   border-radius: 0;
   border: 0;
