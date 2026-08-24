@@ -53,8 +53,26 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camps"
     assert_select "#trail-camp-#{@project.id}", text: /Base camp/
     assert_select "#trail-camp-#{holding.id}", count: 0
-    assert_select ".lp-trail__list-fallback"
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail-segments"
+    assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
+    assert_select ".lp-rpg-scenic", count: 0
     assert_match(/mountain_trail_default|mountain_photo/, response.body)
+  end
+
+  test "mountain v4 phone includes cream tabs journey and today card hooks" do
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-dash-nav.is-v4 a[href='#{life_points_path}']"
+    assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
+    assert_select ".lp-trail__peak"
+    assert_select ".lp-trail-base"
   end
 
   test "planting a project via turbo stream appends a trail camp" do

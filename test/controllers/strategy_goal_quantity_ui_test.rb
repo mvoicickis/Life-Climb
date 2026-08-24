@@ -66,10 +66,9 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta.is-quantity",
-                  text: /500\s*\/\s*15000\s*€/
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__track"
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta", text: /Active/i, count: 0
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /500\s*\/\s*15000\s*€/
+    assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar"
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /Active/i, count: 0
   end
 
   test "non-quantified project shows a count-up battle line, never Active or a bar" do
@@ -80,10 +79,9 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta", text: /battles (won|planned)/
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta.is-quantity", count: 0
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__track", count: 0
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__meta", text: /Active/i, count: 0
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /battles (won|planned)|Not started/i
+    assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar", count: 0
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /Active/i, count: 0
   end
 
   test "editing quantified project updates target and unit without resetting current_amount" do
@@ -109,17 +107,21 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
   test "new project form includes quantity track toggle" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#rpg-add-section-#{@plan.id} input[name='track_quantity']"
-    assert_select "#rpg-add-section-#{@plan.id} input[name='target_amount']"
-    assert_select "#rpg-add-section-#{@plan.id} input[name='unit']"
+    # Quantity fields remain on the visually hidden list-fallback add form.
+    assert_select ".lp-trail__list-fallback #rpg-add-section-#{@plan.id} input[name='track_quantity']"
+    assert_select ".lp-trail__list-fallback #rpg-add-section-#{@plan.id} input[name='target_amount']"
+    assert_select ".lp-trail__list-fallback #rpg-add-section-#{@plan.id} input[name='unit']"
   end
 
   test "path-focus Place first checkpoint form includes quantity track toggle" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#rpg-add-checkpoint input[name='track_quantity']"
-    assert_select "#rpg-add-checkpoint input[name='target_amount']"
-    assert_select "#rpg-add-checkpoint input[name='unit']"
+    # V4 plant form is title + color only (no quantity toggle on the phone canvas).
+    assert_select ".lp-trail-plant"
+    assert_select ".lp-trail-plant input[name='title']"
+    assert_select ".lp-trail__plant-colors input[name='color_key']", minimum: 1
+    assert_select "#rpg-add-checkpoint", count: 0
+    assert_select ".lp-trail-plant input[name='track_quantity']", count: 0
   end
 
   test "path-focus Place first checkpoint accepts and saves quantity fields" do

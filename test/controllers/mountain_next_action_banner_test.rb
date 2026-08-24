@@ -42,8 +42,10 @@ class MountainNextActionBannerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#first-climb-coach", count: 0
-    assert_select "dialog#destination-coach", count: 1
-    assert_select ".lp-rpg__chrome-top", count: 1
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select "dialog#destination-coach", count: 0
+    assert_select ".lp-rpg__chrome-top", count: 0
     assert_select ".lp-dash-next", count: 0
   end
 

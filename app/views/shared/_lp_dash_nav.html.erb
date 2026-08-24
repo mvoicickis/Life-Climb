@@ -1,14 +1,16 @@
 <%# Primary nav — Mountain · Today · You
-    Habits and Journey tabs are hidden (pages/routes still exist).
-    Flip show_habits_and_journey_nav to true to restore both tabs. %>
+    V4 Mountain variant: cream glass + center FAB + Journey (Today|Mountain|+|Journey|You).
+    Habits tab stays hidden. %>
 <% active = local_assigns.fetch(:active, :today).to_s %>
 <% active = "mountain" if active == "strategy" %>
+<% variant = local_assigns.fetch(:variant, :default).to_s %>
+<% v4 = variant == "v4" %>
 <%
   strategy_journey = current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first
   show_habits_and_journey_nav = false
 %>
 
-<nav class="lp-dash-nav" aria-label="Primary">
+<% mountain_link = capture do %>
   <% if strategy_journey %>
     <%= link_to life_journey_path(strategy_journey), class: "lp-dash-nav__link #{'is-active' if active == 'mountain'}" do %>
       <span class="lp-dash-nav__icon" aria-hidden="true">
@@ -30,7 +32,9 @@
       <span><%= t("dash.nav.mountain") %></span>
     <% end %>
   <% end %>
+<% end %>
 
+<% today_link = capture do %>
   <%= link_to dashboard_path, class: "lp-dash-nav__link #{'is-active' if active == 'today'}" do %>
     <span class="lp-dash-nav__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -40,22 +44,27 @@
     </span>
     <span><%= t("dash.nav.today") %></span>
   <% end %>
+<% end %>
 
-  <%# Habits tab — hidden. Page still lives at habits_path. %>
-  <% if show_habits_and_journey_nav %>
-    <%= link_to habits_path, class: "lp-dash-nav__link #{'is-active' if active == 'habits'}" do %>
-      <span class="lp-dash-nav__icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 5.5 H16 A2.5 2.5 0 0 1 18.5 8 V16 A2.5 2.5 0 0 1 16 18.5 H8 A2.5 2.5 0 0 1 5.5 16 V8 A2.5 2.5 0 0 1 8 5.5 Z"/>
-          <path d="M8.8 12.1 L11 14.2 L15.3 9.6"/>
-        </svg>
-      </span>
-      <span><%= t("dash.nav.habits") %></span>
-    <% end %>
+<% you_link = capture do %>
+  <%= link_to settings_path, class: "lp-dash-nav__link #{'is-active' if active == 'you'}" do %>
+    <span class="lp-dash-nav__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.2"/>
+        <path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/>
+      </svg>
+    </span>
+    <span><%= t("dash.nav.you") %></span>
   <% end %>
+<% end %>
 
-  <%# Journey (progress) tab — hidden. Page still lives at life_points_path. %>
-  <% if show_habits_and_journey_nav %>
+<nav class="lp-dash-nav <%= 'is-v4' if v4 %>" aria-label="Primary">
+  <% if v4 %>
+    <%= today_link %>
+    <%= mountain_link %>
+    <button type="button" class="lp-dash-nav__fab" aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
+      <span aria-hidden="true">+</span>
+    </button>
     <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
       <span class="lp-dash-nav__icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -65,15 +74,30 @@
       </span>
       <span><%= t("dash.nav.journey") %></span>
     <% end %>
-  <% end %>
-
-  <%= link_to settings_path, class: "lp-dash-nav__link #{'is-active' if active == 'you'}" do %>
-    <span class="lp-dash-nav__icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="8" r="3.2"/>
-        <path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/>
-      </svg>
-    </span>
-    <span><%= t("dash.nav.you") %></span>
+    <%= you_link %>
+  <% else %>
+    <%= mountain_link %>
+    <%= today_link %>
+    <% if show_habits_and_journey_nav %>
+      <%= link_to habits_path, class: "lp-dash-nav__link #{'is-active' if active == 'habits'}" do %>
+        <span class="lp-dash-nav__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 5.5 H16 A2.5 2.5 0 0 1 18.5 8 V16 A2.5 2.5 0 0 1 16 18.5 H8 A2.5 2.5 0 0 1 5.5 16 V8 A2.5 2.5 0 0 1 8 5.5 Z"/>
+            <path d="M8.8 12.1 L11 14.2 L15.3 9.6"/>
+          </svg>
+        </span>
+        <span><%= t("dash.nav.habits") %></span>
+      <% end %>
+      <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
+        <span class="lp-dash-nav__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 17 L9 11 L13 14.5 L20 7"/>
+            <path d="M15 7 H20 V12"/>
+          </svg>
+        </span>
+        <span><%= t("dash.nav.journey") %></span>
+      <% end %>
+    <% end %>
+    <%= you_link %>
   <% end %>
 </nav>

@@ -44,16 +44,16 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
     assert_response :success
 
-    assert_select ".lp-rpg-paths[data-controller='strategy-plan-rail']"
-    assert_select ".lp-rpg-paths__label", count: 0
-    assert_select ".lp-rpg-path.is-focus", text: /Find a job/i
-    assert_select ".lp-rpg-path-focus", count: 1
-    assert_select ".lp-rpg-path-focus__title", text: /Find a job/i
-    assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#placeCheckpoint']"
-    assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#editPath']"
-    assert_select ".lp-rpg-path-focus__action[data-action='strategy-plan-rail#viewProgress']"
-    assert_select "#rpg-add-checkpoint"
-    assert_select ".lp-rpg-paths__cue", count: 0
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select ".lp-trail__peak-title", text: /Debt free/i
+    assert_select ".lp-trail-hud__plan.is-active", text: /Find a job/i
+    assert_select ".lp-trail-hud__plan", text: /Learn German/i
+    assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
+    assert_select ".lp-trail-plant"
+    assert_select ".lp-rpg-paths", count: 0
+    assert_select "#rpg-add-checkpoint", count: 0
+    assert_select ".lp-rpg-path-focus", count: 0
     assert_select ".lp-rpg-empty-goal", count: 0
     assert_select ".lp-rpg-context", count: 0
   end
@@ -65,7 +65,9 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-xp:not(.is-quiet)", count: 0
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-streak", count: 0
-    assert_select ".lp-rpg-destination-menu__btn"
+    assert_select ".lp-trail__peak"
+    assert_select "#destination-edit-#{@goal.id}"
+    assert_select ".lp-trail__peak-item", text: /Edit Destination/i
     # "New Destination" create is removed (one destination per journey).
     assert_select ".lp-rpg-destination-menu__item[data-action*='destination-switcher#openCreate']", count: 0
     assert_select ".lp-rpg-destination__new", count: 0
@@ -76,18 +78,18 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_b.id)
     assert_response :success
 
-    assert_select ".lp-rpg-path.is-focus", text: /Learn German/i
-    assert_select ".lp-rpg-path-focus", count: 1
-    assert_select ".lp-rpg-path-focus__title", text: /Learn German/i
-    assert_select ".lp-rpg-path-focus__title", text: /Find a job/i, count: 0
+    assert_select ".lp-trail-hud__plan.is-active", text: /Learn German/i
+    assert_select ".lp-trail-hud__plan.is-active", text: /Find a job/i, count: 0
+    assert_select ".lp-trail__peak-title", text: /Debt free/i
   end
 
   test "no destination dots or swipe UI even with multiple destinations in data" do
     get life_journey_path(@journey, goal_id: @goal.id)
     assert_response :success
 
-    # Switching UI is gone: one static destination is shown regardless of data.
-    assert_select ".lp-rpg-destination-carousel.is-single"
+    # Switching UI is gone: one static peak title is shown regardless of data.
+    assert_select ".lp-trail__peak-title", text: /Debt free/i
+    assert_select ".lp-rpg-destination-carousel", count: 0
     assert_select ".lp-rpg-destination-dots", count: 0
     assert_select ".lp-rpg-destination-carousel__arrow", count: 0
     assert_select ".lp-rpg-destination-carousel__peek", count: 0

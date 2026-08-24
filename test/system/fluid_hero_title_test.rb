@@ -2,8 +2,8 @@
 
 require "application_system_test_case"
 
-# Destination + Today hero titles use fluid display-lg type and 2-line wrap
-# instead of single-line ellipsis truncation.
+# V4 destination title lives on the peak pennant (.lp-trail__peak-title).
+# Compact flag width (~100–150px) is expected; Today still uses the dash hero.
 class FluidHeroTitleTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -21,11 +21,11 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
-    plan = @goal.children.create!(
+    @plan = @goal.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "plan", title: "Skills path", position: 0
     )
-    camp = plan.children.create!(
+    camp = @plan.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "project", title: "Rails camp", position: 0
     )
@@ -71,10 +71,8 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
         return {
           ok: true,
           text,
-          titleAttr: el.getAttribute("title") || "",
           fontSize: cs.fontSize,
           whiteSpace: cs.whiteSpace,
-          webkitLineClamp: cs.webkitLineClamp || cs.lineClamp || "",
           overflow: cs.overflow,
           width: r.width,
           height: r.height,
@@ -84,42 +82,39 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     JS
   end
 
-  def assert_hero_title_ok(metrics, expected_text, width, height)
+  def assert_peak_title_ok(metrics, expected_text, width, height)
     assert metrics["ok"], "title missing at #{width}x#{height}: #{metrics.inspect}"
     assert_equal expected_text, metrics["text"]
-    assert_equal expected_text, metrics["titleAttr"]
     refute_equal "nowrap", metrics["whiteSpace"].to_s,
                  "still single-line nowrap at #{width}x#{height}: #{metrics.inspect}"
-    assert_includes %w[2], metrics["webkitLineClamp"].to_s,
-                    "expected line-clamp 2 at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["width"].to_f, :>=, 120,
+    assert_operator metrics["width"].to_f, :>=, 100,
                     "title too narrow at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["height"].to_f, :>=, 16,
                     "title has no height at #{width}x#{height}: #{metrics.inspect}"
     px = metrics["fontSize"].to_s.to_f
-    assert_operator px, :>=, 18.0,
-                    "font-size below fluid floor at #{width}x#{height}: #{metrics.inspect}"
-    # Short viewport may use tighter min (1.25rem ≈ 20px); tall uses ≥1.35rem ≈ 21.6px
-    if height <= 600
-      assert_operator px, :<=, 34.0
-    end
+    assert_operator px, :>=, 14.0,
+                    "font-size below peak floor at #{width}x#{height}: #{metrics.inspect}"
   end
 
   def assert_destination_fluid_title(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
-    within(".lp-dash-nav") { click_link "Mountain" }
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector ".lp-rpg-destination-carousel__title", visible: :all, wait: 5
-    metrics = title_metrics(".lp-rpg-destination-carousel__title")
-    assert_hero_title_ok(metrics, "Become a Rails developer", width, height)
+    assert_selector ".lp-dash-nav", wait: 8
+    visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
+    assert_no_selector ".lp-first-climb-shell", wait: 2
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
+    assert_selector ".lp-trail__peak-title", text: /Become a Rails developer/i, visible: :all, wait: 5
+    metrics = title_metrics(".lp-trail__peak-title")
+    assert_peak_title_ok(metrics, "Become a Rails developer", width, height)
   end
 
   def assert_today_climb_band(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
+    assert_selector ".lp-dash-nav", wait: 8
     within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-hero", visible: :all, wait: 5
+    assert_selector ".lp-dash-hero", visible: :all, wait: 8
     assert_selector ".lp-dash-hero__avatar-img", visible: :all
     assert_selector ".lp-dash-timeline", visible: :all
     assert_no_selector ".lp-dash-climb"

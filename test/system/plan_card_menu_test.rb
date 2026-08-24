@@ -2,6 +2,8 @@
 
 require "application_system_test_case"
 
+# V4 dropped the plan rail overflow menu. Multi-plan focus uses HUD links;
+# destination rename lives on the peak flag → #destination-edit-GOALID.
 class PlanCardMenuTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -41,100 +43,66 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     end
   end
 
-  test "plan card menu opens, closes on outside and escape, and stays single-open" do
+  test "HUD plan links switch focus between plans" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
     assert @journey.present?, "expected an onboarded journey"
-    within(".lp-dash-nav") { click_link "Mountain" }
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 5
+    assert_no_selector ".lp-rpg-plan-rail"
+    assert_no_selector ".lp-rpg-path__menu-btn"
 
+    assert_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/
+    assert_selector ".lp-trail-hud__plan", text: /Beta Path/
+
+    find(".lp-trail-hud__plan", text: /Beta Path/).click
     assert_selector "#strategy-world", wait: 5
-    assert_selector ".lp-rpg-plan-rail"
-    assert_selector ".lp-rpg-path", text: /Alpha Path/
-    assert_selector ".lp-rpg-path__menu-btn", minimum: 2
-
-    buttons = all(".lp-rpg-path__menu-btn")
-    first_btn = buttons[0]
-    second_btn = buttons[1]
-
-    first_btn.click
-    assert_selector ".lp-rpg-path__menu:not([hidden])", text: /Edit Plan/
-    assert_selector ".lp-rpg-path__menu:not([hidden])", text: /Delete Plan/
-    assert_selector ".lp-rpg-path__menu:not([hidden])", count: 1
-
-    page.execute_script("document.elementFromPoint(4, 4).dispatchEvent(new PointerEvent('pointerdown', {bubbles:true}))")
-    assert_no_selector ".lp-rpg-path__menu:not([hidden])"
-
-    first_btn.click
-    assert_selector ".lp-rpg-path__menu:not([hidden])", count: 1
-    page.send_keys(:escape)
-    assert_no_selector ".lp-rpg-path__menu:not([hidden])"
-
-    first_btn.click
-    assert_selector ".lp-rpg-path__menu:not([hidden])", count: 1
-    second_btn.click
-    assert_selector ".lp-rpg-path__menu:not([hidden])", count: 1
-    assert_equal "true", second_btn["aria-expanded"]
-    assert_equal "false", first_btn["aria-expanded"]
+    assert_selector ".lp-trail-hud__plan.is-active", text: /Beta Path/, wait: 5
+    assert_no_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/
+    assert_includes page.current_url, "plan_id=#{@plan_b.id}"
   end
 
-  test "edit plan opens existing rename form, saves, and returns to mountain" do
+  test "destination edit dialog is available from the peak flag menu" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    within(".lp-dash-nav") { click_link "Mountain" }
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
 
-    assert_selector ".lp-rpg-path", text: /Alpha Path/
-    find(".lp-rpg-path__menu-btn", match: :first).click
-    click_button "Edit Plan"
+    assert_selector ".lp-trail__peak-title", text: /Ship LifePoints/i, wait: 5
+    assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
 
-    assert_selector "dialog.lp-strategy-sheet[open]"
-    within("dialog.lp-strategy-sheet[open]") do
-      assert_field "plan-edit-title-#{@plan_a.id}", with: "Alpha Path"
-      fill_in "plan-edit-title-#{@plan_a.id}", with: "Renamed Path"
-      click_button "Save Changes"
+    find(".lp-trail__flag").click
+    assert_selector ".lp-trail__peak-menu:not([hidden])", wait: 3
+    find(".lp-trail__peak-item", text: /Edit Destination/i).click
+
+    assert_selector "dialog#destination-edit-#{@goal.id}[open]", wait: 3
+    within("dialog#destination-edit-#{@goal.id}") do
+      assert_field "title", with: "Ship LifePoints"
+      fill_in "title", with: "Renamed Destination"
+      click_button "Save"
     end
 
     assert_selector "#strategy-world", wait: 5
-    assert_selector ".lp-rpg-path.is-focus", text: /Renamed Path/
-    assert_equal "Renamed Path", @plan_a.reload.title
-    assert_no_selector "dialog.lp-strategy-sheet[open]"
+    assert_selector ".lp-trail__peak-title", text: /Renamed Destination/i, wait: 5
+    assert_equal "Renamed Destination", @goal.reload.title
   end
 
-  test "delete plan requires confirmation then removes plan and keeps sibling focused" do
+  test "V4 has no plan card delete menu; HUD plans and destination edit remain" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    within(".lp-dash-nav") { click_link "Mountain" }
-
-    assert_selector ".lp-rpg-path", text: /Alpha Path/
-    find(".lp-rpg-path__menu-btn", match: :first).click
-    assert_selector ".lp-rpg-path__menu:not([hidden])", wait: 3
-    page.execute_script(<<~JS)
-      document.querySelector('.lp-rpg-path__menu:not([hidden]) .lp-rpg-path__menu-item.is-danger')?.click();
-    JS
-
-    assert_selector "dialog.lp-strategy-sheet[open]", text: /Delete Plan\?/
-    assert_selector "dialog.lp-strategy-sheet[open]", text: /cannot be undone/i
-    within("dialog.lp-strategy-sheet[open]") { click_button "Cancel" }
-    assert_no_selector "dialog.lp-strategy-sheet[open]"
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    assert_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/, wait: 5
+    assert_selector ".lp-trail-hud__plan", text: /Beta Path/
+    assert_no_selector ".lp-rpg-path__menu"
+    assert_no_selector ".lp-rpg-path__menu-item.is-danger"
+    assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
     assert StrategyGoal.exists?(@plan_a.id)
-    assert_selector ".lp-rpg-path", text: /Alpha Path/
-
-    find(".lp-rpg-path__menu-btn", match: :first).click
-    assert_selector ".lp-rpg-path__menu:not([hidden])", wait: 3
-    page.execute_script(<<~JS)
-      document.querySelector('.lp-rpg-path__menu:not([hidden]) .lp-rpg-path__menu-item.is-danger')?.click();
-    JS
-    within("dialog.lp-strategy-sheet[open]") { click_button "Delete" }
-
-    assert_selector "#strategy-world", wait: 5
-    assert_no_selector ".lp-rpg-path", text: /Alpha Path/
-    assert_selector ".lp-rpg-path.is-focus", text: /Beta Path/
-    assert_not StrategyGoal.exists?(@plan_a.id)
+    assert StrategyGoal.exists?(@plan_b.id)
   end
 end

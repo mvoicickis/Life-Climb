@@ -31,16 +31,14 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id)
     assert_response :success
 
-    assert_select ".lp-rpg-destination-carousel.is-single"
-    assert_select ".lp-rpg-destination-carousel__title", text: /Ship LifePoints/i
-    assert_select ".lp-rpg-destination-carousel__active[data-controller~='plan-card-menu']"
-    assert_select ".lp-rpg-destination-menu__btn[data-action*='plan-card-menu#toggle']"
-    assert_select ".lp-rpg-destination-menu__item[data-action*='plan-card-menu#edit']", text: /Edit Destination/i
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail__peak-item", text: /Edit Destination/i
     assert_select "dialog#destination-edit-#{@goal.id}"
-    assert_select ".lp-rpg-path", text: /Career Path/
+    assert_select ".lp-trail-hud"
 
     # No switching or extra-create affordances remain.
-    assert_select ".lp-rpg-destination-carousel.is-multi", count: 0
+    assert_select ".lp-rpg-destination-carousel", count: 0
     assert_select ".lp-rpg-destination-carousel__arrow", count: 0
     assert_select ".lp-rpg-destination-carousel__peek", count: 0
     assert_select ".lp-rpg-destination-dots", count: 0
@@ -56,6 +54,6 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg-destination-carousel__title", text: /Debt Free/i
+    assert_select ".lp-trail__peak-title", text: /Debt Free/i
   end
 end

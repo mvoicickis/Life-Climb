@@ -4,8 +4,13 @@
 <% days = project.children.select(&:day?).reject(&:holding?).sort_by { |d| [ d.completed? ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
 <% open_days = days.reject(&:completed?) %>
 <% done_days = days.select(&:completed?) %>
+<% accent = mountain_trail_accent(project.tagged_color_key) %>
 
-<div class="lp-trail-battles" id="trail-battles-<%= project.id %>">
+<div class="lp-trail-battles" id="trail-battles-<%= project.id %>" style="--lp-trail-accent: <%= accent %>">
+  <p class="lp-trail-battles__stats">
+    <%= t("strategy.rpg.trail.battle_stats", open: open_days.size, won: done_days.size) %>
+  </p>
+
   <%= form_with url: strategy_goals_path,
         method: :post,
         class: "lp-trail-battles__add",
@@ -51,7 +56,7 @@
   <% end %>
 
   <% if done_days.any? %>
-    <details class="lp-trail-battles__done">
+    <details class="lp-trail-battles__done" open>
       <summary><%= t("strategy.rpg.trail.won_battles", count: done_days.size) %></summary>
       <ul class="lp-trail-battles__list is-done">
         <% done_days.each do |battle| %>
