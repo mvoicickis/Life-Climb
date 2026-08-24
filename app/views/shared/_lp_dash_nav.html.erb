@@ -62,9 +62,11 @@
   <% if v4 %>
     <%= today_link %>
     <%= mountain_link %>
-    <button type="button" class="lp-dash-nav__fab" aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
-      <span aria-hidden="true">+</span>
-    </button>
+    <div class="lp-dash-nav__fab-slot">
+      <button type="button" class="lp-dash-nav__fab" aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
+        <span aria-hidden="true">+</span>
+      </button>
+    </div>
     <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
       <span class="lp-dash-nav__icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
