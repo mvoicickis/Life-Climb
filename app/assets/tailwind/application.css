@@ -25576,3 +25576,5 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
     animation: none !important;
   }
 }
+
+@import "../stylesheets/mountain_trail.css";
