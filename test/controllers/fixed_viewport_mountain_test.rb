@@ -116,9 +116,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-summit", minimum: 1
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
-    assert_no_match(/battle_wins|battle_win/, response.body)
-    assert_select "form[action*='battle_win']", count: 0
-
+    assert_select "#trail-sheet-body form[action*='battle_win']"
+    
     assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
     assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
 

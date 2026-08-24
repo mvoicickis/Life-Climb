@@ -1,0 +1,38 @@
+<%# Camp marker on the V4 trail. locals: project, index, total %>
+<% project = local_assigns.fetch(:project) %>
+<% index = local_assigns.fetch(:index, 0) %>
+<% total = local_assigns.fetch(:total, 1) %>
+<% slot = mountain_trail_slot(project, index: index, total: total) %>
+<% color_key = project.tagged_color_key %>
+<% accent = mountain_trail_accent(color_key) %>
+<% meta = strategy_project_card_meta(project) %>
+
+<button type="button"
+        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %>"
+        id="trail-camp-<%= project.id %>"
+        style="--lp-trail-x: <%= slot[:x] %>; --lp-trail-y: <%= slot[:y] %>; --lp-trail-accent: <%= accent %>;"
+        data-camp-id="<%= project.id %>"
+        data-camp-title="<%= project.title %>"
+        data-trail-x="<%= slot[:x] %>"
+        data-trail-y="<%= slot[:y] %>"
+        data-accent="<%= accent %>"
+        data-update-url="<%= strategy_goal_path(project) %>"
+        data-action="pointerdown->trail-canvas#campPointerDown click->trail-canvas#campClick click->trail-camp-sheet#open"
+        aria-label="<%= project.title %>">
+  <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+  <span class="lp-trail-camp__label">
+    <span class="lp-trail-camp__rail" aria-hidden="true"></span>
+    <span class="lp-trail-camp__body">
+      <span class="lp-trail-camp__title"><%= project.title %></span>
+      <% if meta %>
+        <span class="lp-trail-camp__meta"><%= meta[:label] %></span>
+        <% if meta[:ratio] %>
+          <span class="lp-trail__camp-bar" aria-hidden="true">
+            <span class="lp-trail__camp-fill" style="--pct: <%= (meta[:ratio] * 100).round %>%"></span>
+          </span>
+        <% end %>
+      <% end %>
+    </span>
+  </span>
+  <span class="lp-trail-camp__post" aria-hidden="true"></span>
+</button>

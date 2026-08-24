@@ -54,6 +54,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp_a_leaf.id)
+    open_mountain_list_fallback!
     assert_selector "#climb-path-project-#{@camp_a.id}", text: /Get first 100 users/i, wait: 5
     assert_selector "#climb-path-project-#{@camp_b.id}", text: /Ship landing page/i
     assert_no_selector "a.lp-climb-path__link"
@@ -93,7 +94,9 @@ class CampSheetNavTest < ApplicationSystemTestCase
     )
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
-    assert_selector "#climb-path-project-#{empty.id}", text: /Empty camp/i, wait: 5
+    open_mountain_list_fallback!
+    assert_selector "#trail-camp-#{empty.id}", text: /Empty camp/i, wait: 5
+    assert_selector "#climb-path-project-#{empty.id}", text: /Empty camp/i, visible: :all, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_no_selector ".lp-rpg-practice-cats__hint"
     assert_no_selector ".lp-qs-board__title"

@@ -46,6 +46,7 @@ class PracticeTasksTurboStreamSystemTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     open_project_objectives(@vocab)
     within("dialog#section-objectives-#{@vocab.id}") do
+      open_mountain_list_fallback!
       assert_selector ".lp-climb-path__quest-title", text: /Vocabulary/i
       assert_selector "turbo-frame#quest_objectives_#{@vocab.id}", wait: 5
       assert_selector "#quest_progress_#{@vocab.id}", text: /0 \/ 2 objectives done/i

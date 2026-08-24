@@ -44,6 +44,11 @@ class LifeJourneysController < ApplicationController
   end
 
   def update
+    if params[:mountain_photo_intent].present?
+      handle_mountain_photo!
+      return
+    end
+
     if params[:strategy_brief].present?
       @journey.update_strategy_brief!(params.require(:strategy_brief).permit(*LifeJourney::STRATEGY_BRIEF_KEYS))
       redirect_to life_journey_path(@journey, horizon: params[:horizon].presence || "brief"),
@@ -87,6 +92,26 @@ class LifeJourneysController < ApplicationController
   end
 
   private
+
+
+  def handle_mountain_photo!
+    intent = params[:mountain_photo_intent].to_s
+    case intent
+    when "upload"
+      photo = params.dig(:life_journey, :mountain_photo)
+      if photo.present?
+        @journey.mountain_photo.attach(photo)
+        redirect_to life_journey_path(@journey), notice: t("strategy.rpg.trail.photo_updated"), status: :see_other
+      else
+        redirect_to life_journey_path(@journey), alert: t("strategy.rpg.trail.photo_missing"), status: :see_other
+      end
+    when "reset"
+      @journey.mountain_photo.purge_later if @journey.mountain_photo.attached?
+      redirect_to life_journey_path(@journey), notice: t("strategy.rpg.trail.photo_reset"), status: :see_other
+    else
+      redirect_to life_journey_path(@journey), status: :see_other
+    end
+  end
 
   def set_journey
     @journey = current_user.life_journeys.find_by(id: params[:id])

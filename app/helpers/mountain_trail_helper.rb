@@ -26,7 +26,7 @@ module MountainTrailHelper
 
   ACCENT_HEX = {
     "teal" => "#0f766e",
-    "coral" => "#c2410c",
+    "coral" => "#c2410c", # COLOR_KEYS uses coral
     "amber" => "#b45309",
     "purple" => "#7c3aed",
     "blue" => "#2563eb",
@@ -41,7 +41,7 @@ module MountainTrailHelper
     else
       image_path("mountain_trail_default.jpg")
     end
-  rescue ActiveStorage::InvariableError, ActiveStorage::FileNotFoundError, Vips::Error
+  rescue StandardError
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo)
     else
@@ -71,7 +71,6 @@ module MountainTrailHelper
     ACCENT_HEX.fetch(color_key.to_s, "#57534e")
   end
 
-  # Large gaps between camps get a ghost “Plant a project” pin (V4).
   def mountain_trail_ghosts(projects)
     slots = projects.each_with_index.map do |project, i|
       mountain_trail_slot(project, index: i, total: projects.size)
@@ -80,11 +79,9 @@ module MountainTrailHelper
     ghosts = []
 
     if ys.empty?
-      ghosts << { x: trail_x_for_y(0.55), y: 0.55 }
-      return ghosts
+      return [ { x: trail_x_for_y(0.55), y: 0.55 } ]
     end
 
-    # Gap above the highest camp (toward the peak).
     if ys.first - TRAIL_Y_MIN > 0.14
       y = ((TRAIL_Y_MIN + ys.first) / 2.0).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
       ghosts << { x: trail_x_for_y(y), y: y }
@@ -97,7 +94,6 @@ module MountainTrailHelper
       ghosts << { x: trail_x_for_y(y), y: y }
     end
 
-    # Gap below the lowest camp (toward base).
     if TRAIL_Y_MAX - ys.last > 0.14
       y = ((ys.last + TRAIL_Y_MAX) / 2.0).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
       ghosts << { x: trail_x_for_y(y), y: y }
@@ -116,7 +112,6 @@ module MountainTrailHelper
     return 0.58 if total <= 0
 
     t = total == 1 ? 0.5 : index.to_f / (total - 1)
-    # Peak → base: first camps sit higher on the mountain.
     (TRAIL_Y_MIN + t * (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
   end
 

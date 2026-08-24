@@ -2,8 +2,7 @@
 
 require "application_system_test_case"
 
-# Sparse journeys must not reserve a large empty zone below the last climb CTA.
-# Quests stay open (real Mountain state) — do not collapse <details> before measuring.
+# Mountain V4 photo trail: fixed 100dvh shell with an internal photo scroller.
 class SparseClimbTrailHeightTest < ApplicationSystemTestCase
   PHONE_W = 390
   PHONE_H = 844
@@ -42,9 +41,8 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    assert_selector ".lp-climb-path", wait: 5
-    assert_selector ".lp-climb-path__new-btn", wait: 5
-    assert_selector "#climb-path-project-#{@camp.id} .lp-climb-path__title", text: /Duolingo/
+    assert_selector "#mountain-trail", wait: 5
+    assert_selector "#trail-camp-#{@camp.id}", text: /Duolingo/
 
     metrics = measure_mountain_layout!
     File.write("/tmp/sparse-climb-after.json", JSON.pretty_generate(metrics))
@@ -55,26 +53,15 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_in_delta metrics["vh"], metrics["rootHeight"], 2.0
-    assert_equal "auto", metrics["trailOverflowY"]
-    refute metrics["questsOpen"], "project cards stay closed on the list: #{metrics.inspect}"
-
-    # No large empty reserved zone inside stage/trail below the last CTA.
-    assert_operator metrics["emptyBelowInTrail"], :<=, 40,
-                    "trail empty below New Project too large: #{metrics.inspect}"
-    assert_operator metrics["emptyBelowInStage"], :<=, 40,
-                    "stage empty below New Project too large: #{metrics.inspect}"
-    assert_operator metrics["gapToNav"], :<=, 40,
-                    "gap from New Project to bottom nav too large: #{metrics.inspect}"
-
-    # Stage/planning hug content instead of claiming the leftover viewport floor.
-    assert_operator metrics["stageH"], :<=, metrics["pathH"] + 48,
-                    "stage should size to climb content: #{metrics.inspect}"
-    assert_operator metrics["trailH"], :<=, metrics["pathH"] + 24,
-                    "trail should size to climb content: #{metrics.inspect}"
+    assert_equal "auto", metrics["photoOverflowY"]
+    assert metrics["trailPresent"]
+    assert_operator metrics["photoScrollH"], :>, metrics["photoClientH"],
+                    "photo trail should scroll internally: #{metrics.inspect}"
+    assert_operator metrics["gapTrailToNav"], :<=, 40,
+                    "trail bottom should sit near nav: #{metrics.inspect}"
   end
 
   test "dense climb path still scrolls inside the fixed 100dvh shell" do
-    # Path lists every camp — seed many so the trail must scroll.
     @camp.update!(position: 8)
     8.times do |i|
       done = @plan.children.create!(
@@ -97,8 +84,8 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Done Camp 1/, wait: 5, visible: :all
-    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Locked Camp 1/, visible: :all
+    assert_selector "#trail-camp-#{@camp.id}", text: /Duolingo/, wait: 5
+    assert_selector ".lp-trail-camp", minimum: 10, wait: 5
 
     metrics = measure_mountain_layout!
     File.write("/tmp/dense-climb-after.json", JSON.pretty_generate(metrics))
@@ -108,24 +95,22 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["rootOverflow"]
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
-    assert_equal "auto", metrics["trailOverflowY"]
-    assert_operator metrics["pathH"], :>, metrics["trailClientH"],
-                    "dense path should exceed the trail viewport: #{metrics.inspect}"
-    assert_operator metrics["trailScrollH"], :>, metrics["trailClientH"] + 8,
-                    "dense trail must scroll: #{metrics.inspect}"
+    assert_equal "auto", metrics["photoOverflowY"]
+    assert_operator metrics["photoScrollH"], :>, metrics["photoClientH"] + 8,
+                    "dense photo trail must scroll: #{metrics.inspect}"
+    assert_operator metrics["campCount"], :>=, 10
 
     page.execute_script(<<~JS)
-      const trail = document.querySelector('.lp-rpg__stage-trail');
-      if (trail) trail.scrollTop = trail.scrollHeight;
+      const scroll = document.querySelector('.lp-trail__scroll');
+      if (scroll) scroll.scrollTop = scroll.scrollHeight;
     JS
-    assert_selector ".lp-climb-path__new-btn", visible: :all, wait: 5
+    assert_selector ".lp-trail-camp", minimum: 10, visible: :all, wait: 5
   end
 
   private
 
   def lock_phone_viewport!(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
-    # Headless Chrome often reports a shorter innerHeight than resize_to; lock metrics.
     page.driver.browser.execute_cdp(
       "Emulation.setDeviceMetricsOverride",
       width: width,
@@ -140,22 +125,16 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const stage = document.querySelector('.lp-rpg__stage.is-planning');
-        const planning = document.querySelector('.lp-rpg__planning');
-        const trail = document.querySelector('.lp-rpg__stage-trail');
-        const path = document.querySelector('.lp-climb-path');
-        const last = document.querySelector('.lp-climb-path__new-btn');
+        const trailShell = document.querySelector('.lp-rpg__stage-trail');
+        const mountain = document.querySelector('#mountain-trail');
+        const photo = document.querySelector('.lp-trail__scroll');
         const nav = document.querySelector('.lp-dash-nav');
-        const quests = document.querySelector('.lp-climb-path__quests[open]');
-        if (!root || !stage || !planning || !trail || !path || !last || !nav) return null;
+        if (!root || !stage || !trailShell || !mountain || !photo || !nav) return null;
         const rs = getComputedStyle(root);
-        const ss = getComputedStyle(stage);
-        const ps = getComputedStyle(planning);
-        const ts = getComputedStyle(trail);
+        const ps = getComputedStyle(photo);
         const stageRect = stage.getBoundingClientRect();
-        const planningRect = planning.getBoundingClientRect();
-        const trailRect = trail.getBoundingClientRect();
-        const pathRect = path.getBoundingClientRect();
-        const lastRect = last.getBoundingClientRect();
+        const trailRect = trailShell.getBoundingClientRect();
+        const photoRect = photo.getBoundingClientRect();
         const navRect = nav.getBoundingClientRect();
         return {
           vw: window.innerWidth,
@@ -166,28 +145,18 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
             getComputedStyle(document.documentElement).overflow,
           bodyOverflow: getComputedStyle(document.body).overflowY ||
             getComputedStyle(document.body).overflow,
-          stageAlignSelf: ss.alignSelf,
-          stageHeight: ss.height,
-          stageMaxHeight: ss.maxHeight,
-          planningHeight: ps.height,
-          planningMaxHeight: ps.maxHeight,
-          trailOverflowY: ts.overflowY,
-          trailHeight: ts.height,
-          trailMaxHeight: ts.maxHeight,
+          photoOverflowY: ps.overflowY,
           stageH: Math.round(stageRect.height),
-          planningH: Math.round(planningRect.height),
           trailH: Math.round(trailRect.height),
-          pathH: Math.round(pathRect.height),
-          trailScrollH: trail.scrollHeight,
-          trailClientH: trail.clientHeight,
-          lastBottom: Math.round(lastRect.bottom),
+          photoH: Math.round(photoRect.height),
+          photoScrollH: photo.scrollHeight,
+          photoClientH: photo.clientHeight,
           stageBottom: Math.round(stageRect.bottom),
           trailBottom: Math.round(trailRect.bottom),
           navTop: Math.round(navRect.top),
-          emptyBelowInTrail: Math.round(trailRect.bottom - lastRect.bottom),
-          emptyBelowInStage: Math.round(stageRect.bottom - lastRect.bottom),
-          gapToNav: Math.round(navRect.top - lastRect.bottom),
-          questsOpen: !!quests
+          gapTrailToNav: Math.round(navRect.top - trailRect.bottom),
+          trailPresent: true,
+          campCount: document.querySelectorAll('.lp-trail-camp').length
         };
       })()
     JS

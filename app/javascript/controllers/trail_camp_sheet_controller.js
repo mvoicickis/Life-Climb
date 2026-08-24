@@ -14,11 +14,12 @@ export default class extends Controller {
   }
 
   open(event) {
-    event?.preventDefault()
-    event?.stopPropagation()
-
     // Swallow if the canvas just finished a drag-reposition.
     if (event?.defaultPrevented) return
+    if (this.element.dataset.trailSuppressOpen === "1") return
+
+    event?.preventDefault()
+    event?.stopPropagation()
 
     const camp = event?.currentTarget
     if (!camp || !this.hasSheetTarget) return

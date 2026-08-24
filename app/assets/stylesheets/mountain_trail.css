@@ -26,11 +26,13 @@
   --lp-trail-warm: 0;
 
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: var(--lp-trail-phone);
   margin-inline: auto;
   height: 100%;
-  min-height: 100%;
+  min-height: 0;
   color: var(--lp-trail-ink);
   font-family: var(--lp-trail-font);
   background: var(--lp-trail-chrome);
@@ -48,9 +50,10 @@
 }
 
 .lp-trail__scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
   z-index: 0;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -778,16 +781,6 @@
 .lp-trail__controls {
   position: absolute;
   z-index: 10;
-  pointer-events: auto;
-}
-
-.lp-trail__chrome {
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(246, 244, 238, 0.92), rgba(246, 244, 238, 0));
-  color: var(--lp-trail-ink);
 }
 
 /* ——— Keyframes ——— */
@@ -865,4 +858,173 @@
   .lp-trail-sheet__panel {
     animation: none !important;
   }
+}
+
+
+/* Peak flag + list fallback + battle sheet body */
+.lp-trail__peak {
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  pointer-events: none;
+  text-align: center;
+}
+.lp-trail__flag {
+  font-size: 1.4rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.35));
+  animation: lp-trail-flag 2.8s ease-in-out infinite;
+}
+.lp-trail__peak-label {
+  max-width: 12rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(12, 22, 14, 0.55);
+  backdrop-filter: blur(6px);
+  color: rgba(255,255,255,0.9);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lp-trail__list-fallback {
+  position: relative;
+  z-index: 6;
+  flex: 0 0 auto;
+  margin: 0;
+  border-radius: 0;
+  border: 0;
+  border-top: 1px solid var(--lp-trail-line);
+  background: var(--lp-trail-cream-soft);
+  color: var(--lp-trail-ink);
+}
+.lp-trail__list-fallback[open] {
+  max-height: min(42vh, 22rem);
+  overflow: auto;
+}
+.lp-trail__list-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.lp-trail__list-fallback[open] .lp-trail__list-summary {
+  border-bottom: 1px solid var(--lp-trail-line);
+}
+.lp-trail__list-fallback .lp-climb-path {
+  padding: 0.75rem;
+}
+.lp-trail__chrome {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  left: auto;
+  z-index: 12;
+  padding: 0;
+  background: none;
+  pointer-events: none;
+}
+.lp-trail__chrome > * {
+  pointer-events: auto;
+}
+.lp-trail__photo-details {
+  position: relative;
+}
+.lp-trail__photo-btn {
+  list-style: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(12,22,14,0.45);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.lp-trail__photo-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  min-width: 11rem;
+  padding: 0.4rem;
+  border-radius: 0.75rem;
+  background: var(--lp-trail-cream);
+  border: 1px solid var(--lp-trail-line);
+  box-shadow: 0 10px 30px rgba(20,16,10,0.18);
+}
+.lp-trail__photo-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--lp-trail-ink);
+  cursor: pointer;
+}
+.lp-trail__photo-item:hover { background: rgba(28,36,32,0.06); }
+.lp-trail__photo-file { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.lp-trail__plant-colors, .lp-trail__swatch { display: inline-flex; gap: 0.35rem; flex-wrap: wrap; }
+.lp-trail__swatch { cursor: pointer; }
+.lp-trail__swatch-dot {
+  width: 1.1rem; height: 1.1rem; border-radius: 999px; display: block;
+  border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+}
+.lp-trail__swatch.is-teal .lp-trail__swatch-dot { background: #0f766e; }
+.lp-trail__swatch.is-coral .lp-trail__swatch-dot { background: #c2410c; }
+.lp-trail__swatch.is-amber .lp-trail__swatch-dot { background: #b45309; }
+.lp-trail__swatch.is-purple .lp-trail__swatch-dot { background: #7c3aed; }
+.lp-trail__swatch.is-blue .lp-trail__swatch-dot { background: #2563eb; }
+.lp-trail__swatch.is-green .lp-trail__swatch-dot { background: #15803d; }
+.lp-trail__swatch.is-pink .lp-trail__swatch-dot { background: #db2777; }
+.lp-trail__swatch.is-gray .lp-trail__swatch-dot { background: #57534e; }
+.lp-trail__swatch:has(input:checked) .lp-trail__swatch-dot { outline: 2px solid var(--lp-trail-ink); outline-offset: 2px; }
+
+.lp-trail-battles { display: grid; gap: 0.75rem; }
+.lp-trail-battles__add { display: flex; gap: 0.5rem; }
+.lp-trail-battles__input {
+  flex: 1; border-radius: 0.7rem; border: 1px solid var(--lp-trail-line);
+  padding: 0.65rem 0.75rem; font: inherit; background: #fff; color: var(--lp-trail-ink);
+}
+.lp-trail-battles__submit, .lp-trail-battles__win {
+  border: 0; border-radius: 0.7rem; padding: 0.65rem 0.85rem;
+  background: var(--lp-trail-accent); color: #fff; font-weight: 700; cursor: pointer;
+}
+.lp-trail-battles__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.lp-trail-battles__row {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  padding: 0.65rem 0.7rem; border-radius: 0.75rem; background: rgba(28,36,32,0.04);
+}
+.lp-trail-battles__name { font-weight: 650; }
+.lp-trail-battles__actions { display: flex; gap: 0.35rem; }
+.lp-trail-battles__delete {
+  border: 0; background: transparent; color: #b91c1c; font-weight: 650; cursor: pointer;
+}
+.lp-trail-battles__empty { margin: 0; color: var(--lp-trail-muted); font-size: 0.9rem; }
+.lp-trail-battles__done summary { cursor: pointer; font-weight: 700; color: var(--lp-trail-muted); }
+.lp-trail__camp-bar {
+  display: block; height: 4px; border-radius: 99px; margin-top: 0.35rem;
+  background: rgba(28,36,32,0.12); overflow: hidden;
+}
+.lp-trail__camp-fill {
+  display: block; height: 100%; width: var(--pct, 0%);
+  background: var(--lp-trail-accent, #0f766e);
+}
+@keyframes lp-trail-flag {
+  0%, 100% { transform: skewX(0deg); }
+  50% { transform: skewX(-10deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-trail__flag { animation: none; }
 }

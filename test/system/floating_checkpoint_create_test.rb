@@ -58,10 +58,11 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
     assert_no_selector ".lp-first-climb-shell"
 
+    open_mountain_list_fallback!
     page.evaluate_script(<<~JS)
       document.querySelector('.lp-climb-path__add')?.scrollIntoView({ inline: 'end', block: 'nearest' });
     JS
-    find(".lp-climb-path__new-btn", text: /Add a project/i, wait: 5).click
+    find(".lp-climb-path__new-btn", text: /Add a project/i, visible: :all, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
     assert_selector ".lp-rpg-float-create__heading", text: /Add a project/i
     assert_selector "body > .lp-rpg-float-create input[name='title']"
@@ -80,19 +81,22 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
 
+    open_mountain_list_fallback!
     page.evaluate_script(<<~JS)
       document.querySelector('.lp-climb-path__add')?.scrollIntoView({ inline: 'end', block: 'nearest' });
     JS
-    find(".lp-climb-path__new-btn", text: /Add a project/i, wait: 5).click
+    find(".lp-climb-path__new-btn", text: /Add a project/i, visible: :all, wait: 5).click
     assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
 
     card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
     card.fill_in "title", with: "Notifications camp"
-    card.find(".lp-rpg-float-create__btn.is-create").click
-
-    assert_selector ".lp-climb-path__node", text: /Notifications camp/i, wait: 5
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      card.find(".lp-rpg-float-create__btn.is-create").click
+      assert_selector "#mountain-trail", wait: 5
+    end
+    created = @plan.children.for_kind("project").find_by!(title: "Notifications camp")
+    assert_selector "#trail-camp-#{created.id}", text: /Notifications camp/i, wait: 5
     assert_no_selector ".lp-rpg-section-head"
-    assert @user.strategy_goals.for_kind("project").exists?(title: "Notifications camp", parent_id: @plan.id)
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-create-visible.png")

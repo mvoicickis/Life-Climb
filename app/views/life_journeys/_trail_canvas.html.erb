@@ -1,0 +1,213 @@
+<%# Mountain V4 photo trail. locals: trail, goal, plan, journey, current_project, focus %>
+<% trail = local_assigns[:trail] %>
+<% goal = local_assigns[:goal] %>
+<% plan = local_assigns[:plan] %>
+<% journey = local_assigns[:journey] || @journey %>
+<% area = journey.life_area %>
+<% projects = mountain_trail_projects(trail) %>
+<% ghosts = mountain_trail_ghosts(projects) %>
+<% photo_url = mountain_trail_photo_url(journey) %>
+
+<section class="lp-trail is-bleed"
+         id="mountain-trail"
+         aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
+         data-controller="trail-canvas trail-camp-sheet trail-ambient"
+         data-trail-canvas-create-url-value="<%= strategy_goals_path %>"
+         data-trail-canvas-csrf-value="<%= form_authenticity_token %>"
+         data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
+         data-trail-canvas-journey-id-value="<%= journey.id %>"
+         data-trail-canvas-life-area-id-value="<%= area.id %>">
+
+  <div class="lp-trail__scroll">
+    <div class="lp-trail__surface"
+         data-trail-canvas-target="surface"
+         data-action="click->trail-canvas#surfaceClick">
+      <div class="lp-trail__photo-wrap" aria-hidden="true">
+        <div class="lp-trail__photo" style="background-image: url('<%= photo_url %>')"></div>
+        <div class="lp-trail__night"></div>
+        <div class="lp-trail__haze"></div>
+        <div class="lp-trail__warm"></div>
+      </div>
+
+      <div class="lp-trail__ambient" aria-hidden="true">
+        <div class="lp-trail__sun-corona"></div>
+        <div class="lp-trail__sun-rays"></div>
+        <div class="lp-trail__sun" data-trail-ambient-target="sun"></div>
+        <div class="lp-trail__moon" data-trail-ambient-target="moon">
+          <span class="lp-trail__moon-crater"></span>
+          <span class="lp-trail__moon-crater"></span>
+        </div>
+        <div class="lp-trail__mist" data-trail-ambient-target="mist"></div>
+        <div class="lp-trail__embers" data-trail-ambient-target="embers">
+          <span class="lp-trail__ember"></span>
+          <span class="lp-trail__ember"></span>
+          <span class="lp-trail__ember"></span>
+          <span class="lp-trail__ember"></span>
+        </div>
+      </div>
+
+      <div class="lp-trail__peak" aria-hidden="true">
+        <span class="lp-trail__flag">⚑</span>
+        <span class="lp-trail__peak-label"><%= goal&.title.presence || journey.title %></span>
+      </div>
+
+      <div class="lp-trail__camps" id="trail-camps" data-trail-canvas-target="camps">
+        <% projects.each_with_index do |project, index| %>
+          <%= render "life_journeys/trail_camp",
+                project: project,
+                index: index,
+                total: projects.size %>
+        <% end %>
+      </div>
+
+      <div class="lp-trail__ghosts" data-trail-canvas-target="ghosts">
+        <% ghosts.each do |ghost| %>
+          <button type="button"
+                  class="lp-trail-ghost"
+                  style="--lp-trail-x: <%= ghost[:x] %>; --lp-trail-y: <%= ghost[:y] %>;"
+                  data-trail-x="<%= ghost[:x] %>"
+                  data-trail-y="<%= ghost[:y] %>"
+                  data-action="click->trail-canvas#ghostPick"
+                  aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
+            <span class="lp-trail-ghost__chip">
+              <span class="lp-trail-ghost__plus" aria-hidden="true">+</span>
+              <span class="lp-trail-ghost__text"><%= t("strategy.rpg.trail.plant_project") %></span>
+            </span>
+            <span class="lp-trail-ghost__stem" aria-hidden="true"></span>
+          </button>
+        <% end %>
+      </div>
+
+      <div class="lp-trail-plant"
+           data-trail-canvas-target="plantForm"
+           data-action="click->trail-canvas#stop"
+           hidden
+           aria-hidden="true">
+        <button type="button"
+                class="lp-trail-plant__backdrop"
+                data-action="click->trail-canvas#closePlant"
+                aria-label="<%= t('strategy.rpg.cancel') %>"></button>
+        <div class="lp-trail-plant__marker" data-trail-plant-marker aria-hidden="true"></div>
+        <form class="lp-trail-plant__panel"
+              action="<%= strategy_goals_path %>"
+              method="post"
+              data-turbo="true"
+              data-action="submit->trail-canvas#submitPlant">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <input type="hidden" name="life_area_id" value="<%= area.id %>">
+          <input type="hidden" name="life_journey_id" value="<%= journey.id %>">
+          <input type="hidden" name="parent_id" value="<%= plan&.id %>">
+          <input type="hidden" name="horizon" value="project">
+          <input type="hidden" name="trail_x" value="" data-trail-canvas-target="plantX">
+          <input type="hidden" name="trail_y" value="" data-trail-canvas-target="plantY">
+          <h3 class="lp-trail-plant__title"><%= t("strategy.rpg.trail.plant_kicker") %></h3>
+          <p class="lp-trail-plant__sub"><%= t("strategy.rpg.trail.plant_hint") %></p>
+          <input type="text"
+                 name="title"
+                 required
+                 maxlength="120"
+                 class="lp-trail-plant__field"
+                 placeholder="<%= t('strategy.rpg.checkpoint_name_placeholder') %>"
+                 autocomplete="off"
+                 data-trail-canvas-target="plantTitle">
+          <div class="lp-trail__plant-colors" role="radiogroup" aria-label="<%= t('strategy.rpg.quest_color_label') %>">
+            <% StrategyGoal::COLOR_KEYS.each do |key| %>
+              <label class="lp-trail__swatch is-<%= key %>">
+                <input type="radio" name="color_key" value="<%= key %>" class="sr-only">
+                <span class="lp-trail__swatch-dot" aria-hidden="true"></span>
+                <span class="sr-only"><%= t("strategy.rpg.quest_colors.#{key}") %></span>
+              </label>
+            <% end %>
+          </div>
+          <div class="lp-trail-plant__actions">
+            <button type="button"
+                    class="lp-trail-plant__cancel"
+                    data-action="click->trail-canvas#closePlant">
+              <%= t("strategy.rpg.cancel") %>
+            </button>
+            <button type="submit" class="lp-trail-plant__submit">
+              <%= t("strategy.rpg.trail.plant_submit") %>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-trail__chrome" data-trail-ignore>
+    <details class="lp-trail__photo-details">
+      <summary class="lp-trail__photo-btn" aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">⋯</summary>
+      <div class="lp-trail__photo-panel" role="menu">
+        <%= form_with url: life_journey_path(journey),
+              method: :patch,
+              class: "lp-trail__photo-form",
+              html: { enctype: "multipart/form-data" } do %>
+          <%= hidden_field_tag :mountain_photo_intent, "upload" %>
+          <label class="lp-trail__photo-item">
+            <%= t("strategy.rpg.trail.upload_photo") %>
+            <%= file_field_tag "life_journey[mountain_photo]",
+                  accept: "image/jpeg,image/png,image/webp",
+                  class: "lp-trail__photo-file",
+                  onchange: "this.form.requestSubmit()" %>
+          </label>
+        <% end %>
+        <% if journey.mountain_photo.attached? %>
+          <%= button_to t("strategy.rpg.trail.reset_photo"),
+                life_journey_path(journey),
+                method: :patch,
+                params: { mountain_photo_intent: "reset" },
+                class: "lp-trail__photo-item is-reset",
+                form: { class: "lp-trail__photo-form" } %>
+        <% end %>
+      </div>
+    </details>
+  </div>
+
+  <div class="lp-trail-sheet"
+       data-trail-camp-sheet-target="sheet"
+       hidden
+       aria-hidden="true"
+       data-action="click->trail-camp-sheet#closeOnBackdrop">
+    <div class="lp-trail-sheet__backdrop"></div>
+    <div class="lp-trail-sheet__panel"
+         data-trail-camp-sheet-target="panel"
+         data-action="click->trail-camp-sheet#stop"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="trail-sheet-title">
+      <div class="lp-trail-sheet__glow" data-trail-camp-sheet-target="accent" aria-hidden="true"></div>
+      <div class="lp-trail-sheet__handle" aria-hidden="true"></div>
+      <header class="lp-trail-sheet__header">
+        <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
+        <button type="button"
+                class="lp-trail-sheet__close"
+                data-action="click->trail-camp-sheet#close"
+                aria-label="<%= t('strategy.sheet.close') %>">×</button>
+      </header>
+      <div class="lp-trail-sheet__body" data-trail-camp-sheet-target="body" id="trail-sheet-body">
+        <% projects.each do |project| %>
+          <div class="lp-trail-sheet__camp"
+               id="trail-sheet-camp-<%= project.id %>"
+               data-camp-panel="<%= project.id %>"
+               hidden>
+            <%= render "life_journeys/trail_camp_battles",
+                  project: project,
+                  goal: goal,
+                  plan: plan,
+                  area: area %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <details class="lp-trail__list-fallback" data-trail-ignore>
+    <summary class="lp-trail__list-summary"><%= t("strategy.rpg.trail.list_fallback") %></summary>
+    <%= render "life_journeys/rpg_climb_path",
+          trail: trail,
+          goal: goal,
+          plan: plan,
+          current_project: local_assigns[:current_project],
+          focus: local_assigns[:focus] %>
+  </details>
+</section>

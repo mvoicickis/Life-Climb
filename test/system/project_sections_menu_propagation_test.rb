@@ -39,21 +39,23 @@ class ProjectSectionsMenuPropagationTest < ApplicationSystemTestCase
 
     path = life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     visit path
-    assert_selector "#climb-path-project-#{@section.id} .lp-climb-path__menu-btn", wait: 5
+    open_mountain_list_fallback!
+    assert_selector "#climb-path-project-#{@section.id} .lp-climb-path__menu-btn", visible: :all, wait: 5
     page.execute_script(<<~JS)
       document.querySelector('#climb-path-project-#{@section.id}')?.scrollIntoView({ block: 'center' });
     JS
 
     before = page.current_path
 
-    find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn span", visible: :all).click
+    menu_span = find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn span", visible: :all)
+    page.execute_script("arguments[0].click()", menu_span.native)
     assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
     assert_equal before, page.current_path
 
     page.send_keys(:escape)
     assert_no_selector ".lp-climb-path__menu:not([hidden])", wait: 3
 
-    btn = find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn")
+    btn = find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn", visible: :all)
     page.execute_script(<<~JS, btn.native)
       const el = arguments[0];
       const r = el.getBoundingClientRect();

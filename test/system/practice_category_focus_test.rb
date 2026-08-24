@@ -54,9 +54,9 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     assert_selector "#strategy-world.lp-rpg", wait: 5
     assert_no_selector ".lp-qs-board__title"
-    assert_selector "#climb-path-project-#{@vocab.id} .lp-climb-path__title", text: /Vocabulary/i
-    assert_selector "#climb-path-project-#{@lang.id}", text: /Language skills/i, visible: :all
-    assert_selector "#climb-path-project-#{@grammar.id}", text: /Grammar/i, visible: :all
+    assert_selector "#trail-camp-#{@vocab.id}", text: /Vocabulary/i
+    assert_selector "#trail-camp-#{@lang.id}", text: /Language skills/i
+    assert_selector "#trail-camp-#{@grammar.id}", text: /Grammar/i
     assert_no_selector ".lp-climb-path__new-quest-btn"
     assert_no_selector ".lp-climb-path__quests"
 
@@ -95,6 +95,7 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     assert_not flash.reload.completed?, "Quest checkbox must stay read-only"
 
     within("dialog#section-objectives-#{@vocab.id}") do
+      open_mountain_list_fallback!
       find(".lp-climb-path__quest-add-input", visible: :all).set("Review verbs")
       find(".lp-climb-path__quest-add-btn", visible: :all).click
       assert_selector ".lp-qs-obj__text[value='Review verbs']", visible: :all, wait: 5

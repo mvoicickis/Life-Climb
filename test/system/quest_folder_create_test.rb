@@ -40,6 +40,7 @@ class QuestFolderCreateTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    open_mountain_list_fallback!
     assert_no_selector ".lp-climb-path__new-quest-btn"
   end
 end

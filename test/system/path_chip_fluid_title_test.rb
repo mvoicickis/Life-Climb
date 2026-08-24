@@ -70,7 +70,7 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
         const item = document.querySelector(".lp-rpg-plan-rail__item.is-focus");
         const menu = item?.querySelector(".lp-rpg-path__menu-btn");
         const dest = document.querySelector(".lp-rpg-destination-carousel__title");
-        const trail = document.querySelector(".lp-rpg__stage-trail, .lp-rpg-trail, .lp-climb-path");
+        const trail = document.querySelector(".lp-rpg__stage-trail, .lp-rpg-trail, .lp-climb-path, #mountain-trail");
         if (!title || !path || !item) return { ok: false, reason: "missing" };
         const cs = getComputedStyle(title);
         const tr = title.getBoundingClientRect();

@@ -1,0 +1,65 @@
+<%# Battles inside a trail camp sheet. locals: project, goal, plan, area %>
+<% project = local_assigns.fetch(:project) %>
+<% area = local_assigns[:area] || project.life_area %>
+<% days = project.children.select(&:day?).reject(&:holding?).sort_by { |d| [ d.completed? ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
+<% open_days = days.reject(&:completed?) %>
+<% done_days = days.select(&:completed?) %>
+
+<div class="lp-trail-battles" id="trail-battles-<%= project.id %>">
+  <%= form_with url: strategy_goals_path,
+        method: :post,
+        class: "lp-trail-battles__add",
+        data: { turbo: true } do %>
+    <%= hidden_field_tag :life_area_id, area.id %>
+    <%= hidden_field_tag :life_journey_id, project.life_journey_id.presence || @journey&.id %>
+    <%= hidden_field_tag :parent_id, project.id %>
+    <%= hidden_field_tag :horizon, "day" %>
+    <%= hidden_field_tag :scheduled_on, Date.current %>
+    <label class="lp-trail-battles__field">
+      <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
+      <%= text_field_tag :title, nil,
+            required: true,
+            maxlength: 120,
+            class: "lp-trail-battles__input",
+            placeholder: t("strategy.rpg.trail.battle_placeholder"),
+            autocomplete: "off" %>
+    </label>
+    <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
+  <% end %>
+
+  <% if open_days.any? %>
+    <ul class="lp-trail-battles__list">
+      <% open_days.each do |battle| %>
+        <li class="lp-trail-battles__row" id="trail-battle-<%= battle.id %>">
+          <span class="lp-trail-battles__name"><%= battle.title %></span>
+          <div class="lp-trail-battles__actions">
+            <%= button_to t("strategy.rpg.trail.win_battle"),
+                  battle_win_path(battle),
+                  method: :post,
+                  class: "lp-trail-battles__win" %>
+            <%= button_to t("strategy.rpg.delete_checkpoint"),
+                  strategy_goal_path(battle),
+                  method: :delete,
+                  class: "lp-trail-battles__delete",
+                  form: { data: { turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: battle.title) } } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-trail-battles__empty"><%= t("strategy.rpg.trail.no_open_battles") %></p>
+  <% end %>
+
+  <% if done_days.any? %>
+    <details class="lp-trail-battles__done">
+      <summary><%= t("strategy.rpg.trail.won_battles", count: done_days.size) %></summary>
+      <ul class="lp-trail-battles__list is-done">
+        <% done_days.each do |battle| %>
+          <li class="lp-trail-battles__row is-done" id="trail-battle-<%= battle.id %>">
+            <span class="lp-trail-battles__name"><%= battle.title %></span>
+          </li>
+        <% end %>
+      </ul>
+    </details>
+  <% end %>
+</div>

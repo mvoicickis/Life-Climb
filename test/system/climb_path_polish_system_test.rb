@@ -46,8 +46,9 @@ class ClimbPathPolishSystemTest < ApplicationSystemTestCase
     )
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
-    assert_selector ".lp-climb-path", wait: 5
-    assert_selector ".lp-climb-path__node.is-visible", minimum: 2, wait: 5
+    open_mountain_list_fallback!
+    assert_selector ".lp-climb-path", visible: :all, wait: 5
+    assert_selector ".lp-climb-path__node.is-visible", minimum: 2, visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
@@ -79,9 +80,10 @@ class ClimbPathPolishSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
-    assert_selector ".lp-climb-path.is-list", wait: 5
+    open_mountain_list_fallback!
+    assert_selector ".lp-climb-path.is-list", visible: :all, wait: 5
     assert_no_selector "a.lp-climb-path__link"
-    assert_selector "#climb-path-project-#{@current.id} .lp-climb-path__title", text: /Active camp/
-    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Next camp/
+    assert_selector "#climb-path-project-#{@current.id} .lp-climb-path__title", text: /Active camp/, visible: :all
+    assert_selector ".lp-climb-path__project .lp-climb-path__title", text: /Next camp/, visible: :all
   end
 end

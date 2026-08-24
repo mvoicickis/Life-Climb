@@ -77,6 +77,7 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: section.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+    open_mountain_list_fallback!
     assert_selector "#climb-path-project-#{section.id} .lp-climb-path__title", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
