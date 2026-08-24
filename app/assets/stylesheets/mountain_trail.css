@@ -2857,7 +2857,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   position: absolute;
   left: 12px;
   right: 12px;
-  top: 4.6rem;
+  bottom: calc(10.5rem + env(safe-area-inset-bottom));
   z-index: 12;
   display: flex;
   align-items: flex-start;
@@ -2868,6 +2868,12 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   backdrop-filter: blur(14px);
   color: #f7ead9;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+}
+
+.lp-trail-coach__ack,
+.lp-trail-coach__skip {
+  pointer-events: auto;
 }
 
 .lp-trail-coach__icon {
