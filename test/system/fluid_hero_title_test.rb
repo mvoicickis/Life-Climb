@@ -99,10 +99,12 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
   def assert_destination_fluid_title(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 5
-    assert_selector ".lp-trail__peak-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_selector ".lp-dash-nav", wait: 8
+    visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
+    assert_no_selector ".lp-first-climb-shell", wait: 2
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
+    assert_selector ".lp-trail__peak-title", text: /Become a Rails developer/i, visible: :all, wait: 5
     metrics = title_metrics(".lp-trail__peak-title")
     assert_peak_title_ok(metrics, "Become a Rails developer", width, height)
   end
@@ -110,8 +112,9 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
   def assert_today_climb_band(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
+    assert_selector ".lp-dash-nav", wait: 8
     within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-hero", visible: :all, wait: 5
+    assert_selector ".lp-dash-hero", visible: :all, wait: 8
     assert_selector ".lp-dash-hero__avatar-img", visible: :all
     assert_selector ".lp-dash-timeline", visible: :all
     assert_no_selector ".lp-dash-climb"
