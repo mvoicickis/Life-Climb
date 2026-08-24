@@ -127,6 +127,10 @@ class StrategyGoalsController < ApplicationController
       goal.title = params[:title].to_s.strip
     end
 
+    if params.key?(:description) && goal.goal?
+      goal.description = params[:description].to_s.strip.presence
+    end
+
     quantity_touched = goal.path_level_camp? && params.key?(:track_quantity)
     apply_quantity_params!(goal) if goal.path_level_camp?
     apply_color_key_params!(goal) if goal.project?

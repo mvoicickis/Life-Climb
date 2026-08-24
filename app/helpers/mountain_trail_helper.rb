@@ -151,6 +151,47 @@ module MountainTrailHelper
     end
   end
 
+  # Climb day shown on the base-camp pill ("Base camp · Day N").
+  def mountain_trail_day_count(journey)
+    return 1 if journey.blank?
+
+    start_on = journey.created_at.to_date
+    (Date.current - start_on).to_i + 1
+  end
+
+  # Today card copy for the V4 trail band.
+  def mountain_trail_today_card(open_battles:, won_today: 0)
+    open_count = open_battles.size
+    if open_count.positive?
+      {
+        headline: I18n.t("strategy.rpg.trail.today_card.open_headline", count: open_count),
+        sub: I18n.t("strategy.rpg.trail.today_card.open_sub"),
+        count: open_count,
+        badge: true,
+        busy: true
+      }
+    else
+      sub =
+        if won_today.positive?
+          I18n.t("strategy.rpg.trail.today_card.rest_sub", count: won_today)
+        else
+          I18n.t("strategy.rpg.trail.today_card.rest_sub_zero")
+        end
+      {
+        headline: I18n.t("strategy.rpg.trail.today_card.rest_headline"),
+        sub: sub,
+        count: 0,
+        badge: false,
+        busy: false
+      }
+    end
+  end
+
+  def mountain_trail_peak_tagline(goal)
+    goal&.description.to_s.strip.presence ||
+      I18n.t("strategy.rpg.trail.peak_tagline_default")
+  end
+
   private
 
   def auto_trail_y(index, total)

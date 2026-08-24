@@ -25,8 +25,9 @@
 <% alive = current_user.alive_level %>
 <% streak = @climb_streak || strategy_climb_streak_status %>
 <% v4_phone = plan.present? && !first_climb %>
+<% v4_shell = first_climb || v4_phone %>
 
-<div class="lp-rpg is-focus-phase <%= 'is-first-climb' if first_climb %> <%= 'is-v4-phone' if v4_phone %>"
+<div class="lp-rpg is-focus-phase <%= 'is-first-climb' if first_climb %> <%= 'is-v4-phone' if v4_shell %>"
      id="strategy-world"
      data-controller="strategy-celebrate strategy-rpg"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
@@ -38,9 +39,20 @@
      data-stage="<%= stage %>">
 
   <% if first_climb && @goal %>
-    <div class="lp-first-climb-shell">
-      <div class="lp-first-climb-shell__sky" aria-hidden="true"></div>
-      <%= render "life_journeys/first_climb_coach", journey: @journey, goal: @goal %>
+    <div class="lp-rpg__stage is-planning is-v4">
+      <div class="lp-rpg__planning is-v4">
+        <div class="lp-rpg__stage-sections lp-rpg__stage-trail is-v4">
+          <div class="lp-trail-first-shell" aria-hidden="true">
+            <img class="lp-trail-first-shell__photo"
+                 src="<%= mountain_trail_photo_url(@journey) %>"
+                 alt=""
+                 decoding="async">
+          </div>
+          <div class="lp-first-climb-overlay">
+            <%= render "life_journeys/first_climb_coach", journey: @journey, goal: @goal %>
+          </div>
+        </div>
+      </div>
     </div>
   <% elsif v4_phone %>
     <div class="lp-rpg__stage is-planning is-v4">
@@ -97,4 +109,4 @@
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
 </div>
 
-<%= render "shared/lp_dash_nav", active: :mountain, variant: (v4_phone ? :v4 : :default) %>
+<%= render "shared/lp_dash_nav", active: :mountain, variant: (v4_shell ? :v4 : :default) %>

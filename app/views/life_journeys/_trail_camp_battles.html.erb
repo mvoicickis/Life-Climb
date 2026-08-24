@@ -5,6 +5,7 @@
 <% open_days = days.reject(&:completed?) %>
 <% done_days = days.select(&:completed?) %>
 <% accent = mountain_trail_accent(project.tagged_color_key) %>
+<% quantified = project.quantified? %>
 
 <div class="lp-trail-battles" id="trail-battles-<%= project.id %>" style="--lp-trail-accent: <%= accent %>">
   <p class="lp-trail-battles__stats">
@@ -38,10 +39,22 @@
         <li class="lp-trail-battles__row" id="trail-battle-<%= battle.id %>">
           <span class="lp-trail-battles__name"><%= battle.title %></span>
           <div class="lp-trail-battles__actions">
-            <%= button_to t("strategy.rpg.trail.win_battle"),
-                  battle_win_path(battle),
-                  method: :post,
-                  class: "lp-trail-battles__win" %>
+            <% if quantified %>
+              <button type="button"
+                      class="lp-trail-battles__win"
+                      data-action="click->trail-canvas#openLog"
+                      data-project-id="<%= project.id %>"
+                      data-battle-id="<%= battle.id %>"
+                      data-project-title="<%= project.title %>"
+                      data-unit="<%= project.unit %>">
+                <%= t("strategy.rpg.trail.win_battle") %>
+              </button>
+            <% else %>
+              <%= button_to t("strategy.rpg.trail.win_battle"),
+                    battle_win_path(battle),
+                    method: :post,
+                    class: "lp-trail-battles__win" %>
+            <% end %>
             <%= button_to t("strategy.rpg.delete_checkpoint"),
                   strategy_goal_path(battle),
                   method: :delete,

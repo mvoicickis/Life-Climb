@@ -14,8 +14,18 @@ export default class extends Controller {
     "ghosts",
     "glowDots",
     "placingBanner",
+    "placingText",
     "peakMenu",
-    "editDialog"
+    "editDialog",
+    "advanced",
+    "hueRange",
+    "logSheet",
+    "logProjectId",
+    "logBattleId",
+    "logTitle",
+    "logPrompt",
+    "logAmount",
+    "logQuick"
   ]
 
   static values = {
@@ -24,7 +34,8 @@ export default class extends Controller {
     planId: Number,
     lifeAreaId: Number,
     csrf: String,
-    curve: { type: Array, default: [] }
+    curve: { type: Array, default: [] },
+    quantityLogUrl: String
   }
 
   connect() {
@@ -151,19 +162,107 @@ export default class extends Controller {
       form.querySelector("input[name='color_key']")?.value ||
       "teal"
 
+    const quantity = this.readQuantityFields(form)
+
     // Preset spot (ghost / tap) → plant immediately.
     if (this._presetSpot) {
       this._plantX = this._presetSpot.x
       this._plantY = this._presetSpot.y
       this.writeHiddenCoords()
-      await this.postPlant({ title, color, x: this._plantX, y: this._plantY })
+      await this.postPlant({ title, color, x: this._plantX, y: this._plantY, quantity })
       return
     }
 
     // FAB flow → enter placing mode with glow dots.
-    this._pendingPlant = { title, color }
+    this._pendingPlant = { title, color, quantity }
     this.hidePlant({ keepPending: true })
-    this.enterPlacing()
+    this.enterPlacing(title)
+  }
+
+  pickStarter(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const starter = event.currentTarget?.dataset?.starter
+    if (!starter || !this.hasPlantTitleTarget) return
+    this.plantTitleTarget.value = starter
+    this.plantTitleTarget.focus()
+  }
+
+  toggleAdvanced(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    if (!this.hasAdvancedTarget) return
+    const open = this.advancedTarget.hasAttribute("hidden")
+    this.advancedTarget.toggleAttribute("hidden", !open)
+    event.currentTarget?.setAttribute("aria-expanded", open ? "true" : "false")
+  }
+
+  colorPicked(event) {
+    const hue = Number.parseFloat(event.currentTarget?.dataset?.hue)
+    if (this.hasHueRangeTarget && Number.isFinite(hue)) {
+      this.hueRangeTarget.value = String(Math.round(hue))
+    }
+  }
+
+  hueSlide(event) {
+    const hue = Number.parseFloat(event.currentTarget?.value)
+    if (!Number.isFinite(hue) || !this.hasPlantFormTarget) return
+    const nearest = this.nearestColorKey(hue)
+    const input = this.plantFormTarget.querySelector(`input[name='color_key'][value='${nearest}']`)
+    if (input) input.checked = true
+  }
+
+  nearestColorKey(hue) {
+    const map = [
+      [ "teal", 174 ],
+      [ "coral", 18 ],
+      [ "amber", 40 ],
+      [ "purple", 263 ],
+      [ "blue", 228 ],
+      [ "green", 145 ],
+      [ "pink", 340 ],
+      [ "gray", 30 ]
+    ]
+    let best = map[0][0]
+    let bestDist = 999
+    map.forEach(([ key, h ]) => {
+      const d = Math.min(Math.abs(hue - h), 360 - Math.abs(hue - h))
+      if (d < bestDist) {
+        bestDist = d
+        best = key
+      }
+    })
+    return best
+  }
+
+  readQuantityFields(form) {
+    const track = form.querySelector("input[name='track_quantity'][type='checkbox']")
+    const tracked = track?.checked
+    if (!tracked) return null
+    const target = form.querySelector("input[name='target_amount']")?.value
+    const unit = form.querySelector("input[name='unit']")?.value
+    return { track: true, target, unit }
+  }
+
+  enterPlacing(name = "…") {
+    this._placing = true
+    this.element.classList.add("is-placing")
+    if (this.hasPlacingBannerTarget) {
+      this.placingBannerTarget.hidden = false
+      this.placingBannerTarget.setAttribute("aria-hidden", "false")
+    }
+    if (this.hasPlacingTextTarget) {
+      const template = this.placingTextTarget.dataset.template ||
+        this.placingTextTarget.textContent ||
+        'Tap where "%{name}" belongs on the trail'
+      // Store original once
+      if (!this.placingTextTarget.dataset.template) {
+        this.placingTextTarget.dataset.template = this.placingTextTarget.textContent
+      }
+      this.placingTextTarget.textContent =
+        (this.placingTextTarget.dataset.template || template).replace("%{name}", name).replace("…", name)
+    }
+    this.renderGlowDots()
   }
 
   cancelPlacing(event) {
@@ -180,16 +279,6 @@ export default class extends Controller {
       this.glowDotsTarget.hidden = true
       this.glowDotsTarget.innerHTML = ""
     }
-  }
-
-  enterPlacing() {
-    this._placing = true
-    this.element.classList.add("is-placing")
-    if (this.hasPlacingBannerTarget) {
-      this.placingBannerTarget.hidden = false
-      this.placingBannerTarget.setAttribute("aria-hidden", "false")
-    }
-    this.renderGlowDots()
   }
 
   renderGlowDots() {
@@ -212,10 +301,16 @@ export default class extends Controller {
     const pending = this._pendingPlant
     if (!pending) return
     this.cancelPlacing()
-    await this.postPlant({ title: pending.title, color: pending.color, x, y })
+    await this.postPlant({
+      title: pending.title,
+      color: pending.color,
+      x,
+      y,
+      quantity: pending.quantity
+    })
   }
 
-  async postPlant({ title, color, x, y }) {
+  async postPlant({ title, color, x, y, quantity = null }) {
     const url = this.createUrlValue
     if (!url) return
 
@@ -225,6 +320,11 @@ export default class extends Controller {
     body.set("color_key", color)
     body.set("trail_x", String(x))
     body.set("trail_y", String(y))
+    if (quantity?.track) {
+      body.set("track_quantity", "1")
+      if (quantity.target) body.set("target_amount", String(quantity.target))
+      if (quantity.unit) body.set("unit", String(quantity.unit))
+    }
     this.appendContext(body)
     const token = this.csrfToken()
     if (token) body.set("authenticity_token", token)
@@ -247,6 +347,88 @@ export default class extends Controller {
         this.hidePlant()
         return
       }
+      if (response.redirected) {
+        window.location.href = response.url
+        return
+      }
+      window.location.reload()
+    } catch (_error) {
+      window.location.reload()
+    }
+  }
+
+  openLog(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const btn = event.currentTarget
+    if (!this.hasLogSheetTarget) return
+    if (this.hasLogProjectIdTarget) this.logProjectIdTarget.value = btn.dataset.projectId || ""
+    if (this.hasLogBattleIdTarget) this.logBattleIdTarget.value = btn.dataset.battleId || ""
+    if (this.hasLogTitleTarget) {
+      this.logTitleTarget.textContent = btn.dataset.projectTitle || "Log it"
+    }
+    if (this.hasLogPromptTarget) {
+      const unit = btn.dataset.unit || ""
+      this.logPromptTarget.textContent = unit ? `How much toward ${unit}?` : "How much?"
+    }
+    if (this.hasLogAmountTarget) this.logAmountTarget.value = "1"
+    this.logSheetTarget.hidden = false
+    this.logSheetTarget.setAttribute("aria-hidden", "false")
+    this.logSheetTarget.classList.add("is-open")
+    requestAnimationFrame(() => this.logAmountTarget?.focus())
+  }
+
+  closeLog(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.hasLogSheetTarget) return
+    this.logSheetTarget.hidden = true
+    this.logSheetTarget.setAttribute("aria-hidden", "true")
+    this.logSheetTarget.classList.remove("is-open")
+  }
+
+  logMinus(event) {
+    event.preventDefault()
+    if (!this.hasLogAmountTarget) return
+    const n = Number.parseFloat(this.logAmountTarget.value) || 0
+    this.logAmountTarget.value = String(Math.max(0.01, Math.round((n - 1) * 100) / 100))
+  }
+
+  logPlus(event) {
+    event.preventDefault()
+    if (!this.hasLogAmountTarget) return
+    const n = Number.parseFloat(this.logAmountTarget.value) || 0
+    this.logAmountTarget.value = String(Math.round((n + 1) * 100) / 100)
+  }
+
+  logQuick(event) {
+    event.preventDefault()
+    if (!this.hasLogAmountTarget) return
+    const amount = event.currentTarget?.dataset?.amount
+    if (amount) this.logAmountTarget.value = amount
+  }
+
+  async submitLog(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const form = event.currentTarget
+    const url = this.quantityLogUrlValue || form.action
+    if (!url) return
+    const body = new FormData(form)
+    const token = this.csrfToken()
+    if (token) body.set("authenticity_token", token)
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "text/html, application/xhtml+xml",
+          "X-CSRF-Token": token,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body,
+        credentials: "same-origin"
+      })
       if (response.redirected) {
         window.location.href = response.url
         return
@@ -451,6 +633,7 @@ export default class extends Controller {
       target.closest(".lp-trail-today") ||
       target.closest(".lp-trail__peak") ||
       target.closest(".lp-trail-placing") ||
+      target.closest(".lp-trail-log") ||
       target.closest("[data-trail-ignore]")
     )
   }
