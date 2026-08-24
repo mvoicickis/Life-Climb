@@ -18,7 +18,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     end
   end
 
-  # Mountain V4 keeps the legacy climb list inside a collapsed fallback.
+  # Mountain V4 keeps the legacy climb list off-canvas; open as an overlay for menus/tests.
   def open_mountain_list_fallback!
     return unless page.has_css?(".lp-trail__list-fallback", wait: 1)
 
@@ -26,6 +26,8 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       (() => {
         const details = document.querySelector(".lp-trail__list-fallback");
         if (!details) return;
+        details.classList.remove("sr-only");
+        details.classList.add("is-test-open");
         details.open = true;
         details.scrollIntoView({ block: "nearest" });
       })()
@@ -51,7 +53,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       const sheet = root && root.querySelector("[data-trail-camp-sheet-target='sheet']");
       const body = root && root.querySelector("[data-trail-camp-sheet-target='body']");
       const title = root && root.querySelector("[data-trail-camp-sheet-target='title']");
-      const accent = camp.dataset.accent || "#0f766e";
+      const accent = camp.dataset.accent || "#0f9488";
       if (root) root.style.setProperty("--lp-trail-accent", accent);
       if (title) title.textContent = camp.dataset.campTitle || "";
       if (body) {
@@ -69,5 +71,12 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     JS
     assert_selector ".lp-trail-sheet.is-open", wait: 5
     assert_selector "#trail-sheet-camp-#{project.id}:not([hidden])", visible: :all, wait: 5
+  end
+
+  def open_v4_plant_composer!
+    page.execute_script(<<~JS)
+      document.querySelector(".lp-dash-nav__fab")?.click();
+    JS
+    assert_selector ".lp-trail-plant.is-open, .lp-trail-plant:not([hidden])", wait: 5
   end
 end

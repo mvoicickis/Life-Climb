@@ -2,8 +2,8 @@
 
 require "application_system_test_case"
 
-# Destination stage must stay one full-width column whenever peeks leave the grid.
-# A leftover 14%|1fr|14% track parks .active in ~50px and edge-clips the title.
+# V4 peak pennant is a compact flag (~100–150px). Title must stay readable
+# and present — not edge-clipped to a near-zero width.
 class DestinationTitleCollapseTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -33,6 +33,7 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "day", title: "Write one test", scheduled_on: Date.current, position: 0
     )
+    @plan = plan
   end
 
   test "destination title stays centered on tall iPhone viewport" do
@@ -53,35 +54,29 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
-    within(".lp-dash-nav") { click_link "Mountain" }
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    assert_selector ".lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 5
+    assert_selector ".lp-trail__peak-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const title = document.querySelector(".lp-rpg-destination-carousel__title");
-        const stage = document.querySelector(".lp-rpg-destination-carousel__stage");
-        const active = document.querySelector(".lp-rpg-destination-carousel__active");
-        const row = document.querySelector(".lp-rpg-destination-carousel__title-row");
-        if (!title || !stage || !active) return { ok: false, reason: "missing nodes" };
+        const title = document.querySelector(".lp-trail__peak-title");
+        const peak = document.querySelector(".lp-trail__peak");
+        const pennant = document.querySelector(".lp-trail__pennant");
+        if (!title || !peak) return { ok: false, reason: "missing nodes" };
         const tr = title.getBoundingClientRect();
-        const sr = stage.getBoundingClientRect();
-        const ar = active.getBoundingClientRect();
-        const rr = row ? row.getBoundingClientRect() : null;
-        const stageStyle = getComputedStyle(stage);
+        const pr = peak.getBoundingClientRect();
+        const pennantW = pennant ? pennant.getBoundingClientRect().width : null;
         const titleCenter = tr.left + tr.width / 2;
-        const stageCenter = sr.left + sr.width / 2;
+        const peakCenter = pr.left + pr.width / 2;
         return {
           ok: true,
           text: (title.textContent || "").trim(),
           titleW: tr.width,
           titleH: tr.height,
-          titleLeft: tr.left,
-          rowW: rr ? rr.width : null,
-          activeW: ar.width,
-          stageW: sr.width,
-          centerDelta: Math.abs(titleCenter - stageCenter),
-          stageCols: stageStyle.gridTemplateColumns,
+          pennantW,
+          peakW: pr.width,
+          centerDelta: Math.abs(titleCenter - peakCenter),
           viewport: [window.innerWidth, window.innerHeight]
         };
       })()
@@ -89,15 +84,13 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
 
     assert metrics["ok"], "Destination title metrics missing: #{metrics.inspect}"
     assert_match(/Become a Rails developer/i, metrics["text"].to_s)
-    assert_operator metrics["titleW"], :>=, 120,
+    assert_operator metrics["titleW"], :>=, 100,
                     "title edge-clipped (too narrow) at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["titleH"], :>=, 16,
                     "title has no visible height at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["activeW"], :>=, metrics["stageW"] * 0.7,
-                    "active not full stage width at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["centerDelta"], :<=, 24,
-                    "title not centered in stage at #{width}x#{height}: #{metrics.inspect}"
-    refute_match(/\d+(\.\d+)?%/, metrics["stageCols"].to_s,
-                 "stage still uses %-based multi columns while peeks may be gone: #{metrics.inspect}")
+    assert_operator metrics["centerDelta"], :<=, 80,
+                    "title not near peak at #{width}x#{height}: #{metrics.inspect}"
+    assert_no_selector ".lp-rpg-destination-carousel__stage"
+    assert_no_selector ".lp-rpg-destination-carousel__arrow"
   end
 end

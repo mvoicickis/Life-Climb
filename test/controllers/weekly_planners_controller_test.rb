@@ -182,7 +182,14 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
     travel_to Date.new(2026, 8, 10) do
       get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
       assert_response :success
-      assert_select "a[href=?]", weekly_planner_path(plan_id: @plan.id, new_week: 1)
+      # V4 phone drops the plan-rail ⋮ menu; planner remains reachable by URL.
+      assert_select ".lp-rpg.is-v4-phone"
+      assert_select "#trail-camp-#{@project.id}", text: /Resume/
+      assert_select "a[href=?]", weekly_planner_path(plan_id: @plan.id, new_week: 1), count: 0
+
+      get weekly_planner_path(plan_id: @plan.id, new_week: 1)
+      assert_response :success
+      assert_match(/What do you want to work on this week/i, response.body)
     end
   end
 end

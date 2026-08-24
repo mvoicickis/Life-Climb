@@ -44,6 +44,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
       user: @user, title: "Design battle card", position: 0
     )
     @current = @leaf
+    @daily_battles = camps[1]
   end
 
   test "short phone keeps the project list in the planning viewport" do
@@ -57,26 +58,26 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector "#strategy-world", wait: 5
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 5
     assert_no_selector ".lp-first-climb-shell"
 
     assert_selector ".lp-rpg__stage.is-planning", visible: :all
     assert_selector ".lp-rpg__stage-trail", visible: :all
+    assert_selector "#mountain-trail.lp-trail.is-v4", visible: :all
     assert_no_selector ".lp-rpg-sheet.is-quest-space"
     assert_no_selector ".lp-rpg__stage-battle"
     assert_no_selector ".lp-rpg-breadcrumbs"
-    open_mountain_list_fallback!
-    assert_selector ".lp-climb-path__project", minimum: 4, visible: :all, wait: 5
+    assert_selector ".lp-trail-camp", minimum: 4, visible: :all, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
-        const t = document.querySelector(".lp-rpg-destination-carousel__title");
+        const t = document.querySelector(".lp-trail__peak-title");
         const r = t.getBoundingClientRect();
         return { w: r.width, h: r.height, text: (t.textContent || "").trim() };
       })()
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
-    assert_operator title_metrics["w"], :>=, 120, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_selector "#climb-path-project-#{@current.id} .lp-climb-path__title", text: /Daily battles/i, visible: :all
+    assert_operator title_metrics["w"], :>=, 100, "Destination title too narrow: #{title_metrics.inspect}"
+    assert_selector "#trail-camp-#{@daily_battles.id} .lp-trail-camp__title", text: /Daily battles/i, visible: :all
     assert_no_selector ".lp-rpg-camp-switch"
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
@@ -104,27 +105,24 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-trail, .lp-rpg__stage-sections');
         const stage = document.querySelector('.lp-rpg__stage.is-planning');
-        const chrome = document.querySelector('.lp-rpg__chrome-top');
+        const chrome = document.querySelector('.lp-rpg__chrome-top, .lp-trail-hud');
         const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
-        const visible = Array.from(document.querySelectorAll('.lp-climb-path__project')).filter((el) => {
+        const visible = Array.from(document.querySelectorAll('.lp-trail-camp')).filter((el) => {
           const r = el.getBoundingClientRect();
           return r.width > 8 && r.height > 8 && r.right > 0 && r.left < window.innerWidth;
         }).length;
         const rootStyle = root ? getComputedStyle(root) : null;
         const htmlStyle = getComputedStyle(document.documentElement);
-        const chromePad = chrome ? getComputedStyle(chrome).paddingLeft : '';
-        const stagePad = stage ? getComputedStyle(stage).paddingLeft : '';
         return {
           visible,
           innerHeight: window.innerHeight,
           rootOverflow: rootStyle ? rootStyle.overflowY || rootStyle.overflow : '',
           htmlOverflow: htmlStyle.overflowY || htmlStyle.overflow,
           bodyOverflow: getComputedStyle(document.body).overflowY || getComputedStyle(document.body).overflow,
-          chromePad,
-          stagePad,
           trailH: trail ? Math.round(trail.getBoundingClientRect().height) : 0,
           stageH: stage ? Math.round(stage.getBoundingClientRect().height) : 0,
-          statsPresent: !!stats
+          statsPresent: !!stats,
+          hasChrome: !!chrome
         };
       })()
     JS
@@ -135,7 +133,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
-    assert_equal metrics["chromePad"], metrics["stagePad"], "chrome/stage gutters should match: #{metrics.inspect}"
+    assert metrics["hasChrome"], "expected trail HUD chrome: #{metrics.inspect}"
 
     assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
     assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")

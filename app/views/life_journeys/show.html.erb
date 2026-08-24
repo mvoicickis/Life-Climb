@@ -24,8 +24,9 @@
 <% current_project = @current_project %>
 <% alive = current_user.alive_level %>
 <% streak = @climb_streak || strategy_climb_streak_status %>
+<% v4_phone = plan.present? && !first_climb %>
 
-<div class="lp-rpg is-focus-phase <%= 'is-first-climb' if first_climb %>"
+<div class="lp-rpg is-focus-phase <%= 'is-first-climb' if first_climb %> <%= 'is-v4-phone' if v4_phone %>"
      id="strategy-world"
      data-controller="strategy-celebrate strategy-rpg"
      data-strategy-celebrate-gained-value="<%= sp_gained %>"
@@ -40,6 +41,25 @@
     <div class="lp-first-climb-shell">
       <div class="lp-first-climb-shell__sky" aria-hidden="true"></div>
       <%= render "life_journeys/first_climb_coach", journey: @journey, goal: @goal %>
+    </div>
+  <% elsif v4_phone %>
+    <div class="lp-rpg__stage is-planning is-v4">
+      <div class="lp-rpg__planning is-v4">
+        <div class="lp-rpg__stage-sections lp-rpg__stage-trail is-v4">
+          <%= render "life_journeys/trail_canvas",
+                trail: trail,
+                goal: @goal,
+                plan: plan,
+                plans: plans,
+                journey: @journey,
+                current_project: current_project,
+                focus: @focus,
+                alive: alive,
+                streak: streak,
+                progress: progress,
+                root_goals: root_goals %>
+        </div>
+      </div>
     </div>
   <% else %>
     <div class="lp-rpg-scenic" style="--lp-scenic: url('/images/strategy-mountain-scenic.jpg')" aria-hidden="true"></div>
@@ -63,22 +83,12 @@
     <div class="lp-rpg__stage is-planning">
       <div class="lp-rpg__planning">
         <div class="lp-rpg__stage-sections lp-rpg__stage-trail">
-          <% if plan %>
-            <%= render "life_journeys/trail_canvas",
-                  trail: trail,
-                  goal: @goal,
-                  plan: plan,
-                  journey: @journey,
-                  current_project: current_project,
-                  focus: @focus %>
-          <% else %>
-            <%= render "life_journeys/rpg_climb_path",
-                  trail: trail,
-                  goal: @goal,
-                  plan: plan,
-                  current_project: current_project,
-                  focus: @focus %>
-          <% end %>
+          <%= render "life_journeys/rpg_climb_path",
+                trail: trail,
+                goal: @goal,
+                plan: plan,
+                current_project: current_project,
+                focus: @focus %>
         </div>
       </div>
     </div>
@@ -87,4 +97,4 @@
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
 </div>
 
-<%= render "shared/lp_dash_nav", active: :mountain %>
+<%= render "shared/lp_dash_nav", active: :mountain, variant: (v4_phone ? :v4 : :default) %>

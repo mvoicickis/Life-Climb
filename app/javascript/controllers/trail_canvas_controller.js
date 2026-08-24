@@ -1,15 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Mountain V4 photo trail: plant camps on empty taps, drag to reposition.
+// Mountain V4 photo trail: composer → place mode, ghosts, drag camps.
 export default class extends Controller {
   static targets = [
     "surface",
+    "scroll",
     "camps",
     "plantForm",
     "plantX",
     "plantY",
     "plantTitle",
-    "ghosts"
+    "plantSubmit",
+    "ghosts",
+    "glowDots",
+    "placingBanner",
+    "peakMenu",
+    "editDialog"
   ]
 
   static values = {
@@ -17,25 +23,54 @@ export default class extends Controller {
     journeyId: Number,
     planId: Number,
     lifeAreaId: Number,
-    csrf: String
+    csrf: String,
+    curve: { type: Array, default: [] }
   }
 
   connect() {
     this._plantX = null
     this._plantY = null
+    this._presetSpot = null
+    this._placing = false
+    this._pendingPlant = null
     this._drag = null
     this._moved = false
     this._longPressTimer = null
     this._onPointerMove = (event) => this.onCampPointerMove(event)
     this._onPointerUp = (event) => this.onCampPointerUp(event)
+    this.bindFab()
   }
 
   disconnect() {
     this.clearLongPress()
     this.unbindDrag()
+    this.unbindFab()
   }
 
-  // Empty trail tap → open plant composer at normalized coords.
+  bindFab() {
+    this._fabHandler = (event) => {
+      const fab = event.target.closest(".lp-dash-nav__fab")
+      if (!fab) return
+      event.preventDefault()
+      this.openComposerFromFab(event)
+    }
+    document.addEventListener("click", this._fabHandler)
+  }
+
+  unbindFab() {
+    if (this._fabHandler) document.removeEventListener("click", this._fabHandler)
+  }
+
+  openComposerFromFab(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    this._presetSpot = null
+    this._plantX = null
+    this._plantY = null
+    this.openPlant(null, null, { chooseSpot: true })
+  }
+
+  // Empty trail tap → plant at coords, or finish placing mode.
   surfaceClick(event) {
     if (this._moved) {
       this._moved = false
@@ -46,10 +81,15 @@ export default class extends Controller {
     const coords = this.coordsFromEvent(event)
     if (!coords) return
 
-    this.openPlant(coords.x, coords.y)
+    if (this._placing && this._pendingPlant) {
+      this.finishPlacing(coords.x, coords.y)
+      return
+    }
+
+    this._presetSpot = { x: coords.x, y: coords.y }
+    this.openPlant(coords.x, coords.y, { chooseSpot: false })
   }
 
-  // Ghost “Plant a project” pins.
   ghostPick(event) {
     event.preventDefault()
     event.stopPropagation()
@@ -57,20 +97,42 @@ export default class extends Controller {
     const el = event.currentTarget
     const x = this.readCoord(el.dataset.trailX, 0.5)
     const y = this.readCoord(el.dataset.trailY, 0.55)
-    this.openPlant(x, y)
+    this._presetSpot = { x, y }
+    this.openPlant(x, y, { chooseSpot: false })
   }
 
   closePlant(event) {
     event?.preventDefault()
     event?.stopPropagation()
     this.hidePlant()
+    this.cancelPlacing()
   }
 
   stop(event) {
     event.stopPropagation()
   }
 
-  // Prefer turbo-stream fetch; fall back to normal form POST with hidden coords.
+  togglePeakMenu(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.hasPeakMenuTarget) return
+    const open = this.peakMenuTarget.hasAttribute("hidden")
+    this.peakMenuTarget.toggleAttribute("hidden", !open)
+    event.currentTarget?.setAttribute("aria-expanded", open ? "true" : "false")
+  }
+
+  editDestination(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (this.hasPeakMenuTarget) this.peakMenuTarget.hidden = true
+    if (this.hasEditDialogTarget) this.editDialogTarget.showModal()
+  }
+
+  closeEdit(event) {
+    event?.preventDefault()
+    if (this.hasEditDialogTarget) this.editDialogTarget.close()
+  }
+
   async submitPlant(event) {
     event.preventDefault()
     event.stopPropagation()
@@ -84,26 +146,95 @@ export default class extends Controller {
       return
     }
 
-    this.writeHiddenCoords()
+    const color =
+      form.querySelector("input[name='color_key']:checked")?.value ||
+      form.querySelector("input[name='color_key']")?.value ||
+      "teal"
 
-    const url = this.createUrlValue || form.action
+    // Preset spot (ghost / tap) → plant immediately.
+    if (this._presetSpot) {
+      this._plantX = this._presetSpot.x
+      this._plantY = this._presetSpot.y
+      this.writeHiddenCoords()
+      await this.postPlant({ title, color, x: this._plantX, y: this._plantY })
+      return
+    }
+
+    // FAB flow → enter placing mode with glow dots.
+    this._pendingPlant = { title, color }
+    this.hidePlant({ keepPending: true })
+    this.enterPlacing()
+  }
+
+  cancelPlacing(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    this._placing = false
+    this._pendingPlant = null
+    this.element.classList.remove("is-placing")
+    if (this.hasPlacingBannerTarget) {
+      this.placingBannerTarget.hidden = true
+      this.placingBannerTarget.setAttribute("aria-hidden", "true")
+    }
+    if (this.hasGlowDotsTarget) {
+      this.glowDotsTarget.hidden = true
+      this.glowDotsTarget.innerHTML = ""
+    }
+  }
+
+  enterPlacing() {
+    this._placing = true
+    this.element.classList.add("is-placing")
+    if (this.hasPlacingBannerTarget) {
+      this.placingBannerTarget.hidden = false
+      this.placingBannerTarget.setAttribute("aria-hidden", "false")
+    }
+    this.renderGlowDots()
+  }
+
+  renderGlowDots() {
+    if (!this.hasGlowDotsTarget) return
+    const curve = this.curveValue || []
+    this.glowDotsTarget.innerHTML = ""
+    curve.forEach((pair, i) => {
+      if (i % 2 !== 0) return
+      const [y, x] = pair
+      const dot = document.createElement("span")
+      dot.className = "lp-trail-glow"
+      dot.style.setProperty("--lp-trail-x", x)
+      dot.style.setProperty("--lp-trail-y", y)
+      this.glowDotsTarget.appendChild(dot)
+    })
+    this.glowDotsTarget.hidden = false
+  }
+
+  async finishPlacing(x, y) {
+    const pending = this._pendingPlant
+    if (!pending) return
+    this.cancelPlacing()
+    await this.postPlant({ title: pending.title, color: pending.color, x, y })
+  }
+
+  async postPlant({ title, color, x, y }) {
+    const url = this.createUrlValue
     if (!url) return
 
-    const body = new FormData(form)
+    const body = new FormData()
+    body.set("title", title)
+    body.set("horizon", "project")
+    body.set("color_key", color)
+    body.set("trail_x", String(x))
+    body.set("trail_y", String(y))
     this.appendContext(body)
-    if (!body.has("trail_x") && this._plantX != null) body.set("trail_x", this._plantX)
-    if (!body.has("trail_y") && this._plantY != null) body.set("trail_y", this._plantY)
-    if (!body.has("authenticity_token")) {
-      const token = this.csrfToken()
-      if (token) body.set("authenticity_token", token)
-    }
+    const token = this.csrfToken()
+    if (token) body.set("authenticity_token", token)
 
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: {
           Accept: "text/vnd.turbo-stream.html, text/html, application/xhtml+xml",
-          "X-CSRF-Token": this.csrfToken(),
+          "X-CSRF-Token": token,
           "X-Requested-With": "XMLHttpRequest"
         },
         body,
@@ -112,29 +243,20 @@ export default class extends Controller {
 
       const contentType = response.headers.get("content-type") || ""
       if (contentType.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
-        const html = await response.text()
-        window.Turbo.renderStreamMessage(html)
+        window.Turbo.renderStreamMessage(await response.text())
         this.hidePlant()
         return
       }
-
       if (response.redirected) {
         window.location.href = response.url
         return
       }
-
-      // Fallback: classic form submit with hidden trail_x / trail_y.
-      this.writeHiddenCoords()
-      if (typeof form.requestSubmit === "function") form.requestSubmit()
-      else form.submit()
+      window.location.reload()
     } catch (_error) {
-      this.writeHiddenCoords()
-      if (typeof form.requestSubmit === "function") form.requestSubmit()
-      else form.submit()
+      window.location.reload()
     }
   }
 
-  // Long-press / drag camp → PATCH trail coords only.
   campPointerDown(event) {
     if (event.pointerType === "mouse" && event.button !== 0) return
 
@@ -174,7 +296,6 @@ export default class extends Controller {
     const dx = event.clientX - this._drag.startX
     const dy = event.clientY - this._drag.startY
     if (!this._drag.dragging && Math.hypot(dx, dy) > 10) {
-      // Movement before long-press threshold — treat as scroll intent; cancel drag arming.
       this.clearLongPress()
       return
     }
@@ -217,14 +338,12 @@ export default class extends Controller {
       event.preventDefault()
       event.stopPropagation()
       this.patchCampCoords(drag.updateUrl, pending.x, pending.y)
-      // Suppress the click that would open the sheet after a drag.
       this._moved = true
       window.setTimeout(() => { this._moved = false }, 0)
     }
   }
 
   campClick(event) {
-    // After a drag, swallow the synthetic click so the sheet does not open.
     if (this._moved) {
       event.preventDefault()
       event.stopPropagation()
@@ -232,20 +351,34 @@ export default class extends Controller {
     }
   }
 
-  openPlant(x, y) {
-    this._plantX = this.clamp(x, 0.05, 0.95)
-    this._plantY = this.clamp(y, 0.32, 0.88)
-    this.writeHiddenCoords()
+  openPlant(x, y, { chooseSpot = false } = {}) {
+    if (x != null && y != null) {
+      this._plantX = this.clamp(x, 0.05, 0.95)
+      this._plantY = this.clamp(y, 0.32, 0.88)
+      this.writeHiddenCoords()
+    } else {
+      this._plantX = null
+      this._plantY = null
+    }
 
     if (!this.hasPlantFormTarget) return
     this.plantFormTarget.classList.add("is-open")
     this.plantFormTarget.hidden = false
     this.plantFormTarget.setAttribute("aria-hidden", "false")
 
+    if (this.hasPlantSubmitTarget) {
+      this.plantSubmitTarget.textContent = chooseSpot
+        ? this.plantSubmitTarget.dataset.chooseLabel || this.plantSubmitTarget.textContent
+        : this.plantSubmitTarget.dataset.plantLabel || this.plantSubmitTarget.textContent
+    }
+
     const marker = this.plantFormTarget.querySelector("[data-trail-plant-marker]")
-    if (marker) {
+    if (marker && this._plantX != null) {
       marker.style.left = `${this._plantX * 100}%`
       marker.style.top = `${this._plantY * 100}%`
+      marker.hidden = false
+    } else if (marker) {
+      marker.hidden = true
     }
 
     requestAnimationFrame(() => {
@@ -253,14 +386,17 @@ export default class extends Controller {
     })
   }
 
-  hidePlant() {
+  hidePlant({ keepPending = false } = {}) {
     if (!this.hasPlantFormTarget) return
     this.plantFormTarget.classList.remove("is-open")
     this.plantFormTarget.hidden = true
     this.plantFormTarget.setAttribute("aria-hidden", "true")
-    if (this.hasPlantTitleTarget) this.plantTitleTarget.value = ""
-    this._plantX = null
-    this._plantY = null
+    if (this.hasPlantTitleTarget && !keepPending) this.plantTitleTarget.value = ""
+    if (!keepPending) {
+      this._plantX = null
+      this._plantY = null
+      this._presetSpot = null
+    }
   }
 
   writeHiddenCoords() {
@@ -301,9 +437,7 @@ export default class extends Controller {
         body,
         credentials: "same-origin"
       })
-    } catch (_error) {
-      // Keep the optimistic position; next reload will reconcile.
-    }
+    } catch (_error) { /* optimistic */ }
   }
 
   shouldIgnoreClick(target) {
@@ -313,8 +447,10 @@ export default class extends Controller {
       target.closest(".lp-trail-ghost") ||
       target.closest(".lp-trail-sheet") ||
       target.closest(".lp-trail-plant") ||
-      target.closest(".lp-trail__chrome") ||
-      target.closest(".lp-trail__controls") ||
+      target.closest(".lp-trail-hud") ||
+      target.closest(".lp-trail-today") ||
+      target.closest(".lp-trail__peak") ||
+      target.closest(".lp-trail-placing") ||
       target.closest("[data-trail-ignore]")
     )
   }
@@ -327,15 +463,15 @@ export default class extends Controller {
     const surface = this.hasSurfaceTarget ? this.surfaceTarget : this.element
     const rect = surface.getBoundingClientRect()
     if (!rect.width || !rect.height) return null
-
-    const x = this.clamp((clientX - rect.left) / rect.width, 0, 1)
-    const y = this.clamp((clientY - rect.top) / rect.height, 0, 1)
-    return { x, y }
+    return {
+      x: this.clamp((clientX - rect.left) / rect.width, 0.05, 0.95),
+      y: this.clamp((clientY - rect.top) / rect.height, 0.28, 0.92)
+    }
   }
 
   readCoord(value, fallback) {
-    const n = Number(value)
-    return Number.isFinite(n) ? this.clamp(n, 0, 1) : fallback
+    const n = Number.parseFloat(value)
+    return Number.isFinite(n) ? n : fallback
   }
 
   clamp(n, min, max) {
@@ -343,23 +479,27 @@ export default class extends Controller {
   }
 
   csrfToken() {
-    return this.csrfValue || document.querySelector("meta[name='csrf-token']")?.content || ""
+    return this.csrfValue ||
+      document.querySelector("meta[name='csrf-token']")?.content ||
+      ""
   }
 
   clearLongPress() {
-    if (this._longPressTimer) window.clearTimeout(this._longPressTimer)
-    this._longPressTimer = null
+    if (this._longPressTimer) {
+      window.clearTimeout(this._longPressTimer)
+      this._longPressTimer = null
+    }
   }
 
   bindDrag() {
-    document.addEventListener("pointermove", this._onPointerMove)
-    document.addEventListener("pointerup", this._onPointerUp)
-    document.addEventListener("pointercancel", this._onPointerUp)
+    window.addEventListener("pointermove", this._onPointerMove, { passive: false })
+    window.addEventListener("pointerup", this._onPointerUp)
+    window.addEventListener("pointercancel", this._onPointerUp)
   }
 
   unbindDrag() {
-    document.removeEventListener("pointermove", this._onPointerMove)
-    document.removeEventListener("pointerup", this._onPointerUp)
-    document.removeEventListener("pointercancel", this._onPointerUp)
+    window.removeEventListener("pointermove", this._onPointerMove)
+    window.removeEventListener("pointerup", this._onPointerUp)
+    window.removeEventListener("pointercancel", this._onPointerUp)
   }
 }

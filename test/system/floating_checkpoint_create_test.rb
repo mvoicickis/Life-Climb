@@ -57,15 +57,12 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
     assert_no_selector ".lp-first-climb-shell"
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 5
 
-    open_mountain_list_fallback!
-    page.evaluate_script(<<~JS)
-      document.querySelector('.lp-climb-path__add')?.scrollIntoView({ inline: 'end', block: 'nearest' });
-    JS
-    find(".lp-climb-path__new-btn", text: /Add a project/i, visible: :all, wait: 5).click
-    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
-    assert_selector ".lp-rpg-float-create__heading", text: /Add a project/i
-    assert_selector "body > .lp-rpg-float-create input[name='title']"
+    open_v4_plant_composer!
+    assert_selector ".lp-trail-plant.is-open .lp-trail-plant__title", text: /New project on the trail/i
+    assert_selector ".lp-trail-plant.is-open input[name='title']"
+    assert_selector ".lp-trail-plant.is-open .lp-trail-plant__submit"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/mountain-checkpoint-float-create.png")
@@ -80,19 +77,29 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 5
 
-    open_mountain_list_fallback!
-    page.evaluate_script(<<~JS)
-      document.querySelector('.lp-climb-path__add')?.scrollIntoView({ inline: 'end', block: 'nearest' });
-    JS
-    find(".lp-climb-path__new-btn", text: /Add a project/i, visible: :all, wait: 5).click
-    assert_selector "body > .lp-rpg-float-create:not([hidden])", wait: 3
+    open_v4_plant_composer!
+    within(".lp-trail-plant.is-open") do
+      find(".lp-trail-plant__field").set("Notifications camp")
+      find(".lp-trail-plant__submit").click
+    end
+    assert_selector ".lp-trail.is-placing", wait: 3
 
-    card = find("body > .lp-rpg-float-create .lp-rpg-float-create__card")
-    card.fill_in "title", with: "Notifications camp"
-    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
-      card.find(".lp-rpg-float-create__btn.is-create").click
-      assert_selector "#mountain-trail", wait: 5
+    assert_difference -> { @plan.reload.children.for_kind("project").count }, 1 do
+      page.execute_script(<<~JS)
+        (() => {
+          const surface = document.querySelector(".lp-trail__surface");
+          if (!surface) return;
+          const r = surface.getBoundingClientRect();
+          const x = r.left + r.width * 0.52;
+          const y = r.top + r.height * 0.58;
+          surface.dispatchEvent(new MouseEvent("click", {
+            bubbles: true, cancelable: true, clientX: x, clientY: y, view: window
+          }));
+        })()
+      JS
+      assert_text(/Notifications camp/i, wait: 8)
     end
     created = @plan.children.for_kind("project").find_by!(title: "Notifications camp")
     assert_selector "#trail-camp-#{created.id}", text: /Notifications camp/i, wait: 5

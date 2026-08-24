@@ -2,14 +2,15 @@
 
 require "application_system_test_case"
 
-# Path chips keep compact --lp-path-card width but wrap titles to 2 lines
-# so realistic plan names stay readable without overlapping chrome.
+# V4 dropped path chips. Multi-plan titles appear as HUD plan links;
+# destination title stays on the peak pennant.
 class PathChipFluidTitleTest < ApplicationSystemTestCase
   LONG_TITLE = "Make LifePoints Successsull"
   SHORT_TITLE = "Learn German"
 
   setup do
     @user = users(:one)
+    allow_extra_climbs!(@user)
     Onboarding::Run.call(
       user: @user,
       area_key: "career",
@@ -29,20 +30,22 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
 
   test "long path title is fully readable without chrome overlap" do
     plan = create_plan!(LONG_TITLE)
+    create_plan!("Other Path", position: 1)
     assert_path_title_readable(plan, LONG_TITLE, 390, 844)
   end
 
   test "short path title is fully readable without chrome overlap" do
     plan = create_plan!(SHORT_TITLE)
+    create_plan!("Other Path", position: 1)
     assert_path_title_readable(plan, SHORT_TITLE, 390, 844)
   end
 
   private
 
-  def create_plan!(title)
+  def create_plan!(title, position: 0)
     plan = @goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "plan", title: title, position: 0
+      horizon: "plan", title: title, position: position
     )
     camp = plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
@@ -62,44 +65,26 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
     click_button "Sign in"
   end
 
-  def path_metrics
+  def path_metrics(expected_text)
+    needle = expected_text.to_s.split.first.to_json
     page.evaluate_script(<<~JS)
       (() => {
-        const title = document.querySelector(".lp-rpg-path.is-focus .lp-rpg-path__title");
-        const path = document.querySelector(".lp-rpg-path.is-focus");
-        const item = document.querySelector(".lp-rpg-plan-rail__item.is-focus");
-        const menu = item?.querySelector(".lp-rpg-path__menu-btn");
-        const dest = document.querySelector(".lp-rpg-destination-carousel__title");
-        const trail = document.querySelector(".lp-rpg__stage-trail, .lp-rpg-trail, .lp-climb-path, #mountain-trail");
-        if (!title || !path || !item) return { ok: false, reason: "missing" };
-        const cs = getComputedStyle(title);
-        const tr = title.getBoundingClientRect();
-        const pr = path.getBoundingClientRect();
-        const ir = item.getBoundingClientRect();
-        const mr = menu?.getBoundingClientRect();
-        const dr = dest?.getBoundingClientRect();
-        const trailR = trail?.getBoundingClientRect();
-        const truncated = title.scrollHeight > title.clientHeight + 1;
-        // Menu sits top-right; titles may share Y-range — only horizontal intrusion counts.
-        const menuOverlapsTitle = !!(mr && tr.right > mr.left + 2 && tr.left < mr.right - 2);
+        const needle = #{needle};
+        const link = Array.from(document.querySelectorAll(".lp-trail-hud__plan")).find((el) =>
+          (el.textContent || "").includes(needle)
+        ) || document.querySelector(".lp-trail-hud__plan.is-active");
+        const peak = document.querySelector(".lp-trail__peak-title");
+        if (!link && !peak) return { ok: false, reason: "missing" };
+        const target = link || peak;
+        const cs = getComputedStyle(target);
+        const tr = target.getBoundingClientRect();
         return {
           ok: true,
-          text: (title.textContent || "").trim(),
-          titleAttr: title.getAttribute("title") || "",
+          text: (target.textContent || "").trim(),
           whiteSpace: cs.whiteSpace,
-          webkitLineClamp: cs.webkitLineClamp || cs.lineClamp || "",
           fontSize: cs.fontSize,
-          pathWidth: pr.width,
-          itemWidth: ir.width,
           titleWidth: tr.width,
-          truncated,
-          menuOverlapsTitle,
-          destBottom: dr ? dr.bottom : null,
-          pathTop: pr.top,
-          pathBottom: pr.bottom,
-          trailTop: trailR ? trailR.top : null,
-          pathCardMax: getComputedStyle(document.documentElement).getPropertyValue("--lp-path-card") ||
-            getComputedStyle(document.querySelector(".lp-rpg-plan-rail")).getPropertyValue("--lp-path-card"),
+          titleHeight: tr.height,
           viewport: [window.innerWidth, window.innerHeight]
         };
       })()
@@ -111,36 +96,18 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
     sign_in_user!
     assert_selector ".lp-dash-nav", wait: 5
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id)
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
-    assert_selector ".lp-rpg-path.is-focus .lp-rpg-path__title", text: expected_text, visible: :all, wait: 5
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 10
+    assert_no_selector ".lp-rpg-path"
+    assert_selector ".lp-trail-hud__plan.is-active", wait: 5
 
-    assert_text expected_text
-
-    metrics = path_metrics
-    assert metrics["ok"], "path title missing at #{width}x#{height}: #{metrics.inspect}"
-    assert_equal expected_text, metrics["text"]
-    assert_equal expected_text, metrics["titleAttr"]
-    refute_equal "nowrap", metrics["whiteSpace"].to_s
-    assert_includes %w[2], metrics["webkitLineClamp"].to_s
-
-    # Chip width stays compact (~7.5rem = 120px); do not widen the rail card.
-    assert_operator metrics["itemWidth"].to_f, :<=, 130.0,
-                    "path chip widened beyond compact size: #{metrics.inspect}"
-    assert_operator metrics["itemWidth"].to_f, :>=, 100.0,
-                    "path chip unexpectedly narrow: #{metrics.inspect}"
-
-    refute metrics["truncated"],
-           "path title still visually truncated: #{metrics.inspect}"
-    refute metrics["menuOverlapsTitle"],
-           "title overlaps ⋮ menu: #{metrics.inspect}"
-
-    if metrics["destBottom"]
-      assert_operator metrics["pathTop"].to_f, :>=, metrics["destBottom"].to_f - 1,
-                      "path overlaps Destination title: #{metrics.inspect}"
-    end
-    if metrics["trailTop"]
-      assert_operator metrics["pathBottom"].to_f, :<=, metrics["trailTop"].to_f + 2,
-                      "path overlaps trail/sections below: #{metrics.inspect}"
-    end
+    metrics = path_metrics(expected_text)
+    assert metrics["ok"], "HUD/peak title missing at #{width}x#{height}: #{metrics.inspect}"
+    # HUD truncates long plan names to 14 chars in the link text.
+    assert_includes metrics["text"], expected_text[0, 10]
+    assert_operator metrics["titleWidth"].to_f, :>=, 40.0,
+                    "plan/peak title unexpectedly narrow: #{metrics.inspect}"
+    assert_operator metrics["titleHeight"].to_f, :>=, 12.0,
+                    "plan/peak title has no height: #{metrics.inspect}"
+    assert_selector ".lp-trail__peak-title", text: /Ship the product/i
   end
 end

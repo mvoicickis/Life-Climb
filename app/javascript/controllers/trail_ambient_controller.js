@@ -3,6 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Sun/moon arc + mist/ember toggles driven by local clock.
 export default class extends Controller {
   static targets = ["sun", "moon", "mist", "embers"]
+  static values = { dormant: Boolean }
 
   connect() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -27,17 +28,18 @@ export default class extends Controller {
       ? (hrs - 6) / 12
       : (hrs >= 18 ? (hrs - 18) / 12 : (hrs + 6) / 12)
 
-    // Arc across the upper sky (percent of trail surface).
     const x = 8 + cycleFrac * 84
     const y = 28 - Math.sin(cycleFrac * Math.PI) * 18
 
     const root = this.element
     root.classList.toggle("is-day", isDay)
     root.classList.toggle("is-night", !isDay)
+    root.classList.toggle("is-dormant", this.dormantValue)
 
     if (isDay) {
-      root.style.setProperty("--lp-trail-sun-x", `${x}%`)
-      root.style.setProperty("--lp-trail-sun-y", `${y}%`)
+      // Park sun near peak during day (mockup).
+      root.style.setProperty("--lp-trail-sun-x", "56.6%")
+      root.style.setProperty("--lp-trail-sun-y", "20%")
       root.style.setProperty("--lp-trail-night", "0")
       const warm =
         cycleFrac < 0.12
@@ -54,8 +56,8 @@ export default class extends Controller {
       root.style.setProperty("--lp-trail-warm", "0")
     }
 
-    // Mist: early morning / late evening haze; embers after dusk when energy allows.
-    const misty = (!isDay && cycleFrac < 0.2) || (isDay && (cycleFrac < 0.08 || cycleFrac > 0.92))
+    // Mist when dormant (no open battles) or dawn/dusk; embers at night.
+    const misty = this.dormantValue || (!isDay && cycleFrac < 0.2) || (isDay && (cycleFrac < 0.08 || cycleFrac > 0.92))
     const showEmbers = !isDay || hrs >= 17
     this.toggleMist(misty)
     this.toggleEmbers(showEmbers)
@@ -67,19 +69,21 @@ export default class extends Controller {
     const isDay = hrs >= 6 && hrs < 18
     root.classList.toggle("is-day", isDay)
     root.classList.toggle("is-night", !isDay)
-    root.style.setProperty("--lp-trail-sun-x", "58%")
-    root.style.setProperty("--lp-trail-sun-y", "14%")
+    root.classList.toggle("is-dormant", this.dormantValue)
+    root.style.setProperty("--lp-trail-sun-x", "56.6%")
+    root.style.setProperty("--lp-trail-sun-y", "20%")
     root.style.setProperty("--lp-trail-moon-x", "72%")
     root.style.setProperty("--lp-trail-moon-y", "16%")
     root.style.setProperty("--lp-trail-night", isDay ? "0" : "0.28")
     root.style.setProperty("--lp-trail-warm", "0")
-    root.style.setProperty("--lp-trail-mist", "0")
-    root.classList.remove("is-mist", "is-embers")
+    root.style.setProperty("--lp-trail-mist", this.dormantValue ? "0.4" : "0")
+    root.classList.toggle("is-mist", this.dormantValue)
+    root.classList.remove("is-embers")
   }
 
   toggleMist(on) {
     this.element.classList.toggle("is-mist", on)
-    this.element.style.setProperty("--lp-trail-mist", on ? "0.28" : "0")
+    this.element.style.setProperty("--lp-trail-mist", on ? (this.dormantValue ? "0.4" : "0.28") : "0")
     if (this.hasMistTarget) this.mistTarget.classList.toggle("is-on", on)
   }
 

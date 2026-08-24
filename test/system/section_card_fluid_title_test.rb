@@ -2,8 +2,7 @@
 
 require "application_system_test_case"
 
-# Climb path titles keep the full string in the title attribute; long names
-# may ellipsize in the pin card without losing the accessible name.
+# V4 camp titles live on trail markers; long names stay in the accessible text.
 class SectionCardFluidTitleTest < ApplicationSystemTestCase
   LONG_TITLE = "Start: Make LifePoints Successsull"
   SHORT_TITLE = "Learn German"
@@ -72,30 +71,25 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
 
-    within(".lp-dash-nav") { click_link "Mountain" }
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: section.id)
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 5
-    open_mountain_list_fallback!
-    assert_selector "#climb-path-project-#{section.id} .lp-climb-path__title", visible: :all, wait: 5
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 5
+    assert_selector "#trail-camp-#{section.id} .lp-trail-camp__title", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const el = document.querySelector("#climb-path-project-#{section.id} .lp-climb-path__title");
+        const el = document.querySelector("#trail-camp-#{section.id} .lp-trail-camp__title");
         if (!el) return { ok: false };
         const r = el.getBoundingClientRect();
         return {
           ok: true,
           text: (el.textContent || "").trim(),
-          titleAttr: el.getAttribute("title") || "",
           width: r.width
         };
       })()
     JS
-    assert metrics["ok"], "climb path title missing at #{width}x#{height}"
-    assert_equal expected_text, metrics["titleAttr"]
-    assert_operator metrics["width"].to_f, :>=, 80.0
+    assert metrics["ok"], "trail camp title missing at #{width}x#{height}"
+    assert_equal expected_text, metrics["text"]
+    assert_operator metrics["width"].to_f, :>=, 40.0
     assert_includes metrics["text"], expected_text.split.first
   end
 end

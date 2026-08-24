@@ -226,16 +226,18 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_a.id)
     assert_response :success
-    assert_select ".lp-rpg"
-    assert_select "#mountain-trail"
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
     assert_select "#trail-camps"
-    assert_select ".lp-rpg-destination-carousel__title", text: /Goal/i
-    assert_select ".lp-rpg-path", text: /Plan Alpha/i
-    assert_select ".lp-rpg-path", text: /Plan Beta/i
+    assert_select ".lp-trail__peak-title", text: /Goal/i
+    assert_select ".lp-trail-hud__plan", text: /Plan Alpha/i
+    assert_select ".lp-trail-hud__plan", text: /Plan Beta/i
+    assert_select ".lp-trail-hud__plan.is-active", text: /Plan Alpha/i
     assert_select "#trail-camp-#{project_a.id}", text: /Project One/i
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-stats", count: 0
-    assert_select ".lp-dash-nav__link.is-active", text: /Mountain/i
+    assert_select ".lp-rpg-path", count: 0
+    assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__link.is-active", text: /Mountain/i
     assert_select "#strategy-camp-notebook", count: 0
     assert_select "[data-controller*=strategy-rpg]"
     # Battle win lives in the trail camp sheet (not a separate quest board).
@@ -250,15 +252,18 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
     )
-    @user.strategy_goals.create!(
+    project = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Auth Mission", position: 0
     )
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-path.is-focus", text: /Plan/i
-    assert_select ".lp-climb-path__node", text: /Auth Mission/i
-    assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select ".lp-trail__peak-title", text: /Goal/i
+    assert_select "#trail-camp-#{project.id}", text: /Auth Mission/i
+    assert_select ".lp-dash-nav__fab"
+    assert_select ".lp-trail-plant"
+    assert_select "#rpg-add-checkpoint", count: 0
   end
 
   test "completed plans show as done paths on the rail" do
@@ -282,7 +287,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-path.is-done", text: /Done Plan/i
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#trail-camp-#{project.id}.is-done", text: /Done Project/i
+    assert_select ".lp-trail__peak-title", text: /Goal/i
   end
 
   test "sections carousel lists path-level camps under the selected plan" do
@@ -310,8 +317,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-path", text: /Main Plan/i
-    assert_select ".lp-climb-path__node", minimum: 3
+    assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
+    assert_select "#trail-camp-#{projects.first.id}", text: /Project 0/i
+    assert_select "#trail-camps .lp-trail-camp", minimum: 3
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end
@@ -334,7 +342,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg-add.is-checkpoint", text: /Checkpoint|project/i
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select ".lp-dash-nav__fab"
+    assert_select ".lp-trail-plant"
+    assert_select "#trail-camp-#{project.id}", text: /Project/i
+    assert_select "#rpg-add-checkpoint", count: 0
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     # One Plan per journey: the "+ Add path" entry is gone from the rail.
@@ -359,8 +371,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-rpg-path.is-focus", text: /Find a Job/i
-    assert_select ".lp-rpg-path.is-focus", text: /Find a Job/i
+    assert_select ".lp-trail-hud__plan.is-active", text: /Find a Job/i
+    assert_select ".lp-trail-hud__plan", text: /Build SaaS/i
 
     post strategy_goals_path, params: {
       life_area_id: @area.id,

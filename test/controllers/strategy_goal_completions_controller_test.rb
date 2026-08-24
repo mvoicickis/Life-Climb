@@ -94,8 +94,12 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
     post strategy_goal_manual_completion_path(@plan)
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-rpg-path.is-manual .lp-rpg-path__manual", text: I18n.t("strategy.rpg.manually_closed")
-    assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", text: /0%/
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail-segments__bar[style*='--seg-fill: 0']", minimum: 1
+    assert_equal 0, Strategy::Progress.percent(@plan.reload)
+    assert_select ".lp-rpg-path", count: 0
   end
 
   test "trail unlocks later sibling after earlier project is manually closed" do

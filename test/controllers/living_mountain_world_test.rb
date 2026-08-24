@@ -40,9 +40,12 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg"
-    assert_select ".lp-climb-path"
-    assert_select ".lp-rpg-path", text: /Main trail/i
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-dash-nav__fab"
+    assert_select ".lp-rpg-path", count: 0
     assert_select "[data-controller*=strategy-rpg]"
     assert_select ".lp-feedback-prompt", count: 0
   end
@@ -64,9 +67,9 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg-path", minimum: 1
-    assert_select ".lp-climb-path"
-    assert_select ".lp-climb-path__node", text: /First climb/
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#trail-camp-#{project.id}", text: /First climb/
+    assert_select ".lp-trail-hud"
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-qs-board", count: 0
   end
@@ -90,7 +93,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Resume/
+    assert_select "#trail-camp-#{project.id}", text: /Resume/
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-qs-board", count: 0
     assert_select ".lp-climb-path__quests", count: 0
@@ -114,7 +117,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Resume/
+    assert_select "#trail-camp-#{project.id}", text: /Resume/
+    assert_select "#trail-sheet-camp-#{project.id}"
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
 
@@ -145,12 +149,11 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: first.id)
     assert_response :success
-    assert_select "#climb-path-project-#{first.id} .lp-climb-path__title", text: /Resume/
-    assert_select "#climb-path-project-#{locked.id} .lp-climb-path__title", text: /Interviews/
-    assert_select "#climb-path-project-#{locked.id} .lp-climb-path__menu-btn", minimum: 1
+    assert_select "#trail-camp-#{first.id}", text: /Resume/
+    assert_select "#trail-camp-#{locked.id}", text: /Interviews/
+    assert_select ".lp-dash-nav__fab"
     assert_select "a.lp-climb-path__link", count: 0
     assert_select ".lp-climb-path__meta.is-locked", count: 0
-    assert_select ".lp-climb-path__new-btn", text: /Add a project/
     assert_select ".lp-rpg-section-head", count: 0
   end
 
@@ -170,28 +173,29 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Resume camp", position: 0
     )
-    plan_b.children.create!(
+    launch = plan_b.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Launch camp", position: 0
     )
-    other_goal.children.create!(
+    run_plan = other_goal.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "plan", title: "Run path", position: 0
-    ).children.create!(
+    )
+    run_camp = run_plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "5k camp", position: 0
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan_b.id)
     assert_response :success
-    assert_select ".lp-rpg-path.is-focus", text: /Side path/
-    assert_select ".lp-climb-path__node", text: /Launch camp/
-    assert_select ".lp-rpg-destination-carousel__title", text: /#{@goal.title}/
+    assert_select ".lp-trail-hud__plan.is-active", text: /Side path/
+    assert_select "#trail-camp-#{launch.id}", text: /Launch camp/
+    assert_select ".lp-trail__peak-title", text: /#{@goal.title}/
 
     get life_journey_path(@journey, goal_id: other_goal.id)
     assert_response :success
-    assert_select ".lp-rpg-destination-carousel__title", text: /Health/
-    assert_select ".lp-rpg-path", text: /Run path/
+    assert_select ".lp-trail__peak-title", text: /Health/
+    assert_select "#trail-camp-#{run_camp.id}", text: /5k camp/
   end
 
   test "creating a plan via turbo stream redirects so the mountain refreshes" do

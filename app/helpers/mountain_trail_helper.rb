@@ -23,15 +23,16 @@ module MountainTrailHelper
 
   TRAIL_Y_MIN = 0.32
   TRAIL_Y_MAX = 0.88
+  PEAK_X = 0.566
 
   ACCENT_HEX = {
-    "teal" => "#0f766e",
-    "coral" => "#c2410c", # COLOR_KEYS uses coral
-    "amber" => "#b45309",
+    "teal" => "#0f9488",
+    "coral" => "#e8590c",
+    "amber" => "#f1a208",
     "purple" => "#7c3aed",
-    "blue" => "#2563eb",
-    "green" => "#15803d",
-    "pink" => "#db2777",
+    "blue" => "#4c6ef5",
+    "green" => "#12a150",
+    "pink" => "#d6336c",
     "gray" => "#57534e"
   }.freeze
 
@@ -39,13 +40,13 @@ module MountainTrailHelper
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo.variant(resize_to_limit: [ 1200, 1800 ]))
     else
-      image_path("mountain_trail_default.jpg")
+      image_path("mountain_trail_default.webp")
     end
   rescue StandardError
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo)
     else
-      image_path("mountain_trail_default.jpg")
+      image_path("mountain_trail_default.webp")
     end
   end
 
@@ -104,6 +105,50 @@ module MountainTrailHelper
 
   def mountain_trail_curve_json
     TRAIL_CURVE.to_json
+  end
+
+  # Segment rail: one bar per camp with fill % and accent.
+  def mountain_trail_segments(projects)
+    projects.map do |project|
+      accent = mountain_trail_accent(project.tagged_color_key)
+      pct =
+        if project.quantified? && project.target_amount.to_d.positive?
+          ((project.current_amount.to_d / project.target_amount.to_d) * 100).clamp(0, 100).round
+        else
+          days = project.children.select(&:day?).reject(&:holding?)
+          if days.empty?
+            project.completed? ? 100 : 0
+          else
+            ((days.count(&:completed?).to_f / days.size) * 100).round
+          end
+        end
+      { id: project.id, color: accent, fill: pct }
+    end
+  end
+
+  def mountain_trail_camp_state(project, projects:)
+    return :done if project.completed?
+
+    open = projects.reject(&:completed?)
+    current = open.min_by { |p| [ p.position.to_i, p.id ] }
+    current&.id == project.id ? :current : :open
+  end
+
+  def mountain_trail_camp_label(project)
+    meta = strategy_project_card_meta(project)
+    return I18n.t("strategy.rpg.trail.not_started") if meta.blank?
+
+    meta[:label]
+  end
+
+  def mountain_trail_camps_done(projects)
+    projects.count(&:completed?)
+  end
+
+  def mountain_trail_dormant?(projects)
+    projects.none? do |project|
+      project.children.any? { |c| c.day? && !c.holding? && !c.completed? }
+    end
   end
 
   private

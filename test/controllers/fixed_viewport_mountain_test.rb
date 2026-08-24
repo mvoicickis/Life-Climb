@@ -41,15 +41,16 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: project_leaf.id)
     assert_response :success
-    assert_select ".lp-rpg.is-focus-phase"
-    assert_select ".lp-rpg__chrome-top"
-    assert_select ".lp-rpg__stage.is-planning"
-    assert_select ".lp-rpg__planning"
-    assert_select ".lp-rpg__stage-sections"
-    assert_select ".lp-rpg__stage-trail"
-    assert_select ".lp-climb-path.is-list"
+    assert_select ".lp-rpg.is-focus-phase.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-rpg__stage.is-planning.is-v4"
+    assert_select ".lp-rpg__stage-trail.is-v4"
+    assert_select "#trail-camp-#{project.id}", text: /Resume/
+    assert_select ".lp-climb-path.is-list", minimum: 1
     assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: "Resume"
-    assert_select "#climb-path-project-#{project.id} [data-action='click->plan-card-menu#objectives']"
+    assert_select ".lp-rpg-scenic", count: 0
+    assert_select ".lp-rpg__chrome-top", count: 0
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-rpg__chrome-bottom", count: 0
     assert_select ".lp-rpg-stats", count: 0
@@ -58,6 +59,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-context", count: 0
+    assert_select ".lp-dash-nav.is-v4"
+    assert_select ".lp-dash-nav__fab"
   end
 
   test "climb path lists every camp without a lock window" do
@@ -72,14 +75,13 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
     5.times do |i|
-      assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp #{i}"
+      assert_select "#trail-camp-#{@plan.children.for_kind('project').find_by!(title: "Camp #{i}").id}", text: /Camp #{i}/
     end
     assert_select ".lp-climb-path__node.is-locked", count: 0
-    assert_select ".lp-climb-path__kicker", text: /What gets me there/
   end
 
   test "climb path still renders with few camps" do
-    2.times do |i|
+    camps = 2.times.map do |i|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
         horizon: "project", title: "Camp #{i}", position: i
@@ -88,8 +90,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp 0"
-    assert_select ".lp-climb-path__project .lp-climb-path__title", text: "Camp 1"
+    assert_select "#trail-camp-#{camps[0].id}", text: /Camp 0/
+    assert_select "#trail-camp-#{camps[1].id}", text: /Camp 1/
     assert_select "a.lp-climb-path__link", count: 0
   end
 
@@ -113,21 +115,18 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project_leaf.id)
     assert_response :success
 
-    assert_select ".lp-rpg-summit", minimum: 1
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail-hud__stat", minimum: 1
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_select "#trail-sheet-body form[action*='battle_win']"
 
-    assert_select ".lp-rpg-path.is-focus .lp-rpg-path__pct", minimum: 1
-    assert_select ".lp-rpg-plan-rail__item:not(.is-focus):not(.is-add) .lp-rpg-path__pct", count: 0
-
-    assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: /Daily battles/
+    assert_select "#trail-camp-#{project.id}", text: /Daily battles/
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-folder__cta", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0
     assert_select ".lp-rpg-breadcrumbs", count: 0
-    assert_select "#rpg-add-checkpoint"
 
     get objectives_strategy_goal_path(project)
     assert_response :success

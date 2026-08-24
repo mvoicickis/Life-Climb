@@ -44,10 +44,12 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id, focus_id: plan.id)
 
     follow_redirect!
-    assert_select ".lp-rpg"
-    assert_select ".lp-rpg-path.is-focus", text: /Increase Income/
-    assert_select ".lp-climb-path"
-    assert_match(/What gets me there|Add a project/i, response.body)
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-dash-nav__fab"
+    assert_select ".lp-trail-plant"
+    assert_match(/What gets me there|New project on the trail|Plant/i, response.body)
   end
 
   test "after first plan the mountain shows project sections carousel" do
@@ -58,8 +60,11 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey)
     assert_response :success
-    assert_select ".lp-rpg-path", text: /Find Job/i
-    assert_select ".lp-climb-path"
+    assert_select ".lp-rpg.is-v4-phone"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-rpg-path", count: 0
     assert_select ".lp-rpg-world", count: 0
   end
 
