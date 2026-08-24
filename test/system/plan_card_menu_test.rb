@@ -44,14 +44,8 @@ class PlanCardMenuTest < ApplicationSystemTestCase
   end
 
   test "HUD plan links switch focus between plans" do
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-
+    sign_in_and_visit_mountain!
     assert @journey.present?, "expected an onboarded journey"
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
-    assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 5
     assert_no_selector ".lp-rpg-plan-rail"
     assert_no_selector ".lp-rpg-path__menu-btn"
 
@@ -66,11 +60,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
   end
 
   test "destination edit dialog is available from the peak flag menu" do
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    sign_in_and_visit_mountain!
 
     assert_selector ".lp-trail__peak-title", text: /Ship LifePoints/i, wait: 5
     assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
@@ -92,11 +82,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
   end
 
   test "V4 has no plan card delete menu; HUD plans and destination edit remain" do
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    sign_in_and_visit_mountain!
     assert_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/, wait: 5
     assert_selector ".lp-trail-hud__plan", text: /Beta Path/
     assert_no_selector ".lp-rpg-path__menu"
@@ -104,5 +90,18 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
     assert StrategyGoal.exists?(@plan_a.id)
     assert StrategyGoal.exists?(@plan_b.id)
+  end
+
+  private
+
+  def sign_in_and_visit_mountain!
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 8
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_a.id)
+    assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 10
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
   end
 end
