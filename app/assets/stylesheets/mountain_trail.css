@@ -1322,7 +1322,7 @@
   transform: translate(2px, -100%);
   pointer-events: none;
   gap: 0;
-  align-items: flex-start;
+  align-items: flex-end;
   z-index: 15;
 }
 
@@ -1336,7 +1336,7 @@
   margin: 0;
   cursor: pointer;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   animation: none;
   filter: none;
 }
@@ -1356,11 +1356,12 @@
 .lp-trail.is-v4 .lp-trail__pole {
   width: 4px;
   height: 64px;
-  margin-top: 2px;
+  margin: 0;
   background: linear-gradient(180deg, #e8e4d8, #8f8368);
   border-radius: 0 0 1px 1px;
   box-shadow: 1px 1px 3px rgba(18,32,26,.3);
   flex-shrink: 0;
+  align-self: flex-end;
 }
 
 .lp-trail.is-v4 .lp-trail__peak-title,
@@ -2005,9 +2006,10 @@
   filter: blur(5px);
 }
 
-/* V4: hide sun/glow/backlight circles — destination pennant is the summit marker. */
+/* V4: hide sun/glow/backlight/haze circles — destination pennant is the summit marker. */
 .lp-trail.is-v4 .lp-trail__summit-glow,
 .lp-trail.is-v4 .lp-trail__backlight,
+.lp-trail.is-v4 .lp-trail__haze-band,
 .lp-trail.is-v4 .lp-trail__sun,
 .lp-trail.is-v4 .lp-trail__sun-corona,
 .lp-trail.is-v4 .lp-trail__sun-rays,
@@ -2015,6 +2017,25 @@
 .lp-trail.is-v4.is-day .lp-trail__sun-corona,
 .lp-trail.is-v4.is-day .lp-trail__sun-rays {
   display: none !important;
+}
+
+/* Soft patch over the photo's baked-in summit flag so only the destination pennant shows. */
+.lp-trail.is-v4 .lp-trail__summit-cover {
+  position: absolute;
+  top: var(--lp-title-top, 22%);
+  right: var(--lp-peak-right, 35.5%);
+  width: 22px;
+  height: 34px;
+  transform: translate(8px, -85%);
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 6px 6px 8px 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(210, 224, 198, 0.92) 0%,
+    rgba(152, 178, 140, 0.95) 55%,
+    rgba(120, 150, 108, 0.9) 100%
+  );
 }
 
 .lp-trail__tab-fade {
@@ -3240,9 +3261,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   content: "📖 ";
 }
 
+/* V4: circular camp shadows read as stray summit dots when signs pack high. */
 .lp-trail.is-v4 .lp-trail-camp__shadow {
-  width: calc(36px + var(--lp-trail-fog, 0) * 18px);
-  opacity: calc(0.28 + (1 - var(--lp-trail-fog, 0)) * 0.2);
+  display: none;
 }
 
 .lp-trail-battles__daily-switch {
@@ -3448,10 +3469,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-v4 .lp-trail-camp__shadow {
-  transform: translate(calc(-50% + var(--lp-trail-shadow-dx, 0) * 100vw), 0);
-  width: calc(var(--lp-trail-shadow-w, 0.024) * 100vw);
-  max-width: 42px;
-  opacity: var(--lp-trail-shadow-o, 0.28);
+  display: none;
 }
 
 .lp-trail-log__verdict {
