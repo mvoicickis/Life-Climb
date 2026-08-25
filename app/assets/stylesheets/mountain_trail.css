@@ -1316,31 +1316,16 @@
   transition: width 0.3s ease;
 }
 
-/* Destination pennant — replaces baked-in flag on default mountain photo */
+/* Destination pennant — pole planted at summit, banner flies left */
 .lp-trail.is-v4 .lp-trail__peak {
+  left: calc(var(--lp-peak-x, 0.566) * 100%);
   top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
-  right: max(0.35rem, calc((1 - var(--lp-peak-x, 0.566)) * 100% - 0.5rem));
-  left: auto;
-  transform: translate(2px, -100%);
+  right: auto;
+  transform: translate(-100%, -100%);
   pointer-events: none;
   gap: 0;
   align-items: flex-start;
-  z-index: 12;
-}
-
-/* Hide the default photo's small summit flag under our pole. */
-.lp-trail.is-v4 .lp-trail__peak::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: -2px;
-  width: 28px;
-  height: 36px;
-  border-radius: 42% 42% 48% 48%;
-  background: linear-gradient(165deg, #d8ecc8 0%, #a8c992 45%, #8ab87a 100%);
-  box-shadow: 0 1px 3px rgba(18, 32, 22, 0.15);
-  pointer-events: none;
-  z-index: 0;
+  z-index: 15;
 }
 
 .lp-trail.is-v4 .lp-trail__flag {
@@ -2020,6 +2005,23 @@
   z-index: 1;
   pointer-events: none;
   filter: blur(5px);
+}
+
+/* Mask the default photo's baked-in summit flag before our pennant renders. */
+.lp-trail.is-v4 .lp-trail__summit-cover {
+  position: absolute;
+  left: calc(var(--lp-peak-x, 0.566) * 100%);
+  top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
+  width: 56px;
+  height: 78px;
+  transform: translate(-50%, -72%);
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 42% 42% 50% 50%;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 62%, rgba(168, 192, 158, 0.98) 0%, rgba(148, 176, 136, 0.94) 42%, rgba(210, 224, 202, 0.88) 72%, transparent 100%),
+    linear-gradient(180deg, rgba(228, 236, 222, 0.96) 0%, rgba(196, 214, 188, 0.92) 55%, rgba(152, 178, 140, 0.9) 100%);
+  box-shadow: 0 0 12px 4px rgba(220, 232, 214, 0.65);
 }
 
 /* V4 photo already has natural sky light — hide duplicate sun/glow at summit. */
