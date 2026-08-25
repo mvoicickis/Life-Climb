@@ -1,0 +1,85 @@
+<%# Plant composer — mockup metric cards (Up / Down / Range). locals: form_id %>
+<% form_id = local_assigns.fetch(:form_id, "trail-plant-qty") %>
+<% amount_id = "#{form_id}-amount" %>
+<% unit_id = "#{form_id}-unit" %>
+<% min_id = "#{form_id}-min" %>
+<% max_id = "#{form_id}-max" %>
+
+<div class="lp-trail-plant__metrics">
+  <p class="lp-trail-plant__metrics-kicker"><%= t("strategy.rpg.trail.composer.metric_well_heading") %></p>
+  <p class="lp-trail-plant__metrics-lead"><%= t("strategy.rpg.trail.composer.metric_well_lead") %></p>
+
+  <%= hidden_field_tag :track_quantity, "0", id: nil, data: { trail_canvas_target: "trackQuantity" } %>
+
+  <div class="lp-trail-plant__metric-cards" role="radiogroup" aria-label="<%= t('strategy.rpg.trail.composer.metric_label') %>">
+    <% [
+         [ "up", "📈", "metric_up_title", "metric_up_sub" ],
+         [ "down", "📉", "metric_down_title", "metric_down_sub" ],
+         [ "range", "🎯", "metric_range_title", "metric_range_sub" ]
+       ].each_with_index do |(kind, icon, title_key, sub_key), i| %>
+      <button type="button"
+              class="lp-trail-plant__metric-card<%= ' is-selected' if i.zero? %>"
+              data-metric="<%= kind %>"
+              data-action="click->trail-canvas#pickMetricCard"
+              aria-pressed="<%= i.zero? ? 'true' : 'false' %>">
+        <span class="lp-trail-plant__metric-icon" aria-hidden="true"><%= icon %></span>
+        <span class="lp-trail-plant__metric-copy">
+          <span class="lp-trail-plant__metric-title"><%= t("strategy.rpg.trail.composer.#{title_key}") %></span>
+          <span class="lp-trail-plant__metric-sub"><%= t("strategy.rpg.trail.composer.#{sub_key}") %></span>
+        </span>
+        <span class="lp-trail-plant__metric-check" aria-hidden="true">✓</span>
+        <%= radio_button_tag :quantity_kind, kind, i.zero?,
+              id: "#{form_id}-kind-#{kind}",
+              class: "sr-only",
+              data: { action: "change->trail-canvas#metricKindChanged" } %>
+      </button>
+    <% end %>
+  </div>
+
+  <div class="lp-trail-plant__metric-fields" data-trail-canvas-target="metricFields" hidden>
+    <div class="lp-trail-plant__metric-updown" data-quantity-panel="updown">
+      <label class="lp-rpg-float-create__field" for="<%= amount_id %>">
+        <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.target_label") %></span>
+        <%= number_field_tag :target_amount, nil,
+              id: amount_id,
+              class: "lp-rpg-float-create__input lp-quantity-track__input",
+              min: "0.01",
+              step: "any",
+              inputmode: "decimal",
+              placeholder: t("strategy.quantity.target_placeholder"),
+              autocomplete: "off" %>
+      </label>
+    </div>
+
+    <div class="lp-trail-plant__metric-range" data-quantity-panel="range" hidden>
+      <label class="lp-rpg-float-create__field" for="<%= min_id %>">
+        <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.trail.composer.range_min_label") %></span>
+        <%= number_field_tag :range_min, nil,
+              id: min_id,
+              class: "lp-rpg-float-create__input lp-quantity-track__input",
+              step: "any",
+              inputmode: "decimal",
+              autocomplete: "off" %>
+      </label>
+      <label class="lp-rpg-float-create__field" for="<%= max_id %>">
+        <span class="lp-rpg-float-create__label"><%= t("strategy.rpg.trail.composer.range_max_label") %></span>
+        <%= number_field_tag :range_max, nil,
+              id: max_id,
+              class: "lp-rpg-float-create__input lp-quantity-track__input",
+              step: "any",
+              inputmode: "decimal",
+              autocomplete: "off" %>
+      </label>
+    </div>
+
+    <label class="lp-rpg-float-create__field" for="<%= unit_id %>">
+      <span class="lp-rpg-float-create__label"><%= t("strategy.quantity.unit_label") %></span>
+      <%= text_field_tag :unit, nil,
+            id: unit_id,
+            class: "lp-rpg-float-create__input lp-quantity-track__input",
+            maxlength: 40,
+            placeholder: t("strategy.quantity.unit_placeholder"),
+            autocomplete: "off" %>
+    </label>
+  </div>
+</div>

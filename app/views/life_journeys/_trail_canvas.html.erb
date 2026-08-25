@@ -133,9 +133,10 @@
   <% end %>
 
   <div class="lp-trail__scroll" data-trail-canvas-target="scroll">
-    <div class="lp-trail__surface"
-         data-trail-canvas-target="surface"
-         data-action="click->trail-canvas#surfaceClick dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+    <div class="lp-trail__surface" data-trail-canvas-target="surface">
+      <div class="lp-trail__mountain"
+           data-trail-canvas-target="mountain"
+           data-action="click->trail-canvas#surfaceClick dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
       <div class="lp-trail__photo-wrap lp-trail__photo-drop"
            aria-hidden="true"
            data-trail-canvas-target="photoWrap"
@@ -281,38 +282,7 @@
         <% end %>
       </div>
 
-      <div class="lp-trail-base" aria-hidden="true"
-           style="--lp-base-x: <%= MountainTrailHelper::TRAIL_CURVE.last[1] %>; --lp-base-y: 0.95">
-        <div class="lp-trail-base__icons">
-          <span class="lp-trail-base__tent"></span>
-          <span class="lp-trail-base__tent is-2"></span>
-          <span class="lp-trail-base__fire"></span>
-        </div>
-        <span class="lp-trail-base__pill"><%= t("strategy.rpg.trail.base_camp_day", day: day_count) %></span>
-      </div>
-
-      <a href="<%= dashboard_path %>"
-         class="lp-trail-today <%= 'is-busy' if today_card[:busy] %>"
-         data-trail-ignore>
-        <span class="lp-trail-today__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <% if today_card[:busy] %>
-              <path d="M12 3 4.5 6v6.2c0 4.4 3.1 7.6 7.5 8.8 4.4-1.2 7.5-4.4 7.5-8.8V6Z"/>
-            <% else %>
-              <path d="M12 3 4.5 6v6.2c0 4.4 3.1 7.6 7.5 8.8 4.4-1.2 7.5-4.4 7.5-8.8V6Z"/>
-              <path d="M9.2 12.1 11.2 14.1 15.2 9.8"/>
-            <% end %>
-          </svg>
-        </span>
-        <span class="lp-trail-today__copy">
-          <span class="lp-trail-today__headline"><%= today_card[:headline] %></span>
-          <span class="lp-trail-today__sub"><%= today_card[:sub] %></span>
-        </span>
-        <% if today_card[:badge] %>
-          <span class="lp-trail-today__badge"><%= today_card[:count] %></span>
-        <% end %>
-        <span class="lp-trail-today__chev" aria-hidden="true">›</span>
-      </a>
+      <div class="lp-trail__mountain-foot" aria-hidden="true"></div>
 
       <div class="lp-trail-plant"
            data-trail-canvas-target="plantForm"
@@ -429,18 +399,7 @@
             <span class="lp-trail-plant__advanced-chev" aria-hidden="true">⌄</span>
           </button>
           <div class="lp-trail-plant__advanced" data-trail-canvas-target="advanced" hidden>
-            <fieldset class="lp-trail-plant__mode">
-              <legend class="sr-only"><%= t("strategy.rpg.trail.camp_mode_label") %></legend>
-              <label class="lp-trail-plant__mode-opt">
-                <input type="radio" name="camp_mode_pick" value="battles" checked data-action="change->trail-canvas#pickCampMode">
-                <span><%= t("strategy.rpg.trail.camp_mode_battles") %></span>
-              </label>
-              <label class="lp-trail-plant__mode-opt">
-                <input type="radio" name="camp_mode_pick" value="pages" data-action="change->trail-canvas#pickCampMode">
-                <span><%= t("strategy.rpg.trail.camp_mode_pages") %></span>
-              </label>
-            </fieldset>
-            <%= render "life_journeys/quantity_track_fields", form_id: "trail-plant-qty" %>
+            <%= render "life_journeys/trail_plant_metrics", form_id: "trail-plant-qty" %>
           </div>
           <div class="lp-trail-plant__actions">
             <button type="button"
@@ -464,6 +423,9 @@
         <p data-trail-canvas-target="placingText"><%= t("strategy.rpg.trail.placing_hint", name: "…") %></p>
         <button type="button" data-action="click->trail-canvas#cancelPlacing"><%= t("strategy.rpg.cancel") %></button>
       </div>
+      </div><%# /.lp-trail__mountain %>
+
+      <%= render "life_journeys/trail_dock", today_card: today_card, day_count: day_count %>
     </div>
   </div>
 

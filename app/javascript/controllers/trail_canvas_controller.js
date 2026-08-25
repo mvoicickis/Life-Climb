@@ -4,6 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "surface",
+    "mountain",
     "scroll",
     "camps",
     "plantForm",
@@ -18,6 +19,8 @@ export default class extends Controller {
     "peakMenu",
     "editDialog",
     "advanced",
+    "metricFields",
+    "trackQuantity",
     "hueRange",
     "colorWheel",
     "logSheet",
@@ -211,6 +214,61 @@ export default class extends Controller {
     const open = this.advancedTarget.hasAttribute("hidden")
     this.advancedTarget.toggleAttribute("hidden", !open)
     event.currentTarget?.setAttribute("aria-expanded", open ? "true" : "false")
+    if (open) {
+      this.ensureMetricSelection()
+    } else {
+      this.clearMetricSelection()
+    }
+  }
+
+  pickMetricCard(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const kind = event.currentTarget?.dataset?.metric
+    const form = this.plantFormTarget
+    if (!kind || !form) return
+
+    form.querySelectorAll(".lp-trail-plant__metric-card").forEach((el) => {
+      const selected = el.dataset.metric === kind
+      el.classList.toggle("is-selected", selected)
+      el.setAttribute("aria-pressed", selected ? "true" : "false")
+    })
+
+    const radio = form.querySelector(`input[name='quantity_kind'][value='${kind}']`)
+    if (radio) {
+      radio.checked = true
+      this.metricKindChanged({ currentTarget: radio })
+    }
+
+    this.setMetricTracking(true)
+    if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = false
+  }
+
+  ensureMetricSelection() {
+    const form = this.plantFormTarget
+    if (!form) return
+    const selected = form.querySelector(".lp-trail-plant__metric-card.is-selected")
+    if (selected) {
+      this.setMetricTracking(true)
+      if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = false
+      const radio = form.querySelector("input[name='quantity_kind']:checked")
+      if (radio) this.metricKindChanged({ currentTarget: radio })
+      return
+    }
+    const first = form.querySelector(".lp-trail-plant__metric-card")
+    if (first) this.pickMetricCard({ preventDefault: () => {}, stopPropagation: () => {}, currentTarget: first })
+  }
+
+  clearMetricSelection() {
+    this.setMetricTracking(false)
+    if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = true
+  }
+
+  setMetricTracking(on) {
+    const track = this.hasTrackQuantityTarget
+      ? this.trackQuantityTarget
+      : this.plantFormTarget?.querySelector("input[name='track_quantity']")
+    if (track) track.value = on ? "1" : "0"
   }
 
   colorPicked(event) {
@@ -253,8 +311,8 @@ export default class extends Controller {
   }
 
   readQuantityFields(form) {
-    const track = form.querySelector("input[name='track_quantity'][type='checkbox']")
-    const tracked = track?.checked
+    const track = form.querySelector("input[name='track_quantity']")
+    const tracked = track?.type === "checkbox" ? track.checked : track?.value === "1"
     if (!tracked) return null
     const kind = form.querySelector("input[name='quantity_kind']:checked")?.value || "up"
     const target = form.querySelector("input[name='target_amount']")?.value
@@ -975,7 +1033,10 @@ export default class extends Controller {
   }
 
   coordsFromClient(clientX, clientY) {
-    const surface = this.hasSurfaceTarget ? this.surfaceTarget : this.element
+    const mountain = this.hasMountainTarget
+      ? this.mountainTarget
+      : this.surfaceTarget?.querySelector(".lp-trail__mountain")
+    const surface = mountain || (this.hasSurfaceTarget ? this.surfaceTarget : this.element)
     const rect = surface.getBoundingClientRect()
     if (!rect.width || !rect.height) return null
     return {

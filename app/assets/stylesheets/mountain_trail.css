@@ -1086,23 +1086,73 @@
 
 .lp-trail.is-v4 {
   --lp-trail-photo-h: 1180px;
+  --lp-trail-dock-min: 10.5rem;
   --lp-trail-accent: #0f9488;
   background: #5f9438;
 }
 
 .lp-trail.is-v4 .lp-trail__scroll {
-  padding-bottom: 5.5rem;
+  padding-bottom: 4.75rem;
 }
 
 .lp-trail.is-v4 .lp-trail__surface {
-  height: var(--lp-trail-photo-h);
-  min-height: 100%;
+  height: auto;
+  min-height: calc(var(--lp-trail-photo-h) + var(--lp-trail-dock-min));
+  cursor: default;
 }
 
-.lp-trail.is-v4 .lp-trail__photo-wrap {
+.lp-trail.is-v4 .lp-trail__mountain {
+  position: relative;
+  height: var(--lp-trail-photo-h);
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+
+.lp-trail.is-v4 .lp-trail__mountain .lp-trail__photo-wrap {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  height: 100%;
+}
+
+.lp-trail.is-v4 .lp-trail__mountain-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(24, 40, 26, 0.2) 55%, rgba(18, 32, 22, 0.5));
+}
+
+.lp-trail__dock {
+  position: relative;
+  z-index: 3;
+  background: #5f9438;
+  padding: 0.85rem 0.875rem 1.15rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-trail-base--dock {
+  position: static;
+  transform: none;
+  left: auto;
+  top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  width: 100%;
+}
+
+.lp-trail-today--dock {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: 100%;
 }
 
 .lp-trail.is-v4 img.lp-trail__photo {
@@ -1262,13 +1312,16 @@
   transition: width 0.3s ease;
 }
 
-/* Peak pennant — pole on the right */
+/* Peak pennant — anchored at summit top-right (mockup) */
 .lp-trail.is-v4 .lp-trail__peak {
-  left: calc(var(--lp-peak-x, 0.566) * 100%);
-  top: 4.5%;
-  transform: translateX(-50%);
+  top: 1.4%;
+  right: max(0.35rem, calc((1 - var(--lp-peak-x, 0.566)) * 100% - 0.5rem));
+  left: auto;
+  transform: translate(2px, -100%);
   pointer-events: none;
   gap: 0;
+  align-items: flex-start;
+  z-index: 6;
 }
 
 .lp-trail.is-v4 .lp-trail__flag {
@@ -1343,6 +1396,7 @@
   position: absolute;
   top: 100%;
   right: 0;
+  left: auto;
   margin-top: 0.35rem;
   min-width: 10rem;
   padding: 0.35rem;
@@ -1955,7 +2009,11 @@
   z-index: 8;
   pointer-events: none;
   height: 120px;
-  background: linear-gradient(180deg, transparent, rgba(255,255,255,.18) 45%, rgba(255,255,255,.4));
+  background: linear-gradient(180deg, transparent, rgba(95, 148, 56, 0.35) 45%, rgba(95, 148, 56, 0.88));
+}
+
+.lp-trail.is-v4 .lp-trail__tab-fade {
+  background: linear-gradient(180deg, transparent, rgba(95, 148, 56, 0.2) 35%, rgba(95, 148, 56, 0.75));
 }
 
 @keyframes lp-trail-haze-drift {
@@ -1964,7 +2022,7 @@
 }
 
 /* Place mode */
-.lp-trail.is-placing .lp-trail__surface { cursor: crosshair; }
+.lp-trail.is-placing .lp-trail__mountain { cursor: crosshair; }
 .lp-trail.is-placing .lp-trail__ghosts { opacity: 0.25; pointer-events: none; }
 
 .lp-trail__glow-dots { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
@@ -2403,6 +2461,124 @@ body:has(.lp-rpg.is-v4-phone) .lp-feedback-fab {
   border-radius: 14px;
   background: #fbfaf7;
   border: 1px solid #eeebe3;
+}
+
+.lp-trail-plant__metrics-kicker {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9aa096;
+}
+
+.lp-trail-plant__metrics-lead {
+  margin: 0.35rem 0 0;
+  font-size: 0.66rem;
+  line-height: 1.4;
+  color: #8a8f86;
+}
+
+.lp-trail-plant__metric-cards {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.lp-trail-plant__metric-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1.5px solid #e6e3da;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.lp-trail-plant__metric-card:hover {
+  border-color: #c9c5b8;
+}
+
+.lp-trail-plant__metric-card.is-selected {
+  border-color: #16a34a;
+  background: #f4fbf6;
+}
+
+.lp-trail-plant__metric-icon {
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.lp-trail-plant__metric-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.lp-trail-plant__metric-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #12201a;
+}
+
+.lp-trail-plant__metric-sub {
+  font-size: 0.66rem;
+  color: #8a8f86;
+  line-height: 1.35;
+}
+
+.lp-trail-plant__metric-check {
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #16a34a;
+  opacity: 0;
+}
+
+.lp-trail-plant__metric-card.is-selected .lp-trail-plant__metric-check {
+  opacity: 1;
+}
+
+.lp-trail-plant__metric-fields {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+}
+
+.lp-trail-plant__metric-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+@media (max-width: 360px) {
+  .lp-trail.is-v4 .lp-trail__pennant {
+    min-width: 130px;
+    padding: 10px 12px 10px 22px;
+  }
+
+  .lp-trail.is-v4 .lp-trail__peak-title,
+  .lp-trail.is-v4 .lp-trail__peak-title.lp-rpg-destination-carousel__title {
+    font-size: 0.95rem;
+    max-width: 8.5rem;
+  }
+
+  .lp-trail-plant__panel {
+    left: 10px;
+    right: 10px;
+    bottom: 72px;
+  }
+
+  .lp-trail__dock {
+    padding: 0.7rem 0.65rem 1rem;
+  }
 }
 
 .lp-trail-plant__actions {
