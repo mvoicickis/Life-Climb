@@ -62,7 +62,7 @@
          data-trail-coach-has-battles-value="<%= any_battles %>"
          data-trail-coach-has-wins-value="<%= any_wins %>"
          <% end %>
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>;">
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>;">
 
   <% if destination_overlay && goal %>
     <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
@@ -191,7 +191,7 @@
         <%= companion_image_tag class: "lp-trail__companion-img", alt: "" %>
       </div>
 
-      <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>">
+      <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
         <button type="button"
                 class="lp-trail__flag"
                 data-action="click->trail-canvas#togglePeakMenu"
