@@ -14,18 +14,57 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 1, mountain_trail_day_count(nil)
   end
 
-  test "today card shows badge when open battles exist" do
-    card = mountain_trail_today_card(open_battles: [ Object.new, Object.new ], won_today: 0)
-    assert card[:badge]
-    assert card[:busy]
-    assert_equal 2, card[:count]
+  test "today card plants first when the trail is empty" do
+    card = mountain_trail_today_card(projects: [], open_battles: [], won_today: 0)
+    assert_equal "plant_first", card[:mode]
+    assert_match(/plant your first camp/i, card[:headline])
+    assert_not card[:busy]
   end
 
-  test "today card rest state when quiet" do
-    card = mountain_trail_today_card(open_battles: [], won_today: 0)
-    assert_not card[:badge]
-    assert_not card[:busy]
-    assert_match(/rest/i, card[:sub])
+  test "today card names the next battle to win" do
+    battle = Struct.new(:completed_at, :title, :parent_id, keyword_init: true).new(
+      completed_at: nil, title: "Pitch the tent", parent_id: 11
+    )
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      11, false, false, [ battle ], 0.5, 0.7, "Base camp"
+    )
+    card = mountain_trail_today_card(projects: [ camp ], open_battles: [ battle ], won_today: 0)
+    assert_equal "win_next", card[:mode]
+    assert_equal "Pitch the tent", card[:headline]
+    assert_match(/win this/i, card[:sub])
+    assert_equal 11, card[:camp_id]
+    assert card[:busy]
+  end
+
+  test "today card asks to add a battle on an empty camp" do
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      4, false, false, [], 0.5, 0.72, "Ridge"
+    )
+    card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 0)
+    assert_equal "add_battle", card[:mode]
+    assert_equal 4, card[:camp_id]
+    assert_match(/ridge/i, card[:sub])
+  end
+
+  test "today card cheers when today’s battles are already won" do
+    won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      8, false, false, [ won ], 0.5, 0.7, "Base camp"
+    )
+    card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 2)
+    assert_equal "cheer", card[:mode]
+    assert_match(/all clear/i, card[:headline])
+    assert_match(/2/, card[:sub])
+  end
+
+  test "today card plants next when the trail is quiet" do
+    won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      8, false, false, [ won ], 0.5, 0.7, "Base camp"
+    )
+    card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 0)
+    assert_equal "plant_next", card[:mode]
+    assert_match(/plant the next camp/i, card[:headline])
   end
 
   test "peak tagline falls back to default" do
