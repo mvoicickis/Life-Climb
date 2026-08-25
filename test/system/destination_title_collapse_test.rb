@@ -119,6 +119,7 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
                     "title not near peak at #{width}x#{height}: #{metrics.inspect}"
     assert_no_selector ".lp-rpg-destination-carousel__stage"
     assert_no_selector ".lp-rpg-destination-carousel__arrow"
-    assert_no_selector ".lp-trail__summit-cover"
+    # Summit cover patches the photo's baked-in flag under the destination pennant.
+    assert_selector ".lp-trail__summit-cover", visible: :all
   end
 end
