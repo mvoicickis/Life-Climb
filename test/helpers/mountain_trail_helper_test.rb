@@ -38,8 +38,8 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   test "peak coordinates sit on default mountain photo summit" do
     assert_in_delta 0.566, MountainTrailHelper::PEAK_X, 0.001
-    assert MountainTrailHelper::PEAK_Y.between?(0.12, 0.30),
-           "PEAK_Y should match summit crown on default photo"
+    assert MountainTrailHelper::PEAK_Y.between?(0.20, 0.25),
+           "PEAK_Y should match mockup titleTop (0.22)"
   end
 
   test "point on curve returns x within trail bounds" do

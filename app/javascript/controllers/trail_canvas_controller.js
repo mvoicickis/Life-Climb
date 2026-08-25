@@ -67,6 +67,7 @@ export default class extends Controller {
     this._onPointerUp = (event) => this.onCampPointerUp(event)
     this.bindFab()
     this.bindScrollParallax()
+    this.bindPeakPin()
     this.syncAccentFromHue()
   }
 
@@ -75,6 +76,7 @@ export default class extends Controller {
     this.unbindDrag()
     this.unbindFab()
     this.unbindScrollParallax()
+    this.unbindPeakPin()
   }
 
   bindFab() {
@@ -921,6 +923,46 @@ export default class extends Controller {
       this.scrollTarget.removeEventListener("scroll", this._onScrollParallax)
     }
     if (this._parallaxRaf) cancelAnimationFrame(this._parallaxRaf)
+  }
+
+  // Pin destination pennant to the painted summit after object-fit: cover crop
+  // (MountainV4 mockup: titleTop = h*0.22, peakRight from PEAK_X 0.566 on 1024×1536 art).
+  bindPeakPin() {
+    const mountain = this.hasMountainTarget ? this.mountainTarget : null
+    if (!mountain) return
+
+    this.syncPeakPin()
+    if (typeof ResizeObserver === "undefined") return
+
+    this._peakPinObserver = new ResizeObserver(() => this.syncPeakPin())
+    this._peakPinObserver.observe(mountain)
+  }
+
+  unbindPeakPin() {
+    if (this._peakPinObserver) {
+      this._peakPinObserver.disconnect()
+      this._peakPinObserver = null
+    }
+  }
+
+  syncPeakPin() {
+    const mountain = this.hasMountainTarget ? this.mountainTarget : null
+    if (!mountain) return
+
+    const width = mountain.clientWidth || 0
+    const height = mountain.clientHeight || 0
+    if (width < 1 || height < 1) return
+
+    const peakXFrac = 0.566
+    const artW = 1024
+    const artH = 1536
+    const scaledW = artW * (height / artH)
+    const peakX = Math.round(peakXFrac * scaledW - ((scaledW - width) / 2))
+    const peakRight = Math.max(0, width - peakX)
+    const titleTop = Math.round(height * 0.22)
+
+    this.element.style.setProperty("--lp-title-top", `${titleTop}px`)
+    this.element.style.setProperty("--lp-peak-right", `${peakRight}px`)
   }
 
   openPlant(x, y, { chooseSpot = false } = {}) {

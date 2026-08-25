@@ -1104,8 +1104,6 @@
 .lp-trail.is-v4 .lp-trail__mountain {
   position: relative;
   height: var(--lp-trail-photo-h);
-  padding-top: 5.5rem;
-  box-sizing: border-box;
   cursor: crosshair;
   touch-action: pan-y;
 }
@@ -1316,12 +1314,12 @@
   transition: width 0.3s ease;
 }
 
-/* Destination pennant — pole planted at summit tip, banner flies left */
+/* Destination pennant — MountainV4 mockup: right+translate, pole on summit */
 .lp-trail.is-v4 .lp-trail__peak {
-  left: calc(var(--lp-peak-x, 0.566) * 100%);
-  top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
-  right: auto;
-  transform: translate(calc(-100% + 2px), -100%);
+  top: var(--lp-title-top, 22%);
+  right: var(--lp-peak-right, 35.5%);
+  left: auto;
+  transform: translate(2px, -100%);
   pointer-events: none;
   gap: 0;
   align-items: flex-start;
@@ -1357,7 +1355,7 @@
 
 .lp-trail.is-v4 .lp-trail__pole {
   width: 4px;
-  height: 72px;
+  height: 64px;
   margin-top: 2px;
   background: linear-gradient(180deg, #e8e4d8, #8f8368);
   border-radius: 0 0 1px 1px;
@@ -1370,7 +1368,7 @@
 .lp-rpg.is-focus-phase .lp-trail.is-v4 .lp-trail__peak-title.lp-rpg-destination-carousel__title {
   display: block;
   font-family: var(--lp-trail-display);
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: #12201a;
   letter-spacing: -0.01em;
@@ -1390,7 +1388,7 @@
   display: block;
   margin-top: 2px;
   font-family: var(--lp-trail-display);
-  font-size: 0.66rem;
+  font-size: 0.65625rem;
   font-style: italic;
   font-weight: 500;
   color: #6b5e47;
@@ -1995,7 +1993,7 @@
 
 .lp-trail__summit-glow {
   position: absolute;
-  top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
+  top: 19%;
   left: 56.6%;
   transform: translate(-50%, -50%);
   width: 130px;
@@ -2005,21 +2003,6 @@
   z-index: 1;
   pointer-events: none;
   filter: blur(5px);
-}
-
-/* Mask leftover baked-in summit pixels (kept subtle — photo is also cleaned). */
-.lp-trail.is-v4 .lp-trail__summit-cover {
-  position: absolute;
-  left: calc(var(--lp-peak-x, 0.566) * 100%);
-  top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
-  width: 44px;
-  height: 52px;
-  transform: translate(-42%, -88%);
-  z-index: 3;
-  pointer-events: none;
-  border-radius: 50% 50% 40% 40%;
-  background: linear-gradient(180deg, rgba(232, 246, 236, 0.98) 0%, rgba(214, 232, 218, 0.92) 70%, transparent 100%);
-  box-shadow: none;
 }
 
 /* V4: hide sun/glow/backlight circles — destination pennant is the summit marker. */
