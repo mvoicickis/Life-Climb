@@ -282,7 +282,7 @@ module StrategyHelper
     if project.target_amount.present? && project.target_amount.to_d.positive?
       "#{current} / #{format_strategy_quantity(project.target_amount)} #{unit}".strip
     else
-      [current, unit.presence].compact.join(" ")
+      [ current, unit.presence ].compact.join(" ")
     end
   end
 
