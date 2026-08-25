@@ -342,7 +342,9 @@ class StrategyGoal < ApplicationRecord
 
     self.unit = self.unit.to_s.strip.presence
     self.current_amount = 0 if self.current_amount.nil?
-    self.unit = nil if self.target_amount.blank?
+    tracking = has_attribute?(:quantity_kind) && %w[up down range].include?(quantity_kind_value)
+    tracking ||= self.target_amount.present?
+    self.unit = nil unless tracking
   end
 
   def normalize_color_key

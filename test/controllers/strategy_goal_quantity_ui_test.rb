@@ -120,7 +120,7 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-plant input[name='title']"
     assert_select ".lp-trail__plant-colors input[name='color_key']", minimum: 1
     assert_select ".lp-trail-plant__wheel", count: 0
-    assert_select ".lp-trail-plant input[name='quantity_kind']:checked", count: 0
+    assert css_select(".lp-trail-plant input[name='quantity_kind']").none? { |input| input["checked"] }
     assert_select ".lp-trail-plant input[name='track_quantity']"
     assert_select ".lp-trail-plant input[name='target_amount']"
     assert_select ".lp-trail-plant input[name='unit']"

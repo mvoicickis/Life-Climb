@@ -123,7 +123,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-plant__wheel", count: 0
     assert_select ".lp-trail-plant__hue-range", count: 0
     assert_select ".lp-trail-plant__metric-card.is-selected", count: 0
-    assert_select ".lp-trail-plant input[name='quantity_kind']:checked", count: 0
+    assert css_select(".lp-trail-plant input[name='quantity_kind']").none? { |input| input["checked"] }
     assert_select ".lp-trail-plant__metric-follow[hidden]"
     assert_select ".lp-trail-plant__metric-fields[hidden]"
     assert_select ".lp-trail-plant__ask-btn", minimum: 2
