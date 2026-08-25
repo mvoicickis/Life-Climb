@@ -67,6 +67,25 @@ class StrategyGoalsController < ApplicationController
                         status: :see_other
           end
         end
+      elsif goal.day? && parent&.project?
+        # Stay in the open camp sheet — replace battles list instead of leaving Mountain.
+        respond_to do |format|
+          format.turbo_stream do
+            @created = goal
+            @project = parent.reload
+            @goal = goal.root_goal
+            @plan = parent.parent if parent.parent&.plan?
+            @plan ||= parent.ancestor_chain.reverse.find(&:plan?)
+            @journey = current_user.life_journeys.active.find_by(id: goal.life_journey_id) ||
+                       current_user.primary_focused_journey
+            render :create
+          end
+          format.html do
+            redirect_to strategy_redirect_path(**create_redirect_params(goal)),
+                        notice: create_notice(goal, celebration),
+                        status: :see_other
+          end
+        end
       else
         redirect_to strategy_redirect_path(**create_redirect_params(goal)),
                     notice: create_notice(goal, celebration),
