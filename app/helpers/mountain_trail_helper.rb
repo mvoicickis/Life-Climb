@@ -281,33 +281,77 @@ module MountainTrailHelper
     (Date.current - start_on).to_i + 1
   end
 
-  # Today card copy for the V4 trail band.
-  def mountain_trail_today_card(open_battles:, won_today: 0)
-    open_count = open_battles.size
-    if open_count.positive?
-      {
-        headline: I18n.t("strategy.rpg.trail.today_card.open_headline", count: open_count),
-        sub: I18n.t("strategy.rpg.trail.today_card.open_sub"),
-        count: open_count,
-        badge: true,
-        busy: true
-      }
-    else
-      sub =
-        if won_today.positive?
-          I18n.t("strategy.rpg.trail.today_card.rest_sub", count: won_today)
-        else
-          I18n.t("strategy.rpg.trail.today_card.rest_sub_zero")
-        end
-      {
-        headline: I18n.t("strategy.rpg.trail.today_card.rest_headline"),
-        sub: sub,
-        count: 0,
-        badge: false,
-        busy: false
-      }
+  # Lowest incomplete camp with no battles yet — meadow “add a battle” target.
+  def mountain_trail_idle_camp(projects)
+    idle = Array(projects).reject(&:completed?).reject(&:pages_mode?).select do |project|
+      project.children.none? { |child| child.day? && !child.holding? }
     end
+    return if idle.empty?
+
+    layout = mountain_trail_layout(projects)
+    idle.max_by { |project| layout.dig(project.id, :y).to_f }
   end
+
+  # Meadow plaque: one next step, or a short win.
+  def mountain_trail_today_card(projects: [], open_battles: [], won_today: 0)
+    camps = Array(projects)
+    waiting = Array(open_battles).select { |battle| battle.try(:completed_at).blank? }
+
+    if camps.empty?
+      return meadow_plaque(
+        mode: "plant_first",
+        headline: I18n.t("strategy.rpg.trail.today_card.plant_first_headline"),
+        sub: I18n.t("strategy.rpg.trail.today_card.plant_first_sub")
+      )
+    end
+
+    next_battle = waiting.first
+    if next_battle
+      title = next_battle.try(:title).to_s.strip.presence ||
+              I18n.t("strategy.rpg.trail.today_card.win_fallback")
+      camp_id = next_battle.try(:parent_id) || next_battle.try(:parent)&.id
+      return meadow_plaque(
+        mode: "win_next",
+        headline: title,
+        sub: I18n.t("strategy.rpg.trail.today_card.win_sub"),
+        count: waiting.size,
+        badge: waiting.size > 1,
+        busy: true,
+        camp_id: camp_id
+      )
+    end
+
+    idle = mountain_trail_idle_camp(camps)
+    if idle
+      return meadow_plaque(
+        mode: "add_battle",
+        headline: I18n.t("strategy.rpg.trail.today_card.add_headline"),
+        sub: I18n.t("strategy.rpg.trail.today_card.add_sub", camp: idle.title),
+        busy: true,
+        camp_id: idle.id
+      )
+    end
+
+    if won_today.to_i.positive?
+      return meadow_plaque(
+        mode: "cheer",
+        headline: I18n.t("strategy.rpg.trail.today_card.cheer_headline"),
+        sub: I18n.t("strategy.rpg.trail.today_card.cheer_sub", count: won_today),
+        count: won_today
+      )
+    end
+
+    meadow_plaque(
+      mode: "plant_next",
+      headline: I18n.t("strategy.rpg.trail.today_card.plant_next_headline"),
+      sub: I18n.t("strategy.rpg.trail.today_card.plant_next_sub")
+    )
+  end
+
+  def meadow_plaque(mode:, headline:, sub:, count: 0, badge: false, busy: false, camp_id: nil)
+    { mode: mode, headline: headline, sub: sub, count: count, badge: badge, busy: busy, camp_id: camp_id }
+  end
+  private :meadow_plaque
 
   def mountain_trail_peak_tagline(goal)
     goal&.description.to_s.strip.presence ||

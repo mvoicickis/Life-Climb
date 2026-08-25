@@ -1,0 +1,23 @@
+<% today_card = local_assigns.fetch(:today_card) %>
+<% plant_mode = local_assigns[:plant_mode] %>
+<span class="lp-trail-today__icon" aria-hidden="true">
+  <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <% if plant_mode %>
+      <path d="M12 5v14"/>
+      <path d="M5 12h14"/>
+    <% elsif today_card[:busy] %>
+      <path d="M12 3 4.5 6v6.2c0 4.4 3.1 7.6 7.5 8.8 4.4-1.2 7.5-4.4 7.5-8.8V6Z"/>
+    <% else %>
+      <path d="M12 3 4.5 6v6.2c0 4.4 3.1 7.6 7.5 8.8 4.4-1.2 7.5-4.4 7.5-8.8V6Z"/>
+      <path d="M9.2 12.1 11.2 14.1 15.2 9.8"/>
+    <% end %>
+  </svg>
+</span>
+<span class="lp-trail-today__copy">
+  <span class="lp-trail-today__headline"><%= today_card[:headline] %></span>
+  <span class="lp-trail-today__sub"><%= today_card[:sub] %></span>
+</span>
+<% if today_card[:badge] %>
+  <span class="lp-trail-today__badge"><%= today_card[:count] %></span>
+<% end %>
+<span class="lp-trail-today__chev" aria-hidden="true">›</span>

@@ -18,10 +18,9 @@
 <% all_today = (@today_battles || []) %>
 <% today_battles = all_today.select { |b| b.completed_at.blank? }.first(3) %>
 <% won_today = all_today.count { |b| b.completed_at.present? } %>
-<% today_card = mountain_trail_today_card(open_battles: today_battles, won_today: won_today) %>
+<% today_card = mountain_trail_today_card(projects: projects, open_battles: today_battles, won_today: won_today) %>
 <% peak_title = goal&.title.presence || journey.title %>
 <% peak_tagline = mountain_trail_peak_tagline(goal) %>
-<% day_count = mountain_trail_day_count(journey) %>
 <% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
 <% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) unless destination_overlay %>
 <% summit_glow = (camps_done.to_f / [ projects.size, 1 ].max) %>
@@ -399,7 +398,7 @@
         <button type="button" data-action="click->trail-canvas#cancelPlacing"><%= t("strategy.rpg.cancel") %></button>
       </div>
 
-      <%= render "life_journeys/trail_dock", today_card: today_card, day_count: day_count %>
+      <%= render "life_journeys/trail_dock", today_card: today_card %>
       </div><%# /.lp-trail__mountain %>
     </div>
   </div>

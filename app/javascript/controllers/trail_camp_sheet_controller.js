@@ -13,6 +13,21 @@ export default class extends Controller {
     this.teardown()
   }
 
+  openFromDock(event) {
+    const campId = event.currentTarget?.dataset?.campId
+    const camp = campId && this.element.querySelector(`#trail-camp-${campId}`)
+    if (!camp) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    this.open({
+      currentTarget: camp,
+      preventDefault() {},
+      stopPropagation() {},
+      defaultPrevented: false
+    })
+  }
+
   open(event) {
     if (event?.defaultPrevented) return
     if (this.element.dataset.trailSuppressOpen === "1") return

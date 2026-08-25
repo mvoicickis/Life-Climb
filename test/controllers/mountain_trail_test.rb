@@ -113,9 +113,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__mountain .lp-trail__dock .lp-trail-today"
     assert_select ".lp-trail__mountain .lp-trail__dock .lp-trail-base"
     assert_select ".lp-trail-today.is-busy"
-    assert_select ".lp-trail-today__headline", text: /battle/i
-    assert_select ".lp-trail-base__tent", count: 2
-    assert_select ".lp-trail-base__pill"
+    assert_select ".lp-trail-today__headline", text: /Pitch the tent/
+    assert_select ".lp-trail-today__sub", text: /Win this/
+    assert_select ".lp-trail-today[data-action*='openFromDock']"
+    assert_select ".lp-trail-today[data-camp-id=?]", @project.id.to_s
+    assert_select ".lp-trail-base__tent", count: 1
+    assert_select ".lp-trail-base__pill", count: 0
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_match(/--lp-base-y:\s*0\.95/, response.body)
     assert_select ".lp-trail-sheet"

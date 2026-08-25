@@ -779,6 +779,18 @@ en:
           got_it: "Got it"
           skip: "Skip tour"
         today_card:
+          plant_first_headline: "Plant your first camp"
+          plant_first_sub: "Put it on the grass and start the climb"
+          win_sub: "Win this"
+          win_fallback: "Today’s battle"
+          add_headline: "Add a battle here"
+          add_sub: "Next in %{camp}"
+          cheer_headline: "All clear"
+          cheer_sub:
+            one: "%{count} win today"
+            other: "%{count} wins today"
+          plant_next_headline: "Plant the next camp"
+          plant_next_sub: "Keep the climb moving"
           open_headline:
             one: "%{count} battle waiting"
             other: "%{count} battles waiting"
