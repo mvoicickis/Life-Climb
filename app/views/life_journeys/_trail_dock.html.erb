@@ -1,10 +1,10 @@
-<%# Green dock below the mountain photo — Today card + Base camp (mockup V4). %>
+<%# Today card + Base camp overlays on the mountain photo (mockup V4 BASE_YFRAC). %>
 <% today_card = local_assigns.fetch(:today_card) %>
 <% day_count = local_assigns.fetch(:day_count) %>
 
 <div class="lp-trail__dock" data-trail-ignore>
   <a href="<%= dashboard_path %>"
-     class="lp-trail-today lp-trail-today--dock <%= 'is-busy' if today_card[:busy] %>">
+     class="lp-trail-today <%= 'is-busy' if today_card[:busy] %>">
     <span class="lp-trail-today__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <% if today_card[:busy] %>
@@ -25,7 +25,7 @@
     <span class="lp-trail-today__chev" aria-hidden="true">›</span>
   </a>
 
-  <div class="lp-trail-base lp-trail-base--dock" aria-hidden="true">
+  <div class="lp-trail-base" aria-hidden="true">
     <div class="lp-trail-base__icons">
       <span class="lp-trail-base__tent"></span>
       <span class="lp-trail-base__tent is-2"></span>

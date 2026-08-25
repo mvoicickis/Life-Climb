@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Mountain V4 photo trail: composer → place mode, ghosts, drag camps.
+// Mountain V4 photo trail: composer → place mode, ghosts. Camps stay where planted (no drag).
 export default class extends Controller {
   static targets = [
     "surface",
@@ -60,11 +60,6 @@ export default class extends Controller {
     this._placing = false
     this._pendingPlant = null
     this._logContext = null
-    this._drag = null
-    this._moved = false
-    this._longPressTimer = null
-    this._onPointerMove = (event) => this.onCampPointerMove(event)
-    this._onPointerUp = (event) => this.onCampPointerUp(event)
     this.bindFab()
     this.bindScrollParallax()
     this.bindPeakPin()
@@ -72,8 +67,6 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.clearLongPress()
-    this.unbindDrag()
     this.unbindFab()
     this.unbindScrollParallax()
     this.unbindPeakPin()
@@ -104,10 +97,6 @@ export default class extends Controller {
 
   // Empty trail tap → plant at coords, or finish placing mode.
   surfaceClick(event) {
-    if (this._moved) {
-      this._moved = false
-      return
-    }
     if (this.shouldIgnoreClick(event.target)) return
 
     const coords = this.coordsFromEvent(event)
@@ -697,100 +686,6 @@ export default class extends Controller {
     }
   }
 
-  campPointerDown(event) {
-    if (event.pointerType === "mouse" && event.button !== 0) return
-
-    const camp = event.currentTarget
-    event.stopPropagation()
-
-    this._moved = false
-    this.clearLongPress()
-    this._drag = {
-      camp,
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      dragging: false,
-      updateUrl: camp.dataset.updateUrl || "",
-      campId: camp.dataset.campId || ""
-    }
-
-    this._longPressTimer = window.setTimeout(() => {
-      if (!this._drag || this._drag.camp !== camp) return
-      this._drag.dragging = true
-      camp.classList.add("is-dragging")
-      this.bindDrag()
-      try {
-        camp.setPointerCapture(event.pointerId)
-      } catch (_e) { /* ignore */ }
-    }, 420)
-
-    camp.addEventListener("pointermove", this._onPointerMove)
-    camp.addEventListener("pointerup", this._onPointerUp)
-    camp.addEventListener("pointercancel", this._onPointerUp)
-  }
-
-  onCampPointerMove(event) {
-    if (!this._drag || this._drag.pointerId !== event.pointerId) return
-
-    const dx = event.clientX - this._drag.startX
-    const dy = event.clientY - this._drag.startY
-    if (!this._drag.dragging && Math.hypot(dx, dy) > 10) {
-      this.clearLongPress()
-      return
-    }
-
-    if (!this._drag.dragging) return
-
-    event.preventDefault()
-    event.stopPropagation()
-    this._moved = true
-
-    const coords = this.coordsFromClient(event.clientX, event.clientY)
-    if (!coords) return
-
-    this._drag.camp.style.setProperty("--lp-trail-x", coords.x)
-    this._drag.camp.style.setProperty("--lp-trail-y", coords.y)
-    this._drag.camp.dataset.trailX = String(coords.x)
-    this._drag.camp.dataset.trailY = String(coords.y)
-    this._drag.pending = coords
-  }
-
-  onCampPointerUp(event) {
-    if (!this._drag || this._drag.pointerId !== event.pointerId) return
-
-    const drag = this._drag
-    this.clearLongPress()
-    drag.camp.removeEventListener("pointermove", this._onPointerMove)
-    drag.camp.removeEventListener("pointerup", this._onPointerUp)
-    drag.camp.removeEventListener("pointercancel", this._onPointerUp)
-    this.unbindDrag()
-    drag.camp.classList.remove("is-dragging")
-
-    try {
-      drag.camp.releasePointerCapture(event.pointerId)
-    } catch (_e) { /* ignore */ }
-
-    const pending = drag.pending
-    this._drag = null
-
-    if (drag.dragging && pending && drag.updateUrl) {
-      event.preventDefault()
-      event.stopPropagation()
-      this.patchCampCoords(drag.updateUrl, pending.x, pending.y)
-      this._moved = true
-      window.setTimeout(() => { this._moved = false }, 0)
-    }
-  }
-
-  campClick(event) {
-    if (this._moved) {
-      event.preventDefault()
-      event.stopPropagation()
-      this._moved = false
-    }
-  }
-
   async quickComplete(event) {
     event.preventDefault()
     event.stopPropagation()
@@ -969,8 +864,8 @@ export default class extends Controller {
 
   openPlant(x, y, { chooseSpot = false } = {}) {
     if (x != null && y != null) {
-      this._plantX = this.clamp(x, 0.05, 0.95)
-      this._plantY = this.clamp(y, 0.32, 0.88)
+      this._plantX = this.clamp(x, 0.03, 0.97)
+      this._plantY = this.clamp(y, 0.03, 0.985)
       this.writeHiddenCoords()
     } else {
       this._plantX = null
@@ -1034,28 +929,6 @@ export default class extends Controller {
     }
   }
 
-  async patchCampCoords(url, x, y) {
-    const token = this.csrfToken()
-    const body = new FormData()
-    body.set("trail_x", String(x))
-    body.set("trail_y", String(y))
-    body.set("_method", "patch")
-    if (token) body.set("authenticity_token", token)
-
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "text/vnd.turbo-stream.html, text/html, application/xhtml+xml",
-          "X-CSRF-Token": token,
-          "X-Requested-With": "XMLHttpRequest"
-        },
-        body,
-        credentials: "same-origin"
-      })
-    } catch (_error) { /* optimistic */ }
-  }
-
   shouldIgnoreClick(target) {
     if (!target || !target.closest) return true
     return Boolean(
@@ -1084,8 +957,8 @@ export default class extends Controller {
     const rect = surface.getBoundingClientRect()
     if (!rect.width || !rect.height) return null
     return {
-      x: this.clamp((clientX - rect.left) / rect.width, 0.05, 0.95),
-      y: this.clamp((clientY - rect.top) / rect.height, 0.28, 0.92)
+      x: this.clamp((clientX - rect.left) / rect.width, 0.03, 0.97),
+      y: this.clamp((clientY - rect.top) / rect.height, 0.03, 0.985)
     }
   }
 
@@ -1102,24 +975,5 @@ export default class extends Controller {
     return this.csrfValue ||
       document.querySelector("meta[name='csrf-token']")?.content ||
       ""
-  }
-
-  clearLongPress() {
-    if (this._longPressTimer) {
-      window.clearTimeout(this._longPressTimer)
-      this._longPressTimer = null
-    }
-  }
-
-  bindDrag() {
-    window.addEventListener("pointermove", this._onPointerMove, { passive: false })
-    window.addEventListener("pointerup", this._onPointerUp)
-    window.addEventListener("pointercancel", this._onPointerUp)
-  }
-
-  unbindDrag() {
-    window.removeEventListener("pointermove", this._onPointerMove)
-    window.removeEventListener("pointerup", this._onPointerUp)
-    window.removeEventListener("pointercancel", this._onPointerUp)
   }
 }

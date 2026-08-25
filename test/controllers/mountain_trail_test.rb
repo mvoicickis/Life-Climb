@@ -110,9 +110,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__pennant"
     assert_select ".lp-trail__peak-title"
     assert_select ".lp-trail__summit-cover", count: 1
-    assert_select ".lp-trail__dock"
-    assert_select ".lp-trail-today--dock"
-    assert_select ".lp-trail-base--dock"
+    assert_select ".lp-trail__mountain .lp-trail__dock"
+    assert_select ".lp-trail__mountain .lp-trail-today"
+    assert_select ".lp-trail__mountain .lp-trail-base"
+    assert_select ".lp-trail-camp__shadow", minimum: 1
+    assert_match(/--lp-base-y:\s*0\.95/, response.body)
+    assert_select ".lp-trail-sheet"
   end
 
   test "planting a project via turbo stream appends a trail camp" do

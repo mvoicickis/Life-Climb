@@ -54,5 +54,27 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     open_trail_camp_sheet!(@project)
     assert_selector "#trail-battle-#{@battle.id}", text: /Pitch the tent/, visible: :all
     assert_selector "#trail-battles-#{@project.id} form[action*='battle_win']", visible: :all
+
+    # Phase 1 parity: Today/Base on photo; camp sheet pins to viewport.
+    assert_selector ".lp-trail__mountain .lp-trail-today"
+    assert_selector ".lp-trail__mountain .lp-trail-base"
+    position = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail-sheet.is-open')).position")
+    assert_equal "fixed", position
+  end
+
+  test "place mode clamps and planted camps do not drag" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+
+    assert_no_selector ".lp-trail-camp.is-dragging"
+    assert_no_selector "[data-action*='campPointerDown']"
+    # Camp opens sheet on tap — no long-press reposition.
+    open_trail_camp_sheet!(@project)
+    assert_selector ".lp-trail-sheet.is-open", visible: :all
   end
 end

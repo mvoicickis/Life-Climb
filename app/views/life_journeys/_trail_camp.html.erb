@@ -15,23 +15,25 @@
 <% fog = [ 0, (0.62 - layout[:y].to_f) * 0.4 ].max.round(3) %>
 <% shadow = mountain_trail_camp_shadow(layout) %>
 <% leader_h = layout[:leader_h].to_f %>
+<% label_y = layout[:label_y] || layout[:y] %>
 
 <button type="button"
         class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= "is-fire-#{fire}" if fire.positive? %> <%= 'is-pages' if project.pages_mode? %> <%= 'has-leader' if leader_h.positive? %>"
         id="trail-camp-<%= project.id %>"
-        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-anchor-y: <%= layout[:anchor_y] %>; --lp-trail-leader-h: <%= leader_h %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
+        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-anchor-y: <%= layout[:anchor_y] %>; --lp-trail-label-y: <%= label_y %>; --lp-trail-leader-h: <%= leader_h %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
         data-trail-x="<%= layout[:x] %>"
         data-trail-y="<%= layout[:y] %>"
         data-accent="<%= accent %>"
         data-update-url="<%= strategy_goal_path(project) %>"
-        data-action="pointerdown->trail-canvas#campPointerDown click->trail-canvas#campClick click->trail-camp-sheet#open"
+        data-action="click->trail-camp-sheet#open"
         aria-label="<%= project.title %>">
   <% if leader_h.positive? %>
     <span class="lp-trail-camp__leader" aria-hidden="true"></span>
   <% end %>
-  <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+  <span class="lp-trail-camp__shadow" aria-hidden="true"
+        style="--lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"></span>
   <% if open_battle %>
     <span class="lp-trail-camp__quick"
           data-action="click->trail-canvas#quickComplete"
