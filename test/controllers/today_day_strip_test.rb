@@ -9,6 +9,7 @@ class TodayDayStripTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     sign_in_as @user
     @journey = seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find { |c| c.plan? && !c.holding? }
@@ -55,42 +56,39 @@ class TodayDayStripTest < ActionDispatch::IntegrationTest
     @holding_todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Call the dentist")
   end
 
-  test "strip shows one bar per battle with won colour and open grey" do
+  test "day strip is removed from Today V2 even when battles are won and open" do
     @tagged_todo.update!(completed_at: Time.current)
     @untagged_todo.update!(completed_at: Time.current)
 
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-daystrip__bar", count: 5
-    assert_select ".lp-dash-daystrip__label", text: "2 of 5 won"
-    assert_select ".lp-dash-daystrip__bar.has-color.is-purple[data-todo-id=?]", @tagged_todo.id.to_s
-    assert_select ".lp-dash-daystrip__bar.is-won[data-todo-id=?]", @untagged_todo.id.to_s
-    assert_select ".lp-dash-daystrip__bar.has-color[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-daystrip__bar.is-won[data-todo-id=?]", @open_teal.id.to_s, count: 0
-    assert_select ".lp-dash-daystrip__bar.has-color[data-todo-id=?]", @open_teal.id.to_s, count: 0
-    assert_select ".lp-dash-daystrip__bar.is-won[data-todo-id=?]", @open_amber.id.to_s, count: 0
-    assert_select ".lp-dash-daystrip__bar.has-color[data-todo-id=?]", @holding_todo.id.to_s, count: 0
+    assert_select ".lp-dash-daystrip", count: 0
+    assert_battle_row_absent!(title: @tagged_todo.title)
+    assert_battle_row_absent!(title: @untagged_todo.title)
+    assert_battle_row!(title: @open_teal.title)
+    assert_battle_row!(title: @open_amber.title)
+    assert_battle_row!(title: @holding_todo.title)
     refute_includes response.body, I18n.t("strategy.holding.project_title")
   end
 
-  test "won-untagged bar is distinct from an open bar" do
+  test "won battles disappear from battlefield rows" do
     @untagged_todo.update!(completed_at: Time.current)
 
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-daystrip__bar.is-won[data-todo-id=?]", @untagged_todo.id.to_s
-    assert_select ".lp-dash-daystrip__bar.has-color[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-daystrip__bar.is-won[data-todo-id=?]", @tagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-daystrip__bar.has-color[data-todo-id=?]", @tagged_todo.id.to_s, count: 0
+    assert_select ".lp-dash-daystrip", count: 0
+    assert_battle_row_absent!(title: @untagged_todo.title)
+    assert_battle_row!(title: @tagged_todo.title)
   end
 
-  test "empty Today hides the strip" do
+  test "empty Today hides the strip and shows empty battlefield copy" do
     @user.daily_todos.for_day(Date.current).destroy_all
 
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-daystrip", count: 0
+    assert_select ".lp-today-v2-empty", count: 1
   end
 end

@@ -9,11 +9,12 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Ship auth")
     @todo.update!(start_time: "09:00", end_time: "10:00")
   end
 
-  test "completed battles leave the timeline rail and land in a collapsed fold when open work remains" do
+  test "completed battles leave the battlefield list when open work remains" do
     other = @user.daily_todos.create!(
       title: "Still open",
       scheduled_on: Date.current,
@@ -27,28 +28,25 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-timeline__item .lp-dash-tcard[data-todo-id=?]", @todo.id, count: 0
-    assert_select ".lp-dash-timeline__item .lp-dash-tcard[data-todo-id=?]", other.id, count: 1
-    assert_select ".lp-dash-done-fold:not([open])", count: 1
-    assert_select ".lp-dash-done-fold__summary .lp-dash-done-fold__label", text: "Done today"
-    assert_select ".lp-dash-done-fold__count", text: "1"
-    assert_select ".lp-dash-done-fold .lp-dash-tcard.is-done[data-todo-id=?]", @todo.id
-    assert_select ".lp-dash-done-fold .lp-dash-tcard[data-todo-id=?] form[action=?]",
-                  @todo.id, complete_daily_todo_path(@todo)
+    assert_battle_row_absent!(title: @todo.title)
+    assert_battle_row!(title: other.title)
+    assert_select ".lp-dash-done-fold", count: 0
+    assert_select ".lp-dash-timeline", count: 0
   end
 
-  test "fold defaults open when every battle is done" do
+  test "all battles done clears open rows and enables end-day notch" do
     @todo.update!(completed_at: Time.current)
 
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-timeline__rail", count: 0
-    assert_select ".lp-dash-done-fold[open]", count: 1
-    assert_select ".lp-dash-done-fold .lp-dash-tcard.is-done[data-todo-id=?]", @todo.id
+    assert_battle_row_absent!(title: @todo.title)
+    assert_select ".lp-dash-timeline", count: 0
+    assert_select ".lp-dash-done-fold", count: 0
+    assert_select ".lp-today-v2-notch.is-end-day", count: 1
   end
 
-  test "completed timed battle does not keep a rail segment for the now line" do
+  test "completed timed battle does not keep a timeline rail segment" do
     @todo.update!(completed_at: Time.current)
     open = @user.daily_todos.create!(
       title: "Later fight",
@@ -62,8 +60,8 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-timeline__item[data-starts-at]", count: 1
-    assert_select ".lp-dash-timeline__item .lp-dash-tcard[data-todo-id=?]", open.id
-    assert_select ".lp-dash-timeline__item .lp-dash-tcard[data-todo-id=?]", @todo.id, count: 0
+    assert_select ".lp-dash-timeline__item[data-starts-at]", count: 0
+    assert_battle_row!(title: open.title)
+    assert_battle_row_absent!(title: @todo.title)
   end
 end

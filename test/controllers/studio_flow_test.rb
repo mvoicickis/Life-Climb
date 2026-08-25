@@ -58,9 +58,10 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Journey|Mountain|Action Points/i, response.body)
   end
 
-  test "nav includes mountain today you" do
+  test "nav includes Today V2 notch FAB" do
     get dashboard_path
     assert_response :success
+    assert_select ".lp-dash-nav.is-today-v2"
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /You/i

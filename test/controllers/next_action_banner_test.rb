@@ -37,7 +37,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-cta", text: I18n.t("strategy.next_action.plan_route.cta")
   end
 
-  test "set_today banner when spine exists without daily todos" do
+  test "set_today next-action banner is absent on Today V2 when spine exists without daily todos" do
     build_spine_without_cascade!
     seed_today_habits!(@journey.commitment_habit_count)
     @journey.update!(commitment_battle_count: 0)
@@ -45,36 +45,36 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:set_today, tone: :steady)
-    assert_select "a.lp-cta", count: 0
-    assert_select "[data-commitment-progress]", minimum: 1
+    assert_select ".lp-dash-next", count: 0
+    assert_select "#next-action-slot", count: 0
+    assert_today_v2_shell!
   end
 
-  test "complete_battle banner includes todo title with steady tone before overdue hour" do
+  test "complete_battle next-action banner is absent; battle shows as flat row" do
     build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
+    dismiss_onboarding_missions!(@user)
 
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:complete_battle, tone: :steady)
-    assert_select ".lp-dash-next__title", text: /Send five emails/
-    assert_select "a.lp-cta", count: 0
-    assert_select "[data-commitment-progress]", minimum: 1
+    assert_select ".lp-dash-next", count: 0
+    assert_battle_row!(title: "Send five emails", camp: "Improve apps")
+    assert_select "[data-commitment-progress]", count: 0
   end
 
-  test "battle_overdue banner uses urgent tone after overdue hour" do
+  test "battle_overdue next-action banner is absent on Today V2 after overdue hour" do
     build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
+    dismiss_onboarding_missions!(@user)
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 19, 0, 0)
 
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:battle_overdue, tone: :urgent)
-    assert_select ".lp-dash-next__title", text: /Send five emails/
-    assert_select "a.lp-cta", count: 0
-    assert_select "[data-commitment-progress]", minimum: 1
+    assert_select ".lp-dash-next", count: 0
+    assert_battle_row!(title: "Send five emails", camp: "Improve apps")
+    assert_select "[data-commitment-progress]", count: 0
   end
 
   test "commitment_gap panel shows chips, quiet Drop to Easy, and Mountain only when camps short" do
@@ -174,9 +174,10 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_equal 1, @journey.commitment_habit_count
   end
 
-  test "confirm_camp banner when ProjectCheckQueue has a pending project" do
+  test "confirm_camp next-action banner is absent on Today V2 after battle complete" do
     build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
+    dismiss_onboarding_missions!(@user)
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Send five emails")
 
     post complete_daily_todo_path(todo)
@@ -184,22 +185,23 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
 
-    assert_banner_state(:confirm_camp, tone: :steady)
-    assert_select "a.lp-cta", count: 0
-    assert_select "[data-commitment-progress]", minimum: 1
+    assert_select ".lp-dash-next", count: 0
+    assert_battle_row_absent!(title: "Send five emails")
+    assert_select "[data-commitment-progress]", count: 0
   end
 
-  test "day_won banner when todos are done and no camp confirmation pending" do
+  test "day_won next-action banner is absent when todos are done on Today V2" do
     build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
+    dismiss_onboarding_missions!(@user)
     complete_all_todos!
 
     get dashboard_path
     assert_response :success
 
-    assert_banner_state(:day_won, tone: :steady)
-    assert_select "a.lp-cta", text: I18n.t("strategy.next_action.day_won.cta")
-    assert_select "[data-commitment-progress]", minimum: 1
+    assert_select ".lp-dash-next", count: 0
+    assert_select ".lp-today-v2-notch.is-end-day", count: 1
+    assert_select "[data-commitment-progress]", count: 0
   end
 
   test "banner absent when journey has no goal" do

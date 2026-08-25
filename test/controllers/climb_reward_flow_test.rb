@@ -27,6 +27,7 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
       title: "Today Battle", scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    dismiss_onboarding_missions!(@user)
     @todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
   end
 
@@ -43,13 +44,13 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_select "#climb-reward", count: 0
-    assert_select ".lp-dash-hero__stat", minimum: 1
-    assert_select ".lp-dash-timeline", count: 1
+    assert_select ".lp-today-v2-header", count: 1
+    assert_select ".lp-today-v2-field", count: 1
     assert_match(/data-battle-day-celebrate-value="true"/, response.body)
     assert_match(/data-battle-day-ap-gained-value="#{ap}"/, response.body)
   end
 
-  test "when all items are done day is marked won without old battle footer" do
+  test "when all items are done day is marked won on Today V2" do
     # Clear leftover onboarding mission so the day can fully clear via checkboxes.
     @user.missions.for_day.primary.incomplete.find_each do |mission|
       Missions::Complete.call(user: @user, mission: mission)

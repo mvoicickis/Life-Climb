@@ -67,13 +67,12 @@ class FirstClimbTest < ActionDispatch::IntegrationTest
     assert Strategy::HierarchyReady.call(user: @user, journey: @journey)
 
     # One real action only — scaffolding "Plan Your Route" mission is retired.
-    assert_select ".lp-dash-tcard__title", text: "Study chapter 1 for 20 minutes"
-    assert_select ".lp-dash-timeline .lp-dash-tcard", count: 1
+    assert_battle_row!(title: "Study chapter 1 for 20 minutes", camp: "Get certified")
+    assert_select ".lp-dash-timeline .lp-dash-tcard", count: 0
     assert_no_match(/Plan Your Route/i, response.body)
 
-    # Today climb hero (replaces compact header).
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-hero__avatar", count: 1
+    assert_today_v2_shell!
+    assert_select ".lp-dash-hero", count: 0
   end
 
   test "today dead-end shows first-climb coach when spine empty" do

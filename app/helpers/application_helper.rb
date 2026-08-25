@@ -11,6 +11,24 @@ module ApplicationHelper
     image_tag user.character_image, **options
   end
 
+  # Camp pill colors for Today V2 battlefield rows.
+  def battlefield_camp_style(project)
+    hex = if project&.trail_accent_hex.present?
+      project.trail_accent_hex
+    else
+      MountainTrailHelper::ACCENT_HEX.fetch(project&.tagged_color_key.to_s, "#57534e")
+    end
+    { color: hex, bg: "#{hex}26" }
+  end
+
+  def battlefield_hp_band_class(band)
+    case band.to_sym
+    when :safe then "is-safe"
+    when :warn then "is-warn"
+    else "is-danger"
+    end
+  end
+
   # Stage label (e.g. "Camp set") lives on the mountain caption only —
   # never echo mountain[:label] here or the hero shows it twice.
   def dash_momentum_line(percent, mountain: nil)

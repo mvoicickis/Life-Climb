@@ -10,6 +10,7 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     @user.update!(character: "fox")
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Ship auth")
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 30, 0)
   end
@@ -18,28 +19,24 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     travel_back
   end
 
-  test "Set time Start defaults to current time and End stays blank" do
+  test "Today V2 has no inline set-time form on battle rows" do
     assert_not @todo.timed?
 
     get dashboard_path
     assert_response :success
 
-    expected = Time.current.strftime("%H:%M")
-    assert_select ".lp-dash-tcard[data-todo-id=?] input[name='daily_todo[start_time]'][value=?]",
-                  @todo.id.to_s, expected
-    assert_select ".lp-dash-tcard[data-todo-id=?] input[name='daily_todo[end_time]'][required]",
-                  @todo.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] input[name='daily_todo[end_time]'][value]",
-                  @todo.id.to_s, count: 0
+    assert_battle_row!(title: @todo.title, todo: @todo)
+    assert_select ".lp-dash-tcard input[name='daily_todo[start_time]']", count: 0
+    assert_select ".lp-dash-tcard input[name='daily_todo[end_time]']", count: 0
   end
 
-  test "Add step on linked plain battle creates practice_task and quest card on Today" do
+  test "Add step on linked plain battle creates practice_task and flat quest row on Today" do
     assert @todo.strategy_goal_id.present?
     assert_not @todo.quest?
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menuitem", @todo.id.to_s, text: /Add step/
+    assert_select ".lp-dash-tcard__menuitem", count: 0
 
     assert_difference -> { PracticeTask.count }, 1 do
       post strategy_goal_practice_tasks_path(@todo.strategy_goal), params: {
@@ -52,27 +49,22 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert @todo.reload.quest?
-    assert_select ".lp-dash-tcard.is-quest[data-todo-id=?]", @todo.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
-                  @todo.id.to_s, text: /Outline the auth flow/
-    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  @todo.id.to_s, text: /Outline the auth flow/
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win.is-locked", @todo.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menuitem", @todo.id.to_s, text: /Add step/
+    assert_battle_row!(title: @todo.title, camp: "Auth", todo: @todo)
+    assert_select ".lp-dash-quest-next__step", count: 0
+    assert_select ".lp-dash-quest-sheet", count: 0
   end
 
-  test "complete and undo step uses practice_tasks update and unlocks shell when done" do
+  test "complete and undo step uses practice_tasks update and removes row when shell done" do
     day = @todo.strategy_goal
     task = day.practice_tasks.create!(user: @user, title: "Write test", position: 0)
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win.is-locked", @todo.id.to_s
+    assert_battle_row!(title: @todo.title, todo: @todo)
 
     patch practice_task_path(task), params: { completed: "1" }
     assert_redirected_to dashboard_path
     assert task.reload.completed?
-    # Last objective finishes the shell battle automatically.
     assert @todo.reload.completed?
 
     patch practice_task_path(task), params: { completed: "0" }
@@ -81,7 +73,7 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     assert_not @todo.reload.completed?
 
     follow_redirect!
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win.is-locked", @todo.id.to_s
+    assert_battle_row!(title: @todo.title, todo: @todo)
   end
 
   test "nil-goal Add step provisions day, creates step, and keeps a single DailyTodo" do
@@ -108,11 +100,8 @@ class TodayAddStepTest < ActionDispatch::IntegrationTest
     assert_equal 1, orphan.strategy_goal.practice_tasks.where(title: "First checklist step").count
 
     follow_redirect!
-    assert_select ".lp-dash-tcard.is-quest[data-todo-id=?]", orphan.id.to_s
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
-                  orphan.id.to_s, text: /First checklist step/
-    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  orphan.id.to_s, text: /First checklist step/
+    assert_battle_row!(title: orphan.title, todo: orphan)
+    assert_select ".lp-dash-quest-sheet", count: 0
   end
 
   test "commitment still counts timed completed battles with practice_tasks" do

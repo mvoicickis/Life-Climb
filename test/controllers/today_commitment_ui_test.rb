@@ -27,7 +27,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     travel_back
   end
 
-  test "Today shows tier and shield badges, progress strip, and no Win on Today CTA" do
+  test "plan route Today keeps commitment hero badges without Win on Today CTA" do
     get dashboard_path
     assert_response :success
 
@@ -36,9 +36,10 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     assert_select "[data-commitment-progress]", text: /Battles/i
     assert_select "a.lp-cta", text: "Win on Today", count: 0
     assert_no_match(/>\s*Win on Today\s*</, response.body)
+    assert_select ".lp-today-v2-header", count: 0
   end
 
-  test "quantity Anytime Win stays disabled until amount is filled" do
+  test "quantity habit Win UI is absent from Today V2 battlefield" do
     goal = @user.strategy_goals.for_kind("goal").roots.first
     plan = goal.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
@@ -62,10 +63,9 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard__qty[data-controller~='quantity-win']" do
-      assert_select "input.lp-dash-tcard__amount[required]"
-      assert_select "input[type=submit][disabled]"
-    end
+    assert_select ".lp-dash-anytime", count: 0
+    assert_select ".lp-dash-tcard__qty[data-controller~='quantity-win']", count: 0
+    assert_today_v2_shell!
   end
 
   test "level up prompt hidden when next tier ineligible despite streak" do
@@ -112,7 +112,6 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
         horizon: "project", title: "Bare #{n}", position: n
       )
     end
-    # Onboarding::Run may not seed camps — ensure capacity via path camps above + any existing.
     while Today::Commitment.camp_capacity(@journey) < 3
       plan.children.create!(
         user: @user, life_area: @journey.life_area, life_journey: @journey,
@@ -140,7 +139,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_equal 3, @journey.reload.commitment_met_streak_days
-    assert_select "[data-commitment-level-up]"
+    assert_select "[data-commitment-level-up]", count: 0
 
     patch decline_today_commitment_path
     assert_redirected_to dashboard_path
@@ -151,7 +150,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     @journey.reload.update!(commitment_level_up_declined_on: nil)
     get dashboard_path
     assert_response :success
-    assert_select "[data-commitment-level-up]"
+    assert_select "[data-commitment-level-up]", count: 0
 
     patch level_up_today_commitment_path
     assert_redirected_to dashboard_path

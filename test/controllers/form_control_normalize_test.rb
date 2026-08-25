@@ -21,14 +21,15 @@ class FormControlNormalizeTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today quantity amount uses spinner-normalized class" do
+  test "Today quantity amount UI is absent from Today V2 battlefield" do
     enable_habits!
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-anytime input[type=number].lp-dash-tcard__amount", minimum: 1
+    assert_select ".lp-dash-anytime input[type=number].lp-dash-tcard__amount", count: 0
+    assert_select ".lp-dash-anytime", count: 0
   end
 
-  test "gap panel ships custom qty checkbox class and time input shell class" do
+  test "gap panel is absent on Today V2 battlefield" do
     @journey.update!(
       commitment_key: "medium",
       commitment_name: "Medium",
@@ -48,7 +49,7 @@ class FormControlNormalizeTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select "input.lp-commitment-gap__qty-check[type=checkbox]", count: 1
-    assert_select "#commitment-gap-panel input[type=time].lp-input", minimum: 1
+    assert_select "#commitment-gap-panel", count: 0
+    assert_today_v2_shell!
   end
 end

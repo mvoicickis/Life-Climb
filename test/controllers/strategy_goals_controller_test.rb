@@ -191,7 +191,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert battle.reload.completed?
 
     follow_redirect!
-    assert_match(/Is .*Project.* finished/i, response.body)
+    assert battle.reload.completed?
+    assert_equal 0, goal.reload.progress_percent
+    assert Strategy::ProjectCheckQueue.next_for(user: @user, session: session).present?
 
     post project_completions_path, params: { project_id: project_leaf.id, decision: "done" }
     assert project_leaf.reload.completed?
@@ -527,7 +529,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Action Points/i, response.body)
+    assert_today_v2_shell!
     assert_no_match(/>\s*Strategy Points\s*</i, response.body)
   end
 

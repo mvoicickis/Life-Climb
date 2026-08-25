@@ -1,0 +1,75 @@
+<%# Today V2 — single battle row or route mission. locals: todo, mission, journey %>
+<%
+  todo = local_assigns[:todo]
+  mission = local_assigns[:mission]
+  qty_project = nil
+  if mission
+    title = mission.title
+    project = nil
+    complete_url = mission_completion_path(mission)
+    complete_params = { aspect_key: mission.aspect_key }
+    row_id = dom_id(mission, :battlefield_row)
+  else
+    title = todo.title
+    project = todo.visible_path_project
+    complete_url = complete_daily_todo_path(todo)
+    complete_params = {}
+    row_id = dom_id(todo, :battlefield_row)
+    qty_project = todo.strategy_goal&.quantified_path_project
+  end
+  camp_style = battlefield_camp_style(project)
+  camp_label = project&.title.presence || t("dash.battlefield.no_camp")
+%>
+
+<article class="lp-today-v2-row"
+         id="<%= row_id %>"
+         <% if qty_project %>
+         data-controller="quantity-complete"
+         <% end %>
+         <% if todo %>
+         data-todo-id="<%= todo.id %>"
+         data-battle-day-target="item"
+         data-lp="<%= todo.lp_reward %>"
+         <% end %>>
+  <% if project %>
+    <span class="lp-today-v2-row__stripe" style="background: <%= camp_style[:color] %>" aria-hidden="true"></span>
+  <% end %>
+
+  <% if qty_project %>
+    <%= button_to complete_url,
+          method: :post,
+          form: {
+            class: "lp-today-v2-row__check-form",
+            data: {
+              quantity_complete_target: "form",
+              action: "submit->quantity-complete#intercept"
+            }
+          },
+          class: "lp-today-v2-row__check",
+          aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+    <% end %>
+    <%= render "dashboard/dash_battlefield_quantity_sheet", todo: todo, project: qty_project %>
+  <% else %>
+    <%= button_to complete_url,
+          method: :post,
+          params: complete_params,
+          form: {
+            class: "lp-today-v2-row__check-form",
+            data: {
+              controller: "juicy-feedback",
+              action: "submit->juicy-feedback#play",
+              juicy_feedback_suppress_reload_celebrate_value: true
+            }
+          },
+          class: "lp-today-v2-row__check",
+          aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+    <% end %>
+  <% end %>
+
+  <p class="lp-today-v2-row__title"><%= title %></p>
+
+  <span class="lp-today-v2-row__camp"
+        style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">
+    <%= camp_label %>
+  </span>
+</article>

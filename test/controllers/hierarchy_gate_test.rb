@@ -48,7 +48,7 @@ class HierarchyGateTest < ActionDispatch::IntegrationTest
     assert Strategy::HierarchyReady.call(user: @user)
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-timeline"
+    assert_select ".lp-today-v2-field"
   end
 
   test "fight today reaches dashboard after cascade when spine is ready" do
@@ -68,6 +68,6 @@ class HierarchyGateTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_response :success
-    assert_select ".lp-dash-timeline"
+    assert_select ".lp-today-v2-field"
   end
 end

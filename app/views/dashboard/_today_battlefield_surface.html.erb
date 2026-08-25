@@ -1,0 +1,21 @@
+<%# Today V2 battlefield surface — plan-route coach OR HP + battlefield/recap. %>
+<% if @show_plan_route %>
+  <%= render "dashboard/dash_plan_route",
+        journey: @journey,
+        mission: @mission,
+        adventure_year: @adventure_year,
+        strategy_goal: @strategy_goal,
+        first_climb: @first_climb_needed %>
+<% elsif @battlefield_day_ended %>
+  <%= render "dashboard/dash_execution_recap",
+        health: @battlefield_health,
+        streak: @climb_streak,
+        journey: @journey %>
+<% else %>
+  <%= render "dashboard/dash_battlefield",
+        health: @battlefield_health,
+        open_todos: @open_todos,
+        journey: @journey,
+        include_mission: @include_mission_in_battle,
+        mission: @mission %>
+<% end %>

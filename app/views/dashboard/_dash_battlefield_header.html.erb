@@ -1,0 +1,41 @@
+<%# Today V2 — HP header (mockup). locals: health, streak %>
+<% health = local_assigns.fetch(:health) %>
+<% streak = local_assigns[:streak] || @climb_streak %>
+<% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
+<% band = battlefield_hp_band_class(health.band) %>
+
+<header class="lp-today-v2-header" aria-label="<%= t('dash.battlefield.health_label') %>">
+  <div class="lp-today-v2-header__row">
+    <%= link_to settings_path, class: "lp-today-v2-header__avatar", aria: { label: t("nav.settings") } do %>
+      <%= companion_image_tag class: "lp-today-v2-header__avatar-img", alt: "" %>
+    <% end %>
+    <div class="lp-today-v2-header__who">
+      <p class="lp-today-v2-header__name"><%= current_user.display_name %></p>
+      <p class="lp-today-v2-header__meta">
+        <%= l(Date.current, format: :dash_weekday).upcase %>
+        <span aria-hidden="true"> · </span>
+        <%= t("dash.battlefield.day_n", count: streak_days.positive? ? streak_days : 1) %>
+      </p>
+    </div>
+    <div class="lp-today-v2-header__hp-block">
+      <span class="lp-today-v2-header__hp-num <%= band %>" data-today-v2-target="hpNum"><%= health.hp %></span>
+      <span class="lp-today-v2-header__hp-label"><%= t("dash.battlefield.health_label") %></span>
+    </div>
+  </div>
+
+  <div class="lp-today-v2-hp-bar<%= ' is-pulse' if health.danger? %>"
+       role="progressbar"
+       aria-valuemin="0"
+       aria-valuemax="100"
+       aria-valuenow="<%= health.hp %>"
+       data-today-v2-target="hpBar">
+    <span class="lp-today-v2-hp-bar__fill <%= band %>"
+          style="width: <%= health.hp %>%"
+          data-today-v2-target="hpFill"></span>
+  </div>
+
+  <p class="lp-today-v2-risk" data-today-v2-target="riskNote">
+    <span aria-hidden="true"><%= health.risk_icon %></span>
+    <%= health.risk_note %>
+  </p>
+</header>

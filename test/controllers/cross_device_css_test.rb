@@ -19,7 +19,7 @@ class CrossDeviceCssTest < ActionDispatch::IntegrationTest
     assert_select "body.min-h-screen", count: 0
   end
 
-  test "gap panel exposes tap-friendly controls markup" do
+  test "gap panel markup is absent on Today V2 battlefield" do
     journey = @user.primary_focused_journey
     journey.update!(
       commitment_key: "medium",
@@ -40,9 +40,7 @@ class CrossDeviceCssTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-commitment-gap__plus", minimum: 1
-    assert_select ".lp-commitment-gap__qty-toggle", count: 1
-    assert_select "input.lp-commitment-gap__qty-check[type=checkbox]", count: 1
-    assert_select ".lp-commitment-gap__link", minimum: 1
+    assert_select "#commitment-gap-panel", count: 0
+    assert_today_v2_shell!
   end
 end

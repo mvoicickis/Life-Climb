@@ -3,7 +3,7 @@
 require "test_helper"
 
 class TodayPageTest < ActionDispatch::IntegrationTest
-  test "today renders for hierarchy-ready user with timeline header" do
+  test "today renders for hierarchy-ready user with battlefield header" do
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(
@@ -28,9 +28,9 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert Strategy::HierarchyReady.call(user: user)
     get dashboard_path
     assert_response :success, -> { "body=#{response.body.to_s[0, 2000]}" }
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-timeline", count: 1
-    assert_select ".lp-dash-tcard__title", text: "Battle"
+    assert_today_v2_shell!
+    assert_no_legacy_today_shell!
+    assert_battle_row!(title: "Battle", camp: "Project")
   end
 
   test "Today hides the habits section, nag, and habit count while habits are disabled" do
@@ -49,7 +49,6 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     leaf = practice_leaf_for!(project)
     user.strategy_goals.create!(life_area: area, life_journey: journey, parent: leaf, horizon: "day", title: "Battle", scheduled_on: Date.current, position: 0)
     Strategy::CascadeToDaily.call(user: user, life_area: area)
-    # A real habit exists but must be hidden, not merely absent.
     user.habits.create!(name: "Read", unit: "pages", points: 5, frequency: "daily",
       active: true, show_on_home: true, stat_type: "growth", goal: 10)
 
@@ -58,10 +57,10 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-anytime", count: 0
     assert_no_match(/Add a habit/i, response.body)
     assert_no_match(/\d+\s+habits/i, response.body)
-    assert_select ".lp-dash-hero__lab em", text: /battle/i
+    assert_select ".lp-today-v2-field", count: 1
   end
 
-  test "battle day strip renders above the habits section" do
+  test "battle day strip is removed in Today V2" do
     enable_habits!
     user = users(:one)
     sign_in_as user
@@ -86,18 +85,12 @@ class TodayPageTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-daystrip", count: 1
-    assert_select ".lp-dash-anytime", count: 1
-
-    strip_at = response.body.index("lp-dash-daystrip")
-    habits_at = response.body.index("lp-dash-anytime")
-    assert strip_at, "battle day strip should render"
-    assert habits_at, "habits section should render"
-    assert_operator strip_at, :<, habits_at,
-                    "battle day strip should appear before the habits section in the DOM"
+    assert_select ".lp-dash-daystrip", count: 0
+    assert_select ".lp-dash-anytime", count: 0
+    assert_select ".lp-today-v2-field", count: 1
   end
 
-  test "today header shows avatar, day percent, streak, and AP" do
+  test "today header shows avatar, streak meta, and HP block" do
     user = users(:one)
     user.update!(
       name: "Alex Climber",
@@ -129,13 +122,13 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-hero__avatar-img[src*='fox']", count: 1
-    assert_select ".lp-dash-hero__name", text: "Alex Climber"
-    assert_select ".lp-dash-hero__segs", count: 1
-    assert_select ".lp-dash-hero [data-battle-day-target='lpTotal']", text: /120/
-    assert_select ".lp-dash-timeline", count: 1
+    assert_select ".lp-today-v2-header", count: 1
+    assert_select ".lp-today-v2-header__avatar-img[src*='fox']", count: 1
+    assert_select ".lp-today-v2-header__name", text: "Alex Climber"
+    assert_select ".lp-today-v2-header__hp-num", minimum: 1
+    assert_select ".lp-today-v2-hp-bar", count: 1
     assert_select ".lp-dash-header", count: 0
+    assert_select ".lp-dash-hero", count: 0
   end
 
   test "today renders while mountain spine is still incomplete" do

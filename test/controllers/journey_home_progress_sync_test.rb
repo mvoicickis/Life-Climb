@@ -44,7 +44,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Write tests/, response.body)
     assert_match(/Polish UI/, response.body)
-    assert_match(/See your mountain/i, response.body)
+    assert_match(/Open Mountain|See your mountain/i, response.body)
   end
 
   test "strategy battle sync marks journey today layer done" do
@@ -84,8 +84,9 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_in_delta 45.0, @journey.gap_percent.to_f, 0.01
 
     get dashboard_path
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-hero__segs", count: 1
+    assert_response :success
+    assert_select ".lp-today-v2-header", count: 1
+    assert_select ".lp-dash-hero__segs", count: 0
 
     get life_points_path
     assert_response :success
@@ -116,6 +117,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_match(/Finish the book/, response.body)
     assert_match(%r{5/100}, response.body)
+    assert_select ".lp-today-v2-field", minimum: 1
   end
 
   test "tagged approaches save tags on list items" do

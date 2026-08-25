@@ -80,7 +80,7 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  test "Today quest cards show path camp title and nested objectives" do
+  test "Today quest rows show path camp title and camp pill" do
     quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Teal Volume",
@@ -93,15 +93,12 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Teal Volume"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: /Do a lesson/
-    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  text: /Do a lesson/
-    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  text: /Review notes/
+    assert_battle_row!(title: "Teal Volume", camp: "Teal Volume")
+    assert_select ".lp-dash-quest-next__step", count: 0
+    assert_select ".lp-dash-quest-sheet", count: 0
   end
 
-  test "uncolored quest still renders as a quest card on Today" do
+  test "uncolored quest still renders as a flat battlefield row on Today" do
     quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Plain Volume",
@@ -113,9 +110,8 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Plain Volume"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", minimum: 1
-    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj", minimum: 1
+    assert_battle_row!(title: "Plain Volume", camp: "Plain Volume")
+    assert_select ".lp-dash-quest-sheet", count: 0
   end
 
   test "quest detail edit dialog can update color_key" do

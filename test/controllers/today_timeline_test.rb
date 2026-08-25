@@ -9,6 +9,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @area = @user.primary_focused_journey.life_area
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -24,24 +25,21 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today renders compressed timeline and Anytime without section headers" do
+  test "Today V2 renders battlefield shell without timeline, habits, or section headers" do
     enable_habits!
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-timeline", count: 1
-    assert_select ".lp-dash-anytime", count: 1
-    assert_select ".lp-dash-anytime .lp-dash-tcard.is-habit .lp-dash-tcard__title", text: "Meditate"
+    assert_today_v2_shell!
+    assert_no_legacy_today_shell!
     assert_select ".lp-dash-section.is-battles", count: 0
     assert_select ".lp-dash-section.is-quests", count: 0
     assert_select ".lp-dash-section.is-habits", count: 0
-    assert_no_match(/class="[^"]*is-battles/, response.body)
-    assert_select ".lp-dash-tcard__win", minimum: 1
+    assert_battle_row!(title: "Ship auth", camp: "Auth")
     assert_match(/min-height:\s*44px/, File.read(Rails.root.join("app/assets/tailwind/application.css")))
   end
 
-  test "creating a timed battle places it in the timeline not Unscheduled" do
+  test "creating a timed battle places it in the battlefield list" do
     post strategy_goals_path, params: {
       life_area_id: @area.id,
       life_journey_id: @journey.id,
@@ -61,22 +59,20 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-timeline__item .lp-dash-tcard__title", text: "Deep work block"
-    assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard__title", text: "Deep work block", count: 0
+    assert_battle_row!(title: "Deep work block", todo: todo)
+    assert_select ".lp-dash-timeline__unscheduled", count: 0
   end
 
-  test "inline Set time moves an unscheduled todo into the timeline" do
+  test "timed battles render as flat rows without inline set-time UI" do
     assert_not @todo.timed?
 
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0) do
       get dashboard_path
       assert_response :success
-      assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s
-      assert_select ".lp-dash-tcard.is-needs-time[data-todo-id=?]", @todo.id.to_s
-      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__timechip", @todo.id.to_s
-      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win--primary", @todo.id.to_s
-      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__menu", @todo.id.to_s
-      assert_match(/I did it/, response.body)
+      assert_battle_row!(title: @todo.title, todo: @todo)
+      assert_select ".lp-dash-timeline__unscheduled", count: 0
+      assert_select ".lp-dash-tcard__timechip", count: 0
+      assert_select ".lp-dash-tcard__menu", count: 0
 
       patch daily_todo_path(@todo), params: {
         daily_todo: { start_time: "16:00", end_time: "16:45" }
@@ -86,14 +82,12 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
 
       get dashboard_path
       assert_response :success
-      assert_select ".lp-dash-timeline__item .lp-dash-tcard.is-ready[data-todo-id=?]", @todo.id.to_s
-      assert_select ".lp-dash-timeline__unscheduled .lp-dash-tcard[data-todo-id=?]", @todo.id.to_s, count: 0
-      assert_match(/16:00/, response.body)
-      assert_match(/counts today/, response.body)
+      assert_battle_row!(title: @todo.title, todo: @todo)
+      assert_select ".lp-dash-timeline", count: 0
     end
   end
 
-  test "untimed battle shows actionable timechip before overdue hour" do
+  test "untimed battle shows flat row without actionable timechip before overdue hour" do
     assert_not @todo.timed?
     travel_to Time.zone.local(
       Date.current.year, Date.current.month, Date.current.day,
@@ -101,14 +95,13 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     ) do
       get dashboard_path
       assert_response :success
-      assert_select ".lp-dash-tcard.is-needs-time[data-todo-id=?]", @todo.id.to_s
-      assert_select ".lp-dash-tcard[data-todo-id=?] button.lp-dash-tcard__timechip", @todo.id.to_s
-      assert_match(/Add a time so it counts/, response.body)
-      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win--primary", @todo.id.to_s
+      assert_battle_row!(title: @todo.title, todo: @todo)
+      assert_select ".lp-dash-tcard__timechip", count: 0
+      assert_select ".lp-today-v2-row__check", minimum: 1
     end
   end
 
-  test "untimed battle hides actionable timechip at overdue hour" do
+  test "untimed battle shows flat row without timechip at overdue hour" do
     assert_not @todo.timed?
     travel_to Time.zone.local(
       Date.current.year, Date.current.month, Date.current.day,
@@ -116,15 +109,13 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     ) do
       get dashboard_path
       assert_response :success
-      assert_select ".lp-dash-tcard.is-needs-time[data-todo-id=?]", @todo.id.to_s, count: 0
-      assert_select ".lp-dash-tcard[data-todo-id=?] button.lp-dash-tcard__timechip", @todo.id.to_s, count: 0
-      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__timechip.is-muted", @todo.id.to_s
-      assert_match(/No time set/, response.body)
-      assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-tcard__win--primary", @todo.id.to_s
+      assert_battle_row!(title: @todo.title, todo: @todo)
+      assert_select ".lp-dash-tcard__timechip", count: 0
+      assert_select ".lp-today-v2-row__check", minimum: 1
     end
   end
 
-  test "streak at risk next-action still shows without header shield badge" do
+  test "streak at risk next-action banner is absent on Today V2 battlefield" do
     @todo.update!(start_time: "11:00", end_time: "12:00")
     @user.update!(
       climb_streak_days: 5,
@@ -136,14 +127,13 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0) do
       get dashboard_path
       assert_response :success
-      assert_select "[data-next-action-key='streak_at_risk']", count: 1
-      assert_select ".lp-dash-next__shield", count: 0
-      assert_select ".lp-dash-hero", count: 1
-      assert_select "[data-commitment-progress]", minimum: 1
+      assert_select "[data-next-action-key='streak_at_risk']", count: 0
+      assert_select ".lp-today-v2-header", count: 1
+      assert_select "[data-commitment-progress]", count: 0
     end
   end
 
-  test "miss settlement on Today load fades a missed card and spends AP without shield" do
+  test "miss settlement on Today load still spends AP without shield" do
     @todo.update!(start_time: "08:00", end_time: "09:00", lp_reward: 10, miss_settled_at: nil)
     @user.update!(day_shields_available: 0, day_shield_on: Date.current, total_points: 50)
 
@@ -152,7 +142,8 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
         get dashboard_path
       end
       assert_response :success
-      assert_select ".lp-dash-tcard.is-missed[data-todo-id=?]", @todo.id.to_s
+      assert_battle_row!(title: @todo.title, todo: @todo)
+      assert_select ".lp-dash-tcard.is-missed", count: 0
     end
   end
 end

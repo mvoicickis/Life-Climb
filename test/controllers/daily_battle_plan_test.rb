@@ -138,7 +138,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?]", battle_completion_path, count: 0
   end
 
-  test "today lists strategy-fed battles without an add form" do
+  test "today lists strategy-fed battles as flat rows without an add form" do
     titles = [
       "Finish Dashboard UI",
       "Workout",
@@ -162,9 +162,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
     assert_select "form.lp-dash-add", count: 0
-    assert_select ".lp-dash-tcard__win", minimum: 5
+    assert_select ".lp-today-v2-row__check", minimum: 5
     assert_select "form[action=?]", battle_completion_path, count: 0
-    # Per-item AP chips remain; batch reward footer is gone.
-    assert_match(/#{GameRules::BATTLE_TODO_LP}\s*AP/, response.body)
   end
 end
