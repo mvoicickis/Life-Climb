@@ -785,6 +785,7 @@
 
 .lp-trail-sheet__body {
   flex: 1;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: 8px 18px 24px;
   display: flex;
@@ -792,6 +793,10 @@
   position: relative;
   z-index: 1;
   background: var(--lp-trail-cream-soft);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
   color: var(--lp-trail-ink);
   border-radius: 18px 18px 0 0;
   margin-top: 4px;
@@ -1026,15 +1031,19 @@
 .lp-trail__swatch.is-gray .lp-trail__swatch-dot { background: #57534e; }
 .lp-trail__swatch:has(input:checked) .lp-trail__swatch-dot { outline: 2px solid var(--lp-trail-ink); outline-offset: 2px; }
 
-.lp-trail-battles { display: grid; gap: 0.75rem; }
-.lp-trail-battles__add { display: flex; gap: 0.5rem; }
+.lp-trail-battles { display: grid; gap: 0.75rem; width: 100%; max-width: 100%; box-sizing: border-box; min-width: 0; }
+.lp-trail-battles__add { display: block; width: 100%; max-width: 100%; min-width: 0; }
 .lp-trail-battles__input {
-  flex: 1; border-radius: 0.7rem; border: 1px solid var(--lp-trail-line);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: 0.7rem; border: 1px solid var(--lp-trail-line);
   padding: 0.65rem 0.75rem; font: inherit; background: #fff; color: var(--lp-trail-ink);
 }
 .lp-trail-battles__submit, .lp-trail-battles__win {
   border: 0; border-radius: 0.7rem; padding: 0.65rem 0.85rem;
   background: var(--lp-trail-accent); color: #fff; font-weight: 700; cursor: pointer;
+  white-space: nowrap;
 }
 .lp-trail-battles__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
 .lp-trail-battles__row {
@@ -1564,8 +1573,20 @@
   background: rgba(247, 234, 217, 0.35);
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__title {
+  font-family: var(--lp-trail-display);
+  color: #fbf3e6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+  padding-right: 2.5rem;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__header {
   color: #f7ead9;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__crumb {
@@ -1578,11 +1599,10 @@
   cursor: pointer;
   padding: 0;
   text-align: left;
-}
-
-.lp-trail.is-v4 .lp-trail-sheet__title {
-  font-family: var(--lp-trail-display);
-  color: #fbf3e6;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__close {
@@ -1599,6 +1619,17 @@
 .lp-trail.is-v4 .lp-trail-sheet__body {
   background: transparent;
   color: #f7ead9;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__panel {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__stats {
@@ -1650,11 +1681,23 @@
   display: flex;
   gap: 0.5rem;
   margin: 0 0 0.65rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.lp-trail-battles__camp-actions > form {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
 }
 
 .lp-trail-battles__camp-edit,
 .lp-trail-battles__camp-delete {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
   border: 1px solid rgba(247, 234, 217, 0.18);
   background: rgba(255, 255, 255, 0.06);
   color: #f7ead9;
@@ -1664,17 +1707,50 @@
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .lp-trail-battles__camp-delete {
   color: #f5b4a4;
 }
 
+/* Input full width; Daily + Add on the second row on narrow phones (SE). */
 .lp-trail-battles__add-row {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 0.4rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "title title"
+    "daily add";
+  gap: 0.45rem;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.lp-trail-battles__field {
+  grid-area: title;
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
+.lp-trail-battles__daily-switch {
+  grid-area: daily;
+  justify-self: start;
+}
+
+.lp-trail-battles__add-row > .lp-trail-battles__submit {
+  grid-area: add;
+  justify-self: end;
+}
+
+@media (min-width: 420px) {
+  .lp-trail-battles__add-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "title daily add";
+  }
 }
 
 .lp-trail-battles__daily {
