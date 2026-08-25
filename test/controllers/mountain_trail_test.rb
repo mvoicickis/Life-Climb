@@ -111,8 +111,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__peak-title"
     assert_select ".lp-trail__summit-cover", count: 1
     assert_select ".lp-trail__mountain .lp-trail__dock"
-    assert_select ".lp-trail__mountain .lp-trail-today"
-    assert_select ".lp-trail__mountain .lp-trail-base"
+    assert_select ".lp-trail__mountain .lp-trail__dock .lp-trail-today"
+    assert_select ".lp-trail__mountain .lp-trail__dock .lp-trail-base"
+    assert_select ".lp-trail-today.is-busy"
+    assert_select ".lp-trail-today__headline", text: /battle/i
+    assert_select ".lp-trail-base__tent", count: 2
+    assert_select ".lp-trail-base__pill"
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_match(/--lp-base-y:\s*0\.95/, response.body)
     assert_select ".lp-trail-sheet"
