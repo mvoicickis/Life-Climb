@@ -210,6 +210,36 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_operator first.position, :>=, 0
   end
 
+  test "adding a battle via turbo stream stays on camp sheet battles list" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+
+    assert_difference -> { project.children.for_kind("day").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: project.id,
+        horizon: "day",
+        scheduled_on: Date.current.to_s,
+        add_position: "top",
+        title: "Stay in sheet battle"
+      }, as: :turbo_stream
+    end
+
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "trail-battles-#{project.id}"
+    assert_includes response.body, "Stay in sheet battle"
+    assert_no_match(%r{href=["']/life_journeys/}, response.body)
+  end
+
   test "battle complete does not move goal until project confirmed" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
