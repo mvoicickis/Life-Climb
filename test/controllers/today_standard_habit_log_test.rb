@@ -11,6 +11,7 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     sign_in_as @user
     seed_climb!(@user)
+    dismiss_onboarding_missions!(@user)
 
     @user.habits.active.on_home.destroy_all
     @habit = @user.habits.create!(
@@ -38,10 +39,10 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select "#today_habit_#{@habit.id}"
+    assert_select "#today_habit_#{@habit.id}", count: 0
     assert_select ".lp-toast", text: /Added/
     assert_select ".lp-toast", text: /8 hours today/
-    assert_select ".lp-dash-habit__undo", count: 0
+    assert_today_v2_shell!
   end
 
   test "logging a growth quantity habit then loading Today does not 500" do
@@ -63,9 +64,9 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select "#today_habit_#{growth.id}"
+    assert_select "#today_habit_#{growth.id}", count: 0
     assert_select ".lp-toast", text: /Added/
-    assert_select ".lp-dash-habit__sheet-btn.is-undo", text: /Undo/
+    assert_today_v2_shell!
   end
 
   test "toast undo and menu undo both use session snapshot" do

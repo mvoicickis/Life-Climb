@@ -9,6 +9,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @area = @user.primary_focused_journey.life_area
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -16,13 +17,11 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     @section = @plan.children.find(&:project?)
     @leaf = @section
 
-    # Extra plain battle
     @leaf.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Write tests", scheduled_on: Date.current, position: 1
     )
 
-    # Quest checklist (custom color) — sibling path camp after flatten
     @quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Purple Volume",
@@ -32,7 +31,6 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
 
-    # Uncolored quest → still renders as a quest card
     @plain_quest = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Plain Volume",
@@ -58,48 +56,36 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today renders habits above timeline battles without old section headers" do
+  test "Today V2 renders flat battle rows without habits or old section headers" do
     enable_habits!
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-timeline", count: 1
-    assert_select ".lp-dash-anytime", count: 1
+    assert_today_v2_shell!
+    assert_no_legacy_today_shell!
     assert_select ".lp-dash-section.is-battles", count: 0
     assert_select ".lp-dash-section.is-quests", count: 0
     assert_select ".lp-dash-section.is-habits", count: 0
-    assert_select ".lp-dash-anytime h2", text: "Habits"
 
-    body = response.body
-    habits_idx = body.index('class="lp-dash-anytime"')
-    timeline_idx = body.index('class="lp-dash-timeline"')
-    assert habits_idx
-    assert timeline_idx
-    assert_operator habits_idx, :<, timeline_idx, "habits section should render above timeline"
-
-    assert_select ".lp-dash-tcard__title", text: "Ship auth"
-    assert_select ".lp-dash-tcard__title", text: "Write tests"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Purple Volume"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Plain Volume"
-    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate"
-    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Pages read"
-    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Hidden steps", count: 0
+    assert_battle_row!(title: "Ship auth", camp: "Auth")
+    assert_battle_row!(title: "Write tests", camp: "Auth")
+    assert_battle_row!(title: "Purple Volume", camp: "Purple Volume")
+    assert_battle_row!(title: "Plain Volume", camp: "Plain Volume")
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate", count: 0
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Pages read", count: 0
   end
 
-  test "quest cards show next step on the card and all steps in the sheet" do
+  test "quest rows show folder title and camp pill with project name" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: "Do a lesson"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__progress", text: /0 \/ 2/
-    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  text: "Do a lesson"
-    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  text: "Review notes"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
+    assert_battle_row!(title: "Purple Volume", camp: "Purple Volume")
+    assert_select ".lp-dash-quest-next__step", count: 0
+    assert_select ".lp-dash-quest-sheet", count: 0
+    assert_select ".lp-dash-tcard.is-quest", count: 0
   end
 
-  test "three-step quest keeps one compact next-step name and three sheet names" do
+  test "three-step quest keeps one flat row titled with the folder name" do
     host = Strategy::EnsureFolderQuest.call(folder: @quest)
     host.practice_tasks.create!(user: @user, title: "Drill vocab", position: 2)
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
@@ -108,21 +94,13 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step", todo.id.to_s, count: 1
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
-                  todo.id.to_s, text: "Do a lesson"
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
-                  todo.id.to_s, text: "Review notes", count: 0
-    assert_select ".lp-dash-tcard[data-todo-id=?] .lp-dash-quest-next__step",
-                  todo.id.to_s, text: "Drill vocab", count: 0
-    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  todo.id.to_s, count: 3
-    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  todo.id.to_s, text: "Do a lesson"
-    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  todo.id.to_s, text: "Review notes"
-    assert_select ".lp-dash-tcard[data-todo-id=?] dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  todo.id.to_s, text: "Drill vocab"
+    assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__title", todo.id.to_s, count: 1
+    assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__title",
+                  todo.id.to_s, text: "Purple Volume"
+    assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__camp",
+                  todo.id.to_s, text: /Purple Volume/
+    assert_select ".lp-dash-quest-next__step", count: 0
+    assert_select ".lp-dash-quest-sheet", count: 0
   end
 
   test "binary habit completes from Today and quantity habit logs from Today" do
@@ -140,7 +118,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_equal 10, @pages.reload.today_amount.to_i
   end
 
-  test "plain battle still completes from timeline" do
+  test "plain battle still completes from battlefield row" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
       post complete_daily_todo_path(todo)

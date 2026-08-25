@@ -9,6 +9,7 @@ class TodayProjectColourTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     sign_in_as @user
     @journey = seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find { |c| c.plan? && !c.holding? }
@@ -36,38 +37,29 @@ class TodayProjectColourTest < ActionDispatch::IntegrationTest
     @holding_todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Call the dentist")
   end
 
-  test "tagged project paints colour class, rail, name, and dot" do
+  test "tagged project paints stripe and camp pill with project name" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard.has-color.is-purple[data-todo-id=?]", @tagged_todo.id.to_s do
-      assert_select ".lp-dash-tcard__title", text: "Ship auth"
-      assert_select ".lp-dash-tcard__project", text: /Auth/
-      assert_select ".lp-dash-tcard__project-dot", count: 1
+    assert_select ".lp-today-v2-row[data-todo-id=?]", @tagged_todo.id.to_s do
+      assert_select ".lp-today-v2-row__title", text: "Ship auth"
+      assert_select ".lp-today-v2-row__camp", text: /Auth/
+      assert_select ".lp-today-v2-row__stripe", count: 1
     end
   end
 
-  test "untagged project shows name and grey dot without a colour class" do
+  test "untagged project shows camp pill without a colour stripe class" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-tcard[data-todo-id=?]", @untagged_todo.id.to_s do
-      assert_select ".lp-dash-tcard__title", text: "Write docs"
-      assert_select ".lp-dash-tcard__project", text: /Untagged work/
-      assert_select ".lp-dash-tcard__project-dot", count: 1
+    assert_select ".lp-today-v2-row[data-todo-id=?]", @untagged_todo.id.to_s do
+      assert_select ".lp-today-v2-row__title", text: "Write docs"
+      assert_select ".lp-today-v2-row__camp", text: /Untagged work/
     end
     assert_select ".lp-dash-tcard.has-color[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-purple[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-teal[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-coral[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-amber[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-blue[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-green[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-pink[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
-    assert_select ".lp-dash-tcard.is-gray[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
   end
 
-  test "holding-camp battle is an ordinary row with no project node" do
+  test "holding-camp battle is an ordinary row with no camp stripe" do
     get dashboard_path
     assert_response :success
 
@@ -76,11 +68,9 @@ class TodayProjectColourTest < ActionDispatch::IntegrationTest
     refute_includes response.body, holding_title
     refute_includes response.body, holding_plan_title
 
-    assert_select ".lp-dash-tcard[data-todo-id=?]", @holding_todo.id.to_s do
-      assert_select ".lp-dash-tcard__title", text: "Call the dentist"
-      assert_select ".lp-dash-tcard__project", count: 0
-      assert_select ".lp-dash-tcard__project-dot", count: 0
+    assert_select ".lp-today-v2-row[data-todo-id=?]", @holding_todo.id.to_s do
+      assert_select ".lp-today-v2-row__title", text: "Call the dentist"
+      assert_select ".lp-today-v2-row__stripe", count: 0
     end
-    assert_select ".lp-dash-tcard.has-color[data-todo-id=?]", @holding_todo.id.to_s, count: 0
   end
 end

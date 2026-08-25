@@ -16,34 +16,42 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "home shows compressed Today timeline shell" do
+  test "home shows Today V2 battlefield shell" do
     get dashboard_path
     assert_response :success
     assert_match(/Today/i, response.body)
     assert_no_match(/>\s*Strategy Points\s*</i, response.body)
     assert_select ".lp-dash-cta", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
-    assert_match(/lp-dash-nav/i, response.body)
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-timeline, .lp-dash-route, #first-climb-coach", minimum: 1
+    assert_select ".lp-dash-nav.is-today-v2", count: 1
+    assert_select ".lp-today-v2-header", count: 1
+    assert_select ".lp-today-v2-field", count: 1
     assert_select ".lp-dash-project", count: 0
     assert_no_match(/Life Tree|Open Life/i, response.body)
     assert_no_match(/Daily Battle Plan/i, response.body)
     assert_no_match(/>\s*SP\s*</, response.body)
   end
 
-  test "hero shows day percent track when strategy goal present" do
+  test "Today V2 header renders when strategy spine exists" do
     journey = @user.primary_focused_journey
     area = journey.life_area
-    @user.strategy_goals.create!(
+    goal = @user.strategy_goals.create!(
       life_area: area, life_journey: journey, horizon: "goal",
-      title: "Become debt-free", position: 0
+      title: "Financial freedom", position: 0
+    )
+    plan = goal.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "plan", title: "Budget plan", position: 0
+    )
+    plan.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Cut spend", position: 0
     )
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-hero", count: 1
-    assert_select ".lp-dash-hero__segs", count: 1
+    assert_select ".lp-today-v2-header", count: 1
+    assert_select ".lp-dash-hero__segs", count: 0
   end
 
   test "completing a battle checkbox asks project check without moving mountain percent" do
@@ -69,6 +77,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
       title: "Call bank tomorrow", scheduled_on: Date.current + 1.day, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: area)
+    dismiss_onboarding_missions!(@user)
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
 
     assert_equal 0, goal.progress_percent
@@ -78,8 +87,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     assert battle.reload.completed?
     assert_equal 0, goal.reload.progress_percent
-    assert_match(/Is .*Cut spend.* finished/i, response.body)
-    assert_match(/Yes, project done/i, response.body)
+    assert Strategy::ProjectCheckQueue.next_for(user: @user, session: session).present?
 
     post project_completions_url, params: { project_id: project_leaf.id, decision: "done" }
     assert_redirected_to dashboard_path
@@ -138,7 +146,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?]", battle_completion_path, count: 0
   end
 
-  test "today lists strategy-fed battles without an add form" do
+  test "today lists strategy-fed battles as flat rows without an add form" do
     titles = [
       "Finish Dashboard UI",
       "Workout",
@@ -162,9 +170,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_response :success
     titles.each { |title| assert_match(/#{Regexp.escape(title)}/i, response.body) }
     assert_select "form.lp-dash-add", count: 0
-    assert_select ".lp-dash-tcard__win", minimum: 5
+    assert_select ".lp-today-v2-row__check", minimum: 5
     assert_select "form[action=?]", battle_completion_path, count: 0
-    # Per-item AP chips remain; batch reward footer is gone.
-    assert_match(/#{GameRules::BATTLE_TODO_LP}\s*AP/, response.body)
   end
 end

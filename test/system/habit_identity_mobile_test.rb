@@ -10,6 +10,7 @@ class HabitIdentityMobileTest < ApplicationSystemTestCase
     @user = users(:one)
     page.driver.browser.manage.window.resize_to(390, 844)
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @user.habits.destroy_all
     @user.habits.create!(
       name: "Read", unit: "pages", points: 5, frequency: "daily",
@@ -27,27 +28,22 @@ class HabitIdentityMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "identity labels read quietly on Today and Habits without clutter" do
+  test "identity labels read quietly on Habits page; Today V2 omits habits" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-anytime", wait: 5
-
-    assert_selector ".lp-dash-anytime .lp-habit-identity", text: "I am a reader"
-    assert_selector ".lp-dash-anytime .lp-habit-identity", text: "I am someone who moves"
-    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate"
-    assert_selector ".lp-dash-anytime .lp-habit-identity", count: 2
-
-    page.execute_script("document.querySelector('.lp-dash-anytime')?.scrollIntoView({block: 'center'})")
-    sleep 0.3
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-identity-today-mobile.png")
+    assert_today_v2_shell!
+    assert_no_selector ".lp-dash-anytime"
+    assert_no_selector ".lp-habit-identity"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5
     assert_selector ".lp-habit-identity", text: "I am a reader"
     assert_selector ".lp-habit-identity", text: "I am someone who moves"
     assert_selector ".lp-habits__name", text: "Meditate"
+    assert_selector ".lp-habit-identity", count: 2
+
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-identity-habits-mobile.png")
   end
 end

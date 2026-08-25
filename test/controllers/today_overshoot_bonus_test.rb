@@ -11,6 +11,7 @@ class TodayOvershootBonusTest < ActionDispatch::IntegrationTest
     @user.update!(planning_version: 2, total_points: 200, character: "fox")
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @user.habits.active.on_home.destroy_all
     @user.daily_todos.for_day(Date.current).delete_all
 
@@ -32,13 +33,12 @@ class TodayOvershootBonusTest < ActionDispatch::IntegrationTest
       end
     end
 
-    # Hero surfaces overshoot; no separate card / bonus AP line until sync awards.
-    assert_select ".lp-dash-hero[data-day-overshoot='true']"
-    assert_select ".lp-dash-hero__big.is-over", text: /168/
+    assert_select ".lp-dash-hero[data-day-overshoot='true']", count: 0
     assert_select ".lp-dash-overshoot", count: 0
+    assert_select ".lp-today-v2-header", count: 1
   end
 
-  test "logging past 100 on Today awards bonus and hero shows overshoot" do
+  test "logging past 100 on Today awards bonus without hero overshoot UI" do
     post daily_logs_path(habit_id: @habit.id),
          params: { mode: "add", return_to: "today", daily_log: { amount: "168" } }
     assert_redirected_to dashboard_path
@@ -50,29 +50,27 @@ class TodayOvershootBonusTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-dash-hero[data-day-overshoot='true']"
-    assert_select ".lp-dash-hero__big.is-over", text: /168/
-    assert_select "[data-battle-day-target='lpTotal']", text: /#{@user.reload.total_points}/
+    assert_select ".lp-dash-hero[data-day-overshoot='true']", count: 0
+    assert_select ".lp-today-v2-header", count: 1
   end
 
-  test "hero shows day percent at or below 100 without overshoot flag" do
+  test "Today V2 header renders without overshoot hero flag when at or below 100" do
     post daily_logs_path(habit_id: @habit.id),
          params: { mode: "add", return_to: "today", daily_log: { amount: "100" } }
     follow_redirect!
     assert_response :success
-    assert_select ".lp-dash-hero"
+    assert_select ".lp-today-v2-header", count: 1
     assert_select ".lp-dash-hero[data-day-overshoot='true']", count: 0
-    assert_select ".lp-dash-hero__big", text: /100/
   end
 
-  test "commitment survival UI is unchanged when overshoot appears in hero" do
+  test "commitment survival UI is absent on Today V2 when overshoot exists in data" do
     post daily_logs_path(habit_id: @habit.id),
          params: { mode: "add", return_to: "today", daily_log: { amount: "168" } }
     follow_redirect!
     assert_response :success
-    assert_select ".lp-dash-hero[data-day-overshoot='true']"
-    refute_match(/Day survived/, css_select(".lp-dash-hero").to_html)
-    assert_select "#next-action-slot"
+    assert_select ".lp-dash-hero", count: 0
+    assert_select "#next-action-slot", count: 0
+    assert_select "[data-commitment-progress]", count: 0
   end
 
   private

@@ -1,0 +1,59 @@
+<%# Today V2 — open battle rows. locals: health, open_todos, journey, include_mission, mission %>
+<%
+  health = local_assigns.fetch(:health)
+  open_todos = Array(local_assigns.fetch(:open_todos) { @open_todos })
+  journey = local_assigns.fetch(:journey) { @journey }
+  include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
+  mission = local_assigns[:mission] || @mission
+  handoff = @strategy_handoff
+  mountain_href = journey ? life_journey_path(journey) : new_life_journey_path
+  all_clear = health.all_clear?
+  link_class = all_clear ? "is-clear" : "is-open"
+  link_copy = all_clear ? t("dash.battlefield.mountain_all_clear") : t("dash.battlefield.mountain_need")
+%>
+
+<section class="lp-today-v2-field" aria-label="<%= t('dash.battlefield.title') %>">
+  <div class="lp-today-v2-field__head">
+    <h2 class="lp-today-v2-field__title"><%= t("dash.battlefield.title") %></h2>
+    <span class="lp-today-v2-field__count" data-today-v2-target="fieldCount">
+      <%= t("dash.battlefield.count", done: health.done_count, total: health.total_count) %>
+    </span>
+  </div>
+
+  <% if health.empty? %>
+    <div class="lp-today-v2-empty">
+      <%= t("dash.battlefield.empty_html").html_safe %>
+    </div>
+  <% else %>
+    <div class="lp-today-v2-rows" data-today-v2-target="rows">
+      <% if include_mission && mission %>
+        <%= render "dashboard/dash_battlefield_row",
+              todo: nil,
+              mission: mission,
+              journey: journey %>
+      <% end %>
+
+      <% open_todos.each do |todo| %>
+        <%= render "dashboard/dash_battlefield_row",
+              todo: todo,
+              mission: nil,
+              journey: journey %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if !health.empty? %>
+    <%= link_to link_copy,
+          mountain_href,
+          class: "lp-today-v2-mountain-link #{link_class}",
+          data: { today_v2_target: "mountainLink" } %>
+  <% elsif handoff %>
+    <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
+          handoff[:href] || mountain_href,
+          class: "lp-today-v2-mountain-link is-open" %>
+  <% else %>
+    <%= link_to t("dash.battlefield.mountain_need"),
+          mountain_href,
+          class: "lp-today-v2-mountain-link is-open" %>
+  <% end %>
+</section>

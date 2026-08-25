@@ -2,17 +2,14 @@
 
 require "application_system_test_case"
 
-# Long companion-voice headlines must wrap — never clip mid-word with ellipsis.
+# Today V2 drops the next-action banner; long battle titles wrap in the row list.
 class NextActionBannerTruncateTest < ApplicationSystemTestCase
   LONG_TODO = "Rewrite the quarterly stakeholder update deck for board review"
-  LONG_HEADLINE =
-    "⚔️ Finish “#{LONG_TODO}” and the trail lights up."
 
   setup do
     @user = users(:one)
     @user.update!(character: "fox")
     page.driver.browser.manage.window.resize_to(390, 844)
-    # complete_battle yields to battle_overdue after 18:00 — pin morning for a stable key.
     travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0)
 
     Onboarding::Run.call(
@@ -43,31 +40,35 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
       title: LONG_TODO, scheduled_on: Date.current, position: 0
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    dismiss_onboarding_missions!(@user)
     clear_setup_gap!
   end
 
   teardown { travel_back }
 
-  test "long complete_battle headline wraps on Today with commitment progress" do
+  test "long battle title wraps on Today V2 row without next-action banner" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-nav", wait: 5
+    assert_selector ".lp-dash-nav.is-today-v2", wait: 5
 
-    with_fixed_next_action_headline(LONG_HEADLINE) do
-      visit dashboard_path
-      assert_selector ".lp-dash-next[data-next-action-key=complete_battle]", wait: 5
-      assert_selector "[data-commitment-progress]", wait: 5
-      assert_no_selector ".lp-dash-next a.lp-cta"
-      assert_banner_wraps!(placement: "Today")
+    visit dashboard_path
+    assert_today_v2_shell!
+    assert_no_selector ".lp-dash-next"
+    assert_no_selector "[data-commitment-progress]"
+    assert_battle_row!(title: LONG_TODO, camp: "Improve apps")
+    assert_row_title_wraps!
 
-      visit life_journey_path(@journey)
-      assert_no_selector ".lp-dash-next"
-    end
+    visit life_journey_path(@journey)
+    assert_no_selector ".lp-dash-next"
   end
 
   private
+
+  def practice_leaf_for!(camp)
+    camp
+  end
 
   def clear_setup_gap!
     have = @user.habits.active.on_home.count
@@ -96,52 +97,26 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     end
   end
 
-  def with_fixed_next_action_headline(headline)
-    singleton = Strategy::NextAction::Copy.singleton_class
-    original = singleton.instance_method(:headline_for)
-    singleton.define_method(:headline_for) { |**_| headline }
-    yield
-  ensure
-    singleton.define_method(:headline_for, original)
-  end
-
-  def assert_banner_wraps!(placement:)
+  def assert_row_title_wraps!
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const banner = document.querySelector('.lp-dash-next');
-        const title = document.querySelector('.lp-dash-next__title');
-        const progress = document.querySelector('.lp-dash-next__progress');
-        if (!banner || !title || !progress) return null;
-        const bs = getComputedStyle(banner);
+        const title = document.querySelector('.lp-today-v2-row__title');
+        if (!title) return null;
         const ts = getComputedStyle(title);
-        const br = banner.getBoundingClientRect();
-        const pr = progress.getBoundingClientRect();
         return {
-          flexWrap: bs.flexWrap,
-          bannerMinWidth: bs.minWidth,
           titleTextOverflow: ts.textOverflow,
           titleWhiteSpace: ts.whiteSpace,
           titleScrollWider: title.scrollWidth > title.clientWidth + 1,
           titleText: title.textContent.trim(),
-          progressLeft: pr.left,
-          progressRight: pr.right,
-          bannerRight: br.right,
-          bannerLeft: br.left,
           vw: window.innerWidth
         };
       })()
     JS
 
-    assert metrics.present?, "#{placement}: NextAction banner missing"
-    assert_equal "wrap", metrics["flexWrap"], "#{placement}: banner should allow wrap"
-    assert_equal "0px", metrics["bannerMinWidth"], "#{placement}: banner min-width"
-    assert_operator metrics["bannerRight"] - metrics["bannerLeft"], :<=, metrics["vw"] + 1
+    assert metrics.present?, "Today V2 battle row title missing"
     assert_equal "normal", metrics["titleWhiteSpace"]
     refute_equal "ellipsis", metrics["titleTextOverflow"]
-    refute metrics["titleScrollWider"], "#{placement}: title should wrap, not overflow with ellipsis"
+    refute metrics["titleScrollWider"], "title should wrap, not overflow with ellipsis"
     assert_includes metrics["titleText"], "board review"
-    assert_operator metrics["progressLeft"], :>=, metrics["bannerLeft"] - 1
-    assert_operator metrics["progressRight"], :<=, metrics["bannerRight"] + 1
-    assert_operator metrics["progressRight"], :<=, metrics["vw"] + 1
   end
 end

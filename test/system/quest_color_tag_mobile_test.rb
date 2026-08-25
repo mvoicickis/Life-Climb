@@ -10,6 +10,7 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(390, 844)
 
     seed_climb!(@user, today_mission: "Write tests")
+    dismiss_onboarding_missions!(@user)
     @area = @user.primary_focused_journey.life_area
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -32,12 +33,12 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
   end
 
-  test "mobile colored quest shows on Mountain and Today; plain stays default" do
+  test "mobile colored quest shows on Mountain and Today V2 rows; plain stays default" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-timeline", wait: 5
+    assert_today_v2_shell!
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @colored.id)
     open_mountain_list_fallback!
@@ -49,12 +50,10 @@ class QuestColorTagMobileTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-mountain-mobile.png")
 
     visit dashboard_path
-    assert_selector ".lp-dash-tcard.is-quest", text: /Purple Volume/, wait: 5
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: /Do a lesson/
-    find(".lp-dash-tcard.is-quest .lp-dash-quest-next__open", match: :first).click
-    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: /Do a lesson/
-    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: /Review notes/
-    assert_selector ".lp-dash-tcard.is-quest", text: /Plain Volume/
+    assert_battle_row!(title: "Purple Volume", camp: "Purple Volume")
+    assert_battle_row!(title: "Plain Volume", camp: "Plain Volume")
+    assert_no_selector ".lp-dash-tcard.is-quest"
+    assert_no_selector ".lp-dash-quest-next"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/quest-color-today-mobile.png")
   end
 end

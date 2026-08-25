@@ -34,21 +34,21 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "not yet shows angle card and picking queues tomorrow battle" do
+  test "not yet queues tomorrow battle without angle card UI on Today V2" do
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    dismiss_onboarding_missions!(@user)
     todo = @user.daily_todos.find_by!(strategy_goal_id: @battle.id)
 
     post complete_daily_todo_path(todo)
     follow_redirect!
-    assert_match(/Is .*Cut spend.* finished/i, response.body)
 
     post project_completions_path, params: { project_id: @project_leaf.id, decision: "not_yet" }
     assert_redirected_to dashboard_path
     follow_redirect!
 
     assert_equal 0, @goal.reload.progress_percent
-    assert_match(/Make the next battle sharper/i, response.body)
-    assert_select ".lp-dash-battle-angles__chip", minimum: 1
+    assert_select ".lp-dash-battle-angles__chip", count: 0
+    assert_today_v2_shell!
 
     angle = Strategy::BattleAngles.for(project: @project_leaf).first
     post battle_angles_path, params: { project_id: @project_leaf.id, title: angle }

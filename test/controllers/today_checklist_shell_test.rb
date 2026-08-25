@@ -39,12 +39,10 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-quest-next__step", text: "Do a lesson"
-    assert_select ".lp-dash-tcard.is-quest dialog.lp-dash-quest-sheet .lp-dash-checklist__obj-name",
-                  text: "Do a lesson"
-    assert_select ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked", minimum: 1
-    assert_select "form[action=?]", complete_daily_todo_path(todo), count: 0
+    assert_battle_row!(title: "Volume 0", camp: "Volume 0", todo: todo)
+    assert_select ".lp-dash-quest-next__step", count: 0
+    assert_select ".lp-dash-quest-sheet", count: 0
+    assert_select "form[action=?]", complete_daily_todo_path(todo), count: 1
   end
 
   test "checking one objective does not complete the day early" do
@@ -112,16 +110,16 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
     assert_not todo.reload.completed?
   end
 
-  test "objective taps do not open quantity dialog markup" do
+  test "objective taps do not open quantity dialog markup on Today V2" do
     @section.update!(target_amount: 100, unit: "pages")
     assert @section.quantified?
-    task = @host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
+    @host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-tcard.is-quest form[action=?]", practice_task_path(task)
-    assert_select ".lp-dash-tcard.is-quest [data-controller='quantity-complete']", count: 0
+    assert_select ".lp-dash-quest-sheet", count: 0
+    assert_select ".lp-dash-checklist__obj", count: 0
   end
 
   test "sheet step complete responds with turbo stream and keeps compact next updated" do

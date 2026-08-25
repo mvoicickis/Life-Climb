@@ -16,7 +16,7 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     )
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
-    # seed_climb! resets milestones — keep shield tip dismissed so install can take the second notice seat.
+    dismiss_onboarding_missions!(@user)
     @user.update!(
       support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY, User::DAY_SHIELD_TIP_KEY ]
     )
@@ -43,10 +43,9 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     assert_select "[data-install-offer-tip]", count: 0
   end
 
-  test "tip markup present after first win and outside next-action slot" do
+  test "install offer tip is absent on Today V2 battlefield after first win" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     todo.update!(completed_at: Time.current)
-    # Keep stack slots free for next-action + install (level-up would take the second seat).
     @journey.update!(commitment_key: "hard", commitment_met_streak_days: 0)
     assert @user.install_offer_eligible?
 
@@ -55,12 +54,12 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
 
     assert_select "[data-commitment-level-up]", count: 0
     assert_select "[data-day-shield-tip]", count: 0
-    assert_select "[data-install-offer-tip='true']", count: 1
-    assert_select "#next-action-slot [data-install-offer-tip]", count: 0
-    assert_match(/Morning nudge on your home screen/, response.body)
+    assert_select "[data-install-offer-tip='true']", count: 0
+    assert_select "#next-action-slot", count: 0
+    assert_today_v2_shell!
   end
 
-  test "tip still allows next-action to render" do
+  test "next-action slot is absent on Today V2 battlefield" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     todo.update!(completed_at: Time.current)
     @journey.update!(commitment_key: "hard", commitment_met_streak_days: 0)
@@ -68,8 +67,8 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "[data-install-offer-tip='true']", count: 1
-    assert_select "#next-action-slot", count: 1
+    assert_select "[data-install-offer-tip='true']", count: 0
+    assert_select "#next-action-slot", count: 0
   end
 
   test "tip absent after max dismissals" do

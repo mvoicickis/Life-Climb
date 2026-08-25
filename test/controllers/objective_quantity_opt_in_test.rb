@@ -46,7 +46,7 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
     assert_select "#qs-add-track-#{plain.id}", count: 0
   end
 
-  test "opted-in objective under quantified project shows amount dialog and logs" do
+  test "opted-in objective under quantified project completes via backend without quest sheet UI" do
     tracked = @host.practice_tasks.create!(
       user: @user, title: "Read chapter 3", position: 0, track_quantity: true
     )
@@ -57,15 +57,9 @@ class ObjectiveQuantityOptInTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-quest-next__row[data-controller='quantity-complete'] form[action=?]",
-                  practice_task_path(tracked)
-    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj[data-controller='quantity-complete'] form[action=?]",
-                  practice_task_path(tracked)
-    assert_select "#qty-obj-#{tracked.id}"
-    assert_select "#qty-next-#{tracked.id}"
-    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj[data-controller='quantity-complete'] form[action=?]",
-                  practice_task_path(plain),
-                  count: 0
+    assert_battle_row!(title: "Read Atomic Habits", camp: "Read Atomic Habits")
+    assert_select ".lp-dash-quest-next__row[data-controller='quantity-complete']", count: 0
+    assert_select "dialog.lp-dash-quest-sheet", count: 0
 
     assert_difference -> { StrategyQuantityLog.count }, 1 do
       patch practice_task_path(tracked), params: { completed: "1", amount: "12" }

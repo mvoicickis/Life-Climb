@@ -8,6 +8,7 @@ class PracticeTasksTodayCheckboxTest < ActionDispatch::IntegrationTest
     @user.update!(character: "fox")
     sign_in_as @user
     @journey = seed_climb!(@user, today_mission: "Polish Today")
+    dismiss_onboarding_missions!(@user)
     @journey.update!(
       commitment_key: "easy",
       commitment_name: "Easy",
@@ -23,24 +24,22 @@ class PracticeTasksTodayCheckboxTest < ActionDispatch::IntegrationTest
     Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
   end
 
-  test "Today renders nested step as checklist checkbox not Win button" do
+  test "Today V2 renders quest as flat row without nested checklist UI" do
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-quest-next__step", text: /make todays page more nice/
-    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj",
-                  text: /make todays page more nice/
-    assert_select ".lp-dash-check", minimum: 1
+    assert_battle_row!(title: "Polish Today", camp: "Auth")
+    assert_select ".lp-dash-quest-next__step", count: 0
+    assert_select "dialog.lp-dash-quest-sheet", count: 0
     assert_select ".lp-dash-tcard__win.is-nested", count: 0
   end
 
-  test "completing nested step marks checkbox done with strikethrough class" do
+  test "completing nested step finishes shell and removes battlefield row" do
     patch practice_task_path(@task), params: { completed: "1" }
     assert_redirected_to dashboard_path
 
     get dashboard_path
     assert_response :success
-    assert_select "dialog.lp-dash-quest-sheet .lp-dash-checklist__obj.is-done .lp-dash-checklist__obj-name",
-                  text: /make todays page more nice/
-    assert_select "dialog.lp-dash-quest-sheet .lp-dash-check.is-on", minimum: 1
+    assert_battle_row_absent!(title: "Polish Today")
+    assert_select "dialog.lp-dash-quest-sheet", count: 0
   end
 end

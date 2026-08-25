@@ -10,6 +10,7 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     @user = users(:one)
     page.driver.browser.manage.window.resize_to(390, 844)
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @user.habits.destroy_all
     @habit = @user.habits.create!(
       name: "Temp stretch", unit: "times", points: 5, frequency: "daily",
@@ -21,16 +22,17 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "delete habit then navigate to Today without hard refresh hides it" do
+  test "delete habit then navigate to Today without hard refresh keeps V2 shell" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-anytime", wait: 5
-    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Temp stretch"
+    assert_today_v2_shell!
+    assert_no_selector ".lp-dash-anytime"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5
+    assert_selector ".lp-habits__name", text: "Temp stretch"
     card = find(".lp-habits__card", text: "Temp stretch")
     accept_confirm do
       card.click_button "Delete"
@@ -40,9 +42,13 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     assert_selector "[data-controller='turbo-cache'][data-turbo-cache-clear-value='true']", visible: :all
 
     within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-anytime", wait: 5
-    assert_no_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Temp stretch"
-    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: "Keep me"
+    assert_today_v2_shell!
+    assert_no_selector ".lp-dash-anytime"
+    assert_no_selector "#today_habit_#{@habit.id}"
+
+    visit habits_path
+    assert_selector ".lp-habits__name", text: "Keep me"
+    assert_no_selector ".lp-habits__name", text: "Temp stretch"
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-destroy-today-fresh-nav.png")
   end
