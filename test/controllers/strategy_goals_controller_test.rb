@@ -167,6 +167,49 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal project_leaf.id, battle.parent_id
   end
 
+  test "adding a second battle at top keeps position non-negative" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+
+    assert_difference -> { project.children.for_kind("day").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: project.id,
+        horizon: "day",
+        scheduled_on: Date.current.to_s,
+        add_position: "top",
+        title: "First battle"
+      }
+    end
+    first = project.children.for_kind("day").find_by!(title: "First battle")
+    assert_equal 0, first.position
+
+    assert_difference -> { project.children.for_kind("day").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: project.id,
+        horizon: "day",
+        scheduled_on: Date.current.to_s,
+        add_position: "top",
+        title: "Second battle"
+      }
+    end
+    second = project.children.for_kind("day").find_by!(title: "Second battle")
+    assert_equal 0, second.position, "newest battle should sit at the top"
+    assert_equal 1, first.reload.position, "older battle should shift down"
+    assert_operator second.position, :>=, 0
+    assert_operator first.position, :>=, 0
+  end
+
   test "battle complete does not move goal until project confirmed" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
