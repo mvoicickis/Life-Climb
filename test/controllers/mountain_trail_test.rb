@@ -75,7 +75,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__check"
     assert_select "#trail-battles-#{@project.id} .lp-trail-plant__wheel", count: 0
-    assert_select ".lp-trail-plant__wheel"
   end
 
   test "planting quantified range project persists quantity_kind" do
@@ -120,6 +119,30 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_match(/--lp-base-y:\s*0\.95/, response.body)
     assert_select ".lp-trail-sheet"
+    assert_select ".lp-trail__plant-colors"
+    assert_select ".lp-trail-plant__wheel", count: 0
+    assert_select ".lp-trail-plant__hue-range", count: 0
+    assert_select ".lp-trail-plant__metric-card.is-selected", count: 0
+    assert_select ".lp-trail-plant input[name='quantity_kind']:checked", count: 0
+    assert_select ".lp-trail-plant__metric-follow[hidden]"
+    assert_select ".lp-trail-plant__metric-fields[hidden]"
+    assert_select ".lp-trail-plant__ask-btn", minimum: 2
+  end
+
+  test "planting a quantified camp without a target still tracks the number" do
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id, life_journey_id: @journey.id,
+        parent_id: @plan.id, horizon: "project", title: "Pages log",
+        color_key: "green", trail_x: 0.5, trail_y: 0.6,
+        track_quantity: "1", quantity_kind: "up", unit: "pages"
+      }
+    end
+    camp = @user.strategy_goals.for_kind("project").find_by!(title: "Pages log")
+    assert camp.quantified?
+    assert_equal "up", camp.quantity_kind
+    assert_equal "pages", camp.unit
+    assert camp.target_amount.blank?
   end
 
   test "planting a project via turbo stream appends a trail camp" do

@@ -2493,8 +2493,6 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
 }
 
 .lp-trail.is-v4 .lp-trail-plant__field,
-.lp-trail.is-v4 .lp-trail-plant__hue,
-.lp-trail.is-v4 .lp-trail-plant__hue-range,
 .lp-trail.is-v4 .lp-trail-plant__advanced,
 .lp-trail.is-v4 .lp-trail-plant__advanced-toggle,
 .lp-trail.is-v4 .lp-trail-plant__starters,
@@ -2504,16 +2502,10 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   box-sizing: border-box;
 }
 
-.lp-trail.is-v4 .lp-trail-plant__wheel-wrap {
-  width: 100%;
-  max-width: 100%;
-  flex-wrap: wrap;
-}
-
 .lp-trail.is-v4 .lp-trail__plant-colors {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(4, minmax(40px, 1fr));
+  gap: 0.55rem;
   width: 100%;
   max-width: 100%;
   margin-top: 0.65rem;
@@ -2521,10 +2513,17 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   box-sizing: border-box;
 }
 
+@media (min-width: 380px) {
+  .lp-trail.is-v4 .lp-trail__plant-colors {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
 .lp-trail.is-v4 .lp-trail__swatch {
   flex: none;
   width: auto;
-  min-width: 0;
+  min-width: 40px;
+  min-height: 40px;
   aspect-ratio: 1;
   border-radius: 50%;
 }
@@ -2582,6 +2581,47 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   padding: 12px 13px;
   font-size: 0.9rem;
   color: #12201a;
+  color-scheme: light;
+}
+
+.lp-trail-plant__field::placeholder {
+  color: #9aa096;
+  font-weight: 500;
+}
+
+.lp-trail-plant__metric-label .lp-trail-plant__field {
+  margin-top: 0.4rem;
+}
+
+.lp-trail-plant__metric-follow {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.lp-trail-plant__target-ask {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.lp-trail-plant__ask-btn {
+  min-height: 44px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1.5px solid #e6e3da;
+  background: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #12201a;
+  cursor: pointer;
+}
+
+.lp-trail-plant__ask-btn.is-selected {
+  border-color: #16a34a;
+  background: #f4fbf6;
+  color: #166534;
 }
 
 .lp-trail-plant__wheel-wrap {
@@ -2827,7 +2867,8 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   align-items: center;
   gap: 0.65rem;
   width: 100%;
-  padding: 0.65rem 0.75rem;
+  min-height: 44px;
+  padding: 0.7rem 0.75rem;
   border-radius: 12px;
   border: 1.5px solid #e6e3da;
   background: #fff;

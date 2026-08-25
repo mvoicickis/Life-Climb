@@ -277,7 +277,13 @@ module StrategyHelper
   def strategy_quantity_progress_label(project)
     return "" unless project&.quantified?
 
-    "#{format_strategy_quantity(project.current_amount)} / #{format_strategy_quantity(project.target_amount)} #{project.unit}"
+    current = format_strategy_quantity(project.current_amount)
+    unit = project.unit.to_s.strip
+    if project.target_amount.present? && project.target_amount.to_d.positive?
+      "#{current} / #{format_strategy_quantity(project.target_amount)} #{unit}".strip
+    else
+      [current, unit.presence].compact.join(" ")
+    end
   end
 
   # Card meta: quantified gets a real ratio; battles only count up (no bar).

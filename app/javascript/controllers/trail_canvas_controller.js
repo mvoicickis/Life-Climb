@@ -20,9 +20,10 @@ export default class extends Controller {
     "editDialog",
     "advanced",
     "metricFields",
+    "metricFollow",
     "trackQuantity",
-    "hueRange",
-    "colorWheel",
+    "wantTargetBtn",
+    "skipTargetBtn",
     "logSheet",
     "logProjectId",
     "logBattleId",
@@ -63,7 +64,7 @@ export default class extends Controller {
     this.bindFab()
     this.bindScrollParallax()
     this.bindPeakPin()
-    this.syncAccentFromHue()
+    this.syncAccentFromSwatch()
   }
 
   disconnect() {
@@ -205,11 +206,7 @@ export default class extends Controller {
     const open = this.advancedTarget.hasAttribute("hidden")
     this.advancedTarget.toggleAttribute("hidden", !open)
     event.currentTarget?.setAttribute("aria-expanded", open ? "true" : "false")
-    if (open) {
-      this.ensureMetricSelection()
-    } else {
-      this.clearMetricSelection()
-    }
+    if (!open) this.resetMetricFlow()
   }
 
   pickMetricCard(event) {
@@ -232,27 +229,59 @@ export default class extends Controller {
     }
 
     this.setMetricTracking(true)
-    if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = false
+    if (this.hasMetricFollowTarget) this.metricFollowTarget.hidden = false
+    this.setTargetChoice(null)
   }
 
-  ensureMetricSelection() {
+  wantTarget(event) {
+    event.preventDefault()
+    this.setTargetChoice(true)
+  }
+
+  skipTarget(event) {
+    event.preventDefault()
+    this.setTargetChoice(false)
+    this.clearTargetInputs()
+  }
+
+  setTargetChoice(want) {
+    this._wantTarget = want
+    if (this.hasWantTargetBtnTarget) {
+      this.wantTargetBtnTarget.classList.toggle("is-selected", want === true)
+    }
+    if (this.hasSkipTargetBtnTarget) {
+      this.skipTargetBtnTarget.classList.toggle("is-selected", want === false)
+    }
+    if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = want !== true
+    if (want === true) {
+      const radio = this.plantFormTarget?.querySelector("input[name='quantity_kind']:checked")
+      if (radio) this.metricKindChanged({ currentTarget: radio })
+    }
+  }
+
+  resetMetricFlow() {
+    this.setMetricTracking(false)
+    this._wantTarget = null
+    const form = this.plantFormTarget
+    form?.querySelectorAll(".lp-trail-plant__metric-card").forEach((el) => {
+      el.classList.remove("is-selected")
+      el.setAttribute("aria-pressed", "false")
+    })
+    form?.querySelectorAll("input[name='quantity_kind']").forEach((el) => { el.checked = false })
+    if (this.hasMetricFollowTarget) this.metricFollowTarget.hidden = true
+    if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = true
+    this.clearTargetInputs()
+    if (this.hasWantTargetBtnTarget) this.wantTargetBtnTarget.classList.remove("is-selected")
+    if (this.hasSkipTargetBtnTarget) this.skipTargetBtnTarget.classList.remove("is-selected")
+  }
+
+  clearTargetInputs() {
     const form = this.plantFormTarget
     if (!form) return
-    const selected = form.querySelector(".lp-trail-plant__metric-card.is-selected")
-    if (selected) {
-      this.setMetricTracking(true)
-      if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = false
-      const radio = form.querySelector("input[name='quantity_kind']:checked")
-      if (radio) this.metricKindChanged({ currentTarget: radio })
-      return
-    }
-    const first = form.querySelector(".lp-trail-plant__metric-card")
-    if (first) this.pickMetricCard({ preventDefault: () => {}, stopPropagation: () => {}, currentTarget: first })
-  }
-
-  clearMetricSelection() {
-    this.setMetricTracking(false)
-    if (this.hasMetricFieldsTarget) this.metricFieldsTarget.hidden = true
+    ;["target_amount", "range_min", "range_max"].forEach((name) => {
+      const input = form.querySelector(`input[name='${name}']`)
+      if (input) input.value = ""
+    })
   }
 
   setMetricTracking(on) {
@@ -263,42 +292,14 @@ export default class extends Controller {
   }
 
   colorPicked(event) {
-    const hue = Number.parseFloat(event.currentTarget?.dataset?.hue)
-    if (this.hasHueRangeTarget && Number.isFinite(hue)) {
-      this.hueRangeTarget.value = String(Math.round(hue))
-    }
+    const hex = event.currentTarget?.dataset?.hex
+    if (hex && this.hasAccentHexTarget) this.accentHexTarget.value = hex
   }
 
-  hueSlide(event) {
-    const hue = Number.parseFloat(event.currentTarget?.value)
-    if (!Number.isFinite(hue) || !this.hasPlantFormTarget) return
-    const nearest = this.nearestColorKey(hue)
-    const input = this.plantFormTarget.querySelector(`input[name='color_key'][value='${nearest}']`)
-    if (input) input.checked = true
-    this.syncAccentFromHue()
-  }
-
-  nearestColorKey(hue) {
-    const map = [
-      [ "teal", 174 ],
-      [ "coral", 18 ],
-      [ "amber", 40 ],
-      [ "purple", 263 ],
-      [ "blue", 228 ],
-      [ "green", 145 ],
-      [ "pink", 340 ],
-      [ "gray", 30 ]
-    ]
-    let best = map[0][0]
-    let bestDist = 999
-    map.forEach(([ key, h ]) => {
-      const d = Math.min(Math.abs(hue - h), 360 - Math.abs(hue - h))
-      if (d < bestDist) {
-        bestDist = d
-        best = key
-      }
-    })
-    return best
+  syncAccentFromSwatch() {
+    const checked = this.plantFormTarget?.querySelector("input[name='color_key']:checked")
+    const hex = checked?.dataset?.hex
+    if (hex && this.hasAccentHexTarget) this.accentHexTarget.value = hex
   }
 
   readQuantityFields(form) {
@@ -323,41 +324,6 @@ export default class extends Controller {
     })
   }
 
-  wheelPointer(event) {
-    event.preventDefault()
-    const wheel = event.currentTarget
-    const move = (e) => this.pickWheelHue(wheel, e)
-    const up = () => {
-      window.removeEventListener("pointermove", move)
-      window.removeEventListener("pointerup", up)
-    }
-    window.addEventListener("pointermove", move)
-    window.addEventListener("pointerup", up)
-    this.pickWheelHue(wheel, event)
-  }
-
-  pickWheelHue(wheel, event) {
-    const rect = wheel.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    const angle = Math.atan2(event.clientY - cy, event.clientX - cx)
-    let deg = (angle * 180) / Math.PI + 90
-    if (deg < 0) deg += 360
-    if (this.hasHueRangeTarget) {
-      this.hueRangeTarget.value = String(Math.round(deg) % 360)
-      this.hueSlide({ currentTarget: this.hueRangeTarget })
-    }
-  }
-
-  pickTone(event) {
-    event.preventDefault()
-    const btn = event.currentTarget
-    btn.parentElement?.querySelectorAll(".lp-trail-plant__tone").forEach((el) => {
-      el.classList.toggle("is-active", el === btn)
-    })
-    this.syncAccentFromHue(btn.dataset.tone)
-  }
-
   pickCampMode(event) {
     if (!this.hasCampModeTarget) return
     this.campModeTarget.value = event.currentTarget?.value || "battles"
@@ -366,30 +332,6 @@ export default class extends Controller {
       track.checked = true
       track.dispatchEvent(new Event("change", { bubbles: true }))
     }
-  }
-
-  syncAccentFromHue(toneName) {
-    if (!this.hasHueRangeTarget || !this.hasAccentHexTarget) return
-    const hue = Number.parseFloat(this.hueRangeTarget.value) || 174
-    const tone = toneName ||
-      this.plantFormTarget?.querySelector(".lp-trail-plant__tone.is-active")?.dataset?.tone ||
-      "mid"
-    const map = { soft: [78, 72], mid: [62, 48], bold: [45, 26] }
-    const [s, l] = map[tone] || map.mid
-    const hex = this.hslToHex(hue, s, l)
-    this.accentHexTarget.value = hex
-    if (this.hasColorWheelTarget) {
-      this.colorWheelTarget.style.setProperty("--lp-trail-picked", hex)
-    }
-  }
-
-  hslToHex(h, s, l) {
-    s /= 100
-    l /= 100
-    const k = (n) => (n + h / 30) % 12
-    const a = s * Math.min(l, 1 - l)
-    const f = (n) => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))))
-    return "#" + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, "0")).join("")
   }
 
   enterPlacing(name = "…") {
@@ -907,6 +849,9 @@ export default class extends Controller {
       this._plantX = null
       this._plantY = null
       this._presetSpot = null
+      this.resetMetricFlow()
+      if (this.hasAdvancedTarget) this.advancedTarget.hidden = true
+      this.plantFormTarget.querySelector(".lp-trail-plant__advanced-toggle")?.setAttribute("aria-expanded", "false")
     }
   }
 

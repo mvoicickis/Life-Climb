@@ -27,15 +27,18 @@ class StrategyGoalQuantityTest < ActiveSupport::TestCase
     assert_equal BigDecimal("0"), @checkpoint.current_amount
   end
 
-  test "target_amount requires unit and must be positive" do
-    @checkpoint.target_amount = 700
-    @checkpoint.unit = nil
-    assert_not @checkpoint.valid?
-    assert_includes @checkpoint.errors[:unit], "can't be blank"
-
-    @checkpoint.unit = "pages"
+  test "target_amount must be positive when present" do
     @checkpoint.target_amount = 0
+    @checkpoint.unit = "pages"
     assert_not @checkpoint.valid?
+  end
+
+  test "path-level camp can track a number without a target or unit" do
+    @checkpoint.update!(quantity_kind: "up", unit: nil, target_amount: nil)
+
+    assert @checkpoint.quantified?
+    assert_equal "up", @checkpoint.quantity_kind
+    assert @checkpoint.target_amount.blank?
   end
 
   test "days cannot hold a quantity target" do

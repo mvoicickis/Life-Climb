@@ -197,13 +197,12 @@ class StrategyGoal < ApplicationRecord
     MountainTrailHelper::ACCENT_HEX.fetch(tagged_color_key.to_s, "#57534e")
   end
 
-  # Path-level project with a numeric target (pages, €, emails, …).
+  # Path-level camp that logs a number (target/unit optional).
   def quantified?
     return false unless path_level_camp?
 
     kind = quantity_kind_value
-    return true if %w[up down].include?(kind) && target_amount.present? && target_amount.to_d.positive?
-    return true if kind == "range" && range_min.present? && range_max.present?
+    return true if %w[up down range].include?(kind)
 
     # Legacy rows before quantity_kind existed.
     kind == "none" && target_amount.present? && target_amount.to_d.positive?
@@ -443,17 +442,12 @@ class StrategyGoal < ApplicationRecord
       return
     end
 
-    errors.add(:unit, :blank) if self.unit.blank?
-
     case kind
     when "up", "down"
-      errors.add(:target_amount, :blank) if self.target_amount.blank?
       if self.target_amount.present?
         errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
       end
     when "range"
-      errors.add(:range_min, :blank) if range_min.blank?
-      errors.add(:range_max, :blank) if range_max.blank?
       if range_min.present? && range_max.present? && range_min.to_d > range_max.to_d
         errors.add(:range_max, :invalid)
       end
