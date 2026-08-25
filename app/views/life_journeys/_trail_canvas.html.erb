@@ -35,8 +35,6 @@
 <% any_wins = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
-<%# Mockup firstRun: while coaching, hide auto-placed camps so only hand-planted spots show. %>
-<% trail_projects = show_tour ? projects.select { |p| p.trail_x.present? && p.trail_y.present? } : projects %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %>"
@@ -61,7 +59,7 @@
          <% if show_tour %>
          data-trail-coach-ack-value="<%= tour_ack %>"
          data-trail-coach-url-value="<%= mountain_trail_tour_path %>"
-         data-trail-coach-camps-value="<%= trail_projects.size %>"
+         data-trail-coach-camps-value="<%= projects.size %>"
          data-trail-coach-has-battles-value="<%= any_battles %>"
          data-trail-coach-has-wins-value="<%= any_wins %>"
          <% end %>
@@ -198,12 +196,12 @@
       <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>
 
       <div class="lp-trail__camps" id="trail-camps" data-trail-canvas-target="camps">
-        <% trail_projects.each_with_index do |project, index| %>
+        <% projects.each_with_index do |project, index| %>
           <%= render "life_journeys/trail_camp",
                 project: project,
                 index: index,
-                total: trail_projects.size,
-                projects: trail_projects,
+                total: projects.size,
+                projects: projects,
                 current_project: current_project %>
         <% end %>
       </div>
