@@ -107,6 +107,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav.is-v4 a[href='#{life_points_path}']"
     assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
     assert_select ".lp-trail__peak"
+    assert_select ".lp-trail__pennant"
+    assert_select ".lp-trail__peak-title"
     assert_select ".lp-trail__summit-cover"
     assert_select ".lp-trail__dock"
     assert_select ".lp-trail-today--dock"
