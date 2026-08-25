@@ -191,6 +191,37 @@
         <%= companion_image_tag class: "lp-trail__companion-img", alt: "" %>
       </div>
 
+      <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>
+
+      <div class="lp-trail__camps" id="trail-camps" data-trail-canvas-target="camps">
+        <% projects.each_with_index do |project, index| %>
+          <%= render "life_journeys/trail_camp",
+                project: project,
+                index: index,
+                total: projects.size,
+                projects: projects,
+                current_project: current_project %>
+        <% end %>
+      </div>
+
+      <div class="lp-trail__ghosts" data-trail-canvas-target="ghosts">
+        <% ghosts.each do |ghost| %>
+          <button type="button"
+                  class="lp-trail-ghost"
+                  style="--lp-trail-x: <%= ghost[:x] %>; --lp-trail-y: <%= ghost[:y] %>;"
+                  data-trail-x="<%= ghost[:x] %>"
+                  data-trail-y="<%= ghost[:y] %>"
+                  data-action="click->trail-canvas#ghostPick"
+                  aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
+            <span class="lp-trail-ghost__chip">
+              <span class="lp-trail-ghost__plus" aria-hidden="true">+</span>
+              <span class="lp-trail-ghost__text"><%= t("strategy.rpg.trail.plant_project") %></span>
+            </span>
+            <span class="lp-trail-ghost__stem" aria-hidden="true"></span>
+          </button>
+        <% end %>
+      </div>
+
       <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
         <button type="button"
                 class="lp-trail__flag"
@@ -249,37 +280,6 @@
                   form: { class: "lp-trail__photo-form", data: { turbo_confirm: t("strategy.rpg.trail.delete_destination_confirm") } } %>
           <% end %>
         </div>
-      </div>
-
-      <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>
-
-      <div class="lp-trail__camps" id="trail-camps" data-trail-canvas-target="camps">
-        <% projects.each_with_index do |project, index| %>
-          <%= render "life_journeys/trail_camp",
-                project: project,
-                index: index,
-                total: projects.size,
-                projects: projects,
-                current_project: current_project %>
-        <% end %>
-      </div>
-
-      <div class="lp-trail__ghosts" data-trail-canvas-target="ghosts">
-        <% ghosts.each do |ghost| %>
-          <button type="button"
-                  class="lp-trail-ghost"
-                  style="--lp-trail-x: <%= ghost[:x] %>; --lp-trail-y: <%= ghost[:y] %>;"
-                  data-trail-x="<%= ghost[:x] %>"
-                  data-trail-y="<%= ghost[:y] %>"
-                  data-action="click->trail-canvas#ghostPick"
-                  aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
-            <span class="lp-trail-ghost__chip">
-              <span class="lp-trail-ghost__plus" aria-hidden="true">+</span>
-              <span class="lp-trail-ghost__text"><%= t("strategy.rpg.trail.plant_project") %></span>
-            </span>
-            <span class="lp-trail-ghost__stem" aria-hidden="true"></span>
-          </button>
-        <% end %>
       </div>
 
       <div class="lp-trail__mountain-foot" aria-hidden="true"></div>
