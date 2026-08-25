@@ -1137,18 +1137,25 @@
   background: linear-gradient(180deg, transparent, rgba(24, 40, 26, 0.2) 55%, rgba(18, 32, 22, 0.5));
 }
 
-/* Today + Base live on the photo (mockup BASE_YFRAC) — no green under-photo strip. */
+/* Today + Base stacked on the photo (mockup BASE_YFRAC): card, then tents, then day pill. */
 .lp-trail.is-v4 .lp-trail__dock {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: calc(var(--lp-base-y, 0.95) * 100%);
+  bottom: auto;
+  transform: translateY(-100%);
   z-index: 6;
   pointer-events: none;
   background: none;
-  padding: 0;
-  display: block;
+  padding: 0 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
 }
 
-.lp-trail.is-v4 .lp-trail__dock > * {
+.lp-trail.is-v4 .lp-trail__dock > .lp-trail-today {
   pointer-events: auto;
 }
 
@@ -1950,18 +1957,18 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 /* Today card + base camp — on-photo overlays (mockup) */
 .lp-trail-today {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  top: calc(var(--lp-base-y, 0.95) * 100% - 130px);
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
   bottom: auto;
   z-index: 6;
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 11px;
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(252,251,248,0.82);
+  background: rgba(252, 251, 248, 0.82);
   border: 0;
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -1982,12 +1989,17 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   align-items: center;
   justify-content: center;
   background: rgba(34, 197, 94, 0.13);
-  color: #16a34a;
+  color: #12a150;
 }
 
 .lp-trail-today.is-busy .lp-trail-today__icon {
   background: rgba(232, 89, 12, 0.12);
   color: #e8590c;
+}
+
+.lp-trail-today:not(.is-busy) .lp-trail-today__icon {
+  background: rgba(34, 197, 94, 0.13);
+  color: #12a150;
 }
 
 .lp-trail-today__copy {
@@ -1998,15 +2010,16 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-today__headline {
-  font-size: 0.84rem;
+  font-size: 13.5px;
   font-weight: 800;
   color: #12201a;
   line-height: 1.2;
 }
 
 .lp-trail-today__sub {
-  font-size: 0.69rem;
+  font-size: 11px;
   color: #8a8f86;
+  margin-top: 2px;
 }
 
 .lp-trail-today__badge {
@@ -2032,14 +2045,15 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-base {
-  position: absolute;
-  left: calc(var(--lp-base-x, 0.5) * 100%);
-  top: calc(var(--lp-base-y, 0.95) * 100%);
-  transform: translate(-50%, -100%);
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
   z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
+  align-self: center;
   pointer-events: none;
   width: auto;
   height: auto;
@@ -2065,7 +2079,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-bottom: 26px solid #5b4229;
+  border-bottom: 26px solid rgba(212, 120, 58, 0.95);
   filter: drop-shadow(1px 3px 4px rgba(12,22,14,.45));
 }
 
@@ -2073,7 +2087,12 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   border-left-width: 11px;
   border-right-width: 11px;
   border-bottom-width: 19px;
-  border-bottom-color: rgba(60,80,58,.9);
+  border-bottom-color: rgba(60, 80, 58, 0.9);
+  filter: drop-shadow(1px 2px 3px rgba(12,22,14,.4));
+}
+
+.lp-trail.is-v4.is-dormant .lp-trail-base__tent:not(.is-2) {
+  border-bottom-color: rgba(92, 104, 88, 0.9);
 }
 
 .lp-trail-base__fire {

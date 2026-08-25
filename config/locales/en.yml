@@ -779,10 +779,10 @@ en:
             one: "%{count} battle waiting"
             other: "%{count} battles waiting"
           open_sub: "Tap to fight them in Today"
-          rest_headline: "Trail is quiet"
+          rest_headline: "All battles won"
           rest_sub:
-            one: "%{count} won today · rest up"
-            other: "%{count} won today · rest up"
+            one: "%{count} won today"
+            other: "%{count} won today"
           rest_sub_zero: "Rest up — or plant the next camp"
         log_sheet:
           title: "Log it"
