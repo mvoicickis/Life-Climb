@@ -1369,20 +1369,6 @@
   flex-shrink: 0;
 }
 
-/* Gold finial at the top of the mast. */
-.lp-trail.is-v4 .lp-trail__pole::before {
-  content: "";
-  position: absolute;
-  top: -7px;
-  left: 50%;
-  width: 11px;
-  height: 11px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe6a3, #f0a730 65%, #b9781a);
-  box-shadow: 0 0 6px rgba(240,167,48,.6);
-}
-
 /* Soft shadow where the mast is planted into the summit. */
 .lp-trail.is-v4 .lp-trail__pole::after {
   content: "";
@@ -2036,6 +2022,14 @@
   z-index: 1;
   pointer-events: none;
   filter: blur(5px);
+}
+
+/* V4 photo already has natural sky light — hide duplicate sun/glow at summit. */
+.lp-trail.is-v4 .lp-trail__summit-glow,
+.lp-trail.is-v4.is-day .lp-trail__sun,
+.lp-trail.is-v4.is-day .lp-trail__sun-corona,
+.lp-trail.is-v4.is-day .lp-trail__sun-rays {
+  display: none;
 }
 
 .lp-trail__tab-fade {
