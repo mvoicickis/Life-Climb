@@ -51,24 +51,53 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_empty mountain_trail_footprints([])
   end
 
-  test "layout spreads overlapping camp signs downward" do
+  test "layout keeps planted pins fixed and spreads labels with leaders" do
     p1 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 1, trail_x: 0.5, trail_y: 0.55)
     p2 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 2, trail_x: 0.52, trail_y: 0.56)
     layout = mountain_trail_layout([ p1, p2 ])
-    assert layout[2][:y] - layout[1][:y] >= MountainTrailHelper::SIGN_MIN_GAP - 0.001
+    assert_in_delta 0.55, layout[1][:y], 0.0001
+    assert_in_delta 0.56, layout[2][:y], 0.0001
+    assert layout[1][:label_y] - layout[2][:label_y] >= MountainTrailHelper::SIGN_MIN_GAP - 0.001 ||
+           layout[2][:label_y] - layout[1][:label_y] >= MountainTrailHelper::SIGN_MIN_GAP - 0.001
+    assert layout.values.any? { |slot| slot[:leader_h].to_f.positive? }
   end
 
-  test "layout never packs camps above the trail floor under the summit" do
+  test "layout never packs labels above the trail floor under the summit" do
     camps = (1..9).map do |i|
       Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
         id: i, trail_x: 0.5, trail_y: 0.55
       )
     end
     layout = mountain_trail_layout(camps)
-    ys = layout.values.map { |slot| slot[:y].to_f }
-    assert ys.min >= MountainTrailHelper::TRAIL_Y_MIN - 0.0001
-    assert ys.max <= MountainTrailHelper::SIGN_FLOOR_Y + 0.0001
-    assert ys.min > MountainTrailHelper::PEAK_Y
+    label_ys = layout.values.map { |slot| slot[:label_y].to_f }
+    assert label_ys.min >= MountainTrailHelper::TRAIL_Y_MIN - 0.0001
+    assert label_ys.max <= MountainTrailHelper::SIGN_FLOOR_Y + 0.0001
+    assert label_ys.min > MountainTrailHelper::PEAK_Y
+    # Pins stay on planted coords even when labels lift.
+    assert layout.values.all? { |slot| (slot[:y] - slot[:anchor_y]).abs < 0.0001 }
+  end
+
+  test "place mode clamp constants match mockup ranges" do
+    assert_in_delta 0.03, MountainTrailHelper::PLACE_X_MIN, 0.0001
+    assert_in_delta 0.97, MountainTrailHelper::PLACE_X_MAX, 0.0001
+    assert_in_delta 0.03, MountainTrailHelper::PLACE_Y_MIN, 0.0001
+    assert_in_delta 0.985, MountainTrailHelper::PLACE_Y_MAX, 0.0001
+    assert_in_delta 0.95, MountainTrailHelper::BASE_YFRAC, 0.0001
+  end
+
+  test "seventh plant starter stops a bad habit" do
+    starters = mountain_trail_plant_starters
+    assert_equal 7, starters.size
+    habit = starters.find { |s| s[:key] == "habit" }
+    assert habit
+    assert_equal "Stop a bad habit", habit[:label]
+  end
+
+  test "camp shadow leans away from peak light" do
+    shadow = mountain_trail_camp_shadow({ x: 0.3, y: 0.5 })
+    assert shadow[:dx].negative?
+    assert shadow[:width].positive?
+    assert shadow[:opacity].between?(0.2, 0.5)
   end
 
   test "current project picks lowest open camp on trail" do

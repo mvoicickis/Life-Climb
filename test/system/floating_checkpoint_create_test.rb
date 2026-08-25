@@ -89,12 +89,12 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_difference -> { @plan.reload.children.for_kind("project").count }, 1 do
       page.execute_script(<<~JS)
         (() => {
-          const surface = document.querySelector(".lp-trail__surface");
-          if (!surface) return;
-          const r = surface.getBoundingClientRect();
+          const mountain = document.querySelector(".lp-trail__mountain");
+          if (!mountain) return;
+          const r = mountain.getBoundingClientRect();
           const x = r.left + r.width * 0.52;
           const y = r.top + r.height * 0.58;
-          surface.dispatchEvent(new MouseEvent("click", {
+          mountain.dispatchEvent(new MouseEvent("click", {
             bubbles: true, cancelable: true, clientX: x, clientY: y, view: window
           }));
         })()

@@ -46,6 +46,8 @@ module MountainTrailHelper
     [ 25, 4, 0.7 ], [ 85, 4, 0.55 ], [ 5, 20, 0.5 ], [ 95, 20, 0.45 ]
   ].freeze
 
+  # Mockup BASE_YFRAC — base camp + Today card sit on the photo near the trail foot.
+  BASE_YFRAC = 0.95
   FOOT_BASE_Y = 0.94
   FOOT_TOP_Y = 0.28
   SIGN_MIN_GAP = 0.09
@@ -54,6 +56,11 @@ module MountainTrailHelper
   GHOST_HEIGHT = 0.055
   SIGN_HEIGHT = 0.088
   GHOST_MIN_SPAN = SIGN_HEIGHT + GHOST_HEIGHT + 0.012
+  # Place-mode tap range (mockup) — wider than the auto-layout trail band.
+  PLACE_X_MIN = 0.03
+  PLACE_X_MAX = 0.97
+  PLACE_Y_MIN = 0.03
+  PLACE_Y_MAX = 0.985
 
   PLANT_ICON_STARTERS = [
     { icon: "💪", key: "strong", color: "#e8590c" },
@@ -61,7 +68,8 @@ module MountainTrailHelper
     { icon: "💰", key: "save", color: "#0f9488" },
     { icon: "😴", key: "sleep", color: "#7950f2" },
     { icon: "🥗", key: "eat", color: "#22c55e" },
-    { icon: "🗣", key: "language", color: "#e64980" }
+    { icon: "🗣", key: "language", color: "#e64980" },
+    { icon: "🧹", key: "habit", color: "#f1a208" }
   ].freeze
 
   def mountain_trail_project_accent(project)
@@ -90,8 +98,8 @@ module MountainTrailHelper
   def mountain_trail_slot(project, index:, total:)
     if project.trail_x.present? && project.trail_y.present?
       return {
-        x: project.trail_x.to_f.clamp(0.05, 0.95),
-        y: project.trail_y.to_f.clamp(TRAIL_Y_MIN, TRAIL_Y_MAX),
+        x: project.trail_x.to_f.clamp(PLACE_X_MIN, PLACE_X_MAX),
+        y: project.trail_y.to_f.clamp(PLACE_Y_MIN, PLACE_Y_MAX),
         placed: true
       }
     end
@@ -156,9 +164,8 @@ module MountainTrailHelper
     end
   end
 
-  # Layout slots with anti-overlap spreading (mockup MIN_GAP pass).
-  # Never pack camps above TRAIL_Y_MIN — otherwise only posts/shadows stick out
-  # near the summit and read as stray dots above the destination flag.
+  # Layout slots with label-only anti-overlap (mockup MIN_GAP pass).
+  # Pin/post stay on permanent trail coords; only the wood sign lifts with a leader line.
   def mountain_trail_layout(projects)
     raw = projects.each_with_index.map do |project, index|
       slot = mountain_trail_slot(project, index: index, total: projects.size)
@@ -172,10 +179,12 @@ module MountainTrailHelper
     by_height.each do |entry|
       wanted = [ entry[:y], next_top ].min
       wanted = [ wanted, TRAIL_Y_MIN ].max
-      entry[:y] = wanted.round(4)
-      entry[:x] = trail_x_for_y(entry[:y]).round(4) unless entry[:placed]
-      entry[:leader_h] = (entry[:y] - entry[:anchor_y].to_f).abs.round(4)
-      next_top = entry[:y] - gap
+      entry[:label_y] = wanted.round(4)
+      entry[:leader_h] = (entry[:label_y] - entry[:anchor_y].to_f).abs.round(4)
+      # Keep pin at planted / auto slot — do not slide the post along the trail.
+      entry[:y] = entry[:anchor_y].to_f.round(4)
+      entry[:x] = entry[:x].to_f.round(4)
+      next_top = entry[:label_y] - gap
     end
     raw.index_by { |entry| entry[:project].id }
   end
@@ -209,7 +218,7 @@ module MountainTrailHelper
     layout = mountain_trail_layout(projects)
     layout[project.id] || begin
       slot = mountain_trail_slot(project, index: 0, total: [ projects.size, 1 ].max)
-      { x: slot[:x], y: slot[:y], anchor_y: slot[:y], leader_h: 0 }
+      { x: slot[:x], y: slot[:y], anchor_y: slot[:y], label_y: slot[:y], leader_h: 0 }
     end
   end
 

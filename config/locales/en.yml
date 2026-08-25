@@ -840,6 +840,7 @@ en:
           sleep: "Sleep better"
           eat: "Eat better"
           language: "Learn a language"
+          habit: "Stop a bad habit"
         log_verdict:
           first: "First entry"
           in_range: "In your healthy range"

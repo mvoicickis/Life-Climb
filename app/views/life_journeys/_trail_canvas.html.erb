@@ -35,8 +35,9 @@
 <% any_wins = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
+<% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %>"
@@ -62,7 +63,7 @@
          data-trail-coach-has-battles-value="<%= any_battles %>"
          data-trail-coach-has-wins-value="<%= any_wins %>"
          <% end %>
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>;">
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>; --lp-base-x: <%= base_point[:x].round(4) %>; --lp-base-y: <%= MountainTrailHelper::BASE_YFRAC %>;">
 
   <% if destination_overlay && goal %>
     <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
@@ -424,9 +425,9 @@
         <p data-trail-canvas-target="placingText"><%= t("strategy.rpg.trail.placing_hint", name: "…") %></p>
         <button type="button" data-action="click->trail-canvas#cancelPlacing"><%= t("strategy.rpg.cancel") %></button>
       </div>
-      </div><%# /.lp-trail__mountain %>
 
       <%= render "life_journeys/trail_dock", today_card: today_card, day_count: day_count %>
+      </div><%# /.lp-trail__mountain %>
     </div>
   </div>
 
