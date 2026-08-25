@@ -300,8 +300,7 @@
               action="<%= strategy_goals_path %>"
               method="post"
               data-turbo="true"
-              data-action="submit->trail-canvas#submitPlant"
-              data-controller="quantity-track">
+              data-action="submit->trail-canvas#submitPlant">
           <input type="hidden" name="accent_hex" value="" data-trail-canvas-target="accentHex">
           <input type="hidden" name="camp_mode" value="battles" data-trail-canvas-target="campMode">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
@@ -347,22 +346,6 @@
             </div>
           <% end %>
           <p class="lp-trail-plant__flag-label"><%= t("strategy.rpg.trail.flag_colour") %></p>
-          <div class="lp-trail-plant__wheel-wrap">
-            <button type="button"
-                    class="lp-trail-plant__wheel"
-                    data-trail-canvas-target="colorWheel"
-                    data-action="pointerdown->trail-canvas#wheelPointer"
-                    aria-label="<%= t('strategy.rpg.trail.flag_colour') %>"></button>
-            <div class="lp-trail-plant__tones" role="group" aria-label="<%= t('strategy.rpg.trail.composer.tones') %>">
-              <% %w[soft mid bold].each_with_index do |tone, ti| %>
-                <button type="button"
-                        class="lp-trail-plant__tone <%= 'is-active' if ti == 1 %>"
-                        data-tone="<%= tone %>"
-                        data-action="click->trail-canvas#pickTone"
-                        aria-label="<%= tone %>"></button>
-              <% end %>
-            </div>
-          </div>
           <div class="lp-trail__plant-colors" role="radiogroup" aria-label="<%= t('strategy.rpg.quest_color_label') %>">
             <% StrategyGoal::COLOR_KEYS.each_with_index do |key, i| %>
               <label class="lp-trail__swatch is-<%= key %>">
@@ -371,7 +354,7 @@
                        value="<%= key %>"
                        class="sr-only"
                        data-action="change->trail-canvas#colorPicked"
-                       data-hue="<%= { 'teal' => 174, 'coral' => 18, 'amber' => 40, 'purple' => 263, 'blue' => 228, 'green' => 145, 'pink' => 340, 'gray' => 30 }[key] %>"
+                       data-hex="<%= MountainTrailHelper::ACCENT_HEX[key] %>"
                        <%= "checked" if i.zero? %>>
                 <span class="lp-trail__swatch-dot" aria-hidden="true"></span>
                 <span class="lp-trail__swatch-check" aria-hidden="true">✓</span>
@@ -379,16 +362,6 @@
               </label>
             <% end %>
           </div>
-          <label class="lp-trail-plant__hue">
-            <span class="sr-only"><%= t("strategy.rpg.trail.flag_colour") %></span>
-            <input type="range"
-                   min="0"
-                   max="359"
-                   value="174"
-                   class="lp-trail-plant__hue-range"
-                   data-trail-canvas-target="hueRange"
-                   data-action="input->trail-canvas#hueSlide">
-          </label>
           <button type="button"
                   class="lp-trail-plant__advanced-toggle"
                   data-action="click->trail-canvas#toggleAdvanced"
