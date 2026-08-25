@@ -1104,6 +1104,8 @@
 .lp-trail.is-v4 .lp-trail__mountain {
   position: relative;
   height: var(--lp-trail-photo-h);
+  padding-top: 5.5rem;
+  box-sizing: border-box;
   cursor: crosshair;
   touch-action: pan-y;
 }
@@ -1314,7 +1316,7 @@
 
 /* Peak pennant — anchored at summit top-right (mockup) */
 .lp-trail.is-v4 .lp-trail__peak {
-  top: 1.4%;
+  top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
   right: max(0.35rem, calc((1 - var(--lp-peak-x, 0.566)) * 100% - 0.5rem));
   left: auto;
   transform: translate(2px, -100%);
@@ -1989,7 +1991,7 @@
 
 .lp-trail__summit-glow {
   position: absolute;
-  top: 4%;
+  top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
   left: 56.6%;
   transform: translate(-50%, -50%);
   width: 130px;

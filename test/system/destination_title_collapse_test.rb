@@ -63,10 +63,11 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
         const title = document.querySelector(".lp-trail__peak-title");
         const peak = document.querySelector(".lp-trail__peak");
         const pennant = document.querySelector(".lp-trail__pennant");
-        if (!title || !peak) return { ok: false, reason: "missing nodes" };
+        if (!title || !peak || !pennant) return { ok: false, reason: "missing nodes" };
         const tr = title.getBoundingClientRect();
         const pr = peak.getBoundingClientRect();
-        const pennantW = pennant ? pennant.getBoundingClientRect().width : null;
+        const pennantRect = pennant.getBoundingClientRect();
+        const pennantW = pennantRect.width;
         const titleCenter = tr.left + tr.width / 2;
         const peakCenter = pr.left + pr.width / 2;
         return {
@@ -75,6 +76,8 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
           titleW: tr.width,
           titleH: tr.height,
           pennantW,
+          pennantH: pennantRect.height,
+          pennantTop: pennantRect.top,
           peakW: pr.width,
           centerDelta: Math.abs(titleCenter - peakCenter),
           viewport: [window.innerWidth, window.innerHeight]
@@ -88,6 +91,10 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
                     "title edge-clipped (too narrow) at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["titleH"], :>=, 16,
                     "title has no visible height at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["pennantH"], :>=, 40,
+                    "pennant clipped or collapsed at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["pennantTop"], :>=, 0,
+                    "pennant above viewport at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["centerDelta"], :<=, 80,
                     "title not near peak at #{width}x#{height}: #{metrics.inspect}"
     assert_no_selector ".lp-rpg-destination-carousel__stage"
