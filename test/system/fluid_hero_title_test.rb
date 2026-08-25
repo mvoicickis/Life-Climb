@@ -3,7 +3,7 @@
 require "application_system_test_case"
 
 # V4 destination title lives on the peak pennant (.lp-trail__peak-title).
-# Compact flag width (~100–150px) is expected; Today still uses the dash hero.
+# Today V2 uses the battlefield HP header instead of the legacy dash hero.
 class FluidHeroTitleTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -33,6 +33,8 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
       user: @user, life_area: @journey.life_area, life_journey: @journey,
       horizon: "day", title: "Write one test", scheduled_on: Date.current, position: 0
     )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
+    dismiss_onboarding_missions!(@user)
   end
 
   test "destination title is fluid and untruncated on tall phone" do
@@ -43,15 +45,19 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_destination_fluid_title(390, 568)
   end
 
-  test "today climb band renders on tall phone" do
-    assert_today_climb_band(390, 844)
+  test "today V2 battlefield renders on tall phone" do
+    assert_today_v2_battlefield(390, 844)
   end
 
-  test "today climb band renders on short phone" do
-    assert_today_climb_band(390, 568)
+  test "today V2 battlefield renders on short phone" do
+    assert_today_v2_battlefield(390, 568)
   end
 
   private
+
+  def practice_leaf_for!(camp)
+    camp
+  end
 
   def sign_in_user!
     visit new_session_path
@@ -109,14 +115,16 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_peak_title_ok(metrics, "Become a Rails developer", width, height)
   end
 
-  def assert_today_climb_band(width, height)
+  def assert_today_v2_battlefield(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
-    assert_selector ".lp-dash-nav", wait: 8
-    within(".lp-dash-nav") { click_link "Today" }
-    assert_selector ".lp-dash-hero", visible: :all, wait: 8
-    assert_selector ".lp-dash-hero__avatar-img", visible: :all
-    assert_selector ".lp-dash-timeline", visible: :all
+    assert_selector ".lp-dash-nav.is-today-v2", wait: 8
+    within(".lp-dash-nav") { click_link "Today" } if page.has_css?(".lp-dash-nav__link", text: /Today/i)
+    assert_today_v2_shell!
+    assert_selector ".lp-today-v2-header__avatar-img", visible: :all
+    assert_selector ".lp-today-v2-field", visible: :all
+    assert_battle_row!(title: "Write one test", camp: "Rails camp")
     assert_no_selector ".lp-dash-climb"
+    assert_no_legacy_today_shell!
   end
 end

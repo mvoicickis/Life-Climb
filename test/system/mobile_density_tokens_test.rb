@@ -12,6 +12,7 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(390, 844)
 
     @journey = seed_climb!(@user, today_mission: "Ship density")
+    dismiss_onboarding_missions!(@user)
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
@@ -30,12 +31,15 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-timeline", wait: 5
+    assert_today_v2_shell!
+    assert_no_legacy_today_shell!
 
-    win_h = computed(".lp-dash-tcard__win", "min-height")
-    assert_in_delta 44.0, win_h, 1.0, "Win hit area must stay ≥44px"
-    assert_selector ".lp-dash-hero"
-    assert_selector ".lp-dash-anytime"
+    nav_h = computed(".lp-dash-nav.is-today-v2 .lp-dash-nav__link", "min-height")
+    assert_in_delta 44.0, nav_h, 1.0, "Nav hit area must stay ≥44px"
+    check_h = page.evaluate_script(<<~JS)
+      document.querySelector('.lp-today-v2-row__check')?.getBoundingClientRect().height
+    JS
+    assert check_h.to_f.positive?, "expected at least one V2 battle row"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-today-mobile.png")
 
     visit habits_path
@@ -78,8 +82,6 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
       })()
     JS
     refute_equal "0.75rem", rpg_gap.to_s, "Mountain must keep its own --lp-rpg-gap, not Today space-3"
-    nav_h = computed(".lp-dash-nav__link", "min-height")
-    assert_in_delta 44.0, nav_h, 1.0
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-mountain-unchanged-mobile.png")
   end
 

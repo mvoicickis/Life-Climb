@@ -10,6 +10,7 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(390, 844)
 
     seed_climb!(@user, today_mission: "Write tests")
+    dismiss_onboarding_missions!(@user)
     @area = @user.primary_focused_journey.life_area
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -29,46 +30,32 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
       user: @user, title: "Review notes", position: 1, track_quantity: false
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    @todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @host.id)
   end
 
-  test "mobile opted-in objective asks for amount; plain stays one-tap; day finishes" do
+  test "mobile quest row stays flat; objectives complete off-sheet and vanish when won" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-tcard.is-quest", wait: 5
-
-    assert_selector ".lp-dash-quest-next__row[data-controller='quantity-complete']", text: /Read chapter 3/
-    assert_no_selector ".lp-dash-quest-next__row[data-controller='quantity-complete']", text: /Review notes/
+    assert_today_v2_shell!
+    assert_battle_row!(title: "Read Atomic Habits", camp: "Read Atomic Habits", todo: @todo)
+    assert_no_selector ".lp-dash-quest-next"
+    assert_no_selector "dialog.lp-dash-quest-sheet"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/objective-quantity-optin-today-mobile.png")
 
-    within(".lp-dash-quest-next") do
-      find("button.lp-dash-check[aria-label='Complete Read chapter 3']").click
-    end
-    assert_selector "dialog.lp-quantity-complete[open]", wait: 3
-    assert_selector "dialog.lp-quantity-complete[open] .lp-strategy-sheet__title", text: /How many pages/i
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/objective-quantity-dialog-mobile.png")
-
-    within("dialog.lp-quantity-complete[open]") do
-      fill_in "dialog_amount", with: "12"
-      click_button I18n.t("strategy.quantity.log_confirm")
-    end
-
-    assert_selector ".lp-dash-quest-next__step", text: /Review notes/, wait: 5
+    patch_practice_task!(@tracked, amount: "12")
+    visit dashboard_path
+    assert_battle_row!(title: "Read Atomic Habits", todo: @todo)
     assert_equal BigDecimal("19"), @section.reload.current_amount
     assert @tracked.reload.completed?
 
-    within(".lp-dash-quest-next") do
-      find("button.lp-dash-check[aria-label='Complete Review notes']").click
-    end
-    assert_no_selector "dialog.lp-quantity-complete[open]"
-    assert_selector ".lp-dash-done-fold, .lp-dash-tcard.is-quest.is-done", wait: 10
-    visit dashboard_path unless page.has_css?(".lp-dash-done-fold", wait: 0)
-    assert_selector ".lp-dash-done-fold", wait: 5
-    find(".lp-dash-done-fold__summary").click unless page.has_css?(".lp-dash-done-fold[open]", wait: 0)
-    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-quest.is-done", text: /Read Atomic Habits/i, wait: 5
+    patch_practice_task!(@plain)
+    visit dashboard_path
+    assert_battle_row_absent!(title: "Read Atomic Habits")
+    assert_no_selector ".lp-dash-done-fold"
     assert @plain.reload.completed?
     assert @host.reload.completed?
     assert_equal BigDecimal("19"), @section.reload.current_amount

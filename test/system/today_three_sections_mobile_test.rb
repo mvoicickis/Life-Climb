@@ -11,6 +11,7 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(390, 844)
 
     seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @area = @user.primary_focused_journey.life_area
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -61,31 +62,34 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "mobile Today shows timeline cards and Anytime habits" do
+  test "mobile Today V2 shows flat battle rows without habits or legacy sections" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-timeline", wait: 5
+    assert_today_v2_shell!
+    assert_no_legacy_today_shell!
 
-    assert_selector ".lp-dash-tcard__title", text: "Ship auth"
-    assert_selector ".lp-dash-tcard__title", text: "Write tests"
-    assert_selector ".lp-dash-tcard__title", text: "Review PR"
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: /Volume One/
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: /Volume Two/
+    assert_battle_row!(title: "Ship auth", camp: "Auth")
+    assert_battle_row!(title: "Write tests", camp: "Auth")
+    assert_battle_row!(title: "Review PR", camp: "Auth")
+    assert_battle_row!(title: "Volume One", camp: "Volume One")
+    assert_battle_row!(title: "Volume Two", camp: "Volume Two")
     assert_no_selector ".lp-dash-section.is-battles"
     assert_no_selector ".lp-dash-section.is-quests"
     assert_no_selector ".lp-dash-section.is-habits"
+    assert_no_selector ".lp-dash-quest-next"
+    assert_no_selector ".lp-dash-tcard"
 
-    assert_selector ".lp-dash-anytime", text: /Habits/i
-    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Meditate/
-    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Pages read/
-    assert_selector ".lp-dash-anytime .lp-dash-tcard__title", text: /Steps/
+    visit habits_path
+    assert_selector ".lp-habits", wait: 5
+    assert_selector ".lp-habits__name", text: /Meditate/
+    assert_selector ".lp-habits__name", text: /Pages read/
+    assert_selector ".lp-habits__name", text: /Steps/
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-three-sections-mobile.png")
-    page.execute_script("document.querySelector('.lp-dash-anytime')?.scrollIntoView({block: 'center'})")
-    sleep 0.3
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-three-sections-habits-mobile.png")
+    visit dashboard_path
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/today-three-sections-v2-mobile.png")
   end
 end

@@ -10,6 +10,7 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(390, 844)
 
     @journey = seed_climb!(@user, today_mission: "Ship auth")
+    dismiss_onboarding_missions!(@user)
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.find(&:plan?)
     @section = @plan.children.find(&:project?)
@@ -29,22 +30,22 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "three item nav looks clean on mobile and Mountain omits supporting habits" do
+  test "Today V2 nav fits mobile and habits stay off Today" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-nav", wait: 5
+    assert_selector ".lp-dash-nav.is-today-v2", wait: 5
 
     assert_no_selector ".lp-dash-nav__link", text: /Habits/i
-    assert_no_selector ".lp-dash-nav__link", text: /Journey/i
-    links = all(".lp-dash-nav__link")
-    assert_equal 3, links.size
+    links = all(".lp-dash-nav.is-today-v2 .lp-dash-nav__link")
+    assert_equal 4, links.size
     widths = links.map { |el| el.native.size.width }
     assert widths.all? { |w| w >= 48 }, "nav links should stay tappable without collapsing"
     assert widths.sum <= 390, "nav row should fit the mobile viewport without overflow"
+    assert_no_selector ".lp-dash-anytime"
 
-    page.save_screenshot("/opt/cursor/artifacts/screenshots/habits-nav-five-mobile.png")
+    page.save_screenshot("/opt/cursor/artifacts/screenshots/habits-nav-v2-mobile.png")
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
     open_mountain_list_fallback!
@@ -54,7 +55,7 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5
-    assert_no_selector ".lp-dash-nav__link.is-active", text: /Habits/i
+    assert_selector ".lp-habits__name", text: /Meditate/
     page.save_screenshot("/opt/cursor/artifacts/screenshots/habits-page-mobile.png")
   end
 end

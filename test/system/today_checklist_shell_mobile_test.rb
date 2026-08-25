@@ -10,6 +10,7 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(390, 844)
 
     seed_climb!(@user, today_mission: "Write tests")
+    dismiss_onboarding_missions!(@user)
     @area = @user.primary_focused_journey.life_area
     @journey = @user.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -23,49 +24,38 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
     @first = @host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
     @second = @host.practice_tasks.create!(user: @user, title: "Review notes", position: 1)
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    @todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @host.id)
   end
 
-  test "mobile checklist expands and last objective finishes the day" do
+  test "mobile V2 quest row completes objectives off-sheet and disappears when won" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-timeline", wait: 5
+    assert_today_v2_shell!
 
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__title", text: "Volume 0"
-    assert_selector ".lp-dash-tcard.is-quest .lp-dash-tcard__win.is-locked"
-    assert_selector ".lp-dash-quest-next__step", text: "Do a lesson"
-    assert_selector ".lp-dash-quest-next__progress", text: /0 \/ 2/
-
-    find(".lp-dash-quest-next__open").click
-    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: "Do a lesson"
-    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj-name", text: "Review notes"
+    assert_battle_row!(title: "Volume 0", camp: "Volume 0", todo: @todo)
+    assert_no_selector ".lp-dash-quest-next"
+    assert_no_selector "dialog.lp-dash-quest-sheet"
+    assert_no_selector ".lp-dash-tcard.is-quest"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-checklist-shell-mobile.png")
 
-    within("dialog.lp-dash-quest-sheet[open]") do
-      find("button.lp-dash-check[aria-label='Complete Do a lesson']").click
-    end
-    assert_selector "dialog.lp-dash-quest-sheet[open] .lp-dash-checklist__obj.is-done",
-                    text: /Do a lesson/, wait: 5
-    assert_selector ".lp-dash-quest-next__step", text: "Review notes", wait: 5
+    patch_practice_task!(@first)
+    visit dashboard_path
+    assert_battle_row!(title: "Volume 0", todo: @todo)
+    assert @first.reload.completed?
     assert_not @host.reload.completed?
 
-    within("dialog.lp-dash-quest-sheet[open]") do
-      find("button.lp-dash-check[aria-label='Complete Review notes']").click
-    end
-    # Last step finishes the battle — full redirect for celebrate.
-    assert_selector ".lp-dash-done-fold, .lp-dash-tcard.is-quest.is-done", wait: 10
-    visit dashboard_path unless page.has_css?(".lp-dash-done-fold", wait: 0)
-    assert_selector ".lp-dash-done-fold", wait: 5
-    find(".lp-dash-done-fold__summary").click unless page.has_css?(".lp-dash-done-fold[open]", wait: 0)
-    assert_selector ".lp-dash-done-fold .lp-dash-tcard.is-quest.is-done .lp-dash-tcard__title", text: /Volume 0/i, wait: 5
+    patch_practice_task!(@second)
+    visit dashboard_path
+    assert_battle_row_absent!(title: "Volume 0")
+    assert_no_selector ".lp-dash-done-fold"
     assert @first.reload.completed?
     assert @second.reload.completed?
     assert @host.reload.completed?
-    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @host.id)
-    assert todo.completed?
+    assert @todo.reload.completed?
 
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-checklist-complete-mobile.png")
   end

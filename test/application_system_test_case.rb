@@ -1,6 +1,9 @@
 require "test_helper"
+require "test_helpers/today_v2_test_helper"
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
+  include TodayV2TestHelper
+
   driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
 
   # Cards stay closed. Quest Space loads in ⋮ → Objectives.
