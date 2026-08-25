@@ -62,7 +62,7 @@
          data-trail-coach-has-battles-value="<%= any_battles %>"
          data-trail-coach-has-wins-value="<%= any_wins %>"
          <% end %>
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>;">
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>;">
 
   <% if destination_overlay && goal %>
     <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
@@ -150,6 +150,7 @@
         <div class="lp-trail__haze-band is-2"></div>
         <div class="lp-trail__warm"></div>
         <div class="lp-trail__summit-glow"></div>
+        <div class="lp-trail__summit-cover" aria-hidden="true"></div>
         <div class="lp-trail__snow" data-trail-ambient-target="snow"></div>
       </div>
 
