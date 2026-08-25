@@ -107,7 +107,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav.is-v4 a[href='#{life_points_path}']"
     assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
     assert_select ".lp-trail__peak"
-    assert_select ".lp-trail-base"
+    assert_select ".lp-trail__dock"
+    assert_select ".lp-trail-today--dock"
+    assert_select ".lp-trail-base--dock"
   end
 
   test "planting a project via turbo stream appends a trail camp" do
