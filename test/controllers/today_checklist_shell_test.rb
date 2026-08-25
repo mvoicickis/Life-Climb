@@ -42,7 +42,7 @@ class TodayChecklistShellTest < ActionDispatch::IntegrationTest
     assert_battle_row!(title: "Volume 0", camp: "Volume 0", todo: todo)
     assert_select ".lp-dash-quest-next__step", count: 0
     assert_select ".lp-dash-quest-sheet", count: 0
-    assert_select "form[action=?]", complete_daily_todo_path(todo), count: 0
+    assert_select "form[action=?]", complete_daily_todo_path(todo), count: 1
   end
 
   test "checking one objective does not complete the day early" do

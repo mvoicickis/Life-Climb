@@ -39,6 +39,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
   test "set_today next-action banner is absent on Today V2 when spine exists without daily todos" do
     build_spine_without_cascade!
+    dismiss_onboarding_missions!(@user)
     seed_today_habits!(@journey.commitment_habit_count)
     @journey.update!(commitment_battle_count: 0)
 

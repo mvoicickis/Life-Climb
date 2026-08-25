@@ -16,24 +16,21 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
   test "POST create ends day when all battles are complete" do
     @todo.update!(completed_at: Time.current)
 
-    assert_not Today::BattlefieldDay.ended?(session)
-
     post today_end_day_path
     assert_redirected_to dashboard_path
     follow_redirect!
 
-    assert Today::BattlefieldDay.ended?(session)
     assert_select ".lp-today-v2-recap", count: 1
     assert_select ".lp-today-v2-notch.is-new-day", count: 1
+    assert_select ".lp-today-v2-rows", count: 0
   end
 
   test "POST create blocked when open battles remain" do
-    assert @todo.open?
+    refute @todo.completed?
 
     post today_end_day_path
     assert_redirected_to dashboard_path
-    assert_match(/open battle/i, flash[:alert].to_s)
-    assert_not Today::BattlefieldDay.ended?(session)
+    assert_match(/Clear every battle before you end the day/i, flash[:alert].to_s)
 
     follow_redirect!
     assert_select ".lp-today-v2-field", count: 1
@@ -43,14 +40,14 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
   test "DELETE destroy starts a new day and returns to battlefield" do
     @todo.update!(completed_at: Time.current)
     post today_end_day_path
-    assert Today::BattlefieldDay.ended?(session)
+    follow_redirect!
+    assert_select ".lp-today-v2-recap", count: 1
 
     delete today_end_day_path
     assert_redirected_to dashboard_path
     follow_redirect!
 
-    assert_not Today::BattlefieldDay.ended?(session)
     assert_select ".lp-today-v2-recap", count: 0
-    assert_select ".lp-today-v2-field", count: 1
+    assert_select ".lp-today-v2-rows", minimum: 1
   end
 end

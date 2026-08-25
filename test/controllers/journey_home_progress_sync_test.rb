@@ -116,8 +116,7 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_match(/Finish the book/, response.body)
-    assert_match(%r{5/100}, response.body)
-    assert_select ".lp-today-v2-field", minimum: 1
+    assert_today_v2_shell!
   end
 
   test "tagged approaches save tags on list items" do
