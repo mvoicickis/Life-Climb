@@ -24,7 +24,7 @@ module MountainTrailHelper
   TRAIL_Y_MIN = 0.32
   TRAIL_Y_MAX = 0.88
   PEAK_X = 0.566
-  PEAK_Y = 0.197
+  PEAK_Y = 0.22
 
   ACCENT_HEX = {
     "teal" => "#0f9488",

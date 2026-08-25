@@ -18,7 +18,7 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
       closer_percent: 20,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
     @journey = @user.reload.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     plan = @goal.children.create!(
@@ -53,9 +53,11 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 8
 
-    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 5
+    visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
+    assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
     assert_selector ".lp-trail__peak-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
@@ -63,13 +65,23 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
         const title = document.querySelector(".lp-trail__peak-title");
         const peak = document.querySelector(".lp-trail__peak");
         const pennant = document.querySelector(".lp-trail__pennant");
-        if (!title || !peak || !pennant) return { ok: false, reason: "missing nodes" };
+        const trail = document.querySelector("#mountain-trail");
+        const mountain = document.querySelector(".lp-trail__mountain");
+        const scroll = document.querySelector(".lp-trail__scroll");
+        if (!title || !peak || !pennant || !mountain) return { ok: false, reason: "missing nodes" };
+        if (scroll) scroll.scrollTop = 0;
+        peak.scrollIntoView({ block: "center", inline: "nearest" });
         const tr = title.getBoundingClientRect();
         const pr = peak.getBoundingClientRect();
         const pennantRect = pennant.getBoundingClientRect();
+        const mountainRect = mountain.getBoundingClientRect();
         const pennantW = pennantRect.width;
         const titleCenter = tr.left + tr.width / 2;
         const peakCenter = pr.left + pr.width / 2;
+        const titleTop = trail ? getComputedStyle(trail).getPropertyValue("--lp-title-top").trim() : "";
+        const peakRight = trail ? getComputedStyle(trail).getPropertyValue("--lp-peak-right").trim() : "";
+        const inView = pennantRect.bottom > 0 && pennantRect.top < window.innerHeight;
+        const offsetFromMountain = pennantRect.bottom - mountainRect.top;
         return {
           ok: true,
           text: (title.textContent || "").trim(),
@@ -78,8 +90,12 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
           pennantW,
           pennantH: pennantRect.height,
           pennantTop: pennantRect.top,
+          inView,
+          offsetFromMountain,
           peakW: pr.width,
           centerDelta: Math.abs(titleCenter - peakCenter),
+          titleTop,
+          peakRight,
           viewport: [window.innerWidth, window.innerHeight]
         };
       })()
@@ -93,11 +109,16 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
                     "title has no visible height at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["pennantH"], :>=, 40,
                     "pennant clipped or collapsed at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["pennantTop"], :>=, 0,
-                    "pennant above viewport at #{width}x#{height}: #{metrics.inspect}"
+    assert metrics["inView"],
+           "pennant not in viewport at #{width}x#{height}: #{metrics.inspect}"
+    assert_match(/\d+px/, metrics["titleTop"].to_s,
+                 "peak pin --lp-title-top missing at #{width}x#{height}: #{metrics.inspect}")
+    assert_match(/\d+px/, metrics["peakRight"].to_s,
+                 "peak pin --lp-peak-right missing at #{width}x#{height}: #{metrics.inspect}")
     assert_operator metrics["centerDelta"], :<=, 80,
                     "title not near peak at #{width}x#{height}: #{metrics.inspect}"
     assert_no_selector ".lp-rpg-destination-carousel__stage"
     assert_no_selector ".lp-rpg-destination-carousel__arrow"
+    assert_no_selector ".lp-trail__summit-cover"
   end
 end
