@@ -793,13 +793,12 @@
   position: relative;
   z-index: 1;
   background: var(--lp-trail-cream-soft);
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
-}
   color: var(--lp-trail-ink);
   border-radius: 18px 18px 0 0;
   margin-top: 4px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .lp-trail-sheet__body a {
