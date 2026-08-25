@@ -1316,12 +1316,12 @@
   transition: width 0.3s ease;
 }
 
-/* Destination pennant — pole planted at summit, banner flies left */
+/* Destination pennant — pole planted at summit tip, banner flies left */
 .lp-trail.is-v4 .lp-trail__peak {
   left: calc(var(--lp-peak-x, 0.566) * 100%);
   top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
   right: auto;
-  transform: translate(-100%, -100%);
+  transform: translate(calc(-100% + 2px), -100%);
   pointer-events: none;
   gap: 0;
   align-items: flex-start;
@@ -1357,7 +1357,7 @@
 
 .lp-trail.is-v4 .lp-trail__pole {
   width: 4px;
-  height: 64px;
+  height: 72px;
   margin-top: 2px;
   background: linear-gradient(180deg, #e8e4d8, #8f8368);
   border-radius: 0 0 1px 1px;
@@ -2007,29 +2007,31 @@
   filter: blur(5px);
 }
 
-/* Mask the default photo's baked-in summit flag before our pennant renders. */
+/* Mask leftover baked-in summit pixels (kept subtle — photo is also cleaned). */
 .lp-trail.is-v4 .lp-trail__summit-cover {
   position: absolute;
   left: calc(var(--lp-peak-x, 0.566) * 100%);
   top: calc(5.5rem + var(--lp-peak-y, 0.197) * (100% - 5.5rem));
-  width: 56px;
-  height: 78px;
-  transform: translate(-50%, -72%);
+  width: 44px;
+  height: 52px;
+  transform: translate(-42%, -88%);
   z-index: 3;
   pointer-events: none;
-  border-radius: 42% 42% 50% 50%;
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 62%, rgba(168, 192, 158, 0.98) 0%, rgba(148, 176, 136, 0.94) 42%, rgba(210, 224, 202, 0.88) 72%, transparent 100%),
-    linear-gradient(180deg, rgba(228, 236, 222, 0.96) 0%, rgba(196, 214, 188, 0.92) 55%, rgba(152, 178, 140, 0.9) 100%);
-  box-shadow: 0 0 12px 4px rgba(220, 232, 214, 0.65);
+  border-radius: 50% 50% 40% 40%;
+  background: linear-gradient(180deg, rgba(232, 246, 236, 0.98) 0%, rgba(214, 232, 218, 0.92) 70%, transparent 100%);
+  box-shadow: none;
 }
 
-/* V4 photo already has natural sky light — hide duplicate sun/glow at summit. */
+/* V4: hide sun/glow/backlight circles — destination pennant is the summit marker. */
 .lp-trail.is-v4 .lp-trail__summit-glow,
+.lp-trail.is-v4 .lp-trail__backlight,
+.lp-trail.is-v4 .lp-trail__sun,
+.lp-trail.is-v4 .lp-trail__sun-corona,
+.lp-trail.is-v4 .lp-trail__sun-rays,
 .lp-trail.is-v4.is-day .lp-trail__sun,
 .lp-trail.is-v4.is-day .lp-trail__sun-corona,
 .lp-trail.is-v4.is-day .lp-trail__sun-rays {
-  display: none;
+  display: none !important;
 }
 
 .lp-trail__tab-fade {
