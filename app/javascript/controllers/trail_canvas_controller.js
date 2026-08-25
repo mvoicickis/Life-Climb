@@ -926,7 +926,7 @@ export default class extends Controller {
   }
 
   // Pin destination pennant to the painted summit after object-fit: cover crop
-  // (MountainV4 mockup: titleTop = h*0.22, peakRight from PEAK_X 0.566 on 1024×1536 art).
+  // (titleTop / peakRight from --lp-peak-y / --lp-peak-x on 1024×1536 art).
   bindPeakPin() {
     const mountain = this.hasMountainTarget ? this.mountainTarget : null
     if (!mountain) return
@@ -953,13 +953,15 @@ export default class extends Controller {
     const height = mountain.clientHeight || 0
     if (width < 1 || height < 1) return
 
-    const peakXFrac = 0.566
+    const styles = getComputedStyle(this.element)
+    const peakXFrac = parseFloat(styles.getPropertyValue("--lp-peak-x")) || 0.566
+    const peakYFrac = parseFloat(styles.getPropertyValue("--lp-peak-y")) || 0.22
     const artW = 1024
     const artH = 1536
     const scaledW = artW * (height / artH)
     const peakX = Math.round(peakXFrac * scaledW - ((scaledW - width) / 2))
     const peakRight = Math.max(0, width - peakX)
-    const titleTop = Math.round(height * 0.22)
+    const titleTop = Math.round(height * peakYFrac)
 
     this.element.style.setProperty("--lp-title-top", `${titleTop}px`)
     this.element.style.setProperty("--lp-peak-right", `${peakRight}px`)

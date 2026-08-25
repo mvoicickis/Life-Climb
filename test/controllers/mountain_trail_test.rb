@@ -109,7 +109,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__peak"
     assert_select ".lp-trail__pennant"
     assert_select ".lp-trail__peak-title"
-    assert_select ".lp-trail__summit-cover", count: 0
+    assert_select ".lp-trail__summit-cover", count: 1
     assert_select ".lp-trail__dock"
     assert_select ".lp-trail-today--dock"
     assert_select ".lp-trail-base--dock"

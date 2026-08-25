@@ -38,8 +38,7 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   test "peak coordinates sit on default mountain photo summit" do
     assert_in_delta 0.566, MountainTrailHelper::PEAK_X, 0.001
-    assert MountainTrailHelper::PEAK_Y.between?(0.20, 0.25),
-           "PEAK_Y should match mockup titleTop (0.22)"
+    assert_in_delta 0.22, MountainTrailHelper::PEAK_Y, 0.001
   end
 
   test "point on curve returns x within trail bounds" do
@@ -57,6 +56,19 @@ class MountainTrailHelperTest < ActionView::TestCase
     p2 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 2, trail_x: 0.52, trail_y: 0.56)
     layout = mountain_trail_layout([ p1, p2 ])
     assert layout[2][:y] - layout[1][:y] >= MountainTrailHelper::SIGN_MIN_GAP - 0.001
+  end
+
+  test "layout never packs camps above the trail floor under the summit" do
+    camps = (1..9).map do |i|
+      Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+        id: i, trail_x: 0.5, trail_y: 0.55
+      )
+    end
+    layout = mountain_trail_layout(camps)
+    ys = layout.values.map { |slot| slot[:y].to_f }
+    assert ys.min >= MountainTrailHelper::TRAIL_Y_MIN - 0.0001
+    assert ys.max <= MountainTrailHelper::SIGN_FLOOR_Y + 0.0001
+    assert ys.min > MountainTrailHelper::PEAK_Y
   end
 
   test "current project picks lowest open camp on trail" do

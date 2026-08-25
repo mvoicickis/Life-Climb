@@ -24,6 +24,7 @@ module MountainTrailHelper
   TRAIL_Y_MIN = 0.32
   TRAIL_Y_MAX = 0.88
   PEAK_X = 0.566
+  # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
 
   ACCENT_HEX = {
@@ -156,20 +157,25 @@ module MountainTrailHelper
   end
 
   # Layout slots with anti-overlap spreading (mockup MIN_GAP pass).
+  # Never pack camps above TRAIL_Y_MIN — otherwise only posts/shadows stick out
+  # near the summit and read as stray dots above the destination flag.
   def mountain_trail_layout(projects)
     raw = projects.each_with_index.map do |project, index|
       slot = mountain_trail_slot(project, index: index, total: projects.size)
-      { project: project, x: slot[:x], y: slot[:y], anchor_y: slot[:y] }
+      { project: project, x: slot[:x], y: slot[:y], anchor_y: slot[:y], placed: slot[:placed] }
     end
     return {} if raw.empty?
 
     by_height = raw.sort_by { |entry| -entry[:y] }
+    gap = trail_sign_gap(by_height.size)
     next_top = SIGN_FLOOR_Y
     by_height.each do |entry|
       wanted = [ entry[:y], next_top ].min
+      wanted = [ wanted, TRAIL_Y_MIN ].max
       entry[:y] = wanted.round(4)
-      entry[:leader_h] = (wanted - entry[:anchor_y].to_f).abs.round(4)
-      next_top = wanted - SIGN_MIN_GAP
+      entry[:x] = trail_x_for_y(entry[:y]).round(4) unless entry[:placed]
+      entry[:leader_h] = (entry[:y] - entry[:anchor_y].to_f).abs.round(4)
+      next_top = entry[:y] - gap
     end
     raw.index_by { |entry| entry[:project].id }
   end
@@ -350,6 +356,15 @@ module MountainTrailHelper
   end
 
   private
+
+  # Keep preferred sign gap when there is room; compress evenly when many camps
+  # would otherwise spill above the summit band.
+  def trail_sign_gap(camp_count)
+    return SIGN_MIN_GAP if camp_count <= 1
+
+    available = SIGN_FLOOR_Y - TRAIL_Y_MIN
+    [ SIGN_MIN_GAP, available / (camp_count - 1).to_f ].min
+  end
 
   def auto_trail_y(index, total)
     return 0.58 if total <= 0
