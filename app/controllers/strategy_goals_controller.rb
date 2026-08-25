@@ -446,8 +446,9 @@ class StrategyGoalsController < ApplicationController
     scope = current_user.strategy_goals.where(life_area_id: @life_area.id).for_kind(kind)
     scope = parent ? scope.where(parent_id: parent.id) : scope.roots
     if kind == "day" && params[:add_position].to_s == "top"
-      min = scope.minimum(:position)
-      return min.nil? ? 0 : min.to_i - 1
+      # Insert at the top without going below 0 (validation requires position >= 0).
+      scope.update_all("position = position + 1")
+      return 0
     end
     scope.maximum(:position).to_i + 1
   end
