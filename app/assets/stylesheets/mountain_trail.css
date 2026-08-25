@@ -1137,7 +1137,9 @@
   gap: 0.75rem;
 }
 
-.lp-trail-base--dock {
+/* Chain both classes so these dock variants beat the later, equal-specificity
+   floating rules (.lp-trail-base / .lp-trail-today) and stay in the green dock. */
+.lp-trail-base.lp-trail-base--dock {
   position: static;
   transform: none;
   left: auto;
@@ -1149,7 +1151,7 @@
   width: 100%;
 }
 
-.lp-trail-today--dock {
+.lp-trail-today.lp-trail-today--dock {
   position: static;
   left: auto;
   right: auto;
