@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# V4 camp names live in aria-label; current camp also shows a short chip.
+# V4 camp names live in aria-label; a short caption sits under every tent.
 class SectionCardFluidTitleTest < ApplicationSystemTestCase
   LONG_TITLE = "Start: Make LifePoints Successsull"
   SHORT_TITLE = "Learn German"
@@ -83,12 +83,12 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
         if (!el) return { ok: false };
         const r = el.getBoundingClientRect();
         const tent = el.querySelector(".lp-trail-camp__tent");
-        const chip = el.querySelector(".lp-trail-camp__title");
+        const caption = el.querySelector(".lp-trail-camp__caption .lp-trail-camp__title");
         return {
           ok: true,
           hasTent: Boolean(tent),
           label: el.getAttribute("aria-label") || "",
-          chip: chip ? (chip.textContent || "").trim() : "",
+          caption: caption ? (caption.textContent || "").trim() : "",
           width: r.width
         };
       })()
@@ -97,6 +97,6 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     assert metrics["hasTent"]
     assert_equal expected_text, metrics["label"]
     assert_operator metrics["width"].to_f, :>=, 40.0
-    assert_equal expected_text.truncate(14), metrics["chip"] if metrics["chip"].present?
+    assert_equal expected_text.truncate(12), metrics["caption"]
   end
 end

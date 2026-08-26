@@ -108,6 +108,18 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert layout.values.all? { |slot| slot[:leader_h].to_f.zero? }
   end
 
+  test "auto slot matches the renderer for unplaced camps" do
+    slot = MountainTrailHelper::AutoSlot.call(index: 0, total: 2)
+    other = MountainTrailHelper::AutoSlot.call(index: 1, total: 2)
+    assert_in_delta MountainTrailHelper::TRAIL_Y_MIN, slot[:trail_y], 0.0001
+    assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, other[:trail_y], 0.0001
+    unplaced = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 9, trail_x: nil, trail_y: nil)
+    layout = mountain_trail_slot(unplaced, index: 0, total: 2)
+    assert_in_delta slot[:trail_x], layout[:x], 0.0001
+    assert_in_delta slot[:trail_y], layout[:y], 0.0001
+    assert_not layout[:placed]
+  end
+
   test "layout keeps packed tents on their planted coords" do
     camps = (1..9).map do |i|
       Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(

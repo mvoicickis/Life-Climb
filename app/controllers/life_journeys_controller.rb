@@ -165,6 +165,9 @@ class LifeJourneysController < ApplicationController
     @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
     @plan = select_strategy_plan
     @trail = Strategy::Trail.for(plan: @plan)
+    Strategy::PinUnplacedCamps.call(
+      projects: Array(@trail&.nodes).filter_map(&:record).reject { |project| project.holding? || project.completed? }
+    )
     # Mountain = planning. Allow focusing any camp on this Path (even battle-locked)
     # so newly created checkpoints stay visible after save. Today still owns fighting.
     @current_project =

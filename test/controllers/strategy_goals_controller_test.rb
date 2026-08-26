@@ -67,6 +67,31 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "teal", camp.color_key
   end
 
+  test "creating a project without trail coords assigns an auto slot" do
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      horizon: "goal", title: "Auto pin goal"
+    }
+    goal = @user.strategy_goals.for_kind("goal").last
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: goal.id, horizon: "plan", title: "Auto pin path"
+    }
+    plan = @user.strategy_goals.for_kind("plan").last
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: plan.id,
+      horizon: "project",
+      title: "Unplanted camp"
+    }
+    camp = plan.children.for_kind("project").find_by!(title: "Unplanted camp")
+    expected = MountainTrailHelper::AutoSlot.call(index: 0, total: 1)
+    assert_in_delta expected[:trail_x], camp.trail_x, 0.0001
+    assert_in_delta expected[:trail_y], camp.trail_y, 0.0001
+  end
+
   test "goal defaults due_on to one year from today and awards goal SP" do
     post strategy_goals_path, params: {
       life_area_id: @area.id,

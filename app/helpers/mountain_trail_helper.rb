@@ -98,6 +98,40 @@ module MountainTrailHelper
     mountain_trail_all_projects(trail).reject(&:completed?)
   end
 
+  # Shared auto-layout so show-pin and create use the same slot as the renderer.
+  module AutoSlot
+    module_function
+
+    def call(index:, total:)
+      y = y_for(index, total)
+      { trail_x: x_for(y), trail_y: y }
+    end
+
+    def y_for(index, total)
+      return 0.58 if total <= 0
+
+      t = total == 1 ? 0.5 : index.to_f / (total - 1)
+      (TRAIL_Y_MIN + t * (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
+    end
+
+    def x_for(y_frac)
+      curve = TRAIL_CURVE
+      return curve.first[1] if y_frac <= curve.first[0]
+      return curve.last[1] if y_frac >= curve.last[0]
+
+      (0...(curve.length - 1)).each do |i|
+        y0, x0 = curve[i]
+        y1, x1 = curve[i + 1]
+        next unless y_frac >= y0 && y_frac <= y1
+
+        k = (y_frac - y0) / (y1 - y0)
+        return x0 + k * (x1 - x0)
+      end
+
+      0.5
+    end
+  end
+
   # Returns { x:, y:, placed: } with x/y in 0..1 for CSS left/top %.
   def mountain_trail_slot(project, index:, total:)
     if project.trail_x.present? && project.trail_y.present?
@@ -108,8 +142,8 @@ module MountainTrailHelper
       }
     end
 
-    y = auto_trail_y(index, total)
-    { x: trail_x_for_y(y), y: y, placed: false }
+    y = AutoSlot.y_for(index, total)
+    { x: AutoSlot.x_for(y), y: y, placed: false }
   end
 
   def mountain_trail_accent(color_key)
@@ -118,7 +152,7 @@ module MountainTrailHelper
 
   def mountain_trail_ghosts(projects, layout: nil, current_project: nil)
     if projects.empty?
-      return [ { x: trail_x_for_y(0.55), y: 0.55 } ]
+      return [ { x: AutoSlot.x_for(0.55), y: 0.55 } ]
     end
 
     layout ||= mountain_trail_layout(projects)
@@ -141,7 +175,7 @@ module MountainTrailHelper
     end
 
     gaps.sort_by { |g| -g[:span] }.first(projects.size >= 2 ? 2 : 3).map do |g|
-      { x: trail_x_for_y(g[:y]), y: g[:y].clamp(TRAIL_Y_MIN, TRAIL_Y_MAX) }
+      { x: AutoSlot.x_for(g[:y]), y: g[:y].clamp(TRAIL_Y_MIN, TRAIL_Y_MAX) }
     end
   end
 
@@ -366,7 +400,7 @@ module MountainTrailHelper
   # Point on the traced trail curve for a y-fraction (0..1 down the photo).
   def mountain_trail_point_on_curve(y_frac)
     y = y_frac.to_f.clamp(TRAIL_CURVE.first[0], TRAIL_CURVE.last[0])
-    { x: trail_x_for_y(y), y: y }
+    { x: AutoSlot.x_for(y), y: y }
   end
 
   # Footprint dots from base up to the companion climb fraction.
@@ -403,31 +437,5 @@ module MountainTrailHelper
     won = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && c.completed? } }
     total = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? } }
     [ (won * 0.5 + total * 0.15) / 6.0, 1.0 ].min + (open.positive? ? 0.05 : 0)
-  end
-
-  private
-
-  def auto_trail_y(index, total)
-    return 0.58 if total <= 0
-
-    t = total == 1 ? 0.5 : index.to_f / (total - 1)
-    (TRAIL_Y_MIN + t * (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
-  end
-
-  def trail_x_for_y(y_frac)
-    curve = TRAIL_CURVE
-    return curve.first[1] if y_frac <= curve.first[0]
-    return curve.last[1] if y_frac >= curve.last[0]
-
-    (0...(curve.length - 1)).each do |i|
-      y0, x0 = curve[i]
-      y1, x1 = curve[i + 1]
-      next unless y_frac >= y0 && y_frac <= y1
-
-      k = (y_frac - y0) / (y1 - y0)
-      return x0 + k * (x1 - x0)
-    end
-
-    0.5
   end
 end
