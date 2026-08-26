@@ -8,10 +8,9 @@
 <% fog = [ 0, (0.62 - layout[:y].to_f) * 0.4 ].max.round(3) %>
 <% shadow = mountain_trail_camp_shadow(layout) %>
 <% current = state == :current %>
-<% chip_start = layout[:x].to_f > 0.62 %>
 
 <button type="button"
-        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %> <%= 'is-chip-start' if chip_start %>"
+        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %>"
         id="trail-camp-<%= project.id %>"
         style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
         data-camp-id="<%= project.id %>"
@@ -30,9 +29,7 @@
       <span class="lp-trail-camp__fire" aria-hidden="true"></span>
     <% end %>
   </span>
-  <% if current %>
-    <span class="lp-trail-camp__chip">
-      <span class="lp-trail-camp__title"><%= project.title.truncate(14) %></span>
-    </span>
-  <% end %>
+  <span class="lp-trail-camp__caption">
+    <span class="lp-trail-camp__title"><%= project.title.truncate(12) %></span>
+  </span>
 </button>

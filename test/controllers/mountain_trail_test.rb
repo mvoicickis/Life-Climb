@@ -206,6 +206,72 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_in_delta 0.66, @project.trail_y, 0.0001
   end
 
+  test "show pins unplaced camps and keeps those coords after the list changes" do
+    unplaced = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Drift camp", position: 2
+    )
+    assert_nil unplaced.trail_x
+    assert_nil unplaced.trail_y
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    unplaced.reload
+    assert unplaced.trail_x.present?
+    assert unplaced.trail_y.present?
+    pinned_x = unplaced.trail_x
+    pinned_y = unplaced.trail_y
+
+    @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Later camp", position: 3
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    unplaced.reload
+    assert_in_delta pinned_x, unplaced.trail_x, 0.0001
+    assert_in_delta pinned_y, unplaced.trail_y, 0.0001
+  end
+
+  test "every tent has a caption under it and no side chip" do
+    extra = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge lookout", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
+    assert_select "#trail-camp-#{extra.id}[aria-label=?]", "Ridge lookout"
+    assert_select "#trail-camps .lp-trail-camp" do
+      assert_select ".lp-trail-camp__caption .lp-trail-camp__title"
+    end
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__caption", text: /Base camp/
+    assert_select "#trail-camp-#{extra.id} .lp-trail-camp__caption", text: /Ridge loo/
+    assert_select ".lp-trail-camp__chip", count: 0
+    assert_select ".lp-trail-camp.is-chip-start", count: 0
+  end
+
+  test "planting a project without coords still gets an auto trail slot" do
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: @plan.id,
+        horizon: "project",
+        title: "Strategy camp",
+        color_key: "teal"
+      }
+    end
+    created = @plan.children.for_kind("project").find_by!(title: "Strategy camp")
+    expected = MountainTrailHelper::AutoSlot.call(index: 1, total: 2)
+    assert_in_delta expected[:trail_x], created.trail_x, 0.0001
+    assert_in_delta expected[:trail_y], created.trail_y, 0.0001
+  end
+
   test "finished camps leave the mountain photo and sheet" do
     @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
     still_open = @plan.children.create!(

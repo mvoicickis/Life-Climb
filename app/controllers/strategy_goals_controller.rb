@@ -40,6 +40,7 @@ class StrategyGoalsController < ApplicationController
     apply_color_key_params!(goal) if kind == "project"
     apply_camp_mode_params!(goal) if kind == "project"
     apply_trail_params!(goal) if kind == "project"
+    assign_auto_trail_slot!(goal) if kind == "project"
 
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
@@ -374,6 +375,26 @@ class StrategyGoalsController < ApplicationController
 
     goal.trail_x = params[:trail_x].presence
     goal.trail_y = params[:trail_y].presence
+  end
+
+  # Strategy / empty plant fields: park the tent on the auto trail slot before save.
+  def assign_auto_trail_slot!(goal)
+    return unless goal.project?
+    return if goal.trail_x.present? && goal.trail_y.present?
+
+    siblings = incomplete_path_siblings(goal)
+    slot = MountainTrailHelper::AutoSlot.call(index: siblings.size, total: siblings.size + 1)
+    goal.trail_x = slot[:trail_x]
+    goal.trail_y = slot[:trail_y]
+  end
+
+  def incomplete_path_siblings(goal)
+    parent = goal.parent
+    return [] if parent.blank?
+
+    parent.children.select do |child|
+      child.project? && !child.holding? && !child.completed? && child != goal
+    end
   end
 
   # Optional Today window — stored on the cascaded DailyTodo, not on strategy_goals.

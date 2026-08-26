@@ -495,34 +495,43 @@
   animation: lp-trail-ember-pulse 2.4s ease-in-out infinite;
 }
 
-.lp-trail-camp__chip {
+.lp-trail-camp__caption {
   position: absolute;
-  left: calc(50% + 22px);
-  bottom: 8px;
-  max-width: 7.5rem;
-  padding: 0.18rem 0.45rem 0.2rem;
-  border-radius: 999px;
-  background: rgba(247, 239, 226, 0.94);
-  border: 1px solid rgba(90, 66, 40, 0.28);
-  box-shadow: 0 4px 10px rgba(18, 32, 26, 0.18);
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.12rem;
+  max-width: 6.5rem;
   pointer-events: none;
-}
-
-.lp-trail-camp.is-chip-start .lp-trail-camp__chip {
-  left: auto;
-  right: calc(50% + 22px);
+  text-align: center;
 }
 
 .lp-trail-camp__title {
   display: block;
   font-family: var(--lp-trail-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #2a2116;
-  line-height: 1.2;
+  font-size: 0.62rem;
+  font-weight: 650;
+  color: #1a140c;
+  line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-shadow:
+    0 0 4px rgba(255, 252, 245, 0.95),
+    0 1px 2px rgba(255, 248, 235, 0.9);
+}
+
+.lp-trail-camp.is-current .lp-trail-camp__caption {
+  padding: 0.12rem 0.4rem 0.14rem;
+  border-radius: 999px;
+  background: rgba(247, 239, 226, 0.94);
+  border: 1px solid rgba(90, 66, 40, 0.28);
+  box-shadow: 0 4px 10px rgba(18, 32, 26, 0.18);
+}
+
+.lp-trail-camp.is-current .lp-trail-camp__title {
+  font-weight: 800;
+  text-shadow: none;
 }
 
 /* ——— Ghost plant pins ——— */
