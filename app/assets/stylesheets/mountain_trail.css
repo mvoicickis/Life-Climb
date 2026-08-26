@@ -1115,14 +1115,11 @@
   --lp-trail-photo-h: 1180px;
   --lp-trail-accent: #0f9488;
   background: #1a2a1c;
-  display: flex;
-  flex-direction: column;
 }
 
 .lp-trail.is-v4 .lp-trail__scroll {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
   padding-bottom: 0;
 }
 
@@ -1157,7 +1154,7 @@
   background: linear-gradient(180deg, transparent 0%, rgba(28, 52, 32, 0.08) 70%, rgba(18, 36, 22, 0.18));
 }
 
-/* Meadow plaque sits in the green band under the photo, above the nav. */
+/* Next-action chip sits after the photo in the trail scroll, above the nav. */
 .lp-trail.is-v4 .lp-trail__dock {
   position: relative;
   left: auto;
@@ -1166,10 +1163,12 @@
   bottom: auto;
   transform: none;
   z-index: 6;
-  flex: 0 0 auto;
   pointer-events: auto;
-  background: #5f9438;
-  padding: 10px 14px calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(252, 251, 248, 0.92);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-top: 1px solid rgba(18, 32, 26, 0.06);
+  padding: 10px 12px calc(4.75rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   align-items: stretch;

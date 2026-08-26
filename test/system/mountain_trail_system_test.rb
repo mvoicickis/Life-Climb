@@ -55,9 +55,11 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-battle-#{@battle.id}", text: /Pitch the tent/, visible: :all
     assert_selector "#trail-battles-#{@project.id} form[action*='battle_win']", visible: :all
 
-    # Phase 1 parity: Today/Base on photo; camp sheet pins to viewport.
-    assert_selector ".lp-trail__dock .lp-trail-today"
-    assert_selector ".lp-trail__mountain .lp-trail-base"
+    # Next-action bar is in the trail scroll, after the photo.
+    assert_selector ".lp-trail__scroll .lp-trail__dock .lp-trail-today"
+    assert_no_selector ".lp-trail__mountain .lp-trail-today"
+    dock_pos = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail__dock')).position")
+    assert_equal "relative", dock_pos
     position = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail-sheet.is-open')).position")
     assert_equal "fixed", position
   end
