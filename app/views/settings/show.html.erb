@@ -2,323 +2,357 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 <% highlight = params[:highlight].to_s %>
-<% row_class = "group flex items-center justify-between gap-3 rounded-xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-3 text-sm font-bold text-[var(--lp-ink)] transition hover:border-[var(--lp-lime)]" %>
-<% chevron = tag.span("›", class: "shrink-0 text-lg leading-none text-[var(--lp-muted)] transition group-hover:text-[var(--lp-lime)]", "aria-hidden": true) %>
+<% companion_key = current_user.character_key %>
+<% companion_name = companion_key ? t("game_ui.character.#{companion_key}") : nil %>
+<% open_panel = %w[character language name].include?(highlight) ? highlight : nil %>
+<% current_locale = locale_options.find { |opt| opt[:code] == I18n.locale } || locale_options.first %>
+<% chip_icons = { "easy" => "🌱", "medium" => "⚔️", "hard" => "🔥" } %>
 
-<div class="lp-home mx-auto max-w-lg">
-  <header>
-    <p class="lp-brand-kicker">
-      <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
-      <span><%= t("app_name") %></span>
-    </p>
-    <h1 class="lp-home__title"><%= t("settings.title") %></h1>
-    <p class="lp-home__subtitle"><%= t("settings.subtitle") %></p>
-  </header>
+<div class="lp-you"
+     data-controller="you-page"
+     data-you-page-open="<%= open_panel %>">
+  <h1 class="lp-you-sr"><%= t("settings.title") %></h1>
 
-  <section class="lp-glass lp-glass--pad<%= ' lp-you-row--flash' if highlight == 'character' %>" id="you-character">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.make_yours_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.make_yours_hint") %></p>
-
-    <div class="mt-4 space-y-2">
-      <%= link_to edit_name_settings_path,
-            id: "you-row-name",
-            class: [row_class, ("lp-you-row--flash" if highlight == "name")] do %>
-        <span><%= t("settings.change_name") %></span>
-        <span class="flex min-w-0 items-center gap-2">
-          <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]"><%= current_user.name.presence || "—" %></span>
-          <%= chevron %>
-        </span>
-      <% end %>
-    </div>
-
-    <div class="mt-6 border-t border-[var(--lp-border)] pt-5">
-      <h3 class="text-base font-semibold text-[var(--lp-ink)]"><%= t("settings.character_title") %></h3>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.character_hint") %></p>
-      <%= form_with model: current_user, url: settings_path, method: :patch, class: "mt-4", data: { turbo: false } do %>
-        <%= render "shared/character_picker",
-              selected: current_user.character_key,
-              show_brand: false,
-              show_heading: false,
-              submit_label: t("settings.character_save") %>
-      <% end %>
-    </div>
-  </section>
-
-  <section class="lp-glass lp-glass--pad<%= ' lp-you-row--flash' if highlight == 'theme' %>" id="you-theme">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.theme_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.theme_hint") %></p>
-    <div class="lp-theme-switch mt-4" role="group" aria-label="<%= t('settings.theme_title') %>">
-      <% User::THEMES.each do |theme_key| %>
-        <% active = current_user.theme_key == theme_key %>
-        <%= button_to settings_path,
-              method: :patch,
-              params: { user: { theme: theme_key } },
-              class: "lp-theme-switch__btn#{' is-active' if active}",
-              form: { class: "lp-theme-switch__form", data: { turbo: false } } do %>
-          <%= t("settings.theme_#{theme_key}") %>
-        <% end %>
-      <% end %>
-    </div>
-  </section>
-
-  <section class="lp-glass lp-glass--pad" id="you-language">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.language_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.language_hint") %></p>
-    <div class="mt-4">
-      <%= render "shared/locale_switcher", variant: :settings %>
-    </div>
-  </section>
-
-  <% if @commitment_journey %>
-    <section class="lp-glass lp-glass--pad<%= ' lp-you-row--flash' if highlight == 'commitment' %>" id="you-commitment">
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.commitment.title") %></h2>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.commitment.hint") %></p>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]">
-        <% if habits_enabled? %>
-          <%= link_to t("settings.commitment.eligibility.open_habits"), habits_path, class: "underline underline-offset-2" %>
-          ·
-        <% end %>
-        <%= link_to t("settings.commitment.eligibility.open_mountain"), life_journey_path(@commitment_journey), class: "underline underline-offset-2" %>
+  <div class="lp-you__scroll">
+    <header class="lp-you__hero<%= ' lp-you-row--flash' if highlight == 'name' %>">
+      <p class="lp-you__kicker">
+        <span class="lp-you__kicker-mark" aria-hidden="true">🏔</span>
+        <%= t("app_name").upcase %>
       </p>
-
-      <div class="lp-settings-commitment__presets mt-4">
-        <% Today::Commitment::PRESETS.each do |key, preset| %>
-          <% active = @commitment_journey.commitment_key == key
-             elig = Today::Commitment.eligibility(user: current_user, key: key, journey: @commitment_journey)
-             blocked = !elig.eligible? && !active
-             preset_label = habits_enabled? ?
-               t("settings.commitment.preset_label", name: t("v2_onboarding.commitment_presets.#{key}"), habits: preset[:habit_count], battles: preset[:battle_count]) :
-               t("settings.commitment.preset_label_battles_only", name: t("v2_onboarding.commitment_presets.#{key}"), battles: preset[:battle_count]) %>
-          <% if blocked %>
-            <div class="lp-settings-commitment__btn is-disabled" aria-disabled="true">
-              <span>
-                <%= preset_label %>
-              </span>
-              <span class="lp-settings-commitment__lock">
-                <% if elig.missing_habits %>
-                  <%= t("settings.commitment.eligibility.habits",
-                        name: t("v2_onboarding.commitment_presets.#{key}"),
-                        need: elig.habit_need,
-                        have: elig.habit_have) %>
-                <% end %>
-                <% if elig.missing_camps %>
-                  <%= t("settings.commitment.eligibility.camps",
-                        name: t("v2_onboarding.commitment_presets.#{key}"),
-                        need: elig.camp_need,
-                        have: elig.camp_have) %>
-                <% end %>
-              </span>
-            </div>
-          <% else %>
-            <%= button_to preset_label,
-                  commitment_settings_path,
-                  method: :patch,
-                  params: { commitment_key: key },
-                  class: "lp-settings-commitment__btn#{' is-active' if active}",
-                  form: { data: { turbo: false } } %>
-          <% end %>
-        <% end %>
-      </div>
-
-      <%= form_with url: commitment_settings_path, method: :patch, class: "lp-settings-commitment__custom mt-5", data: { turbo: false } do %>
-        <p class="text-sm font-semibold text-[var(--lp-ink)]"><%= t("settings.commitment.custom_title") %></p>
-        <label class="lp-adventure__label mt-3" for="commitment_name"><%= t("settings.commitment.name_label") %></label>
-        <%= text_field_tag :commitment_name, @commitment_journey.commitment_name,
-              id: "commitment_name",
-              maxlength: 40,
-              class: "lp-input w-full" %>
-        <div class="lp-settings-commitment__counts">
-          <% if habits_enabled? %>
-            <div>
-              <label class="lp-adventure__label" for="commitment_habit_count"><%= t("settings.commitment.habits_label") %></label>
-              <%= number_field_tag :commitment_habit_count, @commitment_journey.commitment_habit_count,
-                    id: "commitment_habit_count", min: 0, max: 20, class: "lp-input w-full" %>
-            </div>
-          <% end %>
-          <div>
-            <label class="lp-adventure__label" for="commitment_battle_count"><%= t("settings.commitment.battles_label") %></label>
-            <%= number_field_tag :commitment_battle_count, @commitment_journey.commitment_battle_count,
-                  id: "commitment_battle_count", min: 0, max: 20, class: "lp-input w-full" %>
+      <div class="lp-you__hero-row">
+        <% if current_user.character_image %>
+          <div class="lp-you__avatar">
+            <%= image_tag current_user.character_image, alt: companion_name %>
           </div>
+        <% else %>
+          <div class="lp-you__avatar is-empty" aria-hidden="true">🐾</div>
+        <% end %>
+        <div class="lp-you__hero-copy">
+          <div class="lp-you__name-row">
+            <button type="button"
+                    class="lp-you__name"
+                    data-you-page-target="nameButton"
+                    data-action="click->you-page#editName"
+                    <%= "hidden" if highlight == "name" %>>
+              <span><%= current_user.name.presence || t("settings.change_name") %></span>
+            </button>
+            <%= link_to "✎", edit_name_settings_path,
+                  class: "lp-you__pencil",
+                  id: "you-row-name",
+                  aria: { label: t("settings.change_name") } %>
+          </div>
+          <%= form_with model: current_user, url: settings_path, method: :patch,
+                html: { class: "lp-you__name-form", hidden: highlight != "name",
+                        data: { you_page_target: "nameForm", turbo: false } } do %>
+            <%= text_field_tag "user[name]", current_user.name,
+                  class: "lp-you__name-input",
+                  maxlength: 40,
+                  autocomplete: "name",
+                  data: { you_page_target: "nameInput", action: "keydown->you-page#nameKey" } %>
+          <% end %>
+          <p class="lp-you__companion-line">
+            <% if companion_name %>
+              <%= t("settings.companion_subline", name: companion_name) %>
+            <% else %>
+              <%= t("settings.character_title") %>
+            <% end %>
+          </p>
         </div>
-        <%= submit_tag t("settings.commitment.save_custom"), class: "lp-cta mt-4" %>
+      </div>
+    </header>
+
+    <section class="lp-you-card<%= ' is-open' if highlight == 'character' %><%= ' lp-you-row--flash' if highlight == 'character' %>"
+             id="you-character"
+             data-you-page-target="companionCard">
+      <button type="button" class="lp-you-card__head" data-action="click->you-page#toggleCompanion">
+        <span class="lp-you-card__icon" aria-hidden="true">🐾</span>
+        <h2 class="lp-you-card__title"><%= t("settings.character_title") %></h2>
+        <% if current_user.character_image %>
+          <span class="lp-you-card__mini">
+            <%= image_tag current_user.character_image, alt: "" %>
+          </span>
+        <% end %>
+        <span class="lp-you-card__meta"><%= companion_name %></span>
+        <span class="lp-you-card__chevron" aria-hidden="true">▾</span>
+      </button>
+      <%= form_with model: current_user, url: settings_path, method: :patch, class: "lp-you-companions", data: { turbo: false } do %>
+        <% User::CHARACTERS.each do |key| %>
+          <% active = companion_key == key %>
+          <label class="lp-you-companion<%= ' is-active' if active %>">
+            <%= radio_button_tag "user[character]", key, active,
+                  class: "lp-you-sr",
+                  onchange: "this.form.requestSubmit()" %>
+            <span class="lp-you-companion__face">
+              <%= image_tag "characters/#{key}.png", alt: t("game_ui.character.#{key}") %>
+            </span>
+            <span class="lp-you-companion__label"><%= t("game_ui.character.#{key}") %></span>
+          </label>
+        <% end %>
       <% end %>
     </section>
-  <% end %>
 
-  <section class="lp-glass lp-glass--pad"
-           id="you-reminders"
-           data-controller="push-reminders"
-           data-push-reminders-vapid-url-value="<%= push_config_path(format: :json) %>"
-           data-push-reminders-subscribe-url-value="<%= push_subscription_path %>"
-           data-push-reminders-unsubscribe-url-value="<%= push_subscription_path %>"
-           data-push-reminders-test-url-value="<%= test_push_subscription_path %>"
-           data-status-on="<%= t('settings.reminders_status_on') %>"
-           data-status-off="<%= t('settings.reminders_status_off') %>"
-           data-enabled-message="<%= t('settings.reminders_enabled') %>"
-           data-disabled-message="<%= t('settings.reminders_disabled') %>"
-           data-test-sent-message="<%= t('settings.reminders_test_sent') %>"
-           data-denied-message="<%= t('settings.reminders_denied') %>"
-           data-unsupported-message="<%= t('settings.reminders_unsupported') %>"
-           data-error-message="<%= t('settings.reminders_error') %>">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("settings.reminders_title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.reminders_hint") %></p>
+    <% if @commitment_journey %>
+      <section class="lp-you-card<%= ' lp-you-row--flash' if highlight == 'commitment' %>" id="you-commitment">
+        <div class="lp-you-card__head" style="cursor: default;">
+          <span class="lp-you-card__icon" aria-hidden="true">⚔️</span>
+          <h2 class="lp-you-card__title"><%= t("settings.commitment.title") %></h2>
+        </div>
+        <div class="lp-you-chips">
+          <% Today::Commitment::PRESETS.each do |key, preset| %>
+            <% active = @commitment_journey.commitment_key == key
+               elig = Today::Commitment.eligibility(user: current_user, key: key, journey: @commitment_journey)
+               blocked = !elig.eligible? && !active
+               sub = habits_enabled? ?
+                 "#{preset[:habit_count]} · #{preset[:battle_count]}" :
+                 preset[:battle_count].to_s %>
+            <% if blocked %>
+              <div class="lp-settings-commitment__btn is-disabled" aria-disabled="true">
+                <div class="lp-you-chip__icon" aria-hidden="true"><%= chip_icons[key] %></div>
+                <div class="lp-you-chip__name"><%= t("v2_onboarding.commitment_presets.#{key}") %></div>
+                <div class="lp-settings-commitment__lock">
+                  <% if elig.missing_habits %>
+                    <%= t("settings.commitment.eligibility.habits",
+                          name: t("v2_onboarding.commitment_presets.#{key}"),
+                          need: elig.habit_need,
+                          have: elig.habit_have) %>
+                  <% end %>
+                  <% if elig.missing_camps %>
+                    <%= t("settings.commitment.eligibility.camps",
+                          name: t("v2_onboarding.commitment_presets.#{key}"),
+                          need: elig.camp_need,
+                          have: elig.camp_have) %>
+                  <% end %>
+                </div>
+              </div>
+            <% else %>
+              <%= button_to commitment_settings_path,
+                    method: :patch,
+                    params: { commitment_key: key },
+                    class: "lp-settings-commitment__btn#{' is-active' if active}",
+                    form: { data: { turbo: false } } do %>
+                <div class="lp-you-chip__icon" aria-hidden="true"><%= chip_icons[key] %></div>
+                <div class="lp-you-chip__name"><%= t("v2_onboarding.commitment_presets.#{key}") %></div>
+                <div class="lp-you-chip__sub"><%= sub %></div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="lp-you-card__links">
+          <% if habits_enabled? %>
+            <%= link_to t("settings.commitment.eligibility.open_habits"), habits_path %>
+          <% end %>
+          <%= link_to t("settings.commitment.eligibility.open_mountain"), life_journey_path(@commitment_journey) %>
+        </div>
+        <details class="lp-settings-commitment__custom">
+          <summary><%= t("settings.commitment.custom_title") %></summary>
+          <%= form_with url: commitment_settings_path, method: :patch, class: "mt-3", data: { turbo: false } do %>
+            <label class="lp-adventure__label" for="commitment_name"><%= t("settings.commitment.name_label") %></label>
+            <%= text_field_tag :commitment_name, @commitment_journey.commitment_name,
+                  id: "commitment_name", maxlength: 40, class: "lp-input w-full" %>
+            <div class="lp-settings-commitment__counts">
+              <% if habits_enabled? %>
+                <div>
+                  <label class="lp-adventure__label" for="commitment_habit_count"><%= t("settings.commitment.habits_label") %></label>
+                  <%= number_field_tag :commitment_habit_count, @commitment_journey.commitment_habit_count,
+                        id: "commitment_habit_count", min: 0, max: 20, class: "lp-input w-full" %>
+                </div>
+              <% end %>
+              <div>
+                <label class="lp-adventure__label" for="commitment_battle_count"><%= t("settings.commitment.battles_label") %></label>
+                <%= number_field_tag :commitment_battle_count, @commitment_journey.commitment_battle_count,
+                      id: "commitment_battle_count", min: 0, max: 20, class: "lp-input w-full" %>
+              </div>
+            </div>
+            <%= submit_tag t("settings.commitment.save_custom"), class: "lp-cta mt-4" %>
+          <% end %>
+        </details>
+      </section>
+    <% end %>
 
-    <p class="mt-3 text-sm font-semibold text-[var(--lp-ink)]">
-      <%= t("settings.reminders_status_label") %>:
-      <span data-push-reminders-target="status"><%= t("settings.reminders_status_off") %></span>
-    </p>
-
-    <div class="mt-4 flex flex-wrap gap-2">
-      <button type="button"
-              class="lp-cta"
-              data-push-reminders-target="enable"
-              data-action="click->push-reminders#enable">
+    <section class="lp-you-card"
+             id="you-reminders"
+             data-controller="push-reminders"
+             data-push-reminders-vapid-url-value="<%= push_config_path(format: :json) %>"
+             data-push-reminders-subscribe-url-value="<%= push_subscription_path %>"
+             data-push-reminders-unsubscribe-url-value="<%= push_subscription_path %>"
+             data-push-reminders-test-url-value="<%= test_push_subscription_path %>"
+             data-status-on="<%= t('settings.reminders_status_on') %>"
+             data-status-off="<%= t('settings.reminders_status_off') %>"
+             data-enabled-message="<%= t('settings.reminders_enabled') %>"
+             data-disabled-message="<%= t('settings.reminders_disabled') %>"
+             data-test-sent-message="<%= t('settings.reminders_test_sent') %>"
+             data-denied-message="<%= t('settings.reminders_denied') %>"
+             data-unsupported-message="<%= t('settings.reminders_unsupported') %>"
+             data-error-message="<%= t('settings.reminders_error') %>">
+      <div class="lp-you-remind">
+        <span class="lp-you-card__icon" aria-hidden="true">🔔</span>
+        <div class="lp-you-remind__copy">
+          <h2 class="lp-you-card__title"><%= t("settings.reminders_title") %></h2>
+          <p class="lp-you-remind__status">
+            <span data-push-reminders-target="status"><%= t("settings.reminders_status_off") %></span>
+          </p>
+        </div>
+        <button type="button"
+                class="lp-you-switch"
+                role="switch"
+                aria-checked="false"
+                aria-label="<%= t('settings.reminders_title') %>"
+                data-push-reminders-target="switch"
+                data-action="click->push-reminders#toggleSwitch">
+          <span class="lp-you-switch__knob"></span>
+        </button>
+      </div>
+      <button type="button" class="lp-you-sr" data-push-reminders-target="enable" data-action="click->push-reminders#enable">
         <%= t("settings.reminders_enable") %>
       </button>
-      <button type="button"
-              class="lp-cta"
-              hidden
-              data-push-reminders-target="disable"
-              data-action="click->push-reminders#disable">
+      <button type="button" class="lp-you-sr" hidden data-push-reminders-target="disable" data-action="click->push-reminders#disable">
         <%= t("settings.reminders_disable") %>
       </button>
-      <button type="button"
-              class="rounded-xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-2 text-sm font-bold text-[var(--lp-ink)]"
-              data-push-reminders-target="test"
-              data-action="click->push-reminders#sendTest"
-              disabled>
-        <%= t("settings.reminders_test") %>
+      <div class="lp-you-extras">
+        <button type="button"
+                data-push-reminders-target="test"
+                data-action="click->push-reminders#sendTest"
+                disabled>
+          <%= t("settings.reminders_test") %>
+        </button>
+        <% pref = current_user.notification_preference %>
+        <% notifications_status =
+             if pref&.vacation_active?
+               t("settings.notifications.status_paused")
+             elsif pref
+               t("settings.notifications.frequency.#{pref.frequency}")
+             else
+               t("settings.notifications.frequency.sometimes")
+             end %>
+        <%= link_to settings_notifications_path, id: "you-row-notifications" do %>
+          <%= t("settings.notifications.row_label") %> · <%= notifications_status %>
+        <% end %>
+        <div id="you-row-install-offer"
+             data-controller="pwa-install"
+             data-pwa-install-surface-value="settings"
+             data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
+             data-pwa-install-installed-url-value="<%= install_offer_path %>"
+             data-pwa-install-browser-menu-message-value="<%= t('settings.install_offer.browser_menu') %>">
+          <button type="button"
+                  data-pwa-install-target="row"
+                  data-action="click->pwa-install#install">
+            <%= t("settings.install_offer.row_label") %>
+          </button>
+          <p hidden data-pwa-install-target="message"></p>
+        </div>
+      </div>
+      <p class="lp-you-remind__status" hidden data-push-reminders-target="message"></p>
+    </section>
+
+    <section class="lp-you-card<%= ' is-open' if highlight == 'language' %>"
+             id="you-language"
+             data-you-page-target="languageCard">
+      <button type="button" class="lp-you-card__head" data-action="click->you-page#toggleLanguage">
+        <span class="lp-you-card__icon" aria-hidden="true">🌐</span>
+        <h2 class="lp-you-card__title"><%= t("settings.language_title") %></h2>
+        <span class="lp-you-card__meta"><%= current_locale[:flag] %> <%= t("languages.#{current_locale[:code]}") %></span>
+        <span class="lp-you-card__chevron" aria-hidden="true">▾</span>
       </button>
-    </div>
+      <div class="lp-you-langs">
+        <% locale_options.each do |opt| %>
+          <% active = I18n.locale == opt[:code] %>
+          <%= button_to locale_path(locale: opt[:code]),
+                method: :patch,
+                class: "lp-you-lang#{' is-active' if active}" do %>
+            <span aria-hidden="true"><%= opt[:flag] %></span>
+            <span><%= t("languages.#{opt[:code]}") %></span>
+            <% if active %><span class="lp-you-lang__check" aria-hidden="true">✓</span><% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
 
-    <p class="mt-3 text-sm text-[var(--lp-muted)]"
-       hidden
-       data-push-reminders-target="message"></p>
+    <section class="lp-you-card<%= ' lp-you-row--flash' if highlight == 'theme' %>" id="you-theme">
+      <div class="lp-you-card__head" style="cursor: default;">
+        <span class="lp-you-card__icon" aria-hidden="true">🎨</span>
+        <h2 class="lp-you-card__title"><%= t("settings.theme_title") %></h2>
+      </div>
+      <div class="lp-you-themes lp-theme-switch" role="group" aria-label="<%= t('settings.theme_title') %>">
+        <% User::THEMES.each do |theme_key| %>
+          <% active = current_user.theme_key == theme_key %>
+          <%= button_to settings_path,
+                method: :patch,
+                params: { user: { theme: theme_key } },
+                class: "lp-theme-switch__btn#{' is-active' if active}",
+                form: { class: "lp-theme-switch__form", data: { turbo: false } } do %>
+            <%= t("settings.theme_#{theme_key}") %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
 
-    <% pref = current_user.notification_preference %>
-    <% notifications_status =
-         if pref&.vacation_active?
-           t("settings.notifications.status_paused")
-         elsif pref
-           t("settings.notifications.frequency.#{pref.frequency}")
-         else
-           t("settings.notifications.frequency.sometimes")
-         end %>
-    <div class="mt-5 border-t border-[var(--lp-border)] pt-4">
-      <%= link_to settings_notifications_path,
-            id: "you-row-notifications",
-            class: row_class do %>
-        <span><%= t("settings.notifications.row_label") %></span>
-        <span class="flex min-w-0 items-center gap-2">
-          <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]"><%= notifications_status %></span>
-          <%= chevron %>
-        </span>
+    <section class="lp-you-card is-gold"
+             data-controller="share"
+             data-share-text-value="<%= invite_share_message_body %>"
+             data-share-url-value="<%= share_landing_url %>"
+             data-share-title-value="<%= t('share.invite.title') %>">
+      <div class="lp-you-card__head" style="cursor: default;">
+        <span class="lp-you-card__icon" aria-hidden="true">💛</span>
+        <h2 class="lp-you-card__title"><%= t("support.title") %></h2>
+      </div>
+      <div class="lp-you-support-row">
+        <%= link_to t("settings.support_cta"), support_path, class: "lp-you-support-cta" %>
+        <button type="button" class="lp-you-support-link" data-action="click->share#open">
+          <%= t("settings.invite_short") %>
+        </button>
+        <%= link_to t("settings.contact_short"), new_feedback_path, class: "lp-you-support-link" %>
+      </div>
+      <%= render "shared/share_sheet",
+            title: t("share.invite.title"),
+            subtitle: t("share.invite.subtitle") %>
+    </section>
+
+    <section class="lp-you-card is-tight">
+      <%= link_to new_password_path, class: "lp-you-row" do %>
+        <span class="lp-you-row__label"><span aria-hidden="true">🔑</span> <%= t("settings.change_password") %></span>
+        <span class="lp-you-row__chev" aria-hidden="true">›</span>
       <% end %>
-    </div>
-
-    <div class="mt-3"
-         id="you-row-install-offer"
-         data-controller="pwa-install"
-         data-pwa-install-surface-value="settings"
-         data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
-         data-pwa-install-installed-url-value="<%= install_offer_path %>"
-         data-pwa-install-browser-menu-message-value="<%= t('settings.install_offer.browser_menu') %>">
-      <button type="button"
-              class="<%= row_class %> w-full text-left"
-              data-pwa-install-target="row"
-              data-action="click->pwa-install#install">
-        <span><%= t("settings.install_offer.row_label") %></span>
-        <%= chevron %>
-      </button>
-      <p class="mt-2 text-sm text-[var(--lp-muted)]"
-         hidden
-         data-pwa-install-target="message"></p>
-    </div>
-  </section>
-
-  <section class="lp-glass lp-glass--pad"
-           data-controller="share"
-           data-share-text-value="<%= invite_share_message_body %>"
-           data-share-url-value="<%= share_landing_url %>"
-           data-share-title-value="<%= t('share.invite.title') %>">
-    <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("support.title") %></h2>
-    <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("settings.support_body") %></p>
-    <%= link_to t("support.cta_short"), support_path, class: "lp-cta mt-4 inline-flex" %>
-    <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-      <button type="button"
-              class="text-sm font-bold text-[var(--lp-ink)] underline-offset-2 hover:underline"
-              data-action="click->share#open">
-        <%= t("share.invite.cta_short") %>
-      </button>
-      <%= link_to t("settings.contact_me"), new_feedback_path, class: "text-sm font-bold text-[var(--lp-ink)] underline-offset-2 hover:underline" %>
-    </div>
-    <%= render "shared/share_sheet",
-          title: t("share.invite.title"),
-          subtitle: t("share.invite.subtitle") %>
-  </section>
-
-  <% if current_user.privileged_for_2fa? && !impersonating? %>
-    <section class="lp-glass lp-glass--pad" id="you-two-factor">
-      <h2 class="text-lg font-semibold text-[var(--lp-ink)]"><%= t("two_factor.settings_title") %></h2>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("two_factor.settings_card_body") %></p>
-      <div class="mt-4">
-        <%= link_to settings_two_factor_path, class: row_class do %>
-          <span>
-            <%= current_user.otp_enabled? ? t("two_factor.manage") : t("two_factor.set_up") %>
-          </span>
-          <span class="flex min-w-0 items-center gap-2">
-            <span class="min-w-0 truncate font-semibold text-[var(--lp-muted)]">
-              <%= current_user.otp_enabled? ? t("two_factor.status_on") : t("two_factor.status_off") %>
+      <% if current_user.privileged_for_2fa? && !impersonating? %>
+        <section id="you-two-factor">
+          <%= link_to settings_two_factor_path, class: "lp-you-row" do %>
+            <span class="lp-you-row__label">
+              <span aria-hidden="true">🔒</span>
+              <%= t("two_factor.settings_title") %>
             </span>
-            <%= chevron %>
-          </span>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
-
-  <% if developer? && !impersonating? %>
-    <section class="lp-glass lp-glass--pad" aria-label="<%= t('developer.tools.title') %>">
-      <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("developer.tools.title") %></h2>
-      <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("developer.tools.subtitle") %></p>
-      <div class="mt-3 space-y-2">
-        <%= button_to restart_new_player_experience_developer_tools_path,
-              method: :post,
-              class: "group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-[var(--lp-border)] bg-[var(--lp-elevated)] px-4 py-3 text-left text-sm font-bold text-[var(--lp-ink)] transition hover:border-[var(--lp-lime)]",
-              form: {
-                data: {
-                  turbo_confirm: t("developer.tools.restart_npe_confirm")
-                }
-              } do %>
-          <span><%= t("developer.tools.restart_npe") %></span>
-          <span class="text-lg leading-none text-[var(--lp-muted)]" aria-hidden="true">›</span>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
-
-  <section class="lp-glass lp-glass--pad">
-    <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--lp-muted)]"><%= t("settings.account") %></h2>
-    <div class="mt-3 space-y-2">
-      <%= link_to new_password_path, class: row_class do %>
-        <span><%= t("settings.change_password") %></span>
-        <%= chevron %>
+            <span class="lp-you-row__status">
+              <%= current_user.otp_enabled? ? t("two_factor.status_on") : t("two_factor.status_off") %>
+              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+            </span>
+          <% end %>
+        </section>
       <% end %>
       <% if current_user.admin? && !impersonating? %>
-        <%= link_to admin_root_path, class: row_class do %>
-          <span><%= t("nav.admin") %></span>
-          <%= chevron %>
+        <%= link_to admin_root_path, class: "lp-you-row" do %>
+          <span class="lp-you-row__label"><span aria-hidden="true">🛠</span> <%= t("nav.admin") %></span>
+          <span class="lp-you-row__chev" aria-hidden="true">›</span>
         <% end %>
       <% end %>
-      <%= button_to session_path,
-            method: :delete,
-            class: "group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-[var(--lp-rose)]/40 bg-[var(--lp-elevated)] px-4 py-3 text-left text-sm font-bold text-[var(--lp-rose)]" do %>
-        <span><%= t("nav.sign_out") %></span>
-        <span class="text-lg leading-none" aria-hidden="true">›</span>
+      <% if developer? && !impersonating? %>
+        <%= button_to restart_new_player_experience_developer_tools_path,
+              method: :post,
+              class: "lp-you-row",
+              form: { data: { turbo_confirm: t("developer.tools.restart_npe_confirm") } } do %>
+          <span class="lp-you-row__label"><span aria-hidden="true">🧪</span> <%= t("developer.tools.restart_npe") %></span>
+          <span class="lp-you-row__chev" aria-hidden="true">›</span>
+        <% end %>
       <% end %>
-    </div>
-  </section>
+    </section>
+
+    <% if developer? && !impersonating? %>
+      <p class="lp-you-sr"><%= t("developer.tools.title") %></p>
+    <% end %>
+
+    <%= button_to session_path, method: :delete, class: "lp-you-signout" do %>
+      <%= t("nav.sign_out") %>
+    <% end %>
+
+    <p class="lp-you-foot"><%= t("settings.footer_mark") %></p>
+  </div>
 </div>
 
 <%= render "shared/lp_dash_nav", active: :you %>
