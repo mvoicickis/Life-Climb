@@ -19,11 +19,14 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: "You"
     assert_select ".lp-you"
     assert_select ".lp-you__hero"
+    assert_select ".lp-you__name", text: /One/
     assert_select ".lp-dash-nav.is-v4"
     assert_select "a.lp-dash-nav__link[href=?]", dashboard_path
     assert_select "a.lp-dash-nav__link[href=?]", life_points_path
     assert_select "a.lp-dash-nav__link[href=?]", settings_path
     assert_select ".lp-dash-nav__link.is-active", text: /You/i
+    assert_select ".lp-dash-nav__link", text: /Today/i
+    assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /Journey/i
     assert_select ".lp-dash-nav__fab", count: 0
     assert_select "a[href=?]", edit_today_count_settings_path, count: 0
@@ -52,6 +55,30 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_password_path
     assert_select "a[href=?]", about_path, count: 0
     assert_select "a[href=?]", new_feedback_path
+    assert_select "form[action=?]", session_path
+    assert_select ".lp-you-signout", text: /Sign out/i
+    assert_select "a[href=?]", admin_root_path, count: 0
+    assert_select "form[action=?]", restart_new_player_experience_developer_tools_path, count: 0
+  end
+
+  test "admin sees admin row on You" do
+    sign_in_as users(:admin)
+
+    get settings_path
+    assert_response :success
+    assert_select "a[href=?]", admin_root_path
+    assert_select "section#you-two-factor"
+  end
+
+  test "developer sees restart NPE on You" do
+    user = users(:one)
+    user.update_columns(developer: true)
+    sign_in_as user
+
+    get settings_path
+    assert_response :success
+    assert_select "form[action=?]", restart_new_player_experience_developer_tools_path
+    assert_match(/Restart New Player Experience/, response.body)
   end
 
   test "update theme to dark and back to light" do
