@@ -4,7 +4,8 @@ const CAMP_HOLD_MS = 450
 const CAMP_HOLD_CANCEL_PX = 10
 
 // Mountain V4 photo trail: composer → place mode, ghosts.
-// Blank taps scroll only. Long-press (~450ms) then drag to PATCH camp coords.
+// Blank taps scroll only. Long-press (~450ms) unlocks relocate: the path
+// stays lit until the tent moves, then PATCH camp coords.
 export default class extends Controller {
   static targets = [
     "surface",
@@ -64,6 +65,8 @@ export default class extends Controller {
     this._presetSpot = null
     this._placing = false
     this._pendingPlant = null
+    this._relocating = null
+    this._relocatingCommit = false
     this._logContext = null
     this.bindFab()
     this.bindScrollParallax()
@@ -72,6 +75,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.endRelocate({ restore: true })
     this.clearCampHold()
     this.unbindFab()
     this.unbindScrollParallax()
@@ -95,6 +99,7 @@ export default class extends Controller {
   openComposerFromFab(event) {
     event?.preventDefault()
     event?.stopPropagation()
+    this.endRelocate({ restore: true })
     this._presetSpot = null
     this._plantX = null
     this._plantY = null
@@ -104,10 +109,19 @@ export default class extends Controller {
   // Empty trail tap: plant only while choosing a spot. Otherwise scroll/pan.
   surfaceClick(event) {
     if (this.element.classList.contains("is-dragging")) return
+    if (this._ignoreNextSurfaceClick) {
+      this._ignoreNextSurfaceClick = false
+      return
+    }
     if (this.shouldIgnoreClick(event.target)) return
 
     const coords = this.coordsFromEvent(event)
     if (!coords) return
+
+    if (this._relocating) {
+      this.placeRelocatingCamp(coords.x, coords.y)
+      return
+    }
 
     if (this._placing && this._pendingPlant) {
       this.finishPlacing(coords.x, coords.y)
@@ -121,19 +135,50 @@ export default class extends Controller {
     this.openPlant(snapped.x, snapped.y, { chooseSpot: false })
   }
 
+  // After unlock, a finger on the mountain (not the tiny tent) still moves the camp.
+  surfacePointerDown(event) {
+    if (!this._relocating) return
+    if (this.element.classList.contains("is-placing")) return
+    if (event.pointerType === "mouse" && event.button !== 0) return
+    if (event.target.closest?.(".lp-trail-camp")) return
+    if (this.shouldIgnoreClick(event.target)) return
+
+    event.preventDefault()
+    this.startRelocateDrag(event, this._relocating.camp)
+  }
+
+  surfacePointerMove(event) {
+    this.relocatePointerMove(event)
+  }
+
+  surfacePointerUp(event) {
+    this.relocatePointerUp(event)
+  }
+
   campClick(event) {
-    if (this.element.dataset.trailSuppressOpen === "1") {
+    if (this.element.dataset.trailSuppressOpen === "1" || this._relocating) {
       event.preventDefault()
       event.stopPropagation()
     }
   }
 
-  // Hold ~450ms, then drag. A normal tap still opens the camp sheet.
+  // Hold ~450ms to unlock. Lift your finger — the path stays lit until the tent moves.
+  // A short tap still opens the camp sheet.
   campPointerDown(event) {
     if (event.pointerType === "mouse" && event.button !== 0) return
     if (this.element.classList.contains("is-placing")) return
 
     const camp = event.currentTarget
+    if (this._relocating && this._relocating.camp !== camp) {
+      this.endRelocate({ restore: true })
+    }
+
+    if (this._relocating?.camp === camp) {
+      event.preventDefault()
+      this.startRelocateDrag(event, camp)
+      return
+    }
+
     this.clearCampHold()
     this._campPointer = {
       camp,
@@ -142,12 +187,21 @@ export default class extends Controller {
       startClientY: event.clientY,
       origX: this.readCoord(camp.dataset.trailX, 0.5),
       origY: this.readCoord(camp.dataset.trailY, 0.55),
-      dragging: false
+      dragging: false,
+      unlocked: false
     }
-    this._campHoldTimer = window.setTimeout(() => this.beginCampDrag(), CAMP_HOLD_MS)
+    this._campHoldTimer = window.setTimeout(() => this.unlockCampRelocate(), CAMP_HOLD_MS)
   }
 
   campPointerMove(event) {
+    this.relocatePointerMove(event)
+  }
+
+  campPointerUp(event) {
+    this.relocatePointerUp(event)
+  }
+
+  relocatePointerMove(event) {
     const state = this._campPointer
     if (!state || state.pointerId !== event.pointerId) return
 
@@ -168,7 +222,7 @@ export default class extends Controller {
     this.applyCampCoords(state.camp, snapped.x, snapped.y)
   }
 
-  campPointerUp(event) {
+  relocatePointerUp(event) {
     const state = this._campPointer
     if (!state || state.pointerId !== event.pointerId) return
 
@@ -176,33 +230,86 @@ export default class extends Controller {
     const cancelled = event.type === "pointercancel"
     if (wasDragging) {
       event.preventDefault()
-      if (cancelled) this.applyCampCoords(state.camp, state.origX, state.origY)
-      else this.finishCampDrag()
+      if (cancelled && this._relocating) {
+        this.applyCampCoords(this._relocating.camp, this._relocating.origX, this._relocating.origY)
+      } else if (!cancelled) {
+        this.commitRelocateIfMoved()
+      }
     }
     this.clearCampHold()
-    if (wasDragging) {
+    if (wasDragging || this._relocating) {
+      this._ignoreNextSurfaceClick = true
       this.element.dataset.trailSuppressOpen = "1"
       window.setTimeout(() => {
-        delete this.element.dataset.trailSuppressOpen
+        this._ignoreNextSurfaceClick = false
+        if (!this._relocating) delete this.element.dataset.trailSuppressOpen
       }, 80)
     }
   }
 
-  beginCampDrag() {
+  unlockCampRelocate() {
     const state = this._campPointer
     if (!state) return
 
+    const snapped = this.snapToTrail(state.origX, state.origY)
+    this.applyCampCoords(state.camp, snapped.x, snapped.y)
+    state.origX = snapped.x
+    state.origY = snapped.y
+    state.unlocked = true
     state.dragging = true
+    this._relocating = {
+      camp: state.camp,
+      origX: snapped.x,
+      origY: snapped.y
+    }
+
     try {
       state.camp.setPointerCapture(state.pointerId)
     } catch (_error) { /* capture is best-effort */ }
-    state.camp.classList.add("is-dragging")
-    this.element.classList.add("is-dragging")
+    state.camp.classList.add("is-dragging", "is-relocating")
+    this.element.classList.add("is-dragging", "is-relocating")
     this.element.dataset.trailSuppressOpen = "1"
     this.buzz()
-    const snapped = this.snapToTrail(state.origX, state.origY)
-    this.applyCampCoords(state.camp, snapped.x, snapped.y)
     this.renderGlowDots()
+    this.showRelocateBanner()
+  }
+
+  startRelocateDrag(event, camp) {
+    const rec = this._relocating
+    if (!rec || rec.camp !== camp) return
+
+    this.clearPointerState()
+    this._campPointer = {
+      camp,
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      origX: rec.origX,
+      origY: rec.origY,
+      dragging: true,
+      unlocked: true
+    }
+    const host = event.currentTarget === camp ? camp : (this.hasMountainTarget ? this.mountainTarget : camp)
+    try {
+      host.setPointerCapture(event.pointerId)
+    } catch (_error) { /* capture is best-effort */ }
+    camp.classList.add("is-dragging")
+    this.element.classList.add("is-dragging")
+    this.element.dataset.trailSuppressOpen = "1"
+
+    const coords = this.coordsFromClient(event.clientX, event.clientY)
+    if (coords) {
+      const snapped = this.snapToTrail(coords.x, coords.y)
+      this.applyCampCoords(camp, snapped.x, snapped.y)
+    }
+  }
+
+  placeRelocatingCamp(x, y) {
+    const rec = this._relocating
+    if (!rec) return
+    const snapped = this.snapToTrail(x, y)
+    this.applyCampCoords(rec.camp, snapped.x, snapped.y)
+    this.commitRelocateIfMoved()
   }
 
   applyCampCoords(camp, x, y) {
@@ -212,21 +319,24 @@ export default class extends Controller {
     camp.dataset.trailY = String(y)
   }
 
-  async finishCampDrag() {
+  async commitRelocateIfMoved() {
+    if (this._relocatingCommit) return false
+    const rec = this._relocating
     const state = this._campPointer
-    if (!state) return
+    const camp = rec?.camp || state?.camp
+    if (!camp) return false
 
-    const camp = state.camp
-    const x = this.readCoord(camp.dataset.trailX, state.origX)
-    const y = this.readCoord(camp.dataset.trailY, state.origY)
-    const moved = Math.hypot(x - state.origX, y - state.origY) > 0.004
-    if (!moved) {
-      this.applyCampCoords(camp, state.origX, state.origY)
-      return
-    }
+    const origX = rec?.origX ?? state.origX
+    const origY = rec?.origY ?? state.origY
+    const x = this.readCoord(camp.dataset.trailX, origX)
+    const y = this.readCoord(camp.dataset.trailY, origY)
+    if (Math.hypot(x - origX, y - origY) <= 0.004) return false
 
     const url = camp.dataset.updateUrl
-    if (!url) return
+    if (!url) return false
+
+    this._relocatingCommit = true
+    this.endRelocate({ restore: false })
 
     const token = this.csrfToken()
     const body = new FormData()
@@ -246,29 +356,76 @@ export default class extends Controller {
         body,
         credentials: "same-origin"
       })
-      if (!response.ok) this.applyCampCoords(camp, state.origX, state.origY)
+      if (!response.ok) this.applyCampCoords(camp, origX, origY)
     } catch (_error) {
-      this.applyCampCoords(camp, state.origX, state.origY)
+      this.applyCampCoords(camp, origX, origY)
+    } finally {
+      this._relocatingCommit = false
+    }
+    return true
+  }
+
+  endRelocate({ restore = false } = {}) {
+    const rec = this._relocating
+    if (!rec) return
+
+    if (restore) this.applyCampCoords(rec.camp, rec.origX, rec.origY)
+    rec.camp.classList.remove("is-relocating", "is-dragging")
+    this.element.classList.remove("is-relocating", "is-dragging")
+    this._relocating = null
+    this.hideRelocateBanner()
+    if (!this._placing) this.hideGlowDots()
+    window.setTimeout(() => {
+      if (!this._relocating) delete this.element.dataset.trailSuppressOpen
+    }, 80)
+  }
+
+  showRelocateBanner() {
+    if (!this.hasPlacingBannerTarget) return
+    this.placingBannerTarget.hidden = false
+    this.placingBannerTarget.setAttribute("aria-hidden", "false")
+    if (this.hasPlacingTextTarget) {
+      if (!this.placingTextTarget.dataset.template) {
+        this.placingTextTarget.dataset.template = this.placingTextTarget.textContent
+      }
+      const hint = this.placingTextTarget.dataset.relocateHint
+      if (hint) this.placingTextTarget.textContent = hint
     }
   }
 
-  clearCampHold() {
+  hideRelocateBanner() {
+    if (this._placing) return
+    if (!this.hasPlacingBannerTarget) return
+    this.placingBannerTarget.hidden = true
+    this.placingBannerTarget.setAttribute("aria-hidden", "true")
+    if (this.hasPlacingTextTarget && this.placingTextTarget.dataset.template) {
+      this.placingTextTarget.textContent = this.placingTextTarget.dataset.template
+    }
+  }
+
+  clearPointerState() {
     if (this._campHoldTimer) {
       window.clearTimeout(this._campHoldTimer)
       this._campHoldTimer = null
     }
     const state = this._campPointer
-    if (state?.camp) {
-      state.camp.classList.remove("is-dragging")
+    const hosts = [ state?.camp, this.hasMountainTarget ? this.mountainTarget : null ]
+    hosts.forEach((host) => {
+      if (!host || !state) return
       try {
-        if (state.camp.hasPointerCapture?.(state.pointerId)) {
-          state.camp.releasePointerCapture(state.pointerId)
+        if (host.hasPointerCapture?.(state.pointerId)) {
+          host.releasePointerCapture(state.pointerId)
         }
       } catch (_error) { /* already released */ }
-    }
+    })
+    state?.camp?.classList.remove("is-dragging")
     this.element.classList.remove("is-dragging")
     this._campPointer = null
-    if (!this._placing) this.hideGlowDots()
+  }
+
+  clearCampHold() {
+    this.clearPointerState()
+    if (!this._relocating && !this._placing) this.hideGlowDots()
   }
 
   ghostPick(event) {
@@ -495,6 +652,7 @@ export default class extends Controller {
   }
 
   enterPlacing(name = "…") {
+    this.endRelocate({ restore: true })
     this._placing = true
     this.element.classList.add("is-placing")
     if (this.hasPlacingBannerTarget) {
@@ -518,6 +676,7 @@ export default class extends Controller {
   cancelPlacing(event) {
     event?.preventDefault()
     event?.stopPropagation()
+    this.endRelocate({ restore: true })
     this._placing = false
     this._pendingPlant = null
     this.element.classList.remove("is-placing")

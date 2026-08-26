@@ -136,7 +136,7 @@
     <div class="lp-trail__surface" data-trail-canvas-target="surface">
       <div class="lp-trail__mountain"
            data-trail-canvas-target="mountain"
-           data-action="click->trail-canvas#surfaceClick dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+           data-action="click->trail-canvas#surfaceClick pointerdown->trail-canvas#surfacePointerDown pointermove->trail-canvas#surfacePointerMove pointerup->trail-canvas#surfacePointerUp pointercancel->trail-canvas#surfacePointerUp dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
       <div class="lp-trail__photo-wrap lp-trail__photo-drop"
            aria-hidden="true"
            data-trail-canvas-target="photoWrap"
@@ -387,7 +387,8 @@
            data-trail-canvas-target="placingBanner"
            hidden
            aria-hidden="true">
-        <p data-trail-canvas-target="placingText"><%= t("strategy.rpg.trail.placing_hint", name: "…") %></p>
+        <p data-trail-canvas-target="placingText"
+           data-relocate-hint="<%= t("strategy.rpg.trail.relocate_hint") %>"><%= t("strategy.rpg.trail.placing_hint", name: "…") %></p>
         <button type="button" data-action="click->trail-canvas#cancelPlacing"><%= t("strategy.rpg.cancel") %></button>
       </div>
 
