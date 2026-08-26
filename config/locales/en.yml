@@ -815,6 +815,7 @@ en:
         win_battle: "Win"
         daily: "Daily"
         edit_camp: "Edit"
+        camp_fold: "Camp"
         delete_camp: "Delete"
         finish_camp: "Mark finished"
         finish_camp_confirm: "Mark this camp finished? You can reopen it later."

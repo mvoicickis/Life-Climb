@@ -23,48 +23,7 @@
      data-range-max="<%= project.try(:range_max) %>"
      data-trail-battles-session-wins-value="0"
      data-session-win-template="<%= t('strategy.rpg.trail.session_wins_toast') %>">
-  <div class="lp-trail-battles__camp-actions">
-    <button type="button"
-            class="lp-trail-battles__camp-edit"
-            data-action="click->trail-battles#editCamp"
-            aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
-      ✎ <%= t("strategy.rpg.trail.edit_camp") %>
-    </button>
-    <%= button_to strategy_goal_path(project),
-          method: :delete,
-          class: "lp-trail-battles__camp-delete",
-          form: {
-            data: {
-              turbo: true,
-              turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: project.title),
-              action: "submit->trail-battles#stashCampDelete"
-            }
-          } do %>
-      🗑 <%= t("strategy.rpg.trail.delete_camp") %>
-    <% end %>
-    <% if project.completed? %>
-      <%= button_to strategy_goal_manual_completion_path(project),
-            method: :delete,
-            class: "lp-trail-battles__camp-finish",
-            form: { class: "lp-trail-battles__camp-finish-form", data: { turbo: false } } do %>
-        <%= t("strategy.rpg.trail.reopen_camp") %>
-      <% end %>
-    <% else %>
-      <%= button_to strategy_goal_manual_completion_path(project),
-            method: :post,
-            class: "lp-trail-battles__camp-finish",
-            form: {
-              class: "lp-trail-battles__camp-finish-form",
-              data: {
-                turbo: false,
-                turbo_confirm: t("strategy.rpg.trail.finish_camp_confirm")
-              }
-            } do %>
-        <%= t("strategy.rpg.trail.finish_camp") %>
-      <% end %>
-    <% end %>
-  </div>
-
+  <div class="lp-trail-battles__composer">
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
       <p class="lp-trail-battles__pages-label"><%= strategy_quantity_progress_label(project) %></p>
@@ -128,7 +87,10 @@
         <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
       </div>
     <% end %>
+  <% end %>
+  </div>
 
+  <% unless pages_mode %>
     <% if open_days.any? %>
       <ul class="lp-trail-battles__list">
         <% open_days.each do |battle| %>
@@ -213,6 +175,51 @@
       </details>
     <% end %>
   <% end %>
+
+  <details class="lp-trail-battles__camp-fold">
+    <summary class="lp-trail-battles__camp-fold-summary"><%= t("strategy.rpg.trail.camp_fold") %></summary>
+    <div class="lp-trail-battles__camp-actions">
+      <button type="button"
+              class="lp-trail-battles__camp-edit"
+              data-action="click->trail-battles#editCamp"
+              aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
+        ✎ <%= t("strategy.rpg.trail.edit_camp") %>
+      </button>
+      <%= button_to strategy_goal_path(project),
+            method: :delete,
+            class: "lp-trail-battles__camp-delete",
+            form: {
+              data: {
+                turbo: true,
+                turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: project.title),
+                action: "submit->trail-battles#stashCampDelete"
+              }
+            } do %>
+        🗑 <%= t("strategy.rpg.trail.delete_camp") %>
+      <% end %>
+      <% if project.completed? %>
+        <%= button_to strategy_goal_manual_completion_path(project),
+              method: :delete,
+              class: "lp-trail-battles__camp-finish",
+              form: { class: "lp-trail-battles__camp-finish-form", data: { turbo: false } } do %>
+          <%= t("strategy.rpg.trail.reopen_camp") %>
+        <% end %>
+      <% else %>
+        <%= button_to strategy_goal_manual_completion_path(project),
+              method: :post,
+              class: "lp-trail-battles__camp-finish",
+              form: {
+                class: "lp-trail-battles__camp-finish-form",
+                data: {
+                  turbo: false,
+                  turbo_confirm: t("strategy.rpg.trail.finish_camp_confirm")
+                }
+              } do %>
+          <%= t("strategy.rpg.trail.finish_camp") %>
+        <% end %>
+      <% end %>
+    </div>
+  </details>
 
   <p class="lp-trail-battles__session-toast"
      data-trail-battles-target="sessionToast"

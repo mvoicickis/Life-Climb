@@ -27,7 +27,6 @@
 <% summit_glow = (camps_done.to_f / [ all_projects.size, 1 ].max) %>
 <% climb_frac = mountain_trail_climb_fraction(all_projects) %>
 <% footprints = mountain_trail_footprints(all_projects) %>
-<% companion_slot = mountain_trail_companion_slot(all_projects) %>
 <% current_project = mountain_trail_current_project(projects) %>
 <% trail_energy = mountain_trail_energy(projects) %>
 <% open_battle_count = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } } %>
@@ -184,13 +183,6 @@
           <span class="lp-trail__foot"
                 style="left: <%= (fp[:x] * 100).round(2) %>%; top: <%= (fp[:y] * 100).round(2) %>%; opacity: <%= fp[:opacity] %>"></span>
         <% end %>
-      </div>
-
-      <div class="lp-trail__companion <%= 'is-walk' if climb_frac.positive? && climb_frac < 1 %>"
-           aria-hidden="true"
-           data-trail-ambient-target="companion"
-           style="left: <%= (companion_slot[:x] * 100).round(2) %>%; top: <%= (companion_slot[:y] * 100).round(2) %>%">
-        <%= companion_image_tag class: "lp-trail__companion-img", alt: "" %>
       </div>
 
       <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>

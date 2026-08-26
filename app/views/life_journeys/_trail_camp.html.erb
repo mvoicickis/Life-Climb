@@ -11,7 +11,6 @@
 <% state = mountain_trail_camp_state(project, projects: projects) %>
 <% label = mountain_trail_camp_label(project) %>
 <% fire = mountain_trail_fire_level(project) %>
-<% open_battle = state == :current ? mountain_trail_first_open_battle(project) : nil %>
 <% fog = [ 0, (0.62 - layout[:y].to_f) * 0.4 ].max.round(3) %>
 <% shadow = mountain_trail_camp_shadow(layout) %>
 <% leader_h = layout[:leader_h].to_f %>
@@ -27,21 +26,10 @@
         data-trail-y="<%= layout[:y] %>"
         data-accent="<%= accent %>"
         data-update-url="<%= strategy_goal_path(project) %>"
-        data-action="click->trail-camp-sheet#open"
+        data-action="click->trail-canvas#campClick click->trail-camp-sheet#open pointerdown->trail-canvas#campPointerDown pointermove->trail-canvas#campPointerMove pointerup->trail-canvas#campPointerUp pointercancel->trail-canvas#campPointerUp"
         aria-label="<%= project.title %>">
-  <% if leader_h.positive? %>
-    <span class="lp-trail-camp__leader" aria-hidden="true"></span>
-  <% end %>
   <span class="lp-trail-camp__shadow" aria-hidden="true"
         style="--lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"></span>
-  <% if open_battle %>
-    <span class="lp-trail-camp__quick"
-          data-action="click->trail-canvas#quickComplete"
-          data-battle-id="<%= open_battle.id %>"
-          data-quick-win-url="<%= battle_win_path(open_battle) %>"
-          title="<%= t('strategy.rpg.trail.quick_complete') %>"
-          aria-label="<%= t('strategy.rpg.trail.quick_complete') %>">✓</span>
-  <% end %>
   <span class="lp-trail-camp__sign">
     <span class="lp-trail-camp__label">
       <span class="lp-trail-camp__grain" aria-hidden="true"></span>

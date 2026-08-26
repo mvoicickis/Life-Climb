@@ -1,16 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Bottom battle sheet for a trail camp marker.
+// Android back closes the sheet (history.pushState) instead of leaving Mountain.
 export default class extends Controller {
   static targets = ["sheet", "panel", "title", "body", "accent"]
 
   connect() {
     this._onKey = (event) => this.onKeydown(event)
+    this._onPopState = () => this.onPopState()
     this._openCampId = null
+    this._pushedHistory = false
+    this._closingViaHistory = false
+    window.addEventListener("popstate", this._onPopState)
   }
 
   disconnect() {
-    this.teardown()
+    window.removeEventListener("popstate", this._onPopState)
+    this.teardown({ skipHistory: true })
   }
 
   openFromDock(event) {
@@ -39,6 +45,8 @@ export default class extends Controller {
     const camp = event?.currentTarget
     if (!camp || !this.hasSheetTarget) return
 
+    const alreadyOpen = this.sheetTarget.classList.contains("is-open") && !this.sheetTarget.hidden
+
     const accent = camp.dataset.accent || camp.style.getPropertyValue("--lp-trail-accent") || "#0f9488"
     this.element.style.setProperty("--lp-trail-accent", accent)
     if (this.hasPanelTarget) this.panelTarget.style.setProperty("--lp-trail-accent", accent)
@@ -57,6 +65,8 @@ export default class extends Controller {
     this.sheetTarget.classList.add("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "false")
     document.addEventListener("keydown", this._onKey)
+
+    if (!alreadyOpen) this.pushSheetHistory()
 
     requestAnimationFrame(() => {
       const focusable = this.panelTarget?.querySelector(
@@ -82,6 +92,22 @@ export default class extends Controller {
     if (event.key === "Escape") this.close(event)
   }
 
+  onPopState() {
+    if (this._closingViaHistory) {
+      this._closingViaHistory = false
+      return
+    }
+    if (!this._pushedHistory) return
+    this._pushedHistory = false
+    this.teardown({ skipHistory: true })
+  }
+
+  pushSheetHistory() {
+    if (this._pushedHistory) return
+    history.pushState({ lpTrailCampSheet: this._openCampId || true }, "", window.location.href)
+    this._pushedHistory = true
+  }
+
   stop(event) {
     event.stopPropagation()
   }
@@ -98,7 +124,7 @@ export default class extends Controller {
     })
   }
 
-  teardown() {
+  teardown({ skipHistory = false } = {}) {
     document.removeEventListener("keydown", this._onKey)
     if (!this.hasSheetTarget) return
 
@@ -106,5 +132,11 @@ export default class extends Controller {
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true
     this._openCampId = null
+
+    if (!skipHistory && this._pushedHistory) {
+      this._pushedHistory = false
+      this._closingViaHistory = true
+      history.back()
+    }
   }
 }
