@@ -75,7 +75,12 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
     5.times do |i|
-      assert_select "#trail-camp-#{@plan.children.for_kind('project').find_by!(title: "Camp #{i}").id}", text: /Camp #{i}/
+      camp = @plan.children.for_kind("project").find_by!(title: "Camp #{i}")
+      if i < 2
+        assert_select "#trail-camp-#{camp.id}", count: 0
+      else
+        assert_select "#trail-camp-#{camp.id}", text: /Camp #{i}/
+      end
     end
     assert_select ".lp-climb-path__node.is-locked", count: 0
   end

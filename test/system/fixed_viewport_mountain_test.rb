@@ -37,7 +37,6 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         horizon: "project", title: title, position: i
       )
     end
-    camps[0].complete!
     @leaf = practice_leaf_for!(camps[1])
     host = Strategy::EnsureFolderQuest.call(folder: @leaf)
     host.practice_tasks.create!(

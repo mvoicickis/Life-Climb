@@ -5,6 +5,7 @@
 <% plans = local_assigns[:plans] || [] %>
 <% journey = local_assigns[:journey] || @journey %>
 <% area = journey.life_area %>
+<% all_projects = mountain_trail_all_projects(trail) %>
 <% projects = mountain_trail_projects(trail) %>
 <% destination_overlay = local_assigns[:destination_overlay] %>
 <% layout_map = projects.any? ? mountain_trail_layout(projects) : {} %>
@@ -13,7 +14,7 @@
 <% segments = mountain_trail_segments(projects) %>
 <% photo_url = mountain_trail_photo_url(journey) %>
 <% alive = local_assigns[:alive] || current_user.alive_level %>
-<% camps_done = mountain_trail_camps_done(projects) %>
+<% camps_done = mountain_trail_camps_done(all_projects) %>
 <% dormant = mountain_trail_dormant?(projects) %>
 <% all_today = (@today_battles || []) %>
 <% today_battles = all_today.select { |b| b.completed_at.blank? }.first(3) %>
@@ -23,15 +24,15 @@
 <% peak_tagline = mountain_trail_peak_tagline(goal) %>
 <% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
 <% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) unless destination_overlay %>
-<% summit_glow = (camps_done.to_f / [ projects.size, 1 ].max) %>
-<% climb_frac = mountain_trail_climb_fraction(projects) %>
-<% footprints = mountain_trail_footprints(projects) %>
-<% companion_slot = mountain_trail_companion_slot(projects) %>
+<% summit_glow = (camps_done.to_f / [ all_projects.size, 1 ].max) %>
+<% climb_frac = mountain_trail_climb_fraction(all_projects) %>
+<% footprints = mountain_trail_footprints(all_projects) %>
+<% companion_slot = mountain_trail_companion_slot(all_projects) %>
 <% current_project = mountain_trail_current_project(projects) %>
 <% trail_energy = mountain_trail_energy(projects) %>
 <% open_battle_count = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } } %>
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
-<% any_wins = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
+<% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
@@ -52,7 +53,7 @@
          data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
          data-trail-ambient-dormant-value="<%= dormant %>"
          data-trail-ambient-camps-done-value="<%= camps_done %>"
-         data-trail-ambient-camps-total-value="<%= projects.size %>"
+         data-trail-ambient-camps-total-value="<%= all_projects.size %>"
          data-trail-ambient-open-battles-value="<%= open_battle_count %>"
          data-trail-ambient-energy-value="<%= trail_energy.round(3) %>"
          <% if show_tour %>
@@ -87,7 +88,7 @@
           <span aria-hidden="true">⚡</span><%= current_user.life_points.to_i %>
         </span>
         <span class="lp-trail-hud__stat" title="<%= t('strategy.rpg.trail.camps_done') %>">
-          <span aria-hidden="true">🏕</span><%= camps_done %>/<%= projects.size %>
+          <span aria-hidden="true">🏕</span><%= camps_done %>/<%= all_projects.size %>
         </span>
       </div>
       <% if plans.size > 1 %>

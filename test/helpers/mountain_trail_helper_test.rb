@@ -75,6 +75,13 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_in_delta 0.0, mountain_trail_climb_fraction([]), 0.001
   end
 
+  test "camps done counts completed camps on the full path" do
+    done = Struct.new(:completed?).new(true)
+    open = Struct.new(:completed?).new(false)
+    assert_equal 1, mountain_trail_camps_done([ done, open ])
+    assert_in_delta 0.5, mountain_trail_climb_fraction([ done, open ]), 0.001
+  end
+
   test "peak coordinates sit on default mountain photo summit" do
     assert_in_delta 0.566, MountainTrailHelper::PEAK_X, 0.001
     assert_in_delta 0.22, MountainTrailHelper::PEAK_Y, 0.001
