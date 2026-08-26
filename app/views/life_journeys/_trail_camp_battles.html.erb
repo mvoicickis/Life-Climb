@@ -42,6 +42,27 @@
           } do %>
       🗑 <%= t("strategy.rpg.trail.delete_camp") %>
     <% end %>
+    <% if project.completed? %>
+      <%= button_to strategy_goal_manual_completion_path(project),
+            method: :delete,
+            class: "lp-trail-battles__camp-finish",
+            form: { class: "lp-trail-battles__camp-finish-form", data: { turbo: false } } do %>
+        <%= t("strategy.rpg.trail.reopen_camp") %>
+      <% end %>
+    <% else %>
+      <%= button_to strategy_goal_manual_completion_path(project),
+            method: :post,
+            class: "lp-trail-battles__camp-finish",
+            form: {
+              class: "lp-trail-battles__camp-finish-form",
+              data: {
+                turbo: false,
+                turbo_confirm: t("strategy.rpg.trail.finish_camp_confirm")
+              }
+            } do %>
+        <%= t("strategy.rpg.trail.finish_camp") %>
+      <% end %>
+    <% end %>
   </div>
 
   <% if pages_mode %>
