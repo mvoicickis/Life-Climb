@@ -177,8 +177,21 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-sheet-camp-#{@project.id}"
+    assert_select ".lp-trail-sheet__crumb"
+    assert_select ".lp-trail-sheet__close", count: 0
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
+    assert_select "#trail-battles-#{@project.id} form.lp-trail-battles__camp-finish-form[action=?]",
+                  strategy_goal_manual_completion_path(@project)
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/
+  end
+
+  test "finished camp sheet offers reopen instead of mark finished" do
+    @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Reopen/
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/, count: 0
   end
 
   test "upload and reset mountain photo" do

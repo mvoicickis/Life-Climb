@@ -434,10 +434,6 @@
           ‹ <%= peak_title.truncate(18) %>
         </button>
         <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
-        <button type="button"
-                class="lp-trail-sheet__close"
-                data-action="click->trail-camp-sheet#close"
-                aria-label="<%= t('strategy.sheet.close') %>">×</button>
       </header>
       <div class="lp-trail-sheet__body" data-trail-camp-sheet-target="body" id="trail-sheet-body">
         <% projects.each do |project| %>
