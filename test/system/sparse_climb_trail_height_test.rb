@@ -67,11 +67,10 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
   test "dense climb path still scrolls inside the fixed 100dvh shell" do
     @camp.update!(position: 8)
     8.times do |i|
-      done = @plan.children.create!(
+      @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
-        horizon: "project", title: "Done Camp #{i + 1}", position: i
+        horizon: "project", title: "Open Camp #{i + 1}", position: i
       )
-      done.complete!
     end
     2.times do |i|
       @plan.children.create!(

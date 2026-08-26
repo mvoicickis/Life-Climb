@@ -341,7 +341,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#rpg-add-checkpoint", count: 0
   end
 
-  test "completed plans show as done paths on the rail" do
+  test "completed camps leave the mountain photo" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -363,7 +363,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select "#trail-camp-#{project.id}.is-done", text: /Done Project/i
+    assert_select "#trail-camp-#{project.id}", count: 0
     assert_select ".lp-trail__peak-title", text: /Goal/i
   end
 
