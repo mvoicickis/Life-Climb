@@ -74,7 +74,7 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
 
     assert_no_selector "#trail-camp-#{@junk.id}", wait: 5
     assert_not @user.strategy_goals.exists?(id: @junk.id)
-    assert_selector "#trail-camp-#{@first.id}", text: /Daily battles/i
+    assert_selector "#trail-camp-#{@first.id}[aria-label='Daily battles']", visible: :all
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-camp-manage.png")

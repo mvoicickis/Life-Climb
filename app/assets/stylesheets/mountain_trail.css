@@ -395,6 +395,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
+  min-width: 44px;
+  min-height: 44px;
   pointer-events: auto;
   cursor: grab;
   border: 0;
@@ -416,7 +419,7 @@
 }
 
 .lp-trail-camp.is-current {
-  animation: lp-trail-current 2.4s ease-in-out infinite;
+  z-index: 5;
 }
 
 .lp-trail-camp__shadow {
@@ -434,90 +437,92 @@
   pointer-events: none;
 }
 
-.lp-trail-camp__label {
+.lp-trail-camp__peg {
   position: relative;
-  background: var(--lp-trail-cream-soft);
-  border: 1px solid var(--lp-trail-line);
-  border-radius: 9px;
-  box-shadow:
-    0 6px 16px rgba(18, 32, 26, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  text-align: left;
-  width: max-content;
-  max-width: 172px;
-  padding: 8px 13px 9px 11px;
-  overflow: hidden;
-}
-
-.lp-trail-camp__label::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 9px;
-  background: repeating-linear-gradient(
-    178deg,
-    rgba(74, 48, 22, 0.14) 0px,
-    rgba(74, 48, 22, 0.14) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  mix-blend-mode: multiply;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: end center;
   pointer-events: none;
 }
 
-.lp-trail-camp__rail {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 9px 0 0 9px;
-  background: var(--lp-trail-accent);
-  z-index: 1;
+.lp-trail-camp__tent {
+  width: 28px;
+  height: 24px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lp-trail-accent, #0f9488) 78%, #fff) 0%, var(--lp-trail-accent, #0f9488) 55%, color-mix(in srgb, var(--lp-trail-accent, #0f9488) 70%, #1a120c) 100%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45));
+  position: relative;
 }
 
-.lp-trail-camp__body {
-  position: relative;
-  z-index: 1;
-  padding-left: 5px;
-  min-width: 0;
+.lp-trail-camp__tent::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 40%, #1a120c);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.lp-trail-camp.is-current .lp-trail-camp__tent {
+  width: 34px;
+  height: 30px;
+  filter:
+    drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent) 50%, transparent));
+  animation: lp-trail-camp-pulse 2.4s ease-in-out infinite;
+}
+
+.lp-trail-camp.is-current .lp-trail-camp__tent::after {
+  width: 12px;
+  height: 12px;
+}
+
+.lp-trail-camp__fire {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 11px;
+  height: 11px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 60%, #ffd166, #f0730c 60%, #a33a06);
+  box-shadow: 0 0 10px 4px rgba(255, 150, 50, 0.65);
+  animation: lp-trail-ember-pulse 2.4s ease-in-out infinite;
+}
+
+.lp-trail-camp__chip {
+  position: absolute;
+  left: calc(50% + 22px);
+  bottom: 8px;
+  max-width: 7.5rem;
+  padding: 0.18rem 0.45rem 0.2rem;
+  border-radius: 999px;
+  background: rgba(247, 239, 226, 0.94);
+  border: 1px solid rgba(90, 66, 40, 0.28);
+  box-shadow: 0 4px 10px rgba(18, 32, 26, 0.18);
+  pointer-events: none;
+}
+
+.lp-trail-camp.is-chip-start .lp-trail-camp__chip {
+  left: auto;
+  right: calc(50% + 22px);
 }
 
 .lp-trail-camp__title {
+  display: block;
   font-family: var(--lp-trail-display);
-  font-size: 14px;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: var(--lp-trail-ink-soft);
-  line-height: 1.22;
-  letter-spacing: -0.005em;
-  text-wrap: pretty;
-  overflow-wrap: break-word;
-}
-
-.lp-trail-camp__meta {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--lp-trail-wood);
-  margin-top: 2px;
-  letter-spacing: 0.01em;
+  color: #2a2116;
+  line-height: 1.2;
   white-space: nowrap;
-}
-
-.lp-trail-camp__post {
-  width: 5px;
-  height: 24px;
-  background: linear-gradient(180deg, #8b6239, #5c3d1f);
-  border-radius: 0 0 2px 2px;
-  box-shadow: 1px 2px 3px rgba(18, 32, 26, 0.25);
-}
-
-.lp-trail-camp.is-done .lp-trail-camp__label {
-  opacity: 0.78;
-}
-
-.lp-trail-camp.is-done .lp-trail-camp__title {
-  text-decoration: line-through;
-  text-decoration-color: color-mix(in srgb, var(--lp-trail-muted-2) 70%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ——— Ghost plant pins ——— */
@@ -1467,114 +1472,18 @@
   50% { transform: skewX(-8deg); }
 }
 
-/* Camps — wood signs */
+/* Camps — colored tents on the trail */
 .lp-trail.is-v4 .lp-trail-camp {
   transform: translate(-50%, -100%);
 }
 
-.lp-trail.is-v4 .lp-trail-camp__sign {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.lp-trail.is-v4 .lp-trail-camp__label {
-  position: relative;
-  background: linear-gradient(180deg, #f7efe2, #ead9bd);
-  border: 1px solid rgba(90, 66, 40, 0.35);
-  border-radius: 9px;
-  box-shadow: 0 6px 14px rgba(18,32,26,.22), inset 0 1px 0 rgba(255,255,255,.25);
-  text-align: left;
-  width: max-content;
-  max-width: 172px;
-  padding: 8px 13px 9px 11px;
-  overflow: hidden;
-}
-
-.lp-trail.is-v4 .lp-trail-camp__grain {
-  position: absolute;
-  inset: 0;
-  border-radius: 9px;
-  background: repeating-linear-gradient(
-    178deg,
-    rgba(74, 48, 22, 0.14) 0px,
-    rgba(74, 48, 22, 0.14) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  mix-blend-mode: multiply;
-  pointer-events: none;
-}
-
-.lp-trail.is-v4 .lp-trail-camp.has-color .lp-trail-camp__label {
-  background: linear-gradient(180deg, #f7efe2, #ead9bd);
-}
-
-.lp-trail.is-v4 .lp-trail-camp__rail {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 9px 0 0 9px;
-  background: var(--lp-trail-accent);
-  z-index: 1;
-}
-
-.lp-trail.is-v4 .lp-trail-camp__body {
-  position: relative;
-  z-index: 1;
-  padding-left: 5px;
-}
-
-.lp-trail.is-v4 .lp-trail-camp__title {
-  font-family: var(--lp-trail-display);
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #2a2116;
-  line-height: 1.22;
-  letter-spacing: -0.005em;
-}
-
-.lp-trail.is-v4 .lp-trail-camp__meta {
-  font-size: 0.66rem;
-  font-weight: 700;
-  color: #6b5e47;
-  margin-top: 2px;
-}
-
-.lp-trail.is-v4 .lp-trail-camp__post {
-  width: 5px;
-  height: 24px;
-  background: linear-gradient(180deg, #8a6a45, #5b4229);
-  border-radius: 0 0 2px 2px;
-  box-shadow: 1px 2px 3px rgba(18,32,26,.25);
-}
-
-.lp-trail.is-v4 .lp-trail-camp.has-leader .lp-trail-camp__post {
-  height: calc(24px + (var(--lp-trail-leader-h, 0) * var(--lp-trail-photo-h, 800px)));
-}
-
-.lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__label {
-  box-shadow:
-    0 0 14px 5px color-mix(in srgb, var(--lp-trail-accent) 45%, transparent),
-    0 6px 14px rgba(18,32,26,.22),
-    inset 0 1px 0 rgba(255,255,255,.25);
+.lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__tent {
   animation: lp-trail-camp-pulse 2.4s ease-in-out infinite;
 }
 
-.lp-trail.is-v4 .lp-trail-camp.is-done .lp-trail-camp__title {
-  text-decoration: line-through;
-  text-decoration-color: rgba(138, 111, 70, 0.55);
-}
-
-.lp-trail.is-v4 .lp-trail-camp.is-done .lp-trail-camp__rail {
-  background: #f0a91b;
-}
-
 @keyframes lp-trail-camp-pulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.06); }
+  0%, 100% { filter: brightness(1) drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45)) drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent) 50%, transparent)); }
+  50% { filter: brightness(1.08) drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45)) drop-shadow(0 0 14px color-mix(in srgb, var(--lp-trail-accent) 60%, transparent)); }
 }
 
 /* Ghosts */
@@ -2438,7 +2347,8 @@ body:has(.lp-rpg.is-v4-phone) .lp-feedback-fab {
   .lp-trail-base__fire,
   .lp-trail-glow,
   .lp-trail__haze-band,
-  .lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__label {
+  .lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__tent,
+  .lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__fire {
     animation: none !important;
   }
 }
@@ -3595,31 +3505,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   opacity: calc(1 - var(--lp-trail-fog, 0) * 0.55);
 }
 
-.lp-trail.is-v4 .lp-trail-camp.is-fire-1 .lp-trail-camp__label::after,
-.lp-trail.is-v4 .lp-trail-camp.is-fire-2 .lp-trail-camp__label::after {
-  content: "";
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffb347 0%, #e8590c 70%, transparent 100%);
-  box-shadow: 0 0 8px rgba(232, 89, 12, 0.55);
-  pointer-events: none;
-}
-
-.lp-trail.is-v4 .lp-trail-camp.is-fire-2 .lp-trail-camp__label::after {
-  width: 14px;
-  height: 14px;
-  animation: lp-trail-ember-pulse 1.6s ease-in-out infinite;
-}
-
-.lp-trail.is-v4 .lp-trail-camp.is-pages .lp-trail-camp__meta::before {
-  content: "📖 ";
-}
-
-/* V4 camp ground shadows — oval under posts, lean from peak light. */
+/* V4 camp ground shadows — oval under tents, lean from peak light. */
 .lp-trail.is-v4 .lp-trail-camp__shadow {
   display: block;
 }

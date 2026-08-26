@@ -97,30 +97,27 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_empty mountain_trail_footprints([])
   end
 
-  test "layout keeps planted pins fixed and spreads labels with leaders" do
+  test "layout keeps planted tent pins fixed without lifting labels" do
     p1 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 1, trail_x: 0.5, trail_y: 0.55)
     p2 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 2, trail_x: 0.52, trail_y: 0.56)
     layout = mountain_trail_layout([ p1, p2 ])
     assert_in_delta 0.55, layout[1][:y], 0.0001
     assert_in_delta 0.56, layout[2][:y], 0.0001
-    assert layout[1][:label_y] - layout[2][:label_y] >= MountainTrailHelper::SIGN_MIN_GAP - 0.001 ||
-           layout[2][:label_y] - layout[1][:label_y] >= MountainTrailHelper::SIGN_MIN_GAP - 0.001
-    assert layout.values.any? { |slot| slot[:leader_h].to_f.positive? }
+    assert_in_delta 0.55, layout[1][:label_y], 0.0001
+    assert_in_delta 0.56, layout[2][:label_y], 0.0001
+    assert layout.values.all? { |slot| slot[:leader_h].to_f.zero? }
   end
 
-  test "layout never packs labels above the trail floor under the summit" do
+  test "layout keeps packed tents on their planted coords" do
     camps = (1..9).map do |i|
       Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
         id: i, trail_x: 0.5, trail_y: 0.55
       )
     end
     layout = mountain_trail_layout(camps)
-    label_ys = layout.values.map { |slot| slot[:label_y].to_f }
-    assert label_ys.min >= MountainTrailHelper::TRAIL_Y_MIN - 0.0001
-    assert label_ys.max <= MountainTrailHelper::SIGN_FLOOR_Y + 0.0001
-    assert label_ys.min > MountainTrailHelper::PEAK_Y
-    # Pins stay on planted coords even when labels lift.
     assert layout.values.all? { |slot| (slot[:y] - slot[:anchor_y]).abs < 0.0001 }
+    assert layout.values.all? { |slot| (slot[:y] - 0.55).abs < 0.0001 }
+    assert layout.values.all? { |slot| slot[:leader_h].to_f.zero? }
   end
 
   test "place mode clamp constants match mockup ranges" do

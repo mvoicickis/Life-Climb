@@ -1,25 +1,19 @@
 <%# Camp marker on the V4 trail. locals: project, index, total, projects, current_project %>
 <% project = local_assigns.fetch(:project) %>
-<% index = local_assigns.fetch(:index, 0) %>
-<% total = local_assigns.fetch(:total, 1) %>
 <% projects = local_assigns[:projects] || [ project ] %>
-<% current_project = local_assigns[:current_project] %>
 <% layout = mountain_trail_layout_slot(project, projects: projects) %>
 <% color_key = project.tagged_color_key %>
 <% accent = mountain_trail_project_accent(project) %>
-<% meta = strategy_project_card_meta(project) %>
 <% state = mountain_trail_camp_state(project, projects: projects) %>
-<% label = mountain_trail_camp_label(project) %>
-<% fire = mountain_trail_fire_level(project) %>
 <% fog = [ 0, (0.62 - layout[:y].to_f) * 0.4 ].max.round(3) %>
 <% shadow = mountain_trail_camp_shadow(layout) %>
-<% leader_h = layout[:leader_h].to_f %>
-<% label_y = layout[:label_y] || layout[:y] %>
+<% current = state == :current %>
+<% chip_start = layout[:x].to_f > 0.62 %>
 
 <button type="button"
-        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= "is-fire-#{fire}" if fire.positive? %> <%= 'is-pages' if project.pages_mode? %> <%= 'has-leader' if leader_h.positive? %>"
+        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %> <%= 'is-chip-start' if chip_start %>"
         id="trail-camp-<%= project.id %>"
-        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-anchor-y: <%= layout[:anchor_y] %>; --lp-trail-label-y: <%= label_y %>; --lp-trail-leader-h: <%= leader_h %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
+        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
         data-trail-x="<%= layout[:x] %>"
@@ -30,20 +24,15 @@
         aria-label="<%= project.title %>">
   <span class="lp-trail-camp__shadow" aria-hidden="true"
         style="--lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"></span>
-  <span class="lp-trail-camp__sign">
-    <span class="lp-trail-camp__label">
-      <span class="lp-trail-camp__grain" aria-hidden="true"></span>
-      <span class="lp-trail-camp__rail" aria-hidden="true"></span>
-      <span class="lp-trail-camp__body">
-        <span class="lp-trail-camp__title"><%= project.title %></span>
-        <span class="lp-trail-camp__meta"><%= label %></span>
-        <% if meta&.dig(:ratio) || project.pages_mode? %>
-          <span class="lp-trail__camp-bar" aria-hidden="true">
-            <span class="lp-trail__camp-fill" style="--pct: <%= ((meta&.dig(:ratio) || 0) * 100).round %>%"></span>
-          </span>
-        <% end %>
-      </span>
-    </span>
-    <span class="lp-trail-camp__post" aria-hidden="true"></span>
+  <span class="lp-trail-camp__peg">
+    <span class="lp-trail-camp__tent"></span>
+    <% if current %>
+      <span class="lp-trail-camp__fire" aria-hidden="true"></span>
+    <% end %>
   </span>
+  <% if current %>
+    <span class="lp-trail-camp__chip">
+      <span class="lp-trail-camp__title"><%= project.title.truncate(14) %></span>
+    </span>
+  <% end %>
 </button>

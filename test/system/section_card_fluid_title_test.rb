@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# V4 camp titles live on trail markers; long names stay in the accessible text.
+# V4 camp names live in aria-label; current camp also shows a short chip.
 class SectionCardFluidTitleTest < ApplicationSystemTestCase
   LONG_TITLE = "Start: Make LifePoints Successsull"
   SHORT_TITLE = "Learn German"
@@ -73,23 +73,30 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: section.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 5
-    assert_selector "#trail-camp-#{section.id} .lp-trail-camp__title", visible: :all, wait: 5
+    assert_selector "#trail-camp-#{section.id}", visible: :all, wait: 5
+    label = page.find("#trail-camp-#{section.id}", visible: :all)["aria-label"]
+    assert_equal expected_text, label
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const el = document.querySelector("#trail-camp-#{section.id} .lp-trail-camp__title");
+        const el = document.querySelector("#trail-camp-#{section.id}");
         if (!el) return { ok: false };
         const r = el.getBoundingClientRect();
+        const tent = el.querySelector(".lp-trail-camp__tent");
+        const chip = el.querySelector(".lp-trail-camp__title");
         return {
           ok: true,
-          text: (el.textContent || "").trim(),
+          hasTent: Boolean(tent),
+          label: el.getAttribute("aria-label") || "",
+          chip: chip ? (chip.textContent || "").trim() : "",
           width: r.width
         };
       })()
     JS
-    assert metrics["ok"], "trail camp title missing at #{width}x#{height}"
-    assert_equal expected_text, metrics["text"]
+    assert metrics["ok"], "trail camp tent missing at #{width}x#{height}"
+    assert metrics["hasTent"]
+    assert_equal expected_text, metrics["label"]
     assert_operator metrics["width"].to_f, :>=, 40.0
-    assert_includes metrics["text"], expected_text.split.first
+    assert_equal expected_text.truncate(14), metrics["chip"] if metrics["chip"].present?
   end
 end

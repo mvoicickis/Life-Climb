@@ -54,9 +54,9 @@ class PracticeCategoryFocusSystemTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @vocab.id)
     assert_selector "#strategy-world.lp-rpg", wait: 5
     assert_no_selector ".lp-qs-board__title"
-    assert_selector "#trail-camp-#{@vocab.id}", text: /Vocabulary/i
-    assert_selector "#trail-camp-#{@lang.id}", text: /Language skills/i
-    assert_selector "#trail-camp-#{@grammar.id}", text: /Grammar/i
+    assert_selector "#trail-camp-#{@vocab.id}[aria-label='Vocabulary']", visible: :all
+    assert_selector "#trail-camp-#{@lang.id}[aria-label='Language skills']", visible: :all
+    assert_selector "#trail-camp-#{@grammar.id}[aria-label='Grammar']", visible: :all
     assert_no_selector ".lp-climb-path__new-quest-btn"
     assert_no_selector ".lp-climb-path__quests"
 

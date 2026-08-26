@@ -51,7 +51,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#mountain-trail"
     assert_select "#trail-camps"
-    assert_select "#trail-camp-#{@project.id}", text: /Base camp/
+    assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
     assert_select "#trail-camp-#{holding.id}", count: 0
     assert_select ".lp-trail-hud"
     assert_select ".lp-trail-segments"
@@ -187,6 +190,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} form.lp-trail-battles__camp-finish-form[action=?]",
                   strategy_goal_manual_completion_path(@project)
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/
+    assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__fire"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__title", text: /Base camp/
     markup = css_select("#trail-battles-#{@project.id}").first.to_s
     assert_operator markup.index("lp-trail-battles__add"), :<, markup.index("lp-trail-battles__camp-actions")
     assert_includes markup, "lp-trail-battles__camp-fold"
@@ -212,7 +218,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-camp-#{@project.id}", count: 0
     assert_select "#trail-sheet-camp-#{@project.id}", count: 0
-    assert_select "#trail-camp-#{still_open.id}", text: /Ridge camp/
+    assert_select "#trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /1\s*\/\s*2/
   end
