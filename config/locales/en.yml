@@ -739,6 +739,7 @@ en:
         plant_submit: "Plant project"
         choose_spot: "Choose spot on the mountain →"
         placing_hint: "Tap where “%{name}” belongs on the trail"
+        relocate_hint: "Tap the path to move this camp"
         list_fallback: "List view"
         photo_menu: "Mountain photo"
         peak_tagline_default: "Your summit"

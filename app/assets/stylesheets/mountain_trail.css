@@ -412,9 +412,15 @@
 }
 
 .lp-trail-camp:active,
-.lp-trail-camp.is-dragging {
+.lp-trail-camp.is-dragging,
+.lp-trail-camp.is-relocating {
   cursor: grabbing;
   z-index: 8;
+  touch-action: none;
+}
+
+.lp-trail.is-relocating .lp-trail__mountain {
+  cursor: grabbing;
   touch-action: none;
 }
 
@@ -1489,6 +1495,12 @@
 /* Camps — colored tents on the trail */
 .lp-trail.is-v4 .lp-trail-camp {
   transform: translate(-50%, -100%);
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-relocating,
+.lp-trail.is-v4 .lp-trail-camp.is-dragging {
+  transform: translate(-50%, -100%) scale(1.12);
+  filter: drop-shadow(0 0 10px rgba(255, 248, 220, 0.7));
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__tent {
@@ -2969,10 +2981,10 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   position: absolute;
   left: 14px;
   right: 14px;
-  top: 16px;
+  top: calc(4.5rem + env(safe-area-inset-top, 0px));
   transform: none;
   bottom: auto;
-  z-index: 10;
+  z-index: 24;
   display: flex;
   align-items: center;
   gap: 10px;

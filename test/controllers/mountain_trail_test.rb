@@ -64,6 +64,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-camp__quick", count: 0
     assert_select ".lp-trail-camp__leader", count: 0
     assert_select "[data-action*='campPointerDown']"
+    assert_select "[data-action*='surfacePointerDown']"
+    assert_select "[data-relocate-hint]"
     assert_select ".lp-trail__backlight"
     assert_select ".lp-trail-coach"
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"

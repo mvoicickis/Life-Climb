@@ -38,6 +38,7 @@ export default class extends Controller {
     if (event?.defaultPrevented) return
     if (this.element.dataset.trailSuppressOpen === "1") return
     if (this.element.classList.contains("is-placing")) return
+    if (this.element.classList.contains("is-relocating")) return
 
     event?.preventDefault()
     event?.stopPropagation()
