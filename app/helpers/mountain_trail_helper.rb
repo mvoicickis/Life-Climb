@@ -90,8 +90,12 @@ module MountainTrailHelper
     end
   end
 
-  def mountain_trail_projects(trail)
+  def mountain_trail_all_projects(trail)
     strategy_climb_path_nodes(trail).filter_map(&:record).reject(&:holding?)
+  end
+
+  def mountain_trail_projects(trail)
+    mountain_trail_all_projects(trail).reject(&:completed?)
   end
 
   # Returns { x:, y:, placed: } with x/y in 0..1 for CSS left/top %.

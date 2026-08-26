@@ -186,12 +186,21 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/
   end
 
-  test "finished camp sheet offers reopen instead of mark finished" do
+  test "finished camps leave the mountain photo and sheet" do
     @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
+    still_open = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge camp", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Reopen/
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/, count: 0
+    assert_select "#trail-camp-#{@project.id}", count: 0
+    assert_select "#trail-sheet-camp-#{@project.id}", count: 0
+    assert_select "#trail-camp-#{still_open.id}", text: /Ridge camp/
+    assert_select "#trail-sheet-camp-#{still_open.id}"
+    assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /1\s*\/\s*2/
   end
 
   test "upload and reset mountain photo" do
