@@ -165,9 +165,10 @@ module MountainTrailHelper
   # Returns { x:, y:, placed: } with x/y in 0..1 for CSS left/top %.
   def mountain_trail_slot(project, index:, total:)
     if project.trail_x.present? && project.trail_y.present?
+      slot = AutoSlot.snap(project.trail_x, project.trail_y)
       return {
-        x: project.trail_x.to_f.clamp(PLACE_X_MIN, PLACE_X_MAX),
-        y: project.trail_y.to_f.clamp(PLACE_Y_MIN, PLACE_Y_MAX),
+        x: slot[:trail_x].clamp(PLACE_X_MIN, PLACE_X_MAX),
+        y: slot[:trail_y].clamp(PLACE_Y_MIN, PLACE_Y_MAX),
         placed: true
       }
     end

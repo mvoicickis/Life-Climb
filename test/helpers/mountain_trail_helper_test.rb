@@ -113,14 +113,16 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_empty mountain_trail_footprints([])
   end
 
-  test "layout keeps planted tent pins fixed without lifting labels" do
+  test "layout keeps planted tent pins on the dirt path without lifting labels" do
     p1 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 1, trail_x: 0.5, trail_y: 0.55)
     p2 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 2, trail_x: 0.52, trail_y: 0.56)
     layout = mountain_trail_layout([ p1, p2 ])
-    assert_in_delta 0.55, layout[1][:y], 0.0001
-    assert_in_delta 0.56, layout[2][:y], 0.0001
-    assert_in_delta 0.55, layout[1][:label_y], 0.0001
-    assert_in_delta 0.56, layout[2][:label_y], 0.0001
+    s1 = MountainTrailHelper::AutoSlot.snap(0.5, 0.55)
+    s2 = MountainTrailHelper::AutoSlot.snap(0.52, 0.56)
+    assert_in_delta s1[:trail_y], layout[1][:y], 0.0001
+    assert_in_delta s2[:trail_y], layout[2][:y], 0.0001
+    assert_in_delta s1[:trail_y], layout[1][:label_y], 0.0001
+    assert_in_delta s2[:trail_y], layout[2][:label_y], 0.0001
     assert layout.values.all? { |slot| slot[:leader_h].to_f.zero? }
   end
 
@@ -153,9 +155,20 @@ class MountainTrailHelperTest < ActionView::TestCase
       )
     end
     layout = mountain_trail_layout(camps)
+    expected = MountainTrailHelper::AutoSlot.snap(0.5, 0.55)
     assert layout.values.all? { |slot| (slot[:y] - slot[:anchor_y]).abs < 0.0001 }
-    assert layout.values.all? { |slot| (slot[:y] - 0.55).abs < 0.0001 }
+    assert layout.values.all? { |slot| (slot[:y] - expected[:trail_y]).abs < 0.0001 }
     assert layout.values.all? { |slot| slot[:leader_h].to_f.zero? }
+  end
+
+  test "layout pulls a grass-planted tent onto the dirt path" do
+    camp = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+      id: 1, trail_x: 0.12, trail_y: 0.55
+    )
+    layout = mountain_trail_layout([ camp ])
+    expected = MountainTrailHelper::AutoSlot.snap(0.12, 0.55)
+    assert_in_delta expected[:trail_x], layout[1][:x], 0.0001
+    assert_in_delta expected[:trail_y], layout[1][:y], 0.0001
   end
 
   test "place mode clamp constants match mockup ranges" do
