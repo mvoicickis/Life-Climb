@@ -17,7 +17,7 @@
 <% camps_done = mountain_trail_camps_done(all_projects) %>
 <% dormant = mountain_trail_dormant?(projects) %>
 <% all_today = (@today_battles || []) %>
-<% today_battles = all_today.select { |b| b.completed_at.blank? }.first(3) %>
+<% today_battles = all_today.select { |b| b.completed_at.blank? } %>
 <% won_today = all_today.count { |b| b.completed_at.present? } %>
 <% today_card = mountain_trail_today_card(projects: projects, open_battles: today_battles, won_today: won_today) %>
 <% peak_title = goal&.title.presence || journey.title %>
@@ -391,10 +391,11 @@
         <button type="button" data-action="click->trail-canvas#cancelPlacing"><%= t("strategy.rpg.cancel") %></button>
       </div>
 
-      <%= render "life_journeys/trail_dock", today_card: today_card %>
       </div><%# /.lp-trail__mountain %>
     </div>
   </div>
+
+  <%= render "life_journeys/trail_dock", today_card: today_card %>
 
   <div class="lp-trail__tab-fade" aria-hidden="true"></div>
 

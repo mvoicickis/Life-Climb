@@ -1115,10 +1115,15 @@
   --lp-trail-photo-h: 1180px;
   --lp-trail-accent: #0f9488;
   background: #1a2a1c;
+  display: flex;
+  flex-direction: column;
 }
 
 .lp-trail.is-v4 .lp-trail__scroll {
-  padding-bottom: 4.75rem;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: 0;
 }
 
 .lp-trail.is-v4 .lp-trail__surface {
@@ -1152,18 +1157,19 @@
   background: linear-gradient(180deg, transparent 0%, rgba(28, 52, 32, 0.08) 70%, rgba(18, 36, 22, 0.18));
 }
 
-/* Meadow plaque + tent sit on the grass (BASE_YFRAC). */
+/* Meadow plaque sits in the green band under the photo, above the nav. */
 .lp-trail.is-v4 .lp-trail__dock {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(var(--lp-base-y, 0.95) * 100%);
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
   bottom: auto;
-  transform: translateY(-100%);
+  transform: none;
   z-index: 6;
-  pointer-events: none;
-  background: none;
-  padding: 0 14px 6px;
+  flex: 0 0 auto;
+  pointer-events: auto;
+  background: #5f9438;
+  padding: 10px 14px calc(4.75rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -2190,7 +2196,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail__tab-fade {
-  background: linear-gradient(180deg, transparent, rgba(95, 148, 56, 0.2) 35%, rgba(95, 148, 56, 0.75));
+  display: none;
 }
 
 @keyframes lp-trail-haze-drift {

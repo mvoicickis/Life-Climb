@@ -21,19 +21,35 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_not card[:busy]
   end
 
-  test "today card names the next battle to win" do
+  test "today card names how many battles to do" do
     battle = Struct.new(:completed_at, :title, :parent_id, keyword_init: true).new(
       completed_at: nil, title: "Pitch the tent", parent_id: 11
+    )
+    extra = Struct.new(:completed_at, :title, :parent_id, keyword_init: true).new(
+      completed_at: nil, title: "Second fight", parent_id: 11
+    )
+    third = Struct.new(:completed_at, :title, :parent_id, keyword_init: true).new(
+      completed_at: nil, title: "Third fight", parent_id: 11
     )
     camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
       11, false, false, [ battle ], 0.5, 0.7, "Base camp"
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [ battle ], won_today: 0)
     assert_equal "win_next", card[:mode]
-    assert_equal "Pitch the tent", card[:headline]
-    assert_match(/win this/i, card[:sub])
-    assert_equal 11, card[:camp_id]
+    assert_match(/1 battle to do/i, card[:headline])
+    assert_match(/today/i, card[:sub])
+    assert_equal 1, card[:count]
+    assert_nil card[:camp_id]
     assert card[:busy]
+
+    many = mountain_trail_today_card(
+      projects: [ camp ],
+      open_battles: [ battle, extra, third ],
+      won_today: 0
+    )
+    assert_match(/3 battles to do/i, many[:headline])
+    assert_equal 3, many[:count]
+    assert_not many[:badge]
   end
 
   test "today card asks to add a battle on an empty camp" do

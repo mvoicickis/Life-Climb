@@ -15,7 +15,9 @@
 </span>
 <span class="lp-trail-today__copy">
   <span class="lp-trail-today__headline"><%= today_card[:headline] %></span>
-  <span class="lp-trail-today__sub"><%= today_card[:sub] %></span>
+  <% if today_card[:sub].present? %>
+    <span class="lp-trail-today__sub"><%= today_card[:sub] %></span>
+  <% end %>
 </span>
 <% if today_card[:badge] %>
   <span class="lp-trail-today__badge"><%= today_card[:count] %></span>
