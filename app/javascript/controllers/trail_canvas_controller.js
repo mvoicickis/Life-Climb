@@ -116,8 +116,9 @@ export default class extends Controller {
 
     if (!this.element.classList.contains("is-placing")) return
 
-    this._presetSpot = { x: coords.x, y: coords.y }
-    this.openPlant(coords.x, coords.y, { chooseSpot: false })
+    const snapped = this.snapToTrail(coords.x, coords.y)
+    this._presetSpot = snapped
+    this.openPlant(snapped.x, snapped.y, { chooseSpot: false })
   }
 
   campClick(event) {
@@ -163,7 +164,8 @@ export default class extends Controller {
     event.preventDefault()
     const coords = this.coordsFromClient(event.clientX, event.clientY)
     if (!coords) return
-    this.applyCampCoords(state.camp, coords.x, coords.y)
+    const snapped = this.snapToTrail(coords.x, coords.y)
+    this.applyCampCoords(state.camp, snapped.x, snapped.y)
   }
 
   campPointerUp(event) {
@@ -197,6 +199,10 @@ export default class extends Controller {
     state.camp.classList.add("is-dragging")
     this.element.classList.add("is-dragging")
     this.element.dataset.trailSuppressOpen = "1"
+    this.buzz()
+    const snapped = this.snapToTrail(state.origX, state.origY)
+    this.applyCampCoords(state.camp, snapped.x, snapped.y)
+    this.renderGlowDots()
   }
 
   applyCampCoords(camp, x, y) {
@@ -262,6 +268,7 @@ export default class extends Controller {
     }
     this.element.classList.remove("is-dragging")
     this._campPointer = null
+    if (!this._placing) this.hideGlowDots()
   }
 
   ghostPick(event) {
@@ -271,8 +278,9 @@ export default class extends Controller {
     const el = event.currentTarget
     const x = this.readCoord(el.dataset.trailX, 0.5)
     const y = this.readCoord(el.dataset.trailY, 0.55)
-    this._presetSpot = { x, y }
-    this.openPlant(x, y, { chooseSpot: false })
+    const snapped = this.snapToTrail(x, y)
+    this._presetSpot = snapped
+    this.openPlant(snapped.x, snapped.y, { chooseSpot: false })
   }
 
   closePlant(event) {
@@ -517,18 +525,14 @@ export default class extends Controller {
       this.placingBannerTarget.hidden = true
       this.placingBannerTarget.setAttribute("aria-hidden", "true")
     }
-    if (this.hasGlowDotsTarget) {
-      this.glowDotsTarget.hidden = true
-      this.glowDotsTarget.innerHTML = ""
-    }
+    this.hideGlowDots()
   }
 
   renderGlowDots() {
     if (!this.hasGlowDotsTarget) return
     const curve = this.curveValue || []
     this.glowDotsTarget.innerHTML = ""
-    curve.forEach((pair, i) => {
-      if (i % 2 !== 0) return
+    curve.forEach((pair) => {
       const [y, x] = pair
       const dot = document.createElement("span")
       dot.className = "lp-trail-glow"
@@ -537,17 +541,62 @@ export default class extends Controller {
       this.glowDotsTarget.appendChild(dot)
     })
     this.glowDotsTarget.hidden = false
+    this.element.classList.add("is-trail-lit")
+  }
+
+  hideGlowDots() {
+    this.element.classList.remove("is-trail-lit")
+    if (!this.hasGlowDotsTarget) return
+    this.glowDotsTarget.hidden = true
+    this.glowDotsTarget.innerHTML = ""
+  }
+
+  buzz(ms = 16) {
+    try {
+      navigator.vibrate?.(ms)
+    } catch (_error) { /* iOS Safari often ignores vibrate */ }
+  }
+
+  // Pull a tap onto the dirt path (same polyline as TRAIL_CURVE).
+  snapToTrail(x, y) {
+    const curve = this.curveValue || []
+    if (curve.length < 2) return { x, y }
+
+    let bestX = x
+    let bestY = y
+    let bestD = Infinity
+    for (let i = 0; i < curve.length - 1; i += 1) {
+      const y0 = curve[i][0]
+      const x0 = curve[i][1]
+      const y1 = curve[i + 1][0]
+      const x1 = curve[i + 1][1]
+      const dx = x1 - x0
+      const dy = y1 - y0
+      const len2 = (dx * dx) + (dy * dy)
+      let t = len2 === 0 ? 0 : (((x - x0) * dx) + ((y - y0) * dy)) / len2
+      t = this.clamp(t, 0, 1)
+      const px = x0 + (t * dx)
+      const py = y0 + (t * dy)
+      const dist = ((px - x) ** 2) + ((py - y) ** 2)
+      if (dist < bestD) {
+        bestD = dist
+        bestX = px
+        bestY = py
+      }
+    }
+    return { x: bestX, y: bestY }
   }
 
   async finishPlacing(x, y) {
     const pending = this._pendingPlant
     if (!pending) return
+    const snapped = this.snapToTrail(x, y)
     this.cancelPlacing()
     await this.postPlant({
       title: pending.title,
       color: pending.color,
-      x,
-      y,
+      x: snapped.x,
+      y: snapped.y,
       quantity: pending.quantity
     })
   }
