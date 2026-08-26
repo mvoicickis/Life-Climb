@@ -17,6 +17,13 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get settings_path
     assert_response :success
     assert_select "h1", text: "You"
+    assert_select ".lp-dash-nav.is-v4"
+    assert_select "a.lp-dash-nav__link[href=?]", dashboard_path
+    assert_select "a.lp-dash-nav__link[href=?]", life_points_path
+    assert_select "a.lp-dash-nav__link[href=?]", settings_path
+    assert_select ".lp-dash-nav__link.is-active", text: /You/i
+    assert_select ".lp-dash-nav__link", text: /Journey/i
+    assert_select ".lp-dash-nav__fab", count: 0
     assert_select "a[href=?]", edit_today_count_settings_path, count: 0
     assert_select "a#you-row-today-count", count: 0
     assert_select "a[href=?]", edit_name_settings_path

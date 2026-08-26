@@ -39,7 +39,10 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
-    assert_select ".lp-dash-nav__link", text: /Journey/i, count: 0
+    assert_select ".lp-dash-nav__link", text: /Journey/i
+    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_select ".lp-dash-nav.is-v4"
+    assert_select ".lp-dash-nav__fab", count: 0
     assert_no_match(/Climb progress/i, response.body)
     assert_select ".lp-progress-donut__center span", text: /Action Points|AP/i
   end
@@ -92,7 +95,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
-    assert_select ".lp-dash-nav__link", text: /Journey/i, count: 0
+    assert_select ".lp-dash-nav__link", text: /Journey/i
     assert_select ".lp-dash-nav__link", text: /\A\s*Progress\s*\z/, count: 0
   end
 

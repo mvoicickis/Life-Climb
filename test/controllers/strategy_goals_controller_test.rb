@@ -646,8 +646,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_response :success
     assert_match(/Journey/i, response.body)
-    assert_select ".lp-dash-nav"
-    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i, count: 0
+    assert_select ".lp-dash-nav.is-v4"
+    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_select ".lp-dash-nav__fab", count: 0
   end
 
   test "creating a daily practice persists repeat on the model" do
