@@ -17,7 +17,7 @@ class MountainTrailHelperTest < ActionView::TestCase
   test "today card plants first when the trail is empty" do
     card = mountain_trail_today_card(projects: [], open_battles: [], won_today: 0)
     assert_equal "plant_first", card[:mode]
-    assert_match(/plant your first camp/i, card[:headline])
+    assert_match(/plant a camp/i, card[:headline])
     assert_not card[:busy]
   end
 
@@ -36,20 +36,21 @@ class MountainTrailHelperTest < ActionView::TestCase
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [ battle ], won_today: 0)
     assert_equal "win_next", card[:mode]
-    assert_match(/1 battle to do/i, card[:headline])
+    assert_match(/1 battle ready/i, card[:headline])
     assert_match(/today/i, card[:sub])
     assert_equal 1, card[:count]
     assert_nil card[:camp_id]
     assert card[:busy]
+    assert card[:badge]
 
     many = mountain_trail_today_card(
       projects: [ camp ],
       open_battles: [ battle, extra, third ],
       won_today: 0
     )
-    assert_match(/3 battles to do/i, many[:headline])
+    assert_match(/3 battles ready/i, many[:headline])
     assert_equal 3, many[:count]
-    assert_not many[:badge]
+    assert many[:badge]
   end
 
   test "today card asks to add a battle on an empty camp" do
@@ -59,7 +60,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 0)
     assert_equal "add_battle", card[:mode]
     assert_equal 4, card[:camp_id]
-    assert_match(/ridge/i, card[:sub])
+    assert_match(/needs a battle/i, card[:headline])
   end
 
   test "today card cheers when today’s battles are already won" do
@@ -69,8 +70,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 2)
     assert_equal "cheer", card[:mode]
-    assert_match(/all clear/i, card[:headline])
-    assert_match(/2/, card[:sub])
+    assert_match(/all battles won/i, card[:headline])
+    assert_match(/add the next/i, card[:sub])
   end
 
   test "today card plants next when the trail is quiet" do
@@ -80,7 +81,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 0)
     assert_equal "plant_next", card[:mode]
-    assert_match(/plant the next camp/i, card[:headline])
+    assert_match(/plant a camp/i, card[:headline])
   end
 
   test "peak tagline falls back to default" do

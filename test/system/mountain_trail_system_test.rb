@@ -55,10 +55,12 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-battle-#{@battle.id}", text: /Pitch the tent/, visible: :all
     assert_selector "#trail-battles-#{@project.id} form[action*='battle_win']", visible: :all
 
-    # Today plaque sits in the green band under the photo.
+    # Next-action bar sits in chrome above the nav, not on the photo.
     assert_selector ".lp-trail__dock .lp-trail-today"
-    assert_selector ".lp-trail__dock .lp-trail-base"
+    assert_no_selector ".lp-trail__dock .lp-trail-base"
     assert_no_selector ".lp-trail__mountain .lp-trail-today"
+    dock_pos = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail__dock')).position")
+    assert_equal "relative", dock_pos
     position = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail-sheet.is-open')).position")
     assert_equal "fixed", position
   end

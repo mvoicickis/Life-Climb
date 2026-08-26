@@ -343,6 +343,7 @@ module MountainTrailHelper
         headline: I18n.t("strategy.rpg.trail.today_card.win_headline", count: waiting.size),
         sub: I18n.t("strategy.rpg.trail.today_card.win_sub"),
         count: waiting.size,
+        badge: waiting.size.positive?,
         busy: true
       )
     end

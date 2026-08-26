@@ -1,25 +1,17 @@
-<%# Meadow plaque: next move sits in the green band under the photo. %>
+<%# Next-action chip: chrome above the tab bar. Mountain photo scrolls above. %>
 <% today_card = local_assigns.fetch(:today_card) %>
 <% mode = today_card[:mode].to_s %>
-<% plant_mode = mode.start_with?("plant") %>
-<% add_battle_mode = mode == "add_battle" %>
+<% fight_mode = mode == "win_next" %>
+<% add_battle_mode = mode == "add_battle" && today_card[:camp_id].present? %>
+<% plant_mode = !fight_mode && !add_battle_mode %>
 
 <div class="lp-trail__dock" data-trail-ignore>
-  <div class="lp-trail-base" aria-hidden="true">
-    <div class="lp-trail-base__icons">
-      <span class="lp-trail-base__tent"></span>
-      <span class="lp-trail-base__fire"></span>
-    </div>
-  </div>
-
   <% plaque_class = "lp-trail-today is-#{mode.tr('_', '-')} #{'is-busy' if today_card[:busy]} #{'is-cheer' if mode == 'cheer'}" %>
-  <% if plant_mode %>
-    <button type="button"
-            class="<%= plaque_class %>"
-            data-action="click->trail-canvas#openComposerFromFab">
-      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: true %>
-    </button>
-  <% elsif add_battle_mode && today_card[:camp_id].present? %>
+  <% if fight_mode %>
+    <a href="<%= dashboard_path %>" class="<%= plaque_class %>">
+      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: false %>
+    </a>
+  <% elsif add_battle_mode %>
     <button type="button"
             class="<%= plaque_class %>"
             data-camp-id="<%= today_card[:camp_id] %>"
@@ -27,8 +19,10 @@
       <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: false %>
     </button>
   <% else %>
-    <a href="<%= dashboard_path %>" class="<%= plaque_class %>">
-      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: false %>
-    </a>
+    <button type="button"
+            class="<%= plaque_class %>"
+            data-action="click->trail-canvas#openComposerFromFab">
+      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: true %>
+    </button>
   <% end %>
 </div>

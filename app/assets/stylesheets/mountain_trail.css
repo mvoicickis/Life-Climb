@@ -1157,7 +1157,7 @@
   background: linear-gradient(180deg, transparent 0%, rgba(28, 52, 32, 0.08) 70%, rgba(18, 36, 22, 0.18));
 }
 
-/* Meadow plaque sits in the green band under the photo, above the nav. */
+/* Next-action chip sits in page chrome above the tab bar (not fixed). */
 .lp-trail.is-v4 .lp-trail__dock {
   position: relative;
   left: auto;
@@ -1168,12 +1168,16 @@
   z-index: 6;
   flex: 0 0 auto;
   pointer-events: auto;
-  background: #5f9438;
-  padding: 10px 14px calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(252, 251, 248, 0.92);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-top: 1px solid rgba(18, 32, 26, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  padding: 8px 12px calc(4.75rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 0;
 }
 
 .lp-trail.is-v4 .lp-trail__dock > .lp-trail-today {
@@ -1925,15 +1929,16 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   z-index: 6;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-height: 56px;
   margin: 0;
-  padding: 12px 14px;
-  border-radius: 18px;
+  padding: 10px 14px;
+  border-radius: 20px;
   border: 0;
-  background: rgba(252, 251, 248, 0.82);
+  background: rgba(252, 251, 248, 0.96);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   color: var(--lp-trail-ink);
@@ -1941,11 +1946,19 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   text-align: left;
   font: inherit;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 8px 24px rgba(18,32,26,.18);
-  transition: transform 0.16s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 6px 18px rgba(18, 32, 26, 0.12);
+  transition: transform 0.16s cubic-bezier(.34, 1.56, .64, 1);
 }
 
 .lp-trail-today:active { transform: scale(0.98); }
+
+.lp-trail-today.is-busy {
+  background: #e8590c;
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(232, 89, 12, 0.38);
+}
 
 .lp-trail-today__icon {
   width: 38px;
@@ -1960,8 +1973,8 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-today.is-busy .lp-trail-today__icon {
-  background: rgba(232, 89, 12, 0.12);
-  color: #e8590c;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .lp-trail-today:not(.is-busy) .lp-trail-today__icon {
@@ -1977,16 +1990,24 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-today__headline {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: #12201a;
-  line-height: 1.2;
+  line-height: 1.15;
+}
+
+.lp-trail-today.is-busy .lp-trail-today__headline {
+  color: #fff;
 }
 
 .lp-trail-today__sub {
-  font-size: 11px;
+  font-size: 12px;
   color: #8a8f86;
-  margin-top: 2px;
+  margin-top: 1px;
+}
+
+.lp-trail-today.is-busy .lp-trail-today__sub {
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .lp-trail-today__badge {
@@ -2004,11 +2025,20 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   justify-content: center;
 }
 
+.lp-trail-today.is-busy .lp-trail-today__badge {
+  background: #fff;
+  color: #e8590c;
+}
+
 .lp-trail-today__chev {
   flex-shrink: 0;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #b7bcb2;
+}
+
+.lp-trail-today.is-busy .lp-trail-today__chev {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .lp-trail-base {

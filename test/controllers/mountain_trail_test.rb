@@ -117,13 +117,13 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__summit-cover", count: 1
     assert_select ".lp-trail__mountain .lp-trail__dock", count: 0
     assert_select "#mountain-trail > .lp-trail__dock .lp-trail-today"
-    assert_select "#mountain-trail > .lp-trail__dock .lp-trail-base"
+    assert_select ".lp-trail-base", count: 0
     assert_select ".lp-trail-today.is-busy"
     assert_select ".lp-trail-today[href=?]", dashboard_path
-    assert_select ".lp-trail-today__headline", text: /You have 1 battle to do/
-    assert_select ".lp-trail-today__sub", text: /Open Today/
+    assert_select ".lp-trail-today__headline", text: /1 battle ready/
+    assert_select ".lp-trail-today__sub", text: /Win them on Today/
     assert_select ".lp-trail-today[data-action*='openFromDock']", count: 0
-    assert_select ".lp-trail-base__tent", count: 1
+    assert_select ".lp-trail-base__tent", count: 0
     assert_select ".lp-trail-base__pill", count: 0
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_match(/--lp-base-y:\s*0\.95/, response.body)
@@ -204,6 +204,15 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     @project.reload
     assert_in_delta 0.41, @project.trail_x, 0.0001
     assert_in_delta 0.66, @project.trail_y, 0.0001
+  end
+
+  test "idle camp next-action bar opens the camp sheet" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-today[data-action*='openFromDock']"
+    assert_select ".lp-trail-today[data-camp-id=?]", @project.id.to_s
+    assert_select ".lp-trail-today[href]", count: 0
+    assert_select ".lp-trail-today__headline", text: /needs a battle/
   end
 
   test "show pins unplaced camps and keeps those coords after the list changes" do
