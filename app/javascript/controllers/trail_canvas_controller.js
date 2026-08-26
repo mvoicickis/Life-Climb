@@ -1,6 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Mountain V4 photo trail: composer → place mode, ghosts. Camps stay where planted (no drag).
+const CAMP_HOLD_MS = 450
+const CAMP_HOLD_CANCEL_PX = 10
+
+// Mountain V4 photo trail: composer → place mode, ghosts.
+// Blank taps scroll only. Long-press (~450ms) then drag to PATCH camp coords.
 export default class extends Controller {
   static targets = [
     "surface",
@@ -68,6 +72,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.clearCampHold()
     this.unbindFab()
     this.unbindScrollParallax()
     this.unbindPeakPin()
@@ -96,8 +101,9 @@ export default class extends Controller {
     this.openPlant(null, null, { chooseSpot: true })
   }
 
-  // Empty trail tap → plant at coords, or finish placing mode.
+  // Empty trail tap: plant only while choosing a spot. Otherwise scroll/pan.
   surfaceClick(event) {
+    if (this.element.classList.contains("is-dragging")) return
     if (this.shouldIgnoreClick(event.target)) return
 
     const coords = this.coordsFromEvent(event)
@@ -108,8 +114,154 @@ export default class extends Controller {
       return
     }
 
+    if (!this.element.classList.contains("is-placing")) return
+
     this._presetSpot = { x: coords.x, y: coords.y }
     this.openPlant(coords.x, coords.y, { chooseSpot: false })
+  }
+
+  campClick(event) {
+    if (this.element.dataset.trailSuppressOpen === "1") {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  // Hold ~450ms, then drag. A normal tap still opens the camp sheet.
+  campPointerDown(event) {
+    if (event.pointerType === "mouse" && event.button !== 0) return
+    if (this.element.classList.contains("is-placing")) return
+
+    const camp = event.currentTarget
+    this.clearCampHold()
+    this._campPointer = {
+      camp,
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      origX: this.readCoord(camp.dataset.trailX, 0.5),
+      origY: this.readCoord(camp.dataset.trailY, 0.55),
+      dragging: false
+    }
+    this._campHoldTimer = window.setTimeout(() => this.beginCampDrag(), CAMP_HOLD_MS)
+  }
+
+  campPointerMove(event) {
+    const state = this._campPointer
+    if (!state || state.pointerId !== event.pointerId) return
+
+    const dist = Math.hypot(
+      event.clientX - state.startClientX,
+      event.clientY - state.startClientY
+    )
+
+    if (!state.dragging) {
+      if (dist > CAMP_HOLD_CANCEL_PX) this.clearCampHold()
+      return
+    }
+
+    event.preventDefault()
+    const coords = this.coordsFromClient(event.clientX, event.clientY)
+    if (!coords) return
+    this.applyCampCoords(state.camp, coords.x, coords.y)
+  }
+
+  campPointerUp(event) {
+    const state = this._campPointer
+    if (!state || state.pointerId !== event.pointerId) return
+
+    const wasDragging = state.dragging
+    const cancelled = event.type === "pointercancel"
+    if (wasDragging) {
+      event.preventDefault()
+      if (cancelled) this.applyCampCoords(state.camp, state.origX, state.origY)
+      else this.finishCampDrag()
+    }
+    this.clearCampHold()
+    if (wasDragging) {
+      this.element.dataset.trailSuppressOpen = "1"
+      window.setTimeout(() => {
+        delete this.element.dataset.trailSuppressOpen
+      }, 80)
+    }
+  }
+
+  beginCampDrag() {
+    const state = this._campPointer
+    if (!state) return
+
+    state.dragging = true
+    try {
+      state.camp.setPointerCapture(state.pointerId)
+    } catch (_error) { /* capture is best-effort */ }
+    state.camp.classList.add("is-dragging")
+    this.element.classList.add("is-dragging")
+    this.element.dataset.trailSuppressOpen = "1"
+  }
+
+  applyCampCoords(camp, x, y) {
+    camp.style.setProperty("--lp-trail-x", x)
+    camp.style.setProperty("--lp-trail-y", y)
+    camp.dataset.trailX = String(x)
+    camp.dataset.trailY = String(y)
+  }
+
+  async finishCampDrag() {
+    const state = this._campPointer
+    if (!state) return
+
+    const camp = state.camp
+    const x = this.readCoord(camp.dataset.trailX, state.origX)
+    const y = this.readCoord(camp.dataset.trailY, state.origY)
+    const moved = Math.hypot(x - state.origX, y - state.origY) > 0.004
+    if (!moved) {
+      this.applyCampCoords(camp, state.origX, state.origY)
+      return
+    }
+
+    const url = camp.dataset.updateUrl
+    if (!url) return
+
+    const token = this.csrfToken()
+    const body = new FormData()
+    body.set("trail_x", String(x))
+    body.set("trail_y", String(y))
+    body.set("_method", "patch")
+    if (token) body.set("authenticity_token", token)
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html, text/html",
+          "X-CSRF-Token": token,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body,
+        credentials: "same-origin"
+      })
+      if (!response.ok) this.applyCampCoords(camp, state.origX, state.origY)
+    } catch (_error) {
+      this.applyCampCoords(camp, state.origX, state.origY)
+    }
+  }
+
+  clearCampHold() {
+    if (this._campHoldTimer) {
+      window.clearTimeout(this._campHoldTimer)
+      this._campHoldTimer = null
+    }
+    const state = this._campPointer
+    if (state?.camp) {
+      state.camp.classList.remove("is-dragging")
+      try {
+        if (state.camp.hasPointerCapture?.(state.pointerId)) {
+          state.camp.releasePointerCapture(state.pointerId)
+        }
+      } catch (_error) { /* already released */ }
+    }
+    this.element.classList.remove("is-dragging")
+    this._campPointer = null
   }
 
   ghostPick(event) {
@@ -628,34 +780,6 @@ export default class extends Controller {
     }
   }
 
-  async quickComplete(event) {
-    event.preventDefault()
-    event.stopPropagation()
-    const btn = event.currentTarget
-    const url = btn.dataset.quickWinUrl
-    if (!url) return
-
-    btn.classList.add("is-busy")
-    const token = this.csrfToken()
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "text/vnd.turbo-stream.html",
-          "X-CSRF-Token": token,
-          "X-Requested-With": "XMLHttpRequest"
-        },
-        credentials: "same-origin"
-      })
-      const text = await response.text()
-      if (window.Turbo?.renderStreamMessage) window.Turbo.renderStreamMessage(text)
-    } catch (_e) {
-      window.location.reload()
-    } finally {
-      btn.classList.remove("is-busy")
-    }
-  }
-
   peakTitleKey(event) {
     if (event.key === "Enter") {
       event.preventDefault()
@@ -795,10 +919,23 @@ export default class extends Controller {
     const peakYFrac = parseFloat(styles.getPropertyValue("--lp-peak-y")) || 0.22
     const artW = 1024
     const artH = 1536
-    const scaledW = artW * (height / artH)
-    const peakX = Math.round(peakXFrac * scaledW - ((scaledW - width) / 2))
+    const widthScale = width / artW
+    const heightScale = height / artH
+
+    let peakX
+    let titleTop
+    if (widthScale > heightScale) {
+      // Width fills; cover crops the top/bottom (object-position: 50% 40%).
+      const scaledH = artH * widthScale
+      peakX = Math.round(peakXFrac * width)
+      titleTop = Math.round(peakYFrac * scaledH - 0.4 * (scaledH - height))
+    } else {
+      // Height fills; cover crops the sides (object-position X 50%).
+      const scaledW = artW * heightScale
+      peakX = Math.round(peakXFrac * scaledW - ((scaledW - width) / 2))
+      titleTop = Math.round(height * peakYFrac)
+    }
     const peakRight = Math.max(0, width - peakX)
-    const titleTop = Math.round(height * peakYFrac)
 
     this.element.style.setProperty("--lp-title-top", `${titleTop}px`)
     this.element.style.setProperty("--lp-peak-right", `${peakRight}px`)

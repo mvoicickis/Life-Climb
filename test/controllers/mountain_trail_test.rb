@@ -57,7 +57,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-segments"
     assert_select ".lp-trail__stars"
     assert_select ".lp-trail__footprints"
-    assert_select ".lp-trail__companion"
+    assert_select ".lp-trail__companion", count: 0
+    assert_select ".lp-trail-camp__quick", count: 0
+    assert_select ".lp-trail-camp__leader", count: 0
+    assert_select "[data-action*='campPointerDown']"
     assert_select ".lp-trail__backlight"
     assert_select ".lp-trail-coach"
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
@@ -184,6 +187,17 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} form.lp-trail-battles__camp-finish-form[action=?]",
                   strategy_goal_manual_completion_path(@project)
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/
+    markup = css_select("#trail-battles-#{@project.id}").first.to_s
+    assert_operator markup.index("lp-trail-battles__add"), :<, markup.index("lp-trail-battles__camp-actions")
+    assert_includes markup, "lp-trail-battles__camp-fold"
+  end
+
+  test "moving a camp patches trail coords" do
+    patch strategy_goal_path(@project), params: { trail_x: 0.41, trail_y: 0.66 }
+    assert_response :redirect
+    @project.reload
+    assert_in_delta 0.41, @project.trail_x, 0.0001
+    assert_in_delta 0.66, @project.trail_y, 0.0001
   end
 
   test "finished camps leave the mountain photo and sheet" do

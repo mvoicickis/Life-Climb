@@ -62,7 +62,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_equal "fixed", position
   end
 
-  test "place mode clamps and planted camps do not drag" do
+  test "place mode clamps; blank trail tap does not plant; long-press wiring is present" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -71,9 +71,28 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#mountain-trail", wait: 5
 
+    assert_selector "[data-action*='campPointerDown']"
     assert_no_selector ".lp-trail-camp.is-dragging"
-    assert_no_selector "[data-action*='campPointerDown']"
-    # Camp opens sheet on tap — no long-press reposition.
+    assert_no_selector ".lp-trail-plant.is-open"
+
+    page.execute_script(<<~JS)
+      const mountain = document.querySelector(".lp-trail__mountain");
+      const rect = mountain.getBoundingClientRect();
+      mountain.dispatchEvent(new MouseEvent("click", {
+        bubbles: true,
+        clientX: rect.left + 12,
+        clientY: rect.top + 12
+      }));
+    JS
+    assert_no_selector ".lp-trail-plant.is-open"
+
+    find(".lp-dash-nav__fab").click
+    assert_selector ".lp-trail-plant.is-open", wait: 5
+
+    find(".lp-trail-plant__cancel").click
+    assert_no_selector ".lp-trail-plant.is-open"
+
+    # Tap still opens the sheet. Long-press (~450ms) then drag PATCHes coords.
     open_trail_camp_sheet!(@project)
     assert_selector ".lp-trail-sheet.is-open", visible: :all
   end
