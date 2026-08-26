@@ -59,17 +59,24 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-journey-mobile.png")
 
     visit settings_path
-    assert_selector ".lp-home__title", wait: 5
-    assert_selector ".lp-glass--pad"
-    home_gap = page.evaluate_script(<<~JS)
+    assert_selector ".lp-you", wait: 5
+    assert_selector ".lp-you__hero"
+    assert_selector ".lp-you-card__title"
+    assert_no_selector ".lp-glass--pad"
+    assert_selector ".lp-dash-nav.is-v4"
+    assert_no_selector ".lp-dash-nav__fab"
+    card_gap = page.evaluate_script(<<~JS)
       (() => {
-        const el = document.querySelector('.lp-home');
-        return parseFloat(getComputedStyle(el).rowGap || getComputedStyle(el).gap);
+        const cards = document.querySelectorAll(".lp-you-card");
+        if (cards.length < 2) return null;
+        const a = cards[0].getBoundingClientRect();
+        const b = cards[1].getBoundingClientRect();
+        return b.top - a.bottom;
       })()
     JS
-    assert_in_delta 16.0, home_gap, 1.5, "You section stack should use --lp-space-4"
-    you_title = computed(".lp-home__title", "font-size")
-    assert you_title <= 20.0
+    assert_in_delta 12.0, card_gap.to_f, 1.5, "You cards should stay compact (12px stack)"
+    you_title = computed(".lp-you-card__title", "font-size")
+    assert you_title <= 16.5, "You card titles should stay 16px, got #{you_title}px"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-settings-mobile.png")
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
