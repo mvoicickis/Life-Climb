@@ -308,7 +308,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-hud__plan", text: /Plan Alpha/i
     assert_select ".lp-trail-hud__plan", text: /Plan Beta/i
     assert_select ".lp-trail-hud__plan.is-active", text: /Plan Alpha/i
-    assert_select "#trail-camp-#{project_a.id}", text: /Project One/i
+    assert_select "#trail-camp-#{project_a.id}[aria-label=?]", "Project One"
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-stats", count: 0
     assert_select ".lp-rpg-path", count: 0
@@ -335,7 +335,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select ".lp-trail__peak-title", text: /Goal/i
-    assert_select "#trail-camp-#{project.id}", text: /Auth Mission/i
+    assert_select "#trail-camp-#{project.id}[aria-label=?]", "Auth Mission"
     assert_select ".lp-dash-nav__fab"
     assert_select ".lp-trail-plant"
     assert_select "#rpg-add-checkpoint", count: 0
@@ -393,7 +393,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
-    assert_select "#trail-camp-#{projects.first.id}", text: /Project 0/i
+    assert_select "#trail-camp-#{projects.first.id}[aria-label=?]", "Project 0"
     assert_select "#trail-camps .lp-trail-camp", minimum: 3
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
@@ -420,7 +420,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg.is-v4-phone"
     assert_select ".lp-dash-nav__fab"
     assert_select ".lp-trail-plant"
-    assert_select "#trail-camp-#{project.id}", text: /Project/i
+    assert_select "#trail-camp-#{project.id}[aria-label=?]", "Project"
     assert_select "#rpg-add-checkpoint", count: 0
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-practice-add", text: /Prepare New Quest/i, count: 0

@@ -184,7 +184,7 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       # V4 phone drops the plan-rail ⋮ menu; planner remains reachable by URL.
       assert_select ".lp-rpg.is-v4-phone"
-      assert_select "#trail-camp-#{@project.id}", text: /Resume/
+      assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Resume"
       assert_select "a[href=?]", weekly_planner_path(plan_id: @plan.id, new_week: 1), count: 0
 
       get weekly_planner_path(plan_id: @plan.id, new_week: 1)

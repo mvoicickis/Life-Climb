@@ -46,7 +46,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-hud"
     assert_select ".lp-rpg__stage.is-planning.is-v4"
     assert_select ".lp-rpg__stage-trail.is-v4"
-    assert_select "#trail-camp-#{project.id}", text: /Resume/
+    assert_select "#trail-camp-#{project.id}[aria-label=?]", "Resume"
     assert_select ".lp-climb-path.is-list", minimum: 1
     assert_select "#climb-path-project-#{project.id} .lp-climb-path__title", text: "Resume"
     assert_select ".lp-rpg-scenic", count: 0
@@ -79,7 +79,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
       if i < 2
         assert_select "#trail-camp-#{camp.id}", count: 0
       else
-        assert_select "#trail-camp-#{camp.id}", text: /Camp #{i}/
+        assert_select "#trail-camp-#{camp.id}[aria-label=?]", "Camp #{i}"
       end
     end
     assert_select ".lp-climb-path__node.is-locked", count: 0
@@ -95,8 +95,8 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
-    assert_select "#trail-camp-#{camps[0].id}", text: /Camp 0/
-    assert_select "#trail-camp-#{camps[1].id}", text: /Camp 1/
+    assert_select "#trail-camp-#{camps[0].id}[aria-label=?]", "Camp 0"
+    assert_select "#trail-camp-#{camps[1].id}[aria-label=?]", "Camp 1"
     assert_select "a.lp-climb-path__link", count: 0
   end
 
@@ -126,7 +126,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_select "#trail-sheet-body form[action*='battle_win']"
 
-    assert_select "#trail-camp-#{project.id}", text: /Daily battles/
+    assert_select "#trail-camp-#{project.id}[aria-label=?]", "Daily battles"
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-camp-switch", count: 0
     assert_select ".lp-rpg-camp-folder__cta", count: 0

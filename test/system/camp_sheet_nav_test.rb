@@ -95,7 +95,7 @@ class CampSheetNavTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: empty.id)
     open_mountain_list_fallback!
-    assert_selector "#trail-camp-#{empty.id}", text: /Empty camp/i, wait: 5
+    assert_selector "#trail-camp-#{empty.id}[aria-label='Empty camp']", visible: :all, wait: 5
     assert_selector "#climb-path-project-#{empty.id}", text: /Empty camp/i, visible: :all, wait: 5
     assert_no_selector ".lp-rpg-section-head"
     assert_no_selector ".lp-rpg-practice-cats__hint"

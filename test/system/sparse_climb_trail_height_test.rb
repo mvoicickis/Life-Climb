@@ -42,7 +42,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_selector "#mountain-trail", wait: 5
-    assert_selector "#trail-camp-#{@camp.id}", text: /Duolingo/
+    assert_selector "#trail-camp-#{@camp.id}[aria-label='Duolingo']", visible: :all
 
     metrics = measure_mountain_layout!
     File.write("/tmp/sparse-climb-after.json", JSON.pretty_generate(metrics))
@@ -86,7 +86,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
-    assert_selector "#trail-camp-#{@camp.id}", text: /Duolingo/, wait: 5
+    assert_selector "#trail-camp-#{@camp.id}[aria-label='Duolingo']", visible: :all, wait: 5
     # Dense trails scroll internally — camps above/below the viewport are still in the DOM.
     assert_selector ".lp-trail-camp", minimum: 10, visible: :all, wait: 5
 

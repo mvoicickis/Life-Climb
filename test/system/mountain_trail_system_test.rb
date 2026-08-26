@@ -48,7 +48,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
 
     assert_selector "#mountain-trail", wait: 5
-    assert_selector "#trail-camp-#{@project.id}", text: /Base camp/
+    assert_selector "#trail-camp-#{@project.id}[aria-label='Base camp']", visible: :all
     assert_no_text "Secret hold"
 
     open_trail_camp_sheet!(@project)
