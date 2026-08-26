@@ -781,7 +781,10 @@ en:
         today_card:
           plant_first_headline: "Plant your first camp"
           plant_first_sub: "Put it on the grass and start the climb"
-          win_sub: "Win this"
+          win_headline:
+            one: "You have %{count} battle to do"
+            other: "You have %{count} battles to do"
+          win_sub: "Open Today to win them"
           win_fallback: "Today’s battle"
           add_headline: "Add a battle here"
           add_sub: "Next in %{camp}"

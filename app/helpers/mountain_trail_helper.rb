@@ -338,17 +338,12 @@ module MountainTrailHelper
 
     next_battle = waiting.first
     if next_battle
-      title = next_battle.try(:title).to_s.strip.presence ||
-              I18n.t("strategy.rpg.trail.today_card.win_fallback")
-      camp_id = next_battle.try(:parent_id) || next_battle.try(:parent)&.id
       return meadow_plaque(
         mode: "win_next",
-        headline: title,
+        headline: I18n.t("strategy.rpg.trail.today_card.win_headline", count: waiting.size),
         sub: I18n.t("strategy.rpg.trail.today_card.win_sub"),
         count: waiting.size,
-        badge: waiting.size > 1,
-        busy: true,
-        camp_id: camp_id
+        busy: true
       )
     end
 

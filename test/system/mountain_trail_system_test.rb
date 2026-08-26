@@ -56,7 +56,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-battles-#{@project.id} form[action*='battle_win']", visible: :all
 
     # Phase 1 parity: Today/Base on photo; camp sheet pins to viewport.
-    assert_selector ".lp-trail__mountain .lp-trail-today"
+    assert_selector ".lp-trail__dock .lp-trail-today"
     assert_selector ".lp-trail__mountain .lp-trail-base"
     position = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail-sheet.is-open')).position")
     assert_equal "fixed", position

@@ -1,8 +1,8 @@
-<%# Meadow plaque: next move or a short win. Tiny tent+fire for place. %>
+<%# Meadow plaque: next move sits in the green band under the photo. %>
 <% today_card = local_assigns.fetch(:today_card) %>
 <% mode = today_card[:mode].to_s %>
 <% plant_mode = mode.start_with?("plant") %>
-<% camp_mode = mode.in?(%w[win_next add_battle]) %>
+<% add_battle_mode = mode == "add_battle" %>
 
 <div class="lp-trail__dock" data-trail-ignore>
   <div class="lp-trail-base" aria-hidden="true">
@@ -13,17 +13,13 @@
   </div>
 
   <% plaque_class = "lp-trail-today is-#{mode.tr('_', '-')} #{'is-busy' if today_card[:busy]} #{'is-cheer' if mode == 'cheer'}" %>
-  <% if mode == "cheer" %>
-    <a href="<%= dashboard_path %>" class="<%= plaque_class %>">
-      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: false %>
-    </a>
-  <% elsif plant_mode %>
+  <% if plant_mode %>
     <button type="button"
             class="<%= plaque_class %>"
             data-action="click->trail-canvas#openComposerFromFab">
       <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: true %>
     </button>
-  <% elsif camp_mode && today_card[:camp_id].present? %>
+  <% elsif add_battle_mode && today_card[:camp_id].present? %>
     <button type="button"
             class="<%= plaque_class %>"
             data-camp-id="<%= today_card[:camp_id] %>"
