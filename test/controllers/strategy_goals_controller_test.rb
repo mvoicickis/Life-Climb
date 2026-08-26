@@ -62,8 +62,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     end
 
     camp = plan.children.for_kind("project").find_by!(title: "Planted camp")
-    assert_in_delta 0.45, camp.trail_x, 0.0001
-    assert_in_delta 0.62, camp.trail_y, 0.0001
+    expected = MountainTrailHelper::AutoSlot.snap(0.45, 0.62)
+    assert_in_delta expected[:trail_x], camp.trail_x, 0.0001
+    assert_in_delta expected[:trail_y], camp.trail_y, 0.0001
     assert_equal "teal", camp.color_key
   end
 

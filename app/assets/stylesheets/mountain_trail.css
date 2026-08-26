@@ -2205,7 +2205,16 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 /* Place mode */
 .lp-trail.is-placing .lp-trail__mountain { cursor: crosshair; }
-.lp-trail.is-placing .lp-trail__ghosts { opacity: 0.25; pointer-events: none; }
+.lp-trail.is-placing .lp-trail__ghosts,
+.lp-trail.is-trail-lit .lp-trail__ghosts { opacity: 0.25; pointer-events: none; }
+
+.lp-trail.is-trail-lit .lp-trail-glow {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  background: rgba(255, 248, 220, 1);
+  box-shadow: 0 0 14px 4px rgba(241, 169, 8, 0.9);
+}
 
 .lp-trail__glow-dots { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 

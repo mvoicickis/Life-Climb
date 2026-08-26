@@ -130,6 +130,36 @@ module MountainTrailHelper
 
       0.5
     end
+
+    # Nearest point on the painted dirt path (polyline of TRAIL_CURVE).
+    def snap(trail_x, trail_y)
+      x = trail_x.to_f
+      y = trail_y.to_f
+      curve = TRAIL_CURVE
+      best_x = x
+      best_y = y
+      best_d = Float::INFINITY
+
+      (0...(curve.length - 1)).each do |i|
+        y0, x0 = curve[i]
+        y1, x1 = curve[i + 1]
+        dx = x1 - x0
+        dy = y1 - y0
+        len2 = (dx * dx) + (dy * dy)
+        t = len2.zero? ? 0.0 : (((x - x0) * dx) + ((y - y0) * dy)) / len2
+        t = t.clamp(0.0, 1.0)
+        px = x0 + (t * dx)
+        py = y0 + (t * dy)
+        dist = ((px - x)**2) + ((py - y)**2)
+        next unless dist < best_d
+
+        best_d = dist
+        best_x = px
+        best_y = py
+      end
+
+      { trail_x: best_x, trail_y: best_y }
+    end
   end
 
   # Returns { x:, y:, placed: } with x/y in 0..1 for CSS left/top %.

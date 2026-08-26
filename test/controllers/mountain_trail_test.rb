@@ -171,7 +171,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     created = @plan.children.for_kind("project").find_by!(title: "Ridge camp")
     assert_includes response.body, "trail-camps"
     assert_includes response.body, "trail-camp-#{created.id}"
-    assert_in_delta 0.52, created.trail_x, 0.0001
+    expected = MountainTrailHelper::AutoSlot.snap(0.52, 0.44)
+    assert_in_delta expected[:trail_x], created.trail_x, 0.0001
+    assert_in_delta expected[:trail_y], created.trail_y, 0.0001
   end
 
   test "camp sheet lists day battles and win forms" do
@@ -202,8 +204,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     patch strategy_goal_path(@project), params: { trail_x: 0.41, trail_y: 0.66 }
     assert_response :redirect
     @project.reload
-    assert_in_delta 0.41, @project.trail_x, 0.0001
-    assert_in_delta 0.66, @project.trail_y, 0.0001
+    expected = MountainTrailHelper::AutoSlot.snap(0.41, 0.66)
+    assert_in_delta expected[:trail_x], @project.trail_x, 0.0001
+    assert_in_delta expected[:trail_y], @project.trail_y, 0.0001
   end
 
   test "show pins unplaced camps and keeps those coords after the list changes" do

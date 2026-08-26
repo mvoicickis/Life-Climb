@@ -136,6 +136,16 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_not layout[:placed]
   end
 
+  test "snap pulls a point in the grass onto the dirt path" do
+    on_path = MountainTrailHelper::AutoSlot.snap(0.5, 0.55)
+    assert_in_delta on_path[:trail_x], MountainTrailHelper::AutoSlot.x_for(on_path[:trail_y]), 0.02
+
+    grass = MountainTrailHelper::AutoSlot.snap(0.12, 0.55)
+    assert grass[:trail_x] > 0.35
+    assert grass[:trail_x] < 0.7
+    assert_in_delta 0.55, grass[:trail_y], 0.08
+  end
+
   test "layout keeps packed tents on their planted coords" do
     camps = (1..9).map do |i|
       Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(

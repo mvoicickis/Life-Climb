@@ -375,6 +375,11 @@ class StrategyGoalsController < ApplicationController
 
     goal.trail_x = params[:trail_x].presence
     goal.trail_y = params[:trail_y].presence
+    return if goal.trail_x.blank? || goal.trail_y.blank?
+
+    slot = MountainTrailHelper::AutoSlot.snap(goal.trail_x, goal.trail_y)
+    goal.trail_x = slot[:trail_x]
+    goal.trail_y = slot[:trail_y]
   end
 
   # Strategy / empty plant fields: park the tent on the auto trail slot before save.
