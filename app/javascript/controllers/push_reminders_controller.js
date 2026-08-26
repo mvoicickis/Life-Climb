@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Settings/You — enable Web Push reminders and send a manual test notification.
 export default class extends Controller {
-  static targets = ["status", "enable", "disable", "test", "message"]
+  static targets = ["status", "enable", "disable", "test", "message", "switch"]
   static values = {
     vapidUrl: String,
     subscribeUrl: String,
@@ -117,6 +117,17 @@ export default class extends Controller {
     if (this.hasEnableTarget) this.enableTarget.hidden = subscribed
     if (this.hasDisableTarget) this.disableTarget.hidden = !subscribed
     if (this.hasTestTarget) this.testTarget.disabled = !subscribed
+    if (this.hasSwitchTarget) {
+      this.switchTarget.classList.toggle("is-on", subscribed)
+      this.switchTarget.setAttribute("aria-checked", subscribed ? "true" : "false")
+    }
+  }
+
+  toggleSwitch(event) {
+    event.preventDefault()
+    const subscribed = this.hasSwitchTarget && this.switchTarget.classList.contains("is-on")
+    if (subscribed) this.disable(event)
+    else this.enable(event)
   }
 
   async fetchJson(url, options = {}) {

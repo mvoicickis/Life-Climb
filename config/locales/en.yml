@@ -2557,6 +2557,11 @@ en:
     character_hint: "Shown on Mountain, Today, and the trail."
     character_updated: "Companion updated."
     character_save: "Save companion"
+    companion_subline: "%{name} companion"
+    support_cta: "Support"
+    invite_short: "Invite"
+    contact_short: "Contact"
+    footer_mark: "LifePoints"
     today_count_updated: "Today count updated."
     commitment:
       title: "Daily commitment"
