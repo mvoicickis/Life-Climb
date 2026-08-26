@@ -76,7 +76,10 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     JS
     assert_match(/Ship the MVP/i, title_metrics["text"])
     assert_operator title_metrics["w"], :>=, 100, "Destination title too narrow: #{title_metrics.inspect}"
-    assert_selector "#trail-camp-#{@daily_battles.id} .lp-trail-camp__title", text: /Daily battles/i, visible: :all
+    assert_selector "#trail-camp-#{@daily_battles.id}", visible: :all, wait: 5
+    assert_equal "Daily battles", find("#trail-camp-#{@daily_battles.id}", visible: :all)["aria-label"]
+    tent = page.evaluate_script("Boolean(document.querySelector('#trail-camp-#{@daily_battles.id} .lp-trail-camp__tent'))")
+    assert tent
     assert_no_selector ".lp-rpg-camp-switch"
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)

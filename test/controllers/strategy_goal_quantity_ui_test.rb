@@ -66,9 +66,10 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /500\s*\/\s*15000\s*€/
-    assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar"
-    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /Active/i, count: 0
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{project.id}[aria-label=?]", "Debt payoff"
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", count: 0
+    assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar", count: 0
   end
 
   test "non-quantified project shows a count-up battle line, never Active or a bar" do
@@ -79,9 +80,9 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /battles (won|planned)|Not started/i
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", count: 0
     assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar", count: 0
-    assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", text: /Active/i, count: 0
   end
 
   test "editing quantified project updates target and unit without resetting current_amount" do
