@@ -1,9 +1,11 @@
 <%# Battles inside a trail camp sheet. locals: project, goal, plan, area %>
 <% project = local_assigns.fetch(:project) %>
 <% area = local_assigns[:area] || project.life_area %>
-<% days = project.children.select(&:day?).reject(&:holding?).sort_by { |d| [ d.completed? ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
-<% open_days = days.reject(&:completed?) %>
-<% done_days = days.select(&:completed?) %>
+<% days = project.children.select(&:day?).reject(&:holding?) %>
+<% mountain_trail_preload_done_today!(current_user, days) %>
+<% days = days.sort_by { |d| [ mountain_trail_done_today?(d) ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
+<% open_days = days.reject { |d| mountain_trail_done_today?(d) } %>
+<% done_days = days.select { |d| mountain_trail_done_today?(d) } %>
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
@@ -107,7 +109,7 @@
         <summary><%= t("strategy.rpg.trail.won_battles", count: done_days.size) %></summary>
         <ul class="lp-trail-battles__list is-done">
           <% done_days.each do |battle| %>
-            <%= render "life_journeys/trail_battle_row", battle: battle, done: true %>
+            <%= render "life_journeys/trail_battle_row", battle: battle %>
           <% end %>
         </ul>
       </details>
