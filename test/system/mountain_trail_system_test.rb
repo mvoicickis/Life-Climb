@@ -178,8 +178,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
 
     assert_selector "#trail-base-sheet", text: /Read/, visible: :all, wait: 5
     find("#trail-base-sheet .lp-trail-battles__tick").click
-    assert_selector ".lp-trail-log.is-open", wait: 5
-    assert_selector ".lp-trail-log__prompt", text: /pages/i
+    assert_selector ".lp-trail-sheet .lp-trail-log.is-open", wait: 5
+    assert_selector ".lp-trail-sheet.is-open .lp-trail-log__prompt", text: /pages/i
     assert_selector ".lp-trail-log__amount[readonly]"
   end
 end

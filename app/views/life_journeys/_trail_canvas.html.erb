@@ -467,20 +467,19 @@
         <% end %>
       </div>
     </div>
-  </div>
-
-  <%# Quantity log sheet for quantified camps %>
-  <div class="lp-trail-log"
-       data-trail-canvas-target="logSheet"
-       data-log-verdict-first="<%= t('strategy.rpg.trail.log_verdict.first') %>"
-       data-log-verdict-in-range="<%= t('strategy.rpg.trail.log_verdict.in_range') %>"
-       data-log-verdict-below="<%= t('strategy.rpg.trail.log_verdict.below') %>"
-       data-log-verdict-above="<%= t('strategy.rpg.trail.log_verdict.above') %>"
-       data-log-verdict-same="<%= t('strategy.rpg.trail.log_verdict.same') %>"
-       data-log-verdict-up-from="<%= t('strategy.rpg.trail.log_verdict.up_from') %>"
-       data-log-verdict-down-from="<%= t('strategy.rpg.trail.log_verdict.down_from') %>"
-       hidden
-       aria-hidden="true">
+    <%# Inside the camp sheet so the log cannot paint behind it on iOS. %>
+    <div class="lp-trail-log"
+         data-trail-canvas-target="logSheet"
+         data-action="click->trail-camp-sheet#stop"
+         data-log-verdict-first="<%= t('strategy.rpg.trail.log_verdict.first') %>"
+         data-log-verdict-in-range="<%= t('strategy.rpg.trail.log_verdict.in_range') %>"
+         data-log-verdict-below="<%= t('strategy.rpg.trail.log_verdict.below') %>"
+         data-log-verdict-above="<%= t('strategy.rpg.trail.log_verdict.above') %>"
+         data-log-verdict-same="<%= t('strategy.rpg.trail.log_verdict.same') %>"
+         data-log-verdict-up-from="<%= t('strategy.rpg.trail.log_verdict.up_from') %>"
+         data-log-verdict-down-from="<%= t('strategy.rpg.trail.log_verdict.down_from') %>"
+         hidden
+         aria-hidden="true">
     <button type="button"
             class="lp-trail-log__backdrop"
             data-action="click->trail-canvas#closeLog"
@@ -533,6 +532,7 @@
         </button>
       </div>
     </form>
+    </div>
   </div>
 
   <%# Visually hidden legacy list for objectives/edit menus + system tests. %>

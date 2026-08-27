@@ -144,6 +144,17 @@ export default class extends Controller {
     event.stopPropagation()
   }
 
+  closeNestedLog() {
+    const log = this.sheetTarget.querySelector(".lp-trail-log")
+    if (!log) return
+
+    log.hidden = true
+    log.classList.remove("is-open")
+    log.setAttribute("aria-hidden", "true")
+    const amount = log.querySelector(".lp-trail-log__amount")
+    if (amount) amount.readOnly = true
+  }
+
   revealBodyFor(camp) {
     if (!this.hasBodyTarget) return
 
@@ -164,6 +175,7 @@ export default class extends Controller {
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true
     this._openCampId = null
+    this.closeNestedLog()
 
     if (!skipHistory && this._pushedHistory) {
       this._pushedHistory = false

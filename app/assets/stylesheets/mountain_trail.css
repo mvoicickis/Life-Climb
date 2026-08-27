@@ -811,6 +811,7 @@
   border-radius: 22px 22px 0 0;
   box-shadow: 0 -12px 40px rgba(18, 32, 26, 0.35);
   transform: translateY(0);
+  z-index: 1;
   animation: lp-trail-sheet-up 0.28s cubic-bezier(0.22, 0.9, 0.28, 1) both;
   color: #f7ead9;
   overflow: hidden;
@@ -3362,12 +3363,12 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   padding: 0;
 }
 
-/* Quantity log sheet — above the camp sheet so the field is visible. */
-.lp-trail-log.is-open,
-.lp-trail-log:not([hidden]) {
-  position: fixed;
+/* Quantity log — child of the camp sheet so it cannot paint behind it. */
+.lp-trail-sheet .lp-trail-log.is-open,
+.lp-trail-sheet .lp-trail-log:not([hidden]) {
+  position: absolute;
   inset: 0;
-  z-index: 90;
+  z-index: 20;
 }
 
 .lp-trail-log__backdrop {
