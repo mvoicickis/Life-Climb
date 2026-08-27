@@ -1,11 +1,9 @@
-<%# Win control: tick, or open the number log. locals: battle, rename %>
+<%# Tick or log: checkbox only. Title is not a control (rename lives on ⋯). locals: battle %>
 <% battle = local_assigns.fetch(:battle) %>
-<% rename = local_assigns.fetch(:rename, false) %>
 <% qty_project = battle.quantified_path_project %>
-<% name_data = rename ? "click->trail-battles#renameBattle" : nil %>
 <% if qty_project %>
   <button type="button"
-          class="lp-trail-battles__check"
+          class="lp-trail-battles__tick"
           data-action="click->trail-canvas#openLog"
           data-project-id="<%= qty_project.id %>"
           data-battle-id="<%= battle.id %>"
@@ -17,28 +15,25 @@
           data-last-log="<%= mountain_trail_last_log_amount(qty_project) %>"
           aria-label="<%= t('strategy.rpg.trail.win_battle') %>">
     <span class="lp-trail-battles__box" aria-hidden="true"></span>
-    <span class="lp-trail-battles__name"
-          <% if rename %>data-action="<%= name_data %>" data-update-url="<%= strategy_goal_path(battle) %>"<% end %>><%= battle.title %></span>
-    <% if battle.repeat_daily? %>
-      <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
-    <% end %>
-    <% if qty_project.unit.present? %>
-      <span class="lp-trail-battles__qty-chip"><%= qty_project.unit %></span>
-    <% end %>
   </button>
 <% else %>
   <%= button_to battle_win_path(battle),
         method: :post,
-        class: "lp-trail-battles__check",
+        class: "lp-trail-battles__tick",
         form: {
-          class: "lp-trail-battles__check-form",
-          data: { action: "turbo:submit-end->trail-battles#battleWon" }
+          class: "lp-trail-battles__tick-form",
+          data: { action: "submit->trail-battles#optimisticTick turbo:submit-end->trail-battles#battleWon" }
         } do %>
     <span class="lp-trail-battles__box" aria-hidden="true"></span>
-    <span class="lp-trail-battles__name"
-          <% if rename %>data-action="<%= name_data %>" data-update-url="<%= strategy_goal_path(battle) %>"<% end %>><%= battle.title %></span>
-    <% if battle.repeat_daily? %>
-      <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
-    <% end %>
+    <span class="sr-only"><%= t("strategy.rpg.trail.win_battle") %></span>
   <% end %>
 <% end %>
+<span class="lp-trail-battles__copy">
+  <span class="lp-trail-battles__name"><%= battle.title %></span>
+  <% if battle.repeat_daily? %>
+    <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
+  <% end %>
+  <% if qty_project&.unit.present? %>
+    <span class="lp-trail-battles__qty-chip"><%= qty_project.unit %></span>
+  <% end %>
+</span>

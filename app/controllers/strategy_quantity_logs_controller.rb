@@ -2,6 +2,7 @@
 
 # Mountain V4: log a quantity toward a quantified camp or day, optionally winning a battle.
 class StrategyQuantityLogsController < ApplicationController
+  include MountainSheetRefresh
   def create
     project = current_user.strategy_goals.find(params.require(:project_id))
     raise ActiveRecord::RecordNotFound unless project.quantified?
@@ -30,18 +31,25 @@ class StrategyQuantityLogsController < ApplicationController
     )
 
     awarded = finish_logged_battle!(battle, journey)
+    @awarded = awarded
+    assign_mountain_sheet_for!(battle.presence || project)
 
-    camp = project.day? ? project.parent : project
-    plan = camp&.parent
-    goal = plan&.parent || camp&.root_goal || project.root_goal
-    redirect_to life_journey_path(
-                  journey,
-                  goal_id: goal&.id,
-                  plan_id: plan&.id,
-                  focus_id: camp&.id
-                ),
-                notice: I18n.t("strategy.quantity.logged", unit: project.unit),
-                status: :see_other
+    camp = @project
+    plan = @plan
+    goal = @goal
+    respond_to do |format|
+      format.turbo_stream { render :create, status: :ok }
+      format.html do
+        redirect_to life_journey_path(
+                      journey,
+                      goal_id: goal&.id,
+                      plan_id: plan&.id,
+                      focus_id: camp&.id
+                    ),
+                    notice: I18n.t("strategy.quantity.logged", unit: project.unit),
+                    status: :see_other
+      end
+    end
   rescue ArgumentError => e
     redirect_back fallback_location: dashboard_path, alert: e.message, status: :see_other
   rescue ActiveRecord::RecordNotFound

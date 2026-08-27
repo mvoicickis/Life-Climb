@@ -509,11 +509,14 @@
         <input type="text"
                name="amount"
                inputmode="decimal"
+               enterkeyhint="done"
+               readonly
                class="lp-trail-log__amount"
                value="1"
                required
+               autocomplete="off"
                data-trail-canvas-target="logAmount"
-               data-action="input->trail-canvas#logAmountInput change->trail-canvas#logAmountInput">
+               data-action="click->trail-canvas#armLogAmount input->trail-canvas#logAmountInput change->trail-canvas#logAmountInput">
         <button type="button" class="lp-trail-log__step" data-action="click->trail-canvas#logPlus" aria-label="+">+</button>
       </div>
       <div class="lp-trail-log__quick" data-trail-canvas-target="logQuick">

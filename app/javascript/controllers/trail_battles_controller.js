@@ -128,13 +128,24 @@ export default class extends Controller {
     this.showSessionToast(this.sessionWinsValue)
   }
 
+  optimisticTick(event) {
+    const row = event.target.closest?.(".lp-trail-battles__row")
+    if (!row) return
+    row.classList.add("is-ticking")
+    row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
+  }
+
   battleAdded(event) {
     const { success } = event.detail || {}
     if (!success) return
 
     if (this.hasTitleFieldTarget) {
       this.titleFieldTarget.value = ""
-      this.titleFieldTarget.focus()
+      if (this.keepDailyValue) {
+        this.titleFieldTarget.blur()
+      } else {
+        this.titleFieldTarget.focus()
+      }
     }
     if (this.hasDailyToggleTarget) {
       this.dailyToggleTarget.checked = this.keepDailyValue

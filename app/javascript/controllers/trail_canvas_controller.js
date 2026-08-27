@@ -868,7 +868,10 @@ export default class extends Controller {
       this.logPromptTarget.dataset.rangeMin = btn.dataset.rangeMin || ""
       this.logPromptTarget.dataset.rangeMax = btn.dataset.rangeMax || ""
     }
-    if (this.hasLogAmountTarget) this.logAmountTarget.value = "1"
+    if (this.hasLogAmountTarget) {
+      this.logAmountTarget.value = "1"
+      this.logAmountTarget.readOnly = true
+    }
     this._logContext = {
       kind: btn.dataset.quantityKind || "up",
       rangeMin: Number.parseFloat(btn.dataset.rangeMin),
@@ -879,7 +882,14 @@ export default class extends Controller {
     this.logSheetTarget.hidden = false
     this.logSheetTarget.setAttribute("aria-hidden", "false")
     this.logSheetTarget.classList.add("is-open")
-    requestAnimationFrame(() => this.logAmountTarget?.focus())
+  }
+
+  armLogAmount(event) {
+    const field = event.currentTarget
+    if (!field || !field.readOnly) return
+    field.readOnly = false
+    field.focus()
+    field.select?.()
   }
 
   closeLog(event) {
@@ -889,6 +899,7 @@ export default class extends Controller {
     this.logSheetTarget.hidden = true
     this.logSheetTarget.setAttribute("aria-hidden", "true")
     this.logSheetTarget.classList.remove("is-open")
+    if (this.hasLogAmountTarget) this.logAmountTarget.readOnly = true
   }
 
   logMinus(event) {
@@ -989,13 +1000,20 @@ export default class extends Controller {
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          Accept: "text/html, application/xhtml+xml",
+          Accept: "text/vnd.turbo-stream.html, text/html",
           "X-CSRF-Token": token,
           "X-Requested-With": "XMLHttpRequest"
         },
         body,
         credentials: "same-origin"
       })
+      const kind = response.headers.get("content-type") || ""
+      if (kind.includes("turbo-stream")) {
+        const html = await response.text()
+        this.closeLog()
+        window.Turbo.renderStreamMessage(html)
+        return
+      }
       if (response.redirected) {
         window.location.href = response.url
         return
