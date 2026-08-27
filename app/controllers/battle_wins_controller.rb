@@ -94,15 +94,19 @@ class BattleWinsController < ApplicationController
     assign_mountain_sheet_for!(battle)
     @journey = journey || @journey
     @awarded = awarded
+    @battle = battle.reload
     respond_to do |format|
-      format.turbo_stream { render :create, status: :ok }
+      format.turbo_stream do
+        flash.discard(:ap_gained)
+        flash.discard(:battle_celebrate)
+        flash.discard(:climb_boss)
+        flash.discard(:climb_reward)
+        render :create, status: :ok
+      end
       format.html do
         redirect_to mountain_return_path(journey, battle),
                     notice: I18n.t("battle.completed_notice", lp: awarded),
                     status: :see_other
-      end
-      format.any do
-        redirect_to mountain_return_path(journey, battle), status: :see_other
       end
     end
   end
