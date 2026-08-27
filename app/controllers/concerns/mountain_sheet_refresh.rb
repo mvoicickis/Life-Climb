@@ -18,6 +18,14 @@ module MountainSheetRefresh
     @plan = plan
     @goal = node&.root_goal || project&.root_goal
     @journey = node&.life_journey || project&.life_journey || current_user.primary_focused_journey
+    preload_mountain_done_today_for_project!(project)
+  end
+
+  def preload_mountain_done_today_for_project!(project)
+    return if project.blank?
+
+    battles = project.children.select { |child| child.day? && !child.holding? }
+    helpers.mountain_trail_preload_done_today!(current_user, battles)
   end
 
   # Camp sheets sit on plan-level projects. Nested practice leaves walk up.

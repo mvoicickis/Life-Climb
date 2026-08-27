@@ -121,7 +121,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-strategy-rpg-celebrate-value=?]", "false"
   end
 
-  test "winning a daily battle as turbo stream keeps the open row and drops base camp" do
+  test "winning a daily battle as turbo stream shows done row and drops base camp" do
     @battle.update!(repeat: "daily")
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
 
@@ -132,7 +132,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_match "trail-battle-#{@battle.id}", response.body
     assert_match "action=\"remove\" target=\"trail-base-battle-#{@battle.id}\"", response.body
-    assert_no_match "is-done", response.body
+    assert_match "is-done", response.body
     @battle.reload
     assert @battle.repeat_daily?
     assert_nil @battle.completed_at

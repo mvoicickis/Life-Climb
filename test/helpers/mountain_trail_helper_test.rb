@@ -4,6 +4,7 @@ require "test_helper"
 
 class MountainTrailHelperTest < ActionView::TestCase
   include MountainTrailHelper
+  include ClimbTestHelper
 
   test "day count is one-indexed from journey created_at" do
     journey = Struct.new(:created_at).new(9.days.ago.beginning_of_day)
@@ -254,5 +255,73 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert mountain_trail_base_due?(due)
     assert_not mountain_trail_base_due?(later)
     assert_not mountain_trail_base_due?(done)
+  end
+
+  test "done today uses completed_at for one-shot battles" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Ship auth")
+    battle = user.strategy_goals.find_by!(horizon: "day", title: "Ship auth")
+    assert_not mountain_trail_done_today?(battle, user: user)
+
+    battle.complete!
+    assert mountain_trail_done_today?(battle, user: user)
+  end
+
+  test "done today uses today's todo for daily battles without setting completed_at" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Stretch daily")
+    battle = user.strategy_goals.find_by!(horizon: "day", title: "Stretch daily")
+    battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: user, life_area: battle.life_area, from: Date.current, to: Date.current)
+    todo = user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+
+    assert_not mountain_trail_done_today?(battle, user: user)
+    todo.update!(completed_at: Time.current)
+    mountain_trail_preload_done_today!(user, [ battle ])
+    assert mountain_trail_done_today?(battle, user: user)
+    assert_nil battle.reload.completed_at
+  end
+
+  test "preload avoids per-row todo queries" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Query guard")
+    battle = user.strategy_goals.find_by!(horizon: "day", title: "Query guard")
+    battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: user, life_area: battle.life_area, from: Date.current, to: Date.current)
+    todo = user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+    todo.update!(completed_at: Time.current)
+    mountain_trail_preload_done_today!(user, [ battle ])
+
+    queries = 0
+    subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*_, payload|
+      queries += 1 unless payload[:name] == "SCHEMA"
+    end
+    begin
+      assert mountain_trail_done_today?(battle, user: user)
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber)
+    end
+    assert_equal 0, queries
+  end
+
+  test "camp progress counts daily wins as won today" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Camp progress")
+    battle = user.strategy_goals.find_by!(horizon: "day", title: "Camp progress")
+    project = battle.parent
+    battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area, from: Date.current, to: Date.current)
+    todo = user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+    mountain_trail_preload_done_today!(user, [ battle ])
+
+    before = mountain_trail_camp_progress(project, user: user)
+    assert_equal 1, before[:open]
+    assert_equal 0, before[:won]
+
+    todo.update!(completed_at: Time.current)
+    mountain_trail_preload_done_today!(user, [ battle ])
+    after = mountain_trail_camp_progress(project, user: user)
+    assert_equal 0, after[:open]
+    assert_equal 1, after[:won]
   end
 end

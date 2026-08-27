@@ -1,6 +1,6 @@
 <%# One camp-sheet battle row. locals: battle, done:, show_move_up:, show_move_down: %>
 <% battle = local_assigns.fetch(:battle) %>
-<% done = local_assigns.fetch(:done) { battle.completed? && !battle.repeat_daily? } %>
+<% done = local_assigns.fetch(:done) { mountain_trail_done_today?(battle) } %>
 <% if done %>
   <li class="lp-trail-battles__row is-done is-check" id="trail-battle-<%= battle.id %>">
     <span class="lp-trail-battles__check is-static">

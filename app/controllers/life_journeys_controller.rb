@@ -165,6 +165,7 @@ class LifeJourneysController < ApplicationController
     @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
     @plan = select_strategy_plan
     @trail = Strategy::Trail.for(plan: @plan)
+    preload_mountain_trail_done_today!
     Strategy::PinUnplacedCamps.call(
       projects: Array(@trail&.nodes).filter_map(&:record).reject { |project| project.holding? || project.completed? }
     )
@@ -216,6 +217,12 @@ class LifeJourneysController < ApplicationController
       else
         :fight_today
       end
+  end
+
+  def preload_mountain_trail_done_today!
+    projects = Array(@trail&.nodes).filter_map(&:record).reject(&:holding?)
+    battles = projects.flat_map { |project| Array(project.children).select { |child| child.day? && !child.holding? } }
+    helpers.mountain_trail_preload_done_today!(current_user, battles)
   end
 
   def strategy_branch_for(focus, today_battle)

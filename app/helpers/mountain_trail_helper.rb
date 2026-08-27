@@ -326,7 +326,37 @@ module MountainTrailHelper
     Array(project&.children).select { |child| child.day? && !child.holding? }
   end
 
-  def mountain_trail_camp_progress(project)
+  # Preload today's DailyTodos for Mountain camp rows (one query per render surface).
+  def mountain_trail_preload_done_today!(user, battles)
+    ids = Array(battles).filter_map(&:id)
+    @mountain_done_today_by_goal_id =
+      if ids.empty? || user.blank?
+        {}
+      else
+        user.daily_todos.for_day.where(strategy_goal_id: ids).index_by(&:strategy_goal_id)
+      end
+  end
+
+  # Mountain camp "won" read model: one-shots use completed_at; dailies use today's todo.
+  # Camp progress counts are today-scoped for dailies (not lifetime-cleared).
+  def mountain_trail_done_today?(battle, user: nil)
+    return false if battle.blank?
+    unless battle.try(:repeat_daily?)
+      return battle.completed_at.present? if battle.respond_to?(:completed_at)
+      return battle.completed? if battle.respond_to?(:completed?)
+
+      return false
+    end
+
+    viewer = user || mountain_trail_viewer
+    return false if viewer.blank?
+
+    todo = @mountain_done_today_by_goal_id&.dig(battle.id) ||
+           viewer.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+    todo&.completed_at.present?
+  end
+
+  def mountain_trail_camp_progress(project, user: nil)
     if project&.pages_mode? || (project&.quantified? && mountain_trail_camp_days(project).empty?)
       meta = strategy_project_card_meta(project)
       ratio = meta&.dig(:ratio).to_f
@@ -335,7 +365,8 @@ module MountainTrailHelper
 
     days = mountain_trail_camp_days(project)
     total = days.size
-    won = days.count(&:completed?)
+    viewer = user || mountain_trail_viewer
+    won = days.count { |day| mountain_trail_done_today?(day, user: viewer) }
     open = total - won
     ratio = total.zero? ? 0.0 : (won.to_f / total)
     { kind: :battles, ratio: ratio, open: open, won: won, total: total }
@@ -557,4 +588,9 @@ module MountainTrailHelper
     total = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? } }
     [ (won * 0.5 + total * 0.15) / 6.0, 1.0 ].min + (open.positive? ? 0.05 : 0)
   end
+
+  def mountain_trail_viewer
+    current_user if respond_to?(:current_user)
+  end
+  private :mountain_trail_viewer
 end

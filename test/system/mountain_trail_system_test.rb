@@ -206,6 +206,27 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-trail-log.is-open", visible: :all
   end
 
+  test "winning a daily camp battle shows done row without full page navigation" do
+    @battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+
+    open_trail_camp_sheet!(@project)
+    within("#trail-battle-#{@battle.id}") { find(".lp-trail-battles__tick").click }
+
+    assert_selector "#trail-battle-#{@battle.id}.is-done", visible: :all, wait: 5
+    assert_selector ".lp-trail-sheet.is-open", visible: :all
+    assert_nil @battle.reload.completed_at
+    assert @battle.repeat_daily?
+  end
+
   test "base camp kebab closes when tapping outside" do
     @battle.update!(repeat: "daily")
 
