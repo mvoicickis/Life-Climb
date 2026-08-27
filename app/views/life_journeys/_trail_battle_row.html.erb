@@ -1,0 +1,64 @@
+<%# One camp-sheet battle row. locals: battle, done:, show_move_up:, show_move_down: %>
+<% battle = local_assigns.fetch(:battle) %>
+<% done = local_assigns.fetch(:done) { battle.completed? && !battle.repeat_daily? } %>
+<% if done %>
+  <li class="lp-trail-battles__row is-done is-check" id="trail-battle-<%= battle.id %>">
+    <span class="lp-trail-battles__check is-static">
+      <span class="lp-trail-battles__box is-won" aria-hidden="true">✓</span>
+      <span class="lp-trail-battles__name"><%= battle.title %></span>
+      <% if battle.repeat_daily? %>
+        <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
+      <% end %>
+    </span>
+    <%= button_to battle_reopen_path(battle),
+          method: :post,
+          class: "lp-trail-battles__undo-win",
+          form: { data: { turbo: true } } do %>
+      <%= t("strategy.rpg.trail.undo") %>
+    <% end %>
+  </li>
+<% else %>
+  <li class="lp-trail-battles__row is-check"
+      id="trail-battle-<%= battle.id %>"
+      data-battle-id="<%= battle.id %>"
+      data-update-url="<%= strategy_goal_path(battle) %>">
+    <%= render "life_journeys/trail_battle_check", battle: battle %>
+    <details class="lp-trail-battles__kebab"
+             data-controller="tcard-menu"
+             data-tcard-menu-target="details"
+             data-action="toggle->tcard-menu#toggled">
+      <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
+      <div class="lp-trail-battles__kebab-menu">
+        <button type="button"
+                data-action="click->trail-battles#renameBattle"
+                data-update-url="<%= strategy_goal_path(battle) %>"><%= t("strategy.rpg.trail.battle_rename") %></button>
+        <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
+        <% if local_assigns[:show_move_up] %>
+          <%= button_to t("strategy.rpg.trail.battle_move_up"),
+                strategy_goal_path(battle),
+                method: :patch,
+                params: { move: "up" },
+                form: { data: { turbo: true } } %>
+        <% end %>
+        <% if local_assigns[:show_move_down] %>
+          <%= button_to t("strategy.rpg.trail.battle_move_down"),
+                strategy_goal_path(battle),
+                method: :patch,
+                params: { move: "down" },
+                form: { data: { turbo: true } } %>
+        <% end %>
+        <%= button_to t("strategy.rpg.delete_checkpoint"),
+              strategy_goal_path(battle),
+              method: :delete,
+              class: "is-danger",
+              form: {
+                data: {
+                  turbo: true,
+                  turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: battle.title),
+                  action: "submit->trail-battles#stashBattleDelete"
+                }
+              } %>
+      </div>
+    </details>
+  </li>
+<% end %>

@@ -103,12 +103,39 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Date.current + 1.day, @battle.scheduled_on
   end
 
-  test "winning a battle as turbo stream replaces lists instead of redirecting" do
-    post battle_win_path(@battle), as: :turbo_stream
+  test "winning a battle as turbo stream replaces the row instead of redirecting" do
+    assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
+      post battle_win_path(@battle), as: :turbo_stream
+    end
+
     assert_response :ok
     assert_includes @response.media_type, "turbo-stream"
-    assert_match "trail-battles-#{@project.id}", response.body
-    assert_match "trail-base-sheet", response.body
-    assert_no_match "data-rpg-refresh", response.body
+    assert_match "trail-battle-#{@battle.id}", response.body
+    assert_match "is-done", response.body
+    assert_no_match "trail-toast-host", response.body
+    assert_no_match "turbo-stream action=\"replace\" target=\"trail-battles-", response.body
+    assert @battle.reload.completed?
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "[data-strategy-rpg-celebrate-value=?]", "false"
+  end
+
+  test "winning a daily battle as turbo stream keeps the open row and drops base camp" do
+    @battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
+
+    assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
+      post battle_win_path(@battle), as: :turbo_stream
+    end
+
+    assert_response :ok
+    assert_match "trail-battle-#{@battle.id}", response.body
+    assert_match "action=\"remove\" target=\"trail-base-battle-#{@battle.id}\"", response.body
+    assert_no_match "is-done", response.body
+    @battle.reload
+    assert @battle.repeat_daily?
+    assert_nil @battle.completed_at
+    assert_equal Date.current + 1.day, @battle.scheduled_on
   end
 end

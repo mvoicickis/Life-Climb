@@ -22,7 +22,11 @@
         class: "lp-trail-battles__tick",
         form: {
           class: "lp-trail-battles__tick-form",
-          data: { action: "submit->trail-battles#optimisticTick turbo:submit-end->trail-battles#battleWon" }
+          data: {
+            turbo: true,
+            turbo_stream: true,
+            action: "submit->trail-battles#optimisticTick"
+          }
         } do %>
     <span class="lp-trail-battles__box" aria-hidden="true"></span>
     <span class="sr-only"><%= t("strategy.rpg.trail.win_battle") %></span>
