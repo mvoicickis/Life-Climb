@@ -1114,6 +1114,7 @@
 .lp-trail__swatch:has(input:checked) .lp-trail__swatch-dot { outline: 2px solid var(--lp-trail-ink); outline-offset: 2px; }
 
 .lp-trail-battles {
+  --lp-trail-add-dock: 5.5rem;
   display: grid;
   gap: 0.75rem;
   width: 100%;
@@ -1121,6 +1122,15 @@
   box-sizing: border-box;
   min-width: 0;
   padding-bottom: 0.25rem;
+}
+
+.lp-trail-base-sheet {
+  --lp-trail-add-dock: 7.5rem;
+}
+
+.lp-trail-battles__dock-spacer {
+  height: var(--lp-trail-add-dock);
+  pointer-events: none;
 }
 
 .lp-trail-battles__composer.is-dock {
@@ -1769,6 +1779,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
+  scroll-padding-bottom: 7.5rem;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {

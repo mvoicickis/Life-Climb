@@ -80,11 +80,19 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Pitch the tent", scheduled_on: Date.current, position: 0
     )
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Stretch", scheduled_on: Date.current, position: 1, repeat: "daily"
+    )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__tick"
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__dock-spacer"
+    assert_select "#trail-base-sheet .lp-trail-battles__kebab[data-controller='tcard-menu']"
+    assert_select "#trail-base-sheet .lp-trail-battles__dock-spacer"
+    assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
     assert_select "#trail-battles-#{@project.id} .lp-trail-plant__wheel", count: 0
   end
 

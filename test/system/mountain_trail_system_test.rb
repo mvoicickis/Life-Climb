@@ -182,4 +182,24 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-trail-log__prompt", text: /pages/i
     assert_selector ".lp-trail-log__amount[readonly]"
   end
+
+  test "base camp kebab closes when tapping outside" do
+    @battle.update!(repeat: "daily")
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector ".lp-trail-base-card", wait: 5
+
+    find(".lp-trail-base-card").click
+    assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
+    find("#trail-base-sheet .lp-trail-battles__kebab-btn").click
+    assert_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
+
+    find(".lp-trail-sheet__title", visible: :all).click
+    assert_no_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
+  end
 end
