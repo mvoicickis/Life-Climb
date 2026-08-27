@@ -2060,16 +2060,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
       "daily qty unit add";
   }
 }
-  margin-left: auto;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(247, 234, 217, 0.55);
-  border: 1px solid rgba(247, 234, 217, 0.18);
-  border-radius: 99px;
-  padding: 0.15rem 0.4rem;
-}
 
 .lp-trail-battles__row-delete,
 .lp-trail-battles__undo-win {
