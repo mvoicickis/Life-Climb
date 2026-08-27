@@ -83,7 +83,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__check"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__tick"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
     assert_select "#trail-battles-#{@project.id} .lp-trail-plant__wheel", count: 0
   end

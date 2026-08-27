@@ -95,7 +95,7 @@
               id="trail-battle-<%= battle.id %>"
               data-battle-id="<%= battle.id %>"
               data-update-url="<%= strategy_goal_path(battle) %>">
-            <%= render "life_journeys/trail_battle_check", battle: battle, rename: true %>
+            <%= render "life_journeys/trail_battle_check", battle: battle %>
             <details class="lp-trail-battles__kebab">
               <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
               <div class="lp-trail-battles__kebab-menu">

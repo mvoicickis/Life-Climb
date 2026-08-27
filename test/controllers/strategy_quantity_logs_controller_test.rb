@@ -63,6 +63,21 @@ class StrategyQuantityLogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, @battle.strategy_quantity_logs.count
   end
 
+  test "logging a number as turbo stream stays on mountain" do
+    post strategy_quantity_logs_path, params: {
+      project_id: @project.id,
+      battle_id: @battle.id,
+      amount: "10",
+      life_journey_id: @journey.id
+    }, as: :turbo_stream
+
+    assert_response :ok
+    assert_includes @response.media_type, "turbo-stream"
+    assert_match "trail-battles-#{@project.id}", response.body
+    assert_match "trail-base-sheet", response.body
+    assert @battle.reload.completed?
+  end
+
   private
 
   def sign_in_as(user)

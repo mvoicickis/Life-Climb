@@ -2,6 +2,7 @@
 
 # Win one Strategy battle from the Mountain world map, then return to the climb.
 class BattleWinsController < ApplicationController
+  include MountainSheetRefresh
   def create
     battle = current_user.strategy_goals.battles.find(params[:id])
     journey = battle.life_journey || current_user.primary_focused_journey
@@ -90,13 +91,11 @@ class BattleWinsController < ApplicationController
   private
 
   def respond_to_quick_win(journey, battle, awarded:)
+    assign_mountain_sheet_for!(battle)
+    @journey = journey || @journey
+    @awarded = awarded
     respond_to do |format|
-      format.turbo_stream do
-        @journey = journey
-        @battle = battle
-        @awarded = awarded
-        render :create, status: :ok
-      end
+      format.turbo_stream { render :create, status: :ok }
       format.html do
         redirect_to mountain_return_path(journey, battle),
                     notice: I18n.t("battle.completed_notice", lp: awarded),

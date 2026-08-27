@@ -102,4 +102,13 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_nil @battle.completed_at
     assert_equal Date.current + 1.day, @battle.scheduled_on
   end
+
+  test "winning a battle as turbo stream replaces lists instead of redirecting" do
+    post battle_win_path(@battle), as: :turbo_stream
+    assert_response :ok
+    assert_includes @response.media_type, "turbo-stream"
+    assert_match "trail-battles-#{@project.id}", response.body
+    assert_match "trail-base-sheet", response.body
+    assert_no_match "data-rpg-refresh", response.body
+  end
 end

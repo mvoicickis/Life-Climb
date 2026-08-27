@@ -1958,6 +1958,38 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 0.35rem 0.4rem;
 }
 
+.lp-trail-battles__row.is-ticking {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.lp-trail-battles__tick,
+.lp-trail-battles__tick-form {
+  flex: 0 0 auto;
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.lp-trail-battles__tick {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.lp-trail-battles__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .lp-trail-battles__check,
 .lp-trail-battles__check-form {
   flex: 1;
@@ -3330,12 +3362,12 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   padding: 0;
 }
 
-/* Quantity log sheet */
+/* Quantity log sheet — above the camp sheet so the field is visible. */
 .lp-trail-log.is-open,
 .lp-trail-log:not([hidden]) {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 90;
 }
 
 .lp-trail-log__backdrop {
@@ -3350,8 +3382,8 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   position: absolute;
   left: 14px;
   right: 14px;
-  bottom: 78px;
-  z-index: 41;
+  bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+  z-index: 91;
   background: #fff;
   border-radius: 22px;
   padding: 16px;
