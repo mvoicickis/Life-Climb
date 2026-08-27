@@ -177,10 +177,33 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     end
 
     assert_selector "#trail-base-sheet", text: /Read/, visible: :all, wait: 5
-    find("#trail-base-sheet .lp-trail-battles__tick").click
-    assert_selector ".lp-trail-log.is-open", wait: 5
-    assert_selector ".lp-trail-log__prompt", text: /pages/i
-    assert_selector ".lp-trail-log__amount[readonly]"
+    # Tick on a quantified daily opens the log sheet (a sibling of the camp
+    # sheet). Do not click the first .lp-trail-battles__tick — that can be a
+    # win form for another daily.
+    assert_selector "#trail-base-sheet [data-action*='openLog']", visible: :all, wait: 5
+    find("#trail-base-sheet [data-action*='openLog']", visible: :all).click
+    assert_selector ".lp-trail-log.is-open", visible: :all, wait: 5
+    assert_selector ".lp-trail-log__prompt", text: /pages/i, visible: :all
+    assert_selector ".lp-trail-log__amount[readonly]", visible: :all
+  end
+
+  test "winning a camp battle swaps the row and keeps the sheet open" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+
+    open_trail_camp_sheet!(@project)
+    assert_selector "#trail-battle-#{@battle.id} form[action*='battle_win']", visible: :all
+    within("#trail-battle-#{@battle.id}") { find(".lp-trail-battles__tick").click }
+
+    assert_selector "#trail-battle-#{@battle.id}.is-done", visible: :all, wait: 5
+    assert_selector ".lp-trail-sheet.is-open", visible: :all
+    assert_selector "#trail-battle-#{@battle.id}", text: /Pitch the tent/, visible: :all
+    assert_no_selector ".lp-trail-log.is-open", visible: :all
   end
 
   test "base camp kebab closes when tapping outside" do
