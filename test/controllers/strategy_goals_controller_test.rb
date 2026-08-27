@@ -761,4 +761,31 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, second.reload.position
     assert_equal 1, first.reload.position
   end
+
+  test "day battles can toggle daily and log-a-number from update" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Read", scheduled_on: Date.current, repeat: "daily", position: 0
+    )
+
+    patch strategy_goal_path(battle), params: { track_quantity: "1", quantity_kind: "up", unit: "pages" }
+    battle.reload
+    assert battle.quantified?
+    assert_equal "pages", battle.unit
+
+    patch strategy_goal_path(battle), params: { repeat: "none" }
+    assert_not battle.reload.repeat_daily?
+
+    patch strategy_goal_path(battle), params: { track_quantity: "0" }
+    assert_not battle.reload.quantified?
+  end
 end

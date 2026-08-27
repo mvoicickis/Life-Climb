@@ -2,7 +2,7 @@
 
 module Strategy
   module Quantity
-    # Append an amount to a quantified path-level project and refresh mountain %.
+    # Append an amount to a quantified camp or day battle and refresh mountain %.
     class Log
       def self.call(project:, amount:, user:, source_day: nil, daily_todo: nil, practice_task: nil, logged_on: Date.current)
         new(
@@ -35,7 +35,7 @@ module Strategy
           entry = StrategyQuantityLog.create!(
             user: @user,
             strategy_goal: @project,
-            source_day: @source_day,
+            source_day: @source_day || (@project.day? ? @project : nil),
             daily_todo: @daily_todo,
             practice_task: @practice_task,
             amount: @amount,
@@ -46,8 +46,11 @@ module Strategy
           new_total = @project.current_amount.to_d + @amount
           @project.update!(current_amount: new_total)
 
+          # Daily battles stay open after a log — they come back tomorrow.
           should_complete =
-            if @project.quantity_range?
+            if @project.day?
+              false
+            elsif @project.quantity_range?
               max = @project.range_max.to_d
               max.positive? && new_total >= max
             elsif @project.quantity_down?

@@ -861,7 +861,7 @@ export default class extends Controller {
       } else if (kind === "down") {
         prompt = unit ? `How much (stay under ${unit})?` : "How much (stay under)?"
       } else {
-        prompt = unit ? `How much toward ${unit}?` : "How much?"
+        prompt = unit ? `How many ${unit}?` : "How much?"
       }
       this.logPromptTarget.textContent = prompt
       this.logPromptTarget.dataset.kind = kind

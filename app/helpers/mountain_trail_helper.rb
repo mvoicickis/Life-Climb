@@ -388,7 +388,7 @@ module MountainTrailHelper
 
     if items.empty?
       dailies = Array(projects).flat_map { |project|
-        mountain_trail_camp_days(project).select { |battle| battle.repeat_daily? && !battle.completed? }
+        mountain_trail_camp_days(project).select { |battle| mountain_trail_base_due?(battle) }
       }
       items = dailies.first(4).map { |battle|
         started = battle.created_at&.to_date || Date.current
@@ -399,13 +399,23 @@ module MountainTrailHelper
     { items: items.first(3), extra: [ items.size - 3, 0 ].max }
   end
 
+  def mountain_trail_open_camps(plan)
+    Array(plan&.children).select { |child| child.project? && !child.holding? && !child.completed? }
+  end
+
   def mountain_trail_daily_battles(projects)
     Array(projects).filter_map { |project|
-      battles = mountain_trail_camp_days(project).select { |battle| battle.repeat_daily? && !battle.completed? }
+      battles = mountain_trail_camp_days(project).select { |battle| mountain_trail_base_due?(battle) }
       next if battles.empty?
 
       { project: project, battles: battles }
     }
+  end
+
+  # Daily template still due today (scheduled_on moves to tomorrow after a win).
+  def mountain_trail_base_due?(battle)
+    battle.repeat_daily? && !battle.completed? &&
+      (battle.scheduled_on.blank? || battle.scheduled_on <= Date.current)
   end
 
   def mountain_trail_camps_done(projects)

@@ -44,6 +44,25 @@ class StrategyQuantityLogsControllerTest < ActionDispatch::IntegrationTest
     assert @battle.completed?
   end
 
+  test "logs a number on a daily battle without finishing the template" do
+    @battle.update!(repeat: "daily", quantity_kind: "up", unit: "pages")
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
+
+    post strategy_quantity_logs_path, params: {
+      project_id: @battle.id,
+      battle_id: @battle.id,
+      amount: "12",
+      life_journey_id: @journey.id
+    }
+
+    @battle.reload
+    assert_equal BigDecimal("12"), @battle.current_amount
+    assert @battle.repeat_daily?
+    assert_nil @battle.completed_at
+    assert_equal Date.current + 1.day, @battle.scheduled_on
+    assert_equal 1, @battle.strategy_quantity_logs.count
+  end
+
   private
 
   def sign_in_as(user)

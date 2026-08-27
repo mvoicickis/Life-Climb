@@ -246,4 +246,13 @@ class MountainTrailHelperTest < ActionView::TestCase
     project = Struct.new(:children).new([ battle_open, battle_won ])
     assert mountain_trail_energy([ project ]) > 0.1
   end
+
+  test "base due hides a daily already rolled to tomorrow" do
+    due = Struct.new(:repeat_daily?, :completed?, :scheduled_on).new(true, false, Date.current)
+    later = Struct.new(:repeat_daily?, :completed?, :scheduled_on).new(true, false, Date.current + 1)
+    done = Struct.new(:repeat_daily?, :completed?, :scheduled_on).new(true, true, Date.current)
+    assert mountain_trail_base_due?(due)
+    assert_not mountain_trail_base_due?(later)
+    assert_not mountain_trail_base_due?(done)
+  end
 end

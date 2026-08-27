@@ -5,15 +5,16 @@ module Battles
   class CompleteTodo
     Result = Struct.new(:streak, :personal_best_new, :awarded, keyword_init: true)
 
-    def self.call(todo:, user:, session:, amount: nil)
-      new(todo: todo, user: user, session: session, amount: amount).call
+    def self.call(todo:, user:, session:, amount: nil, already_logged: false)
+      new(todo: todo, user: user, session: session, amount: amount, already_logged: already_logged).call
     end
 
-    def initialize(todo:, user:, session:, amount:)
+    def initialize(todo:, user:, session:, amount:, already_logged: false)
       @todo = todo
       @user = user
       @session = session
       @amount = amount
+      @already_logged = already_logged
     end
 
     def call
@@ -22,7 +23,7 @@ module Battles
       day = @todo.strategy_goal
       checklist = day&.practice_tasks&.any?
       # Checklist days log quantity on opted-in objectives only — never again at day finish.
-      project = checklist ? nil : day&.quantified_path_project
+      project = checklist || @already_logged ? nil : day&.quantified_path_project
       if project
         raise ArgumentError, "Amount required" unless valid_amount?(@amount)
       end

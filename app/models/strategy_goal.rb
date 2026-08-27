@@ -197,15 +197,16 @@ class StrategyGoal < ApplicationRecord
     MountainTrailHelper::ACCENT_HEX.fetch(tagged_color_key.to_s, "#57534e")
   end
 
-  # Path-level camp that logs a number (target/unit optional).
+  # Path-level camp or a day battle that logs a number (target/unit optional).
   def quantified?
+    kind = quantity_kind_value
+    tracking = %w[up down range].include?(kind)
+    tracking ||= kind == "none" && target_amount.present? && target_amount.to_d.positive?
+    return false unless tracking
+    return true if day?
     return false unless path_level_camp?
 
-    kind = quantity_kind_value
-    return true if %w[up down range].include?(kind)
-
-    # Legacy rows before quantity_kind existed.
-    kind == "none" && target_amount.present? && target_amount.to_d.positive?
+    true
   end
 
   def quantity_kind_value
@@ -430,6 +431,14 @@ class StrategyGoal < ApplicationRecord
       end
       # Legacy up via target_amount alone.
       kind = "up"
+    end
+
+    if day?
+      errors.add(:quantity_kind, :invalid) unless %w[up down].include?(kind)
+      if self.target_amount.present?
+        errors.add(:target_amount, :greater_than, count: 0) unless self.target_amount.to_d.positive?
+      end
+      return
     end
 
     unless project?

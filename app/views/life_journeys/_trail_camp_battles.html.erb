@@ -95,50 +95,14 @@
               id="trail-battle-<%= battle.id %>"
               data-battle-id="<%= battle.id %>"
               data-update-url="<%= strategy_goal_path(battle) %>">
-            <% if quantified %>
-              <button type="button"
-                      class="lp-trail-battles__check"
-                      data-action="click->trail-canvas#openLog"
-                      data-project-id="<%= project.id %>"
-                      data-battle-id="<%= battle.id %>"
-                      data-project-title="<%= project.title %>"
-                      data-unit="<%= project.unit %>"
-                      data-quantity-kind="<%= project.try(:quantity_kind).presence || 'up' %>"
-                      data-range-min="<%= project.try(:range_min) %>"
-                      data-range-max="<%= project.try(:range_max) %>"
-                      data-last-log="<%= mountain_trail_last_log_amount(project) %>"
-                      aria-label="<%= t('strategy.rpg.trail.win_battle') %>">
-                <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                <span class="lp-trail-battles__name"
-                      data-action="click->trail-battles#renameBattle"
-                      data-update-url="<%= strategy_goal_path(battle) %>"><%= battle.title %></span>
-                <% if battle.repeat_daily? %>
-                  <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
-                <% end %>
-              </button>
-            <% else %>
-              <%= button_to battle_win_path(battle),
-                    method: :post,
-                    class: "lp-trail-battles__check",
-                    form: {
-                      class: "lp-trail-battles__check-form",
-                      data: { action: "turbo:submit-end->trail-battles#battleWon" }
-                    } do %>
-                <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                <span class="lp-trail-battles__name"
-                      data-action="click->trail-battles#renameBattle"
-                      data-update-url="<%= strategy_goal_path(battle) %>"><%= battle.title %></span>
-                <% if battle.repeat_daily? %>
-                  <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
-                <% end %>
-              <% end %>
-            <% end %>
+            <%= render "life_journeys/trail_battle_check", battle: battle, rename: true %>
             <details class="lp-trail-battles__kebab">
               <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
               <div class="lp-trail-battles__kebab-menu">
                 <button type="button"
                         data-action="click->trail-battles#renameBattle"
                         data-update-url="<%= strategy_goal_path(battle) %>"><%= t("strategy.rpg.trail.battle_rename") %></button>
+                <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
                 <% if index.positive? %>
                   <%= button_to t("strategy.rpg.trail.battle_move_up"),
                         strategy_goal_path(battle),

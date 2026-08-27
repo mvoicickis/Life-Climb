@@ -157,4 +157,28 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     click_button "Move up"
     assert_selector "#trail-battles-#{@project.id} .lp-trail-battles__list li:first-child", text: /Pack the bags/, visible: :all, wait: 5
   end
+
+  test "base camp can add a daily that asks how many pages" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector ".lp-trail-base-card", wait: 5
+
+    find(".lp-trail-base-card").click
+    assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
+
+    within("#trail-base-sheet") do
+      fill_in placeholder: "Add something you do every day", with: "Read"
+      find("label.is-qty").click
+      click_button "Add battle"
+    end
+
+    assert_selector "#trail-base-sheet", text: /Read/, visible: :all, wait: 5
+    find("#trail-base-sheet .lp-trail-battles__check", text: /Read/).click
+    assert_selector ".lp-trail-log.is-open", wait: 5
+    assert_selector ".lp-trail-log__prompt", text: /pages/i
+  end
 end

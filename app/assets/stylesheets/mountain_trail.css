@@ -2000,15 +2000,65 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-battles__daily-chip {
-  margin-left: auto;
-  font-size: 0.62rem;
+  flex: 0 0 auto;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(247, 234, 217, 0.55);
-  border: 1px solid rgba(247, 234, 217, 0.18);
-  border-radius: 99px;
-  padding: 0.15rem 0.4rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #f7e8cf;
+  color: #8f6a1f;
+}
+
+.lp-trail-battles__qty-chip {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e7f0ee;
+  color: #0a5f59;
+}
+
+.lp-trail-battles__add-row.is-base {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "title"
+    "daily"
+    "qty"
+    "unit"
+    "add";
+}
+
+.lp-trail-battles__add-row.is-base .is-qty {
+  grid-area: qty;
+}
+
+.lp-trail-battles__unit-field {
+  grid-area: unit;
+}
+
+.lp-trail-battles__unit {
+  width: 100%;
+  max-width: 8rem;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #ecdfc8;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (min-width: 420px) {
+  .lp-trail-battles__add-row.is-base {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas:
+      "title title title add"
+      "daily qty unit add";
+  }
 }
 
 .lp-trail-battles__row-delete,

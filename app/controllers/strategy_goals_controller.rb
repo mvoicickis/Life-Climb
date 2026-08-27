@@ -37,6 +37,7 @@ class StrategyGoalsController < ApplicationController
       position: next_position(parent, kind)
     )
     apply_quantity_params!(goal) if kind == "project" && parent&.plan?
+    apply_quantity_params!(goal) if kind == "day"
     apply_color_key_params!(goal) if kind == "project"
     apply_camp_mode_params!(goal) if kind == "project"
     apply_trail_params!(goal) if kind == "project"
@@ -77,6 +78,7 @@ class StrategyGoalsController < ApplicationController
             @goal = goal.root_goal
             @plan = parent.parent if parent.parent&.plan?
             @plan ||= parent.ancestor_chain.reverse.find(&:plan?)
+            @plan&.reload
             @journey = current_user.life_journeys.active.find_by(id: goal.life_journey_id) ||
                        current_user.primary_focused_journey
             render :create
@@ -159,10 +161,14 @@ class StrategyGoalsController < ApplicationController
     end
 
     quantity_touched = goal.path_level_camp? && params.key?(:track_quantity)
-    apply_quantity_params!(goal) if goal.path_level_camp?
+    apply_quantity_params!(goal) if goal.path_level_camp? || goal.day?
     apply_color_key_params!(goal) if goal.project?
     apply_camp_mode_params!(goal) if goal.project?
     apply_trail_params!(goal) if goal.project?
+
+    if goal.day? && params.key?(:repeat)
+      goal.repeat = parse_repeat("day")
+    end
 
     if goal.day? && params.key?(:scheduled_on)
       goal.scheduled_on = parse_day_schedule_param(params[:scheduled_on])
@@ -185,6 +191,8 @@ class StrategyGoalsController < ApplicationController
         @project = goal.parent
         @plan = @project&.parent if @project&.parent&.plan?
         @plan ||= @project&.ancestor_chain&.reverse&.find(&:plan?)
+        @project&.reload
+        @plan&.reload
         @goal = goal.root_goal
       end
       prepare_world_for!(goal, focus_id: focus_id)
@@ -363,8 +371,12 @@ class StrategyGoalsController < ApplicationController
     return unless params.key?(:track_quantity) || params.key?(:quantity_kind)
 
     kind = params[:quantity_kind].to_s.presence || "none"
-    tracking = ActiveModel::Type::Boolean.new.cast(params[:track_quantity]) ||
-               %w[up down range].include?(kind)
+    tracking =
+      if params.key?(:track_quantity)
+        ActiveModel::Type::Boolean.new.cast(params[:track_quantity])
+      else
+        %w[up down range].include?(kind)
+      end
 
     unless tracking
       goal.quantity_kind = "none" if goal.has_attribute?(:quantity_kind)
@@ -379,6 +391,7 @@ class StrategyGoalsController < ApplicationController
     kind = "none" unless StrategyGoal::QUANTITY_KINDS.include?(kind)
     goal.quantity_kind = kind if goal.has_attribute?(:quantity_kind)
     goal.unit = params[:unit].to_s.strip.presence
+    goal.unit ||= "pages" if goal.day? && tracking
 
     case kind
     when "range"

@@ -88,4 +88,18 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
       Battles::CompleteTodo.call(todo: todo.reload, user: @user, session: {})
     end
   end
+
+  test "winning a daily battle from mountain keeps it for tomorrow" do
+    @battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)
+
+    assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
+      post battle_win_path(@battle)
+    end
+
+    @battle.reload
+    assert @battle.repeat_daily?
+    assert_nil @battle.completed_at
+    assert_equal Date.current + 1.day, @battle.scheduled_on
+  end
 end
