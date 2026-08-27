@@ -1,34 +1,30 @@
-<%# Meadow plaque: next move sits in the green band under the photo. %>
+<%# Pinned Base camp hut above the tab bar. locals: today_card, journey, projects %>
 <% today_card = local_assigns.fetch(:today_card) %>
+<% journey = local_assigns[:journey] || @journey %>
+<% projects = local_assigns[:projects] || [] %>
 <% mode = today_card[:mode].to_s %>
 <% plant_mode = mode.start_with?("plant") %>
-<% add_battle_mode = mode == "add_battle" %>
+<% pills = mountain_trail_base_pills(journey: journey, projects: projects) %>
+<% hut_title = plant_mode || mode == "cheer" ? today_card[:headline] : t("strategy.rpg.trail.base_camp.title") %>
 
 <div class="lp-trail__dock" data-trail-ignore>
-  <div class="lp-trail-base" aria-hidden="true">
-    <div class="lp-trail-base__icons">
-      <span class="lp-trail-base__tent"></span>
-      <span class="lp-trail-base__fire"></span>
-    </div>
-  </div>
-
-  <% plaque_class = "lp-trail-today is-#{mode.tr('_', '-')} #{'is-busy' if today_card[:busy]} #{'is-cheer' if mode == 'cheer'}" %>
   <% if plant_mode %>
     <button type="button"
-            class="<%= plaque_class %>"
+            class="lp-trail-base-card is-<%= mode.tr('_', '-') %>"
             data-action="click->trail-canvas#openComposerFromFab">
-      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: true %>
-    </button>
-  <% elsif add_battle_mode && today_card[:camp_id].present? %>
-    <button type="button"
-            class="<%= plaque_class %>"
-            data-camp-id="<%= today_card[:camp_id] %>"
-            data-action="click->trail-camp-sheet#openFromDock">
-      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: false %>
+      <%= render "life_journeys/trail_base_card_inner",
+            today_card: today_card,
+            hut_title: hut_title,
+            pills: pills %>
     </button>
   <% else %>
-    <a href="<%= dashboard_path %>" class="<%= plaque_class %>">
-      <%= render "life_journeys/trail_dock_plaque", today_card: today_card, plant_mode: false %>
-    </a>
+    <button type="button"
+            class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %>"
+            data-action="click->trail-camp-sheet#openBase">
+      <%= render "life_journeys/trail_base_card_inner",
+            today_card: today_card,
+            hut_title: hut_title,
+            pills: pills %>
+    </button>
   <% end %>
 </div>

@@ -732,4 +732,33 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     delete strategy_goal_path(plan)
     assert StrategyGoal.exists?(plan.id)
   end
+
+  test "open day battles can swap position with move" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    first = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "First", scheduled_on: Date.current, position: 0
+    )
+    second = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Second", scheduled_on: Date.current, position: 1
+    )
+
+    patch strategy_goal_path(second), params: { move: "up" }
+    assert_response :redirect
+    assert_equal 0, second.reload.position
+    assert_equal 1, first.reload.position
+
+    patch strategy_goal_path(second), params: { move: "up" }
+    assert_equal 0, second.reload.position
+    assert_equal 1, first.reload.position
+  end
 end

@@ -1,0 +1,22 @@
+<% today_card = local_assigns.fetch(:today_card) %>
+<% hut_title = local_assigns.fetch(:hut_title) %>
+<% pills = local_assigns.fetch(:pills) %>
+<span class="lp-trail-base-card__fire" aria-hidden="true">🔥</span>
+<span class="lp-trail-base-card__copy">
+  <span class="lp-trail-base-card__kicker"><%= t("strategy.rpg.trail.base_camp.kicker") %></span>
+  <span class="lp-trail-base-card__title"><%= hut_title %></span>
+  <% if today_card[:sub].present? %>
+    <span class="lp-trail-base-card__sub"><%= today_card[:sub] %></span>
+  <% end %>
+</span>
+<span class="lp-trail-base-card__chev" aria-hidden="true">›</span>
+<% if pills[:items].any? %>
+  <span class="lp-trail-base-card__peek">
+    <% pills[:items].each do |pill| %>
+      <span class="lp-trail-base-card__pill"><%= pill[:name].truncate(16) %> <b><%= pill[:count] %>d</b></span>
+    <% end %>
+    <% if pills[:extra].positive? %>
+      <span class="lp-trail-base-card__pill is-more"><%= t("strategy.rpg.trail.base_camp.more", count: pills[:extra]) %></span>
+    <% end %>
+  </span>
+<% end %>
