@@ -34,6 +34,37 @@ export default class extends Controller {
     })
   }
 
+  openBase(event) {
+    if (this.element.classList.contains("is-placing")) return
+    if (this.element.classList.contains("is-relocating")) return
+
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.hasSheetTarget) return
+
+    const alreadyOpen = this.sheetTarget.classList.contains("is-open") && !this.sheetTarget.hidden
+    const accent = "#d8892a"
+    this.element.style.setProperty("--lp-trail-accent", accent)
+    if (this.hasPanelTarget) this.panelTarget.style.setProperty("--lp-trail-accent", accent)
+    if (this.hasAccentTarget) {
+      this.accentTarget.style.setProperty("--lp-trail-accent", accent)
+      this.accentTarget.dataset.accent = accent
+    }
+    if (this.hasTitleTarget) this.titleTarget.textContent = this.baseTitle()
+
+    this.revealBodyFor({ dataset: { campId: "base" } })
+    this._openCampId = "base"
+    this.sheetTarget.hidden = false
+    this.sheetTarget.classList.add("is-open")
+    this.sheetTarget.setAttribute("aria-hidden", "false")
+    document.addEventListener("keydown", this._onKey)
+    if (!alreadyOpen) this.pushSheetHistory()
+  }
+
+  baseTitle() {
+    return this.element.querySelector(".lp-trail-base-card__kicker")?.textContent?.trim() || "Base camp"
+  }
+
   open(event) {
     if (event?.defaultPrevented) return
     if (this.element.dataset.trailSuppressOpen === "1") return

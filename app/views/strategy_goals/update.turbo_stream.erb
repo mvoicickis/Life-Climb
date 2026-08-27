@@ -1,3 +1,13 @@
-<%= turbo_stream.append "strategy-world" do %>
-  <meta data-rpg-refresh="1">
+<% if @updated&.day? && @project.present? %>
+  <%= turbo_stream.replace "trail-battles-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_battles",
+          project: @project.reload,
+          goal: @goal,
+          plan: @plan,
+          area: @project.life_area %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.append "strategy-world" do %>
+    <meta data-rpg-refresh="1">
+  <% end %>
 <% end %>

@@ -19,6 +19,7 @@ export default class extends Controller {
     "plantSubmit",
     "ghosts",
     "glowDots",
+    "spurs",
     "placingBanner",
     "placingText",
     "peakMenu",
@@ -317,6 +318,23 @@ export default class extends Controller {
     camp.style.setProperty("--lp-trail-y", y)
     camp.dataset.trailX = String(x)
     camp.dataset.trailY = String(y)
+    this.updateSpur(camp, x, y)
+  }
+
+  updateSpur(camp, x, y) {
+    const id = camp.dataset.campId
+    if (!id) return
+    const path = this.element.querySelector(`#trail-spur-${id}`)
+    if (!path) return
+
+    const snap = this.snapToTrail(x, y)
+    const sx = (snap.x * 100).toFixed(2)
+    const sy = (snap.y * 100).toFixed(2)
+    const tx = (x * 100).toFixed(2)
+    const ty = (y * 100).toFixed(2)
+    const cx = ((snap.x + x) * 50).toFixed(2)
+    const cy = (((snap.y + y) * 50) - 1.2).toFixed(2)
+    path.setAttribute("d", `M${sx} ${sy} Q ${cx} ${cy} ${tx} ${ty}`)
   }
 
   async commitRelocateIfMoved() {

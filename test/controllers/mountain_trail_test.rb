@@ -53,6 +53,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camps"
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status"
+    assert_select "#trail-spur-#{@project.id}"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
     assert_select "#trail-camp-#{holding.id}", count: 0
@@ -82,6 +84,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__check"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
     assert_select "#trail-battles-#{@project.id} .lp-trail-plant__wheel", count: 0
   end
 
@@ -118,15 +121,15 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__peak-title"
     assert_select ".lp-trail__summit-cover", count: 1
     assert_select ".lp-trail__mountain .lp-trail__dock", count: 0
-    assert_select ".lp-trail__scroll > .lp-trail__dock .lp-trail-today"
+    assert_select ".lp-trail__scroll > .lp-trail__dock .lp-trail-base-card"
     assert_select "#mountain-trail > .lp-trail__dock", count: 0
-    assert_select ".lp-trail-today.is-busy"
-    assert_select ".lp-trail-today[href=?]", dashboard_path
-    assert_select ".lp-trail-today__headline", text: /You have 1 battle to do/
-    assert_select ".lp-trail-today__sub", text: /Open Today/
-    assert_select ".lp-trail-today[data-action*='openFromDock']", count: 0
-    assert_select ".lp-trail-base__tent", count: 1
-    assert_select ".lp-trail-base__pill", count: 0
+    assert_select ".lp-trail-base-card.is-busy"
+    assert_select ".lp-trail-base-card[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__kicker", text: /Base camp/i
+    assert_select ".lp-trail-base-card__sub", text: /Open Today/
+    assert_select "#trail-sheet-camp-base"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kind"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_match(/--lp-base-y:\s*0\.95/, response.body)
     assert_select ".lp-trail-sheet"
@@ -198,7 +201,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__fire"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__title", text: /Base camp/
     markup = css_select("#trail-battles-#{@project.id}").first.to_s
-    assert_operator markup.index("lp-trail-battles__add"), :<, markup.index("lp-trail-battles__camp-actions")
+    assert_includes markup, "lp-trail-battles__composer is-dock"
+    assert_operator markup.index("lp-trail-battles__camp-actions"), :<, markup.index("is-dock")
     assert_includes markup, "lp-trail-battles__camp-fold"
   end
 

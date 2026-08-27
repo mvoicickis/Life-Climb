@@ -56,7 +56,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-battles-#{@project.id} form[action*='battle_win']", visible: :all
 
     # Next-action bar is in the trail scroll, after the photo.
-    assert_selector ".lp-trail__scroll .lp-trail__dock .lp-trail-today"
+    assert_selector ".lp-trail__scroll .lp-trail__dock .lp-trail-base-card"
     assert_no_selector ".lp-trail__mountain .lp-trail-today"
     position = page.evaluate_script("getComputedStyle(document.querySelector('.lp-trail-sheet.is-open')).position")
     assert_equal "fixed", position
@@ -134,5 +134,27 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
 
     page.execute_script("document.querySelector('.lp-trail-placing button')?.click()")
     assert_no_selector "#mountain-trail.is-relocating"
+  end
+
+  test "camp sheet can move an open battle up" do
+    later = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Pack the bags", scheduled_on: Date.current, position: 1
+    )
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+    assert_selector ".lp-trail-camp__ring", visible: :all
+    assert_selector ".lp-trail-camp__status", text: /battles? ready/i, visible: :all
+
+    open_trail_camp_sheet!(@project)
+    within("#trail-battle-#{later.id}", visible: :all) { find(".lp-trail-battles__kebab-btn", visible: :all).click }
+    click_button "Move up"
+    assert_selector "#trail-battles-#{@project.id} .lp-trail-battles__list li:first-child", text: /Pack the bags/, visible: :all, wait: 5
   end
 end

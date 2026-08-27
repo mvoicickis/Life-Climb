@@ -187,6 +187,18 @@
 
       <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>
 
+      <svg class="lp-trail__spurs" id="trail-spurs" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-trail-canvas-target="spurs">
+        <% projects.each do |project| %>
+          <% slot = layout_map[project.id] %>
+          <% next if slot.blank? %>
+          <path id="trail-spur-<%= project.id %>"
+                class="lp-trail__spur"
+                data-camp-id="<%= project.id %>"
+                fill="none"
+                d="<%= mountain_trail_spur_d(slot[:x], slot[:y]) %>"></path>
+        <% end %>
+      </svg>
+
       <div class="lp-trail__camps" id="trail-camps" data-trail-canvas-target="camps">
         <% projects.each_with_index do |project, index| %>
           <%= render "life_journeys/trail_camp",
@@ -394,7 +406,7 @@
 
       </div><%# /.lp-trail__mountain %>
     </div>
-    <%= render "life_journeys/trail_dock", today_card: today_card %>
+    <%= render "life_journeys/trail_dock", today_card: today_card, journey: journey, projects: projects %>
   </div>
 
   <div class="lp-trail__tab-fade" aria-hidden="true"></div>
@@ -430,6 +442,17 @@
         <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
       </header>
       <div class="lp-trail-sheet__body" data-trail-camp-sheet-target="body" id="trail-sheet-body">
+        <div class="lp-trail-sheet__camp"
+             id="trail-sheet-camp-base"
+             data-camp-panel="base"
+             hidden>
+          <%= render "life_journeys/trail_base_sheet",
+                projects: projects,
+                area: area,
+                plan: plan,
+                goal: goal,
+                journey: journey %>
+        </div>
         <% projects.each do |project| %>
           <div class="lp-trail-sheet__camp"
                id="trail-sheet-camp-<%= project.id %>"

@@ -443,6 +443,23 @@
   pointer-events: none;
 }
 
+.lp-trail__spurs {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lp-trail__spur {
+  stroke: rgba(255, 248, 220, 0.58);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  stroke-dasharray: 0.45 2.4;
+}
+
 .lp-trail-camp__peg {
   position: relative;
   width: 44px;
@@ -450,6 +467,32 @@
   display: grid;
   place-items: end center;
   pointer-events: none;
+}
+
+.lp-trail-camp__ring {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 62px;
+  height: 62px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lp-trail-camp__ring-bg,
+.lp-trail-camp__ring-fg {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.lp-trail-camp__ring-bg {
+  stroke: rgba(255, 255, 255, 0.45);
+}
+
+.lp-trail-camp__ring-fg {
+  stroke: var(--lp-trail-accent, #0f8a80);
 }
 
 .lp-trail-camp__tent {
@@ -507,7 +550,7 @@
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0.12rem;
-  max-width: 6.5rem;
+  max-width: 7.5rem;
   pointer-events: none;
   text-align: center;
 }
@@ -519,6 +562,21 @@
   font-weight: 650;
   color: #1a140c;
   line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 0 4px rgba(255, 252, 245, 0.95),
+    0 1px 2px rgba(255, 248, 235, 0.9);
+}
+
+.lp-trail-camp__status {
+  display: block;
+  margin-top: 0.08rem;
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #5b6259;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1055,7 +1113,98 @@
 .lp-trail__swatch.is-gray .lp-trail__swatch-dot { background: #57534e; }
 .lp-trail__swatch:has(input:checked) .lp-trail__swatch-dot { outline: 2px solid var(--lp-trail-ink); outline-offset: 2px; }
 
-.lp-trail-battles { display: grid; gap: 0.75rem; width: 100%; max-width: 100%; box-sizing: border-box; min-width: 0; }
+.lp-trail-battles {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  padding-bottom: 0.25rem;
+}
+
+.lp-trail-battles__composer.is-dock {
+  position: sticky;
+  bottom: 0;
+  top: auto;
+  z-index: 3;
+  margin: 0.35rem 0 0;
+  padding: 0.65rem 0 0.15rem;
+  background: linear-gradient(0deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
+}
+
+.lp-trail-battles__kebab {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.lp-trail-battles__kebab-btn {
+  list-style: none;
+  width: 34px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #9daba5;
+  font-size: 17px;
+  border-radius: 9px;
+}
+
+.lp-trail-battles__kebab-btn::-webkit-details-marker { display: none; }
+
+.lp-trail-battles__kebab-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 8;
+  min-width: 158px;
+  background: #fff;
+  color: #12241f;
+  border-radius: 13px;
+  padding: 5px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+.lp-trail-battles__kebab-menu button,
+.lp-trail-battles__kebab-menu input[type="submit"] {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  padding: 11px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.lp-trail-battles__kebab-menu .is-danger,
+.lp-trail-battles__kebab-menu button.is-danger {
+  color: #c0432c;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__kebab-menu {
+  background: #2a1d12;
+  color: #f7ead9;
+}
+
+.lp-trail-battles__inline {
+  min-width: 0;
+  flex: 1;
+  padding: 0.35rem 0.45rem;
+}
+
+.lp-trail-battles__composer {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 0 0.65rem;
+  padding: 0.15rem 0 0.65rem;
+  background: linear-gradient(180deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
+}
 .lp-trail-battles__add { display: block; width: 100%; max-width: 100%; min-width: 0; }
 .lp-trail-battles__input {
   width: 100%;
@@ -1181,7 +1330,8 @@
   gap: 8px;
 }
 
-.lp-trail.is-v4 .lp-trail__dock > .lp-trail-today {
+.lp-trail.is-v4 .lp-trail__dock > .lp-trail-today,
+.lp-trail.is-v4 .lp-trail__dock > .lp-trail-base-card {
   pointer-events: auto;
 }
 
@@ -1918,7 +2068,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   position: absolute;
   left: 0.75rem;
   right: 0.75rem;
-  bottom: calc(4.6rem + env(safe-area-inset-bottom));
+  bottom: calc(11.75rem + env(safe-area-inset-bottom, 0px));
   z-index: 60;
   pointer-events: none;
 }
@@ -2016,11 +2166,131 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   justify-content: center;
 }
 
-.lp-trail-today__chev {
-  flex-shrink: 0;
-  font-size: 0.95rem;
+.lp-trail-base-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "fire copy chev"
+    "peek peek peek";
+  align-items: center;
+  column-gap: 11px;
+  row-gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 13px 14px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #f0dba8;
+  background: linear-gradient(165deg, #fff7e8, #fdeecb);
+  color: #12241f;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+.lp-trail-base-card__fire {
+  grid-area: fire;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  background: radial-gradient(circle, #ffcf82, #ea9a3c);
+  box-shadow: 0 0 0 5px rgba(234, 154, 60, 0.16);
+}
+
+.lp-trail-base-card__copy {
+  grid-area: copy;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.lp-trail-base-card__kicker {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9a7433;
+}
+
+.lp-trail-base-card__title {
+  font-size: 15.5px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.lp-trail-base-card__sub {
+  font-size: 12px;
   font-weight: 700;
-  color: #b7bcb2;
+  color: #7d6b4c;
+}
+
+.lp-trail-base-card__chev {
+  grid-area: chev;
+  color: #b39a6f;
+  font-size: 16px;
+}
+
+.lp-trail-base-card__peek {
+  grid-area: peek;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lp-trail-base-card__pill {
+  background: #fff;
+  border: 1px solid #ecdfc8;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #7d6b4c;
+}
+
+.lp-trail-base-card__pill b {
+  color: #d8892a;
+  font-weight: 900;
+}
+
+.lp-trail-battles__kind {
+  display: inline-block;
+  margin: 0 0 0.35rem;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #dcefec;
+  color: #0a5f59;
+}
+
+.lp-trail-battles__kind.is-daily {
+  background: #f7e8cf;
+  color: #8f6a1f;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__kind {
+  background: rgba(15, 148, 136, 0.22);
+  color: #9ee4d8;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__kind.is-daily {
+  background: rgba(216, 137, 42, 0.22);
+  color: #f3d19a;
+}
+
+.lp-trail-base-sheet__grp {
+  margin: 0.65rem 0 0.35rem;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c4b08a;
 }
 
 .lp-trail-base {
@@ -3842,6 +4112,16 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail-destination__cta:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer.is-dock {
+  position: sticky;
+  bottom: 0;
+  top: auto;
+  z-index: 3;
+  margin: 0.35rem 0 0;
+  padding: 0.65rem 0 0.15rem;
+  background: linear-gradient(0deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
 }
 
 @keyframes lp-trail-toast-in {

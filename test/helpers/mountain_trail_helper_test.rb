@@ -98,6 +98,24 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_in_delta 0.5, mountain_trail_climb_fraction([ done, open ]), 0.001
   end
 
+  test "camp status is empty, ready, or cleared" do
+    empty = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [], false)
+    assert_equal "Nothing planned", mountain_trail_camp_status(empty)
+
+    done = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
+    open = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
+    cleared = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [ done ], false)
+    assert_equal "All cleared", mountain_trail_camp_status(cleared)
+
+    mixed = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [ done, open, open ], false)
+    assert_match(/2 battles ready/, mountain_trail_camp_status(mixed))
+  end
+
+  test "spur path is a quadratic from the dirt curve" do
+    d = mountain_trail_spur_d(0.5, 0.7)
+    assert_match(/\AM[\d.]+ [\d.]+ Q /, d)
+  end
+
   test "peak coordinates sit on default mountain photo summit" do
     assert_in_delta 0.566, MountainTrailHelper::PEAK_X, 0.001
     assert_in_delta 0.22, MountainTrailHelper::PEAK_Y, 0.001

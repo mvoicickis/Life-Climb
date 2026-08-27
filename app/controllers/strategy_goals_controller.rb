@@ -149,6 +149,11 @@ class StrategyGoalsController < ApplicationController
       goal.title = params[:title].to_s.strip
     end
 
+    if goal.day? && params[:move].present?
+      move_day_sibling!(goal, params[:move].to_s)
+      goal.reload
+    end
+
     if params.key?(:description) && goal.goal?
       goal.description = params[:description].to_s.strip.presence
     end
@@ -176,6 +181,12 @@ class StrategyGoalsController < ApplicationController
       Strategy::CascadeToDaily.call(user: current_user, life_area: goal.life_area) if goal.day?
       Strategy::SyncCompletion.resync!(node: goal) if quantity_touched
       @updated = goal
+      if goal.day?
+        @project = goal.parent
+        @plan = @project&.parent if @project&.parent&.plan?
+        @plan ||= @project&.ancestor_chain&.reverse&.find(&:plan?)
+        @goal = goal.root_goal
+      end
       prepare_world_for!(goal, focus_id: focus_id)
       respond_to do |format|
         # Schedule toggles always reload Mountain so Practice Category state stays in sync.
@@ -243,6 +254,39 @@ class StrategyGoalsController < ApplicationController
     return if remaining.empty?
 
     remaining[index] || remaining[index - 1] || remaining.first
+  end
+
+  def move_day_sibling!(goal, direction)
+    return unless %w[up down].include?(direction)
+    return unless goal.day? && !goal.completed?
+
+    siblings = current_user.strategy_goals
+      .where(parent_id: goal.parent_id, horizon: "day")
+      .to_a
+      .reject(&:holding?)
+      .reject(&:completed?)
+      .sort_by { |row| [ row.position.to_i, row.id ] }
+    index = siblings.index { |row| row.id == goal.id }
+    return if index.nil?
+
+    swap_index = direction == "up" ? index - 1 : index + 1
+    return if swap_index.negative? || swap_index >= siblings.size
+
+    other = siblings[swap_index]
+    StrategyGoal.transaction do
+      pos_a = goal.position
+      pos_b = other.position
+      if pos_a == pos_b
+        siblings.each_with_index { |row, i| row.update_column(:position, i) }
+        goal.reload
+        other.reload
+        pos_a = goal.position
+        pos_b = other.position
+      end
+      goal.update_column(:position, pos_b)
+      other.update_column(:position, pos_a)
+    end
+    goal.reload
   end
 
   # Prefer the next sibling camp; otherwise the previous one.

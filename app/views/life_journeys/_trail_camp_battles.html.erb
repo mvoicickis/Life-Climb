@@ -7,6 +7,44 @@
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
+<% add_form = capture do %>
+  <%= form_with url: strategy_goals_path,
+        method: :post,
+        class: "lp-trail-battles__add",
+        data: {
+          turbo: true,
+          action: "submit->trail-battles#parseDraft turbo:submit-end->trail-battles#battleAdded"
+        } do %>
+    <%= hidden_field_tag :life_area_id, area.id %>
+    <%= hidden_field_tag :life_journey_id, project.life_journey_id.presence || @journey&.id %>
+    <%= hidden_field_tag :parent_id, project.id %>
+    <%= hidden_field_tag :horizon, "day" %>
+    <%= hidden_field_tag :scheduled_on, Date.current %>
+    <%= hidden_field_tag :add_position, "top" %>
+    <%= hidden_field_tag :repeat, "none", data: { trail_battles_target: "repeatField" } %>
+    <div class="lp-trail-battles__add-row" data-trail-battles-target="addRow">
+      <label class="lp-trail-battles__field">
+        <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
+        <%= text_field_tag :title, nil,
+              required: true,
+              maxlength: 120,
+              class: "lp-trail-battles__input",
+              placeholder: t("strategy.rpg.trail.battle_placeholder"),
+              autocomplete: "off",
+              data: { trail_battles_target: "titleField" } %>
+      </label>
+      <label class="lp-trail-battles__daily-switch">
+        <input type="checkbox"
+               class="lp-trail-battles__daily-check sr-only"
+               data-trail-battles-target="dailyToggle"
+               data-action="change->trail-battles#toggleDaily">
+        <span class="lp-trail-battles__switch" aria-hidden="true"></span>
+        <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.daily") %></span>
+      </label>
+      <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
+    </div>
+  <% end %>
+<% end %>
 
 <div class="lp-trail-battles <%= 'is-pages-mode' if pages_mode %>"
      id="trail-battles-<%= project.id %>"
@@ -23,7 +61,7 @@
      data-range-max="<%= project.try(:range_max) %>"
      data-trail-battles-session-wins-value="0"
      data-session-win-template="<%= t('strategy.rpg.trail.session_wins_toast') %>">
-  <div class="lp-trail-battles__composer">
+  <p class="lp-trail-battles__kind"><%= t("strategy.rpg.trail.camp_kind") %></p>
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
       <p class="lp-trail-battles__pages-label"><%= strategy_quantity_progress_label(project) %></p>
@@ -48,54 +86,15 @@
     </div>
   <% else %>
     <p class="lp-trail-battles__stats">
-      <%= t("strategy.rpg.trail.battle_stats", open: open_days.size, won: done_days.size) %>
+      <%= t("strategy.rpg.trail.camp_ready", count: open_days.size) %>
     </p>
-
-    <%= form_with url: strategy_goals_path,
-          method: :post,
-          class: "lp-trail-battles__add",
-          data: {
-            turbo: true,
-            action: "submit->trail-battles#parseDraft turbo:submit-end->trail-battles#battleAdded"
-          } do %>
-      <%= hidden_field_tag :life_area_id, area.id %>
-      <%= hidden_field_tag :life_journey_id, project.life_journey_id.presence || @journey&.id %>
-      <%= hidden_field_tag :parent_id, project.id %>
-      <%= hidden_field_tag :horizon, "day" %>
-      <%= hidden_field_tag :scheduled_on, Date.current %>
-      <%= hidden_field_tag :add_position, "top" %>
-      <%= hidden_field_tag :repeat, "none", data: { trail_battles_target: "repeatField" } %>
-      <div class="lp-trail-battles__add-row" data-trail-battles-target="addRow">
-        <label class="lp-trail-battles__field">
-          <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
-          <%= text_field_tag :title, nil,
-                required: true,
-                maxlength: 120,
-                class: "lp-trail-battles__input",
-                placeholder: t("strategy.rpg.trail.battle_placeholder"),
-                autocomplete: "off",
-                data: { trail_battles_target: "titleField" } %>
-        </label>
-        <label class="lp-trail-battles__daily-switch">
-          <input type="checkbox"
-                 class="lp-trail-battles__daily-check sr-only"
-                 data-trail-battles-target="dailyToggle"
-                 data-action="change->trail-battles#toggleDaily">
-          <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-          <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.daily") %></span>
-        </label>
-        <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
-      </div>
-    <% end %>
-  <% end %>
-  </div>
-
-  <% unless pages_mode %>
     <% if open_days.any? %>
       <ul class="lp-trail-battles__list">
-        <% open_days.each do |battle| %>
+        <% open_days.each_with_index do |battle, index| %>
           <li class="lp-trail-battles__row is-check"
-              id="trail-battle-<%= battle.id %>">
+              id="trail-battle-<%= battle.id %>"
+              data-battle-id="<%= battle.id %>"
+              data-update-url="<%= strategy_goal_path(battle) %>">
             <% if quantified %>
               <button type="button"
                       class="lp-trail-battles__check"
@@ -110,7 +109,9 @@
                       data-last-log="<%= mountain_trail_last_log_amount(project) %>"
                       aria-label="<%= t('strategy.rpg.trail.win_battle') %>">
                 <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                <span class="lp-trail-battles__name"><%= battle.title %></span>
+                <span class="lp-trail-battles__name"
+                      data-action="click->trail-battles#renameBattle"
+                      data-update-url="<%= strategy_goal_path(battle) %>"><%= battle.title %></span>
                 <% if battle.repeat_daily? %>
                   <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
                 <% end %>
@@ -124,25 +125,47 @@
                       data: { action: "turbo:submit-end->trail-battles#battleWon" }
                     } do %>
                 <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                <span class="lp-trail-battles__name"><%= battle.title %></span>
+                <span class="lp-trail-battles__name"
+                      data-action="click->trail-battles#renameBattle"
+                      data-update-url="<%= strategy_goal_path(battle) %>"><%= battle.title %></span>
                 <% if battle.repeat_daily? %>
                   <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
                 <% end %>
               <% end %>
             <% end %>
-            <%= button_to strategy_goal_path(battle),
-                  method: :delete,
-                  class: "lp-trail-battles__row-delete",
-                  form: {
-                    data: {
-                      turbo: true,
-                      turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: battle.title),
-                      action: "submit->trail-battles#stashBattleDelete"
-                    }
-                  },
-                  aria: { label: t("strategy.rpg.delete_checkpoint") } do %>
-              🗑
-            <% end %>
+            <details class="lp-trail-battles__kebab">
+              <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
+              <div class="lp-trail-battles__kebab-menu">
+                <button type="button"
+                        data-action="click->trail-battles#renameBattle"
+                        data-update-url="<%= strategy_goal_path(battle) %>"><%= t("strategy.rpg.trail.battle_rename") %></button>
+                <% if index.positive? %>
+                  <%= button_to t("strategy.rpg.trail.battle_move_up"),
+                        strategy_goal_path(battle),
+                        method: :patch,
+                        params: { move: "up" },
+                        form: { data: { turbo: true } } %>
+                <% end %>
+                <% if index < open_days.size - 1 %>
+                  <%= button_to t("strategy.rpg.trail.battle_move_down"),
+                        strategy_goal_path(battle),
+                        method: :patch,
+                        params: { move: "down" },
+                        form: { data: { turbo: true } } %>
+                <% end %>
+                <%= button_to t("strategy.rpg.delete_checkpoint"),
+                      strategy_goal_path(battle),
+                      method: :delete,
+                      class: "is-danger",
+                      form: {
+                        data: {
+                          turbo: true,
+                          turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: battle.title),
+                          action: "submit->trail-battles#stashBattleDelete"
+                        }
+                      } %>
+              </div>
+            </details>
           </li>
         <% end %>
       </ul>
@@ -151,7 +174,7 @@
     <% end %>
 
     <% if done_days.any? %>
-      <details class="lp-trail-battles__done" open>
+      <details class="lp-trail-battles__done">
         <summary><%= t("strategy.rpg.trail.won_battles", count: done_days.size) %></summary>
         <ul class="lp-trail-battles__list is-done">
           <% done_days.each do |battle| %>
@@ -220,6 +243,10 @@
       <% end %>
     </div>
   </details>
+
+  <% unless pages_mode %>
+    <div class="lp-trail-battles__composer is-dock"><%= add_form %></div>
+  <% end %>
 
   <p class="lp-trail-battles__session-toast"
      data-trail-battles-target="sessionToast"

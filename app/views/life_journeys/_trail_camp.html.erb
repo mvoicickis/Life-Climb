@@ -8,6 +8,12 @@
 <% fog = [ 0, (0.62 - layout[:y].to_f) * 0.4 ].max.round(3) %>
 <% shadow = mountain_trail_camp_shadow(layout) %>
 <% current = state == :current %>
+<% progress = mountain_trail_camp_progress(project) %>
+<% status = mountain_trail_camp_status(project) %>
+<% ring_r = 27 %>
+<% ring_c = (2 * Math::PI * ring_r).round(2) %>
+<% ring_offset = (ring_c * (1 - progress[:ratio].to_f)).round(2) %>
+<% show_ring = progress[:total].positive? || progress[:kind] == :pages %>
 
 <button type="button"
         class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %>"
@@ -24,6 +30,15 @@
   <span class="lp-trail-camp__shadow" aria-hidden="true"
         style="--lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"></span>
   <span class="lp-trail-camp__peg">
+    <% if show_ring %>
+      <svg class="lp-trail-camp__ring" viewBox="0 0 62 62" aria-hidden="true">
+        <circle class="lp-trail-camp__ring-bg" cx="31" cy="31" r="<%= ring_r %>"></circle>
+        <circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="<%= ring_r %>"
+                stroke-dasharray="<%= ring_c %>"
+                stroke-dashoffset="<%= ring_offset %>"
+                transform="rotate(-90 31 31)"></circle>
+      </svg>
+    <% end %>
     <span class="lp-trail-camp__tent"></span>
     <% if current %>
       <span class="lp-trail-camp__fire" aria-hidden="true"></span>
@@ -31,5 +46,6 @@
   </span>
   <span class="lp-trail-camp__caption">
     <span class="lp-trail-camp__title"><%= project.title.truncate(12) %></span>
+    <span class="lp-trail-camp__status"><%= status %></span>
   </span>
 </button>

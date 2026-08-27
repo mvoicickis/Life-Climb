@@ -319,10 +319,93 @@ module MountainTrailHelper
   end
 
   def mountain_trail_camp_label(project)
-    meta = strategy_project_card_meta(project)
-    return I18n.t("strategy.rpg.trail.not_started") if meta.blank?
+    mountain_trail_camp_status(project)
+  end
 
-    meta[:label]
+  def mountain_trail_camp_days(project)
+    Array(project&.children).select { |child| child.day? && !child.holding? }
+  end
+
+  def mountain_trail_camp_progress(project)
+    if project&.pages_mode? || (project&.quantified? && mountain_trail_camp_days(project).empty?)
+      meta = strategy_project_card_meta(project)
+      ratio = meta&.dig(:ratio).to_f
+      return { kind: :pages, ratio: ratio.clamp(0, 1), open: 0, won: 0, total: 0 }
+    end
+
+    days = mountain_trail_camp_days(project)
+    total = days.size
+    won = days.count(&:completed?)
+    open = total - won
+    ratio = total.zero? ? 0.0 : (won.to_f / total)
+    { kind: :battles, ratio: ratio, open: open, won: won, total: total }
+  end
+
+  def mountain_trail_camp_status(project)
+    progress = mountain_trail_camp_progress(project)
+    if progress[:kind] == :pages
+      return strategy_quantity_progress_label(project).presence || I18n.t("strategy.rpg.trail.camp_status.empty")
+    end
+
+    if progress[:total].zero?
+      I18n.t("strategy.rpg.trail.camp_status.empty")
+    elsif progress[:open].zero?
+      I18n.t("strategy.rpg.trail.camp_status.cleared")
+    else
+      I18n.t("strategy.rpg.trail.camp_status.ready", count: progress[:open])
+    end
+  end
+
+  def mountain_trail_spur_d(x, y)
+    tent_x = x.to_f
+    tent_y = y.to_f
+    spine = AutoSlot.snap(tent_x, tent_y)
+    sx = (spine[:trail_x] * 100).round(2)
+    sy = (spine[:trail_y] * 100).round(2)
+    tx = (tent_x * 100).round(2)
+    ty = (tent_y * 100).round(2)
+    cx = ((sx + tx) / 2.0).round(2)
+    cy = (((sy + ty) / 2.0) - 1.2).round(2)
+    "M#{sx} #{sy} Q #{cx} #{cy} #{tx} #{ty}"
+  end
+
+  def mountain_trail_base_pills(journey:, projects:, user: current_user)
+    items = []
+    if GameRules.habits_enabled? && user && journey
+      habits = user.habits.active.ordered
+      habits = habits.select { |habit|
+        habit.life_journey_id == journey.id || habit.area_id == journey.life_area_id
+      }
+      items = habits.first(4).map { |habit|
+        count = if habit.association(:completions).loaded?
+          habit.completions.size
+        else
+          habit.completions.count
+        end
+        { name: habit.name, count: count }
+      }
+    end
+
+    if items.empty?
+      dailies = Array(projects).flat_map { |project|
+        mountain_trail_camp_days(project).select { |battle| battle.repeat_daily? && !battle.completed? }
+      }
+      items = dailies.first(4).map { |battle|
+        started = battle.created_at&.to_date || Date.current
+        { name: battle.title, count: (Date.current - started).to_i + 1 }
+      }
+    end
+
+    { items: items.first(3), extra: [ items.size - 3, 0 ].max }
+  end
+
+  def mountain_trail_daily_battles(projects)
+    Array(projects).filter_map { |project|
+      battles = mountain_trail_camp_days(project).select { |battle| battle.repeat_daily? && !battle.completed? }
+      next if battles.empty?
+
+      { project: project, battles: battles }
+    }
   end
 
   def mountain_trail_camps_done(projects)

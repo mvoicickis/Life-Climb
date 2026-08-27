@@ -137,4 +137,59 @@ export default class extends Controller {
   disconnect() {
     if (this._sessionToastTimer) window.clearTimeout(this._sessionToastTimer)
   }
+
+  renameBattle(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const row = event.currentTarget.closest(".lp-trail-battles__row")
+    if (!row) return
+    const url = event.currentTarget.dataset.updateUrl || row.dataset.updateUrl
+    const name = row.querySelector(".lp-trail-battles__name")
+    if (!url || !name || row.querySelector("input.lp-trail-battles__inline")) return
+
+    const current = name.textContent.trim()
+    name.hidden = true
+    const input = document.createElement("input")
+    input.type = "text"
+    input.className = "lp-trail-battles__input lp-trail-battles__inline"
+    input.maxLength = 120
+    input.value = current
+    name.insertAdjacentElement("afterend", input)
+    input.focus()
+    input.select()
+
+    const commit = async () => {
+      const title = input.value.trim()
+      input.remove()
+      name.hidden = false
+      if (!title || title === current) return
+      name.textContent = title
+      const token = document.querySelector("meta[name='csrf-token']")?.content
+      const body = new URLSearchParams()
+      body.set("title", title)
+      body.set("authenticity_token", token || "")
+      await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html, text/html",
+          "X-CSRF-Token": token || ""
+        },
+        body,
+        credentials: "same-origin"
+      })
+    }
+
+    input.addEventListener("blur", commit, { once: true })
+    input.addEventListener("keydown", (keyEvent) => {
+      if (keyEvent.key === "Enter") {
+        keyEvent.preventDefault()
+        input.blur()
+      }
+      if (keyEvent.key === "Escape") {
+        keyEvent.preventDefault()
+        input.value = current
+        input.blur()
+      }
+    })
+  }
 }
