@@ -23,7 +23,10 @@
               data-battle-id="<%= battle.id %>"
               data-update-url="<%= strategy_goal_path(battle) %>">
             <%= render "life_journeys/trail_battle_check", battle: battle %>
-            <details class="lp-trail-battles__kebab">
+            <details class="lp-trail-battles__kebab"
+                     data-controller="tcard-menu"
+                     data-tcard-menu-target="details"
+                     data-action="toggle->tcard-menu#toggled">
               <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
               <div class="lp-trail-battles__kebab-menu">
                 <button type="button"
@@ -52,9 +55,11 @@
   <% end %>
 
   <% if add_parent && area %>
+    <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
+    <div class="lp-trail-battles__composer is-dock">
     <%= form_with url: strategy_goals_path,
           method: :post,
-          class: "lp-trail-battles__add lp-trail-battles__add--dock",
+          class: "lp-trail-battles__add",
           data: {
             turbo: true,
             action: "submit->trail-battles#parseDraft turbo:submit-end->trail-battles#battleAdded"
@@ -108,5 +113,6 @@
         <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
       </div>
     <% end %>
+    </div>
   <% end %>
 </div>

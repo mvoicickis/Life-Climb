@@ -96,7 +96,10 @@
               data-battle-id="<%= battle.id %>"
               data-update-url="<%= strategy_goal_path(battle) %>">
             <%= render "life_journeys/trail_battle_check", battle: battle %>
-            <details class="lp-trail-battles__kebab">
+            <details class="lp-trail-battles__kebab"
+                     data-controller="tcard-menu"
+                     data-tcard-menu-target="details"
+                     data-action="toggle->tcard-menu#toggled">
               <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
               <div class="lp-trail-battles__kebab-menu">
                 <button type="button"
@@ -209,6 +212,7 @@
   </details>
 
   <% unless pages_mode %>
+    <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
     <div class="lp-trail-battles__composer is-dock"><%= add_form %></div>
   <% end %>
 
