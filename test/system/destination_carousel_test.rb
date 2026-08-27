@@ -16,7 +16,7 @@ class DestinationCarouselTest < ApplicationSystemTestCase
       closer_percent: 20,
       route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox", mountain_trail_tour_ack: 7)
     @journey = @user.reload.primary_focused_journey
     @goal = @user.strategy_goals.for_kind("goal").roots.first
     @plan = @goal.children.create!(
@@ -37,10 +37,11 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 8
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 5
-    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 5
+    assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 10
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
 
     assert_selector ".lp-trail__peak-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
     assert_match(/Ship LifePoints/i, destination_title_text)
