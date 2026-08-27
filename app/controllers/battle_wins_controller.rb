@@ -7,11 +7,37 @@ class BattleWinsController < ApplicationController
     journey = battle.life_journey || current_user.primary_focused_journey
     amount = GameRules::BATTLE_TODO_LP
 
+    if battle.quantified_path_project.present?
+      redirect_to mountain_return_path(journey, battle),
+                  alert: t("strategy.rpg.trail.log_needed"),
+                  status: :see_other and return
+    end
+
+    if battle.completed? && !battle.repeat_daily?
+      respond_to_quick_win(journey, battle, awarded: 0) and return
+    end
+
+    Strategy::CascadeToDaily.call(user: current_user, life_area: battle.life_area) if battle.life_area
+    todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+
+    if todo && !todo.completed?
+      result = Battles::CompleteTodo.call(todo: todo, user: current_user, session: session)
+      flash[:ap_gained] = result.awarded
+      flash[:battle_celebrate] = true
+      respond_to_quick_win(journey, battle, awarded: result.awarded) and return
+    end
+
+    if battle.repeat_daily?
+      next_day = [ Date.current + 1.day, (battle.scheduled_on || Date.current) + 1.day ].max
+      battle.update!(scheduled_on: next_day, completed_at: nil)
+      Strategy::CascadeToDaily.call(user: current_user, life_area: battle.life_area) if battle.life_area
+      respond_to_quick_win(journey, battle, awarded: 0) and return
+    end
+
     if battle.completed?
       respond_to_quick_win(journey, battle, awarded: 0) and return
     end
 
-    todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
     already_paid = Battles::WinAlreadyPaid.for_battle?(battle, todo: todo)
     awarded = already_paid ? 0 : amount
 

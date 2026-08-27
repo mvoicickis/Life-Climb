@@ -315,4 +315,29 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(@journey)
     assert_not @journey.reload.mountain_photo.attached?
   end
+
+  test "base camp add defaults to daily and can log a number" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-sheet input[name='repeat'][value='daily']"
+    assert_select "#trail-base-sheet [data-trail-battles-target='dailyToggle'][checked]"
+    assert_select "#trail-base-sheet [data-trail-battles-target='quantityToggle']"
+    assert_select "#trail-base-sheet input[name='unit'][value='pages']"
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: @project.id, horizon: "day", scheduled_on: Date.current.to_s,
+      title: "Read", repeat: "daily", track_quantity: "1", quantity_kind: "up", unit: "pages"
+    }
+    reading = @project.children.find_by!(title: "Read")
+    assert reading.repeat_daily?
+    assert reading.quantified?
+    assert_equal "pages", reading.unit
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-battle-#{reading.id} [data-action*='openLog']"
+    assert_select "#trail-base-battle-#{reading.id}", text: /pages/i
+    assert_select "#trail-base-battle-#{reading.id}", text: /Log a number|Just a tick/i
+  end
 end

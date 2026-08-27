@@ -41,12 +41,25 @@ class StrategyGoalQuantityTest < ActiveSupport::TestCase
     assert @checkpoint.target_amount.blank?
   end
 
-  test "days cannot hold a quantity target" do
+  test "days can log a number with an optional unit" do
+    day = @user.strategy_goals.create!(
+      life_area: @area, parent: @checkpoint, horizon: "day",
+      title: "Read", scheduled_on: Date.current, position: 0,
+      quantity_kind: "up", unit: "pages"
+    )
+
+    assert day.quantified?
+    assert_equal "pages", day.unit
+    assert_equal day, day.quantified_path_project
+  end
+
+  test "days still reject a zero target" do
     day = @user.strategy_goals.create!(
       life_area: @area, parent: @checkpoint, horizon: "day",
       title: "Battle", scheduled_on: Date.current, position: 0
     )
-    day.target_amount = 100
+    day.quantity_kind = "up"
+    day.target_amount = 0
     day.unit = "pages"
 
     assert_not day.valid?

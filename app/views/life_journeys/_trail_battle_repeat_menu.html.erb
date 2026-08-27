@@ -1,0 +1,31 @@
+<%# Repeat + amount options. locals: battle %>
+<% battle = local_assigns.fetch(:battle) %>
+<% qty = battle.quantified? %>
+<% if battle.repeat_daily? %>
+  <%= button_to t("strategy.rpg.trail.just_once"),
+        strategy_goal_path(battle),
+        method: :patch,
+        params: { repeat: "none" },
+        form: { data: { turbo: true } } %>
+<% else %>
+  <%= button_to t("strategy.rpg.trail.every_day"),
+        strategy_goal_path(battle),
+        method: :patch,
+        params: { repeat: "daily" },
+        form: { data: { turbo: true } } %>
+<% end %>
+<% unless battle.parent&.path_level_camp? && battle.parent.quantified? %>
+  <% if qty %>
+    <%= button_to t("strategy.rpg.trail.just_tick"),
+          strategy_goal_path(battle),
+          method: :patch,
+          params: { track_quantity: "0" },
+          form: { data: { turbo: true } } %>
+  <% else %>
+    <%= button_to t("strategy.rpg.trail.log_a_number"),
+          strategy_goal_path(battle),
+          method: :patch,
+          params: { track_quantity: "1", quantity_kind: "up", unit: "pages" },
+          form: { data: { turbo: true } } %>
+  <% end %>
+<% end %>

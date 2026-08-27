@@ -3,13 +3,18 @@ import { Controller } from "@hotwired/stimulus"
 // Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
   static targets = [
-    "titleField", "repeatField", "dailyToggle", "renameDialog", "renameField", "sessionToast", "addRow"
+    "titleField", "repeatField", "dailyToggle", "quantityField", "quantityToggle",
+    "unitField", "unitWrap", "renameDialog", "renameField", "sessionToast", "addRow"
   ]
 
-  static values = { sessionWins: { type: Number, default: 0 } }
+  static values = {
+    sessionWins: { type: Number, default: 0 },
+    keepDaily: { type: Boolean, default: false }
+  }
 
   connect() {
     this.styleDailyRow()
+    this.styleQuantityRow()
   }
 
   parseDraft(event) {
@@ -27,6 +32,8 @@ export default class extends Controller {
       this.repeatFieldTarget.value = "none"
     }
 
+    this.syncQuantityFields()
+
     if (!this.titleFieldTarget.value.trim()) {
       event.preventDefault()
       this.titleFieldTarget.focus()
@@ -39,9 +46,30 @@ export default class extends Controller {
     this.styleDailyRow()
   }
 
+  toggleQuantity() {
+    this.syncQuantityFields()
+    this.styleQuantityRow()
+  }
+
+  syncQuantityFields() {
+    const on = this.hasQuantityToggleTarget && this.quantityToggleTarget.checked
+    if (this.hasQuantityFieldTarget) this.quantityFieldTarget.value = on ? "1" : "0"
+    if (this.hasUnitFieldTarget) {
+      this.unitFieldTarget.disabled = !on
+      if (on && !this.unitFieldTarget.value.trim()) this.unitFieldTarget.value = "pages"
+    }
+    if (this.hasUnitWrapTarget) this.unitWrapTarget.hidden = !on
+  }
+
   styleDailyRow() {
     if (!this.hasAddRowTarget || !this.hasDailyToggleTarget) return
     this.addRowTarget.classList.toggle("is-daily-on", this.dailyToggleTarget.checked)
+  }
+
+  styleQuantityRow() {
+    if (!this.hasAddRowTarget) return
+    const on = this.hasQuantityToggleTarget && this.quantityToggleTarget.checked
+    this.addRowTarget.classList.toggle("is-qty-on", on)
   }
 
   editCamp(event) {
@@ -109,8 +137,12 @@ export default class extends Controller {
       this.titleFieldTarget.focus()
     }
     if (this.hasDailyToggleTarget) {
-      this.dailyToggleTarget.checked = false
+      this.dailyToggleTarget.checked = this.keepDailyValue
       this.toggleDaily()
+    }
+    if (this.hasQuantityToggleTarget) {
+      this.quantityToggleTarget.checked = false
+      this.toggleQuantity()
     }
   }
 

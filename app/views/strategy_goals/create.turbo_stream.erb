@@ -6,6 +6,14 @@
           plan: @plan,
           area: @project.life_area %>
   <% end %>
+  <%= turbo_stream.replace "trail-base-sheet" do %>
+    <%= render "life_journeys/trail_base_sheet",
+          projects: mountain_trail_open_camps(@plan),
+          area: @project.life_area,
+          plan: @plan,
+          goal: @goal,
+          journey: @journey %>
+  <% end %>
 <% else %>
   <%= turbo_stream.append "climb-path-projects" do %>
     <%= render "life_journeys/rpg_project_card",
