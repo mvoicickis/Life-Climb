@@ -22,7 +22,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Become a Ruby Developer" } }
     assert_redirected_to v2_onboarding_path(step: "camp")
     follow_redirect!
-    assert_match(/What is your camp/i, response.body)
+    assert_match(/make a camp to get you there/i, response.body)
+    assert_match(/Camps are the stops along the way/i, response.body)
 
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Get certified" } }
     assert_redirected_to v2_onboarding_path(step: "battles")

@@ -10,13 +10,31 @@ export default class extends Controller {
 
   connect() {
     this.index = 0
-    this.show()
-    this._onResize = () => this.position()
-    window.addEventListener("resize", this._onResize)
+    this._onReflow = () => this.schedulePosition()
+    this._scrollRoot = document.querySelector("#mountain-trail .lp-trail__scroll")
+
+    window.addEventListener("resize", this._onReflow, { passive: true })
+    window.addEventListener("scroll", this._onReflow, true)
+    if (this._scrollRoot) this._scrollRoot.addEventListener("scroll", this._onReflow, { passive: true })
+
+    this._resizeObserver = new ResizeObserver(() => this.schedulePosition())
+
+    requestAnimationFrame(() => requestAnimationFrame(() => this.show()))
   }
 
   disconnect() {
-    window.removeEventListener("resize", this._onResize)
+    window.removeEventListener("resize", this._onReflow)
+    window.removeEventListener("scroll", this._onReflow, true)
+    if (this._scrollRoot) this._scrollRoot.removeEventListener("scroll", this._onReflow)
+    this._resizeObserver?.disconnect()
+    if (this._positionFrame) cancelAnimationFrame(this._positionFrame)
+  }
+
+  schedulePosition() {
+    if (this._positionFrame) cancelAnimationFrame(this._positionFrame)
+    this._positionFrame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => this.position())
+    })
   }
 
   show() {
@@ -31,10 +49,11 @@ export default class extends Controller {
     this.actionsTarget.innerHTML = ""
 
     if (step.final) {
+      this._resizeObserver.disconnect()
       this.spotlightTarget.hidden = true
+      this.bubbleTarget.classList.add("is-centered")
       this.bubbleTarget.style.top = "50%"
       this.bubbleTarget.style.left = "50%"
-      this.bubbleTarget.style.transform = "translate(-50%, -50%)"
 
       const btn = document.createElement("a")
       btn.href = step.todayUrl
@@ -44,8 +63,10 @@ export default class extends Controller {
       btn.addEventListener("click", () => this.persist())
       this.actionsTarget.appendChild(btn)
     } else {
+      this.bubbleTarget.classList.remove("is-centered")
+      this.bubbleTarget.style.top = ""
+      this.bubbleTarget.style.left = ""
       this.spotlightTarget.hidden = false
-      this.bubbleTarget.style.transform = ""
 
       const skip = document.createElement("button")
       skip.type = "button"
@@ -60,31 +81,58 @@ export default class extends Controller {
       next.addEventListener("click", () => this.next())
 
       this.actionsTarget.append(skip, next)
-      this.position()
+      this.observeTarget(step.target)
+      this.schedulePosition()
     }
 
     this.bubbleTarget.classList.add("is-visible")
+  }
+
+  observeTarget(targetId) {
+    this._resizeObserver.disconnect()
+    const el = this.targetElement(targetId)
+    if (el) this._resizeObserver.observe(el)
+  }
+
+  targetElement(targetId) {
+    return document.getElementById(targetId)
   }
 
   position() {
     const step = this.stepsValue[this.index]
     if (!step || step.final) return
 
-    const el = document.getElementById(step.target)
+    const el = this.targetElement(step.target)
     if (!el) return
 
-    const pad = 8
-    const rect = el.getBoundingClientRect()
-    this.spotlightTarget.style.top = `${rect.top - pad}px`
-    this.spotlightTarget.style.left = `${rect.left - pad}px`
-    this.spotlightTarget.style.width = `${rect.width + pad * 2}px`
-    this.spotlightTarget.style.height = `${rect.height + pad * 2}px`
+    el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" })
 
-    let top = step.placement === "above" ? rect.top - this.bubbleTarget.offsetHeight - 12 : rect.bottom + 12
-    let left = Math.max(12, Math.min(rect.left, window.innerWidth - this.bubbleTarget.offsetWidth - 12))
-    if (top < 12) top = rect.bottom + 12
-    this.bubbleTarget.style.top = `${top}px`
-    this.bubbleTarget.style.left = `${left}px`
+    const rect = el.getBoundingClientRect()
+    if (rect.width <= 0 || rect.height <= 0) return
+
+    const pad = 8
+    const spotlight = this.spotlightTarget
+    spotlight.style.top = `${rect.top - pad}px`
+    spotlight.style.left = `${rect.left - pad}px`
+    spotlight.style.width = `${rect.width + pad * 2}px`
+    spotlight.style.height = `${rect.height + pad * 2}px`
+
+    const bubble = this.bubbleTarget
+    const margin = 12
+    const bubbleW = bubble.offsetWidth || 264
+    const bubbleH = bubble.offsetHeight || 120
+
+    let top = step.placement === "above" ? rect.top - bubbleH - margin : rect.bottom + margin
+    let left = rect.left + rect.width / 2 - bubbleW / 2
+    left = Math.max(margin, Math.min(left, window.innerWidth - bubbleW - margin))
+
+    if (top < margin) top = rect.bottom + margin
+    if (top + bubbleH > window.innerHeight - margin) {
+      top = Math.max(margin, rect.top - bubbleH - margin)
+    }
+
+    bubble.style.top = `${top}px`
+    bubble.style.left = `${left}px`
   }
 
   next() {
