@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DailyTodosController < ApplicationController
+  include Dashboard::TodaySurface
+
   # Freeform battles are planned on Strategy and synced to Today.
   # Today completes / undoes / removes / sets times on already-fed battles.
   def create
@@ -24,8 +26,12 @@ class DailyTodosController < ApplicationController
 
   def complete
     todo = current_user.daily_todos.find(params[:id])
+    @todo = todo
+    @uncompleted = false
+
     if todo.completed?
       Battles::UncompleteTodo.call(todo: todo, user: current_user)
+      @uncompleted = true
     else
       day = todo.strategy_goal
       if day&.practice_tasks&.incomplete&.exists?
@@ -63,6 +69,7 @@ class DailyTodosController < ApplicationController
         return
       end
 
+      @result = result
       flash[:ap_gained] = result.awarded
       flash[:battle_celebrate] = true
       maybe_milestone_climb_reward!(
@@ -72,7 +79,17 @@ class DailyTodosController < ApplicationController
       )
     end
     Journeys::SyncClimbFromToday.call(user: current_user)
-    redirect_to dashboard_path, status: :see_other
+
+    respond_to do |format|
+      format.turbo_stream do
+        assign_today_complete_stream!
+        discard_complete_flashes!
+        render :complete, status: :ok
+      end
+      format.html do
+        redirect_to dashboard_path, status: :see_other
+      end
+    end
   end
 
   def destroy
@@ -113,6 +130,43 @@ class DailyTodosController < ApplicationController
   end
 
   private
+
+  def assign_today_complete_stream!
+    @journey = current_user.primary_focused_journey
+    assign_today_battle_surface!(reconcile: false)
+    @battlefield_health = Today::BattlefieldHealth.call(
+      open_count: @battle_open_count,
+      total_count: @battle_total_count
+    )
+    @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
+    @climb_streak = Climb::Streak.status(user: current_user)
+    @recap_share = t(
+      "dash.battlefield.share_text",
+      title: @battlefield_health.result_title,
+      done: @battlefield_health.done_count,
+      total: @battlefield_health.total_count,
+      hp: @battlefield_health.hp
+    )
+
+    if @uncompleted
+      @stream_ap_gained = 0
+      @stream_celebrate = false
+      @stream_boss = false
+      @stream_climb_reward = nil
+    else
+      @stream_ap_gained = @result.awarded.to_i
+      @stream_celebrate = true
+      @stream_boss = flash[:climb_boss].present?
+      @stream_climb_reward = flash[:climb_reward]
+    end
+  end
+
+  def discard_complete_flashes!
+    flash.discard(:ap_gained)
+    flash.discard(:battle_celebrate)
+    flash.discard(:climb_boss)
+    flash.discard(:climb_reward)
+  end
 
   def todo_time_params
     params.require(:daily_todo).permit(:start_time, :end_time)
