@@ -43,18 +43,18 @@ module Strategy
         end
       end
 
-      # Remaining days this week with room under MAX_DAILY_TODOS.
+      # Remaining days this week with room under MAX_DAILY_TODOS open todos.
       # +reserved+ is a Hash{Date => Integer} of seats already claimed by
       # earlier items in the current planner cursor (items 0..N-1).
       def self.eligible_dates(user, on: Date.current, reserved: {})
         reserved = reserved.transform_keys { |k| k.is_a?(Date) ? k : Date.iso8601(k.to_s) }
         (on..on.end_of_week).select do |date|
-          used = user.daily_todos.for_day(date).count + reserved.fetch(date, 0)
+          used = GameRules.daily_open_count(user, date) + reserved.fetch(date, 0)
           used < GameRules::MAX_DAILY_TODOS
         end
       rescue ArgumentError, TypeError
         (on..on.end_of_week).select do |date|
-          user.daily_todos.for_day(date).count < GameRules::MAX_DAILY_TODOS
+          GameRules.daily_open_count(user, date) < GameRules::MAX_DAILY_TODOS
         end
       end
 
