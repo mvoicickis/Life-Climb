@@ -18,7 +18,7 @@ module Strategy
       created = 0
       ActiveRecord::Base.transaction do
         one_time_goals.find_each do |goal|
-          created += 1 if upsert_todo!(goal, goal.scheduled_on)
+          created += 1 if upsert_todo!(goal, Date.current)
         end
 
         daily_templates.find_each do |goal|
@@ -37,7 +37,8 @@ module Strategy
     def one_time_goals
       @user.strategy_goals
         .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
-        .where(scheduled_on: @from..@to)
+        .incomplete
+        .not_holding
         .ordered
     end
 

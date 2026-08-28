@@ -42,6 +42,14 @@
     </div>
   <% end %>
 
+  <div id="today-battles-waiting-host">
+    <% if @battles_waiting_count.to_i.positive? %>
+      <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
+        <%= t("dash.battlefield.more_waiting", count: @battles_waiting_count) %>
+      </p>
+    <% end %>
+  </div>
+
   <% if !health.empty? %>
     <div id="today-battlefield-mountain-link">
       <%= link_to link_copy,

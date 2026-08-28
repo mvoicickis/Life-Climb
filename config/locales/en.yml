@@ -77,6 +77,9 @@ en:
       no_camp: "Camp"
       win_battle: "Win %{title}"
       fight_toast: "Tap a battle above to fight it"
+      more_waiting:
+        one: "%{count} more battle on Mountain"
+        other: "%{count} more battles on Mountain"
       notch_fight: "Fight"
       notch_end_day: "End day"
       notch_new_day: "New day"

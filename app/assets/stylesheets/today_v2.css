@@ -177,6 +177,14 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   font-variant-numeric: tabular-nums;
 }
 
+.lp-today-v2-waiting {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--today-muted);
+  text-align: center;
+}
+
 .lp-today-v2-rows {
   display: grid;
   gap: 0.5rem;
