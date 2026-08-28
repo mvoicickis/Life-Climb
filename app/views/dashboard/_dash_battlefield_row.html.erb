@@ -40,6 +40,8 @@
           form: {
             class: "lp-today-v2-row__check-form",
             data: {
+              turbo: true,
+              turbo_stream: true,
               quantity_complete_target: "form",
               action: "submit->quantity-complete#intercept"
             }
@@ -55,6 +57,8 @@
           form: {
             class: "lp-today-v2-row__check-form",
             data: {
+              turbo: true,
+              turbo_stream: true,
               controller: "juicy-feedback",
               action: "submit->juicy-feedback#play",
               juicy_feedback_suppress_reload_celebrate_value: true

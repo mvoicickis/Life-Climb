@@ -17,6 +17,7 @@
 %>
 
 <div
+  id="today-dash-root"
   class="lp-dash<%= ' is-today-v2' if battlefield_ui %><%= ' is-battle-won' if battlefield_ui && @battlefield_health&.all_clear? %>"
   data-controller="<%= ['battle-day', ('today-notch' if battlefield_ui)].compact.join(' ') %>"
   data-battle-day-closer-value="<%= @closer %>"
@@ -29,9 +30,11 @@
   data-today-notch-recap-text-value="<%= recap_share %>"
   <% end %>>
   <% if battlefield_ui %>
-    <%= render "dashboard/dash_battlefield_header",
-          health: @battlefield_health,
-          streak: @climb_streak %>
+    <div id="today-battlefield-header">
+      <%= render "dashboard/dash_battlefield_header",
+            health: @battlefield_health,
+            streak: @climb_streak %>
+    </div>
 
     <% if flash[:human_win].present? %>
       <div class="lp-dash-human-win" role="status">
@@ -93,16 +96,20 @@
 <% end %>
 
 <% if battlefield_ui %>
-  <%= render "shared/lp_dash_nav_today_v2",
-        active: :today,
-        notch: {
-          open_count: @battle_open_count,
-          day_ended: @battlefield_day_ended,
-          all_clear: @battlefield_health.all_clear?,
-          recap_share_text: recap_share
-        } %>
+  <div id="today-dash-nav">
+    <%= render "shared/lp_dash_nav_today_v2",
+          active: :today,
+          notch: {
+            open_count: @battle_open_count,
+            day_ended: @battlefield_day_ended,
+            all_clear: @battlefield_health.all_clear?,
+            recap_share_text: recap_share
+          } %>
+  </div>
 <% else %>
   <%= render "shared/lp_dash_nav", active: :today %>
 <% end %>
 
-<%= render "shared/climb_reward", reward: flash[:climb_reward] if flash[:climb_reward].present? %>
+<div id="climb-reward-host">
+  <%= render "shared/climb_reward", reward: flash[:climb_reward] if flash[:climb_reward].present? %>
+</div>

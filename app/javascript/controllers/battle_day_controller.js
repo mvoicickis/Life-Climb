@@ -11,6 +11,9 @@ export default class extends Controller {
   }
 
   connect() {
+    this._streamCelebrateHandler = (event) => this.celebrateFromStream(event.detail || {})
+    document.addEventListener("battle-day:celebrate", this._streamCelebrateHandler)
+
     // Click-time juicy_feedback already celebrated battle Win — skip reload juice.
     let suppress = false
     try {
@@ -23,6 +26,19 @@ export default class extends Controller {
     if (!suppress && (this.celebrateValue || this.apGainedValue > 0)) {
       window.requestAnimationFrame(() => this.celebrate())
     }
+  }
+
+  disconnect() {
+    document.removeEventListener("battle-day:celebrate", this._streamCelebrateHandler)
+  }
+
+  celebrateFromStream({ celebrate = false, apGained = 0, boss = false } = {}) {
+    if (!celebrate && !(Number(apGained) > 0)) return
+
+    this.celebrateValue = Boolean(celebrate)
+    this.apGainedValue = Number(apGained) || 0
+    this.bossValue = Boolean(boss)
+    window.requestAnimationFrame(() => this.celebrate())
   }
 
   celebrate() {

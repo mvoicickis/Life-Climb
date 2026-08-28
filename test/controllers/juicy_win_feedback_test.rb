@@ -50,7 +50,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-today-v2-row[data-todo-id=?][data-lp]", todo.id
-    assert_select ".lp-today-v2-row[data-todo-id=?] form[data-controller='juicy-feedback'][data-juicy-feedback-suppress-reload-celebrate-value='true']",
+    assert_select ".lp-today-v2-row[data-todo-id=?] form[data-controller='juicy-feedback'][data-juicy-feedback-suppress-reload-celebrate-value='true'][data-turbo-stream='true']",
                   todo.id
     assert_select ".lp-today-v2-row[data-todo-id=?] form[action=?][data-controller='juicy-feedback']",
                   todo.id, complete_daily_todo_path(todo)

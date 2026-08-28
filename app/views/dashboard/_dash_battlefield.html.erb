@@ -12,10 +12,10 @@
   link_copy = all_clear ? t("dash.battlefield.mountain_all_clear") : t("dash.battlefield.mountain_need")
 %>
 
-<section class="lp-today-v2-field" aria-label="<%= t('dash.battlefield.title') %>">
+<section class="lp-today-v2-field" id="today-battlefield-field" aria-label="<%= t('dash.battlefield.title') %>">
   <div class="lp-today-v2-field__head">
     <h2 class="lp-today-v2-field__title"><%= t("dash.battlefield.title") %></h2>
-    <span class="lp-today-v2-field__count" data-today-v2-target="fieldCount">
+    <span class="lp-today-v2-field__count" id="today-battlefield-count" data-today-v2-target="fieldCount">
       <%= t("dash.battlefield.count", done: health.done_count, total: health.total_count) %>
     </span>
   </div>
@@ -25,7 +25,7 @@
       <%= t("dash.battlefield.empty_html").html_safe %>
     </div>
   <% else %>
-    <div class="lp-today-v2-rows" data-today-v2-target="rows">
+    <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
       <% if include_mission && mission %>
         <%= render "dashboard/dash_battlefield_row",
               todo: nil,
@@ -43,10 +43,12 @@
   <% end %>
 
   <% if !health.empty? %>
-    <%= link_to link_copy,
-          mountain_href,
-          class: "lp-today-v2-mountain-link #{link_class}",
-          data: { today_v2_target: "mountainLink" } %>
+    <div id="today-battlefield-mountain-link">
+      <%= link_to link_copy,
+            mountain_href,
+            class: "lp-today-v2-mountain-link #{link_class}",
+            data: { today_v2_target: "mountainLink" } %>
+    </div>
   <% elsif handoff %>
     <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
           handoff[:href] || mountain_href,
