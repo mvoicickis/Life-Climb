@@ -68,9 +68,8 @@ module Strategy
         lp_reward: GameRules::BATTLE_TODO_LP,
         tag: "strategy"
       )
-      if todo.new_record?
-        day_count = @user.daily_todos.for_day(date).count
-        return false if day_count >= GameRules::MAX_DAILY_TODOS
+      if todo.new_record? && GameRules.daily_open_cap_reached?(@user, date)
+        return false
       end
       todo.save!
       todo.previously_new_record?

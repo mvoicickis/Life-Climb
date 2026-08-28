@@ -79,8 +79,7 @@ class DailyTodo < ApplicationRecord
   def within_daily_cap
     return if user.blank? || scheduled_on.blank?
 
-    count = user.daily_todos.for_day(scheduled_on).count
-    return if count < GameRules::MAX_DAILY_TODOS
+    return unless GameRules.daily_open_cap_reached?(user, scheduled_on)
 
     errors.add(:base, I18n.t("dash.battle_day_full", max: GameRules::MAX_DAILY_TODOS))
   end

@@ -7,6 +7,19 @@ module GameRules
   BATTLE_TODO_LP = 30
   MAX_DAILY_TODOS = 20
   DEFAULT_NEW_JOURNEY_GAP = 95.0
+
+  # Open (incomplete) todos for a day — cap enforcement uses this, not total rows.
+  def self.daily_open_count(user, date)
+    user.daily_todos.for_day(date).incomplete.count
+  end
+
+  def self.daily_open_slots_remaining(user, date)
+    MAX_DAILY_TODOS - daily_open_count(user, date)
+  end
+
+  def self.daily_open_cap_reached?(user, date)
+    daily_open_count(user, date) >= MAX_DAILY_TODOS
+  end
   JOURNEY_COMPLETE_GAP_CLAMP = 5.0
 
   # Strategy Points — earned for planning / breaking goals down.

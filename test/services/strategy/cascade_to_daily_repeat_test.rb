@@ -66,8 +66,33 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
 
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
 
-    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day(Date.current).count
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
     assert_equal 5, Today::BattlesWaiting.count(user: @user, life_area: @area)
+  end
+
+  test "completing open todos frees slots for waiting one-shots" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    25.times do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, parent: @camp_leaf, horizon: "day",
+        title: "Battle #{i}", scheduled_on: 1.month.from_now.to_date, repeat: "none", position: i
+      )
+    end
+
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
+    assert_equal 5, Today::BattlesWaiting.count(user: @user, life_area: @area)
+
+    @user.daily_todos.for_day(Date.current).incomplete.limit(15).find_each do |todo|
+      todo.update!(completed_at: Time.current)
+    end
+    assert_equal 5, GameRules.daily_open_count(@user, Date.current)
+
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
+
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
+    assert_equal 0, Today::BattlesWaiting.count(user: @user, life_area: @area)
+    assert_operator @user.daily_todos.for_day(Date.current).count, :>, GameRules::MAX_DAILY_TODOS
   end
 
   test "one-time completed todo is not recreated" do
@@ -97,7 +122,7 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
       )
     end
 
-    while @user.daily_todos.for_day(Date.current).count < GameRules::MAX_DAILY_TODOS
+    while GameRules.daily_open_count(@user, Date.current) < GameRules::MAX_DAILY_TODOS
       n = @user.daily_todos.for_day(Date.current).count
       @user.daily_todos.create!(
         title: "Cap filler #{n}",
@@ -107,7 +132,7 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
         lp_reward: GameRules::BATTLE_TODO_LP
       )
     end
-    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day(Date.current).count
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
 
     @user.daily_todos.to_a
 
