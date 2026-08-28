@@ -53,6 +53,21 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     assert_select "#commitment-gap-panel[data-next-action-key=setup_gap]", count: 1
   end
 
+  test "destroying daily todos alone does not empty Today when strategy day goals remain" do
+    journey = seed_climb!(@user, today_mission: "Pinned fight")
+    dismiss_onboarding_missions!(@user)
+    area = journey.life_area
+    assert_operator @user.strategy_goals.where(life_area_id: area.id, horizon: "day", scheduled_on: Date.current).count, :>, 0
+
+    @user.daily_todos.for_day(Date.current).destroy_all
+    assert_equal 0, @user.daily_todos.for_day(Date.current).count
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-today-v2-row", minimum: 1
+    assert_select ".lp-today-v2-empty", count: 0
+  end
+
   test "dashboard sync does not surface future one-shot battles on today" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
     goal = @user.strategy_goals.for_kind("goal").roots.first
