@@ -53,7 +53,11 @@ module Strategy
     def upsert_todo!(goal, date)
       return false if date.blank?
 
-      todo = @user.daily_todos.find_or_initialize_by(strategy_goal_id: goal.id, scheduled_on: date)
+      todo = DailyTodo.find_or_initialize_by(
+        user_id: @user.id,
+        strategy_goal_id: goal.id,
+        scheduled_on: date
+      )
       return false if todo.persisted? && todo.completed?
 
       todo.assign_attributes(
