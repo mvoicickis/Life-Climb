@@ -24,3 +24,19 @@ Rails 8, Hotwire/Turbo, importmap, Tailwind. SQLite local, Postgres on Render.
 ## Style
 - Keep responses short. Don't restate repo facts you can read yourself.
 - Lead with the risk, not a task recipe.
+
+## Reporting
+- "Merged" means gh pr view says MERGED. Verify before claiming it.
+- Always report the FULL local suite count, not just targeted files.
+- Never report a bug fixed based on green tests alone. Say what you changed;
+  I verify on device.
+
+## Debugging
+- Get the actual exception class and message before theorising. Production
+  console beats inference.
+- When a fix doesn't hold, check the environment first — deploy state,
+  cache, stale local repo — before re-diagnosing.
+
+## Scope
+- One concern per PR. If a plan touches more than ~5 files or mixes a bug
+  fix with a refactor, split it and say why.
