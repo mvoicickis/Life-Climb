@@ -39,7 +39,7 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     assert_select "#climb-path-project-#{@active.id} .lp-climb-path__menu-btn"
     assert_select "#climb-path-project-#{@later.id} .lp-climb-path__title", text: "Launch"
     assert_select "#climb-path-project-#{@later.id} .lp-climb-path__menu-btn"
-    assert_select ".lp-climb-path__new-btn", text: /Add a project/
+    assert_select ".lp-climb-path__new-btn", text: /Add a camp/
     assert_select "a.lp-climb-path__link", count: 0
     assert_select ".lp-climb-path__node.is-locked", count: 0
   end
@@ -74,8 +74,8 @@ class ProjectSectionsMockupTest < ActionDispatch::IntegrationTest
     )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: empty.id, focus_id: empty.id)
     assert_response :success
-    assert_select ".lp-climb-path.is-empty .lp-climb-path__new-btn", text: /Add a project/
-    assert_select "#climb-path-empty", text: /Add a project to this path/
+    assert_select ".lp-climb-path.is-empty .lp-climb-path__new-btn", text: /Add a camp/
+    assert_select "#climb-path-empty", text: /Add a camp to this path/
     assert_select ".lp-climb-path__project", count: 0
   end
 

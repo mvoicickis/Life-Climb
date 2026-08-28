@@ -265,7 +265,7 @@ export default class extends Controller {
   updateContextAdd() {
     if (!this.hasContextAddTarget) return
     if (this.projectIdValue) this.contextAddTarget.textContent = this.contextAddTarget.dataset.labelBattle || "+ Battle"
-    else if (this.planIdValue) this.contextAddTarget.textContent = this.contextAddTarget.dataset.labelProject || "+ Project"
+    else if (this.planIdValue) this.contextAddTarget.textContent = this.contextAddTarget.dataset.labelProject || "+ Camp"
     else this.contextAddTarget.textContent = this.contextAddTarget.dataset.labelPlan || "+ Plan"
 
     // Prefer localized labels already rendered in the footer button when possible

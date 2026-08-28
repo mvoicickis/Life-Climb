@@ -62,6 +62,14 @@
          data-trail-coach-camps-value="<%= projects.size %>"
          data-trail-coach-has-battles-value="<%= any_battles %>"
          data-trail-coach-has-wins-value="<%= any_wins %>"
+         data-trail-coach-steps-total-value="7"
+         data-trail-coach-step-of-value="<%= t('strategy.rpg.trail.coach.step_of', current: '%{current}', total: 7) %>"
+         data-trail-coach-plant-first-value="<%= t('strategy.rpg.trail.coach.plant_first') %>"
+         data-trail-coach-open-camp-value="<%= t('strategy.rpg.trail.coach.open_camp') %>"
+         data-trail-coach-win-battle-value="<%= t('strategy.rpg.trail.coach.win_battle') %>"
+         data-trail-coach-rename-flag-value="<%= t('strategy.rpg.trail.coach.rename_flag') %>"
+         data-trail-coach-xp-bar-value="<%= t('strategy.rpg.trail.coach.xp_bar') %>"
+         data-trail-coach-journey-stats-value="<%= t('strategy.rpg.trail.coach.journey_stats') %>"
          <% end %>
          style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>; --lp-base-x: <%= base_point[:x].round(4) %>; --lp-base-y: <%= MountainTrailHelper::BASE_YFRAC %>;">
 
@@ -119,7 +127,7 @@
            data-trail-ignore>
       <span class="lp-trail-coach__icon" data-trail-coach-target="icon" aria-hidden="true">⛳</span>
       <div class="lp-trail-coach__copy">
-        <p class="lp-trail-coach__step" data-trail-coach-target="step">Step 2 of 7</p>
+        <p class="lp-trail-coach__step" data-trail-coach-target="step"><%= t("strategy.rpg.trail.coach.step_of", current: 2, total: 7) %></p>
         <p class="lp-trail-coach__text" data-trail-coach-target="text"></p>
       </div>
       <div class="lp-trail-coach__actions">

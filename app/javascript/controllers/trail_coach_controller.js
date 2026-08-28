@@ -8,7 +8,15 @@ export default class extends Controller {
     url: String,
     camps: { type: Number, default: 0 },
     hasBattles: { type: Boolean, default: false },
-    hasWins: { type: Boolean, default: false }
+    hasWins: { type: Boolean, default: false },
+    stepsTotal: { type: Number, default: 7 },
+    stepOf: String,
+    plantFirst: String,
+    openCamp: String,
+    winBattle: String,
+    renameFlag: String,
+    xpBar: String,
+    journeyStats: String
   }
 
   connect() {
@@ -23,32 +31,39 @@ export default class extends Controller {
       return
     }
     this.chipTarget.removeAttribute("hidden")
-    if (this.hasStepTarget) this.stepTarget.textContent = `Step ${coach.n} of 7`
+    if (this.hasStepTarget) this.stepTarget.textContent = this.formatStep(coach.n)
     if (this.hasTextTarget) this.textTarget.textContent = coach.text
     if (this.hasIconTarget) this.iconTarget.textContent = coach.icon
   }
 
+  formatStep(n) {
+    const template = this.stepOfValue || "Step %{current} of %{total}"
+    return template
+      .replace("%{current}", String(n))
+      .replace("%{total}", String(this.stepsTotalValue))
+  }
+
   currentCoach() {
     const ack = this.ackValue
-    if (ack >= 7) return null
+    if (ack >= this.stepsTotalValue) return null
 
     if (this.campsValue <= 0) {
-      return { n: 2, icon: "⛳", text: "Tap a glowing signpost to plant your first project." }
+      return { n: 2, icon: "⛳", text: this.plantFirstValue }
     }
     if (!this.hasBattlesValue) {
-      return { n: 3, icon: "⚔", text: "Open your project and add today’s battle." }
+      return { n: 3, icon: "⚔", text: this.openCampValue }
     }
     if (!this.hasWinsValue) {
-      return { n: 4, icon: "✓", text: "Tick a battle to win it — that’s a day’s progress." }
+      return { n: 4, icon: "✓", text: this.winBattleValue }
     }
     if (ack < 5) {
-      return { n: 5, icon: "🚩", text: "Tap your flag any time to rename your destination.", canAck: true }
+      return { n: 5, icon: "🚩", text: this.renameFlagValue, canAck: true }
     }
     if (ack < 6) {
-      return { n: 6, icon: "📊", text: "Your XP and camps done live in the bar up top.", canAck: true }
+      return { n: 6, icon: "📊", text: this.xpBarValue, canAck: true }
     }
     if (ack < 7) {
-      return { n: 7, icon: "📔", text: "Every number you log becomes a stat under Journey.", canAck: true }
+      return { n: 7, icon: "📔", text: this.journeyStatsValue, canAck: true }
     }
     return null
   }
@@ -63,7 +78,7 @@ export default class extends Controller {
 
   async skip(event) {
     event?.preventDefault()
-    await this.persist(7)
+    await this.persist(this.stepsTotalValue)
     this.refresh()
   }
 

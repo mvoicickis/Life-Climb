@@ -191,7 +191,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get life_points_path
     assert_response :success
-    assert_match(/Project totals/i, response.body)
+    assert_match(/Camp totals/i, response.body)
     assert_match(/Read the book/i, response.body)
     assert_match(/Save cash/i, response.body)
     assert_match(/Target 100 pages/i, response.body)

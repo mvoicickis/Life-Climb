@@ -90,8 +90,8 @@ class MountainProjectListTest < ActionDispatch::IntegrationTest
   test "empty path shows an invitation not a warning" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-climb-path.is-empty #climb-path-empty", text: /Add a project to this path/
-    assert_select ".lp-climb-path__invite", text: /Add a project/
+    assert_select ".lp-climb-path.is-empty #climb-path-empty", text: /Add a camp to this path/
+    assert_select ".lp-climb-path__invite", text: /Add a camp/
   end
 
   test "turbo stream create appends a project row" do
