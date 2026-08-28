@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LifePoints — 3-step onboarding mockup (Karen draft)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #0b0f14;
+      --lp-paper-soft: #171c22;
+      --lp-ink: #f3f6f8;
+      --lp-muted: #9aa6b2;
+      --lp-border: rgba(148, 163, 184, 0.22);
+      --lp-green: #57d35b;
+      --lp-lime: #57d35b;
+      --lp-teal: #3ec9c0;
+      --lp-glass: rgba(23, 28, 34, 0.78);
+      --lp-font-display: "Fraunces", Georgia, serif;
+      --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+      --today-ink: #f7ead9;
+      --today-muted: rgba(247, 234, 217, 0.5);
+      --today-danger: #e8482f;
+      --today-safe: #4ade80;
+      --today-card: rgba(255, 255, 255, 0.05);
+      --today-card-border: rgba(255, 255, 255, 0.1);
+      --tap: 44px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--lp-font-ui);
+      color: var(--lp-ink);
+      background:
+        radial-gradient(ellipse 90% 50% at 50% -10%, rgba(87, 211, 91, 0.12), transparent 55%),
+        linear-gradient(180deg, #152033 0%, var(--lp-paper) 38%);
+    }
+
+    body.is-today {
+      background:
+        radial-gradient(ellipse 120% 60% at 50% 0%, rgba(232, 72, 47, 0.14), transparent 55%),
+        linear-gradient(165deg, #241812, #170f0a 55%, #100a06);
+      color: var(--today-ink);
+    }
+
+    .mockup-shell {
+      max-width: 28rem;
+      margin: 0 auto;
+      padding: 0.75rem 1rem 2rem;
+    }
+
+    .mockup-meta {
+      margin-bottom: 1rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 0.85rem;
+      border: 1px dashed rgba(87, 211, 91, 0.35);
+      background: rgba(87, 211, 91, 0.06);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--lp-muted);
+    }
+
+    .mockup-meta strong { color: var(--lp-ink); }
+
+    .mockup-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .mockup-toolbar__label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-muted);
+    }
+
+    .copy-toggle {
+      display: inline-flex;
+      padding: 0.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-glass);
+    }
+
+    .copy-toggle button {
+      border: 0;
+      background: transparent;
+      color: var(--lp-muted);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+      min-height: var(--tap);
+    }
+
+    .copy-toggle button.is-active {
+      background: rgba(87, 211, 91, 0.18);
+      color: var(--lp-green);
+    }
+
+    .compare-block {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .compare-block h2 {
+      margin: 0 0 0.35rem;
+      font-family: var(--lp-font-display);
+      font-size: 1.05rem;
+    }
+
+    .compare-block p {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      line-height: 1.45;
+    }
+
+    .compare-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .compare-card {
+      border-radius: 1rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-glass);
+      padding: 1rem;
+    }
+
+    .compare-card__tag {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-green);
+    }
+
+    /* —— Adventure card (onboarding) —— */
+    .lp-adventure__card {
+      display: grid;
+      gap: 0.85rem;
+      padding: 1.35rem 1.2rem 1.4rem;
+      border-radius: 1.25rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .lp-adventure__step-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .lp-adventure__back {
+      border: 0;
+      background: transparent;
+      color: var(--lp-muted);
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.25rem 0;
+      min-height: var(--tap);
+    }
+
+    .lp-adventure__progress-label {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-muted);
+    }
+
+    .lp-adventure__progress-track {
+      height: 0.35rem;
+      border-radius: 99px;
+      background: rgba(148, 163, 184, 0.18);
+      overflow: hidden;
+    }
+
+    .lp-adventure__progress-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--lp-green), var(--lp-teal));
+      transition: width 0.35s ease;
+    }
+
+    .lp-adventure__kicker {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green);
+    }
+
+    .lp-adventure__title {
+      margin: 0;
+      font-family: var(--lp-font-display);
+      font-size: clamp(1.35rem, 4.8vw + 0.4rem, 1.85rem);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .lp-adventure__lead {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--lp-muted);
+    }
+
+    .lp-character-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 380px) {
+      .lp-character-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .lp-character-pick {
+      display: block;
+      padding: 0.65rem;
+      border-radius: 1rem;
+      border: 1.5px solid transparent;
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .lp-character-pick:has(input:checked) {
+      border-color: var(--lp-lime);
+      box-shadow: 0 0 0 2px rgba(87, 211, 91, 0.35);
+    }
+
+    .lp-character-pick input { position: absolute; opacity: 0; pointer-events: none; }
+
+    .lp-character-pick img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 999px;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px var(--lp-lime), 0 0 18px rgba(34, 197, 94, 0.35);
+    }
+
+    .lp-character-pick span {
+      display: block;
+      margin-top: 0.5rem;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .type-zone {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .type-zone__callout {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 0.65rem;
+      background: rgba(87, 211, 91, 0.1);
+      border: 1px solid rgba(87, 211, 91, 0.28);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--lp-green);
+    }
+
+    .type-zone__callout svg { flex: none; }
+
+    .lp-adventure__label {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+    }
+
+    .lp-input {
+      width: 100%;
+      padding: 0.95rem 1rem;
+      border-radius: 0.85rem;
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      background: rgba(11, 15, 20, 0.65);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.35;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .lp-input::placeholder {
+      color: rgba(154, 166, 178, 0.75);
+      font-weight: 500;
+    }
+
+    .lp-input:focus {
+      border-color: var(--lp-green);
+      box-shadow: 0 0 0 3px rgba(87, 211, 91, 0.22);
+    }
+
+    .examples-below {
+      margin: 0;
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.65rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(148, 163, 184, 0.25);
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--lp-muted);
+    }
+
+    .examples-below strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(154, 166, 178, 0.9);
+    }
+
+    .examples-below em {
+      font-style: normal;
+      color: rgba(154, 166, 178, 0.85);
+    }
+
+    .lp-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: var(--tap);
+      border: 0;
+      border-radius: 999px;
+      padding: 0.85rem 1.5rem;
+      font: inherit;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--lp-teal);
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.22);
+      cursor: pointer;
+    }
+
+    .lp-cta:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .screen { display: none; }
+    .screen.is-active { display: block; }
+
+    .goal-echo {
+      margin: 0;
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.65rem;
+      background: rgba(87, 211, 91, 0.08);
+      border-left: 3px solid var(--lp-green);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    /* —— Today V2 —— */
+    .lp-dash {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: calc(100dvh - 1.5rem);
+    }
+
+    .lp-today-v2-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .lp-today-v2-header__avatar {
+      width: 2.625rem;
+      height: 2.625rem;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--today-danger);
+      flex: none;
+    }
+
+    .lp-today-v2-header__avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .lp-today-v2-header__who { flex: 1; min-width: 0; }
+
+    .lp-today-v2-header__name {
+      margin: 0;
+      font-family: var(--lp-font-display);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .lp-today-v2-header__meta {
+      margin: 0.15rem 0 0;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--today-muted);
+    }
+
+    .lp-today-v2-header__hp-block { text-align: right; }
+
+    .lp-today-v2-header__hp-num {
+      display: block;
+      font-family: var(--lp-font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--today-safe);
+    }
+
+    .lp-today-v2-header__hp-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--today-muted);
+    }
+
+    .lp-today-v2-hp-bar {
+      margin-top: 0.75rem;
+      height: 0.875rem;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .lp-today-v2-hp-bar__fill {
+      display: block;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      transition: width 0.4s ease;
+    }
+
+    .lp-today-v2-risk {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0.45rem 0 0;
+      font-size: 0.69rem;
+      color: var(--today-muted);
+    }
+
+    .lp-today-v2-field__title {
+      margin: 0 0 0.5rem;
+      font-family: var(--lp-font-display);
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    .lp-today-v2-row {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.6875rem 0.75rem;
+      background: var(--today-card);
+      border: 1px solid var(--today-card-border);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .lp-today-v2-row__stripe {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--today-danger);
+    }
+
+    .lp-today-v2-row__check {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 7px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+      flex: none;
+      margin-left: 0.25rem;
+      appearance: none;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .lp-today-v2-row__check:checked {
+      background: var(--today-safe);
+      border-color: var(--today-safe);
+    }
+
+    .lp-today-v2-row__check:checked::after {
+      content: "✓";
+      color: #0f172a;
+      font-size: 0.85rem;
+      font-weight: 900;
+    }
+
+    .lp-today-v2-row__title {
+      flex: 1;
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .lp-today-v2-row.is-done .lp-today-v2-row__title {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+
+    .lp-today-v2-row__camp {
+      flex: none;
+      max-width: 42%;
+      font-size: 0.625rem;
+      font-weight: 700;
+      border-radius: 99px;
+      padding: 0.1875rem 0.5rem;
+      background: rgba(232, 72, 47, 0.18);
+      color: #f7c4b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lp-today-v2-row__ap {
+      flex: none;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--today-muted);
+    }
+
+    .win-toast {
+      padding: 0.75rem 0.9rem;
+      border-radius: 0.75rem;
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #bbf7d0;
+      display: none;
+    }
+
+    .win-toast.is-visible { display: block; animation: popIn 0.35s ease; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .lp-bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.25rem;
+      padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom));
+      background: rgba(16, 10, 6, 0.92);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .lp-bottom-nav a {
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--today-muted);
+      padding: 0.35rem;
+    }
+
+    .lp-bottom-nav a.is-active { color: var(--today-ink); }
+
+    body.is-today .mockup-meta,
+    body.is-today .compare-block,
+    body.is-today .mockup-toolbar { display: none; }
+
+    body.is-today .mockup-shell { padding-bottom: 5rem; }
+  </style>
+</head>
+<body>
+  <div class="mockup-shell">
+    <p class="mockup-meta">
+      <strong>Mockup only</strong> — 3-step onboarding → Today with one tickable battle.
+      Copy is placeholder (Karen approves). Companion images load from
+      <code>app/assets/images/characters/</code> when opened from the repo.
+    </p>
+
+    <div class="mockup-toolbar">
+      <span class="mockup-toolbar__label">Copy for steps 2 &amp; 3</span>
+      <div class="copy-toggle" role="group" aria-label="Copy version">
+        <button type="button" class="is-active" data-copy="a">Copy A — examples below</button>
+        <button type="button" data-copy="b">Copy B — placeholder</button>
+      </div>
+    </div>
+
+  <!-- ——— STEP 1: Companion ——— -->
+  <section class="screen is-active" id="screen-companion" aria-label="Step 1 — Pick companion">
+    <article class="lp-adventure__card">
+      <div class="lp-adventure__step-head">
+        <span class="lp-adventure__progress-label">Step 1 of 3</span>
+      </div>
+      <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
+        <span class="lp-adventure__progress-fill" style="width: 33%"></span>
+      </div>
+
+      <p class="lp-adventure__kicker">Your companion</p>
+      <h1 class="lp-adventure__title">Pick who climbs with you</h1>
+      <p class="lp-adventure__lead">Tap one — you can change this later.</p>
+
+      <div class="lp-character-grid" role="radiogroup" aria-label="Choose companion">
+        <!-- images: relative to mockups/ folder -->
+        <label class="lp-character-pick"><input type="radio" name="character" value="birdie"><img src="../app/assets/images/characters/birdie.png" alt=""><span>Birdie</span></label>
+        <label class="lp-character-pick"><input type="radio" name="character" value="bee"><img src="../app/assets/images/characters/bee.png" alt=""><span>Bee</span></label>
+        <label class="lp-character-pick"><input type="radio" name="character" value="bear"><img src="../app/assets/images/characters/bear.png" alt=""><span>Bear</span></label>
+        <label class="lp-character-pick"><input type="radio" name="character" value="fox" checked><img src="../app/assets/images/characters/fox.png" alt=""><span>Fox</span></label>
+        <label class="lp-character-pick"><input type="radio" name="character" value="horse"><img src="../app/assets/images/characters/horse.png" alt=""><span>Horse</span></label>
+        <label class="lp-character-pick"><input type="radio" name="character" value="raven"><img src="../app/assets/images/characters/raven.png" alt=""><span>Raven</span></label>
+      </div>
+
+      <button type="button" class="lp-cta" id="btn-companion-continue">Continue</button>
+    </article>
+  </section>
+
+  <!-- ——— STEP 2: Goal ——— -->
+  <section class="screen" id="screen-goal" aria-label="Step 2 — Your goal">
+    <article class="lp-adventure__card">
+      <div class="lp-adventure__step-head">
+        <button type="button" class="lp-adventure__back" data-go="companion">← Back</button>
+        <span class="lp-adventure__progress-label">Step 2 of 3</span>
+      </div>
+      <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="2" aria-valuemin="1" aria-valuemax="3">
+        <span class="lp-adventure__progress-fill" style="width: 66%"></span>
+      </div>
+
+      <p class="lp-adventure__kicker" data-copy-a="Your mountain" data-copy-b="Your goal">Your mountain</p>
+      <h1 class="lp-adventure__title" data-copy-a="Type your goal here" data-copy-b="What's your goal?">Type your goal here</h1>
+      <p class="lp-adventure__lead" data-copy-a="Write your own words in the box. This is not a list to pick from." data-copy-b="One sentence about something you want.">Write your own words in the box. This is not a list to pick from.</p>
+
+      <div class="type-zone">
+        <div class="type-zone__callout" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+          Tap the box and type
+        </div>
+        <label class="lp-adventure__label" for="goal-input">Your answer</label>
+        <input class="lp-input" id="goal-input" type="text" maxlength="120" autocomplete="off"
+               data-placeholder-a=""
+               data-placeholder-b="e.g. Get stronger, save money, learn guitar…"
+               placeholder="">
+        <p class="examples-below" id="goal-examples-below" hidden>
+          <strong>Just ideas — type your own</strong>
+          <em>Get healthier · Finish school · Be nicer to my sister · Save for a trip</em>
+        </p>
+      </div>
+
+      <button type="button" class="lp-cta" id="btn-goal-continue" disabled>Continue</button>
+    </article>
+  </section>
+
+  <!-- ——— STEP 3: Today's action ——— -->
+  <section class="screen" id="screen-today-action" aria-label="Step 3 — Today's battle">
+    <article class="lp-adventure__card">
+      <div class="lp-adventure__step-head">
+        <button type="button" class="lp-adventure__back" data-go="goal">← Back</button>
+        <span class="lp-adventure__progress-label">Step 3 of 3</span>
+      </div>
+      <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="3" aria-valuemin="1" aria-valuemax="3">
+        <span class="lp-adventure__progress-fill" style="width: 100%"></span>
+      </div>
+
+      <p class="lp-adventure__kicker" data-copy-a="Today's battle" data-copy-b="First step">Today's battle</p>
+      <h1 class="lp-adventure__title" data-copy-a="What will you do today?" data-copy-b="What can you do today?">What will you do today?</h1>
+      <p class="lp-adventure__lead" data-copy-a="One small thing you can finish today. Type it below." data-copy-b="Something tiny — even 5 minutes counts.">One small thing you can finish today. Type it below.</p>
+
+      <p class="goal-echo" id="goal-echo"></p>
+
+      <div class="type-zone">
+        <div class="type-zone__callout" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+          Tap the box and type
+        </div>
+        <label class="lp-adventure__label" for="action-input">Today's action</label>
+        <input class="lp-input" id="action-input" type="text" maxlength="120" autocomplete="off"
+               data-placeholder-a=""
+               data-placeholder-b="e.g. Walk 5 minutes, text one friend, read 3 pages…"
+               placeholder="">
+        <p class="examples-below" id="action-examples-below" hidden>
+          <strong>Need a nudge? (still type or edit)</strong>
+          <em>Put on shoes · Drink a glass of water · Send one message · Tidy one drawer</em>
+        </p>
+      </div>
+
+      <button type="button" class="lp-cta" id="btn-start-climbing">Start climbing →</button>
+    </article>
+  </section>
+
+  <!-- ——— TODAY ——— -->
+  <section class="screen" id="screen-today" aria-label="Today — your battle">
+    <div class="lp-dash">
+      <header class="lp-today-v2-header">
+        <div class="lp-today-v2-header__row">
+          <div class="lp-today-v2-header__avatar">
+            <img id="today-avatar" src="../app/assets/images/characters/fox.png" alt="">
+          </div>
+          <div class="lp-today-v2-header__who">
+            <p class="lp-today-v2-header__name">You</p>
+            <p class="lp-today-v2-header__meta" id="today-date"></p>
+          </div>
+          <div class="lp-today-v2-header__hp-block">
+            <span class="lp-today-v2-header__hp-num" id="hp-num">100</span>
+            <span class="lp-today-v2-header__hp-label">Day health</span>
+          </div>
+        </div>
+        <div class="lp-today-v2-hp-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+          <span class="lp-today-v2-hp-bar__fill" id="hp-fill"></span>
+        </div>
+        <p class="lp-today-v2-risk"><span aria-hidden="true">⚔️</span> <span id="risk-note">1 battle waiting — tick it to win the day</span></p>
+      </header>
+
+      <div class="win-toast" id="win-toast" role="status">+50 AP · Battle won! You earned your first point.</div>
+
+      <div class="lp-today-v2-field">
+        <h2 class="lp-today-v2-field__title">Today's battles</h2>
+        <div class="lp-today-v2-rows">
+          <div class="lp-today-v2-row" id="battle-row">
+            <span class="lp-today-v2-row__stripe"></span>
+            <input type="checkbox" class="lp-today-v2-row__check" id="battle-check" aria-label="Complete battle">
+            <p class="lp-today-v2-row__title" id="battle-title">…</p>
+            <span class="lp-today-v2-row__camp" id="battle-camp">First step</span>
+            <span class="lp-today-v2-row__ap">+50 AP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ——— Static compare: both copy versions side by side ——— -->
+  <div class="compare-block" id="compare-block">
+    <h2>Steps 2 &amp; 3 — copy comparison</h2>
+    <p>Same layout, two wording strategies. Interactive prototype above uses the selected copy.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="compare-card__tag">Copy A · examples below field</span>
+        <p class="lp-adventure__kicker">Your mountain</p>
+        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">Type your goal here</h3>
+        <p class="lp-adventure__lead" style="margin-bottom:.75rem">Write your own words in the box. This is not a list to pick from.</p>
+        <div class="type-zone__callout" style="margin-bottom:.5rem">Tap the box and type</div>
+        <div class="lp-input" style="pointer-events:none;opacity:.9">|</div>
+        <p class="examples-below" style="margin-top:.5rem">
+          <strong>Just ideas — type your own</strong>
+          <em>Get healthier · Finish school · Be nicer to my sister</em>
+        </p>
+        <hr style="border:0;border-top:1px solid var(--lp-border);margin:1rem 0">
+        <p class="lp-adventure__kicker">Today's battle</p>
+        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">What will you do today?</h3>
+        <p class="lp-adventure__lead" style="margin-bottom:.75rem">One small thing you can finish today. Type it below.</p>
+        <div class="lp-input" style="pointer-events:none;opacity:.9">|</div>
+        <p class="examples-below" style="margin-top:.5rem">
+          <strong>Need a nudge? (still type or edit)</strong>
+          <em>Put on shoes · Drink water · Send one message</em>
+        </p>
+      </div>
+
+      <div class="compare-card">
+        <span class="compare-card__tag">Copy B · examples in placeholder</span>
+        <p class="lp-adventure__kicker">Your goal</p>
+        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">What's your goal?</h3>
+        <p class="lp-adventure__lead" style="margin-bottom:.75rem">One sentence about something you want.</p>
+        <div class="type-zone__callout" style="margin-bottom:.5rem">Tap the box and type</div>
+        <div class="lp-input" style="pointer-events:none;opacity:.7;color:var(--lp-muted)">e.g. Get stronger, save money, learn guitar…</div>
+        <hr style="border:0;border-top:1px solid var(--lp-border);margin:1rem 0">
+        <p class="lp-adventure__kicker">First step</p>
+        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">What can you do today?</h3>
+        <p class="lp-adventure__lead" style="margin-bottom:.75rem">Something tiny — even 5 minutes counts.</p>
+        <div class="lp-input" style="pointer-events:none;opacity:.7;color:var(--lp-muted)">e.g. Walk 5 minutes, text one friend…</div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <nav class="lp-bottom-nav" id="today-nav" hidden aria-label="App navigation">
+    <a href="#" class="is-active">Today</a>
+    <a href="#">Mountain</a>
+    <a href="#">Progress</a>
+  </nav>
+
+  <script>
+    (function () {
+      const state = {
+        copy: "a",
+        character: "fox",
+        goal: "",
+        action: ""
+      };
+
+      const screens = {
+        companion: document.getElementById("screen-companion"),
+        goal: document.getElementById("screen-goal"),
+        todayAction: document.getElementById("screen-today-action"),
+        today: document.getElementById("screen-today")
+      };
+
+      const goalInput = document.getElementById("goal-input");
+      const actionInput = document.getElementById("action-input");
+      const goalExamples = document.getElementById("goal-examples-below");
+      const actionExamples = document.getElementById("action-examples-below");
+
+      function showScreen(key) {
+        Object.values(screens).forEach((el) => el.classList.remove("is-active"));
+        screens[key].classList.add("is-active");
+        const onToday = key === "today";
+        document.body.classList.toggle("is-today", onToday);
+        document.getElementById("today-nav").hidden = !onToday;
+        document.getElementById("compare-block").style.display = onToday ? "none" : "";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function applyCopy() {
+        const variant = state.copy;
+        document.querySelectorAll("[data-copy-a]").forEach((el) => {
+          el.textContent = el.getAttribute("data-copy-" + variant);
+        });
+
+        goalInput.placeholder = goalInput.getAttribute("data-placeholder-" + variant) || "";
+        actionInput.placeholder = actionInput.getAttribute("data-placeholder-" + variant) || "";
+
+        const showBelow = variant === "a";
+        goalExamples.hidden = !showBelow;
+        actionExamples.hidden = !showBelow;
+      }
+
+      document.querySelectorAll(".copy-toggle button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".copy-toggle button").forEach((b) => b.classList.remove("is-active"));
+          btn.classList.add("is-active");
+          state.copy = btn.dataset.copy;
+          applyCopy();
+        });
+      });
+
+      document.querySelectorAll('input[name="character"]').forEach((radio) => {
+        radio.addEventListener("change", () => { state.character = radio.value; });
+      });
+
+      goalInput.addEventListener("input", () => {
+        document.getElementById("btn-goal-continue").disabled = goalInput.value.trim().length === 0;
+      });
+
+      actionInput.addEventListener("input", () => {
+        document.getElementById("btn-start-climbing").disabled = actionInput.value.trim().length === 0;
+      });
+
+      document.getElementById("btn-companion-continue").addEventListener("click", () => {
+        const picked = document.querySelector('input[name="character"]:checked');
+        if (picked) state.character = picked.value;
+        showScreen("goal");
+        goalInput.focus();
+      });
+
+      document.getElementById("btn-goal-continue").addEventListener("click", () => {
+        state.goal = goalInput.value.trim();
+        document.getElementById("goal-echo").textContent = "🎯 " + state.goal;
+        showScreen("todayAction");
+        actionInput.focus();
+      });
+
+      document.getElementById("btn-start-climbing").addEventListener("click", () => {
+        state.action = actionInput.value.trim();
+        document.getElementById("battle-title").textContent = state.action;
+        document.getElementById("battle-camp").textContent = state.goal.length > 28 ? state.goal.slice(0, 26) + "…" : state.goal;
+        document.getElementById("today-avatar").src = "../app/assets/images/characters/" + state.character + ".png";
+
+        const now = new Date();
+        const days = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+        document.getElementById("today-date").textContent = days[now.getDay()] + " · DAY 1";
+
+        showScreen("today");
+      });
+
+      document.querySelectorAll("[data-go]").forEach((btn) => {
+        btn.addEventListener("click", () => showScreen(btn.dataset.go));
+      });
+
+      const battleRow = document.getElementById("battle-row");
+      const battleCheck = document.getElementById("battle-check");
+      const winToast = document.getElementById("win-toast");
+
+      function completeBattle() {
+        battleRow.classList.add("is-done");
+        battleCheck.checked = true;
+        battleCheck.disabled = true;
+        winToast.classList.add("is-visible");
+        document.getElementById("risk-note").textContent = "All clear — you won the day!";
+      }
+
+      battleCheck.addEventListener("change", () => { if (battleCheck.checked) completeBattle(); });
+      battleRow.addEventListener("click", (e) => {
+        if (e.target === battleCheck) return;
+        if (!battleCheck.checked) {
+          battleCheck.checked = true;
+          completeBattle();
+        }
+      });
+
+      applyCopy();
+      document.getElementById("btn-start-climbing").disabled = true;
+    })();
+  </script>
+</body>
+</html>
