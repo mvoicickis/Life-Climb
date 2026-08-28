@@ -122,6 +122,44 @@ class Battles::CompleteTodoTest < ActiveSupport::TestCase
     assert @todo.reload.completed?
   end
 
+  test "completes at daily cap without rolling back" do
+    area = @user.primary_focused_journey.life_area
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.find(&:plan?)
+    camp = plan.children.find(&:project?)
+    camp_leaf = practice_leaf_for!(camp)
+    practice = @user.strategy_goals.create!(
+      life_area: area, parent: camp_leaf, horizon: "day",
+      title: "Daily cap target", scheduled_on: Date.current, repeat: "daily", position: 99
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: area, from: Date.current, to: Date.current)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: practice.id, scheduled_on: Date.current)
+
+    18.times do |i|
+      @user.strategy_goals.create!(
+        life_area: area, parent: camp_leaf, horizon: "day",
+        title: "Extra daily #{i}", scheduled_on: Date.current - 1.month, repeat: "daily", position: 100 + i
+      )
+    end
+
+    while @user.daily_todos.for_day(Date.current).count < GameRules::MAX_DAILY_TODOS
+      n = @user.daily_todos.for_day(Date.current).count
+      @user.daily_todos.create!(
+        title: "Cap filler #{n}",
+        aspect_key: "self",
+        scheduled_on: Date.current,
+        position: n,
+        lp_reward: GameRules::BATTLE_TODO_LP
+      )
+    end
+    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day(Date.current).count
+
+    assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
+      Battles::CompleteTodo.call(todo: todo, user: @user, session: @session)
+    end
+    assert todo.reload.completed_at.present?
+  end
+
   private
 
   def positive_todo_ledgers

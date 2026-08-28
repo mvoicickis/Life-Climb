@@ -29,7 +29,7 @@ class DailyTodosController < ApplicationController
     else
       day = todo.strategy_goal
       if day&.practice_tasks&.incomplete&.exists?
-        redirect_to dashboard_path, alert: t("dash.checklist_finish_objectives")
+        redirect_to dashboard_path, alert: t("dash.checklist_finish_objectives"), status: :see_other
         return
       end
 
@@ -37,7 +37,8 @@ class DailyTodosController < ApplicationController
       project = checklist ? nil : day&.quantified_path_project
       if project && !valid_quantity_amount?(params[:amount])
         redirect_to dashboard_path,
-                    alert: t("strategy.quantity.amount_required", unit: project.unit)
+                    alert: t("strategy.quantity.amount_required", unit: project.unit),
+                    status: :see_other
         return
       end
 
@@ -49,7 +50,16 @@ class DailyTodosController < ApplicationController
           amount: params[:amount]
         )
       rescue ArgumentError
-        redirect_to dashboard_path, alert: t("dash.checklist_finish_objectives")
+        redirect_to dashboard_path, alert: t("dash.checklist_finish_objectives"), status: :see_other
+        return
+      rescue ActiveRecord::RecordInvalid => e
+        Rails.logger.error(
+          "[DailyTodosController#complete] #{e.class}: #{e.message} " \
+          "(record=#{e.record.class.name}##{e.record&.id})"
+        )
+        redirect_to dashboard_path,
+                    alert: e.record.errors.full_messages.to_sentence.presence || t("dash.timeline.time_save_failed"),
+                    status: :see_other
         return
       end
 
@@ -62,7 +72,7 @@ class DailyTodosController < ApplicationController
       )
     end
     Journeys::SyncClimbFromToday.call(user: current_user)
-    redirect_to dashboard_path
+    redirect_to dashboard_path, status: :see_other
   end
 
   def destroy

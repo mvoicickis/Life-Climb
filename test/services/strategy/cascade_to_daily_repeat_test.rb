@@ -58,4 +58,34 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     assert_equal 0, created
     assert_equal 1, @user.daily_todos.where(strategy_goal_id: practice.id).count
   end
+
+  test "at cap does not attach unsaved todos to user association" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    18.times do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, parent: @camp_leaf, horizon: "day",
+        title: "Sync daily #{i}", scheduled_on: Date.current - 1.month, repeat: "daily", position: i
+      )
+    end
+
+    while @user.daily_todos.for_day(Date.current).count < GameRules::MAX_DAILY_TODOS
+      n = @user.daily_todos.for_day(Date.current).count
+      @user.daily_todos.create!(
+        title: "Cap filler #{n}",
+        aspect_key: "self",
+        scheduled_on: Date.current,
+        position: n,
+        lp_reward: GameRules::BATTLE_TODO_LP
+      )
+    end
+    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day(Date.current).count
+
+    @user.daily_todos.to_a
+
+    Strategy::CascadeToDaily.call(
+      user: @user, life_area: @area, from: Date.current.beginning_of_week, to: Date.current.end_of_week
+    )
+
+    assert @user.daily_todos.none?(&:new_record?)
+  end
 end
