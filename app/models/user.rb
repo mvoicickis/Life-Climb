@@ -61,6 +61,7 @@ class User < ApplicationRecord
   THEMES = %w[light dark].freeze
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
   COMPANION_PICK_KEY = "companion_pick".freeze
+  ONBOARDING_MOUNTAIN_TOUR_KEY = "onboarding_mountain_tour".freeze
   DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
   INSTALL_OFFER_MAX_ASKS = 2
   INSTALL_OFFER_RESHOW_AFTER = 30.days
@@ -236,6 +237,25 @@ class User < ApplicationRecord
     return if shown.include?(ADVENTURE_GUIDE_KEY)
 
     update!(support_milestones_shown: shown + [ ADVENTURE_GUIDE_KEY ])
+  end
+
+  def onboarding_mountain_tour_done?
+    Array(support_milestones_shown).map(&:to_s).include?(ONBOARDING_MOUNTAIN_TOUR_KEY)
+  end
+
+  def needs_onboarding_mountain_tour?(journey = nil)
+    return false unless planning_v2? && onboarding_completed?
+    return false if onboarding_mountain_tour_done?
+
+    journey ||= primary_focused_journey || life_journeys.active.order(:id).first
+    journey&.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG) == "true"
+  end
+
+  def mark_onboarding_mountain_tour_done!
+    shown = Array(support_milestones_shown).map(&:to_s)
+    return if shown.include?(ONBOARDING_MOUNTAIN_TOUR_KEY)
+
+    update!(support_milestones_shown: shown + [ ONBOARDING_MOUNTAIN_TOUR_KEY ])
   end
 
   def day_shield_tip_done?

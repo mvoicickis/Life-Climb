@@ -11,7 +11,7 @@ class RegistrationsController < ApplicationController
 
     if @user.save
       start_new_session_for @user
-      redirect_to v2_onboarding_path, notice: t("v2_onboarding.welcome")
+      redirect_to v2_onboarding_path(step: "character"), notice: t("v2_onboarding.signed_up")
     else
       render :new, status: :unprocessable_entity
     end

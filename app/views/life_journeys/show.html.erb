@@ -74,6 +74,9 @@
                 streak: streak,
                 progress: progress,
                 root_goals: root_goals %>
+          <% if current_user.needs_onboarding_mountain_tour?(@journey) %>
+            <%= render "life_journeys/onboarding_mountain_tour", journey: @journey %>
+          <% end %>
         </div>
       </div>
     </div>
