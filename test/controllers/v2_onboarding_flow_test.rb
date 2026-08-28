@@ -5,7 +5,7 @@ require "test_helper"
 class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
   test "four step flow finishes on mountain with battles on today" do
     post registration_url, params: registration_params("fresh@example.com")
-    assert_redirected_to v2_onboarding_path
+    assert_redirected_to v2_onboarding_path(step: "character")
 
     follow_redirect!
     assert_response :success
@@ -27,7 +27,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Get certified" } }
     assert_redirected_to v2_onboarding_path(step: "battles")
     follow_redirect!
-    assert_match(/today.?s battles/i, response.body)
+    assert_match(/What are today/i, response.body)
     assert_select "[data-controller='onboarding-battles']"
 
     patch v2_onboarding_url(step: "battles"), params: {
@@ -61,8 +61,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
   test "legacy session title migrates to goal for in-progress users" do
     post registration_url, params: registration_params("legacy-title@example.com")
     patch v2_onboarding_url(step: "character"), params: { user: { character: "birdie" } }
-
-    session[:v2_onboarding] = { "title" => "Finish the messy garage", "category" => "money" }
+    patch v2_onboarding_url(step: "mountain"), params: { onboarding: { title: "Finish the messy garage" } }
+    assert_redirected_to v2_onboarding_path(step: "camp")
 
     get v2_onboarding_path(step: "goal")
     assert_response :success
@@ -77,7 +77,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     get v2_onboarding_path(step: "mountain")
-    assert_redirected_to v2_onboarding_path(step: "camp")
+    assert_redirected_to v2_onboarding_path(step: "goal")
   end
 
   test "bootstrap failure returns to battles with alert and leaves no spine" do
@@ -86,10 +86,16 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Launch" } }
 
-    Onboarding::Bootstrap.stub(:call, ->(*) { raise Onboarding::Bootstrap::Error, "Could not save your climb." }) do
+    original_bootstrap = Onboarding::Bootstrap.method(:call)
+    Onboarding::Bootstrap.define_singleton_method(:call) do |**|
+      raise Onboarding::Bootstrap::Error, "Could not save your climb."
+    end
+    begin
       patch v2_onboarding_url(step: "battles"), params: {
         onboarding: { battle_titles: [ "Write one test" ] }
       }
+    ensure
+      Onboarding::Bootstrap.define_singleton_method(:call, original_bootstrap)
     end
 
     assert_redirected_to v2_onboarding_path(step: "battles")

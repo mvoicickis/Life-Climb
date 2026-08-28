@@ -20,7 +20,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     user = User.find_by!(email_address: "mareks-new@example.com")
     assert_equal "Mareks", user.name
     assert_equal "Mareks", user.display_name
-    assert_redirected_to v2_onboarding_path
+    assert_redirected_to v2_onboarding_path(step: "character")
   end
 
   test "registration without name fails" do

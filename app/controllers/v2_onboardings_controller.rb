@@ -12,7 +12,10 @@ class V2OnboardingsController < ApplicationController
 
     @draft = normalized_draft
     @step = (params[:step].presence || "character").to_s
-    @step = missing_step if LEGACY_STEPS.include?(@step) || !STEPS.include?(@step)
+    if LEGACY_STEPS.include?(@step)
+      redirect_to v2_onboarding_path(step: missing_step) and return
+    end
+    @step = "character" unless STEPS.include?(@step)
 
     if SETUP_STEPS.include?(@step)
       @setup_step_index = SETUP_STEPS.index(@step) + 1
@@ -28,7 +31,16 @@ class V2OnboardingsController < ApplicationController
     draft = normalized_draft.merge(onboarding_params.to_h.stringify_keys)
     session[:v2_onboarding] = draft
     step = params[:step].to_s
-    step = missing_step if LEGACY_STEPS.include?(step) || !STEPS.include?(step)
+    if LEGACY_STEPS.include?(step)
+      legacy_draft = draft
+      if step == "mountain"
+        title = params.dig(:onboarding, :title).to_s.strip
+        legacy_draft = legacy_draft.merge("goal" => title) if title.present?
+        session[:v2_onboarding] = legacy_draft
+      end
+      redirect_to v2_onboarding_path(step: missing_step) and return
+    end
+    step = "character" unless STEPS.include?(step)
 
     case step
     when "character"
@@ -78,7 +90,7 @@ class V2OnboardingsController < ApplicationController
   private
 
   def onboarding_params
-    params.fetch(:onboarding, {}).permit(:goal, :camp, battle_titles: [])
+    params.fetch(:onboarding, {}).permit(:goal, :camp, :title, battle_titles: [])
   end
 
   def battle_titles_from_params
