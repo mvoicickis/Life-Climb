@@ -15,6 +15,14 @@
         total: @battlefield_health.total_count) %>
 <% end %>
 
+<%= turbo_stream.update "today-battles-waiting-host" do %>
+  <% if @battles_waiting_count.to_i.positive? %>
+    <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
+      <%= t("dash.battlefield.more_waiting", count: @battles_waiting_count) %>
+    </p>
+  <% end %>
+<% end %>
+
 <%= turbo_stream.replace "today-battlefield-header" do %>
   <%= render "dashboard/dash_battlefield_header",
         health: @battlefield_health,

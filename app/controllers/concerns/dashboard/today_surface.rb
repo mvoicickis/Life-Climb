@@ -12,6 +12,8 @@ module Dashboard
     # settlement then reloads todos (full Today page). Stream refreshes pass false
     # for a lighter rebuild from current DB state after a local create.
     def assign_today_battle_surface!(reconcile: true)
+      sync_today_battles!
+
       @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                  @journey.missions.for_day(Date.current).primary.order(:id).first
       @daily_todos = current_user.daily_todos
@@ -65,8 +67,34 @@ module Dashboard
         @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
       end
 
+      assign_battles_waiting_count!
+
       @timeline = Today::Timeline.build(user: current_user, todos: @open_todos)
       @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
+    end
+
+    def sync_today_battles!
+      return if @journey.blank?
+
+      Strategy::CascadeToDaily.call(
+        user: current_user,
+        life_area: @journey.life_area,
+        from: Date.current,
+        to: Date.current
+      )
+    end
+
+    def assign_battles_waiting_count!
+      @battles_waiting_count =
+        if @journey.blank?
+          0
+        else
+          Today::BattlesWaiting.count(
+            user: current_user,
+            life_area: @journey.life_area,
+            on: Date.current
+          )
+        end
     end
 
     def plan_route_pending?
