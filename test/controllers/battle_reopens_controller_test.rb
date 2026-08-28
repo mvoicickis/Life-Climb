@@ -47,4 +47,15 @@ class BattleReopensControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_nil @battle.reload.completed_at
   end
+
+  test "reopening a battle as turbo stream refreshes camp sheet without redirecting" do
+    post battle_reopen_path(@battle), as: :turbo_stream
+
+    assert_response :ok
+    assert_includes @response.media_type, "turbo-stream"
+    assert_match "trail-battles-#{@project.id}", response.body
+    assert_match "trail-battle-#{@battle.id}", response.body
+    assert_no_match "is-done is-check", response.body
+    assert_nil @battle.reload.completed_at
+  end
 end

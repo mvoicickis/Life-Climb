@@ -2,6 +2,8 @@
 
 # Undo a Mountain battle win (reopen day + daily todo).
 class BattleReopensController < ApplicationController
+  include MountainSheetRefresh
+
   def create
     battle = current_user.strategy_goals.battles.find(params[:id])
     journey = battle.life_journey || current_user.primary_focused_journey
@@ -13,14 +15,26 @@ class BattleReopensController < ApplicationController
       Strategy::SyncCompletion.resync!(node: battle.parent) if battle.parent
     end
 
-    redirect_to mountain_return_path(journey, battle),
-                notice: t("strategy.rpg.trail.battle_reopened"),
-                status: :see_other
+    respond_to_reopen(journey, battle)
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
   private
+
+  def respond_to_reopen(journey, battle)
+    assign_mountain_sheet_for!(battle)
+    @journey = journey || @journey
+    @battle = battle.reload
+    respond_to do |format|
+      format.turbo_stream { render :create, status: :ok }
+      format.html do
+        redirect_to mountain_return_path(journey, battle),
+                    notice: t("strategy.rpg.trail.battle_reopened"),
+                    status: :see_other
+      end
+    end
+  end
 
   def mountain_return_path(journey, battle)
     project = battle.parent
