@@ -23,9 +23,8 @@
 
 <article class="lp-today-v2-row"
          id="<%= row_id %>"
-         <% if qty_project %>
-         data-controller="quantity-complete"
-         <% end %>
+         data-controller="<%= ['today-battle-row', ('quantity-complete' if qty_project)].compact.join(' ') %>"
+         data-action="click->today-battle-row#activate"
          <% if todo %>
          data-todo-id="<%= todo.id %>"
          data-battle-day-target="item"
