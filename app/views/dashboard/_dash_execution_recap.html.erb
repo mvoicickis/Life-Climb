@@ -3,7 +3,13 @@
 <% streak = local_assigns[:streak] || @climb_streak %>
 <% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
 <% band = battlefield_hp_band_class(health.band) %>
-<% recap_color = health.band == :safe ? "#4ade80" : health.band == :warn ? "#f0a91b" : "#e8482f" %>
+<% recap_color =
+     case health.band
+     when :safe then "#4ade80"
+     when :warn then "#f0a91b"
+     when :neutral then "rgba(247, 234, 217, 0.38)"
+     else "#e8482f"
+     end %>
 
 <section class="lp-today-v2-field" aria-label="<%= t('dash.battlefield.recap_label') %>">
   <div class="lp-today-v2-field__head">

@@ -18,6 +18,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   --today-danger: #e8482f;
   --today-safe: #4ade80;
   --today-warn: #f0a91b;
+  --today-neutral: rgba(247, 234, 217, 0.38);
   --today-card: rgba(255, 255, 255, 0.05);
   --today-card-border: rgba(255, 255, 255, 0.1);
   display: flex;
@@ -98,6 +99,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 .lp-today-v2-header__hp-num.is-safe { color: var(--today-safe); }
 .lp-today-v2-header__hp-num.is-warn { color: var(--today-warn); }
 .lp-today-v2-header__hp-num.is-danger { color: var(--today-danger); }
+.lp-today-v2-header__hp-num.is-neutral { color: var(--today-muted); }
 
 .lp-today-v2-header__hp-label {
   display: block;
@@ -139,6 +141,10 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 .lp-today-v2-hp-bar__fill.is-danger {
   background: linear-gradient(90deg, #c03a24, #e8482f);
+}
+
+.lp-today-v2-hp-bar__fill.is-neutral {
+  background: var(--today-neutral);
 }
 
 .lp-today-v2-risk {
