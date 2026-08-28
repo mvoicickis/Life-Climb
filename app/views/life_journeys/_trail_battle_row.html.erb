@@ -13,7 +13,7 @@
     <%= button_to battle_reopen_path(battle),
           method: :post,
           class: "lp-trail-battles__undo-win",
-          form: { data: { turbo: true } } do %>
+          form: { data: { turbo: true, turbo_stream: true } } do %>
       <%= t("strategy.rpg.trail.undo") %>
     <% end %>
   </li>
