@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>LifePoints — 3-step onboarding mockup (Karen draft)</title>
+  <title>LifePoints — onboarding mockup (Karen draft)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --lp-paper: #0b0f14;
-      --lp-paper-soft: #171c22;
       --lp-ink: #f3f6f8;
       --lp-muted: #9aa6b2;
       --lp-border: rgba(148, 163, 184, 0.22);
@@ -26,6 +25,11 @@
       --today-safe: #4ade80;
       --today-card: rgba(255, 255, 255, 0.05);
       --today-card-border: rgba(255, 255, 255, 0.1);
+      --rpg-glass: rgba(8, 12, 18, 0.82);
+      --rpg-border: rgba(255, 255, 255, 0.1);
+      --rpg-ink: rgba(248, 250, 252, 0.98);
+      --rpg-muted: rgba(203, 213, 225, 0.74);
+      --rpg-gold: #d4a017;
       --tap: 44px;
     }
 
@@ -48,6 +52,12 @@
       color: var(--today-ink);
     }
 
+    body.is-mountain {
+      background:
+        radial-gradient(ellipse 80% 45% at 50% 0%, rgba(87, 211, 91, 0.1), transparent 50%),
+        linear-gradient(180deg, #0f1a12 0%, #0b0f14 45%, #080c10 100%);
+    }
+
     .mockup-shell {
       max-width: 28rem;
       margin: 0 auto;
@@ -67,91 +77,10 @@
 
     .mockup-meta strong { color: var(--lp-ink); }
 
-    .mockup-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      margin-bottom: 0.85rem;
-    }
+    .screen { display: none; }
+    .screen.is-active { display: block; }
 
-    .mockup-toolbar__label {
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--lp-muted);
-    }
-
-    .copy-toggle {
-      display: inline-flex;
-      padding: 0.2rem;
-      border-radius: 999px;
-      border: 1px solid var(--lp-border);
-      background: var(--lp-glass);
-    }
-
-    .copy-toggle button {
-      border: 0;
-      background: transparent;
-      color: var(--lp-muted);
-      font: inherit;
-      font-size: 0.78rem;
-      font-weight: 800;
-      padding: 0.45rem 0.85rem;
-      border-radius: 999px;
-      cursor: pointer;
-      min-height: var(--tap);
-    }
-
-    .copy-toggle button.is-active {
-      background: rgba(87, 211, 91, 0.18);
-      color: var(--lp-green);
-    }
-
-    .compare-block {
-      margin-top: 2rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--lp-border);
-    }
-
-    .compare-block h2 {
-      margin: 0 0 0.35rem;
-      font-family: var(--lp-font-display);
-      font-size: 1.05rem;
-    }
-
-    .compare-block p {
-      margin: 0 0 1rem;
-      font-size: 0.82rem;
-      color: var(--lp-muted);
-      line-height: 1.45;
-    }
-
-    .compare-grid {
-      display: grid;
-      gap: 0.85rem;
-    }
-
-    .compare-card {
-      border-radius: 1rem;
-      border: 1px solid var(--lp-border);
-      background: var(--lp-glass);
-      padding: 1rem;
-    }
-
-    .compare-card__tag {
-      display: inline-block;
-      margin-bottom: 0.5rem;
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--lp-green);
-    }
-
-    /* —— Adventure card (onboarding) —— */
+    /* —— Onboarding card —— */
     .lp-adventure__card {
       display: grid;
       gap: 0.85rem;
@@ -207,15 +136,6 @@
       transition: width 0.35s ease;
     }
 
-    .lp-adventure__kicker {
-      margin: 0;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--lp-green);
-    }
-
     .lp-adventure__title {
       margin: 0;
       font-family: var(--lp-font-display);
@@ -224,10 +144,10 @@
       line-height: 1.15;
     }
 
-    .lp-adventure__lead {
+    .lp-adventure__hint {
       margin: 0;
-      font-size: 0.95rem;
-      line-height: 1.5;
+      font-size: 0.9rem;
+      line-height: 1.45;
       color: var(--lp-muted);
     }
 
@@ -275,31 +195,7 @@
       font-weight: 700;
     }
 
-    .type-zone {
-      display: grid;
-      gap: 0.5rem;
-    }
-
-    .type-zone__callout {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.55rem 0.7rem;
-      border-radius: 0.65rem;
-      background: rgba(87, 211, 91, 0.1);
-      border: 1px solid rgba(87, 211, 91, 0.28);
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--lp-green);
-    }
-
-    .type-zone__callout svg { flex: none; }
-
-    .lp-adventure__label {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: var(--lp-ink);
-    }
+    .field-block { display: grid; gap: 0.45rem; }
 
     .lp-input {
       width: 100%;
@@ -316,40 +212,62 @@
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .lp-input::placeholder {
-      color: rgba(154, 166, 178, 0.75);
-      font-weight: 500;
-    }
-
     .lp-input:focus {
       border-color: var(--lp-green);
       box-shadow: 0 0 0 3px rgba(87, 211, 91, 0.22);
     }
 
-    .examples-below {
+    .examples-plain {
       margin: 0;
-      padding: 0.65rem 0.75rem;
-      border-radius: 0.65rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px dashed rgba(148, 163, 184, 0.25);
       font-size: 0.8rem;
       line-height: 1.5;
       color: var(--lp-muted);
+      user-select: none;
+      pointer-events: none;
     }
 
-    .examples-below strong {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: rgba(154, 166, 178, 0.9);
+    .battle-list { display: grid; gap: 0.55rem; }
+
+    .battle-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.45rem;
+      align-items: center;
     }
 
-    .examples-below em {
-      font-style: normal;
-      color: rgba(154, 166, 178, 0.85);
+    .battle-row__remove {
+      border: 0;
+      background: transparent;
+      color: var(--lp-muted);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.35rem;
+      min-width: var(--tap);
+      min-height: var(--tap);
+    }
+
+    .battle-row__remove:disabled { opacity: 0.25; cursor: default; }
+
+    .text-btn {
+      border: 0;
+      background: transparent;
+      color: var(--lp-green);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      padding: 0.35rem 0;
+      min-height: var(--tap);
+      text-align: left;
+    }
+
+    .sticky-actions {
+      display: grid;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
     }
 
     .lp-cta {
@@ -370,25 +288,302 @@
       cursor: pointer;
     }
 
-    .lp-cta:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
+    .lp-cta:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    .screen { display: none; }
-    .screen.is-active { display: block; }
-
-    .goal-echo {
-      margin: 0;
-      padding: 0.55rem 0.75rem;
-      border-radius: 0.65rem;
-      background: rgba(87, 211, 91, 0.08);
-      border-left: 3px solid var(--lp-green);
-      font-size: 0.88rem;
+    .lp-cta--secondary {
+      background: transparent;
+      color: var(--lp-muted);
+      box-shadow: none;
+      border: 1.5px solid var(--lp-border);
       font-weight: 700;
     }
 
-    /* —— Today V2 —— */
+    /* —— Mountain —— */
+    .lp-mountain {
+      position: relative;
+      min-height: calc(100dvh - 1.5rem);
+      padding-bottom: 5rem;
+    }
+
+    .lp-mountain__hud {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .lp-mountain__avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--lp-green);
+      flex: none;
+    }
+
+    .lp-mountain__avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .lp-mountain__hud-title {
+      margin: 0;
+      font-family: var(--lp-font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--rpg-ink);
+    }
+
+    .lp-mountain__hud-sub {
+      margin: 0.1rem 0 0;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--rpg-muted);
+    }
+
+    .lp-mountain__scene {
+      position: relative;
+      border-radius: 1.25rem;
+      border: 1px solid var(--rpg-border);
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(87, 211, 91, 0.12), transparent 55%),
+        linear-gradient(180deg, #1a2e1f 0%, #121a14 40%, #0d1210 100%);
+      min-height: 28rem;
+      padding: 1.25rem 1rem 1.5rem;
+      overflow: hidden;
+    }
+
+    .lp-mountain__trail {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      min-height: 24rem;
+    }
+
+    .lp-mountain__trail-line {
+      position: absolute;
+      top: 3.5rem;
+      bottom: 4rem;
+      left: 50%;
+      width: 3px;
+      margin-left: -1.5px;
+      background: linear-gradient(180deg, rgba(87, 211, 91, 0.5), rgba(87, 211, 91, 0.15));
+      border-radius: 99px;
+      z-index: 0;
+    }
+
+    .lp-mountain__node {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 16rem;
+    }
+
+    .lp-mountain__node--goal { margin-bottom: 2.5rem; }
+
+    .lp-mountain__node--camp { margin-top: 0.5rem; }
+
+    .lp-mountain__flag {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      text-align: center;
+    }
+
+    .lp-mountain__flag-pin {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      background: linear-gradient(135deg, var(--rpg-gold), #b8860b);
+      box-shadow: 0 4px 12px rgba(212, 160, 23, 0.35);
+    }
+
+    .lp-mountain__flag-label {
+      margin: 0;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--rpg-gold);
+    }
+
+    .lp-mountain__flag-title {
+      margin: 0;
+      font-family: var(--lp-font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--rpg-ink);
+      line-height: 1.2;
+    }
+
+    .lp-mountain__camp-card {
+      border-radius: 1rem;
+      border: 1px solid var(--rpg-border);
+      background: var(--rpg-glass);
+      backdrop-filter: blur(14px);
+      padding: 0.85rem 0.9rem;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .lp-mountain__camp-kicker {
+      margin: 0 0 0.25rem;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-green);
+    }
+
+    .lp-mountain__camp-title {
+      margin: 0 0 0.65rem;
+      font-family: var(--lp-font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--rpg-ink);
+    }
+
+    .lp-mountain__battles {
+      display: grid;
+      gap: 0.4rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .lp-mountain__battle {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 0.55rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--rpg-ink);
+    }
+
+    .lp-mountain__battle-icon { font-size: 0.9rem; opacity: 0.85; }
+
+    .lp-mountain__add-camp {
+      margin-top: 1.25rem;
+      width: 100%;
+      max-width: 16rem;
+      align-self: center;
+      border: 1.5px dashed rgba(148, 163, 184, 0.35);
+      border-radius: 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--rpg-muted);
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      min-height: var(--tap);
+    }
+
+    /* Tutorial bubbles */
+    .tutorial-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .tutorial-overlay.is-active { pointer-events: auto; }
+
+    .tutorial-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .tutorial-overlay.is-active .tutorial-backdrop { opacity: 1; }
+
+    .tutorial-spotlight {
+      position: absolute;
+      border-radius: 0.75rem;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+
+    .tutorial-bubble {
+      position: absolute;
+      z-index: 2;
+      max-width: 16.5rem;
+      padding: 0.85rem 1rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(87, 211, 91, 0.35);
+      background: rgba(15, 23, 20, 0.96);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      color: var(--rpg-ink);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: auto;
+    }
+
+    .tutorial-overlay.is-active .tutorial-bubble.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tutorial-bubble p { margin: 0; }
+
+    .tutorial-bubble__actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .tutorial-bubble__btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      min-height: 2.25rem;
+    }
+
+    .tutorial-bubble__btn--next {
+      background: var(--lp-teal);
+      color: #fff;
+    }
+
+    .tutorial-bubble__btn--today {
+      background: var(--lp-green);
+      color: #0f172a;
+      width: 100%;
+      padding: 0.65rem 1rem;
+    }
+
+    .tutorial-bubble__btn--skip {
+      background: transparent;
+      color: var(--rpg-muted);
+    }
+
+    .tutorial-bubble__step {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-green);
+      margin-bottom: 0.35rem;
+    }
+
+    /* —— Today —— */
     .lp-dash {
       display: flex;
       flex-direction: column;
@@ -411,11 +606,7 @@
       flex: none;
     }
 
-    .lp-today-v2-header__avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .lp-today-v2-header__avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .lp-today-v2-header__who { flex: 1; min-width: 0; }
 
@@ -467,7 +658,6 @@
       width: 100%;
       border-radius: inherit;
       background: linear-gradient(90deg, #22c55e, #4ade80);
-      transition: width 0.4s ease;
     }
 
     .lp-today-v2-risk {
@@ -485,6 +675,8 @@
       font-size: 0.94rem;
       font-weight: 700;
     }
+
+    .lp-today-v2-rows { display: grid; gap: 0.5rem; }
 
     .lp-today-v2-row {
       display: flex;
@@ -549,7 +741,7 @@
 
     .lp-today-v2-row__camp {
       flex: none;
-      max-width: 42%;
+      max-width: 38%;
       font-size: 0.625rem;
       font-weight: 700;
       border-radius: 99px;
@@ -598,7 +790,16 @@
       background: rgba(16, 10, 6, 0.92);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(14px);
+      z-index: 40;
     }
+
+    body.is-mountain .lp-bottom-nav {
+      background: rgba(8, 12, 10, 0.94);
+      border-top-color: rgba(255, 255, 255, 0.06);
+    }
+
+    body.is-mountain .lp-bottom-nav a { color: var(--rpg-muted); }
+    body.is-mountain .lp-bottom-nav a.is-active { color: var(--rpg-ink); }
 
     .lp-bottom-nav a {
       text-align: center;
@@ -607,289 +808,524 @@
       font-weight: 700;
       color: var(--today-muted);
       padding: 0.35rem;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
     }
 
     .lp-bottom-nav a.is-active { color: var(--today-ink); }
 
-    body.is-today .mockup-meta,
-    body.is-today .compare-block,
-    body.is-today .mockup-toolbar { display: none; }
-
-    body.is-today .mockup-shell { padding-bottom: 5rem; }
+    body.is-app .mockup-meta { display: none; }
+    body.is-app .mockup-shell { padding-bottom: 5rem; }
   </style>
 </head>
 <body>
   <div class="mockup-shell">
     <p class="mockup-meta">
-      <strong>Mockup only</strong> — 3-step onboarding → Today with one tickable battle.
-      Copy is placeholder (Karen approves). Companion images load from
-      <code>app/assets/images/characters/</code> when opened from the repo.
+      <strong>Mockup only</strong> — companion → goal → camp → battles → Mountain (tutorial) → Today.
+      One goal, one camp, many battles. Copy is placeholder (Karen approves).
+      Images from <code>app/assets/images/characters/</code>.
     </p>
 
-    <div class="mockup-toolbar">
-      <span class="mockup-toolbar__label">Copy for steps 2 &amp; 3</span>
-      <div class="copy-toggle" role="group" aria-label="Copy version">
-        <button type="button" class="is-active" data-copy="a">Copy A — examples below</button>
-        <button type="button" data-copy="b">Copy B — placeholder</button>
-      </div>
-    </div>
-
-  <!-- ——— STEP 1: Companion ——— -->
-  <section class="screen is-active" id="screen-companion" aria-label="Step 1 — Pick companion">
-    <article class="lp-adventure__card">
-      <div class="lp-adventure__step-head">
-        <span class="lp-adventure__progress-label">Step 1 of 3</span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
-        <span class="lp-adventure__progress-fill" style="width: 33%"></span>
-      </div>
-
-      <p class="lp-adventure__kicker">Your companion</p>
-      <h1 class="lp-adventure__title">Pick who climbs with you</h1>
-      <p class="lp-adventure__lead">Tap one — you can change this later.</p>
-
-      <div class="lp-character-grid" role="radiogroup" aria-label="Choose companion">
-        <!-- images: relative to mockups/ folder -->
-        <label class="lp-character-pick"><input type="radio" name="character" value="birdie"><img src="../app/assets/images/characters/birdie.png" alt=""><span>Birdie</span></label>
-        <label class="lp-character-pick"><input type="radio" name="character" value="bee"><img src="../app/assets/images/characters/bee.png" alt=""><span>Bee</span></label>
-        <label class="lp-character-pick"><input type="radio" name="character" value="bear"><img src="../app/assets/images/characters/bear.png" alt=""><span>Bear</span></label>
-        <label class="lp-character-pick"><input type="radio" name="character" value="fox" checked><img src="../app/assets/images/characters/fox.png" alt=""><span>Fox</span></label>
-        <label class="lp-character-pick"><input type="radio" name="character" value="horse"><img src="../app/assets/images/characters/horse.png" alt=""><span>Horse</span></label>
-        <label class="lp-character-pick"><input type="radio" name="character" value="raven"><img src="../app/assets/images/characters/raven.png" alt=""><span>Raven</span></label>
-      </div>
-
-      <button type="button" class="lp-cta" id="btn-companion-continue">Continue</button>
-    </article>
-  </section>
-
-  <!-- ——— STEP 2: Goal ——— -->
-  <section class="screen" id="screen-goal" aria-label="Step 2 — Your goal">
-    <article class="lp-adventure__card">
-      <div class="lp-adventure__step-head">
-        <button type="button" class="lp-adventure__back" data-go="companion">← Back</button>
-        <span class="lp-adventure__progress-label">Step 2 of 3</span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="2" aria-valuemin="1" aria-valuemax="3">
-        <span class="lp-adventure__progress-fill" style="width: 66%"></span>
-      </div>
-
-      <p class="lp-adventure__kicker" data-copy-a="Your mountain" data-copy-b="Your goal">Your mountain</p>
-      <h1 class="lp-adventure__title" data-copy-a="Type your goal here" data-copy-b="What's your goal?">Type your goal here</h1>
-      <p class="lp-adventure__lead" data-copy-a="Write your own words in the box. This is not a list to pick from." data-copy-b="One sentence about something you want.">Write your own words in the box. This is not a list to pick from.</p>
-
-      <div class="type-zone">
-        <div class="type-zone__callout" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
-          Tap the box and type
+    <!-- STEP 1: Companion -->
+    <section class="screen is-active" id="screen-companion" aria-label="Step 1 — Pick companion">
+      <article class="lp-adventure__card">
+        <div class="lp-adventure__step-head">
+          <span class="lp-adventure__progress-label">Step 1 of 4</span>
         </div>
-        <label class="lp-adventure__label" for="goal-input">Your answer</label>
-        <input class="lp-input" id="goal-input" type="text" maxlength="120" autocomplete="off"
-               data-placeholder-a=""
-               data-placeholder-b="e.g. Get stronger, save money, learn guitar…"
-               placeholder="">
-        <p class="examples-below" id="goal-examples-below" hidden>
-          <strong>Just ideas — type your own</strong>
-          <em>Get healthier · Finish school · Be nicer to my sister · Save for a trip</em>
-        </p>
-      </div>
-
-      <button type="button" class="lp-cta" id="btn-goal-continue" disabled>Continue</button>
-    </article>
-  </section>
-
-  <!-- ——— STEP 3: Today's action ——— -->
-  <section class="screen" id="screen-today-action" aria-label="Step 3 — Today's battle">
-    <article class="lp-adventure__card">
-      <div class="lp-adventure__step-head">
-        <button type="button" class="lp-adventure__back" data-go="goal">← Back</button>
-        <span class="lp-adventure__progress-label">Step 3 of 3</span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="3" aria-valuemin="1" aria-valuemax="3">
-        <span class="lp-adventure__progress-fill" style="width: 100%"></span>
-      </div>
-
-      <p class="lp-adventure__kicker" data-copy-a="Today's battle" data-copy-b="First step">Today's battle</p>
-      <h1 class="lp-adventure__title" data-copy-a="What will you do today?" data-copy-b="What can you do today?">What will you do today?</h1>
-      <p class="lp-adventure__lead" data-copy-a="One small thing you can finish today. Type it below." data-copy-b="Something tiny — even 5 minutes counts.">One small thing you can finish today. Type it below.</p>
-
-      <p class="goal-echo" id="goal-echo"></p>
-
-      <div class="type-zone">
-        <div class="type-zone__callout" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
-          Tap the box and type
+        <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="4">
+          <span class="lp-adventure__progress-fill" style="width: 25%"></span>
         </div>
-        <label class="lp-adventure__label" for="action-input">Today's action</label>
-        <input class="lp-input" id="action-input" type="text" maxlength="120" autocomplete="off"
-               data-placeholder-a=""
-               data-placeholder-b="e.g. Walk 5 minutes, text one friend, read 3 pages…"
-               placeholder="">
-        <p class="examples-below" id="action-examples-below" hidden>
-          <strong>Need a nudge? (still type or edit)</strong>
-          <em>Put on shoes · Drink a glass of water · Send one message · Tidy one drawer</em>
-        </p>
-      </div>
 
-      <button type="button" class="lp-cta" id="btn-start-climbing">Start climbing →</button>
-    </article>
-  </section>
+        <h1 class="lp-adventure__title">Pick who climbs with you</h1>
+        <p class="lp-adventure__hint">Tap one. You can change this later.</p>
 
-  <!-- ——— TODAY ——— -->
-  <section class="screen" id="screen-today" aria-label="Today — your battle">
-    <div class="lp-dash">
-      <header class="lp-today-v2-header">
-        <div class="lp-today-v2-header__row">
-          <div class="lp-today-v2-header__avatar">
-            <img id="today-avatar" src="../app/assets/images/characters/fox.png" alt="">
-          </div>
-          <div class="lp-today-v2-header__who">
-            <p class="lp-today-v2-header__name">You</p>
-            <p class="lp-today-v2-header__meta" id="today-date"></p>
-          </div>
-          <div class="lp-today-v2-header__hp-block">
-            <span class="lp-today-v2-header__hp-num" id="hp-num">100</span>
-            <span class="lp-today-v2-header__hp-label">Day health</span>
+        <div class="lp-character-grid" role="radiogroup" aria-label="Choose companion">
+          <label class="lp-character-pick"><input type="radio" name="character" value="birdie"><img src="../app/assets/images/characters/birdie.png" alt=""><span>Birdie</span></label>
+          <label class="lp-character-pick"><input type="radio" name="character" value="bee"><img src="../app/assets/images/characters/bee.png" alt=""><span>Bee</span></label>
+          <label class="lp-character-pick"><input type="radio" name="character" value="bear"><img src="../app/assets/images/characters/bear.png" alt=""><span>Bear</span></label>
+          <label class="lp-character-pick"><input type="radio" name="character" value="fox" checked><img src="../app/assets/images/characters/fox.png" alt=""><span>Fox</span></label>
+          <label class="lp-character-pick"><input type="radio" name="character" value="horse"><img src="../app/assets/images/characters/horse.png" alt=""><span>Horse</span></label>
+          <label class="lp-character-pick"><input type="radio" name="character" value="raven"><img src="../app/assets/images/characters/raven.png" alt=""><span>Raven</span></label>
+        </div>
+
+        <button type="button" class="lp-cta" id="btn-companion-continue">Continue</button>
+      </article>
+    </section>
+
+    <!-- STEP 2: Goal -->
+    <section class="screen" id="screen-goal" aria-label="Step 2 — Your goal">
+      <article class="lp-adventure__card">
+        <div class="lp-adventure__step-head">
+          <button type="button" class="lp-adventure__back" data-go="companion">← Back</button>
+          <span class="lp-adventure__progress-label">Step 2 of 4</span>
+        </div>
+        <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="2" aria-valuemin="1" aria-valuemax="4">
+          <span class="lp-adventure__progress-fill" style="width: 50%"></span>
+        </div>
+
+        <h1 class="lp-adventure__title">What's your goal?</h1>
+
+        <div class="field-block">
+          <input class="lp-input" id="goal-input" type="text" maxlength="120" autocomplete="off" autofocus>
+          <p class="examples-plain">Like: get stronger, save money, be kinder to my sister</p>
+        </div>
+
+        <button type="button" class="lp-cta" id="btn-goal-continue" disabled>Continue</button>
+      </article>
+    </section>
+
+    <!-- STEP 3: Camp -->
+    <section class="screen" id="screen-camp" aria-label="Step 3 — Your camp">
+      <article class="lp-adventure__card">
+        <div class="lp-adventure__step-head">
+          <button type="button" class="lp-adventure__back" data-go="goal">← Back</button>
+          <span class="lp-adventure__progress-label">Step 3 of 4</span>
+        </div>
+        <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="3" aria-valuemin="1" aria-valuemax="4">
+          <span class="lp-adventure__progress-fill" style="width: 75%"></span>
+        </div>
+
+        <h1 class="lp-adventure__title">Let's make a camp to get you there</h1>
+        <p class="lp-adventure__hint">A camp is a big step on the way to your goal.</p>
+
+        <div class="field-block">
+          <input class="lp-input" id="camp-input" type="text" maxlength="120" autocomplete="off" placeholder="Name your camp">
+          <p class="examples-plain">Like: get fit, learn guitar, save for a trip</p>
+        </div>
+
+        <button type="button" class="lp-cta" id="btn-camp-continue" disabled>Continue</button>
+      </article>
+    </section>
+
+    <!-- STEP 4: Battles -->
+    <section class="screen" id="screen-battles" aria-label="Step 4 — Today's battles">
+      <article class="lp-adventure__card">
+        <div class="lp-adventure__step-head">
+          <button type="button" class="lp-adventure__back" data-go="camp">← Back</button>
+          <span class="lp-adventure__progress-label">Step 4 of 4</span>
+        </div>
+        <div class="lp-adventure__progress-track" role="progressbar" aria-valuenow="4" aria-valuemin="1" aria-valuemax="4">
+          <span class="lp-adventure__progress-fill" style="width: 100%"></span>
+        </div>
+
+        <h1 class="lp-adventure__title">What can you do today?</h1>
+        <p class="lp-adventure__hint">Each line is one battle. Small is good.</p>
+
+        <div class="battle-list" id="battle-inputs">
+          <div class="battle-row" data-battle-row>
+            <input class="lp-input battle-input" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Walk for 5 minutes">
+            <button type="button" class="battle-row__remove" aria-label="Remove battle" disabled>×</button>
           </div>
         </div>
-        <div class="lp-today-v2-hp-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-          <span class="lp-today-v2-hp-bar__fill" id="hp-fill"></span>
+
+        <button type="button" class="text-btn" id="btn-add-battle">+ Add another</button>
+
+        <div class="sticky-actions">
+          <button type="button" class="lp-cta" id="btn-finish" disabled>Finish</button>
         </div>
-        <p class="lp-today-v2-risk"><span aria-hidden="true">⚔️</span> <span id="risk-note">1 battle waiting — tick it to win the day</span></p>
-      </header>
+      </article>
+    </section>
 
-      <div class="win-toast" id="win-toast" role="status">+50 AP · Battle won! You earned your first point.</div>
+    <!-- MOUNTAIN -->
+    <section class="screen" id="screen-mountain" aria-label="Mountain — your climb">
+      <div class="lp-mountain">
+        <header class="lp-mountain__hud">
+          <div class="lp-mountain__avatar">
+            <img id="mountain-avatar" src="../app/assets/images/characters/fox.png" alt="">
+          </div>
+          <div>
+            <p class="lp-mountain__hud-title">Your mountain</p>
+            <p class="lp-mountain__hud-sub">Goal · Camp · Battles</p>
+          </div>
+        </header>
 
-      <div class="lp-today-v2-field">
-        <h2 class="lp-today-v2-field__title">Today's battles</h2>
-        <div class="lp-today-v2-rows">
-          <div class="lp-today-v2-row" id="battle-row">
-            <span class="lp-today-v2-row__stripe"></span>
-            <input type="checkbox" class="lp-today-v2-row__check" id="battle-check" aria-label="Complete battle">
-            <p class="lp-today-v2-row__title" id="battle-title">…</p>
-            <span class="lp-today-v2-row__camp" id="battle-camp">First step</span>
-            <span class="lp-today-v2-row__ap">+50 AP</span>
+        <div class="lp-mountain__scene">
+          <div class="lp-mountain__trail">
+            <div class="lp-mountain__trail-line" aria-hidden="true"></div>
+
+            <div class="lp-mountain__node lp-mountain__node--goal" id="spot-goal">
+              <div class="lp-mountain__flag">
+                <span class="lp-mountain__flag-pin" aria-hidden="true"></span>
+                <p class="lp-mountain__flag-label">Goal</p>
+                <p class="lp-mountain__flag-title" id="mountain-goal">…</p>
+              </div>
+            </div>
+
+            <div class="lp-mountain__node lp-mountain__node--camp" id="spot-camp">
+              <div class="lp-mountain__camp-card">
+                <p class="lp-mountain__camp-kicker">Camp</p>
+                <p class="lp-mountain__camp-title" id="mountain-camp">…</p>
+                <ul class="lp-mountain__battles" id="mountain-battles"></ul>
+              </div>
+            </div>
+
+            <button type="button" class="lp-mountain__add-camp" id="spot-add-camp">+ Add a camp</button>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ——— Static compare: both copy versions side by side ——— -->
-  <div class="compare-block" id="compare-block">
-    <h2>Steps 2 &amp; 3 — copy comparison</h2>
-    <p>Same layout, two wording strategies. Interactive prototype above uses the selected copy.</p>
+    <!-- TODAY -->
+    <section class="screen" id="screen-today" aria-label="Today — your battles">
+      <div class="lp-dash">
+        <header>
+          <div class="lp-today-v2-header__row">
+            <div class="lp-today-v2-header__avatar">
+              <img id="today-avatar" src="../app/assets/images/characters/fox.png" alt="">
+            </div>
+            <div class="lp-today-v2-header__who">
+              <p class="lp-today-v2-header__name">You</p>
+              <p class="lp-today-v2-header__meta" id="today-date"></p>
+            </div>
+            <div class="lp-today-v2-header__hp-block">
+              <span class="lp-today-v2-header__hp-num">100</span>
+              <span class="lp-today-v2-header__hp-label">Day health</span>
+            </div>
+          </div>
+          <div class="lp-today-v2-hp-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+            <span class="lp-today-v2-hp-bar__fill"></span>
+          </div>
+          <p class="lp-today-v2-risk"><span aria-hidden="true">⚔️</span> <span id="risk-note">Battles waiting — tick one to win</span></p>
+        </header>
 
-    <div class="compare-grid">
-      <div class="compare-card">
-        <span class="compare-card__tag">Copy A · examples below field</span>
-        <p class="lp-adventure__kicker">Your mountain</p>
-        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">Type your goal here</h3>
-        <p class="lp-adventure__lead" style="margin-bottom:.75rem">Write your own words in the box. This is not a list to pick from.</p>
-        <div class="type-zone__callout" style="margin-bottom:.5rem">Tap the box and type</div>
-        <div class="lp-input" style="pointer-events:none;opacity:.9">|</div>
-        <p class="examples-below" style="margin-top:.5rem">
-          <strong>Just ideas — type your own</strong>
-          <em>Get healthier · Finish school · Be nicer to my sister</em>
-        </p>
-        <hr style="border:0;border-top:1px solid var(--lp-border);margin:1rem 0">
-        <p class="lp-adventure__kicker">Today's battle</p>
-        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">What will you do today?</h3>
-        <p class="lp-adventure__lead" style="margin-bottom:.75rem">One small thing you can finish today. Type it below.</p>
-        <div class="lp-input" style="pointer-events:none;opacity:.9">|</div>
-        <p class="examples-below" style="margin-top:.5rem">
-          <strong>Need a nudge? (still type or edit)</strong>
-          <em>Put on shoes · Drink water · Send one message</em>
-        </p>
+        <div class="win-toast" id="win-toast" role="status"></div>
+
+        <div class="lp-today-v2-field">
+          <h2 class="lp-today-v2-field__title">Today's battles</h2>
+          <div class="lp-today-v2-rows" id="today-battles"></div>
+        </div>
       </div>
-
-      <div class="compare-card">
-        <span class="compare-card__tag">Copy B · examples in placeholder</span>
-        <p class="lp-adventure__kicker">Your goal</p>
-        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">What's your goal?</h3>
-        <p class="lp-adventure__lead" style="margin-bottom:.75rem">One sentence about something you want.</p>
-        <div class="type-zone__callout" style="margin-bottom:.5rem">Tap the box and type</div>
-        <div class="lp-input" style="pointer-events:none;opacity:.7;color:var(--lp-muted)">e.g. Get stronger, save money, learn guitar…</div>
-        <hr style="border:0;border-top:1px solid var(--lp-border);margin:1rem 0">
-        <p class="lp-adventure__kicker">First step</p>
-        <h3 class="lp-adventure__title" style="font-size:1.2rem;margin:0 0 .35rem">What can you do today?</h3>
-        <p class="lp-adventure__lead" style="margin-bottom:.75rem">Something tiny — even 5 minutes counts.</p>
-        <div class="lp-input" style="pointer-events:none;opacity:.7;color:var(--lp-muted)">e.g. Walk 5 minutes, text one friend…</div>
-      </div>
-    </div>
-  </div>
+    </section>
   </div>
 
-  <nav class="lp-bottom-nav" id="today-nav" hidden aria-label="App navigation">
-    <a href="#" class="is-active">Today</a>
-    <a href="#">Mountain</a>
-    <a href="#">Progress</a>
+  <!-- Tutorial overlay -->
+  <div class="tutorial-overlay" id="tutorial-overlay" hidden>
+    <div class="tutorial-backdrop"></div>
+    <div class="tutorial-spotlight" id="tutorial-spotlight"></div>
+    <div class="tutorial-bubble" id="tutorial-bubble" role="dialog" aria-live="polite">
+      <p class="tutorial-bubble__step" id="tutorial-step"></p>
+      <p id="tutorial-text"></p>
+      <div class="tutorial-bubble__actions" id="tutorial-actions"></div>
+    </div>
+  </div>
+
+  <nav class="lp-bottom-nav" id="app-nav" hidden aria-label="App navigation">
+    <button type="button" data-nav="today">Today</button>
+    <button type="button" class="is-active" data-nav="mountain">Mountain</button>
+    <button type="button" data-nav="progress">Progress</button>
   </nav>
 
   <script>
     (function () {
+      const TOTAL_STEPS = 4;
       const state = {
-        copy: "a",
         character: "fox",
         goal: "",
-        action: ""
+        camp: "",
+        battles: []
       };
 
       const screens = {
         companion: document.getElementById("screen-companion"),
         goal: document.getElementById("screen-goal"),
-        todayAction: document.getElementById("screen-today-action"),
+        camp: document.getElementById("screen-camp"),
+        battles: document.getElementById("screen-battles"),
+        mountain: document.getElementById("screen-mountain"),
         today: document.getElementById("screen-today")
       };
 
       const goalInput = document.getElementById("goal-input");
-      const actionInput = document.getElementById("action-input");
-      const goalExamples = document.getElementById("goal-examples-below");
-      const actionExamples = document.getElementById("action-examples-below");
+      const campInput = document.getElementById("camp-input");
+      const battleInputs = document.getElementById("battle-inputs");
+      const btnFinish = document.getElementById("btn-finish");
+
+      const tutorialSteps = [
+        {
+          target: "spot-goal",
+          step: "1 of 5",
+          text: "Here's your goal.",
+          placement: "below"
+        },
+        {
+          target: "spot-camp",
+          step: "2 of 5",
+          text: "Here's your camp. Your battles live inside it.",
+          placement: "below"
+        },
+        {
+          target: "spot-camp",
+          step: "3 of 5",
+          text: "You work on your camps every day to get closer to your goal.",
+          placement: "below"
+        },
+        {
+          target: "spot-add-camp",
+          step: "4 of 5",
+          text: "Add more camps here.",
+          placement: "above"
+        },
+        {
+          target: null,
+          step: "5 of 5",
+          text: "Your battles are on Today. Go win one now!",
+          placement: "center",
+          isFinal: true
+        }
+      ];
+
+      let tutorialIndex = 0;
 
       function showScreen(key) {
         Object.values(screens).forEach((el) => el.classList.remove("is-active"));
         screens[key].classList.add("is-active");
-        const onToday = key === "today";
-        document.body.classList.toggle("is-today", onToday);
-        document.getElementById("today-nav").hidden = !onToday;
-        document.getElementById("compare-block").style.display = onToday ? "none" : "";
+
+        const inApp = key === "mountain" || key === "today";
+        document.body.classList.toggle("is-app", inApp);
+        document.body.classList.toggle("is-mountain", key === "mountain");
+        document.body.classList.toggle("is-today", key === "today");
+
+        const nav = document.getElementById("app-nav");
+        nav.hidden = !inApp;
+        nav.querySelectorAll("button").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.dataset.nav === key);
+        });
+
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      function applyCopy() {
-        const variant = state.copy;
-        document.querySelectorAll("[data-copy-a]").forEach((el) => {
-          el.textContent = el.getAttribute("data-copy-" + variant);
-        });
-
-        goalInput.placeholder = goalInput.getAttribute("data-placeholder-" + variant) || "";
-        actionInput.placeholder = actionInput.getAttribute("data-placeholder-" + variant) || "";
-
-        const showBelow = variant === "a";
-        goalExamples.hidden = !showBelow;
-        actionExamples.hidden = !showBelow;
+      function updateFinishButton() {
+        const values = getBattleValues();
+        btnFinish.disabled = values.length === 0;
       }
 
-      document.querySelectorAll(".copy-toggle button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".copy-toggle button").forEach((b) => b.classList.remove("is-active"));
-          btn.classList.add("is-active");
-          state.copy = btn.dataset.copy;
-          applyCopy();
-        });
-      });
+      function getBattleValues() {
+        return Array.from(battleInputs.querySelectorAll(".battle-input"))
+          .map((input) => input.value.trim())
+          .filter(Boolean);
+      }
 
+      function syncRemoveButtons() {
+        const rows = battleInputs.querySelectorAll("[data-battle-row]");
+        rows.forEach((row, i) => {
+          const btn = row.querySelector(".battle-row__remove");
+          btn.disabled = rows.length <= 1;
+        });
+      }
+
+      function addBattleRow(focus) {
+        const row = document.createElement("div");
+        row.className = "battle-row";
+        row.dataset.battleRow = "";
+        row.innerHTML =
+          '<input class="lp-input battle-input" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Drink a glass of water">' +
+          '<button type="button" class="battle-row__remove" aria-label="Remove battle">×</button>';
+        battleInputs.appendChild(row);
+        const input = row.querySelector(".battle-input");
+        input.addEventListener("input", updateFinishButton);
+        row.querySelector(".battle-row__remove").addEventListener("click", () => {
+          if (battleInputs.querySelectorAll("[data-battle-row]").length <= 1) return;
+          row.remove();
+          syncRemoveButtons();
+          updateFinishButton();
+        });
+        syncRemoveButtons();
+        if (focus) input.focus();
+        updateFinishButton();
+      }
+
+      function renderMountain() {
+        document.getElementById("mountain-goal").textContent = state.goal;
+        document.getElementById("mountain-camp").textContent = state.camp;
+        document.getElementById("mountain-avatar").src =
+          "../app/assets/images/characters/" + state.character + ".png";
+
+        const list = document.getElementById("mountain-battles");
+        list.innerHTML = state.battles.map((b) =>
+          '<li class="lp-mountain__battle"><span class="lp-mountain__battle-icon" aria-hidden="true">⚔️</span>' +
+          escapeHtml(b) + "</li>"
+        ).join("");
+      }
+
+      function renderToday() {
+        document.getElementById("today-avatar").src =
+          "../app/assets/images/characters/" + state.character + ".png";
+
+        const now = new Date();
+        const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+        document.getElementById("today-date").textContent = days[now.getDay()] + " · DAY 1";
+
+        const container = document.getElementById("today-battles");
+        container.innerHTML = state.battles.map((title, i) =>
+          '<div class="lp-today-v2-row" data-today-row="' + i + '">' +
+          '<span class="lp-today-v2-row__stripe"></span>' +
+          '<input type="checkbox" class="lp-today-v2-row__check" aria-label="Complete battle">' +
+          '<p class="lp-today-v2-row__title">' + escapeHtml(title) + "</p>" +
+          '<span class="lp-today-v2-row__camp">' + escapeHtml(truncate(state.camp, 22)) + "</span>" +
+          '<span class="lp-today-v2-row__ap">+50 AP</span></div>"
+        ).join("");
+
+        container.querySelectorAll(".lp-today-v2-row").forEach((row) => {
+          const check = row.querySelector(".lp-today-v2-row__check");
+          const complete = () => {
+            if (check.checked) return;
+            check.checked = true;
+            row.classList.add("is-done");
+            check.disabled = true;
+            onBattleWon();
+          };
+          check.addEventListener("change", () => { if (check.checked) complete(); });
+          row.addEventListener("click", (e) => {
+            if (e.target === check) return;
+            complete();
+          });
+        });
+
+        document.getElementById("risk-note").textContent =
+          state.battles.length === 1
+            ? "1 battle waiting — tick it to win"
+            : state.battles.length + " battles waiting — tick one to win";
+      }
+
+      function onBattleWon() {
+        const remaining = document.querySelectorAll(".lp-today-v2-row:not(.is-done)").length;
+        const toast = document.getElementById("win-toast");
+        if (remaining === 0) {
+          toast.textContent = "You won the day! +50 AP";
+          document.getElementById("risk-note").textContent = "All clear — nice work!";
+        } else {
+          toast.textContent = "+50 AP · Battle won!";
+          document.getElementById("risk-note").textContent =
+            remaining + " more — keep going";
+        }
+        toast.classList.add("is-visible");
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function truncate(str, len) {
+        return str.length > len ? str.slice(0, len - 1) + "…" : str;
+      }
+
+      /* —— Tutorial —— */
+      const overlay = document.getElementById("tutorial-overlay");
+      const spotlight = document.getElementById("tutorial-spotlight");
+      const bubble = document.getElementById("tutorial-bubble");
+
+      function startTutorial() {
+        tutorialIndex = 0;
+        overlay.hidden = false;
+        requestAnimationFrame(() => {
+          overlay.classList.add("is-active");
+          showTutorialStep();
+        });
+      }
+
+      function showTutorialStep() {
+        const step = tutorialSteps[tutorialIndex];
+        document.getElementById("tutorial-step").textContent = step.step;
+        document.getElementById("tutorial-text").textContent = step.text;
+
+        const actions = document.getElementById("tutorial-actions");
+        actions.innerHTML = "";
+
+        if (step.isFinal) {
+          spotlight.style.display = "none";
+          positionBubbleCenter();
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "tutorial-bubble__btn tutorial-bubble__btn--today";
+          btn.textContent = "Go to Today →";
+          btn.addEventListener("click", () => {
+            endTutorial();
+            showScreen("today");
+          });
+          actions.appendChild(btn);
+        } else {
+          spotlight.style.display = "block";
+          const target = document.getElementById(step.target);
+          positionSpotlight(target);
+          positionBubbleNear(target, step.placement);
+
+          const skip = document.createElement("button");
+          skip.type = "button";
+          skip.className = "tutorial-bubble__btn tutorial-bubble__btn--skip";
+          skip.textContent = "Skip";
+          skip.addEventListener("click", endTutorial);
+
+          const next = document.createElement("button");
+          next.type = "button";
+          next.className = "tutorial-bubble__btn tutorial-bubble__btn--next";
+          next.textContent = tutorialIndex === tutorialSteps.length - 2 ? "Next" : "Next";
+          next.addEventListener("click", () => {
+            tutorialIndex++;
+            bubble.classList.remove("is-visible");
+            setTimeout(showTutorialStep, 120);
+          });
+
+          actions.append(skip, next);
+        }
+
+        bubble.classList.add("is-visible");
+      }
+
+      function positionSpotlight(el) {
+        const rect = el.getBoundingClientRect();
+        const pad = 8;
+        spotlight.style.top = (rect.top - pad) + "px";
+        spotlight.style.left = (rect.left - pad) + "px";
+        spotlight.style.width = (rect.width + pad * 2) + "px";
+        spotlight.style.height = (rect.height + pad * 2) + "px";
+      }
+
+      function positionBubbleNear(el, placement) {
+        const rect = el.getBoundingClientRect();
+        const bubbleRect = { width: 264, height: 120 };
+        let top, left;
+
+        if (placement === "below") {
+          top = rect.bottom + 12;
+          left = Math.max(12, Math.min(rect.left, window.innerWidth - bubbleRect.width - 12));
+        } else {
+          top = rect.top - bubbleRect.height - 12;
+          left = Math.max(12, Math.min(rect.left, window.innerWidth - bubbleRect.width - 12));
+        }
+
+        if (top < 12) top = rect.bottom + 12;
+        bubble.style.top = top + "px";
+        bubble.style.left = left + "px";
+      }
+
+      function positionBubbleCenter() {
+        bubble.style.top = "50%";
+        bubble.style.left = "50%";
+        bubble.style.transform = "translate(-50%, -50%)";
+      }
+
+      function endTutorial() {
+        overlay.classList.remove("is-active");
+        bubble.classList.remove("is-visible");
+        bubble.style.transform = "";
+        setTimeout(() => { overlay.hidden = true; }, 250);
+      }
+
+      /* —— Events —— */
       document.querySelectorAll('input[name="character"]').forEach((radio) => {
         radio.addEventListener("change", () => { state.character = radio.value; });
       });
 
       goalInput.addEventListener("input", () => {
-        document.getElementById("btn-goal-continue").disabled = goalInput.value.trim().length === 0;
+        document.getElementById("btn-goal-continue").disabled = !goalInput.value.trim();
       });
 
-      actionInput.addEventListener("input", () => {
-        document.getElementById("btn-start-climbing").disabled = actionInput.value.trim().length === 0;
+      campInput.addEventListener("input", () => {
+        document.getElementById("btn-camp-continue").disabled = !campInput.value.trim();
       });
+
+      battleInputs.querySelector(".battle-input").addEventListener("input", updateFinishButton);
 
       document.getElementById("btn-companion-continue").addEventListener("click", () => {
         const picked = document.querySelector('input[name="character"]:checked');
@@ -900,51 +1336,50 @@
 
       document.getElementById("btn-goal-continue").addEventListener("click", () => {
         state.goal = goalInput.value.trim();
-        document.getElementById("goal-echo").textContent = "🎯 " + state.goal;
-        showScreen("todayAction");
-        actionInput.focus();
+        showScreen("camp");
+        campInput.focus();
       });
 
-      document.getElementById("btn-start-climbing").addEventListener("click", () => {
-        state.action = actionInput.value.trim();
-        document.getElementById("battle-title").textContent = state.action;
-        document.getElementById("battle-camp").textContent = state.goal.length > 28 ? state.goal.slice(0, 26) + "…" : state.goal;
-        document.getElementById("today-avatar").src = "../app/assets/images/characters/" + state.character + ".png";
+      document.getElementById("btn-camp-continue").addEventListener("click", () => {
+        state.camp = campInput.value.trim();
+        showScreen("battles");
+        battleInputs.querySelector(".battle-input").focus();
+      });
 
-        const now = new Date();
-        const days = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
-        document.getElementById("today-date").textContent = days[now.getDay()] + " · DAY 1";
+      document.getElementById("btn-add-battle").addEventListener("click", () => addBattleRow(true));
 
-        showScreen("today");
+      btnFinish.addEventListener("click", () => {
+        state.battles = getBattleValues();
+        renderMountain();
+        renderToday();
+        showScreen("mountain");
+        setTimeout(startTutorial, 400);
       });
 
       document.querySelectorAll("[data-go]").forEach((btn) => {
         btn.addEventListener("click", () => showScreen(btn.dataset.go));
       });
 
-      const battleRow = document.getElementById("battle-row");
-      const battleCheck = document.getElementById("battle-check");
-      const winToast = document.getElementById("win-toast");
+      document.getElementById("app-nav").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-nav]");
+        if (!btn) return;
+        const dest = btn.dataset.nav;
+        if (dest === "today") showScreen("today");
+        else if (dest === "mountain") showScreen("mountain");
+      });
 
-      function completeBattle() {
-        battleRow.classList.add("is-done");
-        battleCheck.checked = true;
-        battleCheck.disabled = true;
-        winToast.classList.add("is-visible");
-        document.getElementById("risk-note").textContent = "All clear — you won the day!";
-      }
-
-      battleCheck.addEventListener("change", () => { if (battleCheck.checked) completeBattle(); });
-      battleRow.addEventListener("click", (e) => {
-        if (e.target === battleCheck) return;
-        if (!battleCheck.checked) {
-          battleCheck.checked = true;
-          completeBattle();
+      window.addEventListener("resize", () => {
+        if (!overlay.classList.contains("is-active")) return;
+        const step = tutorialSteps[tutorialIndex];
+        if (step.isFinal) return;
+        const target = document.getElementById(step.target);
+        if (target) {
+          positionSpotlight(target);
+          positionBubbleNear(target, step.placement);
         }
       });
 
-      applyCopy();
-      document.getElementById("btn-start-climbing").disabled = true;
+      syncRemoveButtons();
     })();
   </script>
 </body>
