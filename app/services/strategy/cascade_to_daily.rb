@@ -65,7 +65,6 @@ module Strategy
         title: display_title_for(goal),
         aspect_key: goal.aspect_key,
         position: goal.position,
-        lp_reward: GameRules::BATTLE_TODO_LP,
         tag: "strategy"
       )
       if todo.new_record? && GameRules.daily_open_cap_reached?(@user, date)

@@ -114,6 +114,25 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     assert_equal 1, @user.daily_todos.where(strategy_goal_id: practice.id).count
   end
 
+  test "re-sync does not overwrite lp_reward on existing todo" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    practice = @user.strategy_goals.create!(
+      life_area: @area, parent: @camp_leaf, horizon: "day",
+      title: "Custom reward", scheduled_on: Date.current, repeat: "none", position: 0
+    )
+
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: practice.id, scheduled_on: Date.current)
+    todo.update!(lp_reward: 10)
+
+    practice.update!(title: "Renamed battle")
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
+
+    todo.reload
+    assert_equal 10, todo.lp_reward
+    assert_equal "Renamed battle", todo.title
+  end
+
   test "at cap does not attach unsaved todos to user association" do
     @camp_leaf = practice_leaf_for!(@camp)
     18.times do |i|
