@@ -231,9 +231,10 @@
         <% end %>
       </div>
 
-      <div class="lp-trail__peak" id="<%= 'onboarding-tour-goal' if show_onboarding_tour %>" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
+      <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
         <button type="button"
                 class="lp-trail__flag"
+                <% if show_onboarding_tour %>id="onboarding-tour-goal"<% end %>
                 data-action="click->trail-canvas#togglePeakMenu"
                 aria-haspopup="menu"
                 aria-expanded="false"
