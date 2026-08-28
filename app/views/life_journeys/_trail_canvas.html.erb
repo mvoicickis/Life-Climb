@@ -33,7 +33,8 @@
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
-<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
+<% show_onboarding_tour = current_user.needs_onboarding_mountain_tour?(journey) %>
+<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !show_onboarding_tour %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %>"
@@ -206,14 +207,16 @@
                 index: index,
                 total: projects.size,
                 projects: projects,
-                current_project: current_project %>
+                current_project: current_project,
+                tour_camp: show_onboarding_tour && index.zero? %>
         <% end %>
       </div>
 
       <div class="lp-trail__ghosts" data-trail-canvas-target="ghosts">
-        <% ghosts.each do |ghost| %>
+        <% ghosts.each_with_index do |ghost, ghost_index| %>
           <button type="button"
                   class="lp-trail-ghost"
+                  <% if show_onboarding_tour && ghost_index.zero? %>id="onboarding-tour-add-camp"<% end %>
                   style="--lp-trail-x: <%= ghost[:x] %>; --lp-trail-y: <%= ghost[:y] %>;"
                   data-trail-x="<%= ghost[:x] %>"
                   data-trail-y="<%= ghost[:y] %>"
@@ -228,7 +231,7 @@
         <% end %>
       </div>
 
-      <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
+      <div class="lp-trail__peak" id="<%= 'onboarding-tour-goal' if show_onboarding_tour %>" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
         <button type="button"
                 class="lp-trail__flag"
                 data-action="click->trail-canvas#togglePeakMenu"

@@ -8590,6 +8590,163 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   gap: 0.75rem;
 }
 
+.lp-adventure__examples-plain {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--lp-muted);
+  user-select: none;
+  pointer-events: none;
+}
+
+.lp-adventure__battle-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-adventure__battle-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.lp-adventure__battle-remove {
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.35rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.lp-adventure__battle-remove:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.lp-adventure__add-battle {
+  border: 0;
+  background: transparent;
+  color: var(--lp-green-deep, #166534);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  min-height: 2.75rem;
+  text-align: left;
+}
+
+.lp-onboarding-tour__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.lp-onboarding-tour__overlay.is-active {
+  pointer-events: auto;
+}
+
+.lp-onboarding-tour__spotlight {
+  position: absolute;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.lp-onboarding-tour__bubble {
+  position: fixed;
+  z-index: 62;
+  max-width: 16.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--lp-green) 35%, transparent);
+  background: rgba(15, 23, 20, 0.96);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  color: #f7ead9;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: auto;
+}
+
+.lp-onboarding-tour__bubble.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lp-onboarding-tour__step {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #f7ead9 65%, transparent);
+}
+
+.lp-onboarding-tour__text {
+  margin: 0;
+}
+
+.lp-onboarding-tour__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  justify-content: flex-end;
+}
+
+.lp-onboarding-tour__next,
+.lp-onboarding-tour__cta {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  min-height: 2.25rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-onboarding-tour__next {
+  background: var(--lp-teal);
+  color: #fff;
+}
+
+.lp-onboarding-tour__cta {
+  background: var(--lp-green);
+  color: #0f172a;
+  width: 100%;
+  padding: 0.65rem 1rem;
+}
+
+.lp-onboarding-tour__skip {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 2.25rem;
+  background: transparent;
+  color: color-mix(in srgb, #f7ead9 70%, transparent);
+}
+
 .lp-adventure__mountain-echo {
   margin: 0;
   padding: 0.75rem 0.9rem;

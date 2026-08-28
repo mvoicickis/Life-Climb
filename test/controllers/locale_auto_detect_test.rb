@@ -34,7 +34,7 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
     assert_match(/Die meisten Ziele sterben in der Notizen-App/, response.body)
   end
 
-  test "Latvian Accept-Language carries through signup to Welcome with picker" do
+  test "Latvian Accept-Language carries through signup to onboarding with picker" do
     get root_path, headers: { "Accept-Language" => "lv,en;q=0.8" }
     assert_select "html[lang=?]", "lv"
 
@@ -46,13 +46,11 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
         password_confirmation: "password12345"
       }
     }, headers: { "Accept-Language" => "lv,en;q=0.8" }
-    assert_redirected_to v2_onboarding_path
+    assert_redirected_to v2_onboarding_path(step: "character")
 
     follow_redirect!
     assert_response :success
     assert_select "html[lang=?]", "lv"
-    assert_match(/Laipni lūgts LifePoints/, response.body)
-    assert_select ".lp-adventure__lang .landing-lang-btn", minimum: 5
-    assert_select ".lp-adventure__lang .landing-lang-btn.is-active", text: "LV"
+    assert_match(/Izvēlies savu pavadoni/i, response.body)
   end
 end

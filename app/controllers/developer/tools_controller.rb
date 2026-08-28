@@ -10,7 +10,7 @@ module Developer
       session.delete(:project_check_ids)
       session.delete(:battle_angle_project_id)
 
-      redirect_to v2_onboarding_path(step: "welcome"),
+      redirect_to v2_onboarding_path(step: "character"),
                   notice: t("developer.tools.restart_npe_done"),
                   status: :see_other
     end

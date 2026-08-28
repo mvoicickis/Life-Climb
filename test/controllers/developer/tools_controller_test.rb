@@ -46,7 +46,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     seed_strategy!
 
     post restart_new_player_experience_developer_tools_path
-    assert_redirected_to v2_onboarding_path(step: "welcome")
+    assert_redirected_to v2_onboarding_path(step: "character")
 
     @user.reload
     assert_nil @user.onboarding_completed_at
@@ -63,7 +63,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
 
     begin
       post restart_new_player_experience_developer_tools_path
-      assert_redirected_to v2_onboarding_path(step: "welcome")
+      assert_redirected_to v2_onboarding_path(step: "character")
       assert @user.reload.read_attribute(:developer)
     ensure
       ENV.delete("DEVELOPER_EMAIL")

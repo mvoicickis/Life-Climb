@@ -1,0 +1,65 @@
+<%# Five-bubble Mountain tour after new onboarding bootstrap. locals: journey %>
+<% journey = local_assigns[:journey] || @journey %>
+<% steps = [
+  {
+    target: "onboarding-tour-goal",
+    step: t("v2_onboarding.mountain_tour.step", current: 1, total: 5),
+    text: t("v2_onboarding.mountain_tour.goal"),
+    placement: "below",
+    skipLabel: t("v2_onboarding.mountain_tour.skip"),
+    nextLabel: t("v2_onboarding.mountain_tour.next")
+  },
+  {
+    target: "onboarding-tour-camp",
+    step: t("v2_onboarding.mountain_tour.step", current: 2, total: 5),
+    text: t("v2_onboarding.mountain_tour.camp"),
+    placement: "below",
+    skipLabel: t("v2_onboarding.mountain_tour.skip"),
+    nextLabel: t("v2_onboarding.mountain_tour.next")
+  },
+  {
+    target: "onboarding-tour-camp",
+    step: t("v2_onboarding.mountain_tour.step", current: 3, total: 5),
+    text: t("v2_onboarding.mountain_tour.camp_daily"),
+    placement: "below",
+    skipLabel: t("v2_onboarding.mountain_tour.skip"),
+    nextLabel: t("v2_onboarding.mountain_tour.next")
+  },
+  {
+    target: "onboarding-tour-add-camp",
+    step: t("v2_onboarding.mountain_tour.step", current: 4, total: 5),
+    text: t("v2_onboarding.mountain_tour.add_camp"),
+    placement: "above",
+    skipLabel: t("v2_onboarding.mountain_tour.skip"),
+    nextLabel: t("v2_onboarding.mountain_tour.next")
+  },
+  {
+    final: true,
+    step: t("v2_onboarding.mountain_tour.step", current: 5, total: 5),
+    text: t("v2_onboarding.mountain_tour.today"),
+    todayUrl: dashboard_path,
+    todayLabel: t("v2_onboarding.mountain_tour.today_cta")
+  }
+] %>
+
+<div class="lp-onboarding-tour"
+     data-controller="onboarding-mountain-tour"
+     data-onboarding-mountain-tour-url-value="<%= onboarding_mountain_tour_path %>"
+     data-onboarding-mountain-tour-steps-value="<%= steps.to_json %>">
+  <div class="lp-onboarding-tour__overlay"
+       data-onboarding-mountain-tour-target="overlay"
+       hidden>
+    <div class="lp-onboarding-tour__spotlight"
+         data-onboarding-mountain-tour-target="spotlight"
+         hidden></div>
+  </div>
+  <div class="lp-onboarding-tour__bubble"
+       data-onboarding-mountain-tour-target="bubble"
+       role="dialog"
+       aria-live="polite"
+       hidden>
+    <p class="lp-onboarding-tour__step" data-onboarding-mountain-tour-target="step"></p>
+    <p class="lp-onboarding-tour__text" data-onboarding-mountain-tour-target="text"></p>
+    <div class="lp-onboarding-tour__actions" data-onboarding-mountain-tour-target="actions"></div>
+  </div>
+</div>
