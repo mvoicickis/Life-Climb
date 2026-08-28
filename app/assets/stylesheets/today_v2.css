@@ -193,6 +193,9 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   border-radius: 12px;
   overflow: hidden;
   transition: opacity 0.2s ease, border-color 0.15s ease;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lp-today-v2-row.is-leaving {
@@ -236,6 +239,9 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   font-weight: 600;
   color: var(--today-ink);
   line-height: 1.25;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lp-today-v2-row__camp {
