@@ -22,6 +22,37 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   end
 
   test "cache version bumped for snooze actions" do
-    assert_includes @source, 'CACHE_VERSION = "v7"'
+    assert_includes @source, 'CACHE_VERSION = "v8"'
+  end
+
+  test "documents match navigate destination document or Accept html" do
+    assert_includes @source, 'request.mode === "navigate"'
+    assert_includes @source, 'request.destination === "document"'
+    assert_includes @source, 'accept.includes("text/html")'
+  end
+
+  test "documents are network-only and never cache.put" do
+    document_fn = @source[/async function networkOnlyDocument[\s\S]*?(?=async function networkOnlyNoStore)/]
+    assert document_fn.present?, "expected networkOnlyDocument in the service worker"
+    refute_includes document_fn, "cache.put"
+    assert_includes @source, "application/xhtml+xml"
+    assert_includes @source, "text/vnd.turbo-stream.html"
+    assert_includes @source, "!isHtmlContentType(response)"
+  end
+
+  test "install skipWaiting runs even if precache fails" do
+    install = @source[/self\.addEventListener\("install"[\s\S]*?(?=self\.addEventListener\("activate")/]
+    assert install.present?, "expected install listener in the service worker"
+    assert_includes install, "await cache.addAll(PRECACHE_URLS)"
+    assert_includes install, "catch"
+    assert_includes install, "await self.skipWaiting()"
+  end
+
+  test "activate deletes old lifepoints caches and claims clients" do
+    activate = @source[/self\.addEventListener\("activate"[\s\S]*?(?=self\.addEventListener\("fetch")/]
+    assert activate.present?, "expected activate listener in the service worker"
+    assert_includes activate, 'key.startsWith("lifepoints-")'
+    assert_includes activate, "caches.delete(key)"
+    assert_includes activate, "await self.clients.claim()"
   end
 end

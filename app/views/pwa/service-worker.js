@@ -1,6 +1,12 @@
-const CACHE_VERSION = "v7"
+const CACHE_VERSION = "v8"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const OFFLINE_URL = "/offline.html"
+const ASSET_DESTINATIONS = ["style", "script", "font", "image"]
+const HTML_CONTENT_TYPES = [
+  "text/html",
+  "application/xhtml+xml",
+  "text/vnd.turbo-stream.html"
+]
 
 const PRECACHE_URLS = [
   OFFLINE_URL,
@@ -50,8 +56,12 @@ function notificationActions(data) {
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(CACHE_NAME)
-      await cache.addAll(PRECACHE_URLS)
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        await cache.addAll(PRECACHE_URLS)
+      } catch (_error) {
+        // Precache miss must not block skipWaiting — clients need this fetch fix.
+      }
       await self.skipWaiting()
     })()
   )
@@ -75,16 +85,17 @@ self.addEventListener("fetch", (event) => {
   const { request } = event
   if (request.method !== "GET") return
 
-  const accept = request.headers.get("accept") || ""
-  const isNavigation =
-    request.mode === "navigate" || accept.includes("text/html")
-
-  if (isNavigation) {
-    event.respondWith(networkFirstNavigation(request))
+  if (isDocumentRequest(request)) {
+    event.respondWith(networkOnlyDocument(request))
     return
   }
 
-  event.respondWith(cacheFirstAsset(request))
+  if (isStaticAsset(request)) {
+    event.respondWith(cacheFirstAsset(request))
+    return
+  }
+
+  event.respondWith(networkOnlyNoStore(request))
 })
 
 self.addEventListener("push", (event) => {
@@ -189,7 +200,25 @@ async function openApp(targetUrl) {
   }
 }
 
-async function networkFirstNavigation(request) {
+function isDocumentRequest(request) {
+  const accept = request.headers.get("accept") || ""
+  return (
+    request.mode === "navigate" ||
+    request.destination === "document" ||
+    accept.includes("text/html")
+  )
+}
+
+function isStaticAsset(request) {
+  return ASSET_DESTINATIONS.includes(request.destination)
+}
+
+function isHtmlContentType(response) {
+  const contentType = response.headers.get("content-type") || ""
+  return HTML_CONTENT_TYPES.some((type) => contentType.includes(type))
+}
+
+async function networkOnlyDocument(request) {
   try {
     const response = await fetch(request)
     return response
@@ -200,6 +229,14 @@ async function networkFirstNavigation(request) {
   }
 }
 
+async function networkOnlyNoStore(request) {
+  try {
+    return await fetch(request)
+  } catch (_error) {
+    return Response.error()
+  }
+}
+
 async function cacheFirstAsset(request) {
   const cache = await caches.open(CACHE_NAME)
   const cached = await cache.match(request)
@@ -207,7 +244,7 @@ async function cacheFirstAsset(request) {
 
   try {
     const response = await fetch(request)
-    if (response.ok) {
+    if (response.ok && !isHtmlContentType(response)) {
       cache.put(request, response.clone())
     }
     return response
