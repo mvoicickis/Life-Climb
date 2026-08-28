@@ -2584,6 +2584,11 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-placing .lp-trail__ghosts,
 .lp-trail.is-trail-lit .lp-trail__ghosts { opacity: 0.25; pointer-events: none; }
 
+.lp-trail__ghosts.is-onboarding-tour-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .lp-trail.is-trail-lit .lp-trail-glow {
   width: 10px;
   height: 10px;

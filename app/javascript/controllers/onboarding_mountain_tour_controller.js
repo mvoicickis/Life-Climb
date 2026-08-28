@@ -41,6 +41,8 @@ export default class extends Controller {
     const step = this.stepsValue[this.index]
     if (!step) return
 
+    this.updateGhostVisibility(step)
+
     this.overlayTarget.hidden = false
     this.overlayTarget.classList.add("is-active")
     this.bubbleTarget.hidden = false
@@ -82,10 +84,23 @@ export default class extends Controller {
 
       this.actionsTarget.append(skip, next)
       this.observeTarget(step.target)
-      this.schedulePosition()
+
+      if (step.target === "onboarding-tour-add-camp") {
+        requestAnimationFrame(() => this.schedulePosition())
+      } else {
+        this.schedulePosition()
+      }
     }
 
     this.bubbleTarget.classList.add("is-visible")
+  }
+
+  updateGhostVisibility(step) {
+    const ghosts = document.querySelector("#mountain-trail .lp-trail__ghosts")
+    if (!ghosts) return
+
+    const showGhosts = step.target === "onboarding-tour-add-camp"
+    ghosts.classList.toggle("is-onboarding-tour-hidden", !showGhosts && !step.final)
   }
 
   observeTarget(targetId) {
@@ -98,6 +113,149 @@ export default class extends Controller {
     return document.getElementById(targetId)
   }
 
+  usableRegion() {
+    const margin = 12
+    const style = getComputedStyle(document.documentElement)
+    const safeTop = parseFloat(style.getPropertyValue("env(safe-area-inset-top)")) || 0
+    const safeLeft = parseFloat(style.getPropertyValue("env(safe-area-inset-left)")) || 0
+    const safeRight = parseFloat(style.getPropertyValue("env(safe-area-inset-right)")) || 0
+    const viewportBottom = window.innerHeight
+
+    let top = safeTop + margin
+    const hud = document.querySelector(".lp-trail-hud")
+    if (hud) {
+      const hr = hud.getBoundingClientRect()
+      if (hr.height > 0 && hr.bottom > 0) top = Math.max(top, hr.bottom + margin)
+    }
+
+    let bottom = viewportBottom - margin
+    const nav = document.querySelector(".lp-dash-nav")
+    if (nav) {
+      const nr = nav.getBoundingClientRect()
+      if (nr.height > 0 && nr.top < viewportBottom) bottom = Math.min(bottom, nr.top - margin)
+    }
+
+    const fab = document.querySelector(".lp-dash-nav__fab")
+    if (fab) {
+      const fr = fab.getBoundingClientRect()
+      if (fr.height > 0 && fr.top < viewportBottom) bottom = Math.min(bottom, fr.top - margin)
+    }
+
+    const dock = document.querySelector(".lp-trail__dock")
+    if (dock) {
+      const dr = dock.getBoundingClientRect()
+      if (dr.height > 0 && dr.top < viewportBottom) bottom = Math.min(bottom, dr.top - margin)
+    }
+
+    return {
+      top,
+      left: safeLeft + margin,
+      right: window.innerWidth - safeRight - margin,
+      bottom
+    }
+  }
+
+  intersectRect(a, b) {
+    const left = Math.max(a.left, b.left)
+    const top = Math.max(a.top, b.top)
+    const right = Math.min(a.right, b.right)
+    const bottom = Math.min(a.bottom, b.bottom)
+    if (right <= left || bottom <= top) return null
+
+    return { left, top, right, bottom, width: right - left, height: bottom - top }
+  }
+
+  paddedRect(rect, pad) {
+    return {
+      left: rect.left - pad,
+      top: rect.top - pad,
+      right: rect.right + pad,
+      bottom: rect.bottom + pad,
+      width: rect.width + pad * 2,
+      height: rect.height + pad * 2
+    }
+  }
+
+  scrollTargetIntoSafeArea(el, region) {
+    el.scrollIntoView({ block: "center", inline: "center", behavior: "instant" })
+    this.nudgeTargetIntoRegion(el, region)
+  }
+
+  nudgeTargetIntoRegion(el, region) {
+    if (!this._scrollRoot) return
+
+    for (let pass = 0; pass < 2; pass += 1) {
+      const rect = el.getBoundingClientRect()
+      let delta = 0
+      if (rect.bottom > region.bottom) delta += rect.bottom - region.bottom
+      if (rect.top < region.top) delta -= region.top - rect.top
+      if (delta === 0) break
+      this._scrollRoot.scrollTop += delta
+    }
+  }
+
+  rectsOverlap(a, b, margin = 12) {
+    return !(
+      a.right + margin <= b.left ||
+      a.left >= b.right + margin ||
+      a.bottom + margin <= b.top ||
+      a.top >= b.bottom + margin
+    )
+  }
+
+  placeBubble(spotlightRect, region, bubble, preferredPlacement) {
+    const margin = 12
+    const bubbleW = bubble.offsetWidth || 264
+    const bubbleH = bubble.offsetHeight || 120
+
+    const spaceAbove = spotlightRect.top - region.top
+    const spaceBelow = region.bottom - spotlightRect.bottom
+    const fitsAbove = spaceAbove >= bubbleH + margin
+    const fitsBelow = spaceBelow >= bubbleH + margin
+
+    let below
+    if (fitsBelow && fitsAbove) {
+      below = preferredPlacement !== "above"
+    } else if (fitsBelow) {
+      below = true
+    } else if (fitsAbove) {
+      below = false
+    } else {
+      below = spaceBelow >= spaceAbove
+    }
+
+    const bubbleRectAt = (isBelow, left) => {
+      const top = isBelow
+        ? spotlightRect.bottom + margin
+        : spotlightRect.top - bubbleH - margin
+      return { left, top, right: left + bubbleW, bottom: top + bubbleH }
+    }
+
+    let left = spotlightRect.left + spotlightRect.width / 2 - bubbleW / 2
+    left = Math.max(region.left, Math.min(left, region.right - bubbleW))
+
+    let br = bubbleRectAt(below, left)
+    if (this.rectsOverlap(br, spotlightRect)) {
+      below = !below
+      br = bubbleRectAt(below, left)
+    }
+
+    if (this.rectsOverlap(br, spotlightRect)) {
+      let top = region.top
+      br = { left, top, right: left + bubbleW, bottom: top + bubbleH }
+      if (this.rectsOverlap(br, spotlightRect)) {
+        top = Math.min(region.bottom - bubbleH, spotlightRect.bottom + margin)
+        br = { left, top, right: left + bubbleW, bottom: top + bubbleH }
+      }
+    }
+
+    let top = Math.max(region.top, Math.min(br.top, region.bottom - bubbleH))
+    left = Math.max(region.left, Math.min(br.left, region.right - bubbleW))
+
+    bubble.style.top = `${top}px`
+    bubble.style.left = `${left}px`
+  }
+
   position() {
     const step = this.stepsValue[this.index]
     if (!step || step.final) return
@@ -105,34 +263,40 @@ export default class extends Controller {
     const el = this.targetElement(step.target)
     if (!el) return
 
-    el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" })
+    const region = this.usableRegion()
+    this.scrollTargetIntoSafeArea(el, region)
 
-    const rect = el.getBoundingClientRect()
-    if (rect.width <= 0 || rect.height <= 0) return
+    const raw = el.getBoundingClientRect()
+    if (raw.width <= 0 || raw.height <= 0) return
 
     const pad = 8
-    const spotlight = this.spotlightTarget
-    spotlight.style.top = `${rect.top - pad}px`
-    spotlight.style.left = `${rect.left - pad}px`
-    spotlight.style.width = `${rect.width + pad * 2}px`
-    spotlight.style.height = `${rect.height + pad * 2}px`
-
-    const bubble = this.bubbleTarget
-    const margin = 12
-    const bubbleW = bubble.offsetWidth || 264
-    const bubbleH = bubble.offsetHeight || 120
-
-    let top = step.placement === "above" ? rect.top - bubbleH - margin : rect.bottom + margin
-    let left = rect.left + rect.width / 2 - bubbleW / 2
-    left = Math.max(margin, Math.min(left, window.innerWidth - bubbleW - margin))
-
-    if (top < margin) top = rect.bottom + margin
-    if (top + bubbleH > window.innerHeight - margin) {
-      top = Math.max(margin, rect.top - bubbleH - margin)
+    const padded = this.paddedRect(raw, pad)
+    const regionRect = {
+      left: region.left,
+      top: region.top,
+      right: region.right,
+      bottom: region.bottom
     }
 
-    bubble.style.top = `${top}px`
-    bubble.style.left = `${left}px`
+    const fitsInRegion =
+      padded.top >= region.top &&
+      padded.bottom <= region.bottom &&
+      padded.left >= region.left &&
+      padded.right <= region.right
+
+    let spotlightRect = padded
+    if (!fitsInRegion) {
+      const intersection = this.intersectRect(padded, regionRect)
+      if (intersection) spotlightRect = intersection
+    }
+
+    const spotlight = this.spotlightTarget
+    spotlight.style.top = `${spotlightRect.top}px`
+    spotlight.style.left = `${spotlightRect.left}px`
+    spotlight.style.width = `${spotlightRect.width}px`
+    spotlight.style.height = `${spotlightRect.height}px`
+
+    this.placeBubble(spotlightRect, region, this.bubbleTarget, step.placement)
   }
 
   next() {
