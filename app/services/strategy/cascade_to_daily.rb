@@ -18,7 +18,8 @@ module Strategy
       created = 0
       ActiveRecord::Base.transaction do
         one_time_goals.find_each do |goal|
-          created += 1 if upsert_todo!(goal, Date.current)
+          date = goal.scheduled_on.presence || Date.current
+          created += 1 if upsert_todo!(goal, date)
         end
 
         daily_templates.find_each do |goal|

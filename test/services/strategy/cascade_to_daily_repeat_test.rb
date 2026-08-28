@@ -41,18 +41,20 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     assert_nil practice.completed_at
   end
 
-  test "one-shot with future scheduled_on surfaces on today" do
+  test "one-shot with future scheduled_on cascades onto scheduled date not today" do
     @camp_leaf = practice_leaf_for!(@camp)
+    future = 1.month.from_now.to_date
     battle = @user.strategy_goals.create!(
       life_area: @area, parent: @camp_leaf, horizon: "day",
-      title: "Milestone", scheduled_on: 1.month.from_now.to_date, repeat: "none", position: 0
+      title: "Milestone", scheduled_on: future, repeat: "none", position: 0
     )
 
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
 
-    todo = @user.daily_todos.find_by!(strategy_goal_id: battle.id, scheduled_on: Date.current)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: battle.id, scheduled_on: future)
     assert_equal "Milestone", todo.title
-    assert_equal 1.month.from_now.to_date, battle.reload.scheduled_on
+    assert_nil @user.daily_todos.find_by(strategy_goal_id: battle.id, scheduled_on: Date.current)
+    assert_equal future, battle.reload.scheduled_on
   end
 
   test "cap skips excess one-shots without surfacing todos" do
@@ -60,7 +62,7 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     25.times do |i|
       @user.strategy_goals.create!(
         life_area: @area, parent: @camp_leaf, horizon: "day",
-        title: "Battle #{i}", scheduled_on: 1.month.from_now.to_date, repeat: "none", position: i
+        title: "Battle #{i}", scheduled_on: Date.current, repeat: "none", position: i
       )
     end
 
@@ -75,7 +77,7 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     25.times do |i|
       @user.strategy_goals.create!(
         life_area: @area, parent: @camp_leaf, horizon: "day",
-        title: "Battle #{i}", scheduled_on: 1.month.from_now.to_date, repeat: "none", position: i
+        title: "Battle #{i}", scheduled_on: Date.current, repeat: "none", position: i
       )
     end
 
