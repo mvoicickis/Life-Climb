@@ -1118,9 +1118,9 @@
         const row = document.createElement("div");
         row.className = "battle-row";
         row.dataset.battleRow = "";
-        row.innerHTML =
-          '<input class="lp-input battle-input" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Drink a glass of water">' +
-          '<button type="button" class="battle-row__remove" aria-label="Remove battle">×</button>';
+        row.innerHTML = `
+          <input class="lp-input battle-input" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Drink a glass of water">
+          <button type="button" class="battle-row__remove" aria-label="Remove battle">×</button>`;
         battleInputs.appendChild(row);
         const input = row.querySelector(".battle-input");
         input.addEventListener("input", updateFinishButton);
@@ -1143,8 +1143,7 @@
 
         const list = document.getElementById("mountain-battles");
         list.innerHTML = state.battles.map((b) =>
-          '<li class="lp-mountain__battle"><span class="lp-mountain__battle-icon" aria-hidden="true">⚔️</span>' +
-          escapeHtml(b) + "</li>"
+          `<li class="lp-mountain__battle"><span class="lp-mountain__battle-icon" aria-hidden="true">⚔️</span>${escapeHtml(b)}</li>`
         ).join("");
       }
 
@@ -1157,14 +1156,15 @@
         document.getElementById("today-date").textContent = days[now.getDay()] + " · DAY 1";
 
         const container = document.getElementById("today-battles");
-        container.innerHTML = state.battles.map((title, i) =>
-          '<div class="lp-today-v2-row" data-today-row="' + i + '">' +
-          '<span class="lp-today-v2-row__stripe"></span>' +
-          '<input type="checkbox" class="lp-today-v2-row__check" aria-label="Complete battle">' +
-          '<p class="lp-today-v2-row__title">' + escapeHtml(title) + "</p>" +
-          '<span class="lp-today-v2-row__camp">' + escapeHtml(truncate(state.camp, 22)) + "</span>" +
-          '<span class="lp-today-v2-row__ap">+50 AP</span></div>"
-        ).join("");
+        container.innerHTML = state.battles.map((title, i) => `
+          <div class="lp-today-v2-row" data-today-row="${i}">
+            <span class="lp-today-v2-row__stripe"></span>
+            <input type="checkbox" class="lp-today-v2-row__check" aria-label="Complete battle">
+            <p class="lp-today-v2-row__title">${escapeHtml(title)}</p>
+            <span class="lp-today-v2-row__camp">${escapeHtml(truncate(state.camp, 22))}</span>
+            <span class="lp-today-v2-row__ap">+50 AP</span>
+          </div>
+        `).join("");
 
         container.querySelectorAll(".lp-today-v2-row").forEach((row) => {
           const check = row.querySelector(".lp-today-v2-row__check");
