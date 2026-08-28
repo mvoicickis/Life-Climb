@@ -71,7 +71,7 @@ class ProjectSectionsMenuPropagationTest < ApplicationSystemTestCase
     page.execute_script(<<~JS)
       document.querySelector('.lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item:not(.is-danger)')?.click();
     JS
-    assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Edit Checkpoint/i, wait: 3
+    assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Edit Camp/i, wait: 3
     assert_equal before, page.current_path
     assert_includes page.current_url, "focus_id=#{@section.id}"
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")

@@ -36,7 +36,7 @@ class HabitsAreasUiTest < ActionDispatch::IntegrationTest
     @habit.update!(area: @area, state: "good")
     get habit_path(@habit)
     assert_response :success
-    assert_no_match(/Create a Project to improve this/i, response.body)
+    assert_no_match(/Create a Camp to improve this/i, response.body)
     assert_select "form[data-controller='tracker-state']"
     assert_select "form[data-action='change->tracker-state#select']"
     assert_select "[data-tracker-state-target='choice']", count: 3
@@ -44,7 +44,7 @@ class HabitsAreasUiTest < ActionDispatch::IntegrationTest
     @habit.update!(state: "attention")
     get habit_path(@habit)
     assert_response :success
-    assert_match(/Create a Project to improve this/i, response.body)
+    assert_match(/Create a Camp to improve this/i, response.body)
     assert_select "form[action=?]", habit_improvement_projects_path(@habit)
   end
 

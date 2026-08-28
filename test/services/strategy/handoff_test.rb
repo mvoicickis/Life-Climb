@@ -32,7 +32,7 @@ class StrategyHandoffTest < ActiveSupport::TestCase
       life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Find a job", position: 0
     )
     handoff = Strategy::Handoff.for(user: @user, journey: @journey)
-    assert_match(/Add a project under “Find a job”/i, handoff[:label])
+    assert_match(/Add a camp under “Find a job”/i, handoff[:label])
     assert_includes handoff[:href], "focus_id=#{plan.id}"
   end
 

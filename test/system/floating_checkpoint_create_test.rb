@@ -60,7 +60,7 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 5
 
     open_v4_plant_composer!
-    assert_selector ".lp-trail-plant.is-open .lp-trail-plant__title", text: /New project/i
+    assert_selector ".lp-trail-plant.is-open .lp-trail-plant__title", text: /New Camp/i
     assert_selector ".lp-trail-plant.is-open input[name='title']"
     assert_selector ".lp-trail-plant.is-open .lp-trail-plant__submit"
 

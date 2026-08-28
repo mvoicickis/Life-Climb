@@ -69,7 +69,7 @@ class CheckpointCampManageTest < ApplicationSystemTestCase
     page.execute_script(<<~JS)
       document.querySelector('.lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item.is-danger')?.click();
     JS
-    assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Delete Checkpoint/i, wait: 3
+    assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Delete Camp/i, wait: 3
     within("dialog[open]") { click_button "Delete" }
 
     assert_no_selector "#trail-camp-#{@junk.id}", wait: 5

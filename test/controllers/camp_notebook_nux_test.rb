@@ -50,7 +50,7 @@ class CampNotebookNuxTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
     assert_select ".lp-dash-nav__fab"
     assert_select ".lp-trail-plant"
-    assert_match(/What gets me there|New project on the trail|Plant/i, response.body)
+    assert_match(/What gets me there|New camp on the trail|Plant/i, response.body)
   end
 
   test "after first plan the mountain shows project sections carousel" do

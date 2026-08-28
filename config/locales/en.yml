@@ -29,16 +29,16 @@ en:
     continue_planning_title: "Continue Planning"
     continue_planning_hint: "Your mountain has room for more battles."
     journey_hint_climb: "Finish real work to climb your mountain."
-    journey_hint_battles: "Win today's battles to finish your projects."
+    journey_hint_battles: "Win today's battles to finish your camps." # TODO: translate for lv/de/es/ru.
     project_check:
-      kicker: "Project check"
+      kicker: "Camp check" # TODO: translate for lv/de/es/ru.
       title: "Is “%{title}” finished?"
-      hint: "Battles win the day. Only a finished project moves your year goal."
-      confirm: "Yes, project done"
+      hint: "Battles win the day. Only a finished camp moves your year goal." # TODO: translate for lv/de/es/ru.
+      confirm: "Yes, camp done" # TODO: translate for lv/de/es/ru.
       not_yet: "Not yet"
-      done_notice: "Project done — “%{title}”. Mountain now %{percent}%."
-      not_yet_notice: "Battle won. Sharpen the next fight while the project is still open."
-      invalid: "That project check isn’t valid."
+      done_notice: "Camp done — “%{title}”. Mountain now %{percent}%." # TODO: translate for lv/de/es/ru.
+      not_yet_notice: "Battle won. Sharpen the next fight while the camp is still open." # TODO: translate for lv/de/es/ru.
+      invalid: "That camp check isn’t valid." # TODO: translate for lv/de/es/ru.
     battle_angles:
       kicker: "Next angle"
       title: "Make the next battle sharper"
@@ -46,7 +46,7 @@ en:
       list_label: "Suggested next battles"
       open_strategy: "I’ll plan it on Mountain →"
       queued: "Tomorrow’s battle is set — “%{title}”"
-      invalid: "That project can’t take another battle right now."
+      invalid: "That camp can’t take another battle right now." # TODO: translate for lv/de/es/ru.
       invalid_angle: "Pick one of the suggested angles."
       templates:
         fifteen: "15 minutes on %{project}"
@@ -225,7 +225,7 @@ en:
     strategy_handoff:
       lock_goal: "Lock your season goal on Mountain"
       add_plan: "Add a plan under “%{goal}”"
-      add_project: "Add a project under “%{plan}”"
+      add_project: "Add a camp under “%{plan}”" # TODO: translate for lv/de/es/ru.
       add_battle: "Add today’s battle under “%{project}”"
       open_strategy: "Continue on Mountain"
     action_points_short: "AP"
@@ -238,9 +238,9 @@ en:
     battle_add_hint: "A few small wins — about 5 is a strong day."
     battle_plan_on_strategy: "Plan new battles on Mountain — Today is for fighting."
     battle_day_full: "Today's battle is full (%{max} tasks). Complete some, then add more."
-    battle_won: "Battle won. Keep going — finish a project to move the mountain."
+    battle_won: "Battle won. Keep going — finish a camp to move the mountain." # TODO: translate for lv/de/es/ru.
     complete_battle: "Complete Today's Battle"
-    project_label: "Current Project"
+    project_label: "Current Camp" # TODO: translate for lv/de/es/ru.
     climb_label: "Current climb"
     closer_word: "closer"
     milestones_label: "Milestones"
@@ -249,10 +249,10 @@ en:
     milestone: "Milestone: %{name}"
     why_label: "Why this matters"
     why_battle: "Battle"
-    why_project: "Project"
+    why_project: "Camp" # TODO: translate for lv/de/es/ru.
     why_goal: "Goal"
     view_journey: "View Journey →"
-    view_project: "View Project →"
+    view_project: "View Camp →" # TODO: translate for lv/de/es/ru.
     targets_title: "Targets"
     targets_hint: "Log progress here — Journey updates."
     target_log: "Log"
@@ -290,12 +290,12 @@ en:
       complete_success: "Battle complete. +%{lp} Action Points."
       complete_success_climb: "Battle complete. +%{lp} Action Points. Mountain now %{percent}%."
     project:
-      kicker: "Current Project"
-      view: "View Project →"
+      kicker: "Current Camp" # TODO: translate for lv/de/es/ru.
+      view: "View Camp →" # TODO: translate for lv/de/es/ru.
     why:
       kicker: "Why this matters"
       battle: "Battle"
-      project: "Project"
+      project: "Camp" # TODO: translate for lv/de/es/ru.
       goal: "Goal"
       view: "View Journey →"
     nav:
@@ -326,7 +326,7 @@ en:
     mountain_summary_title: "Mountain Summary"
     mountain_summary_hint: "Why your mountain sits where it does."
     plans_completed: "Plans Completed"
-    projects_completed: "Projects Completed"
+    projects_completed: "Camps Completed" # TODO: translate for lv/de/es/ru.
     current_expedition: "Current Expedition"
     open_strategy: "Open Mountain →"
     lock_goal: "Lock your season goal on Mountain to start the climb."
@@ -352,14 +352,14 @@ en:
     heatmap_less: "Less"
     heatmap_more: "More"
     heatmap_tooltip: "%{date}: %{tasks} battles · %{lp} Action Points"
-    projects_title: "Projects progress"
+    projects_title: "Camps progress" # TODO: translate for lv/de/es/ru.
     projects_hint: "What you are building now."
     climbs_title: "Mountain Summary"
-    climbs_hint: "Plans and projects that move your mountain."
+    climbs_hint: "Plans and camps that move your mountain." # TODO: translate for lv/de/es/ru.
     milestones_line: "Milestones: %{list}"
     clarity_line: "Clarity %{count}/%{total}"
     milestone: "Next: %{name}"
-    empty_projects: "Start a journey to track project progress."
+    empty_projects: "Start a journey to track camp progress." # TODO: translate for lv/de/es/ru.
     empty_climbs: "Lock your season goal on Mountain to track the climb."
     achievements_title: "Achievements"
     achievements_hint: "Milestones you have already earned."
@@ -368,7 +368,7 @@ en:
     achievements_locked: "Not earned yet"
     achievements:
       adventure_guide: "Trail Guide"
-      adventure_guide_hint: "You learned how Goals, Plans, Projects, and Battles fit together."
+      adventure_guide_hint: "You learned how Goals, Plans, Camps, and Battles fit together." # TODO: translate for lv/de/es/ru.
       first_battle: "First Battle"
       first_battle_hint: "You completed your first daily battle."
       lp_100: "First 100 Action Points"
@@ -396,17 +396,17 @@ en:
       empty: "Complete today's battle to unlock personal insights."
     empty_chart: "No Action Points in this period yet."
     empty_categories: "Complete battles to see category mix."
-    empty_projects: "Start a journey to track project progress."
+    empty_projects: "Start a journey to track camp progress." # TODO: translate for lv/de/es/ru.
     close: "Close"
     trends:
       title: "Your climb trends"
-      hint: "Battles, Project totals, and Habits on this Journey."
+      hint: "Battles, Camp totals, and Habits on this Journey." # TODO: translate for lv/de/es/ru.
       battles_title: "Battles per week"
       battles_up: "More Battles this week than last"
       battles_flat: "About the same as last week"
       battles_down: "A bit quieter than last week"
-      quantified_title: "Project totals"
-      quantified_hint: "Cumulative progress toward each Project target."
+      quantified_title: "Camp totals" # TODO: translate for lv/de/es/ru.
+      quantified_hint: "Cumulative progress toward each camp target." # TODO: translate for lv/de/es/ru.
       target_line: "Target %{target} %{unit}"
       habits_title: "Habits this week"
       habits_hint: "Habits linked to this Journey."
@@ -563,47 +563,47 @@ en:
       paths_next: "More paths"
       path_focus_label: "%{title} focus"
       path_focus_title: "%{title} — focus mode"
-      path_focus_place_checkpoint: "Place first checkpoint"
+      path_focus_place_checkpoint: "Place first camp" # TODO: translate for lv/de/es/ru.
       path_focus_edit: "Edit this path"
       path_focus_view_progress: "View progress"
       destination_swipe_hint: "swipe to change destination"
       plan_menu: "Plan options"
       edit_plan: "Edit Plan"
-      edit_checkpoint: "Edit Checkpoint"
+      edit_checkpoint: "Edit Camp" # TODO: translate for lv/de/es/ru.
       edit_destination: "Edit Destination"
       mark_complete: "Mark complete"
       reopen: "Reopen"
       manually_closed: "Manually closed"
       manual_complete_notice: "Marked complete · %{title}"
       manual_reopen_notice: "Reopened · %{title}"
-      manual_complete_invalid: "Only plans and projects can be marked complete."
+      manual_complete_invalid: "Only camps can be marked complete." # TODO: translate for lv/de/es/ru.
       delete_plan: "Delete Plan"
       delete_plan_title: "Delete Plan?"
       delete_plan_body: "This action cannot be undone."
-      delete_checkpoint: "Delete Checkpoint"
-      delete_checkpoint_title: "Delete Checkpoint?"
+      delete_checkpoint: "Delete Camp" # TODO: translate for lv/de/es/ru.
+      delete_checkpoint_title: "Delete Camp?" # TODO: translate for lv/de/es/ru.
       delete_checkpoint_body: "Remove “%{title}” and everything under it. This cannot be undone."
       delete_confirm: "Delete"
       cancel: "Cancel"
       optional: "optional"
-      new_checkpoint: "New Checkpoint"
-      new_project: "New Project"
-      checkpoint_name: "Checkpoint name"
-      checkpoint_name_placeholder: "Checkpoint name"
+      new_checkpoint: "New Camp" # TODO: translate for lv/de/es/ru.
+      new_project: "New Camp" # TODO: translate for lv/de/es/ru.
+      checkpoint_name: "Camp name" # TODO: translate for lv/de/es/ru.
+      checkpoint_name_placeholder: "Camp name" # TODO: translate for lv/de/es/ru.
       checkpoint_description_placeholder: "What makes this milestone matter?"
-      create_checkpoint: "Create Checkpoint"
-      checkpoint_added: "Checkpoint added · %{title}"
+      create_checkpoint: "Create Camp" # TODO: translate for lv/de/es/ru.
+      checkpoint_added: "Camp added · %{title}" # TODO: translate for lv/de/es/ru.
       practice_categories: "Practice categories"
-      project_sections: "Project Sections"
+      project_sections: "Sections" # TODO: translate for lv/de/es/ru.
       what_gets_me_there: "What gets me there"
-      empty_projects_invite: "Add a project to this path."
+      empty_projects_invite: "Add a camp to this path." # TODO: translate for lv/de/es/ru.
 
       project_battles_won: "%{count} battles won"
       project_battles_planned: "%{count} battles planned"
       objectives_menu: "Objectives"
       project_trackers:
         title: "Trackers"
-        add: "Add another Tracker to this Project"
+        add: "Add another Tracker to this camp" # TODO: translate for lv/de/es/ru.
         pick_existing: "Link an existing Tracker"
         pick_blank: "Choose a Tracker"
         link_existing: "Link Tracker"
@@ -611,8 +611,8 @@ en:
         new_name_placeholder: "Tracker name"
         new_unit: "Unit"
         create_and_link: "Create and link"
-        linked: "Linked %{name} to this Project"
-        need_project: "Only Projects on the Path can hold Trackers."
+        linked: "Linked %{name} to this camp" # TODO: translate for lv/de/es/ru.
+        need_project: "Only camps on the Path can hold Trackers." # TODO: translate for lv/de/es/ru.
         habit_missing: "That Tracker wasn’t found."
       nested_camps: "Camps"
       camps_label: "Quest Folders"
@@ -662,7 +662,7 @@ en:
       section_locked_short: "Locked"
       section_locked: "%{title} — locked"
       section_progress: "%{pct}% complete"
-      pick_section_hint: "Choose a project section above to drill deeper."
+      pick_section_hint: "Choose a section above to drill deeper." # TODO: translate for lv/de/es/ru.
       layer_camps_desc: "Break this into smaller camps, then plan daily practice."
       layer_branch_desc: "Open this camp to see the camps inside."
       layer_leaf_desc: "Open to add daily practices."
@@ -723,7 +723,7 @@ en:
         one: "%{count} camp"
         other: "%{count} camps"
       add_path: "+ Path"
-      add_checkpoint: "+ Checkpoint"
+      add_checkpoint: "+ Camp" # TODO: translate for lv/de/es/ru.
       add_step: "+ Step"
       pick_path_hint: "Choose your first path up this mountain."
       climbing: "Climbing"
@@ -786,6 +786,13 @@ en:
         coach:
           got_it: "Got it"
           skip: "Skip tour"
+          step_of: "Step %{current} of %{total}"
+          plant_first: "Tap a glowing signpost to plant your first camp." # TODO: translate for lv/de/es/ru.
+          open_camp: "Open your camp and add today’s battle." # TODO: translate for lv/de/es/ru.
+          win_battle: "Tick a battle to win it — that’s a day’s progress." # TODO: translate for lv/de/es/ru.
+          rename_flag: "Tap your flag any time to rename your destination." # TODO: translate for lv/de/es/ru.
+          xp_bar: "Your XP and camps done live in the bar up top." # TODO: translate for lv/de/es/ru.
+          journey_stats: "Every number you log becomes a stat under Journey." # TODO: translate for lv/de/es/ru.
         today_card:
           plant_first_headline: "Plant your first camp"
           plant_first_sub: "Put it on the grass and start the climb"
@@ -865,7 +872,7 @@ en:
           kicker: "Base camp"
           title: "Where you return every day"
           kind: "Every day · no finish line"
-          sub: "%{count} daily projects. Missing a day takes nothing away."
+          sub: "%{count} daily battles. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
           empty: "Add something you do every day."
           more: "+%{count}"
           add_placeholder: "Add something you do every day"
@@ -923,41 +930,41 @@ en:
         next_camp: "Next camp · %{title}"
         window_prev: "Previous camp"
         window_next: "Next camp"
-        need_checkpoint: "Place your first checkpoint on this path."
-        current_checkpoint: "Current checkpoint"
+        need_checkpoint: "Place your first camp on this path." # TODO: translate for lv/de/es/ru.
+        current_checkpoint: "Current camp" # TODO: translate for lv/de/es/ru.
       sheet:
         label: "Today's Plan"
         next_steps: "Next steps"
-        progress: "Checkpoint progress"
+        progress: "Camp progress" # TODO: translate for lv/de/es/ru.
         all_clear: "Path clear — add the next step."
-        split_empty: "Add a smaller checkpoint to continue."
+        split_empty: "Add a smaller camp to continue." # TODO: translate for lv/de/es/ru.
         now: "Now"
         now_scroll_label: "NOW · scroll →"
         camps: "Camps"
         camps_scroll_label: "SPLIT INTO CAMPS · scroll →"
         later: "Later"
         done: "Done"
-      split_checkpoint: "Split into smaller checkpoints"
-      split_checkpoint_placeholder: "Name a smaller checkpoint"
-      split_checkpoint_cta: "Add checkpoint"
-      add_child_checkpoint: "+ Checkpoint"
-      checkpoint_split_blocked: "Remove or finish steps on this checkpoint before splitting it."
-      checkpoint_branch_no_days: "This checkpoint was split — add steps on a smaller checkpoint."
+      split_checkpoint: "Split into smaller camps" # TODO: translate for lv/de/es/ru.
+      split_checkpoint_placeholder: "Name a smaller camp" # TODO: translate for lv/de/es/ru.
+      split_checkpoint_cta: "Add camp" # TODO: translate for lv/de/es/ru.
+      add_child_checkpoint: "+ Camp" # TODO: translate for lv/de/es/ru.
+      checkpoint_split_blocked: "Remove or finish steps on this camp before splitting it." # TODO: translate for lv/de/es/ru.
+      checkpoint_branch_no_days: "This camp was split — add steps on a smaller camp." # TODO: translate for lv/de/es/ru.
       missions: "Missions"
       missions_kicker: "Missions on this trail"
       plans_kicker: "Plans on this trail"
-      projects_kicker: "Projects in %{plan}"
-      projects_progress: "%{done}/%{total} projects"
-      view_all_projects: "View all projects"
+      projects_kicker: "Camps in %{plan}" # TODO: translate for lv/de/es/ru.
+      projects_progress: "%{done}/%{total} camps" # TODO: translate for lv/de/es/ru.
+      view_all_projects: "View all camps" # TODO: translate for lv/de/es/ru.
       add_plan: "+ Add new plan"
-      add_project: "Add a project"
+      add_project: "Add a camp" # TODO: translate for lv/de/es/ru.
       add_battle: "+ Add battle"
       locked: "Locked"
       battles_kicker: "Today’s fights"
       todays_battles: "Today’s Battles"
       today: "Today"
       pick_checkpoint: "Pick a plan on this trail"
-      pick_mission: "Open a project to reveal today’s battles"
+      pick_mission: "Open a camp to reveal today’s battles" # TODO: translate for lv/de/es/ru.
       stats: "Climb stats"
       xp: "XP"
       ap: "Action Points"
@@ -989,19 +996,19 @@ en:
     zones:
       summit: "Summit"
       plans: "Plans"
-      projects: "Projects"
+      projects: "Camps" # TODO: translate for lv/de/es/ru.
       battles: "Battles"
       camp: "Camp"
       you: "You"
       empty_goal: "Name your mountain"
       add_plan_hint: "Add a plan to open a trail"
-      add_project_hint: "Add a project under this plan"
-      add_battle_hint: "Add a battle under this project"
-      pick_plan: "Tap a plan to reveal its projects"
-      pick_project: "Tap a project to reveal its battles"
+      add_project_hint: "Add a camp under this plan" # TODO: translate for lv/de/es/ru.
+      add_battle_hint: "Add a battle under this camp" # TODO: translate for lv/de/es/ru.
+      pick_plan: "Tap a plan to reveal its camps" # TODO: translate for lv/de/es/ru.
+      pick_project: "Tap a camp to reveal its battles" # TODO: translate for lv/de/es/ru.
       projects_count:
-        one: "%{count} project"
-        other: "%{count} projects"
+        one: "%{count} camp" # TODO: translate for lv/de/es/ru.
+        other: "%{count} camps" # TODO: translate for lv/de/es/ru.
       battles_count:
         one: "%{count} battle"
         other: "%{count} battles"
@@ -1087,10 +1094,10 @@ en:
       questions:
         create_plan: "What’s the first plan on this mountain?"
         set_effort_tier: "How heavy does this plan feel?"
-        create_project: "Name a project under this plan."
-        create_day: "What’s one concrete step for this project?"
+        create_project: "Name a camp under this plan." # TODO: translate for lv/de/es/ru.
+        create_day: "What’s one concrete step for this camp?" # TODO: translate for lv/de/es/ru.
         continue_step: "Add another step, or move on?"
-        continue_project: "Add another project, or done for now?"
+        continue_project: "Add another camp, or done for now?" # TODO: translate for lv/de/es/ru.
       answers:
         effort_tier:
           light: "Light"
@@ -1099,7 +1106,7 @@ en:
         continue:
           repeat_step: "Add another step"
           advance_step: "Move on"
-          repeat_project: "Add another project"
+          repeat_project: "Add another camp" # TODO: translate for lv/de/es/ru.
           advance_project: "Done for now"
       acks:
         "0": "Got it — locked in."
@@ -1113,13 +1120,13 @@ en:
         bad_effort_tier: "Pick light, steady, or heavy."
         bad_decision: "Choose whether to continue or move on."
         missing_plan: "Start with a plan first."
-        missing_project: "Name a project first."
+        missing_project: "Name a camp first." # TODO: translate for lv/de/es/ru.
       shell:
         title: "Build with your guide"
         kicker: "Companion guide"
         continue: "Continue"
         text_placeholder: "Type a short name…"
-        progress: "Projects: %{projects} · Steps on this one: %{steps}"
+        progress: "Camps: %{projects} · Steps on this one: %{steps}" # TODO: translate for lv/de/es/ru.
         done_title: "Done for now"
         done_body: "Your plan is on the mountain. Come back when you’re ready to add more."
         done_cta: "Back to the mountain"
@@ -1140,7 +1147,7 @@ en:
         bad_source: "Pick one of the listed items, or name something else."
         need_items: "Add at least one item to continue."
         bad_dates: "Pick at least one open day to continue."
-        missing_project: "Add a project on this path first."
+        missing_project: "Add a camp on this path first." # TODO: translate for lv/de/es/ru.
       shell:
         title: "Plan this week"
         menu_item: "Plan this week"
@@ -1157,7 +1164,7 @@ en:
         already_item:
           one: "%{title} · %{count} day"
           other: "%{title} · %{count} days"
-        framing: "We’ll put these under your current Project — your checklist item stays where it is."
+        framing: "We’ll put these under your current Camp — your checklist item stays where it is." # TODO: translate for lv/de/es/ru.
         continue_with_count:
           one: "Continue with %{count} item"
           other: "Continue with %{count} items"
@@ -1182,8 +1189,8 @@ en:
         done_cta: "Back to Mountain"
         need_journey: "Focus a journey first, then plan the week."
         need_plan: "Add a path on the mountain first."
-        need_project_title: "This path needs a project"
-        need_project_body: "Place a checkpoint on the path, then come back to plan the week."
+        need_project_title: "This path needs a camp" # TODO: translate for lv/de/es/ru.
+        need_project_body: "Place a camp on the path, then come back to plan the week." # TODO: translate for lv/de/es/ru.
         bad_answer: "Try that answer again."
         tree_changed: "Something on the mountain moved — let’s pick up from a safe spot."
         week_exhausted_title: "No open days left this week"
@@ -1206,7 +1213,7 @@ en:
       edit: "Edit"
       add_child: "Add next step"
       add_plan: "Add plan"
-      add_project: "Add project"
+      add_project: "Add camp" # TODO: translate for lv/de/es/ru.
       add_battle: "Add battle"
       delete: "Delete"
       close: "Close"
@@ -1229,8 +1236,8 @@ en:
         one: "• %{count} plan"
         other: "• %{count} plans"
       projects:
-        one: "• %{count} project"
-        other: "• %{count} projects"
+        one: "• %{count} camp" # TODO: translate for lv/de/es/ru.
+        other: "• %{count} camps" # TODO: translate for lv/de/es/ru.
       battles:
         one: "• %{count} battle"
         other: "• %{count} battles"
@@ -1262,7 +1269,7 @@ en:
       label: "Quest path"
       goal: "Goal"
       plans: "Plans"
-      projects: "Projects"
+      projects: "Camps" # TODO: translate for lv/de/es/ru.
       build: "Build"
       months: "Months"
       battle: "Battle"
@@ -1327,9 +1334,9 @@ en:
           - "Protect your %{count}-day climb — win something today."
         cta: "Win on Today"
       project_unlocked:
-        title: "New project open: “%{title}”"
+        title: "New camp open: “%{title}”" # TODO: translate for lv/de/es/ru.
         titles:
-          - "New project open: “%{title}”."
+          - "New camp open: “%{title}”." # TODO: translate for lv/de/es/ru.
           - "You unlocked “%{title}” — take a look."
           - "“%{title}” is ready on the path."
           - "Fresh ground: “%{title}” just opened."
@@ -1389,19 +1396,19 @@ en:
       add_plan_hint: "Name the biggest part of this goal."
       add_plan_cta: "Add a plan"
       add_project_hint: "Name one concrete thing to build or finish."
-      add_project_cta: "Add a project"
+      add_project_cta: "Add a camp" # TODO: translate for lv/de/es/ru.
       open_plan_title: "Enter “%{title}”"
-      open_plan_hint: "Step into this plan and set its projects."
+      open_plan_hint: "Step into this plan and set its camps." # TODO: translate for lv/de/es/ru.
       open_child_title: "Open “%{title}”"
       open_child_hint: "This is your clearest next stage."
       continue_cta: "Continue"
       enter_plan_cta: "Enter Plan"
-      open_project_cta: "Open Project"
+      open_project_cta: "Open Camp" # TODO: translate for lv/de/es/ru.
       fight_battle_cta: "Add today’s battle"
       add_battle_title: "Add today’s battle"
       add_battle_hint: "One small win you can take next."
       add_battle_cta: "Add today’s battle"
-      add_another_battle_hint: "Stack another small win under this project."
+      add_another_battle_hint: "Stack another small win under this camp." # TODO: translate for lv/de/es/ru.
       add_another_battle_cta: "Add another battle"
       go_today_title: "Fight on Today"
       go_today_hint: "Your battles are ready — go earn Action Points."
@@ -1420,12 +1427,12 @@ en:
     help:
       cta: "Help me"
       cta_goal: "Help me define this goal"
-      cta_project: "Help me define this project"
+      cta_project: "Help me define this camp" # TODO: translate for lv/de/es/ru.
       cta_battle: "Help me choose the next battle"
       cta_new_journey: "Help me think this through"
       cta_onboarding: "Help me clarify this mountain"
       suggest_plan: "Suggest a plan"
-      suggest_project: "Suggest a project"
+      suggest_project: "Suggest a camp" # TODO: translate for lv/de/es/ru.
       suggest_battle: "Suggest a battle"
       thinking: "Thinking…"
       goal_required: "Add your goal title first."
@@ -1438,23 +1445,23 @@ en:
       answer_first: "Answer the question first — then we can suggest ideas."
       disclaimer: "AI suggests. You decide. Nothing is saved until you accept."
     add_another_plan: "Add another plan"
-    add_another_project: "Add another project"
+    add_another_project: "Add another camp" # TODO: translate for lv/de/es/ru.
     add_another_battle: "Add another battle"
-    add_project_optional: "Add a project"
+    add_project_optional: "Add a camp" # TODO: translate for lv/de/es/ru.
     add_link:
       plan: "+ Add plan"
-      project: "+ Add project"
+      project: "+ Add camp" # TODO: translate for lv/de/es/ru.
       battle: "+ Add battle"
     siblings:
       plans: "Switch plan"
-      projects: "Switch project"
-    plan_hint: "One big goal for about a year. Then plans, projects, and battles."
+      projects: "Switch camp" # TODO: translate for lv/de/es/ru.
+    plan_hint: "One big goal for about a year. Then camps and battles." # TODO: translate for lv/de/es/ru.
     plan_hint_v1: "What are the biggest parts of this goal?"
     year_runs_until: "Your climb runs until %{date}."
     fixed_due: "Season ends %{date}."
     due_by: "Due %{date}"
     due_label: "Due by"
-    hint: "Goal → plans → projects → battles."
+    hint: "Goal → camps → battles." # TODO: translate for lv/de/es/ru.
     universe: "Your universe"
     sp_label: "Strategy Points"
     sp_short: "SP"
@@ -1484,7 +1491,7 @@ en:
     celebrate:
       goal: "Goal locked · planning +%{sp}"
       first_plan: "First plan · planning +%{sp}"
-      first_project: "First project · planning +%{sp}"
+      first_project: "First camp · planning +%{sp}" # TODO: translate for lv/de/es/ru.
       strategy_complete: "Trail ready · planning +%{sp}"
       float: "+%{sp}"
     guided:
@@ -1497,12 +1504,12 @@ en:
       ask_goal: "What do I ultimately want to achieve?"
       ask_plans: "What are the biggest parts of this goal?"
       ask_projects: "What specific thing do I need to build or complete?"
-      ask_plan_next: "Break this plan into projects."
+      ask_plan_next: "Break this plan into camps." # TODO: translate for lv/de/es/ru.
       ask_months: "Let’s plan the remaining months."
     levels:
       goal: "Goal"
       plan: "Plans"
-      project: "Projects"
+      project: "Camps" # TODO: translate for lv/de/es/ru.
       month: "Monthly Goals"
       week: "Week"
       day: "Battles"
@@ -1510,7 +1517,7 @@ en:
       year: "Goal"
       goal: "Goal"
       plan: "Plan"
-      project: "Project"
+      project: "Camp" # TODO: translate for lv/de/es/ru.
       brief: "Scale"
       month: "Monthly Goal"
       week: "Week"
@@ -1524,7 +1531,7 @@ en:
     day_placeholder: "One sitting action"
     add_goal: "Create goal · +SP"
     add_plan: "Add plan · +SP"
-    add_project: "Add project · +SP"
+    add_project: "Add camp · +SP" # TODO: translate for lv/de/es/ru.
     add_battle: "Add today’s battle · +SP"
     battles_heading: "Today’s Battles"
     today_battle_title: "Today’s Battle"
@@ -1593,7 +1600,7 @@ en:
       approach_placeholder: "Learn by building real apps"
       program: "Programs"
       program_hint: "Major step sequences — add more than one track if you need them."
-      program_placeholder: "Fundamentals → side project → portfolio"
+      program_placeholder: "Fundamentals → side camp → portfolio" # TODO: translate for lv/de/es/ru.
       milestone: "Milestones"
       milestone_hint: "Multi-day steps (not one sitting). Add the next ones you see."
       ideal: "Ideal scene"
@@ -1696,7 +1703,7 @@ en:
       eyebrow: "Climb reward"
       boss_eyebrow: "Chapter cleared"
       battle_title: "Battle won"
-      project_title: "Project conquered"
+      project_title: "Camp conquered" # TODO: translate for lv/de/es/ru.
       boss_title: "Boss beaten"
       mountain_pct: "Mountain %{pct}%"
       ap_meaning: "Battle strength"
@@ -1808,8 +1815,8 @@ en:
       hard: "Hard"
     deadline_kicker: "A finish line helps"
     deadline_title: "Your climb has a soft finish line."
-    deadline_lead: "%{date} — a checkpoint, not a deadline."
-    deadline_body: "One year from today — a checkpoint, not a deadline. Reach it, celebrate, and keep climbing or start fresh. Your call."
+    deadline_lead: "%{date} — a camp, not a deadline." # TODO: translate for lv/de/es/ru.
+    deadline_body: "One year from today — a camp, not a deadline. Reach it, celebrate, and keep climbing or start fresh. Your call." # TODO: translate for lv/de/es/ru.
     deadline_date_label: "Finish line: %{date}"
     deadline_change: "Change date"
     deadline_picker_label: "Pick a finish line"
@@ -1835,17 +1842,17 @@ en:
     how_step_persist: "Keep going"
     how_step_map: "Your map"
     how_stack_title: "One goal. Many trails."
-    how_stack_body: "Your goal is the mountain. Plans are trails. Projects are camps. Battles are today’s steps."
+    how_stack_body: "Your goal is the mountain. Plans are trails. Camps are stops on the trail. Battles are today’s steps." # TODO: translate for lv/de/es/ru.
     how_example_goal_label: "Goal"
     how_example_goal: "Get healthier"
     how_example_plans_label: "Plans"
     how_example_plan_1: "Move every day"
     how_example_plan_2: "Eat better"
     how_example_plan_3: "Sleep well"
-    how_example_projects_label: "Projects"
+    how_example_projects_label: "Camps" # TODO: translate for lv/de/es/ru.
     how_example_project_focus: "Start a walking habit"
     how_example_project_sibling: "Stretch after work"
-    how_example_plan_projects_count: "%{count} projects"
+    how_example_plan_projects_count: "%{count} camps" # TODO: translate for lv/de/es/ru.
     how_example_battles_label: "Battle"
     how_example_battle_1: "Put on walking shoes"
     how_example_battle_2: "Walk for 20 minutes"
@@ -2105,7 +2112,7 @@ en:
       milestone_hint: "Next multi-day humanity step."
       next_placeholder: "Complete one volunteer shift"
       finished_hint: "What finished help will exist?"
-      finished_placeholder: "A funded micro-project for the cause"
+      finished_placeholder: "A funded micro-camp for the cause" # TODO: translate for lv/de/es/ru.
       today_placeholder: "Donate to one vetted organization"
       today_todo_placeholder: "Research one local need"
       target_title_placeholder: "Volunteer 20 hours"
@@ -2177,13 +2184,13 @@ en:
       policy_hint: "Rules for learning without quitting."
       policy_placeholder: "Study daily. Build while learning. No course-hopping."
       approach_hint: "How will you learn with your schedule?"
-      approach_placeholder: "Morning lessons. Weekend projects. Weekly review."
+      approach_placeholder: "Morning lessons. Weekend camps. Weekly review." # TODO: translate for lv/de/es/ru.
       program_hint: "Major learning steps."
-      program_placeholder: "Basics → projects → teach/share → certify"
+      program_placeholder: "Basics → camps → teach/share → certify" # TODO: translate for lv/de/es/ru.
       milestone_hint: "Next multi-day learning step."
       next_placeholder: "Complete the CRUD course"
       finished_hint: "What finished learning proof will you have?"
-      finished_placeholder: "A shipped project using the new skill"
+      finished_placeholder: "A shipped camp using the new skill" # TODO: translate for lv/de/es/ru.
       today_placeholder: "Finish one lesson"
       today_todo_placeholder: "Do 3 practice exercises"
       target_title_placeholder: "Finish a 700-page textbook"
@@ -2229,7 +2236,7 @@ en:
       policy_hint: "Rules that keep you on purpose."
       policy_placeholder: "Weekly values review. Say no faster. Protect quiet time."
       approach_hint: "How will you clarify and live purpose?"
-      approach_placeholder: "Journal weekly. Mentor talks. One values-based project."
+      approach_placeholder: "Journal weekly. Mentor talks. One values-based camp." # TODO: translate for lv/de/es/ru.
       program_hint: "Major purpose steps."
       program_placeholder: "Name values → test them → commit → review"
       milestone_hint: "Next multi-day purpose step."
@@ -2528,9 +2535,9 @@ en:
     moved: "Area order updated."
     move_failed: "Couldn’t move that Area."
     improve:
-      cta: "Create a Project to improve this"
-      hint: "Adds a Project on your Mountain, linked to this Tracker."
-      created: "Project created: %{title}"
+      cta: "Create a Camp to improve this" # TODO: translate for lv/de/es/ru.
+      hint: "Adds a Camp on your Mountain, linked to this Tracker." # TODO: translate for lv/de/es/ru.
+      created: "Camp created: %{title}" # TODO: translate for lv/de/es/ru.
       project_title: "Improve %{name}"
       plan_title: "%{name} focus"
       need_attention: "Mark this Tracker as needing attention first."
@@ -2712,7 +2719,7 @@ en:
       title: "Developer Tools"
       subtitle: "Only visible to the developer. Does not change other players."
       restart_npe: "Restart New Player Experience"
-      restart_npe_confirm: "Wipe this account’s Goals, Plans, Projects, Battles, and journeys, reset onboarding, then open the first onboarding screen? Your login account stays. Action Points and habits are kept."
+      restart_npe_confirm: "Wipe this account’s Goals, Camps, Battles, and journeys, reset onboarding, then open the first onboarding screen? Your login account stays. Action Points and habits are kept." # TODO: translate for lv/de/es/ru.
       restart_npe_done: "New Player Experience restarted — Strategy data cleared."
   feedback:
     title: "Feedback"
@@ -3242,7 +3249,7 @@ en:
       users_week: "New users this week"
       users_month: "New users this month"
       battles: "Completed battles"
-      projects: "Completed projects"
+      projects: "Completed camps" # TODO: translate for lv/de/es/ru.
       plans: "Plans"
       goals: "Goals"
       journeys: "Journeys"
@@ -3323,7 +3330,7 @@ en:
       journeys: "Journeys"
       goals: "Goals"
       plans: "Plans"
-      projects: "Projects"
+      projects: "Camps" # TODO: translate for lv/de/es/ru.
       battles: "Battles"
       life_points_ledger: "LifePoints"
       empty_section: "Nothing here yet."
