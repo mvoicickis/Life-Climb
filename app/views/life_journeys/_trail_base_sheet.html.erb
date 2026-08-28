@@ -1,10 +1,10 @@
 <%# Daily / repeating work for Base camp. locals: projects, area, plan, goal, journey %>
-<% projects = local_assigns.fetch(:projects) %>
+<% projects = mountain_trail_sort_projects(local_assigns.fetch(:projects)) %>
 <% area = local_assigns[:area] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
 <% groups = mountain_trail_daily_battles(projects) %>
-<% add_parent = projects.find { |project| !project.pages_mode? } || projects.first %>
+<% add_parent = mountain_trail_base_camp_add_parent(projects) %>
 <% daily_count = groups.sum { |group| group[:battles].size } %>
 
 <div class="lp-trail-battles lp-trail-base-sheet"

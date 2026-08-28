@@ -225,6 +225,72 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal open_project, current
   end
 
+  test "sort projects orders by position then id" do
+    second = Struct.new(:id, :position).new(2, 1)
+    first = Struct.new(:id, :position).new(1, 0)
+    assert_equal [ first, second ], mountain_trail_sort_projects([ second, first ])
+  end
+
+  test "open camps returns position-sorted incomplete projects" do
+    @user = users(:one)
+    Onboarding::Run.call(
+      user: @user, area_key: "career", title: "Ship", ideal_scene: "Live",
+      current_reality: "Build", next_win: "Launch", today_mission: "Test", closer_percent: 20
+    )
+    journey = @user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "plan", title: "Path", position: 0
+    )
+    lower = plan.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Lower", position: 1, trail_x: 0.5, trail_y: 0.8
+    )
+    summit = plan.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Summit", position: 0, trail_x: 0.5, trail_y: 0.4
+    )
+
+    assert_equal [ summit, lower ], mountain_trail_open_camps(plan.reload)
+  end
+
+  test "base camp add parent is nil when no projects" do
+    assert_nil mountain_trail_base_camp_add_parent([])
+  end
+
+  test "base camp add parent picks idle lowest camp when no battles exist" do
+    summit = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
+      1, 0, false, false, [], 0.5, 0.4
+    )
+    lower = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
+      2, 1, false, false, [], 0.5, 0.8
+    )
+
+    assert_equal lower, mountain_trail_base_camp_add_parent([ summit, lower ])
+  end
+
+  test "base camp add parent picks current camp with open battles over summit" do
+    battle = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
+    summit = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
+      1, 0, false, false, [], 0.5, 0.4
+    )
+    lower = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
+      2, 1, false, false, [ battle ], 0.5, 0.8
+    )
+
+    assert_equal lower, mountain_trail_base_camp_add_parent([ summit, lower ])
+  end
+
+  test "base camp add parent falls back to first pages camp when all are pages mode" do
+    pages = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
+      1, 0, false, true, [], 0.5, 0.6
+    )
+
+    assert_equal pages, mountain_trail_base_camp_add_parent([ pages ])
+  end
+
   test "fire level scales with battle count" do
     days = Array.new(4) { Struct.new(:day?, :holding?).new(true, false) }
     project = Struct.new(:completed?, :pages_mode?, :children).new(false, false, days)
