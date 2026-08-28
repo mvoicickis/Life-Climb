@@ -83,15 +83,16 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
     assert_equal 5, Today::BattlesWaiting.count(user: @user, life_area: @area)
 
-    @user.daily_todos.for_day(Date.current).incomplete.limit(15).find_each do |todo|
-      todo.update!(completed_at: Time.current)
-    end
-    assert_equal 5, GameRules.daily_open_count(@user, Date.current)
+    todo = @user.daily_todos.for_day(Date.current).incomplete.ordered.first
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
+
+    assert todo.reload.completed?
+    assert todo.strategy_goal.reload.completed?
 
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
 
     assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
-    assert_equal 0, Today::BattlesWaiting.count(user: @user, life_area: @area)
+    assert_equal 4, Today::BattlesWaiting.count(user: @user, life_area: @area)
     assert_operator @user.daily_todos.for_day(Date.current).count, :>, GameRules::MAX_DAILY_TODOS
   end
 
