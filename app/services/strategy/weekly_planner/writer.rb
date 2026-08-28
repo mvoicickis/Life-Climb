@@ -41,7 +41,7 @@ module Strategy
               raise ArgumentError, I18n.t("strategy.weekly_planner.errors.bad_dates")
             end
 
-            used = @user.daily_todos.for_day(date).count + reserved[date]
+            used = GameRules.daily_open_count(@user, date) + reserved[date]
             if used >= GameRules::MAX_DAILY_TODOS
               skipped << { "title" => title, "date" => date.iso8601 }
               next
