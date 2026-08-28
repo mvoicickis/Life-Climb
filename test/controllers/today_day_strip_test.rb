@@ -84,11 +84,15 @@ class TodayDayStripTest < ActionDispatch::IntegrationTest
   end
 
   test "empty Today hides the strip and shows empty battlefield copy" do
+    @user.strategy_goals
+      .where(life_area_id: @area.id, horizon: "day", scheduled_on: Date.current)
+      .destroy_all
     @user.daily_todos.for_day(Date.current).destroy_all
 
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-daystrip", count: 0
+    assert_select ".lp-today-v2-row", count: 0
     assert_select ".lp-today-v2-empty", count: 1
   end
 end

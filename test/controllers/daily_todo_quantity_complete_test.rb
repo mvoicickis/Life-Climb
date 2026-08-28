@@ -45,9 +45,11 @@ class DailyTodoQuantityCompleteTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-today-v2-row[data-todo-id=?][data-controller='quantity-complete']", @todo.id.to_s
+    assert_select ".lp-today-v2-row[data-todo-id=?][data-controller*='quantity-complete']", @todo.id.to_s
     assert_select ".lp-today-v2-row[data-todo-id=?] dialog.lp-quantity-complete", @todo.id.to_s
-    assert_select ".lp-today-v2-row[data-todo-id=?][data-controller='quantity-complete']", plain_todo.id.to_s, count: 0
+    assert_select ".lp-today-v2-row[data-todo-id=?] form[data-action*='quantity-complete#intercept']",
+                  @todo.id.to_s
+    assert_select ".lp-today-v2-row[data-todo-id=?][data-controller*='quantity-complete']", plain_todo.id.to_s, count: 0
     assert_select ".lp-today-v2-row[data-todo-id=?] form.lp-today-v2-row__check-form[action=?]",
                   plain_todo.id.to_s,
                   complete_daily_todo_path(plain_todo)
