@@ -53,20 +53,22 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     assert_select "#commitment-gap-panel[data-next-action-key=setup_gap]", count: 1
   end
 
-  test "dashboard sync surfaces future one-shot battles on today" do
+  test "dashboard sync does not surface future one-shot battles on today" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
     goal = @user.strategy_goals.for_kind("goal").roots.first
     plan = goal.children.find(&:plan?)
     camp = plan.children.find(&:project?)
+    future = 1.month.from_now.to_date
     camp.children.create!(
       user: @user, life_area: journey.life_area, life_journey: journey,
-      horizon: "day", title: "Milestone fight", scheduled_on: 1.month.from_now.to_date,
+      horizon: "day", title: "Milestone fight", scheduled_on: future,
       repeat: "none", position: 99
     )
 
     get dashboard_path
     assert_response :success
-    assert @user.daily_todos.for_day.exists?(title: "Milestone fight")
+    assert_not @user.daily_todos.for_day.exists?(title: "Milestone fight")
+    assert @user.daily_todos.for_day(future).exists?(title: "Milestone fight")
   end
 
   test "dashboard shows waiting indicator when cap hides battles" do
@@ -77,7 +79,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     24.times do |i|
       camp.children.create!(
         user: @user, life_area: journey.life_area, life_journey: journey,
-        horizon: "day", title: "Overflow #{i}", scheduled_on: 1.month.from_now.to_date,
+        horizon: "day", title: "Overflow #{i}", scheduled_on: Date.current,
         repeat: "none", position: 100 + i
       )
     end
@@ -95,7 +97,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     24.times do |i|
       camp.children.create!(
         user: @user, life_area: journey.life_area, life_journey: journey,
-        horizon: "day", title: "Overflow #{i}", scheduled_on: 1.month.from_now.to_date,
+        horizon: "day", title: "Overflow #{i}", scheduled_on: Date.current,
         repeat: "none", position: 100 + i
       )
     end

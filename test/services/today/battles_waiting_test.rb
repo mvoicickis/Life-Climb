@@ -22,7 +22,7 @@ class Today::BattlesWaitingTest < ActiveSupport::TestCase
     21.times do |i|
       @user.strategy_goals.create!(
         life_area: @area, parent: @camp_leaf, horizon: "day",
-        title: "Battle #{i}", scheduled_on: 1.month.from_now.to_date, repeat: "none", position: i
+        title: "Battle #{i}", scheduled_on: Date.current, repeat: "none", position: i
       )
     end
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)

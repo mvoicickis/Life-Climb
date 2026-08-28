@@ -32,6 +32,7 @@ module Today
         .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
         .incomplete
         .not_holding
+        .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
         .pluck(:id)
 
       dailies = @user.strategy_goals
