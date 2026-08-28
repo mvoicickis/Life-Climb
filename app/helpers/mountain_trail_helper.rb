@@ -430,8 +430,23 @@ module MountainTrailHelper
     { items: items.first(3), extra: [ items.size - 3, 0 ].max }
   end
 
+  def mountain_trail_sort_projects(projects)
+    Array(projects).sort_by { |project| [ project.position.to_i, project.id ] }
+  end
+
   def mountain_trail_open_camps(plan)
-    Array(plan&.children).select { |child| child.project? && !child.holding? && !child.completed? }
+    mountain_trail_sort_projects(
+      Array(plan&.children).select { |child| child.project? && !child.holding? && !child.completed? }
+    )
+  end
+
+  # Parent for base-camp daily creates — matches is-current marker, then idle camp.
+  def mountain_trail_base_camp_add_parent(projects)
+    ordered = mountain_trail_sort_projects(projects)
+    mountain_trail_current_project(ordered) ||
+      mountain_trail_idle_camp(ordered) ||
+      ordered.find { |project| !project.pages_mode? } ||
+      ordered.first
   end
 
   def mountain_trail_daily_battles(projects)
