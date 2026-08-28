@@ -86,4 +86,32 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#today-battles-waiting", text: /5 more battles on Mountain/
   end
+
+  test "completing at open cap surfaces next waiting battle on dashboard sync" do
+    journey = seed_climb!(@user, today_mission: "Existing fight")
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.find(&:plan?)
+    camp = plan.children.find(&:project?)
+    24.times do |i|
+      camp.children.create!(
+        user: @user, life_area: journey.life_area, life_journey: journey,
+        horizon: "day", title: "Overflow #{i}", scheduled_on: 1.month.from_now.to_date,
+        repeat: "none", position: 100 + i
+      )
+    end
+
+    get dashboard_path
+    assert_response :success
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
+    assert_equal 5, Today::BattlesWaiting.count(user: @user, life_area: journey.life_area)
+
+    todo = @user.daily_todos.for_day.incomplete.ordered.first
+    post complete_daily_todo_path(todo), as: :turbo_stream
+    assert_response :ok
+
+    assert todo.reload.completed?
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
+    assert_equal 4, Today::BattlesWaiting.count(user: @user, life_area: journey.life_area)
+    assert_operator @user.daily_todos.for_day.count, :>, GameRules::MAX_DAILY_TODOS
+  end
 end

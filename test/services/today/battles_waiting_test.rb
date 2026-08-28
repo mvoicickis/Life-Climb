@@ -27,7 +27,7 @@ class Today::BattlesWaitingTest < ActiveSupport::TestCase
     end
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
 
-    assert_equal GameRules::MAX_DAILY_TODOS, @user.daily_todos.for_day.count
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
     assert_equal 1, Today::BattlesWaiting.count(user: @user, life_area: @area)
   end
 

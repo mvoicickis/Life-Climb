@@ -30,7 +30,7 @@ module Dashboard
       @battle_reward = @open_todos.sum { |t| t.lp_reward.to_i }
       @battle_reward += @mission.lp_reward if @include_mission_in_battle
       @battle_open_count = @open_todos.size + (@include_mission_in_battle ? 1 : 0)
-      @battle_day_full = @daily_todos.size >= GameRules::MAX_DAILY_TODOS
+      @battle_day_full = @open_todos.size >= GameRules::MAX_DAILY_TODOS
       @targets = @journey.journey_targets.active.ordered.to_a
       @closer =
         if @strategy_goal
