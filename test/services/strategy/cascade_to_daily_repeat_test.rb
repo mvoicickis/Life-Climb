@@ -41,6 +41,50 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     assert_nil practice.completed_at
   end
 
+  test "overdue one-shot cascades onto today and prunes stale past feed row" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    past = 11.days.ago.to_date
+    battle = @user.strategy_goals.create!(
+      life_area: @area, parent: @camp_leaf, horizon: "day",
+      title: "Overdue fight", scheduled_on: past, repeat: "none", position: 0
+    )
+    stale = @user.daily_todos.create!(
+      user: @user,
+      strategy_goal: battle,
+      title: "Overdue fight",
+      scheduled_on: past,
+      aspect_key: "self",
+      position: 0,
+      tag: "strategy"
+    )
+
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
+
+    assert_nil @user.daily_todos.find_by(id: stale.id)
+    todo = @user.daily_todos.find_by!(strategy_goal_id: battle.id, scheduled_on: Date.current)
+    assert_equal "Overdue fight", todo.title
+    assert_nil @user.daily_todos.incomplete.find_by(strategy_goal_id: battle.id, scheduled_on: past)
+    assert_equal past, battle.reload.scheduled_on
+    assert_equal 0, Today::BattlesWaiting.count(user: @user, life_area: @area)
+  end
+
+  test "cap overflow with overdue one-shots surfaces first twenty on today" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    past = 5.days.ago.to_date
+    25.times do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, parent: @camp_leaf, horizon: "day",
+        title: "Overdue #{i}", scheduled_on: past, repeat: "none", position: i
+      )
+    end
+
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current)
+
+    assert_equal GameRules::MAX_DAILY_TODOS, GameRules.daily_open_count(@user, Date.current)
+    assert_equal 5, Today::BattlesWaiting.count(user: @user, life_area: @area)
+    assert_equal 0, @user.daily_todos.incomplete.where("scheduled_on < ?", Date.current).count
+  end
+
   test "one-shot with future scheduled_on cascades onto scheduled date not today" do
     @camp_leaf = practice_leaf_for!(@camp)
     future = 1.month.from_now.to_date

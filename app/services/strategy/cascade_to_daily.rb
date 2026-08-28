@@ -18,7 +18,8 @@ module Strategy
       created = 0
       ActiveRecord::Base.transaction do
         one_time_goals.find_each do |goal|
-          date = goal.scheduled_on.presence || Date.current
+          date = surfacing_date_for(goal)
+          prune_stale_one_shot_feed!(goal) if pulled_forward?(goal)
           created += 1 if upsert_todo!(goal, date)
         end
 
@@ -77,6 +78,25 @@ module Strategy
 
     def display_title_for(goal)
       Strategy::EnsureFolderQuest.display_title_for(goal)
+    end
+
+    # One-shots land on scheduled_on when today or future; overdue battles surface today.
+    def surfacing_date_for(goal)
+      scheduled = goal.scheduled_on.presence || Date.current
+      scheduled < Date.current ? Date.current : scheduled
+    end
+
+    def pulled_forward?(goal)
+      goal.scheduled_on.present? && goal.scheduled_on < Date.current
+    end
+
+    # Avoid two open feed rows for the same battle after overdue pull-forward.
+    def prune_stale_one_shot_feed!(goal)
+      @user.daily_todos
+        .where(strategy_goal_id: goal.id)
+        .incomplete
+        .where("scheduled_on < ?", Date.current)
+        .delete_all
     end
   end
 end

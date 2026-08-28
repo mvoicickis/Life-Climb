@@ -66,6 +66,8 @@ en:
       health_label: "Health"
       day_n: "Day %{count}"
       risk_cleared: "All threats cleared."
+      # TODO: translate for lv/de/es/ru
+      risk_empty: "No battles on Today's list yet."
       risk_open:
         one: "1 open battle draining your health."
         other: "%{count} open battles draining your health."
@@ -89,6 +91,8 @@ en:
       recap_kicker: "Day %{day} · Execution recap"
       recap_crushed: "Crushed it"
       recap_survived: "Survived"
+      # TODO: translate for lv/de/es/ru
+      recap_empty: "Day open"
       recap_rough: "Rough day"
       recap_stats: "%{done}/%{total} battles won · %{hp} health held"
       share_recap: "Share recap"

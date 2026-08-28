@@ -68,6 +68,28 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-empty", count: 0
   end
 
+  test "dashboard sync surfaces overdue one-shot battles on today" do
+    journey = seed_climb!(@user, today_mission: "Existing fight")
+    dismiss_onboarding_missions!(@user)
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.find(&:plan?)
+    camp = plan.children.find(&:project?)
+    past = 11.days.ago.to_date
+    overdue = camp.children.create!(
+      user: @user, life_area: journey.life_area, life_journey: journey,
+      horizon: "day", title: "Overdue fight", scheduled_on: past,
+      repeat: "none", position: 99
+    )
+    @user.daily_todos.for_day(Date.current).destroy_all
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-today-v2-row[data-todo-id=?]",
+                  @user.daily_todos.find_by!(strategy_goal_id: overdue.id, scheduled_on: Date.current).id.to_s
+    assert_select "#today-battles-waiting", count: 0
+    assert_select ".lp-today-v2-empty", count: 0
+  end
+
   test "dashboard sync does not surface future one-shot battles on today" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
     goal = @user.strategy_goals.for_kind("goal").roots.first

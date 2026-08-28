@@ -26,6 +26,10 @@ module Today
         band == :danger
       end
 
+      def neutral?
+        band == :neutral
+      end
+
       def all_clear?
         total_count.positive? && open_count.zero?
       end
@@ -46,7 +50,9 @@ module Today
     end
 
     def call
-      hp = @total_count.zero? ? 100 : ((@done_count.to_f / @total_count) * 100).round
+      return empty_result if @total_count.zero?
+
+      hp = ((@done_count.to_f / @total_count) * 100).round
       band = hp >= 70 ? :safe : hp >= 35 ? :warn : :danger
 
       Result.new(
@@ -62,6 +68,19 @@ module Today
     end
 
     private
+
+    def empty_result
+      Result.new(
+        hp: 0,
+        done_count: 0,
+        total_count: 0,
+        open_count: @open_count,
+        band: :neutral,
+        risk_icon: "",
+        risk_note: I18n.t("dash.battlefield.risk_empty"),
+        result_title: I18n.t("dash.battlefield.recap_empty")
+      )
+    end
 
     def risk_note_for(open_count)
       if open_count.zero?

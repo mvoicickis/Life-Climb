@@ -25,6 +25,7 @@ module ApplicationHelper
     case band.to_sym
     when :safe then "is-safe"
     when :warn then "is-warn"
+    when :neutral then "is-neutral"
     else "is-danger"
     end
   end
