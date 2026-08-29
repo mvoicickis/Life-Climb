@@ -4,6 +4,7 @@ require "rails/test_help"
 require_relative "test_helpers/session_test_helper"
 require_relative "test_helpers/climb_test_helper"
 require_relative "test_helpers/today_v2_test_helper"
+require_relative "test_helpers/stripe_test_helper"
 
 module ActiveSupport
   class TestCase
