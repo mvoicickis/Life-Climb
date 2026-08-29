@@ -116,4 +116,7 @@
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
 </div>
 
-<%= render "shared/lp_dash_nav", active: :mountain, variant: (v4_shell ? :v4 : :default) %>
+<%= render "shared/lp_dash_nav",
+      active: :mountain,
+      variant: (v4_shell ? :v4 : :default),
+      onboarding_tour: current_user.needs_onboarding_mountain_tour?(@journey) %>

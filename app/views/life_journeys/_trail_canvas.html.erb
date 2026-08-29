@@ -9,7 +9,6 @@
 <% projects = mountain_trail_projects(trail) %>
 <% destination_overlay = local_assigns[:destination_overlay] %>
 <% layout_map = projects.any? ? mountain_trail_layout(projects) : {} %>
-<% ghosts = mountain_trail_ghosts(projects, layout: layout_map, current_project: current_project) %>
 <% icon_starters = mountain_trail_plant_starters %>
 <% segments = mountain_trail_segments(projects) %>
 <% photo_url = mountain_trail_photo_url(journey) %>
@@ -217,25 +216,6 @@
                 projects: projects,
                 current_project: current_project,
                 tour_camp: show_onboarding_tour && index.zero? %>
-        <% end %>
-      </div>
-
-      <div class="lp-trail__ghosts" data-trail-canvas-target="ghosts">
-        <% ghosts.each_with_index do |ghost, ghost_index| %>
-          <button type="button"
-                  class="lp-trail-ghost"
-                  <% if show_onboarding_tour && ghost_index.zero? %>id="onboarding-tour-add-camp"<% end %>
-                  style="--lp-trail-x: <%= ghost[:x] %>; --lp-trail-y: <%= ghost[:y] %>;"
-                  data-trail-x="<%= ghost[:x] %>"
-                  data-trail-y="<%= ghost[:y] %>"
-                  data-action="click->trail-canvas#ghostPick"
-                  aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
-            <span class="lp-trail-ghost__chip">
-              <span class="lp-trail-ghost__plus" aria-hidden="true">+</span>
-              <span class="lp-trail-ghost__text"><%= t("strategy.rpg.trail.plant_project") %></span>
-            </span>
-            <span class="lp-trail-ghost__stem" aria-hidden="true"></span>
-          </button>
         <% end %>
       </div>
 

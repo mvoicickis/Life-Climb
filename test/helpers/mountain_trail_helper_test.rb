@@ -298,16 +298,6 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 1, mountain_trail_fire_level(project)
   end
 
-  test "ghosts avoid peak band when projects exist" do
-    p1 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 1, trail_x: 0.5, trail_y: 0.55)
-    layout = mountain_trail_layout([ p1 ])
-    ghosts = mountain_trail_ghosts([ p1 ], layout: layout)
-    ghosts.each do |g|
-      assert g[:y] > MountainTrailHelper::PEAK_BAND_Y + 0.03,
-             "ghost at #{g[:y]} should sit below peak band"
-    end
-  end
-
   test "energy rises with wins and open battles" do
     battle_open = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
     battle_won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)

@@ -52,37 +52,17 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
     assert metrics["aboveNav"], "expected camp above bottom nav at 412x800, got #{metrics.inspect}"
   end
 
-  test "ghosts hidden on steps 2-3 and visible on step 4" do
-    bootstrap_and_visit!
-    page.driver.browser.manage.window.resize_to(412, 800)
-
-    assert_selector ".lp-trail__ghosts.is-onboarding-tour-hidden", wait: 5
-
-    click_button class: "lp-onboarding-tour__next"
-    assert_selector "#onboarding-tour-camp", wait: 5
-    assert_selector ".lp-trail__ghosts.is-onboarding-tour-hidden"
-
-    click_button class: "lp-onboarding-tour__next"
-    assert_selector "#onboarding-tour-camp", wait: 5
-    assert_selector ".lp-trail__ghosts.is-onboarding-tour-hidden"
-
-    click_button class: "lp-onboarding-tour__next"
-    assert_selector "#onboarding-tour-add-camp", wait: 5
-    assert_no_selector ".lp-trail__ghosts.is-onboarding-tour-hidden"
-    assert_selector ".lp-trail-ghost", visible: :all
-  end
-
-  test "tour step 4 anchors spotlight to add-camp ghost at 412px" do
+  test "tour step 4 anchors spotlight to add-camp fab at 412px" do
     bootstrap_and_visit!
     page.driver.browser.manage.window.resize_to(412, 800)
 
     3.times { click_button class: "lp-onboarding-tour__next" }
-    assert_selector "#onboarding-tour-add-camp", wait: 5
+    assert_selector "#onboarding-tour-add-camp.lp-dash-nav__fab", wait: 5
     sleep 0.25
 
     metrics = tour_metrics_for("#onboarding-tour-add-camp")
-    assert metrics["ok"], "expected spotlight on add-camp ghost at 412x800, got #{metrics.inspect}"
-    assert metrics["bubbleClear"], "expected bubble clear of ghost at 412x800, got #{metrics.inspect}"
+    assert metrics["ok"], "expected spotlight on add-camp fab at 412x800, got #{metrics.inspect}"
+    assert metrics["bubbleClear"], "expected bubble clear of fab at 412x800, got #{metrics.inspect}"
   end
 
   test "mountain plant fab uses camp wording not project" do

@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 const CAMP_HOLD_MS = 450
 const CAMP_HOLD_CANCEL_PX = 10
 
-// Mountain V4 photo trail: composer → place mode, ghosts.
+// Mountain V4 photo trail: composer → place mode.
 // Blank taps scroll only. Long-press (~450ms) unlocks relocate: the path
 // stays lit until the tent moves, then PATCH camp coords.
 export default class extends Controller {
@@ -17,7 +17,6 @@ export default class extends Controller {
     "plantY",
     "plantTitle",
     "plantSubmit",
-    "ghosts",
     "glowDots",
     "spurs",
     "placingBanner",
@@ -446,18 +445,6 @@ export default class extends Controller {
     if (!this._relocating && !this._placing) this.hideGlowDots()
   }
 
-  ghostPick(event) {
-    event.preventDefault()
-    event.stopPropagation()
-
-    const el = event.currentTarget
-    const x = this.readCoord(el.dataset.trailX, 0.5)
-    const y = this.readCoord(el.dataset.trailY, 0.55)
-    const snapped = this.snapToTrail(x, y)
-    this._presetSpot = snapped
-    this.openPlant(snapped.x, snapped.y, { chooseSpot: false })
-  }
-
   closePlant(event) {
     event?.preventDefault()
     event?.stopPropagation()
@@ -510,7 +497,7 @@ export default class extends Controller {
 
     const quantity = this.readQuantityFields(form)
 
-    // Preset spot (ghost / tap) → plant immediately.
+    // Preset spot (tap while placing) → plant immediately.
     if (this._presetSpot) {
       this._plantX = this._presetSpot.x
       this._plantY = this._presetSpot.y
@@ -1259,7 +1246,6 @@ export default class extends Controller {
     if (!target || !target.closest) return true
     return Boolean(
       target.closest(".lp-trail-camp") ||
-      target.closest(".lp-trail-ghost") ||
       target.closest(".lp-trail-sheet") ||
       target.closest(".lp-trail-plant") ||
       target.closest(".lp-trail-hud") ||

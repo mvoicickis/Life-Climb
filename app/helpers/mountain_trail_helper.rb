@@ -53,9 +53,6 @@ module MountainTrailHelper
   SIGN_MIN_GAP = 0.09
   SIGN_FLOOR_Y = 0.72
   PEAK_BAND_Y = 0.26
-  GHOST_HEIGHT = 0.055
-  SIGN_HEIGHT = 0.088
-  GHOST_MIN_SPAN = SIGN_HEIGHT + GHOST_HEIGHT + 0.012
   # Place-mode tap range (mockup) — wider than the auto-layout trail band.
   PLACE_X_MIN = 0.03
   PLACE_X_MAX = 0.97
@@ -179,35 +176,6 @@ module MountainTrailHelper
 
   def mountain_trail_accent(color_key)
     ACCENT_HEX.fetch(color_key.to_s, "#57534e")
-  end
-
-  def mountain_trail_ghosts(projects, layout: nil, current_project: nil)
-    if projects.empty?
-      return [ { x: AutoSlot.x_for(0.55), y: 0.55 } ]
-    end
-
-    layout ||= mountain_trail_layout(projects)
-    occupied = projects.filter_map { |p| layout.dig(p.id, :y)&.to_f }.sort
-    blocked = [ PEAK_BAND_Y + 0.04 ]
-    if current_project && layout[current_project.id]
-      camp_y = layout[current_project.id][:y].to_f
-      blocked.concat([ camp_y + 0.035, camp_y + 0.08 ])
-    end
-
-    bounds = [ PEAK_BAND_Y ].concat(occupied).concat(blocked).concat([ SIGN_FLOOR_Y ]).sort.uniq
-    gaps = []
-    bounds.each_cons(2) do |low, high|
-      span = high - low
-      bottom = low + GHOST_HEIGHT + 0.012
-      next unless span > GHOST_MIN_SPAN
-      next unless bottom <= high - SIGN_HEIGHT - 0.012
-
-      gaps << { y: bottom, span: span }
-    end
-
-    gaps.sort_by { |g| -g[:span] }.first(projects.size >= 2 ? 2 : 3).map do |g|
-      { x: AutoSlot.x_for(g[:y]), y: g[:y].clamp(TRAIL_Y_MIN, TRAIL_Y_MAX) }
-    end
   end
 
   def mountain_trail_curve_json

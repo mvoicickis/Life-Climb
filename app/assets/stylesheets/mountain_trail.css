@@ -378,8 +378,7 @@
 .lp-trail__ember:nth-child(5) { left: 35%; width: 5px; height: 5px; animation-delay: 2s; }
 
 /* ——— Camps ——— */
-.lp-trail__camps,
-.lp-trail__ghosts {
+.lp-trail__camps {
   position: absolute;
   inset: 0;
   z-index: 4;
@@ -596,63 +595,6 @@
 .lp-trail-camp.is-current .lp-trail-camp__title {
   font-weight: 800;
   text-shadow: none;
-}
-
-/* ——— Ghost plant pins ——— */
-.lp-trail-ghost {
-  position: absolute;
-  left: calc(var(--lp-trail-x, 0.5) * 100%);
-  top: calc(var(--lp-trail-y, 0.5) * 100%);
-  transform: translate(-50%, -100%);
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: auto;
-  cursor: pointer;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  animation: lp-trail-ghost 3s ease-in-out infinite;
-}
-
-.lp-trail-ghost:hover,
-.lp-trail-ghost:focus-visible {
-  filter: brightness(1.15);
-  outline: none;
-}
-
-.lp-trail-ghost__chip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 11px;
-  border-radius: 9px;
-  border: 1.5px dashed rgba(255, 255, 255, 0.75);
-  background: rgba(18, 32, 26, 0.42);
-  backdrop-filter: blur(3px);
-  white-space: nowrap;
-}
-
-.lp-trail-ghost__plus {
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.lp-trail-ghost__text {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.lp-trail-ghost__stem {
-  width: 2px;
-  height: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.12));
-  border-radius: 1px;
 }
 
 /* ——— Plant composer ——— */
@@ -930,11 +872,6 @@
   50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.2); }
 }
 
-@keyframes lp-trail-ghost {
-  0%, 100% { opacity: 0.62; }
-  50% { opacity: 1; }
-}
-
 @keyframes lp-trail-current {
   0%, 100% { transform: translate(-50%, -100%) scale(1); }
   50% { transform: translate(-50%, -100%) scale(1.07); }
@@ -955,7 +892,6 @@
   .lp-trail__sun-rays,
   .lp-trail__mist,
   .lp-trail__ember,
-  .lp-trail-ghost,
   .lp-trail-camp.is-current,
   .lp-trail-plant__marker {
     animation: none !important;
@@ -1671,14 +1607,6 @@
 @keyframes lp-trail-camp-pulse {
   0%, 100% { filter: brightness(1) drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45)) drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent) 50%, transparent)); }
   50% { filter: brightness(1.08) drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45)) drop-shadow(0 0 14px color-mix(in srgb, var(--lp-trail-accent) 60%, transparent)); }
-}
-
-/* Ghosts */
-.lp-trail.is-v4 .lp-trail-ghost__chip {
-  border: 1.5px dashed rgba(255,255,255,.75);
-  background: rgba(18,32,26,.42);
-  color: #fff;
-  backdrop-filter: blur(6px);
 }
 
 /* Dark battle sheet — viewport-fixed like plant sheet (#352 parity) */
@@ -2581,13 +2509,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 /* Place mode */
 .lp-trail.is-placing .lp-trail__mountain { cursor: crosshair; }
-.lp-trail.is-placing .lp-trail__ghosts,
-.lp-trail.is-trail-lit .lp-trail__ghosts { opacity: 0.25; pointer-events: none; }
-
-.lp-trail__ghosts.is-onboarding-tour-hidden {
-  visibility: hidden;
-  pointer-events: none;
-}
 
 .lp-trail.is-trail-lit .lp-trail-glow {
   width: 10px;
@@ -4044,7 +3965,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
     display: none;
   }
 
-  .lp-trail-ghost,
   .lp-trail__haze-band,
   .lp-trail__cloud {
     animation: none !important;
@@ -4056,11 +3976,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   0% { opacity: 0; transform: translateY(-10px); background: #e4f3f1; }
   60% { background: #e4f3f1; }
   100% { opacity: 1; transform: translateY(0); background: transparent; }
-}
-
-@keyframes lp-trail-ghost-breathe {
-  0%, 100% { opacity: 0.62; }
-  50% { opacity: 1; }
 }
 
 @keyframes lp-trail-haze-drift {
@@ -4083,10 +3998,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail__haze-band.is-2 {
   animation: lp-trail-haze-drift 28s ease-in-out infinite reverse;
-}
-
-.lp-trail-ghost__chip {
-  animation: lp-trail-ghost-breathe 3.2s ease-in-out infinite;
 }
 
 .lp-trail-battles__row.is-flash {
