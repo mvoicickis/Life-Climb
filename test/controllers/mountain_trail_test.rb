@@ -411,6 +411,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
+    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
+    assert_select "#trail-base-sheet .lp-trail-battles__empty", count: 0
+    assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
   end
 
   test "base camp dock opens sheet when journey has basics habits but no daily battles" do
@@ -433,6 +436,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-base-card[data-action*='openBase']"
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
     assert_select "#trail-sheet-camp-base"
+    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
+    assert_select "#trail-base-sheet .lp-trail-battles__stats", count: 0
+    assert_select "#trail-base-sheet .lp-trail-battles__empty", count: 0
+    assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
   end
 
   test "base camp card opens sheet when daily is due from past scheduled_on" do
