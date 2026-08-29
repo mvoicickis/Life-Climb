@@ -150,8 +150,8 @@ en:
       need_spine: "Build your mountain path before adding steps."
       already_linked: "That battle already has a checklist home."
     anytime:
-      # Heading drafts: A (shipped) Habits · B Habits · C Anytime
-      title: "Habits"
+      # Heading drafts: A (shipped) Basics · B Basics · C Anytime
+      title: "Basics"
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
       empty: "No habits on Today yet — add one under Habits."

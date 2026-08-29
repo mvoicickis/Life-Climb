@@ -572,7 +572,7 @@ de:
       already_linked: "Dieser Kampf hat bereits eine Checklisten-Heimat."
     anytime:
       # TODO: translate
-      title: "Habits"
+      title: "Basics"
       hint: "Log as many times as you like"
       empty: "No habits on Today yet — add one under Habits."
       add: "Add"
