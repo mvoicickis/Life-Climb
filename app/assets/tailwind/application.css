@@ -21365,6 +21365,10 @@ a.lp-rpg-add.is-guide-entry.is-path {
 .lp-quantity-complete {
   width: min(92vw, 22rem);
   max-width: 22rem;
+  /* Sheet panel is always dark (#171c22) — pin readable ink regardless of html theme. */
+  --rpg-ink: #f3f6f8;
+  --rpg-mist: #8b95a5;
+  color: var(--rpg-ink);
 }
 .lp-quantity-complete .lp-strategy-sheet__panel {
   background: #171c22;
