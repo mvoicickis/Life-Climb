@@ -267,25 +267,6 @@
       </div>
     </section>
 
-    <section class="lp-you-card<%= ' lp-you-row--flash' if highlight == 'theme' %>" id="you-theme">
-      <div class="lp-you-card__head" style="cursor: default;">
-        <span class="lp-you-card__icon" aria-hidden="true">🎨</span>
-        <h2 class="lp-you-card__title"><%= t("settings.theme_title") %></h2>
-      </div>
-      <div class="lp-you-themes lp-theme-switch" role="group" aria-label="<%= t('settings.theme_title') %>">
-        <% User::THEMES.each do |theme_key| %>
-          <% active = current_user.theme_key == theme_key %>
-          <%= button_to settings_path,
-                method: :patch,
-                params: { user: { theme: theme_key } },
-                class: "lp-theme-switch__btn#{' is-active' if active}",
-                form: { class: "lp-theme-switch__form", data: { turbo: false } } do %>
-            <%= t("settings.theme_#{theme_key}") %>
-          <% end %>
-        <% end %>
-      </div>
-    </section>
-
     <section class="lp-you-card is-gold"
              data-controller="share"
              data-share-text-value="<%= invite_share_message_body %>"

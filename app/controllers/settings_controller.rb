@@ -71,7 +71,7 @@ class SettingsController < ApplicationController
   private
 
   def settings_params
-    params.require(:user).permit(:home_stat_count, :character, :name, :theme)
+    params.require(:user).permit(:home_stat_count, :character, :name)
   end
 
   def update_notice
@@ -79,8 +79,6 @@ class SettingsController < ApplicationController
       t("settings.name_updated")
     elsif updating?(:character)
       t("settings.character_updated")
-    elsif updating?(:theme)
-      t("settings.theme_updated")
     elsif updating?(:home_stat_count)
       t("settings.today_count_updated")
     else
@@ -93,8 +91,6 @@ class SettingsController < ApplicationController
       "name"
     elsif updating?(:character)
       "character"
-    elsif updating?(:theme)
-      "theme"
     elsif updating?(:home_stat_count)
       "today_count"
     end
