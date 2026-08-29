@@ -81,7 +81,85 @@ class HabitsMountainTest < ActionDispatch::IntegrationTest
     assert_nil @user.habits.find_by(name: "Mismatch")
   end
 
+  test "mountain destroy turbo stream refreshes trail-base-sheet" do
+    habit = @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      stat_type: "growth",
+      quantity_checkin: true,
+      life_journey_id: @journey.id
+    )
+
+    assert_difference "Habit.count", -1 do
+      delete habit_path(habit), params: mountain_context_params, as: :turbo_stream
+    end
+
+    assert_response :ok
+    assert_includes @response.media_type, "turbo-stream"
+    assert_match "trail-base-sheet", response.body
+    assert_no_match "Pages read", response.body
+  end
+
+  test "mountain destroy rejects another users journey ids" do
+    habit = @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      stat_type: "growth",
+      quantity_checkin: true,
+      life_journey_id: @journey.id
+    )
+    other = users(:two)
+    seed_climb!(other, area_key: "career", title: "Other climb", today_mission: "Other")
+    other_goal = other.strategy_goals.for_kind("goal").roots.first
+    other_plan = other_goal.children.find(&:plan?)
+
+    delete habit_path(habit), params: {
+      return_to: "mountain",
+      life_journey_id: other.primary_focused_journey.id,
+      goal_id: other_goal.id,
+      plan_id: other_plan.id
+    }, as: :turbo_stream
+
+    assert_response :redirect
+    assert_redirected_to dashboard_path
+    assert @user.habits.exists?(habit.id)
+  end
+
+  test "mountain destroy rejects another users habit" do
+    other = users(:two)
+    seed_climb!(other, area_key: "career", title: "Other climb", today_mission: "Other")
+    habit = other.habits.create!(
+      name: "Other pages",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      stat_type: "growth",
+      quantity_checkin: true
+    )
+
+    delete habit_path(habit), params: mountain_context_params, as: :turbo_stream
+
+    assert_response :not_found
+    assert other.habits.exists?(habit.id)
+  end
+
   private
+
+  def mountain_context_params
+    {
+      return_to: "mountain",
+      life_journey_id: @journey.id,
+      goal_id: @goal.id,
+      plan_id: @plan.id
+    }
+  end
 
   def mountain_habit_params(name:, quantity_checkin: "0", unit: "times", life_journey_id: nil, goal_id: nil, plan_id: nil, habit_life_journey_id: nil)
     {

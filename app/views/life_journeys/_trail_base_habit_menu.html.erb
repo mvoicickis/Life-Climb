@@ -1,0 +1,30 @@
+<%# Kebab menu for a Basics habit row. locals: habit, journey, goal, plan %>
+<% habit = local_assigns.fetch(:habit) %>
+<% journey = local_assigns.fetch(:journey) %>
+<% goal = local_assigns.fetch(:goal) %>
+<% plan = local_assigns.fetch(:plan) %>
+<details class="lp-trail-battles__kebab"
+         data-controller="tcard-menu"
+         data-tcard-menu-target="details"
+         data-action="toggle->tcard-menu#toggled">
+  <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
+  <div class="lp-trail-battles__kebab-menu">
+    <%= link_to t("habits.edit"), habit_path(habit), class: "lp-trail-battles__kebab-link" %>
+    <%= button_to t("habits.delete"),
+          habit_path(habit),
+          method: :delete,
+          class: "is-danger",
+          params: {
+            return_to: "mountain",
+            life_journey_id: journey.id,
+            goal_id: goal.id,
+            plan_id: plan.id
+          },
+          form: {
+            data: {
+              turbo: true,
+              turbo_confirm: t("habits.delete_confirm")
+            }
+          } %>
+  </div>
+</details>

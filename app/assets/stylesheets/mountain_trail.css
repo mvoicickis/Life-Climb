@@ -1112,7 +1112,8 @@
 }
 
 .lp-trail-battles__kebab-menu button,
-.lp-trail-battles__kebab-menu input[type="submit"] {
+.lp-trail-battles__kebab-menu input[type="submit"],
+.lp-trail-battles__kebab-menu .lp-trail-battles__kebab-link {
   display: block;
   width: 100%;
   text-align: left;
@@ -1125,6 +1126,8 @@
   border-radius: 9px;
   cursor: pointer;
   color: inherit;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 .lp-trail-battles__kebab-menu .is-danger,
