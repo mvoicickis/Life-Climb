@@ -119,6 +119,7 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-plant"
     assert_select ".lp-trail-plant input[name='title']"
+    assert_select ".lp-trail-plant textarea[name='description']"
     assert_select ".lp-trail__plant-colors input[name='color_key']", minimum: 1
     assert_select ".lp-trail-plant__wheel", count: 0
     assert css_select(".lp-trail-plant input[name='quantity_kind']").none? { |input| input["checked"] }
@@ -147,6 +148,22 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
     assert_equal BigDecimal("120"), project.target_amount
     assert_equal "pages", project.unit
     assert_equal BigDecimal("0"), project.current_amount
+  end
+
+  test "path-focus Place first checkpoint accepts optional description" do
+    assert_difference -> { @user.strategy_goals.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: @plan.id,
+        horizon: "project",
+        title: "Strength camp",
+        description: "Build a daily push-up habit"
+      }
+    end
+
+    project = @user.strategy_goals.for_kind("project").find_by!(title: "Strength camp")
+    assert_equal "Build a daily push-up habit", project.description
   end
 
   private

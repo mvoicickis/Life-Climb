@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Bottom battle sheet for a trail camp marker.
 // Android back closes the sheet (history.pushState) instead of leaving Mountain.
 export default class extends Controller {
-  static targets = ["sheet", "panel", "title", "body", "accent"]
+  static targets = ["sheet", "panel", "title", "subtitle", "body", "accent"]
 
   connect() {
     this._onKey = (event) => this.onKeydown(event)
@@ -50,6 +50,7 @@ export default class extends Controller {
       this.accentTarget.dataset.accent = accent
     }
     if (this.hasTitleTarget) this.titleTarget.textContent = this.baseTitle()
+    this.setSubtitle("")
 
     this.revealBodyFor({ dataset: { campId: "base" } })
     this._openCampId = "base"
@@ -88,6 +89,7 @@ export default class extends Controller {
 
     const title = camp.dataset.campTitle || camp.getAttribute("aria-label") || ""
     if (this.hasTitleTarget) this.titleTarget.textContent = title
+    this.setSubtitle(camp.dataset.campDescription || "")
 
     this.revealBodyFor(camp)
     this._openCampId = camp.dataset.campId || null
@@ -136,6 +138,21 @@ export default class extends Controller {
 
   stop(event) {
     event.stopPropagation()
+  }
+
+  setSubtitle(text) {
+    if (!this.hasSubtitleTarget) return
+
+    const copy = text.trim()
+    if (copy) {
+      this.subtitleTarget.textContent = copy
+      this.subtitleTarget.hidden = false
+      this.subtitleTarget.removeAttribute("hidden")
+    } else {
+      this.subtitleTarget.textContent = ""
+      this.subtitleTarget.hidden = true
+      this.subtitleTarget.setAttribute("hidden", "")
+    }
   }
 
   revealBodyFor(camp) {

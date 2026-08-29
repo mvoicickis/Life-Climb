@@ -316,6 +316,16 @@
                  placeholder="<%= t('strategy.rpg.trail.plant_placeholder') %>"
                  autocomplete="off"
                  data-trail-canvas-target="plantTitle">
+          <label class="lp-trail-plant__field-label">
+            <span class="sr-only"><%= t('strategy.rpg.trail.plant_description_placeholder') %></span>
+            <textarea name="description"
+                      rows="2"
+                      maxlength="200"
+                      class="lp-trail-plant__field is-note"
+                      placeholder="<%= t('strategy.rpg.trail.plant_description_placeholder') %>"
+                      autocomplete="off"
+                      data-trail-canvas-target="plantDescription"></textarea>
+          </label>
           <% if icon_starters.any? && !destination_overlay %>
             <div class="lp-trail-plant__starters lp-trail-plant__starters--icons" role="group" aria-label="<%= t('strategy.rpg.trail.starters_label') %>">
               <% icon_starters.each do |starter| %>
@@ -434,6 +444,9 @@
           <span class="lp-trail-sheet__crumb-label"><%= peak_title.truncate(18) %></span>
         </button>
         <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
+        <p class="lp-trail-sheet__subtitle"
+           data-trail-camp-sheet-target="subtitle"
+           hidden></p>
       </header>
       <div class="lp-trail-sheet__body" data-trail-camp-sheet-target="body" id="trail-sheet-body">
         <div class="lp-trail-sheet__camp"
