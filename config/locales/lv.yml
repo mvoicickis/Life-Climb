@@ -592,7 +592,7 @@ lv:
       already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
       # TODO: translate
-      title: "Habits"
+      title: "Basics"
       hint: "Log as many times as you like"
       empty: "No habits on Today yet — add one under Habits."
       add: "Add"
