@@ -40,3 +40,9 @@ Rails 8, Hotwire/Turbo, importmap, Tailwind. SQLite local, Postgres on Render.
 ## Scope
 - One concern per PR. If a plan touches more than ~5 files or mixes a bug
   fix with a refactor, split it and say why.
+
+## Merging
+- Never use --admin. `gh pr merge <n> --merge` only.
+- If the merge is blocked by a failing check, stop and report. Don't bypass.
+- `test` is the required check. system-test is non-blocking, but a repeated
+  identical failure is not flaky — say so rather than dismissing it.
