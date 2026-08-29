@@ -24,6 +24,24 @@ class HabitGoalProgressPercentTest < ActiveSupport::TestCase
     assert_equal 120, habit.goal_progress_percent
   end
 
+  test "growth habit without stretch goal has no percentage" do
+    habit = @user.habits.create!(
+      name: "Push-Ups",
+      unit: "reps",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      goal: nil,
+      quantity_checkin: true
+    )
+    habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 7, goal: 1)
+
+    assert_not habit.stretch_goal?
+    assert_nil habit.goal_progress_percent
+  end
+
   test "binary habit is 0 or 100" do
     habit = @user.habits.create!(
       name: "Meditate",
