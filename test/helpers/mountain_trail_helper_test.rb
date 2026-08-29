@@ -235,7 +235,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     @user = users(:one)
     Onboarding::Run.call(
       user: @user, area_key: "career", title: "Ship", ideal_scene: "Live",
-      current_reality: "Build", next_win: "Launch", today_mission: "Test", closer_percent: 20
+      current_reality: "Build", next_win: "Launch", today_mission: "Test", closer_percent: 20,
+      route_mission: true
     )
     journey = @user.reload.primary_focused_journey
     area = journey.life_area
