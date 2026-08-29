@@ -515,6 +515,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_200000) do
     t.date "climb_streak_frozen_on"
     t.date "climb_streak_on"
     t.datetime "created_at", null: false
+    t.datetime "current_period_end"
     t.date "day_shield_on"
     t.integer "day_shields_available", default: 1, null: false
     t.boolean "developer", default: false, null: false
@@ -534,6 +535,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_200000) do
     t.string "password_digest", null: false
     t.integer "planning_version", default: 2, null: false
     t.integer "strategy_points", default: 0, null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.string "subscription_status"
     t.json "support_milestones_shown", default: [], null: false
     t.boolean "support_prompts_muted", default: false, null: false
     t.string "theme", default: "light", null: false
@@ -541,6 +545,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_200000) do
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
+    t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

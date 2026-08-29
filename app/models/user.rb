@@ -59,6 +59,7 @@ class User < ApplicationRecord
   CHARACTERS = %w[birdie bee bear fox horse raven].freeze
   LEGACY_CHARACTERS = %w[man woman].freeze
   THEMES = %w[light dark].freeze
+  PREMIUM_ACCESS_STATUSES = %w[active trialing].freeze
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
   COMPANION_PICK_KEY = "companion_pick".freeze
   ONBOARDING_MOUNTAIN_TOUR_KEY = "onboarding_mountain_tour".freeze
@@ -79,17 +80,21 @@ class User < ApplicationRecord
     planning_version.to_i >= 2
   end
 
-  # Premium seam. Today every user is limited to one destination (root goal)
-  # and one non-holding Plan per journey. When the paid multi-goal feature
-  # ships, make these return true for entitled users (e.g. a subscription
-  # check). The limit is enforced by StrategyGoal validations keyed on these
-  # methods, so relaxing it needs no schema migration.
+  # Premium seam: StrategyGoal validations key off extra_destinations_allowed? /
+  # extra_plans_allowed?, which delegate to subscription-backed #premium?.
+  def premium?
+    return false if current_period_end.blank?
+    return false unless current_period_end.future?
+
+    subscription_status.in?(PREMIUM_ACCESS_STATUSES)
+  end
+
   def extra_destinations_allowed?
-    false
+    premium?
   end
 
   def extra_plans_allowed?
-    false
+    premium?
   end
 
   def selected_life_areas

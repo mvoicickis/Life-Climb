@@ -85,4 +85,30 @@ class UserTest < ActiveSupport::TestCase
     # Empty gap when the climb is just started → closer stays high until progress math moves.
     assert_equal (100 - user.overall_gap_percent).clamp(0, 100), user.overall_closer_percent
   end
+
+  test "premium? is false with no subscription" do
+    user = users(:one)
+    assert_nil user.subscription_status
+    refute user.premium?
+    refute user.extra_destinations_allowed?
+    refute user.extra_plans_allowed?
+  end
+
+  test "premium? is true when active with a future period end" do
+    user = users(:one)
+    user.update_columns(subscription_status: "active", current_period_end: 1.day.from_now)
+    assert user.premium?
+  end
+
+  test "premium? is false when active with a past period end" do
+    user = users(:one)
+    user.update_columns(subscription_status: "active", current_period_end: 1.day.ago)
+    refute user.premium?
+  end
+
+  test "premium? is false when canceled even with a future period end" do
+    user = users(:one)
+    user.update_columns(subscription_status: "canceled", current_period_end: 1.day.from_now)
+    refute user.premium?
+  end
 end
