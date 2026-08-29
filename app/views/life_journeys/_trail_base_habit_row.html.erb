@@ -1,38 +1,56 @@
 <%# locals: habit, journey, goal, plan %>
-<% undo = habit_log_undo_for(habit) %>
-<li class="lp-trail-battles__row is-basics" id="trail-base-habit-<%= habit.id %>">
-  <span class="lp-trail-battles__copy">
-    <span class="lp-trail-battles__name"><%= habit.name %></span>
-    <span class="lp-trail-battles__basics-amt">
-      <%= t("strategy.rpg.trail.base_camp.basics.amount",
-            amount: format_amount(habit.today_amount),
-            unit: habit.unit) %>
+<% if habit.quantity_checkin? %>
+  <% undo = habit_log_undo_for(habit) %>
+  <li class="lp-trail-battles__row is-basics" id="trail-base-habit-<%= habit.id %>">
+    <span class="lp-trail-battles__copy">
+      <span class="lp-trail-battles__name"><%= habit.name %></span>
+      <span class="lp-trail-battles__basics-amt">
+        <%= t("strategy.rpg.trail.base_camp.basics.amount",
+              amount: format_amount(habit.today_amount),
+              unit: habit.unit) %>
+      </span>
     </span>
-  </span>
-  <span class="lp-trail-battles__basics-act">
-    <%= render "life_journeys/trail_base_habit_quick",
+    <span class="lp-trail-battles__basics-act">
+      <%= render "life_journeys/trail_base_habit_quick",
+            habit: habit,
+            journey: journey,
+            goal: goal,
+            plan: plan %>
+      <% if undo %>
+        <%= button_to t("strategy.rpg.trail.base_camp.basics.undo"),
+              daily_logs_path(habit_id: habit.id),
+              method: :post,
+              params: {
+                mode: "undo",
+                return_to: "mountain",
+                life_journey_id: journey.id,
+                goal_id: goal.id,
+                plan_id: plan.id
+              },
+              class: "lp-trail-battles__basics-undo",
+              form: { data: { turbo: true } } %>
+      <% end %>
+    </span>
+    <%= render "life_journeys/trail_base_habit_menu",
           habit: habit,
           journey: journey,
           goal: goal,
           plan: plan %>
-    <% if undo %>
-      <%= button_to t("strategy.rpg.trail.base_camp.basics.undo"),
-            daily_logs_path(habit_id: habit.id),
-            method: :post,
-            params: {
-              mode: "undo",
-              return_to: "mountain",
-              life_journey_id: journey.id,
-              goal_id: goal.id,
-              plan_id: plan.id
-            },
-            class: "lp-trail-battles__basics-undo",
-            form: { data: { turbo: true } } %>
-    <% end %>
-  </span>
-  <%= render "life_journeys/trail_base_habit_menu",
-        habit: habit,
-        journey: journey,
-        goal: goal,
-        plan: plan %>
-</li>
+  </li>
+<% else %>
+  <li class="lp-trail-battles__row is-basics is-check" id="trail-base-habit-<%= habit.id %>">
+    <%= render "life_journeys/trail_base_habit_tick",
+          habit: habit,
+          journey: journey,
+          goal: goal,
+          plan: plan %>
+    <span class="lp-trail-battles__copy">
+      <span class="lp-trail-battles__name"><%= habit.name %></span>
+    </span>
+    <%= render "life_journeys/trail_base_habit_menu",
+          habit: habit,
+          journey: journey,
+          goal: goal,
+          plan: plan %>
+  </li>
+<% end %>

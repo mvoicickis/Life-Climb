@@ -7,7 +7,7 @@
 <% groups = mountain_trail_daily_battles(projects) %>
 <% daily_count = groups.sum { |group| group[:battles].size } %>
 <% basics = journey.present? ?
-     mountain_trail_base_quantity_habits(journey: journey, user: current_user) : [] %>
+     mountain_trail_base_habits(journey: journey, user: current_user) : [] %>
 
 <div class="lp-trail-battles lp-trail-base-sheet"
      id="trail-base-sheet"

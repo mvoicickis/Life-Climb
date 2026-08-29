@@ -368,12 +368,11 @@ module MountainTrailHelper
     "M#{sx} #{sy} Q #{cx} #{cy} #{tx} #{ty}"
   end
 
-  def mountain_trail_base_quantity_habits(journey:, user: current_user)
+  def mountain_trail_base_habits(journey:, user: current_user)
     return [] if journey.blank? || user.blank?
 
     mountain_trail_journey_habits(journey: journey, user: user)
-      .where(quantity_checkin: true)
-      .includes(:daily_logs)
+      .includes(:daily_logs, :completions)
       .to_a
   end
 
@@ -499,7 +498,7 @@ module MountainTrailHelper
 
     viewer = user || mountain_trail_viewer
     if journey.present? && viewer.present? &&
-         mountain_trail_base_quantity_habits(journey: journey, user: viewer).any?
+         mountain_trail_base_habits(journey: journey, user: viewer).any?
       return meadow_plaque(
         mode: "basics",
         headline: I18n.t("strategy.rpg.trail.base_camp.title"),

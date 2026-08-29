@@ -1,0 +1,42 @@
+<%# Checkbox for tick-only Basics habits. locals: habit, journey, goal, plan %>
+<% habit = local_assigns.fetch(:habit) %>
+<% journey = local_assigns.fetch(:journey) %>
+<% goal = local_assigns.fetch(:goal) %>
+<% plan = local_assigns.fetch(:plan) %>
+<% done = habit.completed_today? %>
+<% mountain_params = {
+     return_to: "mountain",
+     life_journey_id: journey.id,
+     goal_id: goal.id,
+     plan_id: plan.id
+   } %>
+<% if done %>
+  <% completion = habit.completion_for(Date.current) %>
+  <%= button_to completion_path(completion),
+        method: :delete,
+        class: "lp-trail-battles__tick",
+        params: mountain_params,
+        aria: { label: "#{t('dash.timeline.undo')} #{habit.name}" },
+        form: {
+          class: "lp-trail-battles__tick-form",
+          data: { turbo: true }
+        } do %>
+    <span class="lp-trail-battles__box is-won" aria-hidden="true">✓</span>
+  <% end %>
+<% else %>
+  <%= button_to completions_path(habit_id: habit.id),
+        method: :post,
+        class: "lp-trail-battles__tick",
+        params: mountain_params,
+        aria: { label: "#{t('dash.timeline.did_it')} #{habit.name}" },
+        data: {
+          controller: "pressable",
+          action: "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+        },
+        form: {
+          class: "lp-trail-battles__tick-form",
+          data: { turbo: true }
+        } do %>
+    <span class="lp-trail-battles__box" aria-hidden="true"></span>
+  <% end %>
+<% end %>
