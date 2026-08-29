@@ -223,6 +223,32 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert @battle.repeat_daily?
   end
 
+  test "closing camp sheet keeps trail scroll position" do
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+
+    scroll_top = 420
+    page.execute_script(<<~JS)
+      const scroll = document.querySelector(".lp-trail__scroll");
+      if (scroll) scroll.scrollTop = #{scroll_top};
+    JS
+
+    page.execute_script("document.querySelector('#trail-camp-#{@project.id}').click()")
+    assert_selector ".lp-trail-sheet.is-open", visible: :all, wait: 5
+
+    find(".lp-trail-sheet__crumb", visible: :all).click
+    assert_no_selector ".lp-trail-sheet.is-open", visible: :all, wait: 5
+
+    restored = page.evaluate_script("document.querySelector('.lp-trail__scroll')?.scrollTop")
+    assert_operator restored.to_i, :>=, scroll_top - 5,
+      "expected trail scroll to stay near #{scroll_top}, got #{restored}"
+  end
+
   test "base camp kebab closes when tapping outside" do
     @battle.update!(repeat: "daily")
 

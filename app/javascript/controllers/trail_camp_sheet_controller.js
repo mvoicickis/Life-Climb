@@ -10,13 +10,12 @@ export default class extends Controller {
     this._onPopState = () => this.onPopState()
     this._openCampId = null
     this._pushedHistory = false
-    this._closingViaHistory = false
     window.addEventListener("popstate", this._onPopState)
   }
 
   disconnect() {
     window.removeEventListener("popstate", this._onPopState)
-    this.teardown({ skipHistory: true })
+    this.teardown()
   }
 
   openFromDock(event) {
@@ -125,13 +124,8 @@ export default class extends Controller {
   }
 
   onPopState() {
-    if (this._closingViaHistory) {
-      this._closingViaHistory = false
-      return
-    }
     if (!this._pushedHistory) return
-    this._pushedHistory = false
-    this.teardown({ skipHistory: true })
+    this.teardown()
   }
 
   pushSheetHistory() {
@@ -156,7 +150,7 @@ export default class extends Controller {
     })
   }
 
-  teardown({ skipHistory = false } = {}) {
+  teardown() {
     document.removeEventListener("keydown", this._onKey)
     if (!this.hasSheetTarget) return
 
@@ -164,11 +158,6 @@ export default class extends Controller {
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true
     this._openCampId = null
-
-    if (!skipHistory && this._pushedHistory) {
-      this._pushedHistory = false
-      this._closingViaHistory = true
-      history.back()
-    }
+    this._pushedHistory = false
   }
 }
