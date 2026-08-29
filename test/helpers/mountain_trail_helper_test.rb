@@ -434,7 +434,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 1, after[:won]
   end
 
-  test "base quantity habits scopes to journey quantity checkin and ignores on_home" do
+  test "base habits scopes to journey and ignores on_home" do
     user = users(:one)
     seed_climb!(user, today_mission: "Ship auth")
     journey = user.primary_focused_journey
@@ -510,15 +510,14 @@ class MountainTrailHelperTest < ActionView::TestCase
       life_journey_id: journey.id
     )
 
-    habits = mountain_trail_base_quantity_habits(journey: journey, user: user)
-    assert_equal [ quantity, second_quantity ].sort_by(&:id), habits.sort_by(&:id)
-    refute_includes habits, binary
+    habits = mountain_trail_base_habits(journey: journey, user: user)
+    assert_equal [ quantity, second_quantity, binary ].sort_by(&:id), habits.sort_by(&:id)
     refute_includes habits, wrong
     refute_includes habits, inactive
   end
 
-  test "base quantity habits returns empty when journey blank" do
+  test "base habits returns empty when journey blank" do
     user = users(:one)
-    assert_equal [], mountain_trail_base_quantity_habits(journey: nil, user: user)
+    assert_equal [], mountain_trail_base_habits(journey: nil, user: user)
   end
 end

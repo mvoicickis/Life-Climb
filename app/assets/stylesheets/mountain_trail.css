@@ -2323,6 +2323,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   min-width: 0;
 }
 
+.lp-trail-battles__row.is-basics.is-check .lp-trail-battles__copy {
+  justify-content: flex-start;
+}
+
 .lp-trail-battles__basics-act {
   display: flex;
   align-items: center;

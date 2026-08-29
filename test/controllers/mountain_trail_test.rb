@@ -398,6 +398,31 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "basics block shows tick checkbox for binary journey habits" do
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "Meditate",
+      unit: "times",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      quantity_checkin: false,
+      life_journey_id: @journey.id
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
+    assert_select "#trail-base-habit-#{habit.id}.is-check"
+    assert_select "#trail-base-habit-#{habit.id}", text: /Meditate/
+    assert_select "#trail-base-habit-#{habit.id} form[action=?]", completions_path(habit_id: habit.id)
+    assert_select "#trail-base-habit-#{habit.id} input[name='return_to'][value='mountain']"
+    assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__basics-add", count: 0
+    assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__tick"
+  end
+
   test "non-developer sees basics block on base camp sheet" do
     @user.update_columns(developer: false)
     @user.habits.destroy_all
