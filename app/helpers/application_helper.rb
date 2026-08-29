@@ -1,7 +1,15 @@
 module ApplicationHelper
-  # Single switch for hiding Habits from the UI (see GameRules.habits_enabled?).
+  # Global habits UI (settings, commitment copy, legacy Today surface).
+  # Developers always see habits; everyone else follows GameRules.
   def habits_enabled?
+    return true if current_user&.developer?
+
     GameRules.habits_enabled?
+  end
+
+  # Today V2 battlefield — developers only until we ship habits to beta.
+  def habits_on_today_v2?
+    current_user&.developer?
   end
 
   # Skip rendering when no companion is chosen yet (nil character_image).
