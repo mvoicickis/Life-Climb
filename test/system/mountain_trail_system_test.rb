@@ -26,7 +26,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     )
     @battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current, position: 0
+      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current,
+      position: 0, repeat: "daily"
     )
   end
 

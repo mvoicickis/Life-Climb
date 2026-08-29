@@ -116,7 +116,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   test "mountain v4 phone includes cream tabs journey and today card hooks" do
     @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current, position: 0
+      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current,
+      position: 0, repeat: "daily"
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
 
