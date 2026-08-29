@@ -368,14 +368,20 @@ module MountainTrailHelper
     "M#{sx} #{sy} Q #{cx} #{cy} #{tx} #{ty}"
   end
 
+  def mountain_trail_base_quantity_habits(journey:, user: current_user)
+    return [] if journey.blank? || user.blank?
+
+    mountain_trail_journey_habits(journey: journey, user: user)
+      .where(quantity_checkin: true)
+      .includes(:daily_logs)
+      .to_a
+  end
+
   def mountain_trail_base_pills(journey:, projects:, user: current_user)
     items = []
     if GameRules.habits_enabled? && user && journey
-      habits = user.habits.active.ordered
-      habits = habits.select { |habit|
-        habit.life_journey_id == journey.id || habit.area_id == journey.life_area_id
-      }
-      items = habits.first(4).map { |habit|
+      habits = mountain_trail_journey_habits(journey: journey, user: user)
+      items = habits.limit(4).map { |habit|
         count = if habit.association(:completions).loaded?
           habit.completions.size
         else
@@ -576,4 +582,15 @@ module MountainTrailHelper
     current_user if respond_to?(:current_user)
   end
   private :mountain_trail_viewer
+
+  def mountain_trail_journey_habits(journey:, user:)
+    return user.habits.none if journey.blank? || user.blank?
+
+    user.habits.active.ordered.where(
+      "life_journey_id = ? OR area_id = ?",
+      journey.id,
+      journey.life_area_id
+    )
+  end
+  private :mountain_trail_journey_habits
 end

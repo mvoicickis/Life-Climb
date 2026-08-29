@@ -381,4 +381,92 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 0, after[:open]
     assert_equal 1, after[:won]
   end
+
+  test "base quantity habits scopes to journey quantity checkin and ignores on_home" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Ship auth")
+    journey = user.primary_focused_journey
+    user.habits.destroy_all
+
+    quantity = user.habits.create!(
+      name: "Push-Ups",
+      unit: "reps",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      goal: 25,
+      quantity_checkin: true,
+      life_journey_id: journey.id
+    )
+    binary = user.habits.create!(
+      name: "Meditate",
+      unit: "times",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      goal: 1,
+      quantity_checkin: false,
+      life_journey_id: journey.id
+    )
+    second_quantity = user.habits.create!(
+      name: "Pages",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      goal: 10,
+      quantity_checkin: true,
+      life_journey_id: journey.id
+    )
+    other_journey = user.life_journeys.create!(
+      life_area: journey.life_area,
+      title: "Side climb",
+      ideal_scene: "Elsewhere",
+      current_reality: "Other",
+      next_win: "Other win",
+      gap_percent: 80,
+      status: "active"
+    )
+    wrong = user.habits.create!(
+      name: "Other climb",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      goal: 10,
+      quantity_checkin: true,
+      life_journey_id: other_journey.id
+    )
+    inactive = user.habits.create!(
+      name: "Old habit",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: false,
+      show_on_home: true,
+      stat_type: "growth",
+      goal: 10,
+      quantity_checkin: true,
+      life_journey_id: journey.id
+    )
+
+    habits = mountain_trail_base_quantity_habits(journey: journey, user: user)
+    assert_equal [ quantity, second_quantity ].sort_by(&:id), habits.sort_by(&:id)
+    refute_includes habits, binary
+    refute_includes habits, wrong
+    refute_includes habits, inactive
+  end
+
+  test "base quantity habits returns empty when journey blank" do
+    user = users(:one)
+    assert_equal [], mountain_trail_base_quantity_habits(journey: nil, user: user)
+  end
 end

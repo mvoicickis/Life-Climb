@@ -1,0 +1,11 @@
+<%# locals: habit %>
+<li class="lp-trail-battles__row is-basics" id="trail-base-habit-<%= habit.id %>">
+  <span class="lp-trail-battles__copy">
+    <span class="lp-trail-battles__name"><%= habit.name %></span>
+    <span class="lp-trail-battles__basics-amt">
+      <%= t("strategy.rpg.trail.base_camp.basics.amount",
+            amount: format_amount(habit.today_amount),
+            unit: habit.unit) %>
+    </span>
+  </span>
+</li>
