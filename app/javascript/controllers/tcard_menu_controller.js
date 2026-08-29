@@ -15,6 +15,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.restoreFromPortal()
     this.unbindDocument()
     window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
