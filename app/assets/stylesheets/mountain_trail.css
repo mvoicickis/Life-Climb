@@ -1690,15 +1690,21 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   min-height: 44px;
   max-width: 100%;
   margin: 0;
-  padding: 0 0.5rem 0 0;
-  border: 0;
-  background: transparent;
-  color: var(--lp-trail-accent, #0f9488);
+  padding: 0 0.75rem 0 0;
+  border: 1px solid rgba(158, 228, 216, 0.45);
+  border-radius: 0.65rem;
+  background: rgba(15, 148, 136, 0.28);
+  color: #d8fff8;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   text-align: left;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__crumb:active {
+  background: rgba(15, 148, 136, 0.4);
 }
 
 .lp-trail-sheet__crumb-arrow {
@@ -1708,8 +1714,9 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   display: grid;
   place-items: center;
   font-size: 1.75rem;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1;
+  color: #f0fffc;
 }
 
 .lp-trail-sheet__crumb-label {
@@ -1717,6 +1724,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #e8fffa;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__body {
