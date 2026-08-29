@@ -17210,6 +17210,7 @@ button.lp-strategy-overflow {
   max-height: min(85dvh, 36rem);
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.55rem 0.9rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
   border-radius: 1.25rem 1.25rem 0 0;
   border: 1px solid rgba(148, 163, 184, 0.3);
