@@ -159,7 +159,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-battles-#{@project.id} .lp-trail-battles__list li:first-child", text: /Pack the bags/, visible: :all, wait: 5
   end
 
-  test "base camp can add a daily that asks how many pages" do
+  test "base camp can add a quantity habit in basics" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -174,18 +174,13 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within("#trail-base-sheet") do
       fill_in placeholder: "Add something you do every day", with: "Read"
       find("label.is-qty").click
-      click_button "Add battle"
+      click_button "Add habit"
     end
 
     assert_selector "#trail-base-sheet", text: /Read/, visible: :all, wait: 5
-    # Tick on a quantified daily opens the log sheet (a sibling of the camp
-    # sheet). Do not click the first .lp-trail-battles__tick — that can be a
-    # win form for another daily.
-    assert_selector "#trail-base-sheet [data-action*='openLog']", visible: :all, wait: 5
-    find("#trail-base-sheet [data-action*='openLog']", visible: :all).click
-    assert_selector ".lp-trail-log.is-open", visible: :all, wait: 5
-    assert_selector ".lp-trail-log__prompt", text: /pages/i, visible: :all
-    assert_selector ".lp-trail-log__amount[readonly]", visible: :all
+    assert_selector "#trail-base-sheet .lp-trail-battles__kind.is-basics", visible: :all, wait: 5
+    assert_selector "#trail-base-sheet .lp-trail-battles__basics-add", visible: :all, wait: 5
+    assert_selector "#trail-base-sheet", text: /0 pages/i, visible: :all, wait: 5
   end
 
   test "winning a camp battle swaps the row and keeps the sheet open" do

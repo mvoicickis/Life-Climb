@@ -325,33 +325,45 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_not @journey.reload.mountain_photo.attached?
   end
 
-  test "base camp add defaults to daily and can log a number" do
+  test "base camp composer posts habits with optional quantity" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet input[name='repeat'][value='daily']"
-    assert_select "#trail-base-sheet [data-trail-battles-target='dailyToggle'][checked]"
+    assert_select "#trail-base-sheet form[action=?]", habits_path
+    assert_select "#trail-base-sheet input[name='habit[name]']"
+    assert_select "#trail-base-sheet input[name='return_to'][value='mountain']"
     assert_select "#trail-base-sheet [data-trail-battles-target='quantityToggle']"
-    assert_select "#trail-base-sheet input[name='unit'][value='pages']"
+    assert_select "#trail-base-sheet input[name='repeat']", count: 0
 
-    post strategy_goals_path, params: {
-      life_area_id: @area.id, life_journey_id: @journey.id,
-      parent_id: @project.id, horizon: "day", scheduled_on: Date.current.to_s,
-      title: "Read", repeat: "daily", track_quantity: "1", quantity_kind: "up", unit: "pages"
-    }
-    reading = @project.children.find_by!(title: "Read")
-    assert reading.repeat_daily?
-    assert reading.quantified?
-    assert_equal "pages", reading.unit
+    assert_difference "Habit.count", 1 do
+      assert_no_difference "StrategyGoal.battles.count" do
+        post habits_path, params: {
+          return_to: "mountain",
+          life_journey_id: @journey.id,
+          goal_id: @goal.id,
+          plan_id: @plan.id,
+          habit: {
+            name: "Read",
+            frequency: "daily",
+            quantity_checkin: "1",
+            unit: "pages",
+            life_journey_id: @journey.id
+          }
+        }, as: :turbo_stream
+      end
+    end
+
+    habit = @user.habits.find_by!(name: "Read")
+    assert habit.quantity_checkin?
+    assert_equal "pages", habit.unit
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-battle-#{reading.id} [data-action*='openLog']"
-    assert_select "#trail-base-battle-#{reading.id}", text: /pages/i
-    assert_select "#trail-base-battle-#{reading.id}", text: /Log a number|Just a tick/i
+    assert_select "#trail-base-habit-#{habit.id}", text: /Read/
+    assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__basics-add"
+    assert_select "#trail-base-habit-#{habit.id} form[action*='daily_logs']"
   end
 
-  test "developer sees basics block on base camp sheet for journey quantity habits" do
-    @user.update_columns(developer: true)
+  test "basics block on base camp sheet for journey quantity habits" do
     @user.habits.destroy_all
     habit = @user.habits.create!(
       name: "Pages read",
@@ -378,7 +390,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__basics-add"
   end
 
-  test "non-developer does not see basics block on base camp sheet" do
+  test "non-developer sees basics block on base camp sheet" do
     @user.update_columns(developer: false)
     @user.habits.destroy_all
     habit = @user.habits.create!(
@@ -397,8 +409,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics", count: 0
-    assert_select "#trail-base-habit-#{habit.id}", count: 0
+    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
+    assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
   end
 
   test "base camp card opens sheet when daily is due from past scheduled_on" do

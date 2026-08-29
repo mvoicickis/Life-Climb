@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "titleField", "repeatField", "dailyToggle", "quantityField", "quantityToggle",
-    "unitField", "unitWrap", "renameDialog", "renameField", "sessionToast", "addRow"
+    "unitField", "unitMirrorField", "unitWrap", "renameDialog", "renameField", "sessionToast", "addRow"
   ]
 
   static values = {
@@ -18,18 +18,20 @@ export default class extends Controller {
   }
 
   parseDraft(event) {
-    if (!this.hasTitleFieldTarget || !this.hasRepeatFieldTarget) return
+    if (!this.hasTitleFieldTarget) return
 
-    const raw = this.titleFieldTarget.value || ""
-    const match = raw.trim().match(/^(.*?)\s*(?:,?\s*)(daily|every day)$/i)
-    if (match) {
-      this.titleFieldTarget.value = match[1].trim()
-      this.repeatFieldTarget.value = "daily"
-      if (this.hasDailyToggleTarget) this.dailyToggleTarget.checked = true
-    } else if (this.hasDailyToggleTarget && this.dailyToggleTarget.checked) {
-      this.repeatFieldTarget.value = "daily"
-    } else {
-      this.repeatFieldTarget.value = "none"
+    if (this.hasRepeatFieldTarget) {
+      const raw = this.titleFieldTarget.value || ""
+      const match = raw.trim().match(/^(.*?)\s*(?:,?\s*)(daily|every day)$/i)
+      if (match) {
+        this.titleFieldTarget.value = match[1].trim()
+        this.repeatFieldTarget.value = "daily"
+        if (this.hasDailyToggleTarget) this.dailyToggleTarget.checked = true
+      } else if (this.hasDailyToggleTarget && this.dailyToggleTarget.checked) {
+        this.repeatFieldTarget.value = "daily"
+      } else {
+        this.repeatFieldTarget.value = "none"
+      }
     }
 
     this.syncQuantityFields()
@@ -55,10 +57,23 @@ export default class extends Controller {
     const on = this.hasQuantityToggleTarget && this.quantityToggleTarget.checked
     if (this.hasQuantityFieldTarget) this.quantityFieldTarget.value = on ? "1" : "0"
     if (this.hasUnitFieldTarget) {
-      this.unitFieldTarget.disabled = !on
-      if (on && !this.unitFieldTarget.value.trim()) this.unitFieldTarget.value = "pages"
+      if (on) {
+        const mirror = this.hasUnitMirrorFieldTarget ? this.unitMirrorFieldTarget.value.trim() : ""
+        this.unitFieldTarget.value = mirror || "pages"
+      } else {
+        this.unitFieldTarget.value = "times"
+      }
+    }
+    if (this.hasUnitMirrorFieldTarget && on && !this.unitMirrorFieldTarget.value.trim()) {
+      this.unitMirrorFieldTarget.value = "pages"
     }
     if (this.hasUnitWrapTarget) this.unitWrapTarget.hidden = !on
+  }
+
+  syncUnitMirror() {
+    if (!this.hasUnitFieldTarget || !this.hasUnitMirrorFieldTarget) return
+
+    this.unitFieldTarget.value = this.unitMirrorFieldTarget.value.trim() || "pages"
   }
 
   styleDailyRow() {

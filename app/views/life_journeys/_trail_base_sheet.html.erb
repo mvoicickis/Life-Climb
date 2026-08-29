@@ -7,13 +7,12 @@
 <% groups = mountain_trail_daily_battles(projects) %>
 <% add_parent = mountain_trail_base_camp_add_parent(projects) %>
 <% daily_count = groups.sum { |group| group[:battles].size } %>
-<% basics = habits_on_today_v2? && journey.present? ?
+<% basics = journey.present? ?
      mountain_trail_base_quantity_habits(journey: journey, user: current_user) : [] %>
 
 <div class="lp-trail-battles lp-trail-base-sheet"
      id="trail-base-sheet"
-     data-controller="trail-battles"
-     data-trail-battles-keep-daily-value="true">
+     data-controller="trail-battles">
   <% if basics.any? %>
     <p class="lp-trail-battles__kind is-basics"><%= t("strategy.rpg.trail.base_camp.basics.kind") %></p>
     <ul class="lp-trail-battles__list lp-trail-base-sheet__basics">
@@ -69,29 +68,27 @@
     <p class="lp-trail-battles__empty"><%= t("strategy.rpg.trail.base_camp.empty") %></p>
   <% end %>
 
-  <% if add_parent && area %>
+  <% if journey && goal && plan %>
     <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
     <div class="lp-trail-battles__composer is-dock">
-    <%= form_with url: strategy_goals_path,
+    <%= form_with url: habits_path,
           method: :post,
           class: "lp-trail-battles__add",
           data: {
             turbo: true,
             action: "submit->trail-battles#parseDraft turbo:submit-end->trail-battles#battleAdded"
           } do %>
-      <%= hidden_field_tag :life_area_id, area.id %>
-      <%= hidden_field_tag :life_journey_id, add_parent.life_journey_id.presence || local_assigns[:journey]&.id %>
-      <%= hidden_field_tag :parent_id, add_parent.id %>
-      <%= hidden_field_tag :horizon, "day" %>
-      <%= hidden_field_tag :scheduled_on, Date.current %>
-      <%= hidden_field_tag :repeat, "daily", data: { trail_battles_target: "repeatField" } %>
-      <%= hidden_field_tag :track_quantity, "0", data: { trail_battles_target: "quantityField" } %>
-      <%= hidden_field_tag :quantity_kind, "up" %>
-      <%= hidden_field_tag :add_position, "top" %>
+      <%= hidden_field_tag :return_to, "mountain" %>
+      <%= hidden_field_tag :life_journey_id, journey.id %>
+      <%= hidden_field_tag :goal_id, goal.id %>
+      <%= hidden_field_tag :plan_id, plan.id %>
+      <%= hidden_field_tag "habit[frequency]", "daily" %>
+      <%= hidden_field_tag "habit[life_journey_id]", journey.id %>
+      <input type="hidden" name="habit[quantity_checkin]" value="0">
       <div class="lp-trail-battles__add-row is-base" data-trail-battles-target="addRow">
         <label class="lp-trail-battles__field">
           <span class="sr-only"><%= t("strategy.rpg.trail.base_camp.add_placeholder") %></span>
-          <%= text_field_tag :title, nil,
+          <%= text_field_tag "habit[name]", nil,
                 required: true,
                 maxlength: 120,
                 class: "lp-trail-battles__input",
@@ -99,33 +96,33 @@
                 autocomplete: "off",
                 data: { trail_battles_target: "titleField" } %>
         </label>
-        <label class="lp-trail-battles__daily-switch">
-          <input type="checkbox"
-                 class="lp-trail-battles__daily-check sr-only"
-                 checked
-                 data-trail-battles-target="dailyToggle"
-                 data-action="change->trail-battles#toggleDaily">
-          <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-          <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.daily") %></span>
-        </label>
         <label class="lp-trail-battles__daily-switch is-qty">
           <input type="checkbox"
                  class="lp-trail-battles__daily-check sr-only"
+                 name="habit[quantity_checkin]"
+                 value="1"
                  data-trail-battles-target="quantityToggle"
                  data-action="change->trail-battles#toggleQuantity">
           <span class="lp-trail-battles__switch" aria-hidden="true"></span>
           <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.log_a_number") %></span>
         </label>
+        <%= text_field_tag "habit[unit]", "times",
+              maxlength: 40,
+              class: "lp-trail-battles__unit sr-only",
+              autocomplete: "off",
+              data: { trail_battles_target: "unitField" },
+              aria: { hidden: true } %>
         <label class="lp-trail-battles__unit-field" data-trail-battles-target="unitWrap" hidden>
           <span class="sr-only"><%= t("strategy.rpg.trail.unit_placeholder") %></span>
-          <%= text_field_tag :unit, "pages",
-                maxlength: 40,
-                class: "lp-trail-battles__unit",
-                placeholder: t("strategy.rpg.trail.unit_placeholder"),
-                autocomplete: "off",
-                data: { trail_battles_target: "unitField" } %>
+          <input type="text"
+                 maxlength="40"
+                 class="lp-trail-battles__unit"
+                 placeholder="<%= t("strategy.rpg.trail.unit_placeholder") %>"
+                 autocomplete="off"
+                 data-trail-battles-target="unitMirrorField"
+                 data-action="input->trail-battles#syncUnitMirror">
         </label>
-        <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
+        <%= submit_tag t("strategy.rpg.trail.base_camp.add_habit"), class: "lp-trail-battles__submit" %>
       </div>
     <% end %>
     </div>
