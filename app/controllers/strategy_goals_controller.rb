@@ -156,7 +156,7 @@ class StrategyGoalsController < ApplicationController
       goal.reload
     end
 
-    if params.key?(:description) && goal.goal?
+    if params.key?(:description) && (goal.goal? || goal.project?)
       goal.description = params[:description].to_s.strip.presence
     end
 

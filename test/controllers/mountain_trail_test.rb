@@ -224,6 +224,15 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id}[data-camp-description=?]", "Daily strength work"
     assert_select ".lp-trail-sheet__subtitle[data-trail-camp-sheet-target='subtitle'][hidden]"
     assert_select ".lp-trail-plant textarea[name='description']"
+    assert_select "#trail-battles-#{@project.id}[data-project-description=?]", "Daily strength work"
+    assert_select "#trail-battles-#{@project.id} button[data-action='click->trail-battles#editCampDescription']"
+    assert_select "#trail-battles-#{@project.id} dialog[data-trail-battles-target='descriptionDialog'] textarea"
+  end
+
+  test "patching camp description persists on project row" do
+    patch strategy_goal_path(@project), params: { description: "Morning mobility" }
+    assert_response :redirect
+    assert_equal "Morning mobility", @project.reload.description
   end
 
   test "moving a camp patches trail coords" do

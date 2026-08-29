@@ -4,7 +4,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "titleField", "repeatField", "dailyToggle", "quantityField", "quantityToggle",
-    "unitField", "unitMirrorField", "unitWrap", "renameDialog", "renameField", "sessionToast", "addRow"
+    "unitField", "unitMirrorField", "unitWrap", "renameDialog", "renameField",
+    "descriptionDialog", "descriptionField", "sessionToast", "addRow"
   ]
 
   static values = {
@@ -102,6 +103,21 @@ export default class extends Controller {
     this.renameDialogTarget?.close?.()
   }
 
+  editCampDescription(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.hasDescriptionDialogTarget) return
+    if (this.hasDescriptionFieldTarget) {
+      this.descriptionFieldTarget.value = this.element.dataset.projectDescription || ""
+    }
+    this.descriptionDialogTarget.showModal?.() || (this.descriptionDialogTarget.open = true)
+  }
+
+  closeDescription(event) {
+    event?.preventDefault()
+    this.descriptionDialogTarget?.close?.()
+  }
+
   async saveCamp(event) {
     event.preventDefault()
     const url = this.element.dataset.updateUrl
@@ -124,6 +140,35 @@ export default class extends Controller {
     })
 
     this.closeRename()
+    if (response.redirected) {
+      window.location.href = response.url
+      return
+    }
+    window.location.reload()
+  }
+
+  async saveCampDescription(event) {
+    event.preventDefault()
+    const url = this.element.dataset.updateUrl
+    if (!url) return
+
+    const description = this.hasDescriptionFieldTarget ? this.descriptionFieldTarget.value.trim() : ""
+    const token = document.querySelector("meta[name='csrf-token']")?.content
+    const body = new URLSearchParams()
+    body.set("description", description)
+    body.set("authenticity_token", token || "")
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Accept: "text/vnd.turbo-stream.html, text/html",
+        "X-CSRF-Token": token || ""
+      },
+      body,
+      credentials: "same-origin"
+    })
+
+    this.closeDescription()
     if (response.redirected) {
       window.location.href = response.url
       return

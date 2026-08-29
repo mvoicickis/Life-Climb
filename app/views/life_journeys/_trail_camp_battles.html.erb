@@ -54,6 +54,7 @@
      data-controller="trail-battles"
      data-project-id="<%= project.id %>"
      data-project-title="<%= project.title %>"
+     data-project-description="<%= project.description.to_s %>"
      data-update-url="<%= strategy_goal_path(project) %>"
      data-delete-url="<%= strategy_goal_path(project) %>"
      data-quantified="<%= quantified %>"
@@ -125,6 +126,12 @@
               aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
         ✎ <%= t("strategy.rpg.trail.edit_camp") %>
       </button>
+      <button type="button"
+              class="lp-trail-battles__camp-edit"
+              data-action="click->trail-battles#editCampDescription"
+              aria-label="<%= t('strategy.rpg.trail.edit_camp_description') %>">
+        ✎ <%= t("strategy.rpg.trail.edit_camp_description") %>
+      </button>
       <%= button_to strategy_goal_path(project),
             method: :delete,
             class: "lp-trail-battles__camp-delete",
@@ -183,6 +190,21 @@
              data-trail-battles-target="renameField">
       <div class="lp-trail-battles__rename-actions">
         <button type="button" data-action="click->trail-battles#closeRename"><%= t("strategy.rpg.cancel") %></button>
+        <button type="submit"><%= t("strategy.rpg.save") %></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="lp-trail-battles__rename" data-trail-battles-target="descriptionDialog">
+    <form method="dialog" class="lp-trail-battles__rename-form" data-action="submit->trail-battles#saveCampDescription">
+      <h3><%= t("strategy.rpg.trail.edit_camp_description") %></h3>
+      <textarea rows="3"
+                maxlength="<%= StrategyGoal::SUMMARY_MAX %>"
+                class="lp-trail-battles__input lp-trail-battles__textarea"
+                placeholder="<%= t('strategy.rpg.trail.plant_description_placeholder') %>"
+                data-trail-battles-target="descriptionField"><%= project.description.to_s %></textarea>
+      <div class="lp-trail-battles__rename-actions">
+        <button type="button" data-action="click->trail-battles#closeDescription"><%= t("strategy.rpg.cancel") %></button>
         <button type="submit"><%= t("strategy.rpg.save") %></button>
       </div>
     </form>
