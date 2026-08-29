@@ -372,6 +372,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
     assert_select "#trail-base-habit-#{habit.id}", text: /12 pages/
+    assert_select "#trail-base-habit-#{habit.id} form[action*='daily_logs']"
+    assert_select "#trail-base-habit-#{habit.id} input[name='return_to'][value='mountain']"
+    assert_select "#trail-base-habit-#{habit.id} input[name='life_journey_id'][value='#{@journey.id}']"
+    assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__basics-add"
   end
 
   test "non-developer does not see basics block on base camp sheet" do

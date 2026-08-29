@@ -874,6 +874,7 @@ en:
           basics:
             kind: "Basics"
             amount: "%{amount} %{unit}"
+            undo: "Undo"
           kind: "Every day · no finish line"
           sub: "%{count} daily battles. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
           empty: "Add something you do every day."

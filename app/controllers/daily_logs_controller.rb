@@ -1,5 +1,8 @@
 class DailyLogsController < ApplicationController
+  include MountainSheetRefresh
+
   before_action :set_habit
+  before_action :verify_mountain_context!, if: :mountain_return?
 
   MODES = %w[add set undo].freeze
   UNDO_SESSION_KEY = "habit_log_undo"
@@ -7,7 +10,7 @@ class DailyLogsController < ApplicationController
   def create
     mode = params[:mode].to_s
     unless MODES.include?(mode)
-      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_bad_mode"))
+      respond_log_failure!(t("habits.log_bad_mode"))
       return
     end
 
@@ -23,7 +26,7 @@ class DailyLogsController < ApplicationController
   def create_add!
     delta = parse_amount(daily_log_params[:amount])
     unless delta&.positive?
-      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_need_add"))
+      respond_log_failure!(t("habits.log_need_add"))
       return
     end
 
@@ -36,17 +39,16 @@ class DailyLogsController < ApplicationController
       store_undo!(previous_amount: previous, delta: delta)
       award_rhythm_points_if_won!
       Today::OvershootBonus.sync!(user: current_user)
-      redirect_to after_log_path, **redirect_flash_for_add(delta: delta, log: @daily_log)
+      respond_after_log!(redirect_flash_for_add(delta: delta, log: @daily_log))
     else
-      redirect_to after_log_path(fallback_habit: true),
-                  alert: log_failure_alert(@daily_log.errors.full_messages.to_sentence)
+      respond_log_failure!(@daily_log.errors.full_messages.to_sentence, fallback_habit: true)
     end
   end
 
   def create_set!
     amount = parse_amount(daily_log_params[:amount])
     if amount.nil? || amount.negative?
-      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_need_total"))
+      respond_log_failure!(t("habits.log_need_total"))
       return
     end
 
@@ -58,24 +60,23 @@ class DailyLogsController < ApplicationController
       clear_undo!
       award_rhythm_points_if_won!
       Today::OvershootBonus.sync!(user: current_user)
-      redirect_to after_log_path, notice: notice_for_set(@daily_log)
+      respond_after_log!(notice: notice_for_set(@daily_log))
     else
-      redirect_to after_log_path(fallback_habit: true),
-                  alert: log_failure_alert(@daily_log.errors.full_messages.to_sentence)
+      respond_log_failure!(@daily_log.errors.full_messages.to_sentence, fallback_habit: true)
     end
   end
 
   def create_undo!
     entry = undo_entry
     unless entry
-      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_undo_missing"))
+      respond_log_failure!(t("habits.log_undo_missing"))
       return
     end
 
     previous = parse_amount(entry["previous"])
     if previous.nil? || previous.negative?
       clear_undo!
-      redirect_to after_log_path, alert: log_failure_alert(t("habits.log_undo_missing"))
+      respond_log_failure!(t("habits.log_undo_missing"))
       return
     end
 
@@ -87,10 +88,37 @@ class DailyLogsController < ApplicationController
       clear_undo!
       award_rhythm_points_if_won!
       Today::OvershootBonus.sync!(user: current_user)
-      redirect_to after_log_path, notice: notice_for_undo(@daily_log)
+      respond_after_log!(notice: notice_for_undo(@daily_log))
     else
-      redirect_to after_log_path(fallback_habit: true),
-                  alert: log_failure_alert(@daily_log.errors.full_messages.to_sentence)
+      respond_log_failure!(@daily_log.errors.full_messages.to_sentence, fallback_habit: true)
+    end
+  end
+
+  def respond_after_log!(flash_opts = {})
+    respond_to do |format|
+      format.turbo_stream do
+        if mountain_return?
+          render :create, status: :ok
+        else
+          redirect_to after_log_path, **flash_opts
+        end
+      end
+      format.html { redirect_to after_log_path, **flash_opts }
+    end
+  end
+
+  def respond_log_failure!(message, fallback_habit: false)
+    alert = log_failure_alert(message)
+    respond_to do |format|
+      format.turbo_stream do
+        if mountain_return?
+          flash.now[:alert] = alert
+          render :create, status: :unprocessable_entity
+        else
+          redirect_to after_log_path(fallback_habit: fallback_habit), alert: alert
+        end
+      end
+      format.html { redirect_to after_log_path(fallback_habit: fallback_habit), alert: alert }
     end
   end
 
@@ -101,12 +129,34 @@ class DailyLogsController < ApplicationController
     "#{t('dash.anytime.log_failed_title')} — #{message}"
   end
 
+  def mountain_return?
+    params[:return_to].to_s == "mountain"
+  end
+
+  def verify_mountain_context!
+    assign_mountain_sheet_for_base_camp!
+  rescue ActiveRecord::RecordNotFound
+    redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
+  end
+
   def after_log_path(fallback_habit: false)
     return dashboard_path if params[:return_to].to_s == "today"
+    return mountain_after_log_path if mountain_return?
     return habit_path(@habit) if fallback_habit
     return habit_path(@habit) if @daily_log.blank?
 
     habit_path(@habit, saved: 1, won: (won? ? 1 : 0))
+  end
+
+  def mountain_after_log_path
+    journey = current_user.life_journeys.find_by(id: params[:life_journey_id])
+    return dashboard_path if journey.blank?
+
+    life_journey_path(
+      journey,
+      goal_id: params[:goal_id].presence,
+      plan_id: params[:plan_id].presence
+    )
   end
 
   def award_rhythm_points_if_won!
