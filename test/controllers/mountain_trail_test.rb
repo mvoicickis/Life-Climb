@@ -413,6 +413,28 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
   end
 
+  test "base camp dock opens sheet when journey has basics habits but no daily battles" do
+    @user.habits.destroy_all
+    @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      quantity_checkin: true,
+      life_journey_id: @journey.id
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-base-card.is-basics"
+    assert_select ".lp-trail-base-card[data-action*='openBase']"
+    assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
+    assert_select "#trail-sheet-camp-base"
+  end
+
   test "base camp card opens sheet when daily is due from past scheduled_on" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,

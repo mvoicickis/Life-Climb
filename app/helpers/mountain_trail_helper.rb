@@ -474,7 +474,7 @@ module MountainTrailHelper
 
   # Meadow plaque: one next step, or a short win.
   # open_battles: due daily rows (mountain_trail_base_due_battles), not @today_battles.
-  def mountain_trail_today_card(projects: [], open_battles: [], won_today: 0)
+  def mountain_trail_today_card(projects: [], open_battles: [], won_today: 0, journey: nil, user: nil)
     camps = Array(projects)
     waiting = Array(open_battles).select { |battle| battle.try(:completed_at).blank? }
 
@@ -493,6 +493,17 @@ module MountainTrailHelper
         headline: I18n.t("strategy.rpg.trail.today_card.win_headline", count: waiting.size),
         sub: I18n.t("strategy.rpg.trail.today_card.win_sub"),
         count: waiting.size,
+        busy: true
+      )
+    end
+
+    viewer = user || mountain_trail_viewer
+    if journey.present? && viewer.present? &&
+         mountain_trail_base_quantity_habits(journey: journey, user: viewer).any?
+      return meadow_plaque(
+        mode: "basics",
+        headline: I18n.t("strategy.rpg.trail.base_camp.title"),
+        sub: I18n.t("strategy.rpg.trail.today_card.basics_sub"),
         busy: true
       )
     end
