@@ -432,6 +432,11 @@ module MountainTrailHelper
     }
   end
 
+  # Flat due list — same rows as the Base camp sheet (for dock today_card).
+  def mountain_trail_base_due_battles(projects)
+    mountain_trail_daily_battles(projects).flat_map { |group| group[:battles] }
+  end
+
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
     battle.repeat_daily? && !battle.completed? &&
@@ -468,6 +473,7 @@ module MountainTrailHelper
   end
 
   # Meadow plaque: one next step, or a short win.
+  # open_battles: due daily rows (mountain_trail_base_due_battles), not @today_battles.
   def mountain_trail_today_card(projects: [], open_battles: [], won_today: 0)
     camps = Array(projects)
     waiting = Array(open_battles).select { |battle| battle.try(:completed_at).blank? }
