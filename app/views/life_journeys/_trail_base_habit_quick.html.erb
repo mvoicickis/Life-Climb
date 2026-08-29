@@ -1,0 +1,28 @@
+<%# locals: habit, journey, goal, plan, quick (optional) %>
+<% quick = local_assigns.fetch(:quick) { habit.quick_add_value } %>
+<%= button_to "+#{number_with_delimiter(quick)}",
+      daily_logs_path(habit_id: habit.id),
+      method: :post,
+      params: {
+        mode: "add",
+        return_to: "mountain",
+        life_journey_id: journey.id,
+        goal_id: goal.id,
+        plan_id: plan.id,
+        daily_log: { amount: quick }
+      },
+      class: "lp-trail-battles__basics-add",
+      aria: { label: t("dash.anytime.quick_add", n: number_with_delimiter(quick), unit: habit.unit) },
+      data: {
+        controller: "pressable",
+        action: "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+      },
+      form: {
+        id: dom_id(habit, :mountain_quick),
+        data: {
+          turbo: true,
+          controller: "juicy-feedback",
+          juicy_feedback_pop_amount_value: quick,
+          action: "submit->juicy-feedback#play"
+        }
+      } %>

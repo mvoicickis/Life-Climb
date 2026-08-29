@@ -21,6 +21,30 @@ module MountainSheetRefresh
     preload_mountain_done_today_for_project!(project)
   end
 
+  # Base camp Basics habit log — scope every id through current_user.
+  def assign_mountain_sheet_for_base_camp!
+    @journey = current_user.life_journeys.find(params.require(:life_journey_id))
+    @goal = current_user.strategy_goals.for_kind("goal").find(params.require(:goal_id))
+    @plan = current_user.strategy_goals.for_kind("plan").find(params.require(:plan_id))
+
+    unless @plan.parent_id == @goal.id && mountain_goal_matches_journey?(@goal, @journey)
+      raise ActiveRecord::RecordNotFound
+    end
+
+    projects = helpers.mountain_trail_open_camps(@plan)
+    battles = projects.flat_map { |project|
+      project.children.select { |child| child.day? && !child.holding? }
+    }
+    helpers.mountain_trail_preload_done_today!(current_user, battles)
+  end
+
+  def mountain_goal_matches_journey?(goal, journey)
+    return false if goal.blank? || journey.blank?
+
+    goal.life_journey_id == journey.id || goal.life_area_id == journey.life_area_id
+  end
+  private :mountain_goal_matches_journey?
+
   def preload_mountain_done_today_for_project!(project)
     return if project.blank?
 

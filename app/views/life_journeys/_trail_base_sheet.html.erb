@@ -18,7 +18,11 @@
     <p class="lp-trail-battles__kind is-basics"><%= t("strategy.rpg.trail.base_camp.basics.kind") %></p>
     <ul class="lp-trail-battles__list lp-trail-base-sheet__basics">
       <% basics.each do |habit| %>
-        <%= render "life_journeys/trail_base_habit_row", habit: habit %>
+        <%= render "life_journeys/trail_base_habit_row",
+              habit: habit,
+              journey: journey,
+              goal: goal,
+              plan: plan %>
       <% end %>
     </ul>
   <% end %>
