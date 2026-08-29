@@ -428,8 +428,10 @@
       <header class="lp-trail-sheet__header">
         <button type="button"
                 class="lp-trail-sheet__crumb"
-                data-action="click->trail-camp-sheet#close">
-          ‹ <%= peak_title.truncate(18) %>
+                data-action="click->trail-camp-sheet#close"
+                aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: peak_title) %>">
+          <span class="lp-trail-sheet__crumb-arrow" aria-hidden="true">‹</span>
+          <span class="lp-trail-sheet__crumb-label"><%= peak_title.truncate(18) %></span>
         </button>
         <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
       </header>

@@ -748,6 +748,7 @@ en:
         placing_hint: "Tap where “%{name}” belongs on the trail"
         relocate_hint: "Tap the path to move this camp"
         list_fallback: "List view"
+        back_to_peak: "Back to %{peak}"
         photo_menu: "Mountain photo"
         peak_tagline_default: "Your summit"
         base_camp_day: "Base camp · Day %{day}"
