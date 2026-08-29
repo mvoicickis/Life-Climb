@@ -18,4 +18,5 @@
         journey: @journey,
         include_mission: @include_mission_in_battle,
         mission: @mission %>
+  <%= render "dashboard/dash_anytime", habits: @habits if habits_on_today_v2? %>
 <% end %>
