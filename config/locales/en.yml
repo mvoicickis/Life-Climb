@@ -787,7 +787,7 @@ en:
           got_it: "Got it"
           skip: "Skip tour"
           step_of: "Step %{current} of %{total}"
-          plant_first: "Tap a glowing signpost to plant your first camp." # TODO: translate for lv/de/es/ru.
+          plant_first: "Tap + to plant your first camp." # TODO: translate for lv/de/es/ru.
           open_camp: "Open your camp and add today’s battle." # TODO: translate for lv/de/es/ru.
           win_battle: "Tick a battle to win it — that’s a day’s progress." # TODO: translate for lv/de/es/ru.
           rename_flag: "Tap your flag any time to rename your destination." # TODO: translate for lv/de/es/ru.
@@ -1796,7 +1796,7 @@ en:
       goal: "Here's your goal."
       camp: "Here's your camp. Your battles live inside it."
       camp_daily: "You work on your camps every day to get closer to your goal."
-      add_camp: "Add more camps here."
+      add_camp: "Tap + to add more camps."
       today: "Your battles are on Today. Go win one now!"
       today_cta: "Go to Today"
       next: "Next"

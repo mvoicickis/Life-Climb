@@ -41,8 +41,6 @@ export default class extends Controller {
     const step = this.stepsValue[this.index]
     if (!step) return
 
-    this.updateGhostVisibility(step)
-
     this.overlayTarget.hidden = false
     this.overlayTarget.classList.add("is-active")
     this.bubbleTarget.hidden = false
@@ -93,14 +91,6 @@ export default class extends Controller {
     }
 
     this.bubbleTarget.classList.add("is-visible")
-  }
-
-  updateGhostVisibility(step) {
-    const ghosts = document.querySelector("#mountain-trail .lp-trail__ghosts")
-    if (!ghosts) return
-
-    const showGhosts = step.target === "onboarding-tour-add-camp"
-    ghosts.classList.toggle("is-onboarding-tour-hidden", !showGhosts && !step.final)
   }
 
   observeTarget(targetId) {
@@ -264,7 +254,9 @@ export default class extends Controller {
     if (!el) return
 
     const region = this.usableRegion()
-    this.scrollTargetIntoSafeArea(el, region)
+    if (step.scrollIntoView !== false) {
+      this.scrollTargetIntoSafeArea(el, region)
+    }
 
     const raw = el.getBoundingClientRect()
     if (raw.width <= 0 || raw.height <= 0) return
