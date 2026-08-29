@@ -63,6 +63,11 @@ class Habit < ApplicationRecord
     stat_type == "standard"
   end
 
+  # Today UI: only habits with an explicit stretch goal show "X of Y" and %.
+  def stretch_goal?
+    growth? && goal.present?
+  end
+
   # Legacy heuristic — used for migration backfill and creates that omit the toggle.
   def self.infer_quantity_checkin?(stat_type:, goal:, unit:)
     stat_type.to_s == "standard" ||
@@ -255,6 +260,7 @@ class Habit < ApplicationRecord
     end
 
     return nil if standard?
+    return nil if growth? && goal.blank?
 
     target = todays_goal_value
     return 0 if target.blank? || target <= 0

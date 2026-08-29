@@ -1,18 +1,22 @@
-<%# locals: habit, amount, target, progress, undo, quick %>
+<%# locals: habit, amount, target, progress, undo, quick, sheet_target (optional) %>
 <% amount = local_assigns.fetch(:amount) { habit.today_amount }
-   target = local_assigns.fetch(:target) { habit.todays_goal_value }
+   target = local_assigns.fetch(:target) { habit.stretch_goal? ? habit.todays_goal_value : nil }
    progress = local_assigns.fetch(:progress) { habit.goal_progress_percent }
    undo = local_assigns.fetch(:undo) { habit.quantity_checkin? ? habit_log_undo_for(habit) : nil }
    quick = local_assigns.fetch(:quick) { habit.quantity_checkin? ? habit.quick_add_value : nil }
-   suggestions = habit.quantity_checkin? ? habit.quick_add_suggestions : [] %>
-<div id="<%= dom_id(habit, :today_sheet) %>" class="lp-dash-habit__sheet">
+   suggestions = habit.quantity_checkin? ? habit.quick_add_suggestions : []
+   sheet_attrs = local_assigns[:sheet_target] ? { data: { tcard_menu_target: "sheet" } } : {} %>
+<%= tag.div(
+      id: dom_id(habit, :today_sheet),
+      class: "lp-dash-habit__sheet",
+      **sheet_attrs) do %>
   <div class="lp-dash-habit__grab" aria-hidden="true"></div>
   <div class="lp-dash-habit__shd">
     <span class="lp-dash-habit__sig" aria-hidden="true"><%= habit_sigil(habit) %></span>
     <div class="lp-dash-habit__shd-txt">
       <b><%= habit.name %></b>
       <em>
-        <% if habit.quantity_checkin? && target.present? && habit.growth? %>
+        <% if habit.quantity_checkin? && habit.stretch_goal? && target.present? %>
           <%= t("dash.anytime.amount_of_target",
                 amount: format_amount(amount),
                 target: format_amount(target),
@@ -27,11 +31,11 @@
         <% end %>
       </em>
     </div>
-    <% if progress.is_a?(Numeric) %>
+    <% if progress.is_a?(Numeric) && habit.stretch_goal? %>
       <span class="lp-dash-habit__shd-pc"><%= progress %>%</span>
     <% end %>
   </div>
-  <% if progress.is_a?(Numeric) %>
+  <% if progress.is_a?(Numeric) && habit.stretch_goal? %>
     <div class="lp-dash-habit__shbar" aria-hidden="true">
       <% habit_progress_segments(progress, count: 20).each do |klass| %>
         <i class="<%= klass %>"></i>
@@ -144,4 +148,4 @@
           habit_path(habit),
           class: "lp-dash-habit__sheet-btn is-quiet" %>
   <% end %>
-</div>
+<% end %>
