@@ -842,6 +842,7 @@ en:
         unit_placeholder: "pages"
         log_needed: "Tap the row and enter how many."
         edit_camp: "Edit"
+        edit_camp_description: "Description"
         camp_fold: "Camp"
         delete_camp: "Delete"
         finish_camp: "Mark finished"

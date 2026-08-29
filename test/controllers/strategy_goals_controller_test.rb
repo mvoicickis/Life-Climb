@@ -610,6 +610,27 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/blank|can't be blank|Title/i, flash[:alert].to_s)
   end
 
+  test "update persists description on goal and project rows" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Summit", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Path", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+
+    patch strategy_goal_path(goal), params: { description: "Reach the peak" }
+    assert_equal "Reach the peak", goal.reload.description
+
+    patch strategy_goal_path(project), params: { description: "Daily strength work" }
+    assert_equal "Daily strength work", project.reload.description
+
+    patch strategy_goal_path(project), params: { description: "   " }
+    assert_nil project.reload.description
+  end
+
   test "dashboard shows action points and strategy points" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Become ready", position: 0

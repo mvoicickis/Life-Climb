@@ -1688,6 +1688,29 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-plant__field.is-note {
   min-height: 3.25rem;
   resize: vertical;
+  margin-top: 0;
+  border: 1px solid #e6e3da;
+  background: #fbfaf7;
+  border-radius: 12px;
+  padding: 12px 13px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #12201a;
+  color-scheme: light;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.lp-trail.is-v4 .lp-trail-plant__field.is-note:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--lp-trail-accent) 55%, #e6e3da);
+  box-shadow: 0 0 0 3px var(--lp-trail-accent-soft);
+}
+
+.lp-trail.is-v4 .lp-trail-plant__field.is-note::placeholder {
+  color: #9aa096;
+  font-weight: 500;
 }
 
 .lp-trail.is-v4 .lp-trail-plant__field-label {
@@ -2109,6 +2132,12 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   display: grid;
   gap: 0.75rem;
   padding: 1rem;
+}
+
+.lp-trail-battles__textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+  line-height: 1.4;
 }
 
 .lp-trail-battles__rename-actions {
