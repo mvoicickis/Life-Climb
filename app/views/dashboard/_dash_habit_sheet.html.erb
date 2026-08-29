@@ -40,47 +40,6 @@
   <% end %>
 
   <% if habit.quantity_checkin? %>
-    <p class="lp-dash-habit__lbl"><%= t("dash.anytime.quick_add_label") %></p>
-    <div class="lp-dash-habit__chips">
-      <% suggestions.each do |chip| %>
-        <% on = chip.to_i == quick.to_i %>
-        <%= button_to "+#{number_with_delimiter(chip)}",
-              habit_path(habit),
-              method: :patch,
-              params: {
-                return_to: "today",
-                quick_add_sheet: "1",
-                habit: { quick_add_amount: chip }
-              },
-              class: "lp-dash-habit__chip#{' is-on' if on}",
-              aria: {
-                label: t("dash.anytime.quick_add", n: number_with_delimiter(chip), unit: habit.unit),
-                pressed: on
-              },
-              form: { data: { turbo: true } } %>
-      <% end %>
-    </div>
-    <%= form_with model: habit,
-          url: habit_path(habit),
-          method: :patch,
-          class: "lp-dash-habit__custom",
-          data: { turbo: true } do |form| %>
-      <%= hidden_field_tag :return_to, "today" %>
-      <%= hidden_field_tag :quick_add_sheet, "1" %>
-      <%= form.number_field :quick_add_amount,
-            value: "",
-            min: 1,
-            max: 1_000_000,
-            step: 1,
-            required: true,
-            inputmode: "numeric",
-            autocomplete: "off",
-            placeholder: t("dash.anytime.custom_amount"),
-            class: "lp-dash-habit__custom-input",
-            aria: { label: t("dash.anytime.custom_amount") } %>
-      <%= form.submit t("dash.anytime.use_amount"), class: "lp-dash-habit__use" %>
-    <% end %>
-
     <div class="lp-dash-habit__minor">
       <%= form_with url: daily_logs_path(habit_id: habit.id),
             scope: :daily_log,
@@ -139,6 +98,47 @@
             habit_path(habit),
             class: "lp-dash-habit__sheet-btn is-quiet" %>
     </div>
+
+    <p class="lp-dash-habit__lbl"><%= t("dash.anytime.quick_add_label") %></p>
+    <div class="lp-dash-habit__chips">
+      <% suggestions.each do |chip| %>
+        <% on = chip.to_i == quick.to_i %>
+        <%= button_to "+#{number_with_delimiter(chip)}",
+              habit_path(habit),
+              method: :patch,
+              params: {
+                return_to: "today",
+                quick_add_sheet: "1",
+                habit: { quick_add_amount: chip }
+              },
+              class: "lp-dash-habit__chip#{' is-on' if on}",
+              aria: {
+                label: t("dash.anytime.quick_add", n: number_with_delimiter(chip), unit: habit.unit),
+                pressed: on
+              },
+              form: { data: { turbo: true } } %>
+      <% end %>
+    </div>
+    <%= form_with model: habit,
+          url: habit_path(habit),
+          method: :patch,
+          class: "lp-dash-habit__custom",
+          data: { turbo: true } do |form| %>
+      <%= hidden_field_tag :return_to, "today" %>
+      <%= hidden_field_tag :quick_add_sheet, "1" %>
+      <%= form.number_field :quick_add_amount,
+            value: "",
+            min: 1,
+            max: 1_000_000,
+            step: 1,
+            required: true,
+            inputmode: "numeric",
+            autocomplete: "off",
+            placeholder: t("dash.anytime.custom_amount"),
+            class: "lp-dash-habit__custom-input",
+            aria: { label: t("dash.anytime.custom_amount") } %>
+      <%= form.submit t("dash.anytime.use_amount"), class: "lp-dash-habit__use" %>
+    <% end %>
   <% else %>
     <%= link_to t("dash.hero.menu_edit"),
           habit_path(habit),
