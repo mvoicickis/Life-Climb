@@ -348,4 +348,51 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-battle-#{reading.id}", text: /pages/i
     assert_select "#trail-base-battle-#{reading.id}", text: /Log a number|Just a tick/i
   end
+
+  test "developer sees basics block on base camp sheet for journey quantity habits" do
+    @user.update_columns(developer: true)
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      goal: 25,
+      quantity_checkin: true,
+      life_journey_id: @journey.id
+    )
+    @user.daily_logs.create!(habit: habit, logged_on: Date.current, amount: 12, goal: 25)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
+    assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
+    assert_select "#trail-base-habit-#{habit.id}", text: /12 pages/
+  end
+
+  test "non-developer does not see basics block on base camp sheet" do
+    @user.update_columns(developer: false)
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      goal: 25,
+      quantity_checkin: true,
+      life_journey_id: @journey.id
+    )
+    @user.daily_logs.create!(habit: habit, logged_on: Date.current, amount: 12, goal: 25)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics", count: 0
+    assert_select "#trail-base-habit-#{habit.id}", count: 0
+  end
 end

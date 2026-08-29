@@ -3,14 +3,25 @@
 <% area = local_assigns[:area] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
+<% journey = local_assigns[:journey] %>
 <% groups = mountain_trail_daily_battles(projects) %>
 <% add_parent = mountain_trail_base_camp_add_parent(projects) %>
 <% daily_count = groups.sum { |group| group[:battles].size } %>
+<% basics = habits_on_today_v2? && journey.present? ?
+     mountain_trail_base_quantity_habits(journey: journey, user: current_user) : [] %>
 
 <div class="lp-trail-battles lp-trail-base-sheet"
      id="trail-base-sheet"
      data-controller="trail-battles"
      data-trail-battles-keep-daily-value="true">
+  <% if basics.any? %>
+    <p class="lp-trail-battles__kind is-basics"><%= t("strategy.rpg.trail.base_camp.basics.kind") %></p>
+    <ul class="lp-trail-battles__list lp-trail-base-sheet__basics">
+      <% basics.each do |habit| %>
+        <%= render "life_journeys/trail_base_habit_row", habit: habit %>
+      <% end %>
+    </ul>
+  <% end %>
   <p class="lp-trail-battles__kind is-daily"><%= t("strategy.rpg.trail.base_camp.kind") %></p>
   <p class="lp-trail-battles__stats"><%= t("strategy.rpg.trail.base_camp.sub", count: daily_count) %></p>
 
