@@ -112,6 +112,11 @@ Rails.application.routes.draw do
   post "support/dismiss", to: "supports#dismiss_moment", as: :dismiss_support_moment
   resource :about, only: :show, controller: "abouts"
 
+  namespace :billing do
+    post "checkout", to: "checkouts#create"
+    post "webhook", to: "webhooks#create"
+  end
+
   resources :areas, only: %i[ index create update destroy ] do
     member do
       patch :move

@@ -111,4 +111,10 @@ class UserTest < ActiveSupport::TestCase
     user.update_columns(subscription_status: "canceled", current_period_end: 1.day.from_now)
     refute user.premium?
   end
+
+  test "premium? is true when trialing with a future period end" do
+    user = users(:one)
+    user.update_columns(subscription_status: "trialing", current_period_end: 1.day.from_now)
+    assert user.premium?
+  end
 end

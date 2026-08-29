@@ -79,3 +79,5 @@ gem "rqrcode", "~> 3.2"
 gem "ruby-vips", "~> 2.2"
 
 gem "web-push", "~> 3.1"
+
+gem "stripe", "~> 15.0"
