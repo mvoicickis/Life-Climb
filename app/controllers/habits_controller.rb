@@ -1,10 +1,12 @@
 class HabitsController < ApplicationController
   include CommitmentGapRefresh
+  include MountainSheetRefresh
 
   before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
+  before_action :verify_mountain_context!, if: :mountain_create?
   before_action :load_journeys, only: %i[ new create edit update ]
   before_action :load_areas, only: %i[ index new create edit update show ]
-  skip_before_action :load_journeys, :load_areas, if: :today_quick_add_sheet?
+  skip_before_action :load_journeys, :load_areas, if: -> { today_quick_add_sheet? || mountain_create? }
 
   def index
     @habits = current_user.habits.ordered.includes(:life_journey, :area)
@@ -46,7 +48,12 @@ class HabitsController < ApplicationController
     return_to = params[:return_to].to_s
 
     if @habit.save
-      if params[:source].to_s == "commitment_gap"
+      if mountain_create?
+        respond_to do |format|
+          format.turbo_stream { render :create, status: :ok }
+          format.html { redirect_to mountain_after_create_path, notice: t("strategy.rpg.trail.base_camp.habit_added") }
+        end
+      elsif params[:source].to_s == "commitment_gap"
         notice = if @habit.quantity_checkin?
           t("strategy.next_action.commitment_gap.unfiled_tracker_nudge")
         end
@@ -62,6 +69,14 @@ class HabitsController < ApplicationController
         redirect_to life_points_path, notice: t("progress.stats.created")
       else
         redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
+      end
+    elsif mountain_create?
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:alert] = @habit.errors.full_messages.to_sentence
+          render :create, status: :unprocessable_entity
+        end
+        format.html { redirect_to mountain_after_create_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other }
       end
     elsif return_to == "journey"
       redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
@@ -151,6 +166,28 @@ class HabitsController < ApplicationController
 
   def today_quick_add_sheet?
     params[:return_to].to_s == "today" && params[:quick_add_sheet].present?
+  end
+
+  def mountain_create?
+    action_name == "create" && params[:return_to].to_s == "mountain"
+  end
+
+  def verify_mountain_context!
+    assign_mountain_sheet_for_base_camp!
+    journey_id = params.dig(:habit, :life_journey_id).presence
+    if journey_id.present? && journey_id.to_i != @journey.id
+      raise ActiveRecord::RecordNotFound
+    end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
+  end
+
+  def mountain_after_create_path
+    life_journey_path(
+      @journey,
+      goal_id: @goal.id,
+      plan_id: @plan.id
+    )
   end
 
   def load_journeys
