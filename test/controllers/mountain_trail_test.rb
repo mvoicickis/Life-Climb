@@ -395,4 +395,19 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics", count: 0
     assert_select "#trail-base-habit-#{habit.id}", count: 0
   end
+
+  test "base camp card opens sheet when daily is due from past scheduled_on" do
+    battle = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Read daily", scheduled_on: Date.yesterday,
+      position: 0, repeat: "daily"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-battle-#{battle.id}"
+    assert_select ".lp-trail-base-card.is-win-next"
+    assert_select ".lp-trail-base-card[data-action*='openBase']"
+    assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
+  end
 end

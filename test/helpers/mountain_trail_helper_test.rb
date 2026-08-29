@@ -311,7 +311,26 @@ class MountainTrailHelperTest < ActionView::TestCase
     done = Struct.new(:repeat_daily?, :completed?, :scheduled_on).new(true, true, Date.current)
     assert mountain_trail_base_due?(due)
     assert_not mountain_trail_base_due?(later)
+    assert_not mountain_trail_base_due?(later)
     assert_not mountain_trail_base_due?(done)
+  end
+
+  test "base due battles includes past scheduled_on dailies for today card" do
+    past = Struct.new(:day?, :holding?, :completed?, :repeat_daily?, :scheduled_on, :completed_at, :title).new(
+      true, false, false, true, Date.yesterday, nil, "Read"
+    )
+    tomorrow = Struct.new(:day?, :holding?, :completed?, :repeat_daily?, :scheduled_on, :completed_at, :title).new(
+      true, false, false, true, Date.current + 1, nil, "Later"
+    )
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title, :position).new(
+      3, false, false, [ past, tomorrow ], 0.5, 0.7, "Base camp", 0
+    )
+
+    assert_equal [ past ], mountain_trail_base_due_battles([ camp ])
+
+    card = mountain_trail_today_card(projects: [ camp ], open_battles: mountain_trail_base_due_battles([ camp ]), won_today: 0)
+    assert_equal "win_next", card[:mode]
+    assert_equal 1, card[:count]
   end
 
   test "done today uses completed_at for one-shot battles" do
