@@ -3,10 +3,10 @@ class HabitsController < ApplicationController
   include MountainSheetRefresh
 
   before_action :set_habit, only: %i[ show edit update destroy raise_goal decline_goal_raise ]
-  before_action :verify_mountain_context!, if: :mountain_create?
+  before_action :verify_mountain_context!, if: :mountain_return?
   before_action :load_journeys, only: %i[ new create edit update ]
   before_action :load_areas, only: %i[ index new create edit update show ]
-  skip_before_action :load_journeys, :load_areas, if: -> { today_quick_add_sheet? || mountain_create? }
+  skip_before_action :load_journeys, :load_areas, if: -> { today_quick_add_sheet? || mountain_return? }
 
   def index
     @habits = current_user.habits.ordered.includes(:life_journey, :area)
@@ -140,9 +140,17 @@ class HabitsController < ApplicationController
   end
 
   def destroy
+    mountain = mountain_return?
     @habit.destroy!
-    flash[:turbo_clear_cache] = true
-    redirect_to habits_path, notice: "Removed.", status: :see_other
+    if mountain
+      respond_to do |format|
+        format.turbo_stream { render :destroy, status: :ok }
+        format.html { redirect_to mountain_after_mountain_path, notice: "Removed.", status: :see_other }
+      end
+    else
+      flash[:turbo_clear_cache] = true
+      redirect_to habits_path, notice: "Removed.", status: :see_other
+    end
   end
 
   def raise_goal
@@ -169,25 +177,35 @@ class HabitsController < ApplicationController
   end
 
   def mountain_create?
-    action_name == "create" && params[:return_to].to_s == "mountain"
+    action_name == "create" && mountain_return?
+  end
+
+  def mountain_return?
+    params[:return_to].to_s == "mountain"
   end
 
   def verify_mountain_context!
     assign_mountain_sheet_for_base_camp!
-    journey_id = params.dig(:habit, :life_journey_id).presence
-    if journey_id.present? && journey_id.to_i != @journey.id
-      raise ActiveRecord::RecordNotFound
+    if action_name == "create"
+      journey_id = params.dig(:habit, :life_journey_id).presence
+      if journey_id.present? && journey_id.to_i != @journey.id
+        raise ActiveRecord::RecordNotFound
+      end
     end
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
-  def mountain_after_create_path
+  def mountain_after_mountain_path
     life_journey_path(
       @journey,
       goal_id: @goal.id,
       plan_id: @plan.id
     )
+  end
+
+  def mountain_after_create_path
+    mountain_after_mountain_path
   end
 
   def load_journeys
