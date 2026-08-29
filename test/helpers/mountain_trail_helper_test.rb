@@ -74,6 +74,39 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_match(/2/, card[:sub])
   end
 
+  test "today card opens basics when journey has quantity habits but no daily battles" do
+    user = users(:one)
+    journey = seed_climb!(user)
+    user.habits.destroy_all
+    user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      quantity_checkin: true,
+      life_journey_id: journey.id
+    )
+    won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      8, false, false, [ won ], 0.5, 0.7, "Base camp"
+    )
+
+    card = mountain_trail_today_card(
+      projects: [ camp ],
+      open_battles: [],
+      won_today: 0,
+      journey: journey,
+      user: user
+    )
+
+    assert_equal "basics", card[:mode]
+    assert card[:busy]
+    assert_match(/basics|return every day/i, "#{card[:headline]} #{card[:sub]}")
+  end
+
   test "today card plants next when the trail is quiet" do
     won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
     camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(

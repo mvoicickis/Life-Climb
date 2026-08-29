@@ -809,6 +809,7 @@ en:
             other: "%{count} wins today"
           plant_next_headline: "Plant the next camp"
           plant_next_sub: "Keep the climb moving"
+          basics_sub: "Log your basics"
           open_headline:
             one: "%{count} battle waiting"
             other: "%{count} battles waiting"

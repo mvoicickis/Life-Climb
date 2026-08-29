@@ -18,7 +18,7 @@
 <% base_due_battles = mountain_trail_base_due_battles(projects) %>
 <% all_today = (@today_battles || []) %>
 <% won_today = all_today.count { |b| b.completed_at.present? } %>
-<% today_card = mountain_trail_today_card(projects: projects, open_battles: base_due_battles, won_today: won_today) %>
+<% today_card = mountain_trail_today_card(projects: projects, open_battles: base_due_battles, won_today: won_today, journey: journey) %>
 <% peak_title = goal&.title.presence || journey.title %>
 <% peak_tagline = mountain_trail_peak_tagline(goal) %>
 <% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
