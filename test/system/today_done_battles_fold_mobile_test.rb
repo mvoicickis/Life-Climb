@@ -11,6 +11,9 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     seed_climb!(@user, today_mission: "Fold mission")
     dismiss_onboarding_missions!(@user)
     @user.habits.destroy_all
+    @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Fold mission")
+    @todo.update!(start_time: "09:00", end_time: "10:00", completed_at: Time.current)
+    @todo.strategy_goal&.update!(completed_at: Time.current)
     @user.daily_todos.for_day(Date.current).delete_all
 
     5.times do |i|
@@ -36,6 +39,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     assert_today_v2_shell!
     assert_no_legacy_today_shell!
     assert_no_selector ".lp-today-v2-row"
+    assert_battle_row_absent!(title: @todo.title)
     5.times do |i|
       assert_battle_row_absent!(title: "Win #{i + 1}")
     end
