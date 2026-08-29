@@ -216,6 +216,16 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_includes markup, "lp-trail-battles__camp-fold"
   end
 
+  test "camp description renders on tent data attribute and sheet subtitle target" do
+    @project.update!(description: "Daily strength work")
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-camp-#{@project.id}[data-camp-description=?]", "Daily strength work"
+    assert_select ".lp-trail-sheet__subtitle[data-trail-camp-sheet-target='subtitle'][hidden]"
+    assert_select ".lp-trail-plant textarea[name='description']"
+  end
+
   test "moving a camp patches trail coords" do
     patch strategy_goal_path(@project), params: { trail_x: 0.41, trail_y: 0.66 }
     assert_response :redirect

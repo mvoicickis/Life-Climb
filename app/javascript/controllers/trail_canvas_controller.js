@@ -16,6 +16,7 @@ export default class extends Controller {
     "plantX",
     "plantY",
     "plantTitle",
+    "plantDescription",
     "plantSubmit",
     "glowDots",
     "spurs",
@@ -490,6 +491,8 @@ export default class extends Controller {
       return
     }
 
+    const description = this.hasPlantDescriptionTarget ? this.plantDescriptionTarget.value.trim() : ""
+
     const color =
       form.querySelector("input[name='color_key']:checked")?.value ||
       form.querySelector("input[name='color_key']")?.value ||
@@ -502,12 +505,12 @@ export default class extends Controller {
       this._plantX = this._presetSpot.x
       this._plantY = this._presetSpot.y
       this.writeHiddenCoords()
-      await this.postPlant({ title, color, x: this._plantX, y: this._plantY, quantity })
+      await this.postPlant({ title, description, color, x: this._plantX, y: this._plantY, quantity })
       return
     }
 
     // FAB flow → enter placing mode with glow dots.
-    this._pendingPlant = { title, color, quantity }
+    this._pendingPlant = { title, description, color, quantity }
     this.hidePlant({ keepPending: true })
     this.enterPlacing(title)
   }
@@ -758,6 +761,7 @@ export default class extends Controller {
     this.cancelPlacing()
     await this.postPlant({
       title: pending.title,
+      description: pending.description,
       color: pending.color,
       x: snapped.x,
       y: snapped.y,
@@ -765,12 +769,13 @@ export default class extends Controller {
     })
   }
 
-  async postPlant({ title, color, x, y, quantity = null }) {
+  async postPlant({ title, description = "", color, x, y, quantity = null }) {
     const url = this.createUrlValue
     if (!url) return
 
     const body = new FormData()
     body.set("title", title)
+    if (description) body.set("description", description)
     body.set("horizon", "project")
     body.set("color_key", color)
     body.set("trail_x", String(x))
@@ -1213,6 +1218,7 @@ export default class extends Controller {
     this.plantFormTarget.hidden = true
     this.plantFormTarget.setAttribute("aria-hidden", "true")
     if (this.hasPlantTitleTarget && !keepPending) this.plantTitleTarget.value = ""
+    if (this.hasPlantDescriptionTarget && !keepPending) this.plantDescriptionTarget.value = ""
     if (!keepPending) {
       this._plantX = null
       this._plantY = null

@@ -743,6 +743,7 @@ en:
         plant_kicker: "New camp"
         plant_hint: "A stop up the mountain. Each camp gets you closer to %{destination}."
         plant_placeholder: "What do you want to get better at?"
+        plant_description_placeholder: "What makes this camp matter?"
         plant_submit: "Plant camp"
         choose_spot: "Choose spot on the mountain →"
         placing_hint: "Tap where “%{name}” belongs on the trail"

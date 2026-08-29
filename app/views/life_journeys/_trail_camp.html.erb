@@ -21,6 +21,7 @@
         style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
+        data-camp-description="<%= project.description.to_s %>"
         data-trail-x="<%= layout[:x] %>"
         data-trail-y="<%= layout[:y] %>"
         data-accent="<%= accent %>"

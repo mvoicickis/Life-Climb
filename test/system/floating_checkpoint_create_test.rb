@@ -81,7 +81,7 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
 
     open_v4_plant_composer!
     within(".lp-trail-plant.is-open") do
-      find(".lp-trail-plant__field").set("Notifications camp")
+      find("input.lp-trail-plant__field").set("Notifications camp")
       find(".lp-trail-plant__submit").click
     end
     assert_selector ".lp-trail.is-placing", wait: 3

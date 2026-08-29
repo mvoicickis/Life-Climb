@@ -1675,6 +1675,26 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   max-width: 100%;
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__subtitle {
+  margin: 0 4px 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(247, 234, 217, 0.72);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-trail.is-v4 .lp-trail-plant__field.is-note {
+  min-height: 3.25rem;
+  resize: vertical;
+}
+
+.lp-trail.is-v4 .lp-trail-plant__field-label {
+  display: block;
+  margin-top: 0.45rem;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__header {
   color: #f7ead9;
   min-width: 0;
