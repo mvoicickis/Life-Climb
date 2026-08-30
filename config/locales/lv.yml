@@ -691,38 +691,44 @@ lv:
       menu_undo: "Undo last add"
     battle_next_kicker: "Forši — turi kāpienu."
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
-    # TODO: translate
     battlefield:
-      progress_label: "Battles done"  # TODO: translate
+      progress_label: "Cīņas padarītas"
       risk_open:
-        one: "1 battle waiting"  # TODO: translate
-        other: "%{count} battles waiting"  # TODO: translate
-      mountain_tertiary: "Open Mountain →"  # TODO: translate
+        one: "1 cīņa gaida"
+        other: "%{count} cīņas gaida"
+      mountain_tertiary: "Atvērt Kalnu →"
       win_state:
         day_won:
-          kicker: "Day won"
+          kicker: "Diena uzvarēta"
           headline:
-            one: "1 battle won today"  # TODO: translate
-            other: "%{count} battles won today"  # TODO: translate
-          sub: "Rest on the ridge — or open Mountain for your next move."  # TODO: translate
+            one: "1 cīņa uzvarēta šodien"
+            other: "%{count} cīņas uzvarētas šodien"
+          sub: "Atpūties — vai atver Kalnu, lai izvēlētos nākamo soli."
         confirm_camp:
-          kicker: "Camp check"
-          headline: "Is this camp done?"  # TODO: translate
-          sub: "Quick honest look before you move on."  # TODO: translate
+          kicker: "Nometnes pārbaude"
+          headline: "Vai šī nometne ir pabeigta?"
+          sub: "Godīgs skatiens, pirms dodies tālāk."
         pick_angle:
-          kicker: "Sharpen tomorrow"
-          headline: "Pick a sharper next battle"  # TODO: translate
-          sub: "One clear angle keeps the camp moving."  # TODO: translate
+          kicker: "Sagatavo rītdienu"
+          headline: "Izvēlies skaidrāku nākamo cīņu"
+          sub: "Viens skaidrs solis tur nometni kustībā."
         battles_waiting:
-          kicker: "More on the trail"
+          kicker: "Vairāk uz takas"
           headline:
-            one: "1 battle waiting on Mountain"  # TODO: translate
-            other: "%{count} battles waiting on Mountain"  # TODO: translate
-          sub: "Plant one on Today when you're ready."  # TODO: translate
+            one: "1 cīņa gaida Kalnā"
+            other: "%{count} cīņas gaida Kalnā"
+          sub: "Pārcel kādu uz Šodien, kad esi gatavs."
         upcoming:
-          kicker: "Next up"
-          headline: "“%{title}” is scheduled"  # TODO: translate
-          sub: "Coming %{date} — keep the climb alive until then."  # TODO: translate
+          kicker: "Nākamais"
+          headline: "“%{title}” ir ieplānota"
+          sub: "Gaidāma %{date} — turi kāpienu dzīvu līdz tam."
+      title: "Šodienas kaujaslauks"
+      risk_cleared: "Viss padarīts."
+      risk_empty: "Šodienas sarakstā vēl nav cīņu."
+      mountain_need: "Vajag vēl vienu cīņu? Atver Kalnu"
+      mountain_all_clear: "Atver Kalnu"
+      empty_html: "Šodien nav atvērtu cīņu.<br>Dodies uz Kalnu, lai atvērtu nometni un pievienotu cīņu."
+      day_n: "%{count}. diena"
     project_check:
       kicker: "Projekta pārbaude"
       title: "Vai “%{title}” ir pabeigts?"
