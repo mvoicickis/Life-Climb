@@ -955,7 +955,7 @@ en:
           empty: "Add something you do every day."
           more: "+%{count}"
           add_placeholder: "Add something you do every day"
-          add_habit: "Add habit"
+          add_habit: "Add basic"
           habit_added: "Added to your basics."
           daily_hint: "Shows up again tomorrow."
           amount_hint: "Ask how many, like pages. Leave off for a simple tick."
