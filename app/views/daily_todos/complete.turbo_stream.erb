@@ -16,7 +16,7 @@
 <% end %>
 
 <%= turbo_stream.update "today-battles-waiting-host" do %>
-  <% if @battles_waiting_count.to_i.positive? %>
+  <% if @battles_waiting_count.to_i.positive? && !@battlefield_health.all_clear? %>
     <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
       <%= t("dash.battlefield.more_waiting", count: @battles_waiting_count) %>
     </p>
@@ -29,18 +29,21 @@
         streak: @climb_streak %>
 <% end %>
 
+<% if @battlefield_health.all_clear? && @battlefield_prompt %>
+  <%= turbo_stream.replace "today-battlefield-rows" do %>
+    <div id="today-battlefield-win-host">
+      <%= render "dashboard/dash_battlefield_win",
+            prompt: @battlefield_prompt,
+            journey: @journey %>
+    </div>
+  <% end %>
+<% end %>
+
 <% unless @battlefield_health.empty? %>
   <%= turbo_stream.replace "today-battlefield-mountain-link" do %>
-    <div id="today-battlefield-mountain-link">
-      <% mountain_href = @journey ? life_journey_path(@journey) : new_life_journey_path %>
-      <% all_clear = @battlefield_health.all_clear? %>
-      <%= link_to(
-            all_clear ? t("dash.battlefield.mountain_all_clear") : t("dash.battlefield.mountain_need"),
-            mountain_href,
-            class: "lp-today-v2-mountain-link #{all_clear ? 'is-clear' : 'is-open'}",
-            data: { today_v2_target: "mountainLink" }
-          ) %>
-    </div>
+    <%= render "dashboard/dash_battlefield_mountain_link",
+          health: @battlefield_health,
+          journey: @journey %>
   <% end %>
 <% end %>
 

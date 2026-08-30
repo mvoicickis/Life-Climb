@@ -1,0 +1,24 @@
+<%# locals: prompt, journey %>
+<% prompt = local_assigns.fetch(:prompt) %>
+<% journey = local_assigns.fetch(:journey) { @journey } %>
+<% key = prompt.prompt_key.to_s %>
+
+<div class="lp-today-v2-win" id="today-battlefield-win">
+  <p class="lp-today-v2-win__kicker">
+    <%= t("dash.battlefield.win_state.#{key}.kicker", default: t("dash.battlefield.win_state.day_won.kicker")) %>
+  </p>
+  <h3 class="lp-today-v2-win__title"><%= prompt.headline %></h3>
+  <% if prompt.sub.present? %>
+    <p class="lp-today-v2-win__sub"><%= prompt.sub %></p>
+  <% end %>
+
+  <% case prompt.prompt_key.to_sym %>
+  <% when :confirm_camp %>
+    <%= render "dashboard/dash_project_check", project: prompt.project_check %>
+  <% when :pick_angle %>
+    <%= render "dashboard/dash_battle_angles",
+          project: prompt.battle_angle_project,
+          angles: prompt.battle_angles,
+          journey: journey %>
+  <% end %>
+</div>

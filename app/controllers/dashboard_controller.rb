@@ -46,6 +46,7 @@ class DashboardController < ApplicationController
       open_count: @battle_open_count,
       total_count: @battle_total_count
     )
+    assign_battlefield_prompt!
     # Read-only overshoot display — never sync! / award on GET.
     day_pct = Today::DayPercent.call(
       user: current_user,

@@ -76,6 +76,32 @@ en:
       empty_html: "No open threats today.<br>Head to Mountain to open a camp and add a battle."
       mountain_need: "Need another battle? Open Mountain"
       mountain_all_clear: "All clear — open Mountain for your next battle"
+      mountain_tertiary: "Open Mountain →"
+      win_state:
+        day_won:
+          kicker: "Day won"
+          headline:
+            one: "1 battle won today"
+            other: "%{count} battles won today"
+          sub: "Rest on the ridge — or open Mountain for your next move."
+        confirm_camp:
+          kicker: "Camp check"
+          headline: "Is this camp done?"
+          sub: "Quick honest look before you move on."
+        pick_angle:
+          kicker: "Sharpen tomorrow"
+          headline: "Pick a sharper next battle"
+          sub: "One clear angle keeps the camp moving."
+        battles_waiting:
+          kicker: "More on the trail"
+          headline:
+            one: "1 battle waiting on Mountain"
+            other: "%{count} battles waiting on Mountain"
+          sub: "Plant one on Today when you're ready."
+        upcoming:
+          kicker: "Next up"
+          headline: "“%{title}” is scheduled"
+          sub: "Coming %{date} — keep the climb alive until then."
       no_camp: "Camp"
       win_battle: "Win %{title}"
       fight_toast: "Tap a battle above to fight it"

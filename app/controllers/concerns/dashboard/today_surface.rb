@@ -73,6 +73,19 @@ module Dashboard
       @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
     end
 
+    def assign_battlefield_prompt!
+      return unless @battlefield_health&.all_clear?
+
+      @battlefield_prompt = Today::BattlefieldPrompt.call(
+        health: @battlefield_health,
+        project_check: @project_check,
+        battle_angle_project: @battle_angle_project,
+        battle_angles: @battle_angles,
+        battles_waiting_count: @battles_waiting_count,
+        upcoming_battle: @upcoming_battle
+      )
+    end
+
     def sync_today_battles!
       return if @journey.blank?
 
