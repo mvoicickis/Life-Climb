@@ -18,6 +18,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/What is your goal/i, response.body)
     assert_match(/Step 2 of 4/i, response.body)
+    assert_select "#onboarding_goal[placeholder=?]", I18n.t("v2_onboarding.goal_placeholder")
+    assert_select ".lp-adventure__examples-note-label", text: I18n.t("v2_onboarding.goal_examples_label")
 
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Become a Ruby Developer" } }
     assert_redirected_to v2_onboarding_path(step: "camp")

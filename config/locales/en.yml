@@ -1816,7 +1816,9 @@ en:
     need_camp: "Name your camp to continue."
     need_battle: "Add at least one battle for today."
     goal_title: "What is your goal?"
-    goal_examples: "Examples: Become a licensed plumber · Land an apprenticeship · Pass the trade exam · Get out of debt"
+    goal_placeholder: "Name your goal in your own words"
+    goal_examples_label: "For inspiration only — type your own above"
+    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"
     camp_title: "Let's make a camp to get you there"
     # TODO: translate for lv/de/es/ru.
     camp_lead: "You can't climb a mountain in one go. Camps are the stops along the way."

@@ -8599,6 +8599,34 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   pointer-events: none;
 }
 
+.lp-adventure__examples-note {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  border: 1px dashed color-mix(in srgb, var(--lp-muted) 40%, transparent);
+  background: color-mix(in srgb, var(--lp-muted) 8%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+
+.lp-adventure__examples-note-label {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-adventure__examples-note-text {
+  margin: 0;
+  font-size: 0.78rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--lp-muted) 92%, var(--lp-ink));
+}
+
 .lp-adventure__battle-list {
   display: grid;
   gap: 0.55rem;
