@@ -313,18 +313,18 @@ lv:
           kicker: "Bāzes nometne"
           title: "Vieta, kur atgriezies katru dienu"
           basics:
-            kind: "Pamati"
+            kind: "Ikdienas soļi"
             amount: "%{amount} %{unit}"
             undo: "Atsaukt"
           kind: "Katru dienu · bez finiša līnijas"
           sub:
-            one: "1 Basic. Missing a day takes nothing away." # TODO: translate
-            other: "%{count} Basics. Missing a day takes nothing away." # TODO: translate
+            one: "1 ikdienas solis. Izlaidīta diena neko neatņem."
+            other: "%{count} ikdienas soļi. Izlaidīta diena neko neatņem."
           empty: "Pievieno kaut ko, ko dari katru dienu."
           more: "+%{count}"
           add_placeholder: "Pievieno kaut ko, ko dari katru dienu"
-          add_habit: "Add basic" # TODO: translate
-          habit_added: "Pievienots taviem pamatiem."
+          add_habit: "Pievienot soli"
+          habit_added: "Pievienots taviem ikdienas soļiem."
           daily_hint: "Parādīsies atkal rīt."
           amount_hint: "Jautā skaitu, piemēram, lappuses. Atstāj tukšu, ja pietiek ar ķeksīti."
 
@@ -345,7 +345,7 @@ lv:
             other: "%{count} uzvaras šodien"
           plant_next_headline: "Ieliec nākamo nometni"
           plant_next_sub: "Turpini kāpienu"
-          basics_sub: "Atzīmē savus pamatus"
+          basics_sub: "Pieraksti ikdienas soļus"
           open_headline:
             one: "%{count} cīņa gaida"
             other: "%{count} cīņas gaida"
@@ -848,9 +848,9 @@ lv:
       need_spine: "Izveido kalna ceļu, pirms pievieno soļus."
       already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
-      title: "Pamati"
+      title: "Ikdienas soļi"
       hint: "Pieraksti tik reižu, cik vēlies"
-      empty: "No Basics on Today yet — add one in Base Camp." # TODO: translate
+      empty: "Šodien vēl nav ikdienas soļu — pievieno Bāzes nometnē."
       add: "Pievienot"
       add_placeholder: "Pievienot"
       add_aria: "Pievienot %{unit}"
