@@ -317,7 +317,9 @@ lv:
             amount: "%{amount} %{unit}"
             undo: "Atsaukt"
           kind: "Katru dienu · bez finiša līnijas"
-          sub: "%{count} ikdienas cīņas. Izlaista diena neko neatņem."
+          sub:
+            one: "1 Basic. Missing a day takes nothing away." # TODO: translate
+            other: "%{count} Basics. Missing a day takes nothing away." # TODO: translate
           empty: "Pievieno kaut ko, ko dari katru dienu."
           more: "+%{count}"
           add_placeholder: "Pievieno kaut ko, ko dari katru dienu"
@@ -848,7 +850,7 @@ lv:
     anytime:
       title: "Pamati"
       hint: "Pieraksti tik reižu, cik vēlies"
-      empty: "Sadaļā Šodien vēl nav ieradumu — pievieno kādu sadaļā Ieradumi."
+      empty: "No Basics on Today yet — add one in Base Camp." # TODO: translate
       add: "Pievienot"
       add_placeholder: "Pievienot"
       add_aria: "Pievienot %{unit}"
