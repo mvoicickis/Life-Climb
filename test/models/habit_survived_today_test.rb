@@ -18,16 +18,29 @@ class HabitSurvivedTodayTest < ActiveSupport::TestCase
     assert habit.survived_today?
   end
 
-  test "quantity habit survives on better or perfect tone" do
+  test "growth with goal survives when better than yesterday" do
     habit = @user.habits.create!(
-      name: "Push-ups", unit: "times", points: 5, frequency: "daily",
+      name: "Duo", unit: "lessons", points: 5, frequency: "daily",
       active: true, show_on_home: true, stat_type: "growth", goal: 20,
       quantity_checkin: true
     )
     habit.daily_logs.create!(logged_on: Date.yesterday, amount: 10)
-    habit.daily_logs.create!(logged_on: Date.current, amount: 12)
+    habit.daily_logs.create!(logged_on: Date.current, amount: 15)
 
-    assert_equal :better, HabitStatusEvaluator.new(habit).call
+    assert habit.survived_today?
+  end
+
+  test "growth with goal survives when stretch goal is met even if same as yesterday" do
+    habit = @user.habits.create!(
+      name: "Reps", unit: "reps", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth", goal: 20,
+      quantity_checkin: true
+    )
+    habit.daily_logs.create!(logged_on: Date.yesterday, amount: 25)
+    habit.daily_logs.create!(logged_on: Date.current, amount: 25)
+
+    assert habit.met_habit_goal?
+    assert_equal :same, HabitStatusEvaluator.new(habit).call
     assert habit.survived_today?
   end
 

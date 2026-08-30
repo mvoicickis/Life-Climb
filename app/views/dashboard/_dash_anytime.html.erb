@@ -4,7 +4,7 @@
 <section class="lp-dash-anytime" aria-label="<%= t('dash.anytime.title') %>">
   <header class="lp-dash-anytime__head">
     <h2><%= t("dash.anytime.title") %></h2>
-    <% done_n = habits.count { |h| h.met_habit_goal? || (h.goal_progress_percent.is_a?(Numeric) && h.goal_progress_percent >= 100) || h.completed_today? } %>
+    <% done_n = habits.count(&:survived_today?) %>
     <% if habits.any? %>
       <em class="lp-dash-anytime__count"><%= done_n %>/<%= habits.size %></em>
     <% end %>

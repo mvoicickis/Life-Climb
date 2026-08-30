@@ -179,6 +179,8 @@ class Habit < ApplicationRecord
       return true
     end
 
+    return true if growth? && goal.present? && amount >= goal
+
     return false unless logged_on?(date) || amount.positive?
 
     status = HabitStatusEvaluator.new(self, on: date).call
