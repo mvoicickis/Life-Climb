@@ -48,6 +48,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert_select ".lp-today-v2-recap", count: 0
-    assert_select ".lp-today-v2-rows", minimum: 1
+    assert_select "#today-battlefield-win", count: 1
+    assert_select ".lp-today-v2-rows", count: 0
   end
 end
