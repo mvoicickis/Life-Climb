@@ -1,0 +1,6 @@
+<%# locals: variant (:battles or :basics) %>
+<% variant = local_assigns.fetch(:variant).to_sym %>
+<div class="lp-today-v2-inline-ack" role="status">
+  <span class="lp-today-v2-inline-ack__icon" aria-hidden="true">✓</span>
+  <%= t("dash.end_of_day.inline_ack.#{variant}") %>
+</div>

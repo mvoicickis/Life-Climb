@@ -47,8 +47,9 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert_equal 0, @goal.reload.progress_percent
-    assert_select ".lp-dash-battle-angles__chip", minimum: 1
-    assert_select "#today-battlefield-win", count: 1
+    assert_select ".lp-dash-battle-angles__chip", count: 0
+    assert_select "#today-end-of-day", count: 1
+    assert_select ".lp-dash-project-check", count: 0
     assert_today_v2_shell!
 
     angle = Strategy::BattleAngles.for(project: @project_leaf).first

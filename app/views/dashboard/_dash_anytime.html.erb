@@ -1,7 +1,10 @@
 <%# RPG habit slots — one quick-add + ⋯ sheet.
     locals: habits %>
 <% habits = Array(local_assigns.fetch(:habits) { @habits || [] }) %>
-<section class="lp-dash-anytime" aria-label="<%= t('dash.anytime.title') %>">
+<% basics_all_done = habits.present? && habits.all?(&:survived_today?) %>
+<% battles_all_clear = @battlefield_health&.all_clear? %>
+<% basics_focus = battles_all_clear && habits.present? && !basics_all_done %>
+<section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>" aria-label="<%= t('dash.anytime.title') %>">
   <header class="lp-dash-anytime__head">
     <h2><%= t("dash.anytime.title") %></h2>
     <% done_n = habits.count(&:survived_today?) %>
@@ -11,7 +14,9 @@
     <span class="lp-dash-anytime__ln" aria-hidden="true"></span>
   </header>
 
-  <% if habits.blank? %>
+  <% if basics_all_done && battles_all_clear %>
+    <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
+  <% elsif habits.blank? %>
     <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
   <% else %>
     <ul class="lp-dash-anytime__list">

@@ -26,36 +26,19 @@ class Today::BattlefieldPromptTest < ActiveSupport::TestCase
     assert_equal I18n.t("dash.battlefield.win_state.day_won.sub"), result.sub
   end
 
-  test "confirm_camp takes priority over other keys" do
+  test "project check is passed through but does not change prompt key" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
     project = Struct.new(:title).new("Ship docs")
 
     result = Today::BattlefieldPrompt.call(
       health: health,
       project_check: project,
-      battle_angle_project: project,
-      battle_angles: [ "Draft outline" ],
       battles_waiting_count: 2,
       upcoming_battle: { title: "Later", scheduled_on: Date.current + 1.day }
     )
 
-    assert_equal :confirm_camp, result.prompt_key
+    assert_equal :battles_waiting, result.prompt_key
     assert_equal project, result.project_check
-  end
-
-  test "pick_angle when no project check but angles are queued" do
-    health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
-    project = Struct.new(:title).new("Ship docs")
-
-    result = Today::BattlefieldPrompt.call(
-      health: health,
-      battle_angle_project: project,
-      battle_angles: [ "Draft outline" ]
-    )
-
-    assert_equal :pick_angle, result.prompt_key
-    assert_equal project, result.battle_angle_project
-    assert_equal [ "Draft outline" ], result.battle_angles
   end
 
   test "battles_waiting when extra battles remain on mountain" do

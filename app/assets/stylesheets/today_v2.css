@@ -616,6 +616,279 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   100% { transform: translateX(-50%) scale(1); opacity: 1; }
 }
 
+/* End of day — inline acks, big ack, planning bridge */
+.lp-today-v2-inline-ack {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.22);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--today-safe);
+}
+
+.lp-today-v2-inline-ack__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.18);
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  flex: none;
+}
+
+.lp-dash.is-today-v2 .lp-dash-anytime.is-focus .lp-dash-anytime__head h2,
+.lp-dash.is-today-v2 .lp-dash-anytime.is-focus .lp-dash-anytime__count {
+  color: var(--today-safe);
+}
+
+.lp-dash.is-today-v2 .lp-dash-anytime.is-focus .lp-dash-anytime__count {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.lp-today-v2-end-of-day {
+  margin-top: 1rem;
+}
+
+.lp-today-v2-big-ack {
+  border-radius: 18px;
+  padding: 1.25rem 1rem 1rem;
+  background: linear-gradient(160deg, #1e2e28, #141f1a);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  animation: todayCardIn 0.3s ease both;
+}
+
+.lp-today-v2-big-ack__kicker {
+  margin: 0 0 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2dd4bf;
+}
+
+.lp-today-v2-big-ack__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--today-safe);
+}
+
+.lp-today-v2-big-ack__sub {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgba(247, 234, 217, 0.62);
+}
+
+.lp-today-v2-bridge {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.lp-today-v2-bridge__label {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--today-muted);
+}
+
+.lp-today-v2-bridge__hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.75rem;
+  color: rgba(247, 234, 217, 0.55);
+  line-height: 1.45;
+}
+
+.lp-today-v2-camps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.lp-today-v2-camp {
+  padding: 0.45rem 0.7rem;
+  border-radius: 99px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--today-ink);
+  cursor: pointer;
+}
+
+.lp-today-v2-camp.is-selected {
+  border-color: #14b8a6;
+  background: rgba(20, 184, 166, 0.15);
+  color: #a7f3d0;
+}
+
+.lp-today-v2-camp-skip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.75);
+}
+
+.lp-today-v2-camp-skip__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex: none;
+}
+
+.lp-today-v2-plan-form {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-today-v2-plan-input {
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--today-ink);
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.lp-today-v2-plan-input::placeholder {
+  color: rgba(247, 234, 217, 0.35);
+}
+
+.lp-today-v2-sp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 99px;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.28);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #2dd4bf;
+}
+
+.lp-today-v2-plan-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.lp-today-v2-btn {
+  font-family: inherit;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-today-v2-btn--primary {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  background: linear-gradient(170deg, #34d76b, #1fa855);
+  color: #fff;
+  font-size: 0.82rem;
+  box-shadow: 0 4px 14px rgba(31, 168, 85, 0.35);
+}
+
+.lp-today-v2-btn--ghost {
+  padding: 0.7rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--today-ink);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.82rem;
+}
+
+.lp-today-v2-btn--block {
+  width: 100%;
+}
+
+.lp-today-v2-link-subtle {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.4);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lp-today-v2-signoff {
+  border-radius: 18px;
+  padding: 1.25rem 1rem;
+  background: linear-gradient(160deg, #1e2e28, #141f1a);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  text-align: center;
+  animation: todayCardIn 0.3s ease both;
+}
+
+.lp-today-v2-signoff__emoji {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.lp-today-v2-signoff__title {
+  margin: 0.5rem 0 0;
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: var(--today-safe);
+}
+
+.lp-today-v2-signoff__sub {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.75rem;
+  color: rgba(247, 234, 217, 0.62);
+}
+
+.lp-today-v2-saved-chip {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--today-ink);
+}
+
+.lp-today-v2-signoff__actions {
+  margin-top: 1rem;
+}
+
+.lp-today-v2-end-of-day__camp-check {
+  margin-top: 1rem;
+}
+
+.lp-today-v2-end-of-day__camp-check .lp-dash-project-check {
+  text-align: left;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-today-v2-hp-bar.is-pulse,
   .lp-today-v2-mountain-link.is-clear,

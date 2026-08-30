@@ -43,7 +43,8 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     5.times do |i|
       assert_battle_row_absent!(title: "Win #{i + 1}")
     end
-    assert_selector "#today-battlefield-win", wait: 5
+    assert_selector "#today-end-of-day", wait: 5
+    assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/, wait: 5
     assert_selector ".lp-today-v2-notch.is-end-day", wait: 5
     assert_selector ".lp-today-v2-header__hp-num", text: "5"
 
@@ -60,7 +61,8 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     visit dashboard_path
     assert_today_v2_shell!
     assert_no_selector ".lp-today-v2-row"
-    assert_selector "#today-battlefield-win"
+    assert_selector "#today-end-of-day"
+    assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/
     assert_selector ".lp-today-v2-notch.is-end-day"
     narrow_h = page.evaluate_script("document.querySelector('.lp-today-v2-field')?.getBoundingClientRect().height")
     assert_operator narrow_h.to_f, :<, 240
