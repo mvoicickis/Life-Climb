@@ -42,7 +42,8 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
   test "tour step 2 anchors camp above nav with bubble clear at 412px" do
     journey = bootstrap_and_visit!
     page.driver.browser.manage.window.resize_to(412, 800)
-    click_button class: "lp-onboarding-tour__next"
+    assert_selector "[data-controller='onboarding-mountain-tour']", wait: 5
+    find("button.lp-onboarding-tour__next", wait: 5).click
     assert_selector "#onboarding-tour-camp", wait: 5
     sleep 0.25
 
@@ -55,8 +56,11 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
   test "tour step 4 anchors spotlight to add-camp fab at 412px" do
     bootstrap_and_visit!
     page.driver.browser.manage.window.resize_to(412, 800)
+    assert_selector "[data-controller='onboarding-mountain-tour']", wait: 5
 
-    3.times { click_button class: "lp-onboarding-tour__next" }
+    3.times do
+      find("button.lp-onboarding-tour__next", wait: 5).click
+    end
     assert_selector "#onboarding-tour-add-camp.lp-dash-nav__fab", wait: 5
     sleep 0.25
 
