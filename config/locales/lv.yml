@@ -3,6 +3,51 @@ lv:
     formats:
       chart_day: "%a"
       long: "%-d. %b"
+      dash_weekday: "%A"
+    day_names:
+      - svētdiena
+      - pirmdiena
+      - otrdiena
+      - trešdiena
+      - ceturtdiena
+      - piektdiena
+      - sestdiena
+    abbr_day_names:
+      - Sv
+      - Pr
+      - Ot
+      - Tr
+      - Ce
+      - Pk
+      - Se
+    month_names:
+      - 
+      - janvāris
+      - februāris
+      - marts
+      - aprīlis
+      - maijs
+      - jūnijs
+      - jūlijs
+      - augusts
+      - septembris
+      - oktobris
+      - novembris
+      - decembris
+    abbr_month_names:
+      - 
+      - jan
+      - feb
+      - mar
+      - apr
+      - mai
+      - jūn
+      - jūl
+      - aug
+      - sep
+      - okt
+      - nov
+      - dec
   app_name: "LifePoints"
   companion:
     prompt_kicker: "Jauni pavadoņi"
@@ -729,6 +774,29 @@ lv:
       mountain_all_clear: "Atver Kalnu"
       empty_html: "Šodien nav atvērtu cīņu.<br>Dodies uz Kalnu, lai atvērtu nometni un pievienotu cīņu."
       day_n: "%{count}. diena"
+      count: "%{done}/%{total}"
+      no_camp: "Nometne"
+      win_battle: "Uzvarēt %{title}"
+      more_waiting:
+        one: "Vēl %{count} cīņa Kalnā"
+        other: "Vēl %{count} cīņas Kalnā"
+      notch_fight: "Cīnīties"
+      notch_end_day: "Beigt dienu"
+      notch_new_day: "Jauna diena"
+      fight_toast: "Pieskaries cīņai augšā, lai to izcīnītu"
+      end_day_blocked: "Vispirms izcīni visas cīņas."
+      need_journey: "Vispirms izvēlies ceļojumu."
+      recap_label: "Dienas kopsavilkums"
+      recap_kicker: '%{day}. diena · Dienas kopsavilkums'
+      recap_crushed: "Lieliski padarīts"
+      recap_survived: "Diena nolikta"
+      recap_rough: "Grūta diena"
+      recap_empty: "Šodien nekas nebija ieplānots"
+      recap_stats: '%{done}/%{total} uzvarētas cīņas · %{hp}% saglabāta'
+      share_recap: "Dalīties"
+      next_day: "Nākamā diena"
+      share_toast: "Kopsavilkums gatavs."
+      share_text: '%{title} — %{done}/%{total} uzvarētas cīņas · %{hp}% veselība LifePoints'
     project_check:
       kicker: "Projekta pārbaude"
       title: "Vai “%{title}” ir pabeigts?"
@@ -765,6 +833,9 @@ lv:
       hours_minutes_free: "%{hours}h %{minutes}m brīvs"
       ledger_miss: "Izlaists “%{title}” (−%{amount} AP)"
       ledger_shielded: "Vairogs bloķēja izlaidumu: “%{title}”"
+      did_it: "Izdarīts"
+      undo: "Atsaukt"
+      more_actions: "Vairāk darbību"
     add_step:
       cta: "Pievienot soli"
       title_label: "Solis"
@@ -823,6 +894,13 @@ lv:
       eligibility:
         habits: "%{name} vajag %{need} Šodienas ieradumus — tev ir %{have}."
         camps: "%{name} vajag %{need} plānotas nometnes — tev ir %{have}."
+    battle_empty_cta: "Turpināt Kalnā"
+    battle_angles:
+      kicker: "Nākamais solis"
+      title: "Izvēlies nākamo cīņu"
+      hint: "“%{project}” vēl nav pabeigts — izvēlies skaidrāku cīņu rītdienai."
+      list_label: "Ieteiktās cīņas"
+      open_strategy: "Ieplānošu to Kalnā →"
   climb:
     streak:
       chip: "%{count} dienas"
@@ -840,6 +918,13 @@ lv:
     reward:
       personal_best: "Lielākais kāpiens līdz šim"
       back_to_trail: "Atpakaļ uz taku"
+      eyebrow: "Kāpiena balva"
+      boss_eyebrow: "Posms pabeigts"
+      battle_title: "Cīņa uzvarēta"
+      boss_title: "Liels solis"
+      ap_meaning: "Cīņas spēks"
+      mountain_pct: "Kalns %{pct}%"
+      keep_fighting: "Turpināt"
   progress:
     title: "Ceļojums"
     subtitle: "Cik tālu esi nonācis savā kalnā?"
@@ -1187,9 +1272,8 @@ lv:
       stuck_hint: "Maigs atgādinājums, ja kādu laiku neesi kustējies."
   feedback:
     title: "Atsauksmes"
-    # TODO: translate
-    fab_label: "Send feedback"
-    fab_short: "Feedback"
+    fab_label: "Sūtīt atsauksmi"
+    fab_short: "Atsauksme"
     subtitle: "Raksti man tieši — idejas, kļūdas vai kā jūtas LifePoints."
     open: "Atvērt →"
     write: "Rakstīt →"
@@ -1338,6 +1422,7 @@ lv:
       fox: "Lapsa"
       horse: "Zirgs"
       raven: "Krauklis"
+    home_title: "Sākums"
   support:
     title: "Atbalsti LifePoints"
     subtitle: "Ja LifePoints tev ir palīdzējis veidot labāku dzīvi, tu vari palīdzēt mums veidot labāku LifePoints."
