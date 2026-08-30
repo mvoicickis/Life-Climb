@@ -1,0 +1,12 @@
+<%# locals: health %>
+<% health = local_assigns.fetch(:health) %>
+<p class="lp-today-v2-eod-stats">
+  <%= end_of_day_recap_stats(health) %>
+</p>
+<div class="lp-today-v2-eod-share">
+  <button type="button"
+          class="lp-today-v2-eod-share__btn"
+          data-action="click->today-notch#shareRecap">
+    <%= t("dash.end_of_day.share_day") %>
+  </button>
+</div>

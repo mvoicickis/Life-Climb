@@ -287,4 +287,27 @@ module ApplicationHelper
       { code: :ru, short: "RU", flag: "🇷🇺" }
     ]
   end
+
+  def end_of_day_recap_stats(health)
+    return "" if health.blank?
+
+    if health.hp.to_i >= 100
+      t("dash.end_of_day.recap_stats.full_health",
+        done: health.done_count,
+        total: health.total_count)
+    else
+      t("dash.end_of_day.recap_stats.partial_health",
+        done: health.done_count,
+        total: health.total_count,
+        hp: health.hp)
+    end
+  end
+
+  def end_of_day_share_text(health)
+    return "" if health.blank?
+
+    t("dash.end_of_day.share_text",
+      title: health.result_title,
+      stats: end_of_day_recap_stats(health))
+  end
 end

@@ -85,11 +85,12 @@ module Dashboard
         habits: @habits,
         habits_gate_enabled: habits_gate
       )
-      return unless @end_of_day_ready
+      day_closed = Today::BattlefieldDay.ended?(session)
+      return unless @end_of_day_ready || day_closed
 
       @end_of_day_camps = Today::EndOfDay.open_camps(strategy_goal: @strategy_goal)
       @tomorrow_battles = Today::EndOfDay.tomorrow_battles(user: current_user, journey: @journey)
-      @show_plan_tomorrow_form = plan_tomorrow || @tomorrow_battles.blank?
+      @show_plan_tomorrow_form = !day_closed && (plan_tomorrow || @tomorrow_battles.blank?)
     end
 
     def sync_today_battles!

@@ -24,7 +24,9 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-win", count: 0
     assert_select ".lp-today-v2-inline-ack", text: /All battles won today/
     assert_select "#today-end-of-day", count: 1
-    assert_select ".lp-today-v2-big-ack__title", text: I18n.t("dash.end_of_day.ack.title")
+    assert_select ".lp-today-v2-big-ack__title", text: I18n.t("dash.battlefield.recap_crushed")
+    assert_select ".lp-today-v2-eod-stats", text: /You won 1 of 1 battles/
+    assert_select ".lp-today-v2-eod-share__btn", text: I18n.t("dash.end_of_day.share_day")
     assert_select ".lp-today-v2-mountain-link.is-tertiary", text: I18n.t("dash.battlefield.mountain_tertiary")
     assert_select ".lp-today-v2-row", count: 0
   end
