@@ -8,11 +8,7 @@
 <%
   battlefield_ui = !@show_plan_route
   recap_share = if @battlefield_health
-    t("dash.battlefield.share_text",
-      title: @battlefield_health.result_title,
-      done: @battlefield_health.done_count,
-      total: @battlefield_health.total_count,
-      hp: @battlefield_health.hp)
+    end_of_day_share_text(@battlefield_health)
   end
 %>
 

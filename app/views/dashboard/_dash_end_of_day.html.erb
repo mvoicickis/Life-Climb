@@ -1,21 +1,31 @@
-<%# End-of-day card: big ack, optional plan-tomorrow bridge, interim camp check. %>
-<% camps = Array(local_assigns.fetch(:camps) { @end_of_day_camps }) %>
-<% tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles) { @tomorrow_battles }) %>
-<% show_plan_form = local_assigns.fetch(:show_plan_form) { @show_plan_tomorrow_form } %>
-<% project_check = local_assigns.fetch(:project_check) { @project_check } %>
-<% journey = local_assigns.fetch(:journey) { @journey } %>
+<%# End-of-day card: recap stats, plan-tomorrow bridge, closed state. %>
+<%
+  health = local_assigns.fetch(:health) { @battlefield_health }
+  streak = local_assigns[:streak] || @climb_streak
+  day_closed = local_assigns.fetch(:day_closed) { @battlefield_day_ended }
+  camps = Array(local_assigns.fetch(:camps) { @end_of_day_camps })
+  tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles) { @tomorrow_battles })
+  show_plan_form = local_assigns.fetch(:show_plan_form) { @show_plan_tomorrow_form }
+  project_check = local_assigns.fetch(:project_check) { @project_check }
+  streak_days = streak.respond_to?(:days) ? streak.days.to_i : 1
+  streak_days = 1 if streak_days <= 0
+%>
 
-<section class="lp-today-v2-end-of-day" id="today-end-of-day" aria-label="<%= t('dash.end_of_day.title') %>">
-  <% if tomorrow_battles.any? && !show_plan_form %>
-    <div class="lp-today-v2-signoff">
+<section class="lp-today-v2-end-of-day<%= ' is-closed' if day_closed %>"
+         id="today-end-of-day"
+         aria-label="<%= t('dash.end_of_day.title') %>">
+  <% if day_closed %>
+    <div class="lp-today-v2-signoff is-closed">
       <div class="lp-today-v2-signoff__emoji" aria-hidden="true">🌙</div>
       <h3 class="lp-today-v2-signoff__title"><%= t("dash.end_of_day.signoff.title") %></h3>
       <p class="lp-today-v2-signoff__sub">
-        <%= t("dash.end_of_day.signoff.sub", count: tomorrow_battles.size) %>
+        <%= t("dash.end_of_day.closed.sub", day: streak_days) %>
       </p>
+
+      <%= render "dashboard/dash_end_of_day_recap_strip", health: health %>
+
       <% tomorrow_battles.each do |battle| %>
         <% camp = battle.parent %>
-        <% style = battlefield_camp_style(camp) %>
         <p class="lp-today-v2-saved-chip">
           <span aria-hidden="true">✓</span>
           <%= battle.title %>
@@ -24,6 +34,35 @@
           <% end %>
         </p>
       <% end %>
+
+      <div class="lp-today-v2-signoff__actions">
+        <%= link_to t("dash.end_of_day.reopen_day"),
+              today_end_day_path,
+              data: { turbo_method: :delete },
+              class: "lp-today-v2-link-subtle" %>
+      </div>
+    </div>
+  <% elsif tomorrow_battles.any? && !show_plan_form %>
+    <div class="lp-today-v2-signoff">
+      <div class="lp-today-v2-signoff__emoji" aria-hidden="true">🌙</div>
+      <h3 class="lp-today-v2-signoff__title"><%= t("dash.end_of_day.signoff.title") %></h3>
+      <p class="lp-today-v2-signoff__sub">
+        <%= t("dash.end_of_day.signoff.sub", count: tomorrow_battles.size) %>
+      </p>
+
+      <%= render "dashboard/dash_end_of_day_recap_strip", health: health %>
+
+      <% tomorrow_battles.each do |battle| %>
+        <% camp = battle.parent %>
+        <p class="lp-today-v2-saved-chip">
+          <span aria-hidden="true">✓</span>
+          <%= battle.title %>
+          <% if camp %>
+            · <%= camp.title %>
+          <% end %>
+        </p>
+      <% end %>
+
       <div class="lp-today-v2-signoff__actions">
         <%= button_to t("dash.end_of_day.close_day"),
               today_end_day_path,
@@ -36,15 +75,12 @@
     </div>
   <% else %>
     <div class="lp-today-v2-big-ack">
-      <p class="lp-today-v2-big-ack__kicker"><%= t("dash.end_of_day.ack.kicker") %></p>
-      <h3 class="lp-today-v2-big-ack__title"><%= t("dash.end_of_day.ack.title") %></h3>
-      <p class="lp-today-v2-big-ack__sub">
-        <% if camps.size == 1 %>
-          <%= t("dash.end_of_day.ack.sub_single_camp") %>
-        <% else %>
-          <%= t("dash.end_of_day.ack.sub") %>
-        <% end %>
+      <p class="lp-today-v2-big-ack__kicker">
+        <%= t("dash.battlefield.recap_kicker", day: streak_days) %>
       </p>
+      <h3 class="lp-today-v2-big-ack__title"><%= health.result_title %></h3>
+
+      <%= render "dashboard/dash_end_of_day_recap_strip", health: health %>
 
       <% if camps.any? %>
         <div class="lp-today-v2-bridge"
@@ -142,7 +178,7 @@
     </div>
   <% end %>
 
-  <% if project_check.present? %>
+  <% if project_check.present? && !day_closed %>
     <div class="lp-today-v2-end-of-day__camp-check">
       <%= render "dashboard/dash_project_check", project: project_check %>
     </div>

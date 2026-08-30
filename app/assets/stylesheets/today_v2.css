@@ -540,6 +540,48 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   animation: todayAttentionGlowGreen 1.8s ease-in-out infinite;
 }
 
+.lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-day-closed {
+  background: linear-gradient(170deg, #34d76b, #1fa855);
+  box-shadow:
+    0 0 0 5px rgba(16, 10, 6, 0.92),
+    0 6px 18px rgba(31, 168, 85, 0.5),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+.lp-dash-nav.is-today-v2 .lp-today-v2-notch-label.is-day-closed {
+  color: rgba(247, 234, 217, 0.6);
+}
+
+.lp-today-v2-eod-stats {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(247, 234, 217, 0.75);
+}
+
+.lp-today-v2-eod-share {
+  margin-top: 0.75rem;
+}
+
+.lp-today-v2-eod-share__btn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--today-ink);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lp-today-v2-end-of-day.is-closed .lp-today-v2-big-ack,
+.lp-today-v2-signoff.is-closed {
+  animation: todayCardIn 0.3s ease both;
+}
+
 .lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-new-day {
   background: linear-gradient(170deg, #4a4038, #332b25);
   box-shadow:

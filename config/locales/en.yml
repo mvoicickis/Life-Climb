@@ -110,6 +110,7 @@ en:
         other: "%{count} more battles on Mountain"
       notch_fight: "Fight"
       notch_end_day: "End day"
+      notch_day_closed: "Day closed"
       notch_new_day: "New day"
       end_day_blocked: "Clear every battle before you end the day."
       need_journey: "Focus a journey first."
@@ -128,31 +129,34 @@ en:
     end_of_day:
       title: "End of day"
       close_day: "Close day"
+      reopen_day: "Reopen day"
       plan_another: "Plan another"
+      share_day: "Share your day"
       need_title: "Name tomorrow's battle first."
       invalid_camp: "Pick an open camp on Mountain first."
       saved: "Tomorrow's battle is set — %{title} (+%{sp} SP)"
+      share_text: "%{title}. %{stats} on LifePoints"
+      recap_stats:
+        full_health: "You won %{done} of %{total} battles. You kept all your health."
+        partial_health: "You won %{done} of %{total} battles. You kept %{hp} percent of your health."
+      closed:
+        sub: "Day %{day} is closed."
       inline_ack:
         battles: "All battles won today"
         basics: "Basics logged for today"
-      ack:
-        kicker: "Day complete"
-        title: "You cleared the field"
-        sub: "Rest on the ridge. Plan tomorrow if you like — or close the day now."
-        sub_single_camp: "One camp on your mountain — no picker needed."
       bridge:
         label: "Plan tomorrow"
         hint_multi: "Pick a camp, then name one battle for tomorrow."
         camp_label: "%{title} camp"
-        placeholder: "What's tomorrow's first battle?"
-        next: "Next →"
+        placeholder: "What is your first battle for tomorrow?"
+        next: "Next"
         save: "Save battle"
-        no_camps: "Open a camp on Mountain when you're ready to plan tomorrow."
+        no_camps: "Open a camp on Mountain when you are ready to plan tomorrow."
       signoff:
         title: "See you tomorrow"
         sub:
-          one: "Day is wrapped. One battle is waiting on the ridge."
-          other: "Day is wrapped. %{count} battles are waiting on the ridge."
+          one: "You saved one battle for tomorrow."
+          other: "You saved %{count} battles for tomorrow."
     battle_subtitle: "Win today's battle"
     battle_subtitle_sync: "Win today's battle"
     section_battles: "Battles"
