@@ -36,27 +36,14 @@ module Admin
     private
 
     def cards
-      users = User.count
-      lp_total = User.sum(:total_points)
-      battles = completed_battles_count
-
       {
-        users_total: users,
-        users_today: User.where(created_at: @today.all_day).count,
+        users_total: User.count,
         users_week: User.where(created_at: 7.days.ago.beginning_of_day..).count,
         users_month: User.where(created_at: @today.beginning_of_month.beginning_of_day..).count,
-        battles_completed: battles,
+        battles_completed: completed_battles_count,
         projects_completed: StrategyGoal.for_kind("project").where.not(completed_at: nil).count,
-        plans: StrategyGoal.for_kind("plan").count,
-        goals: StrategyGoal.for_kind("goal").count,
-        journeys: LifeJourney.count,
-        life_points_total: lp_total,
-        life_points_avg: users.positive? ? (lp_total.to_f / users).round(1) : 0,
-        battles_avg: users.positive? ? (battles.to_f / users).round(1) : 0,
         onboarding_done: User.where.not(onboarding_completed_at: nil).count,
-        onboarding_pending: User.where(onboarding_completed_at: nil).count,
-        admins: User.where(admin: true).count,
-        feedbacks: Feedback.count
+        onboarding_pending: User.where(onboarding_completed_at: nil).count
       }
     end
 
