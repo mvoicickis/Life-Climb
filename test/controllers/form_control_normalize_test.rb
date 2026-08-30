@@ -21,11 +21,11 @@ class FormControlNormalizeTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today quantity amount input stays in the habit sheet on Today V2 battlefield" do
+  test "Today quantity amount input renders in habit sheet markup on Today V2 battlefield" do
     enable_habits!
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-anytime input[type=number].lp-dash-tcard__amount", count: 0
+    assert_select ".lp-dash-anytime input[type=number].lp-dash-tcard__amount", minimum: 1
     assert_select ".lp-dash-anytime", count: 1
   end
 

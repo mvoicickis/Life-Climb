@@ -79,7 +79,8 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     assert_no_selector ".lp-dash-section.is-quests"
     assert_no_selector ".lp-dash-section.is-habits"
     assert_no_selector ".lp-dash-quest-next"
-    assert_no_selector ".lp-dash-tcard"
+    assert_no_selector ".lp-dash-tcard.is-quest"
+    assert_selector ".lp-dash-anytime"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5

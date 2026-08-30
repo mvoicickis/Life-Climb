@@ -64,7 +64,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-dash-anytime", count: 1
-    assert_select ".lp-dash-tcard__qty[data-controller~='quantity-win']", count: 0
+    assert_select ".lp-dash-anytime .lp-dash-tcard__qty[data-controller~='quantity-win']", minimum: 1
     assert_today_v2_shell!
   end
 
