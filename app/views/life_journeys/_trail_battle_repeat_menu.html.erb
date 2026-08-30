@@ -25,7 +25,7 @@
     <%= button_to t("strategy.rpg.trail.log_a_number"),
           strategy_goal_path(battle),
           method: :patch,
-          params: { track_quantity: "1", quantity_kind: "up", unit: "pages" },
+          params: { track_quantity: "1", quantity_kind: "up", unit: t("strategy.rpg.trail.default_unit_pages") },
           form: { data: { turbo: true } } %>
   <% end %>
 <% end %>

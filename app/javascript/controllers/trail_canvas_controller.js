@@ -840,7 +840,8 @@ export default class extends Controller {
     if (this.hasLogProjectIdTarget) this.logProjectIdTarget.value = btn.dataset.projectId || ""
     if (this.hasLogBattleIdTarget) this.logBattleIdTarget.value = btn.dataset.battleId || ""
     if (this.hasLogTitleTarget) {
-      this.logTitleTarget.textContent = btn.dataset.projectTitle || "Log it"
+      this.logTitleTarget.textContent =
+        btn.dataset.projectTitle || this.logSheetTarget.dataset.logTitleFallback || ""
     }
     if (this.hasLogPromptTarget) {
       const unit = btn.dataset.unit || ""
@@ -849,11 +850,20 @@ export default class extends Controller {
       const max = Number.parseFloat(btn.dataset.rangeMax)
       let prompt
       if (kind === "range" && Number.isFinite(min) && Number.isFinite(max)) {
-        prompt = `Healthy range ${min}–${max}${unit ? ` ${unit}` : ""}`
+        const template = unit
+          ? this.logSheetTarget.dataset.logPromptHealthyRangeWithUnit
+          : this.logSheetTarget.dataset.logPromptHealthyRange
+        prompt = this.interpolateLogCopy(template, { min, max, unit })
       } else if (kind === "down") {
-        prompt = unit ? `How much (stay under ${unit})?` : "How much (stay under)?"
+        const template = unit
+          ? this.logSheetTarget.dataset.logPromptDown
+          : this.logSheetTarget.dataset.logPromptDownBare
+        prompt = this.interpolateLogCopy(template, { unit })
       } else {
-        prompt = unit ? `How many ${unit}?` : "How much?"
+        const template = unit
+          ? this.logSheetTarget.dataset.logPromptUp
+          : this.logSheetTarget.dataset.logPromptGeneric
+        prompt = this.interpolateLogCopy(template, { unit })
       }
       this.logPromptTarget.textContent = prompt
       this.logPromptTarget.dataset.kind = kind
@@ -975,7 +985,12 @@ export default class extends Controller {
       down_from: "logVerdictDownFrom"
     }
     const raw = this.logSheetTarget.dataset[map[key]] || ""
-    return raw.replace("%{prev}", String(vars.prev ?? ""))
+    return this.interpolateLogCopy(raw, vars)
+  }
+
+  interpolateLogCopy(template, vars = {}) {
+    if (!template) return ""
+    return template.replace(/%\{(\w+)\}/g, (_, key) => String(vars[key] ?? ""))
   }
 
   async submitLog(event) {
