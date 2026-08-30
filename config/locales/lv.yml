@@ -950,6 +950,7 @@ lv:
     character_hint: "Redzams Šodienā, Kalnā un uz takas."
     character_updated: "Pavadonis atjaunināts."
     character_save: "Saglabāt pavadoni"
+    version_label: "App version"  # TODO: translate
     commitment:
       title: "Dienas solījums"
       hint: "Cik laika cīņu un zaļu ieradumu skaitās kā izturēta šodiena uz tava kalna."

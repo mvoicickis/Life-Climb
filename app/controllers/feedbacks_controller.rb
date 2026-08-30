@@ -5,6 +5,7 @@ class FeedbacksController < ApplicationController
   def new
     @feedback = Feedback.new(
       page_context: feedback_page_context,
+      app_version: resolved_app_version,
       rating: params[:rating],
       ok_to_contact: false,
       contact_info: default_contact_info
@@ -15,6 +16,7 @@ class FeedbacksController < ApplicationController
     @feedback = Feedback.new(feedback_params)
     @feedback.user = current_user if authenticated?
     @feedback.page_context = resolved_page_context if @feedback.page_context.blank?
+    @feedback.app_version = resolved_app_version if @feedback.app_version.blank?
 
     if @feedback.save
       begin
@@ -31,7 +33,7 @@ class FeedbacksController < ApplicationController
   private
 
   def feedback_params
-    params.require(:feedback).permit(:body, :rating, :page_context, :ok_to_contact, :contact_info)
+    params.require(:feedback).permit(:body, :rating, :page_context, :app_version, :ok_to_contact, :contact_info)
   end
 
   def default_contact_info
@@ -56,6 +58,13 @@ class FeedbacksController < ApplicationController
     path.presence&.truncate(200)
   rescue URI::InvalidURIError
     nil
+  end
+
+  def resolved_app_version
+    explicit = params.dig(:feedback, :app_version).presence
+    return explicit.to_s.truncate(7) if explicit.present?
+
+    APP_VERSION
   end
 
   def after_feedback_path

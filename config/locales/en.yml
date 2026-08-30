@@ -2644,6 +2644,7 @@ en:
     invite_short: "Invite"
     contact_short: "Contact"
     footer_mark: "LifePoints"
+    version_label: "App version"
     today_count_updated: "Today count updated."
     commitment:
       title: "Daily commitment"
@@ -3353,6 +3354,7 @@ en:
       deleted: "Feedback deleted."
       anonymous: "Anonymous visitor"
       page: "Page"
+      version: "App version"
       rating: "Rating"
       ok_to_contact: "OK to contact"
       do_not_contact: "Do not contact"

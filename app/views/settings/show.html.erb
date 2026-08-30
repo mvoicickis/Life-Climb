@@ -332,7 +332,10 @@
       <%= t("nav.sign_out") %>
     <% end %>
 
-    <p class="lp-you-foot"><%= t("settings.footer_mark") %></p>
+    <p class="lp-you-foot">
+      <%= t("settings.footer_mark") %>
+      · <span data-you-page-target="version" aria-label="<%= t('settings.version_label') %>"></span>
+    </p>
   </div>
 </div>
 

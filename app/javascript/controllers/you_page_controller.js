@@ -7,10 +7,12 @@ export default class extends Controller {
     "languageCard",
     "nameButton",
     "nameForm",
-    "nameInput"
+    "nameInput",
+    "version"
   ]
 
   connect() {
+    this.syncVersion()
     if (this.element.dataset.youPageOpen === "character") {
       this.companionCardTarget?.classList.add("is-open")
     }
@@ -18,6 +20,13 @@ export default class extends Controller {
       this.languageCardTarget?.classList.add("is-open")
     }
     if (this.element.dataset.youPageOpen === "name") this.editName()
+  }
+
+  syncVersion() {
+    if (!this.hasVersionTarget) return
+
+    const meta = document.querySelector('meta[name="app-version"]')
+    this.versionTarget.textContent = meta?.content || "dev"
   }
 
   toggleCompanion(event) {

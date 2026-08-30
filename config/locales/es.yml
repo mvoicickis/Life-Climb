@@ -930,6 +930,7 @@ es:
     character_hint: "Se muestra en Hoy, en la Montaña y en el sendero."
     character_updated: "Compañero actualizado."
     character_save: "Guardar compañero"
+    version_label: "App version"  # TODO: translate
     commitment:
       title: "Compromiso diario"
       hint: "Cuántas batallas con hora y hábitos en verde cuentan como sobrevivir Hoy en tu montaña."

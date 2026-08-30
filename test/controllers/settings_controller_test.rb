@@ -16,6 +16,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
+    assert_select "meta[name=app-version][content=?]", APP_VERSION
+    assert_select "[data-you-page-target=version]"
     assert_select "h1", text: "You"
     assert_select ".lp-you"
     assert_select ".lp-you__hero"
