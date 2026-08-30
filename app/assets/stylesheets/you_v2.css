@@ -9,7 +9,7 @@
   --you-muted: #8a8f86;
   --you-line: #e6e3da;
   --you-green: #16a34a;
-  --you-serif: "Fraunces", Georgia, serif;
+  --you-serif: "Nunito", system-ui, sans-serif;
   width: 100%;
   max-width: 28rem;
   margin: 0 auto;

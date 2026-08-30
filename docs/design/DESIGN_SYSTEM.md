@@ -52,9 +52,10 @@ Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category ma
 
 ## Typography
 
-- **Display (serif):** Fraunces — big headlines, mountain / journey names.
-- **UI (sans):** Source Sans 3 — body and buttons.
-- Keep only these two fonts across landing and app.
+- **Font:** Nunito — single family across landing and app.
+- **Display:** weight 800–900 + `--lp-type-display-*` tokens — headlines, mountain / journey names.
+- **UI / body:** weight 400–700 + `--lp-type-ui-*` tokens — body copy, labels, buttons.
+- Load upright (400–900) and italic (400, 500, 700) via Google Fonts `ital,wght` axis.
 
 ## Icons & imagery
 
