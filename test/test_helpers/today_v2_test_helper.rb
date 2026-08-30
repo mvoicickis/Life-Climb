@@ -21,13 +21,11 @@ module TodayV2TestHelper
       assert_select ".lp-dash-hero", count: 0
       assert_select ".lp-dash-timeline", count: 0
       assert_select ".lp-dash-daystrip", count: 0
-      assert_select ".lp-dash-anytime", count: 0
       assert_select ".lp-dash-done-fold", count: 0
     else
       assert_no_selector ".lp-dash-hero"
       assert_no_selector ".lp-dash-timeline"
       assert_no_selector ".lp-dash-daystrip"
-      assert_no_selector ".lp-dash-anytime"
       assert_no_selector ".lp-dash-done-fold"
     end
   end

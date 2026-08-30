@@ -79,7 +79,7 @@ module Dashboard
     end
 
     def assign_end_of_day!(plan_tomorrow: false)
-      habits_gate = current_user.developer?
+      habits_gate = GameRules.habits_enabled?
       @end_of_day_ready = Today::EndOfDay.ready?(
         health: @battlefield_health,
         habits: @habits,

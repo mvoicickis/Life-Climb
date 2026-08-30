@@ -30,18 +30,6 @@ class ApplicationHelperTest < ActionView::TestCase
     assert habits_enabled?
   end
 
-  test "habits_on_today_v2? is false for non-developer even when GameRules is on" do
-    enable_habits!
-
-    refute habits_on_today_v2?
-  end
-
-  test "habits_on_today_v2? is true for developer" do
-    @user.update_columns(developer: true)
-
-    assert habits_on_today_v2?
-  end
-
   test "app_version returns APP_VERSION constant" do
     assert_equal APP_VERSION, app_version
     assert app_version.present?

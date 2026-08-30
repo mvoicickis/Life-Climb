@@ -28,7 +28,7 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
     fill_in "Password", with: "password12345"
     click_button "Sign in"
     assert_today_v2_shell!
-    assert_no_selector ".lp-dash-anytime"
+    assert_selector ".lp-dash-anytime"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5
@@ -43,7 +43,7 @@ class HabitDestroyTurboCacheMobileTest < ApplicationSystemTestCase
 
     within(".lp-dash-nav") { click_link "Today" }
     assert_today_v2_shell!
-    assert_no_selector ".lp-dash-anytime"
+    assert_selector ".lp-dash-anytime"
     assert_no_selector "#today_habit_#{@habit.id}"
 
     visit habits_path

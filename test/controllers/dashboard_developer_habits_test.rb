@@ -25,15 +25,15 @@ class DashboardDeveloperHabitsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "non-developer does not see anytime on Today V2 even when GameRules enables habits" do
+  test "non-developer sees anytime on Today V2 when GameRules enables habits" do
     enable_habits!
 
     get dashboard_path
     assert_response :success
 
     assert_today_v2_shell!
-    assert_select ".lp-dash-anytime", count: 0
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select ".lp-dash-anytime", count: 1
+    assert_select "#today_habit_#{@habit.id}", count: 1
   end
 
   test "developer sees anytime on Today V2 battlefield" do

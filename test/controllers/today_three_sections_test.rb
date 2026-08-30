@@ -56,7 +56,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today V2 renders flat battle rows without habits or old section headers" do
+  test "Today V2 renders flat battle rows with on-home habits and no old section headers" do
     enable_habits!
     get dashboard_path
     assert_response :success
@@ -71,8 +71,8 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_battle_row!(title: "Write tests", camp: "Auth")
     assert_battle_row!(title: "Purple Volume", camp: "Purple Volume")
     assert_battle_row!(title: "Plain Volume", camp: "Plain Volume")
-    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate", count: 0
-    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Pages read", count: 0
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Meditate", count: 1
+    assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Pages read", count: 1
   end
 
   test "quest rows show folder title and camp pill with project name" do

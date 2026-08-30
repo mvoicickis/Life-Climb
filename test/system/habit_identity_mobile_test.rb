@@ -28,14 +28,15 @@ class HabitIdentityMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "identity labels read quietly on Habits page; Today V2 omits habits" do
+  test "identity labels read quietly on Habits page and Today V2 habit slots" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
     assert_today_v2_shell!
-    assert_no_selector ".lp-dash-anytime"
-    assert_no_selector ".lp-habit-identity"
+    assert_selector ".lp-dash-anytime"
+    assert_selector ".lp-habit-identity", text: "I am a reader"
+    assert_selector ".lp-habit-identity", text: "I am someone who moves"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5

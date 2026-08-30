@@ -88,7 +88,7 @@ class HabitsMountainLinkTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-habits__title", text: /Supporting habits/i, count: 0
   end
 
-  test "Today V2 omits on_home habits from the battlefield surface" do
+  test "Today V2 shows on_home habits on the battlefield surface" do
     linked = @user.habits.create!(
       name: "Linked stretch", unit: "minutes", points: 5, frequency: "daily",
       active: true, show_on_home: true, stat_type: "growth", life_journey: @journey
@@ -104,9 +104,9 @@ class HabitsMountainLinkTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-anytime", count: 0
-    assert_select "#today_habit_#{linked.id}", count: 0
-    assert_select "#today_habit_#{general.id}", count: 0
+    assert_select ".lp-dash-anytime", count: 1
+    assert_select "#today_habit_#{linked.id}", count: 1
+    assert_select "#today_habit_#{general.id}", count: 1
     assert_today_v2_shell!
   end
 

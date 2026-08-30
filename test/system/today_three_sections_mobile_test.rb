@@ -62,7 +62,7 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "mobile Today V2 shows flat battle rows without habits or legacy sections" do
+  test "mobile Today V2 shows flat battle rows with habits and no legacy sections" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -79,7 +79,8 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     assert_no_selector ".lp-dash-section.is-quests"
     assert_no_selector ".lp-dash-section.is-habits"
     assert_no_selector ".lp-dash-quest-next"
-    assert_no_selector ".lp-dash-tcard"
+    assert_no_selector ".lp-dash-tcard.is-quest"
+    assert_selector ".lp-dash-anytime"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5

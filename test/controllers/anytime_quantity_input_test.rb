@@ -25,29 +25,29 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "growth quantity habit quick-add values remain available off Today UI" do
+  test "growth quantity habit quick-add values remain available on Today UI" do
     get dashboard_path
     assert_response :success
 
     assert_equal 5, @habit.quick_add_value
     assert_equal [ 5, 10, 25, 50 ], @habit.quick_add_suggestions
-    assert_select ".lp-dash-anytime", count: 0
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select ".lp-dash-anytime", count: 1
+    assert_select "#today_habit_#{@habit.id}", count: 1
   end
 
-  test "habit overflow menu is absent from Today V2 battlefield" do
+  test "habit overflow menu is present on Today V2 battlefield" do
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-anytime", count: 0
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select ".lp-dash-anytime", count: 1
+    assert_select "#today_habit_#{@habit.id}", count: 1
 
     post daily_logs_path(habit_id: @habit.id),
          params: { mode: "add", return_to: "today", daily_log: { amount: "5" } }
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_response :success
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select "#today_habit_#{@habit.id}", count: 1
   end
 
   test "chip PATCH turbo stream updates sheet and card button without redirect" do
@@ -98,27 +98,27 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_no_match(/lp-dash-habit__chip is-on/, response.body)
   end
 
-  test "standard quantity habit quick-add values remain available off Today UI" do
+  test "standard quantity habit quick-add values remain available on Today UI" do
     @habit.update!(stat_type: "standard", goal: nil, min_value: 10, max_value: 20)
     get dashboard_path
     assert_response :success
 
     assert_equal 5, @habit.quick_add_value
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select "#today_habit_#{@habit.id}", count: 1
   end
 
-  test "unlogged quantity habit has no Today card markup on battlefield UI" do
+  test "unlogged quantity habit renders Today card markup on battlefield UI" do
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{@habit.id}", count: 0
-    assert_select ".lp-dash-anytime", count: 0
+    assert_select "#today_habit_#{@habit.id}", count: 1
+    assert_select ".lp-dash-anytime", count: 1
   end
 
-  test "logged quantity habit has no Today card markup on battlefield UI" do
+  test "logged quantity habit renders Today card markup on battlefield UI" do
     @habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 7, goal: 25)
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select "#today_habit_#{@habit.id}", count: 1
     assert_equal 7, @habit.reload.today_amount.to_i
   end
 
