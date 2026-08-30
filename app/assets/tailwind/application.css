@@ -13561,6 +13561,7 @@ button.lp-strategy-overflow {
     radial-gradient(90% 60% at 50% 0%, rgba(87, 211, 91, 0.18), transparent 55%),
     linear-gradient(180deg, #171c22 0%, #0b0f14 100%);
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+  --rpg-ink: #f3f6f8;
   color: var(--rpg-ink, #f3f6f8);
   text-align: center;
 }
@@ -13584,7 +13585,7 @@ button.lp-strategy-overflow {
   margin: 0.35rem 0 0;
   font-size: 1.45rem;
   font-weight: 850;
-  color: #0f172a;
+  color: var(--rpg-ink, #f3f6f8);
 }
 
 .lp-climb-reward__ap {
@@ -13601,7 +13602,7 @@ button.lp-strategy-overflow {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;
   font-weight: 650;
-  color: #334155;
+  color: color-mix(in srgb, var(--rpg-ink, #f3f6f8) 68%, transparent);
 }
 
 .lp-climb-reward__actions {
@@ -13639,7 +13640,7 @@ button.lp-strategy-overflow {
   border: 0;
   background: transparent;
   font-size: 1.3rem;
-  color: #64748b;
+  color: rgba(243, 246, 248, 0.55);
   cursor: pointer;
 }
 
@@ -17679,7 +17680,7 @@ button.lp-strategy-overflow {
   margin-top: 0.35rem;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #3f6212;
+  color: var(--rpg-green, #57d35b);
   text-decoration: underline;
   text-underline-offset: 0.15em;
   background: transparent;
