@@ -39,8 +39,12 @@
               maxlength: 120,
               class: "lp-input w-full",
               autocomplete: "off",
-              autofocus: true %>
-        <p class="lp-adventure__examples-plain"><%= t("v2_onboarding.goal_examples") %></p>
+              autofocus: true,
+              placeholder: t("v2_onboarding.goal_placeholder") %>
+        <div class="lp-adventure__examples-note" role="note" aria-hidden="true">
+          <p class="lp-adventure__examples-note-label"><%= t("v2_onboarding.goal_examples_label") %></p>
+          <p class="lp-adventure__examples-note-text"><%= t("v2_onboarding.goal_examples") %></p>
+        </div>
         <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
       <% end %>
     </section>

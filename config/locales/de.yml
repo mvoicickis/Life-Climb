@@ -1232,6 +1232,9 @@ de:
       other: "Sonstiges"
     need_mountain: "Nenne das Ziel, das du erreichen willst."
     need_character: "Wähle deinen Begleiter für den Aufstieg."
+    goal_placeholder: "Name your goal in your own words"  # TODO: translate
+    goal_examples_label: "For inspiration only — type your own above"  # TODO: translate
+    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"  # TODO: translate
     continue: "Weiter"
     commitment_kicker: "Wie hart heute?"
     commitment_title: "Wähle dein tägliches Commitment"

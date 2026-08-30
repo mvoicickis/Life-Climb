@@ -1256,7 +1256,9 @@ lv:
     need_camp: "Nosauc savu nometni, lai turpinātu."
     need_battle: "Pievieno vismaz vienu šodienas kauju."
     goal_title: "Kāds ir tavs mērķis?"
-    goal_examples: "Piemēri: Kļūt par licencētu santehniķi · Dabūt mācekļa vietu · Nokārtot kvalifikācijas eksāmenu · Atbrīvoties no parādiem"
+    goal_placeholder: "Name your goal in your own words"  # TODO: translate (lv priority)
+    goal_examples_label: "For inspiration only — type your own above"  # TODO: translate (lv priority)
+    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"  # TODO: translate (lv priority)
     camp_title: "Kāda ir tava nometne?"
     camp_lead: "Nometne ir posms, pie kura strādā tagad — dažas kaujas vienlaikus."
     camp_placeholder: "Iegūt sertifikātu"
