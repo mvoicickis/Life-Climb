@@ -1,15 +1,14 @@
-<%# Today V2 — open battle rows. locals: health, open_todos, journey, include_mission, mission %>
+<%# Today V2 — open battle rows. locals: health, open_todos, journey, include_mission, mission, prompt %>
 <%
   health = local_assigns.fetch(:health)
   open_todos = Array(local_assigns.fetch(:open_todos) { @open_todos })
   journey = local_assigns.fetch(:journey) { @journey }
   include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
   mission = local_assigns[:mission] || @mission
+  prompt = local_assigns.fetch(:prompt) { @battlefield_prompt }
   handoff = @strategy_handoff
   mountain_href = journey ? life_journey_path(journey) : new_life_journey_path
   all_clear = health.all_clear?
-  link_class = all_clear ? "is-clear" : "is-open"
-  link_copy = all_clear ? t("dash.battlefield.mountain_all_clear") : t("dash.battlefield.mountain_need")
 %>
 
 <section class="lp-today-v2-field" id="today-battlefield-field" aria-label="<%= t('dash.battlefield.title') %>">
@@ -20,7 +19,11 @@
     </span>
   </div>
 
-  <% if health.empty? %>
+  <% if all_clear && prompt %>
+    <div id="today-battlefield-win-host">
+      <%= render "dashboard/dash_battlefield_win", prompt: prompt, journey: journey %>
+    </div>
+  <% elsif health.empty? %>
     <div class="lp-today-v2-empty">
       <%= t("dash.battlefield.empty_html").html_safe %>
     </div>
@@ -43,20 +46,15 @@
   <% end %>
 
   <div id="today-battles-waiting-host">
-    <% if @battles_waiting_count.to_i.positive? %>
+    <% if @battles_waiting_count.to_i.positive? && !all_clear %>
       <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
         <%= t("dash.battlefield.more_waiting", count: @battles_waiting_count) %>
       </p>
     <% end %>
   </div>
 
-  <% if !health.empty? %>
-    <div id="today-battlefield-mountain-link">
-      <%= link_to link_copy,
-            mountain_href,
-            class: "lp-today-v2-mountain-link #{link_class}",
-            data: { today_v2_target: "mountainLink" } %>
-    </div>
+  <% if all_clear || !health.empty? %>
+    <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
   <% elsif handoff %>
     <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
           handoff[:href] || mountain_href,

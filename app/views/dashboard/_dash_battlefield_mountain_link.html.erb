@@ -1,0 +1,17 @@
+<%# locals: health, journey %>
+<% health = local_assigns.fetch(:health) %>
+<% journey = local_assigns.fetch(:journey) { @journey } %>
+<% mountain_href = journey ? life_journey_path(journey) : new_life_journey_path %>
+
+<div id="today-battlefield-mountain-link">
+  <% if health.all_clear? %>
+    <%= link_to t("dash.battlefield.mountain_tertiary"),
+          mountain_href,
+          class: "lp-today-v2-mountain-link is-tertiary" %>
+  <% else %>
+    <%= link_to t("dash.battlefield.mountain_need"),
+          mountain_href,
+          class: "lp-today-v2-mountain-link is-open",
+          data: { today_v2_target: "mountainLink" } %>
+  <% end %>
+</div>

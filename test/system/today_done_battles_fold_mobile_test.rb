@@ -43,6 +43,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     5.times do |i|
       assert_battle_row_absent!(title: "Win #{i + 1}")
     end
+    assert_selector "#today-battlefield-win", wait: 5
     assert_selector ".lp-today-v2-notch.is-end-day", wait: 5
     assert_selector ".lp-today-v2-header__hp-num", text: "100"
 
@@ -50,7 +51,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
       document.querySelector('.lp-today-v2-field')?.getBoundingClientRect().height
     JS
     puts "MEASURED_V2_FIELD_HEIGHT_375=#{field_h.round}"
-    assert_operator field_h.to_f, :<, 120, "completed battles should not inflate the field"
+    assert_operator field_h.to_f, :<, 240, "win panel should stay compact on mobile"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-375.png")
@@ -59,9 +60,10 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     visit dashboard_path
     assert_today_v2_shell!
     assert_no_selector ".lp-today-v2-row"
+    assert_selector "#today-battlefield-win"
     assert_selector ".lp-today-v2-notch.is-end-day"
     narrow_h = page.evaluate_script("document.querySelector('.lp-today-v2-field')?.getBoundingClientRect().height")
-    assert_operator narrow_h.to_f, :<, 120
+    assert_operator narrow_h.to_f, :<, 240
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-320.png")
   end
 end

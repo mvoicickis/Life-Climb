@@ -138,6 +138,7 @@ class DailyTodosController < ApplicationController
       open_count: @battle_open_count,
       total_count: @battle_total_count
     )
+    assign_battlefield_prompt!
     @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
     @climb_streak = Climb::Streak.status(user: current_user)
     @recap_share = t(

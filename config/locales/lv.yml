@@ -548,6 +548,34 @@ lv:
       menu_undo: "Undo last add"
     battle_next_kicker: "Forši — turi kāpienu."
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
+    # TODO: translate
+    battlefield:
+      mountain_tertiary: "Open Mountain →"  # TODO: translate
+      win_state:
+        day_won:
+          kicker: "Day won"  # TODO: translate
+          headline:
+            one: "1 battle won today"  # TODO: translate
+            other: "%{count} battles won today"  # TODO: translate
+          sub: "Rest on the ridge — or open Mountain for your next move."  # TODO: translate
+        confirm_camp:
+          kicker: "Camp check"  # TODO: translate
+          headline: "Is this camp done?"  # TODO: translate
+          sub: "Quick honest look before you move on."  # TODO: translate
+        pick_angle:
+          kicker: "Sharpen tomorrow"  # TODO: translate
+          headline: "Pick a sharper next battle"  # TODO: translate
+          sub: "One clear angle keeps the camp moving."  # TODO: translate
+        battles_waiting:
+          kicker: "More on the trail"  # TODO: translate
+          headline:
+            one: "1 battle waiting on Mountain"  # TODO: translate
+            other: "%{count} battles waiting on Mountain"  # TODO: translate
+          sub: "Plant one on Today when you're ready."  # TODO: translate
+        upcoming:
+          kicker: "Next up"  # TODO: translate
+          headline: "“%{title}” is scheduled"  # TODO: translate
+          sub: "Coming %{date} — keep the climb alive until then."  # TODO: translate
     project_check:
       kicker: "Projekta pārbaude"
       title: "Vai “%{title}” ir pabeigts?"
