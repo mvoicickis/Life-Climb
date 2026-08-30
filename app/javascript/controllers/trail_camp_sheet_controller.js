@@ -5,6 +5,10 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["sheet", "panel", "title", "subtitle", "body", "accent"]
 
+  static values = {
+    baseTitleFallback: String
+  }
+
   connect() {
     this._onKey = (event) => this.onKeydown(event)
     this._onPopState = () => this.onPopState()
@@ -63,7 +67,7 @@ export default class extends Controller {
 
   baseTitle() {
     const card = this.element.querySelector(".lp-trail-base-card")
-    return card?.dataset.baseTitle?.trim() || "Base camp"
+    return card?.dataset.baseTitle?.trim() || this.baseTitleFallbackValue || ""
   }
 
   open(event) {

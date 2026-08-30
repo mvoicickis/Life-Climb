@@ -227,6 +227,16 @@ de:
         camp4: "Lager 4"
         summit: "Gipfel"
       trail:
+        default_unit_times: "times"  # TODO: translate
+        default_unit_pages: "pages"  # TODO: translate
+        log_sheet:
+          title_fallback: "Log it"  # TODO: translate
+          healthy_range: "Healthy range %{min}–%{max}"  # TODO: translate
+          healthy_range_with_unit: "Healthy range %{min}–%{max} %{unit}"  # TODO: translate
+          prompt_down: "How much (stay under %{unit})?"  # TODO: translate
+          prompt_down_bare: "How much (stay under)?"  # TODO: translate
+          prompt_up: "How many %{unit}?"  # TODO: translate
+          prompt_generic: "How much?"  # TODO: translate
         plant:
           kicker: "Next camp"  # TODO: translate
     help:

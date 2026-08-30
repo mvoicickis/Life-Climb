@@ -103,7 +103,7 @@
           <span class="lp-trail-battles__switch" aria-hidden="true"></span>
           <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.log_a_number") %></span>
         </label>
-        <%= text_field_tag "habit[unit]", "times",
+        <%= text_field_tag "habit[unit]", t("strategy.rpg.trail.default_unit_times"),
               maxlength: 40,
               class: "lp-trail-battles__unit sr-only",
               autocomplete: "off",
