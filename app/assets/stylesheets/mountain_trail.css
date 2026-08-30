@@ -15,8 +15,8 @@
   --lp-trail-phone: 390px;
   --lp-trail-photo-h: min(1536px, 220vw);
   --lp-trail-chrome: var(--lp-trail-cream);
-  --lp-trail-font: "Source Sans 3", "Segoe UI", sans-serif;
-  --lp-trail-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --lp-trail-font: "Nunito", system-ui, sans-serif;
+  --lp-trail-display: "Nunito", system-ui, sans-serif;
   --lp-trail-sun-x: 50%;
   --lp-trail-sun-y: 18%;
   --lp-trail-moon-x: 72%;
@@ -558,7 +558,7 @@
   display: block;
   font-family: var(--lp-trail-display);
   font-size: 0.62rem;
-  font-weight: 650;
+  font-weight: 700;
   color: #1a140c;
   line-height: 1.15;
   white-space: nowrap;
@@ -1027,7 +1027,7 @@
   padding: 0.55rem 0.65rem;
   border-radius: 0.55rem;
   font-size: 0.85rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-trail-ink);
   cursor: pointer;
 }
@@ -1172,10 +1172,10 @@
   display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
   padding: 0.65rem 0.7rem; border-radius: 0.75rem; background: rgba(28,36,32,0.04);
 }
-.lp-trail-battles__name { font-weight: 650; }
+.lp-trail-battles__name { font-weight: 700; }
 .lp-trail-battles__actions { display: flex; gap: 0.35rem; }
 .lp-trail-battles__delete {
-  border: 0; background: transparent; color: #b91c1c; font-weight: 650; cursor: pointer;
+  border: 0; background: transparent; color: #b91c1c; font-weight: 700; cursor: pointer;
 }
 .lp-trail-battles__empty { margin: 0; color: var(--lp-trail-muted); font-size: 0.9rem; }
 .lp-trail-battles__done summary { cursor: pointer; font-weight: 700; color: var(--lp-trail-muted); }
@@ -1580,7 +1580,7 @@
   padding: 0.55rem 0.65rem;
   border-radius: 0.5rem;
   font: inherit;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-trail-ink);
   cursor: pointer;
 }
@@ -2433,7 +2433,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   background: transparent;
   color: var(--lp-trail-muted);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
 }
@@ -2441,7 +2441,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail-battles__basics-amt {
   flex: 0 0 auto;
   font-size: 0.88rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-trail-muted);
   white-space: nowrap;
 }
@@ -2716,7 +2716,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   background: rgba(18,32,26,0.82);
   color: #fff;
   font-size: 0.8rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .lp-trail-placing button {
@@ -3628,7 +3628,7 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
 }
 
 .lp-rpg.is-v4-phone.is-first-climb .lp-first-climb__title {
-  font-family: var(--lp-trail-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-trail-display, "Nunito", system-ui, sans-serif);
   font-size: 1.7rem;
   font-weight: 700;
   line-height: 1.15;
@@ -4117,7 +4117,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   align-items: center;
   gap: 0.45rem;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-trail-ink);
 }
 

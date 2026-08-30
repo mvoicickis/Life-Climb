@@ -792,7 +792,7 @@
     gap: 0.45rem;
     font-size: 1.15rem;
     font-weight: 800;
-    font-family: "Fraunces", Georgia, serif;
+    font-family: "Nunito", system-ui, sans-serif;
     color: #f3f6f8;
     text-decoration: none;
   }
@@ -837,7 +837,7 @@
   }
 
   .lp-auth {
-    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    font-family: "Nunito", system-ui, sans-serif;
     color: #f3f6f8;
     background:
       radial-gradient(120% 80% at 50% -10%, rgba(87, 211, 91, 0.16), transparent 55%),
@@ -850,7 +850,7 @@
 
   .lp-auth-title {
     margin: 2rem 0 0;
-    font-family: "Fraunces", Georgia, serif;
+    font-family: "Nunito", system-ui, sans-serif;
     font-size: clamp(2rem, 5vw, 2.6rem);
     font-weight: 800;
     letter-spacing: -0.03em;
@@ -1023,8 +1023,8 @@
     --lp-gold: #d4a017;
     --lp-dawn-from: #152033;
     --lp-dawn-to: #0b0f14;
-    --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
-    --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+    --lp-font-display: "Nunito", system-ui, sans-serif;
+    --lp-font-ui: "Nunito", system-ui, sans-serif;
     --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
     --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
     --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
@@ -1583,7 +1583,7 @@
   .lp-landing-lp__label {
     margin: 0;
     font-size: 0.95rem;
-    font-weight: 750;
+    font-weight: 800;
     letter-spacing: -0.01em;
     color: #0f172a;
     text-align: center;
@@ -2044,8 +2044,8 @@
   --studio-paper-2: #f1f5f9;
   --studio-accent: #22c55e;
   --studio-accent-soft: rgba(34, 197, 94, 0.12);
-  --studio-serif: "Fraunces", Georgia, serif;
-  --studio-sans: "Source Sans 3", "Segoe UI", sans-serif;
+  --studio-serif: "Nunito", system-ui, sans-serif;
+  --studio-sans: "Nunito", system-ui, sans-serif;
 }
 
 .studio-app {
@@ -2677,7 +2677,7 @@
 
 .lp-support-invite__title {
   margin: 0.35rem 0 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -3155,8 +3155,8 @@
    Density / type tokens stay shared (not theme-specific). */
 :root {
   /* Shared type + density (unchanged across themes) */
-  --lp-font-display: "Fraunces", Georgia, "Times New Roman", serif;
-  --lp-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+  --lp-font-display: "Nunito", system-ui, sans-serif;
+  --lp-font-ui: "Nunito", system-ui, sans-serif;
   --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
   --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
   --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
@@ -3371,7 +3371,7 @@ html[data-theme="dark"] {
 .lp-home__title {
   margin: 0;
   font-size: var(--lp-type-display-sm);
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--lp-ink);
@@ -4550,7 +4550,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash__stat-name {
   margin-top: 0.12rem;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-green-deep, #166534);
 }
 
@@ -4852,7 +4852,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-commitment-gap__notice {
   margin: 0.35rem 0 0;
   font-size: 0.72rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -4925,7 +4925,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-next__shield {
   margin: 0.15rem 0 0;
   font-size: 0.75rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -4993,7 +4993,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border: 1px solid var(--lp-border);
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   font-size: 0.82rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   flex: 0 0 auto;
 }
@@ -5019,7 +5019,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border: 1px solid var(--lp-border);
   background: var(--lp-elevated);
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   white-space: nowrap;
 }
@@ -5190,7 +5190,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-adventure__commitment-card.is-nudge .lp-adventure__commitment-lock {
   color: var(--lp-ink);
-  font-weight: 750;
+  font-weight: 800;
 }
 
 @keyframes lp-commitment-lock-nudge {
@@ -5215,14 +5215,14 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-adventure__commitment-meta {
   font-size: 0.85rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
 .lp-adventure__commitment-lock {
   margin-top: 0.2rem;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
   line-height: 1.35;
   transition: color 180ms ease, font-weight 180ms ease;
@@ -5275,7 +5275,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-settings-commitment__lock {
   display: block;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
   line-height: 1.35;
 }
@@ -5322,7 +5322,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   flex: 0 0 auto;
   margin-left: 0.45rem;
   font-size: 0.66rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
   white-space: nowrap;
 }
@@ -5497,7 +5497,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-dash-timeline__empty-link {
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-green, #22c55e);
 }
 
@@ -5603,7 +5603,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin: 0.15rem 0 0;
   min-width: 0;
   font-size: 0.75rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -5621,7 +5621,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   flex-wrap: wrap;
   gap: 0.35rem 0.65rem;
   font-size: 0.75rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -5651,7 +5651,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0 0.85rem;
   border-radius: 999px;
   font-size: 0.8125rem;
-  font-weight: 650;
+  font-weight: 700;
   cursor: pointer;
   background: color-mix(in srgb, var(--lp-gold) 14%, transparent);
   color: var(--lp-gold);
@@ -5674,7 +5674,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding-left: 0;
   cursor: default;
   min-height: 0;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .lp-dash-tcard__actions {
@@ -5728,7 +5728,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border: none;
   color: var(--lp-ink);
   font-size: 0.875rem;
-  font-weight: 650;
+  font-weight: 700;
   min-height: var(--lp-tap);
   padding: 0 12px;
   border-radius: 8px;
@@ -5884,7 +5884,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-quest-next__step {
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5894,7 +5894,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-quest-next__progress {
   font-size: 0.75rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -5962,7 +5962,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   color: var(--lp-ink);
   padding: 0.35rem 0.5rem;
   font-size: 1rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .lp-dash-tcard__add-step-actions {
@@ -6125,7 +6125,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-habit__undo p {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -6245,7 +6245,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-radius: 0.9rem;
   padding: 0.75rem 0.9rem;
   font-size: 0.92rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -6591,7 +6591,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-hero__mountain-kicker {
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -6776,14 +6776,14 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-dash-battle__name {
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.3;
 }
 
 .lp-dash-battle__lp {
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--rpg-gold, #d4a017);
   white-space: nowrap;
 }
@@ -6874,7 +6874,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   cursor: pointer;
   list-style: none;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--lp-muted, #9aa6b2);
@@ -6902,7 +6902,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-checklist__obj-name {
   font-size: 0.88rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink, #f3f6f8);
   min-width: 0;
   display: grid;
@@ -7007,7 +7007,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habit-identity {
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--lp-muted, #9aa6b2);
   line-height: 1.25;
@@ -7020,7 +7020,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 .lp-dash-habit__meta {
   font-size: 0.72rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted, #9aa6b2);
 }
 .lp-dash-habit__log {
@@ -7085,7 +7085,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habits__title {
   margin: 0;
   font-size: var(--lp-type-display-sm);
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   letter-spacing: -0.02em;
 }
@@ -7176,7 +7176,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-areas__tracker-name {
-  font-weight: 750;
+  font-weight: 800;
   font-size: 0.92rem;
 }
 
@@ -7189,7 +7189,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: inline-flex;
   align-items: center;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.02em;
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
@@ -7368,7 +7368,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-radius: 0.85rem;
   border: 1px solid var(--lp-border);
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -7430,7 +7430,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habits__name {
   display: block;
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   text-decoration: none;
 }
@@ -7438,7 +7438,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habits__meta {
   margin: 0.2rem 0 0;
   font-size: 0.75rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 .lp-habits__mountain {
@@ -7468,7 +7468,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   min-height: var(--lp-tap, 2.75rem);
   border-radius: 0.65rem;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   padding: 0.45rem 0.75rem;
   text-decoration: none;
   cursor: pointer;
@@ -7516,7 +7516,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habits__empty-title {
   margin: 0;
   font-size: 1.2rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 .lp-habits__empty-body {
@@ -7557,7 +7557,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habits__status-lead {
   margin: 1rem 0 0;
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 800;
 }
 .lp-habits__stats {
   display: flex;
@@ -7568,7 +7568,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-habits__stat-label {
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--lp-muted);
@@ -7590,7 +7590,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: flex;
   justify-content: space-between;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--lp-muted);
@@ -7639,7 +7639,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: block;
   margin-bottom: 0.35rem;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 .lp-habits__input {
@@ -7767,7 +7767,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-rpg-habits__title {
   margin: 0.2rem 0 0;
   font-size: 1rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink, #f1f5f9);
 }
 .lp-rpg-habits__sub {
@@ -7799,12 +7799,12 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 .lp-rpg-habits__name {
   font-size: 0.9rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink, #f1f5f9);
 }
 .lp-rpg-habits__meta {
   font-size: 0.72rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted, #9aa6b2);
 }
 .lp-rpg-habits__cta {
@@ -7813,7 +7813,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 .lp-rpg-habits__cta-link {
   color: #fbbf24;
-  font-weight: 750;
+  font-weight: 800;
   text-decoration: none;
 }
 .lp-rpg-habits__cta-link:hover { text-decoration: underline; }
@@ -7839,14 +7839,14 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-battle__next-kicker {
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 
 .lp-dash-battle__next-hint {
   margin: 0;
   font-size: 0.88rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
   line-height: 1.4;
 }
@@ -7854,7 +7854,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-battle__tomorrow {
   margin: 0.15rem 0 0;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-green, #57d35b);
   line-height: 1.35;
 }
@@ -7870,7 +7870,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-radius: 0.9rem;
   padding: 0.7rem 1rem;
   font-size: 0.92rem;
-  font-weight: 750;
+  font-weight: 800;
   color: #fff;
   background: var(--lp-forest);
   text-decoration: none;
@@ -7898,7 +7898,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   background: color-mix(in srgb, var(--lp-forest) 88%, #fff);
   box-shadow: none;
   border: 1px solid rgba(22, 101, 52, 0.18);
-  font-weight: 750;
+  font-weight: 800;
 }
 
 .lp-dash-cta:hover {
@@ -7918,7 +7918,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-dash-battle__reward {
   margin: 0;
   text-align: left;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
   font-size: 0.85rem;
 }
@@ -7938,7 +7938,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-radius: 0;
   background: transparent;
   color: var(--lp-green-deep, #166534);
-  font-weight: 750;
+  font-weight: 800;
   text-align: left;
 }
 
@@ -7989,7 +7989,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-route__reward-label {
   font-size: 0.8rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-muted);
 }
 
@@ -8427,7 +8427,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-adventure__category-label {
   text-align: center;
   font-size: 0.92rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   line-height: 1.2;
 }
@@ -8443,7 +8443,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   background: color-mix(in srgb, var(--lp-green) 8%, var(--lp-paper));
   color: var(--lp-green-deep, #166534);
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.01em;
   line-height: 1;
 }
@@ -8471,7 +8471,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-adventure__due-echo {
   margin: 0.15rem 0 0;
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 
@@ -8506,7 +8506,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-adventure__ready {
   margin-top: 0.15rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   animation: lp-adventure-beat-in 520ms ease-out both;
   animation-delay: 1.15s;
@@ -8526,7 +8526,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: grid;
   gap: 0.55rem;
   color: var(--lp-ink);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .lp-adventure__beat {
@@ -8581,7 +8581,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   display: block;
   margin-bottom: 0.35rem;
   font-size: 0.84rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-muted);
 }
 
@@ -8783,7 +8783,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-radius: 0.85rem;
   /* Dark paper base (not #fff) so --lp-ink stays readable on RPG surfaces */
   background: color-mix(in srgb, var(--lp-green) 12%, var(--lp-paper));
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 
@@ -9069,7 +9069,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-adventure__how-tree-kicker span {
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
   color: var(--lp-muted);
@@ -9131,7 +9131,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   padding: 0.45rem 0.65rem;
   border-radius: 0.7rem;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
   background: color-mix(in srgb, #fff 72%, transparent);
   border: 1px dashed color-mix(in srgb, var(--lp-level-project, #1d4ed8) 22%, var(--lp-border));
@@ -9360,7 +9360,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   background: color-mix(in srgb, #fff 72%, transparent);
   border: 1px dashed color-mix(in srgb, var(--lp-level-battle, #b45309) 32%, var(--lp-border));
   font-size: 0.92rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .lp-adventure__how-battles.is-remaining li.is-pulse {
@@ -9386,7 +9386,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   justify-content: space-between;
   gap: 0.75rem;
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 
@@ -9413,7 +9413,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-adventure__how-won {
   margin: 0;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-green-deep, #166534);
 }
 
@@ -10084,7 +10084,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   color: var(--lp-muted);
   text-decoration: none;
   font-size: 0.58rem;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 0.005em;
   line-height: 1.15;
   touch-action: manipulation;
@@ -10215,7 +10215,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-journey-points__label {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-muted);
 }
 
@@ -10260,7 +10260,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-journey-summary__stats dt {
   margin: 0;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -10369,7 +10369,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-journey-habits__name {
   margin: 0 0 0.55rem;
   font-size: 0.92rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
   display: flex;
   align-items: baseline;
@@ -10479,7 +10479,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
   color: var(--lp-ink);
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -11816,7 +11816,7 @@ button.lp-progress-heat__cell {
 .lp-strategy-next__add-label {
   margin: 0 0 0.55rem;
   font-size: 0.85rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
 }
 
@@ -11872,7 +11872,7 @@ button.lp-progress-heat__cell {
   background: color-mix(in srgb, var(--lp-level) 8%, var(--lp-elevated));
   color: var(--lp-ink);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -11890,7 +11890,7 @@ button.lp-progress-heat__cell {
   align-items: center;
   gap: 0.45rem;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
 }
 
@@ -12019,7 +12019,7 @@ button.lp-progress-heat__cell {
 .lp-strategy__board-title {
   margin: 0;
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 
@@ -12046,7 +12046,7 @@ button.lp-progress-heat__cell {
   background: color-mix(in srgb, var(--lp-green) 10%, var(--lp-paper));
   color: var(--lp-green-deep);
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -12073,7 +12073,7 @@ button.lp-progress-heat__cell {
 .lp-strategy-siblings__label {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.01em;
   color: var(--lp-muted);
 }
@@ -12179,7 +12179,7 @@ a.lp-strategy-siblings__chip:hover {
 .lp-strategy-add__title {
   margin: 0;
   font-size: 0.98rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-ink);
 }
 
@@ -12698,7 +12698,7 @@ a.lp-strategy-siblings__chip:hover {
 
 .lp-strategy-marker.is-pin .lp-strategy-marker__title {
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
 }
 
 .lp-strategy-marker.is-pin .lp-strategy-marker__pct,
@@ -12871,7 +12871,7 @@ a.lp-strategy-siblings__chip:hover {
   border-radius: 0.7rem;
   background: rgba(255, 255, 255, 0.86);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: rgba(15, 23, 42, 0.72);
   text-align: center;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
@@ -12889,7 +12889,7 @@ a.lp-strategy-siblings__chip:hover {
   background: rgba(255, 255, 255, 0.9);
   color: var(--lp-muted);
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
@@ -12950,7 +12950,7 @@ a.lp-strategy-siblings__chip:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -13123,7 +13123,7 @@ button.lp-strategy-overflow {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.86rem;
-  font-weight: 750;
+  font-weight: 800;
   line-height: 1.2;
   color: var(--lp-ink);
 }
@@ -13133,7 +13133,7 @@ button.lp-strategy-overflow {
 .lp-strategy-marker__check,
 .lp-strategy-marker__ap {
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-muted);
 }
 
@@ -13388,7 +13388,7 @@ button.lp-strategy-overflow {
   margin: 0;
   font-family: var(--lp-font-display);
   font-size: 1.15rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
 }
 
@@ -13410,7 +13410,7 @@ button.lp-strategy-overflow {
   background: color-mix(in srgb, var(--lp-level) 10%, #fff);
   padding: 0.3rem 0.7rem;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
 }
 
@@ -13520,7 +13520,7 @@ button.lp-strategy-overflow {
 .lp-strategy-peek__progress {
   margin: 0.25rem 0 0;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   color: #475569;
 }
 
@@ -13629,7 +13629,7 @@ button.lp-strategy-overflow {
 .lp-climb-reward__streak {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: color-mix(in srgb, var(--rpg-ink, #f3f6f8) 68%, transparent);
 }
 
@@ -13853,7 +13853,7 @@ button.lp-strategy-overflow {
 
 .lp-strategy-sheet__title {
   margin: 0.35rem 0 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: clamp(1.35rem, 4.5vw, 1.65rem);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -14146,7 +14146,7 @@ button.lp-strategy-overflow {
 .lp-strategy-overflow__rename-label {
   margin: 0;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.01em;
   color: var(--lp-muted);
 }
@@ -14178,14 +14178,14 @@ button.lp-strategy-overflow {
   padding: 0.55rem 0.7rem;
   border-radius: 0.55rem;
   font-size: 0.85rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
   cursor: pointer;
 }
 
 .lp-strategy-overflow__action.is-save {
   color: var(--lp-green-deep, #166534);
-  font-weight: 750;
+  font-weight: 800;
   background: color-mix(in srgb, var(--lp-green) 10%, transparent);
 }
 
@@ -14751,7 +14751,7 @@ button.lp-strategy-overflow {
   border-radius: 0.85rem;
   background: transparent;
   color: var(--lp-muted);
-  font-weight: 650;
+  font-weight: 700;
   padding: 0.7rem 0.95rem;
   cursor: pointer;
 }
@@ -14820,7 +14820,7 @@ button.lp-strategy-overflow {
   background: transparent;
   color: var(--lp-muted);
   font-size: 0.8rem;
-  font-weight: 650;
+  font-weight: 700;
   padding: 0.55rem 0.35rem;
   cursor: pointer;
   white-space: nowrap;
@@ -15831,7 +15831,7 @@ button.lp-strategy-overflow {
   background: rgba(15, 23, 42, 0.72);
   color: #f8fafc;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   max-width: 100%;
 }
 
@@ -15997,7 +15997,7 @@ button.lp-strategy-overflow {
   border: 1px solid #e2e8f0;
   background: #fff;
   color: #0f172a;
-  font-weight: 750;
+  font-weight: 800;
   font-size: 0.82rem;
   text-decoration: none;
   cursor: pointer;
@@ -16237,7 +16237,7 @@ button.lp-strategy-overflow {
 
 .lp-camp-notebook__row-title {
   font-size: 0.9rem;
-  font-weight: 750;
+  font-weight: 800;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -16245,7 +16245,7 @@ button.lp-strategy-overflow {
 
 .lp-camp-notebook__row-meta {
   font-size: 0.68rem;
-  font-weight: 650;
+  font-weight: 700;
   color: #64748b;
 }
 
@@ -16285,7 +16285,7 @@ button.lp-strategy-overflow {
   flex: 1;
   min-width: 0;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -16315,7 +16315,7 @@ button.lp-strategy-overflow {
 .lp-camp-notebook__empty {
   margin: 0.5rem 0.25rem;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   color: #64748b;
 }
 
@@ -16354,7 +16354,7 @@ button.lp-strategy-overflow {
   padding: 0.45rem 0.7rem;
   background: #166534;
   color: #fff;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -16491,7 +16491,7 @@ button.lp-strategy-overflow {
 .lp-camp-guide__body {
   margin: 0.15rem 0 0;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   color: #334155;
   line-height: 1.35;
 }
@@ -16590,7 +16590,7 @@ button.lp-strategy-overflow {
   border: 1px solid rgba(87, 211, 91, 0.28);
   color: #86efac;
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 800;
 }
 
 .lp-first-climb__goal span:last-child {
@@ -16659,7 +16659,7 @@ button.lp-strategy-overflow {
   border-radius: 999px;
   padding: 0.4rem 0.75rem;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1.25;
   cursor: pointer;
   text-align: left;
@@ -16751,7 +16751,7 @@ button.lp-strategy-overflow {
   background: transparent;
   color: #e2e8f0;
   font-size: 0.95rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -16958,7 +16958,7 @@ button.lp-strategy-overflow {
   flex: 1;
   min-width: 0;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
   line-height: 1.35;
   white-space: normal;
@@ -17049,14 +17049,14 @@ button.lp-strategy-overflow {
 .lp-dash-habit__nm .lp-habit-identity {
   margin: 0 0 0.1rem;
   font-size: 0.62rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted);
   letter-spacing: 0.02em;
 }
 .lp-dash-habit__nm .lp-dash-tcard__title {
   display: block;
   font-size: 0.83rem;
-  font-weight: 750;
+  font-weight: 800;
   line-height: 1.2;
   margin: 0;
   letter-spacing: -0.005em;
@@ -17538,7 +17538,7 @@ button.lp-strategy-overflow {
   margin: 0.35rem 0 0;
   font-size: 0.82rem;
   color: var(--lp-muted);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 /* Toast above bottom nav */
@@ -17608,7 +17608,7 @@ button.lp-strategy-overflow {
 .lp-dash-quest-next__step {
   color: var(--lp-accent-quests);
   font-size: 0.68rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .lp-dash-overshoot__mark {
@@ -17642,7 +17642,7 @@ button.lp-strategy-overflow {
 .lp-dash-human-win__next {
   margin: 0.35rem 0 0;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 700;
   color: #3f6212;
 }
 
@@ -17683,7 +17683,7 @@ button.lp-strategy-overflow {
   margin: 1rem 0 0;
   max-width: 28rem;
   font-size: 0.88rem;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1.35;
   color: var(--lp-muted);
   text-wrap: pretty;
@@ -17960,7 +17960,7 @@ button.lp-strategy-overflow {
 
 .lp-support__title {
   margin: 0.35rem 0 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: clamp(1.7rem, 4vw, 2.15rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -18263,7 +18263,7 @@ button.lp-strategy-overflow {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: -0.02em;
@@ -18327,7 +18327,7 @@ button.lp-strategy-overflow {
 
 .lp-rpg-summit__title {
   margin: 0.25rem 0 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: clamp(1.45rem, 5vw, 1.85rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -18859,7 +18859,7 @@ button.lp-strategy-overflow {
 
 .lp-rpg-summit__title {
   margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: clamp(1.35rem, 4.2vw, 1.95rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -19104,7 +19104,7 @@ button.lp-strategy-overflow {
 .lp-rpg-node__label em {
   font-style: normal;
   font-size: 0.62rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--rpg-mist, #8b95a5);
 }
 .lp-rpg-node.is-here .lp-rpg-node__label {
@@ -19275,7 +19275,7 @@ button.lp-strategy-overflow {
   display: block;
   margin-top: 0.15rem;
   font-size: 0.72rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--rpg-mist, #8b95a5);
 }
 .lp-rpg-plan__bar {
@@ -19486,7 +19486,7 @@ button.lp-strategy-overflow {
 .lp-rpg-battle__title {
   display: block;
   font-size: 0.95rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.01em;
 }
 .lp-rpg-battle__body {
@@ -20218,9 +20218,9 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
 .lp-rpg-destination-carousel__title {
   margin: 0;
   max-width: 100%;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: var(--lp-type-display-lg);
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--rpg-ink, #f3f6f8);
@@ -20279,7 +20279,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   background: transparent;
   color: rgba(226, 232, 240, 0.92);
   font-size: 0.8rem;
-  font-weight: 650;
+  font-weight: 700;
   text-align: left;
   cursor: pointer;
 }
@@ -20479,7 +20479,7 @@ html:has(.lp-rpg.is-focus-phase:not(.is-first-climb)) body,
   background: transparent;
   color: rgba(226, 232, 240, 0.92);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
@@ -20793,7 +20793,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
 .lp-rpg-paths__label {
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(148, 163, 184, 0.88);
@@ -20989,7 +20989,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
   gap: 0.35rem;
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(148, 163, 184, 0.9);
@@ -21067,7 +21067,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
 }
 .lp-rpg-now-card__title {
   font-size: 0.84rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.25;
   color: rgba(248, 250, 252, 0.96);
@@ -21115,7 +21115,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
 }
 .lp-rpg-camp-card__title {
   font-size: 0.84rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.25;
   color: rgba(252, 211, 77, 0.98);
@@ -21357,16 +21357,16 @@ a.lp-rpg-add.is-guide-entry.is-path {
 .lp-rpg-float-create__kicker {
   margin: 0;
   font-size: 0.62rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(148, 163, 184, 0.72);
 }
 .lp-rpg-float-create__heading {
   margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.35rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: rgba(248, 250, 252, 0.98);
@@ -21389,7 +21389,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
   cursor: pointer;
   color: rgba(226, 232, 240, 0.92);
   font-size: 0.88rem;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1.35;
 }
 .lp-quantity-track__checkbox {
@@ -21543,7 +21543,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
   min-height: 3.1rem;
   padding: 0.85rem 1rem;
   font-size: 1.05rem;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.015em;
 }
 .lp-rpg-float-create__textarea {
@@ -21579,7 +21579,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
   padding: 0.65rem 0.9rem;
   border-radius: 0.85rem;
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.01em;
   cursor: pointer;
   transition: filter 160ms ease, background 160ms ease, border-color 160ms ease;
@@ -21699,7 +21699,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
 .lp-rpg-trail.is-windowed .lp-rpg-node__label em {
   font-size: 0.72rem;
   font-style: normal;
-  font-weight: 650;
+  font-weight: 700;
   color: rgba(251, 191, 36, 0.9);
 }
 .lp-rpg-trail.is-windowed .lp-rpg-explorer {
@@ -21911,7 +21911,7 @@ a.lp-rpg-add.is-guide-entry.is-path {
 .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title {
   flex: 1 1 auto;
   min-width: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: var(--lp-type-display-lg);
   font-weight: 780;
   line-height: 1.15;
@@ -22064,9 +22064,9 @@ html:not([data-theme="dark"]) .lp-climb-path__kicker::before {
 }
 .lp-rpg-current-path__plan {
   margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.12rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.015em;
   color: var(--lp-rpg-ink);
 }
@@ -22122,9 +22122,9 @@ html:not([data-theme="dark"]) .lp-climb-path__kicker::before {
   border: 0;
   background: transparent;
   color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.015em;
   text-align: left;
   text-decoration: none;
@@ -22193,7 +22193,7 @@ a.lp-rpg-practice-cat {
 .lp-rpg-practice-cat__title {
   grid-area: title;
   font-size: 0.98rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
 }
 .lp-rpg-practice-cat__count {
@@ -22265,16 +22265,16 @@ a.lp-rpg-practice-cat {
   margin: 0;
   flex: 1 1 auto;
   min-width: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.28rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
 }
 .lp-rpg-practice-focus__progress {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-rpg-green, #57d35b);
 }
 .lp-rpg-todays-practice__empty {
@@ -22300,7 +22300,7 @@ a.lp-rpg-practice-cat {
   margin: 0;
   flex: 0 0 auto;
   font-size: 0.6rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.62));
@@ -22353,7 +22353,7 @@ a.lp-rpg-practice-cat {
   gap: 0.4rem;
   min-width: 0;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.96));
   overflow: hidden;
   text-overflow: ellipsis;
@@ -22367,7 +22367,7 @@ a.lp-rpg-practice-cat {
   background: rgba(87, 211, 91, 0.14);
   color: var(--lp-rpg-green, #57d35b);
   font-size: 0.62rem;
-  font-weight: 750;
+  font-weight: 800;
   font-style: normal;
   letter-spacing: 0.02em;
   line-height: 1.2;
@@ -22504,7 +22504,7 @@ a.lp-rpg-practice-cat {
 .lp-rpg-plan-card__summary::-webkit-details-marker { display: none; }
 .lp-rpg-plan-card__title {
   font-size: 0.94rem;
-  font-weight: 750;
+  font-weight: 800;
   color: var(--lp-rpg-ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -22547,7 +22547,7 @@ a.lp-rpg-practice-cat {
 .lp-rpg-plan-card__section-label {
   margin: 0 0 0.12rem;
   font-size: 0.56rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--lp-rpg-meta);
@@ -23180,7 +23180,7 @@ a.lp-rpg-section-card__footer-link,
   background: transparent;
   color: rgba(248, 250, 252, 0.92);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   text-align: left;
   cursor: pointer;
 }
@@ -23278,7 +23278,7 @@ a.lp-rpg-layer-card {
 }
 .lp-rpg-layer-card__title {
   font-size: 0.92rem;
-  font-weight: 750;
+  font-weight: 800;
   color: rgba(248, 250, 252, 0.96);
 }
 .lp-rpg-layer-card__desc {
@@ -23367,7 +23367,7 @@ a.lp-rpg-layer-card {
   background: rgba(87, 211, 91, 0.08);
   color: #8ef092;
   font-size: 0.74rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
   list-style: none;
 }
@@ -23484,9 +23484,9 @@ a.lp-rpg-camp-row {
   min-width: 0;
 }
 .lp-rpg-camp-row.is-quest-folder .lp-rpg-camp-row__title {
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.02rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.015em;
 }
 .lp-rpg-camp-folder[open] > summary.lp-rpg-camp-row.is-quest-folder .lp-rpg-camp-row__title {
@@ -23605,7 +23605,7 @@ a.lp-rpg-camp-row {
   display: block;
   min-width: 0;
   font-size: 0.92rem;
-  font-weight: 750;
+  font-weight: 800;
   color: rgba(248, 250, 252, 0.96);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -23757,7 +23757,7 @@ a.lp-rpg-camp-row {
   background: transparent;
   color: rgba(248, 250, 252, 0.92);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 700;
   text-align: left;
   cursor: pointer;
 }
@@ -23976,9 +23976,9 @@ a.lp-rpg-camp-row {
 }
 .lp-rpg-practice-folder__title {
   margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 0.98rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.2;
   color: rgba(248, 250, 252, 0.96);
@@ -24219,7 +24219,7 @@ a.lp-rpg-camp-row {
   padding: 0.4rem 0.75rem;
   border-radius: 0.75rem;
   font-size: 0.74rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 .lp-rpg-practice-finish__btn.is-complete {
@@ -24253,7 +24253,7 @@ a.lp-rpg-camp-row {
   background: rgba(87, 211, 91, 0.1);
   color: #8ef092;
   font-size: 0.8rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 .lp-rpg-practice-folder__add-reveal:hover,
@@ -24293,7 +24293,7 @@ a.lp-rpg-camp-row {
   background: color-mix(in srgb, var(--lp-camp-accent) 14%, transparent);
   color: #8ef092;
   font-size: 0.74rem;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -24323,7 +24323,7 @@ a.lp-rpg-camp-row {
 }
 .lp-rpg-practice-folder__plan-title {
   font-size: 0.9rem;
-  font-weight: 750;
+  font-weight: 800;
   color: rgba(248, 250, 252, 0.96);
 }
 .lp-rpg-practice-folder__plan-hint {
@@ -24419,7 +24419,7 @@ a.lp-rpg-camp-row {
   margin: 0.1rem 0 0;
   max-width: 18rem;
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 800;
   line-height: 1.35;
   color: rgba(236, 242, 248, 0.94);
 }
@@ -24760,7 +24760,7 @@ a.lp-rpg-camp-row {
   gap: 0.35rem;
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
   cursor: pointer;
 }
@@ -24901,12 +24901,12 @@ a.lp-rpg-camp-row {
   display: block;
   margin: 0 0 0.35rem;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
 }
 .lp-feedback__page {
   margin: 0;
   font-size: 0.85rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-muted, #9aa6b2);
   word-break: break-all;
 }
@@ -24932,7 +24932,7 @@ a.lp-rpg-camp-row {
   background: rgba(87, 211, 91, 0.12);
 }
 .lp-feedback__rating-face { font-size: 1.15rem; line-height: 1; }
-.lp-feedback__rating-num { font-size: 0.68rem; font-weight: 750; color: var(--lp-muted); }
+.lp-feedback__rating-num { font-size: 0.68rem; font-weight: 800; color: var(--lp-muted); }
 .lp-feedback__textarea {
   width: 100%;
   border-radius: 0.85rem;
@@ -24985,7 +24985,7 @@ a.lp-rpg-camp-row {
   background: rgba(0, 0, 0, 0.22);
   color: inherit;
   font-size: 0.95rem;
-  font-weight: 650;
+  font-weight: 700;
   padding: 0.65rem 0.8rem;
 }
 .lp-feedback__input:focus {
@@ -25448,7 +25448,7 @@ a.lp-rpg-camp-row {
   gap: 0.35rem;
   margin: 0;
   font-size: 0.68rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-rpg-meta, rgba(148, 163, 184, 0.72));
   cursor: pointer;
 }
@@ -25506,7 +25506,7 @@ a.lp-rpg-camp-row {
   flex: 1 1 auto;
   min-width: 0;
   font-size: 0.84rem;
-  font-weight: 750;
+  font-weight: 800;
 }
 .lp-climb-path__branch-meta {
   font-size: 0.68rem;
@@ -25549,7 +25549,7 @@ a.lp-rpg-camp-row {
 .lp-weekly-planner__already-title {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--lp-muted);
@@ -25565,7 +25565,7 @@ a.lp-rpg-camp-row {
 .lp-weekly-planner__already-item {
   margin: 0;
   font-size: 0.92rem;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--lp-ink);
   min-width: 0;
   overflow-wrap: anywhere;
@@ -25597,7 +25597,7 @@ a.lp-rpg-camp-row {
   background: color-mix(in srgb, var(--lp-glass, #fff) 88%, transparent);
   color: var(--lp-ink);
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
   cursor: pointer;
 }
 .lp-weekly-planner__suggestion:hover {
@@ -25644,7 +25644,7 @@ a.lp-rpg-camp-row {
   color: #e2e8f0;
   text-decoration: none;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 800;
   backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }

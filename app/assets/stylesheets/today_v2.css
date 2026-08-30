@@ -66,7 +66,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 .lp-today-v2-header__name {
   margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.15;
@@ -89,7 +89,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 .lp-today-v2-header__hp-num {
   display: block;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1;
@@ -170,7 +170,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 .lp-today-v2-field__title {
   margin: 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 0.94rem;
   font-weight: 700;
   color: var(--today-ink);
@@ -384,7 +384,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 .lp-today-v2-recap__title {
   margin: 0.375rem 0 0;
-  font-family: var(--lp-font-display, "Fraunces", Georgia, serif);
+  font-family: var(--lp-font-display, "Nunito", system-ui, sans-serif);
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--today-recap-color, var(--today-safe));
