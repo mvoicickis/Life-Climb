@@ -48,6 +48,31 @@ class DashboardDeveloperHabitsTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Push-Ups"
   end
 
+  test "developer basics header counts survived habits not stretch goal completion only" do
+    @user.update_columns(developer: true)
+    @habit.update!(goal: nil, name: "Steps", unit: "steps")
+    @habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 2000)
+
+    binary = @user.habits.create!(
+      name: "Meditate", unit: "times", points: 5, frequency: "daily",
+      active: true, show_on_home: true, quantity_checkin: false
+    )
+    binary.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
+
+    growth_goal = @user.habits.create!(
+      name: "Duo", unit: "lessons", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth", goal: 10,
+      quantity_checkin: true
+    )
+    growth_goal.daily_logs.create!(user: @user, logged_on: Date.yesterday, amount: 5)
+    growth_goal.daily_logs.create!(user: @user, logged_on: Date.current, amount: 15)
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select ".lp-dash-anytime__count", text: "3/3"
+  end
+
   test "developer sees plain amount for growth habit without stretch goal" do
     @user.update_columns(developer: true)
     @habit.update!(goal: nil)
