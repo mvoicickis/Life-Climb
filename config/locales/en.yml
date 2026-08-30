@@ -3318,6 +3318,7 @@ en:
         one: "%{count} user"
         other: "%{count} users"
       col_user: "User"
+      col_status: "Activity status"
       col_signed_up: "Signed up"
       col_onboarding: "Onboarding complete"
       col_first_camp: "First camp planted"
@@ -3325,6 +3326,10 @@ en:
       col_returned: "Returned second day"
       col_last_seen: "Last seen"
       empty: "No users match this filter."
+      status_recent: "Active today or yesterday"
+      status_stale: "Active 2–6 days ago"
+      status_inactive: "Inactive 7+ days"
+      status_never: "Never seen"
     charts:
       users: "Users per day"
       users_growth: "Growth over time"
