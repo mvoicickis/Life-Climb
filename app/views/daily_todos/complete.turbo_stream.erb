@@ -39,7 +39,7 @@
   <% end %>
 <% end %>
 
-<% if habits_on_today_v2? %>
+<% if habits_enabled? %>
   <%= turbo_stream.replace "today-anytime-host" do %>
     <div id="today-anytime-host">
       <%= render "dashboard/dash_anytime", habits: @habits %>

@@ -7,11 +7,6 @@ module ApplicationHelper
     GameRules.habits_enabled?
   end
 
-  # Today V2 battlefield — developers only until we ship habits to beta.
-  def habits_on_today_v2?
-    current_user&.developer?
-  end
-
   # Skip rendering when no companion is chosen yet (nil character_image).
   def companion_image_tag(user = current_user, **options)
     return if user.blank? || user.character_image.blank?
