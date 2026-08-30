@@ -246,6 +246,9 @@ lv:
         camp3: "3. nometne"
         camp4: "4. nometne"
         summit: "Virsotne"
+      trail:
+        plant:
+          kicker: "Next camp"  # TODO: translate
     help:
       cta_onboarding: "Palīdzi man noskaidrot šo kalnu"
     first_climb:

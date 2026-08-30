@@ -226,6 +226,9 @@ de:
         camp3: "Lager 3"
         camp4: "Lager 4"
         summit: "Gipfel"
+      trail:
+        plant:
+          kicker: "Next camp"  # TODO: translate
     help:
       cta_onboarding: "Hilf mir, diesen Berg klarer zu machen"
     first_climb:

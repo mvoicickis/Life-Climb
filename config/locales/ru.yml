@@ -226,6 +226,9 @@ ru:
         camp3: "Лагерь 3"
         camp4: "Лагерь 4"
         summit: "Вершина"
+      trail:
+        plant:
+          kicker: "Next camp"  # TODO: translate
     help:
       cta_onboarding: "Помоги уточнить эту гору"
     first_climb:

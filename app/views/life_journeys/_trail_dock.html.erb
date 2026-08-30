@@ -11,20 +11,24 @@
   <% if plant_mode %>
     <button type="button"
             class="lp-trail-base-card is-<%= mode.tr('_', '-') %>"
+            data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
             data-action="click->trail-canvas#openComposerFromFab">
       <%= render "life_journeys/trail_base_card_inner",
             today_card: today_card,
             hut_title: hut_title,
-            pills: pills %>
+            pills: pills,
+            plant_mode: plant_mode %>
     </button>
   <% else %>
     <button type="button"
             class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %>"
+            data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
             data-action="click->trail-camp-sheet#openBase">
       <%= render "life_journeys/trail_base_card_inner",
             today_card: today_card,
             hut_title: hut_title,
-            pills: pills %>
+            pills: pills,
+            plant_mode: plant_mode %>
     </button>
   <% end %>
 </div>
