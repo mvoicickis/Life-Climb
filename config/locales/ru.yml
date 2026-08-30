@@ -623,7 +623,7 @@ ru:
       # TODO: translate
       title: "Basics"
       hint: "Log as many times as you like"
-      empty: "No habits on Today yet — add one under Habits."
+      empty: "No Basics on Today yet — add one in Base Camp." # TODO: translate
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"

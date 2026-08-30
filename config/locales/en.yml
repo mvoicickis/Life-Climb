@@ -162,8 +162,8 @@ en:
     section_battles: "Battles"
     section_quests: "Quests"
     section_habits: "Habits"
-    habits_empty: "No habits on Today yet — add one under Habits."
-    habits_empty_cta: "Open Habits"
+    habits_empty: "No Basics on Today yet — add one in Base Camp."
+    habits_empty_cta: "Open Base Camp"
     timeline:
       title: "Today's timeline"
       did_it: "I did it"
@@ -212,7 +212,7 @@ en:
       title: "Basics"
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
-      empty: "No habits on Today yet — add one under Habits."
+      empty: "No Basics on Today yet — add one in Base Camp."
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"
@@ -949,7 +949,9 @@ en:
             amount: "%{amount} %{unit}"
             undo: "Undo"
           kind: "Every day · no finish line"
-          sub: "%{count} daily battles. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
+          sub:
+            one: "1 Basic. Missing a day takes nothing away."
+            other: "%{count} Basics. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
           empty: "Add something you do every day."
           more: "+%{count}"
           add_placeholder: "Add something you do every day"
