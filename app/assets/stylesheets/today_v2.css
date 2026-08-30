@@ -346,7 +346,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   font-size: 1.0625rem;
   font-weight: 800;
   line-height: 1.25;
-  color: var(--today-cream);
+  color: var(--today-ink);
 }
 
 .lp-today-v2-win__sub {
@@ -360,6 +360,27 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 .lp-today-v2-win .lp-dash-battle-angles {
   margin-top: 0.25rem;
   text-align: left;
+}
+
+/* Win-panel nested blocks: light-theme tokens in application.css are unreadable on dark shell */
+.lp-dash.is-today-v2 .lp-dash-battle-angles__chip {
+  color: var(--today-ink);
+}
+
+.lp-dash.is-today-v2 .lp-dash-battle-angles__hint {
+  color: var(--today-muted);
+}
+
+.lp-dash.is-today-v2 .lp-dash-battle-angles__strategy a {
+  color: var(--today-safe);
+}
+
+.lp-dash.is-today-v2 .lp-dash-battle-angles__strategy a:hover {
+  color: var(--today-ink);
+}
+
+.lp-dash.is-today-v2 .lp-dash-project-check__no {
+  color: var(--today-ink);
 }
 
 .lp-today-v2-recap {
