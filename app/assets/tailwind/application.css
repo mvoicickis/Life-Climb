@@ -15384,6 +15384,26 @@ button.lp-strategy-overflow {
   color: var(--lp-muted);
 }
 
+.lp-admin__status-dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--lp-muted);
+}
+
+.lp-admin__status-dot.is-green {
+  background: #166534;
+}
+
+.lp-admin__status-dot.is-amber {
+  background: #f59e0b;
+}
+
+.lp-admin__status-dot.is-muted {
+  background: var(--lp-muted);
+}
+
 .lp-admin__row-actions {
   display: flex;
   flex-wrap: wrap;

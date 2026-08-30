@@ -4,6 +4,7 @@
   <table class="lp-admin__table">
     <thead>
       <tr>
+        <th><span class="sr-only"><%= t("admin.funnel.col_status") %></span></th>
         <th><%= t("admin.funnel.col_user") %></th>
         <th><%= t("admin.funnel.col_signed_up") %></th>
         <th><%= t("admin.funnel.col_onboarding") %></th>
@@ -19,7 +20,13 @@
     </thead>
     <tbody>
       <% rows.each do |row| %>
+        <% status = admin_funnel_activity_status(row.last_seen_at) %>
         <tr>
+          <td>
+            <span class="lp-admin__status-dot is-<%= status[:level] %>" title="<%= status[:label] %>">
+              <span class="sr-only"><%= status[:label] %></span>
+            </span>
+          </td>
           <td>
             <div class="lp-admin__person">
               <span class="lp-admin__avatar" aria-hidden="true"><%= admin_initials(row.user) %></span>
