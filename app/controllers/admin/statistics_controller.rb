@@ -6,6 +6,7 @@ module Admin
       @metrics = Admin::Metrics.call(lookback_days: 90)
       @cards = @metrics[:cards]
       @charts = @metrics[:charts]
+      @excluded_users_count = @metrics[:excluded_users]
 
       respond_to do |format|
         format.html

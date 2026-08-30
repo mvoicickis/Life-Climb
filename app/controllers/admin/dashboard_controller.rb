@@ -6,6 +6,7 @@ module Admin
       @metrics = Admin::Metrics.call
       @cards = @metrics[:cards]
       @charts = @metrics[:charts]
+      @excluded_users_count = @metrics[:excluded_users]
       @recent_users = @metrics[:recent_users]
       @recent_feedbacks = @metrics[:recent_feedbacks]
       @recent_ledgers = @metrics[:recent_ledgers]

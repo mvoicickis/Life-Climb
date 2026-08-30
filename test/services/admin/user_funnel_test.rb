@@ -90,4 +90,13 @@ class Admin::UserFunnelTest < ActiveSupport::TestCase
     assert_includes csv, "first_camp_planted_at"
     assert_includes csv, users(:one).email_address
   end
+
+  test "excludes admin and developer accounts" do
+    users(:admin)
+    result = Admin::UserFunnel.call
+    ids = result[:rows].map { |row| row.user.id }
+
+    assert_not_includes ids, users(:admin).id
+    assert_equal User.excluding_privileged.count, result[:rows].size
+  end
 end

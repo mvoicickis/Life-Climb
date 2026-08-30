@@ -5,6 +5,7 @@
     <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
     <h1 class="lp-admin__h1"><%= t("admin.dashboard.title") %></h1>
     <p class="lp-admin__lead"><%= t("admin.dashboard.lead") %></p>
+    <p class="lp-admin__meta"><%= t("admin.dashboard.excluded_users", count: @excluded_users_count) %></p>
   </div>
   <%= link_to t("admin.users.export_csv"),
         admin_users_path(format: :csv, sort: @funnel_sort, filter: @funnel_filter),

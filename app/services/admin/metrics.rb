@@ -27,38 +27,53 @@ module Admin
       {
         cards: cards,
         charts: charts,
-        recent_users: User.order(created_at: :desc).limit(12),
+        excluded_users: User.privileged.count,
+        recent_users: metrics_users.order(created_at: :desc).limit(12),
         recent_feedbacks: Feedback.includes(:user).newest_first.limit(8),
-        recent_ledgers: LifePointLedger.includes(:user).order(created_at: :desc).limit(12)
+        recent_ledgers: LifePointLedger.includes(:user)
+                                       .where(user_id: metrics_user_ids)
+                                       .order(created_at: :desc)
+                                       .limit(12)
       }
     end
 
     private
 
+    def metrics_users
+      User.excluding_privileged
+    end
+
+    def metrics_user_ids
+      metrics_users.select(:id)
+    end
+
     def cards
       {
-        users_total: User.count,
-        users_week: User.where(created_at: 7.days.ago.beginning_of_day..).count,
-        users_month: User.where(created_at: @today.beginning_of_month.beginning_of_day..).count,
+        users_total: metrics_users.count,
+        users_week: metrics_users.where(created_at: 7.days.ago.beginning_of_day..).count,
+        users_month: metrics_users.where(created_at: @today.beginning_of_month.beginning_of_day..).count,
         battles_completed: completed_battles_count,
-        projects_completed: StrategyGoal.for_kind("project").where.not(completed_at: nil).count,
-        onboarding_done: User.where.not(onboarding_completed_at: nil).count,
-        onboarding_pending: User.where(onboarding_completed_at: nil).count
+        projects_completed: StrategyGoal.for_kind("project")
+                                          .where(user_id: metrics_user_ids)
+                                          .where.not(completed_at: nil)
+                                          .count,
+        onboarding_done: metrics_users.where.not(onboarding_completed_at: nil).count,
+        onboarding_pending: metrics_users.where(onboarding_completed_at: nil).count
       }
     end
 
     def charts
       {
-        users_per_day: series_for(User, :created_at),
+        users_per_day: series_for(metrics_users, :created_at),
         life_points_per_day: ledger_series,
         battles_per_day: battle_series
       }
     end
 
     def completed_battles_count
-      Mission.where.not(completed_at: nil).count +
-        DailyTodo.where.not(completed_at: nil).count +
-        StrategyGoal.battles.where.not(completed_at: nil).count
+      Mission.where(user_id: metrics_user_ids).where.not(completed_at: nil).count +
+        DailyTodo.where(user_id: metrics_user_ids).where.not(completed_at: nil).count +
+        StrategyGoal.battles.where(user_id: metrics_user_ids).where.not(completed_at: nil).count
     end
 
     def series_for(scope, column)
@@ -67,7 +82,8 @@ module Admin
     end
 
     def ledger_series
-      rows = LifePointLedger.where(created_at: @range_start.beginning_of_day..)
+      rows = LifePointLedger.where(user_id: metrics_user_ids)
+                            .where(created_at: @range_start.beginning_of_day..)
                             .where("amount > 0")
                             .group(Arel.sql("date(created_at)"))
                             .sum(:amount)
@@ -75,13 +91,16 @@ module Admin
     end
 
     def battle_series
-      mission_rows = Mission.where.not(completed_at: nil)
+      mission_rows = Mission.where(user_id: metrics_user_ids)
+                            .where.not(completed_at: nil)
                             .where(completed_at: @range_start.beginning_of_day..)
                             .group(Arel.sql("date(completed_at)")).count
-      todo_rows = DailyTodo.where.not(completed_at: nil)
+      todo_rows = DailyTodo.where(user_id: metrics_user_ids)
+                           .where.not(completed_at: nil)
                            .where(completed_at: @range_start.beginning_of_day..)
                            .group(Arel.sql("date(completed_at)")).count
-      day_rows = StrategyGoal.battles.where.not(completed_at: nil)
+      day_rows = StrategyGoal.battles.where(user_id: metrics_user_ids)
+                             .where.not(completed_at: nil)
                              .where(completed_at: @range_start.beginning_of_day..)
                              .group(Arel.sql("date(completed_at)")).count
 

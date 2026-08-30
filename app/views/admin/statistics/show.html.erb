@@ -5,6 +5,7 @@
     <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
     <h1 class="lp-admin__h1"><%= t("admin.statistics.title") %></h1>
     <p class="lp-admin__lead"><%= t("admin.statistics.lead") %></p>
+    <p class="lp-admin__meta"><%= t("admin.dashboard.excluded_users", count: @excluded_users_count) %></p>
   </div>
   <div class="lp-admin__btn-row">
     <%= link_to t("admin.statistics.export_csv"), admin_statistics_path(format: :csv), class: "lp-admin__btn" %>

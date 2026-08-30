@@ -3282,6 +3282,9 @@ en:
       latest_users: "Latest registered users"
       newest_activity: "Newest activity"
       no_activity: "No recent LifePoints activity yet."
+      excluded_users:
+        one: "1 admin/developer account excluded from these numbers"
+        other: "%{count} admin/developer accounts excluded from these numbers"
     metrics:
       users_total: "Total users"
       users_today: "New users today"
