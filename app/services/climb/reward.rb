@@ -25,7 +25,6 @@ module Climb
     def self.for_project(user:, goal:, percent_before:, percent_after:, stage_before: nil)
       mountain = Strategy::Mountain.for(goal: goal)
       boss = stage_before.present? && stage_before.to_s != mountain[:stage].to_s
-      boss ||= percent_after.to_i > percent_before.to_i
       status = Climb::Streak.status(user: user)
       {
         kind: boss ? "boss" : "project",
