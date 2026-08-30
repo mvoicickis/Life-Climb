@@ -27,7 +27,7 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     )
   end
 
-  test "V2 header fits at 375 and 320; habits stay off Today" do
+  test "V2 header fits at 375 and 320; habits show on Today when enabled" do
     page.driver.browser.manage.window.resize_to(375, 600)
     visit new_session_path
     fill_in "Email", with: @user.email_address
@@ -39,7 +39,7 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     assert_selector ".lp-today-v2-header__avatar-img"
     assert_selector ".lp-today-v2-header__hp-num"
     assert_selector ".lp-today-v2-hp-bar"
-    assert_no_selector ".lp-dash-anytime"
+    assert_selector ".lp-dash-anytime"
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
@@ -71,7 +71,7 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(320, 600)
     visit dashboard_path
     assert_today_v2_shell!
-    assert_no_selector ".lp-dash-anytime"
+    assert_selector ".lp-dash-anytime"
 
     narrow = page.evaluate_script(<<~JS)
       (() => {
