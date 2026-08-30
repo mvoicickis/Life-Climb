@@ -168,25 +168,25 @@ lv:
       destination_prev: "Iepriekšējais galamērķis"
       destination_next: "Nākamais galamērķis"
       destination_coach:
-        kicker: "A new summit"
-        title: "Name the climb."
-        lead: "Three short answers. Then this destination is yours."
-        name_label: "What are you climbing toward?"
-        name_placeholder: "Publish my book"
-        name_hint: "A destination that takes months, not a day."
-        continue: "Continue"
-        back: "Back"
-        cancel: "Cancel"
+        kicker: "Jauna virsotne"
+        title: "Nosauc savu kāpienu."
+        lead: "Trīs īsas atbildes. Tad šis galamērķis ir tavs."
+        name_label: "Uz ko tu kāp?"
+        name_placeholder: "Izdot savu grāmatu"
+        name_hint: "Galamērķis, kas prasa mēnešus, ne vienu dienu."
+        continue: "Turpināt"
+        back: "Atpakaļ"
+        cancel: "Atcelt"
       destination_menu: "Galamērķa opcijas"
       destination_swipe_hint: "velc, lai mainītu galamērķi"
       edit_destination: "Rediģēt galamērķi"
       project_sections: "Projekta sadaļas"
-      what_gets_me_there: "What gets me there"
-      add_project: "Add a project"
-      empty_projects_invite: "Add a project to this path."
-      project_battles_won: "%{count} battles won"
-      project_battles_planned: "%{count} battles planned"
-      objectives_menu: "Objectives"
+      what_gets_me_there: "Kas mani tur aizvedīs"
+      add_project: "Pievienot projektu"
+      empty_projects_invite: "Pievieno projektu šai takai."
+      project_battles_won: "%{count} uzvarētas cīņas"
+      project_battles_planned: "%{count} ieplānotas cīņas"
+      objectives_menu: "Uzdevumi"
       project_trackers:
         title: "Izsekojamie"
         add: "Pievienot vēl vienu Izsekojamo šim Projektam"
@@ -201,10 +201,10 @@ lv:
         need_project: "Izsekojamos var turēt tikai Ceļa Projekti."
         habit_missing: "Šis Izsekojamais netika atrasts."
       new_project: "Jauns projekts"
-      edit_checkpoint: "Rediģēt kontrolpunktu"
-      delete_checkpoint: "Dzēst kontrolpunktu"
-      delete_checkpoint_title: "Dzēst kontrolpunktu?"
-      delete_checkpoint_body: "Noņemt “%{title}” un visu zem tā. To nevar atsaukt."
+      edit_checkpoint: "Rediģēt nometni"
+      delete_checkpoint: "Dzēst nometni"
+      delete_checkpoint_title: "Dzēst šo nometni?"
+      delete_checkpoint_body: "Nometne un visas tās cīņas tiks dzēstas."
       edit_plan: "Rediģēt plānu"
       mark_complete: "Atzīmēt kā pabeigtu"
       reopen: "Atvērt no jauna"
@@ -247,20 +247,148 @@ lv:
         camp4: "4. nometne"
         summit: "Virsotne"
       trail:
-        default_unit_times: "times"  # TODO: translate
-        default_unit_pages: "pages"  # TODO: translate
+        default_unit_times: "reizes"
+        default_unit_pages: "lappuses"
         log_sheet:
-          title_fallback: "Log it"  # TODO: translate
-          healthy_range: "Healthy range %{min}–%{max}"  # TODO: translate
-          healthy_range_with_unit: "Healthy range %{min}–%{max} %{unit}"  # TODO: translate
-          prompt_down: "How much (stay under %{unit})?"  # TODO: translate
-          prompt_down_bare: "How much (stay under)?"  # TODO: translate
-          prompt_up: "How many %{unit}?"  # TODO: translate
-          prompt_generic: "How much?"  # TODO: translate
+          title_fallback: "Pieraksti"
+          healthy_range: "Veselīgais diapazons %{min}–%{max}"
+          healthy_range_with_unit: "Veselīgais diapazons %{min}–%{max} %{unit}"
+          prompt_down: "Cik daudz (paliec zem %{unit})?"
+          prompt_down_bare: "Cik daudz (paliec zem)?"
+          prompt_up: "Cik %{unit}?"
+          prompt_generic: "Cik daudz?"
+          title: "Pieraksti"
+          prompt: "Cik daudz virzienā uz %{unit}?"
+          confirm: "Pierakstīt →"
+          cancel: "Atcelt"
         plant:
-          kicker: "Next camp"  # TODO: translate
-    help:
-      cta_onboarding: "Palīdzi man noskaidrot šo kalnu"
+          kicker: "Nākamā nometne"
+        back_to_peak: "Atpakaļ uz %{peak}"
+        base_camp:
+          kicker: "Bāzes nometne"
+          title: "Vieta, kur atgriezies katru dienu"
+          basics:
+            kind: "Pamati"
+            amount: "%{amount} %{unit}"
+            undo: "Atsaukt"
+          kind: "Katru dienu · bez finiša līnijas"
+          sub: "%{count} ikdienas cīņas. Izlaista diena neko neatņem."
+          empty: "Pievieno kaut ko, ko dari katru dienu."
+          more: "+%{count}"
+          add_placeholder: "Pievieno kaut ko, ko dari katru dienu"
+          add_habit: "Pievienot ieradumu"
+          habit_added: "Pievienots taviem pamatiem."
+          daily_hint: "Parādīsies atkal rīt."
+          amount_hint: "Jautā skaitu, piemēram, lappuses. Atstāj tukšu, ja pietiek ar ķeksīti."
+
+      # --- Doka kartīte ---
+        today_card:
+          plant_first_headline: "Ieliec savu pirmo nometni"
+          plant_first_sub: "Noliec to zālē un sāc kāpienu"
+          win_headline:
+            one: "Tev jāizcīna %{count} cīņa"
+            other: "Tev jāizcīna %{count} cīņas"
+          win_sub: "Atver Šodien, lai tās uzvarētu"
+          win_fallback: "Šodienas cīņa"
+          add_headline: "Pievieno cīņu šeit"
+          add_sub: "Nākamais: %{camp}"
+          cheer_headline: "Viss padarīts"
+          cheer_sub:
+            one: "%{count} uzvara šodien"
+            other: "%{count} uzvaras šodien"
+          plant_next_headline: "Ieliec nākamo nometni"
+          plant_next_sub: "Turpini kāpienu"
+          basics_sub: "Atzīmē savus pamatus"
+          open_headline:
+            one: "%{count} cīņa gaida"
+            other: "%{count} cīņas gaida"
+          open_sub: "Pieskaries, lai cīnītos sadaļā Šodien"
+          rest_headline: "Visas cīņas uzvarētas"
+          rest_sub:
+            one: "%{count} uzvarēta šodien"
+            other: "%{count} uzvarētas šodien"
+          rest_sub_zero: "Atpūties — vai ieliec nākamo nometni"
+
+      # --- Kopīgie cīņu elementi ---
+        battle_menu: "Cīņas iespējas"
+        battle_rename: "Pārsaukt"
+        battle_move_up: "Pārvietot augšup"
+        battle_move_down: "Pārvietot lejup"
+        battle_moved: "Pārvietots"
+        battle_placeholder: "Šodienas cīņa"
+        add_battle: "Pievienot cīņu"
+        daily: "Katru dienu"
+        every_day: "Katru dienu"
+        just_once: "Tikai vienreiz"
+        log_a_number: "Pierakstīt skaitli"
+        just_tick: "Tikai ķeksītis"
+        unit_placeholder: "lappuses"
+        log_needed: "Pieskaries rindai un ievadi, cik daudz."
+        camp_kind: "Nometne · strādā pie tās jebkurā dienā"
+        camp_ready:
+          one: "%{count} cīņa gatava šeit"
+          other: "%{count} cīņas gatavas šeit"
+        camp_status:
+          empty: "Nekas nav ieplānots"
+          cleared: "Viss padarīts"
+          ready:
+            one: "%{count} cīņa gatava"
+            other: "%{count} cīņas gatavas"
+        camp_fold: "Nometne"
+        edit_camp: "Rediģēt"
+        edit_camp_description: "Apraksts"
+        delete_camp: "Dzēst"
+        finish_camp: "Atzīmēt kā pabeigtu"
+        finish_camp_confirm: "Atzīmēt šo nometni kā pabeigtu? Vēlāk to varēsi atvērt no jauna."
+        reopen_camp: "Atvērt no jauna"
+        no_open_battles: "Kas ir mazākais solis, kas pavirza šo nometni uz priekšu?"
+        won_battles:
+          one: "%{count} uzvarēta cīņa"
+          other: "%{count} uzvarētas cīņas"
+        pages_mode_hint: "Pieraksti lappuses virzienā uz mērķi — ikdienas cīņas nav vajadzīgas."
+        log_pages: "Pierakstīt lappuses"
+        session_wins_toast: "%{count} uzvarētas šoreiz"
+        plant_description_placeholder: "Kāpēc šī nometne ir svarīga?"
+        win_battle: "Uzvarēt"
+        undo: "Atsaukt"
+        deleted_toast: "Dzēsts “%{title}”"
+        restored: "Atjaunots “%{title}”"
+        undo_expired: "Par vēlu, lai atsauktu."
+        battle_reopened: "Cīņa atvērta no jauna."
+        battle_stats: "%{open} atvērtas · %{won} uzvarētas"
+        quick_complete: "Ātrā uzvara"
+        quick_win_toast: "Uzvarēts “%{title}”"
+        log_verdict:
+          first: "Pirmais ieraksts"
+          in_range: "Tavā veselīgajā diapazonā"
+          below: "Zem tava diapazona"
+          above: "Virs tava diapazona"
+          same: "Tāpat kā pagājušoreiz (%{prev})"
+          up_from: "Vairāk nekā %{prev}"
+          down_from: "Mazāk nekā %{prev}"
+        composer:
+          metric_label: "Kā tu to skaiti?"
+          metric_up: "Augšup"
+          metric_down: "Lejup"
+          metric_range: "Diapazons"
+          range_min: "Min"
+          range_max: "Maks"
+          metric_well_heading: "Kas skaitās labi padarīts?"
+          metric_well_lead: "Katru dienu, kad uzvari cīņu šeit, tu ievadi skaitli. Ceļojums to attēlo grafikā."
+          metric_up_title: "Skaitīt augšup"
+          metric_up_sub: "Vairāk ir labāk — izlasītas lappuses, izdarīti atkārtojumi"
+          metric_down_title: "Skaitīt lejup"
+          metric_down_sub: "Mazāk ir labāk — parādi, svars, stress"
+          metric_range_title: "Palikt diapazonā"
+          metric_range_sub: "Turi to starp diviem veselīgiem skaitļiem"
+          target_ask: "Pievienot mērķi?"
+          target_ask_lead: "Vēlies mērķi vai vienkārši pierakstīt skaitli?"
+          target_yes: "Jā, iestatīt mērķi"
+          target_no: "Ne tagad"
+          range_min_label: "Ne mazāk kā"
+          range_max_label: "Ne vairāk kā"
+      cancel: "Atcelt"
+      save: "Saglabāt"
     first_climb:
       label: "Sāc savu kāpienu"
       kicker: "60 sekundes līdz pirmajai cīņai"
@@ -389,7 +517,6 @@ lv:
       shell:
         title: "Plan this week"
         menu_item: "Plan this week"
-        # TODO: translate
         kicker: "This week"
         continue: "Continue"
         add: "Add"
@@ -445,6 +572,12 @@ lv:
       how_many: "Cik %{unit}?"
       log_confirm: "Saglabāt"
       amount_required: "Ieraksti, cik %{unit}."
+      logged: "Pierakstīts virzienā uz %{unit}."
+    save_changes: "Saglabāt izmaiņas"
+    horizons:
+      project: "Nometne"
+    sheet:
+      close: "Aizvērt"
   life_area_catalog:
     self:
       name: "Es"
@@ -567,27 +700,27 @@ lv:
       mountain_tertiary: "Open Mountain →"  # TODO: translate
       win_state:
         day_won:
-          kicker: "Day won"  # TODO: translate
+          kicker: "Day won"
           headline:
             one: "1 battle won today"  # TODO: translate
             other: "%{count} battles won today"  # TODO: translate
           sub: "Rest on the ridge — or open Mountain for your next move."  # TODO: translate
         confirm_camp:
-          kicker: "Camp check"  # TODO: translate
+          kicker: "Camp check"
           headline: "Is this camp done?"  # TODO: translate
           sub: "Quick honest look before you move on."  # TODO: translate
         pick_angle:
-          kicker: "Sharpen tomorrow"  # TODO: translate
+          kicker: "Sharpen tomorrow"
           headline: "Pick a sharper next battle"  # TODO: translate
           sub: "One clear angle keeps the camp moving."  # TODO: translate
         battles_waiting:
-          kicker: "More on the trail"  # TODO: translate
+          kicker: "More on the trail"
           headline:
             one: "1 battle waiting on Mountain"  # TODO: translate
             other: "%{count} battles waiting on Mountain"  # TODO: translate
           sub: "Plant one on Today when you're ready."  # TODO: translate
         upcoming:
-          kicker: "Next up"  # TODO: translate
+          kicker: "Next up"
           headline: "“%{title}” is scheduled"  # TODO: translate
           sub: "Coming %{date} — keep the climb alive until then."  # TODO: translate
     project_check:
@@ -636,25 +769,24 @@ lv:
       need_spine: "Izveido kalna ceļu, pirms pievieno soļus."
       already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
-      # TODO: translate
-      title: "Basics"
-      hint: "Log as many times as you like"
-      empty: "No habits on Today yet — add one under Habits."
-      add: "Add"
-      add_placeholder: "Add"
-      add_aria: "Add %{unit}"
-      quick_add: "Add %{n} %{unit}"
-      quick_add_label: "Quick add button"
-      custom_amount: "custom amount"
-      use_amount: "Use"
-      undo_add: "Undo"
-      set_total: "Set total"
-      save_total: "Save total"
-      enter_exact: "Enter exact amount"
-      uses_steps: "Uses +%{a} and +%{b}"
-      amount_of_target: "%{amount} of %{target} %{unit}"
+      title: "Pamati"
+      hint: "Pieraksti tik reižu, cik vēlies"
+      empty: "Sadaļā Šodien vēl nav ieradumu — pievieno kādu sadaļā Ieradumi."
+      add: "Pievienot"
+      add_placeholder: "Pievienot"
+      add_aria: "Pievienot %{unit}"
+      quick_add: "Pievienot %{n} %{unit}"
+      quick_add_label: "Ātrās pievienošanas poga"
+      custom_amount: "cits skaits"
+      use_amount: "Izmantot"
+      undo_add: "Atsaukt"
+      set_total: "Iestatīt kopsummu"
+      save_total: "Saglabāt kopsummu"
+      enter_exact: "Ievadi precīzu skaitu"
+      uses_steps: "Izmanto +%{a} un +%{b}"
+      amount_of_target: "%{amount} no %{target} %{unit}"
       over_by: "+%{amount}"
-      log_failed_title: "That log didn’t save"
+      log_failed_title: "Šo pierakstu neizdevās saglabāt"
     shield:
       ready_line: "Vairogs gatavs — šodien bloķē vienu izlaistu logu."
       tip_title: "Tavs dienas vairogs"
@@ -763,7 +895,6 @@ lv:
       habit_missed: "izlaists"
     close: "Aizvērt"
     patterns:
-      # TODO: translate
       title: "Your patterns"
       hint: "From your own Battle history."
       completion_rate:
