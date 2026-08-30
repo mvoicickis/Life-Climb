@@ -1,6 +1,9 @@
 <% if impersonating? %>
   <div class="lp-admin-impersonation" role="status">
-    <p><%= t("admin.impersonation.banner", name: current_user.display_name) %></p>
+    <p>
+      <%= t("admin.impersonation.banner", name: current_user.display_name) %>
+      <span class="lp-admin-impersonation__readonly"><%= t("admin.impersonation.read_only") %></span>
+    </p>
     <%= button_to t("admin.impersonation.stop"), admin_impersonation_path(session[:admin_impersonator_id]), method: :delete, class: "lp-admin__btn is-compact" %>
   </div>
 <% end %>

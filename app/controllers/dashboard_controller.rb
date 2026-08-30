@@ -11,6 +11,7 @@ class DashboardController < ApplicationController
   # Old accounts still on planning_version 1 get the Life Tree Home.
   # Product is one-mountain v2 everywhere — graduate them on visit.
   def promote_legacy_tree_users!
+    return if read_only_impersonation?
     return if current_user.planning_v2?
 
     current_user.update!(planning_version: 2)
@@ -34,7 +35,12 @@ class DashboardController < ApplicationController
     @life_points = current_user.reload.life_points
     @climb_streak = Climb::Streak.status(user: current_user)
     @day_shield = Today::DayShield.status(user: current_user)
-    @commitment = Today::Commitment.touch_met_streak!(user: current_user, journey: @journey)
+    @commitment =
+      if read_only_impersonation?
+        Today::Commitment.progress(user: current_user, journey: @journey)
+      else
+        Today::Commitment.touch_met_streak!(user: current_user, journey: @journey)
+      end
     @commitment_level_up = Today::Commitment.suggest_level_up?(journey: @journey)
     @next_action = Strategy::NextAction.for(
       user: current_user,

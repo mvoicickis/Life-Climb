@@ -2,11 +2,12 @@ class ApplicationController < ActionController::Base
   include Authentication
   include SetLocale
   include RequireOnboarding
+  include AdminImpersonationReadOnly
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :impersonating?, :announcement_banner, :developer?
+  helper_method :current_user, :impersonating?, :read_only_impersonation?, :announcement_banner, :developer?
 
   before_action :enforce_maintenance_mode
 

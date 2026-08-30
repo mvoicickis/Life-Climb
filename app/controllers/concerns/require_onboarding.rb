@@ -19,7 +19,7 @@ module RequireOnboarding
     return unless authenticated?
     return if onboarding_flow_controller?
 
-    current_user.update!(planning_version: 2) if current_user && !current_user.planning_v2?
+    current_user.update!(planning_version: 2) if current_user && !current_user.planning_v2? && !impersonating?
     if current_user&.needs_onboarding?
       redirect_to v2_onboarding_path and return
     end
