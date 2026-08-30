@@ -15556,6 +15556,19 @@ button.lp-strategy-overflow {
   margin: 0;
 }
 
+.lp-admin-impersonation__readonly {
+  margin-left: 0.45rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.14);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
 .lp-admin-announcement {
   background: #ecfdf5;
   color: #14532d;

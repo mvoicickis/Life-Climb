@@ -12,7 +12,7 @@ module Dashboard
     # settlement then reloads todos (full Today page). Stream refreshes pass false
     # for a lighter rebuild from current DB state after a local create.
     def assign_today_battle_surface!(reconcile: true)
-      sync_today_battles!
+      sync_today_battles! unless read_only_impersonation?
 
       @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                  @journey.missions.for_day(Date.current).primary.order(:id).first
@@ -53,7 +53,7 @@ module Dashboard
         @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
       @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
 
-      if reconcile
+      if reconcile && !read_only_impersonation?
         Climb::Streak.reconcile!(user: current_user)
         Today::DayShield.reconcile!(user: current_user)
         Today::MissSettlement.apply!(user: current_user)
@@ -88,6 +88,7 @@ module Dashboard
 
     def sync_today_battles!
       return if @journey.blank?
+      return if read_only_impersonation?
 
       Strategy::CascadeToDaily.call(
         user: current_user,
@@ -126,6 +127,7 @@ module Dashboard
     end
 
     def retire_plan_route_if_needed!
+      return if read_only_impersonation?
       return if @journey.blank?
       return unless @journey.setup_flag(Onboarding::Run::ROUTE_FLAG) == "pending"
       return unless strategy_day_battles?

@@ -37,7 +37,7 @@ module Authentication
       return unless record
       return expire_and_clear_session!(record) if session_expired?(record)
 
-      record.touch if record.updated_at < 1.hour.ago
+      record.touch if record.updated_at < 1.hour.ago && !impersonating?
       record
     end
 

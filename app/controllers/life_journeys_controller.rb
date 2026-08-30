@@ -166,9 +166,11 @@ class LifeJourneysController < ApplicationController
     @plan = select_strategy_plan
     @trail = Strategy::Trail.for(plan: @plan)
     preload_mountain_trail_done_today!
-    Strategy::PinUnplacedCamps.call(
-      projects: Array(@trail&.nodes).filter_map(&:record).reject { |project| project.holding? || project.completed? }
-    )
+    unless read_only_impersonation?
+      Strategy::PinUnplacedCamps.call(
+        projects: Array(@trail&.nodes).filter_map(&:record).reject { |project| project.holding? || project.completed? }
+      )
+    end
     # Mountain = planning. Allow focusing any camp on this Path (even battle-locked)
     # so newly created checkpoints stay visible after save. Today still owns fighting.
     @current_project =
@@ -180,7 +182,7 @@ class LifeJourneysController < ApplicationController
     @branch_plan = @plan if @plan
     @branch_project = @current_project if @current_project
     @mountain = strategy_mountain_payload
-    Climb::Streak.reconcile!(user: current_user)
+    Climb::Streak.reconcile!(user: current_user) unless read_only_impersonation?
     @climb_streak = Climb::Streak.status(user: current_user)
     @mountain_ready = strategy_mountain_ready?
     @next_up = strategy_next_up

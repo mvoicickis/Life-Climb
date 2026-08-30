@@ -14,7 +14,7 @@ class LocalesController < ApplicationController
     }
     I18n.locale = locale
 
-    if authenticated? && Current.user
+    if authenticated? && Current.user && !impersonating?
       Current.user.update!(locale: locale.to_s)
     end
 
