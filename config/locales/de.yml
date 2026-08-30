@@ -530,6 +530,10 @@ de:
     battle_next_coaching: "Ein kurzer Check darunter hält deinen Berg ehrlich."
     # TODO: translate
     battlefield:
+      progress_label: "Battles done"  # TODO: translate
+      risk_open:
+        one: "1 battle waiting"  # TODO: translate
+        other: "%{count} battles waiting"  # TODO: translate
       mountain_tertiary: "Open Mountain →"  # TODO: translate
       win_state:
         day_won:

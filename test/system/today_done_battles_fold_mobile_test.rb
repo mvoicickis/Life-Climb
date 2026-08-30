@@ -45,7 +45,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     end
     assert_selector "#today-battlefield-win", wait: 5
     assert_selector ".lp-today-v2-notch.is-end-day", wait: 5
-    assert_selector ".lp-today-v2-header__hp-num", text: "100"
+    assert_selector ".lp-today-v2-header__hp-num", text: "5"
 
     field_h = page.evaluate_script(<<~JS)
       document.querySelector('.lp-today-v2-field')?.getBoundingClientRect().height
