@@ -14,7 +14,7 @@
     <span class="lp-dash-anytime__ln" aria-hidden="true"></span>
   </header>
 
-  <% if basics_all_done %>
+  <% if basics_all_done && battles_all_clear %>
     <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
   <% elsif habits.blank? %>
     <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
