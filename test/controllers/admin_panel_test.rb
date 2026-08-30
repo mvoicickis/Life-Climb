@@ -31,6 +31,7 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     assert_match(/Returned users/i, response.body)
     assert_match(/User funnel/i, response.body)
     assert_match(/First camp planted/i, response.body)
+    assert_match(/admin\/developer account excluded/i, response.body)
     assert_no_match(/Total LifePoints earned/i, response.body)
     assert_no_match(/Plans/i, response.body)
 
@@ -67,6 +68,7 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
       funnel_emails = css_select(".lp-admin__panel[aria-label='User funnel'] tbody small").map(&:text)
       assert_includes funnel_emails, @user.email_address
       assert_not_includes funnel_emails, @other.email_address
+      assert_not_includes funnel_emails, @admin.email_address
     end
   end
 

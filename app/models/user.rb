@@ -76,6 +76,18 @@ class User < ApplicationRecord
     DeveloperAccess.allowed?(self)
   end
 
+  def privileged?
+    admin? || developer?
+  end
+
+  scope :privileged, -> {
+    emails = DeveloperAccess.emails
+    relation = where(admin: true).or(where(developer: true))
+    emails.any? ? relation.or(where(email_address: emails)) : relation
+  }
+
+  scope :excluding_privileged, -> { where.not(id: privileged.select(:id)) }
+
   def planning_v2?
     planning_version.to_i >= 2
   end

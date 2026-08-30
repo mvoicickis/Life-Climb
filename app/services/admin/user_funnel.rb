@@ -59,7 +59,7 @@ module Admin
     private
 
     def build_rows
-      users = User.order(:id).to_a
+      users = User.excluding_privileged.order(:id).to_a
       return [] if users.empty?
 
       user_ids = users.map(&:id)
