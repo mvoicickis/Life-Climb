@@ -28,14 +28,18 @@ module ActiveSupport
       user
     end
 
-    # Habits are hidden by default (GameRules.habits_enabled? == false). Tests
-    # that exercise the habits-on world call enable_habits! in setup or at the
-    # top of the test; the teardown below restores the real default so an
-    # enabled test never leaks into the next one.
+    # Habits are on by default (GameRules.habits_enabled? == true). Tests that
+    # need the battles-only world call disable_habits!; enable_habits! is kept
+    # for explicit opt-in where a test stubs the flag mid-run.
     def enable_habits!
       GameRules.singleton_class.class_eval { define_method(:habits_enabled?) { true } }
     end
-    teardown { GameRules.singleton_class.class_eval { define_method(:habits_enabled?) { false } } }
+
+    def disable_habits!
+      GameRules.singleton_class.class_eval { define_method(:habits_enabled?) { false } }
+    end
+
+    teardown { GameRules.singleton_class.class_eval { define_method(:habits_enabled?) { true } } }
 
     # Parallel workers share a process-global I18n.locale. A test that sets
     # :lv/:de (or restores a polluted "previous" locale) can leave the next

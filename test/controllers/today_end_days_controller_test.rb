@@ -10,6 +10,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
     dismiss_onboarding_missions!(@user)
+    @user.habits.destroy_all
     @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Ship auth")
   end
 

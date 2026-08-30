@@ -35,6 +35,7 @@ class BattleAnglesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "not yet queues tomorrow battle without angle card UI on Today V2" do
+    @user.habits.destroy_all
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     dismiss_onboarding_missions!(@user)
     todo = @user.daily_todos.find_by!(strategy_goal_id: @battle.id)

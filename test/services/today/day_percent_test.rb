@@ -45,7 +45,8 @@ class Today::DayPercentTest < ActiveSupport::TestCase
     assert_equal 0, result.parts_count
   end
 
-  test "battles-only while habits are hidden (default): habits never lower the percent" do
+  test "battles-only while habits are hidden: habits never lower the percent" do
+    disable_habits!
     todos = @user.daily_todos.for_day(Date.current)
     todos.update_all(completed_at: Time.current)
     # A low-progress habit would drag a habits-inclusive average below 100.

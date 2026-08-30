@@ -34,6 +34,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
   end
 
   test "Today hides the habits section, nag, and habit count while habits are disabled" do
+    disable_habits!
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(

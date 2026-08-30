@@ -3,6 +3,7 @@
 require "application_system_test_case"
 
 class HabitsMountainMobileTest < ApplicationSystemTestCase
+  setup { disable_habits! }
   include ClimbTestHelper
 
   setup do

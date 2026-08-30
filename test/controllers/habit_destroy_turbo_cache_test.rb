@@ -3,6 +3,7 @@
 require "test_helper"
 
 class HabitDestroyTurboCacheTest < ActionDispatch::IntegrationTest
+  setup { disable_habits! }
   include ClimbTestHelper
 
   setup do
