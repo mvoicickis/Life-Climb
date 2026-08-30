@@ -1,10 +1,10 @@
-<%# Today V2 — HP header (mockup). locals: health, streak %>
+<%# Today V2 — battles-done header. locals: health, streak %>
 <% health = local_assigns.fetch(:health) %>
 <% streak = local_assigns[:streak] || @climb_streak %>
 <% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
-<% band = battlefield_hp_band_class(health.band) %>
+<% progress_pct = health.total_count.positive? ? health.hp : 0 %>
 
-<header class="lp-today-v2-header" aria-label="<%= t('dash.battlefield.health_label') %>">
+<header class="lp-today-v2-header" aria-label="<%= t('dash.battlefield.progress_label') %>">
   <div class="lp-today-v2-header__row">
     <%= link_to settings_path, class: "lp-today-v2-header__avatar", aria: { label: t("nav.settings") } do %>
       <%= companion_image_tag class: "lp-today-v2-header__avatar-img", alt: "" %>
@@ -18,24 +18,27 @@
       </p>
     </div>
     <div class="lp-today-v2-header__hp-block">
-      <span class="lp-today-v2-header__hp-num <%= band %>" data-today-v2-target="hpNum"><%= health.hp %></span>
-      <span class="lp-today-v2-header__hp-label"><%= t("dash.battlefield.health_label") %></span>
+      <span class="lp-today-v2-header__hp-num is-neutral" data-today-v2-target="hpNum"><%= health.done_count %></span>
+      <span class="lp-today-v2-header__hp-label"><%= t("dash.battlefield.progress_label") %></span>
     </div>
   </div>
 
-  <div class="lp-today-v2-hp-bar<%= ' is-pulse' if health.danger? %>"
+  <div class="lp-today-v2-hp-bar"
        role="progressbar"
        aria-valuemin="0"
-       aria-valuemax="100"
-       aria-valuenow="<%= health.hp %>"
+       aria-valuemax="<%= health.total_count %>"
+       aria-valuenow="<%= health.done_count %>"
+       aria-label="<%= t('dash.battlefield.count', done: health.done_count, total: health.total_count) %>"
        data-today-v2-target="hpBar">
-    <span class="lp-today-v2-hp-bar__fill <%= band %>"
-          style="width: <%= health.hp %>%"
+    <span class="lp-today-v2-hp-bar__fill is-neutral"
+          style="width: <%= progress_pct %>%"
           data-today-v2-target="hpFill"></span>
   </div>
 
   <p class="lp-today-v2-risk" data-today-v2-target="riskNote">
-    <span aria-hidden="true"><%= health.risk_icon %></span>
+    <% if health.risk_icon.present? %>
+      <span aria-hidden="true"><%= health.risk_icon %></span>
+    <% end %>
     <%= health.risk_note %>
   </p>
 </header>

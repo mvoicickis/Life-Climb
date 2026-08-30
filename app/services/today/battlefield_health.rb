@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Today
-  # Mockup TodayV2 "Health" — share of today's battles already won.
+  # Today V2 progress — share of today's battles already won (count-up, no guilt bands).
   class BattlefieldHealth
     Result = Struct.new(
       :hp,
@@ -53,15 +53,14 @@ module Today
       return empty_result if @total_count.zero?
 
       hp = ((@done_count.to_f / @total_count) * 100).round
-      band = hp >= 70 ? :safe : hp >= 35 ? :warn : :danger
 
       Result.new(
         hp: hp,
         done_count: @done_count,
         total_count: @total_count,
         open_count: @open_count,
-        band: band,
-        risk_icon: @open_count.zero? ? "✓" : "⚠",
+        band: :neutral,
+        risk_icon: @open_count.zero? ? "✓" : "",
         risk_note: risk_note_for(@open_count),
         result_title: result_title_for(hp)
       )

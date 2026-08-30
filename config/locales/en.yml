@@ -63,14 +63,14 @@ en:
       summit: "Summit reached"
     battle_title: "Today's battle"
     battlefield:
-      health_label: "Health"
+      progress_label: "Battles done"
       day_n: "Day %{count}"
       risk_cleared: "All threats cleared."
       # TODO: translate for lv/de/es/ru
       risk_empty: "No battles on Today's list yet."
       risk_open:
-        one: "1 open battle draining your health."
-        other: "%{count} open battles draining your health."
+        one: "1 battle waiting"
+        other: "%{count} battles waiting"
       title: "⚔ Today's battlefield"
       count: "%{done}/%{total}"
       empty_html: "No open threats today.<br>Head to Mountain to open a camp and add a battle."
