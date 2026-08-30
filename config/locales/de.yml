@@ -930,6 +930,7 @@ de:
     character_hint: "Wird bei Heute, auf dem Berg und auf dem Pfad gezeigt."
     character_updated: "Begleiter aktualisiert."
     character_save: "Begleiter speichern"
+    version_label: "App version"  # TODO: translate
     commitment:
       title: "Tägliches Commitment"
       hint: "Wie viele zeitgebundene Kämpfe und grüne Gewohnheiten gelten als überstandener Tag."

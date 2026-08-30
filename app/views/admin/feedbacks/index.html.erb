@@ -19,6 +19,9 @@
             <% if feedback.page_context.present? %>
               <p class="lp-admin__meta is-page"><%= t("admin.feedbacks.page") %>: <code><%= feedback.page_context %></code></p>
             <% end %>
+            <% if feedback.app_version.present? %>
+              <p class="lp-admin__meta is-version"><%= t("admin.feedbacks.version") %>: <code><%= feedback.app_version %></code></p>
+            <% end %>
             <% if feedback.rating.present? %>
               <p class="lp-admin__meta is-rating"><%= t("admin.feedbacks.rating") %>: <%= feedback.rating %>/5</p>
             <% end %>

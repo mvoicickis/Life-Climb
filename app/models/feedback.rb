@@ -6,6 +6,7 @@ class Feedback < ApplicationRecord
   validates :body, presence: true, length: { minimum: 2, maximum: 2_000 }
   validates :rating, inclusion: { in: RATINGS }, allow_nil: true
   validates :page_context, length: { maximum: 200 }, allow_nil: true
+  validates :app_version, length: { maximum: 7 }, allow_nil: true
   validates :contact_info, length: { maximum: 120 }, allow_nil: true
 
   before_validation :normalize_fields
@@ -23,6 +24,7 @@ class Feedback < ApplicationRecord
 
   def normalize_fields
     self.page_context = page_context.to_s.strip.presence&.truncate(200)
+    self.app_version = app_version.to_s.strip.presence&.truncate(7)
     self.body = body.to_s.strip.presence
     self.rating = rating.presence&.to_i
     self.rating = nil unless rating.in?(RATINGS)

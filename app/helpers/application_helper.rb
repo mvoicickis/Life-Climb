@@ -77,6 +77,10 @@ module ApplicationHelper
     absolute_url("/?s=lp")
   end
 
+  def app_version
+    APP_VERSION
+  end
+
   def page_meta_title
     content_for?(:title) ? content_for(:title) : "LifePoints"
   end

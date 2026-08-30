@@ -41,4 +41,10 @@ class ApplicationHelperTest < ActionView::TestCase
 
     assert habits_on_today_v2?
   end
+
+  test "app_version returns APP_VERSION constant" do
+    assert_equal APP_VERSION, app_version
+    assert app_version.present?
+    assert_operator app_version.length, :<=, 7
+  end
 end

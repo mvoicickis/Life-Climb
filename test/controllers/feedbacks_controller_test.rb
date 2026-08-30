@@ -10,6 +10,7 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "form[action=?]", feedbacks_path
     assert_select "input[name='feedback[page_context]'][value=?]", "today"
+    assert_select "input[name='feedback[app_version]'][value=?]", APP_VERSION
     assert_select "input[name='feedback[rating]']", count: 5
     assert_select "textarea[name='feedback[body]']"
     assert_select "input[name='feedback[ok_to_contact]']"
@@ -36,6 +37,7 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "The battle list feels clear.", feedback.body
     assert_equal 5, feedback.rating
     assert_equal "today", feedback.page_context
+    assert_equal APP_VERSION, feedback.app_version
     assert_equal false, feedback.ok_to_contact
     assert_nil feedback.contact_info
     assert_redirected_to dashboard_path
@@ -100,6 +102,21 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
+  test "create backfills app_version when omitted" do
+    sign_in_as users(:one)
+
+    assert_difference "Feedback.count", 1 do
+      post feedbacks_path, params: {
+        feedback: {
+          body: "No version field.",
+          page_context: "today"
+        }
+      }
+    end
+
+    assert_equal APP_VERSION, Feedback.order(:id).last.app_version
+  end
+
   test "create captures referer path when page_context blank" do
     sign_in_as users(:one)
 
@@ -134,6 +151,7 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
       body: "Need clearer quest colors.",
       rating: 2,
       page_context: "mountain",
+      app_version: APP_VERSION,
       ok_to_contact: true,
       contact_info: "+353 87 234 6580"
     )
@@ -143,6 +161,7 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Need clearer quest colors/, response.body)
     assert_match(/mountain/, response.body)
+    assert_match(/#{Regexp.escape(APP_VERSION)}/, response.body)
     assert_match(%r{2/5}, response.body)
     assert_match(/OK to contact/i, response.body)
     assert_match(/\+353 87 234 6580/, response.body)

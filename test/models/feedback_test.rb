@@ -18,6 +18,13 @@ class FeedbackTest < ActiveSupport::TestCase
     assert_nil feedback.user_id
   end
 
+  test "normalizes app_version" do
+    feedback = Feedback.new(body: "Hi", app_version: " abc1234 ")
+    assert feedback.valid?
+    feedback.save!
+    assert_equal "abc1234", feedback.app_version
+  end
+
   test "contact_info is cleared unless ok_to_contact" do
     feedback = Feedback.create!(
       body: "Please ignore this number",

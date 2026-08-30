@@ -3,6 +3,9 @@
   <% if @feedback.page_context.present? %>
     <strong>Page:</strong> <%= @feedback.page_context %><br>
   <% end %>
+  <% if @feedback.app_version.present? %>
+    <strong>App version:</strong> <%= @feedback.app_version %><br>
+  <% end %>
   <% if @feedback.rating.present? %>
     <strong>Rating:</strong> <%= @feedback.rating %>/5<br>
   <% end %>

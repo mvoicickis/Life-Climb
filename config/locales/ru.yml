@@ -940,6 +940,7 @@ ru:
     character_hint: "Показывается в Сегодня, на Горе и на тропе."
     character_updated: "Спутник обновлён."
     character_save: "Сохранить спутника"
+    version_label: "App version"  # TODO: translate
     commitment:
       title: "Дневное обязательство"
       hint: "Сколько битв со временем и зелёных привычек считаются выдержанным днём на горе."

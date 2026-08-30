@@ -30,6 +30,9 @@
     <% end %>
 
     <%= form.hidden_field :page_context, value: page_label %>
+    <%= form.hidden_field :app_version,
+          value: app_version,
+          data: { feedback_contact_target: "appVersion" } %>
 
     <div class="lp-feedback__field">
       <p class="lp-feedback__label"><%= t("feedback.page_label") %></p>
