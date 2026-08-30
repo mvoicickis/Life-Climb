@@ -378,6 +378,11 @@
       font-weight: 600;
     }
 
+    .basic__meta.is-invite {
+      color: rgba(247, 234, 217, 0.42);
+      font-weight: 700;
+    }
+
     .basic__btn {
       flex: none;
       padding: 0.4rem 0.65rem;
@@ -739,7 +744,7 @@
     <section class="state">
       <p class="state__label">State 1</p>
       <h2 class="state__title">Battles cleared, Basics remaining</h2>
-      <p class="state__note">Small inline ack where the battle list was. Attention shifts to Basics.</p>
+      <p class="state__note">Small inline ack where the battle list was. Attention shifts to Basics. Not started: target as invitation (no “0 of x”). In progress: “3 of 8” is fine.</p>
       <div class="phone">
         <div class="phone__scroll">
           <header>
@@ -782,7 +787,7 @@
                 <span class="basic__sig" aria-hidden="true">🧘</span>
                 <div class="basic__body">
                   <b class="basic__name">Meditate</b>
-                  <em class="basic__meta">times</em>
+                  <em class="basic__meta is-invite">Once today</em>
                 </div>
                 <button type="button" class="basic__btn">Did it</button>
               </li>
@@ -790,7 +795,7 @@
                 <span class="basic__sig" aria-hidden="true">💧</span>
                 <div class="basic__body">
                   <b class="basic__name">Drink water</b>
-                  <em class="basic__meta">glasses · 0 of 8</em>
+                  <em class="basic__meta">3 of 8 glasses</em>
                 </div>
                 <button type="button" class="basic__btn">+1</button>
               </li>
@@ -798,7 +803,7 @@
                 <span class="basic__sig" aria-hidden="true">📖</span>
                 <div class="basic__body">
                   <b class="basic__name">Read</b>
-                  <em class="basic__meta">pages · 0 of 10</em>
+                  <em class="basic__meta is-invite">10 pages today</em>
                 </div>
                 <button type="button" class="basic__btn">+1</button>
               </li>
