@@ -3,11 +3,11 @@
 require "test_helper"
 
 class TodayEndOfDayTest < ActionDispatch::IntegrationTest
+  setup { enable_habits! }
   include ClimbTestHelper
 
   setup do
     @user = users(:one)
-    @user.update_columns(developer: true)
     @user.habits.destroy_all
     sign_in_as @user
     @journey = seed_climb!(@user, today_mission: "Ship auth")
