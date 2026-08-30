@@ -6,25 +6,21 @@
     <h1 class="lp-admin__h1"><%= t("admin.dashboard.title") %></h1>
     <p class="lp-admin__lead"><%= t("admin.dashboard.lead") %></p>
   </div>
-  <%= link_to t("admin.users.export_csv"), admin_users_path(format: :csv), class: "lp-admin__btn" %>
+  <%= link_to t("admin.users.export_csv"),
+        admin_users_path(format: :csv, sort: @funnel_sort, filter: @funnel_filter),
+        class: "lp-admin__btn" %>
 </header>
 
 <section class="lp-admin__cards" aria-label="<%= t('admin.dashboard.metrics') %>">
   <% [
     [ @cards[:users_total], t("admin.metrics.users_total") ],
-    [ @cards[:users_today], t("admin.metrics.users_today") ],
     [ @cards[:users_week], t("admin.metrics.users_week") ],
     [ @cards[:users_month], t("admin.metrics.users_month") ],
-    [ @cards[:battles_completed], t("admin.metrics.battles") ],
-    [ @cards[:projects_completed], t("admin.metrics.projects") ],
-    [ @cards[:plans], t("admin.metrics.plans") ],
-    [ @cards[:goals], t("admin.metrics.goals") ],
-    [ @cards[:journeys], t("admin.metrics.journeys") ],
-    [ @cards[:life_points_total], t("admin.metrics.life_points") ],
-    [ @cards[:life_points_avg], t("admin.metrics.life_points_avg") ],
-    [ @cards[:battles_avg], t("admin.metrics.battles_avg") ],
+    [ @cards[:returned_users], t("admin.metrics.returned_users") ],
     [ @cards[:onboarding_done], t("admin.metrics.onboarding_done") ],
-    [ @cards[:onboarding_pending], t("admin.metrics.onboarding_pending") ]
+    [ @cards[:onboarding_pending], t("admin.metrics.onboarding_pending") ],
+    [ @cards[:battles_completed], t("admin.metrics.battles") ],
+    [ @cards[:projects_completed], t("admin.metrics.projects") ]
   ].each do |value, label| %>
     <article class="lp-admin__card">
       <p class="lp-admin__card-label"><%= label %></p>
@@ -56,6 +52,31 @@
     </header>
     <div class="lp-admin__chart"><canvas data-admin-charts-target="battles"></canvas></div>
   </article>
+</section>
+
+<section class="lp-admin__panel" aria-label="<%= t('admin.funnel.title') %>">
+  <header class="lp-admin__panel-head">
+    <h2><%= t("admin.funnel.title") %></h2>
+  </header>
+
+  <%= render "admin/dashboard/funnel_counts", stage_counts: @funnel[:stage_counts] %>
+
+  <div class="lp-admin__toolbar">
+    <%= link_to t("admin.funnel.filter_all"),
+          admin_root_path(sort: @funnel_sort),
+          class: @funnel_filter.blank? ? "lp-admin__btn" : "lp-admin__ghost" %>
+    <%= link_to t("admin.funnel.filter_inactive"),
+          admin_root_path(sort: @funnel_sort, filter: Admin::UserFunnel::FILTER_INACTIVE),
+          class: @funnel_filter == Admin::UserFunnel::FILTER_INACTIVE ? "lp-admin__btn" : "lp-admin__ghost" %>
+    <span class="lp-admin__meta">
+      <%= t("admin.funnel.row_count", count: @funnel[:rows].size) %>
+    </span>
+  </div>
+
+  <%= render "admin/dashboard/funnel_table",
+        rows: @funnel[:rows],
+        funnel_sort: @funnel_sort,
+        funnel_filter: @funnel_filter %>
 </section>
 
 <div class="lp-admin__split">

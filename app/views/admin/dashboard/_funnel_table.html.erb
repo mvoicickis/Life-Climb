@@ -1,0 +1,45 @@
+<% next_sort = funnel_sort == "last_seen" ? "last_seen_asc" : "last_seen" %>
+
+<div class="lp-admin__table-wrap">
+  <table class="lp-admin__table">
+    <thead>
+      <tr>
+        <th><%= t("admin.funnel.col_user") %></th>
+        <th><%= t("admin.funnel.col_signed_up") %></th>
+        <th><%= t("admin.funnel.col_onboarding") %></th>
+        <th><%= t("admin.funnel.col_first_camp") %></th>
+        <th><%= t("admin.funnel.col_first_battle") %></th>
+        <th><%= t("admin.funnel.col_returned") %></th>
+        <th>
+          <%= link_to t("admin.funnel.col_last_seen"),
+                admin_root_path(sort: next_sort, filter: funnel_filter),
+                class: "lp-admin__text-link" %>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% rows.each do |row| %>
+        <tr>
+          <td>
+            <div class="lp-admin__person">
+              <span class="lp-admin__avatar" aria-hidden="true"><%= admin_initials(row.user) %></span>
+              <span>
+                <%= link_to row.user.display_name, admin_user_path(row.user), class: "lp-admin__text-link" %>
+                <small><%= row.user.email_address %></small>
+              </span>
+            </div>
+          </td>
+          <td><%= l(row.signed_up_at.to_date, format: :long) %></td>
+          <td><%= row.onboarding_completed_at ? l(row.onboarding_completed_at.to_date, format: :long) : "—" %></td>
+          <td><%= row.first_camp_planted_at ? l(row.first_camp_planted_at.to_date, format: :long) : "—" %></td>
+          <td><%= row.first_battle_won_at ? l(row.first_battle_won_at.to_date, format: :long) : "—" %></td>
+          <td><%= row.returned_second_day_at ? l(row.returned_second_day_at.to_date, format: :long) : "—" %></td>
+          <td><%= row.last_seen_at ? l(row.last_seen_at, format: :short) : t("admin.users.never_seen") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if rows.blank? %>
+    <p class="lp-admin__empty"><%= t("admin.funnel.empty") %></p>
+  <% end %>
+</div>

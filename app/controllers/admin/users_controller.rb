@@ -2,6 +2,8 @@
 
 module Admin
   class UsersController < BaseController
+    FUNNEL_SORTS = %w[last_seen last_seen_asc].freeze
+
     before_action :set_user, only: %i[show edit update destroy promote demote]
 
     def index
@@ -97,10 +99,25 @@ module Admin
     end
 
     def export_csv(scope)
+      funnel_sort = FUNNEL_SORTS.include?(params[:sort].to_s) ? params[:sort] : "last_seen"
+      funnel = Admin::UserFunnel.call(sort: funnel_sort, filter: params[:filter])
+      scope_ids = scope.pluck(:id).to_set
+      rows = funnel[:rows].select { |row| scope_ids.include?(row.user.id) }
+
+      if FUNNEL_SORTS.include?(params[:sort].to_s) || params[:filter].present?
+        return Admin::UserFunnel.export_csv(rows)
+      end
+
+      funnel_by_id = funnel[:rows].index_by { |row| row.user.id }
+
       require "csv"
       CSV.generate(headers: true) do |csv|
-        csv << %w[id name email life_points strategy_points admin onboarding_completed_at created_at]
+        csv << %w[
+          id name email life_points strategy_points admin onboarding_completed_at created_at
+          first_camp_planted_at first_battle_won_at returned_second_day_at last_seen_at
+        ]
         scope.find_each do |user|
+          row = funnel_by_id[user.id]
           csv << [
             user.id,
             user.name,
@@ -109,7 +126,11 @@ module Admin
             user.strategy_points,
             user.admin?,
             user.onboarding_completed_at,
-            user.created_at
+            user.created_at,
+            row&.first_camp_planted_at,
+            row&.first_battle_won_at,
+            row&.returned_second_day_at,
+            row&.last_seen_at
           ]
         end
       end

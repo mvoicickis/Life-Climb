@@ -28,6 +28,11 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     get admin_root_path
     assert_response :success
     assert_match(/Total users/i, response.body)
+    assert_match(/Returned users/i, response.body)
+    assert_match(/User funnel/i, response.body)
+    assert_match(/First camp planted/i, response.body)
+    assert_no_match(/Total LifePoints earned/i, response.body)
+    assert_no_match(/Plans/i, response.body)
 
     get admin_users_path
     assert_response :success
@@ -35,6 +40,8 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
 
     get admin_statistics_path
     assert_response :success
+    assert_match(/Total users/i, response.body)
+    assert_no_match(/Returned users/i, response.body)
 
     get admin_system_path
     assert_response :success
@@ -45,6 +52,22 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
 
     get admin_ops_path
     assert_response :success
+  end
+
+  test "dashboard inactive filter narrows funnel table" do
+    sign_in_as @admin
+
+    travel_to Time.zone.parse("2026-08-30 12:00:00") do
+      @user.sessions.create!(updated_at: 4.days.ago)
+      @other.sessions.create!(updated_at: Time.current)
+
+      get admin_root_path, params: { filter: Admin::UserFunnel::FILTER_INACTIVE }
+      assert_response :success
+
+      funnel_emails = css_select(".lp-admin__panel[aria-label='User funnel'] tbody small").map(&:text)
+      assert_includes funnel_emails, @user.email_address
+      assert_not_includes funnel_emails, @other.email_address
+    end
   end
 
   test "admin can search and sort users" do
@@ -77,7 +100,12 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     get admin_users_path(format: :csv)
     assert_response :success
     assert_includes response.body, "email"
+    assert_includes response.body, "first_camp_planted_at"
     assert_includes response.body, @user.email_address
+
+    get admin_users_path(format: :csv, sort: "last_seen", filter: Admin::UserFunnel::FILTER_INACTIVE)
+    assert_response :success
+    assert_includes response.body, "returned_second_day_at"
   end
 
   test "admin cannot demote or delete self" do

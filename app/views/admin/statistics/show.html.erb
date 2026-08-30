@@ -15,9 +15,12 @@
 <section class="lp-admin__cards is-compact" aria-label="<%= t('admin.dashboard.metrics') %>">
   <% [
     [ @cards[:users_total], t("admin.metrics.users_total") ],
-    [ @cards[:life_points_total], t("admin.metrics.life_points") ],
+    [ @cards[:users_week], t("admin.metrics.users_week") ],
+    [ @cards[:users_month], t("admin.metrics.users_month") ],
+    [ @cards[:onboarding_done], t("admin.metrics.onboarding_done") ],
+    [ @cards[:onboarding_pending], t("admin.metrics.onboarding_pending") ],
     [ @cards[:battles_completed], t("admin.metrics.battles") ],
-    [ @cards[:journeys], t("admin.metrics.journeys") ]
+    [ @cards[:projects_completed], t("admin.metrics.projects") ]
   ].each do |value, label| %>
     <article class="lp-admin__card">
       <p class="lp-admin__card-label"><%= label %></p>
