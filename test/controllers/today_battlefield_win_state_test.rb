@@ -13,6 +13,7 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     @area = @journey.life_area
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Ship auth")
+    @user.habits.destroy_all
   end
 
   test "all clear shows inline battle ack and end-of-day bridge" do
