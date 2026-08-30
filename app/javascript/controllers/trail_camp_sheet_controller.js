@@ -62,7 +62,8 @@ export default class extends Controller {
   }
 
   baseTitle() {
-    return this.element.querySelector(".lp-trail-base-card__kicker")?.textContent?.trim() || "Base camp"
+    const card = this.element.querySelector(".lp-trail-base-card")
+    return card?.dataset.baseTitle?.trim() || "Base camp"
   }
 
   open(event) {

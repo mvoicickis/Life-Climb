@@ -134,6 +134,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#mountain-trail > .lp-trail__dock", count: 0
     assert_select ".lp-trail-base-card.is-busy"
     assert_select ".lp-trail-base-card[data-action*='openBase']"
+    assert_select ".lp-trail-base-card[data-base-title=?]", I18n.t("strategy.rpg.trail.base_camp.kicker")
     assert_select ".lp-trail-base-card__kicker", text: /Base camp/i
     assert_select ".lp-trail-base-card__sub", text: /Open Today/
     assert_select "#trail-sheet-camp-base"
@@ -467,6 +468,22 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__empty", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
+  end
+
+  test "plant next dock card shows Next camp kicker and stable base title for sheet" do
+    @user.habits.destroy_all
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Done once", scheduled_on: Date.yesterday,
+      position: 0, completed_at: 1.day.ago
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-base-card.is-plant-next"
+    assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']"
+    assert_select ".lp-trail-base-card__kicker", text: /Next camp/i
+    assert_select ".lp-trail-base-card[data-base-title=?]", I18n.t("strategy.rpg.trail.base_camp.kicker")
   end
 
   test "base camp dock opens sheet when journey has basics habits but no daily battles" do

@@ -872,6 +872,8 @@ en:
         battle_move_up: "Move up"
         battle_move_down: "Move down"
         battle_moved: "Moved"
+        plant:
+          kicker: "Next camp"
         base_camp:
           kicker: "Base camp"
           title: "Where you return every day"
