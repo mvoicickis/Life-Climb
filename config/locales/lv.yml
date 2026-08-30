@@ -323,7 +323,7 @@ lv:
           empty: "Pievieno kaut ko, ko dari katru dienu."
           more: "+%{count}"
           add_placeholder: "Pievieno kaut ko, ko dari katru dienu"
-          add_habit: "Pievienot ieradumu"
+          add_habit: "Add basic" # TODO: translate
           habit_added: "Pievienots taviem pamatiem."
           daily_hint: "Parādīsies atkal rīt."
           amount_hint: "Jautā skaitu, piemēram, lappuses. Atstāj tukšu, ja pietiek ar ķeksīti."

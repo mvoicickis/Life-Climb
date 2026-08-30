@@ -239,6 +239,8 @@ es:
           prompt_generic: "How much?"  # TODO: translate
         plant:
           kicker: "Next camp"  # TODO: translate
+        base_camp:
+          add_habit: "Add basic"  # TODO: translate
     help:
       cta_onboarding: "Ayúdame a aclarar esta montaña"
     first_climb:
