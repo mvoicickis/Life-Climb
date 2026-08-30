@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# Today V2 — compact HP header fits short phone viewports; habits live on /habits.
+# Today V2 — compact HP header fits short phone viewports; habits show on Today when enabled.
 class TodayHeroViewportTest < ApplicationSystemTestCase
   setup { enable_habits! }
   include ClimbTestHelper

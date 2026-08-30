@@ -31,7 +31,7 @@ class FormControlNormalizeMobileTest < ApplicationSystemTestCase
 
     assert_today_v2_shell!
     assert_no_selector "#commitment-gap-panel"
-    assert_no_selector ".lp-dash-anytime"
+    assert_selector ".lp-dash-anytime"
 
     visit habits_path
     assert_selector ".lp-habits", wait: 5

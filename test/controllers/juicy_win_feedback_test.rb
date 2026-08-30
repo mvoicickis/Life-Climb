@@ -65,13 +65,13 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-done-fold", count: 0
   end
 
-  test "habit section is absent on Today V2 even when habits exist" do
+  test "habit section renders on Today V2 when habits are enabled" do
     enable_habits!
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-anytime", count: 0
-    assert_select ".lp-dash-anytime form[data-controller='juicy-feedback']", count: 0
+    assert_select ".lp-dash-anytime", count: 1
+    assert_select ".lp-dash-anytime form[data-controller='juicy-feedback']", minimum: 1
   end
 
   test "quest objective sheet markup is absent on Today V2" do

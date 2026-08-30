@@ -25,7 +25,7 @@ class TodayTimelineTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "Today V2 renders battlefield shell without timeline, habits, or section headers" do
+  test "Today V2 renders battlefield shell without timeline or section headers" do
     enable_habits!
     get dashboard_path
     assert_response :success

@@ -39,7 +39,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-header", count: 0
   end
 
-  test "quantity habit Win UI is absent from Today V2 battlefield" do
+  test "quantity habit Win UI stays in the habit sheet on Today V2 battlefield" do
     goal = @user.strategy_goals.for_kind("goal").roots.first
     plan = goal.children.create!(
       user: @user, life_area: @journey.life_area, life_journey: @journey,
@@ -63,7 +63,7 @@ class TodayCommitmentUiTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-anytime", count: 0
+    assert_select ".lp-dash-anytime", count: 1
     assert_select ".lp-dash-tcard__qty[data-controller~='quantity-win']", count: 0
     assert_today_v2_shell!
   end

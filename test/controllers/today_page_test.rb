@@ -86,7 +86,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-dash-daystrip", count: 0
-    assert_select ".lp-dash-anytime", count: 0
+    assert_select ".lp-dash-anytime", count: 1
     assert_select ".lp-today-v2-field", count: 1
   end
 

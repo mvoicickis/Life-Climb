@@ -14,7 +14,7 @@ class HabitIdentityLabelTest < ActionDispatch::IntegrationTest
     @user.habits.destroy_all
   end
 
-  test "identity_label saves and displays on Habits but not Today V2 battlefield" do
+  test "identity_label saves and displays on Habits and Today V2 battlefield" do
     assert_difference "Habit.count", 1 do
       post habits_path, params: {
         habit: {
@@ -44,8 +44,8 @@ class HabitIdentityLabelTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{habit.id}", count: 0
-    assert_select ".lp-dash-anytime", count: 0
+    assert_select "#today_habit_#{habit.id}", count: 1
+    assert_select ".lp-dash-anytime", count: 1
 
     get new_habit_path
     assert_response :success
@@ -53,7 +53,7 @@ class HabitIdentityLabelTest < ActionDispatch::IntegrationTest
     assert_select "input[name='habit[identity_label]'][placeholder=?]", "I am a reader"
   end
 
-  test "habits without identity_label render unchanged and stay off Today V2" do
+  test "habits without identity_label render on Today V2 when enabled" do
     habit = @user.habits.create!(
       name: "Meditate", unit: "times", points: 5, frequency: "daily",
       active: true, show_on_home: true, stat_type: "growth"
@@ -67,8 +67,8 @@ class HabitIdentityLabelTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select "#today_habit_#{habit.id}", count: 0
-    assert_select ".lp-dash-anytime", count: 0
+    assert_select "#today_habit_#{habit.id}", count: 1
+    assert_select ".lp-dash-anytime", count: 1
   end
 
   test "blank identity_label normalizes to nil on update" do

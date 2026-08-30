@@ -28,13 +28,13 @@ class HabitIdentityMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "identity labels read quietly on Habits page; Today V2 omits habits" do
+  test "identity labels read quietly on Habits page; Today V2 shows habits without identity copy" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
     assert_today_v2_shell!
-    assert_no_selector ".lp-dash-anytime"
+    assert_selector ".lp-dash-anytime"
     assert_no_selector ".lp-habit-identity"
 
     visit habits_path

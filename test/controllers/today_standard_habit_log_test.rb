@@ -39,7 +39,7 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select "#today_habit_#{@habit.id}", count: 0
+    assert_select "#today_habit_#{@habit.id}", count: 1
     assert_select ".lp-toast", text: /Added/
     assert_select ".lp-toast", text: /8 hours today/
     assert_today_v2_shell!
@@ -64,7 +64,7 @@ class TodayStandardHabitLogTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select "#today_habit_#{growth.id}", count: 0
+    assert_select "#today_habit_#{growth.id}", count: 1
     assert_select ".lp-toast", text: /Added/
     assert_today_v2_shell!
   end

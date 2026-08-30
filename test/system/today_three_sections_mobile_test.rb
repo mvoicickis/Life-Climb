@@ -62,7 +62,7 @@ class TodayThreeSectionsMobileTest < ApplicationSystemTestCase
     )
   end
 
-  test "mobile Today V2 shows flat battle rows without habits or legacy sections" do
+  test "mobile Today V2 shows flat battle rows with habits and no legacy sections" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
