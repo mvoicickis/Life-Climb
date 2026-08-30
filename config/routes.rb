@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     patch :decline
   end
   resource :today_end_day, only: %i[create destroy], controller: "today_end_days"
+  resource :today_plan_tomorrow_battle, only: :create, controller: "today/plan_tomorrow_battles"
   resource :day_shield_tip, only: :destroy
   resource :install_offer, only: %i[ destroy update ]
   resource :life_map, only: :show, controller: "life_maps"

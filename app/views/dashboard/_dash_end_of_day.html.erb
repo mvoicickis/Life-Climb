@@ -1,0 +1,150 @@
+<%# End-of-day card: big ack, optional plan-tomorrow bridge, interim camp check. %>
+<% camps = Array(local_assigns.fetch(:camps) { @end_of_day_camps }) %>
+<% tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles) { @tomorrow_battles }) %>
+<% show_plan_form = local_assigns.fetch(:show_plan_form) { @show_plan_tomorrow_form } %>
+<% project_check = local_assigns.fetch(:project_check) { @project_check } %>
+<% journey = local_assigns.fetch(:journey) { @journey } %>
+
+<section class="lp-today-v2-end-of-day" id="today-end-of-day" aria-label="<%= t('dash.end_of_day.title') %>">
+  <% if tomorrow_battles.any? && !show_plan_form %>
+    <div class="lp-today-v2-signoff">
+      <div class="lp-today-v2-signoff__emoji" aria-hidden="true">🌙</div>
+      <h3 class="lp-today-v2-signoff__title"><%= t("dash.end_of_day.signoff.title") %></h3>
+      <p class="lp-today-v2-signoff__sub">
+        <%= t("dash.end_of_day.signoff.sub", count: tomorrow_battles.size) %>
+      </p>
+      <% tomorrow_battles.each do |battle| %>
+        <% camp = battle.parent %>
+        <% style = battlefield_camp_style(camp) %>
+        <p class="lp-today-v2-saved-chip">
+          <span aria-hidden="true">✓</span>
+          <%= battle.title %>
+          <% if camp %>
+            · <%= camp.title %>
+          <% end %>
+        </p>
+      <% end %>
+      <div class="lp-today-v2-signoff__actions">
+        <%= button_to t("dash.end_of_day.close_day"),
+              today_end_day_path,
+              method: :post,
+              class: "lp-today-v2-btn lp-today-v2-btn--ghost lp-today-v2-btn--block" %>
+        <%= link_to t("dash.end_of_day.plan_another"),
+              dashboard_path(plan_tomorrow: 1),
+              class: "lp-today-v2-link-subtle" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="lp-today-v2-big-ack">
+      <p class="lp-today-v2-big-ack__kicker"><%= t("dash.end_of_day.ack.kicker") %></p>
+      <h3 class="lp-today-v2-big-ack__title"><%= t("dash.end_of_day.ack.title") %></h3>
+      <p class="lp-today-v2-big-ack__sub">
+        <% if camps.size == 1 %>
+          <%= t("dash.end_of_day.ack.sub_single_camp") %>
+        <% else %>
+          <%= t("dash.end_of_day.ack.sub") %>
+        <% end %>
+      </p>
+
+      <% if camps.any? %>
+        <div class="lp-today-v2-bridge"
+             data-controller="end-of-day-plan"
+             data-end-of-day-plan-selected-project-id-value="<%= camps.first.id if camps.size == 1 %>">
+          <p class="lp-today-v2-bridge__label">
+            <%= t("dash.end_of_day.bridge.label") %>
+            <span class="lp-today-v2-sp-badge">+<%= GameRules::STRATEGY_CHILD_SP %> SP</span>
+          </p>
+
+          <% if camps.size > 1 %>
+            <div data-end-of-day-plan-target="picker">
+              <p class="lp-today-v2-bridge__hint"><%= t("dash.end_of_day.bridge.hint_multi") %></p>
+              <div class="lp-today-v2-camps" role="list">
+                <% camps.each_with_index do |camp, index| %>
+                  <button type="button"
+                          class="lp-today-v2-camp<%= ' is-selected' if index.zero? %>"
+                          role="listitem"
+                          data-end-of-day-plan-target="camp"
+                          data-project-id="<%= camp.id %>"
+                          data-action="end-of-day-plan#selectCamp">
+                    <%= camp.title %>
+                  </button>
+                <% end %>
+              </div>
+              <div class="lp-today-v2-plan-actions">
+                <%= link_to t("dash.end_of_day.close_day"),
+                      today_end_day_path,
+                      data: { turbo_method: :post },
+                      class: "lp-today-v2-btn lp-today-v2-btn--ghost" %>
+                <button type="button"
+                        class="lp-today-v2-btn lp-today-v2-btn--primary"
+                        data-action="end-of-day-plan#showForm">
+                  <%= t("dash.end_of_day.bridge.next") %>
+                </button>
+              </div>
+            </div>
+
+            <%= form_with url: today_plan_tomorrow_battle_path,
+                  method: :post,
+                  class: "lp-today-v2-plan-form",
+                  data: { end_of_day_plan_target: "form" },
+                  hidden: true do %>
+              <%= hidden_field_tag :project_id, camps.first.id, data: { end_of_day_plan_target: "projectField" } %>
+              <%= text_field_tag :title, nil,
+                    class: "lp-today-v2-plan-input",
+                    placeholder: t("dash.end_of_day.bridge.placeholder"),
+                    aria: { label: t("dash.end_of_day.bridge.placeholder") },
+                    data: { end_of_day_plan_target: "titleField" },
+                    required: true %>
+              <div class="lp-today-v2-plan-actions">
+                <%= link_to t("dash.end_of_day.close_day"),
+                      today_end_day_path,
+                      data: { turbo_method: :post },
+                      class: "lp-today-v2-btn lp-today-v2-btn--ghost" %>
+                <%= submit_tag t("dash.end_of_day.bridge.save"),
+                      class: "lp-today-v2-btn lp-today-v2-btn--primary" %>
+              </div>
+            <% end %>
+          <% else %>
+            <% camp = camps.first %>
+            <% style = battlefield_camp_style(camp) %>
+            <div class="lp-today-v2-camp-skip">
+              <span class="lp-today-v2-camp-skip__dot" style="background: <%= style[:color] %>" aria-hidden="true"></span>
+              <%= t("dash.end_of_day.bridge.camp_label", title: camp.title) %>
+            </div>
+
+            <%= form_with url: today_plan_tomorrow_battle_path, method: :post, class: "lp-today-v2-plan-form" do %>
+              <%= hidden_field_tag :project_id, camp.id %>
+              <%= text_field_tag :title, nil,
+                    class: "lp-today-v2-plan-input",
+                    placeholder: t("dash.end_of_day.bridge.placeholder"),
+                    aria: { label: t("dash.end_of_day.bridge.placeholder") },
+                    required: true %>
+              <div class="lp-today-v2-plan-actions">
+                <%= link_to t("dash.end_of_day.close_day"),
+                      today_end_day_path,
+                      data: { turbo_method: :post },
+                      class: "lp-today-v2-btn lp-today-v2-btn--ghost" %>
+                <%= submit_tag t("dash.end_of_day.bridge.save"),
+                      class: "lp-today-v2-btn lp-today-v2-btn--primary" %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="lp-today-v2-bridge">
+          <p class="lp-today-v2-bridge__hint"><%= t("dash.end_of_day.bridge.no_camps") %></p>
+          <%= button_to t("dash.end_of_day.close_day"),
+                today_end_day_path,
+                method: :post,
+                class: "lp-today-v2-btn lp-today-v2-btn--ghost lp-today-v2-btn--block" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if project_check.present? %>
+    <div class="lp-today-v2-end-of-day__camp-check">
+      <%= render "dashboard/dash_project_check", project: project_check %>
+    </div>
+  <% end %>
+</section>

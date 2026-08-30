@@ -72,8 +72,6 @@ module Today
     private
 
     def resolve_key
-      return :confirm_camp if @project_check.present?
-      return :pick_angle if @battle_angle_project.present? && @battle_angles.any?
       return :battles_waiting if @battles_waiting_count.positive?
       return :upcoming if @upcoming_battle.present?
 

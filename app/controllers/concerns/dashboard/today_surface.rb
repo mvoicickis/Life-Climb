@@ -43,14 +43,6 @@ module Dashboard
       @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
       @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
       @project_check = Strategy::ProjectCheckQueue.next_for(user: current_user, session: session)
-      @battle_angle_project =
-        if @project_check
-          nil
-        else
-          Strategy::BattleAngleQueue.project_for(user: current_user, session: session)
-        end
-      @battle_angles =
-        @battle_angle_project ? Strategy::BattleAngles.for(project: @battle_angle_project) : []
       @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
 
       if reconcile && !read_only_impersonation?
@@ -79,11 +71,25 @@ module Dashboard
       @battlefield_prompt = Today::BattlefieldPrompt.call(
         health: @battlefield_health,
         project_check: @project_check,
-        battle_angle_project: @battle_angle_project,
-        battle_angles: @battle_angles,
+        battle_angle_project: nil,
+        battle_angles: [],
         battles_waiting_count: @battles_waiting_count,
         upcoming_battle: @upcoming_battle
       )
+    end
+
+    def assign_end_of_day!(plan_tomorrow: false)
+      habits_gate = current_user.developer?
+      @end_of_day_ready = Today::EndOfDay.ready?(
+        health: @battlefield_health,
+        habits: @habits,
+        habits_gate_enabled: habits_gate
+      )
+      return unless @end_of_day_ready
+
+      @end_of_day_camps = Today::EndOfDay.open_camps(strategy_goal: @strategy_goal)
+      @tomorrow_battles = Today::EndOfDay.tomorrow_battles(user: current_user, journey: @journey)
+      @show_plan_tomorrow_form = plan_tomorrow || @tomorrow_battles.blank?
     end
 
     def sync_today_battles!

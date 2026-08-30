@@ -29,13 +29,33 @@
         streak: @climb_streak %>
 <% end %>
 
-<% if @battlefield_health.all_clear? && @battlefield_prompt %>
-  <%= turbo_stream.replace "today-battlefield-rows" do %>
-    <div id="today-battlefield-win-host">
-      <%= render "dashboard/dash_battlefield_win",
-            prompt: @battlefield_prompt,
-            journey: @journey %>
+<% if @battlefield_health.all_clear? %>
+  <%= turbo_stream.replace "today-battlefield-body" do %>
+    <div id="today-battlefield-body">
+      <div id="today-battlefield-inline-ack-host">
+        <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
+      </div>
     </div>
+  <% end %>
+<% end %>
+
+<% if habits_on_today_v2? %>
+  <%= turbo_stream.replace "today-anytime-host" do %>
+    <div id="today-anytime-host">
+      <%= render "dashboard/dash_anytime", habits: @habits %>
+    </div>
+  <% end %>
+<% end %>
+
+<% if @end_of_day_ready %>
+  <%= turbo_stream.replace "today-end-of-day-host" do %>
+    <div id="today-end-of-day-host">
+      <%= render "dashboard/dash_end_of_day" %>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "today-end-of-day-host" do %>
+    <div id="today-end-of-day-host"></div>
   <% end %>
 <% end %>
 

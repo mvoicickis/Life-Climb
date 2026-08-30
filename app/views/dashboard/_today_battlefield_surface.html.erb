@@ -18,5 +18,14 @@
         journey: @journey,
         include_mission: @include_mission_in_battle,
         mission: @mission %>
-  <%= render "dashboard/dash_anytime", habits: @habits if habits_on_today_v2? %>
+  <% if habits_on_today_v2? %>
+    <div id="today-anytime-host">
+      <%= render "dashboard/dash_anytime", habits: @habits %>
+    </div>
+  <% end %>
+  <div id="today-end-of-day-host">
+    <% if @end_of_day_ready %>
+      <%= render "dashboard/dash_end_of_day" %>
+    <% end %>
+  </div>
 <% end %>

@@ -125,6 +125,34 @@ en:
       next_day: "Next day →"
       share_toast: "Recap ready — share sheet would open here."
       share_text: "%{title} — %{done}/%{total} battles won · %{hp} health held on LifePoints"
+    end_of_day:
+      title: "End of day"
+      close_day: "Close day"
+      plan_another: "Plan another"
+      need_title: "Name tomorrow's battle first."
+      invalid_camp: "Pick an open camp on Mountain first."
+      saved: "Tomorrow's battle is set — %{title} (+%{sp} SP)"
+      inline_ack:
+        battles: "All battles won today"
+        basics: "Basics logged for today"
+      ack:
+        kicker: "Day complete"
+        title: "You cleared the field"
+        sub: "Rest on the ridge. Plan tomorrow if you like — or close the day now."
+        sub_single_camp: "One camp on your mountain — no picker needed."
+      bridge:
+        label: "Plan tomorrow"
+        hint_multi: "Pick a camp, then name one battle for tomorrow."
+        camp_label: "%{title} camp"
+        placeholder: "What's tomorrow's first battle?"
+        next: "Next →"
+        save: "Save battle"
+        no_camps: "Open a camp on Mountain when you're ready to plan tomorrow."
+      signoff:
+        title: "See you tomorrow"
+        sub:
+          one: "Day is wrapped. One battle is waiting on the ridge."
+          other: "Day is wrapped. %{count} battles are waiting on the ridge."
     battle_subtitle: "Win today's battle"
     battle_subtitle_sync: "Win today's battle"
     section_battles: "Battles"
