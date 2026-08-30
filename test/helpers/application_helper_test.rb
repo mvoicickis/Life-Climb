@@ -15,10 +15,13 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   test "habits_enabled? is false for non-developer when GameRules is off" do
+    disable_habits!
+
     refute habits_enabled?
   end
 
   test "habits_enabled? is true for developer when GameRules is off" do
+    disable_habits!
     @user.update_columns(developer: true)
 
     assert habits_enabled?

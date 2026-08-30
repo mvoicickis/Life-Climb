@@ -41,10 +41,9 @@ module GameRules
   TARGET_GAP_BP = 20
   TARGET_ABS_CAP = 0.4
 
-  # Habits are hidden from the UI while we get the goal -> projects -> battles
-  # loop right. Flip to true to bring Habits back (single line). While false,
-  # Today shows battles only, and the day percent / commitment are battles-only.
+  # Habits/Basics on Today and in commitment math. Flip to false to hide habits
+  # app-wide while focusing on battles-only (single line).
   def self.habits_enabled?
-    false
+    true
   end
 end
