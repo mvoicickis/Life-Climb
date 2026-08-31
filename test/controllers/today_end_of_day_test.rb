@@ -49,18 +49,22 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
   end
 
   test "acknowledge advances to step 2 plan" do
+    @user.create_notification_preference!(time_zone: "Europe/Berlin")
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
 
-    post today_eod_acknowledge_path
-    assert_redirected_to dashboard_path
-    follow_redirect!
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 18, 0, 0) do
+      post today_eod_acknowledge_path
+      assert_redirected_to dashboard_path
+      follow_redirect!
 
-    assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
-    assert_select ".lp-today-v2-eod-win", count: 0
+      assert_select ".lp-today-v2-eod-plan__label", text: "Tomorrow"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
+      assert_select ".lp-today-v2-eod-win", count: 0
+    end
   end
 
-  test "step 2 emphasizes add for today before 6pm local" do
+  test "step 2 uses today copy before 6pm local" do
     @user.create_notification_preference!(time_zone: "Europe/Berlin")
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
@@ -69,15 +73,18 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       post today_eod_acknowledge_path
       follow_redirect!
 
+      assert_select ".lp-today-v2-eod-plan__label", text: "Today"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do today?"
+
       actions = css_select(".lp-today-v2-eod-plan__actions input[type=submit]")
-      assert_equal "today", actions[0][:value]
+      assert_equal "Add for today", actions[0][:value]
       assert_includes actions[0][:class], "lp-today-v2-eod-plan__primary"
-      assert_equal "tomorrow", actions[1][:value]
+      assert_equal "Save for tomorrow instead", actions[1][:value]
       assert_includes actions[1][:class], "lp-today-v2-eod-plan__secondary"
     end
   end
 
-  test "step 2 emphasizes save for tomorrow from 6pm local" do
+  test "step 2 uses tomorrow copy from 6pm local" do
     @user.create_notification_preference!(time_zone: "Europe/Berlin")
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
@@ -86,10 +93,13 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       post today_eod_acknowledge_path
       follow_redirect!
 
+      assert_select ".lp-today-v2-eod-plan__label", text: "Tomorrow"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
+
       actions = css_select(".lp-today-v2-eod-plan__actions input[type=submit]")
-      assert_equal "tomorrow", actions[0][:value]
+      assert_equal "Save for tomorrow", actions[0][:value]
       assert_includes actions[0][:class], "lp-today-v2-eod-plan__primary"
-      assert_equal "today", actions[1][:value]
+      assert_equal "Add for today instead", actions[1][:value]
       assert_includes actions[1][:class], "lp-today-v2-eod-plan__secondary"
     end
   end
