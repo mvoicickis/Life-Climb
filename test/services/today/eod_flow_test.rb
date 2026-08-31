@@ -29,6 +29,24 @@ class Today::EodFlowTest < ActiveSupport::TestCase
     refute Today::EodFlow.acknowledged?(session)
   end
 
+  test "plan_copy uses today before 6pm local" do
+    user = users(:one)
+    user.create_notification_preference!(time_zone: "Europe/Berlin")
+
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 12, 0, 0) do
+      assert_equal :today, Today::EodFlow.plan_copy(user: user)
+    end
+  end
+
+  test "plan_copy uses tomorrow from 6pm local" do
+    user = users(:one)
+    user.create_notification_preference!(time_zone: "Europe/Berlin")
+
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 18, 0, 0) do
+      assert_equal :tomorrow, Today::EodFlow.plan_copy(user: user)
+    end
+  end
+
   test "plan_action_order emphasizes today before 6pm local" do
     user = users(:one)
     user.create_notification_preference!(time_zone: "Europe/Berlin")

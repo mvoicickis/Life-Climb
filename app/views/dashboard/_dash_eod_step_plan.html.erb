@@ -1,16 +1,18 @@
-<%# Step 2 — plan tomorrow (optional). locals: camps, tomorrow_battles %>
+<%# Step 2 — plan next battle (optional). locals: camps, tomorrow_battles %>
 <%
   camps = Array(local_assigns.fetch(:camps))
   tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles))
   default_camp = camps.first
+  plan_copy = Today::EodFlow.plan_copy(user: current_user)
+  plan_copy_scope = "dash.end_of_day.steps.plan.#{plan_copy}"
 %>
 
 <div class="lp-today-v2-eod-step lp-today-v2-eod-step--plan"
      data-controller="end-of-day-flow">
   <div class="lp-today-v2-eod-plan">
     <div class="lp-today-v2-eod-plan__head">
-      <p class="lp-today-v2-eod-plan__label"><%= t("dash.end_of_day.steps.plan.label") %></p>
-      <h2 class="lp-today-v2-eod-plan__title"><%= t("dash.end_of_day.steps.plan.title") %></h2>
+      <p class="lp-today-v2-eod-plan__label"><%= t("#{plan_copy_scope}.label") %></p>
+      <h2 class="lp-today-v2-eod-plan__title"><%= t("#{plan_copy_scope}.title") %></h2>
       <span class="lp-today-v2-eod-plan__points">
         <%= t("dash.end_of_day.steps.plan.planning_points", count: GameRules::STRATEGY_CHILD_SP) %>
       </span>
@@ -63,16 +65,18 @@
           <%
             primary_schedule, secondary_schedule = Today::EodFlow.plan_action_order(user: current_user)
             plan_action_labels = {
-              tomorrow: t("dash.end_of_day.steps.plan.save_tomorrow"),
-              today: t("dash.end_of_day.steps.plan.add_today")
+              today: t("#{plan_copy_scope}.actions.today"),
+              tomorrow: t("#{plan_copy_scope}.actions.tomorrow")
             }
           %>
           <div class="lp-today-v2-eod-plan__actions">
-            <%= submit_tag plan_action_labels.fetch(primary_schedule),
+            <%= button_tag plan_action_labels.fetch(primary_schedule),
+                  type: "submit",
                   name: "schedule",
                   value: primary_schedule,
                   class: "lp-today-v2-eod-plan__primary" %>
-            <%= submit_tag plan_action_labels.fetch(secondary_schedule),
+            <%= button_tag plan_action_labels.fetch(secondary_schedule),
+                  type: "submit",
                   name: "schedule",
                   value: secondary_schedule,
                   class: "lp-today-v2-eod-plan__secondary" %>

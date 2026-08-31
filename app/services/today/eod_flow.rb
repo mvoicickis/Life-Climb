@@ -36,7 +36,11 @@ module Today
       %i[win plan].include?(step)
     end
 
-    # Before 6pm local: emphasize adding for today; from 6pm: emphasize tomorrow.
+    # Before 6pm local: today framing; from 6pm: tomorrow framing.
+    def self.plan_copy(user:, at: Time.current)
+      evening_planning?(user: user, at: at) ? :tomorrow : :today
+    end
+
     def self.plan_action_order(user:, at: Time.current)
       if evening_planning?(user: user, at: at)
         %i[tomorrow today]
