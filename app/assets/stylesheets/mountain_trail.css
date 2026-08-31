@@ -1488,6 +1488,7 @@
   box-shadow: -2px 4px 10px rgba(18, 32, 26, 0.25);
   animation: lp-trail-flag-flutter 3.4s ease-in-out infinite;
   transform-origin: 100% 50%;
+  overflow: visible;
 }
 
 .lp-trail.is-v4 .lp-trail__pole {
@@ -1504,7 +1505,10 @@
 .lp-trail.is-v4 .lp-trail__peak-title,
 .lp-trail.is-v4 .lp-trail__peak-title.lp-rpg-destination-carousel__title,
 .lp-rpg.is-focus-phase .lp-trail.is-v4 .lp-trail__peak-title.lp-rpg-destination-carousel__title {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   font-family: var(--lp-trail-display);
   font-size: 1.125rem;
   font-weight: 700;
@@ -1513,18 +1517,19 @@
   text-align: right;
   max-width: 10rem;
   line-height: 1.15;
-  white-space: nowrap !important;
+  white-space: normal !important;
   overflow: hidden;
   text-overflow: ellipsis;
-  overflow-wrap: normal;
-  word-break: normal;
-  -webkit-line-clamp: unset;
-  line-clamp: unset;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   text-shadow: none;
 }
 
 .lp-trail.is-v4 .lp-trail__peak-tagline {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   margin-top: 2px;
   font-family: var(--lp-trail-display);
   font-size: 0.65625rem;
@@ -1532,9 +1537,11 @@
   font-weight: 500;
   color: #6b5e47;
   text-align: right;
-  white-space: nowrap;
+  white-space: normal !important;
   overflow: hidden;
   text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   max-width: 10rem;
 }
 

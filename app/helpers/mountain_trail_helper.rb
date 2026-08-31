@@ -28,6 +28,7 @@ module MountainTrailHelper
   PEAK_Y = 0.22
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
   CAMP_TENT_TITLE_LIMIT = 24
+  HUD_PLAN_TITLE_LIMIT = 24
 
   ACCENT_HEX = {
     "teal" => "#0f9488",
@@ -294,6 +295,10 @@ module MountainTrailHelper
 
   def mountain_trail_camp_caption_title(project)
     project.title.to_s.truncate(CAMP_TENT_TITLE_LIMIT)
+  end
+
+  def mountain_trail_hud_plan_title(title)
+    title.to_s.truncate(HUD_PLAN_TITLE_LIMIT)
   end
 
   def mountain_trail_camp_days(project)
