@@ -56,7 +56,12 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
     bootstrap_and_visit!
     page.driver.browser.manage.window.resize_to(412, 800)
 
-    3.times { click_button class: "lp-onboarding-tour__next" }
+    assert_selector "[data-controller='onboarding-mountain-tour']", wait: 5
+    3.times do
+      assert_selector "button.lp-onboarding-tour__next", wait: 5
+      find("button.lp-onboarding-tour__next").click
+      sleep 0.15
+    end
     assert_selector "#onboarding-tour-add-camp.lp-dash-nav__fab", wait: 5
     sleep 0.25
 
@@ -70,7 +75,8 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
       user: @user,
       goal_title: "Ship LifePoints",
       camp_title: "Launch",
-      battle_titles: [ "Write one test" ]
+      battle_titles: [ "Write one test" ],
+      basic_title: "Drink water"
     )
     journey = @user.reload.primary_focused_journey
     @user.update!(character: "fox")
@@ -92,7 +98,8 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
       user: @user,
       goal_title: "Become a Ruby Developer",
       camp_title: "Get certified",
-      battle_titles: [ "Study chapter 1" ]
+      battle_titles: [ "Study chapter 1" ],
+      basic_title: "Walk 10 minutes"
     )
     journey = @user.reload.primary_focused_journey
     @user.update!(character: "fox")

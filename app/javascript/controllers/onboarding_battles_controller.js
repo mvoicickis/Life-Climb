@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Onboarding battles step — add/remove rows, enable Finish when at least one title.
 export default class extends Controller {
-  static targets = ["list", "row", "input", "submit", "form"]
+  static targets = ["list", "row", "input", "basic", "submit", "form"]
   static values = { max: { type: Number, default: 5 } }
 
   connect() {
@@ -47,8 +47,9 @@ export default class extends Controller {
   }
 
   refresh() {
-    const hasTitle = this.inputTargets.some((el) => el.value.trim().length > 0)
-    if (this.hasSubmitTarget) this.submitTarget.disabled = !hasTitle
+    const hasBattle = this.inputTargets.some((el) => el.value.trim().length > 0)
+    const hasBasic = !this.hasBasicTarget || this.basicTarget.value.trim().length > 0
+    if (this.hasSubmitTarget) this.submitTarget.disabled = !(hasBattle && hasBasic)
 
     this.rowTargets.forEach((row) => {
       const btn = row.querySelector(".lp-adventure__battle-remove")
