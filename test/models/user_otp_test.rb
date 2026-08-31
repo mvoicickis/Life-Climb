@@ -51,6 +51,14 @@ class UserOtpTest < ActiveSupport::TestCase
     refute @admin.verify_backup_code!(used)
   end
 
+  test "otp verify tolerates about one window of clock skew" do
+    @admin.begin_otp_setup!
+    @admin.confirm_otp_setup!(@admin.totp.now)
+
+    skewed_code = @admin.totp.at(Time.now.to_i - 25)
+    assert @admin.verify_otp!(skewed_code), "expected code from ~25s ago to verify with OTP_DRIFT=#{UserOtp::OTP_DRIFT}"
+  end
+
   test "regular user cannot begin otp setup" do
     assert_raises(RuntimeError) { @user.begin_otp_setup! }
   end
