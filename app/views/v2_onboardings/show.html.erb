@@ -92,7 +92,18 @@
       <p class="lp-adventure__lead"><%= t("v2_onboarding.battles_lead") %></p>
 
       <%= form_with url: v2_onboarding_path(step: "battles"), method: :patch, class: "lp-adventure__form", data: { turbo: false, onboarding_battles_target: "form" } do %>
-        <div class="lp-adventure__battle-list" data-onboarding-battles-target="list">
+        <label class="lp-adventure__examples-note-label" for="onboarding_basic_title"><%= t("v2_onboarding.basic_label") %></label>
+        <%= text_field_tag "onboarding[basic_title]", @draft["basic_title"],
+              id: "onboarding_basic_title",
+              required: true,
+              maxlength: 120,
+              class: "lp-input w-full",
+              autocomplete: "off",
+              placeholder: t("v2_onboarding.basic_placeholder"),
+              data: { onboarding_battles_target: "basic", action: "input->onboarding-battles#refresh" } %>
+        <p class="lp-adventure__examples-plain"><%= t("v2_onboarding.basic_hint") %></p>
+
+        <div class="lp-adventure__battle-list mt-4" data-onboarding-battles-target="list">
           <% battle_rows.each do |title| %>
             <div class="lp-adventure__battle-row" data-onboarding-battles-target="row">
               <%= text_field_tag "onboarding[battle_titles][]", title,

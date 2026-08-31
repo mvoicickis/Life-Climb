@@ -12,29 +12,32 @@ module Onboarding
     BOOTSTRAP_FLAG = "onboarding_bootstrap".freeze
     MAX_BATTLES = 5
 
-    Result = Struct.new(:journey, :goal, :plan, :project, :battles, keyword_init: true)
+    Result = Struct.new(:journey, :goal, :plan, :project, :battles, :habit, keyword_init: true)
 
-    def self.call(user:, goal_title:, camp_title:, battle_titles:)
-      new(user:, goal_title:, camp_title:, battle_titles:).call
+    def self.call(user:, goal_title:, camp_title:, battle_titles:, basic_title:)
+      new(user:, goal_title:, camp_title:, battle_titles:, basic_title:).call
     end
 
-    def initialize(user:, goal_title:, camp_title:, battle_titles:)
+    def initialize(user:, goal_title:, camp_title:, battle_titles:, basic_title:)
       @user = user
       @goal_title = goal_title.to_s.strip
       @camp_title = camp_title.to_s.strip
       @battle_titles = Array(battle_titles).map { |t| t.to_s.strip }.reject(&:blank?).first(MAX_BATTLES)
+      @basic_title = basic_title.to_s.strip
     end
 
     def call
       raise Error, I18n.t("v2_onboarding.need_goal") if @goal_title.blank?
       raise Error, I18n.t("v2_onboarding.need_camp") if @camp_title.blank?
       raise Error, I18n.t("v2_onboarding.need_battle") if @battle_titles.empty?
+      raise Error, I18n.t("v2_onboarding.need_basic") if @basic_title.blank?
 
       journey = nil
       goal = nil
       plan = nil
       project = nil
       battles = []
+      habit = nil
 
       ActiveRecord::Base.transaction do
         areas = LifeAreas::Select.call(user: @user, keys: [ DEFAULT_AREA_KEY ])
@@ -95,6 +98,19 @@ module Onboarding
           )
         end
 
+        habit = @user.habits.create!(
+          name: @basic_title,
+          unit: "times",
+          points: 5,
+          frequency: "daily",
+          active: true,
+          show_on_home: true,
+          stat_type: "growth",
+          life_journey: journey,
+          quantity_checkin: false
+        )
+        HabitProjectLink.create!(habit: habit, strategy_goal: project)
+
         Strategy::CascadeToDaily.call(user: @user, life_area: primary_area)
 
         flags = (journey.setup_flags.presence || {}).stringify_keys.merge(
@@ -110,7 +126,7 @@ module Onboarding
         Strategy::Celebrate.call(user: @user, goal: first_battle) if first_battle
       end
 
-      Result.new(journey: journey, goal: goal, plan: plan, project: project, battles: battles)
+      Result.new(journey: journey, goal: goal, plan: plan, project: project, battles: battles, habit: habit)
     rescue LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error,
            ActiveRecord::RecordInvalid => e
       raise Error, e.message

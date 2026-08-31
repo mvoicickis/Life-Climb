@@ -70,12 +70,18 @@ class V2OnboardingsController < ApplicationController
       if titles.empty?
         redirect_to v2_onboarding_path(step: "battles"), alert: t("v2_onboarding.need_battle") and return
       end
+      basic_title = draft["basic_title"].to_s.strip
+      if basic_title.blank?
+        redirect_to v2_onboarding_path(step: "battles"), alert: t("v2_onboarding.need_basic") and return
+      end
+      session[:v2_onboarding] = draft.merge("basic_title" => basic_title)
       begin
         result = Onboarding::Bootstrap.call(
           user: current_user,
           goal_title: draft["goal"],
           camp_title: draft["camp"],
-          battle_titles: titles
+          battle_titles: titles,
+          basic_title: basic_title
         )
         session.delete(:v2_onboarding)
         redirect_to life_journey_path(result.journey)
@@ -90,7 +96,7 @@ class V2OnboardingsController < ApplicationController
   private
 
   def onboarding_params
-    params.fetch(:onboarding, {}).permit(:goal, :camp, :title, battle_titles: [])
+    params.fetch(:onboarding, {}).permit(:goal, :camp, :title, :basic_title, battle_titles: [])
   end
 
   def battle_titles_from_params

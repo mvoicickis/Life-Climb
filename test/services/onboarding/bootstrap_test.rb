@@ -12,12 +12,13 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     )
   end
 
-  test "creates goal plan project battles and marks onboarding complete" do
+  test "creates goal plan project battles habit and marks onboarding complete" do
     result = Onboarding::Bootstrap.call(
       user: @user,
       goal_title: "Become a Ruby Developer",
       camp_title: "Get certified",
-      battle_titles: [ "Study chapter 1", "Write one test" ]
+      battle_titles: [ "Study chapter 1", "Write one test" ],
+      basic_title: "Walk 10 minutes"
     )
 
     @user.reload
@@ -36,9 +37,32 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 2, result.battles.size
     assert_equal Date.current, result.battles.first.scheduled_on
 
+    habit = result.habit
+    assert_equal "Walk 10 minutes", habit.name
+    assert habit.show_on_home?
+    refute habit.quantity_checkin?
+    assert_equal journey.id, habit.life_journey_id
+    assert HabitProjectLink.exists?(habit: habit, strategy_goal: result.project)
+
     assert Strategy::HierarchyReady.call(user: @user, journey: journey)
     assert @user.daily_todos.where(scheduled_on: Date.current).exists?
     assert @user.needs_onboarding_mountain_tour?(journey)
+  end
+
+  test "rejects empty basic" do
+    error = assert_raises(Onboarding::Bootstrap::Error) do
+      Onboarding::Bootstrap.call(
+        user: @user,
+        goal_title: "Ship it",
+        camp_title: "Build",
+        battle_titles: [ "Write one test" ],
+        basic_title: ""
+      )
+    end
+
+    assert_equal I18n.t("v2_onboarding.need_basic"), error.message
+    refute @user.reload.onboarding_completed?
+    assert_equal 0, @user.habits.count
   end
 
   test "rejects empty battles" do
@@ -47,7 +71,8 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
         user: @user,
         goal_title: "Ship it",
         camp_title: "Build",
-        battle_titles: []
+        battle_titles: [],
+        basic_title: "Drink water"
       )
     end
 

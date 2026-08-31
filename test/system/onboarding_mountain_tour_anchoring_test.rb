@@ -70,7 +70,8 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
       user: @user,
       goal_title: "Ship LifePoints",
       camp_title: "Launch",
-      battle_titles: [ "Write one test" ]
+      battle_titles: [ "Write one test" ],
+      basic_title: "Drink water"
     )
     journey = @user.reload.primary_focused_journey
     @user.update!(character: "fox")
@@ -92,7 +93,8 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
       user: @user,
       goal_title: "Become a Ruby Developer",
       camp_title: "Get certified",
-      battle_titles: [ "Study chapter 1" ]
+      battle_titles: [ "Study chapter 1" ],
+      basic_title: "Walk 10 minutes"
     )
     journey = @user.reload.primary_focused_journey
     @user.update!(character: "fox")
