@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today — End of day v2 (sequential mockup)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #f7ead9;
+      --muted: rgba(247, 234, 217, 0.5);
+      --paper-deep: #100a06;
+      --green: #4ade80;
+      --teal: #0f766e;
+      --teal-bright: #14b8a6;
+      --planning: #2dd4bf;
+      --line: rgba(255, 255, 255, 0.08);
+      --font: "Nunito", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #e8e4dc;
+      color: #1c2420;
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .page__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #12201a;
+    }
+
+    .page__lede {
+      margin: 0 0 0.75rem;
+      font-size: 0.9rem;
+      color: #5f665e;
+      max-width: 42rem;
+    }
+
+    .page__rules {
+      margin: 0 0 2rem;
+      padding: 0.85rem 1rem;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #ddd8cf;
+      font-size: 0.82rem;
+      color: #4a5248;
+      max-width: 42rem;
+    }
+
+    .page__rules ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .page__rules li { margin-bottom: 0.2rem; }
+
+    .flow-arrow {
+      text-align: center;
+      margin: -1.25rem 0 0.5rem;
+      font-size: 1.25rem;
+      color: #94a3b8;
+    }
+
+    .step {
+      margin-bottom: 2.5rem;
+    }
+
+    .step__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .step__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #12201a;
+    }
+
+    .step__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: #5f665e;
+      max-width: 34rem;
+    }
+
+    .phone {
+      width: 375px;
+      max-width: 100%;
+      margin: 0 auto;
+      background:
+        radial-gradient(ellipse 120% 60% at 50% 0%, rgba(232, 72, 47, 0.14), transparent 55%),
+        linear-gradient(165deg, #241812, #170f0a 55%, var(--paper-deep));
+      color: var(--ink);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.08),
+        0 24px 48px rgba(0, 0, 0, 0.18);
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1.25rem 1.25rem;
+    }
+
+    /* Step 1 — acknowledgment moment */
+    .moment {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 0.5rem;
+    }
+
+    .moment__glow {
+      width: 5.5rem;
+      height: 5.5rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74, 222, 128, 0.28), rgba(74, 222, 128, 0.04));
+      display: grid;
+      place-items: center;
+      margin-bottom: 1.25rem;
+      animation: glow 2.4s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.06); opacity: 0.85; }
+    }
+
+    .moment__icon {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+
+    .moment__title {
+      margin: 0;
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--green);
+    }
+
+    .moment__sub {
+      margin: 0.65rem 0 0;
+      font-size: 0.9rem;
+      color: rgba(247, 234, 217, 0.55);
+      max-width: 16rem;
+    }
+
+    .moment__tap {
+      margin-top: auto;
+      padding-top: 2rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.28);
+      letter-spacing: 0.04em;
+    }
+
+    /* Step 2 — planning question */
+    .question {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question__head {
+      margin-bottom: 1.5rem;
+    }
+
+    .question__label {
+      margin: 0 0 0.5rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .question__title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .question__points {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 0.5rem;
+      padding: 0.28rem 0.55rem;
+      border-radius: 99px;
+      background: rgba(45, 212, 191, 0.1);
+      border: 1px solid rgba(45, 212, 191, 0.22);
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--planning);
+    }
+
+    .camps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .camp {
+      padding: 0.45rem 0.7rem;
+      border-radius: 99px;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: default;
+    }
+
+    .camp.is-selected {
+      border-color: var(--teal-bright);
+      background: rgba(20, 184, 166, 0.15);
+      color: #a7f3d0;
+    }
+
+    .plan-input {
+      width: 100%;
+      padding: 0.85rem 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.28);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .plan-input::placeholder {
+      color: rgba(247, 234, 217, 0.32);
+    }
+
+    .question__footer {
+      margin-top: auto;
+      padding-top: 1.5rem;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(170deg, #34d76b, #1fa855);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: default;
+      box-shadow: 0 4px 14px rgba(31, 168, 85, 0.35);
+    }
+
+    .link-skip {
+      display: block;
+      margin-top: 0.85rem;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.38);
+      text-decoration: none;
+    }
+
+    /* Step 3 — quiet close */
+    .closed {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 0.5rem;
+    }
+
+    .closed__moon {
+      font-size: 2.25rem;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      opacity: 0.9;
+    }
+
+    .closed__title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--green);
+    }
+
+    .closed__sub {
+      margin: 0.5rem 0 0;
+      font-size: 0.82rem;
+      color: rgba(247, 234, 217, 0.45);
+      max-width: 15rem;
+      line-height: 1.5;
+    }
+
+    .closed__saved {
+      margin-top: 1.25rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.65);
+    }
+
+    .closed__share {
+      margin-top: auto;
+      padding-top: 2.5rem;
+    }
+
+    .link-share {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.3);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+      cursor: default;
+    }
+
+    /* Bottom nav — only on closed state, dimmed */
+    .nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto 1fr 1fr;
+      align-items: end;
+      gap: 0.15rem;
+      padding: 0.45rem 0.6rem 0.65rem;
+      background: rgba(16, 10, 6, 0.92);
+      backdrop-filter: blur(26px);
+      color: rgba(247, 234, 217, 0.3);
+      margin-top: auto;
+    }
+
+    .nav__link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.59rem;
+      font-weight: 600;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .nav__link.is-active {
+      color: rgba(240, 169, 27, 0.5);
+    }
+
+    .nav__icon {
+      width: 1.4375rem;
+      height: 1.4375rem;
+      opacity: 0.5;
+    }
+
+    .nav__fab-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0.35;
+    }
+
+    .notch {
+      width: 58px;
+      height: 58px;
+      margin-top: -26px;
+      border-radius: 999px;
+      background: linear-gradient(170deg, #34d76b, #1fa855);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 0 5px rgba(16, 10, 6, 0.92);
+      font-size: 1.1rem;
+    }
+
+    .notch-label {
+      margin-top: 0.15rem;
+      font-size: 0.59rem;
+      font-weight: 700;
+      color: rgba(74, 222, 128, 0.4);
+    }
+
+    .variant-group {
+      display: grid;
+      gap: 2rem;
+      margin-top: 0.5rem;
+    }
+
+    .variant__label {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .moment__glow { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="page__title">Today — End of day v2</h1>
+    <p class="page__lede">
+      Sequential mockup. One obvious next step at a time — not nine things at once.
+      Compare with <code>end-of-day.html</code> (original intent) and the live Today screen (everything stacked).
+    </p>
+    <div class="page__rules">
+      <strong>Rules baked in:</strong>
+      <ul>
+        <li>No camp check on Today</li>
+        <li>Share is secondary — never beside the primary action</li>
+        <li>No error banners for repeat taps</li>
+        <li>"Planning points", not "SP"</li>
+        <li>Plain words — nothing counts down, nothing shows a deficit</li>
+      </ul>
+    </div>
+
+    <!-- Step 1 -->
+    <section class="step">
+      <p class="step__label">Step 1</p>
+      <h2 class="step__title">The win — alone</h2>
+      <p class="step__note">Nothing else on screen. No battle list, no basics, no buttons, no share, no planning form. Tap anywhere to continue.</p>
+      <div class="phone">
+        <div class="phone__body">
+          <div class="moment">
+            <div class="moment__glow" aria-hidden="true">
+              <span class="moment__icon">✓</span>
+            </div>
+            <h3 class="moment__title">You cleared the field</h3>
+            <p class="moment__sub">All battles won. Basics done.</p>
+            <p class="moment__tap">Tap to continue</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="flow-arrow" aria-hidden="true">↓</p>
+
+    <!-- Step 2 -->
+    <section class="step">
+      <p class="step__label">Step 2</p>
+      <h2 class="step__title">One question — what will you do tomorrow?</h2>
+      <p class="step__note">Single focus. Primary action is full-width below the input. Skip is a text link underneath — not beside the button. Share does not appear here.</p>
+
+      <div class="variant-group">
+        <div>
+          <p class="variant__label">2a — Single camp (picker skipped)</p>
+          <div class="phone">
+            <div class="phone__body">
+              <div class="question">
+                <div class="question__head">
+                  <p class="question__label">Tomorrow</p>
+                  <h3 class="question__title">What will you do tomorrow?</h3>
+                  <span class="question__points">+2 planning points</span>
+                </div>
+                <input type="text" class="plan-input" placeholder="Name one thing" aria-label="Tomorrow's battle">
+                <div class="question__footer">
+                  <button type="button" class="btn-primary">Save for tomorrow</button>
+                  <a href="#" class="link-skip" onclick="return false">Skip — I'm done for today</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="variant__label">2b — Multiple camps (picker is part of the question)</p>
+          <div class="phone">
+            <div class="phone__body">
+              <div class="question">
+                <div class="question__head">
+                  <p class="question__label">Tomorrow</p>
+                  <h3 class="question__title">What will you do tomorrow?</h3>
+                  <span class="question__points">+2 planning points</span>
+                </div>
+                <div class="camps" role="list">
+                  <button type="button" class="camp is-selected" role="listitem">Product</button>
+                  <button type="button" class="camp" role="listitem">Health</button>
+                  <button type="button" class="camp" role="listitem">Learning</button>
+                </div>
+                <input type="text" class="plan-input" placeholder="Name one thing" aria-label="Tomorrow's battle">
+                <div class="question__footer">
+                  <button type="button" class="btn-primary">Save for tomorrow</button>
+                  <a href="#" class="link-skip" onclick="return false">Skip — I'm done for today</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="variant__label">2c — Filled in, ready to save</p>
+          <div class="phone">
+            <div class="phone__body">
+              <div class="question">
+                <div class="question__head">
+                  <p class="question__label">Tomorrow</p>
+                  <h3 class="question__title">What will you do tomorrow?</h3>
+                  <span class="question__points">+2 planning points</span>
+                </div>
+                <div class="camps" role="list">
+                  <button type="button" class="camp" role="listitem">Product</button>
+                  <button type="button" class="camp is-selected" role="listitem">Learning</button>
+                  <button type="button" class="camp" role="listitem">Health</button>
+                </div>
+                <input type="text" class="plan-input" value="Review Spanish vocab" aria-label="Tomorrow's battle">
+                <div class="question__footer">
+                  <button type="button" class="btn-primary">Save for tomorrow</button>
+                  <a href="#" class="link-skip" onclick="return false">Skip — I'm done for today</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="flow-arrow" aria-hidden="true">↓</p>
+
+    <!-- Step 3 -->
+    <section class="step">
+      <p class="step__label">Step 3</p>
+      <h2 class="step__title">Done — closed and quiet</h2>
+      <p class="step__note">Day is closed. No close-day button (already closed). Share is a faint link at the bottom — never beside a primary action. Nav is dimmed.</p>
+
+      <div class="variant-group">
+        <div>
+          <p class="variant__label">3a — Planned a battle</p>
+          <div class="phone">
+            <div class="phone__body">
+              <div class="closed">
+                <div class="closed__moon" aria-hidden="true">🌙</div>
+                <h3 class="closed__title">See you tomorrow</h3>
+                <p class="closed__sub">Day 12 is closed.</p>
+                <p class="closed__saved">Review Spanish vocab · Learning</p>
+                <div class="closed__share">
+                  <a href="#" class="link-share" onclick="return false">Share your day</a>
+                </div>
+              </div>
+            </div>
+            <nav class="nav" aria-label="Primary">
+              <span class="nav__link is-active"><span class="nav__icon">◇</span>Today</span>
+              <span class="nav__link"><span class="nav__icon">△</span>Mountain</span>
+              <div class="nav__fab-slot">
+                <div class="notch" aria-hidden="true">✓</div>
+                <span class="notch-label">End day</span>
+              </div>
+              <span class="nav__link"><span class="nav__icon">↗</span>Journey</span>
+              <span class="nav__link"><span class="nav__icon">○</span>You</span>
+            </nav>
+          </div>
+        </div>
+
+        <div>
+          <p class="variant__label">3b — Skipped planning</p>
+          <div class="phone">
+            <div class="phone__body">
+              <div class="closed">
+                <div class="closed__moon" aria-hidden="true">🌙</div>
+                <h3 class="closed__title">See you tomorrow</h3>
+                <p class="closed__sub">Day 12 is closed.</p>
+                <div class="closed__share">
+                  <a href="#" class="link-share" onclick="return false">Share your day</a>
+                </div>
+              </div>
+            </div>
+            <nav class="nav" aria-label="Primary">
+              <span class="nav__link is-active"><span class="nav__icon">◇</span>Today</span>
+              <span class="nav__link"><span class="nav__icon">△</span>Mountain</span>
+              <div class="nav__fab-slot">
+                <div class="notch" aria-hidden="true">✓</div>
+                <span class="notch-label">End day</span>
+              </div>
+              <span class="nav__link"><span class="nav__icon">↗</span>Journey</span>
+              <span class="nav__link"><span class="nav__icon">○</span>You</span>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
