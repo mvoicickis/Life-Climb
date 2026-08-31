@@ -132,6 +132,11 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_in_delta 0.5, mountain_trail_climb_fraction([ done, open ]), 0.001
   end
 
+  test "camp caption truncates long titles for tent labels" do
+    assert_equal "Start: Get a job", mountain_trail_camp_caption("Start: Get a job")
+    assert_equal "Start: Make LifePoint...", mountain_trail_camp_caption("Start: Make LifePoints Successsull")
+  end
+
   test "camp status is empty, ready, or cleared" do
     empty = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [], false)
     assert_equal "Nothing planned", mountain_trail_camp_status(empty)

@@ -555,13 +555,15 @@
 }
 
 .lp-trail-camp__title {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   font-family: var(--lp-trail-display);
   font-size: 0.62rem;
   font-weight: 700;
   color: #1a140c;
   line-height: 1.15;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-shadow:

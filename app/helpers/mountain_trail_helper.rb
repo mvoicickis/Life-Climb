@@ -58,6 +58,7 @@ module MountainTrailHelper
   PLACE_X_MAX = 0.97
   PLACE_Y_MIN = 0.03
   PLACE_Y_MAX = 0.985
+  CAMP_CAPTION_MAX = 24
 
   PLANT_ICON_STARTERS = [
     { icon: "💪", key: "strong", color: "#e8590c" },
@@ -71,6 +72,10 @@ module MountainTrailHelper
 
   def mountain_trail_project_accent(project)
     project&.trail_accent_hex || mountain_trail_accent(project&.tagged_color_key)
+  end
+
+  def mountain_trail_camp_caption(title)
+    title.to_s.truncate(CAMP_CAPTION_MAX)
   end
 
   def mountain_trail_photo_url(journey)

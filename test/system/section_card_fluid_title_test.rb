@@ -97,6 +97,6 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
     assert metrics["hasTent"]
     assert_equal expected_text, metrics["label"]
     assert_operator metrics["width"].to_f, :>=, 40.0
-    assert_equal expected_text.truncate(12), metrics["caption"]
+    assert_equal expected_text.truncate(MountainTrailHelper::CAMP_CAPTION_MAX), metrics["caption"]
   end
 end
