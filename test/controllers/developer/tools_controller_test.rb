@@ -48,6 +48,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
       climb_streak_days: 8,
       climb_streak_on: Date.current
     )
+    get settings_path
     session[Today::EodFlow::ACK_SESSION_KEY] = Date.current.to_s
     session[Today::BattlefieldDay::SESSION_KEY] = Date.current.to_s
 
