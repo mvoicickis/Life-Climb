@@ -99,7 +99,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to v2_onboarding_path(step: "battles")
     follow_redirect!
-    assert_match(/one thing you'll do every day/i, response.body)
+    assert_match(I18n.t("v2_onboarding.need_basic"), response.body)
 
     user = User.find_by!(email_address: "need-basic@example.com")
     refute user.onboarding_completed?
