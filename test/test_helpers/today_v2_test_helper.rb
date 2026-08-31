@@ -9,7 +9,10 @@ module TodayV2TestHelper
       assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
     else
       assert_selector ".lp-dash.is-today-v2", count: 1
-      assert_text "You cleared the field", wait: 5
+      assert_selector ".lp-today-v2-eod-win__title",
+                      text: "You cleared the field",
+                      visible: :all,
+                      wait: 5
       assert_selector "#today-end-of-day", visible: :all
     end
   end

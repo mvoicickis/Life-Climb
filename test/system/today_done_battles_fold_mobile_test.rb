@@ -35,6 +35,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    visit dashboard_path
 
     assert_today_v2_all_clear_shell!
     assert_no_legacy_today_shell!
@@ -45,7 +46,10 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     end
     assert_selector "#today-end-of-day", wait: 5
     assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/, visible: :all, wait: 5
-    assert_selector ".lp-today-v2-eod-win__stats", text: /You won 5 of 5 battles/, wait: 5
+    assert_selector ".lp-today-v2-eod-win__stats",
+                    text: /You won 5 of 5 battles/,
+                    visible: :all,
+                    wait: 5
 
     takeover_h = page.evaluate_script(<<~JS)
       document.querySelector('#today-end-of-day')?.getBoundingClientRect().height
