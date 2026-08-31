@@ -1197,7 +1197,7 @@ de:
       title: "Entwicklertools"
       subtitle: "Nur für den Entwickler sichtbar. Ändert andere Spieler nicht."
       restart_npe: "Neue-Spieler-Erfahrung neu starten"
-      restart_npe_confirm: "Ziele, Pläne, Projekte, Kämpfe und Reisen dieses Kontos löschen, Onboarding zurücksetzen und den ersten Onboarding-Bildschirm öffnen? Dein Login bleibt. Action Points und Gewohnheiten bleiben erhalten."
+      restart_npe_confirm: "Ziele, Pläne, Projekte, Kämpfe, Basics und Reisen dieses Kontos löschen, Onboarding zurücksetzen und den ersten Onboarding-Bildschirm öffnen? Dein Login bleibt. Action Points bleiben erhalten."
       restart_npe_done: "Neue-Spieler-Erfahrung neu gestartet — Strategiedaten gelöscht."
   v2_onboarding:
     title: "Starte dein Abenteuer"

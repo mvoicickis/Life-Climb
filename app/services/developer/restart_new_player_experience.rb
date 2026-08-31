@@ -26,6 +26,7 @@ module Developer
         @user.strategy_point_ledgers.delete_all
         # Cascades daily_logs + completions via Habit dependent: :destroy.
         @user.habits.destroy_all
+        @user.day_overshoot_bonuses.for_day(Date.current).delete_all
 
         shown = Array(@user.support_milestones_shown).map(&:to_s)
         shown.delete(User::ADVENTURE_GUIDE_KEY)
@@ -37,6 +38,12 @@ module Developer
           planning_version: 2,
           strategy_points: 0,
           character: nil,
+          climb_streak_days: 0,
+          climb_streak_on: nil,
+          climb_streak_freezes: 0,
+          climb_streak_frozen_on: nil,
+          day_shields_available: 1,
+          day_shield_on: nil,
           support_milestones_shown: shown
         )
       end
