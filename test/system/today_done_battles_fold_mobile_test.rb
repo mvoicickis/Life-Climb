@@ -38,6 +38,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     visit dashboard_path
 
     assert_today_v2_all_clear_shell!
+    assert_selector ".lp-dash-nav.is-today-v2", visible: true, wait: 5
     assert_no_legacy_today_shell!
     assert_no_selector ".lp-today-v2-row"
     assert_battle_row_absent!(title: @todo.title)
