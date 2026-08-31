@@ -58,13 +58,13 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       assert_redirected_to dashboard_path
       follow_redirect!
 
-      assert_select ".lp-today-v2-eod-plan__label", text: "Tomorrow"
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
+      assert_select ".lp-today-v2-eod-plan__label", count: 0
       assert_select ".lp-today-v2-eod-win", count: 0
     end
   end
 
-  test "step 2 uses today copy before 6pm local" do
+  test "step 2 emphasizes add for today before 6pm local" do
     @user.create_notification_preference!(time_zone: "Europe/Berlin")
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
@@ -73,8 +73,8 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       post today_eod_acknowledge_path
       follow_redirect!
 
-      assert_select ".lp-today-v2-eod-plan__label", text: "Today"
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do today?"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
+      assert_select ".lp-today-v2-eod-plan__label", count: 0
 
       actions = css_select(".lp-today-v2-eod-plan__actions button[type=submit]")
       assert_equal "Add for today", actions[0].text.strip
@@ -86,7 +86,7 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "step 2 uses tomorrow copy from 6pm local" do
+  test "step 2 emphasizes save for tomorrow from 6pm local" do
     @user.create_notification_preference!(time_zone: "Europe/Berlin")
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
@@ -95,8 +95,8 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       post today_eod_acknowledge_path
       follow_redirect!
 
-      assert_select ".lp-today-v2-eod-plan__label", text: "Tomorrow"
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
+      assert_select ".lp-today-v2-eod-plan__label", count: 0
 
       actions = css_select(".lp-today-v2-eod-plan__actions button[type=submit]")
       assert_equal "Save for tomorrow", actions[0].text.strip
