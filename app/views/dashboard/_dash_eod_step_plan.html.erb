@@ -60,14 +60,21 @@
                 aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
                 required: true,
                 autocomplete: "off" %>
+          <%
+            primary_schedule, secondary_schedule = Today::EodFlow.plan_action_order(user: current_user)
+            plan_action_labels = {
+              tomorrow: t("dash.end_of_day.steps.plan.save_tomorrow"),
+              today: t("dash.end_of_day.steps.plan.add_today")
+            }
+          %>
           <div class="lp-today-v2-eod-plan__actions">
-            <%= submit_tag t("dash.end_of_day.steps.plan.save_tomorrow"),
+            <%= submit_tag plan_action_labels.fetch(primary_schedule),
                   name: "schedule",
-                  value: "tomorrow",
+                  value: primary_schedule,
                   class: "lp-today-v2-eod-plan__primary" %>
-            <%= submit_tag t("dash.end_of_day.steps.plan.add_today"),
+            <%= submit_tag plan_action_labels.fetch(secondary_schedule),
                   name: "schedule",
-                  value: "today",
+                  value: secondary_schedule,
                   class: "lp-today-v2-eod-plan__secondary" %>
           </div>
         <% end %>
