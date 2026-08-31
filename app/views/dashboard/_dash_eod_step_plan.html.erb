@@ -70,11 +70,13 @@
             }
           %>
           <div class="lp-today-v2-eod-plan__actions">
-            <%= submit_tag plan_action_labels.fetch(primary_schedule),
+            <%= button_tag plan_action_labels.fetch(primary_schedule),
+                  type: "submit",
                   name: "schedule",
                   value: primary_schedule,
                   class: "lp-today-v2-eod-plan__primary" %>
-            <%= submit_tag plan_action_labels.fetch(secondary_schedule),
+            <%= button_tag plan_action_labels.fetch(secondary_schedule),
+                  type: "submit",
                   name: "schedule",
                   value: secondary_schedule,
                   class: "lp-today-v2-eod-plan__secondary" %>

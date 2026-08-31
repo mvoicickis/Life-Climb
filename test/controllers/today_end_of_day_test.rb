@@ -76,11 +76,13 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       assert_select ".lp-today-v2-eod-plan__label", text: "Today"
       assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do today?"
 
-      actions = css_select(".lp-today-v2-eod-plan__actions input[type=submit]")
-      assert_equal "Add for today", actions[0][:value]
+      actions = css_select(".lp-today-v2-eod-plan__actions button[type=submit]")
+      assert_equal "Add for today", actions[0].text.strip
       assert_includes actions[0][:class], "lp-today-v2-eod-plan__primary"
-      assert_equal "Save for tomorrow instead", actions[1][:value]
+      assert_equal "today", actions[0][:value]
+      assert_equal "Save for tomorrow instead", actions[1].text.strip
       assert_includes actions[1][:class], "lp-today-v2-eod-plan__secondary"
+      assert_equal "tomorrow", actions[1][:value]
     end
   end
 
@@ -96,11 +98,13 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
       assert_select ".lp-today-v2-eod-plan__label", text: "Tomorrow"
       assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
 
-      actions = css_select(".lp-today-v2-eod-plan__actions input[type=submit]")
-      assert_equal "Save for tomorrow", actions[0][:value]
+      actions = css_select(".lp-today-v2-eod-plan__actions button[type=submit]")
+      assert_equal "Save for tomorrow", actions[0].text.strip
       assert_includes actions[0][:class], "lp-today-v2-eod-plan__primary"
-      assert_equal "Add for today instead", actions[1][:value]
+      assert_equal "tomorrow", actions[0][:value]
+      assert_equal "Add for today instead", actions[1].text.strip
       assert_includes actions[1][:class], "lp-today-v2-eod-plan__secondary"
+      assert_equal "today", actions[1][:value]
     end
   end
 
