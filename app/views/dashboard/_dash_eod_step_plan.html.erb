@@ -1,10 +1,8 @@
-<%# Step 2 — plan next battle (optional). locals: camps, tomorrow_battles %>
+<%# Step 2 — plan tomorrow first, optional today after. locals: camps, tomorrow_battles %>
 <%
   camps = Array(local_assigns.fetch(:camps))
   tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles))
   default_camp = camps.first
-  plan_copy = Today::EodFlow.plan_copy(user: current_user)
-  plan_copy_scope = "dash.end_of_day.steps.plan.#{plan_copy}"
 %>
 
 <div class="lp-today-v2-eod-step lp-today-v2-eod-step--plan"
@@ -61,30 +59,53 @@
                 aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
                 required: true,
                 autocomplete: "off" %>
-          <%
-            primary_schedule, secondary_schedule = Today::EodFlow.plan_action_order(user: current_user)
-            plan_action_labels = {
-              today: t("#{plan_copy_scope}.actions.today"),
-              tomorrow: t("#{plan_copy_scope}.actions.tomorrow")
-            }
-          %>
           <div class="lp-today-v2-eod-plan__actions">
-            <%= button_tag plan_action_labels.fetch(primary_schedule),
+            <%= button_tag t("dash.end_of_day.steps.plan.save_tomorrow"),
                   type: "submit",
                   name: "schedule",
-                  value: primary_schedule,
+                  value: "tomorrow",
                   class: "lp-today-v2-eod-plan__primary" %>
-            <%= button_tag plan_action_labels.fetch(secondary_schedule),
-                  type: "submit",
-                  name: "schedule",
-                  value: secondary_schedule,
-                  class: "lp-today-v2-eod-plan__secondary" %>
           </div>
         <% end %>
+
         <%= button_to t("dash.end_of_day.steps.plan.skip"),
               today_end_day_path,
               method: :post,
               class: "lp-today-v2-eod-plan__skip" %>
+
+        <% if tomorrow_battles.any? %>
+          <button type="button"
+                  class="lp-today-v2-eod-plan__today-prompt"
+                  data-end-of-day-flow-target="todayPrompt"
+                  data-action="end-of-day-flow#revealToday">
+            <%= t("dash.end_of_day.steps.plan.add_today_prompt") %>
+          </button>
+
+          <div class="lp-today-v2-eod-plan__today-panel"
+               hidden
+               data-end-of-day-flow-target="todayPanel">
+            <%= form_with url: today_plan_tomorrow_battle_path,
+                  method: :post,
+                  class: "lp-today-v2-eod-plan__form lp-today-v2-eod-plan__form--today" do %>
+              <%= hidden_field_tag :project_id,
+                    default_camp&.id,
+                    data: { end_of_day_flow_target: "todayProjectField" } %>
+              <%= text_field_tag :title, nil,
+                    class: "lp-today-v2-eod-plan__input",
+                    placeholder: t("dash.end_of_day.steps.plan.placeholder"),
+                    aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
+                    required: true,
+                    autocomplete: "off" %>
+              <div class="lp-today-v2-eod-plan__actions">
+                <%= button_tag t("dash.end_of_day.steps.plan.add_today"),
+                      type: "submit",
+                      name: "schedule",
+                      value: "today",
+                      class: "lp-today-v2-eod-plan__primary" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     <% else %>
       <p class="lp-today-v2-eod-plan__empty"><%= t("dash.end_of_day.bridge.no_camps") %></p>

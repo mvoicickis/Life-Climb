@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Camp chip selection on end-of-day step 2.
+// Camp chip selection and optional today reveal on end-of-day step 2.
 export default class extends Controller {
-  static targets = ["camp", "projectField"]
+  static targets = ["camp", "projectField", "todayPrompt", "todayPanel", "todayProjectField"]
 
   connect() {
     if (this.hasCampTarget && this.campTargets.length === 1) {
@@ -21,5 +21,16 @@ export default class extends Controller {
     if (this.hasProjectFieldTarget) {
       this.projectFieldTarget.value = projectId
     }
+    if (this.hasTodayProjectFieldTarget) {
+      this.todayProjectFieldTarget.value = projectId
+    }
+  }
+
+  revealToday() {
+    if (!this.hasTodayPromptTarget || !this.hasTodayPanelTarget) return
+
+    this.todayPromptTarget.hidden = true
+    this.todayPanelTarget.hidden = false
+    this.todayPanelTarget.querySelector("input[type='text']")?.focus()
   }
 }

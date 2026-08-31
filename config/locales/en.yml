@@ -153,19 +153,14 @@ en:
           title: "You cleared the field"
           continue: "Tap to continue"
         plan:
-          title: "What are you certain you can do next?"
+          title: "What are you certain you can do tomorrow?"
           placeholder: "Something small you will do"
           planning_points: "+%{count} planning points"
+          save_tomorrow: "Save for tomorrow"
+          add_today_prompt: "Want to add one more for today?"
+          add_today: "Add for today"
           skip: "Skip — I'm done for today"
           saved_label: "Saved for tomorrow"
-          today:
-            actions:
-              today: "Add for today"
-              tomorrow: "Save for tomorrow instead"
-          tomorrow:
-            actions:
-              today: "Add for today instead"
-              tomorrow: "Save for tomorrow"
         closed:
           title: "See you tomorrow"
           streak: "%{count}-day streak"

@@ -49,66 +49,20 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
   end
 
   test "acknowledge advances to step 2 plan" do
-    @user.create_notification_preference!(time_zone: "Europe/Berlin")
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
 
-    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 18, 0, 0) do
-      post today_eod_acknowledge_path
-      assert_redirected_to dashboard_path
-      follow_redirect!
+    post today_eod_acknowledge_path
+    assert_redirected_to dashboard_path
+    follow_redirect!
 
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
-      assert_select ".lp-today-v2-eod-plan__label", count: 0
-      assert_select ".lp-today-v2-eod-win", count: 0
-    end
+    assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
+    assert_select ".lp-today-v2-eod-plan__primary", text: "Save for tomorrow"
+    assert_select ".lp-today-v2-eod-plan__today-prompt", count: 0
+    assert_select ".lp-today-v2-eod-win", count: 0
   end
 
-  test "step 2 emphasizes add for today before 6pm local" do
-    @user.create_notification_preference!(time_zone: "Europe/Berlin")
-    @todo.update!(completed_at: Time.current)
-    @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
-
-    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 12, 0, 0) do
-      post today_eod_acknowledge_path
-      follow_redirect!
-
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
-      assert_select ".lp-today-v2-eod-plan__label", count: 0
-
-      actions = css_select(".lp-today-v2-eod-plan__actions button[type=submit]")
-      assert_equal "Add for today", actions[0].text.strip
-      assert_includes actions[0][:class], "lp-today-v2-eod-plan__primary"
-      assert_equal "today", actions[0][:value]
-      assert_equal "Save for tomorrow instead", actions[1].text.strip
-      assert_includes actions[1][:class], "lp-today-v2-eod-plan__secondary"
-      assert_equal "tomorrow", actions[1][:value]
-    end
-  end
-
-  test "step 2 emphasizes save for tomorrow from 6pm local" do
-    @user.create_notification_preference!(time_zone: "Europe/Berlin")
-    @todo.update!(completed_at: Time.current)
-    @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
-
-    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 18, 0, 0) do
-      post today_eod_acknowledge_path
-      follow_redirect!
-
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
-      assert_select ".lp-today-v2-eod-plan__label", count: 0
-
-      actions = css_select(".lp-today-v2-eod-plan__actions button[type=submit]")
-      assert_equal "Save for tomorrow", actions[0].text.strip
-      assert_includes actions[0][:class], "lp-today-v2-eod-plan__primary"
-      assert_equal "tomorrow", actions[0][:value]
-      assert_equal "Add for today instead", actions[1].text.strip
-      assert_includes actions[1][:class], "lp-today-v2-eod-plan__secondary"
-      assert_equal "today", actions[1][:value]
-    end
-  end
-
-  test "plan tomorrow battle creates scheduled day goal and stays on step 2" do
+  test "plan tomorrow battle creates scheduled day goal and stays on step 2 with today prompt" do
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
     project = @user.strategy_goals.for_kind("project").first
@@ -126,6 +80,8 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_equal Date.current + 1.day, battle.scheduled_on
     assert_equal project.id, battle.parent_id
     assert_select ".lp-today-v2-eod-plan__chip", text: /Outline deck/
+    assert_select ".lp-today-v2-eod-plan__today-prompt", text: "Want to add one more for today?"
+    assert_select ".lp-today-v2-eod-plan__today-panel[hidden]", count: 1
     assert_select ".lp-today-v2-eod-closed", count: 0
     assert_select ".lp-today-v2-eod-plan", count: 1
   end
@@ -136,6 +92,10 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     project = @user.strategy_goals.for_kind("project").first
 
     post today_eod_acknowledge_path
+    follow_redirect!
+
+    post today_plan_tomorrow_battle_path,
+         params: { project_id: project.id, title: "Outline deck", schedule: "tomorrow" }
     follow_redirect!
 
     post today_plan_tomorrow_battle_path,
