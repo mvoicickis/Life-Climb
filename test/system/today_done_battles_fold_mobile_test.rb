@@ -36,7 +36,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
-    assert_today_v2_shell!
+    assert_today_v2_all_clear_shell!
     assert_no_legacy_today_shell!
     assert_no_selector ".lp-today-v2-row"
     assert_battle_row_absent!(title: @todo.title)
@@ -44,28 +44,26 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
       assert_battle_row_absent!(title: "Win #{i + 1}")
     end
     assert_selector "#today-end-of-day", wait: 5
-    assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/, wait: 5
-    assert_selector ".lp-today-v2-notch.is-end-day", wait: 5
-    assert_selector ".lp-today-v2-header__hp-num", text: "5"
+    assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/, visible: :all, wait: 5
+    assert_selector ".lp-today-v2-eod-win__stats", text: /You won 5 of 5 battles/, wait: 5
 
-    field_h = page.evaluate_script(<<~JS)
-      document.querySelector('.lp-today-v2-field')?.getBoundingClientRect().height
+    takeover_h = page.evaluate_script(<<~JS)
+      document.querySelector('#today-end-of-day')?.getBoundingClientRect().height
     JS
-    puts "MEASURED_V2_FIELD_HEIGHT_375=#{field_h.round}"
-    assert_operator field_h.to_f, :<, 240, "win panel should stay compact on mobile"
+    puts "MEASURED_V2_EOD_HEIGHT_375=#{takeover_h.round}"
+    assert_operator takeover_h.to_f, :>, 200, "win takeover should fill the screen on mobile"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-375.png")
 
     page.driver.browser.manage.window.resize_to(320, 700)
     visit dashboard_path
-    assert_today_v2_shell!
+    assert_today_v2_all_clear_shell!
     assert_no_selector ".lp-today-v2-row"
     assert_selector "#today-end-of-day"
-    assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/
-    assert_selector ".lp-today-v2-notch.is-end-day"
-    narrow_h = page.evaluate_script("document.querySelector('.lp-today-v2-field')?.getBoundingClientRect().height")
-    assert_operator narrow_h.to_f, :<, 240
+    assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/, visible: :all
+    narrow_h = page.evaluate_script("document.querySelector('#today-end-of-day')?.getBoundingClientRect().height")
+    assert_operator narrow_h.to_f, :>, 200
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-320.png")
   end
 end

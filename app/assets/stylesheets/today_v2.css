@@ -1218,6 +1218,12 @@ body:has(.lp-today-v2-eod-takeover.is-closed) #today-dash-nav {
   line-height: 1.5;
 }
 
+.lp-today-v2-eod-step--plan form.button_to {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .lp-today-v2-eod-closed {
   flex: 1;
   display: flex;
