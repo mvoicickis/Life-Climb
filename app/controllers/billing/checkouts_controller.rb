@@ -8,8 +8,8 @@ module Billing
       result = CreateCheckoutSession.call(
         user: current_user,
         interval: params.require(:interval),
-        success_url: dashboard_url(**mailer_url_options),
-        cancel_url: dashboard_url(**mailer_url_options)
+        success_url: pricing_url(billing: "success", **mailer_url_options),
+        cancel_url: pricing_url(billing: "cancel", **mailer_url_options)
       )
 
       render json: result

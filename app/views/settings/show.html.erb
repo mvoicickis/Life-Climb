@@ -268,6 +268,32 @@
     </section>
 
     <section class="lp-you-card is-gold"
+             data-controller="billing-checkout"
+             data-billing-checkout-checkout-url-value="<%= billing_checkout_path %>"
+             data-billing-checkout-portal-url-value="<%= billing_portal_path %>">
+      <div class="lp-you-card__head" style="cursor: default;">
+        <span class="lp-you-card__icon" aria-hidden="true">⭐</span>
+        <h2 class="lp-you-card__title"><%= t("pricing.premium_title") %></h2>
+      </div>
+      <div class="lp-you-support-row">
+        <% if current_user.premium? %>
+          <span class="lp-you-support-link"><%= t("pricing.already_premium") %></span>
+        <% else %>
+          <%= link_to t("pricing.upgrade_cta"), pricing_path, class: "lp-you-support-cta" %>
+        <% end %>
+        <%= link_to t("pricing.view_plans"), pricing_path, class: "lp-you-support-link" %>
+        <% if current_user.stripe_customer_id.present? && StripeConfig.configured? %>
+          <button type="button"
+                  class="lp-you-support-link"
+                  data-action="billing-checkout#portal"
+                  data-billing-checkout-target="button">
+            <%= t("pricing.manage_billing") %>
+          </button>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="lp-you-card is-gold"
              data-controller="share"
              data-share-text-value="<%= invite_share_message_body %>"
              data-share-url-value="<%= share_landing_url %>"
