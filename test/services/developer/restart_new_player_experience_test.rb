@@ -97,6 +97,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_nil user.day_shield_on
     assert_equal 0, user.day_overshoot_bonuses.for_day(Date.current).count
     assert_equal 1, user.day_overshoot_bonuses.for_day(Date.current - 1).count
+  end
 
   test "wipes habits together with daily logs and completions" do
     user = users(:one)
