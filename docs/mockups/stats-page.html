@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats page — Journey redesign mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #f8fafc;
+      --lp-paper-soft: #eef2f7;
+      --lp-mist: #e2e8f0;
+      --lp-ink: #0f172a;
+      --lp-charcoal: #334155;
+      --lp-muted: #475569;
+      --lp-muted-light: #64748b;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-green-soft: rgba(87, 211, 91, 0.18);
+      --lp-teal: #3ec9c0;
+      --lp-teal-deep: #2aa9a1;
+      --lp-gold: #d4a017;
+      --lp-rose: #ef476f;
+      --lp-blue: #3b82f6;
+      --lp-amber: #f59e0b;
+      --lp-purple: #885cf6;
+      --lp-surface: #ffffff;
+      --lp-glass: rgba(255, 255, 255, 0.92);
+      --lp-shadow: 0 14px 36px rgba(15, 23, 42, 0.1);
+      --font: "Nunito", system-ui, sans-serif;
+      --radius: 1rem;
+      --radius-sm: 0.65rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #e8ecf1;
+      color: var(--lp-ink);
+      line-height: 1.45;
+    }
+
+    /* —— Doc wrapper —— */
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .doc__note {
+      margin: 0 0 2rem;
+      padding: 1rem 1.1rem;
+      background: #fff;
+      border: 1px solid #d8dee6;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: var(--lp-charcoal);
+      max-width: 44rem;
+    }
+
+    .doc__note h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-teal-deep);
+    }
+
+    .doc__note ul {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    .doc__note li { margin-bottom: 0.35rem; }
+
+    .doc__label {
+      margin: 0 0 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-teal-deep);
+    }
+
+    /* —— Phone shell —— */
+    .phone {
+      width: 375px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--lp-paper);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.14);
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .phone__scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 1rem 5.5rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* —— Stats page —— */
+    .stats {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .stats__header {
+      padding-top: 0.25rem;
+    }
+
+    .stats__kicker {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-muted-light);
+    }
+
+    .stats__kicker-mark {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, var(--lp-green), var(--lp-teal));
+    }
+
+    .stats__title {
+      margin: 0.35rem 0 0;
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .stats__subtitle {
+      margin: 0.3rem 0 0;
+      font-size: 0.88rem;
+      color: var(--lp-muted);
+    }
+
+    /* Hero */
+    .stats-hero {
+      border-radius: var(--radius);
+      border: 1px solid rgba(87, 211, 91, 0.22);
+      background: var(--lp-glass);
+      padding: 0.9rem;
+      box-shadow: var(--lp-shadow);
+    }
+
+    .stats-hero__goal-label {
+      margin: 0;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .stats-hero__goal {
+      margin: 0.2rem 0 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .stats-hero__row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+    }
+
+    .stats-hero__pct {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--lp-green-deep);
+    }
+
+    .stats-hero__meta {
+      margin: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      text-align: right;
+    }
+
+    .stats-hero__bar {
+      margin-top: 0.5rem;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--lp-mist);
+      overflow: hidden;
+    }
+
+    .stats-hero__bar-fill {
+      height: 100%;
+      width: 42%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--lp-green-deep), var(--lp-green));
+    }
+
+    .stats-hero__foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-top: 0.65rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--lp-border);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+    }
+
+    .stats-hero__foot strong {
+      color: var(--lp-ink);
+      font-weight: 800;
+    }
+
+    .stats-hero__link {
+      margin-left: auto;
+      color: var(--lp-green-deep);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    /* Section head */
+    .section-head { margin-bottom: 0.55rem; }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      margin: 0.2rem 0 0;
+      font-size: 0.8rem;
+      color: var(--lp-muted);
+    }
+
+    /* Toggles */
+    .toggle-row {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.25rem;
+      border-radius: 999px;
+      background: var(--lp-paper-soft);
+      border: 1px solid var(--lp-border);
+    }
+
+    .toggle-row button {
+      flex: 1;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.45rem 0.5rem;
+      font-family: var(--font);
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+
+    .toggle-row button.is-active {
+      background: var(--lp-surface);
+      color: var(--lp-ink);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.15rem;
+      scrollbar-width: none;
+    }
+
+    .chip-row::-webkit-scrollbar { display: none; }
+
+    .chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--lp-border);
+      border-radius: 999px;
+      padding: 0.4rem 0.75rem;
+      font-family: var(--font);
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      background: var(--lp-surface);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip.is-active {
+      border-color: rgba(87, 211, 91, 0.45);
+      background: var(--lp-green-soft);
+      color: var(--lp-green-deep);
+    }
+
+    /* Cards */
+    .card {
+      border-radius: var(--radius);
+      border: 1px solid var(--lp-border);
+      background: var(--lp-glass);
+      padding: 0.85rem;
+      box-shadow: var(--lp-shadow);
+    }
+
+    /* What changed */
+    .changed-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .changed-list li {
+      display: flex;
+      gap: 0.55rem;
+      align-items: flex-start;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--lp-charcoal);
+    }
+
+    .changed-list__icon {
+      flex: 0 0 auto;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .changed-list__delta {
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .changed-list__delta.is-up {
+      background: rgba(87, 211, 91, 0.18);
+      color: var(--lp-green-deep);
+    }
+
+    .changed-list__delta.is-down {
+      background: rgba(239, 71, 111, 0.12);
+      color: var(--lp-rose);
+    }
+
+    .changed-list__delta.is-flat {
+      background: var(--lp-paper-soft);
+      color: var(--lp-muted);
+    }
+
+    /* Camp folders */
+    .camp-folders {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .camp-folder {
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--lp-border);
+      background: var(--lp-surface);
+      overflow: hidden;
+    }
+
+    .camp-folder__summary {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.7rem 0.75rem;
+      cursor: pointer;
+      list-style: none;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .camp-folder__summary::-webkit-details-marker { display: none; }
+
+    .camp-folder__chevron {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: var(--lp-muted-light);
+      transition: transform 0.2s;
+    }
+
+    .camp-folder[open] .camp-folder__chevron { transform: rotate(180deg); }
+
+    .camp-folder__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .camp-folder__stat {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+    }
+
+    .camp-folder__body {
+      padding: 0 0.65rem 0.75rem;
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .camp-folder__target {
+      margin: 0.55rem 0 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--lp-muted-light);
+    }
+
+    /* Charts */
+    .chart-wrap {
+      position: relative;
+      margin-top: 0.35rem;
+    }
+
+    .chart-wrap svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .chart-grid line {
+      stroke: var(--lp-mist);
+      stroke-width: 1;
+    }
+
+    .chart-grid text {
+      font-family: var(--font);
+      font-size: 9px;
+      font-weight: 700;
+      fill: var(--lp-muted-light);
+    }
+
+    .chart-line {
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chart-area {
+      opacity: 0.15;
+    }
+
+    .chart-target {
+      stroke: var(--lp-muted-light);
+      stroke-width: 1;
+      stroke-dasharray: 4 3;
+    }
+
+    /* Battles + habits mini */
+    .mini-grid {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .habit-strip {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .habit-strip__row {
+      display: grid;
+      grid-template-columns: 5.5rem 1fr;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .habit-strip__name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--lp-charcoal);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .habit-strip__days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+
+    .habit-strip__day {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: var(--lp-mist);
+      font-size: 0.55rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      color: var(--lp-muted-light);
+    }
+
+    .habit-strip__day.is-done {
+      background: var(--lp-green-soft);
+      color: var(--lp-green-deep);
+    }
+
+    .habit-strip__day.is-missed {
+      background: rgba(239, 71, 111, 0.1);
+      color: var(--lp-rose);
+    }
+
+    /* Milestones */
+    .milestones {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.45rem;
+    }
+
+    .milestone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.5rem 0.25rem;
+      border: 1px solid var(--lp-border);
+      border-radius: var(--radius-sm);
+      background: var(--lp-surface);
+      text-align: center;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+
+    .milestone.is-locked {
+      opacity: 0.45;
+      filter: grayscale(0.6);
+    }
+
+    .milestone.is-glow {
+      border-color: rgba(87, 211, 91, 0.35);
+      box-shadow: 0 0 0 2px rgba(87, 211, 91, 0.12);
+    }
+
+    .milestone__hex {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .milestone__title {
+      font-size: 0.58rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--lp-charcoal);
+    }
+
+    /* Patterns */
+    .patterns-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .patterns-list li {
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: var(--lp-paper-soft);
+      border: 1px solid var(--lp-border);
+    }
+
+    .patterns-list p {
+      margin: 0;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--lp-charcoal);
+    }
+
+    .patterns-list a {
+      display: inline-block;
+      margin-top: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--lp-green-deep);
+      text-decoration: none;
+    }
+
+    /* KPIs */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .kpi {
+      padding: 0.65rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--lp-border);
+      background: var(--lp-surface);
+    }
+
+    .kpi__label {
+      margin: 0;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+    }
+
+    .kpi__value {
+      margin: 0.2rem 0 0;
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .kpi__delta {
+      margin: 0.15rem 0 0;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--lp-green-deep);
+    }
+
+    .kpi__delta.is-down { color: var(--lp-rose); }
+
+    /* Category donut row */
+    .category-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .donut-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .donut-center strong {
+      font-size: 1.1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .donut-center span {
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .legend li {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .legend__swatch {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      font-size: 0.65rem;
+    }
+
+    .legend__name { flex: 1; color: var(--lp-charcoal); }
+
+    .legend__pct {
+      font-weight: 800;
+      color: var(--lp-muted);
+    }
+
+    /* Heatmap */
+    .heatmap-frame {
+      overflow-x: auto;
+      margin: 0 -0.25rem;
+      padding: 0 0.25rem;
+    }
+
+    .heatmap {
+      display: grid;
+      grid-template-columns: 28px repeat(26, 11px);
+      grid-auto-rows: 11px;
+      gap: 3px;
+      min-width: max-content;
+    }
+
+    .heatmap__day-label {
+      font-size: 0.55rem;
+      font-weight: 800;
+      color: var(--lp-muted-light);
+      display: grid;
+      place-items: center;
+    }
+
+    .heatmap__cell {
+      width: 11px;
+      height: 11px;
+      border-radius: 2px;
+      border: 0;
+      padding: 0;
+    }
+
+    .heatmap__cell.l0 { background: var(--lp-mist); }
+    .heatmap__cell.l1 { background: rgba(87, 211, 91, 0.25); }
+    .heatmap__cell.l2 { background: rgba(87, 211, 91, 0.45); }
+    .heatmap__cell.l3 { background: rgba(87, 211, 91, 0.65); }
+    .heatmap__cell.l4 { background: var(--lp-green); }
+    .heatmap__cell.is-future { background: transparent; border: 1px dashed var(--lp-mist); }
+
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.55rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--lp-muted-light);
+    }
+
+    /* Bottom nav */
+    .dash-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 52px 1fr 1fr;
+      align-items: end;
+      padding: 0.5rem 0.65rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .dash-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      text-decoration: none;
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: var(--lp-muted-light);
+    }
+
+    .dash-nav a.is-active {
+      color: var(--lp-green-deep);
+    }
+
+    .dash-nav svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .dash-nav__fab-slot {
+      display: grid;
+      place-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .dash-nav__fab {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 0;
+      background: linear-gradient(135deg, var(--lp-green), var(--lp-teal));
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 300;
+      line-height: 1;
+      box-shadow: 0 6px 16px rgba(87, 211, 91, 0.35);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc">
+  <h1>Stats page mockup</h1>
+  <p class="doc__lede">Redesign of <code>life_points/progress.html.erb</code> (formerly “Journey”). Standalone HTML only — no Rails. 375&nbsp;px mobile frame, Nunito, light app palette.</p>
+
+  <aside class="doc__note">
+    <h2>Dropped from the current page (and why)</h2>
+    <ul>
+      <li><strong>Decorative mountain SVG hero art</strong> — replaced by a denser goal bar + inline expedition stats so charts get more room above the fold.</li>
+      <li><strong>Standalone “Your strength” points section</strong> — AP and Planning points folded into the hero footer and Activity KPIs to avoid repeating the same numbers three times.</li>
+      <li><strong>Separate Mountain Summary card</strong> — plans/camps counts and “Open Mountain” link merged into the hero; per-camp detail lives in expandable folders below.</li>
+      <li><strong>Standalone Insights card</strong> — reframed as “What changed” at the top of the analytics stack (same detector copy, clearer scan pattern).</li>
+      <li><strong>KPI sparklines without axes</strong> — replaced by labelled grid charts in Activity; deltas kept as text on KPI tiles.</li>
+      <li><strong>Heatmap inside a collapsed &lt;details&gt;</strong> — heatmap is a retained feature, so it stays visible in the scroll (not buried).</li>
+      <li><strong>Habit tracker reorder / add-tracker dialog</strong> — CRUD interactions omitted from this static mockup; read-only habit strips kept.</li>
+      <li><strong>Condition-name labels</strong> (e.g. Non-Existence / Danger / Affluence) — excluded per product rule; no shipped defaults.</li>
+    </ul>
+  </aside>
+
+  <p class="doc__label">Mobile frame · Stats tab active</p>
+
+  <div class="phone" role="img" aria-label="Stats page mockup, 375px wide">
+    <div class="phone__scroll">
+      <div class="stats">
+
+        <!-- Header -->
+        <header class="stats__header">
+          <p class="stats__kicker">
+            <span class="stats__kicker-mark" aria-hidden="true"></span>
+            LifePoints
+          </p>
+          <h1 class="stats__title">Stats</h1>
+          <p class="stats__subtitle">How far you've come — and what's moving.</p>
+        </header>
+
+        <!-- Hero (journey goal + mountain summary, condensed) -->
+        <section class="stats-hero" aria-label="Season goal">
+          <p class="stats-hero__goal-label">Season goal</p>
+          <p class="stats-hero__goal">Become debt-free</p>
+          <div class="stats-hero__row">
+            <p class="stats-hero__pct">42%</p>
+            <p class="stats-hero__meta">2,840 AP · 120 PP</p>
+          </div>
+          <div class="stats-hero__bar" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100">
+            <div class="stats-hero__bar-fill"></div>
+          </div>
+          <div class="stats-hero__foot">
+            <span>Plans <strong>1/2</strong></span>
+            <span>Camps <strong>3/7</strong></span>
+            <span>Now: <strong>Build emergency fund</strong></span>
+            <a href="#" class="stats-hero__link">Mountain →</a>
+          </div>
+        </section>
+
+        <!-- Chart timeframe (new) -->
+        <section aria-label="Chart timeframe">
+          <div class="section-head">
+            <h2>Camp progress</h2>
+            <p>Cumulative totals per camp — tap to expand.</p>
+          </div>
+          <div class="toggle-row" role="tablist" aria-label="Chart timeframe">
+            <button type="button" class="is-active" data-timeframe="daily" role="tab" aria-selected="true">Daily</button>
+            <button type="button" data-timeframe="weekly" role="tab" aria-selected="false">Weekly</button>
+            <button type="button" data-timeframe="monthly" role="tab" aria-selected="false">Monthly</button>
+          </div>
+        </section>
+
+        <!-- Per-camp expandable folders -->
+        <section class="camp-folders" aria-label="Camp charts">
+
+          <details class="camp-folder" open>
+            <summary class="camp-folder__summary">
+              <span class="camp-folder__dot" style="background: var(--lp-teal);"></span>
+              <span>Read the book</span>
+              <span class="camp-folder__stat">25 / 100 pages</span>
+              <span class="camp-folder__chevron" aria-hidden="true">▼</span>
+            </summary>
+            <div class="camp-folder__body">
+              <p class="camp-folder__target">Target 100 pages</p>
+              <div class="chart-wrap">
+                <svg viewBox="0 0 300 140" aria-label="Read the book progress chart">
+                  <g class="chart-grid">
+                    <line x1="36" y1="12" x2="36" y2="108"/>
+                    <line x1="36" y1="108" x2="292" y2="108"/>
+                    <line x1="36" y1="84" x2="292" y2="84" stroke-dasharray="2 4"/>
+                    <line x1="36" y1="60" x2="292" y2="60" stroke-dasharray="2 4"/>
+                    <line x1="36" y1="36" x2="292" y2="36" stroke-dasharray="2 4"/>
+                    <text x="4" y="112">0</text>
+                    <text x="0" y="88">25</text>
+                    <text x="0" y="64">50</text>
+                    <text x="0" y="40">75</text>
+                    <text x="0" y="16">100</text>
+                    <text x="52" y="124">Mon</text>
+                    <text x="108" y="124">Wed</text>
+                    <text x="164" y="124">Fri</text>
+                    <text x="220" y="124">Sun</text>
+                    <text x="276" y="124">Tue</text>
+                  </g>
+                  <line class="chart-target" x1="36" y1="36" x2="292" y2="36"/>
+                  <path class="chart-area" fill="var(--lp-teal)" d="M36,108 L72,98 L108,92 L144,78 L180,70 L216,58 L252,48 L288,42 L288,108 Z"/>
+                  <path class="chart-line" stroke="var(--lp-teal-deep)" d="M36,108 L72,98 L108,92 L144,78 L180,70 L216,58 L252,48 L288,42"/>
+                  <circle cx="288" cy="42" r="4" fill="var(--lp-teal-deep)"/>
+                </svg>
+              </div>
+            </div>
+          </details>
+
+          <details class="camp-folder">
+            <summary class="camp-folder__summary">
+              <span class="camp-folder__dot" style="background: var(--lp-amber);"></span>
+              <span>Save cash</span>
+              <span class="camp-folder__stat">€180 / €500</span>
+              <span class="camp-folder__chevron" aria-hidden="true">▼</span>
+            </summary>
+            <div class="camp-folder__body">
+              <p class="camp-folder__target">Target €500</p>
+              <div class="chart-wrap">
+                <svg viewBox="0 0 300 140" aria-label="Save cash progress chart">
+                  <g class="chart-grid">
+                    <line x1="36" y1="12" x2="36" y2="108"/>
+                    <line x1="36" y1="108" x2="292" y2="108"/>
+                    <line x1="36" y1="84" x2="292" y2="84" stroke-dasharray="2 4"/>
+                    <line x1="36" y1="60" x2="292" y2="60" stroke-dasharray="2 4"/>
+                    <line x1="36" y1="36" x2="292" y2="36" stroke-dasharray="2 4"/>
+                    <text x="0" y="112">€0</text>
+                    <text x="0" y="64">€250</text>
+                    <text x="0" y="16">€500</text>
+                    <text x="72" y="124">W1</text>
+                    <text x="144" y="124">W2</text>
+                    <text x="216" y="124">W3</text>
+                    <text x="276" y="124">W4</text>
+                  </g>
+                  <line class="chart-target" x1="36" y1="36" x2="292" y2="36"/>
+                  <path class="chart-area" fill="var(--lp-amber)" d="M36,108 L108,95 L180,82 L252,68 L288,58 L288,108 Z"/>
+                  <path class="chart-line" stroke="var(--lp-amber)" d="M36,108 L108,95 L180,82 L252,68 L288,58"/>
+                </svg>
+              </div>
+            </div>
+          </details>
+
+          <details class="camp-folder">
+            <summary class="camp-folder__summary">
+              <span class="camp-folder__dot" style="background: var(--lp-blue);"></span>
+              <span>Ship portfolio</span>
+              <span class="camp-folder__stat">4 battles won</span>
+              <span class="camp-folder__chevron" aria-hidden="true">▼</span>
+            </summary>
+            <div class="camp-folder__body">
+              <p class="camp-folder__target">Battle-mode camp — wins over time</p>
+              <div class="chart-wrap">
+                <svg viewBox="0 0 300 140" aria-label="Ship portfolio battles chart">
+                  <g class="chart-grid">
+                    <line x1="36" y1="12" x2="36" y2="108"/>
+                    <line x1="36" y1="108" x2="292" y2="108"/>
+                    <line x1="36" y1="84" x2="292" y2="84" stroke-dasharray="2 4"/>
+                    <line x1="36" y1="60" x2="292" y2="60" stroke-dasharray="2 4"/>
+                    <text x="8" y="112">0</text>
+                    <text x="8" y="64">2</text>
+                    <text x="8" y="16">4</text>
+                    <text x="72" y="124">W1</text>
+                    <text x="144" y="124">W2</text>
+                    <text x="216" y="124">W3</text>
+                    <text x="276" y="124">W4</text>
+                  </g>
+                  <path class="chart-line" stroke="var(--lp-blue)" d="M36,108 L108,84 L180,72 L252,48 L288,36"/>
+                  <circle cx="288" cy="36" r="4" fill="var(--lp-blue)"/>
+                </svg>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- Battles per week (from climb trends, gridded) -->
+        <section class="card" aria-label="Battles per week">
+          <div class="section-head">
+            <h2>Battles per week</h2>
+            <p>More battles this week than last ↑</p>
+          </div>
+          <div class="chart-wrap">
+            <svg viewBox="0 0 300 120" aria-label="Weekly battles bar chart">
+              <g class="chart-grid">
+                <line x1="28" y1="8" x2="28" y2="92"/>
+                <line x1="28" y1="92" x2="292" y2="92"/>
+                <line x1="28" y1="72" x2="292" y2="72" stroke-dasharray="2 4"/>
+                <line x1="28" y1="52" x2="292" y2="52" stroke-dasharray="2 4"/>
+                <line x1="28" y1="32" x2="292" y2="32" stroke-dasharray="2 4"/>
+                <text x="6" y="96">0</text>
+                <text x="6" y="56">3</text>
+                <text x="6" y="16">6</text>
+                <text x="48" y="108">Jun 2</text>
+                <text x="120" y="108">Jun 16</text>
+                <text x="192" y="108">Jun 30</text>
+                <text x="264" y="108">Jul 14</text>
+              </g>
+              <rect x="40" y="68" width="22" height="24" rx="3" fill="var(--lp-mist)"/>
+              <rect x="72" y="56" width="22" height="36" rx="3" fill="var(--lp-mist)"/>
+              <rect x="104" y="44" width="22" height="48" rx="3" fill="var(--lp-mist)"/>
+              <rect x="136" y="52" width="22" height="40" rx="3" fill="var(--lp-mist)"/>
+              <rect x="168" y="36" width="22" height="56" rx="3" fill="var(--lp-mist)"/>
+              <rect x="200" y="48" width="22" height="44" rx="3" fill="var(--lp-mist)"/>
+              <rect x="232" y="28" width="22" height="64" rx="3" fill="var(--lp-green)"/>
+              <rect x="264" y="20" width="22" height="72" rx="3" fill="var(--lp-green-deep)"/>
+            </svg>
+          </div>
+        </section>
+
+        <!-- What changed (new — replaces standalone insights placement) -->
+        <section class="card" aria-label="What changed">
+          <div class="section-head">
+            <h2>What changed</h2>
+            <p>Compared to the prior period.</p>
+          </div>
+          <ul class="changed-list">
+            <li>
+              <span class="changed-list__icon" aria-hidden="true">📈</span>
+              <span>Battles completed up 18% vs last 7 days</span>
+              <span class="changed-list__delta is-up">+18%</span>
+            </li>
+            <li>
+              <span class="changed-list__icon" aria-hidden="true">📅</span>
+              <span>Most consistent on Wednesdays</span>
+              <span class="changed-list__delta is-flat">peak</span>
+            </li>
+            <li>
+              <span class="changed-list__icon" aria-hidden="true">💼</span>
+              <span>42% of AP came from Career</span>
+              <span class="changed-list__delta is-up">top</span>
+            </li>
+            <li>
+              <span class="changed-list__icon" aria-hidden="true">📖</span>
+              <span>“Read the book” gained 12 pages this week</span>
+              <span class="changed-list__delta is-up">+12</span>
+            </li>
+            <li>
+              <span class="changed-list__icon" aria-hidden="true">⚔</span>
+              <span>Win today's battle to keep momentum</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Habits (kept, read-only) -->
+        <section class="card" aria-label="Habits this week">
+          <div class="section-head">
+            <h2>Habits this week</h2>
+            <p>Trackers linked to this mountain.</p>
+          </div>
+          <div class="habit-strip">
+            <div class="habit-strip__row">
+              <span class="habit-strip__name">Morning walk</span>
+              <div class="habit-strip__days" aria-label="7 day strip">
+                <span class="habit-strip__day is-done" title="Mon">✓</span>
+                <span class="habit-strip__day is-done">✓</span>
+                <span class="habit-strip__day is-missed">·</span>
+                <span class="habit-strip__day is-done">✓</span>
+                <span class="habit-strip__day is-done">✓</span>
+                <span class="habit-strip__day">·</span>
+                <span class="habit-strip__day">·</span>
+              </div>
+            </div>
+            <div class="habit-strip__row">
+              <span class="habit-strip__name">Income €</span>
+              <div class="habit-strip__days">
+                <span class="habit-strip__day is-done">45</span>
+                <span class="habit-strip__day is-done">30</span>
+                <span class="habit-strip__day is-done">60</span>
+                <span class="habit-strip__day is-done">25</span>
+                <span class="habit-strip__day">·</span>
+                <span class="habit-strip__day">·</span>
+                <span class="habit-strip__day">·</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Milestones — earned + locked -->
+        <section class="card" aria-label="Milestones">
+          <div class="section-head">
+            <h2>Milestones</h2>
+            <p>Badges you've earned and what's still ahead.</p>
+          </div>
+          <div class="milestones">
+            <button type="button" class="milestone is-glow" aria-label="Trail Guide, earned">
+              <span class="milestone__hex">🧭</span>
+              <span class="milestone__title">Trail Guide</span>
+            </button>
+            <button type="button" class="milestone is-glow" aria-label="First Battle, earned">
+              <span class="milestone__hex">✅</span>
+              <span class="milestone__title">First Battle</span>
+            </button>
+            <button type="button" class="milestone is-glow" aria-label="First 100 AP, earned">
+              <span class="milestone__hex">⚡</span>
+              <span class="milestone__title">100 AP</span>
+            </button>
+            <button type="button" class="milestone is-glow" aria-label="Quarter mountain, earned">
+              <span class="milestone__hex">⛰</span>
+              <span class="milestone__title">25% mountain</span>
+            </button>
+            <button type="button" class="milestone is-locked" aria-label="1000 AP, not earned">
+              <span class="milestone__hex">⚡</span>
+              <span class="milestone__title">1000 AP</span>
+            </button>
+            <button type="button" class="milestone is-locked" aria-label="100 battles, not earned">
+              <span class="milestone__hex">🏆</span>
+              <span class="milestone__title">100 battles</span>
+            </button>
+            <button type="button" class="milestone is-locked" aria-label="Halfway, not earned">
+              <span class="milestone__hex">🌄</span>
+              <span class="milestone__title">50% mountain</span>
+            </button>
+            <button type="button" class="milestone is-locked" aria-label="Summit, not earned">
+              <span class="milestone__hex">🏔</span>
+              <span class="milestone__title">Summit</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Patterns (kept) -->
+        <section class="card" aria-label="Your patterns">
+          <div class="section-head">
+            <h2>Your patterns</h2>
+            <p>What the app notices about your rhythm.</p>
+          </div>
+          <ul class="patterns-list">
+            <li>
+              <p>You finish more battles when you start before 10&nbsp;am.</p>
+              <a href="#">Plan an earlier battle →</a>
+            </li>
+            <li>
+              <p>Career battles dropped mid-week last fortnight.</p>
+              <a href="#">See today's battles →</a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Activity (kept — period filter + KPIs + charts) -->
+        <section aria-label="Activity">
+          <div class="section-head">
+            <h2>Activity</h2>
+            <p>How this period went — battles, AP, and mix.</p>
+          </div>
+
+          <div class="chip-row" role="tablist" aria-label="Activity period">
+            <button type="button" class="chip is-active" role="tab" aria-selected="true">7 days</button>
+            <button type="button" class="chip" role="tab" aria-selected="false">30 days</button>
+            <button type="button" class="chip" role="tab" aria-selected="false">3 months</button>
+            <button type="button" class="chip" role="tab" aria-selected="false">1 year</button>
+            <button type="button" class="chip" role="tab" aria-selected="false">All time</button>
+          </div>
+
+          <div class="kpi-grid" style="margin-top: 0.65rem;">
+            <div class="kpi">
+              <p class="kpi__label">Action Points</p>
+              <p class="kpi__value">340</p>
+              <p class="kpi__delta">↑ 12% vs prior</p>
+            </div>
+            <div class="kpi">
+              <p class="kpi__label">Battles done</p>
+              <p class="kpi__value">18</p>
+              <p class="kpi__delta">↑ 18% vs prior</p>
+            </div>
+            <div class="kpi">
+              <p class="kpi__label">Completion rate</p>
+              <p class="kpi__value">78%</p>
+              <p class="kpi__delta is-down">↓ 4 pts vs prior</p>
+            </div>
+            <div class="kpi">
+              <p class="kpi__label">Active days</p>
+              <p class="kpi__value">5</p>
+              <p class="kpi__delta">↑ 1 vs prior</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 0.65rem; box-shadow: none;">
+            <div class="section-head">
+              <h2>AP earned</h2>
+              <p>Daily Action Points in this period.</p>
+            </div>
+            <div class="chart-wrap">
+              <svg viewBox="0 0 300 130" aria-label="AP growth chart">
+                <g class="chart-grid">
+                  <line x1="32" y1="8" x2="32" y2="100"/>
+                  <line x1="32" y1="100" x2="292" y2="100"/>
+                  <line x1="32" y1="76" x2="292" y2="76" stroke-dasharray="2 4"/>
+                  <line x1="32" y1="52" x2="292" y2="52" stroke-dasharray="2 4"/>
+                  <line x1="32" y1="28" x2="292" y2="28" stroke-dasharray="2 4"/>
+                  <text x="4" y="104">0</text>
+                  <text x="0" y="80">40</text>
+                  <text x="0" y="56">80</text>
+                  <text x="0" y="32">120</text>
+                  <text x="48" y="118">Mon</text>
+                  <text x="108" y="118">Wed</text>
+                  <text x="168" y="118">Fri</text>
+                  <text x="228" y="118">Sun</text>
+                </g>
+                <path class="chart-area" fill="var(--lp-green)" d="M32,100 L75,88 L118,72 L161,80 L204,52 L247,44 L290,36 L290,100 Z"/>
+                <path class="chart-line" stroke="var(--lp-green-deep)" d="M32,100 L75,88 L118,72 L161,80 L204,52 L247,44 L290,36"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Category distribution (kept) -->
+          <div class="card" style="margin-top: 0.65rem; box-shadow: none;">
+            <div class="section-head">
+              <h2>Where AP went</h2>
+              <p>Category mix for this period.</p>
+            </div>
+            <div class="category-row">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 110 110" aria-hidden="true">
+                  <circle cx="55" cy="55" r="42" fill="none" stroke="var(--lp-mist)" stroke-width="14"/>
+                  <circle cx="55" cy="55" r="42" fill="none" stroke="var(--lp-blue)" stroke-width="14"
+                          stroke-dasharray="110 264" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+                  <circle cx="55" cy="55" r="42" fill="none" stroke="var(--lp-green)" stroke-width="14"
+                          stroke-dasharray="66 264" stroke-dashoffset="-110" transform="rotate(-90 55 55)"/>
+                  <circle cx="55" cy="55" r="42" fill="none" stroke="var(--lp-amber)" stroke-width="14"
+                          stroke-dasharray="44 264" stroke-dashoffset="-176" transform="rotate(-90 55 55)"/>
+                  <circle cx="55" cy="55" r="42" fill="none" stroke="var(--lp-purple)" stroke-width="14"
+                          stroke-dasharray="44 264" stroke-dashoffset="-220" transform="rotate(-90 55 55)"/>
+                </svg>
+                <div class="donut-center">
+                  <strong>340</strong>
+                  <span>AP</span>
+                </div>
+              </div>
+              <ul class="legend">
+                <li>
+                  <span class="legend__swatch" style="background: rgba(59,130,246,0.15);">💼</span>
+                  <span class="legend__name">Career</span>
+                  <span class="legend__pct">42%</span>
+                </li>
+                <li>
+                  <span class="legend__swatch" style="background: rgba(87,211,91,0.15);">💪</span>
+                  <span class="legend__name">Self</span>
+                  <span class="legend__pct">25%</span>
+                </li>
+                <li>
+                  <span class="legend__swatch" style="background: rgba(245,158,11,0.15);">💰</span>
+                  <span class="legend__name">Money</span>
+                  <span class="legend__pct">17%</span>
+                </li>
+                <li>
+                  <span class="legend__swatch" style="background: rgba(136,92,246,0.15);">📚</span>
+                  <span class="legend__name">Learning</span>
+                  <span class="legend__pct">16%</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Heatmap (kept, visible) -->
+        <section class="card" aria-label="Weekly activity heatmap">
+          <div class="section-head">
+            <h2>47 active days in the last 6 months</h2>
+            <p>Swipe for earlier weeks.</p>
+          </div>
+          <div class="heatmap-frame">
+            <div class="heatmap" role="img" aria-label="Activity heatmap" id="heatmap-grid"></div>
+          </div>
+          <div class="heatmap-legend">
+            <span>Less</span>
+            <span class="heatmap__cell l0"></span>
+            <span class="heatmap__cell l1"></span>
+            <span class="heatmap__cell l2"></span>
+            <span class="heatmap__cell l3"></span>
+            <span class="heatmap__cell l4"></span>
+            <span>More</span>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Bottom nav: Stats tab (renamed from Journey) -->
+    <nav class="dash-nav" aria-label="Primary">
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5 V12.2 L15.2 14"/></svg>
+        Today
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/></svg>
+        Mountain
+      </a>
+      <div class="dash-nav__fab-slot">
+        <button type="button" class="dash-nav__fab" aria-label="Plant camp">+</button>
+      </div>
+      <a href="#" class="is-active" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17 L9 11 L13 14.5 L20 7"/><path d="M15 7 H20 V12"/></svg>
+        Stats
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/></svg>
+        You
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script>
+  // Timeframe toggle — swaps axis labels on camp charts (demo only)
+  document.querySelectorAll('.toggle-row button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.toggle-row').querySelectorAll('button').forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // Period chips
+  document.querySelectorAll('.chip-row .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.closest('.chip-row').querySelectorAll('.chip').forEach(c => {
+        c.classList.remove('is-active');
+        c.setAttribute('aria-selected', 'false');
+      });
+      chip.classList.add('is-active');
+      chip.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // Heatmap: corner + month row, then 7 day rows
+  (function buildHeatmap() {
+    const grid = document.getElementById('heatmap-grid');
+    if (!grid) return;
+    const levels = [0, 1, 2, 3, 4, 1, 2, 0, 3, 2, 1, 4, 2, 3, 1, 0, 2, 4, 3, 1, 2, 0, 1, 3, 2, 4];
+    const dayLabels = ['', 'M', '', 'W', '', 'F', ''];
+    const months = ['Jan', '', '', '', 'Feb', '', '', '', 'Mar', '', '', '', 'Apr', '', '', '', 'May', '', '', '', 'Jun', '', '', '', 'Jul'];
+
+    const corner = document.createElement('span');
+    corner.className = 'heatmap__day-label';
+    grid.appendChild(corner);
+    for (let w = 0; w < 26; w++) {
+      const month = document.createElement('span');
+      month.className = 'heatmap__day-label';
+      month.textContent = months[w] || '';
+      grid.appendChild(month);
+    }
+    for (let r = 0; r < 7; r++) {
+      const label = document.createElement('span');
+      label.className = 'heatmap__day-label';
+      label.textContent = dayLabels[r];
+      grid.appendChild(label);
+      for (let w = 0; w < 26; w++) {
+        const cell = document.createElement('span');
+        const lvl = levels[(w + r) % levels.length];
+        const future = w >= 24 && r >= 4;
+        cell.className = 'heatmap__cell ' + (future ? 'is-future' : 'l' + lvl);
+        grid.appendChild(cell);
+      }
+    }
+  })();
+</script>
+
+</body>
+</html>
