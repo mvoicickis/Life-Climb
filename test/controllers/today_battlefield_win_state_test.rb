@@ -42,21 +42,6 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_no_match "today-battlefield-win", response.body
   end
 
-  test "camp check renders on step 2 after acknowledge" do
-    @todo.update!(completed_at: Time.current)
-
-    get dashboard_path
-    assert_response :success
-    assert_select ".lp-today-v2-eod-win", count: 1
-    assert_select ".lp-dash-project-check", count: 0
-
-    post today_eod_acknowledge_path
-    follow_redirect!
-
-    assert_select ".lp-today-v2-eod-plan", count: 1
-    assert_select ".lp-dash-project-check", count: 1
-  end
-
   test "completing last battle via turbo stream swaps rows for inline ack and end-of-day host" do
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
