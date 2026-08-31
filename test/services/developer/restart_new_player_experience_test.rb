@@ -22,7 +22,14 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     )
     user.update!(
       support_milestones_shown: %w[adventure_guide first_finished_product],
-      strategy_points: 50
+      strategy_points: 50,
+      climb_streak_days: 8,
+      climb_streak_on: Date.current,
+      climb_streak_freezes: 1,
+      climb_streak_frozen_on: Date.current - 1,
+      day_shields_available: 0,
+      day_shield_on: Date.current,
+      best_day_ap: 99
     )
     user.strategy_point_ledgers.create!(amount: 50, reason: "test") if user.strategy_point_ledgers.none?
 
@@ -56,7 +63,40 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert User.exists?(user.id)
     assert user.read_attribute(:developer)
     assert_equal action_points_before, user.total_points
+    assert_equal 99, user.best_day_ap
+    assert_equal 0, user.climb_streak_days
+    assert_nil user.climb_streak_on
+    assert_equal 0, user.climb_streak_freezes
+    assert_nil user.climb_streak_frozen_on
+    assert_equal 1, user.day_shields_available
+    assert_nil user.day_shield_on
   end
+
+  test "clears climb streak, day shield, and today's overshoot bonus" do
+    user = users(:one)
+    user.update_columns(developer: true)
+    user.update!(
+      climb_streak_days: 8,
+      climb_streak_on: Date.current,
+      climb_streak_freezes: 2,
+      climb_streak_frozen_on: Date.current - 1,
+      day_shields_available: 0,
+      day_shield_on: Date.current - 2
+    )
+    user.day_overshoot_bonuses.create!(on_date: Date.current, peak_percent: 120, awarded_ap: 5)
+    user.day_overshoot_bonuses.create!(on_date: Date.current - 1, peak_percent: 110, awarded_ap: 3)
+
+    Developer::RestartNewPlayerExperience.call(user:)
+
+    user.reload
+    assert_equal 0, user.climb_streak_days
+    assert_nil user.climb_streak_on
+    assert_equal 0, user.climb_streak_freezes
+    assert_nil user.climb_streak_frozen_on
+    assert_equal 1, user.day_shields_available
+    assert_nil user.day_shield_on
+    assert_equal 0, user.day_overshoot_bonuses.for_day(Date.current).count
+    assert_equal 1, user.day_overshoot_bonuses.for_day(Date.current - 1).count
 
   test "wipes habits together with daily logs and completions" do
     user = users(:one)

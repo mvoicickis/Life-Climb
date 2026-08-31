@@ -1439,7 +1439,7 @@ lv:
       title: "Izstrādātāja rīki"
       subtitle: "Redzami tikai izstrādātājam. Nemaina citus spēlētājus."
       restart_npe: "Restartēt jaunā spēlētāja pieredzi"
-      restart_npe_confirm: "Notīrīt šī konta Mērķus, Plānus, Projektus, Kaujas un ceļojumus, atiestatīt ievadīšanu un atvērt pirmo ievadīšanas ekrānu? Pieteikšanās konts paliek. Darba punkti un ieradumi tiek saglabāti."
+      restart_npe_confirm: "Notīrīt šī konta Mērķus, Plānus, Projektus, Kaujas, Pamatus un ceļojumus, atiestatīt ievadīšanu un atvērt pirmo ievadīšanas ekrānu? Pieteikšanās konts paliek. Darba punkti tiek saglabāti."
       restart_npe_done: "Jaunā spēlētāja pieredze restartēta — Stratēģijas dati notīrīti."
   v2_onboarding:
     title: "Sāc savu piedzīvojumu"

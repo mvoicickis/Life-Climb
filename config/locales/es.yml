@@ -1197,7 +1197,7 @@ es:
       title: "Herramientas de desarrollador"
       subtitle: "Solo visible para el desarrollador. No cambia a otros jugadores."
       restart_npe: "Reiniciar experiencia de nuevo jugador"
-      restart_npe_confirm: "¿Borrar Metas, Planes, Proyectos, Batallas y viajes de esta cuenta, reiniciar el onboarding y abrir la primera pantalla? Tu cuenta de acceso se mantiene. Se conservan Action Points y hábitos."
+      restart_npe_confirm: "¿Borrar Metas, Planes, Proyectos, Batallas, Básicos y viajes de esta cuenta, reiniciar el onboarding y abrir la primera pantalla? Tu cuenta de acceso se mantiene. Se conservan Action Points."
       restart_npe_done: "Experiencia de nuevo jugador reiniciada — datos de Estrategia borrados."
   v2_onboarding:
     title: "Empieza tu aventura"

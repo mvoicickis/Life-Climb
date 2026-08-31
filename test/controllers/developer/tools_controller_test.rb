@@ -44,6 +44,12 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
   test "developer restart wipes strategy data and redirects to onboarding welcome" do
     @user.update_columns(developer: true)
     seed_strategy!
+    @user.update!(
+      climb_streak_days: 8,
+      climb_streak_on: Date.current
+    )
+    session[Today::EodFlow::ACK_SESSION_KEY] = Date.current.to_s
+    session[Today::BattlefieldDay::SESSION_KEY] = Date.current.to_s
 
     post restart_new_player_experience_developer_tools_path
     assert_redirected_to v2_onboarding_path(step: "character")
@@ -55,6 +61,10 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, @user.life_journeys.count
     assert_equal 0, @user.life_areas.count
     assert_equal 0, @user.daily_todos.count
+    assert_equal 0, @user.climb_streak_days
+    assert_nil @user.climb_streak_on
+    assert_nil session[Today::EodFlow::ACK_SESSION_KEY]
+    assert_nil session[Today::BattlefieldDay::SESSION_KEY]
   end
 
   test "env whitelist promotes and allows restart" do
