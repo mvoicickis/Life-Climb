@@ -962,6 +962,11 @@ body:has(.lp-today-v2-eod-takeover.is-flow) #today-battle-surface {
   overflow-y: auto;
 }
 
+body:has(.lp-today-v2-eod-takeover) #today-dash-nav {
+  position: relative;
+  z-index: 50;
+}
+
 .lp-today-v2-eod-takeover {
   flex: 1;
   display: flex;
