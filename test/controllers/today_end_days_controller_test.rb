@@ -62,7 +62,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
       follow_redirect!
 
       assert_select ".lp-today-v2-eod-closed", count: 0
-      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
+      assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do next?"
       assert_select ".lp-today-v2-eod-win", count: 0
       assert_select ".lp-today-v2-inline-ack", text: /All battles won today/
       assert_select ".lp-today-v2-rows", count: 0
