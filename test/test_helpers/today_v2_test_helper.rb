@@ -2,6 +2,21 @@
 
 # Shared assertions for Today V2 battlefield UI (when @show_plan_route is false).
 module TodayV2TestHelper
+  def assert_today_v2_all_clear_shell!
+    if integration_test?
+      assert_select ".lp-dash.is-today-v2", count: 1
+      assert_select "#today-end-of-day", count: 1
+      assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
+    else
+      assert_selector ".lp-dash.is-today-v2", count: 1
+      assert_selector ".lp-today-v2-eod-win__title",
+                      text: "You cleared the field",
+                      visible: :all,
+                      wait: 5
+      assert_selector "#today-end-of-day", visible: :all
+    end
+  end
+
   def assert_today_v2_shell!
     if integration_test?
       assert_select ".lp-dash.is-today-v2", count: 1

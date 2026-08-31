@@ -1,0 +1,22 @@
+<%# Step 1 — win moment only. locals: health, streak %>
+<%
+  health = local_assigns.fetch(:health)
+  streak = local_assigns[:streak]
+  streak_days = streak.respond_to?(:days) ? streak.days.to_i : 1
+  streak_days = 1 if streak_days <= 0
+%>
+
+<div class="lp-today-v2-eod-step lp-today-v2-eod-step--win">
+  <%= button_to today_eod_acknowledge_path,
+        method: :post,
+        class: "lp-today-v2-eod-win",
+        form: { class: "lp-today-v2-eod-win__form" } do %>
+    <div class="lp-today-v2-eod-win__glow" aria-hidden="true">
+      <span class="lp-today-v2-eod-win__icon">✓</span>
+    </div>
+    <p class="lp-today-v2-eod-win__day"><%= t("dash.end_of_day.steps.win.kicker", day: streak_days) %></p>
+    <h2 class="lp-today-v2-eod-win__title"><%= t("dash.end_of_day.steps.win.title") %></h2>
+    <p class="lp-today-v2-eod-win__stats"><%= end_of_day_recap_stats(health) %></p>
+    <p class="lp-today-v2-eod-win__tap"><%= t("dash.end_of_day.steps.win.continue") %></p>
+  <% end %>
+</div>

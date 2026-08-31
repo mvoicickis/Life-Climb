@@ -1,16 +1,25 @@
 <% if params[:return_to].to_s == "mountain" %>
   <%= render "life_journeys/mountain_battle_streams" %>
 <% else %>
-  <%= turbo_stream.replace "dashboard-stats" do %>
-    <%= render "dashboard/stats" %>
+  <%= turbo_stream.replace "today-anytime-host" do %>
+    <div id="today-anytime-host">
+      <%= render "dashboard/dash_anytime", habits: @habits %>
+    </div>
   <% end %>
 
-  <%= turbo_stream.replace dom_id(@habit) do %>
-    <%= render "dashboard/habit_row", habit: @habit.reload %>
-  <% end %>
-
-  <%= turbo_stream.replace "recent-activity" do %>
-    <%= render "dashboard/recent_activity",
-        recent_completions: current_user.completions.includes(:habit).order(completed_on: :desc, created_at: :desc).limit(10) %>
+  <% if @end_of_day_ready || @battlefield_day_ended %>
+    <%= turbo_stream.replace "today-end-of-day-host" do %>
+      <div id="today-end-of-day-host">
+        <%= render "dashboard/dash_end_of_day",
+              health: @battlefield_health,
+              streak: @climb_streak,
+              step: @eod_step,
+              recap_share: helpers.end_of_day_share_text(@battlefield_health) %>
+      </div>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.replace "today-end-of-day-host" do %>
+      <div id="today-end-of-day-host"></div>
+    <% end %>
   <% end %>
 <% end %>

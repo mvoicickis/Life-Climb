@@ -139,7 +139,7 @@ class DailyTodosController < ApplicationController
       total_count: @battle_total_count
     )
     assign_battlefield_prompt!
-    assign_end_of_day!(plan_tomorrow: params[:plan_tomorrow].present?)
+    assign_end_of_day!
     @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
     @climb_streak = Climb::Streak.status(user: current_user)
     @recap_share = helpers.end_of_day_share_text(@battlefield_health)

@@ -42,7 +42,7 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
   test "tour step 2 anchors camp above nav with bubble clear at 412px" do
     journey = bootstrap_and_visit!
     page.driver.browser.manage.window.resize_to(412, 800)
-    click_button class: "lp-onboarding-tour__next"
+    find(".lp-onboarding-tour__next", wait: 5).click
     assert_selector "#onboarding-tour-camp", wait: 5
     sleep 0.25
 

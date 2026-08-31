@@ -53,7 +53,7 @@ class DashboardController < ApplicationController
       total_count: @battle_total_count
     )
     assign_battlefield_prompt!
-    assign_end_of_day!(plan_tomorrow: params[:plan_tomorrow].present?)
+    assign_end_of_day!
     # Read-only overshoot display — never sync! / award on GET.
     day_pct = Today::DayPercent.call(
       user: current_user,

@@ -53,7 +53,8 @@
       <%= render "dashboard/dash_end_of_day",
             health: @battlefield_health,
             streak: @climb_streak,
-            day_closed: @battlefield_day_ended %>
+            step: @eod_step,
+            recap_share: @recap_share %>
     </div>
   <% end %>
 <% else %>

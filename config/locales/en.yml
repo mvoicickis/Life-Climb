@@ -131,11 +131,11 @@ en:
       title: "End of day"
       close_day: "Close day"
       reopen_day: "Reopen day"
-      plan_another: "Plan another"
       share_day: "Share your day"
-      need_title: "Name tomorrow's battle first."
+      need_title: "Name your battle first."
       invalid_camp: "Pick an open camp on Mountain first."
-      saved: "Tomorrow's battle is set — %{title} (+%{sp} SP)"
+      saved: "Saved for tomorrow — %{title} (+%{count} planning points)"
+      saved_today: "Added for today — %{title}"
       share_text: "%{title}. %{stats} on LifePoints"
       recap_stats:
         full_health: "You won %{done} of %{total} battles. You kept all your health."
@@ -146,18 +146,27 @@ en:
         battles: "All battles won today"
         basics: "Basics logged for today"
       bridge:
-        label: "Plan tomorrow"
-        hint_multi: "Pick a camp, then name one battle for tomorrow."
-        camp_label: "%{title} camp"
-        placeholder: "What is your first battle for tomorrow?"
-        next: "Next"
-        save: "Save battle"
         no_camps: "Open a camp on Mountain when you are ready to plan tomorrow."
-      signoff:
-        title: "See you tomorrow"
-        sub:
-          one: "You saved one battle for tomorrow."
-          other: "You saved %{count} battles for tomorrow."
+      steps:
+        win:
+          kicker: "Day %{day}"
+          title: "You cleared the field"
+          continue: "Tap to continue"
+        plan:
+          label: "Tomorrow"
+          title: "What are you certain you can do tomorrow?"
+          placeholder: "Something small you will do"
+          planning_points: "+%{count} planning points"
+          save_tomorrow: "Save for tomorrow"
+          add_today: "Add for today instead"
+          skip: "Skip — I'm done for today"
+          saved_label: "Saved for tomorrow"
+        closed:
+          title: "See you tomorrow"
+          streak: "%{count}-day streak"
+          mountain_label: "Your mountain"
+          mountain_meta: "Camp %{current} of %{total} · %{label}"
+          share: "Share your day"
     battle_subtitle: "Win today's battle"
     battle_subtitle_sync: "Win today's battle"
     section_battles: "Battles"

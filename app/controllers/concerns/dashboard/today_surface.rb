@@ -78,7 +78,7 @@ module Dashboard
       )
     end
 
-    def assign_end_of_day!(plan_tomorrow: false)
+    def assign_end_of_day!
       habits_gate = GameRules.habits_enabled?
       @end_of_day_ready = Today::EndOfDay.ready?(
         health: @battlefield_health,
@@ -90,7 +90,25 @@ module Dashboard
 
       @end_of_day_camps = Today::EndOfDay.open_camps(strategy_goal: @strategy_goal)
       @tomorrow_battles = Today::EndOfDay.tomorrow_battles(user: current_user, journey: @journey)
-      @show_plan_tomorrow_form = !day_closed && (plan_tomorrow || @tomorrow_battles.blank?)
+      @eod_step = Today::EodFlow.step(
+        session: session,
+        end_of_day_ready: @end_of_day_ready,
+        day_closed: day_closed
+      )
+    end
+
+    def assign_today_habit_stream!
+      @journey = current_user.primary_focused_journey
+      return if @journey.blank?
+
+      assign_today_battle_surface!(reconcile: false)
+      @battlefield_health = Today::BattlefieldHealth.call(
+        open_count: @battle_open_count,
+        total_count: @battle_total_count
+      )
+      @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
+      @climb_streak = Climb::Streak.status(user: current_user)
+      assign_end_of_day!
     end
 
     def sync_today_battles!
