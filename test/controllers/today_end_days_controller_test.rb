@@ -26,6 +26,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-takeover.is-closed", count: 1
     assert_select ".lp-today-v2-eod-closed__title", text: "See you tomorrow"
     assert_select ".lp-today-v2-eod-closed__share", text: "Share your day"
+    assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
     assert_select ".lp-today-v2-inline-ack", text: /All battles won today/
     assert_select ".lp-today-v2-eod-plan", count: 0
     assert_select "a", text: "Reopen day"
