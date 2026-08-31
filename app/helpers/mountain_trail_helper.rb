@@ -26,6 +26,8 @@ module MountainTrailHelper
   PEAK_X = 0.566
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
+  # Tent caption under camp markers — two lines; long names still truncate in Ruby.
+  CAMP_TENT_TITLE_LIMIT = 24
 
   ACCENT_HEX = {
     "teal" => "#0f9488",
@@ -288,6 +290,10 @@ module MountainTrailHelper
 
   def mountain_trail_camp_label(project)
     mountain_trail_camp_status(project)
+  end
+
+  def mountain_trail_camp_caption_title(project)
+    project.title.to_s.truncate(CAMP_TENT_TITLE_LIMIT)
   end
 
   def mountain_trail_camp_days(project)
