@@ -305,4 +305,32 @@ module ApplicationHelper
       title: health.result_title,
       stats: end_of_day_recap_stats(health))
   end
+
+  def end_of_day_mountain_progress(strategy_goal, mountain)
+    mountain ||= { progress: 0, label: "" }
+    return { percent: mountain[:progress].to_i, camps_completed: 0, camps_total: 0, ridge_label: mountain[:label] } if strategy_goal.blank?
+
+    plans = strategy_goal.children.select { |child| child.plan? && !child.holding? }
+    projects = plans.flat_map { |plan| plan.children.select { |child| child.project? && !child.holding? } }
+    {
+      percent: mountain[:progress].to_i,
+      camps_completed: projects.count(&:completed?),
+      camps_total: projects.size,
+      ridge_label: mountain[:label]
+    }
+  end
+
+  def end_of_day_mountain_meta(progress)
+    progress ||= {}
+    total = progress[:camps_total].to_i
+    if total.positive?
+      current_camp = [ progress[:camps_completed].to_i + 1, total ].min
+      t("dash.end_of_day.steps.closed.mountain_meta",
+        current: current_camp,
+        total: total,
+        label: progress[:ridge_label])
+    else
+      progress[:ridge_label].to_s
+    end
+  end
 end

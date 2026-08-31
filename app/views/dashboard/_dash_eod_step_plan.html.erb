@@ -1,0 +1,85 @@
+<%# Step 2 — plan tomorrow (optional). locals: camps, tomorrow_battles %>
+<%
+  camps = Array(local_assigns.fetch(:camps))
+  tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles))
+  default_camp = camps.first
+%>
+
+<div class="lp-today-v2-eod-step lp-today-v2-eod-step--plan"
+     data-controller="end-of-day-flow">
+  <div class="lp-today-v2-eod-plan">
+    <div class="lp-today-v2-eod-plan__head">
+      <p class="lp-today-v2-eod-plan__label"><%= t("dash.end_of_day.steps.plan.label") %></p>
+      <h2 class="lp-today-v2-eod-plan__title"><%= t("dash.end_of_day.steps.plan.title") %></h2>
+      <span class="lp-today-v2-eod-plan__points">
+        <%= t("dash.end_of_day.steps.plan.planning_points", count: GameRules::STRATEGY_CHILD_SP) %>
+      </span>
+    </div>
+
+    <% if tomorrow_battles.any? %>
+      <div class="lp-today-v2-eod-plan__saved" aria-label="<%= t('dash.end_of_day.steps.plan.saved_label') %>">
+        <% tomorrow_battles.each do |battle| %>
+          <% camp = battle.parent %>
+          <p class="lp-today-v2-eod-plan__chip">
+            <span aria-hidden="true">✓</span>
+            <%= battle.title %>
+            <% if camp %>
+              · <%= camp.title %>
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if camps.any? %>
+      <% if camps.size > 1 %>
+        <div class="lp-today-v2-eod-plan__camps" role="list">
+          <% camps.each_with_index do |camp, index| %>
+            <button type="button"
+                    class="lp-today-v2-eod-plan__camp<%= ' is-selected' if index.zero? %>"
+                    role="listitem"
+                    data-end-of-day-flow-target="camp"
+                    data-project-id="<%= camp.id %>"
+                    data-action="end-of-day-flow#selectCamp">
+              <%= camp.title %>
+            </button>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= form_with url: today_plan_tomorrow_battle_path,
+            method: :post,
+            class: "lp-today-v2-eod-plan__form" do %>
+        <%= hidden_field_tag :project_id,
+              default_camp&.id,
+              data: { end_of_day_flow_target: "projectField" } %>
+        <%= text_field_tag :title, nil,
+              class: "lp-today-v2-eod-plan__input",
+              placeholder: t("dash.end_of_day.steps.plan.placeholder"),
+              aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
+              required: true,
+              autocomplete: "off" %>
+        <div class="lp-today-v2-eod-plan__actions">
+          <%= submit_tag t("dash.end_of_day.steps.plan.save_tomorrow"),
+                name: "schedule",
+                value: "tomorrow",
+                class: "lp-today-v2-eod-plan__primary" %>
+          <%= submit_tag t("dash.end_of_day.steps.plan.add_today"),
+                name: "schedule",
+                value: "today",
+                class: "lp-today-v2-eod-plan__secondary" %>
+        </div>
+      <% end %>
+      <%= button_to t("dash.end_of_day.steps.plan.skip"),
+            today_end_day_path,
+            method: :post,
+            class: "lp-today-v2-eod-plan__skip" %>
+    <% else %>
+      <p class="lp-today-v2-eod-plan__empty"><%= t("dash.end_of_day.bridge.no_camps") %></p>
+      <%= button_to t("dash.end_of_day.steps.plan.skip"),
+            today_end_day_path,
+            method: :post,
+            class: "lp-today-v2-eod-plan__skip lp-today-v2-eod-plan__skip--solo" %>
+    <% end %>
+  </div>
+</div>

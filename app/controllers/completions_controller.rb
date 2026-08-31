@@ -1,5 +1,6 @@
 class CompletionsController < ApplicationController
   include MountainSheetRefresh
+  include Dashboard::TodaySurface
 
   before_action :verify_mountain_context!, if: :mountain_return?
 
@@ -9,6 +10,7 @@ class CompletionsController < ApplicationController
 
     if @completion.save
       Today::OvershootBonus.sync!(user: current_user)
+      assign_today_habit_stream! unless mountain_return?
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to after_completion_path, notice: "+#{@habit.points} points!" }

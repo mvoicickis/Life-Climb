@@ -931,7 +931,409 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   text-align: left;
 }
 
+/* End of day v2 — sequential takeover */
+body:has(.lp-today-v2-eod-takeover.is-flow) #today-battlefield-header,
+body:has(.lp-today-v2-eod-takeover.is-flow) #today-battle-surface {
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body:has(.lp-today-v2-eod-takeover.is-flow) #today-dash-nav {
+  display: none;
+}
+
+body:has(.lp-today-v2-eod-takeover.is-closed) #today-dash-nav {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+#today-end-of-day-host:has(.lp-today-v2-eod-takeover) {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 1rem;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(232, 72, 47, 0.14), transparent 55%),
+    linear-gradient(165deg, #241812, #170f0a 55%, #100a06);
+}
+
+.lp-today-v2-eod-takeover {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lp-today-v2-eod-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  animation: todayCardIn 0.3s ease both;
+}
+
+.lp-today-v2-eod-win__form {
+  flex: 1;
+  display: flex;
+  margin: 0;
+}
+
+.lp-today-v2-eod-win {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.lp-today-v2-eod-win__glow {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.28), rgba(74, 222, 128, 0.04));
+  display: grid;
+  place-items: center;
+  margin-bottom: 1.25rem;
+  animation: todayAttentionGlowGreen 2.4s ease-in-out infinite;
+}
+
+.lp-today-v2-eod-win__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.lp-today-v2-eod-win__day {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2dd4bf;
+}
+
+.lp-today-v2-eod-win__title {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--today-safe);
+}
+
+.lp-today-v2-eod-win__stats {
+  margin: 0.75rem 0 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(247, 234, 217, 0.72);
+  max-width: 17rem;
+  line-height: 1.5;
+}
+
+.lp-today-v2-eod-win__tap {
+  margin-top: auto;
+  padding-top: 2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.28);
+  letter-spacing: 0.04em;
+}
+
+.lp-today-v2-eod-plan {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lp-today-v2-eod-plan__head {
+  margin-bottom: 1.25rem;
+}
+
+.lp-today-v2-eod-plan__label {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--today-muted);
+}
+
+.lp-today-v2-eod-plan__title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.lp-today-v2-eod-plan__points {
+  display: inline-flex;
+  margin-top: 0.5rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 99px;
+  background: rgba(45, 212, 191, 0.1);
+  border: 1px solid rgba(45, 212, 191, 0.22);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #2dd4bf;
+}
+
+.lp-today-v2-eod-plan__saved {
+  margin-bottom: 1rem;
+}
+
+.lp-today-v2-eod-plan__chip {
+  margin: 0 0 0.45rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.65);
+}
+
+.lp-today-v2-eod-plan__camps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.lp-today-v2-eod-plan__camp {
+  padding: 0.45rem 0.7rem;
+  border-radius: 99px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--today-ink);
+  cursor: pointer;
+}
+
+.lp-today-v2-eod-plan__camp.is-selected {
+  border-color: #14b8a6;
+  background: rgba(20, 184, 166, 0.15);
+  color: #a7f3d0;
+}
+
+.lp-today-v2-eod-plan__form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.lp-today-v2-eod-plan__input {
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--today-ink);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.lp-today-v2-eod-plan__input::placeholder {
+  color: rgba(247, 234, 217, 0.32);
+}
+
+.lp-today-v2-eod-plan__actions {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-today-v2-eod-plan__primary {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(170deg, #34d76b, #1fa855);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(31, 168, 85, 0.35);
+}
+
+.lp-today-v2-eod-plan__secondary {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(247, 234, 217, 0.55);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lp-today-v2-eod-plan__skip {
+  display: block;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(247, 234, 217, 0.78);
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+}
+
+.lp-today-v2-eod-plan__skip--solo {
+  margin-top: auto;
+}
+
+.lp-today-v2-eod-plan__empty {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  color: rgba(247, 234, 217, 0.55);
+  line-height: 1.5;
+}
+
+.lp-today-v2-eod-closed {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.75rem 0.5rem 0.5rem;
+}
+
+.lp-today-v2-eod-closed__moon {
+  font-size: 2.25rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.lp-today-v2-eod-closed__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--today-safe);
+}
+
+.lp-today-v2-eod-closed__sub {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(247, 234, 217, 0.45);
+}
+
+.lp-today-v2-eod-closed__chip {
+  margin: 1rem 0 0;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.65);
+}
+
+.lp-today-v2-eod-closed__progress {
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 1rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.lp-today-v2-eod-closed__streak {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--today-ink);
+}
+
+.lp-today-v2-eod-closed__mountain-label {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--today-muted);
+}
+
+.lp-today-v2-eod-closed__mountain-bar {
+  height: 0.5rem;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.lp-today-v2-eod-closed__mountain-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #14b8a6, #2dd4bf);
+}
+
+.lp-today-v2-eod-closed__mountain-meta {
+  margin: 0.4rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.45);
+}
+
+.lp-today-v2-eod-closed__footer {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-today-v2-eod-closed__share {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.3);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.lp-today-v2-eod-closed__reopen {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(247, 234, 217, 0.38);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .lp-today-v2-eod-win__glow,
   .lp-today-v2-hp-bar.is-pulse,
   .lp-today-v2-mountain-link.is-clear,
   .lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-end-day,

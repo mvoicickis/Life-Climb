@@ -1,0 +1,64 @@
+<%# Step 3 — day closed. locals: health, streak, mountain, strategy_goal, tomorrow_battles, recap_share %>
+<%
+  streak = local_assigns[:streak]
+  tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles))
+  mountain = local_assigns.fetch(:mountain) { @mountain }
+  strategy_goal = local_assigns.fetch(:strategy_goal) { @strategy_goal }
+  recap_share = local_assigns[:recap_share]
+  streak_days = streak.respond_to?(:days) ? streak.days.to_i : 1
+  streak_days = 1 if streak_days <= 0
+  climb_days = streak.respond_to?(:days) ? streak.days.to_i : 0
+  progress = end_of_day_mountain_progress(strategy_goal, mountain)
+%>
+
+<div class="lp-today-v2-eod-step lp-today-v2-eod-step--closed">
+  <div class="lp-today-v2-eod-closed">
+    <div class="lp-today-v2-eod-closed__moon" aria-hidden="true">🌙</div>
+    <h2 class="lp-today-v2-eod-closed__title"><%= t("dash.end_of_day.steps.closed.title") %></h2>
+    <p class="lp-today-v2-eod-closed__sub"><%= t("dash.end_of_day.closed.sub", day: streak_days) %></p>
+
+    <% tomorrow_battles.each do |battle| %>
+      <% camp = battle.parent %>
+      <p class="lp-today-v2-eod-closed__chip">
+        <span aria-hidden="true">✓</span>
+        <%= battle.title %>
+        <% if camp %>
+          · <%= camp.title %>
+        <% end %>
+      </p>
+    <% end %>
+
+    <div class="lp-today-v2-eod-closed__progress">
+      <% if climb_days.positive? %>
+        <p class="lp-today-v2-eod-closed__streak">
+          <span class="lp-today-v2-eod-closed__streak-icon" aria-hidden="true">🔥</span>
+          <%= t("dash.end_of_day.steps.closed.streak", count: climb_days) %>
+        </p>
+      <% end %>
+      <p class="lp-today-v2-eod-closed__mountain-label"><%= t("dash.end_of_day.steps.closed.mountain_label") %></p>
+      <div class="lp-today-v2-eod-closed__mountain-bar"
+           role="progressbar"
+           aria-valuenow="<%= progress[:percent] %>"
+           aria-valuemin="0"
+           aria-valuemax="100"
+           aria-label="<%= t('dash.end_of_day.steps.closed.mountain_label') %>">
+        <span class="lp-today-v2-eod-closed__mountain-fill" style="width: <%= progress[:percent] %>%"></span>
+      </div>
+      <p class="lp-today-v2-eod-closed__mountain-meta"><%= end_of_day_mountain_meta(progress) %></p>
+    </div>
+
+    <div class="lp-today-v2-eod-closed__footer">
+      <% if recap_share.present? %>
+        <button type="button"
+                class="lp-today-v2-eod-closed__share"
+                data-action="click->today-notch#shareRecap">
+          <%= t("dash.end_of_day.steps.closed.share") %>
+        </button>
+      <% end %>
+      <%= link_to t("dash.end_of_day.reopen_day"),
+            today_end_day_path,
+            data: { turbo_method: :delete },
+            class: "lp-today-v2-eod-closed__reopen" %>
+    </div>
+  </div>
+</div>
