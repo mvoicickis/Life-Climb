@@ -3,7 +3,7 @@
 class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
-  STEPS = %w[character goal camp battles].freeze
+  STEPS = %w[character goal camp basic battles].freeze
   SETUP_STEPS = STEPS.freeze
   LEGACY_STEPS = %w[welcome category mountain commitment deadline forge how].freeze
 
@@ -23,6 +23,8 @@ class V2OnboardingsController < ApplicationController
     end
 
     redirect_to v2_onboarding_path(step: missing_step) and return if step_incomplete?
+
+    track_onboarding_event!("onboarding_step_viewed", @step)
   end
 
   def update
@@ -50,6 +52,7 @@ class V2OnboardingsController < ApplicationController
       end
       current_user.update!(character: key)
       current_user.mark_companion_pick_done!
+      track_onboarding_event!("onboarding_step_completed", step)
       redirect_to v2_onboarding_path(step: "goal")
     when "goal"
       goal = draft["goal"].to_s.strip
@@ -57,6 +60,7 @@ class V2OnboardingsController < ApplicationController
         redirect_to v2_onboarding_path(step: "goal"), alert: t("v2_onboarding.need_goal") and return
       end
       session[:v2_onboarding] = draft.merge("goal" => goal)
+      track_onboarding_event!("onboarding_step_completed", step)
       redirect_to v2_onboarding_path(step: "camp")
     when "camp"
       camp = draft["camp"].to_s.strip
@@ -64,6 +68,15 @@ class V2OnboardingsController < ApplicationController
         redirect_to v2_onboarding_path(step: "camp"), alert: t("v2_onboarding.need_camp") and return
       end
       session[:v2_onboarding] = draft.merge("camp" => camp)
+      track_onboarding_event!("onboarding_step_completed", step)
+      redirect_to v2_onboarding_path(step: "basic")
+    when "basic"
+      basic_title = draft["basic_title"].to_s.strip
+      if basic_title.blank?
+        redirect_to v2_onboarding_path(step: "basic"), alert: t("v2_onboarding.need_basic") and return
+      end
+      session[:v2_onboarding] = draft.merge("basic_title" => basic_title)
+      track_onboarding_event!("onboarding_step_completed", step)
       redirect_to v2_onboarding_path(step: "battles")
     when "battles"
       titles = battle_titles_from_params
@@ -72,9 +85,9 @@ class V2OnboardingsController < ApplicationController
       end
       basic_title = draft["basic_title"].to_s.strip
       if basic_title.blank?
-        redirect_to v2_onboarding_path(step: "battles"), alert: t("v2_onboarding.need_basic") and return
+        redirect_to v2_onboarding_path(step: "basic"), alert: t("v2_onboarding.need_basic") and return
       end
-      session[:v2_onboarding] = draft.merge("basic_title" => basic_title)
+      track_onboarding_event!("onboarding_step_completed", step)
       begin
         result = Onboarding::Bootstrap.call(
           user: current_user,
@@ -130,7 +143,8 @@ class V2OnboardingsController < ApplicationController
     when "character" then false
     when "goal" then !current_user.character_chosen?
     when "camp" then !current_user.character_chosen? || draft["goal"].blank?
-    when "battles" then !current_user.character_chosen? || draft["goal"].blank? || draft["camp"].blank?
+    when "basic" then !current_user.character_chosen? || draft["goal"].blank? || draft["camp"].blank?
+    when "battles" then !current_user.character_chosen? || draft["goal"].blank? || draft["camp"].blank? || draft["basic_title"].blank?
     else false
     end
   end
@@ -140,7 +154,14 @@ class V2OnboardingsController < ApplicationController
     return "character" unless current_user.character_chosen?
     return "goal" if draft["goal"].blank?
     return "camp" if draft["camp"].blank?
+    return "basic" if draft["basic_title"].blank?
 
     "battles"
+  end
+
+  def track_onboarding_event!(name, step)
+    return unless SETUP_STEPS.include?(step)
+
+    Analytics::Track.call(user: current_user, name: name, properties: { step: step })
   end
 end

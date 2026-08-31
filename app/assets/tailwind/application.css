@@ -8307,6 +8307,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-adventure__lead,
+.lp-adventure__goal-recap,
 .lp-adventure__body,
 .lp-adventure__example,
 .lp-adventure__forge-wait,
@@ -8315,6 +8316,13 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   color: var(--lp-muted);
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.lp-adventure__goal-recap {
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--lp-ink);
 }
 
 .lp-adventure__categories {
