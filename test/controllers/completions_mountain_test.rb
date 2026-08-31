@@ -46,6 +46,15 @@ class CompletionsMountainTest < ActionDispatch::IntegrationTest
     assert @habit.reload.completed_today?
   end
 
+  test "mountain double tick is a no-op without error" do
+    post completions_path(habit_id: @habit.id), params: mountain_completion_params, as: :turbo_stream
+    assert_response :ok
+
+    post completions_path(habit_id: @habit.id), params: mountain_completion_params, as: :turbo_stream
+    assert_response :ok
+    assert_equal 1, @habit.completions.where(completed_on: Date.current).count
+  end
+
   test "mountain untick turbo stream refreshes trail-base-sheet" do
     completion = @user.completions.create!(habit: @habit, completed_on: Date.current)
 

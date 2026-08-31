@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Strategy
-  # Queues open parent projects for the "Did you finish this project?" check on Today.
+  # Queues open parent projects for the camp-check prompt on Mountain.
   class ProjectCheckQueue
     SESSION_KEY = :project_check_ids
 
@@ -23,6 +23,10 @@ module Strategy
       end
 
       project
+    end
+
+    def self.pending?(session:, project_id:)
+      Array(session[SESSION_KEY]).map(&:to_i).include?(project_id.to_i)
     end
 
     def self.dequeue(session:, project_id:)

@@ -44,4 +44,19 @@ class ProjectCompletionsControllerTest < ActionDispatch::IntegrationTest
     assert @goal.reload.completed?
     assert_equal 100, @goal.progress_percent
   end
+
+  test "done from mountain camp sheet returns to mountain" do
+    post project_completions_path,
+         params: {
+           project_id: @project.id,
+           decision: "done",
+           return_to: "mountain",
+           life_journey_id: @journey.id,
+           goal_id: @goal.id,
+           plan_id: @plan.id
+         }
+
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert @project.reload.completed?
+  end
 end

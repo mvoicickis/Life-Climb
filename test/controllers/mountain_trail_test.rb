@@ -217,6 +217,23 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_includes markup, "lp-trail-battles__camp-fold"
   end
 
+  test "camp sheet shows project check when camp is queued" do
+    battle = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Pack the tent", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: battle.id)
+
+    post complete_daily_todo_path(todo)
+    assert_redirected_to dashboard_path
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-check .lp-dash-project-check"
+    assert_select "#trail-battles-#{@project.id} input[name='return_to'][value='mountain']"
+  end
+
   test "camp description renders on tent data attribute and sheet subtitle target" do
     @project.update!(description: "Daily strength work")
 

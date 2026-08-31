@@ -26,11 +26,4 @@
           strategy_goal: @strategy_goal,
           recap_share: recap_share %>
   <% end %>
-
-  <% project_check = local_assigns.fetch(:project_check) { @project_check } %>
-  <% if project_check.present? && step == :plan %>
-    <div class="lp-today-v2-end-of-day__camp-check">
-      <%= render "dashboard/dash_project_check", project: project_check %>
-    </div>
-  <% end %>
 </section>

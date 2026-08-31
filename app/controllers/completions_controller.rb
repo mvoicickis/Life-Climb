@@ -6,6 +6,10 @@ class CompletionsController < ApplicationController
 
   def create
     @habit = current_user.habits.find(params[:habit_id])
+    if @habit.completed_today?
+      return render_existing_completion
+    end
+
     @completion = current_user.completions.build(habit: @habit, completed_on: Date.current)
 
     if @completion.save
@@ -44,6 +48,17 @@ class CompletionsController < ApplicationController
   end
 
   private
+
+  def render_existing_completion
+    Today::OvershootBonus.sync!(user: current_user)
+    assign_mountain_sheet_for_base_camp! if mountain_return?
+    assign_today_habit_stream! unless mountain_return?
+
+    respond_to do |format|
+      format.turbo_stream { render :create }
+      format.html { redirect_to after_completion_path }
+    end
+  end
 
   def mountain_return?
     params[:return_to].to_s == "mountain"

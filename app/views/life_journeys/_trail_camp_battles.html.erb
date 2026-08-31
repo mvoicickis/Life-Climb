@@ -1,6 +1,8 @@
 <%# Battles inside a trail camp sheet. locals: project, goal, plan, area %>
 <% project = local_assigns.fetch(:project) %>
 <% area = local_assigns[:area] || project.life_area %>
+<% goal = local_assigns[:goal] || project.root_goal %>
+<% plan = local_assigns[:plan] || (project.parent if project.parent&.plan?) %>
 <% days = project.children.select(&:day?).reject(&:holding?) %>
 <% mountain_trail_preload_done_today!(current_user, days) %>
 <% days = days.sort_by { |d| [ mountain_trail_done_today?(d) ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
@@ -64,6 +66,16 @@
      data-range-max="<%= project.try(:range_max) %>"
      data-trail-battles-session-wins-value="0"
      data-session-win-template="<%= t('strategy.rpg.trail.session_wins_toast') %>">
+  <% if project_check_pending?(project) %>
+    <div class="lp-trail-battles__camp-check">
+      <%= render "dashboard/dash_project_check",
+            project: project,
+            return_to: "mountain",
+            life_journey_id: project.life_journey_id,
+            goal_id: goal&.id,
+            plan_id: plan&.id %>
+    </div>
+  <% end %>
   <p class="lp-trail-battles__kind"><%= t("strategy.rpg.trail.camp_kind") %></p>
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">

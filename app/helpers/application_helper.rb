@@ -24,6 +24,12 @@ module ApplicationHelper
     { color: hex, bg: "#{hex}26" }
   end
 
+  def project_check_pending?(project)
+    return false if project.blank?
+
+    Strategy::ProjectCheckQueue.pending?(session: session, project_id: project.id)
+  end
+
   def battlefield_hp_band_class(band)
     case band.to_sym
     when :safe then "is-safe"

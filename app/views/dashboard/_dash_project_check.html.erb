@@ -1,4 +1,14 @@
-<%# locals: project %>
+<%# locals: project, return_to (optional), life_journey_id, goal_id, plan_id %>
+<%
+  project = local_assigns.fetch(:project)
+  check_params = { project_id: project.id }
+  if local_assigns[:return_to].present?
+    check_params[:return_to] = local_assigns[:return_to]
+    check_params[:life_journey_id] = local_assigns[:life_journey_id] if local_assigns[:life_journey_id].present?
+    check_params[:goal_id] = local_assigns[:goal_id] if local_assigns[:goal_id].present?
+    check_params[:plan_id] = local_assigns[:plan_id] if local_assigns[:plan_id].present?
+  end
+%>
 <aside class="lp-dash-project-check" aria-label="<%= t('dash.project_check.title', title: project.title) %>">
   <p class="lp-dash-project-check__kicker"><%= t("dash.project_check.kicker") %></p>
   <h2 class="lp-dash-project-check__title"><%= t("dash.project_check.title", title: project.title) %></h2>
@@ -7,12 +17,12 @@
     <%= button_to t("dash.project_check.confirm"),
           project_completions_path,
           method: :post,
-          params: { project_id: project.id, decision: "done" },
+          params: check_params.merge(decision: "done"),
           class: "lp-dash-project-check__yes" %>
     <%= button_to t("dash.project_check.not_yet"),
           project_completions_path,
           method: :post,
-          params: { project_id: project.id, decision: "not_yet" },
+          params: check_params.merge(decision: "not_yet"),
           class: "lp-dash-project-check__no" %>
   </div>
 </aside>
