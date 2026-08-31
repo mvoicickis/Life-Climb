@@ -1,0 +1,28 @@
+<section class="lp-admin__panel" aria-label="<%= t('admin.onboarding_steps.title') %>">
+  <header class="lp-admin__panel-head">
+    <h2><%= t("admin.onboarding_steps.title") %></h2>
+  </header>
+
+  <div class="lp-admin__table-wrap">
+    <table class="lp-admin__table">
+      <thead>
+        <tr>
+          <th scope="col"><%= t("admin.onboarding_steps.step") %></th>
+          <th scope="col"><%= t("admin.onboarding_steps.viewed") %></th>
+          <th scope="col"><%= t("admin.onboarding_steps.completed") %></th>
+          <th scope="col"><%= t("admin.onboarding_steps.drop_off") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr>
+            <td><%= row.label %></td>
+            <td><%= row.viewed %></td>
+            <td><%= row.completed %></td>
+            <td><%= row.drop_off_from_previous.nil? ? "—" : row.drop_off_from_previous %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

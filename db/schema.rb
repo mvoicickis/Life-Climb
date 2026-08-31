@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_30_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_31_140000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -516,6 +516,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_120000) do
     t.index ["user_id"], name: "index_today_actions_on_user_id"
   end
 
+  create_table "user_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.json "properties", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["name", "created_at"], name: "index_user_events_on_name_and_created_at"
+    t.index ["user_id", "name", "created_at"], name: "index_user_events_on_user_id_and_name_and_created_at"
+    t.index ["user_id"], name: "index_user_events_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.integer "best_day_ap", default: 0, null: false
@@ -613,5 +624,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_120000) do
   add_foreign_key "strategy_quantity_logs", "users"
   add_foreign_key "today_actions", "buildings"
   add_foreign_key "today_actions", "users"
+  add_foreign_key "user_events", "users"
   add_foreign_key "users", "buildings", column: "focus_building_id"
 end
