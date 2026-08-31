@@ -102,8 +102,8 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
 
     metrics = path_metrics(expected_text)
     assert metrics["ok"], "HUD/peak title missing at #{width}x#{height}: #{metrics.inspect}"
-    # HUD truncates long plan names to 14 chars in the link text.
-    assert_includes metrics["text"], expected_text[0, 10]
+    # HUD truncates long plan names to HUD_PLAN_TITLE_LIMIT chars in the link text.
+    assert_includes metrics["text"], expected_text[0, 20]
     assert_operator metrics["titleWidth"].to_f, :>=, 40.0,
                     "plan/peak title unexpectedly narrow: #{metrics.inspect}"
     assert_operator metrics["titleHeight"].to_f, :>=, 12.0,

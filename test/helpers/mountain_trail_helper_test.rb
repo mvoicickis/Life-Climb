@@ -132,6 +132,11 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_in_delta 0.5, mountain_trail_climb_fraction([ done, open ]), 0.001
   end
 
+  test "hud plan title truncates long path names for trail chips" do
+    assert_equal "Make LifePoints Succe...", mountain_trail_hud_plan_title("Make LifePoints Successsull")
+    assert_equal "Learn German", mountain_trail_hud_plan_title("Learn German")
+  end
+
   test "camp status is empty, ready, or cleared" do
     empty = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [], false)
     assert_equal "Nothing planned", mountain_trail_camp_status(empty)

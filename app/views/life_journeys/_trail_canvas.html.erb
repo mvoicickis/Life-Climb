@@ -102,7 +102,7 @@
       <% if plans.size > 1 %>
         <div class="lp-trail-hud__plans" role="navigation" aria-label="<%= t('strategy.rpg.plans_kicker') %>">
           <% plans.each do |p| %>
-            <%= link_to p.title.truncate(14),
+            <%= link_to mountain_trail_hud_plan_title(p.title),
                   life_journey_path(journey, goal_id: goal&.id, plan_id: p.id),
                   class: "lp-trail-hud__plan #{'is-active' if plan&.id == p.id}" %>
           <% end %>
