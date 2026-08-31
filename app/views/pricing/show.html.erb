@@ -29,7 +29,7 @@
       <p class="lp-pricing__status-label"><%= t("pricing.already_premium") %></p>
       <% if current_user.current_period_end.present? %>
         <p class="lp-pricing__status-detail">
-          <%= t("pricing.active_until", date: l(current_user.current_period_end, format: :long)) %>
+          <%= t("pricing.active_until", date: l(current_user.current_period_end.to_date, format: :renewal)) %>
         </p>
       <% end %>
     </section>

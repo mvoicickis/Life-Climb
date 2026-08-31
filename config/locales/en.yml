@@ -3,6 +3,7 @@ en:
     formats:
       chart_day: "%a"
       long: "%b %-d"
+      renewal: "%B %-d, %Y"
       dash_weekday: "%A"
   app_name: "LifePoints"
   companion:

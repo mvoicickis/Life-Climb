@@ -3,6 +3,7 @@ lv:
     formats:
       chart_day: "%a"
       long: "%-d. %b"
+      renewal: "%-d. %B %Y"
       dash_weekday: "%A"
     day_names:
       - svētdiena
