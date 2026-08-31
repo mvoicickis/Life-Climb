@@ -3,6 +3,7 @@ ru:
     formats:
       chart_day: "%a"
       long: "%-d %b"
+      renewal: "%-d %B %Y"
   app_name: "LifePoints"
   companion:
     prompt_kicker: "Новые спутники"

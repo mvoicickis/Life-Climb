@@ -3,6 +3,7 @@ es:
     formats:
       chart_day: "%a"
       long: "%-d %b"
+      renewal: "%-d de %B de %Y"
   app_name: "LifePoints"
   companion:
     prompt_kicker: "Nuevos compañeros"
