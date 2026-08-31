@@ -549,21 +549,22 @@
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0.12rem;
-  max-width: 7.5rem;
+  max-width: 9rem;
   pointer-events: none;
   text-align: center;
 }
 
 .lp-trail-camp__title {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-family: var(--lp-trail-display);
   font-size: 0.62rem;
   font-weight: 700;
   color: #1a140c;
   line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
   text-shadow:
     0 0 4px rgba(255, 252, 245, 0.95),
     0 1px 2px rgba(255, 248, 235, 0.9);

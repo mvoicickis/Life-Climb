@@ -289,7 +289,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       assert_select ".lp-trail-camp__caption .lp-trail-camp__title"
     end
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__caption", text: /Base camp/
-    assert_select "#trail-camp-#{extra.id} .lp-trail-camp__caption", text: /Ridge loo/
+    assert_select "#trail-camp-#{extra.id} .lp-trail-camp__caption", text: /Ridge lookout/
     assert_select ".lp-trail-camp__chip", count: 0
     assert_select ".lp-trail-camp.is-chip-start", count: 0
   end
