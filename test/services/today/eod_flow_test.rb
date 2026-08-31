@@ -28,4 +28,24 @@ class Today::EodFlowTest < ActiveSupport::TestCase
     Today::EodFlow.reset_acknowledge!(session)
     refute Today::EodFlow.acknowledged?(session)
   end
+
+  test "plan_action_order emphasizes today before 6pm local" do
+    user = users(:one)
+    user.create_notification_preference!(time_zone: "Europe/Berlin")
+
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 12, 0, 0) do
+      assert_equal %i[today tomorrow], Today::EodFlow.plan_action_order(user: user)
+      refute Today::EodFlow.evening_planning?(user: user)
+    end
+  end
+
+  test "plan_action_order emphasizes tomorrow from 6pm local" do
+    user = users(:one)
+    user.create_notification_preference!(time_zone: "Europe/Berlin")
+
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 31, 18, 0, 0) do
+      assert_equal %i[tomorrow today], Today::EodFlow.plan_action_order(user: user)
+      assert Today::EodFlow.evening_planning?(user: user)
+    end
+  end
 end
