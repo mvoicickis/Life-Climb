@@ -108,6 +108,10 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     assert @binary.reload.completed_today?
 
+    post completions_path(habit_id: @binary.id), as: :turbo_stream
+    assert_response :success
+    assert_equal 1, @binary.completions.where(completed_on: Date.current).count
+
     post daily_logs_path(habit_id: @pages.id),
          params: { mode: "add", return_to: "today", daily_log: { amount: 7 } }
     assert_redirected_to dashboard_path

@@ -62,6 +62,20 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-win", count: 0
   end
 
+  test "plan step does not show camp check on Today" do
+    @todo.update!(completed_at: Time.current)
+    @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
+    project = @user.strategy_goals.for_kind("project").first
+    Strategy::ProjectCheckQueue.enqueue(session: session, project_ids: [ project.id ])
+
+    post today_eod_acknowledge_path
+    follow_redirect!
+
+    assert_select ".lp-today-v2-eod-plan", count: 1
+    assert_select ".lp-dash-project-check", count: 0
+    assert_select ".lp-today-v2-end-of-day__camp-check", count: 0
+  end
+
   test "plan tomorrow battle creates scheduled day goal and stays on step 2 with today prompt" do
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)

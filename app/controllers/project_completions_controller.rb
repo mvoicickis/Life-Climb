@@ -5,10 +5,10 @@ class ProjectCompletionsController < ApplicationController
   def create
     project = current_user.strategy_goals.find(params[:project_id])
     unless project.project?
-      redirect_to dashboard_path, alert: t("dash.project_check.invalid") and return
+      redirect_to after_project_check_path(project), alert: t("dash.project_check.invalid") and return
     end
     if project.holding?
-      redirect_to dashboard_path, alert: t("dash.project_check.invalid") and return
+      redirect_to after_project_check_path(project), alert: t("dash.project_check.invalid") and return
     end
 
     Strategy::ProjectCheckQueue.dequeue(session: session, project_id: project.id)
@@ -34,10 +34,30 @@ class ProjectCompletionsController < ApplicationController
       flash[:battle_celebrate] = true
       flash[:climb_boss] = true if reward[:kind] == "boss"
       flash[:climb_reward] = reward
-      redirect_to dashboard_path, notice: t("dash.project_check.done_notice", title: project.title, percent: after)
+      redirect_to after_project_check_path(project),
+                  notice: t("dash.project_check.done_notice", title: project.title, percent: after)
     else
       Strategy::BattleAngleQueue.enqueue(session: session, project_id: project.id)
-      redirect_to dashboard_path, notice: t("dash.project_check.not_yet_notice")
+      redirect_to after_project_check_path(project), notice: t("dash.project_check.not_yet_notice")
     end
+  end
+
+  private
+
+  def mountain_return?
+    params[:return_to].to_s == "mountain"
+  end
+
+  def after_project_check_path(project)
+    return dashboard_path unless mountain_return?
+
+    journey = project.life_journey || current_user.primary_focused_journey
+    goal = project.root_goal
+    plan = project.parent if project.parent&.plan?
+    life_journey_path(
+      journey,
+      goal_id: params[:goal_id].presence || goal&.id,
+      plan_id: params[:plan_id].presence || plan&.id
+    )
   end
 end
