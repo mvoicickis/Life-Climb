@@ -159,6 +159,15 @@
       line-height: 1;
     }
 
+    .moment__day {
+      margin: 0 0 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--planning);
+    }
+
     .moment__title {
       margin: 0;
       font-size: 1.65rem;
@@ -167,11 +176,13 @@
       color: var(--green);
     }
 
-    .moment__sub {
-      margin: 0.65rem 0 0;
-      font-size: 0.9rem;
-      color: rgba(247, 234, 217, 0.55);
-      max-width: 16rem;
+    .moment__stats {
+      margin: 0.75rem 0 0;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: rgba(247, 234, 217, 0.72);
+      max-width: 17rem;
+      line-height: 1.5;
     }
 
     .moment__tap {
@@ -283,14 +294,21 @@
       box-shadow: 0 4px 14px rgba(31, 168, 85, 0.35);
     }
 
-    .link-skip {
+    .btn-skip {
       display: block;
-      margin-top: 0.85rem;
+      width: 100%;
+      margin-top: 0.65rem;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(247, 234, 217, 0.78);
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 800;
       text-align: center;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: rgba(247, 234, 217, 0.38);
       text-decoration: none;
+      cursor: default;
     }
 
     /* Step 3 — quiet close */
@@ -299,9 +317,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
-      padding: 2rem 0.5rem;
+      padding: 1.75rem 0.5rem 0.5rem;
     }
 
     .closed__moon {
@@ -327,7 +344,7 @@
     }
 
     .closed__saved {
-      margin-top: 1.25rem;
+      margin-top: 1rem;
       padding: 0.55rem 0.85rem;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.04);
@@ -337,9 +354,63 @@
       color: rgba(247, 234, 217, 0.65);
     }
 
+    .closed__progress {
+      width: 100%;
+      margin-top: 1.25rem;
+      padding: 1rem 0.9rem;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
+    }
+
+    .closed__streak {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0 0 0.65rem;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .closed__streak-icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .closed__mountain-label {
+      margin: 0 0 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .closed__mountain-bar {
+      height: 0.5rem;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .closed__mountain-fill {
+      display: block;
+      height: 100%;
+      width: 62%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #14b8a6, #2dd4bf);
+    }
+
+    .closed__mountain-meta {
+      margin: 0.4rem 0 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.45);
+    }
+
     .closed__share {
       margin-top: auto;
-      padding-top: 2.5rem;
+      padding-top: 1.25rem;
     }
 
     .link-share {
@@ -451,15 +522,16 @@
     <section class="step">
       <p class="step__label">Step 1</p>
       <h2 class="step__title">The win — alone</h2>
-      <p class="step__note">Nothing else on screen. No battle list, no basics, no buttons, no share, no planning form. Tap anywhere to continue.</p>
+      <p class="step__note">Nothing else on screen. Recap stats and Day 8 make the win personal. No battle list, no buttons, no share, no planning form. Tap anywhere to continue.</p>
       <div class="phone">
         <div class="phone__body">
           <div class="moment">
             <div class="moment__glow" aria-hidden="true">
               <span class="moment__icon">✓</span>
             </div>
+            <p class="moment__day">Day 8</p>
             <h3 class="moment__title">You cleared the field</h3>
-            <p class="moment__sub">All battles won. Basics done.</p>
+            <p class="moment__stats">You won 1 of 1 battles. You kept all your health.</p>
             <p class="moment__tap">Tap to continue</p>
           </div>
         </div>
@@ -472,7 +544,7 @@
     <section class="step">
       <p class="step__label">Step 2</p>
       <h2 class="step__title">One question — what will you do tomorrow?</h2>
-      <p class="step__note">Single focus. Primary action is full-width below the input. Skip is a text link underneath — not beside the button. Share does not appear here.</p>
+      <p class="step__note">Single focus. Primary action is full-width below the input. Skip is a visible ghost button underneath — not beside the primary, but easy to find. Share does not appear here.</p>
 
       <div class="variant-group">
         <div>
@@ -488,7 +560,7 @@
                 <input type="text" class="plan-input" placeholder="Name one thing" aria-label="Tomorrow's battle">
                 <div class="question__footer">
                   <button type="button" class="btn-primary">Save for tomorrow</button>
-                  <a href="#" class="link-skip" onclick="return false">Skip — I'm done for today</a>
+                  <a href="#" class="btn-skip" onclick="return false">Skip — I'm done for today</a>
                 </div>
               </div>
             </div>
@@ -513,7 +585,7 @@
                 <input type="text" class="plan-input" placeholder="Name one thing" aria-label="Tomorrow's battle">
                 <div class="question__footer">
                   <button type="button" class="btn-primary">Save for tomorrow</button>
-                  <a href="#" class="link-skip" onclick="return false">Skip — I'm done for today</a>
+                  <a href="#" class="btn-skip" onclick="return false">Skip — I'm done for today</a>
                 </div>
               </div>
             </div>
@@ -538,7 +610,7 @@
                 <input type="text" class="plan-input" value="Review Spanish vocab" aria-label="Tomorrow's battle">
                 <div class="question__footer">
                   <button type="button" class="btn-primary">Save for tomorrow</button>
-                  <a href="#" class="link-skip" onclick="return false">Skip — I'm done for today</a>
+                  <a href="#" class="btn-skip" onclick="return false">Skip — I'm done for today</a>
                 </div>
               </div>
             </div>
@@ -553,7 +625,7 @@
     <section class="step">
       <p class="step__label">Step 3</p>
       <h2 class="step__title">Done — closed and quiet</h2>
-      <p class="step__note">Day is closed. No close-day button (already closed). Share is a faint link at the bottom — never beside a primary action. Nav is dimmed.</p>
+      <p class="step__note">Day is closed. Streak and mountain progress fill the middle — here's where you are, not more to do. Share is a faint link at the bottom. Nav is dimmed.</p>
 
       <div class="variant-group">
         <div>
@@ -563,8 +635,19 @@
               <div class="closed">
                 <div class="closed__moon" aria-hidden="true">🌙</div>
                 <h3 class="closed__title">See you tomorrow</h3>
-                <p class="closed__sub">Day 12 is closed.</p>
+                <p class="closed__sub">Day 8 is closed.</p>
                 <p class="closed__saved">Review Spanish vocab · Learning</p>
+                <div class="closed__progress">
+                  <p class="closed__streak">
+                    <span class="closed__streak-icon" aria-hidden="true">🔥</span>
+                    8-day streak
+                  </p>
+                  <p class="closed__mountain-label">Your mountain</p>
+                  <div class="closed__mountain-bar" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Mountain progress">
+                    <span class="closed__mountain-fill"></span>
+                  </div>
+                  <p class="closed__mountain-meta">Camp 2 of 4 · halfway up</p>
+                </div>
                 <div class="closed__share">
                   <a href="#" class="link-share" onclick="return false">Share your day</a>
                 </div>
@@ -590,7 +673,18 @@
               <div class="closed">
                 <div class="closed__moon" aria-hidden="true">🌙</div>
                 <h3 class="closed__title">See you tomorrow</h3>
-                <p class="closed__sub">Day 12 is closed.</p>
+                <p class="closed__sub">Day 8 is closed.</p>
+                <div class="closed__progress">
+                  <p class="closed__streak">
+                    <span class="closed__streak-icon" aria-hidden="true">🔥</span>
+                    8-day streak
+                  </p>
+                  <p class="closed__mountain-label">Your mountain</p>
+                  <div class="closed__mountain-bar" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Mountain progress">
+                    <span class="closed__mountain-fill"></span>
+                  </div>
+                  <p class="closed__mountain-meta">Camp 2 of 4 · halfway up</p>
+                </div>
                 <div class="closed__share">
                   <a href="#" class="link-share" onclick="return false">Share your day</a>
                 </div>
