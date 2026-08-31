@@ -112,9 +112,11 @@ Rails.application.routes.draw do
   resource :support, only: :show, controller: "supports"
   post "support/dismiss", to: "supports#dismiss_moment", as: :dismiss_support_moment
   resource :about, only: :show, controller: "abouts"
+  resource :pricing, only: :show, controller: "pricing"
 
   namespace :billing do
     post "checkout", to: "checkouts#create"
+    post "portal", to: "portals#create"
     post "webhook", to: "webhooks#create"
   end
 

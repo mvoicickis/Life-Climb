@@ -82,6 +82,7 @@ module RequireOnboarding
       feedbacks
       supports
       abouts
+      pricing
       life_points
       progress
       focus

@@ -34,5 +34,21 @@ module Billing
       body = JSON.parse(response.body)
       assert_equal "https://checkout.stripe.test/session", body["url"]
     end
+
+    test "passes pricing return urls to checkout service" do
+      captured = {}
+      with_singleton_stubs(
+        Billing::CreateCheckoutSession => {
+          call: ->(**kwargs) { captured.replace(kwargs); { url: "https://checkout.stripe.test/session" } }
+        }
+      ) do
+        post billing_checkout_path, params: { interval: "yearly" }, as: :json
+      end
+
+      assert_includes captured[:success_url], "/pricing"
+      assert_includes captured[:success_url], "billing=success"
+      assert_includes captured[:cancel_url], "/pricing"
+      assert_includes captured[:cancel_url], "billing=cancel"
+    end
   end
 end

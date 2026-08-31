@@ -1,0 +1,99 @@
+<% content_for :title, t("pricing.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<% premium = current_user.premium? %>
+<% can_manage_billing = current_user.stripe_customer_id.present? %>
+<% stripe_configured = StripeConfig.configured? %>
+
+<div class="lp-pricing"
+     data-controller="billing-checkout"
+     data-billing-checkout-checkout-url-value="<%= billing_checkout_path %>"
+     data-billing-checkout-portal-url-value="<%= billing_portal_path %>">
+  <header class="lp-pricing__hero">
+    <p class="lp-brand-kicker">
+      <%= render "shared/lp_brand_mark", size: 24, class_name: "lp-brand-kicker__mark" %>
+      <span><%= t("app_name") %></span>
+    </p>
+    <p class="lp-pricing__kicker"><%= t("pricing.kicker") %></p>
+    <h1 class="lp-pricing__title"><%= t("pricing.title") %></h1>
+    <p class="lp-pricing__subtitle"><%= t("pricing.subtitle") %></p>
+  </header>
+
+  <% if flash[:notice].present? %>
+    <p class="lp-pricing__flash" role="status"><%= flash[:notice] %></p>
+  <% end %>
+
+  <% if premium %>
+    <section class="lp-pricing__status" aria-label="<%= t("pricing.already_premium") %>">
+      <p class="lp-pricing__status-label"><%= t("pricing.already_premium") %></p>
+      <% if current_user.current_period_end.present? %>
+        <p class="lp-pricing__status-detail">
+          <%= t("pricing.active_until", date: l(current_user.current_period_end, format: :long)) %>
+        </p>
+      <% end %>
+    </section>
+  <% end %>
+
+  <section class="lp-pricing__plans" aria-label="<%= t("pricing.title") %>">
+    <article class="lp-pricing__plan">
+      <h2 class="lp-pricing__plan-title"><%= t("pricing.free_title") %></h2>
+      <p class="lp-pricing__plan-price"><%= t("pricing.free_price") %></p>
+      <ul class="lp-pricing__features">
+        <li><%= t("pricing.feature_free_destination") %></li>
+        <li><%= t("pricing.feature_free_plan") %></li>
+      </ul>
+    </article>
+
+    <article class="lp-pricing__plan is-premium">
+      <h2 class="lp-pricing__plan-title"><%= t("pricing.premium_title") %></h2>
+      <p class="lp-pricing__plan-price"><%= t("pricing.price_monthly") %></p>
+      <p class="lp-pricing__plan-alt"><%= t("pricing.price_yearly") %></p>
+      <ul class="lp-pricing__features">
+        <li><%= t("pricing.feature_premium_destinations") %></li>
+        <li><%= t("pricing.feature_premium_plans") %></li>
+      </ul>
+    </article>
+  </section>
+
+  <% unless stripe_configured %>
+    <p class="lp-pricing__unavailable"><%= t("pricing.stripe_unavailable") %></p>
+  <% else %>
+    <% unless premium %>
+      <div class="lp-pricing__actions">
+        <button type="button"
+                class="lp-pricing__cta"
+                data-action="billing-checkout#checkout"
+                data-interval="monthly"
+                data-billing-checkout-target="button">
+          <%= t("pricing.upgrade_monthly") %>
+        </button>
+        <button type="button"
+                class="lp-pricing__cta is-secondary"
+                data-action="billing-checkout#checkout"
+                data-interval="yearly"
+                data-billing-checkout-target="button">
+          <%= t("pricing.upgrade_yearly") %>
+        </button>
+      </div>
+    <% end %>
+
+    <% if can_manage_billing %>
+      <button type="button"
+              class="lp-pricing__manage"
+              data-action="billing-checkout#portal"
+              data-billing-checkout-target="button">
+        <%= t("pricing.manage_billing") %>
+      </button>
+    <% end %>
+  <% end %>
+
+  <p class="lp-pricing__error"
+     hidden
+     data-billing-checkout-target="error"
+     role="alert"></p>
+
+  <p class="lp-pricing__secure"><%= t("pricing.secure_note") %></p>
+</div>
+
+<%= render "shared/lp_dash_nav", active: :you %>
