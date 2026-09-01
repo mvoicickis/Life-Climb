@@ -735,12 +735,12 @@ ru:
       adventure_guide_hint: "Ты узнал, как связаны Цели, Планы, Проекты и Битвы."
       first_battle: "Первая битва"
       first_battle_hint: "Ты завершил свою первую дневную битву."
-      lp_100: "Первые 100 очков действий"
-      lp_100_hint: "Ты набрал 100 очков действий."
+      lp_100: "First 100 Battle strength"  # TODO: translate
+      lp_100_hint: "You crossed 100 Battle strength."  # TODO: translate
       closer_25: "Четверть горы"
       closer_25_hint: "Твоя сезонная гора достигла 25%."
-      lp_1000: "Первые 1000 очков действий"
-      lp_1000_hint: "Четыре цифры очков действий."
+      lp_1000: "First 1000 Battle strength"  # TODO: translate
+      lp_1000_hint: "Four digits of Battle strength."  # TODO: translate
       battles_100: "100 битв"
       battles_100_hint: "Сто завершённых битв."
       closer_50: "На полпути вверх"
