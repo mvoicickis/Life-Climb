@@ -698,6 +698,7 @@ ru:
     title: "Статистика"
     subtitle: "How far you've come — and what's moving."  # TODO: translate
     goal_label: "Your goal"  # TODO: translate
+    hero_goal: "Goal"  # TODO: translate
     hero_plans: "Plans"  # TODO: translate
     hero_camps: "Camps"  # TODO: translate
     hero_now: "Now:"  # TODO: translate

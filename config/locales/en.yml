@@ -379,6 +379,7 @@ en:
     title: "Stats"
     subtitle: "How far you've come — and what's moving."
     goal_label: "Your goal"
+    hero_goal: "Goal"
     hero_plans: "Plans"
     hero_camps: "Camps"
     hero_now: "Now:"

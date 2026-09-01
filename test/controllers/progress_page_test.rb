@@ -26,7 +26,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Stats/i, response.body)
     assert_select ".lp-progress__subtitle", text: /moving/i
-    assert_match(/AP ·/i, response.body)
+    assert_match(/AP/i, response.body)
     assert_match(/PP/i, response.body)
     assert_match(/See weekly activity/i, response.body)
     assert_match(/Activity/i, response.body)
@@ -35,8 +35,9 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Achievements/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
     assert_select ".stats-hero"
-    assert_select ".stats-hero__pct"
+    assert_select ".stats-hero__lead"
     assert_select ".stats-hero__meta"
+    assert_select ".stats-hero__foot strong", text: /\d+%/
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /You/i
@@ -79,7 +80,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get life_points_path
     assert_response :success
-    assert_select ".stats-hero .stats-hero__pct", text: /#{expected}\s*%/
+    assert_select ".stats-hero__foot strong", text: /#{expected}%/
     assert_match(/Become debt-free/i, response.body)
     assert_match(/Plans/i, response.body)
     assert_match(/Camps/i, response.body)

@@ -10241,12 +10241,20 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin-top: 0.65rem;
 }
 
-.stats-hero__pct {
+.stats-hero__lead {
   margin: 0;
   font-size: 2rem;
   font-weight: 900;
   letter-spacing: -0.04em;
   color: var(--lp-green-deep, #3dbd48);
+  line-height: 1;
+}
+
+.stats-hero__lead-unit {
+  margin-left: 0.15rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .stats-hero__meta {
