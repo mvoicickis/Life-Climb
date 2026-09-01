@@ -690,6 +690,8 @@ de:
     title: "Statistik"
     subtitle: "How far you've come — and what's moving."  # TODO: translate
     goal_label: "Your goal"  # TODO: translate
+    hero_battle_strength: "Battle strength"  # TODO: translate
+    hero_planning_power: "Planning power"  # TODO: translate
     hero_goal: "Goal"  # TODO: translate
     hero_plans: "Plans"  # TODO: translate
     hero_camps: "Camps"  # TODO: translate
