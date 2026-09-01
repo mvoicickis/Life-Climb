@@ -1521,7 +1521,8 @@ lv:
     camp_placeholder: "Iegūt sertifikātu"
     camp_examples: "Piemēri: Iegūt sertifikātu · Iemācīties 1. nodaļu · Nokārtot prakses eksāmenu"
     battles_title: "Kādas ir šodienas kaujas?"
-    battles_lead: "Mazas uzvaras, ko vari pabeigt šodien. Pievieno vairāk, ja gribi — vēlāk vari labot."
+    battles_lead: "We call these Battles. One win today gets you closer to %{goal}."  # TODO: translate
+    basic_lead: "We call these Basics. They move you toward %{goal}."  # TODO: translate
     battle_placeholder: "Mācīties 1. nodaļu 20 minūtes"
     battle_add: "+ Pievienot vēl vienu kauju"
     battle_remove: "Noņemt kauju"
