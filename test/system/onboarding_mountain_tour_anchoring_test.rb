@@ -42,7 +42,10 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
   test "tour step 2 anchors camp above nav with bubble clear at 412px" do
     journey = bootstrap_and_visit!
     page.driver.browser.manage.window.resize_to(412, 800)
-    find(".lp-onboarding-tour__next", wait: 5).click
+
+    assert_selector "[data-controller='onboarding-mountain-tour']", wait: 5
+    assert_selector "button.lp-onboarding-tour__next", wait: 5
+    find("button.lp-onboarding-tour__next").click
     assert_selector "#onboarding-tour-camp", wait: 5
     sleep 0.25
 
@@ -50,6 +53,24 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
     assert metrics["ok"], "expected spotlight on camp at 412x800, got #{metrics.inspect}"
     assert metrics["bubbleClear"], "expected bubble clear of camp at 412x800, got #{metrics.inspect}"
     assert metrics["aboveNav"], "expected camp above bottom nav at 412x800, got #{metrics.inspect}"
+  end
+
+  test "tour step 3 anchors spotlight to base camp with bubble clear at 412px" do
+    bootstrap_and_visit!
+    page.driver.browser.manage.window.resize_to(412, 800)
+
+    assert_selector "[data-controller='onboarding-mountain-tour']", wait: 5
+    2.times do
+      assert_selector "button.lp-onboarding-tour__next", wait: 5
+      find("button.lp-onboarding-tour__next").click
+      sleep 0.15
+    end
+    assert_selector "#onboarding-tour-base-camp", wait: 5
+    sleep 0.25
+
+    metrics = tour_metrics_for("#onboarding-tour-base-camp")
+    assert metrics["ok"], "expected spotlight on base camp at 412x800, got #{metrics.inspect}"
+    assert metrics["bubbleClear"], "expected bubble clear of base camp at 412x800, got #{metrics.inspect}"
   end
 
   test "tour step 4 anchors spotlight to add-camp fab at 412px" do
