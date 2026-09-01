@@ -58,6 +58,8 @@ class User < ApplicationRecord
 
   # Current companion set. Legacy man/woman remain in DB until the user re-picks.
   CHARACTERS = %w[birdie bee bear fox horse raven].freeze
+  # Onboarding / settings pickers — horse kept in CHARACTERS for existing users.
+  PICKABLE_CHARACTERS = (CHARACTERS - %w[horse]).freeze
   LEGACY_CHARACTERS = %w[man woman].freeze
   THEMES = %w[light dark].freeze
   PREMIUM_ACCESS_STATUSES = %w[active trialing].freeze

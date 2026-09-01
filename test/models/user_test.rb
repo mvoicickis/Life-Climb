@@ -42,6 +42,17 @@ class UserTest < ActiveSupport::TestCase
     assert_includes user.errors[:character], "is not included in the list"
   end
 
+  test "pickable companions exclude horse but horse remains valid for existing users" do
+    refute_includes User::PICKABLE_CHARACTERS, "horse"
+    assert_equal User::CHARACTERS - %w[horse], User::PICKABLE_CHARACTERS
+
+    user = users(:one)
+    user.update!(character: "horse")
+    assert_equal "horse", user.character_key
+    assert_equal "characters/horse.png", user.character_image
+    assert user.character_chosen?
+  end
+
   test "legacy man or woman keeps working until re-pick without blocking other updates" do
     user = users(:one)
     user.update_columns(character: "woman", onboarding_completed_at: Time.current, planning_version: 2)

@@ -40,7 +40,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-character input[name='user[character]'][value=bee]"
     assert_select "#you-character input[name='user[character]'][value=bear]"
     assert_select "#you-character input[name='user[character]'][value=fox]"
-    assert_select "#you-character input[name='user[character]'][value=horse]"
+    assert_select "#you-character input[name='user[character]'][value=horse]", count: 0
     assert_select "#you-character input[name='user[character]'][value=raven]"
     assert_select "#you-character img[src*='characters/fox']"
     assert_select "#you-theme", count: 0

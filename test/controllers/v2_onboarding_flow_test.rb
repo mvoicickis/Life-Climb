@@ -12,6 +12,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Choose your companion/i, response.body)
     assert_match(/Step 1 of 5/i, response.body)
     assert_select "input[name='user[character]'][value=fox]"
+    assert_select "input[name='user[character]'][value=horse]", count: 0
+    assert_select ".lp-character-picker--compact"
+    assert_select "[data-controller='character-picker']"
+    assert_select ".lp-character-picker button[type='submit']", count: 0
 
     patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     assert_redirected_to v2_onboarding_path(step: "goal")
