@@ -485,6 +485,7 @@ ru:
     journey_hint_climb: "Завершай проекты, чтобы подниматься по горе."
     journey_hint_battles: "Выигрывай сегодняшние битвы, чтобы завершать проекты."
     action_points_short: "AP"
+    strategy_points_short: "PP"
     action_points_label: "Очки действий"
     action_points_hint: "Выигрывай сегодняшние битвы"
     nav:
@@ -492,7 +493,7 @@ ru:
       strategy: "Гора"
       mountain: "Гора"
       habits: "Привычки"
-      journey: "Путь"
+      journey: "Статистика"
       you: "Ты"
     promise: "Одна гора. Сегодняшняя битва."
     mountain_label: "Гора"
@@ -694,9 +695,14 @@ ru:
       personal_best: "Самый большой подъём пока"
       back_to_trail: "Вернуться на тропу"
   progress:
-    title: "Путь"
-    subtitle: "Как далеко ты зашёл на своей горе?"
-    goal_label: "Цель пути"
+    title: "Статистика"
+    subtitle: "How far you've come — and what's moving."  # TODO: translate
+    goal_label: "Your goal"  # TODO: translate
+    hero_plans: "Plans"  # TODO: translate
+    hero_camps: "Camps"  # TODO: translate
+    hero_now: "Now:"  # TODO: translate
+    hero_points: "%{ap} AP · %{pp} PP"
+    hero_mountain: "Mountain →"  # TODO: translate
     points_title: "Очки"
     points_hint: "Что ты заработал."
     action_points: "Очки действий"
@@ -740,7 +746,7 @@ ru:
       closer_100_hint: "Твоя сезонная гора завершена."
     trends:
       title: "Тренды твоего подъёма"
-      hint: "Битвы, итоги Проектов и Привычки в этом Путешествии."
+      hint: "Битвы, итоги Лагерей и Привычки на этой горе."  # TODO: translate
       battles_title: "Битвы за неделю"
       battles_up: "Больше Битв на этой неделе, чем на прошлой"
       battles_flat: "Примерно как на прошлой неделе"
@@ -749,7 +755,7 @@ ru:
       quantified_hint: "Накопленный прогресс к цели каждого Проекта."
       target_line: "Цель %{target} %{unit}"
       habits_title: "Привычки на этой неделе"
-      habits_hint: "Привычки, связанные с этим Путешествием."
+      habits_hint: "Trackers linked to this mountain."  # TODO: translate
       habit_done: "сделано"
       habit_missed: "пропущено"
     close: "Закрыть"
@@ -895,9 +901,9 @@ ru:
     minimum: "Минимум"
     maximum: "Максимум"
     show_on_today: "Показывать на Сегодня"
-    hide_from_journey: "Hide from Journey"  # TODO: translate
-    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
-    show_on_journey: "Show on Journey"  # TODO: translate
+    hide_from_journey: "Hide from Stats"  # TODO: translate
+    hide_from_journey_stats: "Hide from Stats"  # TODO: translate
+    show_on_journey: "Show on Stats"  # TODO: translate
     active: "Вкл"
     milestone_record: "Новый личный рекорд"
     milestone_boost: "Большой скачок относительно вчера"

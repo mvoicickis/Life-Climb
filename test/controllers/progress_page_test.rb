@@ -21,33 +21,37 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     @area = @journey.life_area
   end
 
-  test "journey page renders mountain points and activity" do
+  test "stats page renders hero points and activity" do
     get life_points_path
     assert_response :success
-    assert_match(/Journey/i, response.body)
-    assert_match(/How far have you come/i, response.body)
-    assert_match(/Action Points/i, response.body)
-    assert_match(/Planning points/i, response.body)
-    assert_match(/Mountain Summary/i, response.body)
+    assert_match(/Stats/i, response.body)
+    assert_select ".lp-progress__subtitle", text: /moving/i
+    assert_match(/AP ·/i, response.body)
+    assert_match(/PP/i, response.body)
     assert_match(/See weekly activity/i, response.body)
     assert_match(/Activity/i, response.body)
     assert_match(/7 Days/i, response.body)
     assert_match(/Weekly activity/i, response.body)
     assert_match(/Achievements/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
+    assert_select ".stats-hero"
+    assert_select ".stats-hero__pct"
+    assert_select ".stats-hero__meta"
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
-    assert_select ".lp-dash-nav__link", text: /Journey/i
-    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_select ".lp-dash-nav__link", text: /Stats/i
+    assert_select ".lp-dash-nav__link.is-active", text: /Stats/i
     assert_select ".lp-dash-nav.is-v4"
     assert_select ".lp-dash-nav__fab", count: 0
     assert_no_match(/Climb progress/i, response.body)
+    assert_no_match(/Mountain Summary/i, response.body)
+    assert_no_match(/Your strength/i, response.body)
     assert_select ".lp-progress-donut__center span", text: /Action Points|AP/i
   end
 
-  test "journey mountain percent matches today when strategy goal exists" do
+  test "stats hero percent matches today when strategy goal exists" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Become debt-free", position: 0
     )
@@ -75,10 +79,11 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get life_points_path
     assert_response :success
-    assert_select ".lp-journey-hero .lp-dash-hero__pct", text: /#{expected}\s*%/
+    assert_select ".stats-hero .stats-hero__pct", text: /#{expected}\s*%/
     assert_match(/Become debt-free/i, response.body)
-    assert_match(/Plans Completed/i, response.body)
-    assert_match(/Current Expedition/i, response.body)
+    assert_match(/Plans/i, response.body)
+    assert_match(/Camps/i, response.body)
+    assert_match(/Now:/i, response.body)
     assert_match(/Become Job Ready|Kill debt/i, response.body)
     assert_no_match(/\b#{@journey.closer_percent.round}%\b/, response.body) if @journey.closer_percent.round != expected
   end
@@ -95,7 +100,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Mountain/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
-    assert_select ".lp-dash-nav__link", text: /Journey/i
+    assert_select ".lp-dash-nav__link", text: /Stats/i
     assert_select ".lp-dash-nav__link", text: /\A\s*Progress\s*\z/, count: 0
   end
 

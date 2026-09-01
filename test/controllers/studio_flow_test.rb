@@ -55,7 +55,7 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
   test "journey page shows mountain progress story" do
     get life_points_path
     assert_response :success
-    assert_match(/Journey|Mountain|Action Points/i, response.body)
+    assert_match(/Stats|Mountain|Action Points/i, response.body)
   end
 
   test "nav includes Today V2 notch FAB" do
@@ -66,7 +66,7 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /You/i
     assert_select ".lp-dash-nav__link", text: /Habits/i, count: 0
-    assert_select ".lp-dash-nav__link", text: /Journey/i, count: 1
+    assert_select ".lp-dash-nav__link", text: /Stats/i, count: 1
     assert_select ".lp-dash-nav a[href=?]", habits_path, count: 0
   end
 

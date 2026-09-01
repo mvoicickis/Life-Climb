@@ -297,6 +297,7 @@ en:
       add_battle: "Add today’s battle under “%{project}”"
       open_strategy: "Continue on Mountain"
     action_points_short: "AP"
+    strategy_points_short: "PP"
     action_points_label: "Action Points"
     action_points_hint: "Battle strength"
     action_points_reward: "Action Points reward"
@@ -371,13 +372,18 @@ en:
       strategy: "Mountain"
       mountain: "Mountain"
       habits: "Habits"
-      journey: "Journey"
+      journey: "Stats"
       you: "You"
 
   progress:
-    title: "Journey"
-    subtitle: "How far have you come on your mountain?"
-    goal_label: "Journey goal"
+    title: "Stats"
+    subtitle: "How far you've come — and what's moving."
+    goal_label: "Your goal"
+    hero_plans: "Plans"
+    hero_camps: "Camps"
+    hero_now: "Now:"
+    hero_points: "%{ap} AP · %{pp} PP"
+    hero_mountain: "Mountain →"
     period_label: "Time range"
     periods:
       d7: "7 Days"
@@ -468,7 +474,7 @@ en:
     close: "Close"
     trends:
       title: "Your climb trends"
-      hint: "Battles, Camp totals, and Habits on this Journey." # TODO: translate for lv/de/es/ru.
+      hint: "Battles, Camp totals, and Habits on this mountain." # TODO: translate for lv/de/es/ru.
       battles_title: "Battles per week"
       battles_up: "More Battles this week than last"
       battles_flat: "About the same as last week"
@@ -477,7 +483,7 @@ en:
       quantified_hint: "Cumulative progress toward each camp target." # TODO: translate for lv/de/es/ru.
       target_line: "Target %{target} %{unit}"
       habits_title: "Habits this week"
-      habits_hint: "Habits linked to this Journey."
+      habits_hint: "Trackers linked to this mountain."
       habit_done: "done"
       habit_missed: "missed"
     patterns:
@@ -495,7 +501,6 @@ en:
         plan_day: "Plan %{day}"
     stats:
       title: "Your stats"
-      hint: "Trackers by Area — last 14 days on Journey."
       chart_label: "%{name} — last 14 days"
       empty_area: "No Trackers in this Area yet."
       add_tracker: "+ Add a Tracker"
@@ -503,7 +508,6 @@ en:
       add_tracker_hint: "Name it, pick a unit, and optionally file it under an Area."
       create: "Add Tracker"
       hide: "Hide"
-      hidden: "Hidden from Journey stats."
       created: "Tracker added."
       move_up: "↑"
       move_down: "↓"
@@ -2605,9 +2609,9 @@ en:
     minimum: "Minimum"
     maximum: "Maximum"
     show_on_today: "Show on Today"
-    hide_from_journey: "Hide from Journey"
-    hide_from_journey_stats: "Hide from Journey stats"
-    show_on_journey: "Show on Journey"
+    hide_from_journey: "Hide from Stats"
+    hide_from_journey_stats: "Hide from Stats"
+    show_on_journey: "Show on Stats"
     active: "On"
     milestone_record: "New personal record"
     milestone_boost: "Big jump vs yesterday"

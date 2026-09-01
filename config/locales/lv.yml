@@ -683,6 +683,7 @@ lv:
     journey_hint_climb: "Pabeidz projektus, lai kāptu savā kalnā."
     journey_hint_battles: "Uzvari šodienas kaujas, lai pabeigtu projektus."
     action_points_short: "AP"
+    strategy_points_short: "PP"
     action_points_label: "Darba punkti"
     action_points_hint: "Uzvari šodienas kaujas"
     nav:
@@ -690,7 +691,7 @@ lv:
       strategy: "Kalns"
       mountain: "Kalns"
       habits: "Ieradumi"
-      journey: "Ceļojums"
+      journey: "Statistika"
       you: "Tu"
     promise: "Viens kalns. Šodienas kauja."
     mountain_label: "Kalns"
@@ -929,9 +930,14 @@ lv:
       mountain_pct: "Kalns %{pct}%"
       keep_fighting: "Turpināt"
   progress:
-    title: "Ceļojums"
-    subtitle: "Cik tālu esi nonācis savā kalnā?"
-    goal_label: "Ceļojuma mērķis"
+    title: "Statistika"
+    subtitle: "How far you've come — and what's moving."  # TODO: translate
+    goal_label: "Your goal"  # TODO: translate
+    hero_plans: "Plans"  # TODO: translate
+    hero_camps: "Camps"  # TODO: translate
+    hero_now: "Now:"  # TODO: translate
+    hero_points: "%{ap} AP · %{pp} PP"
+    hero_mountain: "Mountain →"  # TODO: translate
     points_title: "Punkti"
     points_hint: "Ko tu esi nopelnījis."
     action_points: "Darba punkti"
@@ -975,7 +981,7 @@ lv:
       closer_100_hint: "Tavs sezonas kalns ir pabeigts."
     trends:
       title: "Tava kāpiena tendences"
-      hint: "Cīņas, Projekta kopsummas un Ieradumi šajā Ceļojumā."
+      hint: "Cīņas, Nometņu kopsummas un Ieradumi šajā kalnā."  # TODO: translate
       battles_title: "Cīņas nedēļā"
       battles_up: "Šonedēļ vairāk Cīņu nekā pagājušajā"
       battles_flat: "Aptuveni tāpat kā pagājušajā nedēļā"
@@ -984,7 +990,7 @@ lv:
       quantified_hint: "Uzkrātais progress pret katra Projekta mērķi."
       target_line: "Mērķis %{target} %{unit}"
       habits_title: "Ieradumi šonedēļ"
-      habits_hint: "Ar šo Ceļojumu saistītie ieradumi."
+      habits_hint: "Trackers linked to this mountain."  # TODO: translate
       habit_done: "izdarīts"
       habit_missed: "izlaists"
     close: "Aizvērt"
@@ -1127,9 +1133,9 @@ lv:
     minimum: "Minimums"
     maximum: "Maksimums"
     show_on_today: "Rādīt uz Šodien"
-    hide_from_journey: "Hide from Journey"  # TODO: translate
-    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
-    show_on_journey: "Show on Journey"  # TODO: translate
+    hide_from_journey: "Hide from Stats"  # TODO: translate
+    hide_from_journey_stats: "Hide from Stats"  # TODO: translate
+    show_on_journey: "Show on Stats"  # TODO: translate
     active: "Ieslēgts"
     milestone_record: "Jauns personīgais rekords"
     milestone_boost: "Liels lēciens pret vakardienu"

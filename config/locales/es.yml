@@ -485,6 +485,7 @@ es:
     journey_hint_climb: "Termina proyectos para subir tu montaña."
     journey_hint_battles: "Gana las batallas de hoy para terminar tus proyectos."
     action_points_short: "AP"
+    strategy_points_short: "PP"
     action_points_label: "Puntos de acción"
     action_points_hint: "Gana las batallas de hoy"
     nav:
@@ -492,7 +493,7 @@ es:
       strategy: "Montaña"
       mountain: "Montaña"
       habits: "Hábitos"
-      journey: "Viaje"
+      journey: "Estadísticas"
       you: "Tú"
     promise: "Una montaña. La batalla de hoy."
     mountain_label: "Montaña"
@@ -686,9 +687,14 @@ es:
       personal_best: "Tu mayor subida hasta ahora"
       back_to_trail: "Volver al sendero"
   progress:
-    title: "Viaje"
-    subtitle: "¿Cuánto has avanzado en tu montaña?"
-    goal_label: "Meta del viaje"
+    title: "Estadísticas"
+    subtitle: "How far you've come — and what's moving."  # TODO: translate
+    goal_label: "Your goal"  # TODO: translate
+    hero_plans: "Plans"  # TODO: translate
+    hero_camps: "Camps"  # TODO: translate
+    hero_now: "Now:"  # TODO: translate
+    hero_points: "%{ap} AP · %{pp} PP"
+    hero_mountain: "Mountain →"  # TODO: translate
     points_title: "Puntos"
     points_hint: "Lo que has ganado."
     action_points: "Puntos de acción"
@@ -732,7 +738,7 @@ es:
       closer_100_hint: "Tu montaña de temporada está completa."
     trends:
       title: "Tendencias de tu ascenso"
-      hint: "Batallas, totales de Proyecto y Hábitos en este Viaje."
+      hint: "Batallas, totales de Proyecto y Hábitos en esta montaña."  # TODO: translate
       battles_title: "Batallas por semana"
       battles_up: "Más Batallas esta semana que la anterior"
       battles_flat: "Más o menos igual que la semana pasada"
@@ -741,7 +747,7 @@ es:
       quantified_hint: "Progreso acumulado hacia cada objetivo de Proyecto."
       target_line: "Meta %{target} %{unit}"
       habits_title: "Hábitos esta semana"
-      habits_hint: "Hábitos vinculados a este Viaje."
+      habits_hint: "Trackers linked to this mountain."  # TODO: translate
       habit_done: "hecho"
       habit_missed: "faltó"
     close: "Cerrar"
@@ -885,9 +891,9 @@ es:
     minimum: "Mínimo"
     maximum: "Máximo"
     show_on_today: "Mostrar en Hoy"
-    hide_from_journey: "Hide from Journey"  # TODO: translate
-    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
-    show_on_journey: "Show on Journey"  # TODO: translate
+    hide_from_journey: "Hide from Stats"  # TODO: translate
+    hide_from_journey_stats: "Hide from Stats"  # TODO: translate
+    show_on_journey: "Show on Stats"  # TODO: translate
     active: "Activo"
     milestone_record: "Nuevo récord personal"
     milestone_boost: "Gran salto frente a ayer"

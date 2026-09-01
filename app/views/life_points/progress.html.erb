@@ -18,19 +18,13 @@
     </div>
   </header>
 
-  <%= render "life_points/journey_mountain",
+  <%= render "life_points/stats_hero",
         journey: @journey,
         strategy_goal: @strategy_goal,
-        mountain: @mountain,
-        closer: @closer %>
-
-  <%= render "life_points/journey_points",
+        closer: @closer,
         action_points: @action_points,
-        strategy_points: @strategy_points %>
-
-  <%= render "life_points/journey_summary",
-        summary: @mountain_summary,
-        journey: @journey %>
+        strategy_points: @strategy_points,
+        summary: @mountain_summary %>
 
   <%= render "life_points/journey_trends", trends: @journey_trends %>
 
