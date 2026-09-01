@@ -28,11 +28,13 @@
 
   <%= render "life_points/journey_trends", trends: @journey_trends %>
 
-  <%= render "life_points/patterns", findings: @pattern_findings, user: current_user %>
+  <%= render "life_points/progress_what_changed", insights: @what_changed %>
 
   <div class="lp-progress__grid lp-progress__grid--single">
     <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
   </div>
+
+  <%= render "life_points/patterns", findings: @pattern_findings, user: current_user %>
 
   <%= render "life_points/progress_activity", progress: @progress %>
 

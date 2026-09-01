@@ -11452,13 +11452,13 @@ button.lp-progress-heat__cell {
   margin: 0.9rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
 }
 
 @media (min-width: 640px) {
   .lp-progress-badges {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
   }
 }
 
@@ -11466,15 +11466,16 @@ button.lp-progress-heat__cell {
   position: relative;
   width: 100%;
   border: 1px solid var(--lp-border);
-  border-radius: 1.1rem;
-  background:
-    linear-gradient(145deg, rgba(87, 211, 91, 0.1), transparent 55%),
-    var(--rpg-glass);
+  border-radius: 0.65rem;
+  background: var(--lp-surface, var(--rpg-glass));
   color: var(--lp-ink);
-  padding: 0.85rem 0.6rem;
-  display: grid;
-  justify-items: center;
-  gap: 0.45rem;
+  padding: 0.5rem 0.25rem;
+  min-height: var(--lp-tap, 2.75rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
@@ -11491,55 +11492,81 @@ button.lp-progress-heat__cell {
 }
 
 .lp-progress-badge.is-glow {
-  border-color: color-mix(in srgb, #57d35b 42%, rgba(255, 255, 255, 0.12));
-  box-shadow: 0 0 22px rgba(87, 211, 91, 0.18);
-  animation: lp-badge-glow 3.2s ease-in-out infinite;
+  border-color: color-mix(in srgb, #57d35b 35%, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 0 0 2px rgba(87, 211, 91, 0.12);
 }
 
 .lp-progress-badge.is-locked {
-  opacity: 0.55;
-  filter: grayscale(0.55);
+  opacity: 0.45;
+  filter: grayscale(0.6);
 }
 
 .lp-progress-badge__hex {
-  display: grid;
-  place-items: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0 50%);
-  background: linear-gradient(145deg, rgba(87, 211, 91, 0.55), rgba(22, 101, 52, 0.85));
-  color: #0b0f14;
-  font-size: 1.15rem;
+  display: block;
+  font-size: 1.35rem;
   line-height: 1;
 }
 
 .lp-progress-badge.is-locked .lp-progress-badge__hex {
-  background: linear-gradient(145deg, rgba(148, 163, 184, 0.35), rgba(51, 65, 85, 0.9));
   color: var(--lp-muted);
 }
 
-.lp-progress-badge__check {
-  position: absolute;
-  top: 0.45rem;
-  right: 0.45rem;
-  display: grid;
-  place-items: center;
-  width: 1.15rem;
-  height: 1.15rem;
-  border-radius: 999px;
-  background: var(--lp-green, #57d35b);
-  color: #0b0f14;
-  font-size: 0.7rem;
-  font-weight: 900;
-  line-height: 1;
+.lp-progress-badge__title {
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.2;
+  color: var(--lp-charcoal, var(--lp-ink));
+  overflow-wrap: anywhere;
 }
 
-.lp-progress-badge__title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.25;
-  color: var(--lp-ink);
+.lp-progress-changed__list {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-progress-changed__list li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--lp-charcoal, var(--lp-ink));
+}
+
+.lp-progress-changed__icon {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.lp-progress-changed__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.lp-progress-changed__delta {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.lp-progress-changed__delta.is-up {
+  background: rgba(87, 211, 91, 0.18);
+  color: var(--lp-green-deep, #16a34a);
+}
+
+.lp-progress-changed__delta.is-flat {
+  background: var(--lp-paper-soft, var(--lp-mist));
+  color: var(--lp-muted);
 }
 
 .lp-progress-insights__list {

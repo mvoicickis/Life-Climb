@@ -28,7 +28,8 @@ class ProgressPeriodFrameTest < ActionDispatch::IntegrationTest
     assert_select "#progress_activity .lp-progress-kpis"
     assert_select "#progress_activity .lp-progress-growth"
     assert_select "#progress_activity .lp-progress-categories"
-    assert_select "#progress_activity .lp-progress-insights"
+    assert_select "#progress_activity .lp-progress-insights", count: 0
+    assert_select ".lp-progress-changed"
     assert_select "#progress_activity .lp-progress-filters__chip.is-active", text: /30 Days/i
 
     assert_select ".lp-journey-details .lp-progress-filters", count: 0
@@ -63,7 +64,6 @@ class ProgressPeriodFrameTest < ActionDispatch::IntegrationTest
       lp-progress-kpis
       lp-progress-growth
       lp-progress-categories
-      lp-progress-insights
     ].each do |region|
       assert_includes full, region, "full page missing #{region}"
       assert_includes frame, region, "frame response missing #{region}"

@@ -32,7 +32,14 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/Activity/i, response.body)
     assert_match(/7 Days/i, response.body)
     assert_match(/Weekly activity/i, response.body)
-    assert_match(/Achievements/i, response.body)
+    assert_match(/Milestones/i, response.body)
+    assert_match(/What changed/i, response.body)
+    assert_select ".lp-progress-changed__delta.is-up", minimum: 0
+    assert_select ".lp-progress-changed__delta.is-down", count: 0
+    assert_select ".lp-progress-badge.is-locked"
+    assert_select ".lp-progress-badge.is-glow"
+    assert_no_match(/0 of/i, response.body)
+    assert_no_match(/<h2>\s*Achievements\s*<\/h2>/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
     assert_select ".stats-hero"
     assert_select ".stats-hero__lead"

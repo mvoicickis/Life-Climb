@@ -20,6 +20,8 @@ class LifePointsController < ApplicationController
       return
     end
 
+    @what_changed = Progress::Dashboard.call(user: current_user, period: "7d")[:insights]
+
     @journey = current_user.primary_focused_journey
     @strategy_goal =
       if @journey
