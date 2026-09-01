@@ -10208,6 +10208,89 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   min-width: 0;
 }
 
+.stats-hero {
+  border-radius: var(--radius, 1rem);
+  border: 1px solid rgba(87, 211, 91, 0.22);
+  background: var(--lp-glass, rgba(255, 255, 255, 0.92));
+  padding: 0.9rem;
+  box-shadow: var(--lp-shadow, 0 14px 36px rgba(15, 23, 42, 0.1));
+}
+
+.stats-hero__goal-label {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lp-green-deep, #3dbd48);
+}
+
+.stats-hero__goal {
+  margin: 0.2rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lp-ink);
+}
+
+.stats-hero__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.stats-hero__pct {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--lp-green-deep, #3dbd48);
+}
+
+.stats-hero__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  text-align: right;
+}
+
+.stats-hero__bar {
+  margin-top: 0.5rem;
+  height: 8px;
+}
+
+.stats-hero__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--lp-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.stats-hero__foot strong {
+  color: var(--lp-ink);
+  font-weight: 800;
+}
+
+.stats-hero__link {
+  margin-left: auto;
+  color: var(--lp-green-deep, #3dbd48);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.stats-hero__link:hover {
+  text-decoration: underline;
+}
+
 @media (min-width: 640px) {
   .lp-progress {
     gap: var(--lp-space-4);

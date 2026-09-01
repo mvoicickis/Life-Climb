@@ -29,7 +29,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link.is-active", text: /You/i
     assert_select ".lp-dash-nav__link", text: /Today/i
     assert_select ".lp-dash-nav__link", text: /Mountain/i
-    assert_select ".lp-dash-nav__link", text: /Journey/i
+    assert_select ".lp-dash-nav__link", text: /Stats/i
     assert_select ".lp-dash-nav__fab", count: 0
     assert_select "a[href=?]", edit_today_count_settings_path, count: 0
     assert_select "a#you-row-today-count", count: 0

@@ -485,6 +485,7 @@ de:
     journey_hint_climb: "Beende Projekte, um deinen Berg zu besteigen."
     journey_hint_battles: "Gewinne die Schlachten von heute, um deine Projekte fertigzustellen."
     action_points_short: "AP"
+    strategy_points_short: "PP"
     action_points_label: "Aktionspunkte"
     action_points_hint: "Gewinne die Schlachten von heute"
     nav:
@@ -492,7 +493,7 @@ de:
       strategy: "Berg"
       mountain: "Berg"
       habits: "Gewohnheiten"
-      journey: "Reise"
+      journey: "Statistik"
       you: "Du"
     promise: "Ein Berg. Der Kampf von heute."
     mountain_label: "Berg"
@@ -686,9 +687,14 @@ de:
       personal_best: "Bisher größter Aufstieg"
       back_to_trail: "Zurück zum Pfad"
   progress:
-    title: "Reise"
-    subtitle: "Wie weit bist du auf deinem Berg gekommen?"
-    goal_label: "Reiseziel"
+    title: "Statistik"
+    subtitle: "How far you've come — and what's moving."  # TODO: translate
+    goal_label: "Your goal"  # TODO: translate
+    hero_plans: "Plans"  # TODO: translate
+    hero_camps: "Camps"  # TODO: translate
+    hero_now: "Now:"  # TODO: translate
+    hero_points: "%{ap} AP · %{pp} PP"
+    hero_mountain: "Mountain →"  # TODO: translate
     points_title: "Punkte"
     points_hint: "Was du verdient hast."
     action_points: "Aktionspunkte"
@@ -732,7 +738,7 @@ de:
       closer_100_hint: "Dein Jahresberg ist vollständig."
     trends:
       title: "Deine Aufstiegstrends"
-      hint: "Kämpfe, Projektstände und Gewohnheiten auf dieser Reise."
+      hint: "Kämpfe, Projektstände und Gewohnheiten auf diesem Berg."
       battles_title: "Kämpfe pro Woche"
       battles_up: "Mehr Kämpfe diese Woche als letzte"
       battles_flat: "Ungefähr wie letzte Woche"
@@ -741,7 +747,7 @@ de:
       quantified_hint: "Kumulativer Fortschritt zu jedem Projektziel."
       target_line: "Ziel %{target} %{unit}"
       habits_title: "Gewohnheiten diese Woche"
-      habits_hint: "Mit dieser Reise verknüpfte Gewohnheiten."
+      habits_hint: "Tracker, die mit diesem Berg verknüpft sind."  # TODO: translate
       habit_done: "erledigt"
       habit_missed: "verpasst"
     close: "Schließen"
@@ -885,9 +891,9 @@ de:
     minimum: "Minimum"
     maximum: "Maximum"
     show_on_today: "Auf Heute zeigen"
-    hide_from_journey: "Hide from Journey"  # TODO: translate
-    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
-    show_on_journey: "Show on Journey"  # TODO: translate
+    hide_from_journey: "Hide from Stats"  # TODO: translate
+    hide_from_journey_stats: "Hide from Stats"  # TODO: translate
+    show_on_journey: "Show on Stats"  # TODO: translate
     active: "An"
     milestone_record: "Neuer persönlicher Rekord"
     milestone_boost: "Großer Sprung gegenüber gestern"

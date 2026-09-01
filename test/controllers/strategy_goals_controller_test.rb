@@ -666,9 +666,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
   test "journey page still renders after strategy mountain ships" do
     get life_points_path
     assert_response :success
-    assert_match(/Journey/i, response.body)
+    assert_match(/Stats/i, response.body)
     assert_select ".lp-dash-nav.is-v4"
-    assert_select ".lp-dash-nav__link.is-active", text: /Journey/i
+    assert_select ".lp-dash-nav__link.is-active", text: /Stats/i
     assert_select ".lp-dash-nav__fab", count: 0
   end
 

@@ -75,7 +75,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_select ".lp-landing-chip", text: /\A\s*Self\s*\z/, count: 0
   end
 
-  test "signed-in german nav uses Mountain Today Journey You labels" do
+  test "signed-in german nav uses Mountain Today Stats You labels" do
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(
@@ -97,9 +97,9 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Berg/i
     assert_select ".lp-dash-nav__link", text: /Du/i
     assert_select ".lp-dash-nav__link", text: /Gewohnheiten/i, count: 0
-    assert_select ".lp-dash-nav__link", text: /Reise/i
-    assert_match(/Reise/, response.body)
-    assert_match(/Berg-Zusammenfassung/, response.body)
+    assert_select ".lp-dash-nav__link", text: /Statistik/i
+    assert_match(/Statistik/, response.body)
+    assert_select ".stats-hero"
     assert_match(/Aktionspunkte/, response.body)
   end
 end
