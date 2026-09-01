@@ -3473,6 +3473,55 @@ html[data-theme="dark"] {
   outline-offset: 2px;
 }
 
+/* Onboarding step 1 — five companions, one screen at 360px */
+.lp-adventure--character {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.lp-adventure__card--character {
+  padding: 0.85rem 0.75rem 0.9rem;
+  gap: 0.45rem;
+}
+
+.lp-character-picker--compact {
+  padding: 0;
+}
+
+.lp-character-picker--compact .lp-character-picker__title {
+  margin-top: 0.15rem;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.lp-character-picker--compact .lp-character-picker__hint {
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.lp-character-picker--compact .lp-character-picker__grid {
+  margin-top: 0.55rem;
+  max-width: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.lp-character-picker--compact .lp-character-pick {
+  padding: 0.35rem;
+}
+
+.lp-character-picker--compact .lp-character-pick__label {
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  line-height: 1.15;
+}
+
+.lp-character-picker--compact .lp-avatar-ring {
+  animation: none;
+  box-shadow: 0 0 0 1.5px var(--lp-lime), 0 0 10px rgba(34, 197, 94, 0.28);
+}
+
 .lp-gap-track {
   height: 0.75rem;
   border-radius: 999px;

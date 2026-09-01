@@ -76,7 +76,7 @@
         <span class="lp-you-card__chevron" aria-hidden="true">▾</span>
       </button>
       <%= form_with model: current_user, url: settings_path, method: :patch, class: "lp-you-companions", data: { turbo: false } do %>
-        <% User::CHARACTERS.each do |key| %>
+        <% User::PICKABLE_CHARACTERS.each do |key| %>
           <% active = companion_key == key %>
           <label class="lp-you-companion<%= ' is-active' if active %>">
             <%= radio_button_tag "user[character]", key, active,
