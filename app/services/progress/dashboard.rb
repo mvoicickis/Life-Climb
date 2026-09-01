@@ -406,24 +406,71 @@ module Progress
 
     def achievements
       total = @user.action_points
-      battles = @user.missions.where.not(completed_at: nil).count +
-                @user.daily_todos.where.not(completed_at: nil).count
+      battles = completed_battle_count
       mountain = strategy_mountain_percent
 
       catalog = [
-        { key: "adventure_guide", icon: "🧭", title: I18n.t("progress.achievements.adventure_guide"), hint: I18n.t("progress.achievements.adventure_guide_hint"), unlocked: @user.adventure_guide_done? },
+        achievement_entry("adventure_guide", "🧭", unlocked: @user.adventure_guide_done?),
         # ✅ — crossed-swords ⚔ reads as an X / “not earned” under the earned heading.
-        { key: "first_battle", icon: "✅", title: I18n.t("progress.achievements.first_battle"), hint: I18n.t("progress.achievements.first_battle_hint"), unlocked: battles >= 1 },
-        { key: "lp_100", icon: "⚡", title: I18n.t("progress.achievements.lp_100"), hint: I18n.t("progress.achievements.lp_100_hint"), unlocked: total >= 100 },
-        { key: "closer_25", icon: "⛰", title: I18n.t("progress.achievements.closer_25"), hint: I18n.t("progress.achievements.closer_25_hint"), unlocked: mountain >= 25 },
-        { key: "lp_1000", icon: "⚡", title: I18n.t("progress.achievements.lp_1000"), hint: I18n.t("progress.achievements.lp_1000_hint"), unlocked: total >= 1000 },
-        { key: "battles_100", icon: "🏆", title: I18n.t("progress.achievements.battles_100"), hint: I18n.t("progress.achievements.battles_100_hint"), unlocked: battles >= 100 },
-        { key: "closer_50", icon: "🌄", title: I18n.t("progress.achievements.closer_50"), hint: I18n.t("progress.achievements.closer_50_hint"), unlocked: mountain >= 50 },
-        { key: "closer_100", icon: "🏔", title: I18n.t("progress.achievements.closer_100"), hint: I18n.t("progress.achievements.closer_100_hint"), unlocked: mountain >= 100 }
+        achievement_entry("first_battle", "✅", unlocked: battles >= 1),
+        achievement_entry("lp_100", "⚡", unlocked: total >= 100),
+        achievement_entry("closer_25", "⛰", unlocked: mountain >= 25),
+        achievement_entry("lp_1000", "⚡", unlocked: total >= 1000),
+        achievement_entry("battles_100", "🏆", unlocked: battles >= 100),
+        achievement_entry("closer_50", "🌄", unlocked: mountain >= 50),
+        achievement_entry("closer_100", "🏔", unlocked: mountain >= 100)
       ]
 
-      # Only earned badges belong under the “already earned” hint — never pad with locked ones.
-      catalog.select { |a| a[:unlocked] }
+      sort_achievements(catalog, total: total, battles: battles, mountain: mountain)
+    end
+
+    def achievement_entry(key, icon, unlocked:)
+      {
+        key: key,
+        icon: icon,
+        title: I18n.t("progress.achievements.#{key}"),
+        hint: I18n.t("progress.achievements.#{key}_hint"),
+        locked_hint: I18n.t("progress.achievements.#{key}_locked_hint"),
+        unlocked: unlocked
+      }
+    end
+
+    def completed_battle_count
+      @completed_battle_count ||= @user.missions.where.not(completed_at: nil).count +
+                                 @user.daily_todos.where.not(completed_at: nil).count
+    end
+
+    def sort_achievements(catalog, total:, battles:, mountain:)
+      earned, locked = catalog.partition { |badge| badge[:unlocked] }
+      return earned if locked.empty?
+
+      closest = locked.each_with_index.max_by do |badge, index|
+        [ achievement_proximity(badge, total: total, battles: battles, mountain: mountain), -index ]
+      end&.first
+
+      earned + [ closest ] + (locked - [ closest ])
+    end
+
+    def achievement_proximity(badge, total:, battles:, mountain:)
+      threshold = case badge[:key]
+                  when "adventure_guide" then return 0.0
+                  when "first_battle" then 1
+                  when "lp_100" then 100
+                  when "lp_1000" then 1000
+                  when "battles_100" then 100
+                  when "closer_25" then 25
+                  when "closer_50" then 50
+                  when "closer_100" then 100
+                  else return 0.0
+                  end
+
+      current = case badge[:key]
+                when "first_battle", "battles_100" then battles
+                when "lp_100", "lp_1000" then total
+                else mountain
+                end
+
+      [ current.to_f / threshold, 1.0 ].min
     end
 
     def insights
@@ -448,36 +495,61 @@ module Progress
 
       # When trends dip, lead with a concrete next action — win today's battle.
       if tasks_prev.positive? && task_delta.negative?
-        items << { icon: "📉", text: I18n.t("progress.insights.consistency_down", percent: task_delta.abs) }
-        items << { icon: "⚔", text: I18n.t("progress.insights.battle_turnaround") }
+        items << insight_item(
+          icon: "📉",
+          text: I18n.t("progress.insights.consistency_down", percent: task_delta.abs)
+        )
+        items << insight_item(icon: "⚔", text: I18n.t("progress.insights.battle_turnaround"))
       elsif lp_prev.positive? && lp_delta.negative?
-        items << { icon: "🌿", text: I18n.t("progress.insights.lp_down_nudge", percent: lp_delta.abs) }
+        items << insight_item(
+          icon: "🌿",
+          text: I18n.t("progress.insights.lp_down_nudge", percent: lp_delta.abs)
+        )
       end
 
       if weekday_counts.any?
         best_wday = weekday_counts.max_by { |_, v| v }&.first
         if best_wday
           day_name = I18n.t("date.day_names")[best_wday]
-          items << { icon: "📅", text: I18n.t("progress.insights.best_day", day: day_name) }
+          items << insight_item(
+            icon: "📅",
+            text: I18n.t("progress.insights.best_day", day: day_name),
+            delta: { label: I18n.t("progress.changed.peak"), tone: :flat }
+          )
         end
       end
 
       if top
-        items << { icon: top[:icon], text: I18n.t("progress.insights.top_category", category: top[:label], percent: top[:percent]) }
+        items << insight_item(
+          icon: top[:icon],
+          text: I18n.t("progress.insights.top_category", category: top[:label], percent: top[:percent]),
+          delta: { label: I18n.t("progress.changed.top"), tone: :flat }
+        )
       end
 
       if tasks_prev.positive? && task_delta.positive?
-        items << { icon: "📈", text: I18n.t("progress.insights.consistency_up", percent: task_delta.abs) }
+        items << insight_item(
+          icon: "📈",
+          text: I18n.t("progress.insights.consistency_up", percent: task_delta.abs),
+          delta: { label: "+#{task_delta.abs}%", tone: :up }
+        )
       end
 
       if lp_now.positive? && lp_prev.positive? && !lp_delta.negative?
-        items << {
+        items << insight_item(
           icon: "🌿",
-          text: I18n.t("progress.insights.lp_change", percent: lp_delta.abs, direction: lp_delta >= 0 ? "more" : "less")
-        }
+          text: I18n.t("progress.insights.lp_change", percent: lp_delta.abs, direction: lp_delta >= 0 ? "more" : "less"),
+          delta: { label: "+#{lp_delta.abs}%", tone: :up }
+        )
       end
 
-      items.first(4).presence || [ { icon: "✨", text: I18n.t("progress.insights.empty") } ]
+      items.first(4).presence || [ insight_item(icon: "✨", text: I18n.t("progress.insights.empty")) ]
+    end
+
+    def insight_item(icon:, text:, delta: nil)
+      item = { icon: icon, text: text }
+      item[:delta] = delta if delta
+      item
     end
   end
 end

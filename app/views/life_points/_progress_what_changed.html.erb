@@ -1,0 +1,18 @@
+<%# locals: insights %>
+<section class="lp-progress-card lp-progress-changed" aria-label="<%= t('progress.changed.title') %>">
+  <header class="lp-progress-card__head">
+    <h2><%= t("progress.changed.title") %></h2>
+    <p><%= t("progress.changed.hint") %></p>
+  </header>
+  <ul class="lp-progress-changed__list">
+    <% insights.each do |insight| %>
+      <li>
+        <span class="lp-progress-changed__icon" aria-hidden="true"><%= insight[:icon] %></span>
+        <span class="lp-progress-changed__text"><%= insight[:text] %></span>
+        <% if insight[:delta].present? %>
+          <span class="lp-progress-changed__delta is-<%= insight[:delta][:tone] %>"><%= insight[:delta][:label] %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>

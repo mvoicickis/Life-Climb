@@ -5,29 +5,22 @@
     <p><%= t("progress.achievements_hint") %></p>
   </header>
 
-  <% if achievements.any? %>
-    <ul class="lp-progress-badges">
-      <% achievements.each do |badge| %>
-        <li>
-          <button type="button"
-                  class="lp-progress-badge <%= badge[:unlocked] ? 'is-glow' : 'is-locked' %>"
-                  data-action="progress-achievements#open"
-                  data-icon="<%= badge[:icon] %>"
-                  data-title="<%= badge[:title] %>"
-                  data-hint="<%= badge[:hint] %>"
-                  aria-label="<%= badge[:title] %>: <%= badge[:unlocked] ? t('progress.achievements_earned') : t('progress.achievements_locked') %>">
-            <span class="lp-progress-badge__hex" aria-hidden="true"><%= badge[:icon] %></span>
-            <% if badge[:unlocked] %>
-              <span class="lp-progress-badge__check" aria-hidden="true">✓</span>
-            <% end %>
-            <span class="lp-progress-badge__title"><%= badge[:title] %></span>
-          </button>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <p class="lp-progress-empty"><%= t("progress.achievements_empty") %></p>
-  <% end %>
+  <ul class="lp-progress-badges">
+    <% achievements.each do |badge| %>
+      <li>
+        <button type="button"
+                class="lp-progress-badge <%= badge[:unlocked] ? 'is-glow' : 'is-locked' %>"
+                data-action="progress-achievements#open"
+                data-icon="<%= badge[:icon] %>"
+                data-title="<%= badge[:title] %>"
+                data-hint="<%= badge[:unlocked] ? badge[:hint] : badge[:locked_hint] %>"
+                aria-label="<%= badge[:title] %>: <%= badge[:unlocked] ? t('progress.achievements_earned') : t('progress.achievements_locked') %>">
+          <span class="lp-progress-badge__hex" aria-hidden="true"><%= badge[:icon] %></span>
+          <span class="lp-progress-badge__title"><%= badge[:title] %></span>
+        </button>
+      </li>
+    <% end %>
+  </ul>
 
   <dialog class="lp-progress-dialog" data-progress-achievements-target="dialog">
     <div class="lp-progress-dialog__inner">

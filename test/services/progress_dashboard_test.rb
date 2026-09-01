@@ -46,13 +46,22 @@ class ProgressDashboardTest < ActiveSupport::TestCase
     assert data[:growth].any?
     assert data[:mountain_summary].is_a?(Hash)
     assert_equal [], data[:projects]
-    assert data[:achievements].any?
+    assert_equal 8, data[:achievements].size
     first_battle = data[:achievements].find { |a| a[:key] == "first_battle" }
     assert first_battle
     assert first_battle[:unlocked]
     assert_equal "✅", first_battle[:icon]
-    assert data[:achievements].all? { |a| a[:unlocked] }
+    assert data[:achievements].any? { |a| !a[:unlocked] }
+    assert data[:achievements].first[:unlocked]
+    locked = data[:achievements].reject { |a| a[:unlocked] }
+    assert locked.any?
+    earned_count = data[:achievements].count { |a| a[:unlocked] }
+    assert_equal earned_count, data[:achievements].index(locked.first)
     assert data[:insights].any?
+    up_insight = data[:insights].find { |i| i[:delta]&.dig(:tone) == :up }
+    flat_insight = data[:insights].find { |i| i[:delta]&.dig(:tone) == :flat }
+    assert(up_insight || flat_insight || data[:insights].none? { |i| i[:delta] })
+    assert data[:insights].none? { |i| i[:delta]&.dig(:tone) == :down }
     assert data[:heatmap][:cells].any?
     assert_equal 26 * 7, data[:heatmap][:cells].size
     assert data[:heatmap][:month_labels].any?
