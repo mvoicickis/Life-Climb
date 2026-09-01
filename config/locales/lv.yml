@@ -230,8 +230,12 @@ lv:
       what_gets_me_there: "Kas mani tur aizvedīs"
       add_project: "Pievienot projektu"
       empty_projects_invite: "Pievieno projektu šai takai."
-      project_battles_won: "%{count} uzvarētas cīņas"
-      project_battles_planned: "%{count} ieplānotas cīņas"
+      project_battles_won:
+        one: "%{count} battle won"  # TODO: translate
+        other: "%{count} battles won"  # TODO: translate
+      project_battles_planned:
+        one: "%{count} battle planned"  # TODO: translate
+        other: "%{count} battles planned"  # TODO: translate
       objectives_menu: "Uzdevumi"
       project_trackers:
         title: "Izsekojamie"

@@ -83,7 +83,7 @@ class MountainProjectListTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#climb-path-project-#{camp.id} .lp-climb-path__meta", text: /1 battles planned/
+    assert_select "#climb-path-project-#{camp.id} .lp-climb-path__meta", text: /1 battle planned/
     assert_select "#climb-path-project-#{camp.id} .lp-climb-path__track", count: 0
   end
 
