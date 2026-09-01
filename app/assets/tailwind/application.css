@@ -7152,6 +7152,43 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   margin-bottom: 0.55rem;
 }
 
+.lp-areas__card-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.lp-areas__reorder {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.lp-areas__move {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--lp-border);
+  background: var(--rpg-glass, rgba(23, 28, 34, 0.78));
+  color: var(--lp-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lp-areas__move:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.lp-areas__tracker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .lp-areas__name {
   margin: 0;
   font-size: 0.98rem;
@@ -7163,6 +7200,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem 0.55rem;
+  flex: 1;
+  min-width: 0;
   text-decoration: none;
   color: inherit;
   padding: 0.45rem 0.55rem;

@@ -48,4 +48,13 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_points_path
     assert_equal [ b.id, a.id ], @user.areas.ordered.pluck(:id)
   end
+
+  test "move without return_to redirects to habits areas anchor" do
+    a = @user.areas.create!(name: "A", position: 1)
+    b = @user.areas.create!(name: "B", position: 2)
+
+    patch move_area_path(b), params: { direction: "up" }
+    assert_redirected_to habits_path(anchor: "areas")
+    assert_equal [ b.id, a.id ], @user.areas.ordered.pluck(:id)
+  end
 end

@@ -36,13 +36,6 @@
 
   <%= render "life_points/patterns", findings: @pattern_findings, user: current_user %>
 
-  <% if @show_journey_stats && habits_enabled? %>
-    <%= render "life_points/journey_stats",
-          areas: @stats_areas,
-          unfiled: @stats_unfiled,
-          series: @stats_series %>
-  <% end %>
-
   <div class="lp-progress__grid">
     <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
   </div>

@@ -895,7 +895,9 @@ ru:
     minimum: "Минимум"
     maximum: "Максимум"
     show_on_today: "Показывать на Сегодня"
-    hide_from_journey: "Скрыть из stats Путешествия"
+    hide_from_journey: "Hide from Journey"  # TODO: translate
+    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
+    show_on_journey: "Show on Journey"  # TODO: translate
     active: "Вкл"
     milestone_record: "Новый личный рекорд"
     milestone_boost: "Большой скачок относительно вчера"
