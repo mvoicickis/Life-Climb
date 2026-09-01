@@ -1924,7 +1924,7 @@ en:
       step: "%{current} of %{total}"
       goal: "Here's your goal."
       camp: "Here's your camp. Your battles live inside it."
-      camp_daily: "You work on your camps every day to get closer to your goal."
+      camp_daily: "Your Basics live in Base Camp. Add more here."
       add_camp: "Tap + to add more camps."
       today: "Your battles are on Today. Go win one now!"
       today_cta: "Go to Today"
