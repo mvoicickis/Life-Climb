@@ -1277,11 +1277,15 @@ ru:
       other: "Другое"
     need_mountain: "Назови цель, которой хочешь достичь."
     need_character: "Выбери спутника для подъёма."
-    goal_placeholder: "Name your goal in your own words"  # TODO: translate
-    goal_examples_label: "For inspiration only — type your own above"  # TODO: translate
-    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"  # TODO: translate
-    basic_lead: "We call these Basics. They move you toward %{goal}."  # TODO: translate
-    battles_lead: "We call these Battles. One win today gets you closer to %{goal}."  # TODO: translate
+    goal_placeholder: "Напиши свою цель своими словами"
+    goal_examples_label: "Только для вдохновения — напиши своё выше"
+    goal_examples: "Стать лицензированным сантехником, получить ученичество, сдать экзамен, выбраться из долгов"
+    battles_title: "Что одно ты можешь закончить сегодня?"
+    battle_placeholder: "Напиши свой ответ"
+    battle_examples_label: "Только для вдохновения — напиши своё выше"
+    battle_examples: "Почитать главу 1 двадцать минут, отправить одну заявку на работу, разобрать входящие, приготовить обед на завтра"
+    basic_lead: "Мы называем это Основами. Они приближают тебя к %{goal}."
+    battles_lead: "Мы называем это Битвами. Одна победа сегодня приближает тебя к %{goal}."
     continue: "Продолжить"
     commitment_kicker: "Насколько жёстко сегодня?"
     commitment_title: "Выбери дневное обязательство"

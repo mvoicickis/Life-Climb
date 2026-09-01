@@ -103,6 +103,7 @@
                     autocomplete: "off",
                     autofocus: battle_rows.first == title,
                     placeholder: t("v2_onboarding.battle_placeholder"),
+                    aria: { describedby: "adventure-battles-examples" },
                     data: { onboarding_battles_target: "input", action: "input->onboarding-battles#refresh" } %>
               <button type="button"
                       class="lp-adventure__battle-remove"
@@ -110,6 +111,11 @@
                       aria-label="<%= t("v2_onboarding.battle_remove") %>">×</button>
             </div>
           <% end %>
+        </div>
+
+        <div id="adventure-battles-examples" class="lp-adventure__examples-note" role="note">
+          <p class="lp-adventure__examples-note-label"><%= t("v2_onboarding.battle_examples_label") %></p>
+          <p class="lp-adventure__examples-note-text"><%= t("v2_onboarding.battle_examples") %></p>
         </div>
 
         <button type="button"

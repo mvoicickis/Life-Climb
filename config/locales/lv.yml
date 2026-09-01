@@ -1513,17 +1513,19 @@ lv:
     need_camp: "Nosauc savu nometni, lai turpinātu."
     need_battle: "Pievieno vismaz vienu šodienas kauju."
     goal_title: "Kāds ir tavs mērķis?"
-    goal_placeholder: "Name your goal in your own words"  # TODO: translate (lv priority)
-    goal_examples_label: "For inspiration only — type your own above"  # TODO: translate (lv priority)
-    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"  # TODO: translate (lv priority)
+    goal_placeholder: "Uzraksti savu mērķi ar saviem vārdiem"
+    goal_examples_label: "Tikai iedvesmai — augstāk raksti savu"
+    goal_examples: "Kļūt par licencētu santehniķi, dabūt mācekļa vietu, nokārtot kvalifikācijas eksāmenu, atbrīvoties no parādiem"
     camp_title: "Kāda ir tava nometne?"
     camp_lead: "Nometne ir posms, pie kura strādā tagad — dažas kaujas vienlaikus."
     camp_placeholder: "Iegūt sertifikātu"
     camp_examples: "Piemēri: Iegūt sertifikātu · Iemācīties 1. nodaļu · Nokārtot prakses eksāmenu"
-    battles_title: "Kādas ir šodienas kaujas?"
-    battles_lead: "We call these Battles. One win today gets you closer to %{goal}."  # TODO: translate
-    basic_lead: "We call these Basics. They move you toward %{goal}."  # TODO: translate
-    battle_placeholder: "Mācīties 1. nodaļu 20 minūtes"
+    battles_title: "Kā vienu lietu tu vari šodien pabeigt?"
+    battles_lead: "Mēs tās saucam par Kaujām. Viena uzvara šodien tuvina tevi %{goal}."
+    basic_lead: "Mēs tās saucam par Pamatiem. Tie tuvina tevi %{goal}."
+    battle_placeholder: "Uzraksti savu atbildi"
+    battle_examples_label: "Tikai iedvesmai — augstāk raksti savu"
+    battle_examples: "Mācīties 1. nodaļu 20 minūtes, nosūtīt vienu darba pieteikumu, iztukšot iesūtni, sagatavot rītdienas pusdienas"
     battle_add: "+ Pievienot vēl vienu kauju"
     battle_remove: "Noņemt kauju"
     finish: "Pabeigt"

@@ -1267,11 +1267,15 @@ de:
       other: "Sonstiges"
     need_mountain: "Nenne das Ziel, das du erreichen willst."
     need_character: "Wähle deinen Begleiter für den Aufstieg."
-    goal_placeholder: "Name your goal in your own words"  # TODO: translate
-    goal_examples_label: "For inspiration only — type your own above"  # TODO: translate
-    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"  # TODO: translate
-    basic_lead: "We call these Basics. They move you toward %{goal}."  # TODO: translate
-    battles_lead: "We call these Battles. One win today gets you closer to %{goal}."  # TODO: translate
+    goal_placeholder: "Schreib dein Ziel in deinen eigenen Worten"
+    goal_examples_label: "Nur zur Inspiration — oben deine eigene eingeben"
+    goal_examples: "Klempner mit Meisterbrief werden, eine Ausbildung finden, die Prüfung bestehen, Schulden abbauen"
+    battles_title: "Was ist eine Sache, die du heute fertig machen kannst?"
+    battle_placeholder: "Schreib deine eigene Antwort"
+    battle_examples_label: "Nur zur Inspiration — oben deine eigene eingeben"
+    battle_examples: "Kapitel 1 zwanzig Minuten lernen, eine Bewerbung abschicken, Posteingang leeren, das Mittagessen für morgen vorbereiten"
+    basic_lead: "Das nennen wir Basics. Sie bringen dich %{goal} näher."
+    battles_lead: "Das nennen wir Kämpfe. Ein Sieg heute bringt dich %{goal} näher."
     continue: "Weiter"
     commitment_kicker: "Wie hart heute?"
     commitment_title: "Wähle dein tägliches Commitment"

@@ -34,9 +34,11 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Get certified" } }
     assert_redirected_to v2_onboarding_path(step: "battles")
     follow_redirect!
-    assert_match(/What will you do today/i, response.body)
+    assert_match(/one thing you can finish today/i, response.body)
     assert_match(/Step 4 of 5/i, response.body)
     assert_select "[data-controller='onboarding-battles']"
+    assert_select ".lp-adventure__examples-note-label", text: I18n.t("v2_onboarding.battle_examples_label")
+    assert_select "input[name='onboarding[battle_titles][]'][placeholder=?]", I18n.t("v2_onboarding.battle_placeholder")
     assert_select "#onboarding_basic_title", count: 0
 
     patch v2_onboarding_url(step: "battles"), params: {
