@@ -453,22 +453,22 @@ module Progress
 
     def achievement_proximity(badge, total:, battles:, mountain:)
       threshold = case badge[:key]
-                  when "adventure_guide" then return 0.0
-                  when "first_battle" then 1
-                  when "lp_100" then 100
-                  when "lp_1000" then 1000
-                  when "battles_100" then 100
-                  when "closer_25" then 25
-                  when "closer_50" then 50
-                  when "closer_100" then 100
-                  else return 0.0
-                  end
+      when "adventure_guide" then return 0.0
+      when "first_battle" then 1
+      when "lp_100" then 100
+      when "lp_1000" then 1000
+      when "battles_100" then 100
+      when "closer_25" then 25
+      when "closer_50" then 50
+      when "closer_100" then 100
+      else return 0.0
+      end
 
       current = case badge[:key]
-                when "first_battle", "battles_100" then battles
-                when "lp_100", "lp_1000" then total
-                else mountain
-                end
+      when "first_battle", "battles_100" then battles
+      when "lp_100", "lp_1000" then total
+      else mountain
+      end
 
       [ current.to_f / threshold, 1.0 ].min
     end
