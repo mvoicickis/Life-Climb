@@ -10468,9 +10468,102 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 }
 
 .lp-journey-trends__quantified,
+.lp-journey-trends__camps,
 .lp-journey-trends__habits {
   display: grid;
   gap: var(--lp-space-3);
+}
+
+.lp-camp-toggle {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: var(--lp-paper-soft, #eef2f7);
+  border: 1px solid var(--lp-border);
+}
+
+.lp-camp-toggle__btn {
+  flex: 1;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.lp-camp-toggle__btn.is-active {
+  background: var(--lp-surface, #fff);
+  color: var(--lp-ink);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.lp-camp-folders {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lp-camp-folder {
+  border-radius: var(--radius-sm, 0.65rem);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface, #fff);
+  overflow: hidden;
+}
+
+.lp-camp-folder__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.lp-camp-folder__summary::-webkit-details-marker { display: none; }
+
+.lp-camp-folder__chevron {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--lp-muted-light, #64748b);
+  transition: transform 0.2s;
+}
+
+.lp-camp-folder[open] .lp-camp-folder__chevron { transform: rotate(180deg); }
+
+.lp-camp-folder__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.lp-camp-folder__stat {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-camp-folder__title {
+  min-width: 0;
+}
+
+.lp-camp-folder__body {
+  padding: 0 0.65rem 0.75rem;
+  border-top: 1px solid var(--lp-border);
+}
+
+.lp-camp-folder__target {
+  margin: 0.55rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-muted);
 }
 
 .lp-journey-trends__chart {

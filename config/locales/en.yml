@@ -484,6 +484,13 @@ en:
       battles_down: "A bit quieter than last week"
       quantified_title: "Camp totals" # TODO: translate for lv/de/es/ru.
       quantified_hint: "Cumulative progress toward each camp target." # TODO: translate for lv/de/es/ru.
+      camp_progress_title: "Camp progress"
+      camp_progress_hint: "Cumulative totals per camp — tap to expand."
+      timeframe_label: "Chart timeframe"
+      timeframe_daily: "Daily"
+      timeframe_weekly: "Weekly"
+      timeframe_monthly: "Monthly"
+      battles_camp_hint: "Battles won over time"
       target_line: "Target %{target} %{unit}"
       habits_title: "Habits this week"
       habits_hint: "Trackers linked to this mountain."

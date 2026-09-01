@@ -135,9 +135,9 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_match(/More Battles this week than last|About the same as last week|A bit quieter than last week/i, response.body)
     assert_select ".lp-journey-trends"
     assert_select "[data-controller='journey-trends']"
-    assert_select ".lp-journey-trends__quantified", count: 0
+    assert_select ".lp-journey-trends__camps", count: 1
     assert_select ".lp-journey-trends__habits", count: 0
-    assert_select "canvas[data-journey-trends-target='quantified']", count: 0
+    assert_select "canvas[data-journey-trends-target='camp']", count: 1
     assert_match(/See weekly activity/i, response.body)
     assert_match(/Weekly activity/i, response.body)
   end
@@ -197,12 +197,14 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
     get life_points_path
     assert_response :success
-    assert_match(/Camp totals/i, response.body)
+    assert_match(/Camp progress/i, response.body)
     assert_match(/Read the book/i, response.body)
     assert_match(/Save cash/i, response.body)
     assert_match(/Target 100 pages/i, response.body)
     assert_match(/Target 500 €/i, response.body)
-    assert_select "canvas[data-journey-trends-target='quantified']", count: 2
+    assert_select ".lp-camp-folder", count: 2
+    assert_select ".lp-camp-toggle__btn", count: 3
+    assert_select "canvas[data-journey-trends-target='camp']", count: 2
     assert_match(/Habits this week/i, response.body)
     assert_match(/Linked stretch/i, response.body)
     assert_match(/Income/i, response.body)

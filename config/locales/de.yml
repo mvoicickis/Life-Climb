@@ -749,6 +749,13 @@ de:
       quantified_title: "Projektstände"
       quantified_hint: "Kumulativer Fortschritt zu jedem Projektziel."
       target_line: "Ziel %{target} %{unit}"
+      camp_progress_title: "Camp progress"  # TODO: translate
+      camp_progress_hint: "Cumulative totals per camp — tap to expand."  # TODO: translate
+      timeframe_label: "Chart timeframe"  # TODO: translate
+      timeframe_daily: "Daily"  # TODO: translate
+      timeframe_weekly: "Weekly"  # TODO: translate
+      timeframe_monthly: "Monthly"  # TODO: translate
+      battles_camp_hint: "Battles won over time"  # TODO: translate
       habits_title: "Gewohnheiten diese Woche"
       habits_hint: "Tracker, die mit diesem Berg verknüpft sind."  # TODO: translate
       habit_done: "erledigt"
