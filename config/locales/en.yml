@@ -3456,8 +3456,8 @@ en:
       character: "Companion"
       goal: "Goal"
       camp: "Camp"
-      basic: "Daily habit"
       battles: "Today's battle"
+      basic: "Daily habit"
     charts:
       users: "Users per day"
       users_growth: "Growth over time"
