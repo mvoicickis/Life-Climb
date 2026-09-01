@@ -3,6 +3,10 @@
 require "application_system_test_case"
 
 class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
+  # Tour anchoring needs a warm Mountain render; parallel browser runs can
+  # finish sign-in before the session cookie is ready without extra waits.
+  parallelize(workers: 1)
+
   VIEWPORTS = [
     [ 360, 800 ],
     [ 412, 800 ],
@@ -92,23 +96,10 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
   end
 
   test "mountain plant fab uses camp wording not project" do
-    Onboarding::Bootstrap.call(
-      user: @user,
-      goal_title: "Ship LifePoints",
-      camp_title: "Launch",
-      battle_titles: [ "Write one test" ],
-      basic_title: "Drink water"
-    )
-    journey = @user.reload.primary_focused_journey
-    @user.update!(character: "fox")
+    bootstrap_and_visit!
 
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-    visit life_journey_path(journey)
-
-    assert_selector ".lp-dash-nav__fab[aria-label='Plant a camp']", visible: :all, wait: 5
+    label = I18n.t("strategy.rpg.trail.plant_project")
+    assert_selector ".lp-dash-nav__fab[aria-label='#{label}']", visible: :all, wait: 5
     assert_no_selector ".lp-dash-nav__fab[aria-label='Plant a project']", visible: :all
   end
 
@@ -123,14 +114,30 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
       basic_title: "Walk 10 minutes"
     )
     journey = @user.reload.primary_focused_journey
+    assert journey.present?, "expected bootstrap to create a focused journey"
+
     @user.update!(character: "fox")
 
+    sign_in_and_visit_mountain!(journey)
+    journey
+  end
+
+  def sign_in_and_visit_mountain!(journey)
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_no_current_path new_session_path, wait: 10
+
     visit life_journey_path(journey)
-    journey
+    assert_mountain_onboarding_tour_ready!
+  end
+
+  def assert_mountain_onboarding_tour_ready!
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
+    assert_selector "[data-controller='onboarding-mountain-tour']", wait: 10
+    assert_selector "button.lp-onboarding-tour__next", wait: 10
+    assert_selector ".lp-dash-nav__fab", visible: :all, wait: 5
   end
 
   def tour_metrics_for(target_selector)
