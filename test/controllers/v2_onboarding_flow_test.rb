@@ -28,15 +28,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_match(/Camps are the stops along the way/i, response.body)
 
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Get certified" } }
-    assert_redirected_to v2_onboarding_path(step: "basic")
-    follow_redirect!
-    assert_match(/one thing you will do every day/i, response.body)
-    assert_select "#onboarding_basic_title"
-
-    patch v2_onboarding_url(step: "basic"), params: { onboarding: { basic_title: "Drink water" } }
     assert_redirected_to v2_onboarding_path(step: "battles")
     follow_redirect!
     assert_match(/What will you do today/i, response.body)
+    assert_match(/Step 4 of 5/i, response.body)
     assert_select "[data-controller='onboarding-battles']"
     assert_select "#onboarding_basic_title", count: 0
 
@@ -45,6 +40,13 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
         battle_titles: [ "Study chapter 1 for 20 minutes" ]
       }
     }
+    assert_redirected_to v2_onboarding_path(step: "basic")
+    follow_redirect!
+    assert_match(/one thing you will do every day/i, response.body)
+    assert_match(/Step 5 of 5/i, response.body)
+    assert_select "#onboarding_basic_title"
+
+    patch v2_onboarding_url(step: "basic"), params: { onboarding: { basic_title: "Drink water" } }
 
     user = User.find_by!(email_address: "fresh@example.com")
     journey = user.primary_focused_journey
@@ -81,18 +83,20 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Launch" } }
+    patch v2_onboarding_url(step: "battles"), params: { onboarding: { battle_titles: [ "Write one test" ] } }
+
+    get v2_onboarding_path(step: "basic")
+    viewed_steps = user.user_events.named("onboarding_step_viewed")
+                       .order(:id)
+                       .map { |event| event.properties["step"] }
+    assert_equal %w[character basic], viewed_steps
+
     patch v2_onboarding_url(step: "basic"), params: { onboarding: { basic_title: "Stretch" } }
 
     completed_steps = user.user_events.named("onboarding_step_completed")
                          .order(:id)
                          .map { |event| event.properties["step"] }
-    assert_equal %w[character goal camp basic], completed_steps
-
-    get v2_onboarding_path(step: "battles")
-    viewed_steps = user.user_events.named("onboarding_step_viewed")
-                       .order(:id)
-                       .map { |event| event.properties["step"] }
-    assert_equal %w[character battles], viewed_steps
+    assert_equal %w[character goal camp battles basic], completed_steps
   end
 
   test "legacy session title migrates to goal for in-progress users" do
@@ -122,6 +126,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Launch" } }
+    patch v2_onboarding_url(step: "battles"), params: { onboarding: { battle_titles: [ "Write one test" ] } }
 
     patch v2_onboarding_url(step: "basic"), params: { onboarding: { basic_title: "" } }
 
@@ -134,41 +139,41 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal 0, user.habits.count
   end
 
-  test "battles step redirects to basic when basic is missing from session" do
-    post registration_url, params: registration_params("missing-basic@example.com")
+  test "basic step redirects to battles when battles are missing from session" do
+    post registration_url, params: registration_params("missing-battles@example.com")
     patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Launch" } }
 
-    patch v2_onboarding_url(step: "battles"), params: {
-      onboarding: { battle_titles: [ "Write one test" ] }
+    patch v2_onboarding_url(step: "basic"), params: {
+      onboarding: { basic_title: "Stretch" }
     }
 
-    assert_redirected_to v2_onboarding_path(step: "basic")
+    assert_redirected_to v2_onboarding_path(step: "battles")
   end
 
-  test "bootstrap failure returns to battles with alert and leaves no spine" do
+  test "bootstrap failure returns to basic with alert and leaves no spine" do
     post registration_url, params: registration_params("bootstrap-fail@example.com")
     patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Launch" } }
-    patch v2_onboarding_url(step: "basic"), params: { onboarding: { basic_title: "Stretch" } }
+    patch v2_onboarding_url(step: "battles"), params: { onboarding: { battle_titles: [ "Write one test" ] } }
 
     original_bootstrap = Onboarding::Bootstrap.method(:call)
     Onboarding::Bootstrap.define_singleton_method(:call) do |**|
       raise Onboarding::Bootstrap::Error, "Could not save your climb."
     end
     begin
-      patch v2_onboarding_url(step: "battles"), params: {
+      patch v2_onboarding_url(step: "basic"), params: {
         onboarding: {
-          battle_titles: [ "Write one test" ]
+          basic_title: "Stretch"
         }
       }
     ensure
       Onboarding::Bootstrap.define_singleton_method(:call, original_bootstrap)
     end
 
-    assert_redirected_to v2_onboarding_path(step: "battles")
+    assert_redirected_to v2_onboarding_path(step: "basic")
     follow_redirect!
     assert_match(/Could not save your climb/i, response.body)
 
@@ -216,9 +221,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
   def finish_onboarding_draft!(goal:, camp:, battles: [ "Take the first small step" ], basic: "Drink water")
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: goal } }
     patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: camp } }
+    patch v2_onboarding_url(step: "battles"), params: { onboarding: { battle_titles: battles } }
     patch v2_onboarding_url(step: "basic"), params: { onboarding: { basic_title: basic } }
-    patch v2_onboarding_url(step: "battles"), params: {
-      onboarding: { battle_titles: battles }
-    }
   end
 end

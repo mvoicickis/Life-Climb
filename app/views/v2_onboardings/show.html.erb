@@ -76,40 +76,12 @@
       <% end %>
     </section>
 
-  <% elsif @step == "basic" %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-basic-title">
-      <div class="lp-adventure__step-head">
-        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "camp"), class: "lp-adventure__back" %>
-        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
-        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-      </div>
-
-      <h1 id="adventure-basic-title" class="lp-adventure__title"><%= t("v2_onboarding.basic_title") %></h1>
-      <p class="lp-adventure__goal-recap"><%= @draft["goal"] %></p>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.basic_lead", goal: @draft["goal"]) %></p>
-
-      <%= form_with url: v2_onboarding_path(step: "basic"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
-        <%= text_field_tag "onboarding[basic_title]", @draft["basic_title"],
-              id: "onboarding_basic_title",
-              required: true,
-              maxlength: 120,
-              class: "lp-input w-full",
-              autocomplete: "off",
-              autofocus: true,
-              placeholder: t("v2_onboarding.basic_placeholder") %>
-        <p class="lp-adventure__examples-plain"><%= t("v2_onboarding.basic_hint") %></p>
-        <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
-      <% end %>
-    </section>
-
-  <% else %>
+  <% elsif @step == "battles" %>
     <% battle_rows = Array(@draft["battle_titles"]).presence || [ "" ] %>
     <section class="lp-adventure__card" aria-labelledby="adventure-battles-title"
              data-controller="onboarding-battles">
       <div class="lp-adventure__step-head">
-        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "basic"), class: "lp-adventure__back" %>
+        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "camp"), class: "lp-adventure__back" %>
         <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
       </div>
       <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
@@ -145,7 +117,35 @@
           <%= t("v2_onboarding.battle_add") %>
         </button>
 
-        <%= submit_tag t("v2_onboarding.finish"), class: "lp-cta w-full", data: { onboarding_battles_target: "submit" } %>
+        <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full", data: { onboarding_battles_target: "submit" } %>
+      <% end %>
+    </section>
+
+  <% elsif @step == "basic" %>
+    <section class="lp-adventure__card" aria-labelledby="adventure-basic-title">
+      <div class="lp-adventure__step-head">
+        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "battles"), class: "lp-adventure__back" %>
+        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
+      </div>
+      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
+        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+      </div>
+
+      <h1 id="adventure-basic-title" class="lp-adventure__title"><%= t("v2_onboarding.basic_title") %></h1>
+      <p class="lp-adventure__goal-recap"><%= @draft["goal"] %></p>
+      <p class="lp-adventure__lead"><%= t("v2_onboarding.basic_lead", goal: @draft["goal"]) %></p>
+
+      <%= form_with url: v2_onboarding_path(step: "basic"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
+        <%= text_field_tag "onboarding[basic_title]", @draft["basic_title"],
+              id: "onboarding_basic_title",
+              required: true,
+              maxlength: 120,
+              class: "lp-input w-full",
+              autocomplete: "off",
+              autofocus: true,
+              placeholder: t("v2_onboarding.basic_placeholder") %>
+        <p class="lp-adventure__examples-plain"><%= t("v2_onboarding.basic_hint") %></p>
+        <%= submit_tag t("v2_onboarding.finish"), class: "lp-cta w-full" %>
       <% end %>
     </section>
   <% end %>
