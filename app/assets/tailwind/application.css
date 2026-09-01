@@ -10214,6 +10214,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   background: var(--lp-glass, rgba(255, 255, 255, 0.92));
   padding: 0.9rem;
   box-shadow: var(--lp-shadow, 0 14px 36px rgba(15, 23, 42, 0.1));
+  min-width: 0;
 }
 
 .stats-hero__goal-label {
@@ -10235,9 +10236,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .stats-hero__row {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.35rem 0.5rem;
   margin-top: 0.65rem;
 }
 
@@ -10248,6 +10250,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   letter-spacing: -0.04em;
   color: var(--lp-green-deep, #3dbd48);
   line-height: 1;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .stats-hero__lead-unit {
@@ -10263,6 +10267,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-weight: 700;
   color: var(--lp-muted);
   text-align: right;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
 .stats-hero__bar {
@@ -10281,6 +10287,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--lp-muted);
+  min-width: 0;
 }
 
 .stats-hero__foot strong {
@@ -10297,6 +10304,39 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .stats-hero__link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 479px) {
+  .stats-hero__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .stats-hero__meta {
+    text-align: left;
+  }
+
+  .stats-hero__lead {
+    font-size: 1.65rem;
+  }
+
+  .stats-hero__lead-unit {
+    font-size: 1rem;
+  }
+
+  .stats-hero__foot {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 0.75rem;
+    align-items: start;
+  }
+
+  .stats-hero__link {
+    grid-column: 1 / -1;
+    margin-left: 0;
+    justify-self: start;
+  }
 }
 
 @media (min-width: 640px) {
