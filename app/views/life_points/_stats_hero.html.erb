@@ -5,11 +5,12 @@
   <p class="stats-hero__goal-label"><%= t("progress.goal_label") %></p>
   <p class="stats-hero__goal" title="<%= goal_title %>"><%= goal_title %></p>
   <div class="stats-hero__row">
-    <p class="stats-hero__pct"><%= closer %>%</p>
+    <p class="stats-hero__lead">
+      <%= number_with_delimiter(action_points) %>
+      <span class="stats-hero__lead-unit"><%= t("dash.action_points_short") %></span>
+    </p>
     <p class="stats-hero__meta">
-      <%= t("progress.hero_points",
-            ap: number_with_delimiter(action_points),
-            pp: number_with_delimiter(strategy_points)) %>
+      <%= number_with_delimiter(strategy_points) %> <%= t("dash.strategy_points_short") %>
     </p>
   </div>
   <div class="lp-dash-bar stats-hero__bar"
@@ -21,6 +22,7 @@
     <div class="lp-dash-bar__fill" style="width: <%= closer %>%"></div>
   </div>
   <div class="stats-hero__foot">
+    <span><%= t("progress.hero_goal") %> <strong><%= closer %>%</strong></span>
     <% if summary&.dig(:present) %>
       <span><%= t("progress.hero_plans") %> <strong><%= summary[:plans_done] %>/<%= summary[:plans_total] %></strong></span>
       <span><%= t("progress.hero_camps") %> <strong><%= summary[:projects_done] %>/<%= summary[:projects_total] %></strong></span>
