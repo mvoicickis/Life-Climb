@@ -1,13 +1,15 @@
 <%# locals: trends %>
-<% if trends.present? && (trends[:battles].present? || trends[:quantified].present? || trends[:habits].present?) %>
+<% if trends.present? && (trends[:camps].present? || trends[:battles].present? || trends[:habits].present?) %>
   <% battles_json = trends[:battles] ? trends[:battles][:weeks] : [] %>
-  <% quantified_json = Array(trends[:quantified]).map { |series|
+  <% camps_json = Array(trends[:camps]).map { |camp|
        {
-         project_id: series[:project_id],
-         title: series[:title],
-         unit: series[:unit],
-         target: series[:target],
-         weeks: series[:weeks]
+         project_id: camp[:project_id],
+         title: camp[:title],
+         kind: camp[:kind],
+         unit: camp[:unit],
+         target: camp[:target],
+         accent_hex: camp[:accent_hex],
+         series: camp[:series]
        }
      } %>
   <%= tag.section class: "lp-journey-trends",
@@ -15,19 +17,20 @@
         data: {
           controller: "journey-trends",
           journey_trends_battles_value: battles_json,
-          journey_trends_quantified_value: quantified_json
+          journey_trends_camps_value: camps_json,
+          journey_trends_timeframe_value: "daily"
         } do %>
     <header class="lp-journey-section__head">
       <h2><%= t("progress.trends.title") %></h2>
       <p><%= t("progress.trends.hint") %></p>
     </header>
 
-    <% if trends[:battles].present? %>
-      <%= render "life_points/journey_trends_battles", battles: trends[:battles] %>
+    <% if trends[:camps].present? %>
+      <%= render "life_points/journey_trends_camps", camps: trends[:camps] %>
     <% end %>
 
-    <% if trends[:quantified].present? %>
-      <%= render "life_points/journey_trends_quantified", series_list: trends[:quantified] %>
+    <% if trends[:battles].present? %>
+      <%= render "life_points/journey_trends_battles", battles: trends[:battles] %>
     <% end %>
 
     <% if trends[:habits].present? && habits_enabled? %>

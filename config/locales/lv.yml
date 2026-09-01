@@ -992,6 +992,13 @@ lv:
       quantified_title: "Projekta kopsummas"
       quantified_hint: "Uzkrātais progress pret katra Projekta mērķi."
       target_line: "Mērķis %{target} %{unit}"
+      camp_progress_title: "Camp progress"  # TODO: translate
+      camp_progress_hint: "Cumulative totals per camp — tap to expand."  # TODO: translate
+      timeframe_label: "Chart timeframe"  # TODO: translate
+      timeframe_daily: "Daily"  # TODO: translate
+      timeframe_weekly: "Weekly"  # TODO: translate
+      timeframe_monthly: "Monthly"  # TODO: translate
+      battles_camp_hint: "Battles won over time"  # TODO: translate
       habits_title: "Ieradumi šonedēļ"
       habits_hint: "Trackers linked to this mountain."  # TODO: translate
       habit_done: "izdarīts"

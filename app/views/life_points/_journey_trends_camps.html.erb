@@ -1,0 +1,48 @@
+<%# locals: camps %>
+<section class="lp-journey-trends__camps" aria-label="<%= t('progress.trends.camp_progress_title') %>">
+  <header class="lp-journey-section__head">
+    <h3><%= t("progress.trends.camp_progress_title") %></h3>
+    <p><%= t("progress.trends.camp_progress_hint") %></p>
+  </header>
+
+  <div class="lp-camp-toggle" role="tablist" aria-label="<%= t('progress.trends.timeframe_label') %>">
+    <% %w[daily weekly monthly].each do |timeframe| %>
+      <button type="button"
+              class="lp-camp-toggle__btn <%= 'is-active' if timeframe == 'daily' %>"
+              role="tab"
+              aria-selected="<%= timeframe == 'daily' %>"
+              data-timeframe="<%= timeframe %>"
+              data-action="journey-trends#selectTimeframe">
+        <%= t("progress.trends.timeframe_#{timeframe}") %>
+      </button>
+    <% end %>
+  </div>
+
+  <div class="lp-camp-folders" aria-label="<%= t('progress.trends.camp_progress_title') %>">
+    <% camps.each_with_index do |camp, index| %>
+      <details class="lp-camp-folder"
+               data-project-id="<%= camp[:project_id] %>"
+               data-action="toggle->journey-trends#folderToggled"
+               <%= "open" if index.zero? %>>
+        <summary class="lp-camp-folder__summary">
+          <span class="lp-camp-folder__dot" style="background: <%= camp[:accent_hex] %>;" aria-hidden="true"></span>
+          <span class="lp-camp-folder__title"><%= camp[:title] %></span>
+          <span class="lp-camp-folder__stat"><%= camp[:stat_label] %></span>
+          <span class="lp-camp-folder__chevron" aria-hidden="true">▼</span>
+        </summary>
+        <div class="lp-camp-folder__body">
+          <% if camp[:kind] == "quantified" %>
+            <p class="lp-camp-folder__target"><%= camp[:target_line] %></p>
+          <% else %>
+            <p class="lp-camp-folder__target"><%= t("progress.trends.battles_camp_hint") %></p>
+          <% end %>
+          <div class="lp-journey-trends__chart">
+            <canvas data-journey-trends-target="camp"
+                    data-project-id="<%= camp[:project_id] %>"
+                    aria-label="<%= camp[:title] %>"></canvas>
+          </div>
+        </div>
+      </details>
+    <% end %>
+  </div>
+</section>
