@@ -727,12 +727,12 @@ es:
       adventure_guide_hint: "Aprendiste cómo encajan Metas, Planes, Proyectos y Batallas."
       first_battle: "Primera batalla"
       first_battle_hint: "Completaste tu primera batalla del día."
-      lp_100: "Primeros 100 puntos de acción"
-      lp_100_hint: "Alcanzaste 100 puntos de acción."
+      lp_100: "First 100 Battle strength"  # TODO: translate
+      lp_100_hint: "You crossed 100 Battle strength."  # TODO: translate
       closer_25: "Un cuarto de la montaña"
       closer_25_hint: "Tu montaña de temporada llegó al 25%."
-      lp_1000: "Primeros 1000 puntos de acción"
-      lp_1000_hint: "Cuatro dígitos de puntos de acción."
+      lp_1000: "First 1000 Battle strength"  # TODO: translate
+      lp_1000_hint: "Four digits of Battle strength."  # TODO: translate
       battles_100: "100 batallas"
       battles_100_hint: "Cien batallas completadas."
       closer_50: "A mitad de camino"

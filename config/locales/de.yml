@@ -727,12 +727,12 @@ de:
       adventure_guide_hint: "Du hast gelernt, wie Ziele, Pläne, Projekte und Kämpfe zusammenpassen."
       first_battle: "Erster Kampf"
       first_battle_hint: "Du hast deinen ersten Tageskampf abgeschlossen."
-      lp_100: "Erste 100 Aktionspunkte"
-      lp_100_hint: "Du hast 100 Aktionspunkte erreicht."
+      lp_100: "First 100 Battle strength"  # TODO: translate
+      lp_100_hint: "You crossed 100 Battle strength."  # TODO: translate
       closer_25: "Ein Viertel des Berges"
       closer_25_hint: "Dein Jahresberg hat 25% erreicht."
-      lp_1000: "Erste 1000 Aktionspunkte"
-      lp_1000_hint: "Vierstellige Aktionspunkte."
+      lp_1000: "First 1000 Battle strength"  # TODO: translate
+      lp_1000_hint: "Four digits of Battle strength."  # TODO: translate
       battles_100: "100 Kämpfe"
       battles_100_hint: "Hundert abgeschlossene Kämpfe."
       closer_50: "Halbwegs oben"

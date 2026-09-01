@@ -970,12 +970,12 @@ lv:
       adventure_guide_hint: "Tu iemācījies, kā Mērķi, Plāni, Projekti un Kaujas sader kopā."
       first_battle: "Pirmā kauja"
       first_battle_hint: "Tu pabeidzi savu pirmo dienas kauju."
-      lp_100: "Pirmie 100 darba punkti"
-      lp_100_hint: "Tu sasniedzi 100 darba punktus."
+      lp_100: "First 100 Battle strength"  # TODO: translate
+      lp_100_hint: "You crossed 100 Battle strength."  # TODO: translate
       closer_25: "Ceturtdaļa kalna"
       closer_25_hint: "Tavs sezonas kalns sasniedza 25%."
-      lp_1000: "Pirmie 1000 darba punkti"
-      lp_1000_hint: "Četri cipari darba punktos."
+      lp_1000: "First 1000 Battle strength"  # TODO: translate
+      lp_1000_hint: "Four digits of Battle strength."  # TODO: translate
       battles_100: "100 kaujas"
       battles_100_hint: "Simts pabeigtu kauju."
       closer_50: "Pusceļā uz augšu"
