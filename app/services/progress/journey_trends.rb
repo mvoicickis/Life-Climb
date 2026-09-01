@@ -113,7 +113,7 @@ module Progress
     end
 
     def habits_this_week
-      habits = @journey.habits.active.ordered.to_a
+      habits = @journey.habits.active.visible_on_dashboard.ordered.to_a
       return [] if habits.empty?
 
       week_days = (0..6).map { |offset| week_starts.last + offset }
