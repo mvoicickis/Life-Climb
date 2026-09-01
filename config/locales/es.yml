@@ -1267,11 +1267,15 @@ es:
       other: "Otra cosa"
     need_mountain: "Nombra la meta que quieres alcanzar."
     need_character: "Elige tu compañero para la subida."
-    goal_placeholder: "Name your goal in your own words"  # TODO: translate
-    goal_examples_label: "For inspiration only — type your own above"  # TODO: translate
-    goal_examples: "Become a licensed plumber, land an apprenticeship, pass the trade exam, get out of debt"  # TODO: translate
-    basic_lead: "We call these Basics. They move you toward %{goal}."  # TODO: translate
-    battles_lead: "We call these Battles. One win today gets you closer to %{goal}."  # TODO: translate
+    goal_placeholder: "Escribe tu meta con tus propias palabras"
+    goal_examples_label: "Solo como inspiración — escribe la tuya arriba"
+    goal_examples: "Convertirme en fontanero con licencia, conseguir un aprendizaje, aprobar el examen del oficio, salir de deudas"
+    battles_title: "¿Qué es una cosa que puedes terminar hoy?"
+    battle_placeholder: "Escribe tu propia respuesta"
+    battle_examples_label: "Solo como inspiración — escribe la tuya arriba"
+    battle_examples: "Estudiar el capítulo 1 durante 20 minutos, enviar una solicitud de empleo, vaciar el bandeja de entrada, preparar el almuerzo de mañana"
+    basic_lead: "A esto les llamamos Básicos. Te acercan a %{goal}."
+    battles_lead: "A esto les llamamos Batallas. Una victoria hoy te acerca a %{goal}."
     continue: "Continuar"
     commitment_kicker: "¿Qué tan duro hoy?"
     commitment_title: "Elige tu compromiso diario"
