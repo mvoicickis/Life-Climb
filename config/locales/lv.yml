@@ -1127,7 +1127,9 @@ lv:
     minimum: "Minimums"
     maximum: "Maksimums"
     show_on_today: "Rādīt uz Šodien"
-    hide_from_journey: "Paslēpt no Ceļojuma stats"
+    hide_from_journey: "Hide from Journey"  # TODO: translate
+    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
+    show_on_journey: "Show on Journey"  # TODO: translate
     active: "Ieslēgts"
     milestone_record: "Jauns personīgais rekords"
     milestone_boost: "Liels lēciens pret vakardienu"

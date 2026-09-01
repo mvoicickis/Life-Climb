@@ -76,4 +76,50 @@ class HabitsAreasUiTest < ActionDispatch::IntegrationTest
     assert_redirected_to habits_path
     assert_equal @area.id, @habit.reload.area_id
   end
+
+  test "area move up and down changes order on habits index" do
+    first = @user.areas.create!(name: "Alpha", position: 2)
+    second = @user.areas.create!(name: "Beta", position: 3)
+
+    patch move_area_path(second), params: { direction: "up" }
+    assert_redirected_to habits_path(anchor: "areas")
+    assert_equal [ @area.name, "Beta", "Alpha" ], @user.areas.ordered.pluck(:name)
+
+    get habits_path
+    assert_response :success
+    body = response.body
+    assert body.index(">Beta<") < body.index(">Alpha<")
+  end
+
+  test "journey visibility toggle hides and shows filed habit" do
+    @habit.update!(area: @area, hidden_from_dashboard: false)
+
+    get habits_path
+    assert_response :success
+    assert_select "button", text: I18n.t("habits.hide_from_journey")
+
+    patch habit_path(@habit), params: { habit: { hidden_from_dashboard: true } }
+    assert_redirected_to habits_path
+    assert @habit.reload.hidden_from_dashboard?
+
+    get habits_path
+    assert_select "button", text: I18n.t("habits.show_on_journey")
+
+    patch habit_path(@habit), params: { habit: { hidden_from_dashboard: false } }
+    assert_redirected_to habits_path
+    assert_not @habit.reload.hidden_from_dashboard?
+  end
+
+  test "journey visibility toggle on unfiled habit" do
+    @habit.update!(area_id: nil, hidden_from_dashboard: false)
+
+    get habits_path
+    assert_select ".lp-habits__card-actions button", text: I18n.t("habits.hide_from_journey")
+
+    patch habit_path(@habit), params: { habit: { hidden_from_dashboard: true } }
+    assert_redirected_to habits_path
+
+    get habits_path
+    assert_select ".lp-habits__card-actions button", text: I18n.t("habits.show_on_journey")
+  end
 end

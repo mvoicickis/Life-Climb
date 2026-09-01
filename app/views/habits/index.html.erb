@@ -53,6 +53,7 @@
                 </p>
               </div>
               <div class="lp-habits__card-actions">
+                <%= render "habits/journey_visibility_toggle", habit: habit %>
                 <%= link_to t("habits.edit"), edit_habit_path(habit), class: "lp-habits__btn is-quiet" %>
                 <%= button_to t("habits.delete"), habit_path(habit), method: :delete,
                       data: { turbo_confirm: t("habits.delete_confirm") },

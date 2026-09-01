@@ -885,7 +885,9 @@ de:
     minimum: "Minimum"
     maximum: "Maximum"
     show_on_today: "Auf Heute zeigen"
-    hide_from_journey: "Auf der Reise ausblenden"
+    hide_from_journey: "Hide from Journey"  # TODO: translate
+    hide_from_journey_stats: "Hide from Journey stats"  # TODO: translate
+    show_on_journey: "Show on Journey"  # TODO: translate
     active: "An"
     milestone_record: "Neuer persönlicher Rekord"
     milestone_boost: "Großer Sprung gegenüber gestern"

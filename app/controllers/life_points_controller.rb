@@ -40,30 +40,7 @@ class LifePointsController < ApplicationController
         Progress::JourneyTrends.call(user: current_user, journey: @journey)
       end
     @pattern_findings = Patterns::Detector.call(user: current_user)
-    load_journey_stats
     render "life_points/progress"
-  end
-
-  def load_journey_stats
-    @stats_areas = current_user.areas.ordered.includes(:habits)
-    @stats_unfiled = current_user.habits.active.unfiled.visible_on_dashboard.ordered.to_a
-    visible = []
-    @stats_areas.each do |area|
-      visible.concat(
-        area.habits.select { |habit| habit.active? && !habit.hidden_from_dashboard? }
-                  .sort_by { |habit| [ habit.position, habit.name.to_s ] }
-      )
-    end
-    visible.concat(@stats_unfiled)
-    @stats_series = visible.map do |habit|
-      {
-        habit_id: habit.id,
-        title: habit.name,
-        unit: habit.unit.to_s,
-        days: habit.dashboard_chart_series(days: 14)
-      }
-    end
-    @show_journey_stats = @stats_areas.any? || @stats_unfiled.any?
   end
 
   def show_legacy

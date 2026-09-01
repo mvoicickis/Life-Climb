@@ -1,0 +1,15 @@
+<%# locals: habit %>
+<% habit = local_assigns.fetch(:habit) %>
+<% if habit.hidden_from_dashboard? %>
+  <%= button_to t("habits.show_on_journey"),
+        habit_path(habit),
+        method: :patch,
+        params: { habit: { hidden_from_dashboard: false } },
+        class: "lp-habits__btn is-quiet" %>
+<% else %>
+  <%= button_to t("habits.hide_from_journey"),
+        habit_path(habit),
+        method: :patch,
+        params: { habit: { hidden_from_dashboard: true } },
+        class: "lp-habits__btn is-quiet" %>
+<% end %>

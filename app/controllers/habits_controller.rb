@@ -45,7 +45,6 @@ class HabitsController < ApplicationController
     @habit.stat_type = "growth" if @habit.stat_type.blank?
     clear_targets_unless_configured!
     apply_inferred_quantity_checkin_if_missing!
-    return_to = params[:return_to].to_s
 
     if @habit.save
       if mountain_create?
@@ -65,8 +64,6 @@ class HabitsController < ApplicationController
           format.turbo_stream { render_commitment_gap_stream }
           format.html { redirect_to dashboard_path, notice: "Added. Start logging today — small steps count." }
         end
-      elsif return_to == "journey"
-        redirect_to life_points_path, notice: t("progress.stats.created")
       else
         redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
       end
@@ -78,8 +75,6 @@ class HabitsController < ApplicationController
         end
         format.html { redirect_to mountain_after_create_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other }
       end
-    elsif return_to == "journey"
-      redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
     elsif params[:source].to_s == "commitment_gap"
       refresh_commitment_gap_context!(open_reveal: "habit")
       respond_to do |format|
@@ -109,14 +104,6 @@ class HabitsController < ApplicationController
           format.turbo_stream { render :quick_add }
           format.html { redirect_to dashboard_path }
         end
-      elsif return_to == "journey"
-        notice =
-          if @habit.saved_change_to_hidden_from_dashboard? && @habit.hidden_from_dashboard?
-            t("progress.stats.hidden")
-          else
-            "Saved."
-          end
-        redirect_to life_points_path, notice: notice
       elsif return_to == "show"
         redirect_to habit_path(@habit), notice: "Saved."
       else
@@ -128,8 +115,6 @@ class HabitsController < ApplicationController
         format.turbo_stream { render :quick_add, status: :unprocessable_entity }
         format.html { redirect_to dashboard_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other }
       end
-    elsif return_to == "journey"
-      redirect_to life_points_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other
     elsif return_to == "show"
       @sparkline = @habit.sparkline_amounts(days: 14)
       @improvement_projects = @habit.improvement_projects.for_kind("project").ordered.includes(:life_journey)

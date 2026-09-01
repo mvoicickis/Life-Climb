@@ -206,128 +206,15 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-journey-habits__day", count: 14
     assert_select ".lp-journey-habits__amount", text: "45"
     assert_select ".lp-journey-habits__unit", text: "€"
-    assert_select ".lp-journey-stats__card", text: /Unlinked walk/i
   end
 
-  test "your stats section absent without areas or unfiled trackers" do
-    @user.habits.destroy_all
-    @user.areas.destroy_all
+  test "journey stats section is not rendered" do
+    enable_habits!
+    @user.areas.create!(name: "Health", position: 1)
 
     get life_points_path
     assert_response :success
     assert_select ".lp-journey-stats", count: 0
-    assert_match(/Achievements/i, response.body)
-  end
-
-  test "your stats shows area tracker with labeled chart and state chip" do
-    enable_habits!
-    @user.habits.destroy_all
-    area = @user.areas.create!(name: "Health", position: 1)
-    habit = @user.habits.create!(
-      name: "Steps",
-      points: 5,
-      frequency: "daily",
-      active: true,
-      unit: "steps",
-      show_on_home: true,
-      position: 1,
-      stat_type: "growth",
-      area: area,
-      state: "good",
-      state_label_good: "Moving"
-    )
-    @user.daily_logs.create!(habit: habit, logged_on: Date.current, amount: 4000)
-
-    get life_points_path
-    assert_response :success
-    assert_match(/Your climb trends|Achievements/i, response.body)
-    assert_select ".lp-journey-stats"
-    assert_match(/Your stats/i, response.body)
-    assert_match(/Health/i, response.body)
-    assert_match(/Steps/i, response.body)
-    assert_match(/Moving/i, response.body)
-    assert_select ".lp-areas__state.is-good", text: /Moving/
-    assert_select ".lp-journey-stats__list"
-    assert_select ".lp-journey-stats__chart canvas[data-journey-stats-target='chart'][data-habit-id='#{habit.id}']"
-    assert_select "[data-controller='journey-stats'][data-journey-stats-series-value]"
-    assert_match(/#{Regexp.escape(I18n.l(Date.current, format: "%b %-d"))}/, response.body)
-    assert_select ".lp-journey-stats svg.lp-tracker-spark", count: 0
-    assert_select ".lp-journey-stats__spark", count: 0
-  end
-
-  test "hide removes tracker from journey stats but keeps habit" do
-    enable_habits!
-    @user.habits.destroy_all
-    area = @user.areas.create!(name: "Finance", position: 1)
-    habit = @user.habits.create!(
-      name: "Savings",
-      points: 5,
-      frequency: "daily",
-      active: true,
-      unit: "€",
-      show_on_home: true,
-      position: 1,
-      stat_type: "growth",
-      area: area
-    )
-
-    patch habit_path(habit), params: {
-      return_to: "journey",
-      habit: { hidden_from_dashboard: true }
-    }
-    assert_redirected_to life_points_path
-    assert habit.reload.hidden_from_dashboard?
-
-    get life_points_path
-    assert_response :success
-    assert_select ".lp-journey-stats"
-    assert_select ".lp-journey-stats__card", text: /Savings/, count: 0
-    assert Habit.exists?(habit.id)
-  end
-
-  test "create tracker from journey dialog returns to progress" do
-    enable_habits!
-    area = @user.areas.create!(name: "Home", position: 1)
-
-    assert_difference -> { @user.habits.count }, 1 do
-      post habits_path, params: {
-        return_to: "journey",
-        habit: {
-          name: "Morning pages",
-          unit: "pages",
-          area_id: area.id,
-          points: 5,
-          frequency: "daily",
-          active: true,
-          show_on_home: true,
-          stat_type: "growth"
-        }
-      }
-    end
-    assert_redirected_to life_points_path
-
-    get life_points_path
-    assert_response :success
-    assert_match(/Morning pages/i, response.body)
-    assert_select ".lp-journey-stats__card", text: /Morning pages/
-  end
-
-  test "area move up and down changes order on progress" do
-    enable_habits!
-    first = @user.areas.create!(name: "Alpha", position: 1)
-    second = @user.areas.create!(name: "Beta", position: 2)
-
-    patch move_area_path(second), params: { direction: "up", return_to: "journey" }
-    assert_redirected_to life_points_path
-    assert_equal [ "Beta", "Alpha" ], @user.areas.ordered.pluck(:name)
-
-    get life_points_path
-    assert_response :success
-    body = response.body
-    assert body.index(">Beta<") < body.index(">Alpha<")
-
-    patch move_area_path(second), params: { direction: "down", return_to: "journey" }
-    assert_redirected_to life_points_path
-    assert_equal [ "Alpha", "Beta" ], @user.areas.ordered.pluck(:name)
+    assert_no_match(/Your stats/i, response.body)
   end
 end
