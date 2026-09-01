@@ -10975,6 +10975,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   .lp-progress__grid--charts {
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
   }
+
+  .lp-progress__grid--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .lp-progress-chart {

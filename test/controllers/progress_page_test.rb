@@ -26,8 +26,8 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Stats/i, response.body)
     assert_select ".lp-progress__subtitle", text: /moving/i
-    assert_match(/AP/i, response.body)
-    assert_match(/PP/i, response.body)
+    assert_match(/Battle strength/i, response.body)
+    assert_match(/Planning power/i, response.body)
     assert_match(/See weekly activity/i, response.body)
     assert_match(/Activity/i, response.body)
     assert_match(/7 Days/i, response.body)
