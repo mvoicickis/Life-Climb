@@ -195,6 +195,38 @@ class Progress::JourneyTrendsTest < ActiveSupport::TestCase
     assert_nil pages[:days][0][:amount]
   end
 
+  test "habits this week omits hidden_from_dashboard habits" do
+    visible = @user.habits.create!(
+      name: "Visible walk",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      unit: "steps",
+      show_on_home: true,
+      position: 1,
+      stat_type: "growth",
+      life_journey: @journey
+    )
+    hidden = @user.habits.create!(
+      name: "Hidden walk",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      unit: "steps",
+      show_on_home: true,
+      position: 2,
+      stat_type: "growth",
+      life_journey: @journey,
+      hidden_from_dashboard: true
+    )
+
+    data = Progress::JourneyTrends.call(user: @user, journey: @journey)
+
+    names = data[:habits].map { |h| h[:name] }
+    assert_includes names, visible.name
+    assert_not_includes names, hidden.name
+  end
+
   private
 
   def create_day!(title)
