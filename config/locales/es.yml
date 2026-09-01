@@ -165,8 +165,12 @@ es:
       what_gets_me_there: "What gets me there"
       add_project: "Add a project"
       empty_projects_invite: "Add a project to this path."
-      project_battles_won: "%{count} battles won"
-      project_battles_planned: "%{count} battles planned"
+      project_battles_won:
+        one: "%{count} battle won"  # TODO: translate
+        other: "%{count} battles won"  # TODO: translate
+      project_battles_planned:
+        one: "%{count} battle planned"  # TODO: translate
+        other: "%{count} battles planned"  # TODO: translate
       objectives_menu: "Objectives"
       project_trackers:
         title: "Trackers"

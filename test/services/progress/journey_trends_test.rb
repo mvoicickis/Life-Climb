@@ -154,10 +154,40 @@ class Progress::JourneyTrendsTest < ActiveSupport::TestCase
     camp = data[:camps].find { |c| c[:project_id] == project.id }
 
     assert_equal "battles", camp[:kind]
-    assert_match(/2 battles won/i, camp[:stat_label])
+    assert_equal I18n.t("strategy.rpg.project_battles_won", count: 2), camp[:stat_label]
     assert_nil camp[:target_line]
     assert_equal 2.0, camp[:series][:weekly].last[:value]
     assert_equal 1.0, camp[:series][:weekly][-2][:value]
+  end
+
+  test "binary camp stat label uses singular copy for one win" do
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Ship portfolio", position: 1
+    )
+    day = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Draft case study", scheduled_on: Date.current, position: 0
+    )
+
+    create_completed_todo!(day, completed_at: Time.current)
+
+    data = Progress::JourneyTrends.call(user: @user, journey: @journey)
+    camp = data[:camps].find { |c| c[:project_id] == project.id }
+
+    assert_equal I18n.t("strategy.rpg.project_battles_won", count: 1), camp[:stat_label]
+  end
+
+  test "quantified camp stat label keeps amount slash target format" do
+    pages = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Read the book", position: 2, target_amount: 100, unit: "pages", current_amount: 1
+    )
+
+    data = Progress::JourneyTrends.call(user: @user, journey: @journey)
+    camp = data[:camps].find { |c| c[:project_id] == pages.id }
+
+    assert_equal "1 / 100 pages", camp[:stat_label]
   end
 
   test "habits this week only include linked active habits" do
