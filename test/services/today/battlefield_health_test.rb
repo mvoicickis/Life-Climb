@@ -24,6 +24,34 @@ class Today::BattlefieldHealthTest < ActiveSupport::TestCase
     assert_equal "Nothing left today.", result.risk_note
   end
 
+  test "battles clear with incomplete basics shows basics note" do
+    habits = [
+      Struct.new(:survived_today?).new(true),
+      Struct.new(:survived_today?).new(false)
+    ]
+    result = Today::BattlefieldHealth.call(open_count: 0, total_count: 2, habits: habits)
+
+    assert result.all_clear?
+    assert_equal I18n.t("dash.battlefield.risk_basics_left", count: 1), result.risk_note
+  end
+
+  test "battles clear with multiple incomplete basics pluralizes note" do
+    habits = [
+      Struct.new(:survived_today?).new(false),
+      Struct.new(:survived_today?).new(false)
+    ]
+    result = Today::BattlefieldHealth.call(open_count: 0, total_count: 1, habits: habits)
+
+    assert_equal I18n.t("dash.battlefield.risk_basics_left", count: 2), result.risk_note
+  end
+
+  test "battles clear with all basics survived shows cleared note" do
+    habits = [ Struct.new(:survived_today?).new(true) ]
+    result = Today::BattlefieldHealth.call(open_count: 0, total_count: 1, habits: habits)
+
+    assert_equal "Nothing left today.", result.risk_note
+  end
+
   test "open battles use forward-looking note without warning icon" do
     result = Today::BattlefieldHealth.call(open_count: 1, total_count: 1)
     assert_equal 0, result.hp

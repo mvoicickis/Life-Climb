@@ -15,7 +15,8 @@ module Today
       assign_today_battle_surface!(reconcile: false)
       @battlefield_health = Today::BattlefieldHealth.call(
         open_count: @battle_open_count,
-        total_count: @battle_total_count
+        total_count: @battle_total_count,
+        habits: @habits
       )
       habits_gate = GameRules.habits_enabled?
       ready = Today::EndOfDay.ready?(

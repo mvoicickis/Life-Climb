@@ -68,6 +68,9 @@ en:
       day_n: "Day %{count}"
       risk_cleared: "Nothing left today."
       # TODO: translate for lv/de/es/ru
+      risk_basics_left:
+        one: "One Basic left today."
+        other: "%{count} Basics left today."
       risk_empty: "No battles on Today's list yet."
       risk_open:
         one: "1 battle waiting"
