@@ -106,25 +106,6 @@
 <% end %>
 
 <% if battlefield_ui %>
-  <div id="today-push-offer-host"
-       class="lp-push-offer-host"
-       hidden
-       data-controller="push-offer"
-       data-push-offer-dismiss-url-value="<%= push_offer_path %>"
-       data-push-offer-denied-url-value="<%= push_offer_path %>"
-       data-push-offer-vapid-url-value="<%= push_config_path(format: :json) %>"
-       data-push-offer-subscribe-url-value="<%= push_subscription_path %>"
-       data-push-offer-settings-url-value="<%= settings_path(anchor: "you-reminders") %>"
-       data-push-offer-headline-value="<%= t('dash.push_offer.headline') %>"
-       data-push-offer-yes-label-value="<%= t('dash.push_offer.yes') %>"
-       data-push-offer-not-now-label-value="<%= t('dash.push_offer.not_now') %>"
-       data-push-offer-ios-headline-value="<%= t('dash.push_offer.ios_headline') %>"
-       data-push-offer-ios-body-value="<%= t('dash.push_offer.ios_body') %>"
-       data-push-offer-ios-install-label-value="<%= t('dash.push_offer.ios_install') %>"
-       data-push-offer-unsupported-message-value="<%= t('dash.push_offer.unsupported') %>"
-       data-push-offer-settings-link-label-value="<%= t('dash.push_offer.settings_link') %>">
-  </div>
-
   <div id="today-dash-nav">
     <%= render "shared/lp_dash_nav_today_v2",
           active: :today,

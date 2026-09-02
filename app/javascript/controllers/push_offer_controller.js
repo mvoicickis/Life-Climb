@@ -82,8 +82,6 @@ export default class extends Controller {
   }
 
   renderCard() {
-    if (this.hasCardTarget && !this.cardTarget.hidden) return
-
     const host = this.element
     host.hidden = false
     host.innerHTML = ""
