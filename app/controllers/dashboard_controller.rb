@@ -50,7 +50,8 @@ class DashboardController < ApplicationController
     @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
     @battlefield_health = Today::BattlefieldHealth.call(
       open_count: @battle_open_count,
-      total_count: @battle_total_count
+      total_count: @battle_total_count,
+      habits: @habits
     )
     assign_battlefield_prompt!
     assign_end_of_day!
