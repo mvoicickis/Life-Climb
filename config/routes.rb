@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   resource :life_area_selections, only: %i[ show update ], controller: "life_area_selections"
   resource :v2_onboarding, only: %i[ show update ], controller: "v2_onboardings"
   resource :onboarding_mountain_tour, only: :update, controller: "onboarding_mountain_tours"
+  resources :mountain_tour_events, only: :create
   resources :life_journeys, only: %i[ new create show update ] do
     resource :completion, only: :create, controller: "journey_completions"
     resources :journey_targets, only: %i[ create ]

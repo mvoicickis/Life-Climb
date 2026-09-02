@@ -67,6 +67,8 @@ class BattleWinsController < ApplicationController
     Journeys::SyncClimbFromToday.call(user: current_user) if journey
     Today::OvershootBonus.sync!(user: current_user)
 
+    Analytics::TrackFirstBattleWon.call(user: current_user)
+
     flash[:ap_gained] = awarded
     flash[:battle_celebrate] = true
     if awarded.positive? && (pb.new_record || streak.earned_freeze)

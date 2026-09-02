@@ -5,6 +5,7 @@ export default class extends Controller {
   static targets = ["overlay", "spotlight", "bubble", "step", "text", "actions"]
   static values = {
     url: String,
+    eventsUrl: String,
     steps: Array
   }
 
@@ -41,6 +42,8 @@ export default class extends Controller {
     const step = this.stepsValue[this.index]
     if (!step) return
 
+    this.trackStep("viewed", step.key)
+
     this.overlayTarget.hidden = false
     this.overlayTarget.classList.add("is-active")
     this.bubbleTarget.hidden = false
@@ -60,7 +63,10 @@ export default class extends Controller {
       btn.className = "lp-onboarding-tour__cta"
       btn.textContent = step.todayLabel
       btn.dataset.turbo = "false"
-      btn.addEventListener("click", () => this.persist())
+      btn.addEventListener("click", () => {
+        this.trackStep("completed", step.key)
+        this.persist()
+      })
       this.actionsTarget.appendChild(btn)
     } else {
       this.bubbleTarget.classList.remove("is-centered")
@@ -292,12 +298,18 @@ export default class extends Controller {
   }
 
   next() {
+    const step = this.stepsValue[this.index]
+    if (step?.key) this.trackStep("completed", step.key)
+
     this.index += 1
     this.bubbleTarget.classList.remove("is-visible")
     requestAnimationFrame(() => this.show())
   }
 
   dismiss() {
+    const step = this.stepsValue[this.index]
+    if (step?.key) this.trackStep("completed", step.key)
+
     this.persist()
     this.hide()
   }
@@ -319,5 +331,24 @@ export default class extends Controller {
     } catch (_e) {
       // Tour is non-blocking; user can still climb.
     }
+  }
+
+  trackStep(event, key) {
+    const url = this.eventsUrlValue
+    if (!url || !key) return
+
+    const token = document.querySelector("meta[name='csrf-token']")?.content
+    const body = new URLSearchParams()
+    body.set("authenticity_token", token || "")
+    body.set("event", event)
+    body.set("step", key)
+
+    fetch(url, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body
+    }).catch(() => {
+      // Analytics is non-blocking.
+    })
   }
 }

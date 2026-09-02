@@ -24,4 +24,26 @@ class Admin::OnboardingStepFunnelTest < ActiveSupport::TestCase
     assert_equal 1, goal.completed
     assert_equal 1, goal.drop_off_from_previous
   end
+
+  test "counts distinct users per step from mountain tour events" do
+    user = users(:two)
+    other = users(:one)
+
+    Analytics::Track.call(user: user, name: "mountain_tour_step_viewed", properties: { step: "goal" })
+    Analytics::Track.call(user: user, name: "mountain_tour_step_completed", properties: { step: "goal" })
+    Analytics::Track.call(user: user, name: "mountain_tour_step_viewed", properties: { step: "camp" })
+    Analytics::Track.call(user: other, name: "mountain_tour_step_viewed", properties: { step: "goal" })
+    Analytics::Track.call(user: other, name: "mountain_tour_step_completed", properties: { step: "goal" })
+    Analytics::Track.call(user: other, name: "mountain_tour_step_completed", properties: { step: "camp" })
+
+    rows = Admin::OnboardingStepFunnel.call(Admin::OnboardingStepFunnel::MOUNTAIN_TOUR)[:rows]
+    goal = rows.find { |row| row.key == "goal" }
+    camp = rows.find { |row| row.key == "camp" }
+
+    assert_equal 2, goal.viewed
+    assert_equal 2, goal.completed
+    assert_equal 1, camp.viewed
+    assert_equal 1, camp.completed
+    assert_equal 1, camp.drop_off_from_previous
+  end
 end
