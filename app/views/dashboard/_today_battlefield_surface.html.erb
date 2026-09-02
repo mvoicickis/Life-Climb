@@ -13,6 +13,7 @@
         journey: @journey,
         include_mission: @include_mission_in_battle,
         mission: @mission %>
+  <%= render "dashboard/push_offer_host" %>
   <% if habits_enabled? %>
     <div id="today-anytime-host">
       <%= render "dashboard/dash_anytime", habits: @habits %>
