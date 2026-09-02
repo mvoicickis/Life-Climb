@@ -71,7 +71,7 @@ export default class extends Controller {
     if (!this.portalValue) return
 
     for (const target of ["scrim", "sheet"]) {
-      if (!this.hasTarget(target)) continue
+      if (!this.hasNamedTarget(target)) continue
 
       const element = this[`${target}Target`]
       if (!element._portalHome) {
@@ -85,7 +85,7 @@ export default class extends Controller {
     if (!this.portalValue) return
 
     for (const target of ["sheet", "scrim"]) {
-      if (!this.hasTarget(target)) continue
+      if (!this.hasNamedTarget(target)) continue
 
       const element = this[`${target}Target`]
       const home = element._portalHome
@@ -93,5 +93,10 @@ export default class extends Controller {
 
       home.parent.insertBefore(element, home.next)
     }
+  }
+
+  hasNamedTarget(name) {
+    const method = `has${name.charAt(0).toUpperCase()}${name.slice(1)}Target`
+    return typeof this[method] === "function" && this[method]()
   }
 }
