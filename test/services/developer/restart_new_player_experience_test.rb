@@ -125,6 +125,39 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_equal 0, user.completions.count
   end
 
+  test "clears push, install-offer, and mountain trail tour state" do
+    user = users(:one)
+    user.update_columns(developer: true)
+    user.update!(
+      push_offer_dismiss_count: 2,
+      push_offer_dismissed_at: 1.day.ago,
+      push_offer_permission_denied_at: 1.day.ago,
+      install_offer_dismiss_count: 1,
+      install_offer_dismissed_at: 2.days.ago,
+      install_offer_installed_at: 3.days.ago,
+      mountain_trail_tour_ack: 7
+    )
+    PushSubscription.create!(
+      user: user,
+      endpoint: "https://push.example.com/dev-restart",
+      p256dh: "p256dh",
+      auth: "auth"
+    )
+
+    Developer::RestartNewPlayerExperience.call(user:)
+
+    user.reload
+    assert_equal 0, user.push_subscriptions.count
+    assert_equal 0, user.push_offer_dismiss_count
+    assert_nil user.push_offer_dismissed_at
+    assert_nil user.push_offer_permission_denied_at
+    assert user.push_offer_eligible?(win_number: 1)
+    assert_equal 0, user.install_offer_dismiss_count
+    assert_nil user.install_offer_dismissed_at
+    assert_nil user.install_offer_installed_at
+    assert_equal 0, user.mountain_trail_tour_ack
+  end
+
   test "succeeds when a quantity log still points at a daily todo" do
     user = users(:one)
     user.update_columns(developer: true)

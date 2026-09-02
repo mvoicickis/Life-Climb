@@ -2,9 +2,9 @@
 
 module Developer
   # Full New Player Experience restart for the developer account.
-  # Wipes Strategy / journey data and habits (plus their logs/check-offs)
-  # and clears the companion so the climber re-picks on the next run.
-  # Never deletes the User account or Action Points.
+  # Wipes Strategy / journey data and habits (plus their logs/check-offs),
+  # clears push / install-offer / tour state, and clears the companion so the
+  # climber re-picks on the next run. Never deletes the User account or Action Points.
   class RestartNewPlayerExperience
     def self.call(user:)
       new(user:).call
@@ -27,6 +27,7 @@ module Developer
         # Cascades daily_logs + completions via Habit dependent: :destroy.
         @user.habits.destroy_all
         @user.day_overshoot_bonuses.for_day(Date.current).delete_all
+        @user.push_subscriptions.delete_all
 
         shown = Array(@user.support_milestones_shown).map(&:to_s)
         shown.delete(User::ADVENTURE_GUIDE_KEY)
@@ -44,7 +45,14 @@ module Developer
           climb_streak_frozen_on: nil,
           day_shields_available: 1,
           day_shield_on: nil,
-          support_milestones_shown: shown
+          support_milestones_shown: shown,
+          push_offer_dismiss_count: 0,
+          push_offer_dismissed_at: nil,
+          push_offer_permission_denied_at: nil,
+          install_offer_dismiss_count: 0,
+          install_offer_dismissed_at: nil,
+          install_offer_installed_at: nil,
+          mountain_trail_tour_ack: 0
         )
       end
 
