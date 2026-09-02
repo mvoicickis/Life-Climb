@@ -48,6 +48,20 @@ class DashboardDeveloperHabitsTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-anytime .lp-dash-tcard__title", text: "Push-Ups"
   end
 
+  test "binary habit shows Every day subtitle instead of bare unit" do
+    @user.update_columns(developer: true)
+    binary = @user.habits.create!(
+      name: "Meditate", unit: "times", points: 5, frequency: "daily",
+      active: true, show_on_home: true, quantity_checkin: false
+    )
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#today_habit_#{binary.id} .lp-dash-tcard__meta", text: "Every day"
+    assert_select "#today_habit_#{binary.id} .lp-dash-tcard__meta", text: /times/, count: 0
+  end
+
   test "developer basics header counts survived habits not stretch goal completion only" do
     @user.update_columns(developer: true)
     @habit.update!(goal: nil, name: "Steps", unit: "steps")

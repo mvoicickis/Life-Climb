@@ -66,7 +66,7 @@ en:
     battlefield:
       progress_label: "Battles done"
       day_n: "Day %{count}"
-      risk_cleared: "All threats cleared."
+      risk_cleared: "Nothing left today."
       # TODO: translate for lv/de/es/ru
       risk_empty: "No battles on Today's list yet."
       risk_open:
@@ -74,7 +74,7 @@ en:
         other: "%{count} battles waiting"
       title: "⚔ Today's battlefield"
       count: "%{done}/%{total}"
-      empty_html: "No open threats today.<br>Head to Mountain to open a camp and add a battle."
+      empty_html: "No battles on Today's list yet.<br>Head to Mountain to open a camp and add a battle."
       mountain_need: "Need another battle? Open Mountain"
       mountain_all_clear: "All clear — open Mountain for your next battle"
       mountain_tertiary: "Open Mountain →"
@@ -222,6 +222,7 @@ en:
       title: "Basics"
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
+      binary_subtitle: "Every day"
       empty: "No Basics on Today yet — add one in Base Camp."
       add: "Add"
       add_placeholder: "Add"

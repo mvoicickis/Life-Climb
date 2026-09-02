@@ -21,6 +21,7 @@ class Today::BattlefieldHealthTest < ActiveSupport::TestCase
     assert result.all_clear?
     assert result.neutral?
     assert_equal "✓", result.risk_icon
+    assert_equal "Nothing left today.", result.risk_note
   end
 
   test "open battles use forward-looking note without warning icon" do
