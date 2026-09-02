@@ -7,11 +7,16 @@ export default class extends Controller {
     closer: Number,
     celebrate: Boolean,
     apGained: Number,
-    boss: Boolean
+    boss: Boolean,
+    winNumber: Number,
+    pushOfferEligible: Boolean
   }
 
   connect() {
-    this._streamCelebrateHandler = (event) => this.celebrateFromStream(event.detail || {})
+    this._streamCelebrateHandler = (event) => {
+      if (event.detail?.source === this) return
+      this.triggerWin(event.detail || {}, { dispatch: false })
+    }
     document.addEventListener("battle-day:celebrate", this._streamCelebrateHandler)
 
     // Click-time juicy_feedback already celebrated battle Win — skip reload juice.
@@ -24,7 +29,13 @@ export default class extends Controller {
     }
 
     if (!suppress && (this.celebrateValue || this.apGainedValue > 0)) {
-      window.requestAnimationFrame(() => this.celebrate())
+      this.triggerWin({
+        celebrate: this.celebrateValue,
+        apGained: this.apGainedValue,
+        boss: this.bossValue,
+        winNumber: this.winNumberValue,
+        pushOfferEligible: this.pushOfferEligibleValue
+      })
     }
   }
 
@@ -32,12 +43,39 @@ export default class extends Controller {
     document.removeEventListener("battle-day:celebrate", this._streamCelebrateHandler)
   }
 
-  celebrateFromStream({ celebrate = false, apGained = 0, boss = false } = {}) {
+  triggerWin(
+    {
+      celebrate = false,
+      apGained = 0,
+      boss = false,
+      winNumber = 0,
+      pushOfferEligible = false
+    } = {},
+    { dispatch = true } = {}
+  ) {
     if (!celebrate && !(Number(apGained) > 0)) return
 
     this.celebrateValue = Boolean(celebrate)
     this.apGainedValue = Number(apGained) || 0
     this.bossValue = Boolean(boss)
+    this.winNumberValue = Number(winNumber) || 0
+    this.pushOfferEligibleValue = Boolean(pushOfferEligible)
+
+    if (dispatch) {
+      document.dispatchEvent(
+        new CustomEvent("battle-day:celebrate", {
+          detail: {
+            source: this,
+            celebrate: this.celebrateValue,
+            apGained: this.apGainedValue,
+            boss: this.bossValue,
+            winNumber: this.winNumberValue,
+            pushOfferEligible: this.pushOfferEligibleValue
+          }
+        })
+      )
+    }
+
     window.requestAnimationFrame(() => this.celebrate())
   }
 

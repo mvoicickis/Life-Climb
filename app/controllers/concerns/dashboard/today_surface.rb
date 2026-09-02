@@ -14,6 +14,8 @@ module Dashboard
     def assign_today_battle_surface!(reconcile: true)
       sync_today_battles! unless read_only_impersonation?
 
+      current_user.association(:daily_todos).reset
+
       @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                  @journey.missions.for_day(Date.current).primary.order(:id).first
       @daily_todos = current_user.daily_todos
