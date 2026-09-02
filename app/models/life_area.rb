@@ -75,8 +75,10 @@ class LifeArea < ApplicationRecord
   belongs_to :user
   belongs_to :dream, optional: true
   has_many :goals, dependent: :nullify
-  has_many :life_journeys, dependent: :restrict_with_error
+  has_many :life_journeys
   has_many :strategy_goals, dependent: :destroy
+
+  before_destroy :guard_or_cascade_life_journeys
 
   validates :key, presence: true
   validate :key_must_be_known
@@ -206,6 +208,20 @@ class LifeArea < ApplicationRecord
   end
 
   private
+
+  # Block direct deletes while journeys exist; cascade when destroyed via User.
+  def guard_or_cascade_life_journeys
+    if destroyed_by_association
+      life_journeys.find_each(&:destroy!)
+      return
+    end
+
+    return unless life_journeys.exists?
+
+    record = self.class.human_attribute_name(:life_journeys).downcase
+    errors.add(:base, :'restrict_dependent_destroy.has_many', record: record)
+    throw :abort
+  end
 
   def key_must_be_known
     return if key.blank?
