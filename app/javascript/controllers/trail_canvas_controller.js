@@ -72,6 +72,7 @@ export default class extends Controller {
     this.bindFab()
     this.bindScrollParallax()
     this.bindPeakPin()
+    this.bindSparseTrail()
     this.syncAccentFromSwatch()
   }
 
@@ -81,6 +82,7 @@ export default class extends Controller {
     this.unbindFab()
     this.unbindScrollParallax()
     this.unbindPeakPin()
+    this.unbindSparseTrail()
   }
 
   bindFab() {
@@ -1155,6 +1157,60 @@ export default class extends Controller {
       this._peakPinObserver.disconnect()
       this._peakPinObserver = null
     }
+  }
+
+  bindSparseTrail() {
+    this.fitSparseTrail()
+    if (typeof ResizeObserver === "undefined") return
+
+    if (this.hasScrollTarget) {
+      this._sparseResizeObserver = new ResizeObserver(() => this.fitSparseTrail())
+      this._sparseResizeObserver.observe(this.scrollTarget)
+    }
+
+    if (this.hasCampsTarget) {
+      this._sparseCampObserver = new MutationObserver(() => this.fitSparseTrail())
+      this._sparseCampObserver.observe(this.campsTarget, { childList: true })
+    }
+  }
+
+  unbindSparseTrail() {
+    if (this._sparseResizeObserver) {
+      this._sparseResizeObserver.disconnect()
+      this._sparseResizeObserver = null
+    }
+    if (this._sparseCampObserver) {
+      this._sparseCampObserver.disconnect()
+      this._sparseCampObserver = null
+    }
+  }
+
+  sparseTrail() {
+    const count = this.hasCampsTarget
+      ? this.campsTarget.querySelectorAll(".lp-trail-camp").length
+      : 0
+    return count <= 2
+  }
+
+  syncSparseTrailClass() {
+    const sparse = this.sparseTrail()
+    this.element.classList.toggle("is-sparse-trail", sparse)
+    return sparse
+  }
+
+  fitSparseTrail() {
+    const sparse = this.syncSparseTrailClass()
+    if (!sparse) {
+      this.element.style.removeProperty("--lp-trail-photo-h")
+      return
+    }
+
+    const scroll = this.hasScrollTarget ? this.scrollTarget : null
+    const height = scroll?.clientHeight || 0
+    if (height < 1) return
+
+    this.element.style.setProperty("--lp-trail-photo-h", `${height}px`)
+    this.syncPeakPin()
   }
 
   syncPeakPin() {

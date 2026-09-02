@@ -1222,6 +1222,18 @@
   background: #1a2a1c;
 }
 
+.lp-trail.is-v4.is-sparse-trail .lp-trail__mountain {
+  height: var(--lp-trail-photo-h);
+}
+
+.lp-trail.is-v4.is-sparse-trail .lp-trail__surface {
+  min-height: var(--lp-trail-photo-h);
+}
+
+.lp-trail.is-v4.is-sparse-trail .lp-trail__scroll {
+  overscroll-behavior-y: contain;
+}
+
 .lp-trail.is-v4 .lp-trail__scroll {
   position: absolute;
   inset: 0;
