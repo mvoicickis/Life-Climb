@@ -27,6 +27,11 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log("[lp-push-offer-debug] push-offer#connect", {
+      hostHidden: this.element.hidden,
+      hasDismissUrl: Boolean(this.dismissUrlValue),
+      hasSubscribeUrl: Boolean(this.subscribeUrlValue)
+    })
     ensureCapture()
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
@@ -36,17 +41,43 @@ export default class extends Controller {
     document.removeEventListener("battle-day:celebrate", this._celebrateHandler)
   }
 
-  onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false } = {}) {
-    if (!pushOfferEligible) return
-    if (!celebrate && !(Number(apGained) > 0)) return
+  onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false, winNumber = 0 } = {}) {
+    const detail = {
+      celebrate: Boolean(celebrate),
+      apGained: Number(apGained) || 0,
+      pushOfferEligible: Boolean(pushOfferEligible),
+      winNumber: Number(winNumber) || 0
+    }
+    console.log("[lp-push-offer-debug] push-offer#onCelebrate", detail)
 
+    if (!detail.pushOfferEligible) {
+      console.log("[lp-push-offer-debug] push-offer#onCelebrate skip: pushOfferEligible is false")
+      return
+    }
+    if (!detail.celebrate && !(detail.apGained > 0)) {
+      console.log("[lp-push-offer-debug] push-offer#onCelebrate skip: no celebrate and no AP")
+      return
+    }
+
+    console.log("[lp-push-offer-debug] push-offer#onCelebrate scheduling prepareOffer in 1400ms")
     window.setTimeout(() => this.prepareOffer(), 1400)
   }
 
   async prepareOffer() {
+    console.log("[lp-push-offer-debug] push-offer#prepareOffer start")
     const state = await getPushSubscriptionState()
-    if (state.subscribed || state.permission === "denied") return
+    console.log("[lp-push-offer-debug] push-offer#prepareOffer subscription state", state)
 
+    if (state.subscribed) {
+      console.log("[lp-push-offer-debug] push-offer#prepareOffer skip: already subscribed in browser")
+      return
+    }
+    if (state.permission === "denied") {
+      console.log("[lp-push-offer-debug] push-offer#prepareOffer skip: Notification.permission denied")
+      return
+    }
+
+    console.log("[lp-push-offer-debug] push-offer#prepareOffer rendering card")
     this.renderCard()
   }
 

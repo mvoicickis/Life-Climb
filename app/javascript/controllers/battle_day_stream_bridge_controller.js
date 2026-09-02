@@ -20,11 +20,24 @@ export default class extends Controller {
       winNumber: this.winNumberValue,
       pushOfferEligible: this.pushOfferEligibleValue
     }
+    console.log("[lp-push-offer-debug] battle-day-stream-bridge#connect", {
+      detail,
+      hasTodayDashRoot: !!root,
+      rawValues: {
+        celebrate: this.celebrateValue,
+        apGained: this.apGainedValue,
+        boss: this.bossValue,
+        winNumber: this.winNumberValue,
+        pushOfferEligible: this.pushOfferEligibleValue
+      }
+    })
 
     const battleDay = root && this.application.getControllerForElementAndIdentifier(root, "battle-day")
     if (battleDay) {
+      console.log("[lp-push-offer-debug] battle-day-stream-bridge calling battle-day#triggerWin")
       battleDay.triggerWin(detail)
     } else {
+      console.log("[lp-push-offer-debug] battle-day-stream-bridge fallback dispatch battle-day:celebrate", detail)
       document.dispatchEvent(new CustomEvent("battle-day:celebrate", { detail }))
     }
 

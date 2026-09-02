@@ -29,6 +29,14 @@ export default class extends Controller {
     }
 
     if (!suppress && (this.celebrateValue || this.apGainedValue > 0)) {
+      console.log("[lp-push-offer-debug] battle-day#connect page-load celebrate", {
+        celebrate: this.celebrateValue,
+        apGained: this.apGainedValue,
+        boss: this.bossValue,
+        winNumber: this.winNumberValue,
+        pushOfferEligible: this.pushOfferEligibleValue,
+        suppress
+      })
       this.triggerWin({
         celebrate: this.celebrateValue,
         apGained: this.apGainedValue,
@@ -53,27 +61,44 @@ export default class extends Controller {
     } = {},
     { dispatch = true } = {}
   ) {
-    if (!celebrate && !(Number(apGained) > 0)) return
+    const detail = {
+      celebrate: Boolean(celebrate),
+      apGained: Number(apGained) || 0,
+      boss: Boolean(boss),
+      winNumber: Number(winNumber) || 0,
+      pushOfferEligible: Boolean(pushOfferEligible),
+      dispatch
+    }
+    console.log("[lp-push-offer-debug] battle-day#triggerWin entry", detail)
 
-    this.celebrateValue = Boolean(celebrate)
-    this.apGainedValue = Number(apGained) || 0
-    this.bossValue = Boolean(boss)
-    this.winNumberValue = Number(winNumber) || 0
-    this.pushOfferEligibleValue = Boolean(pushOfferEligible)
+    if (!detail.celebrate && !(detail.apGained > 0)) {
+      console.log("[lp-push-offer-debug] battle-day#triggerWin early return (no celebrate and no AP)")
+      return
+    }
+
+    this.celebrateValue = detail.celebrate
+    this.apGainedValue = detail.apGained
+    this.bossValue = detail.boss
+    this.winNumberValue = detail.winNumber
+    this.pushOfferEligibleValue = detail.pushOfferEligible
 
     if (dispatch) {
+      const eventDetail = {
+        source: this,
+        celebrate: this.celebrateValue,
+        apGained: this.apGainedValue,
+        boss: this.bossValue,
+        winNumber: this.winNumberValue,
+        pushOfferEligible: this.pushOfferEligibleValue
+      }
+      console.log("[lp-push-offer-debug] battle-day#triggerWin dispatch battle-day:celebrate", eventDetail)
       document.dispatchEvent(
         new CustomEvent("battle-day:celebrate", {
-          detail: {
-            source: this,
-            celebrate: this.celebrateValue,
-            apGained: this.apGainedValue,
-            boss: this.bossValue,
-            winNumber: this.winNumberValue,
-            pushOfferEligible: this.pushOfferEligibleValue
-          }
+          detail: eventDetail
         })
       )
+    } else {
+      console.log("[lp-push-offer-debug] battle-day#triggerWin skip dispatch (stream replay)")
     }
 
     window.requestAnimationFrame(() => this.celebrate())
