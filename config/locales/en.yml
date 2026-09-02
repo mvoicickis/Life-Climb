@@ -253,7 +253,7 @@ en:
       dismissed: "Alright. I'll be in Settings if you change your mind."
     push_offer:
       headline: "Want a reminder tomorrow morning?"
-      yes: "Yes, remind me"
+      yes_label: "Yes, remind me"
       not_now: "Not now"
       ios_headline: "Add LifePoints to your home screen"
       ios_body: "Morning reminders need the app on your home screen on iPhone."
