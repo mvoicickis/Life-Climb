@@ -3,6 +3,7 @@ require "test_helper"
 class SecurityHardeningTest < ActionDispatch::IntegrationTest
   test "password must be at least 8 characters" do
     user = User.new(
+      name: "Secure",
       email_address: "secure@example.com",
       password: "short",
       password_confirmation: "short"
