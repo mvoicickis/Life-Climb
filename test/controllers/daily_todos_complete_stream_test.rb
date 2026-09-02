@@ -56,6 +56,7 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert_match "data-battle-day-stream-bridge-ap-gained-value=\"#{GameRules::BATTLE_TODO_LP}\"", response.body
     assert_match "data-battle-day-stream-bridge-win-number-value=\"#{@user.daily_todos.where.not(completed_at: nil).count}\"", response.body
     assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"true\"", response.body
+    assert_match %(turbo-stream action="append" target="today-dash-root"), response.body
     assert_no_match "data-battle-day-celebrate-value", response.body
   end
 
