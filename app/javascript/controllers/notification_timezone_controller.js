@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { detectedBrowserTimeZone } from "browser_timezone"
 
 // Auto-capture the browser IANA timezone into a hidden field and persist on visit.
 export default class extends Controller {
@@ -20,11 +21,7 @@ export default class extends Controller {
   }
 
   detectedZone() {
-    try {
-      return Intl.DateTimeFormat().resolvedOptions().timeZone || ""
-    } catch (_) {
-      return ""
-    }
+    return detectedBrowserTimeZone()
   }
 
   async persist(zone) {

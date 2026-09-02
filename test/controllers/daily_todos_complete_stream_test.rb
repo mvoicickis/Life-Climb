@@ -54,7 +54,18 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_match "data-battle-day-stream-bridge-celebrate-value=\"true\"", response.body
     assert_match "data-battle-day-stream-bridge-ap-gained-value=\"#{GameRules::BATTLE_TODO_LP}\"", response.body
+    assert_match "data-battle-day-stream-bridge-win-number-value=\"#{@user.daily_todos.where.not(completed_at: nil).count}\"", response.body
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"true\"", response.body
     assert_no_match "data-battle-day-celebrate-value", response.body
+  end
+
+  test "push offer bridge is false after permission denied" do
+    @user.update!(push_offer_permission_denied_at: Time.current)
+
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    assert_response :ok
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"false\"", response.body
   end
 
   test "turbo stream personal best milestone renders climb reward dialog in host" do

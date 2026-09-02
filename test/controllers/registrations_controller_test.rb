@@ -23,6 +23,41 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to v2_onboarding_path(step: "character")
   end
 
+  test "registration captures browser time zone into notification preference" do
+    assert_difference("User.count", 1) do
+      assert_difference("NotificationPreference.count", 1) do
+        post registration_url, params: {
+          time_zone: "Europe/Berlin",
+          user: {
+            name: "Berlin User",
+            email_address: "berlin-new@example.com",
+            password: "password12345",
+            password_confirmation: "password12345"
+          }
+        }
+      end
+    end
+
+    user = User.find_by!(email_address: "berlin-new@example.com")
+    assert_equal "Europe/Berlin", user.notification_preference.time_zone
+  end
+
+  test "registration ignores invalid time zone" do
+    assert_difference("User.count", 1) do
+      assert_no_difference("NotificationPreference.count") do
+        post registration_url, params: {
+          time_zone: "Not/AZone",
+          user: {
+            name: "No Zone",
+            email_address: "nozone@example.com",
+            password: "password12345",
+            password_confirmation: "password12345"
+          }
+        }
+      end
+    end
+  end
+
   test "registration without name fails" do
     assert_no_difference("User.count") do
       post registration_url, params: {

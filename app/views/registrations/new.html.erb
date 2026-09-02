@@ -6,7 +6,10 @@
   <h1 class="lp-auth-title"><%= t("auth.register_title") %></h1>
   <p class="lp-auth-sub"><%= t("auth.register_subtitle") %></p>
 
-  <%= form_with model: @user, url: registration_path, class: "space-y-4", data: { turbo: false } do |form| %>
+  <%= form_with model: @user, url: registration_path,
+        class: "space-y-4",
+        data: { controller: "browser-timezone", turbo: false } do |form| %>
+    <%= hidden_field_tag :time_zone, "", data: { browser_timezone_target: "field" } %>
     <% if @user.errors.any? %>
       <div class="rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 font-bold text-rose-900">
         <ul class="list-inside list-disc">

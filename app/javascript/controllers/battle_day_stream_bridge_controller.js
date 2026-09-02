@@ -6,7 +6,9 @@ export default class extends Controller {
     celebrate: Boolean,
     apGained: Number,
     boss: Boolean,
-    allClear: Boolean
+    allClear: Boolean,
+    winNumber: Number,
+    pushOfferEligible: Boolean
   }
 
   connect() {
@@ -15,7 +17,9 @@ export default class extends Controller {
         detail: {
           celebrate: this.celebrateValue,
           apGained: this.apGainedValue,
-          boss: this.bossValue
+          boss: this.bossValue,
+          winNumber: this.winNumberValue,
+          pushOfferEligible: this.pushOfferEligibleValue
         }
       })
     )

@@ -250,6 +250,15 @@ en:
       cta: "Add to home screen"
       dismiss: "Not now"
       dismissed: "Alright. I'll be in Settings if you change your mind."
+    push_offer:
+      headline: "Want a reminder tomorrow morning?"
+      yes: "Yes, remind me"
+      not_now: "Not now"
+      ios_headline: "Add LifePoints to your home screen"
+      ios_body: "Morning reminders need the app on your home screen on iPhone."
+      ios_install: "Add to home screen"
+      unsupported: "Reminders aren't supported in this browser. Try Settings on a phone."
+      settings_link: "Open Settings"
     commitment:
       tier_label: "Daily commitment"
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
