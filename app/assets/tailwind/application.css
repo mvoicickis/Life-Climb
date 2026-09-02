@@ -8684,6 +8684,7 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-adventure__form {
   display: grid;
   gap: 0.75rem;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .lp-adventure__examples-plain {
@@ -26050,6 +26051,10 @@ a.lp-rpg-camp-row {
   font-weight: 800;
   backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+/* No bottom tab bar — sit just above safe area (onboarding, settings, etc.). */
+body:not(:has(.lp-bottom-nav, .lp-dash-nav)) .lp-feedback-fab {
+  bottom: calc(1rem + env(safe-area-inset-bottom));
 }
 /* Mountain: keep FAB off the bottom tab bar. */
 body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
