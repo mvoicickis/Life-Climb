@@ -38,7 +38,15 @@ class PushOfferAfterWinTest < ApplicationSystemTestCase
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     dismiss_onboarding_missions!(@user)
+    @user.habits.create!(
+      name: "Meditate", unit: "times", points: 5, frequency: "daily",
+      active: true, show_on_home: true, stat_type: "growth"
+    )
     @todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+  end
+
+  def browser_console_errors
+    page.driver.browser.logs.get(:browser).select { |entry| entry.level == "SEVERE" }
   end
 
   def sign_in_and_visit_today!
@@ -61,5 +69,9 @@ class PushOfferAfterWinTest < ApplicationSystemTestCase
     assert_no_selector ".lp-today-v2-row[data-todo-id='#{@todo.id}']", wait: 10
     assert_selector ".lp-push-offer", wait: 5
     assert_selector ".lp-push-offer__headline", text: /reminder tomorrow morning/i
+
+    errors = browser_console_errors
+    assert errors.none? { |entry| entry.message.include?("hasTarget is not a function") },
+           "console errors: #{errors.map(&:message).join("\n")}"
   end
 end
