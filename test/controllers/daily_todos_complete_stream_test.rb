@@ -89,4 +89,12 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert_select "form.lp-today-v2-row__check-form[action=?][data-turbo-stream='true']",
                   complete_daily_todo_path(@todo)
   end
+
+  test "turbo stream eod recap matches cleared battlefield health" do
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    assert_response :ok
+    assert_match "You won 1 of 1 battles", response.body
+    assert_no_match "You won 0 of 1 battles", response.body
+  end
 end

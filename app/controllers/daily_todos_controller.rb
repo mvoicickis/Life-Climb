@@ -73,6 +73,9 @@ class DailyTodosController < ApplicationController
       @result = result
       flash[:ap_gained] = result.awarded
       flash[:battle_celebrate] = true
+      @win_number ||= current_user.daily_todos.where.not(completed_at: nil).count
+      flash[:win_number] = @win_number
+      flash[:push_offer_eligible] = current_user.push_offer_eligible?(win_number: @win_number)
       maybe_milestone_climb_reward!(
         awarded: result.awarded,
         streak: result.streak,
@@ -167,6 +170,8 @@ class DailyTodosController < ApplicationController
     flash.discard(:battle_celebrate)
     flash.discard(:climb_boss)
     flash.discard(:climb_reward)
+    flash.discard(:win_number)
+    flash.discard(:push_offer_eligible)
   end
 
   def todo_time_params

@@ -17,9 +17,11 @@
   class="lp-dash<%= ' is-today-v2' if battlefield_ui %><%= ' is-battle-won' if battlefield_ui && @battlefield_health&.all_clear? %>"
   data-controller="<%= ['battle-day', ('today-notch' if battlefield_ui)].compact.join(' ') %>"
   data-battle-day-closer-value="<%= @closer %>"
-  data-battle-day-celebrate-value="<%= @battle_celebrate %>"
+  data-battle-day-celebrate-value="<%= @battle_celebrate ? 'true' : 'false' %>"
   data-battle-day-ap-gained-value="<%= flash[:ap_gained].to_i %>"
-  data-battle-day-boss-value="<%= flash[:climb_boss].present? %>"
+  data-battle-day-boss-value="<%= flash[:climb_boss].present? ? 'true' : 'false' %>"
+  data-battle-day-win-number-value="<%= flash[:win_number].to_i %>"
+  data-battle-day-push-offer-eligible-value="<%= flash[:push_offer_eligible] ? 'true' : 'false' %>"
   <% if battlefield_ui %>
   data-today-notch-fight-toast-value="<%= t('dash.battlefield.fight_toast') %>"
   data-today-notch-share-toast-value="<%= t('dash.battlefield.share_toast') %>"
