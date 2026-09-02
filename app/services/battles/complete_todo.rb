@@ -62,6 +62,8 @@ module Battles
       )
       Today::OvershootBonus.sync!(user: @user)
 
+      Analytics::TrackFirstBattleWon.call(user: @user)
+
       Result.new(streak: streak, personal_best_new: pb.new_record, awarded: awarded)
     end
 

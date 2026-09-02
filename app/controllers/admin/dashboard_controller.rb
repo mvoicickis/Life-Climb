@@ -15,6 +15,7 @@ module Admin
       @funnel_filter = params[:filter].presence
       @funnel = Admin::UserFunnel.call(sort: @funnel_sort, filter: @funnel_filter)
       @onboarding_step_funnel = Admin::OnboardingStepFunnel.call
+      @mountain_tour_funnel = Admin::OnboardingStepFunnel.call(Admin::OnboardingStepFunnel::MOUNTAIN_TOUR)
       @cards = @cards.merge(returned_users: @funnel[:stage_counts][:returned_second_day])
     end
 

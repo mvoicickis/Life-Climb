@@ -1,6 +1,6 @@
-<section class="lp-admin__panel" aria-label="<%= t('admin.onboarding_steps.title') %>">
+<section class="lp-admin__panel" aria-label="<%= local_assigns.fetch(:title) { t('admin.onboarding_steps.title') } %>">
   <header class="lp-admin__panel-head">
-    <h2><%= t("admin.onboarding_steps.title") %></h2>
+    <h2><%= local_assigns.fetch(:title) { t("admin.onboarding_steps.title") } %></h2>
   </header>
 
   <div class="lp-admin__table-wrap">

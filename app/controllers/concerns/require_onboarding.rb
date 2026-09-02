@@ -73,6 +73,7 @@ module RequireOnboarding
       strategy_goal_restores
       mountain_trail_tours
       onboarding_mountain_tours
+      mountain_tour_events
       settings
       push_subscriptions
       push_configs

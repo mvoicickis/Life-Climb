@@ -3473,6 +3473,13 @@ en:
       camp: "Camp"
       battles: "Today's battle"
       basic: "Daily habit"
+    mountain_tour_steps:
+      title: "Mountain tour"
+      goal: "Goal"
+      camp: "Camp"
+      base_camp: "Base camp"
+      add_camp: "Add camp"
+      today: "Go to Today"
     charts:
       users: "Users per day"
       users_growth: "Growth over time"

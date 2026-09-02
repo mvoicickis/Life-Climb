@@ -19,6 +19,7 @@ class Battles::CompleteTodoTest < ActiveSupport::TestCase
     end
     assert @todo.reload.completed?
     assert_equal 1, positive_todo_ledgers.count
+    assert_equal 1, @user.user_events.named("first_battle_won").count
 
     assert_no_difference -> { @user.reload.life_points } do
       Battles::UncompleteTodo.call(todo: @todo, user: @user)
