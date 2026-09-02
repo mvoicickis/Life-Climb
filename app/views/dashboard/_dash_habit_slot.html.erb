@@ -35,7 +35,7 @@
             · <%= habit.range_summary %>
           <% end %>
         <% else %>
-          <%= habit.unit %>
+          <%= t("dash.anytime.binary_subtitle") %>
         <% end %>
         <% if show_pct %>
           · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && amount.to_d.zero? %>"><%= habit.binary_checkin? ? 100 : progress %>%</span>

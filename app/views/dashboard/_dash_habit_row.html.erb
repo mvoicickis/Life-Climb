@@ -28,7 +28,7 @@
       <% end %>
       <span class="lp-dash-battle__name"><%= habit.name %></span>
     </div>
-    <span class="lp-dash-habit__meta"><%= habit.unit %></span>
+    <span class="lp-dash-habit__meta"><%= t("dash.anytime.binary_subtitle") %></span>
   </li>
 <% else %>
   <li class="lp-dash-battle__item lp-dash-habit is-quantity has-color is-amber <%= 'is-done' if habit.met_habit_goal? %>"
