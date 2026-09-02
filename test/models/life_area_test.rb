@@ -26,4 +26,28 @@ class LifeAreaTest < ActiveSupport::TestCase
     assert_includes LifeArea::KEYS, area.key
     assert area.valid?
   end
+
+  test "cannot destroy area while journeys exist" do
+    user = users(:one)
+    area = user.life_areas.create!(
+      key: "purpose",
+      number: LifeArea.catalog_number("purpose"),
+      position: 0,
+      selected_at: Time.current,
+      dream_id: nil,
+      closer_score: 1,
+      meta: {}
+    )
+    user.life_journeys.create!(
+      life_area: area,
+      title: "Climb",
+      ideal_scene: "Summit",
+      current_reality: "Base camp",
+      status: "active"
+    )
+
+    assert_not area.destroy
+    assert area.errors[:base].present?
+    assert LifeArea.exists?(area.id)
+  end
 end

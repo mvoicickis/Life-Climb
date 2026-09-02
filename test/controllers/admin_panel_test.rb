@@ -129,6 +129,28 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_users_path
   end
 
+  test "admin can delete user with life area and journey" do
+    Onboarding::Run.call(
+      user: @other,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "App in production",
+      current_reality: "Still building",
+      next_win: "Launch Beta",
+      today_mission: "Write one test",
+      closer_percent: 20
+    )
+    journey = @other.reload.primary_focused_journey
+    assert journey
+
+    sign_in_as @admin
+    assert_difference "User.count", -1 do
+      delete admin_user_path(@other)
+    end
+    assert_redirected_to admin_users_path
+    assert_not LifeJourney.exists?(journey.id)
+  end
+
   test "non admin cannot promote via direct url" do
     sign_in_as @user
     patch promote_admin_user_path(@other)
