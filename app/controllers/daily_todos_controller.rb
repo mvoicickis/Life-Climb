@@ -49,6 +49,7 @@ class DailyTodosController < ApplicationController
       end
 
       begin
+        @win_number = current_user.daily_todos.where.not(completed_at: nil).count + 1
         result = Battles::CompleteTodo.call(
           todo: todo,
           user: current_user,
@@ -149,11 +150,15 @@ class DailyTodosController < ApplicationController
       @stream_celebrate = false
       @stream_boss = false
       @stream_climb_reward = nil
+      @stream_win_number = 0
+      @stream_push_offer_eligible = false
     else
       @stream_ap_gained = @result.awarded.to_i
       @stream_celebrate = true
       @stream_boss = flash[:climb_boss].present?
       @stream_climb_reward = flash[:climb_reward]
+      @stream_win_number = @win_number.to_i
+      @stream_push_offer_eligible = current_user.push_offer_eligible?(win_number: @stream_win_number)
     end
   end
 

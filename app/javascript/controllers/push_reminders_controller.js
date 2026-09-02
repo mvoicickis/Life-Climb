@@ -1,4 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
+import {
+  disablePushSubscription,
+  enablePushSubscription,
+  getPushSubscriptionState
+} from "push_subscription"
 
 // Settings/You — enable Web Push reminders and send a manual test notification.
 export default class extends Controller {
@@ -19,41 +24,23 @@ export default class extends Controller {
     this.clearMessage()
 
     try {
-      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-        this.showMessage(this.element.dataset.unsupportedMessage || "Push is not supported on this browser.", true)
-        return
-      }
+      const result = await enablePushSubscription({
+        vapidUrl: this.vapidUrlValue,
+        subscribeUrl: this.subscribeUrlValue
+      })
 
-      const permission = await Notification.requestPermission()
-      if (permission !== "granted") {
+      if (!result.ok) {
         this.showMessage(this.element.dataset.deniedMessage || "Notifications were blocked.", true)
         return
       }
 
-      const registration = await navigator.serviceWorker.ready
-      const { publicKey } = await this.fetchJson(this.vapidUrlValue)
-      if (!publicKey) throw new Error("Missing VAPID public key")
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(publicKey)
-      })
-
-      const keys = subscription.toJSON().keys || {}
-      await this.fetchJson(this.subscribeUrlValue, {
-        method: "POST",
-        body: JSON.stringify({
-          subscription: {
-            endpoint: subscription.endpoint,
-            p256dh: keys.p256dh,
-            auth: keys.auth
-          }
-        })
-      })
-
       this.showMessage(this.element.dataset.enabledMessage || "Reminders enabled.", false)
       this.refreshState()
     } catch (error) {
+      if (error.message === "unsupported") {
+        this.showMessage(this.element.dataset.unsupportedMessage || "Push is not supported on this browser.", true)
+        return
+      }
       console.error(error)
       this.showMessage(this.element.dataset.errorMessage || "Could not enable reminders.", true)
     }
@@ -64,17 +51,7 @@ export default class extends Controller {
     this.clearMessage()
 
     try {
-      const registration = "serviceWorker" in navigator ? await navigator.serviceWorker.ready : null
-      const subscription = registration ? await registration.pushManager.getSubscription() : null
-      const endpoint = subscription?.endpoint
-
-      if (subscription) await subscription.unsubscribe()
-
-      const url = endpoint
-        ? `${this.unsubscribeUrlValue}?endpoint=${encodeURIComponent(endpoint)}`
-        : this.unsubscribeUrlValue
-
-      await this.fetchJson(url, { method: "DELETE" })
+      await disablePushSubscription({ unsubscribeUrl: this.unsubscribeUrlValue })
       this.showMessage(this.element.dataset.disabledMessage || "Reminders turned off.", false)
       this.refreshState()
     } catch (error) {
@@ -98,16 +75,7 @@ export default class extends Controller {
   }
 
   async refreshState() {
-    let subscribed = false
-    try {
-      if ("serviceWorker" in navigator && "PushManager" in window) {
-        const registration = await navigator.serviceWorker.ready
-        const subscription = await registration.pushManager.getSubscription()
-        subscribed = !!subscription && Notification.permission === "granted"
-      }
-    } catch (_) {
-      subscribed = false
-    }
+    const { subscribed } = await getPushSubscriptionState()
 
     if (this.hasStatusTarget) {
       this.statusTarget.textContent = subscribed
@@ -162,14 +130,5 @@ export default class extends Controller {
     if (!this.hasMessageTarget) return
     this.messageTarget.hidden = true
     this.messageTarget.textContent = ""
-  }
-
-  urlBase64ToUint8Array(base64String) {
-    const padding = "=".repeat((4 - (base64String.length % 4)) % 4)
-    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/")
-    const raw = atob(base64)
-    const output = new Uint8Array(raw.length)
-    for (let i = 0; i < raw.length; i++) output[i] = raw.charCodeAt(i)
-    return output
   }
 }

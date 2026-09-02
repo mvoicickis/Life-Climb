@@ -68,6 +68,7 @@ class User < ApplicationRecord
   ONBOARDING_MOUNTAIN_TOUR_KEY = "onboarding_mountain_tour".freeze
   DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
   INSTALL_OFFER_MAX_ASKS = 2
+  PUSH_OFFER_MAX_ASKS = 3
   INSTALL_OFFER_RESHOW_AFTER = 30.days
 
   def admin?
@@ -318,6 +319,29 @@ class User < ApplicationRecord
     return if install_offer_installed_at.present?
 
     update!(install_offer_installed_at: Time.current)
+  end
+
+  def push_offer_eligible?(win_number:)
+    return false if push_subscriptions.exists?
+    return false if push_offer_permission_denied_at.present?
+    return false if push_offer_dismiss_count >= PUSH_OFFER_MAX_ASKS
+
+    win_number.to_i.between?(1, PUSH_OFFER_MAX_ASKS)
+  end
+
+  def mark_push_offer_dismissed!
+    return if push_offer_dismiss_count >= PUSH_OFFER_MAX_ASKS
+
+    update!(
+      push_offer_dismiss_count: push_offer_dismiss_count + 1,
+      push_offer_dismissed_at: Time.current
+    )
+  end
+
+  def mark_push_offer_permission_denied!
+    return if push_offer_permission_denied_at.present?
+
+    update!(push_offer_permission_denied_at: Time.current)
   end
 
   def alive_level

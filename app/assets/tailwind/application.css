@@ -18186,6 +18186,58 @@ button.lp-strategy-overflow {
   font-size: 0.95rem;
 }
 
+.lp-push-offer-host {
+  margin: 0.75rem 1rem 0;
+  max-width: 32rem;
+}
+
+.lp-push-offer {
+  border-radius: 1rem;
+  border: 1px solid var(--lp-border, #e2e8f0);
+  background: var(--lp-elevated, #fff);
+  padding: 0.9rem 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.lp-push-offer__headline {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--lp-ink, #0f172a);
+  line-height: 1.35;
+}
+
+.lp-push-offer__body {
+  margin: 0.45rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--lp-muted, #475569);
+}
+
+.lp-push-offer__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.lp-push-offer__yes {
+  min-height: 2.75rem;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.lp-push-offer__not-now {
+  min-height: 2.75rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted, #475569);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
 
 /* === elite product pass === */
 .lp-icon {

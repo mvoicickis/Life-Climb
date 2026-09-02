@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_31_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -555,6 +555,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_140000) do
     t.text "otp_secret"
     t.string "password_digest", null: false
     t.integer "planning_version", default: 2, null: false
+    t.integer "push_offer_dismiss_count", default: 0, null: false
+    t.datetime "push_offer_dismissed_at"
+    t.datetime "push_offer_permission_denied_at"
     t.integer "strategy_points", default: 0, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
