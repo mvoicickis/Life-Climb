@@ -1,6 +1,6 @@
 if Rails.env.production?
   raise "Refusing to seed in production without ADMIN_EMAIL and ADMIN_PASSWORD" unless ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
-  raise "ADMIN_PASSWORD must be at least 12 characters" if ENV["ADMIN_PASSWORD"].to_s.length < 12
+  raise "ADMIN_PASSWORD must be at least #{TextLimits::PASSWORD_MIN} characters" if ENV["ADMIN_PASSWORD"].to_s.length < TextLimits::PASSWORD_MIN
 end
 
 demo_password = ENV.fetch("DEMO_PASSWORD", "password12345")

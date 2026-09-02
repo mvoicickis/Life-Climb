@@ -5,7 +5,7 @@ module Admin
   #
   # Env (set in Render dashboard):
   #   ADMIN_EMAIL=you@example.com
-  #   ADMIN_PASSWORD=at-least-12-chars
+  #   ADMIN_PASSWORD=at-least-8-chars
   #
   # Creates the user if missing, sets admin=true, and (when password present)
   # resets the password so you can log in.

@@ -6,6 +6,6 @@ module TextLimits
   SUMMARY_MAX = 2_000
   EMAIL_MAX = 254
   NAME_MAX = 80
-  PASSWORD_MIN = 12
+  PASSWORD_MIN = 8
   PASSWORD_MAX = 72 # bcrypt limit
 end

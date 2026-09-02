@@ -1,14 +1,19 @@
 require "test_helper"
 
 class SecurityHardeningTest < ActionDispatch::IntegrationTest
-  test "password must be at least 12 characters" do
+  test "password must be at least 8 characters" do
     user = User.new(
+      name: "Secure",
       email_address: "secure@example.com",
       password: "short",
       password_confirmation: "short"
     )
     assert_not user.valid?
     assert_includes user.errors[:password].join, "too short"
+
+    user.password = "12345678"
+    user.password_confirmation = "12345678"
+    assert user.valid?
   end
 
   test "email must look like an email" do

@@ -31,7 +31,7 @@ Rails 8.1 public deployment.
 #### H1. Weak password policy
 - **Why:** Short passwords are trivial to brute-force offline if digests leak.
 - **Risk:** Account takeover.
-- **Fix:** `User` now requires password length 12–72; email format validated.
+- **Fix:** `User` now requires password length 8–72; email format validated.
 - **Status:** Fixed (`app/models/user.rb`)
 
 #### H2. Registration not rate-limited
@@ -131,7 +131,7 @@ Rails 8.1 public deployment.
 ## Production checklist
 
 1. Set `APP_HOST` to the canonical hostname  
-2. Set strong `ADMIN_EMAIL` / `ADMIN_PASSWORD` (12+ chars) before any seed  
+2. Set strong `ADMIN_EMAIL` / `ADMIN_PASSWORD` (8+ chars) before any seed  
 3. Set `SECRET_KEY_BASE` via Rails credentials / platform secrets  
 4. Set `BUY_ME_A_COFFEE_URL` if using Support  
 5. When scaling beyond one dyno: shared cache for Rack::Attack  
