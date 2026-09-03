@@ -18000,22 +18000,6 @@ button.lp-strategy-overflow {
 
 
 /* === elite ux polish === */
-.lp-landing-hero__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.55rem;
-}
-
-.lp-landing-hero__brand-name {
-  font-family: var(--lp-font-display);
-  font-size: clamp(1.85rem, 7.5vw, 2.75rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  color: var(--lp-ink);
-}
-
 .lp-landing-hero__tagline {
   margin: 0 0 0.85rem;
   max-width: 28rem;
@@ -18024,21 +18008,6 @@ button.lp-strategy-overflow {
   line-height: 1.35;
   color: var(--lp-muted);
   text-wrap: pretty;
-}
-
-.lp-landing-hero__mark {
-  width: 2.35rem;
-  height: 2.35rem;
-}
-
-@media (min-width: 768px) {
-  .lp-landing-hero__brand-name {
-    font-size: clamp(2.6rem, 6vw, 3.6rem);
-  }
-  .lp-landing-hero__mark {
-    width: 3rem;
-    height: 3rem;
-  }
 }
 
 .lp-landing-hero__proof {
