@@ -42,7 +42,7 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
 
     assert_select "#today-end-of-day.lp-today-v2-eod-takeover.is-flow", count: 1
     assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
-    assert_select ".lp-today-v2-eod-win__stats", text: /You won 1 of 1 battles/
+    assert_select ".lp-today-v2-eod-win__stats", text: /You won 1 of 1 battle/
     assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
     assert_select ".lp-today-v2-eod-plan", count: 0
     assert_select ".lp-dash-anytime.is-focus", count: 0
