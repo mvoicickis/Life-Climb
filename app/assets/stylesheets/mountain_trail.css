@@ -1727,11 +1727,15 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   color: #f7ead9;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
+  background: linear-gradient(165deg, #2b1c10, #1b120a 55%, #140d07);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__crumb {
@@ -2174,16 +2178,28 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-toast-host {
-  position: absolute;
-  left: 0.75rem;
-  right: 0.75rem;
-  bottom: calc(11.75rem + env(safe-area-inset-bottom, 0px));
-  z-index: 60;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  padding: 0 14px 10px;
   pointer-events: none;
 }
 
 .lp-trail-toast-host .lp-toast {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  max-width: none;
+  margin: 0;
   pointer-events: auto;
+  transform: translateY(-6px);
+  opacity: 0;
+}
+
+.lp-trail-toast-host .lp-toast.is-show {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* Today card + base camp — on-photo overlays (mockup) */
