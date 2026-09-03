@@ -2,3 +2,10 @@
   <%= render "life_journeys/trail_battle_row", battle: @battle %>
 <% end %>
 <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
+<% if @battle %>
+  <%= turbo_stream.update "trail-toast-host" do %>
+    <%= render "life_journeys/trail_toast",
+          title: t("strategy.rpg.trail.quick_win_toast", title: @battle.title),
+          restore: false %>
+  <% end %>
+<% end %>
