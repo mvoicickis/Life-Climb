@@ -112,7 +112,8 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.media_type, "turbo-stream"
     assert_match "trail-battle-#{@battle.id}", response.body
     assert_match "is-done", response.body
-    assert_no_match "trail-toast-host", response.body
+    assert_match "trail-toast-host", response.body
+    assert_match(/Won/, response.body)
     assert_no_match "turbo-stream action=\"replace\" target=\"trail-battles-", response.body
     assert @battle.reload.completed?
 

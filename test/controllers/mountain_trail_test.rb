@@ -217,6 +217,20 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_includes markup, "lp-trail-battles__camp-fold"
   end
 
+  test "battle won toast host sits below camp sheet header" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-sheet__panel #trail-toast-host.lp-trail-toast-host"
+    header_index = response.body.index("lp-trail-sheet__header")
+    toast_index = response.body.index('id="trail-toast-host"')
+    body_index = response.body.index('id="trail-sheet-body"')
+    assert header_index, "expected camp sheet header"
+    assert toast_index, "expected trail toast host"
+    assert body_index, "expected camp sheet body"
+    assert_operator header_index, :<, toast_index
+    assert_operator toast_index, :<, body_index
+  end
+
   test "camp sheet shows project check when camp is queued" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
