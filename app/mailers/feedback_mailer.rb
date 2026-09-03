@@ -7,7 +7,7 @@ class FeedbackMailer < ApplicationMailer
     mail(
       to: feedback_recipient,
       reply_to: @user&.email_address,
-      subject: "Lifeclimb feedback from #{who}"
+      subject: "Life Climb feedback from #{who}"
     )
   end
 

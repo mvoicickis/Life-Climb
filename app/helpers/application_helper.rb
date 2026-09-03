@@ -83,7 +83,7 @@ module ApplicationHelper
   end
 
   def page_meta_title
-    content_for?(:title) ? content_for(:title) : "Lifeclimb"
+    content_for?(:title) ? content_for(:title) : "Life Climb"
   end
 
   def page_meta_description
