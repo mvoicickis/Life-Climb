@@ -1116,6 +1116,34 @@
     min-width: 0;
   }
 
+  .lp-landing-nav__brand-col {
+    position: relative;
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+
+  .lp-landing-nav__tagline {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin: 0.15rem 0 0;
+    max-width: min(16rem, 58vw);
+    font-size: clamp(0.72rem, 2.8vw, 0.88rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--lp-muted);
+    text-wrap: pretty;
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .lp-landing-nav__tagline {
+      margin-top: 0.2rem;
+      max-width: 18rem;
+      font-size: 0.9rem;
+    }
+  }
+
   .lp-landing-brand--centered { justify-content: center; }
 
   .lp-landing-brand__mark {
@@ -18000,16 +18028,6 @@ button.lp-strategy-overflow {
 
 
 /* === elite ux polish === */
-.lp-landing-hero__tagline {
-  margin: 0 0 0.85rem;
-  max-width: 28rem;
-  font-size: clamp(1rem, 3.8vw, 1.15rem);
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--lp-muted);
-  text-wrap: pretty;
-}
-
 .lp-landing-hero__proof {
   margin: 1rem 0 0;
   max-width: 28rem;
