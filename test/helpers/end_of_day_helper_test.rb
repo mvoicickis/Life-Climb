@@ -5,6 +5,12 @@ require "test_helper"
 class EndOfDayHelperTest < ActionView::TestCase
   include ApplicationHelper
 
+  test "end_of_day_recap_stats uses singular battle when total is one" do
+    health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
+
+    assert_equal "You won 1 of 1 battle. You kept all your health.", end_of_day_recap_stats(health)
+  end
+
   test "end_of_day_recap_stats uses plain language at full health" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 3)
 

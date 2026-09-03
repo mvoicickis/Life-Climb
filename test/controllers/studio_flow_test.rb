@@ -73,7 +73,7 @@ class StudioFlowTest < ActionDispatch::IntegrationTest
   test "mountain page loads for focused journey" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_match(/LifePoints|Mountain/i, response.body)
+    assert_match(/Lifeclimb|Mountain/i, response.body)
     assert_select ".lp-rpg, #first-climb-coach"
   end
 end

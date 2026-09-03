@@ -6,7 +6,7 @@ export default class extends Controller {
   static values = {
     text: String,
     url: String,
-    title: { type: String, default: "LifePoints" }
+    title: { type: String, default: "Lifeclimb" }
   }
 
   connect() {
@@ -136,7 +136,7 @@ export default class extends Controller {
 
   email(event) {
     event.preventDefault()
-    const subject = encodeURIComponent(this.titleValue || "LifePoints")
+    const subject = encodeURIComponent(this.titleValue || "Lifeclimb")
     const body = encodeURIComponent(this.fullMessage)
     window.location.href = `mailto:?subject=${subject}&body=${body}`
     this.close()
@@ -158,7 +158,7 @@ export default class extends Controller {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: this.titleValue || "LifePoints",
+          title: this.titleValue || "Lifeclimb",
           text: this.shareText,
           url: this.shareUrl
         })

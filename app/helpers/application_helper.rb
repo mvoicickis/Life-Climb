@@ -83,7 +83,7 @@ module ApplicationHelper
   end
 
   def page_meta_title
-    content_for?(:title) ? content_for(:title) : "LifePoints"
+    content_for?(:title) ? content_for(:title) : "Lifeclimb"
   end
 
   def page_meta_description
@@ -294,10 +294,12 @@ module ApplicationHelper
 
     if health.hp.to_i >= 100
       t("dash.end_of_day.recap_stats.full_health",
+        count: health.total_count,
         done: health.done_count,
         total: health.total_count)
     else
       t("dash.end_of_day.recap_stats.partial_health",
+        count: health.total_count,
         done: health.done_count,
         total: health.total_count,
         hp: health.hp)
