@@ -3,7 +3,7 @@
 module Analytics
   # Persist a named product event for funnel and behavior analysis.
   class Track
-    def self.call(user:, name:, properties: {})
+    def self.call(name:, properties: {}, user: nil)
       new(user:, name:, properties:).call
     end
 
@@ -14,7 +14,11 @@ module Analytics
     end
 
     def call
-      @user.user_events.create!(name: @name, properties: @properties)
+      if @user
+        @user.user_events.create!(name: @name, properties: @properties)
+      else
+        UserEvent.create!(name: @name, properties: @properties)
+      end
     end
   end
 end

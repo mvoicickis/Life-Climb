@@ -521,7 +521,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
     t.string "name", null: false
     t.json "properties", default: {}, null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.index ["name", "created_at"], name: "index_user_events_on_name_and_created_at"
     t.index ["user_id", "name", "created_at"], name: "index_user_events_on_user_id_and_name_and_created_at"
     t.index ["user_id"], name: "index_user_events_on_user_id"

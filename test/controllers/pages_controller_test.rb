@@ -2,7 +2,9 @@ require "test_helper"
 
 class PagesControllerTest < ActionDispatch::IntegrationTest
   test "landing page is public" do
-    get root_path
+    assert_difference -> { UserEvent.named("landing_viewed").count }, 1 do
+      get root_path
+    end
     assert_response :success
     assert_match(/Most goals die in your notes app/, response.body)
     assert_match(/The mountain is yours to climb/, response.body)
@@ -82,7 +84,9 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     )
     user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
 
-    get root_path
+    assert_no_difference -> { UserEvent.named("landing_viewed").count } do
+      get root_path
+    end
     assert_redirected_to dashboard_path
   end
 end

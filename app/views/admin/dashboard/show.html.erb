@@ -84,6 +84,9 @@
 <%= render "admin/dashboard/onboarding_step_funnel",
       rows: @mountain_tour_funnel[:rows],
       title: t("admin.mountain_tour_steps.title") %>
+<%= render "admin/dashboard/onboarding_step_funnel",
+      rows: @landing_funnel[:rows],
+      title: t("admin.landing_steps.title") %>
 
 <div class="lp-admin__split">
   <section class="lp-admin__panel">

@@ -2,7 +2,9 @@ require "test_helper"
 
 class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "registration requires name and greets with it on dashboard after onboarding shortcut" do
-    get new_registration_url
+    assert_difference -> { UserEvent.named("signup_started").count }, 1 do
+      get new_registration_url
+    end
     assert_response :success
     assert_select "input[name='user[name]']"
 
