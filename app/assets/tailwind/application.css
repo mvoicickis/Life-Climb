@@ -18016,6 +18016,16 @@ button.lp-strategy-overflow {
   color: var(--lp-ink);
 }
 
+.lp-landing-hero__tagline {
+  margin: 0 0 0.85rem;
+  max-width: 28rem;
+  font-size: clamp(1rem, 3.8vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--lp-muted);
+  text-wrap: pretty;
+}
+
 .lp-landing-hero__mark {
   width: 2.35rem;
   height: 2.35rem;

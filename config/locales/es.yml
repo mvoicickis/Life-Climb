@@ -1141,6 +1141,7 @@ es:
     start_free: "Empezar gratis"
     back_home: "← Volver al inicio"
     hero_kicker: "LifePoints"
+    hero_tagline: "The mountain is yours to climb" # TODO: translate
     hero_title: "La mayoría de las metas mueren en tu app de notas."
     hero_body: "LifePoints convierte una meta real en una montaña — y te da un paso claro hacia arriba, cada día."
     hero_proof: "Los primeros escaladores ya van de camino"

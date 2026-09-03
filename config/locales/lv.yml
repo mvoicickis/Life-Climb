@@ -1382,6 +1382,7 @@ lv:
     start_free: "Sākt bez maksas"
     back_home: "← Atpakaļ uz sākumu"
     hero_kicker: "LifePoints"
+    hero_tagline: "The mountain is yours to climb" # TODO: translate
     hero_title: "Lielākā daļa mērķu nomirst piezīmju lietotnē."
     hero_body: "LifePoints pārvērš vienu īstu mērķi kalnā — un katru dienu dod tev vienu skaidru soli uz augšu."
     hero_proof: "Pirmie kāpēji jau ir ceļā"
