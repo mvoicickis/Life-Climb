@@ -7,7 +7,7 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get support_path
     assert_response :success
-    assert_match(/Support Lifeclimb/, response.body)
+    assert_match(/Support Life Climb/, response.body)
     assert_match(/Buy the developer a coffee/, response.body)
     assert_match(%r{href="https://buymeacoffee\.com/lifepoints"}, response.body)
     assert_match(/Become a Supporter/, response.body)
@@ -20,7 +20,7 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get support_path
     assert_response :success
-    assert_match(/Share Lifeclimb/, response.body)
+    assert_match(/Share Life Climb/, response.body)
     assert_match(/Invite a friend/, response.body)
     assert_match(/data-controller="share"/, response.body)
     assert_match(/data-action="click-&gt;share#open"|data-action="click->share#open"/, response.body)
@@ -41,7 +41,7 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     get settings_path
     assert_response :success
     assert_select "a[href=?]", support_path
-    assert_match(/Share Lifeclimb/, response.body)
+    assert_match(/Share Life Climb/, response.body)
     assert_match(/data-controller="share"/, response.body)
     assert_match(/share-sheet/, response.body)
   end

@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: -> { ENV.fetch("MAIL_FROM", "Lifeclimb <noreply@lifepoints.onrender.com>") }
+  default from: -> { ENV.fetch("MAIL_FROM", "Life Climb <noreply@lifepoints.onrender.com>") }
   layout "mailer"
 end
