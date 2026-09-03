@@ -101,6 +101,9 @@ Rails.application.configure do
     config.hosts << /.*\.onrender\.com/
   end
 
+  config.hosts << "lifeclimb.app"
+  config.hosts << "www.lifeclimb.app"
+
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
