@@ -3487,6 +3487,10 @@ en:
       base_camp: "Base camp"
       add_camp: "Add camp"
       today: "Go to Today"
+    landing_steps:
+      title: "Landing funnel"
+      landing_viewed: "Landing viewed"
+      signup_started: "Signup started"
     charts:
       users: "Users per day"
       users_growth: "Growth over time"

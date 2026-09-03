@@ -3,6 +3,7 @@ class RegistrationsController < ApplicationController
   rate_limit to: 5, within: 15.minutes, only: :create, with: -> { redirect_to new_registration_path, alert: "Too many attempts. Try again later." }
 
   def new
+    Analytics::Track.call(name: "signup_started")
     @user = User.new
   end
 
