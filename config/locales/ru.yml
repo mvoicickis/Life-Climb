@@ -1151,6 +1151,7 @@ ru:
     start_free: "Начать бесплатно"
     back_home: "← На главную"
     hero_kicker: "LifePoints"
+    hero_tagline: "The mountain is yours to climb" # TODO: translate
     hero_title: "Большинство целей умирают в приложении заметок."
     hero_body: "LifePoints превращает одну настоящую цель в гору — и каждый день даёт тебе один ясный шаг вверх."
     hero_proof: "Первые альпинисты уже в пути"
