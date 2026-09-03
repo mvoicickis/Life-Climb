@@ -32,7 +32,7 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     assert_match(/User funnel/i, response.body)
     assert_match(/First camp planted/i, response.body)
     assert_match(/admin\/developer account excluded/i, response.body)
-    assert_no_match(/Total LifePoints earned/i, response.body)
+    assert_no_match(/Total Climb Points earned/i, response.body)
     assert_no_match(/Plans/i, response.body)
 
     get admin_users_path

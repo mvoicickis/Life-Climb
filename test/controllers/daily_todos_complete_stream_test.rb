@@ -94,7 +94,7 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match "You won 1 of 1 battles", response.body
+    assert_match "You won 1 of 1 battle", response.body
     assert_no_match "You won 0 of 1 battles", response.body
   end
 end

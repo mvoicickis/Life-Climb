@@ -26,7 +26,7 @@ class ShareMessageBuilderTest < ActiveSupport::TestCase
     message = ShareMessageBuilder.new(habit, landing_url: @url).call
 
     assert_match(/📚 Today I read 20 pages of Ruby\./, message)
-    assert_match(/LifePoints/, message)
+    assert_match(/Lifeclimb/, message)
     assert_includes message, @url
   end
 

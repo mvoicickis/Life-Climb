@@ -8,7 +8,7 @@ class DreamLifeFlowTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get dashboard_path
     assert_response :success
-    assert_match(/Today|Battle|Action Points|LifePoints/i, response.body)
+    assert_match(/Today|Battle|Action Points|Lifeclimb/i, response.body)
     assert_select ".lp-dash-nav"
     assert_no_match(/Morale/, response.body)
   end

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
-    <title><%= content_for?(:title) ? "#{yield(:title)} · Admin · LifePoints" : "Admin · LifePoints" %></title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} · Admin · Lifeclimb" : "Admin · Lifeclimb" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
     <%= csrf_meta_tags %>
@@ -22,7 +22,7 @@
         <div class="lp-admin__brand">
           <%= render "shared/lp_brand_mark", size: 28, class_name: "lp-admin__mark" %>
           <div>
-            <p class="lp-admin__brand-kicker">LifePoints</p>
+            <p class="lp-admin__brand-kicker">Lifeclimb</p>
             <p class="lp-admin__brand-title"><%= t("admin.brand") %></p>
           </div>
         </div>
