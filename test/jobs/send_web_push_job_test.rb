@@ -182,4 +182,13 @@ class SendWebPushJobTest < ActiveJob::TestCase
     payload = JSON.parse(@last_kwargs[:message])
     assert_equal %w[quick_add snooze], payload["actions"].map { |a| a["action"] }
   end
+
+  test "passes battle_id through to push payload" do
+    SendWebPushJob.perform_now(
+      @user.id,
+      { "title" => "Hi", "kind" => "morning", "battle_id" => 42 }
+    )
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal 42, payload["battle_id"]
+  end
 end

@@ -107,3 +107,5 @@ lv:
       "3": "Jauna diena, jauns solis. Kāda ir šodienas Battle?"
       "4": "Rīts — viens mazs solis nosaka toni."
       "5": "Šodien tīra lapa. Kāds ir plāns?"
+    morning_nudge_personal:
+      body: 'At %{camp}: "%{battle}". Open your camp.' # TODO: translate

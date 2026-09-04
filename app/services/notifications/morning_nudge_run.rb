@@ -52,15 +52,16 @@ module Notifications
       return false unless gate.allowed?
 
       locale = user.locale.presence || I18n.default_locale
-      body = PhraseBank.morning_nudge(locale: locale)
+      nudge = MorningNudgeBody.for(user: user, locale: locale)
 
       SendWebPushJob.perform_now(
         user.id,
         {
           "title" => I18n.t("notifications.actions.morning_title", locale: locale),
-          "body" => body,
-          "url" => "/dashboard",
-          "kind" => KIND
+          "body" => nudge.body,
+          "url" => nudge.url,
+          "kind" => KIND,
+          "battle_id" => nudge.battle_id
         }
       )
 

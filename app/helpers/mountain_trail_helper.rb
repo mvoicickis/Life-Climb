@@ -275,19 +275,11 @@ module MountainTrailHelper
 
   # Current camp: lowest on trail (highest y) with an open battle — mockup Duolingo node.
   def mountain_trail_current_project(projects)
-    eligible = projects.reject(&:completed?).reject(&:pages_mode?).select do |project|
-      project.children.any? { |c| c.day? && !c.holding? && !c.completed? }
-    end
-    return nil if eligible.empty?
-
-    layout = mountain_trail_layout(projects)
-    eligible.max_by { |p| layout.dig(p.id, :y).to_f }
+    MountainTrail::CurrentFocus.current_project(projects)
   end
 
   def mountain_trail_first_open_battle(project)
-    project.children
-      .select { |c| c.day? && !c.holding? && !c.completed? }
-      .min_by { |c| [ c.position.to_i, c.id ] }
+    MountainTrail::CurrentFocus.first_open_battle(project)
   end
 
   def mountain_trail_fire_level(project)

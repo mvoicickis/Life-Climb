@@ -107,3 +107,5 @@ ru:
       "3": "Новый день, новый шаг. Какая сегодня Battle?"
       "4": "Утро — один маленький шаг задаёт тон."
       "5": "Сегодня чистый лист. Какой план?"
+    morning_nudge_personal:
+      body: 'At %{camp}: "%{battle}". Open your camp.' # TODO: translate
