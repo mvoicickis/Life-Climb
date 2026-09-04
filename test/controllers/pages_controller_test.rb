@@ -11,16 +11,18 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Start free/, response.body)
     assert_match(/How it works/, response.body)
     assert_match(/Your life, one area at a time/, response.body)
-    assert_match(/Every point makes you more alive/, response.body)
+    assert_match(/Proof you did something real/, response.body)
     assert_match(/Run my first 10 km/, response.body)
-    assert_match(/Name today’s step/i, response.body)
-    assert_match(/Action Points/i, response.body)
-    assert_match(/Watch your mountain rise/i, response.body)
-    assert_match(/Early climbers are already on their way/, response.body)
+    assert_match(/Name today(?:&#39;|')s battle/i, response.body)
+    assert_match(/Battle strength/, response.body)
+    assert_match(/Win the battle\. Your mountain rises/, response.body)
     assert_match(/Free to start/, response.body)
-    assert_match(/\+50 AP/, response.body)
-    assert_match(/Action Points/, response.body)
+    assert_match(/\+50/, response.body)
+    assert_match(/Battle strength/, response.body)
     assert_no_match(/\+50 LP/, response.body)
+    assert_no_match(/\+50 AP/, response.body)
+    assert_no_match(/Early climbers are already on their way/, response.body)
+    assert_no_match(/Your progress, made simple/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
     assert_no_match(/status\.better_full|landing\.sample_better|today-card--good|lifepoints-landing-hero\.jpg/, response.body)
   end
@@ -56,7 +58,6 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{rel="canonical" href="https://lifeclimb\.app/"}, response.body)
     assert_match(/application\/ld\+json/, response.body)
     assert_match(/SoftwareApplication/, response.body)
-    assert_match(/Action Points/, response.body)
   end
 
   test "robots and sitemap are public" do

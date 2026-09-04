@@ -37,7 +37,6 @@
     <div class="lp-landing-hero__copy" data-landing-target="heroCopy">
       <h1 class="lp-landing-hero__title"><%= t("landing.hero_title") %></h1>
       <p class="lp-landing-hero__body"><%= t("landing.hero_body") %></p>
-      <p class="lp-landing-hero__proof"><%= t("landing.hero_proof") %></p>
       <div class="lp-landing-hero__ctas">
         <%= link_to t("landing.start_free"), new_registration_path,
             class: "lp-landing-cta",
@@ -133,29 +132,13 @@
           <p class="lp-landing-lp__count">
             <span data-landing-target="lpCount">0</span>
           </p>
-          <p class="lp-landing-lp__label">
-            <%= t("landing.why_ap_label") %>
-            <span class="lp-landing-lp__abbr"><%= t("landing.why_ap_abbr") %></span>
-          </p>
+          <p class="lp-landing-lp__label"><%= t("landing.why_ap_label") %></p>
           <p class="lp-landing-lp__chip"><%= t("landing.why_ap_chip") %></p>
         </div>
       </div>
       <div class="lp-landing-why__copy">
         <h2 class="lp-landing-heading"><%= t("landing.why_title") %></h2>
         <p class="lp-landing-lead"><%= t("landing.why_body") %></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-landing-section lp-landing-section--soft">
-    <div class="lp-landing-section__inner" data-landing-target="fade">
-      <h2 class="lp-landing-heading"><%= t("landing.progress_title") %></h2>
-      <p class="lp-landing-lead"><%= t("landing.progress_body") %></p>
-      <div class="lp-landing-progress" aria-hidden="true">
-        <div class="lp-landing-progress__track">
-          <div class="lp-landing-progress__fill"></div>
-        </div>
-        <span class="lp-landing-progress__pct">64%</span>
       </div>
     </div>
   </section>

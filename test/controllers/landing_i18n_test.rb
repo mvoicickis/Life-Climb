@@ -6,11 +6,11 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Most goals die in your notes app/, response.body)
     assert_match(/Start free/, response.body)
-    assert_match(/Action Points/, response.body)
-    assert_match(/Name today’s step/, response.body)
+    assert_match(/Battle strength/, response.body)
+    assert_match(/Name today(?:&#39;|')s battle/, response.body)
     assert_match(/Run my first 10 km/, response.body)
-    assert_match(/Watch your mountain rise/, response.body)
-    assert_match(/Early climbers are already on their way/, response.body)
+    assert_match(/Win the battle\. Your mountain rises/, response.body)
+    assert_no_match(/Early climbers are already on their way/, response.body)
     assert_no_match(/you move closer to the top/i, response.body)
     assert_no_match(/Run my first 10K[^m]/, response.body)
   end
@@ -21,10 +21,10 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/Lielākā daļa mērķu nomirst piezīmju lietotnē/, response.body)
     assert_match(/Sākt bez maksas/, response.body)
-    assert_match(/darba punkt/i, response.body)
-    assert_match(/Nosauc šodienas soli/i, response.body)
+    assert_match(/Battle strength/, response.body)
+    assert_match(/Name today(?:&#39;|')s battle/, response.body)
     assert_match(/10 km/, response.body)
-    assert_match(/Pirmie kāpēji jau ir ceļā/, response.body)
+    assert_no_match(/Pirmie kāpēji jau ir ceļā/, response.body)
     assert_no_match(/tuvojies virsotnei/i, response.body)
     assert_select ".lp-landing-chip", text: /Es/
     assert_select ".lp-landing-chip", text: /Karjera/
@@ -41,10 +41,10 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/Die meisten Ziele sterben in der Notizen-App/, response.body)
     assert_match(/Kostenlos starten/, response.body)
-    assert_match(/Action Points/, response.body)
-    assert_match(/Nenne den Schritt für heute/i, response.body)
+    assert_match(/Battle strength/, response.body)
+    assert_match(/Name today(?:&#39;|')s battle/, response.body)
     assert_match(/10 km/, response.body)
-    assert_match(/Frühe Kletterer sind schon unterwegs/, response.body)
+    assert_no_match(/Frühe Kletterer sind schon unterwegs/, response.body)
     assert_no_match(/kommst dem Gipfel näher/i, response.body)
     assert_select ".lp-landing-chip", text: /Selbst/
     assert_select ".lp-landing-chip", text: /Karriere/
@@ -61,10 +61,10 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match(/La mayoría de las metas mueren en tu app de notas/, response.body)
     assert_match(/Empezar gratis/, response.body)
-    assert_match(/Action Points/, response.body)
-    assert_match(/Nombra el paso de hoy/i, response.body)
+    assert_match(/Battle strength/, response.body)
+    assert_match(/Name today(?:&#39;|')s battle/, response.body)
     assert_match(/10 km/, response.body)
-    assert_match(/Los primeros escaladores ya van de camino/, response.body)
+    assert_no_match(/Los primeros escaladores ya van de camino/, response.body)
     assert_no_match(/te acercas a la cima/i, response.body)
     assert_select ".lp-landing-chip", text: /Yo/
     assert_select ".lp-landing-chip", text: /Carrera/

@@ -1152,11 +1152,9 @@ es:
     sign_in: "Iniciar sesión"
     start_free: "Empezar gratis"
     back_home: "← Volver al inicio"
-    hero_kicker: "LifePoints"
     hero_tagline: "The mountain is yours to climb" # TODO: translate
     hero_title: "La mayoría de las metas mueren en tu app de notas."
     hero_body: "LifePoints convierte una meta real en una montaña — y te da un paso claro hacia arriba, cada día."
-    hero_proof: "Los primeros escaladores ya van de camino"
     hero_note: "Gratis para empezar · tarda unos 2 minutos"
     areas_title: "Tu vida, un área a la vez"
     areas_body: "Salud. Carrera. Dinero. Relaciones. Propósito. Elige dónde quieres crecer — LifePoints lo convierte en un plan que sí puedes seguir."
@@ -1165,22 +1163,19 @@ es:
     how_step1_title: "Elige tu montaña"
     how_step1_body: "Escoge un objetivo que de verdad quieras."
     how_step1_example: "Ejemplo: “Correr mi primer 10 km.”"
-    how_step2_title: "Nombra el paso de hoy"
-    how_step2_body: "Convierte la meta en una cosa pequeña que puedas terminar hoy."
+    how_step2_title: "Name today's battle" # TODO: translate
+    how_step2_body: "Turn the goal into one small battle you can win today." # TODO: translate
     how_step2_example: "Ejemplo: “Correr 15 minutos después del trabajo.”"
-    how_step3_title: "Hazlo — sube"
-    how_step3_body: "Márcalo. Gana Action Points. Mira subir tu montaña al terminar trabajo real."
+    how_step3_title: "Win the battle" # TODO: translate
+    how_step3_body: "Win the battle. Your mountain rises. Nothing ever goes down." # TODO: translate
     how_step3_example: "Ejemplo: Hecho hoy → la montaña se mueve."
-    why_title: "Cada punto te hace más vivo"
-    why_body: "Los Action Points no son un marcador de juego. Son prueba — cada uno significa que hiciste algo real, en una parte de tu vida que te importa."
-    why_ap_label: "Action Points"
-    why_ap_abbr: "(AP)"
-    why_ap_chip: "+50 AP"
-    progress_title: "Tu progreso, hecho simple"
-    progress_body: "Un porcentaje de montaña. Súbelo terminando trabajo real. Una racha suave ayuda al impulso — si fallas un día, Base Camp puede cubrirte."
-    cta_title: "¿Listo para subir?"
-    cta_body: "Elige tu montaña. Empieza la batalla de hoy."
-    footer_tagline: "Vuelve más vivo."
+    why_title: "Proof you did something real" # TODO: translate
+    why_body: "Not a game score. Every point is one real thing you finished, in a part of your life you chose." # TODO: translate
+    why_ap_label: "Battle strength" # TODO: translate
+    why_ap_chip: "+50" # TODO: translate
+    cta_title: "Pick your mountain" # TODO: translate
+    cta_body: "One goal. One step today. Free to start." # TODO: translate
+    footer_tagline: "The mountain is yours to climb" # TODO: translate
   auth:
     name: "Tu nombre"
     name_placeholder: "¿Cómo te llamamos?"

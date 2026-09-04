@@ -1162,11 +1162,9 @@ ru:
     sign_in: "Войти"
     start_free: "Начать бесплатно"
     back_home: "← На главную"
-    hero_kicker: "LifePoints"
     hero_tagline: "The mountain is yours to climb" # TODO: translate
     hero_title: "Большинство целей умирают в приложении заметок."
     hero_body: "LifePoints превращает одну настоящую цель в гору — и каждый день даёт тебе один ясный шаг вверх."
-    hero_proof: "Первые альпинисты уже в пути"
     hero_note: "Бесплатный старт · займёт около 2 минут"
     areas_title: "Твоя жизнь — область за областью"
     areas_body: "Здоровье. Карьера. Деньги. Отношения. Смысл. Выбери, где хочешь расти — LifePoints превратит это в план, которому можно следовать."
@@ -1175,22 +1173,19 @@ ru:
     how_step1_title: "Выбери свою гору"
     how_step1_body: "Возьми цель, которую действительно хочешь."
     how_step1_example: "Пример: «Пробежать свои первые 10 км»."
-    how_step2_title: "Назови шаг на сегодня"
-    how_step2_body: "Преврати цель в маленькое дело, которое можно сделать сегодня."
+    how_step2_title: "Name today's battle" # TODO: translate
+    how_step2_body: "Turn the goal into one small battle you can win today." # TODO: translate
     how_step2_example: "Пример: «Сегодня после работы бегать 15 минут»."
-    how_step3_title: "Сделай — поднимись"
-    how_step3_body: "Отметь. Заработай Action Points. Смотри, как гора растёт, когда ты делаешь настоящую работу."
+    how_step3_title: "Win the battle" # TODO: translate
+    how_step3_body: "Win the battle. Your mountain rises. Nothing ever goes down." # TODO: translate
     how_step3_example: "Пример: Сегодня сделано → гора сдвигается."
-    why_title: "Каждый балл делает тебя живее"
-    why_body: "Action Points — не игровой счёт. Это доказательство: каждый значит, что ты сделал что-то настоящее в важной части жизни."
-    why_ap_label: "Action Points"
-    why_ap_abbr: "(AP)"
-    why_ap_chip: "+50 AP"
-    progress_title: "Твой прогресс — просто"
-    progress_body: "Один процент горы. Поднимайся, делая настоящую работу. Мягкая серия поддерживает импульс — пропустишь день, Base Camp может подстраховать."
-    cta_title: "Готов подниматься?"
-    cta_body: "Выбери гору. Начни сегодняшнюю битву."
-    footer_tagline: "Становись живее."
+    why_title: "Proof you did something real" # TODO: translate
+    why_body: "Not a game score. Every point is one real thing you finished, in a part of your life you chose." # TODO: translate
+    why_ap_label: "Battle strength" # TODO: translate
+    why_ap_chip: "+50" # TODO: translate
+    cta_title: "Pick your mountain" # TODO: translate
+    cta_body: "One goal. One step today. Free to start." # TODO: translate
+    footer_tagline: "The mountain is yours to climb" # TODO: translate
   auth:
     name: "Твоё имя"
     name_placeholder: "Как тебя называть?"
