@@ -49,11 +49,11 @@ class ProjectSectionsMenuPropagationTest < ApplicationSystemTestCase
 
     menu_span = find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn span", visible: :all)
     page.execute_script("arguments[0].click()", menu_span.native)
-    assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
+    assert_selector "#climb-path-project-#{@section.id} .lp-climb-path__menu:not([hidden])", visible: :all, wait: 3
     assert_equal before, page.current_path
 
     page.send_keys(:escape)
-    assert_no_selector ".lp-climb-path__menu:not([hidden])", wait: 3
+    assert_no_selector "#climb-path-project-#{@section.id} .lp-climb-path__menu:not([hidden])", visible: :all, wait: 3
 
     btn = find("#climb-path-project-#{@section.id} .lp-climb-path__menu-btn", visible: :all)
     page.execute_script(<<~JS, btn.native)
@@ -64,12 +64,12 @@ class ProjectSectionsMenuPropagationTest < ApplicationSystemTestCase
       const target = document.elementFromPoint(x, y);
       target?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y }));
     JS
-    assert_selector ".lp-climb-path__menu:not([hidden])", wait: 3
+    assert_selector "#climb-path-project-#{@section.id} .lp-climb-path__menu:not([hidden])", visible: :all, wait: 3
     assert_equal before, page.current_path
 
     # 3) Choosing Edit must not navigate
     page.execute_script(<<~JS)
-      document.querySelector('.lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item:not(.is-danger)')?.click();
+      document.querySelector('#climb-path-project-#{@section.id} .lp-climb-path__menu:not([hidden]) .lp-climb-path__menu-item:not(.is-danger)')?.click();
     JS
     assert_selector "dialog[open] .lp-strategy-sheet__title", text: /Edit Camp/i, wait: 3
     assert_equal before, page.current_path

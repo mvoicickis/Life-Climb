@@ -1808,6 +1808,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   position: relative;
 }
 
+.lp-trail-sheet__camp-menu[hidden] {
+  display: none !important;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__menu-btn {
   display: inline-flex;
   align-items: center;
