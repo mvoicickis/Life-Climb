@@ -66,8 +66,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".landing-lang-btn--toggle", text: "DE"
     assert_select ".landing-lang-menu-item", count: 4
-    assert_select ".landing-lang-menu-item[aria-label='Deutsch']", text: "EN"
-    assert_select ".landing-lang-menu-item[aria-label='English']", count: 0
+    assert_select ".landing-lang-menu-item[aria-label='English']", text: "EN"
+    assert_select ".landing-lang-menu-item[aria-label='Deutsch']", count: 0
   end
 
   test "landing social meta uses Life Climb og image and tagline" do
