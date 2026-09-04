@@ -20,6 +20,7 @@
 <% won_today = all_today.count { |b| b.completed_at.present? } %>
 <% today_card = mountain_trail_today_card(projects: projects, open_battles: base_due_battles, won_today: won_today, journey: journey) %>
 <% peak_title = goal&.title.presence || journey.title %>
+<% mountain_nav = t("dashboard.nav.mountain") %>
 <% peak_tagline = mountain_trail_peak_tagline(goal) %>
 <% category = Onboarding::Categories.id_for_journey(journey) rescue "other" %>
 <% plant_starters = Array(I18n.t("strategy.first_climb.examples.#{category}.plan", default: [])).first(5) unless destination_overlay %>
@@ -432,9 +433,9 @@
         <button type="button"
                 class="lp-trail-sheet__crumb"
                 data-action="click->trail-camp-sheet#close"
-                aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: peak_title) %>">
+                aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: mountain_nav) %>">
           <span class="lp-trail-sheet__crumb-arrow" aria-hidden="true">‹</span>
-          <span class="lp-trail-sheet__crumb-label"><%= peak_title.truncate(18) %></span>
+          <span class="lp-trail-sheet__crumb-label"><%= mountain_nav %></span>
         </button>
         <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
         <p class="lp-trail-sheet__subtitle"

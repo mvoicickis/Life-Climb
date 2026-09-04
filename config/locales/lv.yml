@@ -393,7 +393,7 @@ lv:
         finish_camp: "Atzīmēt kā pabeigtu"
         finish_camp_confirm: "Atzīmēt šo nometni kā pabeigtu? Vēlāk to varēsi atvērt no jauna."
         reopen_camp: "Atvērt no jauna"
-        no_open_battles: "Kas ir mazākais solis, kas pavirza šo nometni uz priekšu?"
+        no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         won_battles:
           one: "%{count} uzvarēta cīņa"
           other: "%{count} uzvarētas cīņas"

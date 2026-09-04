@@ -244,6 +244,7 @@ de:
           prompt_generic: "How much?"  # TODO: translate
         plant:
           kicker: "Next camp"  # TODO: translate
+        no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         base_camp:
           add_habit: "Add basic"  # TODO: translate
     help:
