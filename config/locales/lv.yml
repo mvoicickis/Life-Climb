@@ -1393,11 +1393,9 @@ lv:
     sign_in: "Ienākt"
     start_free: "Sākt bez maksas"
     back_home: "← Atpakaļ uz sākumu"
-    hero_kicker: "LifePoints"
     hero_tagline: "The mountain is yours to climb" # TODO: translate
     hero_title: "Lielākā daļa mērķu nomirst piezīmju lietotnē."
     hero_body: "LifePoints pārvērš vienu īstu mērķi kalnā — un katru dienu dod tev vienu skaidru soli uz augšu."
-    hero_proof: "Pirmie kāpēji jau ir ceļā"
     hero_note: "Bezmaksas sākums · aizņem apmēram 2 minūtes"
     areas_title: "Tava dzīve, pa vienai jomai"
     areas_body: "Veselība. Karjera. Nauda. Attiecības. Jēga. Izvēlies, kur vēlies augt — LifePoints pārvērš to plānā, kuram tu vari sekot."
@@ -1406,22 +1404,19 @@ lv:
     how_step1_title: "Izvēlies savu kalnu"
     how_step1_body: "Izvēlies vienu mērķi, ko patiešām vēlies."
     how_step1_example: "Piemērs: “Noskriet savu pirmo 10 km.”"
-    how_step2_title: "Nosauc šodienas soli"
-    how_step2_body: "Pārvērt mērķi vienā mazā lietā, ko vari pabeigt šodien."
+    how_step2_title: "Name today's battle" # TODO: translate
+    how_step2_body: "Turn the goal into one small battle you can win today." # TODO: translate
     how_step2_example: "Piemērs: “Pēc darba skriet 15 minūtes.”"
-    how_step3_title: "Dari — kāp"
-    how_step3_body: "Atzīmē. Pelni darba punktus. Skaties, kā kalns ceļas, kad dari īstu darbu."
+    how_step3_title: "Win the battle" # TODO: translate
+    how_step3_body: "Win the battle. Your mountain rises. Nothing ever goes down." # TODO: translate
     how_step3_example: "Piemērs: Šodien izdarīts → kalns kustas."
-    why_title: "Katrs punkts tevi padara dzīvāku"
-    why_body: "Darba punkti nav spēles rezultāts. Tie ir pierādījums — katrs nozīmē, ka tu izdarīji kaut ko īstu dzīves daļā, kas tev ir svarīga."
-    why_ap_label: "Darba punkti"
-    why_ap_abbr: "(AP)"
-    why_ap_chip: "+50 AP"
-    progress_title: "Tavs progress, vienkārši"
-    progress_body: "Viens kalna procents. Kāp, pabeidzot īstu darbu. Maigs sērijas ritms palīdz — ja dienu izlaiž, Base Camp var tevi nosegt."
-    cta_title: "Gatavs kāpt?"
-    cta_body: "Izvēlies savu kalnu. Sāc šodienas kauju."
-    footer_tagline: "Kļūsti dzīvāks."
+    why_title: "Proof you did something real" # TODO: translate
+    why_body: "Not a game score. Every point is one real thing you finished, in a part of your life you chose." # TODO: translate
+    why_ap_label: "Battle strength" # TODO: translate
+    why_ap_chip: "+50" # TODO: translate
+    cta_title: "Pick your mountain" # TODO: translate
+    cta_body: "One goal. One step today. Free to start." # TODO: translate
+    footer_tagline: "The mountain is yours to climb" # TODO: translate
   auth:
     name: "Tavs vārds"
     name_placeholder: "Kā tevi saukt?"
