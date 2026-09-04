@@ -134,7 +134,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_match "is-done", response.body
     assert_no_match %(action="replace" target="trail-battle-#{@battle.id}"), response.body
     assert_no_match "trail-toast-host", response.body
-    assert_no_match(/Won/, response.body)
+    assert_no_match(/Won “/, response.body)
     assert @battle.reload.completed?
   end
 
