@@ -11,7 +11,8 @@ module Strategy
     def self.sync_goal!(user:, goal:)
       return nil if goal.blank? || !goal.day? || goal.holding? || goal.life_area.blank?
 
-      new(user: user, life_area: goal.life_area).sync_goal!(goal)
+      today = Date.current
+      new(user: user, life_area: goal.life_area, from: today, to: today).sync_goal!(goal)
     end
 
     def initialize(user:, life_area:, from:, to:)
