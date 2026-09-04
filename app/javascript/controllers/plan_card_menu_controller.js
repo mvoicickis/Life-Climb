@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 const OPEN_EVENT = "lp-rpg-path-menu:open"
+const CAMP_OPEN_EVENT = "lp-trail-camp-menu:open"
 
 // Plan card ⋮ menu — Edit / Delete use the shared LifePoints dialog.
 export default class extends Controller {
@@ -12,7 +13,8 @@ export default class extends Controller {
     this._onOpenElsewhere = (event) => this.onOpenElsewhere(event)
     this._onReposition = () => this.positionMenu()
     this._onViewport = () => this.ensurePrimaryVisible()
-    window.addEventListener(OPEN_EVENT, this._onOpenElsewhere)
+    this._openEventName = this.campSheetMenu() ? CAMP_OPEN_EVENT : OPEN_EVENT
+    window.addEventListener(this._openEventName, this._onOpenElsewhere)
   }
 
   disconnect() {
@@ -20,7 +22,15 @@ export default class extends Controller {
     this.closeEdit()
     this.closeDelete()
     this.closeObjectives()
-    window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
+    window.removeEventListener(this._openEventName, this._onOpenElsewhere)
+  }
+
+  campSheetMenu() {
+    return this.element.hasAttribute("data-camp-menu-panel")
+  }
+
+  campSheetMenuHidden() {
+    return this.campSheetMenu() && this.element.hidden
   }
 
   toggle(event) {
@@ -29,6 +39,7 @@ export default class extends Controller {
     if (typeof event.stopImmediatePropagation === "function") {
       event.stopImmediatePropagation()
     }
+    if (this.campSheetMenuHidden()) return
     if (this.menuTarget.hidden) {
       this.open()
     } else {
@@ -128,7 +139,9 @@ export default class extends Controller {
   }
 
   open() {
-    window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
+    if (this.campSheetMenuHidden()) return
+
+    window.dispatchEvent(new CustomEvent(this._openEventName, { detail: { source: this } }))
     this.menuTarget.hidden = false
     this.buttonTarget.setAttribute("aria-expanded", "true")
     this.element.classList.add("is-menu-open")
@@ -188,6 +201,8 @@ export default class extends Controller {
   }
 
   onOpenElsewhere(event) {
-    if (event.detail?.source !== this) this.close()
+    if (event.detail?.source === this) return
+    if (this.campSheetMenuHidden()) return
+    this.close()
   }
 }

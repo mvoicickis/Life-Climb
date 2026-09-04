@@ -1788,6 +1788,62 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   background: rgba(15, 148, 136, 0.4);
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 4px 6px;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__title-row .lp-trail-sheet__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.lp-trail-sheet__camp-menu {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.lp-trail-sheet__camp-menu[hidden] {
+  display: none !important;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(247, 234, 217, 0.28);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f7ead9;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__menu-btn:hover,
+.lp-trail.is-v4 .lp-trail-sheet__menu-btn:focus-visible,
+.lp-trail.is-v4 .lp-trail-sheet__camp-menu.is-menu-open .lp-trail-sheet__menu-btn,
+.lp-trail.is-v4 .lp-trail-sheet__menu-btn[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(247, 234, 217, 0.42);
+  outline: none;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__menu-btn:active {
+  background: rgba(255, 255, 255, 0.26);
+}
+
 .lp-trail-sheet__crumb-arrow {
   flex: 0 0 44px;
   width: 44px;
@@ -1873,17 +1929,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   z-index: 0;
 }
 
-.lp-trail-battles__camp-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  margin: 0;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
 .lp-trail-battles__composer {
   position: sticky;
   top: 0;
@@ -1891,60 +1936,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   margin: 0 0 0.65rem;
   padding: 0.15rem 0 0.65rem;
   background: linear-gradient(180deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
-}
-
-.lp-trail-battles__camp-fold {
-  margin: 0.85rem 0 0;
-  border-top: 1px solid rgba(247, 234, 217, 0.12);
-  padding-top: 0.55rem;
-}
-
-.lp-trail-battles__camp-fold-summary {
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: rgba(247, 234, 217, 0.72);
-  list-style: none;
-}
-
-.lp-trail-battles__camp-fold-summary::-webkit-details-marker {
-  display: none;
-}
-
-.lp-trail-battles__camp-fold[open] .lp-trail-battles__camp-actions {
-  margin-top: 0.55rem;
-}
-
-.lp-trail-battles__camp-actions > form {
-  min-width: 0;
-  margin: 0;
-}
-
-.lp-trail-battles__camp-finish-form {
-  grid-column: 1 / -1;
-}
-
-.lp-trail-battles__camp-edit,
-.lp-trail-battles__camp-delete,
-.lp-trail-battles__camp-finish {
-  flex: none;
-  min-width: 0;
-  width: 100%;
-  min-height: 44px;
-  border: 1px solid rgba(247, 234, 217, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  color: #f7ead9;
-  border-radius: 0.65rem;
-  padding: 0.45rem 0.6rem;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.lp-trail-battles__camp-delete {
-  color: #f5b4a4;
 }
 
 /* Input full width; Daily and Add stacked on narrow phones (360px). */

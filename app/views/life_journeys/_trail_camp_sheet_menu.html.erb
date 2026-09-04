@@ -1,0 +1,60 @@
+<%# Camp sheet header ⋮ menu. locals: project %>
+<% project = local_assigns.fetch(:project) %>
+<button type="button"
+        class="lp-trail-sheet__menu-btn"
+        data-plan-card-menu-target="button"
+        data-action="click->plan-card-menu#toggle"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-label="<%= t('strategy.rpg.edit_checkpoint') %>">
+  <span aria-hidden="true">⋮</span>
+</button>
+<div class="lp-climb-path__menu"
+     data-plan-card-menu-target="menu"
+     role="menu"
+     hidden>
+  <button type="button"
+          class="lp-climb-path__menu-item"
+          role="menuitem"
+          data-action="click->plan-card-menu#close click->trail-camp-sheet#editCamp">
+    <span aria-hidden="true">✎</span>
+    <%= t("strategy.rpg.trail.edit_camp") %>
+  </button>
+  <button type="button"
+          class="lp-climb-path__menu-item"
+          role="menuitem"
+          data-action="click->plan-card-menu#close click->trail-camp-sheet#editCampDescription">
+    <span aria-hidden="true">✎</span>
+    <%= t("strategy.rpg.trail.edit_camp_description") %>
+  </button>
+  <% if project.completed? %>
+    <%= button_to t("strategy.rpg.trail.reopen_camp"),
+          strategy_goal_manual_completion_path(project),
+          method: :delete,
+          class: "lp-climb-path__menu-item",
+          form: { class: "lp-climb-path__menu-form", data: { turbo: false } } %>
+  <% else %>
+    <%= button_to t("strategy.rpg.trail.finish_camp"),
+          strategy_goal_manual_completion_path(project),
+          method: :post,
+          class: "lp-climb-path__menu-item",
+          form: {
+            class: "lp-climb-path__menu-form",
+            data: {
+              turbo: false,
+              turbo_confirm: t("strategy.rpg.trail.finish_camp_confirm")
+            }
+          } %>
+  <% end %>
+  <%= button_to t("strategy.rpg.trail.delete_camp"),
+        strategy_goal_path(project),
+        method: :delete,
+        class: "lp-climb-path__menu-item is-danger",
+        form: {
+          class: "lp-climb-path__menu-form",
+          data: {
+            turbo: true,
+            turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: project.title)
+          }
+        } %>
+</div>

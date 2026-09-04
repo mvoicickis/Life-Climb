@@ -269,7 +269,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_no_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
   end
 
-  test "camp sheet composer sits under camp fold at 360px with one battle" do
+  test "camp sheet composer sits close to battle list at 360px with one battle" do
     page.driver.browser.manage.window.resize_to(360, 800)
 
     visit new_session_path
@@ -282,18 +282,25 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
 
     open_trail_camp_sheet!(@project)
 
-    gap = page.evaluate_script(<<~JS)
+    metrics = page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector("#trail-battles-#{@project.id}");
-        const fold = root?.querySelector(".lp-trail-battles__camp-fold-summary");
+        const anchor = root?.querySelector(".lp-trail-battles__list li:last-child")
+          || root?.querySelector(".lp-trail-battles__seed-hint");
         const composer = root?.querySelector(".lp-trail-battles__composer.is-dock");
-        if (!fold || !composer) return null;
-        return Math.round(composer.getBoundingClientRect().top - fold.getBoundingClientRect().bottom);
+        const menuBtn = document.querySelector("#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn");
+        if (!anchor || !composer || !menuBtn) return null;
+        const menuRect = menuBtn.getBoundingClientRect();
+        return {
+          gap: Math.round(composer.getBoundingClientRect().top - anchor.getBoundingClientRect().bottom),
+          menuH: Math.round(menuRect.height)
+        };
       })()
     JS
 
-    assert gap, "expected camp fold and composer in camp sheet"
-    assert_operator gap, :<=, 24, "expected composer directly under camp fold, gap was #{gap}px"
+    assert metrics, "expected battle list, composer, and header menu in camp sheet"
+    assert_operator metrics["gap"], :<=, 48, "expected composer near battle list, gap was #{metrics['gap']}px"
+    assert_equal 44, metrics["menuH"]
   end
 
   test "camp sheet long list keeps last battle above sticky composer at 360px" do
