@@ -11,6 +11,7 @@
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
+<% battle_suggestion = days.empty? && !pages_mode ? mountain_trail_battle_suggestion(project) : nil %>
 <% add_form = capture do %>
   <%= form_with url: strategy_goals_path,
         method: :post,
@@ -65,7 +66,11 @@
      data-range-min="<%= project.try(:range_min) %>"
      data-range-max="<%= project.try(:range_max) %>"
      data-trail-battles-session-wins-value="0"
-     data-session-win-template="<%= t('strategy.rpg.trail.session_wins_toast') %>">
+     data-session-win-template="<%= t('strategy.rpg.trail.session_wins_toast') %>"
+     data-trail-battles-create-url-value="<%= strategy_goals_path %>"
+     data-trail-battles-life-area-id-value="<%= area.id %>"
+     data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
+     data-trail-battles-parent-id-value="<%= project.id %>">
   <% if project_check_pending?(project) %>
     <div class="lp-trail-battles__camp-check">
       <%= render "dashboard/dash_project_check",
@@ -100,7 +105,17 @@
       </button>
     </div>
   <% else %>
-    <% if open_days.any? %>
+    <% if days.empty? && battle_suggestion.present? %>
+      <p class="lp-trail-battles__seed-hint"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
+      <ul class="lp-trail-battles__list">
+        <%= render "life_journeys/trail_battle_suggestion_row",
+              project: project,
+              suggestion: battle_suggestion,
+              area: area,
+              goal: goal,
+              plan: plan %>
+      </ul>
+    <% elsif open_days.any? %>
       <ul class="lp-trail-battles__list">
         <% open_days.each_with_index do |battle, index| %>
           <%= render "life_journeys/trail_battle_row",
@@ -110,8 +125,6 @@
                 show_move_down: index < open_days.size - 1 %>
         <% end %>
       </ul>
-    <% else %>
-      <p class="lp-trail-battles__empty"><%= t("strategy.rpg.trail.no_open_battles") %></p>
     <% end %>
 
     <% if done_days.any? %>
@@ -126,6 +139,7 @@
     <% end %>
   <% end %>
 
+  <% if days.any? %>
   <details class="lp-trail-battles__camp-fold">
     <summary class="lp-trail-battles__camp-fold-summary"><%= t("strategy.rpg.trail.camp_fold") %></summary>
     <div class="lp-trail-battles__camp-actions">
@@ -176,6 +190,7 @@
       <% end %>
     </div>
   </details>
+  <% end %>
 
   <% unless pages_mode %>
     <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>

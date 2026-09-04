@@ -19,6 +19,7 @@
 <% else %>
   <%= button_to battle_win_path(battle),
         method: :post,
+        params: { source: "camp_sheet" },
         class: "lp-trail-battles__tick",
         form: {
           class: "lp-trail-battles__tick-form",

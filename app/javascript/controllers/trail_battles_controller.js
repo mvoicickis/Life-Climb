@@ -10,7 +10,11 @@ export default class extends Controller {
 
   static values = {
     sessionWins: { type: Number, default: 0 },
-    keepDaily: { type: Boolean, default: false }
+    keepDaily: { type: Boolean, default: false },
+    createUrl: String,
+    lifeAreaId: Number,
+    lifeJourneyId: Number,
+    parentId: Number
   }
 
   connect() {
@@ -239,6 +243,80 @@ export default class extends Controller {
 
   disconnect() {
     if (this._sessionToastTimer) window.clearTimeout(this._sessionToastTimer)
+  }
+
+  editSuggestion(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const row = event.currentTarget.closest(".lp-trail-battles__row.is-suggestion")
+    if (!row || row.querySelector("input.lp-trail-battles__inline")) return
+
+    const nameBtn = row.querySelector(".lp-trail-battles__name-btn")
+    const current = (nameBtn?.textContent || row.dataset.suggestionTitle || "").trim()
+    if (!nameBtn) return
+
+    nameBtn.hidden = true
+    const input = document.createElement("input")
+    input.type = "text"
+    input.className = "lp-trail-battles__input lp-trail-battles__inline"
+    input.maxLength = 120
+    input.value = current
+    nameBtn.insertAdjacentElement("afterend", input)
+    input.focus()
+    input.select()
+
+    const commit = async () => {
+      const title = input.value.trim()
+      input.remove()
+      nameBtn.hidden = false
+      if (!title || title === current) return
+
+      nameBtn.textContent = title
+      row.dataset.suggestionTitle = title
+      const titleField = row.querySelector('input[name="title"]')
+      if (titleField) titleField.value = title
+
+      const token = document.querySelector("meta[name='csrf-token']")?.content
+      const body = new URLSearchParams()
+      body.set("life_area_id", String(this.lifeAreaIdValue || ""))
+      body.set("life_journey_id", String(this.lifeJourneyIdValue || ""))
+      body.set("parent_id", String(this.parentIdValue || ""))
+      body.set("horizon", "day")
+      body.set("scheduled_on", new Date().toISOString().slice(0, 10))
+      body.set("add_position", "top")
+      body.set("repeat", "none")
+      body.set("title", title)
+      body.set("authenticity_token", token || "")
+
+      const response = await fetch(this.createUrlValue || "/strategy_goals", {
+        method: "POST",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html, text/html",
+          "X-CSRF-Token": token || ""
+        },
+        body,
+        credentials: "same-origin"
+      })
+
+      const html = await response.text()
+      const contentType = response.headers.get("content-type") || ""
+      if (response.ok && contentType.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
+        window.Turbo.renderStreamMessage(html)
+      }
+    }
+
+    input.addEventListener("blur", commit, { once: true })
+    input.addEventListener("keydown", (keyEvent) => {
+      if (keyEvent.key === "Enter") {
+        keyEvent.preventDefault()
+        input.blur()
+      }
+      if (keyEvent.key === "Escape") {
+        keyEvent.preventDefault()
+        input.value = current
+        input.blur()
+      }
+    })
   }
 
   renameBattle(event) {

@@ -48,6 +48,15 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert @todo.reload.completed?
   end
 
+  test "Today turbo win still renders celebrate bridge independently of camp sheet wins" do
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    assert_response :ok
+    assert_match "data-battle-day-stream-bridge-celebrate-value=\"true\"", response.body
+    assert_match %(turbo-stream action="append" target="today-dash-root"), response.body
+    assert_no_match "trail-toast-host", response.body
+  end
+
   test "turbo stream response includes celebrate bridge payload in stream body" do
     post complete_daily_todo_path(@todo), as: :turbo_stream
 

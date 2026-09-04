@@ -174,6 +174,64 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, @user.strategy_goals.where(horizon: "month").count
   end
 
+  test "seed_win creates and wins a battle in one post" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Empty camp", position: 0
+    )
+
+    assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: project.id,
+        horizon: "day",
+        scheduled_on: Date.current.to_s,
+        title: "Take the first small step",
+        seed_win: "1"
+      }, as: :turbo_stream
+    end
+
+    assert_response :ok
+    battle = project.children.for_kind("day").find_by!(title: "Take the first small step")
+    assert battle.completed?
+    assert @user.daily_todos.for_day.exists?(strategy_goal_id: battle.id, completed_at: battle.completed_at)
+    assert_match "trail-battles-#{project.id}", response.body
+    assert_no_match "trail-battle-suggestion-#{project.id}", response.body
+  end
+
+  test "create day battle without seed_win stays open" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Empty camp", position: 0
+    )
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: project.id,
+      horizon: "day",
+      scheduled_on: Date.current.to_s,
+      title: "Custom battle"
+    }, as: :turbo_stream
+
+    assert_response :ok
+    battle = project.children.for_kind("day").find_by!(title: "Custom battle")
+    assert_not battle.completed?
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+    assert_nil todo.completed_at
+  end
+
   test "battles hang directly under projects" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0

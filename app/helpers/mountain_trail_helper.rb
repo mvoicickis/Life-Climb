@@ -241,6 +241,17 @@ module MountainTrailHelper
     end
   end
 
+  def mountain_trail_battle_suggestion(project)
+    journey = project.life_journey
+    category = Onboarding::Categories.id_for_journey(journey)
+    list = Array(I18n.t("strategy.rpg.trail.battle_suggestions", default: [])) +
+           Array(I18n.t("strategy.first_climb.examples.#{category}.action", default: []))
+    list = list.uniq
+    return nil if list.empty?
+
+    list[project.id % list.size]
+  end
+
   def mountain_trail_last_log_amount(project)
     return nil if project.blank?
 
