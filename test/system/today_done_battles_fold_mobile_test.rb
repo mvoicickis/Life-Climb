@@ -35,7 +35,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_today_v2_shell!
+    assert_selector ".lp-dash-nav.is-today-v2", wait: 8
     visit dashboard_path
 
     assert_today_v2_all_clear_shell!

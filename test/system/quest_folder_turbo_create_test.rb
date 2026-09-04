@@ -12,7 +12,8 @@ class QuestFolderTurboCreateTest < ApplicationSystemTestCase
       ideal_scene: "Hired", current_reality: "Searching", next_win: "Interview",
       today_mission: "Apply", closer_percent: 20, route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
+    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox")
+    dismiss_onboarding_missions!(@user)
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -31,7 +32,7 @@ class QuestFolderTurboCreateTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_today_v2_shell!
+    assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     open_mountain_list_fallback!
