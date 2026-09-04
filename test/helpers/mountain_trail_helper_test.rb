@@ -586,8 +586,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, false, nil, false
     )
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
-      1, false, false, [ battle ], nil, nil, false
+    camp = Struct.new(:id, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?).new(
+      1, false, false, false, [ battle ], nil, nil, false
     )
     marker = mountain_trail_climber_marker([ camp ])
     assert marker[:visible]
@@ -598,6 +598,9 @@ class MountainTrailHelperTest < ActionView::TestCase
     done_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, true, Time.current, false
     )
+    won_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
+      true, false, true, Time.current, false
+    )
     open_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, false, nil, false
     )
@@ -605,7 +608,7 @@ class MountainTrailHelperTest < ActionView::TestCase
       1, true, false, [ done_battle ], 0.48, 0.72, false
     )
     current = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
-      2, false, false, [ open_battle ], 0.5, 0.55, false
+      2, false, false, [ won_battle, open_battle ], 0.5, 0.55, false
     )
     marker = mountain_trail_climber_marker([ cleared, current ])
     assert marker[:visible]
