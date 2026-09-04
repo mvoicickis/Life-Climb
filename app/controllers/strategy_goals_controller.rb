@@ -52,8 +52,12 @@ class StrategyGoalsController < ApplicationController
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
       apply_cascaded_todo_times!(goal) if goal.day?
       if seed_win_requested? && goal.day? && goal.parent&.project?
-        win_result = Battles::WinFromMountain.call(battle: goal, user: current_user, session: session)
-        win_result.flash.each { |key, value| flash[key] = value }
+        battle = goal.reload
+        Strategy::CascadeToDaily.sync_goal!(user: current_user, goal: battle) unless current_user.daily_todos.for_day.exists?(strategy_goal_id: battle.id)
+        win_result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
+        unless request.format.turbo_stream?
+          win_result.flash.each { |key, value| flash[key] = value }
+        end
       end
       Strategy::SyncCompletion.resync!(node: goal) if goal.plan? || goal.project?
       if celebration[:amount].to_i.positive?
@@ -378,7 +382,18 @@ class StrategyGoalsController < ApplicationController
   end
 
   def seed_win_allowed?(parent)
-    parent&.project? && parent.children.select(&:day?).reject(&:holding?).empty?
+    return false unless parent&.project?
+
+    parent.children.select(&:day?).reject(&:holding?).none? { |battle| camp_battle_open?(battle) }
+  end
+
+  def camp_battle_open?(battle)
+    if battle.repeat_daily?
+      todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+      return todo.blank? || todo.completed_at.blank?
+    end
+
+    battle.completed_at.blank?
   end
 
   # Path-level project quantity targets. Only applied when the form includes

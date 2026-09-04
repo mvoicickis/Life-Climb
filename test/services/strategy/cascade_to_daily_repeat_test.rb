@@ -15,6 +15,19 @@ class Strategy::CascadeToDailyRepeatTest < ActiveSupport::TestCase
     )
   end
 
+  test "sync_goal! drops one camp battle onto today" do
+    battle = @user.strategy_goals.create!(
+      life_area: @area, parent: @camp, horizon: "day",
+      title: "Seed step", scheduled_on: Date.current, repeat: "none", position: 0
+    )
+
+    todo = Strategy::CascadeToDaily.sync_goal!(user: @user, goal: battle)
+
+    assert_not_nil todo
+    assert_equal "Seed step", todo.title
+    assert_equal Date.current, todo.scheduled_on
+  end
+
   test "daily template gets a fresh todo after today is completed" do
     @camp_leaf = practice_leaf_for!(@camp)
     practice = @user.strategy_goals.create!(

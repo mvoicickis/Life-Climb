@@ -7,6 +7,14 @@ module Strategy
       new(user:, life_area:, from:, to:).call
     end
 
+    # Drop one camp battle onto Today — used before Mountain wins when area cascade missed it.
+    def self.sync_goal!(user:, goal:)
+      return nil if goal.blank? || !goal.day? || goal.holding? || goal.life_area.blank?
+
+      today = Date.current
+      new(user: user, life_area: goal.life_area, from: today, to: today).sync_goal!(goal)
+    end
+
     def initialize(user:, life_area:, from:, to:)
       @user = user
       @life_area = life_area
@@ -32,6 +40,20 @@ module Strategy
         end
       end
       created
+    end
+
+    def sync_goal!(goal)
+      return nil if goal.blank? || !goal.day? || goal.holding? || goal.life_area.blank?
+
+      date =
+        if goal.repeat_daily?
+          [ Date.current, goal.scheduled_on || Date.current ].max
+        else
+          surfacing_date_for(goal)
+        end
+      prune_stale_one_shot_feed!(goal) if !goal.repeat_daily? && pulled_forward?(goal)
+      upsert_todo!(goal, date)
+      @user.daily_todos.for_day(date).find_by(strategy_goal_id: goal.id)
     end
 
     private

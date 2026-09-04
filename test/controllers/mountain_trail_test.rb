@@ -240,6 +240,29 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-battles__camp-fold"
   end
 
+  test "camp with only won battles shows next seed suggestion" do
+    battle = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battle-suggestion-#{@project.id}"
+    assert_select ".lp-trail-battles__seed-hint"
+    assert_select ".lp-trail-battles__camp-fold"
+  end
+
+  test "seed suggestion tick form requests turbo stream" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battle-suggestion-#{@project.id} form[data-turbo-stream='true']"
+    assert_select "#trail-battle-suggestion-#{@project.id} input[name=seed_win][value='1']"
+  end
+
   test "battle won toast host sits below camp sheet header" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
