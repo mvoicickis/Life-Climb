@@ -76,10 +76,6 @@ module Battles
 
       streak = Climb::Streak.touch!(user: @user)
       pb = Climb::PersonalBest.record!(user: @user, awarded: awarded)
-      Strategy::ProjectCheckQueue.enqueue(
-        session: @session,
-        project_ids: Strategy::ProjectCheckQueue.from_battles([ battle ])
-      )
       Journeys::SyncClimbFromToday.call(user: @user) if journey
       Today::OvershootBonus.sync!(user: @user)
 

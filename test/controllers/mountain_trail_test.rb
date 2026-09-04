@@ -277,7 +277,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_operator toast_index, :<, body_index
   end
 
-  test "camp sheet shows project check when camp is queued" do
+  test "camp sheet does not show project check panel" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Pack the tent", scheduled_on: Date.current, position: 0
@@ -290,8 +290,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-check .lp-dash-project-check"
-    assert_select "#trail-battles-#{@project.id} input[name='return_to'][value='mountain']"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-check", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-dash-project-check", count: 0
   end
 
   test "camp description renders on tent data attribute and sheet subtitle target" do

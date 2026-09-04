@@ -18,7 +18,7 @@
   done_count = [ total_count.to_i - open_count.to_i, 0 ].max
   ring_pct = total_count.to_i.positive? ? ((done_count.to_f / total_count) * 100).round : 0
   ring_pct = 100 if battle_won
-  coaching_below = @project_check.present? || (@battle_angle_project.present? && @battle_angles.present?)
+  coaching_below = false
 %>
 
 <section class="lp-dash-battle" aria-label="<%= t('dash.battle_title') %>">

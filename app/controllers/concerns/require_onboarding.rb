@@ -66,7 +66,6 @@ module RequireOnboarding
       strategy_helps
       journey_completions
       journey_targets
-      project_completions
       battle_wins
       battle_reopens
       strategy_quantity_logs

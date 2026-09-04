@@ -175,7 +175,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_equal 1, @journey.commitment_habit_count
   end
 
-  test "confirm_camp next-action banner is absent on Today V2 after battle complete" do
+  test "next-action banner is absent on Today V2 after battle complete" do
     build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
     dismiss_onboarding_missions!(@user)

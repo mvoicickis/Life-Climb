@@ -7,8 +7,6 @@ module Developer
       Developer::RestartNewPlayerExperience.call(user: current_user)
       session.delete(:v2_onboarding)
       session.delete(:onboarding_draft)
-      session.delete(:project_check_ids)
-      session.delete(:battle_angle_project_id)
       session.delete(Today::EodFlow::ACK_SESSION_KEY)
       session.delete(Today::BattlefieldDay::SESSION_KEY)
 

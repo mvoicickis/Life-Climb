@@ -303,23 +303,6 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
     assert_equal "Checklist quest", result.todo_title
   end
 
-  test "confirm_camp when todos are done and ProjectCheckQueue has a pending project" do
-    project = build_spine_and_cascade!(title: "Send five emails")
-    clear_setup_gap!
-    complete_all_todos!
-
-    session = {}
-    Strategy::ProjectCheckQueue.enqueue(session: session, project_ids: [ project.id ])
-
-    result = Strategy::NextAction.for(user: @user, journey: @journey, session: session)
-
-    assert_equal :confirm_camp, result.key
-    assert_equal :steady, result.tone
-    assert_equal project.title, result.project_title
-    assert_includes result.title, project.title
-    assert_equal "/dashboard", result.href
-  end
-
   test "day_won when todos are done and no pending camp confirmation" do
     build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
@@ -334,12 +317,9 @@ class Strategy::NextActionTest < ActiveSupport::TestCase
   end
 
   test "day_won when todos are done and session is nil" do
-    project = build_spine_and_cascade!(title: "Send five emails")
+    build_spine_and_cascade!(title: "Send five emails")
     clear_setup_gap!
     complete_all_todos!
-    # Without session, ProjectCheckQueue cannot surface — fall through to day_won.
-    session = {}
-    Strategy::ProjectCheckQueue.enqueue(session: session, project_ids: [ project.id ])
 
     result = Strategy::NextAction.for(user: @user, journey: @journey, session: nil)
 

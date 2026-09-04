@@ -2443,14 +2443,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   color: #5b3d8f;
 }
 
-.lp-trail-battles__camp-check {
-  margin: 0 0 0.75rem;
-}
-
-.lp-trail-battles__camp-check .lp-dash-project-check {
-  text-align: left;
-}
-
 .lp-trail-base-sheet__basics {
   margin-bottom: 0.85rem;
 }

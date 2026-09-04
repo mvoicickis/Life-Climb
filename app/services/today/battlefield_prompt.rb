@@ -8,9 +8,6 @@ module Today
       :won_count,
       :headline,
       :sub,
-      :project_check,
-      :battle_angle_project,
-      :battle_angles,
       :upcoming_battle,
       :battles_waiting_count,
       keyword_init: true
@@ -18,17 +15,11 @@ module Today
 
     def self.call(
       health:,
-      project_check: nil,
-      battle_angle_project: nil,
-      battle_angles: nil,
       battles_waiting_count: 0,
       upcoming_battle: nil
     )
       new(
         health: health,
-        project_check: project_check,
-        battle_angle_project: battle_angle_project,
-        battle_angles: battle_angles,
         battles_waiting_count: battles_waiting_count,
         upcoming_battle: upcoming_battle
       ).call
@@ -36,16 +27,10 @@ module Today
 
     def initialize(
       health:,
-      project_check:,
-      battle_angle_project:,
-      battle_angles:,
       battles_waiting_count:,
       upcoming_battle:
     )
       @health = health
-      @project_check = project_check
-      @battle_angle_project = battle_angle_project
-      @battle_angles = Array(battle_angles)
       @battles_waiting_count = battles_waiting_count.to_i
       @upcoming_battle = upcoming_battle
     end
@@ -61,9 +46,6 @@ module Today
         won_count: won_count,
         headline: headline_for(prompt_key, won_count),
         sub: sub_for(prompt_key, won_count),
-        project_check: @project_check,
-        battle_angle_project: @battle_angle_project,
-        battle_angles: @battle_angles,
         upcoming_battle: @upcoming_battle,
         battles_waiting_count: @battles_waiting_count
       )

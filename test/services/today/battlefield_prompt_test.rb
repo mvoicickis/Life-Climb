@@ -26,21 +26,6 @@ class Today::BattlefieldPromptTest < ActiveSupport::TestCase
     assert_equal I18n.t("dash.battlefield.win_state.day_won.sub"), result.sub
   end
 
-  test "project check is passed through but does not change prompt key" do
-    health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
-    project = Struct.new(:title).new("Ship docs")
-
-    result = Today::BattlefieldPrompt.call(
-      health: health,
-      project_check: project,
-      battles_waiting_count: 2,
-      upcoming_battle: { title: "Later", scheduled_on: Date.current + 1.day }
-    )
-
-    assert_equal :battles_waiting, result.prompt_key
-    assert_equal project, result.project_check
-  end
-
   test "battles_waiting when extra battles remain on mountain" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
 

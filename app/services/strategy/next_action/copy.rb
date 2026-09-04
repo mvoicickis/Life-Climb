@@ -9,7 +9,6 @@ module Strategy
         plan_route
         set_today
         complete_battle
-        confirm_camp
         day_won
         battle_overdue
         streak_at_risk
@@ -21,7 +20,6 @@ module Strategy
         plan_route: "🧭 ",
         set_today: "📍 ",
         complete_battle: "⚔️ ",
-        confirm_camp: "🏕️ ",
         day_won: "🏁 ",
         battle_overdue: "⚠️ ",
         streak_at_risk: "🔥 ",

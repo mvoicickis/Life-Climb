@@ -389,7 +389,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "trail-base-sheet", response.body
   end
 
-  test "battle complete does not move goal until project confirmed" do
+  test "battle complete does not move goal until camp marked finished" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -415,13 +415,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert battle.reload.completed?
     assert_equal 0, goal.reload.progress_percent
-    assert Strategy::ProjectCheckQueue.next_for(user: @user, session: session).present?
 
-    post project_completions_path, params: { project_id: project_leaf.id, decision: "done" }
-    assert project_leaf.reload.completed?
-    post project_completions_path, params: { project_id: project.id, decision: "done" }
-    assert_equal 100, goal.reload.progress_percent
+    post strategy_goal_manual_completion_path(project)
+    assert_redirected_to life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
     assert project.reload.completed?
+    assert_equal 100, goal.reload.progress_percent
   end
 
   test "rpg mountain shows trail checkpoints missions and battles for focused project" do

@@ -33,30 +33,8 @@ en:
     continue_planning_hint: "Your mountain has room for more battles."
     journey_hint_climb: "Finish real work to climb your mountain."
     journey_hint_battles: "Win today's battles to finish your camps." # TODO: translate for lv/de/es/ru.
-    project_check:
-      kicker: "Camp check" # TODO: translate for lv/de/es/ru.
-      title: "Is “%{title}” finished?"
-      hint: "Battles win the day. Only a finished camp moves your year goal." # TODO: translate for lv/de/es/ru.
-      confirm: "Yes, camp done" # TODO: translate for lv/de/es/ru.
-      not_yet: "Not yet"
-      done_notice: "Camp done — “%{title}”. Mountain now %{percent}%." # TODO: translate for lv/de/es/ru.
-      not_yet_notice: "Battle won. Sharpen the next fight while the camp is still open." # TODO: translate for lv/de/es/ru.
-      invalid: "That camp check isn’t valid." # TODO: translate for lv/de/es/ru.
     battle_angles:
-      kicker: "Next angle"
-      title: "Make the next battle sharper"
-      hint: "“%{project}” isn’t done yet — pick one clearer fight for tomorrow."
-      list_label: "Suggested next battles"
-      open_strategy: "I’ll plan it on Mountain →"
-      queued: "Tomorrow’s battle is set — “%{title}”"
-      invalid: "That camp can’t take another battle right now." # TODO: translate for lv/de/es/ru.
-      invalid_angle: "Pick one of the suggested angles."
-      templates:
-        fifteen: "15 minutes on %{project}"
-        harder: "Harder cut: %{battle}"
-        blocker: "Clear one blocker for %{project}"
-        prep: "Prep tomorrow’s step for %{project}"
-        smallest: "Smallest next win on %{project}"
+      invalid: "That camp can't take another battle right now." # TODO: translate for lv/de/es/ru.
     momentum:
       begun: "Base camp"
       climbing: "You’re climbing"
@@ -90,14 +68,6 @@ en:
             one: "1 battle won today"
             other: "%{count} battles won today"
           sub: "Rest on the ridge — or open Mountain for your next move."
-        confirm_camp:
-          kicker: "Camp check"
-          headline: "Is this camp done?"
-          sub: "Quick honest look before you move on."
-        pick_angle:
-          kicker: "Sharpen tomorrow"
-          headline: "Pick a sharper next battle"
-          sub: "One clear angle keeps the camp moving."
         battles_waiting:
           kicker: "More on the trail"
           headline:
@@ -1451,14 +1421,6 @@ en:
           - "“%{title}” is waiting. One clear win."
           - "Finish “%{title}” and the trail lights up."
         cta: "Fight on Today"
-      confirm_camp:
-        title: "Check camp: “%{title}”"
-        titles:
-          - "Check camp: “%{title}”."
-          - "Is “%{title}” done, or still climbing?"
-          - "Quick camp check on “%{title}”."
-          - "Honest look: how’s “%{title}”?"
-        cta: "Confirm on Today"
       day_won:
         title: "Day won — keep the mountain moving"
         titles:

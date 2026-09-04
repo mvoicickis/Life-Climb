@@ -356,33 +356,6 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   color: rgba(247, 234, 217, 0.62);
 }
 
-.lp-today-v2-win .lp-dash-project-check,
-.lp-today-v2-win .lp-dash-battle-angles {
-  margin-top: 0.25rem;
-  text-align: left;
-}
-
-/* Win-panel nested blocks: light-theme tokens in application.css are unreadable on dark shell */
-.lp-dash.is-today-v2 .lp-dash-battle-angles__chip {
-  color: var(--today-ink);
-}
-
-.lp-dash.is-today-v2 .lp-dash-battle-angles__hint {
-  color: var(--today-muted);
-}
-
-.lp-dash.is-today-v2 .lp-dash-battle-angles__strategy a {
-  color: var(--today-safe);
-}
-
-.lp-dash.is-today-v2 .lp-dash-battle-angles__strategy a:hover {
-  color: var(--today-ink);
-}
-
-.lp-dash.is-today-v2 .lp-dash-project-check__no {
-  color: var(--today-ink);
-}
-
 .lp-today-v2-recap {
   margin-top: 0.25rem;
   border-radius: 18px;
@@ -921,14 +894,6 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 .lp-today-v2-signoff__actions {
   margin-top: 1rem;
-}
-
-.lp-today-v2-end-of-day__camp-check {
-  margin-top: 1rem;
-}
-
-.lp-today-v2-end-of-day__camp-check .lp-dash-project-check {
-  text-align: left;
 }
 
 /* End of day v2 — sequential screen (nav stays usable) */
