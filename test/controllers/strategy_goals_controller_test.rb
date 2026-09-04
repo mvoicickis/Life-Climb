@@ -389,6 +389,33 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "trail-base-sheet", response.body
   end
 
+  test "destroying a battle via turbo stream removes row and shows undo toast" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    battle = project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Gone battle", scheduled_on: Date.current, position: 0
+    )
+
+    assert_difference -> { project.children.for_kind("day").count }, -1 do
+      delete strategy_goal_path(battle), as: :turbo_stream
+    end
+
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_match %(action="remove" target="trail-battle-#{battle.id}"), response.body
+    assert_match %(action="remove" target="trail-base-battle-#{battle.id}"), response.body
+    assert_match "trail-toast-host", response.body
+    assert_match I18n.t("strategy.rpg.trail.deleted_toast", title: battle.title), response.body
+    assert_not @user.strategy_goals.exists?(id: battle.id)
+  end
+
   test "battle complete does not move goal until camp marked finished" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0

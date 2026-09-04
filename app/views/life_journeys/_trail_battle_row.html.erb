@@ -47,14 +47,14 @@
                 params: { move: "down" },
                 form: { data: { turbo: true } } %>
         <% end %>
-        <%= button_to t("strategy.rpg.delete_checkpoint"),
+        <%= button_to t("strategy.rpg.trail.delete_battle"),
               strategy_goal_path(battle),
               method: :delete,
               class: "is-danger",
               form: {
                 data: {
                   turbo: true,
-                  turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: battle.title),
+                  turbo_confirm: t("strategy.rpg.trail.delete_battle_body", title: battle.title),
                   action: "submit->trail-battles#stashBattleDelete"
                 }
               } %>

@@ -1,3 +1,7 @@
+<% if @removed_was_day %>
+  <%= turbo_stream.remove "trail-battle-#{@removed_id}" %>
+  <%= turbo_stream.remove "trail-base-battle-#{@removed_id}" %>
+<% end %>
 <%= turbo_stream.append "strategy-world" do %>
   <meta data-rpg-refresh="1">
 <% end %>
