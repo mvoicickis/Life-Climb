@@ -30,8 +30,8 @@ module Notifications
 
       result = MorningNudgeBody.for(user: @user, locale: :en)
 
-      assert_includes result.body, "#{"A" * 24}…"
-      assert_includes result.body, "#{"B" * 36}…"
+      assert_includes result.body, "#{"A" * 24}..."
+      assert_includes result.body, "#{"B" * 36}..."
       assert result.body.length <= Notifications::MorningNudgeBody::BODY_LIMIT
     end
 

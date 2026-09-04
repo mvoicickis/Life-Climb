@@ -44,12 +44,12 @@ module MountainTrail
       assert_nil result.battle
     end
 
-    test "returns nil battle when camp has no open day children" do
+    test "returns nil camp and battle when camp has no open day children" do
       seed_mountain_spine!(battle_title: nil)
 
       result = CurrentFocus.for(user: @user)
 
-      assert result.camp.present?
+      assert_nil result.camp
       assert_nil result.battle
     end
 

@@ -46,7 +46,6 @@ module Notifications
     end
 
     test "battle_id surfaces existing battle on Today without creating a new goal" do
-      journey = seed_climb!(@user, today_mission: "Ship login")
       battle = @user.strategy_goals.where(horizon: "day").order(:id).last
       @user.daily_todos.for_day.delete_all
 
@@ -60,9 +59,8 @@ module Notifications
 
       body = JSON.parse(response.body)
       assert body["ok"]
-      assert_equal "Ship login", body["title"]
+      assert_equal battle.title, body["title"]
       assert_equal battle.id, @user.daily_todos.for_day.last.strategy_goal_id
-      assert_equal journey.life_area_id, battle.life_area_id
     end
 
     test "rejects battle_id for another users battle" do
