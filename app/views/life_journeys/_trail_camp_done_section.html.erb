@@ -1,11 +1,14 @@
-<%# Collapsed won battles for a camp sheet. locals: project, done_days, area, goal, plan %>
+<%# Collapsed won battles for a camp sheet. locals: project, won_battles, area, goal, plan %>
 <% project = local_assigns.fetch(:project) %>
-<% done_days = local_assigns.fetch(:done_days) %>
-<% if done_days.any? %>
+<% won_battles = local_assigns.fetch(:won_battles) %>
+<% if won_battles.any? %>
+  <p class="lp-trail-battles__won-here" id="trail-battles-won-here-<%= project.id %>">
+    <%= t("strategy.rpg.trail.won_battles_here", count: won_battles.size) %>
+  </p>
   <details class="lp-trail-battles__done" id="trail-battles-done-<%= project.id %>">
-    <summary id="trail-battles-done-summary-<%= project.id %>"><%= t("strategy.rpg.trail.won_battles", count: done_days.size) %></summary>
+    <summary id="trail-battles-done-summary-<%= project.id %>"><%= t("strategy.rpg.trail.won_battles_fold") %></summary>
     <ul class="lp-trail-battles__list is-done" id="trail-battles-done-list-<%= project.id %>">
-      <% done_days.each do |battle| %>
+      <% won_battles.each do |battle| %>
         <%= render "life_journeys/trail_battle_row", battle: battle %>
       <% end %>
     </ul>

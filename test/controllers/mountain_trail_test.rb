@@ -139,7 +139,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-base-card__kicker", text: /Base camp/i
     assert_select ".lp-trail-base-card__sub", text: /Open Today/
     assert_select "#trail-sheet-camp-base"
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kind"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kind", count: 0
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_match(/--lp-base-y:\s*0\.95/, response.body)
@@ -203,7 +203,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-camp-#{@project.id}"
     assert_select ".lp-trail-sheet__crumb"
     assert_select ".lp-trail-sheet__crumb-arrow"
-    assert_select ".lp-trail-sheet__close", count: 0
+    assert_select ".lp-trail-sheet__close", count: 1
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
     assert_select "#trail-battles-#{@project.id} input[name=source][value=camp_sheet]"
@@ -314,7 +314,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-plant textarea[name='description']"
     assert_select "#trail-battles-#{@project.id}[data-project-description=?]", "Daily strength work"
     assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCampDescription']"
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kind", count: 0
     assert_select "#trail-battles-#{@project.id} dialog[data-trail-battles-target='descriptionDialog'] textarea"
   end
 
@@ -322,6 +322,34 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     patch strategy_goal_path(@project), params: { description: "Morning mobility" }
     assert_response :redirect
     assert_equal "Morning mobility", @project.reload.description
+  end
+
+  test "camp sheet title strips Start prefix for sheet display" do
+    @project.update!(title: I18n.t("strategy.first_climb.project_title", plan: "Learn guitar"))
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-camp-#{@project.id}[data-camp-title=?]",
+                  I18n.t("strategy.first_climb.project_title", plan: "Learn guitar")
+    assert_select "#trail-camp-#{@project.id}[data-camp-sheet-title=?]", "Learn guitar"
+  end
+
+  test "won battles today show count above done fold" do
+    battle = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battles-won-here-#{@project.id}",
+                  text: I18n.t("strategy.rpg.trail.won_battles_here", count: 1)
+    assert_select "#trail-battles-done-summary-#{@project.id}",
+                  text: I18n.t("strategy.rpg.trail.won_battles_fold")
+    assert_select "#trail-battles-done-list-#{@project.id} #trail-battle-#{battle.id}"
   end
 
   test "moving a camp patches trail coords" do
