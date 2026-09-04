@@ -4,7 +4,8 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
   test "landing page is available in english by default" do
     get root_path
     assert_response :success
-    assert_match(/Most goals die in your notes app/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
+    assert_select ".lp-landing-nav__tagline", count: 0
     assert_match(/Start free/, response.body)
     assert_match(/Battle strength/, response.body)
     assert_match(/Name today(?:&#39;|')s battle/, response.body)
@@ -19,7 +20,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :lv)
     assert_redirected_to root_path
     follow_redirect!
-    assert_match(/Lielākā daļa mērķu nomirst piezīmju lietotnē/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
     assert_match(/Sākt bez maksas/, response.body)
     assert_match(/Battle strength/, response.body)
     assert_match(/Name today(?:&#39;|')s battle/, response.body)
@@ -39,7 +40,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :de)
     assert_redirected_to root_path
     follow_redirect!
-    assert_match(/Die meisten Ziele sterben in der Notizen-App/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
     assert_match(/Kostenlos starten/, response.body)
     assert_match(/Battle strength/, response.body)
     assert_match(/Name today(?:&#39;|')s battle/, response.body)
@@ -59,7 +60,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     patch locale_path(locale: :es)
     assert_redirected_to root_path
     follow_redirect!
-    assert_match(/La mayoría de las metas mueren en tu app de notas/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
     assert_match(/Empezar gratis/, response.body)
     assert_match(/Battle strength/, response.body)
     assert_match(/Name today(?:&#39;|')s battle/, response.body)

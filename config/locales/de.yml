@@ -1152,8 +1152,7 @@ de:
     sign_in: "Anmelden"
     start_free: "Kostenlos starten"
     back_home: "← Zurück zur Startseite"
-    hero_tagline: "The mountain is yours to climb" # TODO: translate
-    hero_title: "Die meisten Ziele sterben in der Notizen-App."
+    hero_title: "The mountain is yours to climb" # TODO: translate
     hero_body: "LifePoints macht aus einem echten Ziel einen Berg — und gibt dir jeden Tag einen klaren Schritt nach oben."
     hero_note: "Kostenlos starten · dauert etwa 2 Minuten"
     areas_title: "Dein Leben, ein Bereich nach dem anderen"

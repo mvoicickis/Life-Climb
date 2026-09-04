@@ -10,7 +10,7 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=?]", "lv"
-    assert_match(/Lielākā daļa mērķu nomirst piezīmju lietotnē/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
     assert_match(/Sākt bez maksas/, response.body)
   end
 
@@ -19,7 +19,7 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=?]", "en"
-    assert_match(/Most goals die in your notes app/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
     assert_match(/Start free/, response.body)
   end
 

@@ -6,8 +6,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
       get root_path
     end
     assert_response :success
-    assert_match(/Most goals die in your notes app/, response.body)
-    assert_match(/The mountain is yours to climb/, response.body)
+    assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
+    assert_select ".lp-landing-nav__tagline", count: 0
     assert_match(/Start free/, response.body)
     assert_match(/How it works/, response.body)
     assert_match(/Your life, one area at a time/, response.body)
