@@ -53,6 +53,8 @@ module MountainTrailHelper
   BASE_YFRAC = 0.95
   FOOT_BASE_Y = 0.94
   FOOT_TOP_Y = 0.28
+  # Minimum trail-leg advance per battle win (display-only climber marker).
+  CLIMBER_MIN_LEG_STEP = 0.12
   SIGN_MIN_GAP = 0.09
   SIGN_FLOOR_Y = 0.72
   PEAK_BAND_Y = 0.26
@@ -609,16 +611,74 @@ module MountainTrailHelper
   end
 
   def mountain_trail_companion_slot(projects)
-    current = mountain_trail_current_project(projects)
-    if current
-      layout = mountain_trail_layout(projects)
-      slot = layout[current.id]
-      return { x: slot[:x], y: [ slot[:y] + 0.035, 0.91 ].min } if slot
-    end
+    marker = mountain_trail_climber_marker(projects)
+    return marker.slice(:x, :y) if marker[:visible]
 
-    frac = mountain_trail_climb_fraction(projects)
-    y = FOOT_BASE_Y - frac * (FOOT_BASE_Y - FOOT_TOP_Y)
-    mountain_trail_point_on_curve(y)
+    mountain_trail_point_on_curve(BASE_YFRAC)
+  end
+
+  # Display-only climber on the trail spine between last cleared camp and focus camp.
+  def mountain_trail_climber_marker(all_projects, user: nil)
+    camps = Array(all_projects).reject(&:holding?)
+    return { visible: false } if camps.empty?
+
+    focus = mountain_trail_focus_camp(camps)
+    return { visible: false } if focus.blank?
+
+    progress = mountain_trail_camp_progress(focus, user: user || mountain_trail_viewer)
+    display_ratio = mountain_trail_climber_display_ratio(progress)
+
+    layout = mountain_trail_layout(camps)
+    focus_layout = layout[focus.id]
+    return { visible: false } if focus_layout.blank?
+
+    focus_y = focus_layout[:y].to_f
+    completed = camps.select(&:completed?)
+    last_cleared = completed
+      .select { |project| layout[project.id] && layout[project.id][:y].to_f > focus_y }
+      .min_by { |project| layout[project.id][:y].to_f }
+
+    from_y = last_cleared ? layout[last_cleared.id][:y].to_f : BASE_YFRAC
+    to_y = focus_y
+    y = from_y - (display_ratio * (from_y - to_y))
+    point = mountain_trail_point_on_curve(y)
+
+    {
+      visible: true,
+      x: point[:x],
+      y: point[:y],
+      ratio: display_ratio
+    }
+  end
+
+  def mountain_trail_climber_display_ratio(progress)
+    ratio = progress[:ratio].to_f.clamp(0.0, 1.0)
+    return ratio unless progress[:kind] == :battles
+
+    won = progress[:won].to_i
+    total = progress[:total].to_i
+    return 0.0 if won <= 0 || total <= 0
+
+    raw = won.to_f / total
+    stepped = won * CLIMBER_MIN_LEG_STEP
+    [ raw, stepped ].max.clamp(0.0, 1.0)
+  end
+
+  # Focus camp for the climber: open battles, idle camp, or lowest working camp.
+  def mountain_trail_focus_camp(projects)
+    current = mountain_trail_current_project(projects)
+    return current if current
+
+    idle = mountain_trail_idle_camp(projects)
+    return idle if idle
+
+    working = Array(projects).reject(&:completed?).reject(&:pages_mode?).select do |project|
+      project.children.any? { |child| child.day? && !child.holding? }
+    end
+    return if working.empty?
+
+    layout = mountain_trail_layout(projects)
+    working.max_by { |project| layout.dig(project.id, :y).to_f }
   end
 
   # Momentum 0..1 for embers / hero saturation (mockup energy).

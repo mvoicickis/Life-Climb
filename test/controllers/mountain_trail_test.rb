@@ -62,7 +62,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-segments"
     assert_select ".lp-trail__stars"
     assert_select ".lp-trail__footprints"
-    assert_select ".lp-trail__companion", count: 0
+    assert_select "#trail-climber .lp-trail__companion", count: 1
     assert_select ".lp-trail-camp__quick", count: 0
     assert_select ".lp-trail-camp__leader", count: 0
     assert_select "[data-action*='campPointerDown']"

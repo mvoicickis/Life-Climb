@@ -1,0 +1,11 @@
+<%# Display-only companion on the trail spine. locals: marker %>
+<% marker = local_assigns.fetch(:marker) %>
+<div id="trail-climber" aria-hidden="true">
+  <% if marker[:visible] %>
+    <div class="lp-trail__companion<%= ' is-walk' if local_assigns[:animate] %>"
+         data-trail-ambient-target="companion"
+         style="left: <%= (marker[:x] * 100).round(2) %>%; top: <%= (marker[:y] * 100).round(2) %>%;">
+      <%= companion_image_tag class: "lp-trail__companion-img", alt: "" %>
+    </div>
+  <% end %>
+</div>

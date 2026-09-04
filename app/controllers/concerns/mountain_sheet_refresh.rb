@@ -19,6 +19,7 @@ module MountainSheetRefresh
     @goal = node&.root_goal || project&.root_goal
     @journey = node&.life_journey || project&.life_journey || current_user.primary_focused_journey
     preload_mountain_done_today_for_project!(project)
+    assign_mountain_climber_context!
   end
 
   # Base camp Basics habit log — scope every id through current_user.
@@ -36,6 +37,14 @@ module MountainSheetRefresh
       project.children.select { |child| child.day? && !child.holding? }
     }
     helpers.mountain_trail_preload_done_today!(current_user, battles)
+    assign_mountain_climber_context!
+  end
+
+  def assign_mountain_climber_context!
+    return if @plan.blank?
+
+    @trail = Strategy::Trail.for(plan: @plan)
+    @all_projects = helpers.mountain_trail_all_projects(@trail)
   end
 
   def mountain_goal_matches_journey?(goal, journey)
