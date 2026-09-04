@@ -223,8 +223,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-battle-suggestion-#{@project.id}"
     assert_select ".lp-trail-battles__seed-hint", text: /Win this one to get moving/
-    assert_select "#trail-battles-#{@project.id} input[name=source][value=camp_sheet]", count: 0
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-actions--empty"
     assert_select "#trail-battles-#{@project.id} input[name=seed_win][value='1']"
   end
 

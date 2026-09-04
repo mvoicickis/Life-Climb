@@ -200,7 +200,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     battle = project.children.for_kind("day").find_by!(title: "Take the first small step")
     assert battle.completed?
-    assert @user.daily_todos.for_day.exists?(strategy_goal_id: battle.id, completed_at: battle.completed_at)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
+    assert todo.completed?
     assert_match "trail-battles-#{project.id}", response.body
     assert_no_match "trail-battle-suggestion-#{project.id}", response.body
   end

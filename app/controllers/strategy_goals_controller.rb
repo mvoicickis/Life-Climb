@@ -51,7 +51,7 @@ class StrategyGoalsController < ApplicationController
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
       apply_cascaded_todo_times!(goal) if goal.day?
-      if seed_win_requested? && goal.day? && parent&.project?
+      if seed_win_requested? && goal.day? && goal.parent&.project?
         win_result = Battles::WinFromMountain.call(battle: goal, user: current_user, session: session)
         win_result.flash.each { |key, value| flash[key] = value }
       end

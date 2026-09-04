@@ -190,6 +190,15 @@
       <% end %>
     </div>
   </details>
+  <% else %>
+  <div class="lp-trail-battles__camp-actions lp-trail-battles__camp-actions--empty">
+    <button type="button"
+            class="lp-trail-battles__camp-edit"
+            data-action="click->trail-battles#editCampDescription"
+            aria-label="<%= t('strategy.rpg.trail.edit_camp_description') %>">
+      ✎ <%= t("strategy.rpg.trail.edit_camp_description") %>
+    </button>
+  </div>
   <% end %>
 
   <% unless pages_mode %>
