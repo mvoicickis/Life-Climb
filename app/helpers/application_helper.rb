@@ -69,6 +69,10 @@ module ApplicationHelper
     "The mountain is yours to climb"
   end
 
+  def social_meta_title
+    "Life Climb — #{social_meta_description}"
+  end
+
   def social_og_image_path
     "/og-lifeclimb-share.png"
   end
