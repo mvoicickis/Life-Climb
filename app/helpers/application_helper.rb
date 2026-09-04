@@ -297,6 +297,10 @@ module ApplicationHelper
     ]
   end
 
+  def current_locale_option
+    locale_options.find { |opt| opt[:code] == I18n.locale } || locale_options.first
+  end
+
   def end_of_day_recap_stats(health)
     return "" if health.blank?
 

@@ -28,13 +28,39 @@
     <% end %>
   </div>
 <% else %>
-  <div class="landing-lang <%= 'landing-lang--light' if variant == :auth %>" role="group" aria-label="<%= t('nav.language') %>">
-    <% locale_options.each do |locale| %>
-      <%= button_to locale[:short],
-          locale_path(locale: locale[:code]),
-          method: :patch,
-          class: "landing-lang-btn #{I18n.locale == locale[:code] ? 'is-active' : ''}",
-          form: { class: "inline" } %>
-    <% end %>
+  <% current = current_locale_option %>
+  <div class="landing-lang <%= 'landing-lang--light' if variant == :auth %>"
+       data-controller="dropdown">
+    <button type="button"
+            class="landing-lang-btn landing-lang-btn--toggle is-active"
+            data-dropdown-target="button"
+            data-action="click->dropdown#toggle"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-label="<%= t('nav.language') %>: <%= t("languages.#{current[:code]}") %>">
+      <span aria-hidden="true"><%= current[:short] %></span>
+    </button>
+
+    <div data-dropdown-target="menu"
+         class="landing-lang-menu"
+         role="listbox"
+         aria-label="<%= t('nav.language') %>"
+         hidden>
+      <% locale_options.each do |locale| %>
+        <% next if locale[:code] == current[:code] %>
+        <%= button_to locale[:short],
+            locale_path(locale: locale[:code]),
+            method: :patch,
+            class: "landing-lang-menu-item",
+            form: { class: "landing-lang-menu-form" },
+            role: "option",
+            aria: { label: t("languages.#{locale[:code]}") } %>
+      <% end %>
+      <button type="button"
+              class="landing-lang-menu-close"
+              data-action="click->dropdown#close">
+        <%= t("progress.close") %>
+      </button>
+    </div>
   </div>
 <% end %>
