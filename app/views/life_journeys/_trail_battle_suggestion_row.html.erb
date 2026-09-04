@@ -7,27 +7,30 @@
 <li class="lp-trail-battles__row is-check is-suggestion"
     id="trail-battle-suggestion-<%= project.id %>"
     data-suggestion-title="<%= suggestion %>">
-  <%= form_with url: strategy_goals_path,
+  <%= button_to strategy_goals_path,
         method: :post,
-        class: "lp-trail-battles__tick-form",
-        data: {
-          turbo: true,
-          turbo_stream: true,
-          action: "submit->trail-battles#optimisticTick"
+        params: {
+          life_area_id: area.id,
+          life_journey_id: project.life_journey_id.presence,
+          parent_id: project.id,
+          horizon: "day",
+          scheduled_on: Date.current,
+          add_position: "top",
+          repeat: "none",
+          title: suggestion,
+          seed_win: "1"
+        },
+        class: "lp-trail-battles__tick",
+        form: {
+          class: "lp-trail-battles__tick-form",
+          data: {
+            turbo: true,
+            turbo_stream: true,
+            action: "submit->trail-battles#optimisticTick"
+          }
         } do %>
-    <%= hidden_field_tag :life_area_id, area.id %>
-    <%= hidden_field_tag :life_journey_id, project.life_journey_id.presence %>
-    <%= hidden_field_tag :parent_id, project.id %>
-    <%= hidden_field_tag :horizon, "day" %>
-    <%= hidden_field_tag :scheduled_on, Date.current %>
-    <%= hidden_field_tag :add_position, "top" %>
-    <%= hidden_field_tag :repeat, "none" %>
-    <%= hidden_field_tag :title, suggestion %>
-    <%= hidden_field_tag :seed_win, "1" %>
-    <button type="submit" class="lp-trail-battles__tick" aria-label="<%= t('strategy.rpg.trail.win_battle') %>">
-      <span class="lp-trail-battles__box" aria-hidden="true"></span>
-      <span class="sr-only"><%= t("strategy.rpg.trail.win_battle") %></span>
-    </button>
+    <span class="lp-trail-battles__box" aria-hidden="true"></span>
+    <span class="sr-only"><%= t("strategy.rpg.trail.win_battle") %></span>
   <% end %>
   <span class="lp-trail-battles__copy">
     <button type="button"

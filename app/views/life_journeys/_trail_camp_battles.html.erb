@@ -11,7 +11,7 @@
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
-<% battle_suggestion = days.empty? && !pages_mode ? mountain_trail_battle_suggestion(project) : nil %>
+<% battle_suggestion = open_days.empty? && !pages_mode ? mountain_trail_battle_suggestion(project) : nil %>
 <% add_form = capture do %>
   <%= form_with url: strategy_goals_path,
         method: :post,
@@ -44,7 +44,7 @@
                data-trail-battles-target="dailyToggle"
                data-action="change->trail-battles#toggleDaily">
         <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-        <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.daily") %></span>
+        <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.every_day") %></span>
       </label>
       <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
     </div>
@@ -105,7 +105,7 @@
       </button>
     </div>
   <% else %>
-    <% if days.empty? && battle_suggestion.present? %>
+    <% if open_days.empty? && battle_suggestion.present? %>
       <p class="lp-trail-battles__seed-hint"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
       <ul class="lp-trail-battles__list">
         <%= render "life_journeys/trail_battle_suggestion_row",

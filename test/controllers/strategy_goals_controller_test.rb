@@ -203,7 +203,67 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
     assert todo.completed?
     assert_match "trail-battles-#{project.id}", response.body
-    assert_no_match "trail-battle-suggestion-#{project.id}", response.body
+    assert_match "trail-battle-suggestion-#{project.id}", response.body
+    assert_nil flash[:battle_celebrate]
+    assert_nil flash[:ap_gained]
+  end
+
+  test "seed_win turbo stream stays quiet on mountain like camp sheet wins" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Empty camp", position: 0
+    )
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: project.id,
+      horizon: "day",
+      scheduled_on: Date.current.to_s,
+      title: "Take the first small step",
+      seed_win: "1"
+    }, as: :turbo_stream
+
+    assert_response :ok
+    assert_nil flash[:battle_celebrate]
+    assert_no_match "trail-toast-host", response.body
+  end
+
+  test "seed_win allowed when camp only has won battles" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    won = project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "First win", scheduled_on: Date.current, position: 0
+    )
+    won.complete!
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: won.id)
+    todo.update!(completed_at: Time.current)
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: project.id,
+      horizon: "day",
+      scheduled_on: Date.current.to_s,
+      title: "Next small step",
+      seed_win: "1"
+    }, as: :turbo_stream
+
+    assert_response :ok
+    assert project.children.for_kind("day").exists?(title: "Next small step")
   end
 
   test "create day battle without seed_win stays open" do

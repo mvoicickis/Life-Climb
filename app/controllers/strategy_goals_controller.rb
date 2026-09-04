@@ -81,6 +81,12 @@ class StrategyGoalsController < ApplicationController
         # Stay in the open camp sheet — replace battles list instead of leaving Mountain.
         respond_to do |format|
           format.turbo_stream do
+            if seed_win_requested?
+              flash.discard(:ap_gained)
+              flash.discard(:battle_celebrate)
+              flash.discard(:climb_boss)
+              flash.discard(:climb_reward)
+            end
             @created = goal
             @project = parent.reload
             @goal = goal.root_goal
@@ -378,7 +384,18 @@ class StrategyGoalsController < ApplicationController
   end
 
   def seed_win_allowed?(parent)
-    parent&.project? && parent.children.select(&:day?).reject(&:holding?).empty?
+    return false unless parent&.project?
+
+    parent.children.select(&:day?).reject(&:holding?).none? { |battle| camp_battle_open?(battle) }
+  end
+
+  def camp_battle_open?(battle)
+    if battle.repeat_daily?
+      todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+      return todo.blank? || todo.completed_at.blank?
+    end
+
+    battle.completed_at.blank?
   end
 
   # Path-level project quantity targets. Only applied when the form includes
