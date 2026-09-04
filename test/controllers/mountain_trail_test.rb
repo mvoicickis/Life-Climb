@@ -89,6 +89,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__tick"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
+    assert_select "#trail-battles-#{@project.id} form button.is-danger", text: /Delete battle/
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__dock-spacer"
     assert_select "#trail-base-sheet .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select "#trail-base-sheet .lp-trail-battles__dock-spacer"

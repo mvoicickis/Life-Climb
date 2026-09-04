@@ -46,14 +46,14 @@
                         data-action="click->trail-battles#renameBattle"
                         data-update-url="<%= strategy_goal_path(battle) %>"><%= t("strategy.rpg.trail.battle_rename") %></button>
                 <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
-                <%= button_to t("strategy.rpg.delete_checkpoint"),
+                <%= button_to t("strategy.rpg.trail.delete_battle"),
                       strategy_goal_path(battle),
                       method: :delete,
                       class: "is-danger",
                       form: {
                         data: {
                           turbo: true,
-                          turbo_confirm: t("strategy.rpg.delete_checkpoint_body", title: battle.title),
+                          turbo_confirm: t("strategy.rpg.trail.delete_battle_body", title: battle.title),
                           action: "submit->trail-battles#stashBattleDelete"
                         }
                       } %>

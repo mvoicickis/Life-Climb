@@ -364,6 +364,8 @@ lv:
       # --- Kopīgie cīņu elementi ---
         battle_menu: "Cīņas iespējas"
         battle_rename: "Pārsaukt"
+        delete_battle: "Delete battle" # TODO: translate
+        delete_battle_body: "Remove “%{title}”? This cannot be undone." # TODO: translate
         battle_move_up: "Pārvietot augšup"
         battle_move_down: "Pārvietot lejup"
         battle_moved: "Pārvietots"
