@@ -43,6 +43,33 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(%r{/branding/lifepoints-leaf-mark\.png}, response.body)
   end
 
+  test "landing locale switcher shows current locale with expandable menu" do
+    get root_path
+    assert_response :success
+    assert_select ".landing-lang-btn--toggle", text: "EN"
+    assert_select ".landing-lang-btn--toggle[aria-expanded='false']"
+    assert_select ".landing-lang-btn--toggle[aria-label*='Language']"
+    assert_select ".landing-lang-menu[hidden]"
+    assert_select ".landing-lang-menu-item", count: 4
+    assert_select ".landing-lang-menu-close", text: "Close"
+    assert_select ".landing-lang .landing-lang-btn", count: 1
+  end
+
+  test "landing locale switcher reflects request locale when user locale is nil" do
+    user = users(:one)
+    assert_nil user.locale
+
+    patch locale_path(locale: :de)
+    follow_redirect!
+
+    get root_path
+    assert_response :success
+    assert_select ".landing-lang-btn--toggle", text: "DE"
+    assert_select ".landing-lang-menu-item", count: 4
+    assert_select ".landing-lang-menu-item[aria-label='Deutsch']", text: "EN"
+    assert_select ".landing-lang-menu-item[aria-label='English']", count: 0
+  end
+
   test "landing social meta uses Life Climb og image and tagline" do
     get root_path
     assert_response :success

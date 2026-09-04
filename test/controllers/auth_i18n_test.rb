@@ -42,4 +42,18 @@ class AuthI18nTest < ActionDispatch::IntegrationTest
     assert_match(/Bienvenido de nuevo/, response.body)
     assert_match(/Iniciar sesión/, response.body)
   end
+
+  test "auth locale switcher shows request locale when user locale is nil" do
+    user = users(:one)
+    assert_nil user.locale
+    sign_in_as user
+
+    patch locale_path(locale: :lv)
+    follow_redirect!
+
+    get new_session_path
+    assert_response :success
+    assert_select ".landing-lang-btn--toggle", text: "LV"
+    assert_select ".landing-lang-menu-close"
+  end
 end
