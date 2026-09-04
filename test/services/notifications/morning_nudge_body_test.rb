@@ -29,9 +29,11 @@ module Notifications
       )
 
       result = MorningNudgeBody.for(user: @user, locale: :en)
+      camp_title = ("A" * 40).truncate(Notifications::MorningNudgeBody::CAMP_LIMIT)
+      battle_title = ("B" * 50).truncate(Notifications::MorningNudgeBody::BATTLE_LIMIT)
 
-      assert_includes result.body, "#{"A" * 24}..."
-      assert_includes result.body, "#{"B" * 36}..."
+      assert_includes result.body, camp_title
+      assert_includes result.body, battle_title
       assert result.body.length <= Notifications::MorningNudgeBody::BODY_LIMIT
     end
 
