@@ -13,7 +13,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Your life, one area at a time/, response.body)
     assert_match(/Proof you did something real/, response.body)
     assert_match(/Run my first 10 km/, response.body)
-    assert_match(/Name today's battle/i, response.body)
+    assert_match(/Name today(?:&#39;|')s battle/i, response.body)
     assert_match(/Battle strength/, response.body)
     assert_match(/Win the battle\. Your mountain rises/, response.body)
     assert_match(/Free to start/, response.body)
