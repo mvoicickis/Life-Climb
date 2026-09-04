@@ -43,13 +43,15 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(%r{/branding/lifepoints-leaf-mark\.png}, response.body)
   end
 
-  test "landing social meta uses mountain logo og image" do
+  test "landing social meta uses Life Climb og image and tagline" do
     get root_path
     assert_response :success
     assert_match(/name="theme-color" content="#f8fafc"/, response.body)
-    assert_match(%r{og:image" content="https://[^"]+/og-lifepoints-brand\.png"}, response.body)
-    assert_match(/og:image:alt" content="Life Climb — Most goals die in your notes app\."/, response.body)
-    assert_match(%r{og:url" content="https://[^"]+/"}, response.body)
+    assert_match(%r{og:image" content="https://lifeclimb\.app/og-lifeclimb-share\.png"}, response.body)
+    assert_match(/og:description" content="The mountain is yours to climb"/, response.body)
+    assert_match(/og:image:alt" content="Life Climb — The mountain is yours to climb\."/, response.body)
+    assert_match(%r{og:url" content="https://lifeclimb\.app/"}, response.body)
+    assert_match(%r{rel="canonical" href="https://lifeclimb\.app/"}, response.body)
     assert_match(/application\/ld\+json/, response.body)
     assert_match(/SoftwareApplication/, response.body)
     assert_match(/Action Points/, response.body)
@@ -59,13 +61,13 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get "/robots.txt"
     assert_response :success
     assert_match(/User-agent:\s*\*/i, response.body)
-    assert_match(%r{Sitemap:\s*https://lifepoints\.onrender\.com/sitemap\.xml}, response.body)
+    assert_match(%r{Sitemap:\s*https://lifeclimb\.app/sitemap\.xml}, response.body)
 
     get "/sitemap.xml"
     assert_response :success
-    assert_match(%r{https://lifepoints\.onrender\.com/}, response.body)
-    assert_match(%r{https://lifepoints\.onrender\.com/about}, response.body)
-    assert_match(%r{https://lifepoints\.onrender\.com/registration/new}, response.body)
+    assert_match(%r{https://lifeclimb\.app/}, response.body)
+    assert_match(%r{https://lifeclimb\.app/about}, response.body)
+    assert_match(%r{https://lifeclimb\.app/registration/new}, response.body)
   end
 
   test "signed in users go to dashboard from root" do
