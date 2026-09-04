@@ -1,9 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
+import { TITLE_MAX, attachTitleLimit } from "lib/title_limit"
 
 // Onboarding battles step — add/remove rows, enable Finish when at least one title.
 export default class extends Controller {
   static targets = ["list", "row", "input", "submit", "form"]
-  static values = { max: { type: Number, default: 5 } }
+  static values = {
+    max: { type: Number, default: 5 },
+    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" }
+  }
 
   connect() {
     this.refresh()
@@ -18,15 +22,19 @@ export default class extends Controller {
     row.dataset.onboardingBattlesTarget = "row"
     const placeholder = this.inputTargets[0]?.placeholder || ""
     row.innerHTML = `
-      <input type="text"
-             name="onboarding[battle_titles][]"
-             maxlength="120"
-             class="lp-input w-full"
-             autocomplete="off"
-             placeholder="${placeholder.replace(/"/g, "&quot;")}"
-             aria-describedby="adventure-battles-examples"
-             data-onboarding-battles-target="input"
-             data-action="input->onboarding-battles#refresh">
+      <div class="lp-title-limit lp-adventure__battle-field" data-controller="title-limit"
+           data-title-limit-at-max-template-value="${this.atMaxTemplateValue.replace(/"/g, "&quot;")}">
+        <input type="text"
+               name="onboarding[battle_titles][]"
+               maxlength="${TITLE_MAX}"
+               class="lp-input w-full"
+               autocomplete="off"
+               placeholder="${placeholder.replace(/"/g, "&quot;")}"
+               aria-describedby="adventure-battles-examples"
+               data-onboarding-battles-target="input"
+               data-action="input->onboarding-battles#refresh">
+        <p class="lp-title-limit__count" data-title-limit-target="count" hidden role="status"></p>
+      </div>
       <button type="button"
               class="lp-adventure__battle-remove"
               data-action="onboarding-battles#remove"

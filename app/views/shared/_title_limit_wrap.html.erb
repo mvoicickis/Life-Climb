@@ -1,0 +1,7 @@
+<%# Wraps a title input and shows a count when maxlength is reached. %>
+<div class="lp-title-limit <%= local_assigns[:class] %>"
+     data-controller="title-limit"
+     data-title-limit-at-max-template-value="<%= t('title_limit.at_max') %>">
+  <%= yield %>
+  <p class="lp-title-limit__count" data-title-limit-target="count" hidden role="status"></p>
+</div>

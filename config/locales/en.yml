@@ -6,6 +6,8 @@ en:
       renewal: "%B %-d, %Y"
       dash_weekday: "%A"
   app_name: "Life Climb"
+  title_limit:
+    at_max: "%{count} of %{max} letters used"
   companion:
     prompt_kicker: "New companions"
     prompt_title: "Pick who climbs with you"

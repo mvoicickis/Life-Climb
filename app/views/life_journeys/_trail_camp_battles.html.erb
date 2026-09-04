@@ -30,13 +30,15 @@
     <div class="lp-trail-battles__add-row" data-trail-battles-target="addRow">
       <label class="lp-trail-battles__field">
         <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
-        <%= text_field_tag :title, nil,
-              required: true,
-              maxlength: 120,
-              class: "lp-trail-battles__input",
-              placeholder: t("strategy.rpg.trail.battle_placeholder"),
-              autocomplete: "off",
-              data: { trail_battles_target: "titleField" } %>
+        <%= render layout: "shared/title_limit_wrap" do %>
+          <%= text_field_tag :title, nil,
+                required: true,
+                maxlength: StrategyGoal::TITLE_MAX,
+                class: "lp-trail-battles__input",
+                placeholder: t("strategy.rpg.trail.battle_placeholder"),
+                autocomplete: "off",
+                data: { trail_battles_target: "titleField" } %>
+        <% end %>
       </label>
       <label class="lp-trail-battles__daily-switch">
         <input type="checkbox"
@@ -70,7 +72,8 @@
      data-trail-battles-create-url-value="<%= strategy_goals_path %>"
      data-trail-battles-life-area-id-value="<%= area.id %>"
      data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
-     data-trail-battles-parent-id-value="<%= project.id %>">
+     data-trail-battles-parent-id-value="<%= project.id %>"
+     data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>">
   <% if project_check_pending?(project) %>
     <div class="lp-trail-battles__camp-check">
       <%= render "dashboard/dash_project_check",

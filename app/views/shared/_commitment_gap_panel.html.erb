@@ -121,12 +121,14 @@
                   class: "lp-commitment-gap__form",
                   data: { turbo: true } do %>
               <input type="hidden" name="open_reveal" value="battle">
-              <%= text_field_tag :title, nil,
-                    placeholder: t("strategy.next_action.commitment_gap.battle_placeholder"),
-                    class: "lp-input w-full",
-                    autocomplete: "off",
-                    required: true,
-                    maxlength: 80 %>
+              <%= render layout: "shared/title_limit_wrap" do %>
+                <%= text_field_tag :title, nil,
+                      placeholder: t("strategy.next_action.commitment_gap.battle_placeholder"),
+                      class: "lp-input w-full",
+                      autocomplete: "off",
+                      required: true,
+                      maxlength: StrategyGoal::TITLE_MAX %>
+              <% end %>
               <div class="lp-commitment-gap__time-row">
                 <span class="lp-commitment-gap__hint"><%= t("strategy.next_action.commitment_gap.starts_now_ends") %></span>
                 <%= time_field_tag :end_time, default_end, required: true, class: "lp-input" %>
@@ -210,12 +212,14 @@
                 class: "lp-commitment-gap__form",
                 data: { turbo: true } do %>
             <input type="hidden" name="open_reveal" value="battle">
-            <%= text_field_tag :title, nil,
-                  placeholder: t("strategy.next_action.commitment_gap.battle_placeholder"),
-                  class: "lp-input w-full",
-                  autocomplete: "off",
-                  required: true,
-                  maxlength: 80 %>
+            <%= render layout: "shared/title_limit_wrap" do %>
+              <%= text_field_tag :title, nil,
+                    placeholder: t("strategy.next_action.commitment_gap.battle_placeholder"),
+                    class: "lp-input w-full",
+                    autocomplete: "off",
+                    required: true,
+                    maxlength: StrategyGoal::TITLE_MAX %>
+            <% end %>
             <div class="lp-commitment-gap__time-row">
               <span class="lp-commitment-gap__hint"><%= t("strategy.next_action.commitment_gap.starts_now_ends") %></span>
               <%= time_field_tag :end_time, default_end, required: true, class: "lp-input" %>
