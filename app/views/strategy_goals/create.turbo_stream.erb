@@ -50,6 +50,15 @@
             index: [ @plan.children.count { |c| c.project? && !c.holding? } - 1, 0 ].max,
             total: [ @plan.children.count { |c| c.project? && !c.holding? }, 1 ].max %>
     <% end %>
+    <%= turbo_stream.append "trail-sheet-title-row" do %>
+      <div id="trail-sheet-menu-<%= @created.id %>"
+           class="lp-trail-sheet__camp-menu"
+           data-controller="plan-card-menu"
+           data-camp-menu-panel="<%= @created.id %>"
+           hidden>
+        <%= render "life_journeys/trail_camp_sheet_menu", project: @created %>
+      </div>
+    <% end %>
     <%= turbo_stream.append "trail-sheet-body" do %>
       <div class="lp-trail-sheet__camp"
            id="trail-sheet-camp-<%= @created.id %>"

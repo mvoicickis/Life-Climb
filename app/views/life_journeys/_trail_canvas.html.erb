@@ -437,7 +437,18 @@
           <span class="lp-trail-sheet__crumb-arrow" aria-hidden="true">‹</span>
           <span class="lp-trail-sheet__crumb-label"><%= mountain_nav %></span>
         </button>
-        <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
+        <div class="lp-trail-sheet__title-row" id="trail-sheet-title-row">
+          <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
+          <% projects.each do |project| %>
+            <div id="trail-sheet-menu-<%= project.id %>"
+                 class="lp-trail-sheet__camp-menu"
+                 data-controller="plan-card-menu"
+                 data-camp-menu-panel="<%= project.id %>"
+                 hidden>
+              <%= render "life_journeys/trail_camp_sheet_menu", project: project %>
+            </div>
+          <% end %>
+        </div>
         <p class="lp-trail-sheet__subtitle"
            data-trail-camp-sheet-target="subtitle"
            hidden></p>

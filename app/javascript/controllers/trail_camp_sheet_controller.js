@@ -58,6 +58,7 @@ export default class extends Controller {
 
     this.revealBodyFor({ dataset: { campId: "base" } })
     this._openCampId = "base"
+    this.hideCampMenus()
     this.sheetTarget.hidden = false
     this.sheetTarget.classList.add("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "false")
@@ -98,6 +99,7 @@ export default class extends Controller {
 
     this.revealBodyFor(camp)
     this._openCampId = camp.dataset.campId || null
+    this.showCampMenu(this._openCampId)
 
     this.sheetTarget.hidden = false
     this.sheetTarget.classList.add("is-open")
@@ -145,6 +147,49 @@ export default class extends Controller {
     event.stopPropagation()
   }
 
+  editCamp(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    this.activeTrailBattlesController()?.editCamp(event)
+  }
+
+  editCampDescription(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    this.activeTrailBattlesController()?.editCampDescription(event)
+  }
+
+  showCampMenu(campId) {
+    if (!this.hasSheetTarget || !campId) return this.hideCampMenus()
+
+    this.sheetTarget.querySelectorAll("[data-camp-menu-panel]").forEach((menu) => {
+      const match = menu.dataset.campMenuPanel === String(campId)
+      menu.hidden = !match
+      menu.toggleAttribute("hidden", !match)
+    })
+  }
+
+  hideCampMenus() {
+    if (!this.hasSheetTarget) return
+
+    this.sheetTarget.querySelectorAll("[data-camp-menu-panel]").forEach((menu) => {
+      menu.hidden = true
+      menu.setAttribute("hidden", "")
+      const controller = this.application.getControllerForElementAndIdentifier(menu, "plan-card-menu")
+      controller?.close()
+    })
+  }
+
+  activeTrailBattlesController() {
+    if (!this._openCampId || !this.hasBodyTarget) return null
+
+    const panel = this.bodyTarget.querySelector(`[data-camp-panel="${this._openCampId}"]:not([hidden])`)
+    const root = panel?.querySelector("[data-controller~='trail-battles']")
+    if (!root) return null
+
+    return this.application.getControllerForElementAndIdentifier(root, "trail-battles")
+  }
+
   setSubtitle(text) {
     if (!this.hasSubtitleTarget) return
 
@@ -176,6 +221,7 @@ export default class extends Controller {
     document.removeEventListener("keydown", this._onKey)
     if (!this.hasSheetTarget) return
 
+    this.hideCampMenus()
     this.sheetTarget.classList.remove("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true

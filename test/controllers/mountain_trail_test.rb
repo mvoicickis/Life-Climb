@@ -206,25 +206,34 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
     assert_select "#trail-battles-#{@project.id} input[name=source][value=camp_sheet]"
-    assert_select "#trail-battles-#{@project.id} form.lp-trail-battles__camp-finish-form[action=?]",
+    assert_select "#trail-sheet-menu-#{@project.id}[data-controller='plan-card-menu']"
+    assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
+    assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCamp']", text: /Edit/
+    assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCampDescription']", text: /Description/
+    assert_select "#trail-sheet-menu-#{@project.id} form.lp-climb-path__menu-form[action=?]",
                   strategy_goal_manual_completion_path(@project)
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/
+    assert_select "#trail-sheet-menu-#{@project.id} form.lp-climb-path__menu-form[action=?]",
+                  strategy_goal_path(@project)
     assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__tent"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__fire"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__title", text: /Base camp/
     markup = css_select("#trail-battles-#{@project.id}").first.to_s
     assert_includes markup, "lp-trail-battles__composer is-dock"
-    assert_operator markup.index("lp-trail-battles__camp-actions"), :<, markup.index("is-dock")
-    assert_includes markup, "lp-trail-battles__camp-fold"
+    assert_not_includes markup, "lp-trail-battles__camp-fold"
+    header_index = response.body.index("lp-trail-sheet__title-row")
+    battles_index = response.body.index("trail-battles-#{@project.id}")
+    assert header_index, "expected camp sheet header menu row"
+    assert battles_index, "expected camp battles panel"
+    assert_operator header_index, :<, battles_index
   end
 
-  test "empty camp shows seed suggestion and hides camp fold" do
+  test "empty camp shows seed suggestion and header camp menu" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battle-suggestion-#{@project.id}"
     assert_select ".lp-trail-battles__seed-hint", text: /Win this one to get moving/
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-actions--empty"
+    assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCampDescription']"
     assert_select "#trail-battles-#{@project.id} input[name=seed_win][value='1']"
   end
 
@@ -237,7 +246,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battle-suggestion-#{@project.id}", count: 0
-    assert_select ".lp-trail-battles__camp-fold"
+    assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
   end
 
   test "camp with only won battles shows next seed suggestion" do
@@ -253,7 +262,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-battle-suggestion-#{@project.id}"
     assert_select ".lp-trail-battles__seed-hint"
-    assert_select ".lp-trail-battles__camp-fold"
+    assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
   end
 
   test "seed suggestion tick form requests turbo stream" do
@@ -303,7 +312,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-sheet__subtitle[data-trail-camp-sheet-target='subtitle'][hidden]"
     assert_select ".lp-trail-plant textarea[name='description']"
     assert_select "#trail-battles-#{@project.id}[data-project-description=?]", "Daily strength work"
-    assert_select "#trail-battles-#{@project.id} button[data-action='click->trail-battles#editCampDescription']"
+    assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCampDescription']"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
     assert_select "#trail-battles-#{@project.id} dialog[data-trail-battles-target='descriptionDialog'] textarea"
   end

@@ -67,6 +67,11 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
         });
       }
       if (sheet) {
+        sheet.querySelectorAll("[data-camp-menu-panel]").forEach((menu) => {
+          const match = menu.dataset.campMenuPanel === String(camp.dataset.campId);
+          menu.hidden = !match;
+          menu.toggleAttribute("hidden", !match);
+        });
         sheet.hidden = false;
         sheet.classList.add("is-open");
         sheet.setAttribute("aria-hidden", "false");
