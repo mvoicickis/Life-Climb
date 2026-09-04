@@ -205,6 +205,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-sheet__close", count: 0
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
+    assert_select "#trail-battles-#{@project.id} input[name=source][value=camp_sheet]"
     assert_select "#trail-battles-#{@project.id} form.lp-trail-battles__camp-finish-form[action=?]",
                   strategy_goal_manual_completion_path(@project)
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-finish", text: /Mark finished/
@@ -215,6 +216,28 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_includes markup, "lp-trail-battles__composer is-dock"
     assert_operator markup.index("lp-trail-battles__camp-actions"), :<, markup.index("is-dock")
     assert_includes markup, "lp-trail-battles__camp-fold"
+  end
+
+  test "empty camp shows seed suggestion and hides camp fold" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battle-suggestion-#{@project.id}"
+    assert_select ".lp-trail-battles__seed-hint", text: /Win this one to get moving/
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-actions--empty"
+    assert_select "#trail-battles-#{@project.id} input[name=seed_win][value='1']"
+  end
+
+  test "camp with a battle hides seed suggestion" do
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Existing fight", scheduled_on: Date.current, position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battle-suggestion-#{@project.id}", count: 0
+    assert_select ".lp-trail-battles__camp-fold"
   end
 
   test "battle won toast host sits below camp sheet header" do
@@ -258,6 +281,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-plant textarea[name='description']"
     assert_select "#trail-battles-#{@project.id}[data-project-description=?]", "Daily strength work"
     assert_select "#trail-battles-#{@project.id} button[data-action='click->trail-battles#editCampDescription']"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
     assert_select "#trail-battles-#{@project.id} dialog[data-trail-battles-target='descriptionDialog'] textarea"
   end
 

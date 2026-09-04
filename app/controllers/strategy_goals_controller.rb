@@ -43,10 +43,18 @@ class StrategyGoalsController < ApplicationController
     apply_trail_params!(goal) if kind == "project"
     assign_auto_trail_slot!(goal) if kind == "project"
 
+    if seed_win_requested? && !seed_win_allowed?(parent)
+      return fail_redirect(t("strategy.bad_parent"), focus_id: parent&.id)
+    end
+
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
       apply_cascaded_todo_times!(goal) if goal.day?
+      if seed_win_requested? && goal.day? && goal.parent&.project?
+        win_result = Battles::WinFromMountain.call(battle: goal, user: current_user, session: session)
+        win_result.flash.each { |key, value| flash[key] = value }
+      end
       Strategy::SyncCompletion.resync!(node: goal) if goal.plan? || goal.project?
       if celebration[:amount].to_i.positive?
         flash[:sp_gained] = celebration[:amount]
@@ -363,6 +371,14 @@ class StrategyGoalsController < ApplicationController
     return if params[:parent_id].blank?
 
     current_user.strategy_goals.find(params[:parent_id])
+  end
+
+  def seed_win_requested?
+    params[:seed_win].to_s == "1"
+  end
+
+  def seed_win_allowed?(parent)
+    parent&.project? && parent.children.select(&:day?).reject(&:holding?).empty?
   end
 
   # Path-level project quantity targets. Only applied when the form includes

@@ -244,6 +244,41 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal "Stop a bad habit", habit[:label]
   end
 
+  test "battle suggestion is stable per camp" do
+    user = users(:one)
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "App live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Write tests",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+
+    first = mountain_trail_battle_suggestion(project)
+    second = mountain_trail_battle_suggestion(project)
+    assert first.present?
+    assert_equal first, second
+  end
+
+  test "battle suggestion falls back to generic list without journey" do
+    project = Struct.new(:id, :life_journey).new(3, nil)
+    assert mountain_trail_battle_suggestion(project).present?
+  end
+
   test "camp shadow leans away from peak light" do
     shadow = mountain_trail_camp_shadow({ x: 0.3, y: 0.5 })
     assert shadow[:dx].negative?

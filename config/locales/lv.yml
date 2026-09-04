@@ -369,7 +369,17 @@ lv:
         battle_moved: "Pārvietots"
         battle_placeholder: "Šodienas cīņa"
         add_battle: "Pievienot cīņu"
-        daily: "Katru dienu"
+        daily: "Do this every day" # TODO: translate
+        seed_battle_hint: "Win this one to get moving." # TODO: translate
+        battle_suggestions: # TODO: translate
+          - "Take the first small step"
+          - "Block 25 minutes and start"
+          - "Study for 20 minutes"
+          - "Send one honest check-in"
+          - "Do one focused practice block"
+          - "Read 10 pages"
+          - "Move $20 to savings"
+          - "Update one resume bullet"
         every_day: "Katru dienu"
         just_once: "Tikai vienreiz"
         log_a_number: "Pierakstīt skaitli"

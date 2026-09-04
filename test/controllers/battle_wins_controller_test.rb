@@ -122,6 +122,19 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-strategy-rpg-celebrate-value=?]", "false"
   end
 
+  test "camp sheet turbo win with source is quiet without toast" do
+    assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
+      post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
+    end
+
+    assert_response :ok
+    assert_match "trail-battle-#{@battle.id}", response.body
+    assert_match "is-done", response.body
+    assert_no_match "trail-toast-host", response.body
+    assert_no_match(/Won/, response.body)
+    assert @battle.reload.completed?
+  end
+
   test "winning a daily battle as turbo stream shows done row and drops base camp" do
     @battle.update!(repeat: "daily")
     Strategy::CascadeToDaily.call(user: @user, life_area: @area, from: Date.current, to: Date.current + 1.day)

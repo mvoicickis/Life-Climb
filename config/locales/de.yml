@@ -245,6 +245,17 @@ de:
         plant:
           kicker: "Next camp"  # TODO: translate
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
+        daily: "Do this every day" # TODO: translate
+        seed_battle_hint: "Win this one to get moving." # TODO: translate
+        battle_suggestions: # TODO: translate
+          - "Take the first small step"
+          - "Block 25 minutes and start"
+          - "Study for 20 minutes"
+          - "Send one honest check-in"
+          - "Do one focused practice block"
+          - "Read 10 pages"
+          - "Move $20 to savings"
+          - "Update one resume bullet"
         base_camp:
           add_habit: "Add basic"  # TODO: translate
     help:
