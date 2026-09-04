@@ -93,7 +93,7 @@ export default class extends Controller {
       this.accentTarget.dataset.accent = accent
     }
 
-    const title = camp.dataset.campTitle || camp.getAttribute("aria-label") || ""
+    const title = camp.dataset.campSheetTitle || camp.dataset.campTitle || camp.getAttribute("aria-label") || ""
     if (this.hasTitleTarget) this.titleTarget.textContent = title
     this.setSubtitle(camp.dataset.campDescription || "")
 

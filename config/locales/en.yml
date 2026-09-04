@@ -1006,6 +1006,10 @@ en:
         won_battles:
           one: "%{count} battle won"
           other: "%{count} battles won"
+        won_battles_here:
+          one: "%{count} battle won here"
+          other: "%{count} battles won here"
+        won_battles_fold: "Won today"
         quick_complete: "Quick win"
         quick_win_toast: "Won “%{title}”"
         mark_reached: "Mark destination reached"

@@ -3,7 +3,7 @@
   <%= turbo_stream.replace "trail-battles-done-slot-#{@project.id}" do %>
     <%= render "life_journeys/trail_camp_done_section",
           project: @project,
-          done_days: @done_days,
+          won_battles: @won_battles,
           area: @project.life_area,
           goal: @goal,
           plan: @plan %>

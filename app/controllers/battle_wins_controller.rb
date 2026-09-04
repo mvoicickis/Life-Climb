@@ -31,7 +31,7 @@ class BattleWinsController < ApplicationController
     @quiet_win = params[:source] == "camp_sheet"
     if @quiet_win && @project.present?
       days = @project.children.select { |child| child.day? && !child.holding? }
-      @done_days = days.select { |day| helpers.mountain_trail_done_today?(day) }
+      @won_battles = days.select { |day| helpers.mountain_trail_done_today?(day) }
                            .sort_by { |d| [ d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] }
     end
     respond_to do |format|

@@ -409,6 +409,10 @@ lv:
         won_battles:
           one: "%{count} uzvarēta cīņa"
           other: "%{count} uzvarētas cīņas"
+        won_battles_here:
+          one: "%{count} battle won here"  # TODO: translate
+          other: "%{count} battles won here"  # TODO: translate
+        won_battles_fold: "Won today"  # TODO: translate
         pages_mode_hint: "Pieraksti lappuses virzienā uz mērķi — ikdienas cīņas nav vajadzīgas."
         log_pages: "Pierakstīt lappuses"
         session_wins_toast: "%{count} uzvarētas šoreiz"

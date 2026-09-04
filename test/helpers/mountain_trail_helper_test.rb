@@ -560,4 +560,9 @@ class MountainTrailHelperTest < ActionView::TestCase
     user = users(:one)
     assert_equal [], mountain_trail_base_habits(journey: nil, user: user)
   end
+
+  test "camp sheet title strips first-climb Start prefix" do
+    project = Struct.new(:title).new(I18n.t("strategy.first_climb.project_title", plan: "Learn guitar"))
+    assert_equal "Learn guitar", mountain_trail_camp_sheet_title(project)
+  end
 end

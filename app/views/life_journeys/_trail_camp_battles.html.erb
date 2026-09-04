@@ -6,12 +6,12 @@
 <% days = project.children.select(&:day?).reject(&:holding?) %>
 <% mountain_trail_preload_done_today!(current_user, days) %>
 <% days = days.sort_by { |d| [ mountain_trail_done_today?(d) ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
-<% open_days = days.reject { |d| mountain_trail_done_today?(d) } %>
-<% done_days = days.select { |d| mountain_trail_done_today?(d) } %>
+<% open_battles = days.reject { |d| mountain_trail_done_today?(d) } %>
+<% won_battles = days.select { |d| mountain_trail_done_today?(d) } %>
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
-<% battle_suggestion = open_days.empty? && !pages_mode ? mountain_trail_battle_suggestion(project) : nil %>
+<% battle_suggestion = open_battles.empty? && !pages_mode ? mountain_trail_battle_suggestion(project) : nil %>
 <% add_form = capture do %>
   <%= form_with url: strategy_goals_path,
         method: :post,
@@ -73,7 +73,6 @@
      data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
      data-trail-battles-parent-id-value="<%= project.id %>"
      data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>">
-  <p class="lp-trail-battles__kind"><%= t("strategy.rpg.trail.camp_kind") %></p>
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
       <p class="lp-trail-battles__pages-label"><%= strategy_quantity_progress_label(project) %></p>
@@ -97,11 +96,11 @@
       </button>
     </div>
   <% else %>
-    <% if open_days.empty? && battle_suggestion.present? %>
+    <% if open_battles.empty? && battle_suggestion.present? %>
       <p class="lp-trail-battles__seed-hint" id="trail-battles-seed-hint-<%= project.id %>"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
     <% end %>
     <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
-      <% if open_days.empty? && battle_suggestion.present? %>
+      <% if open_battles.empty? && battle_suggestion.present? %>
         <%= render "life_journeys/trail_battle_suggestion_row",
               project: project,
               suggestion: battle_suggestion,
@@ -109,12 +108,12 @@
               goal: goal,
               plan: plan %>
       <% else %>
-        <% open_days.each_with_index do |battle, index| %>
+        <% open_battles.each_with_index do |battle, index| %>
           <%= render "life_journeys/trail_battle_row",
                 battle: battle,
                 done: false,
                 show_move_up: index.positive?,
-                show_move_down: index < open_days.size - 1 %>
+                show_move_down: index < open_battles.size - 1 %>
         <% end %>
       <% end %>
     </ul>
@@ -122,7 +121,7 @@
     <div id="trail-battles-done-slot-<%= project.id %>">
       <%= render "life_journeys/trail_camp_done_section",
             project: project,
-            done_days: done_days,
+            won_battles: won_battles,
             area: area,
             goal: goal,
             plan: plan %>

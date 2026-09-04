@@ -315,6 +315,12 @@ module MountainTrailHelper
     project.title.to_s.truncate(CAMP_TENT_TITLE_LIMIT)
   end
 
+  def mountain_trail_camp_sheet_title(project)
+    title = project.title.to_s
+    prefix = I18n.t("strategy.first_climb.project_title", plan: "")
+    title.delete_prefix(prefix)
+  end
+
   def mountain_trail_hud_plan_title(title)
     title.to_s.truncate(HUD_PLAN_TITLE_LIMIT)
   end
