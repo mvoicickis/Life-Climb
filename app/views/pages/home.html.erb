@@ -69,57 +69,11 @@
   </section>
 
   <section class="lp-landing-section lp-landing-section--soft">
-    <div class="lp-landing-split" data-landing-target="fade">
-      <div class="lp-landing-split__copy">
-        <h2 class="lp-landing-heading"><%= t("landing.how_title") %></h2>
-        <ol class="lp-landing-steps">
-          <li class="lp-landing-step">
-            <span class="lp-landing-step__icon" aria-hidden="true">
-              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 26 V10"/>
-                <path d="M8 10 L22 7 V16 L8 13"/>
-              </svg>
-            </span>
-            <div>
-              <p class="lp-landing-step__num">1. <%= t("landing.how_step1_title") %></p>
-              <p class="lp-landing-step__body"><%= t("landing.how_step1_body") %></p>
-              <p class="lp-landing-step__example"><%= t("landing.how_step1_example") %></p>
-            </div>
-          </li>
-          <li class="lp-landing-step">
-            <span class="lp-landing-step__icon" aria-hidden="true">
-              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 24 L12 14 L18 19 L28 8"/>
-                <path d="M22 8 H28 V14"/>
-              </svg>
-            </span>
-            <div>
-              <p class="lp-landing-step__num">2. <%= t("landing.how_step2_title") %></p>
-              <p class="lp-landing-step__body"><%= t("landing.how_step2_body") %></p>
-              <p class="lp-landing-step__example"><%= t("landing.how_step2_example") %></p>
-            </div>
-          </li>
-          <li class="lp-landing-step">
-            <span class="lp-landing-step__icon" aria-hidden="true">
-              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="16" cy="16" r="11"/>
-                <path d="M10 16.5 L14 20.5 L22 12"/>
-              </svg>
-            </span>
-            <div>
-              <p class="lp-landing-step__num">3. <%= t("landing.how_step3_title") %></p>
-              <p class="lp-landing-step__body"><%= t("landing.how_step3_body") %></p>
-              <p class="lp-landing-step__example"><%= t("landing.how_step3_example") %></p>
-            </div>
-          </li>
-        </ol>
-      </div>
-      <figure class="lp-landing-split__art">
-        <picture>
-          <source srcset="/branding/landing-scene-climb.webp" type="image/webp">
-          <img src="/branding/landing-scene-climb.jpg" alt="" width="1100" height="733" loading="lazy" decoding="async">
-        </picture>
-      </figure>
+    <div class="lp-landing-loop" data-landing-target="fade">
+      <h2 class="lp-landing-heading"><%= t("landing.how_title") %></h2>
+      <p class="lp-landing-lead"><%= t("landing.how_lede") %></p>
+      <%= render "pages/how_loop" %>
+      <p class="lp-landing-loop__foot"><%= t("landing.how_foot") %></p>
     </div>
   </section>
 
