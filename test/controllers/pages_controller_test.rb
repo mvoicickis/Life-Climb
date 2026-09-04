@@ -49,7 +49,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/name="theme-color" content="#f8fafc"/, response.body)
     assert_match(%r{og:image" content="https://lifeclimb\.app/og-lifeclimb-share\.png"}, response.body)
     assert_match(/og:description" content="The mountain is yours to climb"/, response.body)
-    assert_match(/og:image:alt" content="Life Climb — The mountain is yours to climb\."/, response.body)
+    assert_match(/og:image:alt" content="Life Climb — The mountain is yours to climb"/, response.body)
     assert_match(%r{og:url" content="https://lifeclimb\.app/"}, response.body)
     assert_match(%r{rel="canonical" href="https://lifeclimb\.app/"}, response.body)
     assert_match(/application\/ld\+json/, response.body)
