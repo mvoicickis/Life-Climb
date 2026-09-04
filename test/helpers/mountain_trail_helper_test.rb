@@ -565,4 +565,62 @@ class MountainTrailHelperTest < ActionView::TestCase
     project = Struct.new(:title).new(I18n.t("strategy.first_climb.project_title", plan: "Learn guitar"))
     assert_equal "Learn guitar", mountain_trail_camp_sheet_title(project)
   end
+
+  test "climber display ratio applies minimum leg step for large camps" do
+    progress = { kind: :battles, won: 1, total: 10, ratio: 0.1, open: 9 }
+    assert_in_delta MountainTrailHelper::CLIMBER_MIN_LEG_STEP,
+                  mountain_trail_climber_display_ratio(progress), 0.001
+  end
+
+  test "climber display ratio caps at the camp" do
+    progress = { kind: :battles, won: 10, total: 10, ratio: 1.0, open: 0 }
+    assert_in_delta 1.0, mountain_trail_climber_display_ratio(progress), 0.001
+  end
+
+  test "climber display ratio keeps pages camps on raw ratio" do
+    progress = { kind: :pages, won: 0, total: 0, ratio: 0.2, open: 0 }
+    assert_in_delta 0.2, mountain_trail_climber_display_ratio(progress), 0.001
+  end
+
+  test "climber marker starts at base with zero wins" do
+    battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
+      true, false, false, nil, false
+    )
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
+      1, false, false, [ battle ], nil, nil, false
+    )
+    marker = mountain_trail_climber_marker([ camp ])
+    assert marker[:visible]
+    assert_in_delta MountainTrailHelper::BASE_YFRAC, marker[:y], 0.02
+  end
+
+  test "climber marker advances between cleared camp and current camp" do
+    done_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
+      true, false, true, Time.current, false
+    )
+    open_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
+      true, false, false, nil, false
+    )
+    cleared = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
+      1, true, false, [ done_battle ], 0.48, 0.72, false
+    )
+    current = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
+      2, false, false, [ open_battle ], 0.5, 0.55, false
+    )
+    marker = mountain_trail_climber_marker([ cleared, current ])
+    assert marker[:visible]
+    assert marker[:y] < cleared.trail_y
+    assert marker[:y] > current.trail_y
+  end
+
+  test "climber marker hidden when all camps are complete" do
+    done_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
+      true, false, true, Time.current, false
+    )
+    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
+      1, true, false, [ done_battle ], 0.5, 0.7, false
+    )
+    marker = mountain_trail_climber_marker([ camp ])
+    assert_not marker[:visible]
+  end
 end

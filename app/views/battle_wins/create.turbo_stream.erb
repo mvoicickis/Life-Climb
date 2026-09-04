@@ -9,12 +9,14 @@
           plan: @plan %>
   <% end %>
   <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
+  <%= render "life_journeys/trail_climber_stream" %>
 <% else %>
   <%= turbo_stream.replace "trail-battle-#{@battle.id}" do %>
     <%= render "life_journeys/trail_battle_row", battle: @battle %>
   <% end %>
   <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <% unless @quiet_win %>
+    <%= render "life_journeys/trail_climber_stream" %>
     <% if @battle %>
       <%= turbo_stream.update "trail-toast-host" do %>
         <%= render "life_journeys/trail_toast",

@@ -1,0 +1,7 @@
+<% if @all_projects.present? %>
+  <%= turbo_stream.replace "trail-climber" do %>
+    <%= render "life_journeys/trail_climber",
+          marker: helpers.mountain_trail_climber_marker(@all_projects),
+          animate: true %>
+  <% end %>
+<% end %>
