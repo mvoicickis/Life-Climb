@@ -128,11 +128,11 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert_match %{action="remove" target="trail-battle-#{@battle.id}"}, response.body
+    assert_match %(action="remove" target="trail-battle-#{@battle.id}"), response.body
     assert_match "trail-battles-done-slot-#{@project.id}", response.body
     assert_match "trail-battle-#{@battle.id}", response.body
     assert_match "is-done", response.body
-    assert_no_match %{action="replace" target="trail-battle-#{@battle.id}"}, response.body
+    assert_no_match %(action="replace" target="trail-battle-#{@battle.id}"), response.body
     assert_no_match "trail-toast-host", response.body
     assert_no_match(/Won/, response.body)
     assert @battle.reload.completed?
@@ -155,11 +155,11 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
 
     assert_response :ok
-    assert_match %{action="remove" target="trail-battle-#{@battle.id}"}, response.body
+    assert_match %(action="remove" target="trail-battle-#{@battle.id}"), response.body
     assert_match "trail-battles-done-list-#{@project.id}", response.body
     assert_match "Win this fight", response.body
     assert_match "Already won", response.body
-    assert_no_match %{action="replace" target="trail-battle-#{@battle.id}"}, response.body
+    assert_no_match %(action="replace" target="trail-battle-#{@battle.id}"), response.body
   end
 
   test "winning a daily battle as turbo stream shows done row and drops base camp" do
