@@ -245,9 +245,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
     )
-    battle.complete!
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
-    todo.update!(completed_at: Time.current)
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success

@@ -52,8 +52,12 @@ class StrategyGoalsController < ApplicationController
       Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
       apply_cascaded_todo_times!(goal) if goal.day?
       if seed_win_requested? && goal.day? && goal.parent&.project?
-        win_result = Battles::WinFromMountain.call(battle: goal, user: current_user, session: session)
-        win_result.flash.each { |key, value| flash[key] = value }
+        battle = goal.reload
+        Strategy::CascadeToDaily.sync_goal!(user: current_user, goal: battle) unless current_user.daily_todos.for_day.exists?(strategy_goal_id: battle.id)
+        win_result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
+        unless request.format.turbo_stream?
+          win_result.flash.each { |key, value| flash[key] = value }
+        end
       end
       Strategy::SyncCompletion.resync!(node: goal) if goal.plan? || goal.project?
       if celebration[:amount].to_i.positive?
@@ -81,12 +85,6 @@ class StrategyGoalsController < ApplicationController
         # Stay in the open camp sheet — replace battles list instead of leaving Mountain.
         respond_to do |format|
           format.turbo_stream do
-            if seed_win_requested?
-              flash.discard(:ap_gained)
-              flash.discard(:battle_celebrate)
-              flash.discard(:climb_boss)
-              flash.discard(:climb_reward)
-            end
             @created = goal
             @project = parent.reload
             @goal = goal.root_goal

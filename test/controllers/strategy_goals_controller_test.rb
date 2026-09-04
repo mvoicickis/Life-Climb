@@ -204,8 +204,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert todo.completed?
     assert_match "trail-battles-#{project.id}", response.body
     assert_match "trail-battle-suggestion-#{project.id}", response.body
-    assert_nil flash[:battle_celebrate]
-    assert_nil flash[:ap_gained]
+
+    get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+    assert_response :success
+    assert_select "[data-strategy-rpg-celebrate-value=?]", "false"
   end
 
   test "seed_win turbo stream stays quiet on mountain like camp sheet wins" do
@@ -230,8 +232,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     }, as: :turbo_stream
 
     assert_response :ok
-    assert_nil flash[:battle_celebrate]
     assert_no_match "trail-toast-host", response.body
+
+    get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
+    assert_response :success
+    assert_select "[data-strategy-rpg-celebrate-value=?]", "false"
   end
 
   test "seed_win allowed when camp only has won battles" do
@@ -248,9 +253,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "First win", scheduled_on: Date.current, position: 0
     )
-    won.complete!
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: won.id)
-    todo.update!(completed_at: Time.current)
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
 
     post strategy_goals_path, params: {
       life_area_id: @area.id,

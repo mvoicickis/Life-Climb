@@ -29,8 +29,13 @@ module Battles
         return Result.new(awarded: 0, battle: battle.reload, flash: flash_data)
       end
 
-      Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area) if battle.life_area
-      todo = @user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+      if battle.life_area
+        Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area)
+        todo = @user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+        todo ||= Strategy::CascadeToDaily.sync_goal!(user: @user, goal: battle.reload)
+      else
+        todo = nil
+      end
 
       if todo && !todo.completed?
         result = CompleteTodo.call(todo: todo, user: @user, session: @session)

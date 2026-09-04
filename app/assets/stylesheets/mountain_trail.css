@@ -4103,7 +4103,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   font-size: 0.72rem;
   font-weight: 700;
   color: rgba(247, 234, 217, 0.78);
-  white-space: nowrap;
+  white-space: normal;
   line-height: 1.2;
 }
 
