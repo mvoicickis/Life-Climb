@@ -80,7 +80,8 @@
   <% elsif @step == "battles" %>
     <% battle_rows = Array(@draft["battle_titles"]).presence || [ "" ] %>
     <section class="lp-adventure__card" aria-labelledby="adventure-battles-title"
-             data-controller="onboarding-battles">
+             data-controller="onboarding-battles"
+             data-onboarding-battles-at-max-template-value="<%= t('title_limit.at_max') %>">
       <div class="lp-adventure__step-head">
         <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "camp"), class: "lp-adventure__back" %>
         <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
@@ -97,14 +98,16 @@
         <div class="lp-adventure__battle-list" data-onboarding-battles-target="list">
           <% battle_rows.each do |title| %>
             <div class="lp-adventure__battle-row" data-onboarding-battles-target="row">
-              <%= text_field_tag "onboarding[battle_titles][]", title,
-                    maxlength: 120,
-                    class: "lp-input w-full",
-                    autocomplete: "off",
-                    autofocus: battle_rows.first == title,
-                    placeholder: t("v2_onboarding.battle_placeholder"),
-                    aria: { describedby: "adventure-battles-examples" },
-                    data: { onboarding_battles_target: "input", action: "input->onboarding-battles#refresh" } %>
+              <%= render layout: "shared/title_limit_wrap", locals: { class: "lp-adventure__battle-field" } do %>
+                <%= text_field_tag "onboarding[battle_titles][]", title,
+                      maxlength: StrategyGoal::TITLE_MAX,
+                      class: "lp-input w-full",
+                      autocomplete: "off",
+                      autofocus: battle_rows.first == title,
+                      placeholder: t("v2_onboarding.battle_placeholder"),
+                      aria: { describedby: "adventure-battles-examples" },
+                      data: { onboarding_battles_target: "input", action: "input->onboarding-battles#refresh" } %>
+              <% end %>
               <button type="button"
                       class="lp-adventure__battle-remove"
                       data-action="onboarding-battles#remove"

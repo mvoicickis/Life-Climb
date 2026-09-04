@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { TITLE_MAX, attachTitleLimit } from "lib/title_limit"
 
 // Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
@@ -14,7 +15,8 @@ export default class extends Controller {
     createUrl: String,
     lifeAreaId: Number,
     lifeJourneyId: Number,
-    parentId: Number
+    parentId: Number,
+    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" }
   }
 
   connect() {
@@ -205,6 +207,7 @@ export default class extends Controller {
 
     if (this.hasTitleFieldTarget) {
       this.titleFieldTarget.value = ""
+      this.titleFieldTarget.dispatchEvent(new Event("input", { bubbles: true }))
       if (this.keepDailyValue) {
         this.titleFieldTarget.blur()
       } else {
@@ -245,6 +248,16 @@ export default class extends Controller {
     if (this._sessionToastTimer) window.clearTimeout(this._sessionToastTimer)
   }
 
+  inlineTitleInput(current) {
+    const input = document.createElement("input")
+    input.type = "text"
+    input.className = "lp-trail-battles__input lp-trail-battles__inline"
+    input.maxLength = TITLE_MAX
+    input.value = current
+    const limit = attachTitleLimit(input, { template: this.atMaxTemplateValue })
+    return { input, limit }
+  }
+
   editSuggestion(event) {
     event.preventDefault()
     event.stopPropagation()
@@ -256,17 +269,14 @@ export default class extends Controller {
     if (!nameBtn) return
 
     nameBtn.hidden = true
-    const input = document.createElement("input")
-    input.type = "text"
-    input.className = "lp-trail-battles__input lp-trail-battles__inline"
-    input.maxLength = 120
-    input.value = current
+    const { input, limit } = this.inlineTitleInput(current)
     nameBtn.insertAdjacentElement("afterend", input)
     input.focus()
     input.select()
 
     const commit = async () => {
       const title = input.value.trim()
+      limit.detach()
       input.remove()
       nameBtn.hidden = false
       if (!title || title === current) return
@@ -330,17 +340,14 @@ export default class extends Controller {
 
     const current = name.textContent.trim()
     name.hidden = true
-    const input = document.createElement("input")
-    input.type = "text"
-    input.className = "lp-trail-battles__input lp-trail-battles__inline"
-    input.maxLength = 120
-    input.value = current
+    const { input, limit } = this.inlineTitleInput(current)
     name.insertAdjacentElement("afterend", input)
     input.focus()
     input.select()
 
     const commit = async () => {
       const title = input.value.trim()
+      limit.detach()
       input.remove()
       name.hidden = false
       if (!title || title === current) return

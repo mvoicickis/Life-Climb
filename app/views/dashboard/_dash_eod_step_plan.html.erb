@@ -53,12 +53,15 @@
           <%= hidden_field_tag :project_id,
                 default_camp&.id,
                 data: { end_of_day_flow_target: "projectField" } %>
-          <%= text_field_tag :title, nil,
-                class: "lp-today-v2-eod-plan__input",
-                placeholder: t("dash.end_of_day.steps.plan.placeholder"),
-                aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
-                required: true,
-                autocomplete: "off" %>
+          <%= render layout: "shared/title_limit_wrap" do %>
+            <%= text_field_tag :title, nil,
+                  class: "lp-today-v2-eod-plan__input",
+                  placeholder: t("dash.end_of_day.steps.plan.placeholder"),
+                  aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
+                  required: true,
+                  maxlength: StrategyGoal::TITLE_MAX,
+                  autocomplete: "off" %>
+          <% end %>
           <div class="lp-today-v2-eod-plan__actions">
             <%= button_tag t("dash.end_of_day.steps.plan.save_tomorrow"),
                   type: "submit",
@@ -90,12 +93,15 @@
               <%= hidden_field_tag :project_id,
                     default_camp&.id,
                     data: { end_of_day_flow_target: "todayProjectField" } %>
-              <%= text_field_tag :title, nil,
-                    class: "lp-today-v2-eod-plan__input",
-                    placeholder: t("dash.end_of_day.steps.plan.placeholder"),
-                    aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
-                    required: true,
-                    autocomplete: "off" %>
+              <%= render layout: "shared/title_limit_wrap" do %>
+                <%= text_field_tag :title, nil,
+                      class: "lp-today-v2-eod-plan__input",
+                      placeholder: t("dash.end_of_day.steps.plan.placeholder"),
+                      aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
+                      required: true,
+                      maxlength: StrategyGoal::TITLE_MAX,
+                      autocomplete: "off" %>
+              <% end %>
               <div class="lp-today-v2-eod-plan__actions">
                 <%= button_tag t("dash.end_of_day.steps.plan.add_today"),
                       type: "submit",

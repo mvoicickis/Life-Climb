@@ -8759,9 +8759,38 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-adventure__battle-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.45rem;
-  align-items: center;
+  align-items: start;
+}
+
+.lp-adventure__battle-field {
+  min-width: 0;
+}
+
+.lp-title-limit {
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
+.lp-title-limit__count {
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--lp-muted);
+}
+
+.lp-trail-battles__field .lp-title-limit__count {
+  color: rgba(247, 234, 217, 0.72);
+}
+
+.lp-commitment-gap__form .lp-title-limit__count {
+  margin-top: 0.15rem;
+}
+
+.lp-today-v2-eod-plan__form .lp-title-limit__count {
+  margin-top: 0.2rem;
 }
 
 .lp-adventure__battle-remove {
