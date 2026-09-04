@@ -1158,16 +1158,10 @@ de:
     areas_title: "Dein Leben, ein Bereich nach dem anderen"
     areas_body: "Gesundheit. Karriere. Geld. Beziehungen. Sinn. Wähle, wo du wachsen willst — LifePoints macht daraus einen Plan, dem du folgen kannst."
     areas_more: "und mehr, wenn du bereit bist"
-    how_title: "So funktioniert’s"
-    how_step1_title: "Wähle deinen Berg"
-    how_step1_body: "Nimm ein Ziel, das du wirklich willst."
-    how_step1_example: "Beispiel: „Meinen ersten 10 km laufen.“"
-    how_step2_title: "Name today's battle" # TODO: translate
-    how_step2_body: "Turn the goal into one small battle you can win today." # TODO: translate
-    how_step2_example: "Beispiel: „Heute nach der Arbeit 15 Minuten laufen.“"
-    how_step3_title: "Win the battle" # TODO: translate
-    how_step3_body: "Win the battle. Your mountain rises. Nothing ever goes down." # TODO: translate
-    how_step3_example: "Beispiel: Heute erledigt → der Berg bewegt sich."
+    how_title: "Plan it. Fight it. Climb." # TODO: translate
+    how_lede: "Two screens, one loop. You plan on the Mountain, you fight on Today, the mountain rises." # TODO: translate
+    how_aria_label: "A loop: on Mountain you plan camps and battles, those battles appear on Today where you win them, the mountain rises, and you plan the next camp." # TODO: translate
+    how_foot: "Planning counts too. Every camp you set and every battle you win moves you up — and nothing ever takes you back down." # TODO: translate
     why_title: "Proof you did something real" # TODO: translate
     why_body: "Not a game score. Every point is one real thing you finished, in a part of your life you chose." # TODO: translate
     why_ap_label: "Battle strength" # TODO: translate

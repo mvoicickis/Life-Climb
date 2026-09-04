@@ -1546,6 +1546,30 @@
     color: var(--lp-muted-dark);
   }
 
+  .lp-landing-loop {
+    width: min(22.5rem, 100%);
+    margin: 0 auto;
+  }
+
+  .lp-landing-loop .lp-landing-lead {
+    margin-top: 0.4rem;
+  }
+
+  .lp-landing-loop__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 1rem;
+  }
+
+  .lp-landing-loop__foot {
+    margin: 1rem 0 0;
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--lp-muted-dark);
+  }
+
   .lp-landing-split {
     width: min(68rem, 100%);
     margin: 0 auto;
