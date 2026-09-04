@@ -268,4 +268,70 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     find(".lp-trail-sheet__title", visible: :all).click
     assert_no_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
   end
+
+  test "camp sheet composer sits under camp fold at 360px with one battle" do
+    page.driver.browser.manage.window.resize_to(360, 800)
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+
+    open_trail_camp_sheet!(@project)
+
+    gap = page.evaluate_script(<<~JS)
+      (() => {
+        const root = document.querySelector("#trail-battles-#{@project.id}");
+        const fold = root?.querySelector(".lp-trail-battles__camp-fold-summary");
+        const composer = root?.querySelector(".lp-trail-battles__composer.is-dock");
+        if (!fold || !composer) return null;
+        return Math.round(composer.getBoundingClientRect().top - fold.getBoundingClientRect().bottom);
+      })()
+    JS
+
+    assert gap, "expected camp fold and composer in camp sheet"
+    assert_operator gap, :<=, 24, "expected composer directly under camp fold, gap was #{gap}px"
+  end
+
+  test "camp sheet long list keeps last battle above sticky composer at 360px" do
+    page.driver.browser.manage.window.resize_to(360, 800)
+
+    14.times do |i|
+      @project.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "day", title: "Battle #{i + 2}", scheduled_on: Date.current, position: i + 1
+      )
+    end
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
+
+    open_trail_camp_sheet!(@project)
+
+    overlap = page.evaluate_script(<<~JS)
+      (() => {
+        const body = document.querySelector(".lp-trail-sheet__body");
+        const list = document.querySelector("#trail-battles-list-#{@project.id}");
+        const lastRow = list?.querySelector("li:last-child");
+        const composer = document.querySelector("#trail-battles-#{@project.id} .lp-trail-battles__composer.is-dock");
+        if (!body || !lastRow || !composer) return null;
+
+        const rowBottom = lastRow.offsetTop + lastRow.offsetHeight;
+        body.scrollTop = Math.max(0, rowBottom - body.clientHeight + composer.offsetHeight + 8);
+        return Math.round(lastRow.getBoundingClientRect().bottom - composer.getBoundingClientRect().top);
+      })()
+    JS
+
+    assert overlap, "expected camp sheet body, last battle row, and composer"
+    assert_operator overlap, :<=, 4,
+      "expected last battle to stay above sticky composer, overlap was #{overlap}px"
+  end
 end

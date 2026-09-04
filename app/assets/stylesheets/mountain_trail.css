@@ -1075,7 +1075,8 @@
   bottom: 0;
   top: auto;
   z-index: 3;
-  margin: 0.35rem 0 0;
+  /* Pull over the dock spacer so short lists sit tight under the camp fold. */
+  margin: calc(-1 * (var(--lp-trail-add-dock) + 1.5rem)) 0 0;
   padding: 0.65rem 0 0.15rem;
   background: linear-gradient(0deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
 }
@@ -1818,6 +1819,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
+  scroll-padding-bottom: 5.5rem;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__body:has(.lp-trail-base-sheet) {
   scroll-padding-bottom: 7.5rem;
 }
 
@@ -4362,7 +4367,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   bottom: 0;
   top: auto;
   z-index: 3;
-  margin: 0.35rem 0 0;
+  margin: calc(-1 * (var(--lp-trail-add-dock) + 1.5rem)) 0 0;
   padding: 0.65rem 0 0.15rem;
   background: linear-gradient(0deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
 }
