@@ -15,4 +15,4 @@ Disallow: /v2_onboarding
 Disallow: /password
 
 # Canonical host is APP_HOST in production (see docs/SECURITY.md).
-Sitemap: https://lifepoints.onrender.com/sitemap.xml
+Sitemap: https://lifeclimb.app/sitemap.xml

@@ -58,9 +58,19 @@ module ApplicationHelper
     AreaCopy.for(area_key, key, **options)
   end
 
+  CANONICAL_HOST = "lifeclimb.app"
+
   def canonical_base_url
-    host = ENV["APP_HOST"].presence || (respond_to?(:request) ? request.host : "example.com")
+    host = ENV["APP_HOST"].presence || CANONICAL_HOST
     "https://#{host}"
+  end
+
+  def social_meta_description
+    "The mountain is yours to climb"
+  end
+
+  def social_og_image_path
+    "/og-lifeclimb-share.png"
   end
 
   def absolute_url(path)
