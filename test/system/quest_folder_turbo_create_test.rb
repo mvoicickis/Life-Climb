@@ -31,6 +31,7 @@ class QuestFolderTurboCreateTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_today_v2_shell!
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     open_mountain_list_fallback!
