@@ -1,13 +1,26 @@
-<%= turbo_stream.replace "trail-battle-#{@battle.id}" do %>
-  <%= render "life_journeys/trail_battle_row", battle: @battle %>
-<% end %>
-<%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
-<% unless @quiet_win %>
-  <% if @battle %>
-    <%= turbo_stream.update "trail-toast-host" do %>
-      <%= render "life_journeys/trail_toast",
-            title: t("strategy.rpg.trail.quick_win_toast", title: @battle.title),
-            restore: false %>
+<% if @quiet_win && @project.present? %>
+  <%= turbo_stream.remove "trail-battle-#{@battle.id}" %>
+  <%= turbo_stream.replace "trail-battles-done-slot-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_done_section",
+          project: @project,
+          done_days: @done_days,
+          area: @project.life_area,
+          goal: @goal,
+          plan: @plan %>
+  <% end %>
+  <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
+<% else %>
+  <%= turbo_stream.replace "trail-battle-#{@battle.id}" do %>
+    <%= render "life_journeys/trail_battle_row", battle: @battle %>
+  <% end %>
+  <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
+  <% unless @quiet_win %>
+    <% if @battle %>
+      <%= turbo_stream.update "trail-toast-host" do %>
+        <%= render "life_journeys/trail_toast",
+              title: t("strategy.rpg.trail.quick_win_toast", title: @battle.title),
+              restore: false %>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
