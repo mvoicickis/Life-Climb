@@ -31,7 +31,7 @@ class Strategy::PinUnplacedCampsTest < ActiveSupport::TestCase
     unplaced.reload
     assert_in_delta 0.4, placed.trail_x, 0.0001
     assert_in_delta 0.7, placed.trail_y, 0.0001
-    expected = MountainTrailHelper::AutoSlot.call(index: 1, total: 2)
+    expected = MountainTrailHelper::AutoSlot.call(index: 1, total: 2, sparse: true)
     assert_in_delta expected[:trail_x], unplaced.trail_x, 0.0001
     assert_in_delta expected[:trail_y], unplaced.trail_y, 0.0001
   end

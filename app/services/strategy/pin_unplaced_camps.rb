@@ -15,10 +15,11 @@ module Strategy
       return if @projects.none? { |project| unplaced?(project) }
 
       total = @projects.size
+      sparse = total <= 2
       @projects.each_with_index do |project, index|
         next unless unplaced?(project)
 
-        slot = MountainTrailHelper::AutoSlot.call(index: index, total: total)
+        slot = MountainTrailHelper::AutoSlot.call(index: index, total: total, sparse: sparse)
         project.update_columns(
           trail_x: slot[:trail_x],
           trail_y: slot[:trail_y],

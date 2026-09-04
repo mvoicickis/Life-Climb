@@ -23,6 +23,9 @@ module MountainTrailHelper
 
   TRAIL_Y_MIN = 0.32
   TRAIL_Y_MAX = 0.88
+  TRAIL_Y_SPARSE_MIN = 0.38
+  TRAIL_Y_SPARSE_MAX = 0.72
+  TRAIL_Y_SPARSE_SINGLE = 0.55
   PEAK_X = 0.566
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
@@ -98,20 +101,27 @@ module MountainTrailHelper
     mountain_trail_all_projects(trail).reject(&:completed?)
   end
 
+  def mountain_trail_sparse?(projects)
+    projects.size <= 2
+  end
+
   # Shared auto-layout so show-pin and create use the same slot as the renderer.
   module AutoSlot
     module_function
 
-    def call(index:, total:)
-      y = y_for(index, total)
+    def call(index:, total:, sparse: false)
+      y = y_for(index, total, sparse: sparse)
       { trail_x: x_for(y), trail_y: y }
     end
 
-    def y_for(index, total)
+    def y_for(index, total, sparse: false)
       return 0.58 if total <= 0
+      return TRAIL_Y_SPARSE_SINGLE if sparse && total == 1
 
       t = total == 1 ? 0.5 : index.to_f / (total - 1)
-      (TRAIL_Y_MIN + t * (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(TRAIL_Y_MIN, TRAIL_Y_MAX)
+      y_min = sparse ? TRAIL_Y_SPARSE_MIN : TRAIL_Y_MIN
+      y_max = sparse ? TRAIL_Y_SPARSE_MAX : TRAIL_Y_MAX
+      (y_min + t * (y_max - y_min)).clamp(y_min, y_max)
     end
 
     def x_for(y_frac)
@@ -163,7 +173,12 @@ module MountainTrailHelper
   end
 
   # Returns { x:, y:, placed: } with x/y in 0..1 for CSS left/top %.
-  def mountain_trail_slot(project, index:, total:)
+  def mountain_trail_slot(project, index:, total:, sparse: false)
+    if sparse
+      y = AutoSlot.y_for(index, total, sparse: true)
+      return { x: AutoSlot.x_for(y), y: y, placed: false }
+    end
+
     if project.trail_x.present? && project.trail_y.present?
       slot = AutoSlot.snap(project.trail_x, project.trail_y)
       return {
@@ -206,8 +221,9 @@ module MountainTrailHelper
 
   # Tents sit on planted / auto trail coords. No label lift or leader posts.
   def mountain_trail_layout(projects)
+    sparse = mountain_trail_sparse?(projects)
     projects.each_with_index.to_h do |project, index|
-      slot = mountain_trail_slot(project, index: index, total: projects.size)
+      slot = mountain_trail_slot(project, index: index, total: projects.size, sparse: sparse)
       y = slot[:y].to_f.round(4)
       x = slot[:x].to_f.round(4)
       [ project.id, {
@@ -250,7 +266,8 @@ module MountainTrailHelper
   def mountain_trail_layout_slot(project, projects:)
     layout = mountain_trail_layout(projects)
     layout[project.id] || begin
-      slot = mountain_trail_slot(project, index: 0, total: [ projects.size, 1 ].max)
+      sparse = mountain_trail_sparse?(projects)
+      slot = mountain_trail_slot(project, index: 0, total: [ projects.size, 1 ].max, sparse: sparse)
       { x: slot[:x], y: slot[:y], anchor_y: slot[:y], label_y: slot[:y], leader_h: 0 }
     end
   end

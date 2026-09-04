@@ -6,6 +6,8 @@ require "application_system_test_case"
 class SparseClimbTrailHeightTest < ApplicationSystemTestCase
   PHONE_W = 390
   PHONE_H = 844
+  NARROW_W = 360
+  NARROW_H = 640
 
   setup do
     @user = users(:one)
@@ -33,7 +35,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     host.practice_tasks.create!(user: @user, title: "Do a lesson", position: 0)
   end
 
-  test "sparse climb content ends near the nav with quests open" do
+  test "sparse climb fits the mountain in the viewport with peak visible" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -42,6 +44,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_selector "#mountain-trail", wait: 5
+    assert_selector "#mountain-trail.is-sparse-trail", wait: 5
     assert_selector "#trail-camp-#{@camp.id}[aria-label='Duolingo']", visible: :all
 
     metrics = measure_mountain_layout!
@@ -55,13 +58,39 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_in_delta metrics["vh"], metrics["rootHeight"], 2.0
     assert_equal "auto", metrics["photoOverflowY"]
     assert metrics["trailPresent"]
-    # Photo surface is taller than the fixed shell viewport, so the scroller can pan.
-    assert_operator metrics["surfaceH"], :>, metrics["photoClientH"],
-                    "photo surface should exceed the trail viewport: #{metrics.inspect}"
-    assert_operator metrics["photoScrollH"], :>, metrics["photoClientH"],
-                    "photo trail should scroll internally: #{metrics.inspect}"
+    assert metrics["sparseTrail"]
+    assert_operator metrics["surfaceH"], :<=, metrics["photoClientH"] + 2,
+                    "sparse mountain should fit the scroll viewport: #{metrics.inspect}"
+    assert_operator metrics["photoScrollH"], :>=, metrics["photoClientH"],
+                    "dock may extend scroll range below the photo: #{metrics.inspect}"
+    assert metrics["peakInView"], "peak pennant should be visible without scrolling: #{metrics.inspect}"
     assert_operator metrics["gapTrailToNav"], :<=, 40,
                     "trail bottom should sit near nav: #{metrics.inspect}"
+  end
+
+  test "sparse two-camp trail keeps upper camp inside sparse band at 360x640" do
+    lock_phone_viewport!(NARROW_W, NARROW_H)
+    second = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Phrasebook", position: 1,
+      trail_x: 0.5, trail_y: MountainTrailHelper::TRAIL_Y_MAX
+    )
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+
+    visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
+    assert_selector "#trail-camp-#{second.id}", visible: :all, wait: 5
+
+    metrics = measure_mountain_layout!(narrow: true)
+    assert metrics["sparseTrail"]
+    assert_operator metrics["upperCampY"], :<=, MountainTrailHelper::TRAIL_Y_SPARSE_MAX + 0.01,
+                    "upper camp should use sparse band, not dense foot: #{metrics.inspect}"
+    assert metrics["campAboveDock"], "camp caption should stay above dock at scrollTop 0: #{metrics.inspect}"
+    assert metrics["peakInView"]
   end
 
   test "dense climb path still scrolls inside the fixed 100dvh shell" do
@@ -87,7 +116,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @camp.id)
     assert_selector "#trail-camp-#{@camp.id}[aria-label='Duolingo']", visible: :all, wait: 5
-    # Dense trails scroll internally — camps above/below the viewport are still in the DOM.
+    assert_no_selector "#mountain-trail.is-sparse-trail"
     assert_selector ".lp-trail-camp", minimum: 10, visible: :all, wait: 5
 
     metrics = measure_mountain_layout!
@@ -99,6 +128,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_equal "auto", metrics["photoOverflowY"]
+    refute metrics["sparseTrail"]
     assert_operator metrics["surfaceH"], :>, metrics["photoClientH"],
                     "photo surface should exceed the trail viewport: #{metrics.inspect}"
     assert_operator metrics["photoScrollH"], :>, metrics["photoClientH"] + 8,
@@ -125,7 +155,7 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
     )
   end
 
-  def measure_mountain_layout!
+  def measure_mountain_layout!(narrow: false)
     page.evaluate_script(<<~JS)
       (() => {
         const root = document.querySelector('.lp-rpg.is-focus-phase');
@@ -143,6 +173,31 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
         const photoRect = photo.getBoundingClientRect();
         const surfaceRect = surface?.getBoundingClientRect();
         const navRect = nav.getBoundingClientRect();
+        const peak = document.querySelector('.lp-trail__peak');
+        const peakRect = peak?.getBoundingClientRect();
+        const camps = Array.from(document.querySelectorAll('.lp-trail-camp'));
+        const upperCamp = camps.reduce((best, el) => {
+          const y = Number.parseFloat(el.dataset.trailY || el.style.getPropertyValue('--lp-trail-y') || '0');
+          return !best || y > Number.parseFloat(best.dataset.trailY || '0') ? el : best;
+        }, null);
+        const upperCampY = upperCamp
+          ? Number.parseFloat(upperCamp.dataset.trailY || upperCamp.style.getPropertyValue('--lp-trail-y') || '0')
+          : null;
+        const dock = document.querySelector('.lp-trail__dock');
+        const dockRect = dock?.getBoundingClientRect();
+        const campCaption = upperCamp?.querySelector('.lp-trail-camp__caption');
+        const captionRect = campCaption?.getBoundingClientRect();
+        const peakInView = Boolean(
+          peakRect &&
+          photoRect &&
+          peakRect.bottom > photoRect.top + 4 &&
+          peakRect.top < photoRect.bottom - 4
+        );
+        const campAboveDock = Boolean(
+          !dockRect ||
+          !captionRect ||
+          captionRect.bottom <= dockRect.top + 2
+        );
         return {
           vw: window.innerWidth,
           vh: window.innerHeight,
@@ -164,7 +219,11 @@ class SparseClimbTrailHeightTest < ApplicationSystemTestCase
           navTop: Math.round(navRect.top),
           gapTrailToNav: Math.round(navRect.top - trailRect.bottom),
           trailPresent: true,
-          campCount: document.querySelectorAll('.lp-trail-camp').length
+          sparseTrail: mountain.classList.contains('is-sparse-trail'),
+          peakInView,
+          campAboveDock,
+          upperCampY,
+          campCount: camps.length
         };
       })()
     JS

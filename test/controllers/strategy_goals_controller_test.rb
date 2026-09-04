@@ -88,7 +88,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
       title: "Unplanted camp"
     }
     camp = plan.children.for_kind("project").find_by!(title: "Unplanted camp")
-    expected = MountainTrailHelper::AutoSlot.call(index: 0, total: 1)
+    expected = MountainTrailHelper::AutoSlot.call(index: 0, total: 1, sparse: true)
     assert_in_delta expected[:trail_x], camp.trail_x, 0.0001
     assert_in_delta expected[:trail_y], camp.trail_y, 0.0001
   end

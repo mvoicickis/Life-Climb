@@ -445,7 +445,9 @@ class StrategyGoalsController < ApplicationController
     return if goal.trail_x.present? && goal.trail_y.present?
 
     siblings = incomplete_path_siblings(goal)
-    slot = MountainTrailHelper::AutoSlot.call(index: siblings.size, total: siblings.size + 1)
+    total = siblings.size + 1
+    sparse = total <= 2
+    slot = MountainTrailHelper::AutoSlot.call(index: siblings.size, total: total, sparse: sparse)
     goal.trail_x = slot[:trail_x]
     goal.trail_y = slot[:trail_y]
   end

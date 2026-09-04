@@ -36,7 +36,7 @@
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !show_onboarding_tour %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-sparse-trail' if mountain_trail_sparse?(projects) %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %>"

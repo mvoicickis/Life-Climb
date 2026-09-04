@@ -173,7 +173,8 @@ class MountainTrailHelperTest < ActionView::TestCase
   test "layout keeps planted tent pins on the dirt path without lifting labels" do
     p1 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 1, trail_x: 0.5, trail_y: 0.55)
     p2 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 2, trail_x: 0.52, trail_y: 0.56)
-    layout = mountain_trail_layout([ p1, p2 ])
+    p3 = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(id: 3, trail_x: 0.48, trail_y: 0.54)
+    layout = mountain_trail_layout([ p1, p2, p3 ])
     s1 = MountainTrailHelper::AutoSlot.snap(0.5, 0.55)
     s2 = MountainTrailHelper::AutoSlot.snap(0.52, 0.56)
     assert_in_delta s1[:trail_y], layout[1][:y], 0.0001
@@ -193,6 +194,35 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_in_delta slot[:trail_x], layout[:x], 0.0001
     assert_in_delta slot[:trail_y], layout[:y], 0.0001
     assert_not layout[:placed]
+  end
+
+  test "sparse auto slot uses the tighter y band" do
+    single = MountainTrailHelper::AutoSlot.call(index: 0, total: 1, sparse: true)
+    low = MountainTrailHelper::AutoSlot.call(index: 0, total: 2, sparse: true)
+    high = MountainTrailHelper::AutoSlot.call(index: 1, total: 2, sparse: true)
+
+    assert_in_delta MountainTrailHelper::TRAIL_Y_SPARSE_SINGLE, single[:trail_y], 0.0001
+    assert_in_delta MountainTrailHelper::TRAIL_Y_SPARSE_MIN, low[:trail_y], 0.0001
+    assert_in_delta MountainTrailHelper::TRAIL_Y_SPARSE_MAX, high[:trail_y], 0.0001
+    assert_operator high[:trail_y], :<, MountainTrailHelper::TRAIL_Y_MAX
+  end
+
+  test "sparse layout ignores persisted coords so camps shift with the band" do
+    pinned = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+      id: 1, trail_x: 0.5, trail_y: MountainTrailHelper::TRAIL_Y_MAX
+    )
+    layout = mountain_trail_layout([ pinned ])
+    assert_in_delta MountainTrailHelper::TRAIL_Y_SPARSE_SINGLE, layout[1][:y], 0.0001
+    refute layout[1][:placed]
+  end
+
+  test "mountain_trail_sparse is true for up to two camps" do
+    camps = [
+      Struct.new(:id, keyword_init: true).new(id: 1),
+      Struct.new(:id, keyword_init: true).new(id: 2)
+    ]
+    assert mountain_trail_sparse?(camps)
+    refute mountain_trail_sparse?(camps + [ Struct.new(:id, keyword_init: true).new(id: 3) ])
   end
 
   test "snap pulls a point in the grass onto the dirt path" do
@@ -222,7 +252,13 @@ class MountainTrailHelperTest < ActionView::TestCase
     camp = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
       id: 1, trail_x: 0.12, trail_y: 0.55
     )
-    layout = mountain_trail_layout([ camp ])
+    extra = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+      id: 2, trail_x: 0.5, trail_y: 0.6
+    )
+    filler = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+      id: 3, trail_x: 0.48, trail_y: 0.58
+    )
+    layout = mountain_trail_layout([ camp, extra, filler ])
     expected = MountainTrailHelper::AutoSlot.snap(0.12, 0.55)
     assert_in_delta expected[:trail_x], layout[1][:x], 0.0001
     assert_in_delta expected[:trail_y], layout[1][:y], 0.0001
