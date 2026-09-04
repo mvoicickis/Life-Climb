@@ -1152,8 +1152,7 @@ es:
     sign_in: "Iniciar sesión"
     start_free: "Empezar gratis"
     back_home: "← Volver al inicio"
-    hero_tagline: "The mountain is yours to climb" # TODO: translate
-    hero_title: "La mayoría de las metas mueren en tu app de notas."
+    hero_title: "The mountain is yours to climb" # TODO: translate
     hero_body: "LifePoints convierte una meta real en una montaña — y te da un paso claro hacia arriba, cada día."
     hero_note: "Gratis para empezar · tarda unos 2 minutos"
     areas_title: "Tu vida, un área a la vez"

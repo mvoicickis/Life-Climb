@@ -1397,8 +1397,7 @@ lv:
     sign_in: "Ienākt"
     start_free: "Sākt bez maksas"
     back_home: "← Atpakaļ uz sākumu"
-    hero_tagline: "The mountain is yours to climb" # TODO: translate
-    hero_title: "Lielākā daļa mērķu nomirst piezīmju lietotnē."
+    hero_title: "The mountain is yours to climb" # TODO: translate
     hero_body: "LifePoints pārvērš vienu īstu mērķi kalnā — un katru dienu dod tev vienu skaidru soli uz augšu."
     hero_note: "Bezmaksas sākums · aizņem apmēram 2 minūtes"
     areas_title: "Tava dzīve, pa vienai jomai"
