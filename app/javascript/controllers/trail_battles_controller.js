@@ -201,7 +201,41 @@ export default class extends Controller {
     row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
   }
 
+  beginAddSubmit(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-battles__add")) return
+
+    if (this._submitting) {
+      event.preventDefault()
+      return
+    }
+    this._submitting = true
+
+    window.setTimeout(() => {
+      form.querySelectorAll(".lp-trail-battles__submit").forEach((el) => {
+        if (el.disabled) return
+        el.disabled = true
+        el.classList.add("is-pending")
+        el.setAttribute("aria-busy", "true")
+      })
+    }, 0)
+  }
+
+  endAddSubmit(form) {
+    this._submitting = false
+    const root = form || this.element.querySelector(".lp-trail-battles__add")
+    if (!root) return
+
+    root.querySelectorAll(".lp-trail-battles__submit").forEach((el) => {
+      el.disabled = false
+      el.classList.remove("is-pending")
+      el.removeAttribute("aria-busy")
+    })
+  }
+
   battleAdded(event) {
+    this.endAddSubmit(event.target)
+
     const { success } = event.detail || {}
     if (!success) return
 
@@ -293,7 +327,6 @@ export default class extends Controller {
       body.set("parent_id", String(this.parentIdValue || ""))
       body.set("horizon", "day")
       body.set("scheduled_on", new Date().toISOString().slice(0, 10))
-      body.set("add_position", "top")
       body.set("repeat", "none")
       body.set("title", title)
       body.set("authenticity_token", token || "")

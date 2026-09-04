@@ -1,18 +1,32 @@
 <% if @created.day? && @project.present? %>
-  <%= turbo_stream.replace "trail-battles-#{@project.id}" do %>
-    <%= render "life_journeys/trail_camp_battles",
-          project: @project,
-          goal: @goal,
-          plan: @plan,
-          area: @project.life_area %>
+  <% if @seed_win || @created.completed? %>
+    <%= turbo_stream.replace "trail-battles-#{@project.id}" do %>
+      <%= render "life_journeys/trail_camp_battles",
+            project: @project,
+            goal: @goal,
+            plan: @plan,
+            area: @project.life_area %>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.remove "trail-battle-suggestion-#{@project.id}" %>
+    <%= turbo_stream.remove "trail-battles-seed-hint-#{@project.id}" %>
+    <%= turbo_stream.append "trail-battles-list-#{@project.id}" do %>
+      <%= render "life_journeys/trail_battle_row",
+            battle: @created,
+            done: false,
+            show_move_up: @prior_open_count.positive?,
+            show_move_down: false %>
+    <% end %>
   <% end %>
-  <%= turbo_stream.replace "trail-base-sheet" do %>
-    <%= render "life_journeys/trail_base_sheet",
-          projects: mountain_trail_open_camps(@plan),
-          area: @project.life_area,
-          plan: @plan,
-          goal: @goal,
-          journey: @journey %>
+  <% if @created.repeat_daily? %>
+    <%= turbo_stream.replace "trail-base-sheet" do %>
+      <%= render "life_journeys/trail_base_sheet",
+            projects: mountain_trail_open_camps(@plan),
+            area: @project.life_area,
+            plan: @plan,
+            goal: @goal,
+            journey: @journey %>
+    <% end %>
   <% end %>
 <% else %>
   <%= turbo_stream.append "climb-path-projects" do %>

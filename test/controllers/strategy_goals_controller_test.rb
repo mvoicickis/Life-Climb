@@ -317,7 +317,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal project_leaf.id, battle.parent_id
   end
 
-  test "adding a second battle at top keeps position non-negative" do
+  test "adding a second battle appends at end with non-negative positions" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -335,7 +335,6 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
         parent_id: project.id,
         horizon: "day",
         scheduled_on: Date.current.to_s,
-        add_position: "top",
         title: "First battle"
       }
     end
@@ -349,13 +348,12 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
         parent_id: project.id,
         horizon: "day",
         scheduled_on: Date.current.to_s,
-        add_position: "top",
         title: "Second battle"
       }
     end
     second = project.children.for_kind("day").find_by!(title: "Second battle")
-    assert_equal 0, second.position, "newest battle should sit at the top"
-    assert_equal 1, first.reload.position, "older battle should shift down"
+    assert_equal 1, second.position, "newest battle should sit at the end"
+    assert_equal 0, first.reload.position, "older battle should keep its position"
     assert_operator second.position, :>=, 0
     assert_operator first.position, :>=, 0
   end
@@ -378,16 +376,17 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
         parent_id: project.id,
         horizon: "day",
         scheduled_on: Date.current.to_s,
-        add_position: "top",
         title: "Stay in sheet battle"
       }, as: :turbo_stream
     end
 
+    battle = project.children.for_kind("day").find_by!(title: "Stay in sheet battle")
     assert_equal Mime[:turbo_stream].to_s, response.media_type
-    assert_includes response.body, "turbo-stream"
-    assert_includes response.body, "trail-battles-#{project.id}"
+    assert_includes response.body, 'turbo-stream action="append"'
+    assert_includes response.body, "trail-battle-#{battle.id}"
     assert_includes response.body, "Stay in sheet battle"
     assert_no_match(%r{href=["']/life_journeys/}, response.body)
+    assert_no_match "trail-base-sheet", response.body
   end
 
   test "battle complete does not move goal until project confirmed" do
