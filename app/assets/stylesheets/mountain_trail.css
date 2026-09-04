@@ -1051,7 +1051,7 @@
 .lp-trail__swatch:has(input:checked) .lp-trail__swatch-dot { outline: 2px solid var(--lp-trail-ink); outline-offset: 2px; }
 
 .lp-trail-battles {
-  --lp-trail-add-dock: 5.5rem;
+  --lp-trail-add-dock: 7.5rem;
   display: grid;
   gap: 0.75rem;
   width: 100%;
@@ -1819,10 +1819,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  scroll-padding-bottom: 5.5rem;
-}
-
-.lp-trail.is-v4 .lp-trail-sheet__body:has(.lp-trail-base-sheet) {
   scroll-padding-bottom: 7.5rem;
 }
 
