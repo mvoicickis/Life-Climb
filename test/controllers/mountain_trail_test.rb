@@ -281,6 +281,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-plant textarea[name='description']"
     assert_select "#trail-battles-#{@project.id}[data-project-description=?]", "Daily strength work"
     assert_select "#trail-battles-#{@project.id} button[data-action='click->trail-battles#editCampDescription']"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
     assert_select "#trail-battles-#{@project.id} dialog[data-trail-battles-target='descriptionDialog'] textarea"
   end
 
