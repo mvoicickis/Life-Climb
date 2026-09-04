@@ -1946,13 +1946,14 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   color: #f5b4a4;
 }
 
-/* Input full width; Daily + Add on the second row on narrow phones (SE). */
+/* Input full width; Daily and Add stacked on narrow phones (360px). */
 .lp-trail-battles__add-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "title title"
-    "daily add";
+    "title"
+    "daily"
+    "add";
   gap: 0.45rem;
   align-items: center;
   width: 100%;
@@ -1975,13 +1976,26 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail-battles__add-row > .lp-trail-battles__submit {
   grid-area: add;
-  justify-self: end;
+  justify-self: stretch;
+  width: 100%;
+  min-height: 44px;
+}
+
+.lp-trail-battles__submit:disabled,
+.lp-trail-battles__submit.is-pending {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 @media (min-width: 420px) {
   .lp-trail-battles__add-row {
     grid-template-columns: minmax(0, 1fr) auto auto;
     grid-template-areas: "title daily add";
+  }
+
+  .lp-trail-battles__add-row > .lp-trail-battles__submit {
+    width: auto;
+    justify-self: end;
   }
 }
 

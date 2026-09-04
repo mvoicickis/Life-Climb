@@ -49,12 +49,10 @@ class StrategyGoalsController < ApplicationController
 
     if goal.save
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
-      Strategy::CascadeToDaily.call(user: current_user, life_area: @life_area) if goal.day?
+      Strategy::CascadeToDaily.sync_goal!(user: current_user, goal: goal) if goal.day?
       apply_cascaded_todo_times!(goal) if goal.day?
       if seed_win_requested? && goal.day? && goal.parent&.project?
-        battle = goal.reload
-        Strategy::CascadeToDaily.sync_goal!(user: current_user, goal: battle) unless current_user.daily_todos.for_day.exists?(strategy_goal_id: battle.id)
-        win_result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
+        win_result = Battles::WinFromMountain.call(battle: goal.reload, user: current_user, session: session)
         unless request.format.turbo_stream?
           win_result.flash.each { |key, value| flash[key] = value }
         end
@@ -93,6 +91,12 @@ class StrategyGoalsController < ApplicationController
             @plan&.reload
             @journey = current_user.life_journeys.active.find_by(id: goal.life_journey_id) ||
                        current_user.primary_focused_journey
+            @seed_win = seed_win_requested?
+            days = @project.children.select(&:day?).reject(&:holding?)
+            helpers.mountain_trail_preload_done_today!(current_user, days)
+            @prior_open_count = days.count do |d|
+              d.id != @created.id && !helpers.mountain_trail_done_today?(d)
+            end
             render :create
           end
           format.html do
@@ -578,12 +582,7 @@ class StrategyGoalsController < ApplicationController
   def next_position(parent, kind)
     scope = current_user.strategy_goals.where(life_area_id: @life_area.id).for_kind(kind)
     scope = parent ? scope.where(parent_id: parent.id) : scope.roots
-    if kind == "day" && params[:add_position].to_s == "top"
-      # Insert at the top without going below 0 (validation requires position >= 0).
-      scope.update_all("position = position + 1")
-      return 0
-    end
-    scope.maximum(:position).to_i + 1
+    (scope.maximum(:position) || -1) + 1
   end
 
   def redirect_focus_id(goal)
