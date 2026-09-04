@@ -109,16 +109,16 @@
   <% else %>
     <% if open_days.empty? && battle_suggestion.present? %>
       <p class="lp-trail-battles__seed-hint" id="trail-battles-seed-hint-<%= project.id %>"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
-      <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+    <% end %>
+    <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+      <% if open_days.empty? && battle_suggestion.present? %>
         <%= render "life_journeys/trail_battle_suggestion_row",
               project: project,
               suggestion: battle_suggestion,
               area: area,
               goal: goal,
               plan: plan %>
-      </ul>
-    <% elsif open_days.any? %>
-      <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+      <% else %>
         <% open_days.each_with_index do |battle, index| %>
           <%= render "life_journeys/trail_battle_row",
                 battle: battle,
@@ -126,19 +126,17 @@
                 show_move_up: index.positive?,
                 show_move_down: index < open_days.size - 1 %>
         <% end %>
-      </ul>
-    <% end %>
+      <% end %>
+    </ul>
 
-    <% if done_days.any? %>
-      <details class="lp-trail-battles__done">
-        <summary><%= t("strategy.rpg.trail.won_battles", count: done_days.size) %></summary>
-        <ul class="lp-trail-battles__list is-done">
-          <% done_days.each do |battle| %>
-            <%= render "life_journeys/trail_battle_row", battle: battle %>
-          <% end %>
-        </ul>
-      </details>
-    <% end %>
+    <div id="trail-battles-done-slot-<%= project.id %>">
+      <%= render "life_journeys/trail_camp_done_section",
+            project: project,
+            done_days: done_days,
+            area: area,
+            goal: goal,
+            plan: plan %>
+    </div>
   <% end %>
 
   <% if days.any? %>

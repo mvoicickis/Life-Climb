@@ -128,11 +128,38 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
+    assert_match %{action="remove" target="trail-battle-#{@battle.id}"}, response.body
+    assert_match "trail-battles-done-slot-#{@project.id}", response.body
     assert_match "trail-battle-#{@battle.id}", response.body
     assert_match "is-done", response.body
+    assert_no_match %{action="replace" target="trail-battle-#{@battle.id}"}, response.body
     assert_no_match "trail-toast-host", response.body
     assert_no_match(/Won/, response.body)
     assert @battle.reload.completed?
+  end
+
+  test "camp sheet win moves battle into done section without duplicating open list" do
+    second = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @project_leaf, horizon: "day",
+      title: "Second fight", scheduled_on: Date.current, position: 1
+    )
+    won = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @project_leaf, horizon: "day",
+      title: "Already won", scheduled_on: Date.current, position: 2
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: won.id)
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
+    won.reload
+
+    post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
+
+    assert_response :ok
+    assert_match %{action="remove" target="trail-battle-#{@battle.id}"}, response.body
+    assert_match "trail-battles-done-list-#{@project.id}", response.body
+    assert_match "Win this fight", response.body
+    assert_match "Already won", response.body
+    assert_no_match %{action="replace" target="trail-battle-#{@battle.id}"}, response.body
   end
 
   test "winning a daily battle as turbo stream shows done row and drops base camp" do
