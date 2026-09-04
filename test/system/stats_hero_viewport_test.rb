@@ -17,6 +17,8 @@ class StatsHeroViewportTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_today_v2_shell!
+    assert_no_legacy_today_shell!
 
     visit life_points_path
     assert_selector ".stats-hero", wait: 5
