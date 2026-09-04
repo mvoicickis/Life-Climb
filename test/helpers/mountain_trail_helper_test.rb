@@ -604,11 +604,11 @@ class MountainTrailHelperTest < ActionView::TestCase
     open_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, false, nil, false
     )
-    cleared = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
-      1, true, false, [ done_battle ], 0.48, 0.72, false
+    cleared = Struct.new(:id, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?).new(
+      1, true, false, false, [ done_battle ], 0.48, 0.72, false
     )
-    current = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
-      2, false, false, [ won_battle, open_battle ], 0.5, 0.55, false
+    current = Struct.new(:id, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?).new(
+      2, false, false, false, [ won_battle, open_battle ], 0.5, 0.55, false
     )
     marker = mountain_trail_climber_marker([ cleared, current ])
     assert marker[:visible]
