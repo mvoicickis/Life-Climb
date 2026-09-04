@@ -54,7 +54,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-hero__segs", count: 0
   end
 
-  test "completing a battle checkbox asks project check without moving mountain percent" do
+  test "completing a battle checkbox does not move mountain percent until camp marked finished" do
     journey = @user.primary_focused_journey
     area = journey.life_area
     goal = @user.strategy_goals.create!(
@@ -87,18 +87,13 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
 
     assert battle.reload.completed?
     assert_equal 0, goal.reload.progress_percent
-    assert Strategy::ProjectCheckQueue.next_for(user: @user, session: session).present?
 
-    post project_completions_url, params: { project_id: project_leaf.id, decision: "done" }
-    assert_redirected_to dashboard_path
-    post project_completions_url, params: { project_id: project.id, decision: "done" }
-    assert_redirected_to dashboard_path
+    post strategy_goal_manual_completion_path(project)
+    assert_redirected_to life_journey_path(journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
     follow_redirect!
 
-    assert project_leaf.reload.completed?
     assert project.reload.completed?
     assert_equal 100, goal.reload.progress_percent
-    assert_match(/Mountain now 100%/i, flash[:notice].to_s + response.body)
   end
 
   test "today does not offer freeform battle creation" do

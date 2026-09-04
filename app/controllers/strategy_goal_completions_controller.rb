@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Mountain sticky mark-complete / reopen for Plans and Projects.
-# Separate from Today’s ProjectCompletionsController (post-battle check).
 class StrategyGoalCompletionsController < ApplicationController
   before_action :require_planning_v2
   before_action :set_goal

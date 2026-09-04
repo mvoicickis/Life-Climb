@@ -56,10 +56,6 @@ module Battles
 
       streak = Climb::Streak.touch!(user: @user)
       pb = Climb::PersonalBest.record!(user: @user, awarded: awarded)
-      Strategy::ProjectCheckQueue.enqueue(
-        session: @session,
-        project_ids: Strategy::ProjectCheckQueue.from_battles([ day ].compact)
-      )
       Today::OvershootBonus.sync!(user: @user)
 
       Analytics::TrackFirstBattleWon.call(user: @user)

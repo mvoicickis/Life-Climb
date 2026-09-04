@@ -46,7 +46,6 @@ class BattlesCompleteDayTest < ActiveSupport::TestCase
     result = Battles::CompleteDay.call(user: @user)
     assert result.ok
     assert_operator result.awarded, :>, 0
-    assert_includes result.project_check_ids, project_leaf.id
     assert_match(/Action Points/i, result.message)
     assert_no_match(/Mountain now/i, result.message)
 

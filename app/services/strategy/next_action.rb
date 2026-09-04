@@ -330,9 +330,6 @@ module Strategy
       incomplete = todos.reject(&:completed?)
       return complete_battle(incomplete.first) if incomplete.any?
 
-      pending = pending_camp
-      return confirm_camp(pending) if pending
-
       day_won
     end
 
@@ -364,16 +361,6 @@ module Strategy
       )
     end
 
-    def confirm_camp(project)
-      Result.new(
-        key: :confirm_camp,
-        title: I18n.t("strategy.next_action.confirm_camp.title", title: project.title),
-        cta_label: I18n.t("strategy.next_action.confirm_camp.cta"),
-        href: helpers.dashboard_path,
-        project_title: project.title
-      )
-    end
-
     def day_won
       Result.new(
         key: :day_won,
@@ -381,12 +368,6 @@ module Strategy
         cta_label: I18n.t("strategy.next_action.day_won.cta"),
         href: helpers.life_journey_path(@journey)
       )
-    end
-
-    def pending_camp
-      return nil if @session.nil?
-
-      Strategy::ProjectCheckQueue.next_for(user: @user, session: @session)
     end
   end
 end

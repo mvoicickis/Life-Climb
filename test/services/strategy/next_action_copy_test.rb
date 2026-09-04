@@ -8,7 +8,6 @@ class Strategy::NextAction::CopyTest < ActiveSupport::TestCase
 
   INTERPOLATED = %i[
     complete_battle
-    confirm_camp
     battle_overdue
     streak_at_risk
     project_unlocked
@@ -55,14 +54,10 @@ class Strategy::NextAction::CopyTest < ActiveSupport::TestCase
     end
   end
 
-  test "complete_battle and confirm_camp interpolate title" do
+  test "complete_battle interpolates title" do
     battle = Strategy::NextAction::Copy.headline_for(key: :complete_battle, title: "Send five emails", locale: :en)
     assert_includes battle, "Send five emails"
     assert battle.start_with?("⚔️ ")
-
-    camp = Strategy::NextAction::Copy.headline_for(key: :confirm_camp, title: "Improve apps", locale: :en)
-    assert_includes camp, "Improve apps"
-    assert camp.start_with?("🏕️ ")
   end
 
   test "signal headlines interpolate title or count" do

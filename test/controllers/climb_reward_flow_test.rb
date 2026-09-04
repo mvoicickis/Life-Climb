@@ -66,15 +66,4 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-cta", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
   end
-
-  test "project done still opens climb reward modal" do
-    post complete_daily_todo_path(@todo)
-    follow_redirect!
-    leaf = @todo.strategy_goal.parent
-    post project_completions_path, params: { project_id: leaf.id, decision: "done" }
-    assert_redirected_to dashboard_path
-    assert flash[:climb_reward].present?
-    follow_redirect!
-    assert_select "#climb-reward"
-  end
 end

@@ -115,10 +115,6 @@ class StrategyQuantityLogsController < ApplicationController
     end
 
     Climb::Streak.touch!(user: current_user)
-    Strategy::ProjectCheckQueue.enqueue(
-      session: session,
-      project_ids: Strategy::ProjectCheckQueue.from_battles([ battle ])
-    )
     Journeys::SyncClimbFromToday.call(user: current_user) if journey
     Today::OvershootBonus.sync!(user: current_user)
     flash[:ap_gained] = awarded

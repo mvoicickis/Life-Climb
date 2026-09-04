@@ -44,7 +44,6 @@ module Dashboard
       @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
       @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
       @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
-      @project_check = Strategy::ProjectCheckQueue.next_for(user: current_user, session: session)
       @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
 
       if reconcile && !read_only_impersonation?
@@ -72,9 +71,6 @@ module Dashboard
 
       @battlefield_prompt = Today::BattlefieldPrompt.call(
         health: @battlefield_health,
-        project_check: @project_check,
-        battle_angle_project: nil,
-        battle_angles: [],
         battles_waiting_count: @battles_waiting_count,
         upcoming_battle: @upcoming_battle
       )

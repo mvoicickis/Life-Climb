@@ -73,16 +73,6 @@
      data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
      data-trail-battles-parent-id-value="<%= project.id %>"
      data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>">
-  <% if project_check_pending?(project) %>
-    <div class="lp-trail-battles__camp-check">
-      <%= render "dashboard/dash_project_check",
-            project: project,
-            return_to: "mountain",
-            life_journey_id: project.life_journey_id,
-            goal_id: goal&.id,
-            plan_id: plan&.id %>
-    </div>
-  <% end %>
   <p class="lp-trail-battles__kind"><%= t("strategy.rpg.trail.camp_kind") %></p>
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
