@@ -2,10 +2,9 @@
 
 require "test_helper"
 
-class BattleTitleLimitTest < ActionDispatch::IntegrationTest
+class BattleTitleLimitTrailTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
-    @user.update!(character: "fox")
     sign_in_as @user
     allow_extra_climbs!(@user)
     Onboarding::Run.call(
@@ -43,11 +42,27 @@ class BattleTitleLimitTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "#trail-battles-#{@project.id} input[name=title][maxlength=?]", StrategyGoal::TITLE_MAX.to_s
-    assert_select "#trail-battles-#{@project.id} [data-controller*='title-limit']"
+    assert_select "#trail-battles-#{@project.id} .lp-title-limit[data-controller*='title-limit']"
     assert_select "#trail-battles-#{@project.id} .lp-title-limit__count[role=status]"
   end
+end
 
-  test "commitment gap battle quick add uses TITLE_MAX and title limit UI" do
+class BattleTitleLimitCommitmentGapTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    @user.update!(character: "fox", climb_streak_days: 0, climb_streak_on: nil)
+    sign_in_as @user
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Find a job",
+      ideal_scene: "Hired",
+      current_reality: "Searching",
+      today_mission: "Plan the path",
+      closer_percent: 10,
+      route_mission: true
+    )
+    @journey = @user.reload.primary_focused_journey
     enable_habits!
     @journey.update!(
       commitment_key: "medium",
@@ -62,14 +77,31 @@ class BattleTitleLimitTest < ActionDispatch::IntegrationTest
         start_time: "09:00", end_time: "10:00", position: 40 + n
       )
     end
+  end
 
+  test "commitment gap battle quick add uses TITLE_MAX and title limit UI" do
     get dashboard_path
 
     assert_response :success
+    assert_select "#commitment-gap-panel[data-next-action-key=commitment_gap]"
     assert_select "#commitment-gap-panel input[name=title][maxlength=?]", StrategyGoal::TITLE_MAX.to_s
-    assert_select "#commitment-gap-panel [data-controller*='title-limit']"
+    assert_select "#commitment-gap-panel .lp-title-limit[data-controller*='title-limit']"
   end
 
+  private
+
+  def seed_today_habits!(count)
+    have = @user.habits.active.on_home.count
+    (have + 1).upto(count) do |n|
+      @user.habits.create!(
+        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
+        active: true, show_on_home: true, quantity_checkin: false
+      )
+    end
+  end
+end
+
+class BattleTitleLimitOnboardingTest < ActionDispatch::IntegrationTest
   test "v2 onboarding battles step uses TITLE_MAX and title limit UI" do
     email = "battle-limit-#{SecureRandom.hex(4)}@example.com"
     post registration_url, params: {
@@ -90,18 +122,6 @@ class BattleTitleLimitTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[name='onboarding[battle_titles][]'][maxlength=?]", StrategyGoal::TITLE_MAX.to_s
-    assert_select ".lp-adventure__battle-field [data-controller*='title-limit']"
-  end
-
-  private
-
-  def seed_today_habits!(count)
-    have = @user.habits.active.on_home.count
-    (have + 1).upto(count) do |n|
-      @user.habits.create!(
-        name: "Habit #{n}", unit: "times", points: 5, frequency: "daily",
-        active: true, show_on_home: true, quantity_checkin: false
-      )
-    end
+    assert_select ".lp-adventure__battle-field[data-controller*='title-limit']"
   end
 end
