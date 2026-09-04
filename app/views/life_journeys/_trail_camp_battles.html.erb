@@ -100,9 +100,6 @@
       </button>
     </div>
   <% else %>
-    <p class="lp-trail-battles__stats">
-      <%= t("strategy.rpg.trail.camp_ready", count: open_days.size) %>
-    </p>
     <% if open_days.any? %>
       <ul class="lp-trail-battles__list">
         <% open_days.each_with_index do |battle, index| %>
