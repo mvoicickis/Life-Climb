@@ -15,6 +15,7 @@ export default class extends Controller {
     this._openCampId = null
     this._pushedHistory = false
     window.addEventListener("popstate", this._onPopState)
+    this.maybeOpenFromQuery()
   }
 
   disconnect() {
@@ -31,7 +32,7 @@ export default class extends Controller {
     this.openCampById(campId)
   }
 
-  // Called after trail plant turbo stream — not on page load.
+  // Called after trail plant turbo stream — or on first landing with ?open_camp=.
   openCampById(campId) {
     const camp = campId && this.element.querySelector(`#trail-camp-${campId}`)
     if (!camp) return
@@ -237,5 +238,19 @@ export default class extends Controller {
     this.sheetTarget.hidden = true
     this._openCampId = null
     this._pushedHistory = false
+  }
+
+  maybeOpenFromQuery() {
+    const params = new URLSearchParams(window.location.search)
+    const campId = params.get("open_camp")
+    if (!campId) return
+
+    requestAnimationFrame(() => {
+      this.openCampById(campId)
+      params.delete("open_camp")
+      const query = params.toString()
+      const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
+      history.replaceState(history.state, "", next)
+    })
   }
 }

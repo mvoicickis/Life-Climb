@@ -102,8 +102,8 @@ class BattleTitleLimitCommitmentGapTest < ActionDispatch::IntegrationTest
 end
 
 class BattleTitleLimitOnboardingTest < ActionDispatch::IntegrationTest
-  test "v2 onboarding battles step uses TITLE_MAX and title limit UI" do
-    email = "battle-limit-#{SecureRandom.hex(4)}@example.com"
+  test "v2 onboarding camps step uses TITLE_MAX on add row" do
+    email = "camp-limit-#{SecureRandom.hex(4)}@example.com"
     post registration_url, params: {
       user: {
         name: "Alex",
@@ -113,15 +113,11 @@ class BattleTitleLimitOnboardingTest < ActionDispatch::IntegrationTest
       }
     }
     follow_redirect!
-    patch v2_onboarding_url(step: "character"), params: { user: { character: "fox" } }
-    follow_redirect!
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Become a Ruby Developer" } }
-    follow_redirect!
-    patch v2_onboarding_url(step: "camp"), params: { onboarding: { camp: "Get certified" } }
     follow_redirect!
 
     assert_response :success
-    assert_select "input[name='onboarding[battle_titles][]'][maxlength=?]", StrategyGoal::TITLE_MAX.to_s
-    assert_select ".lp-adventure__battle-field[data-controller*='title-limit']"
+    assert_select "#onboarding_camp_add[maxlength=?]", StrategyGoal::TITLE_MAX.to_s
+    assert_select "[data-controller='onboarding-camps']"
   end
 end

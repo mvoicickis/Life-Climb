@@ -12,6 +12,7 @@
   <% if plant_mode %>
     <button type="button"
             class="lp-trail-base-card is-<%= mode.tr('_', '-') %>"
+            <% if show_onboarding_tour %>id="onboarding-tour-base-camp"<% end %>
             data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
             data-action="click->trail-canvas#openComposerFromFab">
       <%= render "life_journeys/trail_base_card_inner",

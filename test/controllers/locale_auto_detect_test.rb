@@ -46,11 +46,11 @@ class LocaleAutoDetectTest < ActionDispatch::IntegrationTest
         password_confirmation: "password12345"
       }
     }, headers: { "Accept-Language" => "lv,en;q=0.8" }
-    assert_redirected_to v2_onboarding_path(step: "character")
+    assert_redirected_to v2_onboarding_path(step: "goal")
 
     follow_redirect!
     assert_response :success
     assert_select "html[lang=?]", "lv"
-    assert_match(/Izvēlies savu pavadoni/i, response.body)
+    assert_match(/Name your mountain/i, response.body)
   end
 end

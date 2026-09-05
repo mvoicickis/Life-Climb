@@ -26167,6 +26167,337 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   }
 }
 
+/* Two-screen onboarding (goal + camps) */
+.lp-ob {
+  --lp-ob-green: #57d35b;
+  --lp-ob-green-deep: #3dbd48;
+  --lp-ob-tap: 2.75rem;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #0f172a;
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-ob__mountain-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.28;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.lp-ob__mountain-bg--steps {
+  opacity: 0.28;
+}
+
+.lp-ob__mountain-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 57% 22%;
+}
+
+.lp-ob__body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem 1rem 0;
+  max-width: 28rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lp-ob__body--camps {
+  padding-bottom: 0;
+}
+
+.lp-ob__card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.35rem 1.2rem 1.4rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+}
+
+.lp-ob__card--goal {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.lp-ob--goal .lp-ob__body {
+  overflow: hidden;
+}
+
+.lp-ob__step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lp-ob__back {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #475569;
+  text-decoration: none;
+}
+
+.lp-ob__progress-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.lp-ob__progress-track {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.lp-ob__progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lp-ob-green);
+}
+
+.lp-ob__title {
+  margin: 0;
+  font-size: clamp(1.55rem, 5vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.lp-ob__lead {
+  margin: 0;
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.lp-ob__form,
+.lp-ob-steps {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-ob-steps {
+  flex: 1;
+  min-height: 0;
+  grid-template-rows: auto 1fr auto;
+}
+
+.lp-ob-steps__head {
+  flex-shrink: 0;
+  padding-bottom: 0.75rem;
+}
+
+.lp-ob-steps__add {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.65rem;
+}
+
+.lp-ob-steps__add-input {
+  flex: 1;
+  min-width: 0;
+  border-radius: 0.85rem;
+}
+
+.lp-ob-steps__add-btn {
+  flex-shrink: 0;
+  width: var(--lp-ob-tap);
+  height: var(--lp-ob-tap);
+  border: 0;
+  border-radius: 999px;
+  background: var(--lp-ob-green);
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(87, 211, 91, 0.28);
+}
+
+.lp-ob-steps__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 0.5rem;
+}
+
+.lp-ob-steps__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lp-ob-steps__ghosts {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lp-ob-steps__ghosts.is-hidden {
+  display: none;
+}
+
+.lp-ob-steps__ghost {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: var(--lp-ob-tap);
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.85rem;
+  border: 1px dashed rgba(71, 85, 105, 0.28);
+  background: rgba(71, 85, 105, 0.05);
+  color: rgba(71, 85, 105, 0.72);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+}
+
+.lp-ob-steps__ghost-handle {
+  width: 1.1rem;
+  height: 1.1rem;
+  opacity: 0.35;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Ccircle cx='9' cy='7' r='1.5'/%3E%3Ccircle cx='15' cy='7' r='1.5'/%3E%3Ccircle cx='9' cy='12' r='1.5'/%3E%3Ccircle cx='15' cy='12' r='1.5'/%3E%3Ccircle cx='9' cy='17' r='1.5'/%3E%3Ccircle cx='15' cy='17' r='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.lp-ob-steps__row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--lp-ob-tap);
+  padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #f8fafc;
+  touch-action: none;
+}
+
+.lp-ob-steps__row.is-dragging {
+  opacity: 0.55;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.lp-ob-steps__row.is-drop-target {
+  border-color: rgba(87, 211, 91, 0.55);
+  box-shadow: 0 0 0 2px rgba(87, 211, 91, 0.25);
+}
+
+.lp-ob-steps__handle {
+  flex-shrink: 0;
+  width: var(--lp-ob-tap);
+  height: var(--lp-ob-tap);
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  cursor: grab;
+  display: grid;
+  place-items: center;
+  color: #475569;
+  padding: 0;
+}
+
+.lp-ob-steps__handle:active {
+  cursor: grabbing;
+}
+
+.lp-ob-steps__handle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  pointer-events: none;
+}
+
+.lp-ob-steps__text {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.45rem 0.25rem;
+  border-radius: 0.5rem;
+  cursor: text;
+  word-break: break-word;
+}
+
+.lp-ob-steps__text:hover {
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.lp-ob-steps__edit {
+  flex: 1;
+  min-width: 0;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(87, 211, 91, 0.45);
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.45rem 0.55rem;
+  min-height: 2.25rem;
+}
+
+.lp-ob-steps__hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.lp-ob-steps__dock {
+  flex-shrink: 0;
+  padding: 0.75rem 0 calc(0.85rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+}
+
+.lp-ob .lp-cta {
+  background: var(--lp-ob-green);
+  box-shadow: 0 10px 24px rgba(87, 211, 91, 0.28);
+}
+
+.lp-ob .lp-cta:hover {
+  background: var(--lp-ob-green-deep);
+}
+
+.lp-ob .lp-cta:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 @import "../stylesheets/mountain_trail.css";
 @import "../stylesheets/today_v2.css";
 @import "../stylesheets/you_v2.css";

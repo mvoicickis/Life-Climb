@@ -7,22 +7,22 @@ class Admin::OnboardingStepFunnelTest < ActiveSupport::TestCase
     user = users(:two)
     other = users(:one)
 
-    Analytics::Track.call(user: user, name: "onboarding_step_viewed", properties: { step: "character" })
-    Analytics::Track.call(user: user, name: "onboarding_step_completed", properties: { step: "character" })
     Analytics::Track.call(user: user, name: "onboarding_step_viewed", properties: { step: "goal" })
-    Analytics::Track.call(user: other, name: "onboarding_step_viewed", properties: { step: "character" })
-    Analytics::Track.call(user: other, name: "onboarding_step_completed", properties: { step: "character" })
+    Analytics::Track.call(user: user, name: "onboarding_step_completed", properties: { step: "goal" })
+    Analytics::Track.call(user: user, name: "onboarding_step_viewed", properties: { step: "camps" })
+    Analytics::Track.call(user: other, name: "onboarding_step_viewed", properties: { step: "goal" })
     Analytics::Track.call(user: other, name: "onboarding_step_completed", properties: { step: "goal" })
+    Analytics::Track.call(user: other, name: "onboarding_step_completed", properties: { step: "camps" })
 
     rows = Admin::OnboardingStepFunnel.call[:rows]
-    character = rows.find { |row| row.key == "character" }
     goal = rows.find { |row| row.key == "goal" }
+    camps = rows.find { |row| row.key == "camps" }
 
-    assert_equal 2, character.viewed
-    assert_equal 2, character.completed
-    assert_equal 1, goal.viewed
-    assert_equal 1, goal.completed
-    assert_equal 1, goal.drop_off_from_previous
+    assert_equal 2, goal.viewed
+    assert_equal 2, goal.completed
+    assert_equal 1, camps.viewed
+    assert_equal 1, camps.completed
+    assert_equal 1, camps.drop_off_from_previous
   end
 
   test "counts distinct users per step from mountain tour events" do
