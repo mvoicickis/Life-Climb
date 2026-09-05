@@ -71,8 +71,6 @@
               area: @created.life_area %>
       </div>
     <% end %>
-    <%= turbo_stream.action :open_trail_camp, target: "mountain-trail" do %>
-<%= @created.id %>
-    <% end %>
+    <%= turbo_stream.open_trail_camp(@created.id) %>
   <% end %>
 <% end %>
