@@ -44,5 +44,36 @@ module Notifications
       assert_equal before, @user.daily_todos.for_day.count
       assert_operator other.daily_todos.for_day.count, :>=, 1
     end
+
+    test "battle_id surfaces existing battle on Today without creating a new goal" do
+      battle = @user.strategy_goals.where(horizon: "day").order(:id).last
+      @user.daily_todos.for_day.delete_all
+
+      assert_no_difference -> { @user.strategy_goals.where(horizon: "day").count } do
+        assert_difference -> { @user.daily_todos.for_day.count }, 1 do
+          post notifications_quick_add_path,
+               params: { token: @token, battle_id: battle.id },
+               as: :json
+        end
+      end
+
+      body = JSON.parse(response.body)
+      assert body["ok"]
+      assert_equal battle.title, body["title"]
+      assert_equal battle.id, @user.daily_todos.for_day.last.strategy_goal_id
+    end
+
+    test "rejects battle_id for another users battle" do
+      other = users(:two)
+      seed_climb!(other, area_key: "self", title: "Other climb", today_mission: "Walk")
+      battle = other.strategy_goals.where(horizon: "day").order(:id).last
+
+      post notifications_quick_add_path,
+           params: { token: @token, battle_id: battle.id },
+           as: :json
+
+      assert_response :unprocessable_entity
+      refute JSON.parse(response.body)["ok"]
+    end
   end
 end

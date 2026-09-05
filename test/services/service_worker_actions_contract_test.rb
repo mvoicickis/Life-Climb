@@ -21,6 +21,10 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, "handleNotificationAction"
   end
 
+  test "handleNotificationAction posts battle_id when present" do
+    assert_includes @source, "battle_id: data.battle_id"
+  end
+
   test "cache version bumped for snooze actions" do
     assert_includes @source, 'CACHE_VERSION = "v8"'
   end

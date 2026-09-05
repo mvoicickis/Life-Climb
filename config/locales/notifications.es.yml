@@ -107,3 +107,5 @@ es:
       "3": "Nuevo día, nuevo paso. ¿Cuál es la Battle de hoy?"
       "4": "Buenos días — un paso pequeño marca el tono."
       "5": "Hoy es una página en blanco. ¿Cuál es el plan?"
+    morning_nudge_personal:
+      body: 'At %{camp}: "%{battle}". Open your camp.' # TODO: translate

@@ -15,6 +15,27 @@ export default class extends Controller {
     this._openCampId = null
     this._pushedHistory = false
     window.addEventListener("popstate", this._onPopState)
+    this.maybeOpenFromDeepLink()
+  }
+
+  maybeOpenFromDeepLink() {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("open_camp") !== "1") return
+
+    const focusId = params.get("focus_id")
+    if (!focusId) return
+
+    const camp = this.element.querySelector(`#trail-camp-${focusId}`)
+    if (!camp) return
+
+    requestAnimationFrame(() => {
+      this.open({
+        currentTarget: camp,
+        preventDefault() {},
+        stopPropagation() {},
+        defaultPrevented: false
+      })
+    })
   }
 
   disconnect() {

@@ -114,7 +114,8 @@ self.addEventListener("push", (event) => {
     actions: notificationActions(data),
     data: {
       url: data.url || "/dashboard",
-      token: data.token || ""
+      token: data.token || "",
+      battle_id: data.battle_id || ""
     },
     ...intensityOptions(data.intensity)
   }
@@ -148,7 +149,10 @@ async function handleNotificationAction(action, data) {
         "Content-Type": "application/json",
         Accept: "application/json"
       },
-      body: JSON.stringify({ token: data.token || "" })
+      body: JSON.stringify({
+        token: data.token || "",
+        battle_id: data.battle_id || ""
+      })
     })
     const payload = await response.json().catch(() => ({}))
     const ok = response.ok && payload.ok

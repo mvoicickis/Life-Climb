@@ -108,3 +108,5 @@ en:
       "3": "New day, new step. What's today's Battle?"
       "4": "Morning — one small move sets the tone."
       "5": "Today's a clean slate. What's the plan?"
+    morning_nudge_personal:
+      body: 'At %{camp}: "%{battle}". Open your camp.' # TODO: translate for lv/de/es/ru.
