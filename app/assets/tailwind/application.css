@@ -10268,21 +10268,15 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   min-width: 0;
 }
 
-.stats-hero__goal-label {
-  margin: 0;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--lp-green-deep, #3dbd48);
-}
-
 .stats-hero__goal {
-  margin: 0.2rem 0 0;
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--lp-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stats-hero__row {

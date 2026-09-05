@@ -3,6 +3,10 @@ class SettingsController < ApplicationController
     @home_habits = current_user.home_board_habits
     @all_habits = current_user.habits.active.ordered
     @commitment_journey = current_user.primary_focused_journey
+    @strategy_goal =
+      if @commitment_journey
+        current_user.strategy_goals.for_area(@commitment_journey.life_area_id).for_kind("goal").roots.first
+      end
   end
 
   def edit_name

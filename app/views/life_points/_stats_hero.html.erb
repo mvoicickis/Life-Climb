@@ -1,8 +1,7 @@
 <%# locals: journey, strategy_goal, closer, action_points, strategy_points, summary %>
-<% goal_title = strategy_goal&.title.presence || journey&.title || t("progress.lock_goal") %>
+<% goal_title = active_goal_title(strategy_goal: strategy_goal, journey: journey) %>
 <% strategy_href = journey || current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first %>
 <section class="stats-hero" aria-label="<%= t('progress.goal_label') %>">
-  <p class="stats-hero__goal-label"><%= t("progress.goal_label") %></p>
   <p class="stats-hero__goal" title="<%= goal_title %>"><%= goal_title %></p>
   <div class="stats-hero__row">
     <p class="stats-hero__lead">

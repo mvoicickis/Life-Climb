@@ -15,9 +15,10 @@
 
   <div class="lp-you__scroll">
     <header class="lp-you__hero<%= ' lp-you-row--flash' if highlight == 'name' %>">
+      <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @commitment_journey) %>
       <p class="lp-you__kicker">
         <span class="lp-you__kicker-mark" aria-hidden="true">🏔</span>
-        <%= t("app_name").upcase %>
+        <span class="lp-you__kicker-text" title="<%= goal_title %>"><%= goal_title %></span>
       </p>
       <div class="lp-you__hero-row">
         <% if current_user.character_image %>

@@ -353,4 +353,8 @@ module ApplicationHelper
       progress[:ridge_label].to_s
     end
   end
+
+  def active_goal_title(strategy_goal: nil, journey: nil)
+    strategy_goal&.title.presence || journey&.title || t("dash.active_goal_fallback")
+  end
 end

@@ -358,6 +358,7 @@ en:
       project: "Camp" # TODO: translate for lv/de/es/ru.
       goal: "Goal"
       view: "View Journey →"
+    active_goal_fallback: "Set your goal on Mountain"
     nav:
       today: "Today"
       strategy: "Mountain"

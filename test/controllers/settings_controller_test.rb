@@ -21,6 +21,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: "You"
     assert_select ".lp-you"
     assert_select ".lp-you__hero"
+    assert_select ".lp-you__kicker-text", text: I18n.t("dash.active_goal_fallback")
     assert_select ".lp-you__name", text: /One/
     assert_select ".lp-dash-nav.is-v4"
     assert_select "a.lp-dash-nav__link[href=?]", dashboard_path
@@ -60,6 +61,34 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-you-signout", text: /Sign out/i
     assert_select "a[href=?]", admin_root_path, count: 0
     assert_select "form[action=?]", restart_new_player_experience_developer_tools_path, count: 0
+  end
+
+  test "You kicker shows active goal title when climb exists" do
+    user = users(:one)
+    sign_in_as user
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Write tests",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    user.strategy_goals.create!(
+      life_area: area,
+      life_journey: journey,
+      horizon: "goal",
+      title: "Everest",
+      position: 0
+    )
+
+    get settings_path
+    assert_response :success
+    assert_select ".lp-you__kicker-text", text: "Everest"
   end
 
   test "admin sees admin row on You" do
