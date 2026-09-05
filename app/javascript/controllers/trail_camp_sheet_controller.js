@@ -24,17 +24,27 @@ export default class extends Controller {
 
   openFromDock(event) {
     const campId = event.currentTarget?.dataset?.campId
-    const camp = campId && this.element.querySelector(`#trail-camp-${campId}`)
-    if (!camp) return
+    if (!campId) return
 
     event.preventDefault()
     event.stopPropagation()
+    this.openCampById(campId)
+  }
+
+  // Called after trail plant turbo stream — not on page load.
+  openCampById(campId) {
+    const camp = campId && this.element.querySelector(`#trail-camp-${campId}`)
+    if (!camp) return
+
     this.open({
       currentTarget: camp,
       preventDefault() {},
       stopPropagation() {},
       defaultPrevented: false
     })
+
+    const coach = this.application.getControllerForElementAndIdentifier(this.element, "trail-coach")
+    coach?.notePlanted()
   }
 
   openBase(event) {
