@@ -91,7 +91,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-field", count: 1
   end
 
-  test "today header shows avatar, streak meta, and HP block" do
+  test "today header shows avatar, active goal meta, and HP block" do
     user = users(:one)
     user.update!(
       name: "Alex Climber",
@@ -126,6 +126,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-header", count: 1
     assert_select ".lp-today-v2-header__avatar-img[src*='fox']", count: 1
     assert_select ".lp-today-v2-header__name", text: "Alex Climber"
+    assert_select ".lp-today-v2-header__meta", text: "Goal"
     assert_select ".lp-today-v2-header__hp-num", minimum: 1
     assert_select ".lp-today-v2-hp-bar", count: 1
     assert_select ".lp-dash-header", count: 0

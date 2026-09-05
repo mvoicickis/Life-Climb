@@ -78,8 +78,10 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--today-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-today-v2-header__hp-block {

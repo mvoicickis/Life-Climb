@@ -42,6 +42,8 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_no_match(/<h2>\s*Achievements\s*<\/h2>/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
     assert_select ".stats-hero"
+    assert_select ".stats-hero__goal", text: /Financial freedom|Set your goal on Mountain/
+    assert_select ".stats-hero__goal-label", count: 0
     assert_select ".stats-hero__lead"
     assert_select ".stats-hero__meta"
     assert_select ".stats-hero__foot strong", text: /\d+%/

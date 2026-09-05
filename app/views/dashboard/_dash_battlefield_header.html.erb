@@ -1,7 +1,5 @@
-<%# Today V2 — battles-done header. locals: health, streak %>
+<%# Today V2 — battles-done header. locals: health %>
 <% health = local_assigns.fetch(:health) %>
-<% streak = local_assigns[:streak] || @climb_streak %>
-<% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
 <% progress_pct = health.total_count.positive? ? health.hp : 0 %>
 
 <header class="lp-today-v2-header" aria-label="<%= t('dash.battlefield.progress_label') %>">
@@ -11,11 +9,8 @@
     <% end %>
     <div class="lp-today-v2-header__who">
       <p class="lp-today-v2-header__name"><%= current_user.display_name %></p>
-      <p class="lp-today-v2-header__meta">
-        <%= l(Date.current, format: :dash_weekday).upcase %>
-        <span aria-hidden="true"> · </span>
-        <%= t("dash.battlefield.day_n", count: streak_days.positive? ? streak_days : 1) %>
-      </p>
+      <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
+      <p class="lp-today-v2-header__meta" title="<%= goal_title %>"><%= goal_title %></p>
     </div>
     <div class="lp-today-v2-header__hp-block">
       <span class="lp-today-v2-header__hp-num is-neutral" data-today-v2-target="hpNum"><%= health.done_count %></span>
