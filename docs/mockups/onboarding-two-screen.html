@@ -277,8 +277,24 @@
     }
 
     /* —— Screen 2 layout —— */
+    .phone--steps {
+      position: relative;
+      overflow: hidden;
+    }
+
     .phone--steps .phone__body {
       padding-bottom: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ob-mountain-bg--steps {
+      opacity: 0.14;
+    }
+
+    .phone--steps .steps-dock {
+      position: relative;
+      z-index: 1;
     }
 
     .steps-head {
@@ -540,6 +556,13 @@
     <section class="screen-block" aria-labelledby="screen2-label">
       <p class="screen-block__label" id="screen2-label">Screen 2 — Create your climb</p>
       <div class="phone phone--steps" role="img" aria-label="Screen 2: Create your climb">
+        <div class="ob-mountain-bg ob-mountain-bg--steps" aria-hidden="true">
+          <img
+            class="ob-mountain-bg__photo"
+            src="../../public/images/onboarding_path.webp"
+            alt=""
+            decoding="async">
+        </div>
         <div class="phone__body">
           <header class="steps-head">
             <h1 class="ob-title">Create your climb</h1>
