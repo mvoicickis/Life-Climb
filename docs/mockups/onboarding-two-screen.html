@@ -192,19 +192,19 @@
 
     .ob-mountain-bg {
       position: absolute;
-      left: 50%;
-      bottom: -0.35rem;
-      width: 118%;
-      transform: translateX(-50%);
+      inset: 0;
       opacity: 0.18;
       pointer-events: none;
       z-index: 0;
+      overflow: hidden;
     }
 
-    .ob-mountain-bg__art {
+    .ob-mountain-bg__photo {
       display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
     }
 
     .ob-title {
@@ -510,39 +510,11 @@
       <div class="phone phone--screen1" role="img" aria-label="Screen 1: Name your mountain">
         <div class="phone__body">
           <div class="ob-mountain-bg" aria-hidden="true">
-            <svg class="ob-mountain-bg__art" viewBox="0 0 320 180" role="presentation" focusable="false">
-              <defs>
-                <linearGradient id="mock-mtn-sky" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#ecfdf5"/>
-                  <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-                </linearGradient>
-                <linearGradient id="mock-mtn-face" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#166534"/>
-                  <stop offset="55%" stop-color="#15803d"/>
-                  <stop offset="100%" stop-color="#0f766e"/>
-                </linearGradient>
-                <linearGradient id="mock-mtn-shade" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#14532d" stop-opacity="0.35"/>
-                  <stop offset="100%" stop-color="#14532d" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#mock-mtn-sky)"/>
-              <path d="M0 150 L70 95 L120 130 L180 70 L250 120 L320 90 L320 180 L0 180 Z" fill="#bbf7d0" opacity="0.55"/>
-              <path d="M40 180 L160 38 L280 180 Z" fill="url(#mock-mtn-face)"/>
-              <path d="M40 180 L160 38 L160 180 Z" fill="url(#mock-mtn-shade)"/>
-              <path d="M130 78 L160 38 L190 78 L175 72 L160 92 L145 72 Z" fill="#f8fafc" opacity="0.95"/>
-              <path d="M92 168 C118 148, 128 136, 148 118 C168 100, 176 90, 188 78" fill="none" stroke="#fef3c7" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 6"/>
-              <g>
-                <path d="M118 148 L132 128 L146 148 Z" fill="#d97706"/>
-                <rect x="128" y="140" width="4" height="8" fill="#92400e"/>
-              </g>
-              <g>
-                <path d="M168 112 L168 88" stroke="#166534" stroke-width="2"/>
-                <path d="M168 88 L186 94 L168 100 Z" fill="#84cc16"/>
-              </g>
-              <circle cx="160" cy="38" r="18" fill="#fef08a" opacity="0.45"/>
-              <circle cx="132" cy="146" r="5" fill="#fbbf24" opacity="0.55"/>
-            </svg>
+            <img
+              class="ob-mountain-bg__photo"
+              src="../../public/images/mountain_trail_default.webp"
+              alt=""
+              decoding="async">
           </div>
           <div class="ob-card ob-card--screen1">
             <h1 class="ob-title">Name your mountain</h1>
