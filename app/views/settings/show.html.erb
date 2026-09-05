@@ -16,10 +16,6 @@
   <div class="lp-you__scroll">
     <header class="lp-you__hero<%= ' lp-you-row--flash' if highlight == 'name' %>">
       <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @commitment_journey) %>
-      <p class="lp-you__kicker">
-        <span class="lp-you__kicker-mark" aria-hidden="true">🏔</span>
-        <span class="lp-you__kicker-text" title="<%= goal_title %>"><%= goal_title %></span>
-      </p>
       <div class="lp-you__hero-row">
         <% if current_user.character_image %>
           <div class="lp-you__avatar">
@@ -29,9 +25,10 @@
           <div class="lp-you__avatar is-empty" aria-hidden="true">🐾</div>
         <% end %>
         <div class="lp-you__hero-copy">
+          <p class="lp-you__goal" title="<%= goal_title %>"><%= goal_title %></p>
           <div class="lp-you__name-row">
             <button type="button"
-                    class="lp-you__name"
+                    class="lp-you__meta-name"
                     data-you-page-target="nameButton"
                     data-action="click->you-page#editName"
                     <%= "hidden" if highlight == "name" %>>
@@ -51,13 +48,6 @@
                   autocomplete: "name",
                   data: { you_page_target: "nameInput", action: "keydown->you-page#nameKey" } %>
           <% end %>
-          <p class="lp-you__companion-line">
-            <% if companion_name %>
-              <%= t("settings.companion_subline", name: companion_name) %>
-            <% else %>
-              <%= t("settings.character_title") %>
-            <% end %>
-          </p>
         </div>
       </div>
     </header>

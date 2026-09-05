@@ -25,6 +25,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_response :success
     assert_match(/Stats/i, response.body)
+    assert_select ".lp-progress__title", text: /Financial freedom|Set your goal on Mountain/
     assert_select ".lp-progress__subtitle", text: /moving/i
     assert_match(/Battle strength/i, response.body)
     assert_match(/Planning power/i, response.body)
@@ -42,8 +43,7 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_no_match(/<h2>\s*Achievements\s*<\/h2>/i, response.body)
     assert_match(/lp-dash-nav/i, response.body)
     assert_select ".stats-hero"
-    assert_select ".stats-hero__goal", text: /Financial freedom|Set your goal on Mountain/
-    assert_select ".stats-hero__goal-label", count: 0
+    assert_select ".stats-hero__goal", count: 0
     assert_select ".stats-hero__lead"
     assert_select ".stats-hero__meta"
     assert_select ".stats-hero__foot strong", text: /\d+%/
