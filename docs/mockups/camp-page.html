@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camp page — redesign mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #f7ead9;
+      --muted: rgba(247, 234, 217, 0.52);
+      --muted-dim: rgba(247, 234, 217, 0.34);
+      --paper: #1f1510;
+      --paper-deep: #140d08;
+      --sheet: #231810;
+      --line: rgba(255, 255, 255, 0.08);
+      --accent: #14b8a6;
+      --accent-deep: #0f766e;
+      --green: #4ade80;
+      --green-soft: rgba(74, 222, 128, 0.16);
+      --gold: #fbbf24;
+      --danger: #f87171;
+      --font: "Nunito", system-ui, sans-serif;
+      --radius: 0.85rem;
+      --tap: 44px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #e8e4dc;
+      color: #1c2420;
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 4rem;
+    }
+
+    .page__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #12201a;
+    }
+
+    .page__lede {
+      margin: 0 0 0.75rem;
+      font-size: 0.9rem;
+      color: #5f665e;
+      max-width: 42rem;
+    }
+
+    .page__rules {
+      margin: 0 0 2rem;
+      padding: 0.85rem 1rem;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #ddd8cf;
+      font-size: 0.82rem;
+      color: #4a5248;
+      max-width: 42rem;
+    }
+
+    .page__rules h2 {
+      margin: 0 0 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+    }
+
+    .page__rules ul {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    .page__rules li { margin-bottom: 0.25rem; }
+
+    .step {
+      margin-bottom: 2.75rem;
+    }
+
+    .step__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+    }
+
+    .step__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #12201a;
+    }
+
+    .step__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: #5f665e;
+      max-width: 34rem;
+    }
+
+    .flow-arrow {
+      text-align: center;
+      margin: -1.5rem 0 0.75rem;
+      font-size: 1.25rem;
+      color: #94a3b8;
+    }
+
+    /* —— Phone shell (360px) —— */
+    .phone {
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      background:
+        radial-gradient(ellipse 120% 50% at 50% 0%, rgba(232, 72, 47, 0.12), transparent 55%),
+        linear-gradient(165deg, #241812, #170f0a 55%, var(--paper-deep));
+      color: var(--ink);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.08),
+        0 20px 40px rgba(0, 0, 0, 0.18);
+      min-height: 620px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .phone__mountain {
+      flex: 0 0 38%;
+      min-height: 200px;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(20, 13, 8, 0.1), rgba(20, 13, 8, 0.75)),
+        linear-gradient(145deg, #2d4a35 0%, #1a2a1c 40%, #0f1812 100%);
+    }
+
+    .phone__mountain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        polygon(50% 18%, 78% 62%, 62% 62%, 50% 42%, 38% 62%, 22% 62%);
+      background-color: rgba(15, 23, 18, 0.55);
+      clip-path: polygon(50% 18%, 78% 62%, 62% 62%, 50% 42%, 38% 62%, 22% 62%);
+    }
+
+    .phone__mountain::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 40%;
+      background: linear-gradient(0deg, #140d08, transparent);
+    }
+
+    /* —— Camp sheet —— */
+    .sheet {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--sheet);
+      border-radius: 20px 20px 0 0;
+      margin-top: -1.25rem;
+      position: relative;
+      z-index: 1;
+      min-height: 0;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.28);
+    }
+
+    .sheet.is-done {
+      background: linear-gradient(180deg, #1a2818 0%, var(--sheet) 35%);
+    }
+
+    .sheet__handle {
+      width: 2.5rem;
+      height: 4px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.18);
+      margin: 0.55rem auto 0;
+      flex-shrink: 0;
+    }
+
+    .sheet__head {
+      padding: 0.65rem 1rem 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .sheet__kicker {
+      margin: 0 0 0.2rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .sheet__title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .sheet__title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 900;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .sheet__badge {
+      flex-shrink: 0;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.55rem;
+      border-radius: 99px;
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid rgba(74, 222, 128, 0.28);
+      margin-top: 0.15rem;
+    }
+
+    .sheet__badge.is-gold {
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--gold);
+      border-color: rgba(251, 191, 36, 0.28);
+    }
+
+    .sheet__sub {
+      margin: 0.35rem 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .sheet__cheer {
+      margin: 0.5rem 0 0;
+      padding: 0.55rem 0.7rem;
+      border-radius: var(--radius);
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .sheet__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.35rem 1rem 0;
+      min-height: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .sheet__dock-spacer {
+      height: 4.5rem;
+      flex-shrink: 0;
+    }
+
+    /* —— Battle list —— */
+    .battles {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .battle {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-height: var(--tap);
+      padding: 0.45rem 0.65rem;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+    }
+
+    .battle__check {
+      flex-shrink: 0;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 0.4rem;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .battle__check:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .battle.is-won .battle__check {
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .battle.is-won .battle__check::after {
+      content: "";
+      position: absolute;
+      left: 0.28rem;
+      top: 0.12rem;
+      width: 0.35rem;
+      height: 0.6rem;
+      border: solid #0f1812;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg);
+    }
+
+    .battle__name {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.3;
+      word-break: break-word;
+      cursor: text;
+      border-radius: 0.35rem;
+      padding: 0.15rem 0.2rem;
+      margin: -0.15rem -0.2rem;
+    }
+
+    .battle__name:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .battle__name:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .battle.is-won .battle__name {
+      color: var(--muted-dim);
+      text-decoration: line-through;
+      text-decoration-color: rgba(247, 234, 217, 0.28);
+    }
+
+    .battle__chip {
+      flex-shrink: 0;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.35rem;
+      background: rgba(20, 184, 166, 0.14);
+      color: var(--accent);
+    }
+
+    /* —— Won fold —— */
+    .won-fold {
+      margin-top: 0.65rem;
+    }
+
+    .won-fold summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--muted);
+      padding: 0.45rem 0;
+      min-height: var(--tap);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .won-fold summary::-webkit-details-marker { display: none; }
+
+    .won-fold summary::before {
+      content: "▸";
+      font-size: 0.75rem;
+      transition: transform 0.15s ease;
+    }
+
+    .won-fold[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .won-fold .battles {
+      margin-top: 0.15rem;
+    }
+
+    .won-fold .battle {
+      background: rgba(0, 0, 0, 0.12);
+      border-color: transparent;
+    }
+
+    /* —— Example chips (empty state) —— */
+    .examples {
+      margin-top: 0.75rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .examples__label {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .examples__list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .example {
+      border: 1px dashed rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.55rem 0.75rem;
+      border-radius: 99px;
+      min-height: var(--tap);
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.25;
+    }
+
+    .example:hover,
+    .example:focus-visible {
+      border-color: var(--accent);
+      background: rgba(20, 184, 166, 0.1);
+      outline: none;
+    }
+
+    /* —— Add row (always visible) —— */
+    .add-dock {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      padding: 0.55rem 1rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(0deg, var(--sheet) 72%, rgba(35, 24, 16, 0.92) 100%);
+      border-top: 1px solid var(--line);
+    }
+
+    .add-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: var(--tap);
+      padding: 0.35rem 0.55rem;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .add-row__plus {
+      flex-shrink: 0;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 0.4rem;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    .add-row__plus::before,
+    .add-row__plus::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 1px;
+    }
+
+    .add-row__plus::before {
+      width: 0.55rem;
+      height: 2px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .add-row__plus::after {
+      width: 2px;
+      height: 0.55rem;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .add-row__input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0.25rem 0;
+    }
+
+    .add-row__input::placeholder {
+      color: var(--muted-dim);
+      font-weight: 600;
+    }
+
+    .add-row__input:focus {
+      outline: none;
+    }
+
+    .add-row__hint {
+      margin: 0.35rem 0 0;
+      font-size: 0.72rem;
+      color: var(--muted-dim);
+      text-align: center;
+    }
+
+    /* —— Camp menu —— */
+    .camp-menu {
+      margin-top: 0.75rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .camp-menu summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--muted);
+      padding: 0.45rem 0;
+      min-height: var(--tap);
+      display: flex;
+      align-items: center;
+    }
+
+    .camp-menu summary::-webkit-details-marker { display: none; }
+
+    .camp-menu__actions {
+      display: grid;
+      gap: 0.25rem;
+      padding: 0.25rem 0 0.5rem;
+    }
+
+    .camp-menu__btn {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: var(--tap);
+      padding: 0.45rem 0.65rem;
+      border: 0;
+      border-radius: 0.65rem;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .camp-menu__btn.is-primary {
+      background: rgba(20, 184, 166, 0.14);
+      color: var(--accent);
+    }
+
+    .camp-menu__btn.is-danger {
+      color: var(--danger);
+    }
+
+    .camp-menu__btn.is-muted {
+      color: var(--muted);
+    }
+
+    /* —— Done state extras —— */
+    .done-banner {
+      margin: 0.5rem 0 0;
+      padding: 0.85rem;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.12), rgba(251, 191, 36, 0.08));
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      text-align: center;
+    }
+
+    .done-banner__icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin: 0 auto 0.45rem;
+      border-radius: 50%;
+      background: var(--green-soft);
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--green);
+    }
+
+    .done-banner__title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--green);
+    }
+
+    .done-banner__sub {
+      margin: 0.2rem 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .sheet.is-done .add-dock {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    @media (max-width: 380px) {
+      .page { padding-inline: 0.75rem; }
+      .sheet__title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="page__title">Camp page — redesign</h1>
+    <p class="page__lede">Four states in one file. CSS only, no images. Add row always at the bottom. Press Enter to save and keep typing. Tap a battle name to edit it.</p>
+
+    <div class="page__rules">
+      <h2>Rules</h2>
+      <ul>
+        <li>No “0 battles ready here” — an empty list is enough.</li>
+        <li>Add row stays visible in every state.</li>
+        <li>Enter saves a battle and keeps focus in the add row.</li>
+        <li>Tap battle text to edit in place.</li>
+        <li>Won battles sit in a folded section — grey and crossed out.</li>
+        <li>Copy must be simple enough for an 8-year-old.</li>
+      </ul>
+    </div>
+
+    <!-- State 1: Empty camp -->
+    <section class="step" id="state-empty">
+      <p class="step__label">State 1</p>
+      <h2 class="step__title">Empty camp</h2>
+      <p class="step__note">No battles yet. Example chips fill the list when tapped. Add row at the bottom.</p>
+
+      <div class="phone" data-camp-demo>
+        <div class="phone__mountain" aria-hidden="true"></div>
+        <div class="sheet">
+          <div class="sheet__handle" aria-hidden="true"></div>
+          <header class="sheet__head">
+            <p class="sheet__kicker">Camp</p>
+            <div class="sheet__title-row">
+              <h3 class="sheet__title">Learn Spanish</h3>
+            </div>
+            <p class="sheet__sub">Pick a small step for today.</p>
+          </header>
+
+          <div class="sheet__body">
+            <ul class="battles" data-battle-list></ul>
+
+            <div class="examples">
+              <p class="examples__label">Try one of these:</p>
+              <div class="examples__list">
+                <button type="button" class="example" data-fill-battle>Read for 10 minutes</button>
+                <button type="button" class="example" data-fill-battle>Learn 5 new words</button>
+                <button type="button" class="example" data-fill-battle>Listen to one song</button>
+              </div>
+            </div>
+
+            <details class="camp-menu">
+              <summary>Camp settings</summary>
+              <div class="camp-menu__actions">
+                <button type="button" class="camp-menu__btn">✎ Rename camp</button>
+                <button type="button" class="camp-menu__btn is-primary">✓ Mark camp done</button>
+                <button type="button" class="camp-menu__btn is-danger">🗑 Delete camp</button>
+              </div>
+            </details>
+
+            <div class="sheet__dock-spacer" aria-hidden="true"></div>
+          </div>
+
+          <div class="add-dock">
+            <div class="add-row">
+              <span class="add-row__plus" aria-hidden="true"></span>
+              <input type="text" class="add-row__input" placeholder="Add a battle" maxlength="120" data-add-input aria-label="Add a battle">
+            </div>
+            <p class="add-row__hint">Press Enter to save</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="flow-arrow" aria-hidden="true">↓</p>
+
+    <!-- State 2: With battles -->
+    <section class="step" id="state-active">
+      <p class="step__label">State 2</p>
+      <h2 class="step__title">Battles to do</h2>
+      <p class="step__note">Open battles on top. Add row below them. Won battles folded underneath.</p>
+
+      <div class="phone" data-camp-demo>
+        <div class="phone__mountain" aria-hidden="true"></div>
+        <div class="sheet">
+          <div class="sheet__handle" aria-hidden="true"></div>
+          <header class="sheet__head">
+            <p class="sheet__kicker">Camp</p>
+            <div class="sheet__title-row">
+              <h3 class="sheet__title">Learn Spanish</h3>
+            </div>
+            <p class="sheet__sub">2 battles left today.</p>
+          </header>
+
+          <div class="sheet__body">
+            <ul class="battles" data-battle-list>
+              <li class="battle">
+                <button type="button" class="battle__check" aria-label="Win battle"></button>
+                <span class="battle__name" contenteditable="true" spellcheck="false">Read for 10 minutes</span>
+              </li>
+              <li class="battle">
+                <button type="button" class="battle__check" aria-label="Win battle"></button>
+                <span class="battle__name" contenteditable="true" spellcheck="false">Learn 5 new words</span>
+              </li>
+            </ul>
+
+            <details class="won-fold">
+              <summary>1 battle won</summary>
+              <ul class="battles">
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Set up my desk</span>
+                </li>
+              </ul>
+            </details>
+
+            <details class="camp-menu">
+              <summary>Camp settings</summary>
+              <div class="camp-menu__actions">
+                <button type="button" class="camp-menu__btn">✎ Rename camp</button>
+                <button type="button" class="camp-menu__btn is-primary">✓ Mark camp done</button>
+                <button type="button" class="camp-menu__btn is-danger">🗑 Delete camp</button>
+              </div>
+            </details>
+
+            <div class="sheet__dock-spacer" aria-hidden="true"></div>
+          </div>
+
+          <div class="add-dock">
+            <div class="add-row">
+              <span class="add-row__plus" aria-hidden="true"></span>
+              <input type="text" class="add-row__input" placeholder="Add a battle" maxlength="120" data-add-input aria-label="Add a battle">
+            </div>
+            <p class="add-row__hint">Press Enter to save</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="flow-arrow" aria-hidden="true">↓</p>
+
+    <!-- State 3: All won, camp open -->
+    <section class="step" id="state-all-won">
+      <p class="step__label">State 3</p>
+      <h2 class="step__title">All battles won — camp still open</h2>
+      <p class="step__note">Every battle is done but the camp is not finished yet. Add row still works.</p>
+
+      <div class="phone" data-camp-demo>
+        <div class="phone__mountain" aria-hidden="true"></div>
+        <div class="sheet">
+          <div class="sheet__handle" aria-hidden="true"></div>
+          <header class="sheet__head">
+            <p class="sheet__kicker">Camp</p>
+            <div class="sheet__title-row">
+              <h3 class="sheet__title">Learn Spanish</h3>
+              <span class="sheet__badge">All won today</span>
+            </div>
+            <p class="sheet__cheer">Nice! You did every battle. Mark the camp done when you are ready.</p>
+          </header>
+
+          <div class="sheet__body">
+            <ul class="battles" data-battle-list></ul>
+
+            <details class="won-fold" open>
+              <summary>3 battles won</summary>
+              <ul class="battles">
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Read for 10 minutes</span>
+                </li>
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Learn 5 new words</span>
+                </li>
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Set up my desk</span>
+                </li>
+              </ul>
+            </details>
+
+            <details class="camp-menu" open>
+              <summary>Camp settings</summary>
+              <div class="camp-menu__actions">
+                <button type="button" class="camp-menu__btn">✎ Rename camp</button>
+                <button type="button" class="camp-menu__btn is-primary">✓ Mark camp done</button>
+                <button type="button" class="camp-menu__btn is-danger">🗑 Delete camp</button>
+              </div>
+            </details>
+
+            <div class="sheet__dock-spacer" aria-hidden="true"></div>
+          </div>
+
+          <div class="add-dock">
+            <div class="add-row">
+              <span class="add-row__plus" aria-hidden="true"></span>
+              <input type="text" class="add-row__input" placeholder="Add a battle" maxlength="120" data-add-input aria-label="Add a battle">
+            </div>
+            <p class="add-row__hint">Press Enter to save</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="flow-arrow" aria-hidden="true">↓</p>
+
+    <!-- State 4: Camp complete -->
+    <section class="step" id="state-complete">
+      <p class="step__label">State 4</p>
+      <h2 class="step__title">Camp complete</h2>
+      <p class="step__note">The whole camp is marked done. Add row is faded. Reopen from camp settings.</p>
+
+      <div class="phone" data-camp-demo>
+        <div class="phone__mountain" aria-hidden="true"></div>
+        <div class="sheet is-done">
+          <div class="sheet__handle" aria-hidden="true"></div>
+          <header class="sheet__head">
+            <p class="sheet__kicker">Camp</p>
+            <div class="sheet__title-row">
+              <h3 class="sheet__title">Learn Spanish</h3>
+              <span class="sheet__badge is-gold">Done</span>
+            </div>
+            <div class="done-banner">
+              <div class="done-banner__icon" aria-hidden="true">✓</div>
+              <p class="done-banner__title">Camp complete!</p>
+              <p class="done-banner__sub">You finished this camp. Great work.</p>
+            </div>
+          </header>
+
+          <div class="sheet__body">
+            <details class="won-fold" open>
+              <summary>3 battles won</summary>
+              <ul class="battles">
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Read for 10 minutes</span>
+                </li>
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Learn 5 new words</span>
+                </li>
+                <li class="battle is-won">
+                  <span class="battle__check" aria-hidden="true"></span>
+                  <span class="battle__name">Set up my desk</span>
+                </li>
+              </ul>
+            </details>
+
+            <details class="camp-menu">
+              <summary>Camp settings</summary>
+              <div class="camp-menu__actions">
+                <button type="button" class="camp-menu__btn is-muted">↩ Reopen camp</button>
+                <button type="button" class="camp-menu__btn is-danger">🗑 Delete camp</button>
+              </div>
+            </details>
+
+            <div class="sheet__dock-spacer" aria-hidden="true"></div>
+          </div>
+
+          <div class="add-dock">
+            <div class="add-row">
+              <span class="add-row__plus" aria-hidden="true"></span>
+              <input type="text" class="add-row__input" placeholder="Add a battle" maxlength="120" disabled aria-label="Add a battle" aria-disabled="true">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      function makeBattleRow(title, editable) {
+        const li = document.createElement("li");
+        li.className = "battle";
+        const check = document.createElement("button");
+        check.type = "button";
+        check.className = "battle__check";
+        check.setAttribute("aria-label", "Win battle");
+        const name = document.createElement("span");
+        name.className = "battle__name";
+        name.textContent = title;
+        if (editable !== false) {
+          name.contentEditable = "true";
+          name.spellcheck = false;
+        }
+        li.append(check, name);
+        return li;
+      }
+
+      document.querySelectorAll("[data-camp-demo]").forEach(function (phone) {
+        const list = phone.querySelector("[data-battle-list]");
+        const input = phone.querySelector("[data-add-input]");
+        if (!list || !input || input.disabled) return;
+
+        function addBattle(title) {
+          const text = (title || input.value).trim();
+          if (!text) return;
+          list.appendChild(makeBattleRow(text));
+          input.value = "";
+          input.focus();
+          const examples = phone.querySelector(".examples");
+          if (examples && list.children.length > 0) examples.hidden = true;
+        }
+
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            addBattle();
+          }
+        });
+
+        phone.querySelectorAll("[data-fill-battle]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            addBattle(btn.textContent.trim());
+          });
+        });
+
+        phone.addEventListener("click", function (e) {
+          const name = e.target.closest(".battle__name");
+          if (!name || !name.isContentEditable) return;
+          if (document.activeElement !== name) {
+            name.focus();
+            const range = document.createRange();
+            range.selectNodeContents(name);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
