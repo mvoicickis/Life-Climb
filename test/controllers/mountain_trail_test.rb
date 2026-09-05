@@ -189,7 +189,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "trail-camp-#{created.id}"
     assert_includes response.body, 'action="open_trail_camp"'
     assert_includes response.body, 'target="mountain-trail"'
-    assert_includes response.body, "camp_id=\"#{created.id}\""
+    assert_includes response.body, "camp-id=\"#{created.id}\""
     expected = MountainTrailHelper::AutoSlot.snap(0.52, 0.44)
     assert_in_delta expected[:trail_x], created.trail_x, 0.0001
     assert_in_delta expected[:trail_y], created.trail_y, 0.0001
