@@ -447,7 +447,7 @@
       <h2>How to review</h2>
       <ul>
         <li><strong>Screen 1</strong> — single goal field, placeholder “Save 20,000”, Next CTA.</li>
-        <li><strong>Screen 2</strong> — type in the add row and press Enter to save (focus stays). Tap row text to edit. Drag the handle to reorder. “Start climbing” stays fixed above the add row; list scrolls when long.</li>
+        <li><strong>Screen 2</strong> — type in the add row and press Enter to save (focus stays). Tap row text to edit. After two rows, a reorder hint appears under the list. “Start climbing” stays fixed above the add row; list scrolls when long.</li>
       </ul>
       <div class="doc__tools">
         <button type="button" class="doc__btn" id="load-twenty">Load 20 sample rows (scroll test)</button>
@@ -482,12 +482,12 @@
 
     <!-- Screen 2 -->
     <section class="screen-block" aria-labelledby="screen2-label">
-      <p class="screen-block__label" id="screen2-label">Screen 2 — Write what you need to get there</p>
-      <div class="phone phone--steps" role="img" aria-label="Screen 2: Write what you need to get there">
+      <p class="screen-block__label" id="screen2-label">Screen 2 — Create your climb</p>
+      <div class="phone phone--steps" role="img" aria-label="Screen 2: Create your climb">
         <div class="phone__body">
           <header class="steps-head">
-            <h1 class="ob-title">Write what you need to get there</h1>
-            <p class="ob-lead">Drag to put them in the order you'll reach them.</p>
+            <h1 class="ob-title">Create your climb</h1>
+            <p class="ob-lead">Write what you need to get there. Put the closest one first.</p>
           </header>
 
           <div class="steps-scroll" id="steps-scroll">
@@ -535,6 +535,7 @@
       var items = [];
       var dragId = null;
       var dragOverId = null;
+      var reorderHintShown = false;
 
       var handleSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>';
 
@@ -546,6 +547,14 @@
         ghosts.classList.toggle("is-hidden", items.length > 0);
         startBtn.disabled = items.length === 0;
         renderList();
+        if (!reorderHintShown && items.length >= 2) {
+          reorderHintShown = true;
+          var hint = document.createElement("p");
+          hint.className = "steps-add__hint";
+          hint.id = "steps-reorder-hint";
+          hint.textContent = "Hold and drag to reorder";
+          list.insertAdjacentElement("afterend", hint);
+        }
       }
 
       function renderList() {
