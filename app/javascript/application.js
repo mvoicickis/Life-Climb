@@ -1,5 +1,6 @@
 // Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
+import "trail_turbo_streams"
 import "controllers"
 import { ensureCapture } from "pwa_install_prompt"
 import { startNavTransition } from "nav_transition"

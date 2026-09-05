@@ -187,6 +187,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     created = @plan.children.for_kind("project").find_by!(title: "Ridge camp")
     assert_includes response.body, "trail-camps"
     assert_includes response.body, "trail-camp-#{created.id}"
+    assert_match(/turbo-stream action="open_trail_camp" target="mountain-trail"/, response.body)
+    assert_match(/<template>\s*#{created.id}\s*<\/template>/, response.body)
     expected = MountainTrailHelper::AutoSlot.snap(0.52, 0.44)
     assert_in_delta expected[:trail_x], created.trail_x, 0.0001
     assert_in_delta expected[:trail_y], created.trail_y, 0.0001
