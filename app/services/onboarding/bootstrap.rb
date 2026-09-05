@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Onboarding
-  # New-player onboarding: goal + camp + today's battles → full spine on Today.
-  # All-or-nothing transaction — no route mission, no destination overlay dead end.
+  # New-player onboarding: goal + ordered camps → full spine on Today.
+  # All-or-nothing transaction — one invisible plan, one project per camp row.
   class Bootstrap
     class Error < StandardError; end
 
@@ -10,34 +10,29 @@ module Onboarding
     DEFAULT_CATEGORY = "other".freeze
     DEFAULT_COMMITMENT = "easy".freeze
     BOOTSTRAP_FLAG = "onboarding_bootstrap".freeze
-    MAX_BATTLES = 5
+    MAX_CAMPS = 20
 
-    Result = Struct.new(:journey, :goal, :plan, :project, :battles, :habit, keyword_init: true)
+    Result = Struct.new(:journey, :goal, :plan, :projects, :first_battle, keyword_init: true)
 
-    def self.call(user:, goal_title:, camp_title:, battle_titles:, basic_title:)
-      new(user:, goal_title:, camp_title:, battle_titles:, basic_title:).call
+    def self.call(user:, goal_title:, camp_titles:)
+      new(user:, goal_title:, camp_titles:).call
     end
 
-    def initialize(user:, goal_title:, camp_title:, battle_titles:, basic_title:)
+    def initialize(user:, goal_title:, camp_titles:)
       @user = user
       @goal_title = goal_title.to_s.strip
-      @camp_title = camp_title.to_s.strip
-      @battle_titles = Array(battle_titles).map { |t| t.to_s.strip }.reject(&:blank?).first(MAX_BATTLES)
-      @basic_title = basic_title.to_s.strip
+      @camp_titles = normalize_camp_titles(camp_titles)
     end
 
     def call
       raise Error, I18n.t("v2_onboarding.need_goal") if @goal_title.blank?
-      raise Error, I18n.t("v2_onboarding.need_camp") if @camp_title.blank?
-      raise Error, I18n.t("v2_onboarding.need_battle") if @battle_titles.empty?
-      raise Error, I18n.t("v2_onboarding.need_basic") if @basic_title.blank?
+      raise Error, I18n.t("v2_onboarding.need_camp") if @camp_titles.empty?
 
       journey = nil
       goal = nil
       plan = nil
-      project = nil
-      battles = []
-      habit = nil
+      projects = []
+      first_battle = nil
 
       ActiveRecord::Base.transaction do
         areas = LifeAreas::Select.call(user: @user, keys: [ DEFAULT_AREA_KEY ])
@@ -74,42 +69,37 @@ module Onboarding
         plan = create_child!(
           parent: goal,
           horizon: "plan",
-          title: @camp_title,
+          title: I18n.t("v2_onboarding.climb_plan_title"),
           life_area: primary_area,
-          life_journey: journey
-        )
-        project = create_child!(
-          parent: plan,
-          horizon: "project",
-          title: I18n.t("strategy.first_climb.project_title", plan: @camp_title.truncate(40)),
-          life_area: primary_area,
-          life_journey: journey
+          life_journey: journey,
+          position: 0
         )
 
-        @battle_titles.each_with_index do |title, index|
-          battles << create_child!(
-            parent: project,
-            horizon: "day",
+        total = @camp_titles.size
+        @camp_titles.each_with_index do |title, index|
+          slot = MountainTrailHelper::AutoSlot.call(index: index, total: total)
+          projects << create_child!(
+            parent: plan,
+            horizon: "project",
             title: title,
             life_area: primary_area,
             life_journey: journey,
-            scheduled_on: Date.current,
-            position: index
+            position: index,
+            trail_x: slot[:trail_x],
+            trail_y: slot[:trail_y]
           )
         end
 
-        habit = @user.habits.create!(
-          name: @basic_title,
-          unit: "times",
-          points: 5,
-          frequency: "daily",
-          active: true,
-          show_on_home: true,
-          stat_type: "growth",
+        first_project = projects.first
+        first_battle = create_child!(
+          parent: first_project,
+          horizon: "day",
+          title: default_seed_battle_title,
+          life_area: primary_area,
           life_journey: journey,
-          quantity_checkin: false
+          scheduled_on: Date.current,
+          position: 0
         )
-        HabitProjectLink.create!(habit: habit, strategy_goal: project)
 
         Strategy::CascadeToDaily.call(user: @user, life_area: primary_area)
 
@@ -122,11 +112,12 @@ module Onboarding
 
         @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
 
-        first_battle = battles.first
         Strategy::Celebrate.call(user: @user, goal: first_battle) if first_battle
       end
 
-      Result.new(journey: journey, goal: goal, plan: plan, project: project, battles: battles, habit: habit)
+      Strategy::PinUnplacedCamps.call(projects: projects)
+
+      Result.new(journey: journey, goal: goal, plan: plan, projects: projects, first_battle: first_battle)
     rescue LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error,
            ActiveRecord::RecordInvalid => e
       raise Error, e.message
@@ -134,7 +125,23 @@ module Onboarding
 
     private
 
-    def create_child!(parent:, horizon:, title:, life_area:, life_journey:, scheduled_on: nil, position: nil)
+    def normalize_camp_titles(camp_titles)
+      seen = {}
+      Array(camp_titles).map { |t| t.to_s.strip }.reject(&:blank?).each_with_object([]) do |title, list|
+        next if seen[title.downcase]
+
+        seen[title.downcase] = true
+        list << title
+      end.first(MAX_CAMPS)
+    end
+
+    def default_seed_battle_title
+      Array(I18n.t("strategy.rpg.trail.battle_suggestions")).first.to_s.strip.presence ||
+        "Take the first small step"
+    end
+
+    def create_child!(parent:, horizon:, title:, life_area:, life_journey:, scheduled_on: nil, position: nil,
+                      trail_x: nil, trail_y: nil)
       scope = @user.strategy_goals.where(life_area_id: life_area.id).for_kind(horizon).where(parent_id: parent.id)
       pos = position.nil? ? scope.maximum(:position).to_i + 1 : position
       @user.strategy_goals.create!(
@@ -144,7 +151,9 @@ module Onboarding
         horizon: horizon,
         title: title,
         scheduled_on: scheduled_on,
-        position: pos
+        position: pos,
+        trail_x: trail_x,
+        trail_y: trail_y
       )
     end
   end

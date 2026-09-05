@@ -109,14 +109,12 @@ class OnboardingMountainTourAnchoringTest < ApplicationSystemTestCase
     Onboarding::Bootstrap.call(
       user: @user,
       goal_title: "Become a Ruby Developer",
-      camp_title: "Get certified",
-      battle_titles: [ "Study chapter 1" ],
-      basic_title: "Walk 10 minutes"
+      camp_titles: [ "Get certified" ]
     )
     journey = @user.reload.primary_focused_journey
     assert journey.present?, "expected bootstrap to create a focused journey"
 
-    @user.update!(character: "fox")
+    @user.update!(character: "fox") unless @user.character_chosen?
 
     sign_in_and_visit_mountain!(journey)
     journey

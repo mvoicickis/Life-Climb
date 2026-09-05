@@ -2,161 +2,115 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<div class="lp-adventure mx-auto max-w-lg space-y-6 px-4 pb-24 pt-8<%= " lp-adventure--character" if @step == "character" %>">
-  <% if @step == "character" %>
-    <section class="lp-adventure__card lp-adventure__card--character" aria-labelledby="character-pick-title">
-      <div class="lp-adventure__step-head">
-        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>" aria-label="<%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %>">
-        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-      </div>
+<% if @step == "goal" %>
+  <div class="lp-ob lp-ob--goal">
+    <div class="lp-ob__mountain-bg" aria-hidden="true">
+      <%= image_tag "mountain_trail_default.webp", class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
+    </div>
 
-      <%= form_with url: v2_onboarding_path(step: "character"), method: :patch, data: { turbo: false } do %>
-        <%= render "shared/character_picker",
-              selected: current_user.character,
-              show_brand: false,
-              compact: true,
-              auto_submit: true %>
-      <% end %>
-    </section>
-
-  <% elsif @step == "goal" %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-goal-title">
-      <div class="lp-adventure__step-head">
-        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "character"), class: "lp-adventure__back" %>
-        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
-        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-      </div>
-
-      <h1 id="adventure-goal-title" class="lp-adventure__title"><%= t("v2_onboarding.goal_title") %></h1>
-
-      <%= form_with url: v2_onboarding_path(step: "goal"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
-        <%= text_field_tag "onboarding[goal]", @draft["goal"],
-              id: "onboarding_goal",
-              required: true,
-              maxlength: 120,
-              class: "lp-input w-full",
-              autocomplete: "off",
-              autofocus: true,
-              placeholder: t("v2_onboarding.goal_placeholder") %>
-        <div class="lp-adventure__examples-note" role="note" aria-hidden="true">
-          <p class="lp-adventure__examples-note-label"><%= t("v2_onboarding.goal_examples_label") %></p>
-          <p class="lp-adventure__examples-note-text"><%= t("v2_onboarding.goal_examples") %></p>
+    <div class="lp-ob__body">
+      <section class="lp-ob__card lp-ob__card--goal" aria-labelledby="onboarding-goal-title">
+        <div class="lp-ob__step-head">
+          <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
         </div>
-        <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
-      <% end %>
-    </section>
+        <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>" aria-label="<%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %>">
+          <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+        </div>
 
-  <% elsif @step == "camp" %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-camp-title">
-      <div class="lp-adventure__step-head">
-        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "goal"), class: "lp-adventure__back" %>
-        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
-        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-      </div>
+        <h1 id="onboarding-goal-title" class="lp-ob__title"><%= t("v2_onboarding.mountain_name_title") %></h1>
 
-      <h1 id="adventure-camp-title" class="lp-adventure__title"><%= t("v2_onboarding.camp_title") %></h1>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.camp_lead") %></p>
+        <%= form_with url: v2_onboarding_path(step: "goal"), method: :patch, class: "lp-ob__form", data: { turbo: false } do %>
+          <label class="sr-only" for="onboarding_goal"><%= t("v2_onboarding.mountain_name_title") %></label>
+          <%= text_field_tag "onboarding[goal]", @draft["goal"],
+                id: "onboarding_goal",
+                required: true,
+                maxlength: 120,
+                class: "lp-input w-full",
+                autocomplete: "off",
+                autofocus: true,
+                placeholder: t("v2_onboarding.mountain_name_placeholder") %>
+          <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+        <% end %>
+      </section>
+    </div>
+  </div>
 
-      <%= form_with url: v2_onboarding_path(step: "camp"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
-        <%= text_field_tag "onboarding[camp]", @draft["camp"],
-              id: "onboarding_camp",
-              required: true,
-              maxlength: 120,
-              class: "lp-input w-full",
-              autocomplete: "off",
-              autofocus: true,
-              placeholder: t("v2_onboarding.camp_placeholder") %>
-        <p class="lp-adventure__examples-plain"><%= t("v2_onboarding.camp_examples") %></p>
-        <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
-      <% end %>
-    </section>
+<% elsif @step == "camps" %>
+  <% camp_rows = Array(@draft["camp_titles"]).presence || [] %>
+  <div class="lp-ob lp-ob--camps"
+       data-controller="onboarding-camps"
+       data-onboarding-camps-reorder-hint-value="<%= t("v2_onboarding.camps_reorder_hint") %>"
+       data-onboarding-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>">
+    <div class="lp-ob__mountain-bg lp-ob__mountain-bg--steps" aria-hidden="true">
+      <%= image_tag "onboarding_path.webp", class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
+    </div>
 
-  <% elsif @step == "battles" %>
-    <% battle_rows = Array(@draft["battle_titles"]).presence || [ "" ] %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-battles-title"
-             data-controller="onboarding-battles"
-             data-onboarding-battles-at-max-template-value="<%= t('title_limit.at_max') %>">
-      <div class="lp-adventure__step-head">
-        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "camp"), class: "lp-adventure__back" %>
-        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
-        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-      </div>
+    <div class="lp-ob__body lp-ob__body--camps">
+      <header class="lp-ob-steps__head">
+        <div class="lp-ob__step-head">
+          <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "goal"), class: "lp-ob__back" %>
+          <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
+        </div>
+        <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
+          <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+        </div>
 
-      <h1 id="adventure-battles-title" class="lp-adventure__title"><%= t("v2_onboarding.battles_title") %></h1>
-      <p class="lp-adventure__goal-recap"><%= @draft["goal"] %></p>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.battles_lead", goal: @draft["goal"]) %></p>
+        <h1 class="lp-ob__title"><%= t("v2_onboarding.camps_title") %></h1>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead") %></p>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead_order") %></p>
+      </header>
 
-      <%= form_with url: v2_onboarding_path(step: "battles"), method: :patch, class: "lp-adventure__form", data: { turbo: false, onboarding_battles_target: "form" } do %>
-        <div class="lp-adventure__battle-list" data-onboarding-battles-target="list">
-          <% battle_rows.each do |title| %>
-            <div class="lp-adventure__battle-row" data-onboarding-battles-target="row">
-              <%= render layout: "shared/title_limit_wrap", locals: { class: "lp-adventure__battle-field" } do %>
-                <%= text_field_tag "onboarding[battle_titles][]", title,
-                      maxlength: StrategyGoal::TITLE_MAX,
-                      class: "lp-input w-full",
-                      autocomplete: "off",
-                      autofocus: battle_rows.first == title,
-                      placeholder: t("v2_onboarding.battle_placeholder"),
-                      aria: { describedby: "adventure-battles-examples" },
-                      data: { onboarding_battles_target: "input", action: "input->onboarding-battles#refresh" } %>
-              <% end %>
-              <button type="button"
-                      class="lp-adventure__battle-remove"
-                      data-action="onboarding-battles#remove"
-                      aria-label="<%= t("v2_onboarding.battle_remove") %>">×</button>
-            </div>
+      <%= form_with url: v2_onboarding_path(step: "camps"),
+            method: :patch,
+            class: "lp-ob-steps",
+            data: {
+              turbo: false,
+              onboarding_camps_target: "form",
+              action: "submit->onboarding-camps#beforeSubmit"
+            } do %>
+        <div class="lp-ob-steps__add">
+          <label class="sr-only" for="onboarding_camp_add"><%= t("v2_onboarding.camps_add_label") %></label>
+          <input type="text"
+                 id="onboarding_camp_add"
+                 class="lp-input lp-ob-steps__add-input"
+                 autocomplete="off"
+                 maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                 enterkeyhint="go"
+                 placeholder="<%= t("v2_onboarding.camps_add_placeholder") %>"
+                 data-onboarding-camps-target="addInput"
+                 data-action="keydown->onboarding-camps#addFromEnter">
+          <button type="button"
+                  class="lp-ob-steps__add-btn"
+                  aria-label="<%= t("v2_onboarding.camps_add_button") %>"
+                  data-action="click->onboarding-camps#addFromButton">+</button>
+        </div>
+
+        <div class="lp-ob-steps__scroll">
+          <div class="lp-ob-steps__ghosts" data-onboarding-camps-target="ghosts" aria-hidden="true">
+            <% t("v2_onboarding.camps_ghost_examples").each do |example| %>
+              <div class="lp-ob-steps__ghost">
+                <span class="lp-ob-steps__ghost-handle" aria-hidden="true"></span>
+                <%= example %>
+              </div>
+            <% end %>
+          </div>
+          <ul class="lp-ob-steps__list" data-onboarding-camps-target="list" aria-label="<%= t("v2_onboarding.camps_list_label") %>"></ul>
+          <p class="lp-ob-steps__hint" data-onboarding-camps-target="hint" hidden></p>
+        </div>
+
+        <div data-onboarding-camps-target="hiddenFields">
+          <% camp_rows.each do |title| %>
+            <%= hidden_field_tag "onboarding[camp_titles][]", title %>
           <% end %>
         </div>
 
-        <div id="adventure-battles-examples" class="lp-adventure__examples-note" role="note">
-          <p class="lp-adventure__examples-note-label"><%= t("v2_onboarding.battle_examples_label") %></p>
-          <p class="lp-adventure__examples-note-text"><%= t("v2_onboarding.battle_examples") %></p>
-        </div>
-
-        <button type="button"
-                class="lp-adventure__add-battle"
-                data-action="onboarding-battles#add">
-          <%= t("v2_onboarding.battle_add") %>
-        </button>
-
-        <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full", data: { onboarding_battles_target: "submit" } %>
+        <footer class="lp-ob-steps__dock">
+          <%= submit_tag t("v2_onboarding.start_climbing"),
+                class: "lp-cta w-full",
+                disabled: camp_rows.empty?,
+                data: { onboarding_camps_target: "submit" } %>
+        </footer>
       <% end %>
-    </section>
-
-  <% elsif @step == "basic" %>
-    <section class="lp-adventure__card" aria-labelledby="adventure-basic-title">
-      <div class="lp-adventure__step-head">
-        <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "battles"), class: "lp-adventure__back" %>
-        <span class="lp-adventure__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-      </div>
-      <div class="lp-adventure__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
-        <span class="lp-adventure__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-      </div>
-
-      <h1 id="adventure-basic-title" class="lp-adventure__title"><%= t("v2_onboarding.basic_title") %></h1>
-      <p class="lp-adventure__goal-recap"><%= @draft["goal"] %></p>
-      <p class="lp-adventure__lead"><%= t("v2_onboarding.basic_lead", goal: @draft["goal"]) %></p>
-
-      <%= form_with url: v2_onboarding_path(step: "basic"), method: :patch, class: "lp-adventure__form", data: { turbo: false } do %>
-        <%= text_field_tag "onboarding[basic_title]", @draft["basic_title"],
-              id: "onboarding_basic_title",
-              required: true,
-              maxlength: 120,
-              class: "lp-input w-full",
-              autocomplete: "off",
-              autofocus: true,
-              placeholder: t("v2_onboarding.basic_placeholder") %>
-        <p class="lp-adventure__examples-plain"><%= t("v2_onboarding.basic_hint") %></p>
-        <%= submit_tag t("v2_onboarding.finish"), class: "lp-cta w-full" %>
-      <% end %>
-    </section>
-  <% end %>
-</div>
+    </div>
+  </div>
+<% end %>

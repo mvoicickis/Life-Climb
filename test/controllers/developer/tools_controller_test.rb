@@ -53,7 +53,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     session[Today::BattlefieldDay::SESSION_KEY] = Date.current.to_s
 
     post restart_new_player_experience_developer_tools_path
-    assert_redirected_to v2_onboarding_path(step: "character")
+    assert_redirected_to v2_onboarding_path(step: "goal")
 
     @user.reload
     assert_nil @user.onboarding_completed_at
@@ -74,7 +74,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
 
     begin
       post restart_new_player_experience_developer_tools_path
-      assert_redirected_to v2_onboarding_path(step: "character")
+      assert_redirected_to v2_onboarding_path(step: "goal")
       assert @user.reload.read_attribute(:developer)
     ensure
       ENV.delete("DEVELOPER_EMAIL")

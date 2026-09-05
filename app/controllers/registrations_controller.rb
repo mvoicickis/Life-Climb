@@ -10,10 +10,13 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(user_params)
 
+    @user.character = "fox"
+
     if @user.save
+      @user.mark_companion_pick_done!
       capture_signup_time_zone!
       start_new_session_for @user
-      redirect_to v2_onboarding_path(step: "character"), notice: t("v2_onboarding.signed_up")
+      redirect_to v2_onboarding_path(step: "goal"), notice: t("v2_onboarding.signed_up")
     else
       render :new, status: :unprocessable_entity
     end

@@ -12,13 +12,11 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     )
   end
 
-  test "creates goal plan project battles habit and marks onboarding complete" do
+  test "creates goal one plan multiple projects first battle and marks onboarding complete" do
     result = Onboarding::Bootstrap.call(
       user: @user,
       goal_title: "Become a Ruby Developer",
-      camp_title: "Get certified",
-      battle_titles: [ "Study chapter 1", "Write one test" ],
-      basic_title: "Walk 10 minutes"
+      camp_titles: [ "Get certified", "Land first role" ]
     )
 
     @user.reload
@@ -32,51 +30,53 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_nil journey.setup_flag("route")
 
     assert_equal "Become a Ruby Developer", result.goal.title
-    assert_equal "Get certified", result.plan.title
-    assert result.project.title.present?
-    assert_equal 2, result.battles.size
-    assert_equal Date.current, result.battles.first.scheduled_on
+    assert_equal I18n.t("v2_onboarding.climb_plan_title"), result.plan.title
+    assert_equal 2, result.projects.size
+    assert_equal "Get certified", result.projects[0].title
+    assert_equal "Land first role", result.projects[1].title
+    assert_equal 0, result.projects[0].position
+    assert_equal 1, result.projects[1].position
 
-    habit = result.habit
-    assert_equal "Walk 10 minutes", habit.name
-    assert habit.show_on_home?
-    refute habit.quantity_checkin?
-    assert_equal journey.id, habit.life_journey_id
-    assert HabitProjectLink.exists?(habit: habit, strategy_goal: result.project)
+    assert_equal 1, result.projects[0].children.for_kind("day").count
+    assert_equal Date.current, result.first_battle.scheduled_on
+    assert_equal I18n.t("strategy.rpg.trail.battle_suggestions").first, result.first_battle.title
+    assert_equal 0, result.projects[1].children.for_kind("day").count
+
+    trail = Strategy::Trail.for(plan: result.plan.reload)
+    assert_equal 2, trail.nodes.size
+    assert_equal :current, trail.nodes[0].state
+    assert_equal :locked, trail.nodes[1].state
 
     assert Strategy::HierarchyReady.call(user: @user, journey: journey)
     assert @user.daily_todos.where(scheduled_on: Date.current).exists?
     assert @user.needs_onboarding_mountain_tour?(journey)
-  end
-
-  test "rejects empty basic" do
-    error = assert_raises(Onboarding::Bootstrap::Error) do
-      Onboarding::Bootstrap.call(
-        user: @user,
-        goal_title: "Ship it",
-        camp_title: "Build",
-        battle_titles: [ "Write one test" ],
-        basic_title: ""
-      )
-    end
-
-    assert_equal I18n.t("v2_onboarding.need_basic"), error.message
-    refute @user.reload.onboarding_completed?
     assert_equal 0, @user.habits.count
   end
 
-  test "rejects empty battles" do
+  test "rejects empty camps" do
     error = assert_raises(Onboarding::Bootstrap::Error) do
       Onboarding::Bootstrap.call(
         user: @user,
         goal_title: "Ship it",
-        camp_title: "Build",
-        battle_titles: [],
-        basic_title: "Drink water"
+        camp_titles: []
       )
     end
 
-    assert_equal I18n.t("v2_onboarding.need_battle"), error.message
+    assert_equal I18n.t("v2_onboarding.need_camp"), error.message
+    refute @user.reload.onboarding_completed?
+    assert_equal 0, @user.life_journeys.count
+  end
+
+  test "rejects empty goal" do
+    error = assert_raises(Onboarding::Bootstrap::Error) do
+      Onboarding::Bootstrap.call(
+        user: @user,
+        goal_title: "",
+        camp_titles: [ "Build" ]
+      )
+    end
+
+    assert_equal I18n.t("v2_onboarding.need_goal"), error.message
     refute @user.reload.onboarding_completed?
     assert_equal 0, @user.life_journeys.count
   end
