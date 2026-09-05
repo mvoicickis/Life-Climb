@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding — two-screen mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #ffffff;
+      --lp-paper-soft: #f8fafc;
+      --lp-mist: #e2e8f0;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-charcoal: #334155;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-teal: #3ec9c0;
+      --lp-teal-deep: #2aa9a1;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-elevated: #ffffff;
+      --lp-glass: rgba(255, 255, 255, 0.92);
+      --rpg-glass: rgba(255, 255, 255, 0.92);
+      --lp-font-display: "Nunito", system-ui, sans-serif;
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --lp-tap: 2.75rem;
+      --font: var(--lp-font-ui);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: #0f172a;
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: #475569;
+      max-width: 44rem;
+    }
+
+    .doc__note {
+      margin: 0 0 2rem;
+      padding: 1rem 1.1rem;
+      background: #fff;
+      border: 1px solid #d8dee6;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #334155;
+      max-width: 44rem;
+    }
+
+    .doc__note h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .doc__note ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .doc__note li { margin-bottom: 0.35rem; }
+
+    .doc__tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .doc__btn {
+      appearance: none;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      background: #fff;
+      color: #0f172a;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+    }
+
+    .doc__btn:hover { border-color: #94a3b8; }
+
+    .screen-block {
+      margin-bottom: 2.5rem;
+    }
+
+    .screen-block__label {
+      margin: 0 0 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0 0 2.5rem;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #cbd5e1;
+    }
+
+    /* —— 360px phone shell —— */
+    .phone {
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--lp-paper);
+      color: var(--lp-ink);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+      min-height: 640px;
+      height: min(720px, 92dvh);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone__body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 1.35rem 1rem 0;
+    }
+
+    /* —— Shared card patterns —— */
+    .ob-card {
+      display: grid;
+      gap: 0.85rem;
+      padding: 1.35rem 1.2rem 1.4rem;
+      border-radius: 1.25rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper);
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    .ob-card--screen1 {
+      margin-top: auto;
+      margin-bottom: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone--screen1 .phone__body {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ob-mountain-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .ob-mountain-bg__photo {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 57% 22%;
+    }
+
+    .ob-title {
+      margin: 0;
+      font-family: var(--lp-font-display);
+      font-size: clamp(1.55rem, 5vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--lp-ink);
+    }
+
+    .ob-lead {
+      margin: 0;
+      color: var(--lp-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .ob-form {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .lp-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-elevated);
+      color: var(--lp-ink);
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      min-height: var(--lp-tap);
+    }
+
+    .lp-input::placeholder { color: var(--lp-muted); }
+
+    .lp-input:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+      border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+    }
+
+    .lp-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: var(--lp-tap);
+      border: 0;
+      border-radius: 999px;
+      padding: 0.85rem 1.5rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      background: var(--lp-green);
+      box-shadow: 0 10px 24px rgba(87, 211, 91, 0.28);
+      cursor: pointer;
+    }
+
+    .lp-cta:hover { background: var(--lp-green-deep); }
+
+    .lp-cta:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* —— Screen 2 layout —— */
+    .phone--steps .phone__body {
+      padding-bottom: 0;
+    }
+
+    .steps-head {
+      flex-shrink: 0;
+      padding-bottom: 0.75rem;
+    }
+
+    .steps-add {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.65rem;
+    }
+
+    .steps-add__input {
+      flex: 1;
+      min-width: 0;
+      border-radius: 0.85rem;
+    }
+
+    .steps-add__btn {
+      flex-shrink: 0;
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      border: 0;
+      border-radius: 999px;
+      background: var(--lp-green);
+      color: #fff;
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(87, 211, 91, 0.28);
+    }
+
+    .steps-add__btn:hover { background: var(--lp-green-deep); }
+
+    .steps-add__btn:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+    }
+
+    .steps-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 0 0.5rem;
+      margin: 0 -0.15rem;
+      padding-inline: 0.15rem;
+    }
+
+    .steps-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .steps-ghosts {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .steps-ghosts.is-hidden { display: none; }
+
+    .steps-ghost {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-height: var(--lp-tap);
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.85rem;
+      border: 1px dashed color-mix(in srgb, var(--lp-muted) 28%, transparent);
+      background: color-mix(in srgb, var(--lp-muted) 5%, transparent);
+      color: color-mix(in srgb, var(--lp-muted) 72%, transparent);
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-style: italic;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .steps-ghost__handle {
+      width: 1.1rem;
+      height: 1.1rem;
+      opacity: 0.35;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Ccircle cx='9' cy='7' r='1.5'/%3E%3Ccircle cx='15' cy='7' r='1.5'/%3E%3Ccircle cx='9' cy='12' r='1.5'/%3E%3Ccircle cx='15' cy='12' r='1.5'/%3E%3Ccircle cx='9' cy='17' r='1.5'/%3E%3Ccircle cx='15' cy='17' r='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+
+    .steps-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: var(--lp-tap);
+      padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+      border-radius: 0.85rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+      touch-action: none;
+    }
+
+    .steps-row.is-dragging {
+      opacity: 0.55;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .steps-row.is-drop-target {
+      border-color: color-mix(in srgb, var(--lp-green) 55%, var(--lp-border));
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-green) 25%, transparent);
+    }
+
+    .steps-row__handle {
+      flex-shrink: 0;
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      border: 0;
+      border-radius: 0.65rem;
+      background: transparent;
+      cursor: grab;
+      display: grid;
+      place-items: center;
+      color: var(--lp-muted);
+      padding: 0;
+    }
+
+    .steps-row__handle:active { cursor: grabbing; }
+
+    .steps-row__handle svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      pointer-events: none;
+    }
+
+    .steps-row__text {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.45rem 0.25rem;
+      border-radius: 0.5rem;
+      cursor: text;
+      word-break: break-word;
+    }
+
+    .steps-row__text:hover {
+      background: color-mix(in srgb, var(--lp-ink) 4%, transparent);
+    }
+
+    .steps-row__edit {
+      flex: 1;
+      min-width: 0;
+      border-radius: 0.65rem;
+      border: 1px solid color-mix(in srgb, var(--lp-green) 45%, var(--lp-border));
+      background: var(--lp-paper);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.45rem 0.55rem;
+      min-height: 2.25rem;
+    }
+
+    .steps-row__edit:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 1px;
+    }
+
+    .steps-list-hint {
+      margin: 0.65rem 0 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+    }
+
+    .steps-dock {
+      flex-shrink: 0;
+      padding: 0.75rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid var(--lp-border);
+      background: var(--lp-paper);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Onboarding — two-screen mockup</h1>
+    <p class="doc__lede">Static HTML at 360px width, light theme with app green accent. Both screens stacked for side-by-side review.</p>
+
+    <div class="doc__note">
+      <h2>How to review</h2>
+      <ul>
+        <li><strong>Screen 1</strong> — single goal field, placeholder “Save 20,000”, Next CTA.</li>
+        <li><strong>Screen 2</strong> — add row at the top (Enter or +). New rows append below in typed order. Tap row text to edit. After two rows, a reorder hint appears under the list. “Start climbing” stays fixed at the bottom; list scrolls when long.</li>
+      </ul>
+      <div class="doc__tools">
+        <button type="button" class="doc__btn" id="load-twenty">Load 20 sample rows (scroll test)</button>
+        <button type="button" class="doc__btn" id="clear-rows">Clear rows</button>
+      </div>
+    </div>
+
+    <!-- Screen 1 -->
+    <section class="screen-block" aria-labelledby="screen1-label">
+      <p class="screen-block__label" id="screen1-label">Screen 1 — Name your mountain</p>
+      <div class="phone phone--screen1" role="img" aria-label="Screen 1: Name your mountain">
+        <div class="phone__body">
+          <div class="ob-mountain-bg" aria-hidden="true">
+            <img
+              class="ob-mountain-bg__photo"
+              src="../../public/images/mountain_trail_default.webp"
+              alt=""
+              decoding="async">
+          </div>
+          <div class="ob-card ob-card--screen1">
+            <h1 class="ob-title">Name your mountain</h1>
+            <form class="ob-form" action="#" onsubmit="return false;">
+              <label class="sr-only" for="mountain-name">Mountain name</label>
+              <input
+                id="mountain-name"
+                type="text"
+                class="lp-input"
+                placeholder="Save 20,000"
+                autocomplete="off"
+                maxlength="120">
+              <button type="submit" class="lp-cta">Next</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider" aria-hidden="true">Screen 2</div>
+
+    <!-- Screen 2 -->
+    <section class="screen-block" aria-labelledby="screen2-label">
+      <p class="screen-block__label" id="screen2-label">Screen 2 — Create your climb</p>
+      <div class="phone phone--steps" role="img" aria-label="Screen 2: Create your climb">
+        <div class="phone__body">
+          <header class="steps-head">
+            <h1 class="ob-title">Create your climb</h1>
+            <p class="ob-lead">What do you need to reach your goal?</p>
+            <p class="ob-lead">List your way from nearest to farthest.</p>
+          </header>
+
+          <div class="steps-add">
+            <label class="sr-only" for="step-add">Add a step</label>
+            <input
+              id="step-add"
+              type="text"
+              class="lp-input steps-add__input"
+              placeholder="Add a step"
+              autocomplete="off"
+              maxlength="120"
+              enterkeyhint="go">
+            <button type="button" class="steps-add__btn" id="step-add-btn" aria-label="Add step">+</button>
+          </div>
+
+          <div class="steps-scroll" id="steps-scroll">
+            <div class="steps-ghosts" id="steps-ghosts" aria-hidden="true">
+              <div class="steps-ghost">
+                <span class="steps-ghost__handle" aria-hidden="true"></span>
+                Open a savings account
+              </div>
+              <div class="steps-ghost">
+                <span class="steps-ghost__handle" aria-hidden="true"></span>
+                Pay off the credit card
+              </div>
+            </div>
+            <ul class="steps-list" id="steps-list" aria-label="Steps to reach your mountain"></ul>
+          </div>
+        </div>
+
+        <footer class="steps-dock">
+          <button type="button" class="lp-cta" id="start-climbing" disabled>Start climbing</button>
+        </footer>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var list = document.getElementById("steps-list");
+      var ghosts = document.getElementById("steps-ghosts");
+      var addInput = document.getElementById("step-add");
+      var addBtn = document.getElementById("step-add-btn");
+      var startBtn = document.getElementById("start-climbing");
+      var loadTwentyBtn = document.getElementById("load-twenty");
+      var clearRowsBtn = document.getElementById("clear-rows");
+      var items = [];
+      var dragId = null;
+      var dragOverId = null;
+      var reorderHintShown = false;
+
+      var handleSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>';
+
+      function uid() {
+        return "step-" + Math.random().toString(36).slice(2, 10);
+      }
+
+      function syncUi() {
+        ghosts.classList.toggle("is-hidden", items.length > 0);
+        startBtn.disabled = items.length === 0;
+        renderList();
+        if (!reorderHintShown && items.length >= 2) {
+          reorderHintShown = true;
+          var hint = document.createElement("p");
+          hint.className = "steps-list-hint";
+          hint.id = "steps-reorder-hint";
+          hint.textContent = "Hold and drag to reorder";
+          list.insertAdjacentElement("afterend", hint);
+        }
+      }
+
+      function renderList() {
+        list.innerHTML = "";
+        items.forEach(function (item, index) {
+          list.appendChild(buildRow(item, index));
+        });
+      }
+
+      function buildRow(item, index) {
+        var li = document.createElement("li");
+        li.className = "steps-row";
+        li.dataset.id = item.id;
+        li.dataset.index = String(index);
+
+        var handle = document.createElement("button");
+        handle.type = "button";
+        handle.className = "steps-row__handle";
+        handle.setAttribute("aria-label", "Drag to reorder");
+        handle.innerHTML = handleSvg;
+        handle.addEventListener("pointerdown", onHandlePointerDown);
+
+        var textBtn = document.createElement("button");
+        textBtn.type = "button";
+        textBtn.className = "steps-row__text";
+        textBtn.textContent = item.text;
+        textBtn.addEventListener("click", function () { beginEdit(item.id, textBtn); });
+
+        li.appendChild(handle);
+        li.appendChild(textBtn);
+        return li;
+      }
+
+      function addItem(text) {
+        var trimmed = text.trim();
+        if (!trimmed) return false;
+        items.push({ id: uid(), text: trimmed });
+        syncUi();
+        return true;
+      }
+
+      function submitAdd() {
+        if (addItem(addInput.value)) {
+          addInput.value = "";
+          addInput.focus();
+        }
+      }
+
+      function beginEdit(id, anchor) {
+        var item = items.find(function (i) { return i.id === id; });
+        if (!item) return;
+
+        var input = document.createElement("input");
+        input.type = "text";
+        input.className = "steps-row__edit";
+        input.value = item.text;
+        input.maxLength = 120;
+
+        function commit() {
+          var next = input.value.trim();
+          if (next) item.text = next;
+          syncUi();
+        }
+
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commit();
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            syncUi();
+          }
+        });
+
+        input.addEventListener("blur", commit);
+
+        anchor.replaceWith(input);
+        input.focus();
+        input.select();
+      }
+
+      addInput.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        submitAdd();
+      });
+
+      addBtn.addEventListener("click", submitAdd);
+
+      function onHandlePointerDown(e) {
+        e.preventDefault();
+        var row = e.currentTarget.closest(".steps-row");
+        if (!row) return;
+        dragId = row.dataset.id;
+        row.classList.add("is-dragging");
+        e.currentTarget.setPointerCapture(e.pointerId);
+
+        function move(ev) {
+          var target = document.elementFromPoint(ev.clientX, ev.clientY);
+          var overRow = target && target.closest(".steps-row");
+          list.querySelectorAll(".steps-row.is-drop-target").forEach(function (el) {
+            el.classList.remove("is-drop-target");
+          });
+          if (overRow && overRow.dataset.id !== dragId) {
+            overRow.classList.add("is-drop-target");
+            dragOverId = overRow.dataset.id;
+          } else {
+            dragOverId = null;
+          }
+        }
+
+        function up(ev) {
+          row.classList.remove("is-dragging");
+          list.querySelectorAll(".steps-row.is-drop-target").forEach(function (el) {
+            el.classList.remove("is-drop-target");
+          });
+          try { e.currentTarget.releasePointerCapture(ev.pointerId); } catch (_) {}
+
+          if (dragId && dragOverId && dragId !== dragOverId) {
+            var from = items.findIndex(function (i) { return i.id === dragId; });
+            var to = items.findIndex(function (i) { return i.id === dragOverId; });
+            if (from > -1 && to > -1) {
+              var moved = items.splice(from, 1)[0];
+              items.splice(to, 0, moved);
+              syncUi();
+            }
+          }
+
+          dragId = null;
+          dragOverId = null;
+          document.removeEventListener("pointermove", move);
+          document.removeEventListener("pointerup", up);
+          document.removeEventListener("pointercancel", up);
+        }
+
+        document.addEventListener("pointermove", move);
+        document.addEventListener("pointerup", up);
+        document.addEventListener("pointercancel", up);
+      }
+
+      loadTwentyBtn.addEventListener("click", function () {
+        items = [];
+        for (var i = 1; i <= 20; i++) {
+          items.push({ id: uid(), text: "Step " + i + " — milestone on the way up" });
+        }
+        syncUi();
+        document.getElementById("steps-scroll").scrollTop = 0;
+      });
+
+      clearRowsBtn.addEventListener("click", function () {
+        items = [];
+        syncUi();
+        addInput.focus();
+      });
+
+      syncUi();
+    })();
+  </script>
+</body>
+</html>
