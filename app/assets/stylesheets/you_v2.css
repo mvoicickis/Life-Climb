@@ -33,35 +33,47 @@
   border-radius: 0 0 26px 26px;
 }
 
-.lp-you__kicker {
+.lp-you__hero-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lp-you__goal {
+  margin: 0;
+  font-family: var(--you-serif);
+  font-size: 21px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-you__meta-name {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 0;
-  min-width: 0;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.lp-you__kicker-text {
-  flex: 1;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  max-width: 100%;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.lp-you__kicker-mark {
-  font-size: 13px;
-}
-
-.lp-you__hero-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 14px;
+.lp-you__meta-name span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-you__avatar {
@@ -98,6 +110,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-top: 4px;
+  min-width: 0;
 }
 
 .lp-you__name {

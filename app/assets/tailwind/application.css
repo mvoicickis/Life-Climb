@@ -10268,17 +10268,6 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   min-width: 0;
 }
 
-.stats-hero__goal {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--lp-ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .stats-hero__row {
   display: flex;
   flex-wrap: wrap;
@@ -10943,6 +10932,9 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-progress__subtitle {

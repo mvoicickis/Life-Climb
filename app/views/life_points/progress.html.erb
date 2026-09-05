@@ -13,7 +13,8 @@
         <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
         <span><%= t("app_name") %></span>
       </p>
-      <h1 class="lp-progress__title"><%= t("progress.title") %></h1>
+      <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
+      <h1 class="lp-progress__title" title="<%= goal_title %>"><%= goal_title %></h1>
       <p class="lp-progress__subtitle"><%= t("progress.subtitle") %></p>
     </div>
   </header>

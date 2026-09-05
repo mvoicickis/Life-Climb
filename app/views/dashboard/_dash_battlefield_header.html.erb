@@ -8,9 +8,9 @@
       <%= companion_image_tag class: "lp-today-v2-header__avatar-img", alt: "" %>
     <% end %>
     <div class="lp-today-v2-header__who">
-      <p class="lp-today-v2-header__name"><%= current_user.display_name %></p>
       <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
-      <p class="lp-today-v2-header__meta" title="<%= goal_title %>"><%= goal_title %></p>
+      <p class="lp-today-v2-header__name" title="<%= goal_title %>"><%= goal_title %></p>
+      <p class="lp-today-v2-header__meta" title="<%= current_user.display_name %>"><%= current_user.display_name %></p>
     </div>
     <div class="lp-today-v2-header__hp-block">
       <span class="lp-today-v2-header__hp-num is-neutral" data-today-v2-target="hpNum"><%= health.done_count %></span>

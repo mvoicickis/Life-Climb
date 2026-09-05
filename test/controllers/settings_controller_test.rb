@@ -21,8 +21,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: "You"
     assert_select ".lp-you"
     assert_select ".lp-you__hero"
-    assert_select ".lp-you__kicker-text", text: I18n.t("dash.active_goal_fallback")
-    assert_select ".lp-you__name", text: /One/
+    assert_select ".lp-you__goal", text: I18n.t("dash.active_goal_fallback")
+    assert_select ".lp-you__meta-name", text: /One/
     assert_select ".lp-dash-nav.is-v4"
     assert_select "a.lp-dash-nav__link[href=?]", dashboard_path
     assert_select "a.lp-dash-nav__link[href=?]", life_points_path
@@ -63,7 +63,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?]", restart_new_player_experience_developer_tools_path, count: 0
   end
 
-  test "You kicker shows active goal title when climb exists" do
+  test "You hero shows active goal title when climb exists" do
     user = users(:one)
     sign_in_as user
     Onboarding::Run.call(
@@ -88,7 +88,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
-    assert_select ".lp-you__kicker-text", text: "Everest"
+    assert_select ".lp-you__goal", text: "Everest"
+    assert_select ".lp-you__meta-name", text: /One/
   end
 
   test "admin sees admin row on You" do
