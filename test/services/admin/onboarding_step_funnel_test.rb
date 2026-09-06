@@ -39,7 +39,7 @@ class Admin::OnboardingStepFunnelTest < ActiveSupport::TestCase
 
     assert_equal 2, today.viewed
     assert_equal 2, today.completed
-    assert_equal 0, today.drop_off_from_previous
+    assert_nil today.drop_off_from_previous
   end
 
   test "counts anonymous landing funnel events" do

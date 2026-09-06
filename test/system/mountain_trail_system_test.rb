@@ -172,7 +172,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
 
     within("#trail-base-sheet") do
-      fill_in placeholder: "Add something you do every day", with: "Read"
+      fill_in placeholder: "Add a daily tracker", with: "Read"
       find("label.is-qty").click
       click_button "Add daily tracker"
     end
