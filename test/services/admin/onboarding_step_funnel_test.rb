@@ -29,22 +29,17 @@ class Admin::OnboardingStepFunnelTest < ActiveSupport::TestCase
     user = users(:two)
     other = users(:one)
 
-    Analytics::Track.call(user: user, name: "mountain_tour_step_viewed", properties: { step: "goal" })
-    Analytics::Track.call(user: user, name: "mountain_tour_step_completed", properties: { step: "goal" })
-    Analytics::Track.call(user: user, name: "mountain_tour_step_viewed", properties: { step: "camp" })
-    Analytics::Track.call(user: other, name: "mountain_tour_step_viewed", properties: { step: "goal" })
-    Analytics::Track.call(user: other, name: "mountain_tour_step_completed", properties: { step: "goal" })
-    Analytics::Track.call(user: other, name: "mountain_tour_step_completed", properties: { step: "camp" })
+    Analytics::Track.call(user: user, name: "mountain_tour_step_viewed", properties: { step: "today" })
+    Analytics::Track.call(user: user, name: "mountain_tour_step_completed", properties: { step: "today" })
+    Analytics::Track.call(user: other, name: "mountain_tour_step_viewed", properties: { step: "today" })
+    Analytics::Track.call(user: other, name: "mountain_tour_step_completed", properties: { step: "today" })
 
     rows = Admin::OnboardingStepFunnel.call(Admin::OnboardingStepFunnel::MOUNTAIN_TOUR)[:rows]
-    goal = rows.find { |row| row.key == "goal" }
-    camp = rows.find { |row| row.key == "camp" }
+    today = rows.find { |row| row.key == "today" }
 
-    assert_equal 2, goal.viewed
-    assert_equal 2, goal.completed
-    assert_equal 1, camp.viewed
-    assert_equal 1, camp.completed
-    assert_equal 1, camp.drop_off_from_previous
+    assert_equal 2, today.viewed
+    assert_equal 2, today.completed
+    assert_equal 0, today.drop_off_from_previous
   end
 
   test "counts anonymous landing funnel events" do

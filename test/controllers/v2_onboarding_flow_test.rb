@@ -40,9 +40,14 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal "other", journey.setup_flag("onboarding_category")
     assert_equal "true", journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG)
     assert_equal "easy", journey.commitment_key
+    assert_equal 0, journey.commitment_habit_count
+    assert_equal 1, journey.commitment_battle_count
     assert_nil journey.setup_flag("route")
     assert Strategy::HierarchyReady.call(user: user, journey: journey)
     assert user.daily_todos.where(scheduled_on: Date.current).exists?
+
+    gap = Today::Commitment.setup_gap(user: user, journey: journey)
+    refute_equal :habits, gap&.kind
 
     plan = user.strategy_goals.for_kind("plan").first
     assert_equal I18n.t("v2_onboarding.climb_plan_title"), plan.title

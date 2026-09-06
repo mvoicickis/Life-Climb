@@ -1,47 +1,10 @@
-<%# Five-bubble Mountain tour after new onboarding bootstrap. locals: journey %>
+<%# Single-bubble Mountain tour after new onboarding bootstrap. locals: journey %>
 <% journey = local_assigns[:journey] || @journey %>
 <% steps = [
   {
-    key: "goal",
-    target: "onboarding-tour-goal",
-    step: t("v2_onboarding.mountain_tour.step", current: 1, total: 5),
-    text: t("v2_onboarding.mountain_tour.goal"),
-    placement: "below",
-    skipLabel: t("v2_onboarding.mountain_tour.skip"),
-    nextLabel: t("v2_onboarding.mountain_tour.next")
-  },
-  {
-    key: "camp",
-    target: "onboarding-tour-camp",
-    step: t("v2_onboarding.mountain_tour.step", current: 2, total: 5),
-    text: t("v2_onboarding.mountain_tour.camp"),
-    placement: "below",
-    skipLabel: t("v2_onboarding.mountain_tour.skip"),
-    nextLabel: t("v2_onboarding.mountain_tour.next")
-  },
-  {
-    key: "base_camp",
-    target: "onboarding-tour-base-camp",
-    step: t("v2_onboarding.mountain_tour.step", current: 3, total: 5),
-    text: t("v2_onboarding.mountain_tour.camp_daily"),
-    placement: "above",
-    skipLabel: t("v2_onboarding.mountain_tour.skip"),
-    nextLabel: t("v2_onboarding.mountain_tour.next")
-  },
-  {
-    key: "add_camp",
-    target: "onboarding-tour-add-camp",
-    step: t("v2_onboarding.mountain_tour.step", current: 4, total: 5),
-    text: t("v2_onboarding.mountain_tour.add_camp"),
-    placement: "above",
-    skipLabel: t("v2_onboarding.mountain_tour.skip"),
-    nextLabel: t("v2_onboarding.mountain_tour.next"),
-    scrollIntoView: false
-  },
-  {
     key: "today",
     final: true,
-    step: t("v2_onboarding.mountain_tour.step", current: 5, total: 5),
+    step: t("v2_onboarding.mountain_tour.step", current: 1, total: 1),
     text: t("v2_onboarding.mountain_tour.today"),
     todayUrl: dashboard_path,
     todayLabel: t("v2_onboarding.mountain_tour.today_cta")

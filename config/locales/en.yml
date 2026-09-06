@@ -153,8 +153,8 @@ en:
     section_battles: "Battles"
     section_quests: "Quests"
     section_habits: "Habits"
-    habits_empty: "No Basics on Today yet — add one in Base Camp."
-    habits_empty_cta: "Open Base Camp"
+    habits_empty: "No daily trackers yet."
+    habits_empty_cta: "Add on Mountain"
     timeline:
       title: "Today's timeline"
       did_it: "I did it"
@@ -204,7 +204,7 @@ en:
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
       binary_subtitle: "Every day"
-      empty: "No Basics on Today yet — add one in Base Camp."
+      empty: "No daily trackers on Today yet."
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"
@@ -902,7 +902,7 @@ en:
             other: "%{count} wins today"
           plant_next_headline: "Plant the next camp"
           plant_next_sub: "Keep the climb moving"
-          basics_sub: "Log your basics"
+          basics_sub: "Log your daily trackers"
           open_headline:
             one: "%{count} battle waiting"
             other: "%{count} battles waiting"
@@ -990,18 +990,18 @@ en:
           kicker: "Base camp"
           title: "Where you return every day"
           basics:
-            kind: "Basics"
+            kind: "Daily"
             amount: "%{amount} %{unit}"
             undo: "Undo"
           kind: "Every day · no finish line"
           sub:
-            one: "1 Basic. Missing a day takes nothing away."
-            other: "%{count} Basics. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
-          empty: "Add something you do every day."
+            one: "1 daily tracker. Missing a day takes nothing away."
+            other: "%{count} daily trackers. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
+          empty: "Optional — add something you repeat every day."
           more: "+%{count}"
-          add_placeholder: "Add something you do every day"
-          add_habit: "Add basic"
-          habit_added: "Added to your basics."
+          add_placeholder: "Add a daily tracker"
+          add_habit: "Add daily tracker"
+          habit_added: "Daily tracker added."
           daily_hint: "Shows up again tomorrow."
           amount_hint: "Ask how many, like pages. Leave off for a simple tick."
         won_battles:
