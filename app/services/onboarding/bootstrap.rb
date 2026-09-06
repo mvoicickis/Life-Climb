@@ -48,11 +48,14 @@ module Onboarding
           closer_percent: 5
         )
 
-        key = DEFAULT_COMMITMENT
-        unless Today::Commitment.eligible_for?(user: @user, key: key, journey: journey)
-          key = "easy"
-        end
-        Today::Commitment.apply_preset!(journey, key)
+        easy = Today::Commitment::PRESETS.fetch(DEFAULT_COMMITMENT)
+        journey.update!(
+          commitment_key: DEFAULT_COMMITMENT,
+          commitment_name: easy[:name],
+          commitment_habit_count: 0,
+          commitment_battle_count: 1,
+          commitment_level_up_declined_on: nil
+        )
         Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
 
         due_on = Strategy::YearCycle.default_goal_due
