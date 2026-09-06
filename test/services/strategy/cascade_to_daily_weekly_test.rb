@@ -36,9 +36,10 @@ class Strategy::CascadeToDailyWeeklyTest < ActiveSupport::TestCase
       to: monday + 6.days
     )
 
-    assert @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday + 1.day)
-    assert @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday + 3.days)
-    refute @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday + 2.days)
+    assert @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday)
+    assert @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday + 2.days)
+    assert @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday + 4.days)
+    refute @user.daily_todos.exists?(strategy_goal_id: battle.id, scheduled_on: monday + 1.day)
   end
 
   test "completing weekly battle advances to next selected weekday" do

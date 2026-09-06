@@ -475,10 +475,11 @@ module MountainTrailHelper
 
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
-    return false unless battle.repeat_daily? || battle.repeat_weekly?
-    return false if battle.completed?
+    return false unless battle.try(:repeat_daily?) || battle.try(:repeat_weekly?)
+    return false if battle.respond_to?(:completed?) && battle.completed?
+    return false if battle.respond_to?(:completed_at) && battle.completed_at.present? && !battle.try(:repeat_recurring?)
     return false if battle.scheduled_on.present? && battle.scheduled_on > Date.current
-    return false if battle.repeat_weekly? && !battle.repeats_on?(Date.current)
+    return false if battle.try(:repeat_weekly?) && !battle.repeats_on?(Date.current)
 
     true
   end

@@ -21,6 +21,12 @@ class FirstCampRevealsController < ApplicationController
 
   private
 
+  def require_planning_v2
+    return if current_user.planning_v2?
+
+    redirect_to dashboard_path, alert: t("strategy.need_v2"), status: :see_other
+  end
+
   def set_journey
     @journey = current_user.life_journeys.active.find(params[:life_journey_id])
   end
