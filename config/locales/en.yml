@@ -9,10 +9,7 @@ en:
   title_limit:
     at_max: "%{count} of %{max} letters used"
   companion:
-    prompt_kicker: "New companions"
     prompt_title: "Pick who climbs with you"
-    prompt_lead: "Choose one companion. You’ll see them on Today and on the mountain."
-    prompt_cta: "Save companion"
   battle:
     lp_reason: "Battle win: %{title}"
     completed_notice: "Battle complete. +%{lp} Action Points"
@@ -1937,16 +1934,6 @@ en:
     battle_remove: "Remove battle"
     finish: "Finish"
     signed_up: "Your adventure is ready."
-    mountain_tour:
-      step: "%{current} of %{total}"
-      goal: "Here's your goal."
-      camp: "Here's your camp. Your battles live inside it."
-      camp_daily: "Your Basics live in Base Camp. Add more here."
-      add_camp: "Tap + to add more camps."
-      today: "Your battles are on Today. Go win one now!"
-      today_cta: "Go to Today"
-      next: "Next"
-      skip: "Skip tour"
     commitment_kicker: "How hard today?"
     commitment_title: "Pick your daily commitment"
     commitment_lead: "Win this many timed battles and green habits each day. You can change it later."
@@ -3465,13 +3452,6 @@ en:
       camp: "Camp"
       battles: "Today's battle"
       basic: "Daily habit"
-    mountain_tour_steps:
-      title: "Mountain tour"
-      goal: "Goal"
-      camp: "Camp"
-      base_camp: "Base camp"
-      add_camp: "Add camp"
-      today: "Go to Today"
     landing_steps:
       title: "Landing funnel"
       landing_viewed: "Landing viewed"

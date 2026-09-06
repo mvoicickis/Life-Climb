@@ -51,10 +51,7 @@ lv:
       - dec
   app_name: "LifePoints"
   companion:
-    prompt_kicker: "Jauni pavadoņi"
-    prompt_title: "Izvēlies, kas kāpj ar tevi"
-    prompt_lead: "Izvēlies vienu pavadoni. Tu viņu redzēsi Šodienā un kalnā."
-    prompt_cta: "Saglabāt pavadoni"
+    prompt_title: "Pick who climbs with you" # TODO: translate
   strategy:
     holding:
       plan_title: "lp.holding.plan"
@@ -1535,16 +1532,6 @@ lv:
     battle_remove: "Noņemt kauju"
     finish: "Pabeigt"
     signed_up: "Tavs piedzīvojums ir gatavs."
-    mountain_tour:
-      step: "%{current}. no %{total}"
-      goal: "Šeit ir tavs mērķis."
-      camp: "Šeit ir tava nometne. Tavas kaujas dzīvo tajā."
-      camp_daily: "Katru dienu strādā pie nometnēm, lai tuvotos mērķim."
-      add_camp: "Tap + to add more camps." # TODO: translate
-      today: "Tavas kaujas ir Šodienā. Ej uzvari vienu!"
-      today_cta: "Uz Šodien"
-      next: "Tālāk"
-      skip: "Izlaist ceļvedi"
     continue: "Turpināt"
     commitment_kicker: "Cik grūti šodien?"
     commitment_title: "Izvēlies dienas solījumu"

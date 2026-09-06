@@ -56,7 +56,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     get life_journey_path(journey)
     assert_response :success
     assert_select ".lp-trail-destination", count: 0
-    assert_select "[data-controller*='onboarding-mountain-tour']"
+    assert_select "#companion-pick-prompt", count: 0
 
     get dashboard_path
     assert_response :success

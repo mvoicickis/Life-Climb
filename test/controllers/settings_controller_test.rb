@@ -149,8 +149,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "#companion-pick-prompt"
-    assert_select "#companion-pick-prompt input[name='user[character]'][value=fox]"
-    assert_select "#companion-pick-prompt input[name='user[character]'][value=raven]"
+    assert_select "#companion-pick-prompt .lp-companion-pick__option input[name='user[character]'][value=fox]"
+    assert_select "#companion-pick-prompt .lp-companion-pick__option input[name='user[character]'][value=raven]"
+    assert_select "#companion-pick-prompt .lp-ob__title", text: I18n.t("companion.prompt_title")
+    assert_select "#companion-pick-prompt button[type=submit]", count: 0
 
     patch settings_path, params: { user: { character: "bee" } }
     assert_redirected_to settings_path(highlight: "character")

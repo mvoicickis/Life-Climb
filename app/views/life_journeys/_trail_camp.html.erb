@@ -17,7 +17,7 @@
 
 <button type="button"
         class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %>"
-        id="<%= local_assigns[:tour_camp] ? 'onboarding-tour-camp' : "trail-camp-#{project.id}" %>"
+        id="trail-camp-<%= project.id %>"
         style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= accent %>; --lp-trail-fog: <%= fog %>; --lp-trail-shadow-dx: <%= shadow[:dx] %>; --lp-trail-shadow-w: <%= shadow[:width] %>; --lp-trail-shadow-o: <%= shadow[:opacity] %>;"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"

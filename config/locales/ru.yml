@@ -6,10 +6,7 @@ ru:
       renewal: "%-d %B %Y"
   app_name: "LifePoints"
   companion:
-    prompt_kicker: "Новые спутники"
-    prompt_title: "Выбери, кто идёт с тобой"
-    prompt_lead: "Выбери одного спутника. Ты увидишь его в Сегодня и на горе."
-    prompt_cta: "Сохранить спутника"
+    prompt_title: "Pick who climbs with you" # TODO: translate
   strategy:
     holding:
       plan_title: "lp.holding.plan"

@@ -74,9 +74,6 @@
                 streak: streak,
                 progress: progress,
                 root_goals: root_goals %>
-          <% if current_user.needs_onboarding_mountain_tour?(@journey) %>
-            <%= render "life_journeys/onboarding_mountain_tour", journey: @journey %>
-          <% end %>
         </div>
       </div>
     </div>
@@ -118,5 +115,4 @@
 
 <%= render "shared/lp_dash_nav",
       active: :mountain,
-      variant: (v4_shell ? :v4 : :default),
-      onboarding_tour: current_user.needs_onboarding_mountain_tour?(@journey) %>
+      variant: (v4_shell ? :v4 : :default) %>

@@ -32,7 +32,6 @@ module Developer
         shown = Array(@user.support_milestones_shown).map(&:to_s)
         shown.delete(User::ADVENTURE_GUIDE_KEY)
         shown.delete(User::COMPANION_PICK_KEY)
-        shown.delete(User::ONBOARDING_MOUNTAIN_TOUR_KEY)
 
         @user.update!(
           onboarding_completed_at: nil,

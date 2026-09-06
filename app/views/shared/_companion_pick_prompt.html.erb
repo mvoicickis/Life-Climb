@@ -2,22 +2,48 @@
 <% return unless current_user&.needs_companion_pick? %>
 <% return if controller_name == "v2_onboardings" %>
 
-<section class="lp-companion-prompt lp-glass lp-glass--pad mx-auto mb-4 max-w-lg"
-         id="companion-pick-prompt"
-         aria-labelledby="companion-pick-prompt-title">
-  <p class="text-xs font-bold uppercase tracking-[0.14em] text-[var(--lp-green-deep)]">
-    <%= t("companion.prompt_kicker") %>
-  </p>
-  <h2 id="companion-pick-prompt-title" class="mt-1 text-xl font-semibold text-[var(--lp-ink)]">
-    <%= t("companion.prompt_title") %>
-  </h2>
-  <p class="mt-1 text-sm text-[var(--lp-muted)]"><%= t("companion.prompt_lead") %></p>
+<div class="lp-companion-pick lp-ob"
+     id="companion-pick-prompt"
+     role="dialog"
+     aria-labelledby="companion-pick-prompt-title"
+     aria-modal="true">
+  <div class="lp-ob__mountain-bg" aria-hidden="true">
+    <%= image_tag "mountain_trail_default.webp", class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
+  </div>
 
-  <%= form_with url: settings_path, method: :patch, data: { turbo: false }, class: "mt-4" do %>
-    <%= render "shared/character_picker",
-          selected: current_user.character_key,
-          show_brand: false,
-          show_heading: false,
-          submit_label: t("companion.prompt_cta") %>
-  <% end %>
-</section>
+  <div class="lp-ob__body">
+    <section class="lp-ob__card lp-ob__card--goal lp-companion-pick__card"
+             aria-labelledby="companion-pick-prompt-title">
+      <h1 id="companion-pick-prompt-title" class="lp-ob__title"><%= t("companion.prompt_title") %></h1>
+
+      <%= form_with model: current_user,
+            url: settings_path,
+            method: :patch,
+            data: {
+              turbo: false,
+              controller: "character-picker",
+              character_picker_auto_submit_value: true
+            },
+            class: "lp-companion-pick__form" do %>
+        <div class="lp-companion-pick__grid"
+             role="radiogroup"
+             aria-labelledby="companion-pick-prompt-title">
+          <% User::PICKABLE_CHARACTERS.each do |key| %>
+            <label class="lp-companion-pick__option">
+              <input type="radio"
+                     name="user[character]"
+                     value="<%= key %>"
+                     class="sr-only"
+                     required
+                     data-action="change->character-picker#submit">
+              <%= image_tag "characters/#{key}.png",
+                    alt: t("game_ui.character.#{key}"),
+                    class: "lp-companion-pick__avatar" %>
+              <span class="lp-companion-pick__label"><%= t("game_ui.character.#{key}") %></span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</div>
