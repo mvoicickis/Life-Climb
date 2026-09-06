@@ -8769,112 +8769,6 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   text-align: left;
 }
 
-.lp-onboarding-tour__overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-}
-
-.lp-onboarding-tour__overlay.is-active {
-  pointer-events: auto;
-}
-
-.lp-onboarding-tour__spotlight {
-  position: fixed;
-  border-radius: 0.75rem;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
-  pointer-events: none;
-  transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
-  z-index: 61;
-}
-
-.lp-onboarding-tour__bubble {
-  position: fixed;
-  z-index: 62;
-  max-width: min(16.5rem, calc(100vw - 24px));
-  padding: 0.85rem 1rem;
-  border-radius: 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--lp-green) 35%, transparent);
-  background: rgba(15, 23, 20, 0.96);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  color: #f7ead9;
-  font-size: 0.9rem;
-  line-height: 1.45;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: auto;
-}
-
-.lp-onboarding-tour__bubble.is-visible {
-  opacity: 1;
-}
-
-.lp-onboarding-tour__bubble.is-centered {
-  transform: translate(-50%, -50%);
-}
-
-.lp-onboarding-tour__step {
-  margin: 0 0 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, #f7ead9 65%, transparent);
-}
-
-.lp-onboarding-tour__text {
-  margin: 0;
-}
-
-.lp-onboarding-tour__actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  justify-content: flex-end;
-}
-
-.lp-onboarding-tour__next,
-.lp-onboarding-tour__cta {
-  border: 0;
-  border-radius: 999px;
-  padding: 0.5rem 1rem;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  min-height: 2.25rem;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lp-onboarding-tour__next {
-  background: var(--lp-teal);
-  color: #fff;
-}
-
-.lp-onboarding-tour__cta {
-  background: var(--lp-green);
-  color: #0f172a;
-  width: 100%;
-  padding: 0.65rem 1rem;
-}
-
-.lp-onboarding-tour__skip {
-  border: 0;
-  border-radius: 999px;
-  padding: 0.5rem 1rem;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  min-height: 2.25rem;
-  background: transparent;
-  color: color-mix(in srgb, #f7ead9 70%, transparent);
-}
-
 .lp-adventure__mountain-echo {
   margin: 0;
   padding: 0.75rem 0.9rem;
@@ -26513,6 +26407,82 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   opacity: 0.38;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+/* Legacy companion re-pick — matches onboarding goal/camps screens */
+.lp-companion-pick {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+}
+
+.lp-companion-pick__card {
+  width: 100%;
+}
+
+.lp-companion-pick__form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-companion-pick__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.lp-companion-pick__option {
+  grid-column: span 2;
+  display: grid;
+  gap: 0.25rem;
+  justify-items: center;
+  padding: 0.35rem 0.2rem 0.4rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  min-height: var(--lp-ob-tap);
+}
+
+.lp-companion-pick__option:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.lp-companion-pick__option:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.lp-companion-pick__option:has(input:checked) {
+  border-color: var(--lp-ob-green);
+  background: color-mix(in srgb, var(--lp-ob-green) 12%, #fff);
+}
+
+.lp-companion-pick__option:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--lp-ob-green) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.lp-companion-pick__avatar {
+  display: block;
+  width: 100%;
+  max-width: 4.5rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px transparent;
+}
+
+.lp-companion-pick__option:has(input:checked) .lp-companion-pick__avatar {
+  box-shadow: 0 0 0 2px var(--lp-ob-green), 0 0 12px rgba(87, 211, 91, 0.28);
+}
+
+.lp-companion-pick__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  color: #0f172a;
 }
 
 @import "../stylesheets/mountain_trail.css";

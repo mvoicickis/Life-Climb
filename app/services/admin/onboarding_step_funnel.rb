@@ -9,12 +9,6 @@ module Admin
       label_scope: "admin.onboarding_steps"
     }.freeze
 
-    MOUNTAIN_TOUR = {
-      steps: OnboardingMountainTour::STEPS,
-      event_prefix: "mountain_tour",
-      label_scope: "admin.mountain_tour_steps"
-    }.freeze
-
     LANDING = {
       steps: %w[landing_viewed signup_started],
       label_scope: "admin.landing_steps",

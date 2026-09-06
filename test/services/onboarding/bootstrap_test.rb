@@ -64,7 +64,6 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
 
     assert Strategy::HierarchyReady.call(user: @user, journey: journey)
     assert @user.daily_todos.where(scheduled_on: Date.current).exists?
-    assert @user.needs_onboarding_mountain_tour?(journey)
     assert_equal 0, @user.habits.count
   end
 

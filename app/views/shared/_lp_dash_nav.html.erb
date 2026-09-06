@@ -4,7 +4,6 @@
 <% active = "mountain" if active == "strategy" %>
 <% variant = local_assigns.fetch(:variant, :default).to_s %>
 <% show_plant_fab = variant == "v4" %>
-<% onboarding_tour = local_assigns.fetch(:onboarding_tour, false) %>
 <%
   strategy_journey = current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first
 %>
@@ -76,7 +75,6 @@
     <% if show_plant_fab %>
       <button type="button"
               class="lp-dash-nav__fab"
-              <% if onboarding_tour %>id="onboarding-tour-add-camp"<% end %>
               aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true">
           <path d="M12 5v14M5 12h14"/>

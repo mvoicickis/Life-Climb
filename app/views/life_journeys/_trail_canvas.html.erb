@@ -33,8 +33,7 @@
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
-<% show_onboarding_tour = current_user.needs_onboarding_mountain_tour?(journey) %>
-<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !show_onboarding_tour %>
+<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %>"
@@ -221,15 +220,13 @@
                 index: index,
                 total: projects.size,
                 projects: projects,
-                current_project: current_project,
-                tour_camp: show_onboarding_tour && index.zero? %>
+                current_project: current_project %>
         <% end %>
       </div>
 
       <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
         <button type="button"
                 class="lp-trail__flag"
-                <% if show_onboarding_tour %>id="onboarding-tour-goal"<% end %>
                 data-action="click->trail-canvas#togglePeakMenu"
                 aria-haspopup="menu"
                 aria-expanded="false"
@@ -415,7 +412,7 @@
 
       </div><%# /.lp-trail__mountain %>
     </div>
-    <%= render "life_journeys/trail_dock", today_card: today_card, journey: journey, projects: projects, show_onboarding_tour: show_onboarding_tour %>
+    <%= render "life_journeys/trail_dock", today_card: today_card, journey: journey, projects: projects %>
   </div>
 
   <div class="lp-trail__tab-fade" aria-hidden="true"></div>

@@ -1,8 +1,7 @@
-<%# Pinned Base camp hut above the tab bar. locals: today_card, journey, projects, show_onboarding_tour %>
+<%# Pinned Base camp hut above the tab bar. locals: today_card, journey, projects %>
 <% today_card = local_assigns.fetch(:today_card) %>
 <% journey = local_assigns[:journey] || @journey %>
 <% projects = local_assigns[:projects] || [] %>
-<% show_onboarding_tour = local_assigns.fetch(:show_onboarding_tour, false) %>
 <% mode = today_card[:mode].to_s %>
 <% plant_mode = mode.start_with?("plant") %>
 <% pills = mountain_trail_base_pills(journey: journey, projects: projects) %>
@@ -12,7 +11,6 @@
   <% if plant_mode %>
     <button type="button"
             class="lp-trail-base-card is-<%= mode.tr('_', '-') %>"
-            <% if show_onboarding_tour %>id="onboarding-tour-base-camp"<% end %>
             data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
             data-action="click->trail-canvas#openComposerFromFab">
       <%= render "life_journeys/trail_base_card_inner",
@@ -24,7 +22,6 @@
   <% else %>
     <button type="button"
             class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %>"
-            <% if show_onboarding_tour %>id="onboarding-tour-base-camp"<% end %>
             data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
             data-action="click->trail-camp-sheet#openBase">
       <%= render "life_journeys/trail_base_card_inner",

@@ -25,23 +25,6 @@ class Admin::OnboardingStepFunnelTest < ActiveSupport::TestCase
     assert_equal 1, camps.drop_off_from_previous
   end
 
-  test "counts distinct users per step from mountain tour events" do
-    user = users(:two)
-    other = users(:one)
-
-    Analytics::Track.call(user: user, name: "mountain_tour_step_viewed", properties: { step: "today" })
-    Analytics::Track.call(user: user, name: "mountain_tour_step_completed", properties: { step: "today" })
-    Analytics::Track.call(user: other, name: "mountain_tour_step_viewed", properties: { step: "today" })
-    Analytics::Track.call(user: other, name: "mountain_tour_step_completed", properties: { step: "today" })
-
-    rows = Admin::OnboardingStepFunnel.call(Admin::OnboardingStepFunnel::MOUNTAIN_TOUR)[:rows]
-    today = rows.find { |row| row.key == "today" }
-
-    assert_equal 2, today.viewed
-    assert_equal 2, today.completed
-    assert_nil today.drop_off_from_previous
-  end
-
   test "counts anonymous landing funnel events" do
     3.times { Analytics::Track.call(name: "landing_viewed") }
     Analytics::Track.call(name: "signup_started")
