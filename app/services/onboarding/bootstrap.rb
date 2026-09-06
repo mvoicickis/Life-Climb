@@ -80,7 +80,9 @@ module Onboarding
 
         total = @camp_titles.size
         @camp_titles.each_with_index do |title, index|
-          slot = MountainTrailHelper::AutoSlot.call(index: index, total: total)
+          # Screen 2 list is nearest-first; trail_y grows toward base camp (climber).
+          trail_slot_index = total - 1 - index
+          slot = MountainTrailHelper::AutoSlot.call(index: trail_slot_index, total: total)
           projects << create_child!(
             parent: plan,
             horizon: "project",
