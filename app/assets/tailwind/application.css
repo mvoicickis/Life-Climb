@@ -26184,14 +26184,14 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 .lp-ob__mountain-bg {
   position: absolute;
   inset: 0;
-  opacity: 0.28;
+  opacity: 0.38;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
 }
 
 .lp-ob__mountain-bg--steps {
-  opacity: 0.28;
+  opacity: 0.38;
 }
 
 .lp-ob__mountain-photo {
