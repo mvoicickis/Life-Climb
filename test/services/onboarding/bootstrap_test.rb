@@ -3,6 +3,8 @@
 require "test_helper"
 
 class OnboardingBootstrapTest < ActiveSupport::TestCase
+  include MountainTrailHelper
+
   setup do
     @user = User.create!(
       name: "Alex",
@@ -48,6 +50,17 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 2, trail.nodes.size
     assert_equal :current, trail.nodes[0].state
     assert_equal :locked, trail.nodes[1].state
+    assert_equal result.projects[0].id, trail.current_node.id
+
+    first_slot = MountainTrailHelper::AutoSlot.call(index: 1, total: 2)
+    last_slot = MountainTrailHelper::AutoSlot.call(index: 0, total: 2)
+    assert_in_delta first_slot[:trail_y], result.projects[0].trail_y, 0.0001
+    assert_in_delta last_slot[:trail_y], result.projects[1].trail_y, 0.0001
+    assert_operator result.projects[0].trail_y.to_f, :>, result.projects[1].trail_y.to_f
+
+    marker = mountain_trail_climber_marker(result.projects, user: @user)
+    assert marker[:visible]
+    assert_operator marker[:y], :>, result.projects[0].trail_y.to_f
 
     assert Strategy::HierarchyReady.call(user: @user, journey: journey)
     assert @user.daily_todos.where(scheduled_on: Date.current).exists?
