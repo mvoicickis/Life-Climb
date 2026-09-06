@@ -17,13 +17,19 @@ export default class extends Controller {
     maxLength: { type: Number, default: 120 }
   }
 
+  static HOLD_MS = 250
+  static MOVE_CANCEL_PX = 8
+
   connect() {
     this.items = []
     this.dragId = null
-    this.dragOverId = null
     this.reorderHintShown = false
     this.loadInitialItems()
     this.syncUi()
+  }
+
+  disconnect() {
+    this.cancelActiveDrag()
   }
 
   loadInitialItems() {
@@ -67,6 +73,8 @@ export default class extends Controller {
   }
 
   syncUi() {
+    this.cancelActiveDrag()
+
     if (this.hasGhostsTarget) {
       this.ghostsTarget.classList.toggle("is-hidden", this.items.length > 0)
     }
@@ -171,59 +179,190 @@ export default class extends Controller {
   }
 
   onHandlePointerDown(event) {
-    event.preventDefault()
-    const row = event.currentTarget.closest(".lp-ob-steps__row")
-    if (!row) return
+    if (event.button !== 0) return
 
-    this.dragId = row.dataset.id
-    row.classList.add("is-dragging")
-    event.currentTarget.setPointerCapture(event.pointerId)
+    const handle = event.currentTarget
+    const row = handle.closest(".lp-ob-steps__row")
+    if (!row || !this.hasListTarget) return
 
-    const move = (ev) => {
-      const target = document.elementFromPoint(ev.clientX, ev.clientY)
-      const overRow = target && target.closest(".lp-ob-steps__row")
-      this.listTarget.querySelectorAll(".lp-ob-steps__row.is-drop-target").forEach((el) => {
-        el.classList.remove("is-drop-target")
-      })
-      if (overRow && overRow.dataset.id !== this.dragId) {
-        overRow.classList.add("is-drop-target")
-        this.dragOverId = overRow.dataset.id
-      } else {
-        this.dragOverId = null
+    const pointerId = event.pointerId
+    const startX = event.clientX
+    const startY = event.clientY
+    let holdTimer = null
+    let active = false
+
+    const cleanupListeners = () => {
+      document.removeEventListener("pointermove", onMove)
+      document.removeEventListener("pointerup", onUp)
+      document.removeEventListener("pointercancel", onUp)
+    }
+
+    const cancelHold = () => {
+      if (holdTimer) {
+        clearTimeout(holdTimer)
+        holdTimer = null
       }
     }
 
-    const up = (ev) => {
-      row.classList.remove("is-dragging")
-      this.listTarget.querySelectorAll(".lp-ob-steps__row.is-drop-target").forEach((el) => {
-        el.classList.remove("is-drop-target")
-      })
-      try {
-        event.currentTarget.releasePointerCapture(ev.pointerId)
-      } catch (_) {
-        // pointer already released
-      }
+    const onMove = (ev) => {
+      if (ev.pointerId !== pointerId) return
 
-      if (this.dragId && this.dragOverId && this.dragId !== this.dragOverId) {
-        const from = this.items.findIndex((entry) => entry.id === this.dragId)
-        const to = this.items.findIndex((entry) => entry.id === this.dragOverId)
-        if (from > -1 && to > -1) {
-          const moved = this.items.splice(from, 1)[0]
-          this.items.splice(to, 0, moved)
-          this.syncUi()
+      if (!active) {
+        const dx = Math.abs(ev.clientX - startX)
+        const dy = Math.abs(ev.clientY - startY)
+        if (dx > this.constructor.MOVE_CANCEL_PX || dy > this.constructor.MOVE_CANCEL_PX) {
+          cancelHold()
         }
+        return
       }
 
-      this.dragId = null
-      this.dragOverId = null
-      document.removeEventListener("pointermove", move)
-      document.removeEventListener("pointerup", up)
-      document.removeEventListener("pointercancel", up)
+      ev.preventDefault()
+      this.updateDragPosition(ev.clientX, ev.clientY)
+      this.updatePlaceholderPosition(ev.clientY)
     }
 
-    document.addEventListener("pointermove", move)
-    document.addEventListener("pointerup", up)
-    document.addEventListener("pointercancel", up)
+    const onUp = (ev) => {
+      if (ev.pointerId !== pointerId) return
+
+      cancelHold()
+      cleanupListeners()
+
+      if (active) {
+        this.finishDrag(row)
+      }
+
+      handle.classList.remove("is-grabbing")
+      this.activeDrag = null
+    }
+
+    holdTimer = setTimeout(() => {
+      holdTimer = null
+      active = true
+      handle.classList.add("is-grabbing")
+      this.startDrag(handle, row, pointerId, startY)
+    }, this.constructor.HOLD_MS)
+
+    document.addEventListener("pointermove", onMove)
+    document.addEventListener("pointerup", onUp)
+    document.addEventListener("pointercancel", onUp)
+  }
+
+  startDrag(handle, row, pointerId, startY) {
+    const rowRect = row.getBoundingClientRect()
+    const placeholder = document.createElement("li")
+    placeholder.className = "lp-ob-steps__placeholder"
+    placeholder.setAttribute("aria-hidden", "true")
+    placeholder.style.height = `${rowRect.height}px`
+
+    this.listTarget.insertBefore(placeholder, row)
+    document.body.appendChild(row)
+
+    row.classList.add("is-dragging")
+    row.style.width = `${rowRect.width}px`
+    row.style.left = `${rowRect.left}px`
+    row.style.top = `${rowRect.top}px`
+
+    try {
+      handle.setPointerCapture(pointerId)
+    } catch (_) {
+      // capture may fail on some browsers
+    }
+
+    this.activeDrag = {
+      handle,
+      row,
+      placeholder,
+      pointerId,
+      pointerOffsetY: startY - rowRect.top,
+      anchorLeft: rowRect.left,
+      dragId: row.dataset.id
+    }
+    this.dragId = row.dataset.id
+  }
+
+  updateDragPosition(clientX, clientY) {
+    const drag = this.activeDrag
+    if (!drag) return
+
+    drag.row.style.top = `${clientY - drag.pointerOffsetY}px`
+    drag.row.style.left = `${drag.anchorLeft}px`
+  }
+
+  updatePlaceholderPosition(clientY) {
+    const drag = this.activeDrag
+    if (!drag) return
+
+    const rows = [...this.listTarget.querySelectorAll(".lp-ob-steps__row")]
+    let inserted = false
+
+    for (const other of rows) {
+      const rect = other.getBoundingClientRect()
+      const mid = rect.top + rect.height / 2
+      if (clientY < mid) {
+        this.listTarget.insertBefore(drag.placeholder, other)
+        inserted = true
+        break
+      }
+    }
+
+    if (!inserted) {
+      this.listTarget.appendChild(drag.placeholder)
+    }
+  }
+
+  placeholderIndex() {
+    const drag = this.activeDrag
+    if (!drag) return -1
+
+    let index = 0
+    for (const child of this.listTarget.children) {
+      if (child === drag.placeholder) return index
+      if (child.classList.contains("lp-ob-steps__row")) index += 1
+    }
+    return index
+  }
+
+  finishDrag(row) {
+    const drag = this.activeDrag
+    if (!drag) return
+
+    const from = this.items.findIndex((entry) => entry.id === drag.dragId)
+    const to = this.placeholderIndex()
+
+    if (from > -1 && to > -1 && from !== to) {
+      const [moved] = this.items.splice(from, 1)
+      this.items.splice(to, 0, moved)
+      this.syncUi()
+      return
+    }
+
+    this.teardownDragDom(row, drag)
+    this.dragId = null
+  }
+
+  teardownDragDom(row, drag) {
+    drag.placeholder.remove()
+    row.classList.remove("is-dragging")
+    row.style.width = ""
+    row.style.left = ""
+    row.style.top = ""
+    this.listTarget.appendChild(row)
+
+    try {
+      drag.handle.releasePointerCapture(drag.pointerId)
+    } catch (_) {
+      // pointer already released
+    }
+  }
+
+  cancelActiveDrag() {
+    const drag = this.activeDrag
+    if (!drag) return
+
+    this.teardownDragDom(drag.row, drag)
+    drag.handle.classList.remove("is-grabbing")
+    this.activeDrag = null
+    this.dragId = null
   }
 
   beforeSubmit(event) {
