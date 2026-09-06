@@ -42,7 +42,15 @@ module Today
         .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
         .pluck(:id)
 
-      one_shots + dailies
+      weeklies = @user.strategy_goals
+        .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
+        .incomplete
+        .not_holding
+        .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
+        .select { |goal| goal.repeats_on?(@on) }
+        .map(&:id)
+
+      one_shots + dailies + weeklies
     end
   end
 end

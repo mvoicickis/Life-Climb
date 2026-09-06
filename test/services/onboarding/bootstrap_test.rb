@@ -28,6 +28,7 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal "purpose", journey.life_area.key
     assert_equal "other", journey.setup_flag("onboarding_category")
     assert_equal "true", journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG)
+    assert_equal "pending", journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG)
     assert_equal "easy", journey.commitment_key
     assert_equal 0, journey.commitment_habit_count
     assert_equal 1, journey.commitment_battle_count

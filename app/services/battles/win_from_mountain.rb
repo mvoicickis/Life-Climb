@@ -25,7 +25,7 @@ module Battles
         raise ArgumentError, I18n.t("strategy.rpg.trail.log_needed")
       end
 
-      if battle.completed? && !battle.repeat_daily?
+      if battle.completed? && !battle.repeat_recurring?
         return Result.new(awarded: 0, battle: battle.reload, flash: flash_data)
       end
 
@@ -44,9 +44,8 @@ module Battles
         return Result.new(awarded: result.awarded, battle: battle.reload, flash: flash_data)
       end
 
-      if battle.repeat_daily?
-        next_day = [ Date.current + 1.day, (battle.scheduled_on || Date.current) + 1.day ].max
-        battle.update!(scheduled_on: next_day, completed_at: nil)
+      if battle.repeat_recurring?
+        battle.advance_recurring_schedule!(after: Date.current)
         Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area) if battle.life_area
         return Result.new(awarded: 0, battle: battle.reload, flash: flash_data)
       end

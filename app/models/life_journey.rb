@@ -84,6 +84,18 @@ class LifeJourney < ApplicationRecord
     setup_flags[layer.to_s]
   end
 
+  def first_camp_reveal_pending?
+    setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG) == "pending"
+  end
+
+  def clear_first_camp_reveal!
+    flags = (setup_flags.presence || {}).stringify_keys.merge(
+      Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG => "done"
+    )
+    update_columns(setup_flags: flags, updated_at: Time.current)
+    self.setup_flags = flags
+  end
+
   def layer_done?(layer)
     setup_flag(layer) == "done"
   end

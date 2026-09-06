@@ -33,13 +33,15 @@
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
-<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? %>
+<% first_camp_reveal = journey&.first_camp_reveal_pending? && !destination_overlay && plan.present? %>
+<% first_camp = first_camp_reveal ? projects.min_by { |p| [ p.position.to_i, p.id ] } : nil %>
+<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
-         data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %>"
+         data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
          data-trail-canvas-create-url-value="<%= strategy_goals_path %>"
          data-trail-canvas-csrf-value="<%= form_authenticity_token %>"
          data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
@@ -51,6 +53,13 @@
          data-trail-canvas-curve-value="<%= mountain_trail_curve_json %>"
          data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
          data-trail-camp-sheet-base-title-fallback-value="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
+         <% if first_camp_reveal %>
+         data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
+         data-first-camp-reveal-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
+         data-first-camp-reveal-skip-hint-value="<%= t('strategy.rpg.trail.first_camp_reveal.skip_hint') %>"
+         data-trail-camp-sheet-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
+         data-trail-camp-sheet-reveal-pending-value="true"
+         <% end %>
          data-trail-ambient-dormant-value="<%= dormant %>"
          data-trail-ambient-camps-done-value="<%= camps_done %>"
          data-trail-ambient-camps-total-value="<%= all_projects.size %>"
@@ -487,11 +496,20 @@
                id="trail-sheet-camp-<%= project.id %>"
                data-camp-panel="<%= project.id %>"
                hidden>
-            <%= render "life_journeys/trail_camp_battles",
-                  project: project,
-                  goal: goal,
-                  plan: plan,
-                  area: area %>
+            <%= if first_camp_reveal && project.id == first_camp.id
+                  render "life_journeys/first_camp_battle_setup",
+                    project: project,
+                    goal: goal,
+                    plan: plan,
+                    area: area,
+                    journey: journey
+                else
+                  render "life_journeys/trail_camp_battles",
+                    project: project,
+                    goal: goal,
+                    plan: plan,
+                    area: area
+                end %>
           </div>
         <% end %>
       </div>
@@ -599,5 +617,16 @@
         <% end %>
       </div>
     </dialog>
+  <% end %>
+
+  <% if first_camp_reveal %>
+    <div id="first-camp-reveal-overlay"
+         class="lp-first-camp-reveal"
+         data-first-camp-reveal-target="overlay"
+         data-action="click->first-camp-reveal#skip"
+         aria-hidden="false">
+      <p class="lp-first-camp-reveal__skip"
+         data-first-camp-reveal-target="skipHint"><%= t("strategy.rpg.trail.first_camp_reveal.skip_hint") %></p>
+    </div>
   <% end %>
 </section>

@@ -77,13 +77,12 @@ module Battles
       goal = @todo.strategy_goal
       return if goal.blank?
 
-      unless goal.repeat_daily?
+      unless goal.repeat_recurring?
         goal.complete!
         return
       end
 
-      next_day = [ Date.current + 1.day, @todo.scheduled_on + 1.day ].max
-      goal.update!(scheduled_on: next_day, completed_at: nil)
+      goal.advance_recurring_schedule!(after: @todo.scheduled_on || Date.current)
       Strategy::CascadeToDaily.call(user: @user, life_area: goal.life_area)
     end
   end

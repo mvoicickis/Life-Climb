@@ -69,7 +69,7 @@ class StrategyQuantityLogsController < ApplicationController
 
   def finish_logged_battle!(battle, journey)
     return 0 if battle.blank?
-    return 0 if battle.completed? && !battle.repeat_daily?
+    return 0 if battle.completed? && !battle.repeat_recurring?
 
     Strategy::CascadeToDaily.call(user: current_user, life_area: battle.life_area) if battle.life_area
     todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
@@ -85,9 +85,8 @@ class StrategyQuantityLogsController < ApplicationController
       return result.awarded
     end
 
-    if battle.repeat_daily?
-      next_day = [ Date.current + 1.day, (battle.scheduled_on || Date.current) + 1.day ].max
-      battle.update!(scheduled_on: next_day, completed_at: nil)
+    if battle.repeat_recurring?
+      battle.advance_recurring_schedule!(after: Date.current)
       Strategy::CascadeToDaily.call(user: current_user, life_area: battle.life_area) if battle.life_area
       return 0
     end

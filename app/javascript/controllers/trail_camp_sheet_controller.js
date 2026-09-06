@@ -6,7 +6,9 @@ export default class extends Controller {
   static targets = ["sheet", "panel", "title", "subtitle", "body", "accent"]
 
   static values = {
-    baseTitleFallback: String
+    baseTitleFallback: String,
+    dismissUrl: String,
+    revealPending: Boolean
   }
 
   connect() {
@@ -232,12 +234,37 @@ export default class extends Controller {
     document.removeEventListener("keydown", this._onKey)
     if (!this.hasSheetTarget) return
 
+    if (this.revealPendingValue && this.hasDismissUrlValue) {
+      this.dismissFirstCampReveal()
+    }
+
     this.hideCampMenus()
     this.sheetTarget.classList.remove("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true
     this._openCampId = null
     this._pushedHistory = false
+  }
+
+  async dismissFirstCampReveal() {
+    const reveal = this.application.getControllerForElementAndIdentifier(this.element, "first-camp-reveal")
+    try {
+      await fetch(this.dismissUrlValue, {
+        method: "PATCH",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html",
+          "X-CSRF-Token": this.csrfToken()
+        },
+        credentials: "same-origin"
+      })
+    } catch (_error) {
+      // Keep going — local finish still clears the overlay.
+    }
+    reveal?.finish()
+  }
+
+  csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content || ""
   }
 
   maybeOpenFromQuery() {
