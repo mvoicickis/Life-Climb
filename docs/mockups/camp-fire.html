@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camp fire — travelling base camp mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #f6f4ee;
+      --lp-ink: #1c2420;
+      --lp-muted: #5f665e;
+      --lp-line: #e6e3da;
+      --lp-accent: #0f766e;
+      --lp-accent-bright: #14b8a6;
+      --lp-cream: #fbfaf7;
+      --lp-font: "Nunito", system-ui, sans-serif;
+      --phone-w: 360px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font);
+      background: #e8ecf1;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .doc__note {
+      margin: 0 0 2rem;
+      padding: 1rem 1.1rem;
+      background: #fff;
+      border: 1px solid #d8dee6;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #334155;
+      max-width: 44rem;
+    }
+
+    .doc__note h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-accent);
+    }
+
+    .doc__note ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .doc__note li { margin-bottom: 0.35rem; }
+
+    .state-block {
+      margin-bottom: 2.75rem;
+    }
+
+    .state-block__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-accent);
+    }
+
+    .state-block__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .state-block__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      max-width: 34rem;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      max-width: 100%;
+      margin: 0 auto;
+      height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: #5f9438;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.14);
+    }
+
+    .phone__mountain {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .phone__photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      pointer-events: none;
+    }
+
+    .phone__haze {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(176, 196, 214, 0.18) 0%,
+        rgba(176, 196, 214, 0.08) 25%,
+        transparent 55%
+      );
+      pointer-events: none;
+    }
+
+    .phone__trail {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .phone__trail path {
+      fill: none;
+      stroke: rgba(255, 248, 220, 0.58);
+      stroke-width: 0.7;
+      stroke-linecap: round;
+      stroke-dasharray: 0.45 2.4;
+    }
+
+    .phone__climber {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2.5px solid var(--lp-accent);
+      box-shadow: 0 2px 8px rgba(18, 32, 26, 0.35);
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* —— Camp marker (tappable for camp battles) —— */
+    .camp-marker {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      z-index: 5;
+      display: grid;
+      place-items: end center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .camp-marker:active { transform: translate(-50%, -100%) scale(0.96); }
+
+    .camp-marker.is-done {
+      opacity: 0.55;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .camp-marker.is-done .camp-marker__tent {
+      filter: grayscale(0.35) brightness(0.92);
+    }
+
+    .camp-marker__ring {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 58px;
+      height: 58px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .camp-marker__ring circle {
+      fill: none;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+    }
+
+    .camp-marker__ring-bg { stroke: rgba(255, 255, 255, 0.45); }
+    .camp-marker__ring-fg { stroke: var(--camp-accent, var(--lp-accent)); }
+
+    .camp-marker__tent {
+      width: 30px;
+      height: 26px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--camp-accent, #0f9488) 78%, #fff) 0%,
+        var(--camp-accent, #0f9488) 55%,
+        color-mix(in srgb, var(--camp-accent, #0f9488) 70%, #1a120c) 100%
+      );
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45));
+      position: relative;
+    }
+
+    .camp-marker.is-current .camp-marker__tent {
+      width: 34px;
+      height: 30px;
+      filter:
+        drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45))
+        drop-shadow(0 0 10px color-mix(in srgb, var(--camp-accent, #0f9488) 50%, transparent));
+    }
+
+    .camp-marker__caption {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.15rem;
+      padding: 0.12rem 0.45rem 0.14rem;
+      border-radius: 999px;
+      background: rgba(247, 239, 226, 0.94);
+      border: 1px solid rgba(90, 66, 40, 0.28);
+      box-shadow: 0 4px 10px rgba(18, 32, 26, 0.18);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .camp-marker__title {
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: #1a140c;
+      line-height: 1.15;
+    }
+
+    .camp-marker.is-done .camp-marker__caption {
+      background: rgba(247, 239, 226, 0.7);
+      box-shadow: none;
+    }
+
+    /* —— Hearth cluster: tent + fire + fox beside current camp —— */
+    .hearth {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      z-index: 6;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      pointer-events: none;
+    }
+
+    .hearth__tent {
+      width: 22px;
+      height: 18px;
+      margin-bottom: 2px;
+      background: linear-gradient(180deg, #f5e6c8 0%, #d4a76a 55%, #8b5e34 100%);
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 2px 3px rgba(12, 22, 14, 0.3));
+      pointer-events: none;
+    }
+
+    .hearth__tent::after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .hearth__fire {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      margin-bottom: -4px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hearth__fire:active { transform: scale(0.94); }
+
+    .hearth__flame {
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      width: 18px;
+      height: 22px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 45% 45%;
+      background: radial-gradient(ellipse at 50% 80%, #ffd166 0%, #f0730c 55%, #a33a06 100%);
+      box-shadow:
+        0 0 14px 6px rgba(255, 150, 50, 0.7),
+        0 0 28px 10px rgba(255, 120, 30, 0.35);
+      animation: flame-pulse 2.4s ease-in-out infinite;
+    }
+
+    .hearth__flame::before,
+    .hearth__flame::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe08a, #f59e0b);
+    }
+
+    .hearth__flame::before {
+      width: 8px;
+      height: 10px;
+      left: -3px;
+      bottom: 4px;
+      opacity: 0.85;
+      animation: flame-flicker 1.8s ease-in-out infinite;
+    }
+
+    .hearth__flame::after {
+      width: 7px;
+      height: 9px;
+      right: -2px;
+      bottom: 6px;
+      opacity: 0.75;
+      animation: flame-flicker 2.1s ease-in-out infinite reverse;
+    }
+
+    .hearth__glow {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 36px;
+      height: 12px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255, 180, 60, 0.55), transparent 70%);
+    }
+
+    .hearth__embers {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      width: 24px;
+      height: 16px;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .hearth__ember {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #ffb347;
+      opacity: 0;
+      animation: ember-rise 2.8s ease-in infinite;
+    }
+
+    .hearth__ember:nth-child(1) { left: 30%; animation-delay: 0s; }
+    .hearth__ember:nth-child(2) { left: 55%; animation-delay: 0.9s; }
+    .hearth__ember:nth-child(3) { left: 42%; animation-delay: 1.6s; }
+
+    .hearth.is-dim .hearth__flame {
+      background: radial-gradient(ellipse at 50% 80%, #e8c878 0%, #c46820 60%, #7a4010 100%);
+      box-shadow:
+        0 0 8px 3px rgba(255, 150, 50, 0.35),
+        0 0 16px 5px rgba(255, 120, 30, 0.15);
+      animation: flame-pulse-dim 3.2s ease-in-out infinite;
+    }
+
+    .hearth.is-dim .hearth__glow {
+      background: radial-gradient(ellipse, rgba(255, 180, 60, 0.25), transparent 70%);
+    }
+
+    .hearth.is-dim .hearth__ember { display: none; }
+
+    .hearth__fox {
+      width: 34px;
+      height: 34px;
+      margin-bottom: -2px;
+      margin-left: -4px;
+      object-fit: contain;
+      object-position: center bottom;
+      transform: scaleX(-1) rotate(-8deg);
+      filter: drop-shadow(0 2px 4px rgba(12, 22, 14, 0.25));
+      pointer-events: none;
+    }
+
+    /* —— Bottom sheet (fire tapped) —— */
+    .sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      pointer-events: auto;
+    }
+
+    .sheet__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(18, 32, 26, 0.42);
+    }
+
+    .sheet__panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      max-height: 78%;
+      background:
+        radial-gradient(ellipse 140% 55% at 50% 0%, rgba(255, 196, 110, 0.16), transparent 60%),
+        linear-gradient(165deg, #2b1c10, #1b120a 55%, #140d07);
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -12px 40px rgba(18, 32, 26, 0.35);
+      color: #f7ead9;
+      overflow: hidden;
+    }
+
+    .sheet__glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      pointer-events: none;
+      background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(255, 196, 110, 0.16), transparent 70%);
+    }
+
+    .sheet__handle {
+      width: 36px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 99px;
+      margin: 10px auto 6px;
+      flex-shrink: 0;
+    }
+
+    .sheet__header {
+      padding: 2px 16px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sheet__title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .sheet__sub {
+      margin: 0.2rem 0 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.55);
+    }
+
+    .sheet__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .sheet__kind {
+      margin: 0 0 0.5rem;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .sheet__kind.is-daily {
+      background: #f7e8cf;
+      color: #8f6a1f;
+    }
+
+    .sheet__kind.is-side {
+      background: #dcefec;
+      color: #0a5f59;
+    }
+
+    .sheet__empty {
+      margin: 0 0 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: rgba(247, 234, 217, 0.72);
+      line-height: 1.45;
+    }
+
+    .sheet__list {
+      list-style: none;
+      margin: 0 0 1rem;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .sheet__row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .sheet__check {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      border-radius: 7px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      background: transparent;
+    }
+
+    .sheet__check.is-done {
+      border-color: #4ade80;
+      background: #4ade80;
+      position: relative;
+    }
+
+    .sheet__check.is-done::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 3px;
+      width: 5px;
+      height: 9px;
+      border: solid #12201a;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .sheet__dock {
+      flex-shrink: 0;
+      padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(20, 13, 7, 0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .sheet__add {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sheet__add-input {
+      flex: 1;
+      min-width: 0;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      color: #f7ead9;
+      font: 700 0.88rem var(--lp-font);
+    }
+
+    .sheet__add-input::placeholder {
+      color: rgba(247, 234, 217, 0.45);
+    }
+
+    .sheet__add-btn {
+      flex-shrink: 0;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 14px;
+      border: 0;
+      background: var(--lp-accent-bright);
+      color: #fff;
+      font: 800 1.1rem var(--lp-font);
+      cursor: pointer;
+    }
+
+    .phone__chrome {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 8;
+      padding: 12px 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .phone__chrome-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.92);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .phone__legend {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 7;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(252, 251, 248, 0.88);
+      backdrop-filter: blur(12px);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #5f665e;
+      line-height: 1.35;
+      pointer-events: none;
+    }
+
+    .phone__legend strong {
+      color: #12201a;
+      font-weight: 800;
+    }
+
+    .tap-hint {
+      display: inline-block;
+      margin-top: 2px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(20, 184, 166, 0.15);
+      color: #0f766e;
+      font-weight: 800;
+    }
+
+    @keyframes flame-pulse {
+      0%, 100% { transform: translateX(-50%) scaleY(1); }
+      50% { transform: translateX(-50%) scaleY(1.06); }
+    }
+
+    @keyframes flame-pulse-dim {
+      0%, 100% { transform: translateX(-50%) scaleY(1); opacity: 0.88; }
+      50% { transform: translateX(-50%) scaleY(1.03); opacity: 0.95; }
+    }
+
+    @keyframes flame-flicker {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    @keyframes ember-rise {
+      0% { opacity: 0; transform: translateY(0); }
+      20% { opacity: 0.9; }
+      100% { opacity: 0; transform: translateY(-14px); }
+    }
+
+    .divider {
+      text-align: center;
+      margin: 0.5rem 0 1.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Camp fire — travelling base camp</h1>
+    <p class="doc__lede">Static mockup at 360px. Base camp is no longer fixed at the bottom of the mountain. It is a fire that travels with the climber and burns beside whichever camp they are on.</p>
+
+    <div class="doc__note">
+      <h2>Rules</h2>
+      <ul>
+        <li>Beside the <strong>current camp marker</strong>: tent (picture only), fire (only tappable thing here), fox lying by the fire.</li>
+        <li>Tap the fire: sheet with daily things and side battles that belong to no camp. Add row always visible at the bottom.</li>
+        <li>Fire burns brighter the more days in a row you show up. No numbers. No shame. Never goes out.</li>
+        <li>When a camp is finished, the fire leaves. Nothing stays behind at old camps.</li>
+        <li><strong>New players:</strong> the fire stays hidden until they win their first battle. They see only the camp marker — one obvious thing to tap.</li>
+      </ul>
+    </div>
+
+    <!-- State 1 -->
+    <section class="state-block" aria-labelledby="state1-label">
+      <p class="state-block__label" id="state1-label">State 1</p>
+      <h2 class="state-block__title">Climber on camp one — bright fire</h2>
+      <p class="state-block__note">Camp marker, then tent, fire, and fox beside it. Fire is bright because the climber has been showing up.</p>
+
+      <div class="phone" role="img" aria-label="State 1: climber at camp one with bright travelling fire">
+        <div class="phone__mountain">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
+          <div class="phone__haze" aria-hidden="true"></div>
+          <svg class="phone__trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 18 82 C 28 72, 34 64, 42 56 C 50 48, 58 38, 68 28"></path>
+          </svg>
+        </div>
+
+        <div class="phone__chrome">
+          <span class="phone__chrome-title">Mountain</span>
+        </div>
+
+        <!-- Camp 1 — current -->
+        <button type="button" class="camp-marker is-current" style="left: 42%; top: 56%; --camp-accent: #0f9488;" aria-label="Open bank account">
+          <svg class="camp-marker__ring" viewBox="0 0 62 62" aria-hidden="true">
+            <circle class="camp-marker__ring-bg" cx="31" cy="31" r="27"></circle>
+            <circle class="camp-marker__ring-fg" cx="31" cy="31" r="27"
+                    stroke-dasharray="169.6" stroke-dashoffset="84.8" transform="rotate(-90 31 31)"></circle>
+          </svg>
+          <span class="camp-marker__tent" aria-hidden="true"></span>
+          <span class="camp-marker__caption">
+            <span class="camp-marker__title">Open bank account</span>
+          </span>
+        </button>
+
+        <!-- Hearth beside camp 1 -->
+        <div class="hearth" style="left: 54%; top: 54%;" aria-hidden="true">
+          <span class="hearth__tent"></span>
+          <button type="button" class="hearth__fire" aria-label="Open your fire">
+            <span class="hearth__glow"></span>
+            <span class="hearth__flame"></span>
+            <span class="hearth__embers">
+              <span class="hearth__ember"></span>
+              <span class="hearth__ember"></span>
+              <span class="hearth__ember"></span>
+            </span>
+          </button>
+          <img class="hearth__fox" src="../../app/assets/images/characters/fox.png" alt="" decoding="async">
+        </div>
+
+        <!-- Camp 2 — ahead -->
+        <button type="button" class="camp-marker" style="left: 68%; top: 28%; --camp-accent: #7c3aed;" aria-label="Pay off card">
+          <svg class="camp-marker__ring" viewBox="0 0 62 62" aria-hidden="true">
+            <circle class="camp-marker__ring-bg" cx="31" cy="31" r="27"></circle>
+            <circle class="camp-marker__ring-fg" cx="31" cy="31" r="27"
+                    stroke-dasharray="169.6" stroke-dashoffset="169.6" transform="rotate(-90 31 31)"></circle>
+          </svg>
+          <span class="camp-marker__tent" aria-hidden="true"></span>
+          <span class="camp-marker__caption">
+            <span class="camp-marker__title">Pay off card</span>
+          </span>
+        </button>
+
+        <span class="phone__climber" style="left: 42%; top: 56%;" aria-hidden="true"></span>
+
+        <p class="phone__legend">
+          <strong>Camp marker</strong> — tap for camp battles.
+          <span class="tap-hint">Fire — tap for daily things</span>
+        </p>
+      </div>
+    </section>
+
+    <p class="divider" aria-hidden="true">State 2</p>
+
+    <!-- State 2 -->
+    <section class="state-block" aria-labelledby="state2-label">
+      <p class="state-block__label" id="state2-label">State 2</p>
+      <h2 class="state-block__title">Same camp — dim fire</h2>
+      <p class="state-block__note">A climber who has been away. The fire is softer but still lit. It never goes out.</p>
+
+      <div class="phone" role="img" aria-label="State 2: climber at camp one with dim travelling fire">
+        <div class="phone__mountain">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
+          <div class="phone__haze" aria-hidden="true"></div>
+          <svg class="phone__trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 18 82 C 28 72, 34 64, 42 56 C 50 48, 58 38, 68 28"></path>
+          </svg>
+        </div>
+
+        <div class="phone__chrome">
+          <span class="phone__chrome-title">Mountain</span>
+        </div>
+
+        <button type="button" class="camp-marker is-current" style="left: 42%; top: 56%; --camp-accent: #0f9488;" aria-label="Open bank account">
+          <svg class="camp-marker__ring" viewBox="0 0 62 62" aria-hidden="true">
+            <circle class="camp-marker__ring-bg" cx="31" cy="31" r="27"></circle>
+            <circle class="camp-marker__ring-fg" cx="31" cy="31" r="27"
+                    stroke-dasharray="169.6" stroke-dashoffset="84.8" transform="rotate(-90 31 31)"></circle>
+          </svg>
+          <span class="camp-marker__tent" aria-hidden="true"></span>
+          <span class="camp-marker__caption">
+            <span class="camp-marker__title">Open bank account</span>
+          </span>
+        </button>
+
+        <div class="hearth is-dim" style="left: 54%; top: 54%;" aria-hidden="true">
+          <span class="hearth__tent"></span>
+          <button type="button" class="hearth__fire" aria-label="Open your fire">
+            <span class="hearth__glow"></span>
+            <span class="hearth__flame"></span>
+            <span class="hearth__embers">
+              <span class="hearth__ember"></span>
+              <span class="hearth__ember"></span>
+              <span class="hearth__ember"></span>
+            </span>
+          </button>
+          <img class="hearth__fox" src="../../app/assets/images/characters/fox.png" alt="" decoding="async">
+        </div>
+
+        <button type="button" class="camp-marker" style="left: 68%; top: 28%; --camp-accent: #7c3aed;" aria-label="Pay off card">
+          <svg class="camp-marker__ring" viewBox="0 0 62 62" aria-hidden="true">
+            <circle class="camp-marker__ring-bg" cx="31" cy="31" r="27"></circle>
+            <circle class="camp-marker__ring-fg" cx="31" cy="31" r="27"
+                    stroke-dasharray="169.6" stroke-dashoffset="169.6" transform="rotate(-90 31 31)"></circle>
+          </svg>
+          <span class="camp-marker__tent" aria-hidden="true"></span>
+          <span class="camp-marker__caption">
+            <span class="camp-marker__title">Pay off card</span>
+          </span>
+        </button>
+
+        <span class="phone__climber" style="left: 42%; top: 56%;" aria-hidden="true"></span>
+
+        <p class="phone__legend">
+          Fire is dimmer after time away. <strong>Still lit.</strong> No numbers shown.
+        </p>
+      </div>
+    </section>
+
+    <p class="divider" aria-hidden="true">State 3</p>
+
+    <!-- State 3 -->
+    <section class="state-block" aria-labelledby="state3-label">
+      <p class="state-block__label" id="state3-label">State 3</p>
+      <h2 class="state-block__title">Camp one finished — fire moved to camp two</h2>
+      <p class="state-block__note">Nothing left behind at camp one. The hearth travels with the climber to the next camp.</p>
+
+      <div class="phone" role="img" aria-label="State 3: camp one done, fire beside camp two">
+        <div class="phone__mountain">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
+          <div class="phone__haze" aria-hidden="true"></div>
+          <svg class="phone__trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 18 82 C 28 72, 34 64, 42 56 C 50 48, 58 38, 68 28"></path>
+          </svg>
+        </div>
+
+        <div class="phone__chrome">
+          <span class="phone__chrome-title">Mountain</span>
+        </div>
+
+        <!-- Camp 1 — done, no hearth -->
+        <span class="camp-marker is-done" style="left: 42%; top: 56%; --camp-accent: #0f9488;" aria-hidden="true">
+          <span class="camp-marker__tent"></span>
+          <span class="camp-marker__caption">
+            <span class="camp-marker__title">Open bank account</span>
+          </span>
+        </span>
+
+        <!-- Camp 2 — current -->
+        <button type="button" class="camp-marker is-current" style="left: 68%; top: 28%; --camp-accent: #7c3aed;" aria-label="Pay off card">
+          <svg class="camp-marker__ring" viewBox="0 0 62 62" aria-hidden="true">
+            <circle class="camp-marker__ring-bg" cx="31" cy="31" r="27"></circle>
+            <circle class="camp-marker__ring-fg" cx="31" cy="31" r="27"
+                    stroke-dasharray="169.6" stroke-dashoffset="127.2" transform="rotate(-90 31 31)"></circle>
+          </svg>
+          <span class="camp-marker__tent" aria-hidden="true"></span>
+          <span class="camp-marker__caption">
+            <span class="camp-marker__title">Pay off card</span>
+          </span>
+        </button>
+
+        <div class="hearth" style="left: 80%; top: 26%;" aria-hidden="true">
+          <span class="hearth__tent"></span>
+          <button type="button" class="hearth__fire" aria-label="Open your fire">
+            <span class="hearth__glow"></span>
+            <span class="hearth__flame"></span>
+            <span class="hearth__embers">
+              <span class="hearth__ember"></span>
+              <span class="hearth__ember"></span>
+              <span class="hearth__ember"></span>
+            </span>
+          </button>
+          <img class="hearth__fox" src="../../app/assets/images/characters/fox.png" alt="" decoding="async">
+        </div>
+
+        <span class="phone__climber" style="left: 68%; top: 28%;" aria-hidden="true"></span>
+
+        <p class="phone__legend">
+          Camp one is done. <strong>No fire, no tent, no fox</strong> left there.
+        </p>
+      </div>
+    </section>
+
+    <p class="divider" aria-hidden="true">State 4</p>
+
+    <!-- State 4 -->
+    <section class="state-block" aria-labelledby="state4-label">
+      <p class="state-block__label" id="state4-label">State 4</p>
+      <h2 class="state-block__title">Fire tapped — sheet open</h2>
+      <p class="state-block__note">Daily things and side battles that belong to no camp. Add row pinned at the bottom.</p>
+
+      <div class="phone" role="img" aria-label="State 4: fire sheet open with daily things and side battles">
+        <div class="phone__mountain">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
+          <div class="phone__haze" aria-hidden="true"></div>
+        </div>
+
+        <div class="phone__chrome">
+          <span class="phone__chrome-title">Mountain</span>
+        </div>
+
+        <button type="button" class="camp-marker is-current" style="left: 42%; top: 56%; --camp-accent: #0f9488;" aria-label="Open bank account">
+          <span class="camp-marker__tent" aria-hidden="true"></span>
+        </button>
+
+        <div class="hearth" style="left: 54%; top: 54%;" aria-hidden="true">
+          <span class="hearth__tent"></span>
+          <button type="button" class="hearth__fire" aria-label="Open your fire">
+            <span class="hearth__glow"></span>
+            <span class="hearth__flame"></span>
+          </button>
+          <img class="hearth__fox" src="../../app/assets/images/characters/fox.png" alt="" decoding="async">
+        </div>
+
+        <div class="sheet" aria-label="Fire sheet">
+          <div class="sheet__backdrop" aria-hidden="true"></div>
+          <div class="sheet__panel">
+            <div class="sheet__glow" aria-hidden="true"></div>
+            <div class="sheet__handle" aria-hidden="true"></div>
+            <header class="sheet__header">
+              <h3 class="sheet__title">By the fire</h3>
+              <p class="sheet__sub">Things you do every day and extra fights</p>
+            </header>
+            <div class="sheet__body">
+              <p class="sheet__kind is-daily">Every day</p>
+              <ul class="sheet__list" aria-label="Daily things">
+                <li class="sheet__row">
+                  <span class="sheet__check is-done" aria-hidden="true"></span>
+                  Drink water
+                </li>
+                <li class="sheet__row">
+                  <span class="sheet__check" aria-hidden="true"></span>
+                  Walk outside
+                </li>
+              </ul>
+
+              <p class="sheet__kind is-side">Side fights</p>
+              <p class="sheet__empty">Nothing here yet. Add an extra fight when you are ready.</p>
+            </div>
+            <footer class="sheet__dock">
+              <div class="sheet__add">
+                <input type="text" class="sheet__add-input" placeholder="Add something" aria-label="Add something">
+                <button type="button" class="sheet__add-btn" aria-label="Add">+</button>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
