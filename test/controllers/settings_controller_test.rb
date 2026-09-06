@@ -154,8 +154,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#companion-pick-prompt .lp-ob__title", text: I18n.t("companion.prompt_title")
     assert_select "#companion-pick-prompt button[type=submit]", count: 0
 
-    patch settings_path, params: { user: { character: "bee" } }
-    assert_redirected_to settings_path(highlight: "character")
+    patch companion_pick_path,
+          params: { user: { character: "bee" } },
+          headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :success
     assert_equal "bee", user.reload.character
     refute user.needs_companion_pick?
 

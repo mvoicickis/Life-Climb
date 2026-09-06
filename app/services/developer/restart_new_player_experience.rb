@@ -3,8 +3,8 @@
 module Developer
   # Full New Player Experience restart for the developer account.
   # Wipes Strategy / journey data and habits (plus their logs/check-offs),
-  # clears push / install-offer / tour state, and clears the companion so the
-  # climber re-picks on the next run. Never deletes the User account or Action Points.
+  # clears push / install-offer / tour state, and resets the companion to fox
+  # (same as signup). Never deletes the User account or Action Points.
   class RestartNewPlayerExperience
     def self.call(user:)
       new(user:).call
@@ -37,7 +37,7 @@ module Developer
           onboarding_completed_at: nil,
           planning_version: 2,
           strategy_points: 0,
-          character: nil,
+          character: "fox",
           climb_streak_days: 0,
           climb_streak_on: nil,
           climb_streak_freezes: 0,
@@ -54,6 +54,8 @@ module Developer
           mountain_trail_tour_ack: 0
         )
       end
+
+      @user.mark_companion_pick_done!
 
       @user
     end
