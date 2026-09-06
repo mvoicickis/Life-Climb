@@ -6,6 +6,7 @@ class PushOfferAfterWinTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
     @user.update!(
+      character: "fox",
       push_offer_dismiss_count: 0,
       push_offer_dismissed_at: nil,
       push_offer_permission_denied_at: nil
