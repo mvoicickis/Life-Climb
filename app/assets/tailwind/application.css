@@ -26398,40 +26398,57 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   border-radius: 0.85rem;
   border: 1px solid rgba(15, 23, 42, 0.1);
   background: #f8fafc;
-  touch-action: none;
 }
 
 .lp-ob-steps__row.is-dragging {
-  opacity: 0.55;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  position: fixed;
+  z-index: 30;
+  margin: 0;
+  opacity: 1;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.2);
+  transform: scale(1.02);
+  pointer-events: none;
+  touch-action: none;
 }
 
-.lp-ob-steps__row.is-drop-target {
-  border-color: rgba(87, 211, 91, 0.55);
-  box-shadow: 0 0 0 2px rgba(87, 211, 91, 0.25);
+.lp-ob-steps__placeholder {
+  list-style: none;
+  min-height: var(--lp-ob-tap);
+  border-radius: 0.85rem;
+  border: 2px dashed rgba(87, 211, 91, 0.45);
+  background: rgba(87, 211, 91, 0.08);
+  transition: height 0.12s ease;
 }
 
 .lp-ob-steps__handle {
   flex-shrink: 0;
   width: var(--lp-ob-tap);
   height: var(--lp-ob-tap);
-  border: 0;
+  min-width: var(--lp-ob-tap);
+  min-height: var(--lp-ob-tap);
+  border: 1px dashed rgba(71, 85, 105, 0.4);
   border-radius: 0.65rem;
-  background: transparent;
+  background: rgba(71, 85, 105, 0.1);
   cursor: grab;
   display: grid;
   place-items: center;
   color: #475569;
   padding: 0;
+  touch-action: none;
+  user-select: none;
 }
 
+.lp-ob-steps__handle.is-grabbing,
 .lp-ob-steps__handle:active {
   cursor: grabbing;
+  color: #3dbd48;
+  border-color: rgba(87, 211, 91, 0.55);
+  background: rgba(87, 211, 91, 0.14);
 }
 
 .lp-ob-steps__handle svg {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.25rem;
+  height: 1.25rem;
   pointer-events: none;
 }
 
