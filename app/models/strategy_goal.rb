@@ -9,7 +9,7 @@ class StrategyGoal < ApplicationRecord
   KINDS = %w[goal plan project day].freeze
   LEGACY_KINDS = %w[month week].freeze
   LEGACY_KIND = { "year" => "goal" }.freeze
-  REPEAT_KINDS = %w[none daily].freeze
+  REPEAT_KINDS = %w[none daily weekly].freeze
   COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
   CAMP_MODES = %w[battles pages].freeze
   QUANTITY_KINDS = %w[none up down range].freeze
@@ -59,6 +59,7 @@ class StrategyGoal < ApplicationRecord
   validates :trail_y, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
   validate :scheduled_on_required_for_day
   validate :repeat_allowed_for_kind
+  validate :repeat_weekdays_rules
   validate :due_on_rules
   validate :parent_kind_matches
   validate :parent_leaf_branch_xor
@@ -74,6 +75,7 @@ class StrategyGoal < ApplicationRecord
 
   before_validation :normalize_legacy_kind
   before_validation :normalize_repeat
+  before_validation :normalize_repeat_weekdays
   before_validation :normalize_quantity_fields
   before_validation :normalize_color_key
   before_validation :normalize_accent_hex
@@ -142,6 +144,47 @@ class StrategyGoal < ApplicationRecord
 
   def repeat_daily?
     day? && repeat.to_s == "daily"
+  end
+
+  def repeat_weekly?
+    day? && repeat.to_s == "weekly"
+  end
+
+  def repeat_recurring?
+    repeat_daily? || repeat_weekly?
+  end
+
+  def repeat_weekdays_array
+    Array(repeat_weekdays).map(&:to_i).select { |w| (0..6).cover?(w) }.uniq.sort
+  end
+
+  def repeats_on?(date)
+    return false unless repeat_weekly?
+    return false if date.blank?
+
+    repeat_weekdays_array.include?(date.to_date.wday)
+  end
+
+  def next_weekly_occurrence(after: Date.current)
+    anchor = after.to_date
+    wdays = repeat_weekdays_array
+    return anchor + 1.week if wdays.empty?
+
+    (1..7).each do |offset|
+      candidate = anchor + offset.days
+      return candidate if wdays.include?(candidate.wday)
+    end
+    anchor + 1.week
+  end
+
+  def advance_recurring_schedule!(after: Date.current)
+    anchor = after.to_date
+    if repeat_daily?
+      next_day = [ anchor + 1.day, (scheduled_on || anchor) + 1.day ].max
+      update!(scheduled_on: next_day, completed_at: nil)
+    elsif repeat_weekly?
+      update!(scheduled_on: next_weekly_occurrence(after: anchor), completed_at: nil)
+    end
   end
 
   def allowed_child_kinds
@@ -483,6 +526,19 @@ class StrategyGoal < ApplicationRecord
     return if day? && REPEAT_KINDS.include?(repeat.to_s)
 
     errors.add(:repeat, :invalid)
+  end
+
+  def normalize_repeat_weekdays
+    return unless has_attribute?(:repeat_weekdays)
+
+    self.repeat_weekdays = repeat_weekly? ? repeat_weekdays_array : nil
+  end
+
+  def repeat_weekdays_rules
+    return unless repeat_weekly?
+    return if repeat_weekdays_array.any?
+
+    errors.add(:repeat_weekdays, :blank)
   end
 
   def due_on_rules

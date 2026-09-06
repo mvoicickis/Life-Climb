@@ -440,6 +440,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_170000) do
     t.decimal "range_max", precision: 12, scale: 2
     t.decimal "range_min", precision: 12, scale: 2
     t.string "repeat", default: "none", null: false
+    t.json "repeat_weekdays"
     t.date "scheduled_on"
     t.decimal "target_amount", precision: 12, scale: 2
     t.string "title", null: false

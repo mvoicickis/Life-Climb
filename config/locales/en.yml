@@ -944,6 +944,16 @@ en:
           - "Update one resume bullet"
         every_day: "Every day"
         just_once: "Just once"
+        first_camp_reveal:
+          skip_hint: "Tap anywhere to open the camp" # TODO: translate for lv/de/es/ru.
+          setup_lead: "Write what you will do today to reach this camp." # TODO: translate for lv/de/es/ru.
+          how_often: "How often" # TODO: translate for lv/de/es/ru.
+          today_only: "Today only" # TODO: translate for lv/de/es/ru.
+          pick_days: "Pick days of the week" # TODO: translate for lv/de/es/ru.
+          dock_note: "Press Enter to save your battle." # TODO: translate for lv/de/es/ru.
+          weekdays_label: "Days of the week" # TODO: translate for lv/de/es/ru.
+          need_title: "Write a battle first." # TODO: translate for lv/de/es/ru.
+          need_days: "Pick at least one day." # TODO: translate for lv/de/es/ru.
         log_a_number: "Log a number"
         just_tick: "Just a tick"
         unit_placeholder: "pages"

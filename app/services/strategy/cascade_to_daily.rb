@@ -38,6 +38,15 @@ module Strategy
             created += 1 if upsert_todo!(goal, date)
           end
         end
+
+        weekly_templates.find_each do |goal|
+          (@from..@to).each do |date|
+            next if goal.scheduled_on.present? && date < goal.scheduled_on
+            next unless goal.repeats_on?(date)
+
+            created += 1 if upsert_todo!(goal, date)
+          end
+        end
       end
       created
     end
@@ -48,10 +57,15 @@ module Strategy
       date =
         if goal.repeat_daily?
           [ Date.current, goal.scheduled_on || Date.current ].max
+        elsif goal.repeat_weekly?
+          candidate = [ Date.current, goal.scheduled_on || Date.current ].max
+          goal.repeats_on?(candidate) ? candidate : nil
         else
           surfacing_date_for(goal)
         end
-      prune_stale_one_shot_feed!(goal) if !goal.repeat_daily? && pulled_forward?(goal)
+      return nil if date.blank?
+
+      prune_stale_one_shot_feed!(goal) if !goal.repeat_recurring? && pulled_forward?(goal)
       upsert_todo!(goal, date)
       @user.daily_todos.for_day(date).find_by(strategy_goal_id: goal.id)
     end
@@ -69,6 +83,14 @@ module Strategy
     def daily_templates
       @user.strategy_goals
         .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
+        .incomplete
+        .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
+        .ordered
+    end
+
+    def weekly_templates
+      @user.strategy_goals
+        .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
         .incomplete
         .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
         .ordered

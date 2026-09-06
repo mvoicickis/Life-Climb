@@ -71,6 +71,8 @@ module RequireOnboarding
       strategy_quantity_logs
       strategy_goal_restores
       mountain_trail_tours
+      first_camp_reveals
+      first_camp_battles
       settings
       push_subscriptions
       push_configs

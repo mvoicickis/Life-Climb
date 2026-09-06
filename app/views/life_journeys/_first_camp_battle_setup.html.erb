@@ -1,0 +1,83 @@
+<%# First camp battle setup — shown while first_camp_reveal is pending. locals: project, goal, plan, area, journey %>
+<% project = local_assigns.fetch(:project) %>
+<% journey = local_assigns.fetch(:journey) %>
+<% area = local_assigns[:area] || project.life_area %>
+<% accent = mountain_trail_project_accent(project) %>
+<% weekday_labels = t("date.abbr_day_names") %>
+
+<div class="lp-first-camp-setup"
+     id="first-camp-setup-<%= project.id %>"
+     style="--lp-trail-accent: <%= accent %>"
+     data-controller="first-camp-battle"
+     data-first-camp-battle-create-url-value="<%= life_journey_first_camp_battles_path(journey) %>"
+     data-first-camp-battle-need-title-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_title') %>"
+     data-first-camp-battle-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>">
+  <p class="lp-first-camp-setup__lead"><%= t("strategy.rpg.trail.first_camp_reveal.setup_lead") %></p>
+
+  <%= form_with url: life_journey_first_camp_battles_path(journey),
+        method: :post,
+        class: "lp-first-camp-setup__form",
+        data: {
+          turbo: true,
+          first_camp_battle_target: "form",
+          action: "submit->first-camp-battle#submit turbo:submit-end->first-camp-battle#saved"
+        } do %>
+    <label class="lp-first-camp-setup__field">
+      <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
+      <%= render layout: "shared/title_limit_wrap" do %>
+        <%= text_field_tag :title, nil,
+              required: true,
+              maxlength: StrategyGoal::TITLE_MAX,
+              class: "lp-first-camp-setup__input",
+              placeholder: t("strategy.rpg.trail.battle_placeholder"),
+              autocomplete: "off",
+              enterkeyhint: "done",
+              data: {
+                first_camp_battle_target: "titleField",
+                action: "keydown->first-camp-battle#titleKeydown"
+              } %>
+      <% end %>
+    </label>
+
+    <div class="lp-first-camp-setup__freq">
+      <p class="lp-first-camp-setup__freq-label"><%= t("strategy.rpg.trail.first_camp_reveal.how_often") %></p>
+      <div class="lp-first-camp-setup__freq-toggle" role="group" aria-label="<%= t('strategy.rpg.trail.first_camp_reveal.how_often') %>">
+        <button type="button"
+                class="lp-first-camp-setup__freq-btn is-active"
+                data-first-camp-battle-target="todayBtn"
+                data-action="click->first-camp-battle#pickToday">
+          <%= t("strategy.rpg.trail.first_camp_reveal.today_only") %>
+        </button>
+        <button type="button"
+                class="lp-first-camp-setup__freq-btn"
+                data-first-camp-battle-target="daysBtn"
+                data-action="click->first-camp-battle#pickDays">
+          <%= t("strategy.rpg.trail.first_camp_reveal.pick_days") %>
+        </button>
+      </div>
+      <div class="lp-first-camp-setup__weekdays"
+           data-first-camp-battle-target="weekdaysRow"
+           role="group"
+           aria-label="<%= t('strategy.rpg.trail.first_camp_reveal.weekdays_label') %>">
+        <% 7.times do |wday| %>
+          <button type="button"
+                  class="lp-first-camp-setup__weekday"
+                  data-day="<%= wday %>"
+                  data-action="click->first-camp-battle#toggleWeekday">
+            <%= weekday_labels[wday].first %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <%= hidden_field_tag :repeat, "none", data: { first_camp_battle_target: "repeatField" } %>
+    <div data-first-camp-battle-target="weekdayFields"></div>
+
+    <p class="lp-first-camp-setup__error"
+       data-first-camp-battle-target="error"
+       hidden
+       role="alert"></p>
+  <% end %>
+
+  <p class="lp-first-camp-setup__dock-note"><%= t("strategy.rpg.trail.first_camp_reveal.dock_note") %></p>
+</div>

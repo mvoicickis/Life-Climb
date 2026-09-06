@@ -49,6 +49,8 @@ Rails.application.routes.draw do
   resources :life_journeys, only: %i[ new create show update ] do
     resource :completion, only: :create, controller: "journey_completions"
     resources :journey_targets, only: %i[ create ]
+    resource :first_camp_reveal, only: :update
+    resources :first_camp_battles, only: :create
   end
   resources :strategy_goals, only: %i[ create update destroy ] do
     member do

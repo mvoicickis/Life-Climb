@@ -30,7 +30,7 @@ module Battles
         end
 
         @todo.update!(completed_at: nil)
-        day&.reopen! unless day&.repeat_daily?
+        day&.reopen! unless day&.repeat_recurring?
         if @reset_objectives && day&.practice_tasks&.any?
           day.practice_tasks.find_each(&:reopen!)
         end

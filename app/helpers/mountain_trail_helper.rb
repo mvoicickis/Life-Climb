@@ -346,7 +346,7 @@ module MountainTrailHelper
   # Camp progress counts are today-scoped for dailies (not lifetime-cleared).
   def mountain_trail_done_today?(battle, user: nil)
     return false if battle.blank?
-    unless battle.try(:repeat_daily?)
+    unless battle.try(:repeat_recurring?)
       return battle.completed_at.present? if battle.respond_to?(:completed_at)
       return battle.completed? if battle.respond_to?(:completed?)
 
@@ -475,8 +475,12 @@ module MountainTrailHelper
 
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
-    battle.repeat_daily? && !battle.completed? &&
-      (battle.scheduled_on.blank? || battle.scheduled_on <= Date.current)
+    return false unless battle.repeat_daily? || battle.repeat_weekly?
+    return false if battle.completed?
+    return false if battle.scheduled_on.present? && battle.scheduled_on > Date.current
+    return false if battle.repeat_weekly? && !battle.repeats_on?(Date.current)
+
+    true
   end
 
   def mountain_trail_camps_done(projects)

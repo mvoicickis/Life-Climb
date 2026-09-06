@@ -393,7 +393,7 @@ class StrategyGoalsController < ApplicationController
   end
 
   def camp_battle_open?(battle)
-    if battle.repeat_daily?
+    if battle.repeat_recurring?
       todo = current_user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
       return todo.blank? || todo.completed_at.blank?
     end

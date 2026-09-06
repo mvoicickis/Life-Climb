@@ -10,6 +10,7 @@ module Onboarding
     DEFAULT_CATEGORY = "other".freeze
     DEFAULT_COMMITMENT = "easy".freeze
     BOOTSTRAP_FLAG = "onboarding_bootstrap".freeze
+    FIRST_CAMP_REVEAL_FLAG = "first_camp_reveal".freeze
     MAX_CAMPS = 20
 
     Result = Struct.new(:journey, :goal, :plan, :projects, :first_battle, keyword_init: true)
@@ -110,7 +111,8 @@ module Onboarding
 
         flags = (journey.setup_flags.presence || {}).stringify_keys.merge(
           Onboarding::Categories::CATEGORY_FLAG => DEFAULT_CATEGORY,
-          BOOTSTRAP_FLAG => "true"
+          BOOTSTRAP_FLAG => "true",
+          FIRST_CAMP_REVEAL_FLAG => "pending"
         )
         journey.update_columns(setup_flags: flags, updated_at: Time.current)
         journey.setup_flags = flags
