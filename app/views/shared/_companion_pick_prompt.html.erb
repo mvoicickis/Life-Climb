@@ -17,10 +17,9 @@
       <h1 id="companion-pick-prompt-title" class="lp-ob__title"><%= t("companion.prompt_title") %></h1>
 
       <%= form_with model: current_user,
-            url: settings_path,
+            url: companion_pick_path,
             method: :patch,
             data: {
-              turbo: false,
               controller: "character-picker",
               character_picker_auto_submit_value: true
             },

@@ -46,8 +46,10 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
 
     user.reload
     assert_nil user.onboarding_completed_at
-    assert_nil user.character
-    refute user.character_chosen?
+    assert_equal "fox", user.character
+    assert user.character_chosen?
+    assert user.companion_pick_done?
+    refute user.needs_companion_pick?
     assert user.needs_onboarding?
     refute user.adventure_guide_done?
     assert_includes user.support_milestones_shown, "first_finished_product"
@@ -215,7 +217,9 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_equal 0, user.strategy_quantity_logs.count
     assert_equal 0, user.daily_todos.count
     assert_nil user.onboarding_completed_at
-    assert_nil user.character
-    refute user.character_chosen?
+    assert_equal "fox", user.character
+    assert user.character_chosen?
+    assert user.companion_pick_done?
+    refute user.needs_companion_pick?
   end
 end
