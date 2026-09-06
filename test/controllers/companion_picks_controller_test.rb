@@ -47,6 +47,7 @@ class CompanionPicksControllerTest < ActionDispatch::IntegrationTest
       planning_version: 2
     )
     sign_in_as user
+    seed_climb!(user)
 
     get dashboard_path
     assert_response :success
