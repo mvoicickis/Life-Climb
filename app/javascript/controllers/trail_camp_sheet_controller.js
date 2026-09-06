@@ -84,6 +84,14 @@ export default class extends Controller {
     return card?.dataset.baseTitle?.trim() || this.baseTitleFallbackValue || ""
   }
 
+  campTitleFor(camp) {
+    if (this.element.classList.contains("is-first-camp-reveal")) {
+      return camp.dataset.campTitle || camp.getAttribute("aria-label") || ""
+    }
+
+    return camp.dataset.campSheetTitle || camp.dataset.campTitle || camp.getAttribute("aria-label") || ""
+  }
+
   open(event) {
     if (event?.defaultPrevented) return
     if (this.element.dataset.trailSuppressOpen === "1") return
@@ -106,7 +114,7 @@ export default class extends Controller {
       this.accentTarget.dataset.accent = accent
     }
 
-    const title = camp.dataset.campSheetTitle || camp.dataset.campTitle || camp.getAttribute("aria-label") || ""
+    const title = this.campTitleFor(camp)
     if (this.hasTitleTarget) this.titleTarget.textContent = title
     this.setSubtitle(camp.dataset.campDescription || "")
 
