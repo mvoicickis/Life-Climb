@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First camp plan — animated mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #ffffff;
+      --lp-paper-soft: #f8fafc;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-tap: 2.75rem;
+      --font: "Nunito", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .doc__note {
+      margin: 0 0 1.25rem;
+      padding: 1rem 1.1rem;
+      background: #fff;
+      border: 1px solid #d8dee6;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #334155;
+      max-width: 44rem;
+    }
+
+    .doc__note h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .doc__note ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .doc__note li { margin-bottom: 0.35rem; }
+
+    .doc__tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .doc__btn {
+      appearance: none;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+    }
+
+    .doc__btn:hover { border-color: #94a3b8; }
+
+    .doc__btn--primary {
+      background: var(--lp-green);
+      border-color: var(--lp-green);
+      color: #fff;
+    }
+
+    .doc__btn--primary:hover { background: var(--lp-green-deep); }
+
+    /* —— 360px phone —— */
+    .phone {
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      height: min(720px, 92dvh);
+      min-height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: var(--lp-paper);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .scene.is-sheet-open { cursor: default; }
+
+    .scene__viewport {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
+    .scene.is-focus-camp .scene__viewport {
+      transform: scale(1.08) translateY(-4%);
+    }
+
+    .scene__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 28%;
+      pointer-events: none;
+    }
+
+    .scene__trail {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .scene__trail path {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.72);
+      stroke-width: 0.55;
+      stroke-linecap: round;
+      stroke-dasharray: 0.4 2.2;
+    }
+
+    .summit {
+      position: absolute;
+      left: 50%;
+      top: 11%;
+      transform: translate(-50%, -8px) scale(0.92);
+      z-index: 4;
+      max-width: 78%;
+      padding: 0.45rem 0.85rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity 0.55s ease,
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .summit.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+
+    .summit__kicker {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .summit__title {
+      display: block;
+      margin-top: 0.1rem;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .camp {
+      position: absolute;
+      transform: translate(-50%, -100%) scale(0.4);
+      z-index: 5;
+      display: grid;
+      place-items: end center;
+      min-width: 44px;
+      min-height: 44px;
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity 0.35s ease,
+        transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    .camp.is-landed {
+      opacity: 1;
+      transform: translate(-50%, -100%) scale(1);
+    }
+
+    .camp.is-current .camp__tent {
+      width: 34px;
+      height: 30px;
+      filter:
+        drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.35))
+        drop-shadow(0 0 12px rgba(87, 211, 91, 0.45));
+    }
+
+    .camp__tent {
+      width: 28px;
+      height: 24px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--camp-accent, var(--lp-green)) 75%, #fff) 0%,
+        var(--camp-accent, var(--lp-green)) 55%,
+        color-mix(in srgb, var(--camp-accent, var(--lp-green)) 65%, #1a120c) 100%
+      );
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.35));
+    }
+
+    .camp__label {
+      margin-top: 0.12rem;
+      padding: 0.14rem 0.5rem 0.16rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--lp-border);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+      white-space: nowrap;
+      max-width: 9.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .skip-hint {
+      position: absolute;
+      left: 50%;
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%);
+      z-index: 6;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--lp-border);
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .skip-hint.is-visible { opacity: 1; }
+
+    /* —— Camp sheet (onboarding green on white) —— */
+    .sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .sheet.is-open {
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .sheet__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.28);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .sheet.is-open .sheet__backdrop { opacity: 1; }
+
+    .sheet__panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      max-height: 82%;
+      background: var(--lp-paper);
+      border-radius: 1.25rem 1.25rem 0 0;
+      border-top: 1px solid var(--lp-border);
+      box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
+      transform: translateY(105%);
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sheet.is-open .sheet__panel { transform: translateY(0); }
+
+    .sheet__handle {
+      width: 2.25rem;
+      height: 0.25rem;
+      margin: 0.55rem auto 0.35rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+      flex-shrink: 0;
+    }
+
+    .sheet__header {
+      padding: 0.35rem 1.2rem 0.85rem;
+      border-bottom: 1px solid var(--lp-border);
+      flex-shrink: 0;
+    }
+
+    .sheet__title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--lp-ink);
+      line-height: 1.2;
+    }
+
+    .sheet__body {
+      padding: 1rem 1.2rem 0.5rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .sheet__lead {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--lp-ink);
+      line-height: 1.45;
+    }
+
+    .lp-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      min-height: var(--lp-tap);
+    }
+
+    .lp-input::placeholder { color: var(--lp-muted); }
+
+    .lp-input:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+      border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+    }
+
+    .freq {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .freq__label {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .freq__toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .freq__btn {
+      min-height: var(--lp-tap);
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.5rem 0.65rem;
+    }
+
+    .freq__btn.is-active {
+      border-color: color-mix(in srgb, var(--lp-green) 45%, var(--lp-border));
+      background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-paper));
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-green) 22%, transparent);
+    }
+
+    .freq__days {
+      display: none;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+
+    .freq__days.is-visible { display: grid; }
+
+    .freq__day {
+      min-height: 2.5rem;
+      border-radius: 0.65rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+      color: var(--lp-muted);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .freq__day.is-on {
+      border-color: var(--lp-green);
+      background: var(--lp-green);
+      color: #fff;
+    }
+
+    .battle-row {
+      display: none;
+      align-items: center;
+      gap: 0.65rem;
+      min-height: var(--lp-tap);
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.85rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+    }
+
+    .battle-row.is-visible {
+      display: flex;
+    }
+
+    .battle-row__check {
+      flex-shrink: 0;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 0.45rem;
+      border: 2px solid color-mix(in srgb, var(--lp-green) 55%, var(--lp-border));
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      position: relative;
+    }
+
+    .battle-row__check.is-done {
+      background: var(--lp-green);
+      border-color: var(--lp-green);
+    }
+
+    .battle-row__check.is-done::after {
+      content: "";
+      position: absolute;
+      left: 0.32rem;
+      top: 0.12rem;
+      width: 0.28rem;
+      height: 0.55rem;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .battle-row__text {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--lp-ink);
+      word-break: break-word;
+    }
+
+    .sheet__dock {
+      flex-shrink: 0;
+      padding: 0.75rem 1.2rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid var(--lp-border);
+      background: var(--lp-paper);
+    }
+
+    .sheet__dock-note {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      text-align: center;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>First camp plan — animated mockup</h1>
+    <p class="doc__lede">360px click-through. After onboarding, the mountain builds itself: goal at the summit, camps land on the trail, then camp one opens with the first battle plan.</p>
+
+    <div class="doc__note">
+      <h2>How to use</h2>
+      <ul>
+        <li>The reveal plays when the page opens. Tap anywhere on the mountain to skip straight to the camp sheet.</li>
+        <li>Type a battle, press Enter to save it. Pick today only or tap day letters. Tick the row when you are ready.</li>
+        <li>Use <strong>Replay reveal</strong> to run the animation again.</li>
+      </ul>
+    </div>
+
+    <div class="doc__tools">
+      <button type="button" class="doc__btn doc__btn--primary" id="replay-btn">Replay reveal</button>
+    </div>
+
+    <div class="phone" id="phone" aria-label="First camp plan mockup">
+      <div class="scene" id="scene" role="presentation">
+        <div class="scene__viewport" id="viewport">
+          <img
+            class="scene__photo"
+            src="../../public/images/mountain_trail_default.webp"
+            alt=""
+            decoding="async">
+          <svg class="scene__trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 22 84 C 30 76, 36 68, 40 60 C 46 52, 50 44, 54 36 C 58 28, 62 22, 68 16"></path>
+          </svg>
+
+          <div class="summit" id="summit" aria-hidden="true">
+            <span class="summit__kicker">Your mountain</span>
+            <span class="summit__title" id="goal-title">Save 20,000</span>
+          </div>
+
+          <div id="camps-root" aria-hidden="true"></div>
+        </div>
+
+        <p class="skip-hint" id="skip-hint">Tap anywhere to open the camp</p>
+      </div>
+
+      <div class="sheet" id="sheet" aria-hidden="true">
+        <div class="sheet__backdrop" id="sheet-backdrop"></div>
+        <div class="sheet__panel" id="sheet-panel" role="dialog" aria-labelledby="sheet-title">
+          <div class="sheet__handle" aria-hidden="true"></div>
+          <header class="sheet__header">
+            <h2 class="sheet__title" id="sheet-title">Open a savings account</h2>
+          </header>
+          <div class="sheet__body">
+            <p class="sheet__lead">Write what you will do today to reach this camp.</p>
+            <label class="sr-only" for="battle-input">Today’s battle</label>
+            <input
+              id="battle-input"
+              type="text"
+              class="lp-input"
+              placeholder="Put ten dollars in the jar"
+              autocomplete="off"
+              maxlength="120"
+              enterkeyhint="done">
+
+            <div class="freq">
+              <p class="freq__label">How often</p>
+              <div class="freq__toggle" role="group" aria-label="How often">
+                <button type="button" class="freq__btn is-active" data-freq="today" id="freq-today">Today only</button>
+                <button type="button" class="freq__btn" data-freq="days" id="freq-days">Pick days of the week</button>
+              </div>
+              <div class="freq__days" id="freq-days-row" role="group" aria-label="Days of the week">
+                <button type="button" class="freq__day" data-day="0">M</button>
+                <button type="button" class="freq__day" data-day="1">T</button>
+                <button type="button" class="freq__day" data-day="2">W</button>
+                <button type="button" class="freq__day" data-day="3">T</button>
+                <button type="button" class="freq__day" data-day="4">F</button>
+                <button type="button" class="freq__day" data-day="5">S</button>
+                <button type="button" class="freq__day" data-day="6">S</button>
+              </div>
+            </div>
+
+            <div class="battle-row" id="battle-row">
+              <button type="button" class="battle-row__check" id="battle-check" aria-label="Mark battle done"></button>
+              <span class="battle-row__text" id="battle-text"></span>
+            </div>
+          </div>
+          <footer class="sheet__dock">
+            <p class="sheet__dock-note">Press Enter to save your battle.</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var GOAL = "Save 20,000";
+      var CAMPS = [
+        "Open a savings account",
+        "Pay off the credit card"
+      ];
+      var CAMP_SLOTS = [
+        { left: 40, top: 78, accent: "#57d35b" },
+        { left: 44, top: 58, accent: "#3dbd48" }
+      ];
+
+      var scene = document.getElementById("scene");
+      var viewport = document.getElementById("viewport");
+      var summit = document.getElementById("summit");
+      var goalTitle = document.getElementById("goal-title");
+      var campsRoot = document.getElementById("camps-root");
+      var skipHint = document.getElementById("skip-hint");
+      var sheet = document.getElementById("sheet");
+      var sheetPanel = document.getElementById("sheet-panel");
+      var sheetTitle = document.getElementById("sheet-title");
+      var battleInput = document.getElementById("battle-input");
+      var battleRow = document.getElementById("battle-row");
+      var battleText = document.getElementById("battle-text");
+      var battleCheck = document.getElementById("battle-check");
+      var freqToday = document.getElementById("freq-today");
+      var freqDays = document.getElementById("freq-days");
+      var freqDaysRow = document.getElementById("freq-days-row");
+      var replayBtn = document.getElementById("replay-btn");
+
+      var animToken = 0;
+      var sheetOpen = false;
+      var campEls = [];
+
+      goalTitle.textContent = GOAL;
+      sheetTitle.textContent = CAMPS[0];
+
+      function buildCamps() {
+        campsRoot.innerHTML = "";
+        campEls = CAMPS.map(function (title, index) {
+          var slot = CAMP_SLOTS[index] || CAMP_SLOTS[CAMP_SLOTS.length - 1];
+          var el = document.createElement("div");
+          el.className = "camp";
+          el.style.left = slot.left + "%";
+          el.style.top = slot.top + "%";
+          el.style.setProperty("--camp-accent", slot.accent);
+          el.innerHTML =
+            '<span class="camp__tent" aria-hidden="true"></span>' +
+            '<span class="camp__label">' + escapeHtml(title) + "</span>";
+          campsRoot.appendChild(el);
+          return el;
+        });
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function wait(ms, token) {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve(token === animToken);
+          }, ms);
+        });
+      }
+
+      function resetVisualState() {
+        animToken += 1;
+        sheetOpen = false;
+        scene.classList.remove("is-focus-camp", "is-sheet-open");
+        summit.classList.remove("is-visible");
+        skipHint.classList.remove("is-visible");
+        sheet.classList.remove("is-open");
+        sheet.setAttribute("aria-hidden", "true");
+        viewport.style.transform = "";
+        campEls.forEach(function (el) {
+          el.classList.remove("is-landed", "is-current");
+        });
+        battleInput.value = "";
+        battleRow.classList.remove("is-visible");
+        battleCheck.classList.remove("is-done");
+        battleText.textContent = "";
+        setFreqMode("today");
+        freqDaysRow.querySelectorAll(".freq__day").forEach(function (btn) {
+          btn.classList.remove("is-on");
+        });
+      }
+
+      function openSheet(focusInput) {
+        if (sheetOpen) return;
+        sheetOpen = true;
+        scene.classList.add("is-focus-camp", "is-sheet-open");
+        skipHint.classList.remove("is-visible");
+        if (campEls[0]) campEls[0].classList.add("is-current");
+        sheet.classList.add("is-open");
+        sheet.setAttribute("aria-hidden", "false");
+        if (focusInput !== false) {
+          requestAnimationFrame(function () {
+            battleInput.focus();
+          });
+        }
+      }
+
+      function skipToSheet() {
+        if (sheetOpen) return;
+        animToken += 1;
+        summit.classList.add("is-visible");
+        campEls.forEach(function (el) { el.classList.add("is-landed"); });
+        openSheet(true);
+      }
+
+      async function playReveal() {
+        resetVisualState();
+        buildCamps();
+        var token = animToken;
+
+        await wait(350, token);
+        if (token !== animToken) return;
+
+        summit.classList.add("is-visible");
+        skipHint.classList.add("is-visible");
+
+        await wait(700, token);
+        if (token !== animToken) return;
+
+        for (var i = 0; i < campEls.length; i++) {
+          campEls[i].classList.add("is-landed");
+          await wait(550, token);
+          if (token !== animToken) return;
+        }
+
+        await wait(400, token);
+        if (token !== animToken) return;
+
+        scene.classList.add("is-focus-camp");
+        if (campEls[0]) campEls[0].classList.add("is-current");
+
+        await wait(500, token);
+        if (token !== animToken) return;
+
+        openSheet(true);
+      }
+
+      function setFreqMode(mode) {
+        var isToday = mode === "today";
+        freqToday.classList.toggle("is-active", isToday);
+        freqDays.classList.toggle("is-active", !isToday);
+        freqDaysRow.classList.toggle("is-visible", !isToday);
+      }
+
+      function saveBattle() {
+        var text = battleInput.value.trim();
+        if (!text) return;
+        battleText.textContent = text;
+        battleRow.classList.add("is-visible");
+        battleCheck.classList.remove("is-done");
+        battleInput.blur();
+      }
+
+      scene.addEventListener("click", function () {
+        if (!sheetOpen) skipToSheet();
+      });
+
+      sheetPanel.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+
+      battleInput.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        saveBattle();
+      });
+
+      battleCheck.addEventListener("click", function () {
+        battleCheck.classList.toggle("is-done");
+      });
+
+      freqToday.addEventListener("click", function (event) {
+        event.stopPropagation();
+        setFreqMode("today");
+      });
+
+      freqDays.addEventListener("click", function (event) {
+        event.stopPropagation();
+        setFreqMode("days");
+      });
+
+      freqDaysRow.querySelectorAll(".freq__day").forEach(function (btn) {
+        btn.addEventListener("click", function (event) {
+          event.stopPropagation();
+          btn.classList.toggle("is-on");
+        });
+      });
+
+      replayBtn.addEventListener("click", function () {
+        playReveal();
+      });
+
+      buildCamps();
+      playReveal();
+    })();
+  </script>
+</body>
+</html>
