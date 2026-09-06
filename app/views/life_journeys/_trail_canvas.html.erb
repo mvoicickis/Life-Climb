@@ -55,6 +55,7 @@
          data-trail-camp-sheet-base-title-fallback-value="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
          <% if first_camp_reveal %>
          data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
+         data-first-camp-reveal-camp-title-value="<%= first_camp.title %>"
          data-first-camp-reveal-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
          data-first-camp-reveal-skip-hint-value="<%= t('strategy.rpg.trail.first_camp_reveal.skip_hint') %>"
          data-trail-camp-sheet-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
@@ -449,7 +450,7 @@
           <span class="lp-trail-sheet__crumb-label"><%= mountain_nav %></span>
         </button>
         <div class="lp-trail-sheet__title-row" id="trail-sheet-title-row">
-          <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"></h2>
+          <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal %><%= first_camp.title %><% end %></h2>
           <div class="lp-trail-sheet__actions">
             <% projects.each do |project| %>
               <div id="trail-sheet-menu-<%= project.id %>"

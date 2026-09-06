@@ -58,6 +58,11 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-destination", count: 0
     assert_select "#companion-pick-prompt", count: 0
+    assert_select ".lp-trail.is-first-camp-reveal"
+    assert_select "#trail-sheet-title", text: "Get certified"
+    assert_select "#trail-camp-#{first_project.id}[data-camp-title=?]", "Get certified"
+    assert_select "[data-first-camp-reveal-camp-title-value=?]", "Get certified"
+    assert_select ".lp-first-camp-setup__dock"
 
     get dashboard_path
     assert_response :success
