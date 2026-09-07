@@ -1,4 +1,7 @@
-# LifePoints Architecture (source of truth)
+# LifePoints Architecture (legacy product notes)
+
+> **Living docs (prefer these):** [DECISIONS.md](DECISIONS.md) · [ENGINEERING.md](ENGINEERING.md) · [LEXICON.md](LEXICON.md) · [ROADMAP.md](ROADMAP.md)  
+> This file is older product doctrine and may drift. Do not reopen settled debates here — update DECISIONS.md instead.
 
 LifePoints is a **Life Operating System**, not a habit tracker. It helps people close the gap between **Current Reality** and **Ideal Scene**.
 
