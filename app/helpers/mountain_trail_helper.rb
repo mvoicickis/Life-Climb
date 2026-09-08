@@ -187,6 +187,80 @@ module MountainTrailHelper
     TRAIL_CURVE.to_json
   end
 
+  # Spine polyline for first-camp reveal (base → summit), viewBox 0..100 space.
+  def mountain_trail_spine_points
+    TRAIL_CURVE.reverse.map { |y, x| [ x.to_f * 100.0, y.to_f * 100.0 ] }
+  end
+
+  def mountain_trail_spine_path_d
+    mountain_trail_spine_points.map.with_index do |(px, py), index|
+      coord = "#{px.round(1)} #{py.round(1)}"
+      index.zero? ? "M #{coord}" : "L #{coord}"
+    end.join(" ")
+  end
+
+  # Arc-length fraction along the spine for a camp at image fractions (trail_x, trail_y).
+  def mountain_trail_camp_path_frac(trail_x, trail_y)
+    points = mountain_trail_spine_points
+    return 0.0 if points.length < 2
+
+    cx = trail_x.to_f * 100.0
+    cy = trail_y.to_f * 100.0
+    cumulative = [ 0.0 ]
+    total = 0.0
+
+    (1...points.length).each do |index|
+      dx = points[index][0] - points[index - 1][0]
+      dy = points[index][1] - points[index - 1][1]
+      total += Math.hypot(dx, dy)
+      cumulative << total
+    end
+
+    return 0.0 if total.zero?
+
+    best_dist = Float::INFINITY
+    best_length = 0.0
+
+    (0...(points.length - 1)).each do |index|
+      x0, y0 = points[index]
+      x1, y1 = points[index + 1]
+      dx = x1 - x0
+      dy = y1 - y0
+      len2 = (dx * dx) + (dy * dy)
+      t = len2.zero? ? 0.0 : (((cx - x0) * dx) + ((cy - y0) * dy)) / len2
+      t = t.clamp(0.0, 1.0)
+      px = x0 + (t * dx)
+      py = y0 + (t * dy)
+      dist = ((px - cx)**2) + ((py - cy)**2)
+      next unless dist < best_dist
+
+      best_dist = dist
+      best_length = cumulative[index] + (t * Math.sqrt(len2))
+    end
+
+    (best_length / total).clamp(0.0, 1.0)
+  end
+
+  # Landing order for first-camp reveal: bottom → top (trail_y desc).
+  def mountain_trail_reveal_camps(projects)
+    layout = mountain_trail_layout(Array(projects))
+    Array(projects).filter_map do |project|
+      slot = layout[project.id]
+      next unless slot
+
+      {
+        id: project.id,
+        path_frac: mountain_trail_camp_path_frac(slot[:x], slot[:y]),
+        x: slot[:x],
+        y: slot[:y]
+      }
+    end.sort_by { |camp| -camp[:y] }
+  end
+
+  def mountain_trail_reveal_camps_json(projects)
+    mountain_trail_reveal_camps(projects).to_json
+  end
+
   # Segment rail: one bar per camp with fill % and accent.
   def mountain_trail_segments(projects)
     projects.map do |project|
