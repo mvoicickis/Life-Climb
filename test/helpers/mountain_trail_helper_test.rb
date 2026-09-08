@@ -631,8 +631,9 @@ class MountainTrailHelperTest < ActionView::TestCase
     d = mountain_trail_spine_path_d
     assert_match(/\AM /, d)
     assert_includes d, "L "
-    first_y = d[/\A\M [\d.]+ ([\d.]+)/, 1].to_f
-    last_y = d[/([\d.]+)\z/, 1].to_f
+    coords = d.delete_prefix("M ").split(" L ").map { |pair| pair.split.map(&:to_f) }
+    first_y = coords.first.last
+    last_y = coords.last.last
     assert_operator first_y, :>, 90
     assert_operator last_y, :<, 35
   end
