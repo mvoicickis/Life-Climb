@@ -55,6 +55,7 @@
          data-trail-camp-sheet-base-title-fallback-value="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
          <% if first_camp_reveal %>
          data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
+         data-first-camp-reveal-camps-value="<%= mountain_trail_reveal_camps_json(projects) %>"
          data-first-camp-reveal-camp-title-value="<%= first_camp.title %>"
          data-first-camp-reveal-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
          data-first-camp-reveal-skip-hint-value="<%= t('strategy.rpg.trail.first_camp_reveal.skip_hint') %>"
@@ -211,9 +212,9 @@
 
       <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>
 
-      <svg class="lp-trail__spine" id="trail-spine" viewBox="0 0 100 100" preserveAspectRatio="none" hidden aria-hidden="true">
-        <path class="lp-trail__spine-glow" id="trail-spine-glow" fill="none" d="<%= mountain_trail_spine_path_d %>"></path>
-        <path class="lp-trail__spine-line" id="trail-spine-line" fill="none" d="<%= mountain_trail_spine_path_d %>"></path>
+      <svg class="lp-trail__spine" id="trail-spine" viewBox="0 0 100 100" preserveAspectRatio="none" hidden aria-hidden="true" data-first-camp-reveal-target="spine">
+        <path class="lp-trail__spine-glow" id="trail-spine-glow" fill="none" data-first-camp-reveal-target="trailGlow" d="<%= mountain_trail_spine_path_d %>"></path>
+        <path class="lp-trail__spine-line" id="trail-spine-line" fill="none" data-first-camp-reveal-target="trailLine" d="<%= mountain_trail_spine_path_d %>"></path>
       </svg>
 
       <svg class="lp-trail__spurs" id="trail-spurs" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-trail-canvas-target="spurs">
@@ -239,7 +240,9 @@
         <% end %>
       </div>
 
-      <div class="lp-trail__peak" style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>">
+      <div class="lp-trail__peak<%= ' lp-trail__peak--reveal' if first_camp_reveal %>"
+           style="--lp-peak-x: <%= MountainTrailHelper::PEAK_X %>; --lp-peak-y: <%= MountainTrailHelper::PEAK_Y %>"
+           <% if first_camp_reveal %>data-first-camp-reveal-target="summit"<% end %>>
         <button type="button"
                 class="lp-trail__flag"
                 data-action="click->trail-canvas#togglePeakMenu"
@@ -626,10 +629,11 @@
   <% end %>
 
   <% if first_camp_reveal %>
+    <% first_camp_layout = layout_map[first_camp.id] %>
     <div id="first-camp-reveal-overlay"
          class="lp-first-camp-reveal"
          data-first-camp-reveal-target="overlay"
-         data-action="click->first-camp-reveal#skip"
+         style="--lp-hint-x: <%= first_camp_layout[:x] %>; --lp-hint-y: <%= first_camp_layout[:y] %>;"
          aria-hidden="false">
       <p class="lp-first-camp-reveal__skip"
          data-first-camp-reveal-target="skipHint"><%= t("strategy.rpg.trail.first_camp_reveal.skip_hint") %></p>

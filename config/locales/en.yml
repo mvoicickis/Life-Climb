@@ -945,7 +945,7 @@ en:
         every_day: "Every day"
         just_once: "Just once"
         first_camp_reveal:
-          skip_hint: "Tap anywhere to open the camp" # TODO: translate for lv/de/es/ru.
+          skip_hint: "Tap the tent to plan your first day" # TODO: translate for lv/de/es/ru.
           setup_lead: "Write what you will do today to reach this camp." # TODO: translate for lv/de/es/ru.
           how_often: "How often" # TODO: translate for lv/de/es/ru.
           today_only: "Today only" # TODO: translate for lv/de/es/ru.

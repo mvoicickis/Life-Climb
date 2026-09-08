@@ -4420,24 +4420,85 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 /* First camp reveal after v2 onboarding */
+.lp-trail__spine {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.lp-trail__spine-glow,
+.lp-trail__spine-line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lp-trail__spine-glow {
+  stroke: #57d35b;
+  stroke-width: 1.35;
+  opacity: 0.15;
+}
+
+.lp-trail__spine-line {
+  stroke: rgba(255, 255, 255, 0.82);
+  stroke-width: 0.55;
+}
+
+.lp-trail.is-first-camp-reveal .lp-trail__spine {
+  filter:
+    drop-shadow(0 0 3px color-mix(in srgb, #57d35b 40%, transparent))
+    drop-shadow(0 0 8px color-mix(in srgb, #57d35b 22%, transparent));
+}
+
+.lp-trail.is-first-camp-reveal .lp-trail__peak--reveal {
+  opacity: 0;
+  transform: translate(2px, calc(-100% - 8px)) scale(0.92);
+  transition:
+    opacity 0.8s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-trail.is-first-camp-reveal .lp-trail__peak--reveal.is-visible {
+  opacity: 1;
+  transform: translate(2px, -100%) scale(1);
+}
+
 .lp-trail.is-first-camp-reveal .lp-trail-camp {
   opacity: 0;
-  transform: translate(-50%, calc(-100% + 8px)) scale(0.82);
+  transform: translate(-50%, -100%) translateY(-14px) scale(0.4);
   pointer-events: none;
   transition:
-    opacity 0.35s ease,
-    transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+    opacity 0.5s ease,
+    transform 0.8s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 .lp-trail.is-first-camp-reveal .lp-trail-camp.is-landed {
   opacity: 1;
-  transform: translate(-50%, -100%) scale(1);
+  transform: translate(-50%, -100%) translateY(0) scale(1);
+  pointer-events: none;
+}
+
+.lp-trail.is-first-camp-reveal.is-awaiting-tap .lp-trail-camp.is-landed.is-current {
   pointer-events: auto;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lp-trail.is-first-camp-reveal.is-awaiting-tap .lp-trail-camp.is-landed.is-current.is-pulsing {
+    animation: lp-first-camp-pulse 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes lp-first-camp-pulse {
+  0%, 100% { transform: translate(-50%, -100%) translateY(0) scale(1); }
+  50% { transform: translate(-50%, -100%) translateY(0) scale(1.06); }
 }
 
 .lp-trail.is-first-camp-reveal.is-focus-camp .lp-trail__scroll {
   transform: scale(1.08) translateY(-4%);
-  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* First camp sheet — onboarding green on white (docs/mockups/first-camp-plan.html) */
@@ -4503,7 +4564,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   position: absolute;
   inset: 0;
   z-index: 12;
-  cursor: pointer;
+  pointer-events: none;
 }
 
 .lp-first-camp-reveal__skip {
@@ -4512,9 +4573,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   margin: 0;
-  padding: 0.45rem 0.85rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(15, 23, 42, 0.1);
   font-size: 0.72rem;
   font-weight: 800;
@@ -4522,10 +4583,20 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
+  max-width: 11rem;
+  text-align: center;
+  line-height: 1.25;
 }
 
 .lp-first-camp-reveal__skip.is-visible {
   opacity: 1;
+}
+
+.lp-first-camp-reveal__skip.is-near-camp {
+  left: calc(var(--lp-hint-x, 0.5) * 100%);
+  top: calc(var(--lp-hint-y, 0.85) * 100% + 3%);
+  bottom: auto;
+  transform: translateX(-50%);
 }
 
 .lp-first-camp-setup {
@@ -4667,8 +4738,19 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .lp-trail.is-first-camp-reveal .lp-trail__peak--reveal,
   .lp-trail.is-first-camp-reveal .lp-trail-camp,
-  .lp-trail.is-first-camp-reveal.is-focus-camp .lp-trail__scroll {
+  .lp-trail.is-first-camp-reveal.is-focus-camp .lp-trail__scroll,
+  .lp-first-camp-reveal__skip {
     transition: none;
+  }
+
+  .lp-trail.is-first-camp-reveal .lp-trail__spine-line,
+  .lp-trail.is-first-camp-reveal .lp-trail__spine-glow {
+    stroke-dashoffset: 0 !important;
+  }
+
+  .lp-trail.is-first-camp-reveal.is-awaiting-tap .lp-trail-camp.is-landed.is-current.is-pulsing {
+    animation: none;
   }
 }
