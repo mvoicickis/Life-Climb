@@ -199,7 +199,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     on_path = MountainTrailHelper::AutoSlot.snap(0.5, 0.55)
     assert_in_delta on_path[:trail_x], MountainTrailHelper::AutoSlot.x_for(on_path[:trail_y]), 0.02
 
-    grass = MountainTrailHelper::AutoSlot.snap(0.12, 0.55)
+    grass = MountainTrailHelper::AutoSlot.snap(0.70, 0.55)
     assert grass[:trail_x] > 0.35
     assert grass[:trail_x] < 0.7
     assert_in_delta 0.55, grass[:trail_y], 0.08
@@ -220,10 +220,10 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   test "layout pulls a grass-planted tent onto the dirt path" do
     camp = Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
-      id: 1, trail_x: 0.12, trail_y: 0.55
+      id: 1, trail_x: 0.70, trail_y: 0.55
     )
     layout = mountain_trail_layout([ camp ])
-    expected = MountainTrailHelper::AutoSlot.snap(0.12, 0.55)
+    expected = MountainTrailHelper::AutoSlot.snap(0.70, 0.55)
     assert_in_delta expected[:trail_x], layout[1][:x], 0.0001
     assert_in_delta expected[:trail_y], layout[1][:y], 0.0001
   end
