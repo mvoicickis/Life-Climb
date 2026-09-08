@@ -1,10 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Animated first landing after v2 onboarding — summit, camps land, camp 1 sheet opens.
+const TRAIL_DRAW_MS = 1600
+
+// First landing after v2 onboarding — summit, trail draw, camps land, tap tent to open sheet.
 export default class extends Controller {
-  static targets = [ "overlay", "skipHint" ]
+  static targets = [
+    "overlay",
+    "skipHint",
+    "summit",
+    "trailLine",
+    "trailGlow",
+    "spine"
+  ]
+
   static values = {
     campId: String,
+    camps: Array,
     dismissUrl: String,
     skipHint: String
   }
@@ -14,27 +25,29 @@ export default class extends Controller {
 
     this._token = 0
     this._finished = false
+    this._tapReady = false
+    this._trailLength = 0
+
+    this.element.dataset.trailSuppressOpen = "1"
+    this.unhideSpine()
+    this.resetTrailDraw()
+    this.bindFirstCampTap()
     this.playReveal()
   }
 
-  skip(event) {
-    event?.preventDefault()
-    event?.stopPropagation()
-    this.skipToSheet()
-  }
-
-  skipToSheet() {
-    if (this._finished) return
+  disconnect() {
     this._token += 1
-    this.landAllCamps()
-    this.openCampSheet(true)
+    this.unbindFirstCampTap()
   }
 
   finish() {
     if (this._finished) return
     this._finished = true
+    this._tapReady = false
     this._token += 1
-    this.element.classList.remove("is-first-camp-reveal")
+    this.unbindFirstCampTap()
+    delete this.element.dataset.trailSuppressOpen
+    this.element.classList.remove("is-first-camp-reveal", "is-focus-camp", "is-awaiting-tap")
     this.overlayTarget?.remove()
     const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
     if (sheet?._openCampId) {
@@ -44,51 +57,146 @@ export default class extends Controller {
 
   async playReveal() {
     const token = this._token
-    await this.wait(350, token)
-    if (token !== this._token) return
 
-    this.showSkipHint()
+    try {
+      if (this.prefersReducedMotion()) {
+        this.recoverToTapReady()
+        return
+      }
 
-    await this.wait(700, token)
-    if (token !== this._token) return
+      await this.wait(500, token)
+      if (token !== this._token) return
 
-    await this.landCampsSequentially(token)
-    if (token !== this._token) return
+      this.showSummit()
 
-    this.element.classList.add("is-focus-camp")
-    this.markCurrentCamp()
+      await this.wait(900, token)
+      if (token !== this._token) return
 
-    await this.wait(500, token)
-    if (token !== this._token) return
+      if (!(await this.animateTrailDraw(token))) return
 
-    this.openCampSheet(true)
+      await this.wait(600, token)
+      if (token !== this._token) return
+
+      this.enterTapReady()
+    } catch (error) {
+      this.recoverToTapReady(error)
+    }
   }
 
-  async landCampsSequentially(token) {
-    const camps = Array.from(this.element.querySelectorAll(".lp-trail-camp"))
-    for (const camp of camps) {
-      camp.classList.add("is-landed")
-      await this.wait(550, token)
-      if (token !== this._token) return
+  recoverToTapReady(error) {
+    if (error) {
+      console.warn("first-camp-reveal: recoverToTapReady", error)
     }
+
+    this._token += 1
+    this.showFullTrail()
+    this.landAllCamps()
+    this.showSummit()
+    this.element.classList.add("is-focus-camp")
+    this.enterTapReady({ pulse: !this.prefersReducedMotion() })
+  }
+
+  enterTapReady({ pulse = true } = {}) {
+    this._tapReady = true
+    this.element.classList.add("is-focus-camp", "is-awaiting-tap")
+    this.markCurrentCamp()
+    if (pulse) this.firstCampEl()?.classList.add("is-pulsing")
+    this.showSkipHint()
+  }
+
+  async animateTrailDraw(token) {
+    const line = this.trailLineTarget
+    const glow = this.trailGlowTarget
+    const length = line.getTotalLength()
+    this._trailLength = length
+
+    if (!length) throw new Error("trail spine length is zero")
+
+    line.style.strokeDasharray = `${length}`
+    glow.style.strokeDasharray = `${length}`
+    line.style.strokeDashoffset = `${length}`
+    glow.style.strokeDashoffset = `${length}`
+
+    const landed = new Set()
+    const campFracs = this.campsValue || []
+
+    return new Promise((resolve) => {
+      const start = performance.now()
+
+      const frame = (now) => {
+        if (token !== this._token) {
+          resolve(false)
+          return
+        }
+
+        const progress = Math.min((now - start) / TRAIL_DRAW_MS, 1)
+        const offset = length * (1 - progress)
+        line.style.strokeDashoffset = `${offset}`
+        glow.style.strokeDashoffset = `${offset}`
+
+        campFracs.forEach((camp) => {
+          if (!landed.has(camp.id) && progress >= camp.path_frac) {
+            this.landCamp(camp.id)
+            landed.add(camp.id)
+          }
+        })
+
+        if (progress < 1) {
+          requestAnimationFrame(frame)
+        } else {
+          resolve(true)
+        }
+      }
+
+      requestAnimationFrame(frame)
+    })
+  }
+
+  landCamp(campId) {
+    const camp = this.element.querySelector(`#trail-camp-${campId}`)
+    camp?.classList.add("is-landed")
   }
 
   landAllCamps() {
     this.element.querySelectorAll(".lp-trail-camp").forEach((camp) => {
       camp.classList.add("is-landed")
     })
-    this.element.classList.add("is-focus-camp")
-    this.markCurrentCamp()
-    this.hideSkipHint()
   }
 
   markCurrentCamp() {
-    const camp = this.element.querySelector(`#trail-camp-${this.campIdValue}`)
-    camp?.classList.add("is-current")
+    this.firstCampEl()?.classList.add("is-current")
+  }
+
+  firstCampEl() {
+    return this.element.querySelector(`#trail-camp-${this.campIdValue}`)
+  }
+
+  bindFirstCampTap() {
+    const camp = this.firstCampEl()
+    if (!camp) return
+
+    this._onFirstCampClick = (event) => {
+      if (!this._tapReady || this._finished) return
+      if (!camp.classList.contains("is-landed")) return
+      event.preventDefault()
+      event.stopPropagation()
+      this.openCampSheet(true)
+    }
+    camp.addEventListener("click", this._onFirstCampClick)
+  }
+
+  unbindFirstCampTap() {
+    const camp = this.firstCampEl()
+    if (camp && this._onFirstCampClick) {
+      camp.removeEventListener("click", this._onFirstCampClick)
+    }
+    this._onFirstCampClick = null
   }
 
   openCampSheet(focusInput) {
     this.hideSkipHint()
+    this.firstCampEl()?.classList.remove("is-pulsing")
+    delete this.element.dataset.trailSuppressOpen
     if (this.hasOverlayTarget) {
       this.overlayTarget.hidden = true
       this.overlayTarget.setAttribute("aria-hidden", "true")
@@ -103,14 +211,54 @@ export default class extends Controller {
     }
   }
 
+  unhideSpine() {
+    if (this.hasSpineTarget) {
+      this.spineTarget.hidden = false
+      this.spineTarget.removeAttribute("hidden")
+    }
+  }
+
+  resetTrailDraw() {
+    if (!this.hasTrailLineTarget || !this.hasTrailGlowTarget) return
+
+    const length = this.trailLineTarget.getTotalLength()
+    this._trailLength = length
+    if (!length) return
+
+    this.trailLineTarget.style.strokeDasharray = `${length}`
+    this.trailGlowTarget.style.strokeDasharray = `${length}`
+
+    if (this.prefersReducedMotion()) {
+      this.showFullTrail()
+    } else {
+      this.trailLineTarget.style.strokeDashoffset = `${length}`
+      this.trailGlowTarget.style.strokeDashoffset = `${length}`
+    }
+  }
+
+  showFullTrail() {
+    if (!this.hasTrailLineTarget || !this.hasTrailGlowTarget) return
+    this.trailLineTarget.style.strokeDashoffset = "0"
+    this.trailGlowTarget.style.strokeDashoffset = "0"
+  }
+
+  showSummit() {
+    if (!this.hasSummitTarget) return
+    this.summitTarget.classList.add("is-visible")
+  }
+
   showSkipHint() {
     if (!this.hasSkipHintTarget) return
-    this.skipHintTarget.classList.add("is-visible")
+    this.skipHintTarget.classList.add("is-visible", "is-near-camp")
   }
 
   hideSkipHint() {
     if (!this.hasSkipHintTarget) return
-    this.skipHintTarget.classList.remove("is-visible")
+    this.skipHintTarget.classList.remove("is-visible", "is-near-camp")
+  }
+
+  prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
   }
 
   wait(ms, token) {
