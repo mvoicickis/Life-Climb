@@ -127,15 +127,12 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
-      cursor: pointer;
     }
-
-    .scene.is-sheet-open { cursor: default; }
 
     .scene__viewport {
       position: absolute;
       inset: 0;
-      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: transform;
     }
 
@@ -185,8 +182,8 @@
       opacity: 0;
       pointer-events: none;
       transition:
-        opacity 0.55s ease,
-        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        opacity 1.1s ease,
+        transform 1.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .summit.is-visible {
@@ -224,13 +221,26 @@
       opacity: 0;
       pointer-events: none;
       transition:
-        opacity 0.35s ease,
-        transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+        opacity 0.7s ease,
+        transform 1.1s cubic-bezier(0.34, 1.4, 0.64, 1);
     }
 
     .camp.is-landed {
       opacity: 1;
       transform: translate(-50%, -100%) scale(1);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .camp.is-current.is-pulsing {
+        animation: camp-pulse 1.8s ease-in-out infinite;
+      }
+    }
+
+    @keyframes camp-pulse {
+      0%, 100% { transform: translate(-50%, -100%) scale(1); }
+      50% { transform: translate(-50%, -100%) scale(1.06); }
     }
 
     .camp.is-current .camp__tent {
@@ -242,6 +252,9 @@
     }
 
     .camp__tent {
+      display: block;
+      min-width: 44px;
+      min-height: 44px;
       width: 28px;
       height: 24px;
       background: linear-gradient(
@@ -289,6 +302,16 @@
     }
 
     .skip-hint.is-visible { opacity: 1; }
+
+    .skip-hint.is-near-camp {
+      left: 40%;
+      top: 81%;
+      bottom: auto;
+      transform: translateX(-50%);
+      max-width: 11rem;
+      text-align: center;
+      line-height: 1.25;
+    }
 
     /* —— Camp sheet (onboarding green on white) —— */
     .sheet {
@@ -548,7 +571,7 @@
     <div class="doc__note">
       <h2>How to use</h2>
       <ul>
-        <li>The reveal plays when the page opens. Tap anywhere on the mountain to skip straight to the camp sheet.</li>
+        <li>The reveal plays when the page opens. When it finishes, tap camp one’s tent to open the battle plan sheet.</li>
         <li>Type a battle, press Enter to save it. Pick today only or tap day letters. Tick the row when you are ready.</li>
         <li>Use <strong>Replay reveal</strong> to run the animation again.</li>
       </ul>
@@ -578,7 +601,7 @@
           <div id="camps-root" aria-hidden="true"></div>
         </div>
 
-        <p class="skip-hint" id="skip-hint">Tap anywhere to open the camp</p>
+        <p class="skip-hint" id="skip-hint">Tap the tent to plan your first day</p>
       </div>
 
       <div class="sheet" id="sheet" aria-hidden="true">
@@ -679,6 +702,14 @@
           el.innerHTML =
             '<span class="camp__tent" aria-hidden="true"></span>' +
             '<span class="camp__label">' + escapeHtml(title) + "</span>";
+          if (index === 0) {
+            el.addEventListener("click", function (event) {
+              if (!sheetOpen && el.classList.contains("is-landed")) {
+                event.stopPropagation();
+                openSheet(true);
+              }
+            });
+          }
           campsRoot.appendChild(el);
           return el;
         });
@@ -705,12 +736,12 @@
         sheetOpen = false;
         scene.classList.remove("is-focus-camp", "is-sheet-open");
         summit.classList.remove("is-visible");
-        skipHint.classList.remove("is-visible");
+        skipHint.classList.remove("is-visible", "is-near-camp");
         sheet.classList.remove("is-open");
         sheet.setAttribute("aria-hidden", "true");
         viewport.style.transform = "";
         campEls.forEach(function (el) {
-          el.classList.remove("is-landed", "is-current");
+          el.classList.remove("is-landed", "is-current", "is-pulsing");
         });
         battleInput.value = "";
         battleRow.classList.remove("is-visible");
@@ -726,8 +757,11 @@
         if (sheetOpen) return;
         sheetOpen = true;
         scene.classList.add("is-focus-camp", "is-sheet-open");
-        skipHint.classList.remove("is-visible");
-        if (campEls[0]) campEls[0].classList.add("is-current");
+        skipHint.classList.remove("is-visible", "is-near-camp");
+        if (campEls[0]) {
+          campEls[0].classList.add("is-current");
+          campEls[0].classList.remove("is-pulsing");
+        }
         sheet.classList.add("is-open");
         sheet.setAttribute("aria-hidden", "false");
         if (focusInput !== false) {
@@ -737,44 +771,31 @@
         }
       }
 
-      function skipToSheet() {
-        if (sheetOpen) return;
-        animToken += 1;
-        summit.classList.add("is-visible");
-        campEls.forEach(function (el) { el.classList.add("is-landed"); });
-        openSheet(true);
-      }
-
       async function playReveal() {
         resetVisualState();
         buildCamps();
         var token = animToken;
 
-        await wait(350, token);
+        await wait(700, token);
         if (token !== animToken) return;
 
         summit.classList.add("is-visible");
-        skipHint.classList.add("is-visible");
 
-        await wait(700, token);
+        await wait(1400, token);
         if (token !== animToken) return;
 
         for (var i = 0; i < campEls.length; i++) {
           campEls[i].classList.add("is-landed");
-          await wait(550, token);
+          await wait(1100, token);
           if (token !== animToken) return;
         }
 
-        await wait(400, token);
+        await wait(800, token);
         if (token !== animToken) return;
 
         scene.classList.add("is-focus-camp");
-        if (campEls[0]) campEls[0].classList.add("is-current");
-
-        await wait(500, token);
-        if (token !== animToken) return;
-
-        openSheet(true);
+        if (campEls[0]) campEls[0].classList.add("is-current", "is-pulsing");
+        skipHint.classList.add("is-visible", "is-near-camp");
       }
 
       function setFreqMode(mode) {
@@ -792,10 +813,6 @@
         battleCheck.classList.remove("is-done");
         battleInput.blur();
       }
-
-      scene.addEventListener("click", function () {
-        if (!sheetOpen) skipToSheet();
-      });
 
       sheetPanel.addEventListener("click", function (event) {
         event.stopPropagation();
