@@ -4421,6 +4421,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 /* First camp reveal after v2 onboarding */
 .lp-trail__spine {
+  display: none;
   position: absolute;
   inset: 0;
   width: 100%;
