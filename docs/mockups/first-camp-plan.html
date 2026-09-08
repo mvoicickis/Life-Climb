@@ -132,7 +132,7 @@
     .scene__viewport {
       position: absolute;
       inset: 0;
-      transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: transform;
     }
 
@@ -156,14 +156,27 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
+      filter:
+        drop-shadow(0 0 3px color-mix(in srgb, var(--lp-green) 40%, transparent))
+        drop-shadow(0 0 8px color-mix(in srgb, var(--lp-green) 22%, transparent));
     }
 
-    .scene__trail path {
+    .scene__trail-glow,
+    .scene__trail-line {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.72);
-      stroke-width: 0.55;
       stroke-linecap: round;
-      stroke-dasharray: 0.4 2.2;
+      stroke-linejoin: round;
+    }
+
+    .scene__trail-glow {
+      stroke: var(--lp-green);
+      stroke-width: 1.35;
+      opacity: 0.15;
+    }
+
+    .scene__trail-line {
+      stroke: rgba(255, 255, 255, 0.82);
+      stroke-width: 0.55;
     }
 
     .summit {
@@ -182,8 +195,8 @@
       opacity: 0;
       pointer-events: none;
       transition:
-        opacity 1.1s ease,
-        transform 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+        opacity 0.8s ease,
+        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .summit.is-visible {
@@ -212,7 +225,7 @@
 
     .camp {
       position: absolute;
-      transform: translate(-50%, -100%) scale(0.4);
+      transform: translate(-50%, -100%) translateY(-14px) scale(0.4);
       z-index: 5;
       display: grid;
       place-items: end center;
@@ -221,13 +234,13 @@
       opacity: 0;
       pointer-events: none;
       transition:
-        opacity 0.7s ease,
-        transform 1.1s cubic-bezier(0.34, 1.4, 0.64, 1);
+        opacity 0.5s ease,
+        transform 0.8s cubic-bezier(0.34, 1.4, 0.64, 1);
     }
 
     .camp.is-landed {
       opacity: 1;
-      transform: translate(-50%, -100%) scale(1);
+      transform: translate(-50%, -100%) translateY(0) scale(1);
       pointer-events: auto;
       cursor: pointer;
     }
@@ -239,8 +252,8 @@
     }
 
     @keyframes camp-pulse {
-      0%, 100% { transform: translate(-50%, -100%) scale(1); }
-      50% { transform: translate(-50%, -100%) scale(1.06); }
+      0%, 100% { transform: translate(-50%, -100%) translateY(0) scale(1); }
+      50% { transform: translate(-50%, -100%) translateY(0) scale(1.06); }
     }
 
     .camp.is-current .camp__tent {
@@ -304,13 +317,31 @@
     .skip-hint.is-visible { opacity: 1; }
 
     .skip-hint.is-near-camp {
-      left: 40%;
-      top: 81%;
+      left: 51%;
+      top: 88%;
       bottom: auto;
       transform: translateX(-50%);
       max-width: 11rem;
       text-align: center;
       line-height: 1.25;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scene__viewport,
+      .summit,
+      .camp,
+      .skip-hint {
+        transition: none;
+      }
+
+      .scene__trail-line,
+      .scene__trail-glow {
+        stroke-dashoffset: 0 !important;
+      }
+
+      .camp.is-current.is-pulsing {
+        animation: none;
+      }
     }
 
     /* —— Camp sheet (onboarding green on white) —— */
@@ -590,7 +621,8 @@
             alt=""
             decoding="async">
           <svg class="scene__trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M 22 84 C 30 76, 36 68, 40 60 C 46 52, 50 44, 54 36 C 58 28, 62 22, 68 16"></path>
+            <path class="scene__trail-glow" id="trail-glow" d="M 50.3 95.0 L 48.3 94.0 L 43.5 93.0 L 42.8 92.0 L 41.1 91.0 L 38.3 90.0 L 38.1 89.0 L 42.0 88.0 L 44.4 87.0 L 49.5 86.0 L 51.2 85.0 L 54.3 84.0 L 60.0 83.0 L 63.5 82.0 L 65.7 81.0 L 65.7 80.0 L 63.1 79.0 L 60.9 78.0 L 60.4 77.0 L 60.4 76.0 L 54.7 75.0 L 50.4 74.0 L 54.3 73.0 L 58.9 72.0 L 62.4 71.0 L 64.1 70.0 L 62.7 69.0 L 58.4 68.0 L 49.7 67.0 L 49.6 66.0 L 47.2 65.0 L 46.8 64.0 L 50.0 63.0 L 54.1 62.0 L 58.7 61.0 L 61.7 60.0 L 61.3 59.0 L 58.4 58.0 L 52.3 57.0 L 46.3 56.0 L 45.1 55.0 L 49.1 54.0 L 53.7 53.0 L 59.3 52.0 L 61.3 51.0 L 59.7 50.0 L 56.0 49.0 L 47.7 48.0 L 46.9 47.0 L 50.4 46.0 L 54.9 45.0 L 58.9 44.0 L 60.4 43.0 L 58.5 42.0 L 57.1 41.0 L 54.7 40.0 L 57.1 39.0 L 59.6 38.0 L 61.9 37.0 L 61.2 36.0 L 58.0 35.0 L 57.1 34.0 L 59.6 33.0 L 60.9 32.0 L 59.3 31.0 L 56.4 30.0 L 53.5 29.0 L 53.3 28.0"></path>
+            <path class="scene__trail-line" id="trail-line" d="M 50.3 95.0 L 48.3 94.0 L 43.5 93.0 L 42.8 92.0 L 41.1 91.0 L 38.3 90.0 L 38.1 89.0 L 42.0 88.0 L 44.4 87.0 L 49.5 86.0 L 51.2 85.0 L 54.3 84.0 L 60.0 83.0 L 63.5 82.0 L 65.7 81.0 L 65.7 80.0 L 63.1 79.0 L 60.9 78.0 L 60.4 77.0 L 60.4 76.0 L 54.7 75.0 L 50.4 74.0 L 54.3 73.0 L 58.9 72.0 L 62.4 71.0 L 64.1 70.0 L 62.7 69.0 L 58.4 68.0 L 49.7 67.0 L 49.6 66.0 L 47.2 65.0 L 46.8 64.0 L 50.0 63.0 L 54.1 62.0 L 58.7 61.0 L 61.7 60.0 L 61.3 59.0 L 58.4 58.0 L 52.3 57.0 L 46.3 56.0 L 45.1 55.0 L 49.1 54.0 L 53.7 53.0 L 59.3 52.0 L 61.3 51.0 L 59.7 50.0 L 56.0 49.0 L 47.7 48.0 L 46.9 47.0 L 50.4 46.0 L 54.9 45.0 L 58.9 44.0 L 60.4 43.0 L 58.5 42.0 L 57.1 41.0 L 54.7 40.0 L 57.1 39.0 L 59.6 38.0 L 61.9 37.0 L 61.2 36.0 L 58.0 35.0 L 57.1 34.0 L 59.6 33.0 L 60.9 32.0 L 59.3 31.0 L 56.4 30.0 L 53.5 29.0 L 53.3 28.0"></path>
           </svg>
 
           <div class="summit" id="summit" aria-hidden="true">
@@ -661,15 +693,18 @@
         "Pay off the credit card"
       ];
       var CAMP_SLOTS = [
-        { left: 40, top: 78, accent: "#57d35b" },
-        { left: 44, top: 58, accent: "#3dbd48" }
+        { left: 51.2, top: 85.0, accent: "#57d35b", pathFrac: 0.134 },
+        { left: 58.4, top: 58.0, accent: "#3dbd48", pathFrac: 0.551 }
       ];
+      var TRAIL_DRAW_MS = 1600;
 
       var scene = document.getElementById("scene");
       var viewport = document.getElementById("viewport");
       var summit = document.getElementById("summit");
       var goalTitle = document.getElementById("goal-title");
       var campsRoot = document.getElementById("camps-root");
+      var trailLine = document.getElementById("trail-line");
+      var trailGlow = document.getElementById("trail-glow");
       var skipHint = document.getElementById("skip-hint");
       var sheet = document.getElementById("sheet");
       var sheetPanel = document.getElementById("sheet-panel");
@@ -686,9 +721,75 @@
       var animToken = 0;
       var sheetOpen = false;
       var campEls = [];
+      var trailLength = 0;
 
       goalTitle.textContent = GOAL;
       sheetTitle.textContent = CAMPS[0];
+
+      function prefersReducedMotion() {
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      }
+
+      function resetTrailDraw() {
+        trailLength = trailLine.getTotalLength();
+        trailLine.style.strokeDasharray = trailLength;
+        trailGlow.style.strokeDasharray = trailLength;
+        if (prefersReducedMotion()) {
+          trailLine.style.strokeDashoffset = "0";
+          trailGlow.style.strokeDashoffset = "0";
+        } else {
+          trailLine.style.strokeDashoffset = trailLength;
+          trailGlow.style.strokeDashoffset = trailLength;
+        }
+      }
+
+      function animateTrailDraw(token) {
+        if (prefersReducedMotion()) {
+          campEls.forEach(function (el) { el.classList.add("is-landed"); });
+          return Promise.resolve(true);
+        }
+
+        var length = trailLength || trailLine.getTotalLength();
+        trailLength = length;
+        trailLine.style.strokeDasharray = length;
+        trailGlow.style.strokeDasharray = length;
+        trailLine.style.strokeDashoffset = length;
+        trailGlow.style.strokeDashoffset = length;
+
+        var landed = campEls.map(function () { return false; });
+
+        return new Promise(function (resolve) {
+          var start = performance.now();
+
+          function frame(now) {
+            if (token !== animToken) {
+              resolve(false);
+              return;
+            }
+
+            var progress = Math.min((now - start) / TRAIL_DRAW_MS, 1);
+            var offset = length * (1 - progress);
+            trailLine.style.strokeDashoffset = offset;
+            trailGlow.style.strokeDashoffset = offset;
+
+            campEls.forEach(function (el, index) {
+              var slot = CAMP_SLOTS[index];
+              if (!landed[index] && slot && progress >= slot.pathFrac) {
+                el.classList.add("is-landed");
+                landed[index] = true;
+              }
+            });
+
+            if (progress < 1) {
+              requestAnimationFrame(frame);
+            } else {
+              resolve(true);
+            }
+          }
+
+          requestAnimationFrame(frame);
+        });
+      }
 
       function buildCamps() {
         campsRoot.innerHTML = "";
@@ -740,6 +841,7 @@
         sheet.classList.remove("is-open");
         sheet.setAttribute("aria-hidden", "true");
         viewport.style.transform = "";
+        resetTrailDraw();
         campEls.forEach(function (el) {
           el.classList.remove("is-landed", "is-current", "is-pulsing");
         });
@@ -774,23 +876,30 @@
       async function playReveal() {
         resetVisualState();
         buildCamps();
+        resetTrailDraw();
         var token = animToken;
+        var reduced = prefersReducedMotion();
 
-        await wait(700, token);
+        if (reduced) {
+          summit.classList.add("is-visible");
+          campEls.forEach(function (el) { el.classList.add("is-landed"); });
+          scene.classList.add("is-focus-camp");
+          if (campEls[0]) campEls[0].classList.add("is-current");
+          skipHint.classList.add("is-visible", "is-near-camp");
+          return;
+        }
+
+        await wait(500, token);
         if (token !== animToken) return;
 
         summit.classList.add("is-visible");
 
-        await wait(1400, token);
+        await wait(900, token);
         if (token !== animToken) return;
 
-        for (var i = 0; i < campEls.length; i++) {
-          campEls[i].classList.add("is-landed");
-          await wait(1100, token);
-          if (token !== animToken) return;
-        }
+        if (!(await animateTrailDraw(token))) return;
 
-        await wait(800, token);
+        await wait(600, token);
         if (token !== animToken) return;
 
         scene.classList.add("is-focus-camp");
