@@ -211,6 +211,11 @@
 
       <div class="lp-trail__glow-dots" data-trail-canvas-target="glowDots" hidden aria-hidden="true"></div>
 
+      <svg class="lp-trail__spine" id="trail-spine" viewBox="0 0 100 100" preserveAspectRatio="none" hidden aria-hidden="true">
+        <path class="lp-trail__spine-glow" id="trail-spine-glow" fill="none" d="<%= mountain_trail_spine_path_d %>"></path>
+        <path class="lp-trail__spine-line" id="trail-spine-line" fill="none" d="<%= mountain_trail_spine_path_d %>"></path>
+      </svg>
+
       <svg class="lp-trail__spurs" id="trail-spurs" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-trail-canvas-target="spurs">
         <% projects.each do |project| %>
           <% slot = layout_map[project.id] %>

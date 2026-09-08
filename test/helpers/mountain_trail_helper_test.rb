@@ -626,4 +626,50 @@ class MountainTrailHelperTest < ActionView::TestCase
     marker = mountain_trail_climber_marker([ camp ])
     assert_not marker[:visible]
   end
+
+  test "spine path d runs base to summit in viewBox space" do
+    d = mountain_trail_spine_path_d
+    assert_match(/\AM /, d)
+    assert_includes d, "L "
+    coords = d.delete_prefix("M ").split(" L ").map { |pair| pair.split.map(&:to_f) }
+    first_y = coords.first.last
+    last_y = coords.last.last
+    assert_operator first_y, :>, 90
+    assert_operator last_y, :<, 35
+  end
+
+  test "reveal camp path_frac increases bottom to top for 1 3 and 5 camps" do
+    [ 1, 3, 5 ].each do |count|
+      projects = reveal_test_projects(count)
+      camps = mountain_trail_reveal_camps(projects)
+      assert_equal count, camps.size
+      fracs = camps.pluck(:path_frac)
+      assert fracs.all? { |frac| frac > 0 && frac < 1 }
+      assert_equal fracs.sort, fracs
+      expected_ys = projects.map(&:trail_y).sort.reverse.map { |y| y.round(4) }
+      assert_equal expected_ys, camps.pluck(:y)
+    end
+  end
+
+  test "reveal camps json is sorted by trail_y descending" do
+    projects = reveal_test_projects(3)
+    parsed = JSON.parse(mountain_trail_reveal_camps_json(projects))
+    ys = parsed.map { |camp| camp["y"] }
+    assert_equal ys.sort.reverse, ys
+    assert_equal [ "id", "path_frac", "x", "y" ], parsed.first.keys.sort
+  end
+
+  private
+
+  def reveal_test_projects(count)
+    (0...count).map do |index|
+      trail_slot_index = count - 1 - index
+      slot = MountainTrailHelper::AutoSlot.call(index: trail_slot_index, total: count)
+      Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+        id: index + 1,
+        trail_x: slot[:trail_x],
+        trail_y: slot[:trail_y]
+      )
+    end
+  end
 end
