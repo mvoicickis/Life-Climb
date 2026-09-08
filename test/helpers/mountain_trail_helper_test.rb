@@ -646,7 +646,8 @@ class MountainTrailHelperTest < ActionView::TestCase
       fracs = camps.pluck(:path_frac)
       assert fracs.all? { |frac| frac > 0 && frac < 1 }
       assert_equal fracs.sort, fracs
-      assert_equal projects.map(&:trail_y).sort.reverse, camps.pluck(:y)
+      expected_ys = projects.map(&:trail_y).sort.reverse.map { |y| y.round(4) }
+      assert_equal expected_ys, camps.pluck(:y)
     end
   end
 
