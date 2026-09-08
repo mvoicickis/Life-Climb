@@ -33,7 +33,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     user.reload
     journey = user.primary_focused_journey
     first_project = user.strategy_goals.for_kind("project").order(:position).first
-    assert_redirected_to life_journey_path(journey, open_camp: first_project.id)
+    assert_redirected_to life_journey_path(journey)
 
     assert user.onboarding_completed?
     assert_equal "purpose", user.life_areas.v2_selected.first.key
@@ -59,9 +59,13 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-destination", count: 0
     assert_select "#companion-pick-prompt", count: 0
     assert_select ".lp-trail.is-first-camp-reveal"
-    assert_select "#trail-sheet-title", text: "Get certified"
+    assert_select "#trail-spine-line"
     assert_select "#trail-camp-#{first_project.id}[data-camp-title=?]", "Get certified"
     assert_select "[data-first-camp-reveal-camp-title-value=?]", "Get certified"
+    assert_select "[data-first-camp-reveal-camps-value]"
+    assert_select ".lp-first-camp-reveal__skip", text: I18n.t("strategy.rpg.trail.first_camp_reveal.skip_hint")
+    assert_select ".lp-trail-sheet.is-open", count: 0
+    assert_select "#trail-sheet-title", text: "Get certified"
     assert_select ".lp-first-camp-setup__dock"
 
     get dashboard_path

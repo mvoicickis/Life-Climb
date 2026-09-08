@@ -276,6 +276,8 @@ export default class extends Controller {
   }
 
   maybeOpenFromQuery() {
+    if (this.revealPendingValue) return
+
     const params = new URLSearchParams(window.location.search)
     const campId = params.get("open_camp")
     if (!campId) return

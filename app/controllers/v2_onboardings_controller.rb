@@ -71,7 +71,7 @@ class V2OnboardingsController < ApplicationController
           camp_titles: titles
         )
         session.delete(:v2_onboarding)
-        redirect_to life_journey_path(result.journey, open_camp: result.projects.first.id)
+        redirect_to life_journey_path(result.journey)
       rescue Onboarding::Bootstrap::Error => e
         redirect_to v2_onboarding_path(step: "camps"), alert: e.message
       end
