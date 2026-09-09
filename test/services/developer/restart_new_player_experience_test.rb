@@ -228,8 +228,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     user = users(:one)
     user.update_columns(developer: true, total_points: 50)
 
-    Rails.env.stub(:local?, false) do
-      ENV.delete("ENABLE_DEVELOPER_TOOLS")
+    Developer::RestartNewPlayerExperience.stub(:allowed_environment?, false) do
       error = assert_raises(Developer::RestartNewPlayerExperience::Error) do
         Developer::RestartNewPlayerExperience.call(user: user)
       end
@@ -244,7 +243,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     user = users(:one)
     user.update_columns(developer: true)
 
-    Rails.env.stub(:local?, false) do
+    Rails.stub(:env, ActiveSupport::EnvironmentInquirer.new("production")) do
       ENV["ENABLE_DEVELOPER_TOOLS"] = "true"
       begin
         assert Developer::RestartNewPlayerExperience.allowed_environment?
