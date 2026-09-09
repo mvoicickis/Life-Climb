@@ -26,34 +26,42 @@
     <%= hidden_field_tag :horizon, "day" %>
     <%= hidden_field_tag :scheduled_on, Date.current %>
     <%= hidden_field_tag :repeat, "none", data: { trail_battles_target: "repeatField" } %>
-    <div class="lp-trail-battles__add-row" data-trail-battles-target="addRow">
+    <div class="lp-trail-battles__composer-row" data-trail-battles-target="addRow">
       <label class="lp-trail-battles__field">
         <span class="sr-only"><%= t("strategy.rpg.trail.battle_placeholder") %></span>
         <%= render layout: "shared/title_limit_wrap" do %>
-          <%= text_field_tag :title, nil,
+          <%= text_area_tag :title, nil,
                 required: true,
                 maxlength: StrategyGoal::TITLE_MAX,
-                class: "lp-trail-battles__input",
+                rows: 1,
+                class: "lp-trail-battles__input lp-trail-battles__textarea",
                 placeholder: t("strategy.rpg.trail.battle_placeholder"),
                 autocomplete: "off",
                 enterkeyhint: "done",
-                data: { trail_battles_target: "titleField" } %>
+                data: {
+                  trail_battles_target: "titleField",
+                  action: "input->trail-battles#syncComposer input->trail-battles#growComposer keydown->trail-battles#composerKeydown blur->trail-battles#composerBlur"
+                } %>
         <% end %>
       </label>
-      <label class="lp-trail-battles__daily-switch">
-        <input type="checkbox"
-               class="lp-trail-battles__daily-check sr-only"
-               data-trail-battles-target="dailyToggle"
-               data-action="change->trail-battles#toggleDaily">
-        <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-        <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.every_day") %></span>
-      </label>
-      <%= submit_tag t("strategy.rpg.trail.add_battle"), class: "lp-trail-battles__submit" %>
+      <button type="submit"
+              class="lp-trail-battles__composer-add"
+              data-trail-battles-target="composerAddBtn"
+              disabled
+              aria-label="<%= t('strategy.rpg.trail.add_battle') %>">+</button>
     </div>
+    <label class="lp-trail-battles__daily-switch">
+      <input type="checkbox"
+             class="lp-trail-battles__daily-check sr-only"
+             data-trail-battles-target="dailyToggle"
+             data-action="change->trail-battles#toggleDaily">
+      <span class="lp-trail-battles__switch" aria-hidden="true"></span>
+      <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.every_day") %></span>
+    </label>
   <% end %>
 <% end %>
 
-<div class="lp-trail-battles <%= 'is-pages-mode' if pages_mode %>"
+<div class="lp-trail-battles <%= 'is-pages-mode' if pages_mode %> <%= 'has-won-today' if won_battles.any? %>"
      id="trail-battles-<%= project.id %>"
      style="--lp-trail-accent: <%= accent %>"
      data-controller="trail-battles"
@@ -74,7 +82,8 @@
      data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
      data-trail-battles-parent-id-value="<%= project.id %>"
      data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>"
-     data-trail-battles-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>">
+     data-trail-battles-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>"
+     data-action="turbo:submit-end->trail-battles#winSubmitted">
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
       <p class="lp-trail-battles__pages-label"><%= strategy_quantity_progress_label(project) %></p>
@@ -98,29 +107,53 @@
       </button>
     </div>
   <% else %>
-    <% if open_battles.empty? && battle_suggestion.present? %>
-      <p class="lp-trail-battles__seed-hint" id="trail-battles-seed-hint-<%= project.id %>"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
-    <% end %>
-    <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+    <div class="lp-trail-battles__scroll">
       <% if open_battles.empty? && battle_suggestion.present? %>
-        <%= render "life_journeys/trail_battle_suggestion_row",
-              project: project,
-              suggestion: battle_suggestion,
-              area: area,
-              goal: goal,
-              plan: plan %>
-      <% else %>
-        <% open_battles.each_with_index do |battle, index| %>
-          <%= render "life_journeys/trail_battle_row",
-                battle: battle,
-                done: false,
-                show_move_up: index.positive?,
-                show_move_down: index < open_battles.size - 1 %>
-        <% end %>
+        <p class="lp-trail-battles__seed-hint" id="trail-battles-seed-hint-<%= project.id %>"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
       <% end %>
-    </ul>
+      <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+        <% if open_battles.empty? && battle_suggestion.present? %>
+          <%= render "life_journeys/trail_battle_suggestion_row",
+                project: project,
+                suggestion: battle_suggestion,
+                area: area,
+                goal: goal,
+                plan: plan %>
+        <% else %>
+          <% open_battles.each_with_index do |battle, index| %>
+            <%= render "life_journeys/trail_battle_row",
+                  battle: battle,
+                  done: false,
+                  show_move_up: index.positive?,
+                  show_move_down: index < open_battles.size - 1 %>
+          <% end %>
+        <% end %>
+      </ul>
 
-    <div id="trail-battles-done-slot-<%= project.id %>">
+      <% unless pages_mode %>
+        <div class="lp-trail-battles__composer"
+             data-trail-battles-target="composer">
+          <button type="button"
+                  class="lp-trail-battles__composer-trigger lp-frost"
+                  data-trail-battles-target="composerTrigger"
+                  data-action="click->trail-battles#openComposer">
+            + <%= t("strategy.rpg.trail.add_battle") %>
+          </button>
+          <div class="lp-trail-battles__composer-form lp-frost"
+               data-trail-battles-target="composerForm"
+               hidden>
+            <%= add_form %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div id="trail-camp-win-toast-slot-<%= project.id %>"
+         class="lp-trail-battles__win-toast-slot"
+         data-trail-battles-target="winToastSlot"></div>
+
+    <div id="trail-battles-done-slot-<%= project.id %>"
+         data-trail-battles-target="doneSlot">
       <%= render "life_journeys/trail_camp_done_section",
             project: project,
             won_battles: won_battles,
@@ -128,11 +161,6 @@
             goal: goal,
             plan: plan %>
     </div>
-  <% end %>
-
-  <% unless pages_mode %>
-    <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
-    <div class="lp-trail-battles__composer is-dock"><%= add_form %></div>
   <% end %>
 
   <p class="lp-trail-battles__session-toast"

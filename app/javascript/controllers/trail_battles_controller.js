@@ -7,7 +7,9 @@ export default class extends Controller {
     "titleField", "repeatField", "dailyToggle", "quantityField", "quantityToggle",
     "unitField", "unitMirrorField", "unitWrap", "renameDialog", "renameField",
     "descriptionDialog", "descriptionField", "sessionToast", "addRow",
-    "pickDaysDialog", "weekdaysRow", "pickDaysError"
+    "pickDaysDialog", "weekdaysRow", "pickDaysError",
+    "composer", "composerTrigger", "composerForm", "composerAddBtn",
+    "wonStrip", "wonPanel", "doneSlot", "winToastSlot", "winToast"
   ]
 
   static values = {
@@ -300,6 +302,165 @@ export default class extends Controller {
     row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
   }
 
+  prepareWin(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
+
+    const row = form.closest(".lp-trail-battles__row.is-open")
+    if (!row || row.classList.contains("is-exiting")) return
+
+    if (row.dataset.winAnimating === "1") return
+
+    event.preventDefault()
+    row.dataset.winAnimating = "1"
+    row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
+
+    const onExit = (transitionEvent) => {
+      if (transitionEvent.propertyName !== "transform") return
+      row.removeEventListener("transitionend", onExit)
+      delete row.dataset.winAnimating
+      form.requestSubmit()
+    }
+
+    row.classList.add("is-exiting")
+    row.addEventListener("transitionend", onExit)
+  }
+
+  winSubmitted(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
+    if (!event.detail?.success) return
+
+    this.scheduleWinToastDismiss()
+    this.element.classList.add("has-won-today")
+  }
+
+  scheduleWinToastDismiss() {
+    window.clearTimeout(this._winToastTimer)
+    this._winToastTimer = window.setTimeout(() => this.clearWinToast(), 5000)
+  }
+
+  clearWinToast() {
+    window.clearTimeout(this._winToastTimer)
+    if (this.hasWinToastSlotTarget) this.winToastSlotTarget.innerHTML = ""
+  }
+
+  dismissWinToast() {
+    this.clearWinToast()
+  }
+
+  reopenWonBattle(event) {
+    if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") return
+    event.preventDefault()
+
+    const row = event.currentTarget
+    const url = row.dataset.reopenUrl
+    if (!url) return
+
+    const token = document.querySelector("meta[name='csrf-token']")?.content
+    const body = new URLSearchParams()
+    body.set("authenticity_token", token || "")
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "text/vnd.turbo-stream.html, text/html",
+        "X-CSRF-Token": token || ""
+      },
+      body,
+      credentials: "same-origin"
+    }).then((response) => response.text()).then((html) => {
+      if (window.Turbo?.renderStreamMessage) window.Turbo.renderStreamMessage(html)
+    })
+  }
+
+  openComposer() {
+    if (!this.hasComposerTarget) return
+    this.composerTarget.classList.add("is-open")
+    if (this.hasComposerTriggerTarget) this.composerTriggerTarget.hidden = true
+    if (this.hasComposerFormTarget) {
+      this.composerFormTarget.hidden = false
+      this.composerFormTarget.removeAttribute("hidden")
+    }
+    this.syncComposer()
+    requestAnimationFrame(() => {
+      this.titleFieldTarget?.focus()
+      this.growComposer()
+    })
+  }
+
+  closeComposer() {
+    if (!this.hasComposerTarget) return
+    this.composerTarget.classList.remove("is-open")
+    if (this.hasComposerTriggerTarget) this.composerTriggerTarget.hidden = false
+    if (this.hasComposerFormTarget) {
+      this.composerFormTarget.hidden = true
+      this.composerFormTarget.setAttribute("hidden", "")
+    }
+    if (this.hasTitleFieldTarget) {
+      this.titleFieldTarget.value = ""
+      this.syncComposer()
+      this.growComposer()
+    }
+    if (this.hasDailyToggleTarget) {
+      this.dailyToggleTarget.checked = false
+      this.toggleDaily()
+    }
+  }
+
+  syncComposer() {
+    if (!this.hasComposerAddBtnTarget || !this.hasTitleFieldTarget) return
+    this.composerAddBtnTarget.disabled = !this.titleFieldTarget.value.trim()
+  }
+
+  growComposer() {
+    if (!this.hasTitleFieldTarget) return
+    const field = this.titleFieldTarget
+    field.style.height = "auto"
+    field.style.height = `${field.scrollHeight}px`
+  }
+
+  composerKeydown(event) {
+    if (event.key !== "Enter" || event.shiftKey) return
+    event.preventDefault()
+    if (!this.composerAddBtnTarget?.disabled) {
+      event.target.closest("form")?.requestSubmit()
+    }
+  }
+
+  composerBlur() {
+    window.setTimeout(() => {
+      if (!this.hasTitleFieldTarget) return
+      if (document.activeElement === this.composerAddBtnTarget) return
+      if (!this.titleFieldTarget.value.trim()) this.closeComposer()
+    }, 0)
+  }
+
+  toggleWonPanel() {
+    if (!this.hasWonPanelTarget) return
+    if (this.wonPanelTarget.classList.contains("is-open")) {
+      this.closeWonPanel()
+    } else {
+      this.openWonPanel()
+    }
+  }
+
+  openWonPanel() {
+    if (!this.hasWonPanelTarget) return
+    this.wonPanelTarget.classList.add("is-open")
+    this.wonPanelTarget.setAttribute("aria-hidden", "false")
+    this.element.classList.add("is-won-panel-open")
+    if (this.hasWonStripTarget) this.wonStripTarget.setAttribute("aria-expanded", "true")
+  }
+
+  closeWonPanel() {
+    if (!this.hasWonPanelTarget) return
+    this.wonPanelTarget.classList.remove("is-open")
+    this.wonPanelTarget.setAttribute("aria-hidden", "true")
+    this.element.classList.remove("is-won-panel-open")
+    if (this.hasWonStripTarget) this.wonStripTarget.setAttribute("aria-expanded", "false")
+  }
+
   beginAddSubmit(event) {
     const form = event.target
     if (!form?.classList?.contains("lp-trail-battles__add")) return
@@ -311,7 +472,7 @@ export default class extends Controller {
     this._submitting = true
 
     window.setTimeout(() => {
-      form.querySelectorAll(".lp-trail-battles__submit").forEach((el) => {
+      form.querySelectorAll(".lp-trail-battles__submit, .lp-trail-battles__composer-add").forEach((el) => {
         if (el.disabled) return
         el.disabled = true
         el.classList.add("is-pending")
@@ -325,7 +486,7 @@ export default class extends Controller {
     const root = form || this.element.querySelector(".lp-trail-battles__add")
     if (!root) return
 
-    root.querySelectorAll(".lp-trail-battles__submit").forEach((el) => {
+    root.querySelectorAll(".lp-trail-battles__submit, .lp-trail-battles__composer-add").forEach((el) => {
       el.disabled = false
       el.classList.remove("is-pending")
       el.removeAttribute("aria-busy")
@@ -340,9 +501,11 @@ export default class extends Controller {
 
     if (this.hasTitleFieldTarget) {
       this.titleFieldTarget.value = ""
+      this.syncComposer()
+      this.growComposer()
       this.titleFieldTarget.dispatchEvent(new Event("input", { bubbles: true }))
       if (this.keepDailyValue) {
-        this.titleFieldTarget.blur()
+        this.closeComposer()
       } else {
         this.titleFieldTarget.focus()
       }
@@ -379,6 +542,7 @@ export default class extends Controller {
 
   disconnect() {
     if (this._sessionToastTimer) window.clearTimeout(this._sessionToastTimer)
+    if (this._winToastTimer) window.clearTimeout(this._winToastTimer)
   }
 
   inlineTitleInput(current) {

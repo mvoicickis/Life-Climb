@@ -440,25 +440,30 @@
        data-trail-camp-sheet-target="sheet"
        hidden
        aria-hidden="true">
-    <div class="lp-trail-sheet__backdrop"
-         data-action="click->trail-camp-sheet#close"></div>
+    <div class="lp-trail-sheet__backdrop" aria-hidden="true"></div>
     <div class="lp-trail-sheet__panel"
          data-trail-camp-sheet-target="panel"
          data-action="click->trail-camp-sheet#stop"
          role="dialog"
          aria-modal="true"
          aria-labelledby="trail-sheet-title">
+      <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+        <%= image_tag "camp_fire_default.webp",
+              class: "lp-trail-sheet__camp-bg-photo",
+              alt: "",
+              decoding: "async" %>
+      </div>
       <div class="lp-trail-sheet__glow" data-trail-camp-sheet-target="accent" aria-hidden="true"></div>
-      <div class="lp-trail-sheet__handle" aria-hidden="true"></div>
       <header class="lp-trail-sheet__header">
-        <button type="button"
-                class="lp-trail-sheet__crumb"
-                data-action="click->trail-camp-sheet#close"
-                aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: mountain_nav) %>">
-          <span class="lp-trail-sheet__crumb-arrow" aria-hidden="true">‹</span>
-          <span class="lp-trail-sheet__crumb-label"><%= mountain_nav %></span>
-        </button>
         <div class="lp-trail-sheet__title-row" id="trail-sheet-title-row">
+          <% unless first_camp_reveal %>
+            <button type="button"
+                    class="lp-trail-sheet__back"
+                    data-action="click->trail-camp-sheet#close"
+                    aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: mountain_nav) %>">
+              <span aria-hidden="true">‹</span>
+            </button>
+          <% end %>
           <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal %><%= first_camp.title %><% end %></h2>
           <% unless first_camp_reveal %>
             <div class="lp-trail-sheet__actions">

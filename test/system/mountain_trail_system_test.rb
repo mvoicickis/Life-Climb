@@ -196,7 +196,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-battle-#{@battle.id} form[action*='battle_win']", visible: :all
     within("#trail-battle-#{@battle.id}") { find(".lp-trail-battles__tick").click }
 
-    assert_selector "#trail-battle-#{@battle.id}.is-done", visible: :all, wait: 5
+    assert_selector "#trail-battle-#{@battle.id}.is-won", visible: :all, wait: 5
     assert_selector ".lp-trail-sheet.is-open", visible: :all
     assert_selector "#trail-battle-#{@battle.id}", text: /Pitch the tent/, visible: :all
     assert_no_selector ".lp-trail-log.is-open", visible: :all
@@ -217,7 +217,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     open_trail_camp_sheet!(@project)
     within("#trail-battle-#{@battle.id}") { find(".lp-trail-battles__tick").click }
 
-    assert_selector "#trail-battle-#{@battle.id}.is-done", visible: :all, wait: 5
+    assert_selector "#trail-battle-#{@battle.id}.is-won", visible: :all, wait: 5
     assert_selector ".lp-trail-sheet.is-open", visible: :all
     assert_nil @battle.reload.completed_at
     assert @battle.repeat_daily?

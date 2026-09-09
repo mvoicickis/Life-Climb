@@ -1679,23 +1679,21 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
-  background: var(--lp-surface);
+  position: relative;
+  background: var(--lp-paper-soft);
   color: var(--lp-ink);
-  border-top: 1px solid var(--lp-border);
+  border-top: 0;
   left: 0;
   right: 0;
   bottom: var(--lp-keyboard-inset, 0px);
   top: auto;
   width: 100%;
   max-width: 100%;
-  max-height: min(
-    calc(var(--lp-sheet-vh, 100dvh) * 0.9),
-    calc(var(--lp-sheet-vh, 100dvh) - env(safe-area-inset-top, 0px) - 0.75rem)
-  );
-  height: auto;
+  max-height: var(--lp-sheet-vh, 100dvh);
+  height: var(--lp-sheet-vh, 100dvh);
   margin: 0;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  border-radius: 1.25rem 1.25rem 0 0;
+  border-radius: 0;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
@@ -1704,15 +1702,33 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   transition: transform .3s cubic-bezier(.2,.9,.3,1.15);
-  box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
+  box-shadow: none;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__camp-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.34;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__camp-bg-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__backdrop {
-  background: rgba(15, 23, 42, 0.28);
+  background: transparent;
+  pointer-events: none;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__handle {
-  background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+  display: none;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__title {
@@ -1767,54 +1783,74 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 3;
   color: var(--lp-ink);
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
-  background: var(--lp-surface);
-  border-bottom: 1px solid var(--lp-border);
+  padding: 0.55rem 0.65rem 1.35rem 0.45rem;
+  padding-top: calc(0.55rem + env(safe-area-inset-top, 0px));
+  background: linear-gradient(
+    180deg,
+    var(--lp-frost) 0%,
+    color-mix(in srgb, var(--lp-frost) 72%, transparent) 58%,
+    transparent 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 0;
 }
 
-.lp-trail.is-v4 .lp-trail-sheet__crumb {
+.lp-trail.is-v4 .lp-trail-sheet__back {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 0.1rem;
-  min-height: 44px;
-  max-width: 100%;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   margin: 0;
-  padding: 0 0.75rem 0 0;
-  border: 1px solid var(--lp-border);
+  padding: 0;
+  border: 0;
   border-radius: 0.65rem;
-  background: var(--lp-paper);
+  background: transparent;
   color: var(--lp-ink);
   font: inherit;
-  font-size: 0.78rem;
+  font-size: 1.55rem;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
-  text-align: left;
 }
 
-.lp-trail.is-v4 .lp-trail-sheet__crumb:active {
-  background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-muted) 12%);
+.lp-trail.is-v4 .lp-trail-sheet__back:active {
+  background: color-mix(in srgb, var(--lp-paper) 45%, transparent);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__title-row {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.15rem;
   min-width: 0;
   max-width: 100%;
-  margin: 0 4px 6px;
+  min-height: var(--lp-tap);
+  margin: 0;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__title-row .lp-trail-sheet__title {
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 .lp-trail-sheet__camp-menu {
@@ -1837,7 +1873,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 0;
   border: 1px solid var(--lp-border);
   border-radius: 0.65rem;
-  background: var(--lp-paper);
+  background: color-mix(in srgb, var(--lp-paper) 55%, transparent);
   color: var(--lp-ink);
   font-size: 1.15rem;
   line-height: 1;
@@ -1876,7 +1912,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 0;
   border: 1px solid var(--lp-border);
   border-radius: 0.65rem;
-  background: var(--lp-paper);
+  background: color-mix(in srgb, var(--lp-paper) 55%, transparent);
   color: var(--lp-ink);
   font-size: 1.1rem;
   line-height: 1;
@@ -1936,17 +1972,24 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__body {
-  background: var(--lp-surface);
+  position: relative;
+  z-index: 1;
+  background: transparent;
   color: var(--lp-ink);
   max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
+  min-height: 0;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   scroll-padding-bottom: 7.5rem;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__camp {
+  min-height: 100%;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
@@ -1992,9 +2035,97 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   color: var(--lp-muted);
 }
 
-.lp-trail.is-v4 .lp-trail-battles__row {
-  border-radius: var(--lp-radius-field);
-  background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-ink) 4%);
+.lp-trail.is-v4 .lp-trail-battles {
+  --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.2rem 0.85rem;
+}
+
+.lp-trail.is-v4 .lp-trail-battles.has-won-today .lp-trail-battles__scroll {
+  padding-bottom: var(--won-strip-height);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open,
+.lp-trail.is-v4 .lp-trail-battles__row.is-open.is-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--lp-tap);
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease,
+    max-height 0.28s ease,
+    margin 0.28s ease,
+    padding 0.28s ease,
+    border-width 0.28s ease;
+  max-height: 8rem;
+  overflow: hidden;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open.is-exiting {
+  transform: translateX(108%);
+  opacity: 0;
+  max-height: 0;
+  margin-top: -0.55rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__box {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--lp-tick-ring);
+  background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__box.is-won {
+  background: var(--lp-green);
+  border-color: var(--lp-green);
+  position: relative;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__box.is-won::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.28rem;
+  height: 0.55rem;
+  margin-top: -0.32rem;
+  margin-left: -0.16rem;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__daily-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.45rem;
+  border-radius: var(--lp-radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  background: color-mix(in srgb, var(--lp-muted) 12%, var(--lp-paper));
   border: 1px solid var(--lp-border);
 }
 
@@ -4520,14 +4651,303 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   cursor: not-allowed;
 }
 
-.lp-trail.is-v4 .lp-trail-battles__composer.is-dock {
-  position: sticky;
+.lp-trail.is-v4 .lp-trail-battles__composer {
+  margin-top: 0.55rem;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  padding: 0.55rem 0.85rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-trigger:active {
+  color: var(--lp-ink);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer.is-open .lp-trail-battles__composer-trigger {
+  display: none;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: var(--lp-tap);
+  border-radius: var(--lp-radius-field);
+  field-sizing: content;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-add {
+  flex-shrink: 0;
+  width: var(--lp-tap);
+  height: var(--lp-tap);
+  border: 0;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: var(--lp-shadow-cta);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-add:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
   bottom: 0;
-  top: auto;
-  z-index: 3;
-  margin: calc(-1 * (var(--lp-trail-add-dock) + 1.5rem)) 0 0;
-  padding: 0.65rem 0 0.15rem;
-  background: linear-gradient(0deg, var(--lp-surface) 70%, color-mix(in srgb, var(--lp-surface) 92%, transparent) 100%);
+  z-index: 12;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: var(--lp-tap);
+  padding: 0 1.2rem env(safe-area-inset-bottom, 0px);
+  border: 0;
+  border-top: 1px solid var(--lp-border);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.lp-trail.is-v4 .lp-trail-battles.has-won-today .lp-trail-battles__won-strip {
+  display: flex;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-strip-chevron {
+  display: inline-block;
+  font-size: 0.72rem;
+  line-height: 1;
+  transition: transform 0.22s ease;
+}
+
+.lp-trail.is-v4 .lp-trail-battles.is-won-panel-open .lp-trail-battles__won-strip-chevron {
+  transform: rotate(180deg);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 16;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel.is-open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: color-mix(in srgb, var(--lp-ink) 35%, transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel.is-open .lp-trail-battles__won-panel-backdrop {
+  opacity: 1;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: min(72dvh, 520px);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--lp-radius-card) var(--lp-radius-card) 0 0;
+  border-top: 1px solid var(--lp-border);
+  box-shadow: 0 -12px 36px rgba(15, 23, 42, 0.12);
+  transform: translateY(100%);
+  transition: transform 0.28s ease;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel.is-open .lp-trail-battles__won-panel-sheet {
+  transform: translateY(0);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem 0.55rem 1.2rem;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--lp-border);
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--lp-paper) 55%, transparent);
+  color: var(--lp-muted);
+  font-size: 0.82rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-panel-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 1.2rem 1rem;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-won {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.15rem;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+  min-height: var(--lp-tap);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-won .lp-trail-battles__name {
+  color: var(--lp-muted);
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__tick.is-done {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-won .lp-trail-battles__box.is-won {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--lp-green);
+  border: 2px solid var(--lp-green);
+  position: relative;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-won .lp-trail-battles__box.is-won::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.28rem;
+  height: 0.55rem;
+  margin-top: -0.32rem;
+  margin-left: -0.16rem;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__win-toast-slot {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(0.65rem + env(safe-area-inset-bottom, 0px));
+  z-index: 14;
+  pointer-events: none;
+}
+
+.lp-trail.is-v4 .lp-trail-battles.has-won-today .lp-trail-battles__win-toast-slot {
+  bottom: calc(var(--won-strip-height) + 0.65rem);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__win-toast {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: var(--lp-tap);
+  padding: 0.55rem 1rem;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  pointer-events: auto;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__win-toast.is-visible {
+  display: flex;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__win-toast-undo {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: inherit;
+  font-weight: 800;
+  color: var(--lp-green-deep);
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 @keyframes lp-trail-toast-in {
@@ -4629,7 +5049,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   padding: 0.35rem 1.2rem 0.85rem;
 }
 
-.lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__crumb,
+.lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__back,
 .lp-trail.is-first-camp-reveal .lp-trail-sheet__actions,
 .lp-trail.is-first-camp-reveal .lp-trail-sheet__menu-btn,
 .lp-trail.is-first-camp-reveal .lp-trail-sheet__close {

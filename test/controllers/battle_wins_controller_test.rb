@@ -111,7 +111,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_includes @response.media_type, "turbo-stream"
     assert_match "trail-battle-#{@battle.id}", response.body
-    assert_match "is-done", response.body
+    assert_match "is-won", response.body
     assert_match "trail-toast-host", response.body
     assert_match(/Won/, response.body)
     assert_no_match "turbo-stream action=\"replace\" target=\"trail-battles-", response.body
@@ -122,7 +122,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-strategy-rpg-celebrate-value=?]", "false"
   end
 
-  test "camp sheet turbo win with source is quiet without toast" do
+  test "camp sheet turbo win with source is quiet without header toast" do
     assert_difference -> { @user.reload.life_points }, GameRules::BATTLE_TODO_LP do
       post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
     end
@@ -130,13 +130,26 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_match %(action="remove" target="trail-battle-#{@battle.id}"), response.body
     assert_match "trail-battles-done-slot-#{@project.id}", response.body
+    assert_match "trail-camp-win-toast-slot-#{@project.id}", response.body
+    assert_match "lp-trail-battles__win-toast", response.body
     assert_match "trail-battle-#{@battle.id}", response.body
-    assert_match "is-done", response.body
+    assert_match "is-won", response.body
     assert_no_match %(action="replace" target="trail-battle-#{@battle.id}"), response.body
     assert_no_match "trail-toast-host", response.body
     assert_no_match(/Won “/, response.body)
     assert_match %(action="replace" target="trail-climber"), response.body
     assert @battle.reload.completed?
+  end
+
+  test "camp sheet undo via reopen keeps life points" do
+    lp_before = @user.reload.life_points
+    post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
+    assert @battle.reload.completed?
+
+    post battle_reopen_path(@battle), as: :turbo_stream
+    assert_response :ok
+    assert_not @battle.reload.completed?
+    assert_equal lp_before + GameRules::BATTLE_TODO_LP, @user.reload.life_points
   end
 
   test "camp sheet win moves battle into done section without duplicating open list" do

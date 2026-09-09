@@ -1,5 +1,8 @@
 <% if @quiet_win && @project.present? %>
   <%= turbo_stream.remove "trail-battle-#{@battle.id}" %>
+  <%= turbo_stream.update "trail-camp-win-toast-slot-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_win_toast", battle: @battle %>
+  <% end %>
   <%= turbo_stream.replace "trail-battles-done-slot-#{@project.id}" do %>
     <%= render "life_journeys/trail_camp_done_section",
           project: @project,
