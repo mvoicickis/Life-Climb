@@ -85,12 +85,32 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__repeat-tag", text: chip[:label]
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__body .lp-trail-battles__repeat-tag .lp-trail-battles__repeat-icon"
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__repeat-label", text: chip[:label]
     assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__daily-chip", text: chip[:label]
     assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
                   count: 0
     assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
                   count: 0
+  end
+
+  test "camp sheet daily battle stacks repeat tag below title with icon" do
+    daily = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day",
+      title: "Transfer spare change into savings every evening after dinner",
+      scheduled_on: Date.current,
+      position: 0,
+      repeat: "daily"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battle-#{daily.id} .lp-trail-battles__body .lp-trail-battles__name",
+                  text: daily.title
+    assert_select "#trail-battle-#{daily.id} .lp-trail-battles__body .lp-trail-battles__repeat-tag .lp-trail-battles__repeat-icon"
+    assert_select "#trail-battle-#{daily.id} .lp-trail-battles__repeat-label",
+                  text: I18n.t("strategy.rpg.trail.every_day")
   end
 
   test "battle sheet includes daily toggle and checkbox rows" do
