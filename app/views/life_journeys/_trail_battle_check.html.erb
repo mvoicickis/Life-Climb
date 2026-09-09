@@ -33,9 +33,9 @@
     <span class="sr-only"><%= t("strategy.rpg.trail.win_battle") %></span>
   <% end %>
 <% end %>
-<span class="lp-trail-battles__copy">
+<span class="lp-trail-battles__body">
   <span class="lp-trail-battles__name"><%= battle.title %></span>
-  <%= render "life_journeys/trail_battle_repeat_chip", battle: battle %>
+  <%= render "life_journeys/trail_battle_repeat_chip", battle: battle, camp_sheet: true %>
   <% if qty_project&.unit.present? %>
     <span class="lp-trail-battles__qty-chip"><%= qty_project.unit %></span>
   <% end %>
