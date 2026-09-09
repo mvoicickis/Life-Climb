@@ -4584,8 +4584,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__crumb,
-.lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__actions {
-  display: none;
+.lp-trail.is-first-camp-reveal .lp-trail-sheet__actions,
+.lp-trail.is-first-camp-reveal .lp-trail-sheet__menu-btn,
+.lp-trail.is-first-camp-reveal .lp-trail-sheet__close {
+  display: none !important;
 }
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__title-row {
@@ -4651,24 +4653,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   display: grid;
   gap: 0.85rem;
   min-width: 0;
-}
-
-.lp-first-camp-setup__header {
-  min-width: 0;
-}
-
-.lp-first-camp-setup__title {
-  margin: 0;
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0f172a;
-  line-height: 1.25;
-  word-break: break-word;
-}
-
-.lp-trail.is-first-camp-reveal .lp-trail-sheet__title {
-  display: none;
 }
 
 .lp-first-camp-setup__lead {

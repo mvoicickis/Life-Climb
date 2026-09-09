@@ -181,6 +181,7 @@ export default class extends Controller {
   }
 
   showCampMenu(campId) {
+    if (this.element.classList.contains("is-first-camp-reveal")) return this.hideCampMenus()
     if (!this.hasSheetTarget || !campId) return this.hideCampMenus()
 
     this.sheetTarget.querySelectorAll("[data-camp-menu-panel]").forEach((menu) => {

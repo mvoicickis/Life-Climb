@@ -35,7 +35,10 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey)
 
     assert_response :success
-    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__title", text: @first_camp.title
+    assert_select "#trail-sheet-title", text: @first_camp.title, count: 1
+    assert_select ".lp-first-camp-setup__title", count: 0
+    assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__menu-btn", count: 0
+    assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__close", count: 0
     assert_select "#trail-sheet-camp-#{@first_camp.id} input[type=submit][value=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
     assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__hint",
@@ -43,6 +46,17 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-camp-#{@first_camp.id} [data-action*='first-camp-battle#titleKeydown']"
     assert_select "#trail-sheet-camp-#{@first_camp.id} input[placeholder=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.title_placeholder")
+  end
+
+  test "dismissed reveal restores camp sheet header actions" do
+    patch life_journey_first_camp_reveal_path(@journey), as: :turbo_stream
+
+    get life_journey_path(@journey)
+
+    assert_response :success
+    assert_select ".lp-trail.is-first-camp-reveal", count: 0
+    assert_select "#trail-sheet-menu-#{@first_camp.id} .lp-trail-sheet__menu-btn"
+    assert_select ".lp-trail-sheet__close"
   end
 
   test "completing pinned camp does not show setup on another camp" do
