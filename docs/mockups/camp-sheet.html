@@ -283,7 +283,7 @@
         margin 0.28s ease,
         padding 0.28s ease,
         border-width 0.28s ease;
-      max-height: 8rem;
+      max-height: 11rem;
       overflow: hidden;
     }
 
@@ -348,13 +348,28 @@
       transform: rotate(45deg);
     }
 
-    .battle-row__text {
+    .battle-row__body {
       flex: 1 1 auto;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .battle-row__text {
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--lp-ink);
       word-break: break-word;
+    }
+
+    .battle-row__daily {
+      align-self: flex-start;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--lp-muted);
+      letter-spacing: 0.02em;
     }
 
     .battle-row__kebab {
@@ -824,7 +839,9 @@
             <ul class="battle-list" id="battle-list">
               <li class="battle-row is-open lp-frost" data-battle-id="1">
                 <button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>
-                <span class="battle-row__text">Put ten dollars in the jar</span>
+                <div class="battle-row__body">
+                  <span class="battle-row__text">Put ten dollars in the jar</span>
+                </div>
                 <details class="battle-row__kebab">
                   <summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>
                   <div class="battle-row__kebab-menu">
@@ -833,9 +850,12 @@
                   </div>
                 </details>
               </li>
-              <li class="battle-row is-open lp-frost" data-battle-id="2">
+              <li class="battle-row is-open lp-frost" data-battle-id="2" data-daily="true">
                 <button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>
-                <span class="battle-row__text">Check savings app balance</span>
+                <div class="battle-row__body">
+                  <span class="battle-row__text">Transfer spare change into savings every evening after dinner</span>
+                  <span class="battle-row__daily">Every day</span>
+                </div>
                 <details class="battle-row__kebab">
                   <summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>
                   <div class="battle-row__kebab-menu">
@@ -1018,8 +1038,10 @@
       function saveBattle() {
         var title = battleInput.value.trim();
         if (!title) return;
-        battleList.appendChild(buildBattleRow(nextId++, title));
+        var isDaily = document.getElementById("daily-toggle").checked;
+        battleList.appendChild(buildBattleRow(nextId++, title, isDaily));
         battleInput.value = "";
+        document.getElementById("daily-toggle").checked = false;
         syncAddBtn();
         battleInput.focus();
       }
@@ -1032,13 +1054,23 @@
           .replace(/"/g, "&quot;");
       }
 
-      function buildBattleRow(id, title) {
+      function battleRowBodyHtml(title, isDaily) {
+        return (
+          '<div class="battle-row__body">' +
+            '<span class="battle-row__text">' + escapeHtml(title) + "</span>" +
+            (isDaily ? '<span class="battle-row__daily">Every day</span>' : "") +
+          "</div>"
+        );
+      }
+
+      function buildBattleRow(id, title, isDaily) {
         var li = document.createElement("li");
         li.className = "battle-row is-open lp-frost";
         li.dataset.battleId = String(id);
+        if (isDaily) li.dataset.daily = "true";
         li.innerHTML =
           '<button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>' +
-          '<span class="battle-row__text">' + escapeHtml(title) + "</span>" +
+          battleRowBodyHtml(title, isDaily) +
           '<details class="battle-row__kebab">' +
             '<summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>' +
             '<div class="battle-row__kebab-menu">' +
@@ -1078,7 +1110,8 @@
         var undoData = {
           text: text,
           battleId: battleId,
-          nextSibling: nextSibling
+          nextSibling: nextSibling,
+          isDaily: row.dataset.daily === "true"
         };
 
         row.classList.add("is-exiting");
@@ -1102,7 +1135,7 @@
 
         if (data.wonRow && data.wonRow.parentNode) data.wonRow.remove();
 
-        var restored = buildBattleRow(data.battleId, data.text);
+        var restored = buildBattleRow(data.battleId, data.text, data.isDaily);
         if (data.nextSibling && data.nextSibling.parentNode === battleList) {
           battleList.insertBefore(restored, data.nextSibling);
         } else {
