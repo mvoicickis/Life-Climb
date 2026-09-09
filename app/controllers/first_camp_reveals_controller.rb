@@ -5,10 +5,10 @@ class FirstCampRevealsController < ApplicationController
   before_action :set_journey
 
   def update
-    return head :no_content unless @journey.first_camp_reveal_pending?
+    @project = first_camp_project
+    return head :no_content if @project.blank?
 
     @journey.clear_first_camp_reveal!
-    @project = first_camp_project
     @plan = @project&.parent if @project&.parent&.plan?
     @goal = @project&.root_goal
     @area = @project&.life_area || @journey.life_area
