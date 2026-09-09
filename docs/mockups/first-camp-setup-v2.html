@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First camp setup v2 — sheet mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #ffffff;
+      --lp-paper-soft: #f8fafc;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-tap: 2.75rem;
+      --font: "Nunito", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .doc__note {
+      margin: 0 0 2rem;
+      padding: 1rem 1.1rem;
+      background: var(--lp-paper);
+      border: 1px solid #d8dee6;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #334155;
+      max-width: 44rem;
+    }
+
+    .doc__note h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .doc__note ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .doc__note li { margin-bottom: 0.35rem; }
+
+    .variant {
+      margin-bottom: 2.75rem;
+    }
+
+    .variant__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .variant__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .variant__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      max-width: 36rem;
+    }
+
+    .frame {
+      position: relative;
+      margin: 0 auto;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #dbeafe;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .frame--360 {
+      width: 360px;
+      max-width: 100%;
+      height: min(640px, 88dvh);
+      min-height: 560px;
+    }
+
+    .frame--desktop {
+      width: min(100%, 920px);
+      height: 520px;
+      border-radius: 16px;
+    }
+
+    .frame__backdrop {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.22) 100%),
+        url("../../public/images/mountain_trail_default.webp") center 28% / cover no-repeat;
+    }
+
+    .frame__size-tag {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.75rem;
+      z-index: 2;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--lp-border);
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+    }
+
+    /* —— Bottom sheet —— */
+    .sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      pointer-events: none;
+    }
+
+    .frame--desktop .sheet {
+      align-items: center;
+      padding: 0 1.5rem 0;
+    }
+
+    .sheet__panel {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-height: 78%;
+      background: var(--lp-paper);
+      border-radius: 1.25rem 1.25rem 0 0;
+      border-top: 1px solid var(--lp-border);
+      box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
+      pointer-events: auto;
+    }
+
+    .frame--desktop .sheet__panel {
+      max-width: 480px;
+      max-height: 92%;
+      border-radius: 1.25rem;
+      border: 1px solid var(--lp-border);
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.16);
+      margin-bottom: 1.5rem;
+    }
+
+    .sheet__handle {
+      width: 2.25rem;
+      height: 0.25rem;
+      margin: 0.55rem auto 0.35rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+      flex-shrink: 0;
+    }
+
+    .frame--desktop .sheet__handle {
+      display: none;
+    }
+
+    .sheet__header {
+      padding: 0.35rem 1.2rem 0.85rem;
+      border-bottom: 1px solid var(--lp-border);
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .sheet__crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.15rem;
+      margin: 0 0 0.45rem;
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      cursor: default;
+    }
+
+    .sheet__crumb-arrow {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .sheet__title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--lp-ink);
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .sheet__body {
+      padding: 1rem 1.2rem 0.25rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: grid;
+      gap: 0.85rem;
+      min-width: 0;
+    }
+
+    .setup__lead {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--lp-ink);
+      line-height: 1.45;
+    }
+
+    .setup__field {
+      display: grid;
+      gap: 0.55rem;
+      min-width: 0;
+    }
+
+    .setup__input {
+      width: 100%;
+      min-height: var(--lp-tap);
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+    }
+
+    .setup__input::placeholder {
+      color: var(--lp-muted);
+      font-weight: 600;
+    }
+
+    .setup__input:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+      border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+    }
+
+    .setup__submit {
+      width: 100%;
+      min-height: var(--lp-tap);
+      border: 0;
+      border-radius: 999px;
+      padding: 0.65rem 1rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--lp-green) 35%, transparent);
+      cursor: pointer;
+    }
+
+    .setup__submit:hover {
+      filter: brightness(0.97);
+    }
+
+    .setup__submit:active {
+      transform: translateY(1px);
+    }
+
+    .setup__hint {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      text-align: center;
+    }
+
+    .sheet__dock {
+      flex-shrink: 0;
+      padding: 0.55rem 1.2rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 400px) {
+      .doc {
+        padding-inline: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>First camp setup v2 — sheet mockup</h1>
+    <p class="doc__lede">Static redesign of the first-camp battle setup sheet. Camp title in the header, plain question lead, example placeholder, primary save button, Enter as secondary hint. No “how often” pills.</p>
+
+    <div class="doc__note">
+      <h2>Changes from current</h2>
+      <ul>
+        <li>Header shows the camp name (from onboarding), not a position number.</li>
+        <li>Lead asks a plain question — no “battle” jargon.</li>
+        <li>Placeholder is a concrete example (“Read 10 pages”), not “Battle for today”.</li>
+        <li>Green “Save for today” button is the primary action; Enter hint stays but is secondary.</li>
+        <li>“How often” / weekday picker removed — first day is always today only.</li>
+      </ul>
+    </div>
+
+    <section class="variant" aria-labelledby="variant-360">
+      <p class="variant__label" id="variant-360">360px</p>
+      <h2 class="variant__title">Standard camp title</h2>
+      <p class="variant__note">Typical onboarding camp name from screen 2.</p>
+
+      <div class="frame frame--360">
+        <div class="frame__backdrop" aria-hidden="true"></div>
+        <span class="frame__size-tag">360 × 640</span>
+        <div class="sheet" role="presentation">
+          <div class="sheet__panel" role="dialog" aria-labelledby="sheet-title-360">
+            <div class="sheet__handle" aria-hidden="true"></div>
+            <header class="sheet__header">
+              <p class="sheet__crumb"><span class="sheet__crumb-arrow" aria-hidden="true">‹</span> Save 20,000</p>
+              <h2 class="sheet__title" id="sheet-title-360">Get certified</h2>
+            </header>
+            <div class="sheet__body">
+              <p class="setup__lead">What’s one small thing you’ll do today?</p>
+              <div class="setup__field">
+                <label class="sr-only" for="input-360">Today’s step</label>
+                <input
+                  id="input-360"
+                  type="text"
+                  class="setup__input"
+                  placeholder="Read 10 pages"
+                  autocomplete="off"
+                  maxlength="120"
+                  enterkeyhint="done">
+                <button type="button" class="setup__submit">Save for today</button>
+                <p class="setup__hint">Or press Enter</p>
+              </div>
+            </div>
+            <footer class="sheet__dock" aria-hidden="true"></footer>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="variant" aria-labelledby="variant-desktop">
+      <p class="variant__label" id="variant-desktop">Desktop</p>
+      <h2 class="variant__title">Same sheet at wider width</h2>
+      <p class="variant__note">Panel caps at 480px; content stays readable on large screens.</p>
+
+      <div class="frame frame--desktop">
+        <div class="frame__backdrop" aria-hidden="true"></div>
+        <span class="frame__size-tag">920 × 520</span>
+        <div class="sheet" role="presentation">
+          <div class="sheet__panel" role="dialog" aria-labelledby="sheet-title-desktop">
+            <div class="sheet__handle" aria-hidden="true"></div>
+            <header class="sheet__header">
+              <p class="sheet__crumb"><span class="sheet__crumb-arrow" aria-hidden="true">‹</span> Save 20,000</p>
+              <h2 class="sheet__title" id="sheet-title-desktop">Get certified</h2>
+            </header>
+            <div class="sheet__body">
+              <p class="setup__lead">What’s one small thing you’ll do today?</p>
+              <div class="setup__field">
+                <label class="sr-only" for="input-desktop">Today’s step</label>
+                <input
+                  id="input-desktop"
+                  type="text"
+                  class="setup__input"
+                  placeholder="Read 10 pages"
+                  autocomplete="off"
+                  maxlength="120"
+                  enterkeyhint="done">
+                <button type="button" class="setup__submit">Save for today</button>
+                <p class="setup__hint">Or press Enter</p>
+              </div>
+            </div>
+            <footer class="sheet__dock" aria-hidden="true"></footer>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="variant" aria-labelledby="variant-long">
+      <p class="variant__label" id="variant-long">360px · long title</p>
+      <h2 class="variant__title">Camp title wrapping</h2>
+      <p class="variant__note">Long camp names from onboarding should wrap in the header without clipping.</p>
+
+      <div class="frame frame--360">
+        <div class="frame__backdrop" aria-hidden="true"></div>
+        <span class="frame__size-tag">360 × 640</span>
+        <div class="sheet" role="presentation">
+          <div class="sheet__panel" role="dialog" aria-labelledby="sheet-title-long">
+            <div class="sheet__handle" aria-hidden="true"></div>
+            <header class="sheet__header">
+              <p class="sheet__crumb"><span class="sheet__crumb-arrow" aria-hidden="true">‹</span> Become a Ruby developer</p>
+              <h2 class="sheet__title" id="sheet-title-long">Complete the advanced cloud architecture certification course</h2>
+            </header>
+            <div class="sheet__body">
+              <p class="setup__lead">What’s one small thing you’ll do today?</p>
+              <div class="setup__field">
+                <label class="sr-only" for="input-long">Today’s step</label>
+                <input
+                  id="input-long"
+                  type="text"
+                  class="setup__input"
+                  placeholder="Read 10 pages"
+                  autocomplete="off"
+                  maxlength="120"
+                  enterkeyhint="done">
+                <button type="button" class="setup__submit">Save for today</button>
+                <p class="setup__hint">Or press Enter</p>
+              </div>
+            </div>
+            <footer class="sheet__dock" aria-hidden="true"></footer>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
