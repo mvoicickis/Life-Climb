@@ -396,6 +396,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-won-strip-#{@project.id}",
                   text: /#{I18n.t("strategy.rpg.trail.won_battles_fold")} \(1\)/
     assert_select "#trail-battles-done-list-#{@project.id} #trail-battle-#{battle.id}.is-won"
+    assert_select "#trail-battle-#{battle.id} form.lp-trail-battles__reopen-form[action=?][data-turbo-stream=?]",
+                  battle_reopen_path(battle), "true"
+    assert_select "#trail-battle-#{battle.id} form[data-action*='trail-battles#battleReopened']"
   end
 
   test "moving a camp patches trail coords" do

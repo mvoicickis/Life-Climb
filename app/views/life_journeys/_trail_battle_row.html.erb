@@ -4,16 +4,25 @@
 <% if done %>
   <li class="lp-trail-battles__row is-won"
       id="trail-battle-<%= battle.id %>"
-      data-battle-id="<%= battle.id %>"
-      data-action="click->trail-battles#reopenWonBattle keydown->trail-battles#reopenWonBattle"
-      data-reopen-url="<%= battle_reopen_path(battle) %>"
-      role="button"
-      tabindex="0">
-    <span class="lp-trail-battles__tick is-done" aria-hidden="true">
-      <span class="lp-trail-battles__box is-won"></span>
-    </span>
-    <span class="lp-trail-battles__name"><%= battle.title %></span>
-    <%= render "life_journeys/trail_battle_repeat_chip", battle: battle %>
+      data-battle-id="<%= battle.id %>">
+    <%= button_to battle_reopen_path(battle),
+          method: :post,
+          class: "lp-trail-battles__won-row-btn",
+          form: {
+            class: "lp-trail-battles__reopen-form",
+            data: {
+              turbo: true,
+              turbo_stream: true,
+              action: "turbo:submit-end->trail-battles#battleReopened"
+            }
+          } do %>
+      <span class="lp-trail-battles__tick is-done" aria-hidden="true">
+        <span class="lp-trail-battles__box is-won"></span>
+      </span>
+      <span class="lp-trail-battles__name"><%= battle.title %></span>
+      <%= render "life_journeys/trail_battle_repeat_chip", battle: battle %>
+      <span class="sr-only"><%= t("strategy.rpg.trail.undo") %></span>
+    <% end %>
   </li>
 <% else %>
   <li class="lp-trail-battles__row is-open is-check lp-frost"
