@@ -533,11 +533,43 @@
 
     .won-panel__head {
       flex-shrink: 0;
-      padding: 0.85rem 1.2rem 0.55rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.65rem 0.55rem 1.2rem;
+    }
+
+    .won-panel__title {
+      flex: 1 1 auto;
+      min-width: 0;
       font-size: 0.82rem;
       font-weight: 800;
       color: var(--lp-muted);
-      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .won-panel__close {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--lp-border);
+      border-radius: 0.65rem;
+      background: color-mix(in srgb, var(--lp-paper) 55%, transparent);
+      color: var(--lp-muted);
+      font-size: 0.82rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .won-panel__close:active {
+      background: color-mix(in srgb, var(--lp-paper) 70%, var(--lp-muted) 8%);
+      color: var(--lp-ink);
     }
 
     .won-panel__scroll {
@@ -844,7 +876,12 @@
         <div class="won-panel" id="won-panel" aria-hidden="true">
           <button type="button" class="won-panel__backdrop" id="won-backdrop" aria-label="Close won list"></button>
           <div class="won-panel__sheet lp-frost">
-            <div class="won-panel__head" id="won-panel-head">Won today (6)</div>
+            <div class="won-panel__head">
+              <span class="won-panel__title" id="won-panel-head">Won today (6)</span>
+              <button type="button" class="won-panel__close" id="won-panel-close" aria-label="Close won list">
+                <span aria-hidden="true">▾</span>
+              </button>
+            </div>
             <div class="won-panel__scroll">
               <ul class="battle-list won-panel__list" id="won-list">
                 <li class="battle-row is-won" data-battle-id="won-1">
@@ -893,6 +930,7 @@
       var wonPanel = document.getElementById("won-panel");
       var wonPanelHead = document.getElementById("won-panel-head");
       var wonBackdrop = document.getElementById("won-backdrop");
+      var wonPanelClose = document.getElementById("won-panel-close");
       var winToast = document.getElementById("win-toast");
       var winToastUndo = document.getElementById("win-toast-undo");
       var nextId = 3;
@@ -1080,6 +1118,7 @@
 
       wonStrip.addEventListener("click", toggleWonPanel);
       wonBackdrop.addEventListener("click", closeWonPanel);
+      wonPanelClose.addEventListener("click", closeWonPanel);
       winToastUndo.addEventListener("click", undoWin);
 
       document.getElementById("close-btn").addEventListener("click", function () {
