@@ -130,6 +130,8 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_match %(action="remove" target="trail-battle-#{@battle.id}"), response.body
     assert_match "trail-battles-done-slot-#{@project.id}", response.body
+    assert_match /id="trail-battles-done-slot-#{@project.id}"[^>]*has-won-today/, response.body
+    assert_no_match /id="trail-battles-done-slot-#{@project.id}"[^>]*\shidden/, response.body
     assert_match "trail-camp-win-toast-slot-#{@project.id}", response.body
     assert_match "lp-trail-battles__win-toast", response.body
     assert_match "trail-battle-#{@battle.id}", response.body
@@ -171,6 +173,8 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_match %(action="remove" target="trail-battle-#{@battle.id}"), response.body
     assert_match "trail-battles-done-list-#{@project.id}", response.body
+    assert_match /id="trail-battles-done-slot-#{@project.id}"[^>]*has-won-today/, response.body
+    assert_no_match /id="trail-battles-done-slot-#{@project.id}"[^>]*\shidden/, response.body
     assert_match "Win this fight", response.body
     assert_match "Already won", response.body
     assert_no_match %(action="replace" target="trail-battle-#{@battle.id}"), response.body

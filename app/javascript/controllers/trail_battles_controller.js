@@ -332,7 +332,50 @@ export default class extends Controller {
     if (!event.detail?.success) return
 
     this.scheduleWinToastDismiss()
+    this.scheduleCampOverlayResync()
+  }
+
+  scheduleCampOverlayResync() {
+    if (this._pendingOverlayResync) return
+    this._pendingOverlayResync = true
+
+    let finished = false
+    const finish = () => {
+      if (finished) return
+      finished = true
+      this._pendingOverlayResync = false
+      if (!this.shouldResyncCampOverlays()) return
+      this.resyncCampOverlaysAfterWin()
+    }
+
+    document.addEventListener("turbo:render", finish, { once: true })
+    requestAnimationFrame(() => requestAnimationFrame(finish))
+  }
+
+  shouldResyncCampOverlays() {
+    const campSheet = this.campSheetController()
+    if (!campSheet?.hasSheetTarget) return false
+
+    const sheet = campSheet.sheetTarget
+    if (sheet.hidden || !sheet.classList.contains("is-open")) return false
+
+    return String(campSheet._openCampId) === String(this.projectId())
+  }
+
+  resyncCampOverlaysAfterWin() {
+    const projectId = this.projectId()
+    const campSheet = this.campSheetController()
+    if (!projectId || !campSheet) return
+
     this.syncWonTodayState(true)
+    campSheet.showCampOverlays(projectId)
+  }
+
+  campSheetController() {
+    const root = this.element.closest("[data-controller~='trail-camp-sheet']")
+    if (!root) return null
+
+    return this.application.getControllerForElementAndIdentifier(root, "trail-camp-sheet")
   }
 
   syncWonTodayState(on) {

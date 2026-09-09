@@ -1,11 +1,12 @@
-<%# Won today strip + expandable panel. locals: project, won_battles, area, goal, plan %>
+<%# Won today strip + expandable panel. locals: project, won_battles, area, goal, plan, reveal: %>
 <% project = local_assigns.fetch(:project) %>
 <% won_battles = local_assigns.fetch(:won_battles) %>
+<% reveal = local_assigns.fetch(:reveal, false) %>
 <div id="trail-battles-done-slot-<%= project.id %>"
      class="lp-trail-sheet__done-slot <%= 'has-won-today' if won_battles.any? %>"
      data-camp-overlay-panel="<%= project.id %>"
-     hidden
-     aria-hidden="true">
+     <% unless reveal %>hidden<% end %>
+     aria-hidden="<%= reveal ? 'false' : 'true' %>">
   <% if won_battles.any? %>
     <button type="button"
             class="lp-trail-battles__won-strip lp-frost"
