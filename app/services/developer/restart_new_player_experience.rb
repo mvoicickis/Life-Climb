@@ -3,11 +3,17 @@
 module Developer
   # Full New Player Experience restart for the developer account.
   # Wipes Strategy / journey data and habits (plus their logs/check-offs),
-  # clears push / install-offer / tour state, and resets the companion to fox
-  # (same as signup). Never deletes the User account or Action Points.
+  # clears push / install-offer / tour state, resets Action Points to zero,
+  # and resets the companion to fox (same as signup). Never deletes the User account.
   class RestartNewPlayerExperience
+    class Error < StandardError; end
+
     def self.call(user:)
       new(user:).call
+    end
+
+    def self.allowed_environment?
+      Rails.env.local? || ENV["ENABLE_DEVELOPER_TOOLS"] == "true"
     end
 
     def initialize(user:)
@@ -15,6 +21,8 @@ module Developer
     end
 
     def call
+      guard!
+
       ActiveRecord::Base.transaction do
         # Quantity logs FK to daily_todos — must go first (delete_all skips nullify callbacks).
         @user.strategy_quantity_logs.delete_all
@@ -24,6 +32,7 @@ module Developer
         # Journeys first: LifeArea has_many :life_journeys, dependent: :restrict_with_error
         @user.life_areas.destroy_all
         @user.strategy_point_ledgers.delete_all
+        @user.life_point_ledgers.delete_all
         # Cascades daily_logs + completions via Habit dependent: :destroy.
         @user.habits.destroy_all
         @user.day_overshoot_bonuses.for_day(Date.current).delete_all
@@ -37,6 +46,8 @@ module Developer
           onboarding_completed_at: nil,
           planning_version: 2,
           strategy_points: 0,
+          total_points: 0,
+          best_day_ap: 0,
           character: "fox",
           climb_streak_days: 0,
           climb_streak_on: nil,
@@ -58,6 +69,14 @@ module Developer
       @user.mark_companion_pick_done!
 
       @user
+    end
+
+    private
+
+    def guard!
+      return if self.class.allowed_environment?
+
+      raise Error, "RestartNewPlayerExperience is disabled outside local environments"
     end
   end
 end

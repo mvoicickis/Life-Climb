@@ -7,6 +7,10 @@ module Developer
       Developer::RestartNewPlayerExperience.call(user: current_user)
       session.delete(:v2_onboarding)
       session.delete(:onboarding_draft)
+      session.delete(:onboarding_step)
+      session.delete(:next_mountain)
+      session.delete(:last_destroyed_goal)
+      session.delete(DailyLogsController::UNDO_SESSION_KEY)
       session.delete(Today::EodFlow::ACK_SESSION_KEY)
       session.delete(Today::BattlefieldDay::SESSION_KEY)
 
