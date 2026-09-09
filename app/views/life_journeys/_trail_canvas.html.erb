@@ -33,8 +33,9 @@
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
 <% tour_ack = current_user.try(:mountain_trail_tour_ack).to_i %>
-<% first_camp_reveal = journey&.first_camp_reveal_pending? && !destination_overlay && plan.present? %>
-<% first_camp = first_camp_reveal ? projects.min_by { |p| [ p.position.to_i, p.id ] } : nil %>
+<% first_camp_id = journey&.first_camp_reveal_camp_id %>
+<% first_camp = first_camp_id.present? ? all_projects.find { |p| p.id == first_camp_id } : nil %>
+<% first_camp_reveal = first_camp.present? && !destination_overlay && plan.present? %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
 <% base_point = mountain_trail_point_on_curve(MountainTrailHelper::BASE_YFRAC) %>
 

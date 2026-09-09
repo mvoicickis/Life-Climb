@@ -62,14 +62,7 @@ class FirstCampBattlesController < ApplicationController
   end
 
   def first_camp_project
-    plan = current_user.strategy_goals
-      .where(life_journey_id: @journey.id)
-      .for_kind("plan")
-      .order(:position, :id)
-      .first
-    return if plan.blank?
-
-    plan.children.for_kind("project").not_holding.order(:position, :id).first
+    @journey.first_camp_reveal_project
   end
 
   def parse_repeat_params
