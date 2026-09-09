@@ -65,8 +65,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select "[data-first-camp-reveal-camps-value]"
     assert_select ".lp-first-camp-reveal__skip", text: I18n.t("strategy.rpg.trail.first_camp_reveal.skip_hint")
     assert_select ".lp-trail-sheet.is-open", count: 0
-    assert_select "#trail-sheet-title", text: "Get certified"
-    assert_select ".lp-first-camp-setup__dock"
+    assert_select ".lp-first-camp-setup__title", text: "Get certified"
+    assert_select "input[type=submit][value=?]", I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
+    assert_select ".lp-first-camp-setup__hint", text: I18n.t("strategy.rpg.trail.first_camp_reveal.dock_note")
+    assert_select "[data-action*='first-camp-battle#titleKeydown']"
 
     get dashboard_path
     assert_response :success

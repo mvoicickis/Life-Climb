@@ -31,6 +31,20 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-camp-#{@second_camp.id} .lp-trail-battles"
   end
 
+  test "setup sheet shows camp title submit button and enter hint" do
+    get life_journey_path(@journey)
+
+    assert_response :success
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__title", text: @first_camp.title
+    assert_select "#trail-sheet-camp-#{@first_camp.id} input[type=submit][value=?]",
+                  I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__hint",
+                  text: I18n.t("strategy.rpg.trail.first_camp_reveal.dock_note")
+    assert_select "#trail-sheet-camp-#{@first_camp.id} [data-action*='first-camp-battle#titleKeydown']"
+    assert_select "#trail-sheet-camp-#{@first_camp.id} input[placeholder=?]",
+                  I18n.t("strategy.rpg.trail.first_camp_reveal.title_placeholder")
+  end
+
   test "completing pinned camp does not show setup on another camp" do
     @first_camp.complete!
 

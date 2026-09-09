@@ -4653,6 +4653,24 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   min-width: 0;
 }
 
+.lp-first-camp-setup__header {
+  min-width: 0;
+}
+
+.lp-first-camp-setup__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.lp-trail.is-first-camp-reveal .lp-trail-sheet__title {
+  display: none;
+}
+
 .lp-first-camp-setup__lead {
   margin: 0;
   font-size: 0.95rem;
@@ -4664,6 +4682,11 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-first-camp-setup__field,
 .lp-first-camp-setup__form {
   min-width: 0;
+}
+
+.lp-first-camp-setup__form {
+  display: grid;
+  gap: 0.55rem;
 }
 
 .lp-first-camp-setup__input {
@@ -4685,73 +4708,35 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border-color: color-mix(in srgb, #57d35b 35%, rgba(15, 23, 42, 0.1));
 }
 
-.lp-first-camp-setup__freq {
-  display: grid;
-  gap: 0.55rem;
+.lp-first-camp-setup__submit {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(180deg, #57d35b 0%, #3dbd48 100%);
+  box-shadow: 0 8px 18px color-mix(in srgb, #57d35b 35%, transparent);
+  cursor: pointer;
 }
 
-.lp-first-camp-setup__freq-label {
+.lp-first-camp-setup__submit:hover {
+  filter: brightness(0.97);
+}
+
+.lp-first-camp-setup__submit:active {
+  transform: translateY(1px);
+}
+
+.lp-first-camp-setup__hint {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #3dbd48;
-}
-
-.lp-first-camp-setup__freq-toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.45rem;
-}
-
-.lp-first-camp-setup__freq-btn {
-  min-height: 2.75rem;
-  padding: 0.5rem 0.65rem;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #f8fafc;
-  color: #0f172a;
-  font: inherit;
-  font-size: 0.88rem;
   font-weight: 700;
-  cursor: pointer;
-}
-
-.lp-first-camp-setup__freq-btn.is-active {
-  border-color: color-mix(in srgb, #57d35b 45%, rgba(15, 23, 42, 0.1));
-  background: color-mix(in srgb, #57d35b 14%, #fff);
-  box-shadow: 0 0 0 2px color-mix(in srgb, #57d35b 22%, transparent);
-  color: #0f172a;
-}
-
-.lp-first-camp-setup__weekdays {
-  display: none;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.35rem;
-}
-
-.lp-first-camp-setup__weekdays.is-visible {
-  display: grid;
-}
-
-.lp-first-camp-setup__weekday {
-  min-height: 2.5rem;
-  border-radius: 0.65rem;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #f8fafc;
   color: #475569;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  cursor: pointer;
-  padding: 0;
-}
-
-.lp-first-camp-setup__weekday.is-on {
-  background: #57d35b;
-  border-color: #57d35b;
-  color: #fff;
+  text-align: center;
 }
 
 .lp-first-camp-setup__error {
@@ -4759,22 +4744,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   font-size: 0.82rem;
   font-weight: 700;
   color: #b45309;
-}
-
-.lp-first-camp-setup__dock {
-  flex-shrink: 0;
-  margin: 0.5rem -1.2rem 0;
-  padding: 0.75rem 1.2rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid rgba(15, 23, 42, 0.1);
-  background: #fff;
-}
-
-.lp-first-camp-setup__dock-note {
-  margin: 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #475569;
-  text-align: center;
 }
 
 @media (max-width: 360px) {
