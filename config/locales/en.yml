@@ -951,6 +951,9 @@ en:
           submit: "Save for today" # TODO: translate for lv/de/es/ru.
           dock_note: "Or press Enter" # TODO: translate for lv/de/es/ru.
           need_title: "Write something first." # TODO: translate for lv/de/es/ru.
+          pick_days: "Pick days of the week" # TODO: translate for lv/de/es/ru.
+          weekdays_label: "Days of the week" # TODO: translate for lv/de/es/ru.
+          need_days: "Pick at least one day." # TODO: translate for lv/de/es/ru.
         log_a_number: "Log a number"
         just_tick: "Just a tick"
         unit_placeholder: "pages"
@@ -2529,6 +2532,8 @@ en:
     ru: "Русский"
   dashboard:
     title: "Today"
+    nav:
+      mountain: "Mountain"
     kicker: "Your growth board"
     subtitle: "Am I becoming a better version of myself?"
     quote: "Small daily improvements lead to stunning results."
@@ -2731,7 +2736,7 @@ en:
         often: "Often"
         sometimes: "Sometimes"
         rarely: "Rarely"
-        off: "Off"
+        "off": "Off"
       intensity_label: "Intensity"
       intensity_hint: "How insistent each notification feels. Not supported the same way on every device."
       intensity:
