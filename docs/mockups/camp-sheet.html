@@ -162,6 +162,7 @@
       align-items: center;
       gap: 0.15rem;
       min-width: 0;
+      min-height: var(--lp-tap);
     }
 
     .sheet__back {
@@ -197,9 +198,12 @@
       letter-spacing: -0.02em;
       color: var(--lp-ink);
       line-height: 1.2;
-      white-space: nowrap;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
       overflow: hidden;
       text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
 
     .sheet__actions {
