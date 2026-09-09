@@ -411,14 +411,22 @@
     .composer.is-open .composer__trigger { display: none; }
     .composer.is-open .composer__form { display: grid; }
 
-    .composer__field {
+    .composer__row {
       grid-area: title;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .composer__field {
+      flex: 1 1 auto;
       min-width: 0;
     }
 
     .lp-input {
       width: 100%;
-      border-radius: 999px;
+      border-radius: 0.85rem;
       border: 1px solid var(--lp-border);
       background: var(--lp-paper-soft);
       color: var(--lp-ink);
@@ -427,6 +435,38 @@
       font-size: 1rem;
       font-weight: 600;
       min-height: var(--lp-tap);
+    }
+
+    .composer__add-btn {
+      flex-shrink: 0;
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      border: 0;
+      border-radius: 999px;
+      background: var(--lp-green);
+      color: #fff;
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(87, 211, 91, 0.28);
+    }
+
+    .composer__add-btn:hover:not(:disabled) {
+      background: var(--lp-green-deep);
+    }
+
+    .composer__add-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .composer__add-btn:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
     }
 
     .lp-input::placeholder { color: var(--lp-muted); }
@@ -515,7 +555,7 @@
       <h2>How to use</h2>
       <ul>
         <li>Tap <strong>+ Add battle</strong> to expand the composer. The input focuses automatically.</li>
-        <li>Type a battle and press <strong>Enter</strong> to save it. Focus stays in the input for another battle.</li>
+        <li>Type a battle, then tap the green <strong>+</strong> or press <strong>Enter</strong> to save. Focus stays for the next one.</li>
         <li>Tap away with an empty input to collapse back to one row.</li>
         <li>Tick an open battle row to mark it won. Won battles fold under <strong>Won today</strong>.</li>
       </ul>
@@ -565,17 +605,25 @@
             <div class="composer" id="composer">
               <button type="button" class="composer__trigger" id="composer-trigger">+ Add battle</button>
               <div class="composer__form" id="composer-form">
-                <label class="composer__field">
-                  <span class="sr-only">Battle for today</span>
-                  <input
-                    id="battle-input"
-                    type="text"
-                    class="lp-input"
-                    placeholder="Battle for today"
-                    autocomplete="off"
-                    maxlength="120"
-                    enterkeyhint="done">
-                </label>
+                <div class="composer__row">
+                  <label class="composer__field">
+                    <span class="sr-only">Battle for today</span>
+                    <input
+                      id="battle-input"
+                      type="text"
+                      class="lp-input"
+                      placeholder="Battle for today"
+                      autocomplete="off"
+                      maxlength="120"
+                      enterkeyhint="done">
+                  </label>
+                  <button
+                    type="button"
+                    class="composer__add-btn"
+                    id="composer-add-btn"
+                    disabled
+                    aria-label="Add battle">+</button>
+                </div>
                 <label class="composer__daily">
                   <input type="checkbox" class="composer__daily-check" id="daily-toggle">
                   <span class="composer__switch" aria-hidden="true"></span>
@@ -606,13 +654,19 @@
       var composer = document.getElementById("composer");
       var composerTrigger = document.getElementById("composer-trigger");
       var battleInput = document.getElementById("battle-input");
+      var addBtn = document.getElementById("composer-add-btn");
       var battleList = document.getElementById("battle-list");
       var wonList = document.getElementById("won-list");
       var wonDetails = document.getElementById("won-details");
       var nextId = 2;
 
+      function syncAddBtn() {
+        addBtn.disabled = !battleInput.value.trim();
+      }
+
       function openComposer() {
         composer.classList.add("is-open");
+        syncAddBtn();
         requestAnimationFrame(function () {
           battleInput.focus();
         });
@@ -621,7 +675,17 @@
       function closeComposer() {
         composer.classList.remove("is-open");
         battleInput.value = "";
+        addBtn.disabled = true;
         document.getElementById("daily-toggle").checked = false;
+      }
+
+      function saveBattle() {
+        var title = battleInput.value.trim();
+        if (!title) return;
+        battleList.appendChild(buildBattleRow(nextId++, title));
+        battleInput.value = "";
+        syncAddBtn();
+        battleInput.focus();
       }
 
       function escapeHtml(text) {
@@ -669,19 +733,19 @@
       }
 
       composerTrigger.addEventListener("click", openComposer);
+      addBtn.addEventListener("click", saveBattle);
+
+      battleInput.addEventListener("input", syncAddBtn);
 
       battleInput.addEventListener("keydown", function (event) {
         if (event.key !== "Enter") return;
         event.preventDefault();
-        var title = battleInput.value.trim();
-        if (!title) return;
-        battleList.appendChild(buildBattleRow(nextId++, title));
-        battleInput.value = "";
-        battleInput.focus();
+        saveBattle();
       });
 
       battleInput.addEventListener("blur", function () {
         window.setTimeout(function () {
+          if (document.activeElement === addBtn) return;
           if (!battleInput.value.trim()) closeComposer();
         }, 0);
       });
