@@ -241,7 +241,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     page.execute_script("document.querySelector('#trail-camp-#{@project.id}').click()")
     assert_selector ".lp-trail-sheet.is-open", visible: :all, wait: 5
 
-    find(".lp-trail-sheet__crumb", visible: :all).click
+    find(".lp-trail-sheet__back", visible: :all).click
     assert_no_selector ".lp-trail-sheet.is-open", visible: :all, wait: 5
 
     restored = page.evaluate_script("document.querySelector('.lp-trail__scroll')?.scrollTop")
@@ -287,7 +287,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
         const root = document.querySelector("#trail-battles-#{@project.id}");
         const anchor = root?.querySelector(".lp-trail-battles__list li:last-child")
           || root?.querySelector(".lp-trail-battles__seed-hint");
-        const composer = root?.querySelector(".lp-trail-battles__composer.is-dock");
+        const composer = root?.querySelector(".lp-trail-battles__composer");
         const menuBtn = document.querySelector("#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn");
         if (!anchor || !composer || !menuBtn) return null;
         const menuRect = menuBtn.getBoundingClientRect();
@@ -328,21 +328,16 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
         const body = document.querySelector(".lp-trail-sheet__body");
         const list = document.querySelector("#trail-battles-list-#{@project.id}");
         const lastRow = list?.querySelector("li:last-child");
-        const composer = document.querySelector("#trail-battles-#{@project.id} .lp-trail-battles__composer.is-dock");
+        const composer = document.querySelector("#trail-battles-#{@project.id} .lp-trail-battles__composer");
         if (!body || !lastRow || !composer) return null;
 
-        let minOverlap = Infinity;
-        for (let scrollTop = 0; scrollTop <= body.scrollHeight; scrollTop += 16) {
-          body.scrollTop = scrollTop;
-          const overlap = lastRow.getBoundingClientRect().bottom - composer.getBoundingClientRect().top;
-          if (overlap < minOverlap) minOverlap = overlap;
-        }
-        return Math.round(minOverlap);
+        body.scrollTop = body.scrollHeight;
+        return Math.round(composer.getBoundingClientRect().top - lastRow.getBoundingClientRect().bottom);
       })()
     JS
 
     assert overlap, "expected camp sheet body, last battle row, and composer"
-    assert_operator overlap, :<=, 4,
-      "expected last battle to clear sticky composer when scrolled, best overlap was #{overlap}px"
+    assert_operator overlap, :>=, 0,
+      "expected composer below last battle when scrolled, gap was #{overlap}px"
   end
 end

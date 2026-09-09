@@ -111,7 +111,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__tick"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select "#trail-battles-#{@project.id} form button.is-danger", text: /Delete battle/
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__dock-spacer"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger"
     assert_select "#trail-base-sheet .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select "#trail-base-sheet .lp-trail-battles__dock-spacer"
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
@@ -227,8 +227,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-sheet-camp-#{@project.id}"
-    assert_select ".lp-trail-sheet__crumb"
-    assert_select ".lp-trail-sheet__crumb-arrow"
+    assert_select ".lp-trail-sheet__back"
     assert_select ".lp-trail-sheet__close", count: 1
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
@@ -245,7 +244,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__fire"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__title", text: /Base camp/
     markup = css_select("#trail-battles-#{@project.id}").first.to_s
-    assert_includes markup, "lp-trail-battles__composer is-dock"
+    assert_includes markup, "lp-trail-battles__composer-trigger"
     assert_not_includes markup, "lp-trail-battles__camp-fold"
     header_index = response.body.index("lp-trail-sheet__title-row")
     battles_index = response.body.index("trail-battles-#{@project.id}")
@@ -374,11 +373,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battles-won-here-#{@project.id}",
-                  text: I18n.t("strategy.rpg.trail.won_battles_here", count: 1)
-    assert_select "#trail-battles-done-summary-#{@project.id}",
-                  text: I18n.t("strategy.rpg.trail.won_battles_fold")
-    assert_select "#trail-battles-done-list-#{@project.id} #trail-battle-#{battle.id}"
+    assert_select "#trail-battles-won-strip-#{@project.id}",
+                  text: /#{I18n.t("strategy.rpg.trail.won_battles_fold")} \(1\)/
+    assert_select "#trail-battles-done-list-#{@project.id} #trail-battle-#{battle.id}.is-won"
   end
 
   test "moving a camp patches trail coords" do

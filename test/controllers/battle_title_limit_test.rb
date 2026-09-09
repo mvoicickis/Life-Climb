@@ -41,7 +41,7 @@ class BattleTitleLimitTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: @project.id)
 
     assert_response :success
-    assert_select "#trail-battles-#{@project.id} input[name=title][maxlength=?]", StrategyGoal::TITLE_MAX.to_s
+    assert_select "#trail-battles-#{@project.id} textarea[name=title][maxlength=?]", StrategyGoal::TITLE_MAX.to_s
     assert_select "#trail-battles-#{@project.id} .lp-title-limit[data-controller*='title-limit']"
     assert_select "#trail-battles-#{@project.id} .lp-title-limit__count[role=status]"
   end
