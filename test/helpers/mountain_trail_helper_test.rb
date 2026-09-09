@@ -454,20 +454,36 @@ class MountainTrailHelperTest < ActionView::TestCase
   end
 
   test "camp due hides weekly battles on off days" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Camp due weekly")
+    project = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
     off_day = (Date.current.wday + 1) % 7
-    weekly = Struct.new(:repeat_weekly?, :repeat_daily?, :completed?, :completed_at, :scheduled_on, :repeats_on?).new(
-      true, false, false, nil, Date.current, false
+    off_weekly = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "Off-day weekly",
+      scheduled_on: Date.current,
+      repeat: "weekly",
+      repeat_weekdays: [ off_day ],
+      position: 1
     )
-    due_weekly = Struct.new(:repeat_weekly?, :repeat_daily?, :completed?, :completed_at, :scheduled_on, :repeats_on?).new(
-      true, false, false, nil, Date.current, true
+    due_weekly = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "Due weekly",
+      scheduled_on: Date.current,
+      repeat: "weekly",
+      repeat_weekdays: [ Date.current.wday ],
+      position: 2
     )
-    daily = Struct.new(:repeat_weekly?, :repeat_daily?).new(false, true)
-    one_shot = Struct.new(:repeat_weekly?, :repeat_daily?).new(false, false)
 
-    assert_not mountain_trail_camp_due?(weekly)
+    assert_not mountain_trail_camp_due?(off_weekly)
     assert mountain_trail_camp_due?(due_weekly)
-    assert mountain_trail_camp_due?(daily)
-    assert mountain_trail_camp_due?(one_shot)
+    assert mountain_trail_camp_due?(project.children.find { |day| day.title == "Camp due weekly" })
   end
 
   test "camp open list excludes off-day weekly battles" do

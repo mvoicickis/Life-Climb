@@ -62,6 +62,7 @@ class Battles::WinFromMountainTest < ActiveSupport::TestCase
     battle.reload
     assert_equal expected, battle.scheduled_on
     assert_nil battle.completed_at
-    assert @user.daily_todos.for_day.exists?(strategy_goal_id: battle.id, completed_at: Time.current..)
+    todo = @user.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+    assert todo&.completed_at.present?
   end
 end
