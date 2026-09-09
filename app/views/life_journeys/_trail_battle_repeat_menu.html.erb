@@ -7,12 +7,30 @@
         method: :patch,
         params: { repeat: "none" },
         form: { data: { turbo: true } } %>
+<% elsif battle.repeat_weekly? %>
+  <%= button_to t("strategy.rpg.trail.just_once"),
+        strategy_goal_path(battle),
+        method: :patch,
+        params: { repeat: "none" },
+        form: { data: { turbo: true } } %>
+  <button type="button"
+          data-action="click->trail-battles#openPickDays"
+          data-update-url="<%= strategy_goal_path(battle) %>"
+          data-weekdays="<%= battle.repeat_weekdays_array.join(",") %>">
+    <%= t("strategy.rpg.trail.first_camp_reveal.pick_days") %>
+  </button>
 <% else %>
   <%= button_to t("strategy.rpg.trail.every_day"),
         strategy_goal_path(battle),
         method: :patch,
         params: { repeat: "daily" },
         form: { data: { turbo: true } } %>
+  <button type="button"
+          data-action="click->trail-battles#openPickDays"
+          data-update-url="<%= strategy_goal_path(battle) %>"
+          data-weekdays="">
+    <%= t("strategy.rpg.trail.first_camp_reveal.pick_days") %>
+  </button>
 <% end %>
 <% unless battle.parent&.path_level_camp? && battle.parent.quantified? %>
   <% if qty %>

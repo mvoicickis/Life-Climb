@@ -72,7 +72,8 @@
      data-trail-battles-life-area-id-value="<%= area.id %>"
      data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
      data-trail-battles-parent-id-value="<%= project.id %>"
-     data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>">
+     data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>"
+     data-trail-battles-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>">
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
       <p class="lp-trail-battles__pages-label"><%= strategy_quantity_progress_label(project) %></p>
@@ -169,4 +170,6 @@
       </div>
     </form>
   </dialog>
+
+  <%= render "life_journeys/trail_battle_pick_days_dialog" %>
 </div>

@@ -75,6 +75,24 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_match(/mountain_trail_default|mountain_photo/, response.body)
   end
 
+  test "weekly battle row shows weekday chip and omits every day from kebab" do
+    weekly = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Guitar", scheduled_on: Date.current, position: 2,
+      repeat: "weekly", repeat_weekdays: [ Date.current.wday, (Date.current.wday + 2) % 7 ]
+    )
+    chip = ApplicationController.helpers.mountain_trail_repeat_weekday_chip(weekly)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__daily-chip", text: chip[:label]
+    assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__daily-chip", text: chip[:label]
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
+                  count: 0
+    assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
+                  count: 0
+  end
+
   test "battle sheet includes daily toggle and checkbox rows" do
     @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,

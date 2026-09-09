@@ -546,6 +546,21 @@ module MountainTrailHelper
     mountain_trail_daily_battles(projects).flat_map { |group| group[:battles] }
   end
 
+  # Short weekday chip for weekly battles (e.g. "M W F"). Nil unless repeat_weekly?.
+  def mountain_trail_repeat_weekday_chip(battle)
+    return unless battle.try(:repeat_weekly?)
+
+    weekdays = battle.repeat_weekdays_array
+    return if weekdays.empty?
+
+    abbr = I18n.t("date.abbr_day_names")
+    full = I18n.t("date.day_names")
+    {
+      label: weekdays.map { |wday| abbr[wday].first }.join(" "),
+      aria_label: weekdays.map { |wday| full[wday] }.join(", ")
+    }
+  end
+
   # Camp sheet open list + progress: weekly rows only on scheduled weekdays; daily/one-shot unchanged.
   def mountain_trail_camp_due?(battle)
     return false if battle.blank?

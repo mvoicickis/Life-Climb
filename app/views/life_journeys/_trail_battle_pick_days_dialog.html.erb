@@ -1,0 +1,27 @@
+<% weekday_labels = t("date.abbr_day_names") %>
+<dialog class="lp-trail-battles__rename" data-trail-battles-target="pickDaysDialog">
+  <form method="dialog" class="lp-trail-battles__rename-form" data-action="submit->trail-battles#savePickDays">
+    <h3><%= t("strategy.rpg.trail.first_camp_reveal.pick_days") %></h3>
+    <div class="lp-first-camp-setup__weekdays is-visible"
+         data-trail-battles-target="weekdaysRow"
+         role="group"
+         aria-label="<%= t('strategy.rpg.trail.first_camp_reveal.weekdays_label') %>">
+      <% 7.times do |wday| %>
+        <button type="button"
+                class="lp-first-camp-setup__weekday"
+                data-day="<%= wday %>"
+                data-action="click->trail-battles#togglePickDay">
+          <%= weekday_labels[wday].first %>
+        </button>
+      <% end %>
+    </div>
+    <p class="lp-first-camp-setup__error"
+       data-trail-battles-target="pickDaysError"
+       hidden
+       role="alert"></p>
+    <div class="lp-trail-battles__rename-actions">
+      <button type="button" data-action="click->trail-battles#closePickDays"><%= t("strategy.rpg.cancel") %></button>
+      <button type="submit"><%= t("strategy.rpg.save") %></button>
+    </div>
+  </form>
+</dialog>
