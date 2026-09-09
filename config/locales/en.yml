@@ -2532,6 +2532,8 @@ en:
     ru: "Русский"
   dashboard:
     title: "Today"
+    nav:
+      mountain: "Mountain"
     kicker: "Your growth board"
     subtitle: "Am I becoming a better version of myself?"
     quote: "Small daily improvements lead to stunning results."
@@ -2734,7 +2736,7 @@ en:
         often: "Often"
         sometimes: "Sometimes"
         rarely: "Rarely"
-        off: "Off"
+        "off": "Off"
       intensity_label: "Intensity"
       intensity_hint: "How insistent each notification feels. Not supported the same way on every device."
       intensity:
