@@ -673,6 +673,7 @@
     }
 
     .lp-input {
+      display: block;
       width: 100%;
       border-radius: 0.85rem;
       border: 1px solid var(--lp-border);
@@ -682,7 +683,11 @@
       font: inherit;
       font-size: 1rem;
       font-weight: 600;
+      line-height: 1.35;
       min-height: var(--lp-tap);
+      max-height: calc((1rem * 1.35 * 4) + 1.5rem);
+      resize: none;
+      overflow-y: hidden;
     }
 
     .composer__add-btn {
@@ -872,14 +877,14 @@
                 <div class="composer__row">
                   <label class="composer__field">
                     <span class="sr-only">Battle for today</span>
-                    <input
+                    <textarea
                       id="battle-input"
-                      type="text"
                       class="lp-input"
                       placeholder="Battle for today"
                       autocomplete="off"
                       maxlength="120"
-                      enterkeyhint="done">
+                      rows="1"
+                      enterkeyhint="done"></textarea>
                   </label>
                   <button
                     type="button"
@@ -977,6 +982,26 @@
         addBtn.disabled = !battleInput.value.trim();
       }
 
+      function resizeBattleInput() {
+        battleInput.style.height = "auto";
+        var maxHeight = parseFloat(window.getComputedStyle(battleInput).maxHeight);
+        var scrollHeight = battleInput.scrollHeight;
+        var nextHeight = Math.min(scrollHeight, maxHeight);
+        battleInput.style.height = nextHeight + "px";
+        battleInput.style.overflowY = scrollHeight > maxHeight ? "auto" : "hidden";
+      }
+
+      function resetBattleInput() {
+        battleInput.style.height = "";
+        battleInput.style.overflowY = "";
+        resizeBattleInput();
+      }
+
+      function syncBattleInput() {
+        syncAddBtn();
+        resizeBattleInput();
+      }
+
       function syncWonStrip() {
         var count = wonList.querySelectorAll(".battle-row").length;
         var label = "Won today (" + count + ")";
@@ -1022,9 +1047,10 @@
 
       function openComposer() {
         composer.classList.add("is-open");
-        syncAddBtn();
+        resetBattleInput();
         requestAnimationFrame(function () {
           battleInput.focus();
+          resizeBattleInput();
         });
       }
 
@@ -1033,6 +1059,7 @@
         battleInput.value = "";
         addBtn.disabled = true;
         document.getElementById("daily-toggle").checked = false;
+        resetBattleInput();
       }
 
       function saveBattle() {
@@ -1042,7 +1069,7 @@
         battleList.appendChild(buildBattleRow(nextId++, title, isDaily));
         battleInput.value = "";
         document.getElementById("daily-toggle").checked = false;
-        syncAddBtn();
+        resetBattleInput();
         battleInput.focus();
       }
 
@@ -1148,7 +1175,7 @@
       composerTrigger.addEventListener("click", openComposer);
       addBtn.addEventListener("click", saveBattle);
 
-      battleInput.addEventListener("input", syncAddBtn);
+      battleInput.addEventListener("input", syncBattleInput);
 
       battleInput.addEventListener("keydown", function (event) {
         if (event.key !== "Enter") return;
