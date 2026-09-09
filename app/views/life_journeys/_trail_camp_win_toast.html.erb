@@ -1,0 +1,23 @@
+<%# Camp sheet win undo toast. locals: battle %>
+<% battle = local_assigns.fetch(:battle) %>
+<div class="lp-trail-battles__win-toast lp-frost is-visible"
+     id="trail-camp-win-toast-<%= battle.id %>"
+     role="status"
+     aria-live="polite"
+     data-controller="camp-win-toast"
+     data-trail-battles-target="winToast"
+     data-battle-id="<%= battle.id %>">
+  <span><%= t("strategy.rpg.trail.win_toast") %></span>
+  <span aria-hidden="true">·</span>
+  <%= button_to t("strategy.rpg.trail.undo"),
+        battle_reopen_path(battle),
+        method: :post,
+        class: "lp-trail-battles__win-toast-undo",
+        form: {
+          data: {
+            turbo: true,
+            turbo_stream: true,
+            action: "submit->trail-battles#dismissWinToast"
+          }
+        } %>
+</div>

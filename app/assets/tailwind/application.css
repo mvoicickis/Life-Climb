@@ -3300,6 +3300,8 @@
   --lp-radius-pill: 999px;
   --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
   --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+  --lp-frost: color-mix(in srgb, var(--lp-paper) 78%, transparent);
+  --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
   /* Today section accents — same hues in both themes */
   --lp-accent-battles: #2dd4bf;
   --lp-accent-quests: #a78bfa;
@@ -3381,6 +3383,18 @@
   --lp-rpg-veil-b: rgba(248, 250, 252, 0.22);
   --lp-rpg-veil-c: rgba(241, 245, 249, 0.78);
   --lp-rpg-scenic-filter: saturate(1.02) contrast(1.02) brightness(1.05);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --lp-frost: color-mix(in srgb, var(--lp-paper) 92%, transparent);
+  }
+}
+
+.lp-frost {
+  background: var(--lp-frost);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 html[data-theme="light"] {

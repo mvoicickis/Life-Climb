@@ -55,7 +55,8 @@ class BattleReopensControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.media_type, "turbo-stream"
     assert_match "trail-battles-#{@project.id}", response.body
     assert_match "trail-battle-#{@battle.id}", response.body
-    assert_no_match "is-done is-check", response.body
+    assert_no_match "is-won", response.body
+    assert_match "is-open", response.body
     assert_nil @battle.reload.completed_at
   end
 end

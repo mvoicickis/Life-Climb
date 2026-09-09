@@ -11,6 +11,7 @@ export default class extends Controller {
     this._onPointer = (event) => this.onPointerDown(event)
     this._onKey = (event) => this.onKeydown(event)
     this._onOpenElsewhere = (event) => this.onOpenElsewhere(event)
+    this._onReposition = () => this.positionMenu()
     window.addEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
 
@@ -26,9 +27,16 @@ export default class extends Controller {
       window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
       this.portalToBody()
       this.bindDocument()
+      this.positionMenu()
+      window.addEventListener("resize", this._onReposition)
+      window.visualViewport?.addEventListener("resize", this._onReposition)
+      window.visualViewport?.addEventListener("scroll", this._onReposition)
     } else {
       this.restoreFromPortal()
       this.unbindDocument()
+      window.removeEventListener("resize", this._onReposition)
+      window.visualViewport?.removeEventListener("resize", this._onReposition)
+      window.visualViewport?.removeEventListener("scroll", this._onReposition)
     }
   }
 
@@ -38,6 +46,35 @@ export default class extends Controller {
     this.detailsTarget.open = false
     this.restoreFromPortal()
     this.unbindDocument()
+    window.removeEventListener("resize", this._onReposition)
+    window.visualViewport?.removeEventListener("resize", this._onReposition)
+    window.visualViewport?.removeEventListener("scroll", this._onReposition)
+  }
+
+  positionMenu() {
+    if (!this.hasDetailsTarget || !this.detailsTarget.open) return
+
+    const summary = this.detailsTarget.querySelector("summary")
+    const menu = this.detailsTarget.querySelector(".lp-trail-battles__kebab-menu")
+    if (!summary || !menu) return
+
+    const rect = summary.getBoundingClientRect()
+    menu.style.position = "fixed"
+    menu.style.top = `${Math.round(rect.bottom + 4)}px`
+    menu.style.left = "auto"
+    menu.style.right = `${Math.round(window.innerWidth - rect.right)}px`
+    menu.style.zIndex = "120"
+
+    requestAnimationFrame(() => {
+      const menuRect = menu.getBoundingClientRect()
+      if (menuRect.bottom > window.innerHeight - 8) {
+        menu.style.top = `${Math.round(rect.top - menuRect.height - 4)}px`
+      }
+      if (menuRect.left < 8) {
+        menu.style.right = "auto"
+        menu.style.left = "8px"
+      }
+    })
   }
 
   onOpenElsewhere(event) {
