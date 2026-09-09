@@ -48,4 +48,26 @@ class StrategyGoalWeeklyRepeatTest < ActiveSupport::TestCase
     refute day.valid?
     assert_includes day.errors[:repeat_weekdays], "can't be blank"
   end
+
+  test "second weekly win on the same day after reopen does not skip the next occurrence" do
+    anchor = Date.current
+    next_wday = (anchor.wday + 2) % 7
+    day = @user.strategy_goals.create!(
+      life_area: @area,
+      parent: @camp_leaf,
+      horizon: "day",
+      title: "Practice",
+      scheduled_on: anchor,
+      repeat: "weekly",
+      repeat_weekdays: [ anchor.wday, next_wday ],
+      position: 0
+    )
+
+    day.advance_recurring_schedule!(after: anchor)
+    first_next = day.reload.scheduled_on
+
+    day.advance_recurring_schedule!(after: anchor)
+
+    assert_equal first_next, day.reload.scheduled_on
+  end
 end
