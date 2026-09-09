@@ -1679,6 +1679,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
+  --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
   position: relative;
   background: var(--lp-paper-soft);
   color: var(--lp-ink);
@@ -1703,6 +1704,12 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   -webkit-overflow-scrolling: touch;
   transition: transform .3s cubic-bezier(.2,.9,.3,1.15);
   box-shadow: none;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .lp-trail.is-v4 .lp-trail-sheet__panel {
+    --lp-frost: color-mix(in srgb, #ffffff 92%, transparent);
+  }
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__camp-bg {
@@ -2075,6 +2082,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
     border-width 0.28s ease;
   max-height: 8rem;
   overflow: hidden;
+  background: var(--lp-frost);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open.is-exiting {
@@ -2094,7 +2102,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   height: 22px;
   border-radius: 50%;
   border: 2px solid var(--lp-tick-ring);
-  background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
+  background: color-mix(in srgb, #ffffff 88%, transparent);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__box.is-won {
@@ -2207,7 +2215,12 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-battles__composer {
-  background: linear-gradient(180deg, var(--lp-surface) 70%, color-mix(in srgb, var(--lp-surface) 92%, transparent) 100%);
+  position: static;
+  top: auto;
+  z-index: auto;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  background: transparent;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__rename {
@@ -4649,10 +4662,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail-destination__cta:disabled {
   opacity: 0.65;
   cursor: not-allowed;
-}
-
-.lp-trail.is-v4 .lp-trail-battles__composer {
-  margin-top: 0.55rem;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__composer-trigger {
