@@ -9,4 +9,16 @@
           area: @area %>
   </div>
 <% end %>
+<% trail = Strategy::Trail.for(plan: @plan) %>
+<% projects = mountain_trail_projects(trail) %>
+<% current_project = mountain_trail_current_project(projects) %>
+<% camp_index = projects.find_index { |p| p.id == @project.id } || 0 %>
+<%= turbo_stream.replace "trail-camp-#{@project.id}" do %>
+  <%= render "life_journeys/trail_camp",
+        project: @project,
+        index: camp_index,
+        total: projects.size,
+        projects: projects,
+        current_project: current_project %>
+<% end %>
 <%= turbo_stream.remove "first-camp-reveal-overlay" %>
