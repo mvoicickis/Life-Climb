@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Camp sheet — collapsed composer mockup</title>
+  <title>Camp view — collapsed composer mockup</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
@@ -94,52 +94,16 @@
         0 24px 48px rgba(15, 23, 42, 0.12);
     }
 
-    .scene {
+    /* —— Full-screen camp page —— */
+    .camp {
       position: absolute;
       inset: 0;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
 
-    .scene__photo {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: 50% 28%;
-      pointer-events: none;
-    }
-
-    .scene__dim {
-      position: absolute;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.28);
-      pointer-events: none;
-    }
-
-    /* —— Camp sheet —— */
-    .sheet {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      pointer-events: auto;
-    }
-
-    .sheet__panel {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      max-height: 82%;
-      border-radius: 1.25rem 1.25rem 0 0;
-      border-top: 1px solid var(--lp-border);
-      box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
-      overflow: hidden;
-    }
-
-    .sheet__camp-bg {
+    .camp__bg {
       position: absolute;
       inset: 0;
       opacity: 0.28;
@@ -148,7 +112,7 @@
       overflow: hidden;
     }
 
-    .sheet__camp-bg__photo {
+    .camp__bg__photo {
       display: block;
       width: 100%;
       height: 100%;
@@ -156,35 +120,34 @@
       object-position: 50% 100%;
     }
 
-    .sheet__surface {
-      position: relative;
+    .camp__scrim {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
       z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.45) 38%,
+        rgba(255, 255, 255, 0.78) 68%,
+        rgba(255, 255, 255, 0.9) 100%
+      );
+    }
+
+    .camp__content {
+      position: relative;
+      z-index: 2;
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
       min-height: 0;
     }
 
-    .sheet__peek {
-      flex-shrink: 0;
-      height: 3.25rem;
-      pointer-events: none;
-    }
-
-    .sheet__handle {
-      width: 2.25rem;
-      height: 0.25rem;
-      margin: 0.55rem auto 0.35rem;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
-      flex-shrink: 0;
-    }
-
     .sheet__header {
-      padding: 0.35rem 1.2rem 0.85rem;
-      border-bottom: 1px solid var(--lp-border);
+      padding: 0.85rem 1.2rem 0.85rem;
+      padding-top: calc(0.85rem + env(safe-area-inset-top, 0px));
+      border-bottom: 1px solid color-mix(in srgb, var(--lp-border) 65%, transparent);
       flex-shrink: 0;
-      background: var(--lp-paper);
     }
 
     .sheet__crumb {
@@ -196,7 +159,9 @@
       padding: 0 0.75rem 0 0;
       border: 1px solid var(--lp-border);
       border-radius: 0.65rem;
-      background: var(--lp-paper-soft);
+      background: color-mix(in srgb, var(--lp-paper-soft) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: var(--lp-ink);
       font: inherit;
       font-size: 0.78rem;
@@ -205,7 +170,7 @@
     }
 
     .sheet__crumb:active {
-      background: color-mix(in srgb, var(--lp-paper-soft) 88%, var(--lp-muted) 12%);
+      background: color-mix(in srgb, var(--lp-paper-soft) 78%, var(--lp-muted) 12%);
     }
 
     .sheet__title-row {
@@ -244,7 +209,9 @@
       padding: 0;
       border: 1px solid var(--lp-border);
       border-radius: 0.65rem;
-      background: var(--lp-paper-soft);
+      background: color-mix(in srgb, var(--lp-paper-soft) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: var(--lp-ink);
       font-size: 1.1rem;
       line-height: 1;
@@ -257,16 +224,15 @@
     }
 
     .sheet__icon-btn:active {
-      background: color-mix(in srgb, var(--lp-paper-soft) 88%, var(--lp-muted) 12%);
+      background: color-mix(in srgb, var(--lp-paper-soft) 78%, var(--lp-muted) 12%);
     }
 
     .sheet__body {
-      padding: 1rem 1.2rem 0.75rem;
+      padding: 1rem 1.2rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       flex: 1 1 auto;
       min-height: 0;
-      background: var(--lp-paper);
     }
 
     .battle-list {
@@ -282,10 +248,10 @@
       align-items: center;
       gap: 0.35rem;
       min-height: var(--lp-tap);
-      padding: 0.35rem 0.4rem;
-      border-radius: 0.85rem;
-      border: 1px solid var(--lp-border);
-      background: var(--lp-paper-soft);
+      padding: 0.35rem 0.15rem;
+      border-radius: 0.65rem;
+      border: 0;
+      background: transparent;
     }
 
     .battle-row__tick {
@@ -294,7 +260,7 @@
       height: 1.35rem;
       border-radius: 0.45rem;
       border: 2px solid color-mix(in srgb, var(--lp-green) 55%, var(--lp-border));
-      background: transparent;
+      background: color-mix(in srgb, var(--lp-paper) 72%, transparent);
       cursor: pointer;
       padding: 0;
       position: relative;
@@ -351,7 +317,7 @@
       top: 100%;
       z-index: 8;
       min-width: 158px;
-      background: #fff;
+      background: var(--lp-paper);
       color: var(--lp-ink);
       border-radius: 13px;
       padding: 5px;
@@ -387,9 +353,6 @@
 
     .won-block {
       margin-top: 0.85rem;
-      padding: 0.15rem 0;
-      border-radius: 0.85rem;
-      background: var(--lp-paper);
     }
 
     .won-block__summary {
@@ -399,7 +362,6 @@
       color: var(--lp-muted);
       list-style: none;
       padding: 0.15rem 0;
-      background: var(--lp-paper);
     }
 
     .won-block__summary::-webkit-details-marker { display: none; }
@@ -467,7 +429,9 @@
       width: 100%;
       border-radius: 0.85rem;
       border: 1px solid var(--lp-border);
-      background: var(--lp-paper-soft);
+      background: color-mix(in srgb, var(--lp-paper-soft) 92%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: var(--lp-ink);
       padding: 0.75rem 1rem;
       font: inherit;
@@ -514,6 +478,7 @@
       outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
       outline-offset: 2px;
       border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+      background: var(--lp-paper-soft);
     }
 
     .composer__daily {
@@ -587,8 +552,8 @@
 </head>
 <body>
   <div class="doc">
-    <h1>Camp sheet — collapsed composer</h1>
-    <p class="doc__lede">360px click-through. Regular camp sheet with back crumb, title, battle rows, kebab, and close. The composer starts collapsed as “+ Add battle”.</p>
+    <h1>Camp view — collapsed composer</h1>
+    <p class="doc__lede">360px click-through. Full-screen camp page with camp fire behind the list. Back crumb, title, battle rows, kebab, close, and a composer that starts collapsed as “+ Add battle”.</p>
 
     <div class="doc__note">
       <h2>How to use</h2>
@@ -600,28 +565,17 @@
       </ul>
     </div>
 
-    <div class="phone" aria-label="Camp sheet mockup">
-      <div class="scene" role="presentation">
-        <img
-          class="scene__photo"
-          src="../../public/images/mountain_trail_default.webp"
-          alt=""
-          decoding="async">
-        <div class="scene__dim" aria-hidden="true"></div>
-      </div>
-
-      <div class="sheet" id="sheet">
-        <div class="sheet__panel" role="dialog" aria-labelledby="sheet-title">
-          <div class="sheet__camp-bg" aria-hidden="true">
-            <img
-              class="sheet__camp-bg__photo"
-              src="../../public/images/camp_fire_default.webp"
-              alt=""
-              decoding="async">
-          </div>
-          <div class="sheet__surface">
-          <div class="sheet__handle" aria-hidden="true"></div>
-          <div class="sheet__peek" aria-hidden="true"></div>
+    <div class="phone" aria-label="Camp view mockup">
+      <div class="camp" id="camp">
+        <div class="camp__bg" aria-hidden="true">
+          <img
+            class="camp__bg__photo"
+            src="../../public/images/camp_fire_default.webp"
+            alt=""
+            decoding="async">
+        </div>
+        <div class="camp__scrim" aria-hidden="true"></div>
+        <div class="camp__content">
           <header class="sheet__header">
             <button type="button" class="sheet__crumb" id="crumb-btn" aria-label="Back to mountain">
               <span aria-hidden="true">‹</span> My mountain
@@ -630,7 +584,7 @@
               <h2 class="sheet__title" id="sheet-title">Open a savings account</h2>
               <div class="sheet__actions">
                 <button type="button" class="sheet__icon-btn sheet__icon-btn--kebab" id="camp-kebab" aria-label="Camp menu">⋯</button>
-                <button type="button" class="sheet__icon-btn" id="close-btn" aria-label="Close sheet">✕</button>
+                <button type="button" class="sheet__icon-btn" id="close-btn" aria-label="Close camp">✕</button>
               </div>
             </div>
           </header>
@@ -691,7 +645,6 @@
                 </ul>
               </details>
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -806,11 +759,11 @@
       });
 
       document.getElementById("close-btn").addEventListener("click", function () {
-        document.getElementById("sheet").style.visibility = "hidden";
+        document.getElementById("camp").style.visibility = "hidden";
       });
 
       document.getElementById("crumb-btn").addEventListener("click", function () {
-        document.getElementById("sheet").style.visibility = "hidden";
+        document.getElementById("camp").style.visibility = "hidden";
       });
     })();
   </script>
