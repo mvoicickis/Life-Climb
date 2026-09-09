@@ -21,7 +21,7 @@
       data-battle-id="<%= battle.id %>"
       data-battle-title="<%= battle.title %>"
       data-update-url="<%= strategy_goal_path(battle) %>">
-    <%= render "life_journeys/trail_battle_check", battle: battle %>
+    <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true %>
     <details class="lp-trail-battles__kebab"
              data-controller="tcard-menu"
              data-tcard-menu-target="details"

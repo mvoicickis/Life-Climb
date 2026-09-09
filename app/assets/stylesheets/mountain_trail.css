@@ -2075,7 +2075,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
     margin 0.28s ease,
     padding 0.28s ease,
     border-width 0.28s ease;
-  max-height: 8rem;
+  max-height: 11rem;
   overflow: hidden;
   background: var(--lp-frost);
 }
@@ -2120,16 +2120,33 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   transform: rotate(45deg);
 }
 
-.lp-trail.is-v4 .lp-trail-battles__daily-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.12rem 0.45rem;
-  border-radius: var(--lp-radius-pill);
-  font-size: 0.72rem;
+.lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__repeat-tag {
+  align-self: flex-start;
+  font-size: 0.68rem;
   font-weight: 700;
+  line-height: 1.2;
   color: var(--lp-muted);
-  background: color-mix(in srgb, var(--lp-muted) 12%, var(--lp-paper));
-  border: 1px solid var(--lp-border);
+  letter-spacing: 0.02em;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__kebab-btn {
+  width: 44px;
+  height: 44px;
+  color: var(--lp-muted);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__empty,
