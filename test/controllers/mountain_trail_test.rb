@@ -115,7 +115,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select "#trail-base-sheet .lp-trail-battles__dock-spacer"
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
-    assert_select "#trail-battles-#{@project.id} input.lp-trail-battles__input[enterkeyhint='done']"
+    assert_select "#trail-battles-#{@project.id} textarea.lp-trail-battles__input[enterkeyhint='done']"
     assert_select "#trail-base-sheet input.lp-trail-battles__input[enterkeyhint='done']"
     assert_select "#trail-battles-#{@project.id} .lp-trail-plant__wheel", count: 0
   end
