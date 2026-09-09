@@ -85,7 +85,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__repeat-tag", text: chip[:label]
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__body .lp-trail-battles__repeat-tag .lp-trail-battles__repeat-icon"
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__repeat-label", text: chip[:label]
     assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__daily-chip", text: chip[:label]
     assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
                   count: 0

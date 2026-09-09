@@ -2123,24 +2123,46 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__body {
   flex: 1 1 auto;
   min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.2rem;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__name {
+  display: block;
+  width: 100%;
   font-size: 0.95rem;
   font-weight: 600;
+  line-height: 1.35;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__repeat-tag {
+  display: inline-flex;
+  align-items: center;
   align-self: flex-start;
+  gap: 0.28rem;
+  max-width: 100%;
   font-size: 0.68rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--lp-muted);
   letter-spacing: 0.02em;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__repeat-icon {
+  width: 0.82em;
+  height: 0.82em;
+  flex: 0 0 auto;
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__repeat-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__kebab-btn {
