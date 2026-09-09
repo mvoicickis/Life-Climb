@@ -228,7 +228,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     user = users(:one)
     user.update_columns(developer: true, total_points: 50)
 
-    Developer::RestartNewPlayerExperience.stub(:allowed_environment?, false) do
+    with_allowed_environment(false) do
       error = assert_raises(Developer::RestartNewPlayerExperience::Error) do
         Developer::RestartNewPlayerExperience.call(user: user)
       end
@@ -243,7 +243,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     user = users(:one)
     user.update_columns(developer: true)
 
-    Rails.stub(:env, ActiveSupport::EnvironmentInquirer.new("production")) do
+    with_rails_env("production") do
       ENV["ENABLE_DEVELOPER_TOOLS"] = "true"
       begin
         assert Developer::RestartNewPlayerExperience.allowed_environment?
@@ -254,5 +254,24 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
         ENV.delete("ENABLE_DEVELOPER_TOOLS")
       end
     end
+  end
+
+  private
+
+  def with_allowed_environment(value)
+    singleton = Developer::RestartNewPlayerExperience.singleton_class
+    original = singleton.instance_method(:allowed_environment?)
+    singleton.define_method(:allowed_environment?) { value }
+    yield
+  ensure
+    singleton.define_method(:allowed_environment?, original)
+  end
+
+  def with_rails_env(env_name)
+    previous = Rails.env
+    Rails.env = ActiveSupport::EnvironmentInquirer.new(env_name)
+    yield
+  ensure
+    Rails.env = previous
   end
 end
