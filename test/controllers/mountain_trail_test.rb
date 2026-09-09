@@ -104,6 +104,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     )
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
+    assert_no_match(/translation_missing/i, response.body)
+    assert_select "#trail-base-sheet[data-trail-battles-need-days-value=?]",
+                  I18n.t("strategy.rpg.trail.first_camp_reveal.need_days")
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__tick"
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
@@ -254,6 +257,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   test "empty camp shows seed suggestion and header camp menu" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
+    assert_no_match(/translation_missing/i, response.body)
+    assert_select "#trail-battles-#{@project.id}[data-trail-battles-need-days-value=?]",
+                  I18n.t("strategy.rpg.trail.first_camp_reveal.need_days")
     assert_select "#trail-battle-suggestion-#{@project.id}"
     assert_select ".lp-trail-battles__seed-hint", text: /Win this one to get moving/
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
