@@ -8,7 +8,6 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
   test "wipes strategy data and clears onboarding while keeping the account" do
     user = users(:one)
     user.update_columns(developer: true, total_points: 120, character: "fox")
-    action_points_before = user.total_points
 
     Onboarding::Run.call(
       user: user,
@@ -32,6 +31,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
       best_day_ap: 99
     )
     user.strategy_point_ledgers.create!(amount: 50, reason: "test") if user.strategy_point_ledgers.none?
+    user.life_point_ledgers.create!(amount: 30, reason: "battle win") if user.life_point_ledgers.none?
 
     assert_operator user.strategy_goals.count, :>, 0
     assert_operator user.life_journeys.count, :>, 0
@@ -60,12 +60,13 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_equal 0, user.practice_tasks.count
     assert_equal 0, user.strategy_point_ledgers.count
     assert_equal 0, user.strategy_points
+    assert_equal 0, user.life_point_ledgers.count
+    assert_equal 0, user.total_points
+    assert_equal 0, user.best_day_ap
 
-    # Kept: account, developer flag, Action Points
+    # Kept: account, developer flag, non-onboarding milestones
     assert User.exists?(user.id)
     assert user.read_attribute(:developer)
-    assert_equal action_points_before, user.total_points
-    assert_equal 99, user.best_day_ap
     assert_equal 0, user.climb_streak_days
     assert_nil user.climb_streak_on
     assert_equal 0, user.climb_streak_freezes
@@ -221,5 +222,56 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert user.character_chosen?
     assert user.companion_pick_done?
     refute user.needs_companion_pick?
+  end
+
+  test "raises when env guard is off" do
+    user = users(:one)
+    user.update_columns(developer: true, total_points: 50)
+
+    with_allowed_environment(false) do
+      error = assert_raises(Developer::RestartNewPlayerExperience::Error) do
+        Developer::RestartNewPlayerExperience.call(user: user)
+      end
+      assert_match(/disabled outside local environments/i, error.message)
+    end
+
+    user.reload
+    assert_equal 50, user.total_points
+  end
+
+  test "allowed when ENABLE_DEVELOPER_TOOLS is true even outside local env" do
+    user = users(:one)
+    user.update_columns(developer: true)
+
+    with_rails_env("production") do
+      ENV["ENABLE_DEVELOPER_TOOLS"] = "true"
+      begin
+        assert Developer::RestartNewPlayerExperience.allowed_environment?
+        assert_nothing_raised do
+          Developer::RestartNewPlayerExperience.call(user: user)
+        end
+      ensure
+        ENV.delete("ENABLE_DEVELOPER_TOOLS")
+      end
+    end
+  end
+
+  private
+
+  def with_allowed_environment(value)
+    singleton = Developer::RestartNewPlayerExperience.singleton_class
+    original = singleton.instance_method(:allowed_environment?)
+    singleton.define_method(:allowed_environment?) { value }
+    yield
+  ensure
+    singleton.define_method(:allowed_environment?, original)
+  end
+
+  def with_rails_env(env_name)
+    previous = Rails.env
+    Rails.env = ActiveSupport::EnvironmentInquirer.new(env_name)
+    yield
+  ensure
+    Rails.env = previous
   end
 end

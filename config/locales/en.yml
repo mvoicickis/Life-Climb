@@ -2865,7 +2865,7 @@ en:
       title: "Developer Tools"
       subtitle: "Only visible to the developer. Does not change other players."
       restart_npe: "Restart New Player Experience"
-      restart_npe_confirm: "Wipe this account’s Goals, Camps, Battles, Basics, and journeys, reset onboarding, then open the first onboarding screen? Your login account stays. Action Points are kept." # TODO: translate for lv/de/es/ru.
+      restart_npe_confirm: "Wipe this account’s Goals, Camps, Battles, Basics, and journeys, reset onboarding and Action Points to zero, then open the first onboarding screen? Your login account stays." # TODO: translate for lv/de/es/ru.
       restart_npe_done: "New Player Experience restarted — Strategy data cleared."
   feedback:
     title: "Feedback"

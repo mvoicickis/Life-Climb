@@ -51,6 +51,10 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     get settings_path
     session[Today::EodFlow::ACK_SESSION_KEY] = Date.current.to_s
     session[Today::BattlefieldDay::SESSION_KEY] = Date.current.to_s
+    session[:last_destroyed_goal] = { "user_id" => @user.id, "attrs" => {} }
+    session[:onboarding_step] = "camps"
+    session[:next_mountain] = { "area_key" => "career" }
+    session[DailyLogsController::UNDO_SESSION_KEY] = { "habit_id" => 1 }
 
     post restart_new_player_experience_developer_tools_path
     assert_redirected_to v2_onboarding_path(step: "goal")
@@ -66,6 +70,10 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     assert_nil @user.climb_streak_on
     assert_nil session[Today::EodFlow::ACK_SESSION_KEY]
     assert_nil session[Today::BattlefieldDay::SESSION_KEY]
+    assert_nil session[:last_destroyed_goal]
+    assert_nil session[:onboarding_step]
+    assert_nil session[:next_mountain]
+    assert_nil session[DailyLogsController::UNDO_SESSION_KEY]
   end
 
   test "env whitelist promotes and allows restart" do
