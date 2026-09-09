@@ -39,6 +39,8 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     assert_select ".lp-first-camp-setup__title", count: 0
     assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__menu-btn", count: 0
     assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__close", count: 0
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-battles__dock-spacer"
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-battles__composer.is-dock"
     assert_select "#trail-sheet-camp-#{@first_camp.id} input[type=submit][value=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
     assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__hint",

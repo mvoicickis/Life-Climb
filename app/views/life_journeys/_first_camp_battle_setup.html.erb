@@ -19,33 +19,36 @@
           first_camp_battle_target: "form",
           action: "submit->first-camp-battle#submit turbo:submit-end->first-camp-battle#saved"
         } do %>
-    <label class="lp-first-camp-setup__field">
-      <span class="sr-only"><%= t("strategy.rpg.trail.first_camp_reveal.title_placeholder") %></span>
-      <%= render layout: "shared/title_limit_wrap" do %>
-        <%= text_field_tag :title, nil,
-              required: true,
-              maxlength: StrategyGoal::TITLE_MAX,
-              class: "lp-first-camp-setup__input",
-              placeholder: t("strategy.rpg.trail.first_camp_reveal.title_placeholder"),
-              autocomplete: "off",
-              enterkeyhint: "done",
-              data: {
-                first_camp_battle_target: "titleField",
-                action: "keydown->first-camp-battle#titleKeydown"
-              } %>
-      <% end %>
-    </label>
-
     <%= hidden_field_tag :repeat, "none", data: { first_camp_battle_target: "repeatField" } %>
 
-    <%= submit_tag t("strategy.rpg.trail.first_camp_reveal.submit"),
-          class: "lp-first-camp-setup__submit" %>
+    <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
+    <div class="lp-trail-battles__composer is-dock lp-first-camp-setup__dock">
+      <label class="lp-first-camp-setup__field">
+        <span class="sr-only"><%= t("strategy.rpg.trail.first_camp_reveal.title_placeholder") %></span>
+        <%= render layout: "shared/title_limit_wrap" do %>
+          <%= text_field_tag :title, nil,
+                required: true,
+                maxlength: StrategyGoal::TITLE_MAX,
+                class: "lp-first-camp-setup__input",
+                placeholder: t("strategy.rpg.trail.first_camp_reveal.title_placeholder"),
+                autocomplete: "off",
+                enterkeyhint: "done",
+                data: {
+                  first_camp_battle_target: "titleField",
+                  action: "keydown->first-camp-battle#titleKeydown"
+                } %>
+        <% end %>
+      </label>
 
-    <p class="lp-first-camp-setup__hint"><%= t("strategy.rpg.trail.first_camp_reveal.dock_note") %></p>
+      <%= submit_tag t("strategy.rpg.trail.first_camp_reveal.submit"),
+            class: "lp-first-camp-setup__submit" %>
 
-    <p class="lp-first-camp-setup__error"
-       data-first-camp-battle-target="error"
-       hidden
-       role="alert"></p>
+      <p class="lp-first-camp-setup__hint"><%= t("strategy.rpg.trail.first_camp_reveal.dock_note") %></p>
+
+      <p class="lp-first-camp-setup__error"
+         data-first-camp-battle-target="error"
+         hidden
+         role="alert"></p>
+    </div>
   <% end %>
 </div>

@@ -1673,17 +1673,25 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   pointer-events: none;
 }
 
+.lp-trail.is-v4 .lp-trail-sheet {
+  --lp-sheet-vh: 100dvh;
+  --lp-keyboard-inset: 0px;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__panel {
   background: var(--lp-surface);
   color: var(--lp-ink);
   border-top: 1px solid var(--lp-border);
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--lp-keyboard-inset, 0px);
   top: auto;
   width: 100%;
   max-width: 100%;
-  max-height: min(90dvh, calc(100dvh - env(safe-area-inset-top, 0px) - 0.75rem));
+  max-height: min(
+    calc(var(--lp-sheet-vh, 100dvh) * 0.9),
+    calc(var(--lp-sheet-vh, 100dvh) - env(safe-area-inset-top, 0px) - 0.75rem)
+  );
   height: auto;
   margin: 0;
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -4569,10 +4577,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 /* First camp sheet — layout only (surface tokens are default on all v4 sheets) */
-.lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__panel {
-  max-height: 82%;
-}
-
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__handle {
   width: 2.25rem;
   height: 0.25rem;
@@ -4605,9 +4609,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__body {
   flex: 1 1 auto;
-  padding: 1rem 1.2rem 0;
+  padding: 1rem 1.2rem calc(1rem + env(safe-area-inset-bottom, 0px));
   border-radius: 0;
   margin-top: 0;
+  scroll-padding-bottom: 7.5rem;
 }
 
 .lp-first-camp-reveal {
@@ -4669,6 +4674,11 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-first-camp-setup__form {
+  display: block;
+  min-width: 0;
+}
+
+.lp-first-camp-setup__dock {
   display: grid;
   gap: 0.55rem;
 }
