@@ -17,7 +17,10 @@
       --lp-green-deep: #3dbd48;
       --lp-border: rgba(15, 23, 42, 0.1);
       --lp-tap: 2.75rem;
+      --lp-radius-card: 1.25rem;
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
       --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+      --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
       --font: "Nunito", system-ui, sans-serif;
     }
 
@@ -101,18 +104,25 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      background: var(--lp-paper);
     }
 
-    .camp__bg {
+    .camp__header-wrap {
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .camp__header-bg {
       position: absolute;
       inset: 0;
       opacity: 0.34;
       pointer-events: none;
-      z-index: 0;
       overflow: hidden;
     }
 
-    .camp__bg__photo {
+    .camp__header-bg__photo,
+    .camp__footer-bg__photo {
       display: block;
       width: 100%;
       height: 100%;
@@ -120,34 +130,12 @@
       object-position: 50% 100%;
     }
 
-    .camp__scrim {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.08) 0%,
-        rgba(255, 255, 255, 0.45) 38%,
-        rgba(255, 255, 255, 0.78) 68%,
-        rgba(255, 255, 255, 0.9) 100%
-      );
-    }
-
-    .camp__content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-      min-height: 0;
-    }
-
     .sheet__header {
+      position: relative;
+      z-index: 1;
       padding: 0.85rem 1.2rem 0.85rem;
       padding-top: calc(0.85rem + env(safe-area-inset-top, 0px));
       border-bottom: 1px solid color-mix(in srgb, var(--lp-border) 65%, transparent);
-      flex-shrink: 0;
     }
 
     .sheet__crumb {
@@ -159,7 +147,7 @@
       padding: 0 0.75rem 0 0;
       border: 1px solid var(--lp-border);
       border-radius: 0.65rem;
-      background: color-mix(in srgb, var(--lp-paper-soft) 88%, transparent);
+      background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color: var(--lp-ink);
@@ -170,7 +158,7 @@
     }
 
     .sheet__crumb:active {
-      background: color-mix(in srgb, var(--lp-paper-soft) 78%, var(--lp-muted) 12%);
+      background: color-mix(in srgb, var(--lp-paper) 78%, var(--lp-muted) 12%);
     }
 
     .sheet__title-row {
@@ -209,7 +197,7 @@
       padding: 0;
       border: 1px solid var(--lp-border);
       border-radius: 0.65rem;
-      background: color-mix(in srgb, var(--lp-paper-soft) 88%, transparent);
+      background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color: var(--lp-ink);
@@ -224,15 +212,22 @@
     }
 
     .sheet__icon-btn:active {
-      background: color-mix(in srgb, var(--lp-paper-soft) 78%, var(--lp-muted) 12%);
+      background: color-mix(in srgb, var(--lp-paper) 78%, var(--lp-muted) 12%);
     }
 
     .sheet__body {
-      padding: 1rem 1.2rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       flex: 1 1 auto;
       min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sheet__tasks {
+      background: var(--lp-paper);
+      padding: 1rem 1.2rem 0.5rem;
+      flex-shrink: 0;
     }
 
     .battle-list {
@@ -240,33 +235,55 @@
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 0.45rem;
+      gap: 0.55rem;
     }
 
     .battle-row {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.5rem;
       min-height: var(--lp-tap);
-      padding: 0.35rem 0.15rem;
-      border-radius: 0.65rem;
-      border: 0;
-      background: transparent;
+    }
+
+    .battle-row.is-open {
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--lp-radius-card);
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper);
+      box-shadow: var(--lp-shadow-card);
     }
 
     .battle-row__tick {
       flex-shrink: 0;
-      width: 1.35rem;
-      height: 1.35rem;
-      border-radius: 0.45rem;
-      border: 2px solid color-mix(in srgb, var(--lp-green) 55%, var(--lp-border));
-      background: color-mix(in srgb, var(--lp-paper) 72%, transparent);
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
       cursor: pointer;
       padding: 0;
+      display: grid;
+      place-items: center;
       position: relative;
     }
 
+    .battle-row__tick::before {
+      content: "";
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--lp-tick-ring);
+      background: var(--lp-paper);
+      display: block;
+    }
+
     .battle-row__tick.is-done {
+      cursor: default;
+    }
+
+    .battle-row__tick.is-done::before {
       background: var(--lp-green);
       border-color: var(--lp-green);
     }
@@ -274,10 +291,12 @@
     .battle-row__tick.is-done::after {
       content: "";
       position: absolute;
-      left: 0.32rem;
-      top: 0.12rem;
+      left: 50%;
+      top: 50%;
       width: 0.28rem;
       height: 0.55rem;
+      margin-top: -0.32rem;
+      margin-left: -0.16rem;
       border: solid #fff;
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
@@ -299,7 +318,7 @@
 
     .battle-row__kebab-btn {
       list-style: none;
-      width: 34px;
+      width: 44px;
       height: 44px;
       display: grid;
       place-items: center;
@@ -343,16 +362,36 @@
     }
 
     .battle-row.is-won {
-      opacity: 0.72;
+      padding: 0.2rem 0.15rem;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
     }
 
     .battle-row.is-won .battle-row__text {
       color: var(--lp-muted);
+      font-weight: 600;
       text-decoration: line-through;
     }
 
+    .camp__footer-bg {
+      position: relative;
+      flex-shrink: 0;
+      min-height: 5.5rem;
+      overflow: hidden;
+    }
+
+    .camp__footer-bg__layer {
+      position: absolute;
+      inset: 0;
+      opacity: 0.34;
+      overflow: hidden;
+    }
+
     .won-block {
-      margin-top: 0.85rem;
+      background: var(--lp-paper);
+      padding: 0.35rem 1.2rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+      flex-shrink: 0;
     }
 
     .won-block__summary {
@@ -361,42 +400,45 @@
       font-weight: 700;
       color: var(--lp-muted);
       list-style: none;
-      padding: 0.15rem 0;
+      padding: 0.55rem 0;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
     }
 
     .won-block__summary::-webkit-details-marker { display: none; }
 
     .won-block__list {
-      margin: 0.45rem 0 0;
+      margin: 0.15rem 0 0;
       padding: 0;
+      display: grid;
+      gap: 0.35rem;
     }
 
     /* —— Composer —— */
     .composer {
-      margin-top: 0.45rem;
+      margin-top: 0.55rem;
     }
 
     .composer__trigger {
       display: flex;
       align-items: center;
-      justify-content: center;
       width: 100%;
       min-height: var(--lp-tap);
       border: 0;
-      border-radius: 999px;
-      padding: 0.65rem 1rem;
+      border-radius: 0.65rem;
+      padding: 0.35rem 0.15rem;
       font: inherit;
       font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--lp-paper);
-      background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
-      box-shadow: var(--lp-shadow-cta);
+      font-weight: 700;
+      color: var(--lp-muted);
+      background: transparent;
       cursor: pointer;
+      text-align: left;
     }
 
     .composer__trigger:active {
-      transform: translateY(1px);
-      filter: brightness(0.97);
+      color: var(--lp-ink);
     }
 
     .composer__form {
@@ -407,6 +449,11 @@
         "daily";
       gap: 0.45rem;
       align-items: center;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--lp-radius-card);
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper);
+      box-shadow: var(--lp-shadow-card);
     }
 
     .composer.is-open .composer__trigger { display: none; }
@@ -429,9 +476,7 @@
       width: 100%;
       border-radius: 0.85rem;
       border: 1px solid var(--lp-border);
-      background: color-mix(in srgb, var(--lp-paper-soft) 92%, transparent);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: var(--lp-paper-soft);
       color: var(--lp-ink);
       padding: 0.75rem 1rem;
       font: inherit;
@@ -478,7 +523,7 @@
       outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
       outline-offset: 2px;
       border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
-      background: var(--lp-paper-soft);
+      background: var(--lp-paper);
     }
 
     .composer__daily {
@@ -552,30 +597,29 @@
 </head>
 <body>
   <div class="doc">
-    <h1>Camp view — collapsed composer</h1>
-    <p class="doc__lede">360px click-through. Full-screen camp page with camp fire behind the list. Back crumb, title, battle rows, kebab, close, and a composer that starts collapsed as “+ Add battle”.</p>
+    <h1>Camp view — Todoist-style cards</h1>
+    <p class="doc__lede">360px click-through. Open battles sit on solid paper cards; camp fire shows behind the header and below the list. Tap <strong>+ Add battle</strong> for the quiet add row.</p>
 
     <div class="doc__note">
       <h2>How to use</h2>
       <ul>
         <li>Tap <strong>+ Add battle</strong> to expand the composer. The input focuses automatically.</li>
         <li>Type a battle, then tap the green <strong>+</strong> or press <strong>Enter</strong> to save. Focus stays for the next one.</li>
-        <li>Tap away with an empty input to collapse back to one row.</li>
-        <li>Tick an open battle row to mark it won. Won battles fold under <strong>Won today</strong>.</li>
+        <li>Tap away with an empty input to collapse back to the quiet add row.</li>
+        <li>Tick an open card to mark it won. Won battles fold under <strong>Won today</strong>.</li>
       </ul>
     </div>
 
     <div class="phone" aria-label="Camp view mockup">
       <div class="camp" id="camp">
-        <div class="camp__bg" aria-hidden="true">
-          <img
-            class="camp__bg__photo"
-            src="../../public/images/camp_fire_default.webp"
-            alt=""
-            decoding="async">
-        </div>
-        <div class="camp__scrim" aria-hidden="true"></div>
-        <div class="camp__content">
+        <div class="camp__header-wrap">
+          <div class="camp__header-bg" aria-hidden="true">
+            <img
+              class="camp__header-bg__photo"
+              src="../../public/images/camp_fire_default.webp"
+              alt=""
+              decoding="async">
+          </div>
           <header class="sheet__header">
             <button type="button" class="sheet__crumb" id="crumb-btn" aria-label="Back to mountain">
               <span aria-hidden="true">‹</span> My mountain
@@ -588,12 +632,25 @@
               </div>
             </div>
           </header>
+        </div>
 
-          <div class="sheet__body">
+        <div class="sheet__body">
+          <div class="sheet__tasks">
             <ul class="battle-list" id="battle-list">
-              <li class="battle-row" data-battle-id="1">
+              <li class="battle-row is-open" data-battle-id="1">
                 <button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>
                 <span class="battle-row__text">Put ten dollars in the jar</span>
+                <details class="battle-row__kebab">
+                  <summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>
+                  <div class="battle-row__kebab-menu">
+                    <button type="button">Rename</button>
+                    <button type="button">Delete</button>
+                  </div>
+                </details>
+              </li>
+              <li class="battle-row is-open" data-battle-id="2">
+                <button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>
+                <span class="battle-row__text">Check savings app balance</span>
                 <details class="battle-row__kebab">
                   <summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>
                   <div class="battle-row__kebab-menu">
@@ -633,18 +690,48 @@
                 </label>
               </div>
             </div>
+          </div>
 
-            <div class="won-block">
-              <details class="won-block__details" id="won-details">
-                <summary class="won-block__summary">Won today</summary>
-                <ul class="battle-list won-block__list" id="won-list">
-                  <li class="battle-row is-won" data-battle-id="won-1">
-                    <span class="battle-row__tick is-done" aria-hidden="true"></span>
-                    <span class="battle-row__text">Set up automatic transfer</span>
-                  </li>
-                </ul>
-              </details>
+          <div class="camp__footer-bg" aria-hidden="true">
+            <div class="camp__footer-bg__layer">
+              <img
+                class="camp__footer-bg__photo"
+                src="../../public/images/camp_fire_default.webp"
+                alt=""
+                decoding="async">
             </div>
+          </div>
+
+          <div class="won-block">
+            <details class="won-block__details" id="won-details">
+              <summary class="won-block__summary" id="won-summary">Won today (6)</summary>
+              <ul class="battle-list won-block__list" id="won-list">
+                <li class="battle-row is-won" data-battle-id="won-1">
+                  <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                  <span class="battle-row__text">Set up automatic transfer</span>
+                </li>
+                <li class="battle-row is-won" data-battle-id="won-2">
+                  <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                  <span class="battle-row__text">Download bank statements</span>
+                </li>
+                <li class="battle-row is-won" data-battle-id="won-3">
+                  <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                  <span class="battle-row__text">Cancel unused subscription</span>
+                </li>
+                <li class="battle-row is-won" data-battle-id="won-4">
+                  <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                  <span class="battle-row__text">Move lunch money to savings</span>
+                </li>
+                <li class="battle-row is-won" data-battle-id="won-5">
+                  <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                  <span class="battle-row__text">Review monthly budget</span>
+                </li>
+                <li class="battle-row is-won" data-battle-id="won-6">
+                  <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                  <span class="battle-row__text">Round up spare change</span>
+                </li>
+              </ul>
+            </details>
           </div>
         </div>
       </div>
@@ -659,11 +746,16 @@
       var addBtn = document.getElementById("composer-add-btn");
       var battleList = document.getElementById("battle-list");
       var wonList = document.getElementById("won-list");
-      var wonDetails = document.getElementById("won-details");
-      var nextId = 2;
+      var wonSummary = document.getElementById("won-summary");
+      var nextId = 3;
 
       function syncAddBtn() {
         addBtn.disabled = !battleInput.value.trim();
+      }
+
+      function syncWonCount() {
+        var count = wonList.querySelectorAll(".battle-row").length;
+        wonSummary.textContent = "Won today (" + count + ")";
       }
 
       function openComposer() {
@@ -700,7 +792,7 @@
 
       function buildBattleRow(id, title) {
         var li = document.createElement("li");
-        li.className = "battle-row";
+        li.className = "battle-row is-open";
         li.dataset.battleId = String(id);
         li.innerHTML =
           '<button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>' +
@@ -731,7 +823,7 @@
           '<span class="battle-row__text">' + escapeHtml(text) + "</span>";
         wonList.appendChild(wonRow);
         row.remove();
-        wonDetails.open = true;
+        syncWonCount();
       }
 
       composerTrigger.addEventListener("click", openComposer);
@@ -765,6 +857,8 @@
       document.getElementById("crumb-btn").addEventListener("click", function () {
         document.getElementById("camp").style.visibility = "hidden";
       });
+
+      syncWonCount();
     })();
   </script>
 </body>
