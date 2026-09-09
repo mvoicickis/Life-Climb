@@ -5,10 +5,10 @@ class FirstCampRevealsController < ApplicationController
   before_action :set_journey
 
   def update
-    return head :no_content unless @journey.first_camp_reveal_pending?
+    @project = first_camp_project
+    return head :no_content if @project.blank?
 
     @journey.clear_first_camp_reveal!
-    @project = first_camp_project
     @plan = @project&.parent if @project&.parent&.plan?
     @goal = @project&.root_goal
     @area = @project&.life_area || @journey.life_area
@@ -32,13 +32,6 @@ class FirstCampRevealsController < ApplicationController
   end
 
   def first_camp_project
-    plan = current_user.strategy_goals
-      .where(life_journey_id: @journey.id)
-      .for_kind("plan")
-      .order(:position, :id)
-      .first
-    return if plan.blank?
-
-    plan.children.for_kind("project").not_holding.order(:position, :id).first
+    @journey.first_camp_reveal_project
   end
 end

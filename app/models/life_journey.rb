@@ -85,7 +85,26 @@ class LifeJourney < ApplicationRecord
   end
 
   def first_camp_reveal_pending?
+    reconcile_first_camp_reveal!
     setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG) == "pending"
+  end
+
+  # Pinned onboarding camp — nil when reveal is not active or the camp is invalid.
+  def first_camp_reveal_camp_id
+    return unless first_camp_reveal_pending?
+
+    setup_flag(Onboarding::Bootstrap::FIRST_CAMP_ID_FLAG).to_i
+  end
+
+  def first_camp_reveal_project
+    camp_id = first_camp_reveal_camp_id
+    return if camp_id.blank?
+
+    user.strategy_goals
+      .where(life_journey_id: id)
+      .for_kind("project")
+      .not_holding
+      .find_by(id: camp_id)
   end
 
   def clear_first_camp_reveal!
@@ -276,6 +295,24 @@ class LifeJourney < ApplicationRecord
   end
 
   private
+
+  def reconcile_first_camp_reveal!
+    return unless setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG) == "pending"
+
+    camp_id = setup_flag(Onboarding::Bootstrap::FIRST_CAMP_ID_FLAG).presence&.to_i
+    if camp_id.blank?
+      clear_first_camp_reveal!
+      return
+    end
+
+    project = user.strategy_goals
+      .where(life_journey_id: id)
+      .for_kind("project")
+      .not_holding
+      .find_by(id: camp_id)
+
+    clear_first_camp_reveal! if project.blank? || project.completed?
+  end
 
   def climb_list_for(kind)
     climb_items_for(kind).map { |item| item["title"] }
