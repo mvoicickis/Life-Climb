@@ -1969,10 +1969,19 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-battles__input {
+  min-height: var(--lp-tap);
+  border-radius: var(--lp-radius-pill);
+  padding: 0.75rem 1rem;
   background: var(--lp-paper);
   border-color: var(--lp-border);
   color: var(--lp-ink);
   color-scheme: light;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__input:focus {
+  outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+  outline-offset: 2px;
+  border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
 }
 
 .lp-trail.is-v4 .lp-trail-battles__input::placeholder {
@@ -1984,6 +1993,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row {
+  border-radius: var(--lp-radius-field);
   background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-ink) 4%);
   border: 1px solid var(--lp-border);
 }
@@ -2013,12 +2023,34 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-battles__switch {
+  border-radius: var(--lp-radius-pill);
   background: color-mix(in srgb, var(--lp-muted) 18%, var(--lp-paper));
   border-color: var(--lp-border);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__switch::after {
   background: var(--lp-surface);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__daily-check:checked + .lp-trail-battles__switch {
+  background: var(--lp-green);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__submit {
+  border-radius: var(--lp-radius-pill);
+  min-height: var(--lp-tap);
+  font-weight: 800;
+  color: var(--lp-surface);
+  background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
+  box-shadow: var(--lp-shadow-cta);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__submit:hover {
+  filter: brightness(0.97);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__submit:active {
+  transform: translateY(1px);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__session-toast {
@@ -4366,8 +4398,18 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border: 1px solid color-mix(in srgb, var(--lp-trail-accent, #0f9488) 35%, transparent);
 }
 
+.lp-trail.is-v4 .lp-trail-battles__add-row.is-daily-on {
+  border-radius: var(--lp-radius-field);
+  background: color-mix(in srgb, var(--lp-green) 14%, transparent);
+  border-color: color-mix(in srgb, var(--lp-green) 35%, transparent);
+}
+
 .lp-trail-battles__add-row.is-daily-on .lp-trail-battles__input {
   border-color: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 45%, transparent);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__add-row.is-daily-on .lp-trail-battles__input {
+  border-color: color-mix(in srgb, var(--lp-green) 45%, transparent);
 }
 
 .lp-trail.is-v4 .lp-trail-camp__shadow {
@@ -4713,7 +4755,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   font-weight: 800;
   color: var(--lp-surface);
   background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--lp-green) 35%, transparent);
+  box-shadow: var(--lp-shadow-cta);
   cursor: pointer;
 }
 
