@@ -441,7 +441,7 @@ module MountainTrailHelper
       return { kind: :pages, ratio: ratio.clamp(0, 1), open: 0, won: 0, total: 0 }
     end
 
-    days = mountain_trail_camp_days(project)
+    days = mountain_trail_camp_days(project).select { |day| mountain_trail_camp_due?(day) }
     total = days.size
     viewer = user || mountain_trail_viewer
     won = days.count { |day| mountain_trail_done_today?(day, user: viewer) }
@@ -544,6 +544,14 @@ module MountainTrailHelper
   # Flat due list — same rows as the Base camp sheet (for dock today_card).
   def mountain_trail_base_due_battles(projects)
     mountain_trail_daily_battles(projects).flat_map { |group| group[:battles] }
+  end
+
+  # Camp sheet open list + progress: weekly rows only on scheduled weekdays; daily/one-shot unchanged.
+  def mountain_trail_camp_due?(battle)
+    return false if battle.blank?
+    return mountain_trail_base_due?(battle) if battle.try(:repeat_weekly?)
+
+    true
   end
 
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
