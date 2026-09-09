@@ -435,6 +435,12 @@
       background: transparent;
       border: 0;
       box-shadow: none;
+      cursor: pointer;
+      min-height: var(--lp-tap);
+    }
+
+    .battle-row.is-won:active {
+      background: color-mix(in srgb, var(--lp-paper) 35%, transparent);
     }
 
     .battle-row.is-won .battle-row__text {
@@ -823,7 +829,7 @@
       </ul>
     </div>
 
-    <div class="phone" aria-label="Camp view mockup">
+    <div class="phone" id="phone" aria-label="Camp view mockup">
       <div class="camp has-won-today" id="camp">
         <div class="camp__bg" aria-hidden="true">
           <img
@@ -933,27 +939,27 @@
             </div>
             <div class="won-panel__scroll">
               <ul class="battle-list won-panel__list" id="won-list">
-                <li class="battle-row is-won" data-battle-id="won-1">
+                <li class="battle-row is-won" data-battle-id="won-seed-1" data-source-id="seed-1">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Set up automatic transfer</span>
                 </li>
-                <li class="battle-row is-won" data-battle-id="won-2">
+                <li class="battle-row is-won" data-battle-id="won-seed-2" data-source-id="seed-2">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Download bank statements</span>
                 </li>
-                <li class="battle-row is-won" data-battle-id="won-3">
+                <li class="battle-row is-won" data-battle-id="won-seed-3" data-source-id="seed-3">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Cancel unused subscription</span>
                 </li>
-                <li class="battle-row is-won" data-battle-id="won-4">
+                <li class="battle-row is-won" data-battle-id="won-seed-4" data-source-id="seed-4">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Move lunch money to savings</span>
                 </li>
-                <li class="battle-row is-won" data-battle-id="won-5">
+                <li class="battle-row is-won" data-battle-id="won-seed-5" data-source-id="seed-5">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Review monthly budget</span>
                 </li>
-                <li class="battle-row is-won" data-battle-id="won-6">
+                <li class="battle-row is-won" data-battle-id="won-seed-6" data-source-id="seed-6">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Round up spare change</span>
                 </li>
@@ -967,6 +973,7 @@
 
   <script>
     (function () {
+      var phone = document.getElementById("phone");
       var camp = document.getElementById("camp");
       var composer = document.getElementById("composer");
       var composerTrigger = document.getElementById("composer-trigger");
@@ -1133,24 +1140,31 @@
         menu.style.visibility = "";
 
         var btnRect = btn.getBoundingClientRect();
-        var campRect = camp.getBoundingClientRect();
+        var frameRect = phone.getBoundingClientRect();
+        var pad = 8;
         var gap = 4;
-        var spaceBelow = campRect.bottom - btnRect.bottom;
-        var spaceAbove = btnRect.top - campRect.top;
+        var spaceBelow = frameRect.bottom - btnRect.bottom;
+        var spaceAbove = btnRect.top - frameRect.top;
         var flipUp = spaceBelow < menuHeight + gap && spaceAbove > spaceBelow;
 
         var left = btnRect.right - menuWidth;
-        left = Math.max(campRect.left + 8, Math.min(left, campRect.right - menuWidth - 8));
+        if (left < frameRect.left + pad) {
+          left = btnRect.left;
+        }
+        if (left + menuWidth > frameRect.right - pad) {
+          left = btnRect.right - menuWidth;
+        }
+        left = Math.max(frameRect.left + pad, Math.min(left, frameRect.right - menuWidth - pad));
 
         menu.style.left = left + "px";
         menu.style.right = "auto";
         menu.style.zIndex = "30";
 
         if (flipUp) {
-          menu.style.top = Math.max(campRect.top + 8, btnRect.top - menuHeight - gap) + "px";
+          menu.style.top = Math.max(frameRect.top + pad, btnRect.top - menuHeight - gap) + "px";
           menu.style.bottom = "auto";
         } else {
-          menu.style.top = Math.min(btnRect.bottom + gap, campRect.bottom - menuHeight - 8) + "px";
+          menu.style.top = Math.min(btnRect.bottom + gap, frameRect.bottom - menuHeight - pad) + "px";
           menu.style.bottom = "auto";
         }
       }
@@ -1186,14 +1200,54 @@
         });
       }
 
-      function buildWonRow(battleId, text) {
+      function buildWonRow(battleId, text, options) {
+        options = options || {};
         var wonRow = document.createElement("li");
         wonRow.className = "battle-row is-won";
         wonRow.dataset.battleId = "won-" + battleId;
+        wonRow.dataset.sourceId = String(battleId);
+        if (options.isDaily) wonRow.dataset.daily = "true";
+        if (options.insertBefore) wonRow.dataset.insertBefore = options.insertBefore;
         wonRow.innerHTML =
           '<span class="battle-row__tick is-done" aria-hidden="true"></span>' +
           '<span class="battle-row__text">' + escapeHtml(text) + "</span>";
+        bindWonRow(wonRow);
         return wonRow;
+      }
+
+      function restoreOpenRow(sourceId, text, isDaily, insertBeforeId) {
+        var restored = buildBattleRow(sourceId, text, isDaily);
+        var insertBefore = insertBeforeId
+          ? battleList.querySelector('[data-battle-id="' + insertBeforeId + '"]')
+          : null;
+        if (insertBefore) {
+          battleList.insertBefore(restored, insertBefore);
+        } else {
+          battleList.appendChild(restored);
+        }
+        return restored;
+      }
+
+      function unwinRow(wonRow) {
+        var sourceId = wonRow.dataset.sourceId || wonRow.dataset.battleId.replace(/^won-/, "");
+        var text = wonRow.querySelector(".battle-row__text").textContent;
+        var isDaily = wonRow.dataset.daily === "true";
+        var insertBeforeId = wonRow.dataset.insertBefore || "";
+
+        wonRow.remove();
+
+        if (wonList.querySelectorAll(".battle-row").length === 0) {
+          closeWonPanel();
+        }
+
+        syncWonStrip();
+        restoreOpenRow(sourceId, text, isDaily, insertBeforeId);
+      }
+
+      function bindWonRow(wonRow) {
+        wonRow.addEventListener("click", function () {
+          unwinRow(wonRow);
+        });
       }
 
       function markWon(row) {
@@ -1202,11 +1256,14 @@
         var text = row.querySelector(".battle-row__text").textContent;
         var battleId = row.dataset.battleId;
         var nextSibling = row.nextElementSibling;
+        var isDaily = row.dataset.daily === "true";
+        var insertBefore = nextSibling ? nextSibling.dataset.battleId : "";
         var undoData = {
           text: text,
           battleId: battleId,
           nextSibling: nextSibling,
-          isDaily: row.dataset.daily === "true"
+          isDaily: isDaily,
+          insertBefore: insertBefore
         };
 
         row.classList.add("is-exiting");
@@ -1214,7 +1271,10 @@
           if (event.propertyName !== "transform") return;
           row.removeEventListener("transitionend", onExit);
           row.remove();
-          var wonRow = buildWonRow(battleId, text);
+          var wonRow = buildWonRow(battleId, text, {
+            isDaily: isDaily,
+            insertBefore: insertBefore
+          });
           wonList.appendChild(wonRow);
           undoData.wonRow = wonRow;
           syncWonStrip();
@@ -1230,12 +1290,12 @@
 
         if (data.wonRow && data.wonRow.parentNode) data.wonRow.remove();
 
-        var restored = buildBattleRow(data.battleId, data.text, data.isDaily);
-        if (data.nextSibling && data.nextSibling.parentNode === battleList) {
-          battleList.insertBefore(restored, data.nextSibling);
-        } else {
-          battleList.appendChild(restored);
-        }
+        restoreOpenRow(
+          data.battleId,
+          data.text,
+          data.isDaily,
+          data.insertBefore || (data.nextSibling ? data.nextSibling.dataset.battleId : "")
+        );
 
         syncWonStrip();
       }
@@ -1259,6 +1319,7 @@
       });
 
       battleList.querySelectorAll(".battle-row").forEach(bindOpenRow);
+      wonList.querySelectorAll(".battle-row").forEach(bindWonRow);
 
       document.querySelector(".sheet__body").addEventListener("scroll", function () {
         battleList.querySelectorAll(".battle-row__kebab[open]").forEach(positionKebabMenu);
