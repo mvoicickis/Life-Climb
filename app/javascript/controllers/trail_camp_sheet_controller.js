@@ -14,6 +14,10 @@ export default class extends Controller {
   connect() {
     this._onKey = (event) => this.onKeydown(event)
     this._onPopState = () => this.onPopState()
+    this._onViewport = () => {
+      this.syncViewportInsets()
+      this.ensureFocusedVisible()
+    }
     this._openCampId = null
     this._pushedHistory = false
     window.addEventListener("popstate", this._onPopState)
@@ -75,8 +79,7 @@ export default class extends Controller {
     this.sheetTarget.hidden = false
     this.sheetTarget.classList.add("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "false")
-    document.addEventListener("keydown", this._onKey)
-    if (!alreadyOpen) this.pushSheetHistory()
+    this.bindSheetGuards({ alreadyOpen })
   }
 
   baseTitle() {
@@ -125,15 +128,14 @@ export default class extends Controller {
     this.sheetTarget.hidden = false
     this.sheetTarget.classList.add("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "false")
-    document.addEventListener("keydown", this._onKey)
-
-    if (!alreadyOpen) this.pushSheetHistory()
+    this.bindSheetGuards({ alreadyOpen })
 
     requestAnimationFrame(() => {
       const focusable = this.panelTarget?.querySelector(
         "button, [href], input, textarea, [tabindex]:not([tabindex='-1'])"
       )
       focusable?.focus({ preventScroll: true })
+      this.ensureFocusedVisible()
     })
   }
 
@@ -162,6 +164,87 @@ export default class extends Controller {
     if (this._pushedHistory) return
     history.pushState({ lpTrailCampSheet: this._openCampId || true }, "", window.location.href)
     this._pushedHistory = true
+  }
+
+  bindSheetGuards({ alreadyOpen = false } = {}) {
+    document.addEventListener("keydown", this._onKey)
+    this.bindViewportGuards()
+    if (!alreadyOpen) this.pushSheetHistory()
+  }
+
+  bindViewportGuards() {
+    this.unbindViewportGuards()
+    this.syncViewportInsets()
+    window.addEventListener("resize", this._onViewport)
+    window.visualViewport?.addEventListener("resize", this._onViewport)
+    window.visualViewport?.addEventListener("scroll", this._onViewport)
+
+    this._onInputFocus = () => this.ensureFocusedVisible()
+    if (this.hasPanelTarget) {
+      this.panelTarget.querySelectorAll("input, textarea").forEach((input) => {
+        input.addEventListener("focus", this._onInputFocus)
+      })
+    }
+  }
+
+  unbindViewportGuards() {
+    window.removeEventListener("resize", this._onViewport)
+    window.visualViewport?.removeEventListener("resize", this._onViewport)
+    window.visualViewport?.removeEventListener("scroll", this._onViewport)
+
+    if (this._onInputFocus && this.hasPanelTarget) {
+      this.panelTarget.querySelectorAll("input, textarea").forEach((input) => {
+        input.removeEventListener("focus", this._onInputFocus)
+      })
+    }
+  }
+
+  syncViewportInsets() {
+    if (!this.hasSheetTarget) return
+
+    const sheet = this.sheetTarget
+    const viewport = window.visualViewport
+
+    if (viewport) {
+      sheet.style.setProperty("--lp-sheet-vh", `${viewport.height}px`)
+      const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+      sheet.style.setProperty("--lp-keyboard-inset", `${inset}px`)
+    } else {
+      sheet.style.setProperty("--lp-sheet-vh", `${window.innerHeight}px`)
+      sheet.style.setProperty("--lp-keyboard-inset", "0px")
+    }
+  }
+
+  resetViewportInsets() {
+    if (!this.hasSheetTarget) return
+
+    this.sheetTarget.style.removeProperty("--lp-sheet-vh")
+    this.sheetTarget.style.removeProperty("--lp-keyboard-inset")
+  }
+
+  ensureFocusedVisible() {
+    if (!this.hasPanelTarget || !this.hasSheetTarget) return
+    if (!this.sheetTarget.classList.contains("is-open")) return
+
+    const active = document.activeElement
+    let input = null
+
+    if (active instanceof HTMLElement && this.panelTarget.contains(active)) {
+      input = active.matches("input, textarea") ? active : active.closest("input, textarea")
+    }
+
+    input ||= this.panelTarget.querySelector("input:focus, textarea:focus")
+
+    const target =
+      input?.closest(".lp-trail-battles__composer.is-dock") ||
+      input ||
+      this.panelTarget.querySelector(".lp-trail-battles__composer.is-dock")
+
+    if (!target) return
+
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" })
+    })
   }
 
   stop(event) {
@@ -241,6 +324,8 @@ export default class extends Controller {
 
   teardown() {
     document.removeEventListener("keydown", this._onKey)
+    this.unbindViewportGuards()
+    this.resetViewportInsets()
     if (!this.hasSheetTarget) return
 
     if (this.revealPendingValue && this.hasDismissUrlValue) {
