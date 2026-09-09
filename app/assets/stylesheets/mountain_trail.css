@@ -1138,8 +1138,10 @@
 }
 
 .lp-trail.is-v4 .lp-trail-battles__kebab-menu {
-  background: #2a1d12;
-  color: #f7ead9;
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  border: 1px solid var(--lp-border);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
 }
 
 .lp-trail-battles__inline {
@@ -1646,7 +1648,7 @@
   50% { filter: brightness(1.08) drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.45)) drop-shadow(0 0 14px color-mix(in srgb, var(--lp-trail-accent) 60%, transparent)); }
 }
 
-/* Dark battle sheet — viewport-fixed like plant sheet (#352 parity) */
+/* Light battle sheet — viewport-fixed like plant sheet (#352 parity) */
 .lp-trail.is-v4 .lp-trail-sheet.is-open,
 .lp-trail.is-v4 .lp-trail-sheet:not([hidden]) {
   position: fixed;
@@ -1672,8 +1674,9 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
-  background: linear-gradient(165deg, #2b1c10, #1b120a 55%, #140d07);
-  color: #f7ead9;
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  border-top: 1px solid var(--lp-border);
   left: 0;
   right: 0;
   bottom: 0;
@@ -1693,20 +1696,20 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   transition: transform .3s cubic-bezier(.2,.9,.3,1.15);
-  box-shadow: 0 -12px 40px rgba(18, 32, 26, 0.28);
+  box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__backdrop {
-  background: rgba(10, 12, 8, 0.5);
+  background: rgba(15, 23, 42, 0.28);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__handle {
-  background: rgba(247, 234, 217, 0.35);
+  background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__title {
   font-family: var(--lp-trail-display);
-  color: #fbf3e6;
+  color: var(--lp-ink);
   overflow-wrap: anywhere;
   word-break: break-word;
   max-width: 100%;
@@ -1717,7 +1720,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   font-size: 0.88rem;
   font-weight: 500;
   line-height: 1.4;
-  color: rgba(247, 234, 217, 0.75);
+  color: var(--lp-muted);
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -1759,12 +1762,13 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   position: sticky;
   top: 0;
   z-index: 3;
-  color: #f7ead9;
+  color: var(--lp-ink);
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
-  background: linear-gradient(165deg, #2b1c10, #1b120a 55%, #140d07);
+  background: var(--lp-surface);
+  border-bottom: 1px solid var(--lp-border);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__crumb {
@@ -1775,20 +1779,19 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   max-width: 100%;
   margin: 0;
   padding: 0 0.75rem 0 0;
-  border: 1px solid rgba(158, 228, 216, 0.45);
+  border: 1px solid var(--lp-border);
   border-radius: 0.65rem;
-  background: rgba(15, 148, 136, 0.28);
-  color: #d8fff8;
+  background: var(--lp-paper);
+  color: var(--lp-ink);
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__crumb:active {
-  background: rgba(15, 148, 136, 0.4);
+  background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-muted) 12%);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__title-row {
@@ -1824,10 +1827,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   height: 44px;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(247, 234, 217, 0.28);
+  border: 1px solid var(--lp-border);
   border-radius: 0.65rem;
-  background: rgba(255, 255, 255, 0.12);
-  color: #f7ead9;
+  background: var(--lp-paper);
+  color: var(--lp-ink);
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
@@ -1838,13 +1841,13 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-sheet__menu-btn:focus-visible,
 .lp-trail.is-v4 .lp-trail-sheet__camp-menu.is-menu-open .lp-trail-sheet__menu-btn,
 .lp-trail.is-v4 .lp-trail-sheet__menu-btn[aria-expanded="true"] {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(247, 234, 217, 0.42);
+  background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-muted) 12%);
+  border-color: color-mix(in srgb, var(--lp-border) 70%, var(--lp-muted) 30%);
   outline: none;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__menu-btn:active {
-  background: rgba(255, 255, 255, 0.26);
+  background: color-mix(in srgb, var(--lp-paper) 82%, var(--lp-muted) 18%);
 }
 
 .lp-trail-sheet__actions {
@@ -1863,10 +1866,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   height: 44px;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(247, 234, 217, 0.28);
+  border: 1px solid var(--lp-border);
   border-radius: 0.65rem;
-  background: rgba(255, 255, 255, 0.12);
-  color: #f7ead9;
+  background: var(--lp-paper);
+  color: var(--lp-ink);
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -1875,13 +1878,33 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail-sheet__close:hover,
 .lp-trail.is-v4 .lp-trail-sheet__close:focus-visible {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(247, 234, 217, 0.42);
+  background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-muted) 12%);
+  border-color: color-mix(in srgb, var(--lp-border) 70%, var(--lp-muted) 30%);
   outline: none;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__close:active {
-  background: rgba(255, 255, 255, 0.26);
+  background: color-mix(in srgb, var(--lp-paper) 82%, var(--lp-muted) 18%);
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__crumb-arrow {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__crumb-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--lp-ink);
 }
 
 .lp-trail-sheet__crumb-arrow {
@@ -1905,8 +1928,8 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__body {
-  background: transparent;
-  color: #f7ead9;
+  background: var(--lp-surface);
+  color: var(--lp-ink);
   max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
@@ -1928,52 +1951,116 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   margin: 0.35rem 0 0.5rem;
   font-size: 0.82rem;
   font-weight: 700;
-  color: rgba(247, 234, 217, 0.68);
+  color: var(--lp-muted);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__stats {
   margin: 0 0 0.5rem;
   font-size: 0.78rem;
-  color: rgba(247,234,217,0.7);
+  color: var(--lp-muted);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__input {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(247,234,217,0.2);
-  color: #fbf3e6;
+  background: var(--lp-paper);
+  border-color: var(--lp-border);
+  color: var(--lp-ink);
+  color-scheme: light;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__input::placeholder {
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__field .lp-title-limit__count {
+  color: var(--lp-muted);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(247,234,217,0.12);
+  background: color-mix(in srgb, var(--lp-paper) 88%, var(--lp-ink) 4%);
+  border: 1px solid var(--lp-border);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__empty,
 .lp-trail.is-v4 .lp-trail-battles__done summary {
-  color: rgba(247,234,217,0.65);
+  color: var(--lp-muted);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__delete {
-  color: rgba(247,234,217,0.7);
+  color: #b91c1c;
   background: transparent;
   border: 0;
 }
 
+.lp-trail.is-v4 .lp-trail-battles__row-delete,
+.lp-trail.is-v4 .lp-trail-battles__undo-win {
+  color: #b91c1c;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__daily {
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__daily-label {
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__switch {
+  background: color-mix(in srgb, var(--lp-muted) 18%, var(--lp-paper));
+  border-color: var(--lp-border);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__switch::after {
+  background: var(--lp-surface);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__session-toast {
+  background: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 12%, var(--lp-paper));
+  border-color: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 28%, var(--lp-border));
+  color: var(--lp-ink);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__pages-label {
+  color: var(--lp-ink);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__pages-bar {
+  background: color-mix(in srgb, var(--lp-muted) 16%, var(--lp-paper));
+}
+
+.lp-trail.is-v4 .lp-trail-battles__pages-hint {
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-base-sheet__grp {
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer {
+  background: linear-gradient(180deg, var(--lp-surface) 70%, color-mix(in srgb, var(--lp-surface) 92%, transparent) 100%);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__rename {
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__rename .lp-trail-battles__input,
+.lp-trail.is-v4 .lp-trail-battles__rename .lp-trail-battles__textarea {
+  background: var(--lp-paper);
+  border-color: var(--lp-border);
+  color: var(--lp-ink);
+  color-scheme: light;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__rename-actions button[type="button"] {
+  background: var(--lp-paper);
+  border: 1px solid var(--lp-border);
+  color: var(--lp-ink);
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__glow {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 120px;
-  pointer-events: none;
-  border-radius: 1.25rem 1.25rem 0 0;
-  background: radial-gradient(
-    ellipse 80% 100% at 50% 0%,
-    color-mix(in srgb, var(--lp-trail-accent, #0f9488) 45%, transparent),
-    transparent 70%
-  );
-  opacity: 0.85;
-  z-index: 0;
+  display: none;
 }
 
 .lp-trail-battles__composer {
@@ -2548,33 +2635,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   white-space: nowrap;
 }
 
-.lp-trail.is-v4 .lp-trail-battles__kind {
-  background: rgba(15, 148, 136, 0.22);
-  color: #9ee4d8;
-}
-
-.lp-trail.is-v4 .lp-trail-battles__kind.is-basics {
-  background: rgba(124, 58, 237, 0.22);
-  color: #c4b5fd;
-}
-
-.lp-trail.is-v4 .lp-trail-battles__row.is-basics .lp-trail-battles__basics-amt {
-  color: rgba(255, 255, 255, 0.62);
-}
-
-.lp-trail.is-v4 .lp-trail-battles__basics-add {
-  background: rgba(124, 58, 237, 0.32);
-  color: #ddd6fe;
-}
-
-.lp-trail.is-v4 .lp-trail-battles__basics-undo {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.lp-trail.is-v4 .lp-trail-battles__kind.is-daily {
-  background: rgba(216, 137, 42, 0.22);
-  color: #f3d19a;
-}
 
 .lp-trail-base-sheet__grp {
   margin: 0.65rem 0 0.35rem;
@@ -4411,7 +4471,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   z-index: 3;
   margin: calc(-1 * (var(--lp-trail-add-dock) + 1.5rem)) 0 0;
   padding: 0.65rem 0 0.15rem;
-  background: linear-gradient(0deg, #2b1c10 70%, rgba(27, 18, 10, 0.92) 100%);
+  background: linear-gradient(0deg, var(--lp-surface) 70%, color-mix(in srgb, var(--lp-surface) 92%, transparent) 100%);
 }
 
 @keyframes lp-trail-toast-in {
@@ -4502,35 +4562,19 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* First camp sheet — onboarding green on white (docs/mockups/first-camp-plan.html) */
-.lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__backdrop {
-  background: rgba(15, 23, 42, 0.28);
-}
-
-.lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__glow {
-  display: none;
-}
-
+/* First camp sheet — layout only (surface tokens are default on all v4 sheets) */
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__panel {
   max-height: 82%;
-  background: #fff;
-  color: #0f172a;
-  border-top: 1px solid rgba(15, 23, 42, 0.1);
-  box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
 }
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__handle {
   width: 2.25rem;
   height: 0.25rem;
   margin: 0.55rem auto 0.35rem;
-  background: color-mix(in srgb, #475569 35%, transparent);
 }
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__header {
   padding: 0.35rem 1.2rem 0.85rem;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
-  background: #fff;
-  color: #0f172a;
 }
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__crumb,
@@ -4548,15 +4592,12 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #0f172a;
   line-height: 1.2;
 }
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__body {
   flex: 1 1 auto;
   padding: 1rem 1.2rem 0;
-  background: #fff;
-  color: #0f172a;
   border-radius: 0;
   margin-top: 0;
 }
