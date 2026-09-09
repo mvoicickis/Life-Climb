@@ -273,17 +273,18 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_operator header_index, :<, battles_index
   end
 
-  test "empty camp shows seed suggestion and header camp menu" do
+  test "empty camp shows add battle CTA without seed suggestion" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_no_match(/translation_missing/i, response.body)
     assert_select "#trail-battles-#{@project.id}[data-trail-battles-need-days-value=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.need_days")
-    assert_select "#trail-battle-suggestion-#{@project.id}"
-    assert_select ".lp-trail-battles__seed-hint", text: /Win this one to get moving/
+    assert_select "#trail-battle-suggestion-#{@project.id}", count: 0
+    assert_select ".lp-trail-battles__seed-hint", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger", text: /Add battle/
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
     assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCampDescription']"
-    assert_select "#trail-battles-#{@project.id} input[name=seed_win][value='1']"
+    assert_select "#trail-battles-#{@project.id} input[name=seed_win]", count: 0
   end
 
   test "camp with a battle hides seed suggestion" do
@@ -298,7 +299,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
   end
 
-  test "camp with only won battles shows next seed suggestion" do
+  test "camp with only won battles shows add battle CTA without seed suggestion" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
@@ -309,16 +310,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battle-suggestion-#{@project.id}"
-    assert_select ".lp-trail-battles__seed-hint"
+    assert_select "#trail-battle-suggestion-#{@project.id}", count: 0
+    assert_select ".lp-trail-battles__seed-hint", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger"
     assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
-  end
-
-  test "seed suggestion tick form requests turbo stream" do
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_response :success
-    assert_select "#trail-battle-suggestion-#{@project.id} form[data-turbo-stream='true']"
-    assert_select "#trail-battle-suggestion-#{@project.id} input[name=seed_win][value='1']"
   end
 
   test "battle won toast host sits below camp sheet header" do

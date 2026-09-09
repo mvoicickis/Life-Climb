@@ -286,7 +286,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       (() => {
         const root = document.querySelector("#trail-battles-#{@project.id}");
         const anchor = root?.querySelector(".lp-trail-battles__list li:last-child")
-          || root?.querySelector(".lp-trail-battles__seed-hint");
+          || root?.querySelector(".lp-trail-battles__composer-trigger");
         const composer = root?.querySelector(".lp-trail-battles__composer");
         const menuBtn = document.querySelector("#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn");
         if (!anchor || !composer || !menuBtn) return null;
