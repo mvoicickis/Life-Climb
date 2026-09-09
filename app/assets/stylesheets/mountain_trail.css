@@ -4664,7 +4664,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--lp-ink);
   line-height: 1.45;
 }
 
@@ -4685,35 +4685,35 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-first-camp-setup__input {
   width: 100%;
-  min-height: 2.75rem;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  min-height: var(--lp-tap);
+  border-radius: var(--lp-radius-pill);
+  border: 1px solid var(--lp-border);
   padding: 0.75rem 1rem;
   font: inherit;
   font-size: 1rem;
   font-weight: 600;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--lp-paper);
+  color: var(--lp-ink);
 }
 
 .lp-first-camp-setup__input:focus {
-  outline: 2px solid color-mix(in srgb, #57d35b 55%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
   outline-offset: 2px;
-  border-color: color-mix(in srgb, #57d35b 35%, rgba(15, 23, 42, 0.1));
+  border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
 }
 
 .lp-first-camp-setup__submit {
   width: 100%;
-  min-height: 2.75rem;
+  min-height: var(--lp-tap);
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--lp-radius-pill);
   padding: 0.65rem 1rem;
   font: inherit;
   font-size: 1rem;
   font-weight: 800;
-  color: #fff;
-  background: linear-gradient(180deg, #57d35b 0%, #3dbd48 100%);
-  box-shadow: 0 8px 18px color-mix(in srgb, #57d35b 35%, transparent);
+  color: var(--lp-surface);
+  background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--lp-green) 35%, transparent);
   cursor: pointer;
 }
 
@@ -4729,7 +4729,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   margin: 0;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--lp-muted);
   text-align: center;
 }
 
