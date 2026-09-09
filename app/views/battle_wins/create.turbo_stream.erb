@@ -9,7 +9,8 @@
           won_battles: @won_battles,
           area: @project.life_area,
           goal: @goal,
-          plan: @plan %>
+          plan: @plan,
+          reveal: true %>
   <% end %>
   <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <%= render "life_journeys/trail_climber_stream" %>
