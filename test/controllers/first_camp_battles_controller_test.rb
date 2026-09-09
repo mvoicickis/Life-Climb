@@ -42,6 +42,21 @@ class FirstCampBattlesControllerTest < ActionDispatch::IntegrationTest
     assert @user.daily_todos.for_day(Date.current).exists?(strategy_goal_id: battle.id)
   end
 
+  test "create via form submit clears reveal and saves battle" do
+    get life_journey_path(@journey)
+
+    assert_response :success
+    assert_select "form.lp-first-camp-setup__form input[type=submit]"
+
+    post life_journey_first_camp_battles_path(@journey),
+         params: { title: "Study for 20 minutes", repeat: "none" },
+         as: :turbo_stream
+
+    assert_response :success
+    refute @journey.reload.first_camp_reveal_pending?
+    assert_equal "Study for 20 minutes", @project.reload.children.for_kind("day").sole.title
+  end
+
   test "create accepts weekly repeat with weekdays" do
     post life_journey_first_camp_battles_path(@journey),
          params: {
