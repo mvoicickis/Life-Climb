@@ -11,7 +11,6 @@
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
-<% battle_suggestion = open_battles.empty? && !pages_mode ? mountain_trail_battle_suggestion(project) : nil %>
 <% add_form = capture do %>
   <%= form_with url: strategy_goals_path,
         method: :post,
@@ -108,25 +107,13 @@
     </div>
   <% else %>
     <div class="lp-trail-battles__scroll">
-      <% if open_battles.empty? && battle_suggestion.present? %>
-        <p class="lp-trail-battles__seed-hint" id="trail-battles-seed-hint-<%= project.id %>"><%= t("strategy.rpg.trail.seed_battle_hint") %></p>
-      <% end %>
       <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
-        <% if open_battles.empty? && battle_suggestion.present? %>
-          <%= render "life_journeys/trail_battle_suggestion_row",
-                project: project,
-                suggestion: battle_suggestion,
-                area: area,
-                goal: goal,
-                plan: plan %>
-        <% else %>
-          <% open_battles.each_with_index do |battle, index| %>
-            <%= render "life_journeys/trail_battle_row",
-                  battle: battle,
-                  done: false,
-                  show_move_up: index.positive?,
-                  show_move_down: index < open_battles.size - 1 %>
-          <% end %>
+        <% open_battles.each_with_index do |battle, index| %>
+          <%= render "life_journeys/trail_battle_row",
+                battle: battle,
+                done: false,
+                show_move_up: index.positive?,
+                show_move_down: index < open_battles.size - 1 %>
         <% end %>
       </ul>
 

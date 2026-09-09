@@ -203,7 +203,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
     assert todo.completed?
     assert_match "trail-battles-#{project.id}", response.body
-    assert_match "trail-battle-suggestion-#{project.id}", response.body
+    assert_no_match "trail-battle-suggestion-#{project.id}", response.body
 
     get life_journey_path(@journey, goal_id: goal.id, plan_id: plan.id, focus_id: project.id)
     assert_response :success
