@@ -42,4 +42,33 @@ class StrategyGoalRepeatTest < ActiveSupport::TestCase
     assert_equal "none", day.repeat
     assert_not day.repeat_daily?
   end
+
+  test "advance_recurring_schedule! moves daily to the day after the win" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    day = @user.strategy_goals.create!(
+      life_area: @area, parent: @camp_leaf, horizon: "day",
+      title: "Stretch", scheduled_on: Date.current, repeat: "daily", position: 0
+    )
+
+    day.advance_recurring_schedule!(after: Date.current)
+
+    assert_equal Date.current + 1.day, day.reload.scheduled_on
+    assert_nil day.completed_at
+  end
+
+  test "second daily win on the same day after reopen does not skip a day" do
+    @camp_leaf = practice_leaf_for!(@camp)
+    day = @user.strategy_goals.create!(
+      life_area: @area, parent: @camp_leaf, horizon: "day",
+      title: "Stretch", scheduled_on: Date.current, repeat: "daily", position: 0
+    )
+
+    day.advance_recurring_schedule!(after: Date.current)
+    assert_equal Date.current + 1.day, day.reload.scheduled_on
+
+    # Reopen clears today's todo but leaves scheduled_on at tomorrow.
+    day.advance_recurring_schedule!(after: Date.current)
+
+    assert_equal Date.current + 1.day, day.reload.scheduled_on
+  end
 end

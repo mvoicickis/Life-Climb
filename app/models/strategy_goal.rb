@@ -180,8 +180,9 @@ class StrategyGoal < ApplicationRecord
   def advance_recurring_schedule!(after: Date.current)
     anchor = after.to_date
     if repeat_daily?
-      next_day = [ anchor + 1.day, (scheduled_on || anchor) + 1.day ].max
-      update!(scheduled_on: next_day, completed_at: nil)
+      # Anchor on the win date only — scheduled_on may already be tomorrow after
+      # a reopen+re-win, and max(..., scheduled_on+1) would skip a day.
+      update!(scheduled_on: anchor + 1.day, completed_at: nil)
     elsif repeat_weekly?
       update!(scheduled_on: next_weekly_occurrence(after: anchor), completed_at: nil)
     end
