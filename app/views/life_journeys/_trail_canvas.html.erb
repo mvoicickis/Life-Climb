@@ -530,6 +530,15 @@
           </div>
         <% end %>
       </div>
+      <% unless first_camp_reveal %>
+        <% projects.each do |project| %>
+          <%= render "life_journeys/trail_camp_panel_overlays",
+                project: project,
+                goal: goal,
+                plan: plan,
+                area: area %>
+        <% end %>
+      <% end %>
     </div>
   </div>
 

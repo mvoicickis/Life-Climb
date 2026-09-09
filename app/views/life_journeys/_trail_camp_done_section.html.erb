@@ -1,47 +1,51 @@
 <%# Won today strip + expandable panel. locals: project, won_battles, area, goal, plan %>
 <% project = local_assigns.fetch(:project) %>
 <% won_battles = local_assigns.fetch(:won_battles) %>
-<% if won_battles.any? %>
-  <button type="button"
-          class="lp-trail-battles__won-strip lp-frost"
-          id="trail-battles-won-strip-<%= project.id %>"
-          data-trail-battles-target="wonStrip"
-          data-action="click->trail-battles#toggleWonPanel"
-          aria-expanded="false"
-          aria-controls="trail-battles-won-panel-<%= project.id %>">
-    <span id="trail-battles-won-strip-label-<%= project.id %>">
-      <%= t("strategy.rpg.trail.won_battles_fold") %> (<%= won_battles.size %>)
-    </span>
-    <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
-  </button>
-
-  <div class="lp-trail-battles__won-panel"
-       id="trail-battles-won-panel-<%= project.id %>"
-       data-trail-battles-target="wonPanel"
-       aria-hidden="true">
+<div id="trail-battles-done-slot-<%= project.id %>"
+     class="lp-trail-sheet__done-slot <%= 'has-won-today' if won_battles.any? %>"
+     data-camp-overlay-panel="<%= project.id %>"
+     hidden
+     aria-hidden="true">
+  <% if won_battles.any? %>
     <button type="button"
-            class="lp-trail-battles__won-panel-backdrop"
-            data-action="click->trail-battles#closeWonPanel"
-            aria-label="<%= t('strategy.sheet.close') %>"></button>
-    <div class="lp-trail-battles__won-panel-sheet lp-frost">
-      <div class="lp-trail-battles__won-panel-head">
-        <span class="lp-trail-battles__won-panel-title" id="trail-battles-won-panel-head-<%= project.id %>">
-          <%= t("strategy.rpg.trail.won_battles_fold") %> (<%= won_battles.size %>)
-        </span>
-        <button type="button"
-                class="lp-trail-battles__won-panel-close"
-                data-action="click->trail-battles#closeWonPanel"
-                aria-label="<%= t('strategy.sheet.close') %>">
-          <span aria-hidden="true">▾</span>
-        </button>
-      </div>
-      <div class="lp-trail-battles__won-panel-scroll">
-        <ul class="lp-trail-battles__list is-done" id="trail-battles-done-list-<%= project.id %>">
-          <% won_battles.each do |battle| %>
-            <%= render "life_journeys/trail_battle_row", battle: battle %>
-          <% end %>
-        </ul>
+            class="lp-trail-battles__won-strip lp-frost"
+            id="trail-battles-won-strip-<%= project.id %>"
+            data-action="click->trail-camp-sheet#toggleWonPanel"
+            aria-expanded="false"
+            aria-controls="trail-battles-won-panel-<%= project.id %>">
+      <span id="trail-battles-won-strip-label-<%= project.id %>">
+        <%= t("strategy.rpg.trail.won_battles_fold") %> (<%= won_battles.size %>)
+      </span>
+      <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
+    </button>
+
+    <div class="lp-trail-battles__won-panel"
+         id="trail-battles-won-panel-<%= project.id %>"
+         aria-hidden="true">
+      <button type="button"
+              class="lp-trail-battles__won-panel-backdrop"
+              data-action="click->trail-camp-sheet#closeWonPanel"
+              aria-label="<%= t('strategy.sheet.close') %>"></button>
+      <div class="lp-trail-battles__won-panel-sheet lp-frost">
+        <div class="lp-trail-battles__won-panel-head">
+          <span class="lp-trail-battles__won-panel-title" id="trail-battles-won-panel-head-<%= project.id %>">
+            <%= t("strategy.rpg.trail.won_battles_fold") %> (<%= won_battles.size %>)
+          </span>
+          <button type="button"
+                  class="lp-trail-battles__won-panel-close"
+                  data-action="click->trail-camp-sheet#closeWonPanel"
+                  aria-label="<%= t('strategy.sheet.close') %>">
+            <span aria-hidden="true">▾</span>
+          </button>
+        </div>
+        <div class="lp-trail-battles__won-panel-scroll">
+          <ul class="lp-trail-battles__list is-done" id="trail-battles-done-list-<%= project.id %>">
+            <% won_battles.each do |battle| %>
+              <%= render "life_journeys/trail_battle_row", battle: battle %>
+            <% end %>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>

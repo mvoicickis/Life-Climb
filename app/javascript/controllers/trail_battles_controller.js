@@ -9,7 +9,7 @@ export default class extends Controller {
     "descriptionDialog", "descriptionField", "sessionToast", "addRow",
     "pickDaysDialog", "weekdaysRow", "pickDaysError",
     "composer", "composerTrigger", "composerForm", "composerAddBtn",
-    "wonStrip", "wonPanel", "doneSlot", "winToastSlot", "winToast"
+    "winToast"
   ]
 
   static values = {
@@ -332,7 +332,47 @@ export default class extends Controller {
     if (!event.detail?.success) return
 
     this.scheduleWinToastDismiss()
-    this.element.classList.add("has-won-today")
+    this.syncWonTodayState(true)
+  }
+
+  syncWonTodayState(on) {
+    const doneSlot = this.doneSlotElement()
+    const panel = this.sheetPanelElement()
+    doneSlot?.classList.toggle("has-won-today", on)
+    panel?.classList.toggle("has-won-today", on)
+    if (on) {
+      doneSlot?.removeAttribute("hidden")
+      doneSlot?.setAttribute("aria-hidden", "false")
+      this.winToastSlotElement()?.removeAttribute("hidden")
+    }
+  }
+
+  projectId() {
+    return this.element.dataset.projectId
+  }
+
+  sheetPanelElement() {
+    return this.element.closest(".lp-trail-sheet__panel")
+  }
+
+  doneSlotElement() {
+    const id = this.projectId()
+    return id ? document.getElementById(`trail-battles-done-slot-${id}`) : null
+  }
+
+  winToastSlotElement() {
+    const id = this.projectId()
+    return id ? document.getElementById(`trail-camp-win-toast-slot-${id}`) : null
+  }
+
+  wonStripElement() {
+    const id = this.projectId()
+    return id ? document.getElementById(`trail-battles-won-strip-${id}`) : null
+  }
+
+  wonPanelElement() {
+    const id = this.projectId()
+    return id ? document.getElementById(`trail-battles-won-panel-${id}`) : null
   }
 
   scheduleWinToastDismiss() {
@@ -342,7 +382,8 @@ export default class extends Controller {
 
   clearWinToast() {
     window.clearTimeout(this._winToastTimer)
-    if (this.hasWinToastSlotTarget) this.winToastSlotTarget.innerHTML = ""
+    const slot = this.winToastSlotElement()
+    if (slot) slot.innerHTML = ""
   }
 
   dismissWinToast() {
@@ -437,8 +478,9 @@ export default class extends Controller {
   }
 
   toggleWonPanel() {
-    if (!this.hasWonPanelTarget) return
-    if (this.wonPanelTarget.classList.contains("is-open")) {
+    const wonPanel = this.wonPanelElement()
+    if (!wonPanel) return
+    if (wonPanel.classList.contains("is-open")) {
       this.closeWonPanel()
     } else {
       this.openWonPanel()
@@ -446,19 +488,25 @@ export default class extends Controller {
   }
 
   openWonPanel() {
-    if (!this.hasWonPanelTarget) return
-    this.wonPanelTarget.classList.add("is-open")
-    this.wonPanelTarget.setAttribute("aria-hidden", "false")
-    this.element.classList.add("is-won-panel-open")
-    if (this.hasWonStripTarget) this.wonStripTarget.setAttribute("aria-expanded", "true")
+    const wonPanel = this.wonPanelElement()
+    const panel = this.sheetPanelElement()
+    const wonStrip = this.wonStripElement()
+    if (!wonPanel) return
+    wonPanel.classList.add("is-open")
+    wonPanel.setAttribute("aria-hidden", "false")
+    panel?.classList.add("is-won-panel-open")
+    wonStrip?.setAttribute("aria-expanded", "true")
   }
 
   closeWonPanel() {
-    if (!this.hasWonPanelTarget) return
-    this.wonPanelTarget.classList.remove("is-open")
-    this.wonPanelTarget.setAttribute("aria-hidden", "true")
-    this.element.classList.remove("is-won-panel-open")
-    if (this.hasWonStripTarget) this.wonStripTarget.setAttribute("aria-expanded", "false")
+    const wonPanel = this.wonPanelElement()
+    const panel = this.sheetPanelElement()
+    const wonStrip = this.wonStripElement()
+    if (!wonPanel) return
+    wonPanel.classList.remove("is-open")
+    wonPanel.setAttribute("aria-hidden", "true")
+    panel?.classList.remove("is-won-panel-open")
+    wonStrip?.setAttribute("aria-expanded", "false")
   }
 
   beginAddSubmit(event) {

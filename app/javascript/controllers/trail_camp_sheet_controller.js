@@ -76,6 +76,7 @@ export default class extends Controller {
     this.revealBodyFor({ dataset: { campId: "base" } })
     this._openCampId = "base"
     this.hideCampMenus()
+    this.hideCampOverlays()
     this.sheetTarget.hidden = false
     this.sheetTarget.classList.add("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "false")
@@ -124,6 +125,7 @@ export default class extends Controller {
     this.revealBodyFor(camp)
     this._openCampId = camp.dataset.campId || null
     this.showCampMenu(this._openCampId)
+    this.showCampOverlays(this._openCampId)
 
     this.sheetTarget.hidden = false
     this.sheetTarget.classList.add("is-open")
@@ -274,6 +276,52 @@ export default class extends Controller {
     })
   }
 
+  showCampOverlays(campId) {
+    if (!this.hasSheetTarget) return this.hideCampOverlays()
+
+    let panelHasWon = false
+    this.sheetTarget.querySelectorAll("[data-camp-overlay-panel]").forEach((overlay) => {
+      const match = campId && overlay.dataset.campOverlayPanel === String(campId)
+      overlay.hidden = !match
+      overlay.toggleAttribute("hidden", !match)
+      overlay.setAttribute("aria-hidden", match ? "false" : "true")
+      if (match && overlay.classList.contains("has-won-today")) panelHasWon = true
+    })
+
+    if (this.hasPanelTarget) {
+      this.panelTarget.classList.toggle("has-won-today", panelHasWon)
+      this.panelTarget.classList.remove("is-won-panel-open")
+    }
+  }
+
+  hideCampOverlays() {
+    if (!this.hasSheetTarget) return
+
+    this.sheetTarget.querySelectorAll("[data-camp-overlay-panel]").forEach((overlay) => {
+      overlay.hidden = true
+      overlay.setAttribute("hidden", "")
+      overlay.setAttribute("aria-hidden", "true")
+    })
+
+    if (this.hasPanelTarget) {
+      this.panelTarget.classList.remove("has-won-today", "is-won-panel-open")
+    }
+  }
+
+  toggleWonPanel(event) {
+    event?.preventDefault()
+    this.activeTrailBattlesController()?.toggleWonPanel()
+  }
+
+  closeWonPanel(event) {
+    event?.preventDefault()
+    this.activeTrailBattlesController()?.closeWonPanel()
+  }
+
+  dismissWinToast(event) {
+    this.activeTrailBattlesController()?.dismissWinToast()
+  }
+
   hideCampMenus() {
     if (!this.hasSheetTarget) return
 
@@ -333,6 +381,7 @@ export default class extends Controller {
     }
 
     this.hideCampMenus()
+    this.hideCampOverlays()
     this.sheetTarget.classList.remove("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true

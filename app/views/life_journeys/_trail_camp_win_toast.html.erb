@@ -5,7 +5,6 @@
      role="status"
      aria-live="polite"
      data-controller="camp-win-toast"
-     data-trail-battles-target="winToast"
      data-battle-id="<%= battle.id %>">
   <span><%= t("strategy.rpg.trail.win_toast") %></span>
   <span aria-hidden="true">·</span>
@@ -17,7 +16,7 @@
           data: {
             turbo: true,
             turbo_stream: true,
-            action: "submit->trail-battles#dismissWinToast"
+            action: "submit->trail-camp-sheet#dismissWinToast"
           }
         } %>
 </div>
