@@ -1,0 +1,20 @@
+<%# Panel-level win toast + won strip/panel for one camp. locals: project, goal, plan, area %>
+<% project = local_assigns.fetch(:project) %>
+<% area = local_assigns[:area] || project.life_area %>
+<% goal = local_assigns[:goal] %>
+<% plan = local_assigns[:plan] %>
+<% days = project.children.select(&:day?).reject(&:holding?) %>
+<% mountain_trail_preload_done_today!(current_user, days) %>
+<% won_battles = days.select { |d| mountain_trail_done_today?(d) } %>
+
+<div id="trail-camp-win-toast-slot-<%= project.id %>"
+     class="lp-trail-sheet__win-toast-slot"
+     data-camp-overlay-panel="<%= project.id %>"
+     hidden></div>
+
+<%= render "life_journeys/trail_camp_done_section",
+      project: project,
+      won_battles: won_battles,
+      area: area,
+      goal: goal,
+      plan: plan %>

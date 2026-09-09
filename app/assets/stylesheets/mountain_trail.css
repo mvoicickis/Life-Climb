@@ -1680,6 +1680,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
   --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
+  --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
   position: relative;
   background: var(--lp-paper-soft);
   color: var(--lp-ink);
@@ -1995,6 +1996,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   scroll-padding-bottom: 7.5rem;
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__panel.has-won-today .lp-trail-sheet__body {
+  padding-bottom: var(--won-strip-height);
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__camp {
   min-height: 100%;
 }
@@ -2043,8 +2048,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-battles {
-  --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
-  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -2052,15 +2055,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-battles__scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   padding: 1rem 1.2rem 0.85rem;
-}
-
-.lp-trail.is-v4 .lp-trail-battles.has-won-today .lp-trail-battles__scroll {
-  padding-bottom: var(--won-strip-height);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open,
@@ -4667,22 +4662,25 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-v4 .lp-trail-battles__composer-trigger {
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: var(--lp-tap);
-  border: 1px solid var(--lp-border);
-  border-radius: var(--lp-radius-card);
-  padding: 0.55rem 0.85rem;
+  border: 0;
+  border-radius: var(--lp-radius-pill);
+  padding: 0.85rem 1.5rem;
   font: inherit;
   font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--lp-muted);
+  font-weight: 800;
+  color: #fff;
+  background: var(--lp-green);
+  box-shadow: var(--lp-shadow-cta);
   cursor: pointer;
-  text-align: left;
-  box-shadow: var(--lp-shadow-card);
+  text-align: center;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__composer-trigger:active {
-  color: var(--lp-ink);
+  background: var(--lp-green-deep);
+  color: #fff;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__composer.is-open .lp-trail-battles__composer-trigger {
@@ -4736,13 +4734,21 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   box-shadow: none;
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__done-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+
 .lp-trail.is-v4 .lp-trail-battles__won-strip {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 12;
+  z-index: 1;
   display: none;
+  pointer-events: auto;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
@@ -4759,7 +4765,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   white-space: nowrap;
 }
 
-.lp-trail.is-v4 .lp-trail-battles.has-won-today .lp-trail-battles__won-strip {
+.lp-trail.is-v4 .lp-trail-sheet__done-slot.has-won-today .lp-trail-battles__won-strip {
   display: flex;
 }
 
@@ -4770,14 +4776,14 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   transition: transform 0.22s ease;
 }
 
-.lp-trail.is-v4 .lp-trail-battles.is-won-panel-open .lp-trail-battles__won-strip-chevron {
+.lp-trail.is-v4 .lp-trail-sheet__panel.is-won-panel-open .lp-trail-battles__won-strip-chevron {
   transform: rotate(180deg);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__won-panel {
   position: absolute;
   inset: 0;
-  z-index: 16;
+  z-index: 2;
   pointer-events: none;
   visibility: hidden;
 }
@@ -4913,7 +4919,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   transform: rotate(45deg);
 }
 
-.lp-trail.is-v4 .lp-trail-battles__win-toast-slot {
+.lp-trail.is-v4 .lp-trail-sheet__win-toast-slot {
   position: absolute;
   left: 1rem;
   right: 1rem;
@@ -4922,7 +4928,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   pointer-events: none;
 }
 
-.lp-trail.is-v4 .lp-trail-battles.has-won-today .lp-trail-battles__win-toast-slot {
+.lp-trail.is-v4 .lp-trail-sheet__panel.has-won-today .lp-trail-sheet__win-toast-slot {
   bottom: calc(var(--won-strip-height) + 0.65rem);
 }
 

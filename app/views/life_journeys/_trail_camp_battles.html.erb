@@ -61,7 +61,7 @@
   <% end %>
 <% end %>
 
-<div class="lp-trail-battles <%= 'is-pages-mode' if pages_mode %> <%= 'has-won-today' if won_battles.any? %>"
+<div class="lp-trail-battles <%= 'is-pages-mode' if pages_mode %>"
      id="trail-battles-<%= project.id %>"
      style="--lp-trail-accent: <%= accent %>"
      data-controller="trail-battles"
@@ -134,7 +134,7 @@
         <div class="lp-trail-battles__composer"
              data-trail-battles-target="composer">
           <button type="button"
-                  class="lp-trail-battles__composer-trigger lp-frost"
+                  class="lp-trail-battles__composer-trigger"
                   data-trail-battles-target="composerTrigger"
                   data-action="click->trail-battles#openComposer">
             + <%= t("strategy.rpg.trail.add_battle") %>
@@ -146,20 +146,6 @@
           </div>
         </div>
       <% end %>
-    </div>
-
-    <div id="trail-camp-win-toast-slot-<%= project.id %>"
-         class="lp-trail-battles__win-toast-slot"
-         data-trail-battles-target="winToastSlot"></div>
-
-    <div id="trail-battles-done-slot-<%= project.id %>"
-         data-trail-battles-target="doneSlot">
-      <%= render "life_journeys/trail_camp_done_section",
-            project: project,
-            won_battles: won_battles,
-            area: area,
-            goal: goal,
-            plan: plan %>
     </div>
   <% end %>
 
