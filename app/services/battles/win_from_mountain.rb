@@ -45,6 +45,8 @@ module Battles
       end
 
       if battle.repeat_recurring?
+        return Result.new(awarded: 0, battle: battle.reload, flash: flash_data) if todo.blank?
+
         battle.advance_recurring_schedule!(after: Date.current)
         Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area) if battle.life_area
         return Result.new(awarded: 0, battle: battle.reload, flash: flash_data)

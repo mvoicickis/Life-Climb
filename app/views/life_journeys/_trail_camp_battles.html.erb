@@ -6,7 +6,7 @@
 <% days = project.children.select(&:day?).reject(&:holding?) %>
 <% mountain_trail_preload_done_today!(current_user, days) %>
 <% days = days.sort_by { |d| [ mountain_trail_done_today?(d) ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
-<% open_battles = days.reject { |d| mountain_trail_done_today?(d) } %>
+<% open_battles = days.select { |d| mountain_trail_camp_due?(d) }.reject { |d| mountain_trail_done_today?(d) } %>
 <% won_battles = days.select { |d| mountain_trail_done_today?(d) } %>
 <% accent = mountain_trail_project_accent(project) %>
 <% quantified = project.quantified? %>

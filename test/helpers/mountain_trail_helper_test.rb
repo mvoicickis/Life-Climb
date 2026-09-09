@@ -453,6 +453,70 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 0, queries
   end
 
+  test "camp due hides weekly battles on off days" do
+    off_day = (Date.current.wday + 1) % 7
+    weekly = Struct.new(:repeat_weekly?, :repeat_daily?, :completed?, :completed_at, :scheduled_on, :repeats_on?).new(
+      true, false, false, nil, Date.current, false
+    )
+    due_weekly = Struct.new(:repeat_weekly?, :repeat_daily?, :completed?, :completed_at, :scheduled_on, :repeats_on?).new(
+      true, false, false, nil, Date.current, true
+    )
+    daily = Struct.new(:repeat_weekly?, :repeat_daily?).new(false, true)
+    one_shot = Struct.new(:repeat_weekly?, :repeat_daily?).new(false, false)
+
+    assert_not mountain_trail_camp_due?(weekly)
+    assert mountain_trail_camp_due?(due_weekly)
+    assert mountain_trail_camp_due?(daily)
+    assert mountain_trail_camp_due?(one_shot)
+  end
+
+  test "camp open list excludes off-day weekly battles" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Weekly camp filter")
+    project = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    off_day = (Date.current.wday + 1) % 7
+    weekly = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "Off-day weekly",
+      scheduled_on: Date.current,
+      repeat: "weekly",
+      repeat_weekdays: [ off_day ],
+      position: 1
+    )
+    mountain_trail_preload_done_today!(user, project.children.select(&:day?))
+
+    open = project.children.select(&:day?).select { |day| mountain_trail_camp_due?(day) }
+      .reject { |day| mountain_trail_done_today?(day, user: user) }
+
+    refute_includes open.map(&:id), weekly.id
+  end
+
+  test "camp progress excludes off-day weekly battles from open count" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Weekly progress")
+    project = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    off_day = (Date.current.wday + 1) % 7
+    user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "Off-day weekly",
+      scheduled_on: Date.current,
+      repeat: "weekly",
+      repeat_weekdays: [ off_day ],
+      position: 1
+    )
+    mountain_trail_preload_done_today!(user, project.children.select(&:day?))
+
+    progress = mountain_trail_camp_progress(project, user: user)
+    assert_equal 1, progress[:open]
+    assert_equal 1, progress[:total]
+  end
+
   test "camp progress counts daily wins as won today" do
     user = users(:one)
     journey = seed_climb!(user, today_mission: "Camp progress")
