@@ -4910,15 +4910,32 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-won {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.2rem 0.15rem;
+  padding: 0;
   background: transparent;
   border: 0;
   box-shadow: none;
-  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__reopen-form {
+  display: block;
+  margin: 0;
+  width: 100%;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__won-row-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
   min-height: var(--lp-tap);
+  padding: 0.2rem 0.15rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: inherit;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-won .lp-trail-battles__name {

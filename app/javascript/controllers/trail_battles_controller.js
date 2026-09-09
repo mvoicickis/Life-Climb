@@ -390,29 +390,12 @@ export default class extends Controller {
     this.clearWinToast()
   }
 
-  reopenWonBattle(event) {
-    if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") return
-    event.preventDefault()
+  battleReopened(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-battles__reopen-form")) return
+    if (!event.detail?.success) return
 
-    const row = event.currentTarget
-    const url = row.dataset.reopenUrl
-    if (!url) return
-
-    const token = document.querySelector("meta[name='csrf-token']")?.content
-    const body = new URLSearchParams()
-    body.set("authenticity_token", token || "")
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "text/vnd.turbo-stream.html, text/html",
-        "X-CSRF-Token": token || ""
-      },
-      body,
-      credentials: "same-origin"
-    }).then((response) => response.text()).then((html) => {
-      if (window.Turbo?.renderStreamMessage) window.Turbo.renderStreamMessage(html)
-    })
+    this.closeWonPanel()
   }
 
   openComposer() {

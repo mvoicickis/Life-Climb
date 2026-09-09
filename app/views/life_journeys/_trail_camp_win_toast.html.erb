@@ -13,10 +13,11 @@
         method: :post,
         class: "lp-trail-battles__win-toast-undo",
         form: {
+          class: "lp-trail-battles__reopen-form",
           data: {
             turbo: true,
             turbo_stream: true,
-            action: "submit->trail-camp-sheet#dismissWinToast"
+            action: "submit->trail-camp-sheet#dismissWinToast turbo:submit-end->trail-battles#battleReopened"
           }
         } %>
 </div>
