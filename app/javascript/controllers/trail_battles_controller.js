@@ -6,7 +6,8 @@ export default class extends Controller {
   static targets = [
     "titleField", "repeatField", "dailyToggle", "quantityField", "quantityToggle",
     "unitField", "unitMirrorField", "unitWrap", "renameDialog", "renameField",
-    "descriptionDialog", "descriptionField", "sessionToast", "addRow"
+    "descriptionDialog", "descriptionField", "sessionToast", "addRow",
+    "pickDaysDialog", "weekdaysRow", "pickDaysError"
   ]
 
   static values = {
@@ -16,10 +17,13 @@ export default class extends Controller {
     lifeAreaId: Number,
     lifeJourneyId: Number,
     parentId: Number,
-    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" }
+    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" },
+    needDays: String
   }
 
   connect() {
+    this._pickDays = new Set()
+    this._pickDaysUrl = null
     this.styleDailyRow()
     this.styleQuantityRow()
   }
@@ -122,6 +126,101 @@ export default class extends Controller {
   closeDescription(event) {
     event?.preventDefault()
     this.descriptionDialogTarget?.close?.()
+  }
+
+  openPickDays(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.hasPickDaysDialogTarget) return
+
+    const button = event.currentTarget
+    this._pickDaysUrl = button.dataset.updateUrl
+    this._pickDays = new Set()
+    const preset = (button.dataset.weekdays || "").split(",").filter((day) => day !== "")
+    preset.forEach((day) => this._pickDays.add(day))
+
+    this.weekdaysRowTarget.querySelectorAll(".lp-first-camp-setup__weekday").forEach((el) => {
+      const on = this._pickDays.has(el.dataset.day)
+      el.classList.toggle("is-on", on)
+    })
+
+    this.clearPickDaysError()
+    event.currentTarget.closest("details")?.removeAttribute("open")
+    this.pickDaysDialogTarget.showModal?.() || (this.pickDaysDialogTarget.open = true)
+  }
+
+  closePickDays(event) {
+    event?.preventDefault()
+    this.pickDaysDialogTarget?.close?.()
+  }
+
+  togglePickDay(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    const button = event.currentTarget
+    const day = button.dataset.day
+    if (this._pickDays.has(day)) {
+      this._pickDays.delete(day)
+      button.classList.remove("is-on")
+    } else {
+      this._pickDays.add(day)
+      button.classList.add("is-on")
+    }
+  }
+
+  async savePickDays(event) {
+    event.preventDefault()
+    const url = this._pickDaysUrl
+    if (!url) return
+
+    if (this._pickDays.size === 0) {
+      this.showPickDaysError(this.needDaysValue || "Pick at least one day.")
+      return
+    }
+
+    const token = document.querySelector("meta[name='csrf-token']")?.content
+    const body = new URLSearchParams()
+    body.set("repeat", "weekly")
+    body.set("authenticity_token", token || "")
+    this._pickDays.forEach((day) => body.append("repeat_weekdays[]", day))
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Accept: "text/vnd.turbo-stream.html, text/html",
+        "X-CSRF-Token": token || ""
+      },
+      body,
+      credentials: "same-origin"
+    })
+
+    this.closePickDays()
+    if (response.redirected) {
+      window.location.href = response.url
+      return
+    }
+    if (response.ok) {
+      const html = await response.text()
+      if (html.includes("turbo-stream")) {
+        window.Turbo?.renderStreamMessage?.(html)
+        return
+      }
+    }
+    window.location.reload()
+  }
+
+  showPickDaysError(message) {
+    if (!this.hasPickDaysErrorTarget) return
+    this.pickDaysErrorTarget.textContent = message
+    this.pickDaysErrorTarget.hidden = false
+    this.pickDaysErrorTarget.removeAttribute("hidden")
+  }
+
+  clearPickDaysError() {
+    if (!this.hasPickDaysErrorTarget) return
+    this.pickDaysErrorTarget.textContent = ""
+    this.pickDaysErrorTarget.hidden = true
+    this.pickDaysErrorTarget.setAttribute("hidden", "")
   }
 
   async saveCamp(event) {

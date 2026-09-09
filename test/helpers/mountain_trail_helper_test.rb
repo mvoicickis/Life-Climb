@@ -453,6 +453,28 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 0, queries
   end
 
+  test "repeat weekday chip returns short labels and aria text for weekly battles" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Chip helper")
+    project = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    battle = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "Weekly chip",
+      scheduled_on: Date.current,
+      repeat: "weekly",
+      repeat_weekdays: [ 1, 3, 5 ],
+      position: 9
+    )
+
+    chip = mountain_trail_repeat_weekday_chip(battle)
+    assert_equal "M W F", chip[:label]
+    assert_equal "Monday, Wednesday, Friday", chip[:aria_label]
+    assert_nil mountain_trail_repeat_weekday_chip(project)
+  end
+
   test "camp due hides weekly battles on off days" do
     user = users(:one)
     journey = seed_climb!(user, today_mission: "Camp due weekly")

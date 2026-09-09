@@ -18,7 +18,7 @@
             show_move_down: false %>
     <% end %>
   <% end %>
-  <% if @created.repeat_daily? %>
+  <% if @created.repeat_recurring? %>
     <%= turbo_stream.replace "trail-base-sheet" do %>
       <%= render "life_journeys/trail_base_sheet",
             projects: mountain_trail_open_camps(@plan),

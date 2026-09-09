@@ -1,0 +1,7 @@
+<%# Repeat frequency chip for battle rows. locals: battle %>
+<% battle = local_assigns.fetch(:battle) %>
+<% if battle.repeat_daily? %>
+  <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
+<% elsif chip = mountain_trail_repeat_weekday_chip(battle) %>
+  <span class="lp-trail-battles__daily-chip" aria-label="<%= chip[:aria_label] %>"><%= chip[:label] %></span>
+<% end %>

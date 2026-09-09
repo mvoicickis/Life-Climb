@@ -6,9 +6,7 @@
     <span class="lp-trail-battles__check is-static">
       <span class="lp-trail-battles__box is-won" aria-hidden="true">✓</span>
       <span class="lp-trail-battles__name"><%= battle.title %></span>
-      <% if battle.repeat_daily? %>
-        <span class="lp-trail-battles__daily-chip"><%= t("strategy.rpg.trail.daily") %></span>
-      <% end %>
+      <%= render "life_journeys/trail_battle_repeat_chip", battle: battle %>
     </span>
     <%= button_to battle_reopen_path(battle),
           method: :post,

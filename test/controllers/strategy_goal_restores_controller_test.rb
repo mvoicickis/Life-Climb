@@ -50,4 +50,24 @@ class StrategyGoalRestoresControllerTest < ActionDispatch::IntegrationTest
     post strategy_goal_restores_path
     assert_response :redirect
   end
+
+  test "restores stashed weekly day battle with weekdays" do
+    project = @user.strategy_goals.create!(
+      title: "Camp", horizon: "project", parent: @plan,
+      life_area: @area, life_journey: @journey, position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      title: "Guitar", horizon: "day", parent: project,
+      life_area: @area, life_journey: @journey, position: 0,
+      scheduled_on: Date.current, repeat: "weekly", repeat_weekdays: [ 1, 3, 5 ]
+    )
+    delete strategy_goal_path(battle)
+    assert_nil StrategyGoal.find_by(id: battle.id)
+
+    post strategy_goal_restores_path
+    assert_response :redirect
+    restored = @user.strategy_goals.find_by!(title: "Guitar")
+    assert restored.repeat_weekly?
+    assert_equal [ 1, 3, 5 ], restored.repeat_weekdays_array
+  end
 end

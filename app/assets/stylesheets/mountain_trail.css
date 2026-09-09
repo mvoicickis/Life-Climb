@@ -2180,6 +2180,12 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   gap: 0.4rem;
 }
 
+.lp-trail-battles__check.is-static {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
 .lp-trail-battles__check,
 .lp-trail-battles__check-form {
   flex: 1;

@@ -931,6 +931,50 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, first.reload.position
   end
 
+  test "creating a weekly practice persists repeat weekdays on the model" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: project.id, horizon: "day", scheduled_on: Date.current.to_s,
+      title: "Guitar", repeat: "weekly", repeat_weekdays: [ 1, 3, 5 ]
+    }
+    battle = @user.strategy_goals.for_kind("day").find_by!(title: "Guitar")
+    assert battle.repeat_weekly?
+    assert_equal [ 1, 3, 5 ], battle.repeat_weekdays_array
+  end
+
+  test "day battles can update weekly repeat weekdays" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Guitar", scheduled_on: Date.current, repeat: "weekly",
+      repeat_weekdays: [ 1, 3 ], position: 0
+    )
+
+    patch strategy_goal_path(battle),
+          params: { repeat: "weekly", repeat_weekdays: [ 2, 4 ] },
+          as: :turbo_stream
+    assert_response :success
+    assert_equal [ 2, 4 ], battle.reload.repeat_weekdays_array
+  end
+
   test "day battles can toggle daily and log-a-number from update" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0

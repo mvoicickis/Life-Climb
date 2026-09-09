@@ -38,6 +38,7 @@ class StrategyGoalsController < ApplicationController
     )
     apply_quantity_params!(goal) if kind == "project" && parent&.plan?
     apply_quantity_params!(goal) if kind == "day"
+    apply_repeat_weekdays!(goal) if kind == "day"
     apply_color_key_params!(goal) if kind == "project"
     apply_camp_mode_params!(goal) if kind == "project"
     apply_trail_params!(goal) if kind == "project"
@@ -186,6 +187,8 @@ class StrategyGoalsController < ApplicationController
     if goal.day? && params.key?(:repeat)
       goal.repeat = parse_repeat("day")
     end
+
+    apply_repeat_weekdays!(goal) if goal.day?
 
     if goal.day? && params.key?(:scheduled_on)
       goal.scheduled_on = parse_day_schedule_param(params[:scheduled_on])
@@ -523,6 +526,7 @@ class StrategyGoalsController < ApplicationController
         "position" => goal.position,
         "scheduled_on" => goal.scheduled_on,
         "repeat" => goal.repeat,
+        "repeat_weekdays" => goal.repeat_weekdays,
         "color_key" => goal.color_key,
         "accent_hex" => (goal.has_attribute?(:accent_hex) ? goal.accent_hex : nil),
         "camp_mode" => (goal.has_attribute?(:camp_mode) ? goal.camp_mode : "battles"),
@@ -568,6 +572,14 @@ class StrategyGoalsController < ApplicationController
 
     value = params[:repeat].to_s
     StrategyGoal::REPEAT_KINDS.include?(value) ? value : "none"
+  end
+
+  def apply_repeat_weekdays!(goal)
+    return unless goal.day?
+    return unless params.key?(:repeat_weekdays) || params[:repeat].to_s == "weekly"
+
+    weekdays = Array(params[:repeat_weekdays]).map(&:to_i).select { |w| (0..6).cover?(w) }.uniq
+    goal.repeat_weekdays = weekdays
   end
 
   # Day goals require a date — "later" / blank moves practice off today (tomorrow).
