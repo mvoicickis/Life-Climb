@@ -22,6 +22,7 @@
       --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
       --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
       --lp-frost: color-mix(in srgb, var(--lp-paper) 78%, transparent);
+      --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
       --font: "Nunito", system-ui, sans-serif;
     }
 
@@ -229,13 +230,14 @@
       -webkit-overflow-scrolling: touch;
       flex: 1 1 auto;
       min-height: 0;
-      display: flex;
-      flex-direction: column;
+    }
+
+    .camp.has-won-today .sheet__body {
+      padding-bottom: var(--won-strip-height);
     }
 
     .sheet__tasks {
-      padding: 1rem 1.2rem 0.5rem;
-      flex-shrink: 0;
+      padding: 1rem 1.2rem 0.85rem;
     }
 
     .battle-list {
@@ -258,6 +260,27 @@
       border-radius: var(--lp-radius-card);
       border: 1px solid var(--lp-border);
       box-shadow: var(--lp-shadow-card);
+      transition:
+        transform 0.28s ease,
+        opacity 0.28s ease,
+        max-height 0.28s ease,
+        margin 0.28s ease,
+        padding 0.28s ease,
+        border-width 0.28s ease;
+      max-height: 8rem;
+      overflow: hidden;
+    }
+
+    .battle-row.is-open.is-exiting {
+      transform: translateX(108%);
+      opacity: 0;
+      max-height: 0;
+      margin-top: -0.55rem;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-width: 0;
+      box-shadow: none;
+      pointer-events: none;
     }
 
     .battle-row__tick {
@@ -381,30 +404,150 @@
       text-decoration: line-through;
     }
 
-    .won-block {
-      padding: 0.35rem 1.2rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
-      flex-shrink: 0;
-    }
-
-    .won-block__summary {
-      cursor: pointer;
+    .won-strip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 12;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      min-height: var(--lp-tap);
+      padding: 0 1.2rem env(safe-area-inset-bottom, 0px);
+      border: 0;
+      border-top: 1px solid var(--lp-border);
+      font: inherit;
       font-size: 0.82rem;
       font-weight: 700;
       color: var(--lp-muted);
-      list-style: none;
-      padding: 0.55rem 0.85rem;
-      min-height: 44px;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .camp.has-won-today .won-strip {
       display: flex;
+    }
+
+    .won-strip__chevron {
+      display: inline-block;
+      font-size: 0.72rem;
+      line-height: 1;
+      transition: transform 0.22s ease;
+    }
+
+    .camp.is-won-panel-open .won-strip__chevron {
+      transform: rotate(180deg);
+    }
+
+    .win-toast {
+      position: absolute;
+      left: 1rem;
+      right: 1rem;
+      bottom: calc(0.65rem + env(safe-area-inset-bottom, 0px));
+      z-index: 14;
+      display: none;
       align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      min-height: var(--lp-tap);
+      padding: 0.55rem 1rem;
       border-radius: var(--lp-radius-card);
       border: 1px solid var(--lp-border);
       box-shadow: var(--lp-shadow-card);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--lp-ink);
     }
 
-    .won-block__summary::-webkit-details-marker { display: none; }
+    .camp.has-won-today .win-toast {
+      bottom: calc(var(--won-strip-height) + 0.65rem);
+    }
 
-    .won-block__list {
-      margin: 0.15rem 0 0;
+    .win-toast.is-visible {
+      display: flex;
+    }
+
+    .win-toast__undo {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      font: inherit;
+      font-size: inherit;
+      font-weight: 800;
+      color: var(--lp-green-deep);
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .won-panel {
+      position: absolute;
+      inset: 0;
+      z-index: 16;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .won-panel.is-open {
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .won-panel__backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      padding: 0;
+      background: color-mix(in srgb, var(--lp-ink) 35%, transparent);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      cursor: pointer;
+    }
+
+    .won-panel.is-open .won-panel__backdrop {
+      opacity: 1;
+    }
+
+    .won-panel__sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-height: min(72dvh, 520px);
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--lp-radius-card) var(--lp-radius-card) 0 0;
+      border-top: 1px solid var(--lp-border);
+      box-shadow: 0 -12px 36px rgba(15, 23, 42, 0.12);
+      transform: translateY(100%);
+      transition: transform 0.28s ease;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .won-panel.is-open .won-panel__sheet {
+      transform: translateY(0);
+    }
+
+    .won-panel__head {
+      flex-shrink: 0;
+      padding: 0.85rem 1.2rem 0.55rem;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      text-align: center;
+    }
+
+    .won-panel__scroll {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 1.2rem 1rem;
+    }
+
+    .won-panel__list {
+      margin: 0;
       padding: 0;
       display: grid;
       gap: 0.35rem;
@@ -592,7 +735,7 @@
 <body>
   <div class="doc">
     <h1>Camp view — frosted glass over camp fire</h1>
-    <p class="doc__lede">360px click-through. Camp fire fills the page at 0.34; open battles, header, add row, and Won today sit on frosted panels with sharp fire in the gaps.</p>
+    <p class="doc__lede">360px click-through. Tick a battle to slide it out and show a 5s undo toast. Won today is a fixed bottom strip; tap it to slide the done list up.</p>
 
     <div class="doc__note">
       <h2>How to use</h2>
@@ -600,12 +743,12 @@
         <li>Tap <strong>+ Add battle</strong> to expand the composer. The input focuses automatically.</li>
         <li>Type a battle, then tap the green <strong>+</strong> or press <strong>Enter</strong> to save. Focus stays for the next one.</li>
         <li>Tap away with an empty input to collapse back to the quiet add row.</li>
-        <li>Tick an open card to mark it won. Won battles fold under <strong>Won today</strong>.</li>
+        <li>Tick an open card to slide it out. Tap <strong>Undo</strong> on the toast within 5 seconds, or open <strong>Won today</strong> at the bottom.</li>
       </ul>
     </div>
 
     <div class="phone" aria-label="Camp view mockup">
-      <div class="camp" id="camp">
+      <div class="camp has-won-today" id="camp">
         <div class="camp__bg" aria-hidden="true">
           <img
             class="camp__bg__photo"
@@ -685,11 +828,25 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="won-block">
-            <details class="won-block__details" id="won-details">
-              <summary class="won-block__summary lp-frost" id="won-summary">Won today (6)</summary>
-              <ul class="battle-list won-block__list" id="won-list">
+        <div class="win-toast lp-frost" id="win-toast" role="status" aria-live="polite">
+          <span>Won</span>
+          <span aria-hidden="true">·</span>
+          <button type="button" class="win-toast__undo" id="win-toast-undo">Undo</button>
+        </div>
+
+        <button type="button" class="won-strip lp-frost" id="won-strip" aria-expanded="false" aria-controls="won-panel">
+          <span id="won-strip-label">Won today (6)</span>
+          <span class="won-strip__chevron" aria-hidden="true">▾</span>
+        </button>
+
+        <div class="won-panel" id="won-panel" aria-hidden="true">
+          <button type="button" class="won-panel__backdrop" id="won-backdrop" aria-label="Close won list"></button>
+          <div class="won-panel__sheet lp-frost">
+            <div class="won-panel__head" id="won-panel-head">Won today (6)</div>
+            <div class="won-panel__scroll">
+              <ul class="battle-list won-panel__list" id="won-list">
                 <li class="battle-row is-won" data-battle-id="won-1">
                   <span class="battle-row__tick is-done" aria-hidden="true"></span>
                   <span class="battle-row__text">Set up automatic transfer</span>
@@ -715,7 +872,7 @@
                   <span class="battle-row__text">Round up spare change</span>
                 </li>
               </ul>
-            </details>
+            </div>
           </div>
         </div>
       </div>
@@ -724,22 +881,69 @@
 
   <script>
     (function () {
+      var camp = document.getElementById("camp");
       var composer = document.getElementById("composer");
       var composerTrigger = document.getElementById("composer-trigger");
       var battleInput = document.getElementById("battle-input");
       var addBtn = document.getElementById("composer-add-btn");
       var battleList = document.getElementById("battle-list");
       var wonList = document.getElementById("won-list");
-      var wonSummary = document.getElementById("won-summary");
+      var wonStrip = document.getElementById("won-strip");
+      var wonStripLabel = document.getElementById("won-strip-label");
+      var wonPanel = document.getElementById("won-panel");
+      var wonPanelHead = document.getElementById("won-panel-head");
+      var wonBackdrop = document.getElementById("won-backdrop");
+      var winToast = document.getElementById("win-toast");
+      var winToastUndo = document.getElementById("win-toast-undo");
       var nextId = 3;
+      var toastTimer = null;
+      var pendingUndo = null;
 
       function syncAddBtn() {
         addBtn.disabled = !battleInput.value.trim();
       }
 
-      function syncWonCount() {
+      function syncWonStrip() {
         var count = wonList.querySelectorAll(".battle-row").length;
-        wonSummary.textContent = "Won today (" + count + ")";
+        var label = "Won today (" + count + ")";
+        wonStripLabel.textContent = label;
+        wonPanelHead.textContent = label;
+        camp.classList.toggle("has-won-today", count > 0);
+      }
+
+      function hideWinToast() {
+        if (toastTimer) {
+          window.clearTimeout(toastTimer);
+          toastTimer = null;
+        }
+        winToast.classList.remove("is-visible");
+        pendingUndo = null;
+      }
+
+      function showWinToast(undoData) {
+        hideWinToast();
+        pendingUndo = undoData;
+        winToast.classList.add("is-visible");
+        toastTimer = window.setTimeout(hideWinToast, 5000);
+      }
+
+      function openWonPanel() {
+        camp.classList.add("is-won-panel-open");
+        wonPanel.classList.add("is-open");
+        wonPanel.setAttribute("aria-hidden", "false");
+        wonStrip.setAttribute("aria-expanded", "true");
+      }
+
+      function closeWonPanel() {
+        camp.classList.remove("is-won-panel-open");
+        wonPanel.classList.remove("is-open");
+        wonPanel.setAttribute("aria-hidden", "true");
+        wonStrip.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleWonPanel() {
+        if (wonPanel.classList.contains("is-open")) closeWonPanel();
+        else openWonPanel();
       }
 
       function openComposer() {
@@ -788,26 +992,70 @@
               '<button type="button">Delete</button>' +
             "</div>" +
           "</details>";
+        bindOpenRow(li);
+        return li;
+      }
+
+      function bindOpenRow(li) {
         li.querySelector(".battle-row__tick").addEventListener("click", function () {
           markWon(li);
         });
         li.querySelector('.battle-row__kebab-menu button:last-child').addEventListener("click", function () {
           li.remove();
         });
-        return li;
       }
 
-      function markWon(row) {
-        var text = row.querySelector(".battle-row__text").textContent;
+      function buildWonRow(battleId, text) {
         var wonRow = document.createElement("li");
         wonRow.className = "battle-row is-won";
-        wonRow.dataset.battleId = "won-" + row.dataset.battleId;
+        wonRow.dataset.battleId = "won-" + battleId;
         wonRow.innerHTML =
           '<span class="battle-row__tick is-done" aria-hidden="true"></span>' +
           '<span class="battle-row__text">' + escapeHtml(text) + "</span>";
-        wonList.appendChild(wonRow);
-        row.remove();
-        syncWonCount();
+        return wonRow;
+      }
+
+      function markWon(row) {
+        if (row.classList.contains("is-exiting")) return;
+
+        var text = row.querySelector(".battle-row__text").textContent;
+        var battleId = row.dataset.battleId;
+        var nextSibling = row.nextElementSibling;
+        var undoData = {
+          text: text,
+          battleId: battleId,
+          nextSibling: nextSibling
+        };
+
+        row.classList.add("is-exiting");
+        row.addEventListener("transitionend", function onExit(event) {
+          if (event.propertyName !== "transform") return;
+          row.removeEventListener("transitionend", onExit);
+          row.remove();
+          var wonRow = buildWonRow(battleId, text);
+          wonList.appendChild(wonRow);
+          undoData.wonRow = wonRow;
+          syncWonStrip();
+          showWinToast(undoData);
+        });
+      }
+
+      function undoWin() {
+        if (!pendingUndo) return;
+
+        var data = pendingUndo;
+        hideWinToast();
+
+        if (data.wonRow && data.wonRow.parentNode) data.wonRow.remove();
+
+        var restored = buildBattleRow(data.battleId, data.text);
+        if (data.nextSibling && data.nextSibling.parentNode === battleList) {
+          battleList.insertBefore(restored, data.nextSibling);
+        } else {
+          battleList.appendChild(restored);
+        }
+
+        syncWonStrip();
       }
 
       composerTrigger.addEventListener("click", openComposer);
@@ -828,21 +1076,21 @@
         }, 0);
       });
 
-      battleList.querySelectorAll(".battle-row__tick").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          markWon(btn.closest(".battle-row"));
-        });
-      });
+      battleList.querySelectorAll(".battle-row").forEach(bindOpenRow);
+
+      wonStrip.addEventListener("click", toggleWonPanel);
+      wonBackdrop.addEventListener("click", closeWonPanel);
+      winToastUndo.addEventListener("click", undoWin);
 
       document.getElementById("close-btn").addEventListener("click", function () {
-        document.getElementById("camp").style.visibility = "hidden";
+        camp.style.visibility = "hidden";
       });
 
       document.getElementById("crumb-btn").addEventListener("click", function () {
-        document.getElementById("camp").style.visibility = "hidden";
+        camp.style.visibility = "hidden";
       });
 
-      syncWonCount();
+      syncWonStrip();
     })();
   </script>
 </body>
