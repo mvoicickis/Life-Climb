@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camp sheet — collapsed composer mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #ffffff;
+      --lp-paper-soft: #f8fafc;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-tap: 2.75rem;
+      --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+      --font: "Nunito", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .doc__note {
+      margin: 0 0 1.25rem;
+      padding: 1rem 1.1rem;
+      background: #fff;
+      border: 1px solid #d8dee6;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #334155;
+      max-width: 44rem;
+    }
+
+    .doc__note h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .doc__note ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .doc__note li { margin-bottom: 0.35rem; }
+
+    /* —— 360px phone —— */
+    .phone {
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      height: min(720px, 92dvh);
+      min-height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: var(--lp-paper);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .scene__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 28%;
+      pointer-events: none;
+    }
+
+    .scene__dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.28);
+      pointer-events: none;
+    }
+
+    /* —— Camp sheet —— */
+    .sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      pointer-events: auto;
+    }
+
+    .sheet__panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      max-height: 82%;
+      background: var(--lp-paper);
+      border-radius: 1.25rem 1.25rem 0 0;
+      border-top: 1px solid var(--lp-border);
+      box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.14);
+    }
+
+    .sheet__handle {
+      width: 2.25rem;
+      height: 0.25rem;
+      margin: 0.55rem auto 0.35rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+      flex-shrink: 0;
+    }
+
+    .sheet__header {
+      padding: 0.35rem 1.2rem 0.85rem;
+      border-bottom: 1px solid var(--lp-border);
+      flex-shrink: 0;
+    }
+
+    .sheet__crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.1rem;
+      min-height: 44px;
+      margin: 0 0 0.35rem;
+      padding: 0 0.75rem 0 0;
+      border: 1px solid var(--lp-border);
+      border-radius: 0.65rem;
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .sheet__crumb:active {
+      background: color-mix(in srgb, var(--lp-paper-soft) 88%, var(--lp-muted) 12%);
+    }
+
+    .sheet__title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-width: 0;
+    }
+
+    .sheet__title {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--lp-ink);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .sheet__actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex: 0 0 auto;
+    }
+
+    .sheet__icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--lp-border);
+      border-radius: 0.65rem;
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .sheet__icon-btn--kebab {
+      font-size: 1.15rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sheet__icon-btn:active {
+      background: color-mix(in srgb, var(--lp-paper-soft) 88%, var(--lp-muted) 12%);
+    }
+
+    .sheet__body {
+      padding: 1rem 1.2rem 0.75rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .battle-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .battle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: var(--lp-tap);
+      padding: 0.35rem 0.4rem;
+      border-radius: 0.85rem;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+    }
+
+    .battle-row__tick {
+      flex-shrink: 0;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 0.45rem;
+      border: 2px solid color-mix(in srgb, var(--lp-green) 55%, var(--lp-border));
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      position: relative;
+    }
+
+    .battle-row__tick.is-done {
+      background: var(--lp-green);
+      border-color: var(--lp-green);
+    }
+
+    .battle-row__tick.is-done::after {
+      content: "";
+      position: absolute;
+      left: 0.32rem;
+      top: 0.12rem;
+      width: 0.28rem;
+      height: 0.55rem;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .battle-row__text {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--lp-ink);
+      word-break: break-word;
+    }
+
+    .battle-row__kebab {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .battle-row__kebab-btn {
+      list-style: none;
+      width: 34px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: var(--lp-muted);
+      font-size: 17px;
+      border-radius: 9px;
+    }
+
+    .battle-row__kebab-btn::-webkit-details-marker { display: none; }
+
+    .battle-row__kebab-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      z-index: 8;
+      min-width: 158px;
+      background: #fff;
+      color: var(--lp-ink);
+      border-radius: 13px;
+      padding: 5px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+    }
+
+    .battle-row__kebab-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 11px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .battle-row__kebab-menu button:hover {
+      background: var(--lp-paper-soft);
+    }
+
+    .battle-row.is-won {
+      opacity: 0.72;
+    }
+
+    .battle-row.is-won .battle-row__text {
+      color: var(--lp-muted);
+      text-decoration: line-through;
+    }
+
+    .won-block {
+      margin-top: 0.85rem;
+    }
+
+    .won-block__summary {
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      list-style: none;
+    }
+
+    .won-block__summary::-webkit-details-marker { display: none; }
+
+    .won-block__list {
+      margin: 0.45rem 0 0;
+      padding: 0;
+    }
+
+    /* —— Composer —— */
+    .composer {
+      margin-top: 0.45rem;
+    }
+
+    .composer__trigger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: var(--lp-tap);
+      border: 0;
+      border-radius: 999px;
+      padding: 0.65rem 1rem;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--lp-paper);
+      background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
+      box-shadow: var(--lp-shadow-cta);
+      cursor: pointer;
+    }
+
+    .composer__trigger:active {
+      transform: translateY(1px);
+      filter: brightness(0.97);
+    }
+
+    .composer__form {
+      display: none;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "title"
+        "daily";
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .composer.is-open .composer__trigger { display: none; }
+    .composer.is-open .composer__form { display: grid; }
+
+    .composer__field {
+      grid-area: title;
+      min-width: 0;
+    }
+
+    .lp-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      min-height: var(--lp-tap);
+    }
+
+    .lp-input::placeholder { color: var(--lp-muted); }
+
+    .lp-input:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+      border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+    }
+
+    .composer__daily {
+      grid-area: daily;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      justify-self: start;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .composer__daily-check {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .composer__switch {
+      position: relative;
+      width: 2.1rem;
+      height: 1.2rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--lp-muted) 18%, var(--lp-paper-soft));
+      border: 1px solid var(--lp-border);
+      transition: background 0.18s ease;
+    }
+
+    .composer__switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 50%;
+      background: var(--lp-paper);
+      transition: transform 0.18s ease;
+    }
+
+    .composer__daily-check:checked + .composer__switch {
+      background: var(--lp-green);
+      border-color: var(--lp-green);
+    }
+
+    .composer__daily-check:checked + .composer__switch::after {
+      transform: translateX(0.9rem);
+    }
+
+    .composer__daily-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      line-height: 1.2;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Camp sheet — collapsed composer</h1>
+    <p class="doc__lede">360px click-through. Regular camp sheet with back crumb, title, battle rows, kebab, and close. The composer starts collapsed as “+ Add battle”.</p>
+
+    <div class="doc__note">
+      <h2>How to use</h2>
+      <ul>
+        <li>Tap <strong>+ Add battle</strong> to expand the composer. The input focuses automatically.</li>
+        <li>Type a battle and press <strong>Enter</strong> to save it. Focus stays in the input for another battle.</li>
+        <li>Tap away with an empty input to collapse back to one row.</li>
+        <li>Tick an open battle row to mark it won. Won battles fold under <strong>Won today</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="phone" aria-label="Camp sheet mockup">
+      <div class="scene" role="presentation">
+        <img
+          class="scene__photo"
+          src="../../public/images/mountain_trail_default.webp"
+          alt=""
+          decoding="async">
+        <div class="scene__dim" aria-hidden="true"></div>
+      </div>
+
+      <div class="sheet" id="sheet">
+        <div class="sheet__panel" role="dialog" aria-labelledby="sheet-title">
+          <div class="sheet__handle" aria-hidden="true"></div>
+          <header class="sheet__header">
+            <button type="button" class="sheet__crumb" id="crumb-btn" aria-label="Back to mountain">
+              <span aria-hidden="true">‹</span> My mountain
+            </button>
+            <div class="sheet__title-row">
+              <h2 class="sheet__title" id="sheet-title">Open a savings account</h2>
+              <div class="sheet__actions">
+                <button type="button" class="sheet__icon-btn sheet__icon-btn--kebab" id="camp-kebab" aria-label="Camp menu">⋯</button>
+                <button type="button" class="sheet__icon-btn" id="close-btn" aria-label="Close sheet">✕</button>
+              </div>
+            </div>
+          </header>
+
+          <div class="sheet__body">
+            <ul class="battle-list" id="battle-list">
+              <li class="battle-row" data-battle-id="1">
+                <button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>
+                <span class="battle-row__text">Put ten dollars in the jar</span>
+                <details class="battle-row__kebab">
+                  <summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>
+                  <div class="battle-row__kebab-menu">
+                    <button type="button">Rename</button>
+                    <button type="button">Delete</button>
+                  </div>
+                </details>
+              </li>
+            </ul>
+
+            <div class="composer" id="composer">
+              <button type="button" class="composer__trigger" id="composer-trigger">+ Add battle</button>
+              <div class="composer__form" id="composer-form">
+                <label class="composer__field">
+                  <span class="sr-only">Battle for today</span>
+                  <input
+                    id="battle-input"
+                    type="text"
+                    class="lp-input"
+                    placeholder="Battle for today"
+                    autocomplete="off"
+                    maxlength="120"
+                    enterkeyhint="done">
+                </label>
+                <label class="composer__daily">
+                  <input type="checkbox" class="composer__daily-check" id="daily-toggle">
+                  <span class="composer__switch" aria-hidden="true"></span>
+                  <span class="composer__daily-label">Every day</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="won-block">
+              <details class="won-block__details" id="won-details">
+                <summary class="won-block__summary">Won today</summary>
+                <ul class="battle-list won-block__list" id="won-list">
+                  <li class="battle-row is-won" data-battle-id="won-1">
+                    <span class="battle-row__tick is-done" aria-hidden="true"></span>
+                    <span class="battle-row__text">Set up automatic transfer</span>
+                  </li>
+                </ul>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var composer = document.getElementById("composer");
+      var composerTrigger = document.getElementById("composer-trigger");
+      var battleInput = document.getElementById("battle-input");
+      var battleList = document.getElementById("battle-list");
+      var wonList = document.getElementById("won-list");
+      var wonDetails = document.getElementById("won-details");
+      var nextId = 2;
+
+      function openComposer() {
+        composer.classList.add("is-open");
+        requestAnimationFrame(function () {
+          battleInput.focus();
+        });
+      }
+
+      function closeComposer() {
+        composer.classList.remove("is-open");
+        battleInput.value = "";
+        document.getElementById("daily-toggle").checked = false;
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function buildBattleRow(id, title) {
+        var li = document.createElement("li");
+        li.className = "battle-row";
+        li.dataset.battleId = String(id);
+        li.innerHTML =
+          '<button type="button" class="battle-row__tick" aria-label="Mark battle done"></button>' +
+          '<span class="battle-row__text">' + escapeHtml(title) + "</span>" +
+          '<details class="battle-row__kebab">' +
+            '<summary class="battle-row__kebab-btn" aria-label="Battle menu">⋯</summary>' +
+            '<div class="battle-row__kebab-menu">' +
+              '<button type="button">Rename</button>' +
+              '<button type="button">Delete</button>' +
+            "</div>" +
+          "</details>";
+        li.querySelector(".battle-row__tick").addEventListener("click", function () {
+          markWon(li);
+        });
+        li.querySelector('.battle-row__kebab-menu button:last-child').addEventListener("click", function () {
+          li.remove();
+        });
+        return li;
+      }
+
+      function markWon(row) {
+        var text = row.querySelector(".battle-row__text").textContent;
+        var wonRow = document.createElement("li");
+        wonRow.className = "battle-row is-won";
+        wonRow.dataset.battleId = "won-" + row.dataset.battleId;
+        wonRow.innerHTML =
+          '<span class="battle-row__tick is-done" aria-hidden="true"></span>' +
+          '<span class="battle-row__text">' + escapeHtml(text) + "</span>";
+        wonList.appendChild(wonRow);
+        row.remove();
+        wonDetails.open = true;
+      }
+
+      composerTrigger.addEventListener("click", openComposer);
+
+      battleInput.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        var title = battleInput.value.trim();
+        if (!title) return;
+        battleList.appendChild(buildBattleRow(nextId++, title));
+        battleInput.value = "";
+        battleInput.focus();
+      });
+
+      battleInput.addEventListener("blur", function () {
+        window.setTimeout(function () {
+          if (!battleInput.value.trim()) closeComposer();
+        }, 0);
+      });
+
+      battleList.querySelectorAll(".battle-row__tick").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          markWon(btn.closest(".battle-row"));
+        });
+      });
+
+      document.getElementById("close-btn").addEventListener("click", function () {
+        document.getElementById("sheet").style.visibility = "hidden";
+      });
+
+      document.getElementById("crumb-btn").addEventListener("click", function () {
+        document.getElementById("sheet").style.visibility = "hidden";
+      });
+    })();
+  </script>
+</body>
+</html>
