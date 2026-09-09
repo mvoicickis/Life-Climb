@@ -9,10 +9,6 @@
      style="--lp-trail-accent: <%= accent %>"
      data-controller="first-camp-battle"
      data-first-camp-battle-need-title-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_title') %>">
-  <header class="lp-first-camp-setup__header">
-    <h2 class="lp-first-camp-setup__title"><%= project.title %></h2>
-  </header>
-
   <p class="lp-first-camp-setup__lead"><%= t("strategy.rpg.trail.first_camp_reveal.setup_lead") %></p>
 
   <%= form_with url: life_journey_first_camp_battles_path(journey),
