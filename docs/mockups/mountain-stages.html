@@ -39,34 +39,58 @@
       --lp-trail-photo-h: 100%;
       --phone-w: 360px;
       --phone-h: 640px;
-      /* Painted terrace centres on mountain-stages-bg.webp (940×1672). */
-      --terrace-cloud-y: 36%;
-      --terrace-cloud-x: 50%;
-      --terrace-fog-y: 47%;
-      --terrace-fog-x: 50%;
-      --terrace-open-y: 59%;
-      --terrace-open-x: 50%;
-      --terrace-done-y: 74%;
-      --terrace-done-x: 50%;
+      /* Measured terrace anchors on mountain-stages-bg.webp (940×1672 px). */
+      --map-aspect: 940 / 1672;
+      --map-safe: 12px;
+      --terrace-cloud-y: 38.04%;
+      --terrace-cloud-x-left: 35.59%;
+      --terrace-cloud-x-right: 63.94%;
+      --terrace-cloud-x: 49.76%;
+      --terrace-fog-y: 49.16%;
+      --terrace-fog-x-left: 34.67%;
+      --terrace-fog-x-right: 65.29%;
+      --terrace-fog-x: 49.98%;
+      --terrace-open-y: 61.90%;
+      --terrace-open-x-left: 30.81%;
+      --terrace-open-x-right: 71.44%;
+      --terrace-open-x: 51.12%;
+      --terrace-done-y: 71.83%;
+      --terrace-done-x-left: 39.06%;
+      --terrace-done-x-right: 59.65%;
+      --terrace-done-x: 49.36%;
       --ledge-cloud-y: var(--terrace-cloud-y);
+      --ledge-cloud-x-left: var(--terrace-cloud-x-left);
+      --ledge-cloud-x-right: var(--terrace-cloud-x-right);
       --ledge-cloud-x: var(--terrace-cloud-x);
       --ledge-fog-y: var(--terrace-fog-y);
+      --ledge-fog-x-left: var(--terrace-fog-x-left);
+      --ledge-fog-x-right: var(--terrace-fog-x-right);
       --ledge-fog-x: var(--terrace-fog-x);
       --ledge-open-y: var(--terrace-open-y);
+      --ledge-open-x-left: var(--terrace-open-x-left);
+      --ledge-open-x-right: var(--terrace-open-x-right);
       --ledge-open-x: var(--terrace-open-x);
       --ledge-done-y: var(--terrace-done-y);
+      --ledge-done-x-left: var(--terrace-done-x-left);
+      --ledge-done-x-right: var(--terrace-done-x-right);
       --ledge-done-x: var(--terrace-done-x);
-      --lp-goal-x: 57%;
-      --lp-goal-y: 10.5%;
+      --lp-goal-x: 52.5%;
+      --lp-goal-y: 9.2%;
     }
 
     /* New user: no done stage — shift every stage down one terrace. */
     .lp-trail.is-new-user {
       --ledge-open-y: var(--terrace-done-y);
+      --ledge-open-x-left: var(--terrace-done-x-left);
+      --ledge-open-x-right: var(--terrace-done-x-right);
       --ledge-open-x: var(--terrace-done-x);
       --ledge-fog-y: var(--terrace-open-y);
+      --ledge-fog-x-left: var(--terrace-open-x-left);
+      --ledge-fog-x-right: var(--terrace-open-x-right);
       --ledge-fog-x: var(--terrace-open-x);
       --ledge-cloud-y: var(--terrace-fog-y);
+      --ledge-cloud-x-left: var(--terrace-fog-x-left);
+      --ledge-cloud-x-right: var(--terrace-fog-x-right);
       --ledge-cloud-x: var(--terrace-fog-x);
     }
 
@@ -203,29 +227,49 @@
 
     .lp-trail__surface {
       position: relative;
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: hidden;
+      flex: 0 0 auto;
+      overflow: visible;
     }
 
-    .lp-trail__mountain {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
+    .phone.phone--map {
+      height: auto;
     }
 
-    .lp-trail__photo-wrap {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
+    .phone.phone--map .lp-trail {
+      position: relative;
+      height: auto;
+    }
+
+    .phone.phone--map .lp-trail__scroll {
+      overflow: visible;
+    }
+
+    .lp-trail__map {
+      position: relative;
+      width: 100%;
+      aspect-ratio: var(--map-aspect);
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .lp-trail__photo {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      height: auto;
       display: block;
+      vertical-align: top;
+    }
+
+    .lp-trail__map--anchors .terrace-anchor {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      pointer-events: none;
     }
 
     .lp-trail__haze,
@@ -327,9 +371,9 @@
       position: absolute;
       left: var(--lp-goal-x);
       top: var(--lp-goal-y);
-      transform: translate(-100%, 0);
+      transform: translate(0.55rem, -15%);
       z-index: 15;
-      max-width: calc(var(--phone-w) - 5.5rem);
+      max-width: calc(100% - var(--lp-goal-x) - var(--map-safe));
       pointer-events: none;
     }
 
@@ -383,15 +427,14 @@
 
     .lp-trail-stage {
       position: absolute;
-      left: var(--lp-stage-x);
+      left: var(--lp-stage-x-left);
+      width: calc(var(--lp-stage-x-right) - var(--lp-stage-x-left));
       top: var(--lp-stage-y);
-      transform: translate(-50%, calc(-100% + 0.2rem));
+      transform: translateY(calc(-100% + 1px));
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.18rem;
-      width: calc(var(--phone-w) - 1rem);
-      max-width: calc(var(--phone-w) - 1rem);
+      gap: 0.14rem;
       pointer-events: none;
     }
 
@@ -556,11 +599,12 @@
 
     .lp-trail-stage__cloud {
       position: absolute;
-      left: var(--lp-stage-x);
+      left: var(--lp-stage-x-left);
+      width: calc(var(--lp-stage-x-right) - var(--lp-stage-x-left));
       top: var(--lp-stage-y);
-      transform: translate(-50%, calc(-100% + 0.35rem));
+      transform: translateY(calc(-100% + 1px));
       z-index: 5;
-      max-width: calc(var(--phone-w) - 2.5rem);
+      max-width: calc(100% - (2 * var(--map-safe)));
       padding: 0.45rem 0.75rem;
       border-radius: var(--lp-radius-pill);
       background: rgba(255, 255, 255, 0.78);
@@ -570,6 +614,10 @@
       font-weight: 800;
       color: #475569;
       text-align: center;
+      margin-inline: auto;
+      display: block;
+      width: fit-content;
+      max-width: 100%;
       pointer-events: auto;
       cursor: pointer;
       backdrop-filter: blur(10px);
@@ -721,7 +769,7 @@
       box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      max-width: 100%;
+      max-width: min(100%, calc(100% - 2 * var(--map-safe)));
     }
 
     .lp-trail-stage.is-open.is-two-camps .lp-trail-camp {
@@ -765,6 +813,19 @@
       color: var(--lp-muted);
       line-height: 1.2;
       text-shadow: none;
+    }
+
+    .lp-trail-camp.is-current.is-name-hidden .lp-trail-camp__caption {
+      display: none;
+    }
+
+    .lp-trail-camp.is-current.is-name-hidden .lp-trail-camp__peg {
+      box-shadow: 0 0 0 2px var(--lp-green);
+      border-radius: 0.55rem;
+    }
+
+    .lp-trail-stage.is-open .lp-trail-camp__caption {
+      max-width: 100%;
     }
 
     .lp-trail-camp.is-current .lp-trail-camp__caption {
@@ -1314,7 +1375,7 @@
         <li><strong>2 camps</strong> — side by side, names wrap to 2 lines, never cut off</li>
         <li><strong>3+ camps</strong> — 2 visible, ‹ › arrows (44px), dots under the ledge (one per camp); always opens on the next camp (fox + green outline); bottom battle card stays fixed while paging</li>
         <li><strong>Only the open ledge</strong> gets arrows — fog and done ledges stay as now</li>
-        <li><strong>Ledge anchors</strong> — terrace centres on <code>mountain-stages-bg.webp</code>: cloud 36%, fog 47%, open 59%, done 74%. New users shift down one terrace.</li>
+        <li><strong>Map box</strong> — 940:1672 image at full width, no crop; positions are % of that box (Frame 0 shows measured anchors)</li>
       </ul>
     </div>
 
@@ -1330,11 +1391,35 @@
 
     <div class="frames">
 
+
+      <!-- Frame 0 — Terrace anchor calibration -->
+      <section class="frame-block" aria-labelledby="f0-label">
+        <p class="frame-block__label" id="f0-label">Frame 0</p>
+        <h2 class="frame-block__title">Measured terrace anchors</h2>
+        <div class="phone phone--map" role="img" aria-label="Frame 0: bare mountain with red dots on measured terrace anchors">
+          <div class="lp-trail__map lp-trail__map--anchors">
+            <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
+            <span class="terrace-anchor" style="left: var(--terrace-cloud-x-left); top: var(--terrace-cloud-y);" title="Cloud L"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-cloud-x); top: var(--terrace-cloud-y);" title="Cloud centre"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-cloud-x-right); top: var(--terrace-cloud-y);" title="Cloud R"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-fog-x-left); top: var(--terrace-fog-y);" title="Fog L"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-fog-x); top: var(--terrace-fog-y);" title="Fog centre"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-fog-x-right); top: var(--terrace-fog-y);" title="Fog R"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-open-x-left); top: var(--terrace-open-y);" title="Open L"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-open-x); top: var(--terrace-open-y);" title="Open centre"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-open-x-right); top: var(--terrace-open-y);" title="Open R"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-done-x-left); top: var(--terrace-done-y);" title="Done L"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-done-x); top: var(--terrace-done-y);" title="Done centre"></span>
+            <span class="terrace-anchor" style="left: var(--terrace-done-x-right); top: var(--terrace-done-y);" title="Done R"></span>
+          </div>
+        </div>
+      </section>
+
       <!-- Frame 1 — New user, 3 camps -->
       <section class="frame-block" aria-labelledby="f1-label">
         <p class="frame-block__label" id="f1-label">Frame 1</p>
         <h2 class="frame-block__title">New user · 3 camps from onboarding</h2>
-        <div class="phone" role="img" aria-label="Frame 1: new user with three camps, one per stage">
+        <div class="phone phone--map" role="img" aria-label="Frame 1: new user with three camps, one per stage">
           <section class="lp-trail is-bleed is-v4 is-new-user" aria-label="Mountain trail">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1352,16 +1437,13 @@
 
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                <div class="lp-trail__map">
                     <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-                  </div>
-
-                  <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-open is-single" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail__stages" id="trail-camps">
+                    <div class="lp-trail-stage is-open is-single" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 · open now</p>
                       <div class="lp-trail-stage__camps">
-                        <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                        <button type="button" class="lp-trail-camp is-current is-name-hidden has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg">
                             <span class="lp-trail-camp__tent"></span>
@@ -1373,11 +1455,11 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail__companion" style="left: 48%; top: 71%;">
+                    <div class="lp-trail__companion" style="left: 54%; top: 70.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
 
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · 1 camp</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true">
@@ -1386,7 +1468,7 @@
                       </div>
                     </div>
 
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
                   </div>
 
                   <div class="lp-trail__goal">
@@ -1418,7 +1500,7 @@
       <section class="frame-block" aria-labelledby="f2-label">
         <p class="frame-block__label" id="f2-label">Frame 2</p>
         <h2 class="frame-block__title">My plan · 9 camps · carousel</h2>
-        <div class="phone" role="img" aria-label="Frame 2: nine camps across four stages with open ledge carousel">
+        <div class="phone phone--map" role="img" aria-label="Frame 2: nine camps across four stages with open ledge carousel">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1436,13 +1518,10 @@
 
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                <div class="lp-trail__map">
                     <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-                  </div>
-
-                  <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                    <div class="lp-trail__stages" id="trail-camps">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true">
@@ -1451,16 +1530,16 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
                       <div class="lp-trail-stage__row">
                         <div class="lp-trail-stage__camps is-pair">
-                          <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                          <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
                             <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                             <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
                             <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
                           </button>
-                          <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                          <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
                             <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                             <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
                             <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
@@ -1475,11 +1554,11 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail__companion" style="left: 46%; top: 56%;">
+                    <div class="lp-trail__companion" style="left: 58%; top: 60.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
 
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
@@ -1488,7 +1567,7 @@
                       </div>
                     </div>
 
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
                   </div>
 
                   <div class="lp-trail__goal">
@@ -1520,7 +1599,7 @@
       <section class="frame-block" aria-labelledby="f3-label">
         <p class="frame-block__label" id="f3-label">Frame 3</p>
         <h2 class="frame-block__title">Open stage · 6 camps (carousel)</h2>
-        <div class="phone" role="img" aria-label="Frame 3: six camps on open stage with carousel arrows and dots">
+        <div class="phone phone--map" role="img" aria-label="Frame 3: six camps on open stage with carousel arrows and dots">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1538,15 +1617,10 @@
 
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
-                    <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
-                    <div class="lp-trail__haze"></div>
-                    <div class="lp-trail__mountain-foot"></div>
-                  </div>
-
-                  <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                <div class="lp-trail__map">
+                    <img class="lp-trail__photo" src="mountain-stages-bg.webp" width="940" height="1672" alt="" decoding="async">
+                    <div class="lp-trail__stages" id="trail-camps">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
@@ -1555,7 +1629,7 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
                       <div class="lp-trail-stage__row">
                         <div class="lp-trail-stage__camps is-pair">
@@ -1579,11 +1653,11 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail__companion" style="left: 44%; top: 58%;">
+                    <div class="lp-trail__companion" style="left: 42%; top: 60.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
 
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 2 camps</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
@@ -1591,15 +1665,12 @@
                       </div>
                     </div>
 
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">2 more stages</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">2 more stages</button>
                   </div>
 
-                  <div class="lp-trail__peak">
-                    <button type="button" class="lp-trail__flag" aria-label="Summit goal">
-                      <span class="lp-trail__pennant">
-                        <span class="lp-trail__peak-title lp-rpg-destination-carousel__title">Big goal</span>
-                      </span>
-                      <span class="lp-trail__pole" aria-hidden="true"></span>
+                  <div class="lp-trail__goal">
+                    <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
+                      <span class="lp-trail__goal-title lp-rpg-destination-carousel__title">Big goal</span>
                     </button>
                   </div>
                 </div>
@@ -1625,7 +1696,7 @@
       <section class="frame-block" aria-labelledby="f4-label">
         <p class="frame-block__label" id="f4-label">Frame 4</p>
         <h2 class="frame-block__title">Long names · 2-line wrap</h2>
-        <div class="phone" role="img" aria-label="Frame 4: long camp names wrap without clipping">
+        <div class="phone phone--map" role="img" aria-label="Frame 4: long camp names wrap without clipping">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1643,13 +1714,10 @@
 
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                <div class="lp-trail__map">
                     <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-                  </div>
-
-                  <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                    <div class="lp-trail__stages" id="trail-camps">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
@@ -1658,7 +1726,7 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
                       <div class="lp-trail-stage__camps is-pair">
                         <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
@@ -1674,18 +1742,18 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail__companion" style="left: 44%; top: 56%;">
+                    <div class="lp-trail__companion" style="left: 58%; top: 60.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
 
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 1 camp</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
 
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
                   </div>
 
                   <div class="lp-trail__goal">
@@ -1716,7 +1784,7 @@
       <section class="frame-block" aria-labelledby="f5-label">
         <p class="frame-block__label" id="f5-label">Frame 5</p>
         <h2 class="frame-block__title">20 camps · same one-screen map</h2>
-        <div class="phone" role="img" aria-label="Frame 5: twenty camps collapsed to four ledges on one screen">
+        <div class="phone phone--map" role="img" aria-label="Frame 5: twenty camps collapsed to four ledges on one screen">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1734,13 +1802,10 @@
 
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                <div class="lp-trail__map">
                     <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-                  </div>
-
-                  <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                    <div class="lp-trail__stages" id="trail-camps">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 4 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
@@ -1749,7 +1814,7 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 5 · open now</p>
                       <div class="lp-trail-stage__row">
                         <div class="lp-trail-stage__camps is-pair">
@@ -1774,11 +1839,11 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail__companion" style="left: 44%; top: 56%;">
+                    <div class="lp-trail__companion" style="left: 42%; top: 60.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
 
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 6 · 3 camps</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
@@ -1787,7 +1852,7 @@
                       </div>
                     </div>
 
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">12 more stages</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">12 more stages</button>
                   </div>
 
                   <div class="lp-trail__goal">
@@ -1818,7 +1883,7 @@
       <section class="frame-block" aria-labelledby="f6-label">
         <p class="frame-block__label" id="f6-label">Frame 6</p>
         <h2 class="frame-block__title">Fog tapped · Stage 3 sheet</h2>
-        <div class="phone" role="img" aria-label="Frame 6: sheet listing Stage 3 camps, all open">
+        <div class="phone phone--map" role="img" aria-label="Frame 6: sheet listing Stage 3 camps, all open">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1836,15 +1901,10 @@
 
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
-                    <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
-                    <div class="lp-trail__haze"></div>
-                    <div class="lp-trail__mountain-foot"></div>
-                  </div>
-
-                  <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                <div class="lp-trail__map">
+                    <img class="lp-trail__photo" src="mountain-stages-bg.webp" width="940" height="1672" alt="" decoding="async">
+                    <div class="lp-trail__stages" id="trail-camps">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
@@ -1853,7 +1913,7 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y); opacity: 0.55;">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right); opacity: 0.55;">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
                       <div class="lp-trail-stage__row">
                         <div class="lp-trail-stage__camps is-pair">
@@ -1868,7 +1928,7 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
@@ -1877,15 +1937,12 @@
                       </div>
                     </div>
 
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
                   </div>
 
-                  <div class="lp-trail__peak">
-                    <button type="button" class="lp-trail__flag" aria-label="Summit goal">
-                      <span class="lp-trail__pennant">
-                        <span class="lp-trail__peak-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
-                      </span>
-                      <span class="lp-trail__pole" aria-hidden="true"></span>
+                  <div class="lp-trail__goal">
+                    <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
+                      <span class="lp-trail__goal-title lp-rpg-destination-carousel__title">Big goal</span>
                     </button>
                   </div>
                 </div>
@@ -1952,7 +2009,7 @@
       <section class="frame-block" aria-labelledby="m1-label">
         <p class="frame-block__label" id="m1-label">M1</p>
         <h2 class="frame-block__title">Open stage · 4 camps · page 1</h2>
-        <div class="phone" role="img" aria-label="M1: Montain next with Registration, next arrow, four dots first active">
+        <div class="phone phone--map" role="img" aria-label="M1: Registration next with Montain visible, next arrow, four dots first active">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1969,27 +2026,25 @@
             </div>
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                <div class="lp-trail__map">
                     <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-                  </div>
-                  <div class="lp-trail__stages">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                    <div class="lp-trail__stages">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
                       <div class="lp-trail-stage__row">
                         <div class="lp-trail-stage__camps is-pair">
-                          <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                          <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
                             <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                             <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
                             <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
                           </button>
-                          <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                          <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
                             <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                             <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
                             <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
@@ -2004,17 +2059,17 @@
                         <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
-                    <div class="lp-trail__companion" style="left: 46%; top: 56%;">
+                    <div class="lp-trail__companion" style="left: 58%; top: 60.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 2 camps</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                         <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
                   </div>
                   <div class="lp-trail__goal">
                     <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
@@ -2043,7 +2098,7 @@
       <section class="frame-block" aria-labelledby="m2-label">
         <p class="frame-block__label" id="m2-label">M2</p>
         <h2 class="frame-block__title">After › · same battle card</h2>
-        <div class="phone" role="img" aria-label="M2: Day 2 problem and Todays Page visible, previous arrow, dot two active, same bottom card">
+        <div class="phone phone--map" role="img" aria-label="M2: Day 2 problem and Todays Page visible, previous arrow, dot two active, same bottom card">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -2060,20 +2115,16 @@
             </div>
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
-                <div class="lp-trail__mountain">
-                  <div class="lp-trail__photo-wrap" aria-hidden="true">
-                    <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
-                    <div class="lp-trail__haze"></div>
-                    <div class="lp-trail__mountain-foot"></div>
-                  </div>
-                  <div class="lp-trail__stages">
-                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                <div class="lp-trail__map">
+                    <img class="lp-trail__photo" src="mountain-stages-bg.webp" width="940" height="1672" alt="" decoding="async">
+                    <div class="lp-trail__stages">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-y: var(--ledge-done-y); --lp-stage-x-left: var(--ledge-done-x-left); --lp-stage-x-right: var(--ledge-done-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-                    <div class="lp-trail-stage is-open is-carousel is-pair has-nav-both" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair has-nav-both" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
                       <div class="lp-trail-stage__row">
                         <button type="button" class="lp-trail-stage__nav is-prev" aria-label="Previous camps">‹</button>
@@ -2097,25 +2148,22 @@
                         <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
-                    <div class="lp-trail__companion" style="left: 44%; top: 58%;">
+                    <div class="lp-trail__companion" style="left: 58%; top: 60.5%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
-                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 2 camps</p>
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                         <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
                   </div>
-                  <div class="lp-trail__peak">
-                    <button type="button" class="lp-trail__flag" aria-label="Summit goal">
-                      <span class="lp-trail__pennant">
-                        <span class="lp-trail__peak-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
-                        <span class="lp-trail__peak-tagline">Ship the MVP</span>
-                      </span>
-                      <span class="lp-trail__pole" aria-hidden="true"></span>
+                  <div class="lp-trail__goal">
+                    <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
+                      <span class="lp-trail__goal-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
+                      <span class="lp-trail__goal-tagline">Ship the MVP</span>
                     </button>
                   </div>
                 </div>
