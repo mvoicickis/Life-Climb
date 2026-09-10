@@ -332,7 +332,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
-    assert_select ".lp-trail-camp-idle__pill", text: I18n.t("strategy.rpg.trail.camp_idle.won_pill")
+    assert_select ".lp-trail-camp-idle__pill-text", text: I18n.t("strategy.rpg.trail.camp_idle.won_pill")
     assert_select ".lp-trail-camp-idle__body", count: 0
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
                   text: I18n.t("strategy.rpg.trail.camp_idle.won_button")
