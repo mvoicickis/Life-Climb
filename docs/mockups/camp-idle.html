@@ -28,8 +28,8 @@
       --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
       --lp-font-ui: "Nunito", system-ui, sans-serif;
       --mock-phone-height: 640px;
-      --mock-keyboard-inset: calc(var(--mock-phone-height) * 0.45);
-      --mock-sheet-vh: calc(var(--mock-phone-height) - var(--mock-keyboard-inset));
+      --mock-keyboard-inset: 288px;
+      --mock-sheet-vh: 352px;
     }
 
     @supports not (backdrop-filter: blur(1px)) {
@@ -125,7 +125,7 @@
       height: var(--mock-keyboard-inset);
       background: #d1d5db;
       border-top: 1px solid #9ca3af;
-      z-index: 20;
+      z-index: 1;
       pointer-events: none;
     }
 
@@ -136,6 +136,13 @@
       position: relative;
       height: 100%;
       min-height: 0;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet.is-open {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
     }
 
     .lp-trail.is-v4 .lp-trail-sheet__panel {
@@ -149,21 +156,21 @@
       overflow: hidden;
       background: var(--lp-paper-soft);
       color: var(--lp-ink);
+      bottom: var(--lp-keyboard-inset, 0px);
+      max-height: var(--lp-sheet-vh, 100%);
+      flex-shrink: 0;
     }
 
     .phone--keyboard .lp-trail-sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
       --lp-sheet-vh: var(--mock-sheet-vh);
       --lp-keyboard-inset: var(--mock-keyboard-inset);
     }
 
     .phone--keyboard .lp-trail-sheet__panel {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: auto;
-      bottom: var(--lp-keyboard-inset, 0px);
       height: var(--lp-sheet-vh, 100%);
-      max-height: var(--lp-sheet-vh, 100%);
     }
 
     .lp-trail.is-v4 .lp-trail-sheet__camp-bg {
@@ -301,9 +308,22 @@
     }
 
     .phone--keyboard .lp-trail-battles__scroll.is-idle {
-      justify-content: flex-start;
+      justify-content: flex-end;
       overflow-y: auto;
-      padding-top: 0.65rem;
+      padding-bottom: 0.65rem;
+    }
+
+    .lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer {
+      margin-top: 0;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer-form {
+      padding: 0;
+      border: 0;
+      box-shadow: none;
+      background: transparent;
     }
 
     /* Frame 4: list scrolls; composer pinned above won strip */
@@ -648,7 +668,7 @@
                   <div class="lp-trail-battles" id="trail-battles-1">
                     <div class="lp-trail-battles__scroll is-idle">
                       <div class="lp-trail-camp-idle lp-frost">
-                        <h3 class="lp-trail-camp-idle__title">Start step 1</h3>
+                        <h3 class="lp-trail-camp-idle__title">Your climb starts here</h3>
                         <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
                         <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
                       </div>
@@ -846,7 +866,7 @@
       <div class="frame">
         <p class="frame__label">6 — Add first battle (keyboard)</p>
         <div class="phone phone--keyboard lp-trail is-v4">
-          <div class="lp-trail-sheet">
+          <div class="lp-trail-sheet is-open">
             <div class="lp-trail-sheet__panel">
               <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
                 <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
@@ -863,21 +883,20 @@
                   <div class="lp-trail-battles" id="trail-battles-6">
                     <div class="lp-trail-battles__scroll is-idle">
                       <div class="lp-trail-camp-idle lp-frost">
-                        <h3 class="lp-trail-camp-idle__title">Start step 1</h3>
-                        <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
-                      </div>
-                      <div class="lp-trail-battles__composer is-open">
-                        <div class="lp-trail-battles__composer-form lp-frost">
-                          <div class="lp-trail-battles__composer-row">
-                            <label class="lp-trail-battles__field">
-                              <textarea class="lp-trail-battles__input lp-trail-battles__textarea" rows="1" placeholder="Battle for today" autofocus></textarea>
+                        <h3 class="lp-trail-camp-idle__title">Your climb starts here</h3>
+                        <div class="lp-trail-battles__composer is-open">
+                          <div class="lp-trail-battles__composer-form">
+                            <div class="lp-trail-battles__composer-row">
+                              <label class="lp-trail-battles__field">
+                                <textarea class="lp-trail-battles__input lp-trail-battles__textarea" rows="1" placeholder="Battle for today" autofocus></textarea>
+                              </label>
+                              <button type="button" class="lp-trail-battles__composer-add" disabled aria-label="Add battle">+</button>
+                            </div>
+                            <label class="lp-trail-battles__daily-switch">
+                              <span class="lp-trail-battles__switch" aria-hidden="true"></span>
+                              <span class="lp-trail-battles__daily-label">Every day</span>
                             </label>
-                            <button type="button" class="lp-trail-battles__composer-add" disabled aria-label="Add battle">+</button>
                           </div>
-                          <label class="lp-trail-battles__daily-switch">
-                            <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-                            <span class="lp-trail-battles__daily-label">Every day</span>
-                          </label>
                         </div>
                       </div>
                     </div>
@@ -888,7 +907,7 @@
           </div>
           <div class="phone__keyboard-mock" aria-hidden="true"></div>
         </div>
-        <p class="frame__note">Android Chrome: <code>visualViewport</code> resize sets <code>--lp-sheet-vh</code> and <code>--lp-keyboard-inset</code> on <code>.lp-trail-sheet</code>, lifting the panel with <code>bottom: var(--lp-keyboard-inset)</code>. iOS Safari: same vars, but the inset also subtracts <code>visualViewport.offsetTop</code> so the sheet clears the keyboard when the URL bar shifts.</p>
+        <p class="frame__note">Reuses <code>trail_camp_sheet_controller.js</code> (<code>syncViewportInsets</code> → <code>--lp-sheet-vh</code> / <code>--lp-keyboard-inset</code> on <code>.lp-trail-sheet</code>) and <code>mountain_trail.css</code> (<code>bottom: var(--lp-keyboard-inset)</code> on <code>.lp-trail-sheet__panel</code>). Android Chrome: inset from <code>innerHeight − visualViewport.height − offsetTop</code>. iOS Safari: same formula; <code>offsetTop</code> matters when the URL bar shifts. No <code>interactive-widget</code> in the viewport meta today.</p>
       </div>
 
     </div>
