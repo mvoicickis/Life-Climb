@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camp sheet idle states — mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-paper: #ffffff;
+      --lp-paper-soft: #f8fafc;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-green-soft: rgba(87, 211, 91, 0.22);
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-tap: 2.75rem;
+      --lp-radius-card: 1.25rem;
+      --lp-radius-pill: 999px;
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+      --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
+      --lp-frost: color-mix(in srgb, var(--lp-paper) 78%, transparent);
+      --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+    }
+
+    @supports not (backdrop-filter: blur(1px)) {
+      :root { --lp-frost: color-mix(in srgb, var(--lp-paper) 92%, transparent); }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lp-frost {
+      background: var(--lp-frost);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .doc {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1.5rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 52rem;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .frame {
+      flex: 0 0 360px;
+      max-width: 100%;
+    }
+
+    .frame__label {
+      margin: 0 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-muted);
+    }
+
+    /* —— 360px phone —— */
+    .phone {
+      width: 360px;
+      max-width: 100%;
+      height: min(720px, 92dvh);
+      min-height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: var(--lp-paper-soft);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    /* —— Production class chain (v4 camp sheet) —— */
+    .lp-trail.is-v4 .lp-trail-sheet__panel {
+      --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
+      --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__camp-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.34;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__camp-bg-photo {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 100%;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__header {
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      padding: 0.55rem 0.65rem 0.35rem 0.45rem;
+      padding-top: calc(0.55rem + env(safe-area-inset-top, 0px));
+      background: linear-gradient(
+        180deg,
+        var(--lp-frost) 0%,
+        color-mix(in srgb, var(--lp-frost) 72%, transparent) 58%,
+        transparent 100%
+      );
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.15rem;
+      min-width: 0;
+      min-height: var(--lp-tap);
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__back {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0.65rem;
+      background: transparent;
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: default;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__title {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--lp-ink);
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__subtitle {
+      margin: 0 4px 0.65rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--lp-muted);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__body {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      background: transparent;
+      color: var(--lp-ink);
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__panel.has-won-today .lp-trail-sheet__body {
+      padding-bottom: var(--won-strip-height);
+    }
+
+    /* Centering fix: camp is the flex column that passes height down */
+    .lp-trail.is-v4 .lp-trail-sheet__camp {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 1rem 1.2rem 0.85rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      scroll-padding-bottom: 7.5rem;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__scroll.is-idle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: visible;
+    }
+
+    /* Idle card — frost + open-row chrome */
+    .lp-trail.is-v4 .lp-trail-camp-idle {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.85rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      margin: 0 auto;
+      padding: 1.15rem 1rem 1.1rem;
+      text-align: center;
+      border-radius: var(--lp-radius-card);
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-trail.is-v4 .lp-trail-camp-idle__title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-camp-idle__body {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-camp-idle__pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      align-self: center;
+      max-width: 100%;
+      margin: 0;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-green-soft);
+      color: var(--lp-green-deep);
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-camp-idle__pill-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 50%;
+      background: var(--lp-green);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__composer-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: var(--lp-tap);
+      border: 0;
+      border-radius: var(--lp-radius-pill);
+      padding: 0.85rem 1.5rem;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+      background: var(--lp-green);
+      box-shadow: var(--lp-shadow-cta);
+      cursor: default;
+      text-align: center;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__row.is-open.is-check {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: var(--lp-tap);
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--lp-radius-card);
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__box {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--lp-tick-ring);
+      background: color-mix(in srgb, #ffffff 88%, transparent);
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__name {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__kebab-btn {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      color: var(--lp-muted);
+      font-size: 17px;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: default;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__composer {
+      margin-top: 0.55rem;
+      flex-shrink: 0;
+    }
+
+    .frame--scroll-demo .phone {
+      height: 520px;
+      min-height: 520px;
+    }
+
+    /* Won strip — pinned, safe area (matches production) */
+    .lp-trail.is-v4 .lp-trail-sheet__done-slot {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      pointer-events: none;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__won-strip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      display: none;
+      pointer-events: auto;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      min-height: var(--lp-tap);
+      padding: 0 1.2rem env(safe-area-inset-bottom, 0px);
+      border: 0;
+      border-top: 1px solid var(--lp-border);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      text-align: center;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    .lp-trail.is-v4 .lp-trail-sheet__done-slot.has-won-today .lp-trail-battles__won-strip {
+      display: flex;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__won-strip-chevron {
+      font-size: 0.72rem;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Camp sheet idle states</h1>
+    <p class="doc__lede">360px frames. Production class chain with centering fix at <code>.lp-trail-sheet__camp</code> (flex column + <code>flex: 1</code>). Idle card uses <code>lp-frost</code> plus open-row border, radius and shadow. Strip label is <strong>Won (n)</strong> — includes older one-shot wins.</p>
+
+    <div class="gallery">
+
+      <!-- Frame 1: State A — step 1 -->
+      <div class="frame">
+        <p class="frame__label">1 — State A</p>
+        <div class="phone lp-trail is-v4">
+          <div class="lp-trail-sheet__panel">
+            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
+            </div>
+            <header class="lp-trail-sheet__header">
+              <div class="lp-trail-sheet__title-row">
+                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                <h2 class="lp-trail-sheet__title">step 1</h2>
+              </div>
+              <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+            </header>
+            <div class="lp-trail-sheet__body" id="trail-sheet-body">
+              <div class="lp-trail-sheet__camp" id="trail-sheet-camp-1">
+                <div class="lp-trail-battles" id="trail-battles-1">
+                  <div class="lp-trail-battles__scroll is-idle">
+                    <div class="lp-trail-camp-idle lp-frost">
+                      <h3 class="lp-trail-camp-idle__title">Start step 1</h3>
+                      <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
+                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 2: State B + Won strip -->
+      <div class="frame">
+        <p class="frame__label">2 — State B + strip</p>
+        <div class="phone lp-trail is-v4">
+          <div class="lp-trail-sheet__panel has-won-today">
+            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
+            </div>
+            <header class="lp-trail-sheet__header">
+              <div class="lp-trail-sheet__title-row">
+                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                <h2 class="lp-trail-sheet__title">step 1</h2>
+              </div>
+              <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+            </header>
+            <div class="lp-trail-sheet__body">
+              <div class="lp-trail-sheet__camp">
+                <div class="lp-trail-battles" id="trail-battles-2">
+                  <div class="lp-trail-battles__scroll is-idle">
+                    <div class="lp-trail-camp-idle lp-trail-camp-idle--won lp-frost">
+                      <p class="lp-trail-camp-idle__pill">
+                        <span class="lp-trail-camp-idle__pill-check" aria-hidden="true">✓</span>
+                        All battles won today
+                      </p>
+                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add next battle</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-2">
+              <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-2">
+                <span id="trail-battles-won-strip-label-2">Won (6)</span>
+                <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 3: State A — long camp name + two-line description -->
+      <div class="frame">
+        <p class="frame__label">3 — State A, long copy</p>
+        <div class="phone lp-trail is-v4">
+          <div class="lp-trail-sheet__panel">
+            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
+            </div>
+            <header class="lp-trail-sheet__header">
+              <div class="lp-trail-sheet__title-row">
+                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                <h2 class="lp-trail-sheet__title">Finish the kitchen renovation before winter</h2>
+              </div>
+              <p class="lp-trail-sheet__subtitle">Clear the counters, donate what we won't use, and paint the cabinets before the first frost.</p>
+            </header>
+            <div class="lp-trail-sheet__body">
+              <div class="lp-trail-sheet__camp">
+                <div class="lp-trail-battles" id="trail-battles-3">
+                  <div class="lp-trail-battles__scroll is-idle">
+                    <div class="lp-trail-camp-idle lp-frost">
+                      <h3 class="lp-trail-camp-idle__title">Start Finish the kitchen renovation before winter</h3>
+                      <p class="lp-trail-camp-idle__body">Clear the counters, donate what we won't use, and paint the cabinets before the first frost.</p>
+                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 4: Five open battles, scrollable -->
+      <div class="frame frame--scroll-demo">
+        <p class="frame__label">4 — Open battles (scroll)</p>
+        <div class="phone lp-trail is-v4">
+          <div class="lp-trail-sheet__panel has-won-today">
+            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
+            </div>
+            <header class="lp-trail-sheet__header">
+              <div class="lp-trail-sheet__title-row">
+                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                <h2 class="lp-trail-sheet__title">step 1</h2>
+              </div>
+              <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+            </header>
+            <div class="lp-trail-sheet__body">
+              <div class="lp-trail-sheet__camp">
+                <div class="lp-trail-battles" id="trail-battles-4">
+                  <div class="lp-trail-battles__scroll">
+                    <ul class="lp-trail-battles__list" id="trail-battles-list-4">
+                      <li class="lp-trail-battles__row is-open is-check lp-frost">
+                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                        <span class="lp-trail-battles__name">Sort the donation pile by room</span>
+                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                      </li>
+                      <li class="lp-trail-battles__row is-open is-check lp-frost">
+                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                        <span class="lp-trail-battles__name">Wipe down every counter and the backsplash behind the stove</span>
+                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                      </li>
+                      <li class="lp-trail-battles__row is-open is-check lp-frost">
+                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                        <span class="lp-trail-battles__name">Order cabinet paint samples online</span>
+                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                      </li>
+                      <li class="lp-trail-battles__row is-open is-check lp-frost">
+                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                        <span class="lp-trail-battles__name">Empty the junk drawer into one labeled box</span>
+                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                      </li>
+                      <li class="lp-trail-battles__row is-open is-check lp-frost">
+                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                        <span class="lp-trail-battles__name">Tape off the trim and sand one cabinet door</span>
+                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                      </li>
+                    </ul>
+                    <div class="lp-trail-battles__composer">
+                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add battle</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-4">
+              <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-4">
+                <span>Won (6)</span>
+                <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
