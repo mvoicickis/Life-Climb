@@ -449,23 +449,91 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 0.1rem;
+      gap: 0.35rem;
       width: 100%;
       max-width: 100%;
-      padding-inline: 0.35rem;
+      padding-inline: 0.15rem;
       pointer-events: auto;
     }
 
-    .lp-trail-stage.is-open .lp-trail-stage__camps {
-      gap: 0.08rem;
+    .lp-trail-stage.is-open.is-single .lp-trail-stage__camps {
+      justify-content: center;
     }
 
-    .lp-trail-stage.is-open .lp-trail-camp:nth-child(2):not(.is-more) {
-      transform: translateY(-0.7rem);
+    .lp-trail-stage.is-open.is-pair .lp-trail-stage__camps {
+      gap: 0.5rem;
+      padding-inline: 0.25rem;
     }
 
-    .lp-trail-stage.is-open .lp-trail-camp:nth-child(4):not(.is-more) {
-      transform: translateY(-0.45rem);
+    .lp-trail-stage.is-open.is-pair .lp-trail-camp {
+      flex: 1 1 0;
+      max-width: 7.75rem;
+    }
+
+    .lp-trail-stage__row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 100%;
+      gap: 0.1rem;
+    }
+
+    .lp-trail-stage__nav {
+      flex: 0 0 var(--lp-tap);
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      min-width: var(--lp-tap);
+      min-height: var(--lp-tap);
+      border: 1px solid var(--lp-border);
+      border-radius: 50%;
+      background: var(--lp-frost);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--lp-ink);
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      padding: 0;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    .lp-trail-stage.is-carousel .lp-trail-stage__row .lp-trail-stage__camps {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: calc(100% - var(--lp-tap) - 0.25rem);
+    }
+
+    .lp-trail-stage.is-carousel.has-nav-both .lp-trail-stage__row .lp-trail-stage__camps {
+      max-width: calc(100% - (2 * var(--lp-tap)) - 0.35rem);
+    }
+
+    .lp-trail-stage.is-carousel.is-pair .lp-trail-camp {
+      flex: 1 1 0;
+      max-width: none;
+    }
+
+    .lp-trail-stage__dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      margin-top: 0.12rem;
+      min-height: 0.55rem;
+    }
+
+    .lp-trail-stage__dot {
+      width: 0.38rem;
+      height: 0.38rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 18%, transparent);
+    }
+
+    .lp-trail-stage__dot.is-active {
+      background: var(--lp-green-deep);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-green) 28%, transparent);
     }
 
     .lp-trail-stage.is-done .lp-trail-stage__camps {
@@ -535,20 +603,13 @@
     }
 
     .lp-trail-stage.is-open .lp-trail-camp {
-      flex: 1 1 0;
-      max-width: 6.15rem;
+      flex: 0 1 auto;
+      max-width: 7.25rem;
     }
 
-    .lp-trail-stage.is-open .lp-trail-camp.is-more {
-      flex: 0 0 auto;
+    .lp-trail-stage.is-open.is-pair .lp-trail-camp,
+    .lp-trail-stage.is-open.is-carousel.is-pair .lp-trail-camp {
       max-width: none;
-      min-width: 0;
-      transform: none;
-    }
-
-    .lp-trail-stage.is-open .lp-trail-camp.is-more .lp-trail-camp__title {
-      white-space: nowrap;
-      font-weight: 800;
     }
 
     .lp-trail-camp {
@@ -623,14 +684,6 @@
       height: 11px;
     }
 
-    .lp-trail-camp.is-more .lp-trail-camp__tent {
-      background: linear-gradient(180deg, #e8e4dc, #c8c2b4 55%, #9a9284);
-    }
-
-    .lp-trail-stage.is-done .lp-trail-camp__caption {
-      display: none;
-    }
-
     .lp-trail-stage.is-fog .lp-trail-camp__caption {
       display: none;
     }
@@ -665,8 +718,8 @@
       max-width: 9.75rem;
     }
 
-    .lp-trail-stage.is-open.is-two-camps .lp-trail-camp:nth-child(2) {
-      transform: translateY(-0.85rem);
+    .lp-trail-stage.is-done .lp-trail-camp__caption {
+      display: none;
     }
 
     .lp-trail-camp__title {
@@ -993,138 +1046,278 @@
       border: 0;
     }
 
-    /* Stage contour rings — drawn from data, not baked into photo */
-    .lp-trail.has-stage-rings .lp-trail__rings,
-    .lp-trail.has-stage-rings .lp-trail__schematic {
+    /* Arrange camps sheet */
+    .lp-arrange-sheet {
       position: absolute;
       inset: 0;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+    }
+
+    .lp-arrange-sheet__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem 0.55rem;
+      padding-top: calc(0.65rem + env(safe-area-inset-top, 0px));
+      border-bottom: 1px solid var(--lp-border);
+      background: var(--lp-surface);
+    }
+
+    .lp-arrange-sheet__title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .lp-arrange-sheet__done {
+      border: 0;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-green);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      box-shadow: var(--lp-shadow-cta);
+    }
+
+    .lp-arrange-sheet__body {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding: 0.65rem 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .lp-arrange-add-stage {
       width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: visible;
+      min-height: 2rem;
+      border: 1px dashed color-mix(in srgb, var(--lp-green) 45%, var(--lp-border));
+      border-radius: var(--lp-radius-field);
+      background: transparent;
+      color: var(--lp-muted);
+      font: inherit;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.35rem 0.65rem;
     }
 
-    .lp-trail.has-stage-rings .lp-trail__rings {
+    .lp-arrange-stage {
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-field);
+      background: var(--lp-surface);
+      box-shadow: var(--lp-shadow-card);
+      overflow: hidden;
+    }
+
+    .lp-arrange-stage.is-folded {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: var(--lp-tap);
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-field);
+      background: var(--lp-surface);
+      font: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--lp-ink);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .lp-arrange-stage.is-folded span:last-child {
+      color: var(--lp-muted);
+      font-size: 1rem;
+    }
+
+    .lp-arrange-stage__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
+      border-bottom: 1px solid var(--lp-border);
+      background: color-mix(in srgb, var(--lp-paper) 65%, var(--lp-surface));
+    }
+
+    .lp-arrange-stage__label {
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .lp-arrange-stage__menu-btn {
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      min-width: var(--lp-tap);
+      border: 0;
+      border-radius: var(--lp-radius-field);
+      background: transparent;
+      color: var(--lp-muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .lp-arrange-stage__menu {
+      position: relative;
+    }
+
+    .lp-arrange-stage__popover {
+      position: absolute;
+      right: 0;
+      top: calc(100% - 0.35rem);
       z-index: 2;
+      min-width: 9rem;
+      padding: 0.35rem;
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-field);
+      background: var(--lp-surface);
+      box-shadow: var(--lp-shadow-card);
     }
 
-    .lp-trail.has-stage-rings .lp-trail__schematic {
-      z-index: 1;
+    .lp-arrange-stage__popover button {
+      display: block;
+      width: 100%;
+      border: 0;
+      border-radius: 0.55rem;
+      background: transparent;
+      color: #b91c1c;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.55rem 0.65rem;
+      cursor: pointer;
     }
 
-    .lp-trail.has-stage-rings .lp-trail__stages {
-      z-index: 4;
+    .lp-arrange-stage__camps {
+      display: grid;
+      gap: 0.35rem;
+      padding: 0.45rem 0.55rem 0.55rem;
     }
 
-    .lp-trail.has-stage-rings .lp-trail-stage {
-      transform: translate(-50%, calc(-100% + 0.15rem));
+    .lp-arrange-move-here {
+      width: 100%;
+      min-height: 2.15rem;
+      border: 1.5px dashed var(--lp-green);
+      border-radius: var(--lp-radius-field);
+      background: color-mix(in srgb, var(--lp-green) 10%, var(--lp-surface));
+      color: var(--lp-green-deep);
+      font: inherit;
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0.4rem 0.65rem;
     }
 
-    .lp-trail.has-stage-rings .lp-trail-stage__label {
-      margin-bottom: 0.05rem;
-    }
-
-    .lp-trail-ring__fill {
-      stroke: none;
-    }
-
-    .lp-trail-ring.is-done .lp-trail-ring__fill {
-      fill: color-mix(in srgb, var(--lp-muted) 42%, transparent);
-    }
-
-    .lp-trail-ring.is-open .lp-trail-ring__fill {
-      fill: color-mix(in srgb, var(--lp-green) 24%, transparent);
-    }
-
-    .lp-trail-ring.is-fog .lp-trail-ring__fill {
-      fill: color-mix(in srgb, var(--lp-paper) 55%, transparent);
-    }
-
-    .lp-trail-ring__back {
-      fill: none;
-      stroke: color-mix(in srgb, var(--lp-ink) 14%, transparent);
-      stroke-width: 0.28;
-    }
-
-    .lp-trail-ring.is-done .lp-trail-ring__front {
-      fill: none;
-      stroke: color-mix(in srgb, var(--lp-muted) 72%, var(--lp-ink));
-      stroke-width: 0.42;
-    }
-
-    .lp-trail-ring.is-open .lp-trail-ring__front {
-      fill: none;
-      stroke: var(--lp-green-deep);
-      stroke-width: 0.48;
-    }
-
-    .lp-trail-ring.is-fog .lp-trail-ring__front {
-      fill: none;
-      stroke: color-mix(in srgb, var(--lp-muted) 55%, transparent);
-      stroke-width: 0.38;
-      stroke-dasharray: 1.1 0.85;
-    }
-
-    .lp-trail-ring__trail {
-      fill: none;
-      stroke: color-mix(in srgb, var(--lp-green-deep) 55%, var(--lp-muted));
-      stroke-width: 0.38;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.72;
-    }
-
-    .lp-trail.has-stage-rings:not(.is-schematic) .lp-trail-ring__trail {
-      stroke: rgba(255, 248, 220, 0.52);
-      stroke-dasharray: 0.55 1.35;
-      opacity: 0.85;
-    }
-
-    /* Schematic frame — clean line style */
-    .lp-trail.is-schematic {
+    .lp-arrange-camp-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: var(--lp-tap);
+      padding: 0.35rem 0.45rem;
+      border-radius: var(--lp-radius-field);
+      border: 1px solid var(--lp-border);
       background: var(--lp-paper-soft);
     }
 
-    .lp-trail.is-schematic .lp-trail__photo-wrap,
-    .lp-trail.is-schematic .lp-trail__haze,
-    .lp-trail.is-schematic .lp-trail__mountain-foot {
-      display: none;
+    .lp-arrange-camp-row.is-lifted {
+      border-color: var(--lp-green);
+      background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-surface));
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-green) 22%, transparent);
     }
 
-    .lp-trail-schematic__mountain {
-      fill: var(--lp-surface);
-      stroke: color-mix(in srgb, var(--lp-ink) 18%, transparent);
-      stroke-width: 0.55;
-      stroke-linejoin: round;
+    .lp-arrange-camp-row__handle {
+      flex-shrink: 0;
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      border: 0;
+      border-radius: 0.55rem;
+      background: transparent;
+      color: var(--lp-muted);
+      font-size: 0.95rem;
+      line-height: 1;
+      cursor: grab;
+      padding: 0;
     }
 
-    .lp-trail-schematic__ground {
-      fill: none;
-      stroke: var(--lp-border);
-      stroke-width: 0.35;
+    .lp-arrange-camp-row__name {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-size: 0.84rem;
+      font-weight: 700;
+      overflow-wrap: normal;
+      word-break: normal;
     }
 
-    .lp-trail.is-schematic .lp-trail-ring__trail {
-      stroke: color-mix(in srgb, var(--lp-green-deep) 62%, var(--lp-muted));
-      stroke-dasharray: 0.85 0.75;
-      opacity: 0.9;
+    .lp-arrange-camp-row__nudge {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid var(--lp-border);
+      border-radius: 0.55rem;
+      background: var(--lp-surface);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .lp-arrange-stage.is-done .lp-arrange-stage__label {
+      color: var(--lp-muted);
+    }
+
+    .phone.is-arrange-only .lp-trail__scroll {
+      visibility: hidden;
+    }
+
+    .frame-section-label {
+      flex: 0 0 100%;
+      margin: 1.5rem 0 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lp-muted);
     }
   </style>
 </head>
 <body>
   <div class="doc">
     <h1>Mountain stages — ledge mockup</h1>
-    <p class="doc__lede">Eight 360px frames side by side. Camps sit on stage rings traced from <code>mountain_trail_default.webp</code> — rings and trail are drawn in SVG, never baked into the photo. Frames 7–8 show contour rings on the painted mountain and in a clean schematic style.</p>
+    <p class="doc__lede">360px frames side by side. Frames 1–6 are the original map scenarios. M1–M2 show the open-ledge carousel in detail. A1–A5 show Arrange camps (opened from the HUD button). Every button is a command — no confirmation dialogs.</p>
 
     <div class="doc__note">
-      <h2>Ledge anchors (TRAIL_CURVE)</h2>
+      <h2>Open ledge rules</h2>
       <ul>
-        <li><strong>Done</strong> — y 87.5%, x 54.9%</li>
-        <li><strong>Open</strong> — y 62.3%, x 48.8%</li>
-        <li><strong>Fog</strong> — y 46.3%, x 51.2%</li>
-        <li><strong>Cloud</strong> — y 35.2%, x 56.2%</li>
-        <li><strong>Summit flag</strong> — y 22%, x 56.6%</li>
-        <li><strong>Ring width</strong> — scales with elevation (wider lower, narrower higher); height = 12% of width</li>
+        <li><strong>1 camp</strong> — centered on the ledge</li>
+        <li><strong>2 camps</strong> — side by side, names wrap to 2 lines, never cut off</li>
+        <li><strong>3+ camps</strong> — 2 visible, ‹ › arrows (44px), dots under the ledge (one per camp); always opens on the next camp (fox + green outline); bottom battle card stays fixed while paging</li>
+        <li><strong>Only the open ledge</strong> gets arrows — fog and done ledges stay as now</li>
+        <li><strong>Ledge anchors</strong> — done y 87.5%, open y 62.3%, fog y 46.3%, cloud y 35.2%, summit y 22%</li>
+      </ul>
+    </div>
+
+    <div class="doc__note">
+      <h2>Arrange camps</h2>
+      <ul>
+        <li>Highest stage at top, stage 1 at bottom — mountain-shaped list</li>
+        <li>Tap a camp to lift it (green); every stage shows a Move here spot; ↑ ↓ reorder within a stage</li>
+        <li>+ Add stage between every pair and at the top; stage menu → Delete stage (camps drop to the stage below)</li>
+        <li>Stages with 4+ camps fold to one line — tap to expand</li>
       </ul>
     </div>
 
@@ -1160,7 +1353,7 @@
                   </div>
 
                   <div class="lp-trail__stages" id="trail-camps">
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-single" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 · open now</p>
                       <div class="lp-trail-stage__camps">
                         <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
@@ -1223,8 +1416,8 @@
       <!-- Frame 2 — My plan, 9 camps -->
       <section class="frame-block" aria-labelledby="f2-label">
         <p class="frame-block__label" id="f2-label">Frame 2</p>
-        <h2 class="frame-block__title">My plan · 9 camps</h2>
-        <div class="phone" role="img" aria-label="Frame 2: nine camps across four stages">
+        <h2 class="frame-block__title">My plan · 9 camps · carousel</h2>
+        <div class="phone" role="img" aria-label="Frame 2: nine camps across four stages with open ledge carousel">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1259,28 +1452,31 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                      <div class="lp-trail-stage__camps">
-                        <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
-                        </button>
+                      <div class="lp-trail-stage__row">
+                        <div class="lp-trail-stage__camps is-pair">
+                          <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
+                          </button>
+                          <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
+                          </button>
+                        </div>
+                        <button type="button" class="lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
+                      </div>
+                      <div class="lp-trail-stage__dots" aria-hidden="true">
+                        <span class="lp-trail-stage__dot is-active"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
 
-                    <div class="lp-trail__companion" style="left: 52%; top: 58%;">
+                    <div class="lp-trail__companion" style="left: 44%; top: 58%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
 
@@ -1327,8 +1523,8 @@
       <!-- Frame 3 — 6 camps on open stage -->
       <section class="frame-block" aria-labelledby="f3-label">
         <p class="frame-block__label" id="f3-label">Frame 3</p>
-        <h2 class="frame-block__title">Open stage · 6 camps (+3 overflow)</h2>
-        <div class="phone" role="img" aria-label="Frame 3: six camps on open stage showing three tents plus plus-three">
+        <h2 class="frame-block__title">Open stage · 6 camps (carousel)</h2>
+        <div class="phone" role="img" aria-label="Frame 3: six camps on open stage with carousel arrows and dots">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
@@ -1363,29 +1559,27 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                      <div class="lp-trail-stage__camps">
-                        <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Alpha">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Alpha</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Beta">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Beta</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Gamma">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Gamma</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp is-more" style="--lp-trail-accent: #57534e;" aria-label="3 more camps" data-open-sheet="stage-sheet-f3">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">+3 more</span></span>
-                        </button>
+                      <div class="lp-trail-stage__row">
+                        <div class="lp-trail-stage__camps is-pair">
+                          <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Alpha">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Alpha</span></span>
+                          </button>
+                          <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Beta">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Beta</span></span>
+                          </button>
+                        </div>
+                        <button type="button" class="lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
+                      </div>
+                      <div class="lp-trail-stage__dots" aria-hidden="true">
+                        <span class="lp-trail-stage__dot is-active"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
 
@@ -1427,45 +1621,6 @@
             </div>
 
             <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
-
-            <div class="lp-trail-sheet" id="stage-sheet-f3" hidden>
-              <div class="lp-trail-sheet__backdrop" data-close-sheet aria-hidden="true"></div>
-              <div class="lp-trail-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="stage-sheet-f3-title">
-                <header class="lp-trail-sheet__header">
-                  <div class="lp-trail-sheet__title-row">
-                    <button type="button" class="lp-trail-sheet__back" data-close-sheet aria-label="Back to mountain"><span aria-hidden="true">‹</span></button>
-                    <h2 class="lp-trail-sheet__title" id="stage-sheet-f3-title">Stage 2</h2>
-                    <button type="button" class="lp-trail-sheet__close" data-close-sheet aria-label="Close"><span aria-hidden="true">✕</span></button>
-                  </div>
-                  <p class="lp-trail-sheet__subtitle">3 more camps · all open</p>
-                </header>
-                <div class="lp-trail-sheet__body">
-                  <ul class="lp-trail-sheet__camp-list">
-                    <li>
-                      <button type="button" class="lp-trail-sheet__camp-item">
-                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #7950f2;"></span>
-                        <span class="lp-trail-sheet__camp-name">Delta</span>
-                        <span class="lp-trail-sheet__camp-hint">Open →</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" class="lp-trail-sheet__camp-item">
-                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #e64980;"></span>
-                        <span class="lp-trail-sheet__camp-name">Epsilon</span>
-                        <span class="lp-trail-sheet__camp-hint">Open →</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" class="lp-trail-sheet__camp-item">
-                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #22c55e;"></span>
-                        <span class="lp-trail-sheet__camp-name">Zeta</span>
-                        <span class="lp-trail-sheet__camp-hint">Open →</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
           </section>
         </div>
       </section>
@@ -1509,9 +1664,9 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open is-two-camps" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                      <div class="lp-trail-stage__camps">
+                      <div class="lp-trail-stage__camps is-pair">
                         <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
@@ -1605,29 +1760,28 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 5 · open now</p>
-                      <div class="lp-trail-stage__camps">
-                        <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Analytics">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Analytics</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Billing">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Billing</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Support">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Support</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp is-more" style="--lp-trail-accent: #57534e;" aria-label="1 more camp" data-open-sheet="stage-sheet-f5">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">+1 more</span></span>
-                        </button>
+                      <div class="lp-trail-stage__row">
+                        <div class="lp-trail-stage__camps is-pair">
+                          <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Analytics">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Analytics</span></span>
+                          </button>
+                          <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Billing">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Billing</span></span>
+                          </button>
+                        </div>
+                        <button type="button" class="lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
+                      </div>
+                      <div class="lp-trail-stage__dots" aria-hidden="true">
+                        <span class="lp-trail-stage__dot is-active"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
 
@@ -1670,31 +1824,6 @@
             </div>
 
             <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
-
-            <div class="lp-trail-sheet" id="stage-sheet-f5" hidden>
-              <div class="lp-trail-sheet__backdrop" data-close-sheet aria-hidden="true"></div>
-              <div class="lp-trail-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="stage-sheet-f5-title">
-                <header class="lp-trail-sheet__header">
-                  <div class="lp-trail-sheet__title-row">
-                    <button type="button" class="lp-trail-sheet__back" data-close-sheet aria-label="Back to mountain"><span aria-hidden="true">‹</span></button>
-                    <h2 class="lp-trail-sheet__title" id="stage-sheet-f5-title">Stage 5</h2>
-                    <button type="button" class="lp-trail-sheet__close" data-close-sheet aria-label="Close"><span aria-hidden="true">✕</span></button>
-                  </div>
-                  <p class="lp-trail-sheet__subtitle">1 more camp · all open</p>
-                </header>
-                <div class="lp-trail-sheet__body">
-                  <ul class="lp-trail-sheet__camp-list">
-                    <li>
-                      <button type="button" class="lp-trail-sheet__camp-item">
-                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #7950f2;"></span>
-                        <span class="lp-trail-sheet__camp-name">Growth</span>
-                        <span class="lp-trail-sheet__camp-hint">Open →</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
           </section>
         </div>
       </section>
@@ -1738,12 +1867,18 @@
                       </div>
                     </div>
 
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y); opacity: 0.55;">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y); opacity: 0.55;">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                      <div class="lp-trail-stage__camps">
-                        <span class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span><span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span></span>
-                        <span class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span><span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span></span>
-                        <span class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span><span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span></span>
+                      <div class="lp-trail-stage__row">
+                        <div class="lp-trail-stage__camps is-pair">
+                          <span class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span><span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span></span>
+                          <span class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span><span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span></span>
+                        </div>
+                        <span class="lp-trail-stage__nav is-next" aria-hidden="true">›</span>
+                      </div>
+                      <div class="lp-trail-stage__dots" aria-hidden="true">
+                        <span class="lp-trail-stage__dot is-active"></span>
+                        <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
 
@@ -1825,12 +1960,14 @@
         </div>
       </section>
 
-      <!-- Frame 7 — Frame 2 with contour rings on photo -->
-      <section class="frame-block" aria-labelledby="f7-label">
-        <p class="frame-block__label" id="f7-label">Frame 7</p>
-        <h2 class="frame-block__title">My plan · rings on painted mountain</h2>
-        <div class="phone" role="img" aria-label="Frame 7: nine camps with SVG contour rings over the photo">
-          <section class="lp-trail is-bleed is-v4 has-stage-rings" aria-label="Mountain trail with stage rings">
+      <p class="frame-section-label">Map · open ledge carousel</p>
+
+      <!-- M1 — 4 camps, page 1 -->
+      <section class="frame-block" aria-labelledby="m1-label">
+        <p class="frame-block__label" id="m1-label">M1</p>
+        <h2 class="frame-block__title">Open stage · 4 camps · page 1</h2>
+        <div class="phone" role="img" aria-label="M1: Montain next with Registration, next arrow, four dots first active">
+          <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
                 <span class="lp-trail-hud__avatar lp-rpg-avatar">
@@ -1844,7 +1981,6 @@
               </div>
               <button type="button" class="lp-trail-arrange">Arrange camps</button>
             </div>
-
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
                 <div class="lp-trail__mountain">
@@ -1853,55 +1989,49 @@
                     <div class="lp-trail__haze"></div>
                     <div class="lp-trail__mountain-foot"></div>
                   </div>
-                  <svg class="lp-trail__rings" aria-hidden="true"></svg>
-
                   <div class="lp-trail__stages">
                     <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
-                        <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true">
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                        </span>
+                        <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                      <div class="lp-trail-stage__camps">
-                        <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
-                        </button>
+                      <div class="lp-trail-stage__row">
+                        <div class="lp-trail-stage__camps is-pair">
+                          <button type="button" class="lp-trail-camp is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
+                          </button>
+                          <button type="button" class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
+                          </button>
+                        </div>
+                        <button type="button" class="lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
+                      </div>
+                      <div class="lp-trail-stage__dots" aria-hidden="true">
+                        <span class="lp-trail-stage__dot is-active"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
-
-                    <div class="lp-trail__companion" style="left: 52%; top: 58%;">
+                    <div class="lp-trail__companion" style="left: 44%; top: 58%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
-
                     <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
-                      <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
+                      <p class="lp-trail-stage__label lp-frost">Stage 3 · 2 camps</p>
                       <div class="lp-trail-stage__camps">
-                        <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                         <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-
                     <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
                   </div>
-
                   <div class="lp-trail__peak">
                     <button type="button" class="lp-trail__flag" aria-label="Summit goal">
                       <span class="lp-trail__pennant">
@@ -1913,7 +2043,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="lp-trail__dock" data-trail-ignore>
                 <button type="button" class="lp-trail-today is-busy">
                   <span class="lp-trail-today__copy">
@@ -1924,18 +2053,17 @@
                 </button>
               </div>
             </div>
-
             <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
           </section>
         </div>
       </section>
 
-      <!-- Frame 8 — Schematic line style -->
-      <section class="frame-block" aria-labelledby="f8-label">
-        <p class="frame-block__label" id="f8-label">Frame 8</p>
-        <h2 class="frame-block__title">My plan · schematic rings</h2>
-        <div class="phone" role="img" aria-label="Frame 8: schematic mountain with contour rings, no photo">
-          <section class="lp-trail is-bleed is-v4 has-stage-rings is-schematic" aria-label="Schematic mountain trail with stage rings">
+      <!-- M2 — 4 camps, page 2 -->
+      <section class="frame-block" aria-labelledby="m2-label">
+        <p class="frame-block__label" id="m2-label">M2</p>
+        <h2 class="frame-block__title">After › · same battle card</h2>
+        <div class="phone" role="img" aria-label="M2: Day 2 problem and Todays Page visible, previous arrow, dot two active, same bottom card">
+          <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__pill">
                 <span class="lp-trail-hud__avatar lp-rpg-avatar">
@@ -1949,60 +2077,57 @@
               </div>
               <button type="button" class="lp-trail-arrange">Arrange camps</button>
             </div>
-
             <div class="lp-trail__scroll">
               <div class="lp-trail__surface">
                 <div class="lp-trail__mountain">
-                  <svg class="lp-trail__schematic" aria-hidden="true"></svg>
-                  <svg class="lp-trail__rings" aria-hidden="true"></svg>
-
+                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                    <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
+                    <div class="lp-trail__haze"></div>
+                    <div class="lp-trail__mountain-foot"></div>
+                  </div>
                   <div class="lp-trail__stages">
                     <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
                       <div class="lp-trail-stage__camps">
-                        <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true">
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                        </span>
+                        <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-
-                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                    <div class="lp-trail-stage is-open is-carousel is-pair has-nav-both" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
                       <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                      <div class="lp-trail-stage__camps">
-                        <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
-                        </button>
-                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
-                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
-                        </button>
+                      <div class="lp-trail-stage__row">
+                        <button type="button" class="lp-trail-stage__nav is-prev" aria-label="Previous camps">‹</button>
+                        <div class="lp-trail-stage__camps is-pair">
+                          <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
+                          </button>
+                          <button type="button" class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Today's Page">
+                            <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                            <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                            <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Today's Page</span></span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="lp-trail-stage__dots" aria-hidden="true">
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot is-active"></span>
+                        <span class="lp-trail-stage__dot"></span>
+                        <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
-
-                    <div class="lp-trail__companion" style="left: 52%; top: 58%;">
+                    <div class="lp-trail__companion" style="left: 44%; top: 58%;">
                       <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
                     </div>
-
                     <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
-                      <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
+                      <p class="lp-trail-stage__label lp-frost">Stage 3 · 2 camps</p>
                       <div class="lp-trail-stage__camps">
-                        <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                         <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                         <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
                       </div>
                     </div>
-
                     <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
                   </div>
-
                   <div class="lp-trail__peak">
                     <button type="button" class="lp-trail__flag" aria-label="Summit goal">
                       <span class="lp-trail__pennant">
@@ -2014,7 +2139,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="lp-trail__dock" data-trail-ignore>
                 <button type="button" class="lp-trail-today is-busy">
                   <span class="lp-trail-today__copy">
@@ -2025,133 +2149,307 @@
                 </button>
               </div>
             </div>
-
             <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
           </section>
+        </div>
+      </section>
+
+      <p class="frame-section-label">Arrange camps · commands only</p>
+
+      <!-- A1 — New user, 3 stages -->
+      <section class="frame-block" aria-labelledby="a1-label">
+        <p class="frame-block__label" id="a1-label">A1</p>
+        <h2 class="frame-block__title">After onboarding · 3 stages</h2>
+        <div class="phone is-arrange-only" role="img" aria-label="A1: arrange sheet with three stages one camp each">
+          <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
+          <div class="lp-arrange-sheet">
+            <header class="lp-arrange-sheet__header">
+              <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
+              <button type="button" class="lp-arrange-sheet__done">Done</button>
+            </header>
+            <div class="lp-arrange-sheet__body">
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
+                  <div class="lp-arrange-stage__menu">
+                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
+                  </div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu">
+                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
+                  </div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 1 · open now</span>
+                  <div class="lp-arrange-stage__menu">
+                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
+                  </div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Montain</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- A2 — Registration lifted -->
+      <section class="frame-block" aria-labelledby="a2-label">
+        <p class="frame-block__label" id="a2-label">A2</p>
+        <h2 class="frame-block__title">Registration lifted · Move here</h2>
+        <div class="phone is-arrange-only" role="img" aria-label="A2: lifted camp with move here spots on every stage">
+          <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
+          <div class="lp-arrange-sheet">
+            <header class="lp-arrange-sheet__header">
+              <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
+              <button type="button" class="lp-arrange-sheet__done">Done</button>
+            </header>
+            <div class="lp-arrange-sheet__body">
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <button type="button" class="lp-arrange-move-here">Move here</button>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <button type="button" class="lp-arrange-move-here">Move here</button>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 1 · open now</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <button type="button" class="lp-arrange-move-here">Move here</button>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Montain</span>
+                  </div>
+                  <div class="lp-arrange-camp-row is-lifted">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                    <button type="button" class="lp-arrange-camp-row__nudge" aria-label="Move up">↑</button>
+                    <button type="button" class="lp-arrange-camp-row__nudge" aria-label="Move down">↓</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- A3 — After move -->
+      <section class="frame-block" aria-labelledby="a3-label">
+        <p class="frame-block__label" id="a3-label">A3</p>
+        <h2 class="frame-block__title">Registration moved to Stage 1</h2>
+        <div class="phone is-arrange-only" role="img" aria-label="A3: stage one has two camps, stage two has Day 2 problem">
+          <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
+          <div class="lp-arrange-sheet">
+            <header class="lp-arrange-sheet__header">
+              <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
+              <button type="button" class="lp-arrange-sheet__done">Done</button>
+            </header>
+            <div class="lp-arrange-sheet__body">
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 1 · open now</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Montain</span>
+                  </div>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- A4 — 9 camps, folded stages -->
+      <section class="frame-block" aria-labelledby="a4-label">
+        <p class="frame-block__label" id="a4-label">A4</p>
+        <h2 class="frame-block__title">My 9 camps · folded stages</h2>
+        <div class="phone is-arrange-only" role="img" aria-label="A4: nine camps with stage two expanded and stages three and four folded">
+          <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
+          <div class="lp-arrange-sheet">
+            <header class="lp-arrange-sheet__header">
+              <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
+              <button type="button" class="lp-arrange-sheet__done">Done</button>
+            </header>
+            <div class="lp-arrange-sheet__body">
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <button type="button" class="lp-arrange-stage is-folded"><span>Stage 4 · 2 camps</span><span aria-hidden="true">›</span></button>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <button type="button" class="lp-arrange-stage is-folded"><span>Stage 3 · 3 camps</span><span aria-hidden="true">›</span></button>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · open now</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Montain</span>
+                  </div>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                  </div>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                  </div>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Todays Page">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Today's Page</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage is-done">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 1 · done</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Camps">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Camps</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- A5 — Delete stage menu -->
+      <section class="frame-block" aria-labelledby="a5-label">
+        <p class="frame-block__label" id="a5-label">A5</p>
+        <h2 class="frame-block__title">Stage menu · Delete stage</h2>
+        <div class="phone is-arrange-only" role="img" aria-label="A5: stage menu open with delete stage command">
+          <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
+          <div class="lp-arrange-sheet">
+            <header class="lp-arrange-sheet__header">
+              <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
+              <button type="button" class="lp-arrange-sheet__done">Done</button>
+            </header>
+            <div class="lp-arrange-sheet__body">
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
+                  <div class="lp-arrange-stage__menu">
+                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
+                    <div class="lp-arrange-stage__popover">
+                      <button type="button">Delete stage</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 1 · open now</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
+                    <span class="lp-arrange-camp-row__name">Montain</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
     </div>
   </div>
   <script>
-    (function () {
-      var SVG_NS = "http://www.w3.org/2000/svg";
-
-      /* Stage ring data — same anchors as TRAIL_CURVE ledges; scales for any count. */
-      var STAGE_RINGS = [
-        { state: "done", x: 0.549, y: 0.875 },
-        { state: "open", x: 0.488, y: 0.623 },
-        { state: "fog", x: 0.512, y: 0.463 }
-      ];
-
-      var TRAIL_TAIL = { x: 0.562, y: 0.352 };
-
-      function ringWidthPct(y) {
-        var yPct = y * 100;
-        var t = (yPct - 38) / (88 - 38);
-        t = Math.max(0, Math.min(1, t));
-        return 34 + t * 18;
-      }
-
-      function svgEl(name, attrs) {
-        var el = document.createElementNS(SVG_NS, name);
-        Object.keys(attrs).forEach(function (key) {
-          el.setAttribute(key, attrs[key]);
-        });
-        return el;
-      }
-
-      function renderRing(stage) {
-        var rx = ringWidthPct(stage.y) / 2;
-        var ry = rx * 0.12;
-        var cx = stage.x * 100;
-        var cy = stage.y * 100 - ry;
-        var g = svgEl("g", {
-          class: "lp-trail-ring is-" + stage.state,
-          transform: "translate(" + cx.toFixed(2) + " " + cy.toFixed(2) + ")"
-        });
-
-        g.appendChild(svgEl("ellipse", {
-          class: "lp-trail-ring__fill",
-          cx: "0",
-          cy: "0",
-          rx: rx.toFixed(2),
-          ry: ry.toFixed(2)
-        }));
-
-        g.appendChild(svgEl("path", {
-          class: "lp-trail-ring__back",
-          d: "M " + (-rx).toFixed(2) + " 0 A " + rx.toFixed(2) + " " + ry.toFixed(2) + " 0 0 0 " + rx.toFixed(2) + " 0"
-        }));
-
-        g.appendChild(svgEl("path", {
-          class: "lp-trail-ring__front",
-          d: "M " + (-rx).toFixed(2) + " 0 A " + rx.toFixed(2) + " " + ry.toFixed(2) + " 0 0 1 " + rx.toFixed(2) + " 0"
-        }));
-
-        return { node: g, cx: cx, cy: cy, rx: rx, ry: ry };
-      }
-
-      function renderTrailPath(rings) {
-        var points = rings.map(function (ring) {
-          return [ring.cx, ring.cy + ring.ry];
-        });
-        points.push([TRAIL_TAIL.x * 100, TRAIL_TAIL.y * 100]);
-
-        var d = points.map(function (pt, index) {
-          return (index === 0 ? "M" : "L") + " " + pt[0].toFixed(2) + " " + pt[1].toFixed(2);
-        }).join(" ");
-
-        return svgEl("path", { class: "lp-trail-ring__trail", d: d });
-      }
-
-      function renderSchematic(svg) {
-        svg.setAttribute("viewBox", "0 0 100 100");
-        svg.setAttribute("preserveAspectRatio", "none");
-
-        svg.appendChild(svgEl("path", {
-          class: "lp-trail-schematic__ground",
-          d: "M 4 94 L 96 94"
-        }));
-
-        svg.appendChild(svgEl("path", {
-          class: "lp-trail-schematic__mountain",
-          d: "M 4 94 L 22 72 C 30 58, 36 54, 42 50 C 46 46, 50 36, 56.6 16 C 62 30, 68 42, 74 50 C 82 60, 88 70, 96 94 Z"
-        }));
-      }
-
-      function renderRings(svg) {
-        svg.setAttribute("viewBox", "0 0 100 100");
-        svg.setAttribute("preserveAspectRatio", "none");
-
-        var rings = STAGE_RINGS.map(renderRing);
-        svg.appendChild(renderTrailPath(rings));
-        rings.forEach(function (ring) {
-          svg.appendChild(ring.node);
-        });
-      }
-
-      document.querySelectorAll(".lp-trail.has-stage-rings").forEach(function (trail) {
-        var schematic = trail.querySelector(".lp-trail__schematic");
-        var rings = trail.querySelector(".lp-trail__rings");
-        if (schematic) renderSchematic(schematic);
-        if (rings) renderRings(rings);
-      });
-    })();
-
-    document.querySelectorAll(".lp-trail-camp.is-more[data-open-sheet]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var sheet = document.getElementById(btn.getAttribute("data-open-sheet"));
-        if (sheet) sheet.hidden = false;
-      });
-    });
-
-    document.querySelectorAll("[data-close-sheet]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var sheet = btn.closest(".lp-trail-sheet");
-        if (sheet) sheet.hidden = true;
-      });
-    });
+    /* Static mockup — no runtime behaviour required. */
   </script>
 </body>
 </html>
