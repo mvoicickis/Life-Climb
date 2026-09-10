@@ -992,12 +992,129 @@
       white-space: nowrap;
       border: 0;
     }
+
+    /* Stage contour rings — drawn from data, not baked into photo */
+    .lp-trail.has-stage-rings .lp-trail__rings,
+    .lp-trail.has-stage-rings .lp-trail__schematic {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .lp-trail.has-stage-rings .lp-trail__rings {
+      z-index: 2;
+    }
+
+    .lp-trail.has-stage-rings .lp-trail__schematic {
+      z-index: 1;
+    }
+
+    .lp-trail.has-stage-rings .lp-trail__stages {
+      z-index: 4;
+    }
+
+    .lp-trail.has-stage-rings .lp-trail-stage {
+      transform: translate(-50%, calc(-100% + 0.15rem));
+    }
+
+    .lp-trail.has-stage-rings .lp-trail-stage__label {
+      margin-bottom: 0.05rem;
+    }
+
+    .lp-trail-ring__fill {
+      stroke: none;
+    }
+
+    .lp-trail-ring.is-done .lp-trail-ring__fill {
+      fill: color-mix(in srgb, var(--lp-muted) 42%, transparent);
+    }
+
+    .lp-trail-ring.is-open .lp-trail-ring__fill {
+      fill: color-mix(in srgb, var(--lp-green) 24%, transparent);
+    }
+
+    .lp-trail-ring.is-fog .lp-trail-ring__fill {
+      fill: color-mix(in srgb, var(--lp-paper) 55%, transparent);
+    }
+
+    .lp-trail-ring__back {
+      fill: none;
+      stroke: color-mix(in srgb, var(--lp-ink) 14%, transparent);
+      stroke-width: 0.28;
+    }
+
+    .lp-trail-ring.is-done .lp-trail-ring__front {
+      fill: none;
+      stroke: color-mix(in srgb, var(--lp-muted) 72%, var(--lp-ink));
+      stroke-width: 0.42;
+    }
+
+    .lp-trail-ring.is-open .lp-trail-ring__front {
+      fill: none;
+      stroke: var(--lp-green-deep);
+      stroke-width: 0.48;
+    }
+
+    .lp-trail-ring.is-fog .lp-trail-ring__front {
+      fill: none;
+      stroke: color-mix(in srgb, var(--lp-muted) 55%, transparent);
+      stroke-width: 0.38;
+      stroke-dasharray: 1.1 0.85;
+    }
+
+    .lp-trail-ring__trail {
+      fill: none;
+      stroke: color-mix(in srgb, var(--lp-green-deep) 55%, var(--lp-muted));
+      stroke-width: 0.38;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.72;
+    }
+
+    .lp-trail.has-stage-rings:not(.is-schematic) .lp-trail-ring__trail {
+      stroke: rgba(255, 248, 220, 0.52);
+      stroke-dasharray: 0.55 1.35;
+      opacity: 0.85;
+    }
+
+    /* Schematic frame — clean line style */
+    .lp-trail.is-schematic {
+      background: var(--lp-paper-soft);
+    }
+
+    .lp-trail.is-schematic .lp-trail__photo-wrap,
+    .lp-trail.is-schematic .lp-trail__haze,
+    .lp-trail.is-schematic .lp-trail__mountain-foot {
+      display: none;
+    }
+
+    .lp-trail-schematic__mountain {
+      fill: var(--lp-surface);
+      stroke: color-mix(in srgb, var(--lp-ink) 18%, transparent);
+      stroke-width: 0.55;
+      stroke-linejoin: round;
+    }
+
+    .lp-trail-schematic__ground {
+      fill: none;
+      stroke: var(--lp-border);
+      stroke-width: 0.35;
+    }
+
+    .lp-trail.is-schematic .lp-trail-ring__trail {
+      stroke: color-mix(in srgb, var(--lp-green-deep) 62%, var(--lp-muted));
+      stroke-dasharray: 0.85 0.75;
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body>
   <div class="doc">
     <h1>Mountain stages — ledge mockup</h1>
-    <p class="doc__lede">Six 360px frames side by side. Camps sit on four fixed ledges traced from <code>mountain_trail_default.webp</code> — no drawn trail overlay. Only the painted path in the photo.</p>
+    <p class="doc__lede">Eight 360px frames side by side. Camps sit on stage rings traced from <code>mountain_trail_default.webp</code> — rings and trail are drawn in SVG, never baked into the photo. Frames 7–8 show contour rings on the painted mountain and in a clean schematic style.</p>
 
     <div class="doc__note">
       <h2>Ledge anchors (TRAIL_CURVE)</h2>
@@ -1007,6 +1124,7 @@
         <li><strong>Fog</strong> — y 46.3%, x 51.2%</li>
         <li><strong>Cloud</strong> — y 35.2%, x 56.2%</li>
         <li><strong>Summit flag</strong> — y 22%, x 56.6%</li>
+        <li><strong>Ring width</strong> — scales with elevation (wider lower, narrower higher); height = 12% of width</li>
       </ul>
     </div>
 
@@ -1707,9 +1825,320 @@
         </div>
       </section>
 
+      <!-- Frame 7 — Frame 2 with contour rings on photo -->
+      <section class="frame-block" aria-labelledby="f7-label">
+        <p class="frame-block__label" id="f7-label">Frame 7</p>
+        <h2 class="frame-block__title">My plan · rings on painted mountain</h2>
+        <div class="phone" role="img" aria-label="Frame 7: nine camps with SVG contour rings over the photo">
+          <section class="lp-trail is-bleed is-v4 has-stage-rings" aria-label="Mountain trail with stage rings">
+            <div class="lp-trail-hud" data-trail-ignore>
+              <div class="lp-trail-hud__pill">
+                <span class="lp-trail-hud__avatar lp-rpg-avatar">
+                  <img class="lp-trail-hud__avatar-img lp-rpg-avatar__img" src="../../app/assets/images/characters/fox.png" alt="">
+                  <span class="lp-trail-hud__level lp-rpg-avatar__level">4</span>
+                </span>
+                <div class="lp-trail-hud__stats">
+                  <span class="lp-trail-hud__stat"><span aria-hidden="true">⚡</span>48</span>
+                  <span class="lp-trail-hud__stat"><span aria-hidden="true">🏕</span>1/9</span>
+                </div>
+              </div>
+              <button type="button" class="lp-trail-arrange">Arrange camps</button>
+            </div>
+
+            <div class="lp-trail__scroll">
+              <div class="lp-trail__surface">
+                <div class="lp-trail__mountain">
+                  <div class="lp-trail__photo-wrap" aria-hidden="true">
+                    <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async">
+                    <div class="lp-trail__haze"></div>
+                    <div class="lp-trail__mountain-foot"></div>
+                  </div>
+                  <svg class="lp-trail__rings" aria-hidden="true"></svg>
+
+                  <div class="lp-trail__stages">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                      <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
+                      <div class="lp-trail-stage__camps">
+                        <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true">
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                      <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
+                      <div class="lp-trail-stage__camps">
+                        <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
+                        </button>
+                        <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
+                        </button>
+                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="lp-trail__companion" style="left: 52%; top: 58%;">
+                      <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
+                    </div>
+
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                      <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
+                      <div class="lp-trail-stage__camps">
+                        <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
+                        <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
+                        <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
+                      </div>
+                    </div>
+
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                  </div>
+
+                  <div class="lp-trail__peak">
+                    <button type="button" class="lp-trail__flag" aria-label="Summit goal">
+                      <span class="lp-trail__pennant">
+                        <span class="lp-trail__peak-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
+                        <span class="lp-trail__peak-tagline">Ship the MVP</span>
+                      </span>
+                      <span class="lp-trail__pole" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lp-trail__dock" data-trail-ignore>
+                <button type="button" class="lp-trail-today is-busy">
+                  <span class="lp-trail-today__copy">
+                    <span class="lp-trail-today__headline">Fix signup email</span>
+                    <span class="lp-trail-today__sub">Next in Registration &amp; Onboarding</span>
+                  </span>
+                  <span class="lp-trail-today__tick" aria-label="Win battle"></span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
+          </section>
+        </div>
+      </section>
+
+      <!-- Frame 8 — Schematic line style -->
+      <section class="frame-block" aria-labelledby="f8-label">
+        <p class="frame-block__label" id="f8-label">Frame 8</p>
+        <h2 class="frame-block__title">My plan · schematic rings</h2>
+        <div class="phone" role="img" aria-label="Frame 8: schematic mountain with contour rings, no photo">
+          <section class="lp-trail is-bleed is-v4 has-stage-rings is-schematic" aria-label="Schematic mountain trail with stage rings">
+            <div class="lp-trail-hud" data-trail-ignore>
+              <div class="lp-trail-hud__pill">
+                <span class="lp-trail-hud__avatar lp-rpg-avatar">
+                  <img class="lp-trail-hud__avatar-img lp-rpg-avatar__img" src="../../app/assets/images/characters/fox.png" alt="">
+                  <span class="lp-trail-hud__level lp-rpg-avatar__level">4</span>
+                </span>
+                <div class="lp-trail-hud__stats">
+                  <span class="lp-trail-hud__stat"><span aria-hidden="true">⚡</span>48</span>
+                  <span class="lp-trail-hud__stat"><span aria-hidden="true">🏕</span>1/9</span>
+                </div>
+              </div>
+              <button type="button" class="lp-trail-arrange">Arrange camps</button>
+            </div>
+
+            <div class="lp-trail__scroll">
+              <div class="lp-trail__surface">
+                <div class="lp-trail__mountain">
+                  <svg class="lp-trail__schematic" aria-hidden="true"></svg>
+                  <svg class="lp-trail__rings" aria-hidden="true"></svg>
+
+                  <div class="lp-trail__stages">
+                    <div class="lp-trail-stage is-done" style="--lp-stage-x: var(--ledge-done-x); --lp-stage-y: var(--ledge-done-y);">
+                      <p class="lp-trail-stage__label lp-frost">Stage 1 done</p>
+                      <div class="lp-trail-stage__camps">
+                        <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true">
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="lp-trail-stage is-open" style="--lp-stage-x: var(--ledge-open-x); --lp-stage-y: var(--ledge-open-y);">
+                      <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
+                      <div class="lp-trail-stage__camps">
+                        <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
+                        </button>
+                        <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
+                        </button>
+                        <button type="button" class="lp-trail-camp has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="lp-trail__companion" style="left: 52%; top: 58%;">
+                      <img class="lp-trail__companion-img" src="../../app/assets/images/characters/fox.png" alt="">
+                    </div>
+
+                    <div class="lp-trail-stage is-fog" style="--lp-stage-x: var(--ledge-fog-x); --lp-stage-y: var(--ledge-fog-y);">
+                      <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
+                      <div class="lp-trail-stage__camps">
+                        <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
+                        <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
+                        <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span></span>
+                      </div>
+                    </div>
+
+                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-x: var(--ledge-cloud-x); --lp-stage-y: var(--ledge-cloud-y);">1 more stage</button>
+                  </div>
+
+                  <div class="lp-trail__peak">
+                    <button type="button" class="lp-trail__flag" aria-label="Summit goal">
+                      <span class="lp-trail__pennant">
+                        <span class="lp-trail__peak-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
+                        <span class="lp-trail__peak-tagline">Ship the MVP</span>
+                      </span>
+                      <span class="lp-trail__pole" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lp-trail__dock" data-trail-ignore>
+                <button type="button" class="lp-trail-today is-busy">
+                  <span class="lp-trail-today__copy">
+                    <span class="lp-trail-today__headline">Fix signup email</span>
+                    <span class="lp-trail-today__sub">Next in Registration &amp; Onboarding</span>
+                  </span>
+                  <span class="lp-trail-today__tick" aria-label="Win battle"></span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
+          </section>
+        </div>
+      </section>
+
     </div>
   </div>
   <script>
+    (function () {
+      var SVG_NS = "http://www.w3.org/2000/svg";
+
+      /* Stage ring data — same anchors as TRAIL_CURVE ledges; scales for any count. */
+      var STAGE_RINGS = [
+        { state: "done", x: 0.549, y: 0.875 },
+        { state: "open", x: 0.488, y: 0.623 },
+        { state: "fog", x: 0.512, y: 0.463 }
+      ];
+
+      var TRAIL_TAIL = { x: 0.562, y: 0.352 };
+
+      function ringWidthPct(y) {
+        var yPct = y * 100;
+        var t = (yPct - 38) / (88 - 38);
+        t = Math.max(0, Math.min(1, t));
+        return 34 + t * 18;
+      }
+
+      function svgEl(name, attrs) {
+        var el = document.createElementNS(SVG_NS, name);
+        Object.keys(attrs).forEach(function (key) {
+          el.setAttribute(key, attrs[key]);
+        });
+        return el;
+      }
+
+      function renderRing(stage) {
+        var rx = ringWidthPct(stage.y) / 2;
+        var ry = rx * 0.12;
+        var cx = stage.x * 100;
+        var cy = stage.y * 100 - ry;
+        var g = svgEl("g", {
+          class: "lp-trail-ring is-" + stage.state,
+          transform: "translate(" + cx.toFixed(2) + " " + cy.toFixed(2) + ")"
+        });
+
+        g.appendChild(svgEl("ellipse", {
+          class: "lp-trail-ring__fill",
+          cx: "0",
+          cy: "0",
+          rx: rx.toFixed(2),
+          ry: ry.toFixed(2)
+        }));
+
+        g.appendChild(svgEl("path", {
+          class: "lp-trail-ring__back",
+          d: "M " + (-rx).toFixed(2) + " 0 A " + rx.toFixed(2) + " " + ry.toFixed(2) + " 0 0 0 " + rx.toFixed(2) + " 0"
+        }));
+
+        g.appendChild(svgEl("path", {
+          class: "lp-trail-ring__front",
+          d: "M " + (-rx).toFixed(2) + " 0 A " + rx.toFixed(2) + " " + ry.toFixed(2) + " 0 0 1 " + rx.toFixed(2) + " 0"
+        }));
+
+        return { node: g, cx: cx, cy: cy, rx: rx, ry: ry };
+      }
+
+      function renderTrailPath(rings) {
+        var points = rings.map(function (ring) {
+          return [ring.cx, ring.cy + ring.ry];
+        });
+        points.push([TRAIL_TAIL.x * 100, TRAIL_TAIL.y * 100]);
+
+        var d = points.map(function (pt, index) {
+          return (index === 0 ? "M" : "L") + " " + pt[0].toFixed(2) + " " + pt[1].toFixed(2);
+        }).join(" ");
+
+        return svgEl("path", { class: "lp-trail-ring__trail", d: d });
+      }
+
+      function renderSchematic(svg) {
+        svg.setAttribute("viewBox", "0 0 100 100");
+        svg.setAttribute("preserveAspectRatio", "none");
+
+        svg.appendChild(svgEl("path", {
+          class: "lp-trail-schematic__ground",
+          d: "M 4 94 L 96 94"
+        }));
+
+        svg.appendChild(svgEl("path", {
+          class: "lp-trail-schematic__mountain",
+          d: "M 4 94 L 22 72 C 30 58, 36 54, 42 50 C 46 46, 50 36, 56.6 16 C 62 30, 68 42, 74 50 C 82 60, 88 70, 96 94 Z"
+        }));
+      }
+
+      function renderRings(svg) {
+        svg.setAttribute("viewBox", "0 0 100 100");
+        svg.setAttribute("preserveAspectRatio", "none");
+
+        var rings = STAGE_RINGS.map(renderRing);
+        svg.appendChild(renderTrailPath(rings));
+        rings.forEach(function (ring) {
+          svg.appendChild(ring.node);
+        });
+      }
+
+      document.querySelectorAll(".lp-trail.has-stage-rings").forEach(function (trail) {
+        var schematic = trail.querySelector(".lp-trail__schematic");
+        var rings = trail.querySelector(".lp-trail__rings");
+        if (schematic) renderSchematic(schematic);
+        if (rings) renderRings(rings);
+      });
+    })();
+
     document.querySelectorAll(".lp-trail-camp.is-more[data-open-sheet]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var sheet = document.getElementById(btn.getAttribute("data-open-sheet"));
