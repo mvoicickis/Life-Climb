@@ -126,15 +126,7 @@
         <%= render "life_journeys/trail_camp_empty_state",
               project: project,
               variant: camp_idle_variant,
-              won_count: won_today_count %>
-        <div class="lp-trail-battles__composer"
-             data-trail-battles-target="composer">
-          <div class="lp-trail-battles__composer-form lp-frost"
-               data-trail-battles-target="composerForm"
-               hidden>
-            <%= add_form %>
-          </div>
-        </div>
+              add_form: add_form %>
       <% else %>
         <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
           <% open_battles.each_with_index do |battle, index| %>

@@ -972,15 +972,12 @@ en:
         battle_reopened: "Battle reopened."
         no_open_battles: "Add the smallest thing that moves this camp forward."
         camp_idle:
-          start_title: "Start %{camp}"
+          start_title: "Your climb starts here"
           start_body: "Pick one small thing you can finish today. Small wins get you to the top."
           start_button: "+ Add first battle"
-          won_title:
-            one: "1 battle won today"
-            other: "%{count} battles won today"
-          won_body: "Add the next small step for %{camp}."
+          won_pill: "All battles won today"
           won_button: "+ Add next battle"
-          keep_title: "Keep climbing %{camp}"
+          keep_title: "Keep climbing"
           keep_body: "Pick one small thing you can finish today."
           keep_button: "+ Add battle"
         not_started: "Not started"
@@ -1029,7 +1026,7 @@ en:
         won_battles_here:
           one: "%{count} battle won here"
           other: "%{count} battles won here"
-        won_battles_fold: "Won today"
+        won_battles_strip: "Won"
         win_toast: "Won"
         quick_complete: "Quick win"
         quick_win_toast: "Won “%{title}”"

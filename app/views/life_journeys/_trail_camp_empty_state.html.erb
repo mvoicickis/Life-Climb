@@ -1,30 +1,32 @@
-<%# Centered idle block when a camp has no open battles. locals: project, variant:, won_count: %>
+<%# Centered idle block when a camp has no open battles. locals: project, variant:, add_form: %>
 <% project = local_assigns.fetch(:project) %>
 <% variant = local_assigns.fetch(:variant) %>
-<% camp = mountain_trail_camp_sheet_title(project) %>
-<% won_count = local_assigns.fetch(:won_count, 0) %>
+<% add_form = local_assigns.fetch(:add_form) %>
 
-<div class="lp-trail-camp-idle">
-  <h3 class="lp-trail-camp-idle__title">
-    <% case variant %>
-    <% when :start %>
-      <%= t("strategy.rpg.trail.camp_idle.start_title", camp: camp) %>
-    <% when :won %>
-      <%= t("strategy.rpg.trail.camp_idle.won_title", count: won_count) %>
-    <% when :keep %>
-      <%= t("strategy.rpg.trail.camp_idle.keep_title", camp: camp) %>
-    <% end %>
-  </h3>
-  <p class="lp-trail-camp-idle__body">
-    <% case variant %>
-    <% when :start %>
-      <%= t("strategy.rpg.trail.camp_idle.start_body") %>
-    <% when :won %>
-      <%= t("strategy.rpg.trail.camp_idle.won_body", camp: camp) %>
-    <% when :keep %>
-      <%= t("strategy.rpg.trail.camp_idle.keep_body") %>
-    <% end %>
-  </p>
+<div class="lp-trail-camp-idle lp-frost<%= " lp-trail-camp-idle--won" if variant == :won %>">
+  <% if variant == :won %>
+    <p class="lp-trail-camp-idle__pill">
+      <span class="lp-trail-camp-idle__pill-check" aria-hidden="true">✓</span>
+      <span class="lp-trail-camp-idle__pill-text"><%= t("strategy.rpg.trail.camp_idle.won_pill") %></span>
+    </p>
+  <% else %>
+    <h3 class="lp-trail-camp-idle__title">
+      <% case variant %>
+      <% when :start %>
+        <%= t("strategy.rpg.trail.camp_idle.start_title") %>
+      <% when :keep %>
+        <%= t("strategy.rpg.trail.camp_idle.keep_title") %>
+      <% end %>
+    </h3>
+    <p class="lp-trail-camp-idle__body">
+      <% case variant %>
+      <% when :start %>
+        <%= t("strategy.rpg.trail.camp_idle.start_body") %>
+      <% when :keep %>
+        <%= t("strategy.rpg.trail.camp_idle.keep_body") %>
+      <% end %>
+    </p>
+  <% end %>
   <button type="button"
           class="lp-trail-battles__composer-trigger"
           data-trail-battles-target="composerTrigger"
@@ -38,4 +40,12 @@
       <%= t("strategy.rpg.trail.camp_idle.keep_button") %>
     <% end %>
   </button>
+  <div class="lp-trail-battles__composer"
+       data-trail-battles-target="composer">
+    <div class="lp-trail-battles__composer-form"
+         data-trail-battles-target="composerForm"
+         hidden>
+      <%= add_form %>
+    </div>
+  </div>
 </div>

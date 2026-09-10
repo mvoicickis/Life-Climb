@@ -404,15 +404,12 @@ lv:
         reopen_camp: "Atvērt no jauna"
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         camp_idle:
-          start_title: "Start %{camp}"  # TODO: translate
+          start_title: "Your climb starts here"  # TODO: translate
           start_body: "Pick one small thing you can finish today. Small wins get you to the top."  # TODO: translate
           start_button: "+ Add first battle"  # TODO: translate
-          won_title:
-            one: "1 battle won today"  # TODO: translate
-            other: "%{count} battles won today"  # TODO: translate
-          won_body: "Add the next small step for %{camp}."  # TODO: translate
+          won_pill: "All battles won today"  # TODO: translate
           won_button: "+ Add next battle"  # TODO: translate
-          keep_title: "Keep climbing %{camp}"  # TODO: translate
+          keep_title: "Keep climbing"  # TODO: translate
           keep_body: "Pick one small thing you can finish today."  # TODO: translate
           keep_button: "+ Add battle"  # TODO: translate
         won_battles:
@@ -421,7 +418,7 @@ lv:
         won_battles_here:
           one: "%{count} battle won here"  # TODO: translate
           other: "%{count} battles won here"  # TODO: translate
-        won_battles_fold: "Won today"  # TODO: translate
+        won_battles_strip: "Won"  # TODO: translate
         pages_mode_hint: "Pieraksti lappuses virzienā uz mērķi — ikdienas cīņas nav vajadzīgas."
         log_pages: "Pierakstīt lappuses"
         session_wins_toast: "%{count} uzvarētas šoreiz"
