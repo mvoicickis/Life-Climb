@@ -19,6 +19,7 @@
       --lp-border: rgba(15, 23, 42, 0.1);
       --lp-tap: 2.75rem;
       --lp-radius-card: 1.25rem;
+      --lp-radius-field: 0.85rem;
       --lp-radius-pill: 999px;
       --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
       --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
@@ -26,6 +27,9 @@
       --lp-frost: color-mix(in srgb, var(--lp-paper) 78%, transparent);
       --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
       --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --mock-phone-height: 640px;
+      --mock-keyboard-inset: calc(var(--mock-phone-height) * 0.45);
+      --mock-sheet-vh: calc(var(--mock-phone-height) - var(--mock-keyboard-inset));
     }
 
     @supports not (backdrop-filter: blur(1px)) {
@@ -50,7 +54,7 @@
     }
 
     .doc {
-      max-width: 1600px;
+      max-width: 1800px;
       margin: 0 auto;
       padding: 2rem 1.25rem 4rem;
     }
@@ -78,6 +82,7 @@
     .frame {
       flex: 0 0 360px;
       max-width: 100%;
+      min-width: 0;
     }
 
     .frame__label {
@@ -89,12 +94,20 @@
       color: var(--lp-muted);
     }
 
+    .frame__note {
+      margin: 0.55rem 0 0;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--lp-muted);
+      max-width: 360px;
+    }
+
     /* —— 360px phone —— */
     .phone {
       width: 360px;
       max-width: 100%;
-      height: min(720px, 92dvh);
-      min-height: 640px;
+      height: var(--mock-phone-height);
+      min-height: var(--mock-phone-height);
       border-radius: 28px;
       overflow: hidden;
       position: relative;
@@ -104,7 +117,27 @@
         0 24px 48px rgba(15, 23, 42, 0.12);
     }
 
+    .phone__keyboard-mock {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--mock-keyboard-inset);
+      background: #d1d5db;
+      border-top: 1px solid #9ca3af;
+      z-index: 20;
+      pointer-events: none;
+    }
+
     /* —— Production class chain (v4 camp sheet) —— */
+    .lp-trail.is-v4 .lp-trail-sheet {
+      --lp-sheet-vh: 100%;
+      --lp-keyboard-inset: 0px;
+      position: relative;
+      height: 100%;
+      min-height: 0;
+    }
+
     .lp-trail.is-v4 .lp-trail-sheet__panel {
       --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
       --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
@@ -116,6 +149,21 @@
       overflow: hidden;
       background: var(--lp-paper-soft);
       color: var(--lp-ink);
+    }
+
+    .phone--keyboard .lp-trail-sheet {
+      --lp-sheet-vh: var(--mock-sheet-vh);
+      --lp-keyboard-inset: var(--mock-keyboard-inset);
+    }
+
+    .phone--keyboard .lp-trail-sheet__panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: var(--lp-keyboard-inset, 0px);
+      height: var(--lp-sheet-vh, 100%);
+      max-height: var(--lp-sheet-vh, 100%);
     }
 
     .lp-trail.is-v4 .lp-trail-sheet__camp-bg {
@@ -242,7 +290,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-      scroll-padding-bottom: 7.5rem;
+      scroll-padding-bottom: 0.5rem;
     }
 
     .lp-trail.is-v4 .lp-trail-battles__scroll.is-idle {
@@ -250,6 +298,28 @@
       flex-direction: column;
       justify-content: center;
       overflow-y: visible;
+    }
+
+    .phone--keyboard .lp-trail-battles__scroll.is-idle {
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding-top: 0.65rem;
+    }
+
+    /* Frame 4: list scrolls; composer pinned above won strip */
+    .lp-trail.is-v4 .lp-trail-battles--pinned-composer .lp-trail-battles__scroll {
+      padding-bottom: 0.35rem;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles--pinned-composer .lp-trail-battles__composer {
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0.55rem 1.2rem 0.75rem;
+      background: linear-gradient(
+        0deg,
+        var(--lp-paper-soft) 72%,
+        color-mix(in srgb, var(--lp-paper-soft) 55%, transparent) 100%
+      );
     }
 
     /* Idle card — frost + open-row chrome */
@@ -340,6 +410,121 @@
       text-align: center;
     }
 
+    .lp-trail.is-v4 .lp-trail-battles__composer.is-open .lp-trail-battles__composer-trigger {
+      display: none;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__composer-form {
+      display: grid;
+      gap: 0.45rem;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--lp-radius-card);
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__composer-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__field {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__input,
+    .lp-trail.is-v4 .lp-trail-battles__textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: var(--lp-tap);
+      border-radius: var(--lp-radius-field);
+      padding: 0.75rem 1rem;
+      background: var(--lp-paper);
+      border: 1px solid var(--lp-border);
+      color: var(--lp-ink);
+      font: inherit;
+      font-size: 0.95rem;
+      line-height: 1.35;
+      resize: none;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__input:focus,
+    .lp-trail.is-v4 .lp-trail-battles__textarea:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+      border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__input::placeholder,
+    .lp-trail.is-v4 .lp-trail-battles__textarea::placeholder {
+      color: var(--lp-muted);
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__composer-add {
+      flex-shrink: 0;
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      border: 0;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-green);
+      color: #fff;
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: default;
+      box-shadow: var(--lp-shadow-cta);
+      opacity: 0.38;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__daily-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: default;
+      user-select: none;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__switch {
+      position: relative;
+      width: 2.1rem;
+      height: 1.2rem;
+      border-radius: var(--lp-radius-pill);
+      background: color-mix(in srgb, var(--lp-muted) 18%, var(--lp-paper));
+      border: 1px solid var(--lp-border);
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 50%;
+      background: var(--lp-paper);
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__daily-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      line-height: 1.2;
+    }
+
+    .lp-trail.is-v4 .lp-trail-battles__composer {
+      margin-top: 0.55rem;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
     .lp-trail.is-v4 .lp-trail-battles__list {
       list-style: none;
       margin: 0;
@@ -393,16 +578,6 @@
       cursor: default;
     }
 
-    .lp-trail.is-v4 .lp-trail-battles__composer {
-      margin-top: 0.55rem;
-      flex-shrink: 0;
-    }
-
-    .frame--scroll-demo .phone {
-      height: 520px;
-      min-height: 520px;
-    }
-
     /* Won strip — pinned, safe area (matches production) */
     .lp-trail.is-v4 .lp-trail-sheet__done-slot {
       position: absolute;
@@ -448,7 +623,7 @@
 <body>
   <div class="doc">
     <h1>Camp sheet idle states</h1>
-    <p class="doc__lede">360px frames. Production class chain with centering fix at <code>.lp-trail-sheet__camp</code> (flex column + <code>flex: 1</code>). Idle card uses <code>lp-frost</code> plus open-row border, radius and shadow. Strip label is <strong>Won (n)</strong> — includes older one-shot wins.</p>
+    <p class="doc__lede">360px frames. Production class chain with centering fix at <code>.lp-trail-sheet__camp</code>. Camp description stays in the header subtitle only; idle card bodies use <code>start_body</code> / <code>keep_body</code> from en.yml. Strip label is <strong>Won (n)</strong>.</p>
 
     <div class="gallery">
 
@@ -456,25 +631,27 @@
       <div class="frame">
         <p class="frame__label">1 — State A</p>
         <div class="phone lp-trail is-v4">
-          <div class="lp-trail-sheet__panel">
-            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
-              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
-            </div>
-            <header class="lp-trail-sheet__header">
-              <div class="lp-trail-sheet__title-row">
-                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
-                <h2 class="lp-trail-sheet__title">step 1</h2>
+          <div class="lp-trail-sheet">
+            <div class="lp-trail-sheet__panel">
+              <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+                <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
               </div>
-              <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
-            </header>
-            <div class="lp-trail-sheet__body" id="trail-sheet-body">
-              <div class="lp-trail-sheet__camp" id="trail-sheet-camp-1">
-                <div class="lp-trail-battles" id="trail-battles-1">
-                  <div class="lp-trail-battles__scroll is-idle">
-                    <div class="lp-trail-camp-idle lp-frost">
-                      <h3 class="lp-trail-camp-idle__title">Start step 1</h3>
-                      <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
-                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
+              <header class="lp-trail-sheet__header">
+                <div class="lp-trail-sheet__title-row">
+                  <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                  <h2 class="lp-trail-sheet__title">step 1</h2>
+                </div>
+                <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+              </header>
+              <div class="lp-trail-sheet__body" id="trail-sheet-body">
+                <div class="lp-trail-sheet__camp" id="trail-sheet-camp-1">
+                  <div class="lp-trail-battles" id="trail-battles-1">
+                    <div class="lp-trail-battles__scroll is-idle">
+                      <div class="lp-trail-camp-idle lp-frost">
+                        <h3 class="lp-trail-camp-idle__title">Start step 1</h3>
+                        <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
+                        <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -488,37 +665,39 @@
       <div class="frame">
         <p class="frame__label">2 — State B + strip</p>
         <div class="phone lp-trail is-v4">
-          <div class="lp-trail-sheet__panel has-won-today">
-            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
-              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
-            </div>
-            <header class="lp-trail-sheet__header">
-              <div class="lp-trail-sheet__title-row">
-                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
-                <h2 class="lp-trail-sheet__title">step 1</h2>
+          <div class="lp-trail-sheet">
+            <div class="lp-trail-sheet__panel has-won-today">
+              <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+                <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
               </div>
-              <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
-            </header>
-            <div class="lp-trail-sheet__body">
-              <div class="lp-trail-sheet__camp">
-                <div class="lp-trail-battles" id="trail-battles-2">
-                  <div class="lp-trail-battles__scroll is-idle">
-                    <div class="lp-trail-camp-idle lp-trail-camp-idle--won lp-frost">
-                      <p class="lp-trail-camp-idle__pill">
-                        <span class="lp-trail-camp-idle__pill-check" aria-hidden="true">✓</span>
-                        All battles won today
-                      </p>
-                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add next battle</button>
+              <header class="lp-trail-sheet__header">
+                <div class="lp-trail-sheet__title-row">
+                  <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                  <h2 class="lp-trail-sheet__title">step 1</h2>
+                </div>
+                <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+              </header>
+              <div class="lp-trail-sheet__body">
+                <div class="lp-trail-sheet__camp">
+                  <div class="lp-trail-battles" id="trail-battles-2">
+                    <div class="lp-trail-battles__scroll is-idle">
+                      <div class="lp-trail-camp-idle lp-trail-camp-idle--won lp-frost">
+                        <p class="lp-trail-camp-idle__pill">
+                          <span class="lp-trail-camp-idle__pill-check" aria-hidden="true">✓</span>
+                          All battles won today
+                        </p>
+                        <button type="button" class="lp-trail-battles__composer-trigger">+ Add next battle</button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-2">
-              <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-2">
-                <span id="trail-battles-won-strip-label-2">Won (6)</span>
-                <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
-              </button>
+              <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-2">
+                <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-2">
+                  <span id="trail-battles-won-strip-label-2">Won (6)</span>
+                  <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -528,25 +707,27 @@
       <div class="frame">
         <p class="frame__label">3 — State A, long copy</p>
         <div class="phone lp-trail is-v4">
-          <div class="lp-trail-sheet__panel">
-            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
-              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
-            </div>
-            <header class="lp-trail-sheet__header">
-              <div class="lp-trail-sheet__title-row">
-                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
-                <h2 class="lp-trail-sheet__title">Finish the kitchen renovation before winter</h2>
+          <div class="lp-trail-sheet">
+            <div class="lp-trail-sheet__panel">
+              <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+                <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
               </div>
-              <p class="lp-trail-sheet__subtitle">Clear the counters, donate what we won't use, and paint the cabinets before the first frost.</p>
-            </header>
-            <div class="lp-trail-sheet__body">
-              <div class="lp-trail-sheet__camp">
-                <div class="lp-trail-battles" id="trail-battles-3">
-                  <div class="lp-trail-battles__scroll is-idle">
-                    <div class="lp-trail-camp-idle lp-frost">
-                      <h3 class="lp-trail-camp-idle__title">Start Finish the kitchen renovation before winter</h3>
-                      <p class="lp-trail-camp-idle__body">Clear the counters, donate what we won't use, and paint the cabinets before the first frost.</p>
-                      <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
+              <header class="lp-trail-sheet__header">
+                <div class="lp-trail-sheet__title-row">
+                  <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                  <h2 class="lp-trail-sheet__title">Finish the kitchen renovation before winter</h2>
+                </div>
+                <p class="lp-trail-sheet__subtitle">Clear the counters, donate what we won't use, and paint the cabinets before the first frost.</p>
+              </header>
+              <div class="lp-trail-sheet__body">
+                <div class="lp-trail-sheet__camp">
+                  <div class="lp-trail-battles" id="trail-battles-3">
+                    <div class="lp-trail-battles__scroll is-idle">
+                      <div class="lp-trail-camp-idle lp-frost">
+                        <h3 class="lp-trail-camp-idle__title">Your climb starts here</h3>
+                        <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
+                        <button type="button" class="lp-trail-battles__composer-trigger">+ Add first battle</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -556,67 +737,158 @@
         </div>
       </div>
 
-      <!-- Frame 4: Five open battles, scrollable -->
-      <div class="frame frame--scroll-demo">
+      <!-- Frame 4: Five open battles, scrollable list + pinned add -->
+      <div class="frame">
         <p class="frame__label">4 — Open battles (scroll)</p>
         <div class="phone lp-trail is-v4">
-          <div class="lp-trail-sheet__panel has-won-today">
-            <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
-              <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
-            </div>
-            <header class="lp-trail-sheet__header">
-              <div class="lp-trail-sheet__title-row">
-                <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
-                <h2 class="lp-trail-sheet__title">step 1</h2>
+          <div class="lp-trail-sheet">
+            <div class="lp-trail-sheet__panel has-won-today">
+              <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+                <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
               </div>
-              <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
-            </header>
-            <div class="lp-trail-sheet__body">
-              <div class="lp-trail-sheet__camp">
-                <div class="lp-trail-battles" id="trail-battles-4">
-                  <div class="lp-trail-battles__scroll">
-                    <ul class="lp-trail-battles__list" id="trail-battles-list-4">
-                      <li class="lp-trail-battles__row is-open is-check lp-frost">
-                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                        <span class="lp-trail-battles__name">Sort the donation pile by room</span>
-                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
-                      </li>
-                      <li class="lp-trail-battles__row is-open is-check lp-frost">
-                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                        <span class="lp-trail-battles__name">Wipe down every counter and the backsplash behind the stove</span>
-                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
-                      </li>
-                      <li class="lp-trail-battles__row is-open is-check lp-frost">
-                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                        <span class="lp-trail-battles__name">Order cabinet paint samples online</span>
-                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
-                      </li>
-                      <li class="lp-trail-battles__row is-open is-check lp-frost">
-                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                        <span class="lp-trail-battles__name">Empty the junk drawer into one labeled box</span>
-                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
-                      </li>
-                      <li class="lp-trail-battles__row is-open is-check lp-frost">
-                        <span class="lp-trail-battles__box" aria-hidden="true"></span>
-                        <span class="lp-trail-battles__name">Tape off the trim and sand one cabinet door</span>
-                        <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
-                      </li>
-                    </ul>
+              <header class="lp-trail-sheet__header">
+                <div class="lp-trail-sheet__title-row">
+                  <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                  <h2 class="lp-trail-sheet__title">step 1</h2>
+                </div>
+                <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+              </header>
+              <div class="lp-trail-sheet__body">
+                <div class="lp-trail-sheet__camp">
+                  <div class="lp-trail-battles lp-trail-battles--pinned-composer" id="trail-battles-4">
+                    <div class="lp-trail-battles__scroll">
+                      <ul class="lp-trail-battles__list" id="trail-battles-list-4">
+                        <li class="lp-trail-battles__row is-open is-check lp-frost">
+                          <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                          <span class="lp-trail-battles__name">Sort the donation pile by room</span>
+                          <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                        </li>
+                        <li class="lp-trail-battles__row is-open is-check lp-frost">
+                          <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                          <span class="lp-trail-battles__name">Wipe down every counter and the backsplash behind the stove</span>
+                          <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                        </li>
+                        <li class="lp-trail-battles__row is-open is-check lp-frost">
+                          <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                          <span class="lp-trail-battles__name">Order cabinet paint samples online</span>
+                          <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                        </li>
+                        <li class="lp-trail-battles__row is-open is-check lp-frost">
+                          <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                          <span class="lp-trail-battles__name">Empty the junk drawer into one labeled box</span>
+                          <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                        </li>
+                        <li class="lp-trail-battles__row is-open is-check lp-frost">
+                          <span class="lp-trail-battles__box" aria-hidden="true"></span>
+                          <span class="lp-trail-battles__name">Tape off the trim and sand one cabinet door</span>
+                          <span class="lp-trail-battles__kebab-btn" aria-hidden="true">⋯</span>
+                        </li>
+                      </ul>
+                    </div>
                     <div class="lp-trail-battles__composer">
                       <button type="button" class="lp-trail-battles__composer-trigger">+ Add battle</button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-4">
-              <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-4">
-                <span>Won (6)</span>
-                <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
-              </button>
+              <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-4">
+                <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-4">
+                  <span>Won (6)</span>
+                  <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Frame 5: State C + Won strip -->
+      <div class="frame">
+        <p class="frame__label">5 — State C + strip</p>
+        <div class="phone lp-trail is-v4">
+          <div class="lp-trail-sheet">
+            <div class="lp-trail-sheet__panel has-won-today">
+              <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+                <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
+              </div>
+              <header class="lp-trail-sheet__header">
+                <div class="lp-trail-sheet__title-row">
+                  <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                  <h2 class="lp-trail-sheet__title">step 1</h2>
+                </div>
+                <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+              </header>
+              <div class="lp-trail-sheet__body">
+                <div class="lp-trail-sheet__camp">
+                  <div class="lp-trail-battles" id="trail-battles-5">
+                    <div class="lp-trail-battles__scroll is-idle">
+                      <div class="lp-trail-camp-idle lp-frost">
+                        <h3 class="lp-trail-camp-idle__title">Keep climbing</h3>
+                        <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today.</p>
+                        <button type="button" class="lp-trail-battles__composer-trigger">+ Add battle</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-trail-sheet__done-slot has-won-today" id="trail-battles-done-slot-5">
+                <button type="button" class="lp-trail-battles__won-strip lp-frost" id="trail-battles-won-strip-5">
+                  <span>Won (2)</span>
+                  <span class="lp-trail-battles__won-strip-chevron" aria-hidden="true">▾</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 6: State A composer open + keyboard -->
+      <div class="frame">
+        <p class="frame__label">6 — Add first battle (keyboard)</p>
+        <div class="phone phone--keyboard lp-trail is-v4">
+          <div class="lp-trail-sheet">
+            <div class="lp-trail-sheet__panel">
+              <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+                <img class="lp-trail-sheet__camp-bg-photo" src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
+              </div>
+              <header class="lp-trail-sheet__header">
+                <div class="lp-trail-sheet__title-row">
+                  <button type="button" class="lp-trail-sheet__back" aria-label="Back"><span aria-hidden="true">‹</span></button>
+                  <h2 class="lp-trail-sheet__title">step 1</h2>
+                </div>
+                <p class="lp-trail-sheet__subtitle">Create Camps place so it flows</p>
+              </header>
+              <div class="lp-trail-sheet__body">
+                <div class="lp-trail-sheet__camp">
+                  <div class="lp-trail-battles" id="trail-battles-6">
+                    <div class="lp-trail-battles__scroll is-idle">
+                      <div class="lp-trail-camp-idle lp-frost">
+                        <h3 class="lp-trail-camp-idle__title">Start step 1</h3>
+                        <p class="lp-trail-camp-idle__body">Pick one small thing you can finish today. Small wins get you to the top.</p>
+                      </div>
+                      <div class="lp-trail-battles__composer is-open">
+                        <div class="lp-trail-battles__composer-form lp-frost">
+                          <div class="lp-trail-battles__composer-row">
+                            <label class="lp-trail-battles__field">
+                              <textarea class="lp-trail-battles__input lp-trail-battles__textarea" rows="1" placeholder="Battle for today" autofocus></textarea>
+                            </label>
+                            <button type="button" class="lp-trail-battles__composer-add" disabled aria-label="Add battle">+</button>
+                          </div>
+                          <label class="lp-trail-battles__daily-switch">
+                            <span class="lp-trail-battles__switch" aria-hidden="true"></span>
+                            <span class="lp-trail-battles__daily-label">Every day</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone__keyboard-mock" aria-hidden="true"></div>
+        </div>
+        <p class="frame__note">Android Chrome: <code>visualViewport</code> resize sets <code>--lp-sheet-vh</code> and <code>--lp-keyboard-inset</code> on <code>.lp-trail-sheet</code>, lifting the panel with <code>bottom: var(--lp-keyboard-inset)</code>. iOS Safari: same vars, but the inset also subtracts <code>visualViewport.offsetTop</code> so the sheet clears the keyboard when the URL bar shifts.</p>
       </div>
 
     </div>
