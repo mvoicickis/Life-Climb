@@ -2058,6 +2058,50 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 1rem 1.2rem 0.85rem;
 }
 
+.lp-trail.is-v4 .lp-trail-battles__scroll.is-idle {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--lp-space-3, 0.75rem);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 0 var(--lp-space-2, 0.5rem);
+  text-align: center;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__title {
+  margin: 0;
+  font-size: var(--lp-type-title, 1.25rem);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__body {
+  margin: 0;
+  font-size: var(--lp-type-body, 0.95rem);
+  line-height: 1.45;
+  color: var(--lp-muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer-trigger {
+  margin-top: var(--lp-space-2, 0.5rem);
+}
+
 .lp-trail.is-v4 .lp-trail-battles__row.is-open,
 .lp-trail.is-v4 .lp-trail-battles__row.is-open.is-check {
   display: flex;

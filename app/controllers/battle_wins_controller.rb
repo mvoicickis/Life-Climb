@@ -33,6 +33,11 @@ class BattleWinsController < ApplicationController
       days = @project.children.select { |child| child.day? && !child.holding? }
       @won_battles = days.select { |day| helpers.mountain_trail_done_today?(day) }
                            .sort_by { |d| [ d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] }
+      open_remaining = days.count do |day|
+        helpers.mountain_trail_camp_due?(day) && !helpers.mountain_trail_done_today?(day)
+      end
+      won_today_count = days.count { |day| helpers.mountain_trail_won_today?(day) }
+      @replace_camp_battles = open_remaining.zero? && won_today_count.positive?
     end
     respond_to do |format|
       format.turbo_stream do

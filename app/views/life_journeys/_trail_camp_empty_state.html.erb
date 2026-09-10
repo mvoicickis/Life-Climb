@@ -1,0 +1,41 @@
+<%# Centered idle block when a camp has no open battles. locals: project, variant:, won_count: %>
+<% project = local_assigns.fetch(:project) %>
+<% variant = local_assigns.fetch(:variant) %>
+<% camp = mountain_trail_camp_sheet_title(project) %>
+<% won_count = local_assigns.fetch(:won_count, 0) %>
+
+<div class="lp-trail-camp-idle">
+  <h3 class="lp-trail-camp-idle__title">
+    <% case variant %>
+    <% when :start %>
+      <%= t("strategy.rpg.trail.camp_idle.start_title", camp: camp) %>
+    <% when :won %>
+      <%= t("strategy.rpg.trail.camp_idle.won_title", count: won_count) %>
+    <% when :keep %>
+      <%= t("strategy.rpg.trail.camp_idle.keep_title", camp: camp) %>
+    <% end %>
+  </h3>
+  <p class="lp-trail-camp-idle__body">
+    <% case variant %>
+    <% when :start %>
+      <%= t("strategy.rpg.trail.camp_idle.start_body") %>
+    <% when :won %>
+      <%= t("strategy.rpg.trail.camp_idle.won_body", camp: camp) %>
+    <% when :keep %>
+      <%= t("strategy.rpg.trail.camp_idle.keep_body") %>
+    <% end %>
+  </p>
+  <button type="button"
+          class="lp-trail-battles__composer-trigger"
+          data-trail-battles-target="composerTrigger"
+          data-action="click->trail-battles#openComposer">
+    <% case variant %>
+    <% when :start %>
+      <%= t("strategy.rpg.trail.camp_idle.start_button") %>
+    <% when :won %>
+      <%= t("strategy.rpg.trail.camp_idle.won_button") %>
+    <% when :keep %>
+      <%= t("strategy.rpg.trail.camp_idle.keep_button") %>
+    <% end %>
+  </button>
+</div>
