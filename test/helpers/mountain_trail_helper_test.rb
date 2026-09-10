@@ -416,6 +416,16 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert mountain_trail_done_today?(battle, user: user)
   end
 
+  test "won today is false for one-shot won yesterday while done today stays true" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Yesterday win")
+    battle = user.strategy_goals.find_by!(horizon: "day", title: "Yesterday win")
+    battle.update!(completed_at: 1.day.ago)
+
+    assert mountain_trail_done_today?(battle, user: user)
+    assert_not mountain_trail_won_today?(battle, user: user)
+  end
+
   test "done today uses today's todo for daily battles without setting completed_at" do
     user = users(:one)
     seed_climb!(user, today_mission: "Stretch daily")

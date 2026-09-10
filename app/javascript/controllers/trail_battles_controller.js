@@ -20,7 +20,8 @@ export default class extends Controller {
     lifeJourneyId: Number,
     parentId: Number,
     atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" },
-    needDays: String
+    needDays: String,
+    openComposerOnConnect: { type: Boolean, default: false }
   }
 
   connect() {
@@ -28,6 +29,11 @@ export default class extends Controller {
     this._pickDaysUrl = null
     this.styleDailyRow()
     this.styleQuantityRow()
+    if (this.openComposerOnConnectValue) {
+      this.openComposerOnConnectValue = false
+      delete this.element.dataset.trailBattlesOpenComposerOnConnectValue
+      this.openComposer()
+    }
   }
 
   parseDraft(event) {

@@ -971,6 +971,18 @@ en:
         undo_expired: "Too late to undo."
         battle_reopened: "Battle reopened."
         no_open_battles: "Add the smallest thing that moves this camp forward."
+        camp_idle:
+          start_title: "Start %{camp}"
+          start_body: "Pick one small thing you can finish today. Small wins get you to the top."
+          start_button: "+ Add first battle"
+          won_title:
+            one: "1 battle won today"
+            other: "%{count} battles won today"
+          won_body: "Add the next small step for %{camp}."
+          won_button: "+ Add next battle"
+          keep_title: "Keep climbing %{camp}"
+          keep_body: "Pick one small thing you can finish today."
+          keep_button: "+ Add battle"
         not_started: "Not started"
         camps_done: "Camps cleared"
         battle_stats: "%{open} open · %{won} won"

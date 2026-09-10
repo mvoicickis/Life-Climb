@@ -8,9 +8,21 @@
 <% days = days.sort_by { |d| [ mountain_trail_done_today?(d) ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
 <% open_battles = days.select { |d| mountain_trail_camp_due?(d) }.reject { |d| mountain_trail_done_today?(d) } %>
 <% won_battles = days.select { |d| mountain_trail_done_today?(d) } %>
-<% accent = mountain_trail_project_accent(project) %>
+<% won_today_count = days.count { |d| mountain_trail_won_today?(d) } %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
+<% camp_idle_variant =
+     if open_battles.any? || pages_mode
+       nil
+     elsif days.empty?
+       :start
+     elsif won_today_count.positive?
+       :won
+     else
+       :keep
+     end %>
+<% open_composer = local_assigns[:open_composer] %>
+<% accent = mountain_trail_project_accent(project) %>
 <% add_form = capture do %>
   <%= form_with url: strategy_goals_path,
         method: :post,
@@ -82,6 +94,9 @@
      data-trail-battles-parent-id-value="<%= project.id %>"
      data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>"
      data-trail-battles-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>"
+     <% if open_composer %>
+     data-trail-battles-open-composer-on-connect-value="true"
+     <% end %>
      data-action="turbo:submit-end->trail-battles#winSubmitted">
   <% if pages_mode %>
     <div class="lp-trail-battles__pages">
@@ -106,18 +121,31 @@
       </button>
     </div>
   <% else %>
-    <div class="lp-trail-battles__scroll">
-      <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
-        <% open_battles.each_with_index do |battle, index| %>
-          <%= render "life_journeys/trail_battle_row",
-                battle: battle,
-                done: false,
-                show_move_up: index.positive?,
-                show_move_down: index < open_battles.size - 1 %>
-        <% end %>
-      </ul>
+    <div class="lp-trail-battles__scroll<%= " is-idle" if camp_idle_variant %>">
+      <% if camp_idle_variant %>
+        <%= render "life_journeys/trail_camp_empty_state",
+              project: project,
+              variant: camp_idle_variant,
+              won_count: won_today_count %>
+        <div class="lp-trail-battles__composer"
+             data-trail-battles-target="composer">
+          <div class="lp-trail-battles__composer-form lp-frost"
+               data-trail-battles-target="composerForm"
+               hidden>
+            <%= add_form %>
+          </div>
+        </div>
+      <% else %>
+        <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+          <% open_battles.each_with_index do |battle, index| %>
+            <%= render "life_journeys/trail_battle_row",
+                  battle: battle,
+                  done: false,
+                  show_move_up: index.positive?,
+                  show_move_down: index < open_battles.size - 1 %>
+          <% end %>
+        </ul>
 
-      <% unless pages_mode %>
         <div class="lp-trail-battles__composer"
              data-trail-battles-target="composer">
           <button type="button"

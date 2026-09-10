@@ -273,18 +273,39 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_operator header_index, :<, battles_index
   end
 
-  test "empty camp shows add battle CTA without seed suggestion" do
+  test "idle state A shows start copy for empty camp" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_no_match(/translation_missing/i, response.body)
-    assert_select "#trail-battles-#{@project.id}[data-trail-battles-need-days-value=?]",
-                  I18n.t("strategy.rpg.trail.first_camp_reveal.need_days")
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
+    assert_select ".lp-trail-camp-idle__title", text: /Start.*Base camp/
+    assert_select ".lp-trail-camp-idle__body", text: I18n.t("strategy.rpg.trail.camp_idle.start_body")
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
+                  text: I18n.t("strategy.rpg.trail.camp_idle.start_button")
     assert_select "#trail-battle-suggestion-#{@project.id}", count: 0
-    assert_select ".lp-trail-battles__seed-hint", count: 0
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger", text: /Add battle/
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__camp-fold", count: 0
-    assert_select "#trail-sheet-menu-#{@project.id} button[data-action*='trail-camp-sheet#editCampDescription']"
     assert_select "#trail-battles-#{@project.id} input[name=seed_win]", count: 0
+  end
+
+  test "adding first battle from idle replaces camp battles frame" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+
+    assert_difference -> { @project.children.for_kind("day").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: @project.id,
+        horizon: "day",
+        scheduled_on: Date.current,
+        repeat: "none",
+        title: "First step"
+      }, as: :turbo_stream
+    end
+
+    assert_response :success
+    assert_match %(action="replace" target="trail-battles-#{@project.id}"), response.body
+    assert_no_match %(action="append" target="trail-battles-list-#{@project.id}"), response.body
+    assert_match "data-trail-battles-open-composer-on-connect-value=\"true\"", response.body
   end
 
   test "camp with a battle hides seed suggestion" do
@@ -299,7 +320,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
   end
 
-  test "camp with only won battles shows add battle CTA without seed suggestion" do
+  test "idle state B shows won today copy when battles cleared" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
@@ -310,10 +331,43 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-battle-suggestion-#{@project.id}", count: 0
-    assert_select ".lp-trail-battles__seed-hint", count: 0
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger"
-    assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
+    assert_select ".lp-trail-camp-idle__title", text: I18n.t("strategy.rpg.trail.camp_idle.won_title", count: 1)
+    assert_select ".lp-trail-camp-idle__body", text: /#{Regexp.escape(I18n.t("strategy.rpg.trail.camp_idle.won_body", camp: "Base camp"))}/
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
+                  text: I18n.t("strategy.rpg.trail.camp_idle.won_button")
+    assert_select "#trail-battles-won-strip-#{@project.id}"
+  end
+
+  test "idle state C shows keep climbing copy on off-day weekly battle" do
+    off_day = (Date.current.wday + 1) % 7
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Off-day weekly", scheduled_on: Date.current,
+      repeat: "weekly", repeat_weekdays: [ off_day ], position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
+    assert_select ".lp-trail-camp-idle__title", text: /Keep climbing.*Base camp/
+    assert_select ".lp-trail-camp-idle__body", text: I18n.t("strategy.rpg.trail.camp_idle.keep_body")
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
+                  text: I18n.t("strategy.rpg.trail.camp_idle.keep_button")
+  end
+
+  test "winning last camp sheet battle replaces battles frame with idle state B" do
+    battle = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Last open fight", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+
+    post battle_win_path(battle), params: { source: "camp_sheet" }, as: :turbo_stream
+
+    assert_response :success
+    assert_match %(action="replace" target="trail-battles-#{@project.id}"), response.body
+    assert_match I18n.t("strategy.rpg.trail.camp_idle.won_title", count: 1), response.body
   end
 
   test "battle won toast host sits below camp sheet header" do

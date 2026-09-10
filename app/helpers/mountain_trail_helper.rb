@@ -434,6 +434,24 @@ module MountainTrailHelper
     todo&.completed_at.present?
   end
 
+  # Calendar-today wins only — for idle State B copy. Does not affect open_battles.
+  def mountain_trail_won_today?(battle, user: nil)
+    return false if battle.blank?
+
+    if battle.try(:repeat_recurring?)
+      viewer = user || mountain_trail_viewer
+      return false if viewer.blank?
+
+      todo = @mountain_done_today_by_goal_id&.dig(battle.id) ||
+             viewer.daily_todos.for_day.find_by(strategy_goal_id: battle.id)
+      return todo&.completed_at.present?
+    end
+
+    return false unless battle.respond_to?(:completed_at) && battle.completed_at.present?
+
+    battle.completed_at.in_time_zone(Time.zone).to_date == Date.current
+  end
+
   def mountain_trail_camp_progress(project, user: nil)
     if project&.pages_mode? || (project&.quantified? && mountain_trail_camp_days(project).empty?)
       meta = strategy_project_card_meta(project)
