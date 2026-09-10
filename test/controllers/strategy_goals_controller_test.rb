@@ -382,11 +382,46 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     battle = project.children.for_kind("day").find_by!(title: "Stay in sheet battle")
     assert_equal Mime[:turbo_stream].to_s, response.media_type
-    assert_includes response.body, 'turbo-stream action="append"'
-    assert_includes response.body, "trail-battle-#{battle.id}"
+    assert_match %(action="replace" target="trail-battles-#{project.id}"), response.body
     assert_includes response.body, "Stay in sheet battle"
+    assert_includes response.body, 'data-trail-battles-open-composer-on-connect-value="true"'
+    assert_no_match "lp-trail-camp-idle", response.body
     assert_no_match(%r{href=["']/life_journeys/}, response.body)
     assert_no_match "trail-base-sheet", response.body
+  end
+
+  test "adding a second battle via turbo stream appends to camp sheet battles list" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "First battle", scheduled_on: Date.current, position: 0
+    )
+
+    assert_difference -> { project.children.for_kind("day").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: project.id,
+        horizon: "day",
+        scheduled_on: Date.current.to_s,
+        title: "Second battle"
+      }, as: :turbo_stream
+    end
+
+    battle = project.children.for_kind("day").find_by!(title: "Second battle")
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_match %(action="append" target="trail-battles-list-#{project.id}"), response.body
+    assert_includes response.body, "trail-battle-#{battle.id}"
+    assert_includes response.body, "Second battle"
+    assert_no_match 'data-trail-battles-open-composer-on-connect-value="true"', response.body
   end
 
   test "destroying a battle via turbo stream removes row and shows undo toast" do
