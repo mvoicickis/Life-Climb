@@ -449,10 +449,10 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 0.12rem;
+      gap: 0.1rem;
       width: 100%;
       max-width: 100%;
-      padding-inline: 0.15rem;
+      padding-inline: 0.35rem;
       pointer-events: auto;
     }
 
@@ -460,11 +460,11 @@
       gap: 0.08rem;
     }
 
-    .lp-trail-stage.is-open .lp-trail-camp:nth-child(2) {
+    .lp-trail-stage.is-open .lp-trail-camp:nth-child(2):not(.is-more) {
       transform: translateY(-0.7rem);
     }
 
-    .lp-trail-stage.is-open .lp-trail-camp:nth-child(4) {
+    .lp-trail-stage.is-open .lp-trail-camp:nth-child(4):not(.is-more) {
       transform: translateY(-0.45rem);
     }
 
@@ -536,7 +536,19 @@
 
     .lp-trail-stage.is-open .lp-trail-camp {
       flex: 1 1 0;
-      max-width: 7.25rem;
+      max-width: 6.15rem;
+    }
+
+    .lp-trail-stage.is-open .lp-trail-camp.is-more {
+      flex: 0 0 auto;
+      max-width: none;
+      min-width: 0;
+      transform: none;
+    }
+
+    .lp-trail-stage.is-open .lp-trail-camp.is-more .lp-trail-camp__title {
+      white-space: nowrap;
+      font-weight: 800;
     }
 
     .lp-trail-camp {
@@ -615,15 +627,8 @@
       background: linear-gradient(180deg, #e8e4dc, #c8c2b4 55%, #9a9284);
     }
 
-    .lp-trail-camp.is-more .lp-trail-camp__more {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-size: 0.72rem;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 0 1px 2px rgba(18, 32, 26, 0.45);
+    .lp-trail-stage.is-done .lp-trail-camp__caption {
+      display: none;
     }
 
     .lp-trail-stage.is-fog .lp-trail-camp__caption {
@@ -676,9 +681,9 @@
       color: #1a140c;
       line-height: 1.2;
       white-space: normal;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-      hyphens: auto;
+      overflow-wrap: normal;
+      word-break: normal;
+      hyphens: none;
       text-shadow:
         0 0 4px rgba(255, 252, 245, 0.95),
         0 1px 2px rgba(255, 248, 235, 0.9);
@@ -700,13 +705,13 @@
     }
 
     .lp-trail-camp.is-current .lp-trail-camp__caption {
-      background: rgba(247, 239, 226, 0.96);
-      border: 1px solid rgba(90, 66, 40, 0.32);
-      box-shadow: 0 4px 12px rgba(18, 32, 26, 0.16);
+      background: var(--lp-frost);
+      border: 2px solid var(--lp-green);
+      box-shadow: 0 4px 12px rgba(87, 211, 91, 0.14);
     }
 
     .lp-trail-camp.is-current .lp-trail-camp__title {
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .lp-trail-stage.is-open .lp-trail-camp:not(.is-current) .lp-trail-camp__caption {
@@ -714,7 +719,7 @@
     }
 
     .lp-trail-stage.is-done .lp-trail-camp__title {
-      font-size: 0.54rem;
+      display: none;
     }
 
     @keyframes lp-trail-camp-pulse {
@@ -758,14 +763,8 @@
       padding: 0;
       display: grid;
       place-items: center;
-    }
-
-    .lp-trail-base-fire__icon {
-      width: 0.95rem;
-      height: 0.95rem;
-      display: block;
-      color: var(--lp-fire-orange);
-      filter: drop-shadow(0 0 3px rgba(240, 115, 12, 0.35));
+      font-size: 1.05rem;
+      line-height: 1;
     }
 
     /* Bottom battle card */
@@ -855,6 +854,10 @@
     }
 
     /* Fog sheet (frame 6) */
+    .lp-trail-sheet[hidden] {
+      display: none;
+    }
+
     .lp-trail-sheet {
       position: absolute;
       inset: 0;
@@ -1094,12 +1097,7 @@
               </div>
             </div>
 
-            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp">
-              <svg class="lp-trail-base-fire__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                <path d="M12 22c-1.1-1.8-3.5-4.3-3.5-8.2 0-2.2 1.4-3.9 2.8-5.3.6.9 1.4 1.5 2.2 1.5.8 0 1.6-.6 2.2-1.5 1.4 1.4 2.8 3.1 2.8 5.3 0 3.9-2.4 6.4-3.5 8.2Z"/>
-                <path d="M12 2c0 2.5-1.8 4.5-3.5 6.5C7.8 6.5 6 4.5 6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </button>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
           </section>
         </div>
       </section>
@@ -1139,7 +1137,6 @@
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true">
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camps</span></span>
                         </span>
                       </div>
                     </div>
@@ -1204,12 +1201,7 @@
               </div>
             </div>
 
-            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp">
-              <svg class="lp-trail-base-fire__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                <path d="M12 22c-1.1-1.8-3.5-4.3-3.5-8.2 0-2.2 1.4-3.9 2.8-5.3.6.9 1.4 1.5 2.2 1.5.8 0 1.6-.6 2.2-1.5 1.4 1.4 2.8 3.1 2.8 5.3 0 3.9-2.4 6.4-3.5 8.2Z"/>
-                <path d="M12 2c0 2.5-1.8 4.5-3.5 6.5C7.8 6.5 6 4.5 6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </button>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
           </section>
         </div>
       </section>
@@ -1249,7 +1241,6 @@
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camps</span></span>
                         </span>
                       </div>
                     </div>
@@ -1272,12 +1263,10 @@
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Gamma</span></span>
                         </button>
-                        <button type="button" class="lp-trail-camp is-more" style="--lp-trail-accent: #57534e;" aria-label="3 more camps">
+                        <button type="button" class="lp-trail-camp is-more" style="--lp-trail-accent: #57534e;" aria-label="3 more camps" data-open-sheet="stage-sheet-f3">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg">
-                            <span class="lp-trail-camp__tent"></span>
-                            <span class="lp-trail-camp__more">+3</span>
-                          </span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">+3 more</span></span>
                         </button>
                       </div>
                     </div>
@@ -1319,12 +1308,46 @@
               </div>
             </div>
 
-            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp">
-              <svg class="lp-trail-base-fire__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                <path d="M12 22c-1.1-1.8-3.5-4.3-3.5-8.2 0-2.2 1.4-3.9 2.8-5.3.6.9 1.4 1.5 2.2 1.5.8 0 1.6-.6 2.2-1.5 1.4 1.4 2.8 3.1 2.8 5.3 0 3.9-2.4 6.4-3.5 8.2Z"/>
-                <path d="M12 2c0 2.5-1.8 4.5-3.5 6.5C7.8 6.5 6 4.5 6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </button>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
+
+            <div class="lp-trail-sheet" id="stage-sheet-f3" hidden>
+              <div class="lp-trail-sheet__backdrop" data-close-sheet aria-hidden="true"></div>
+              <div class="lp-trail-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="stage-sheet-f3-title">
+                <header class="lp-trail-sheet__header">
+                  <div class="lp-trail-sheet__title-row">
+                    <button type="button" class="lp-trail-sheet__back" data-close-sheet aria-label="Back to mountain"><span aria-hidden="true">‹</span></button>
+                    <h2 class="lp-trail-sheet__title" id="stage-sheet-f3-title">Stage 2</h2>
+                    <button type="button" class="lp-trail-sheet__close" data-close-sheet aria-label="Close"><span aria-hidden="true">✕</span></button>
+                  </div>
+                  <p class="lp-trail-sheet__subtitle">3 more camps · all open</p>
+                </header>
+                <div class="lp-trail-sheet__body">
+                  <ul class="lp-trail-sheet__camp-list">
+                    <li>
+                      <button type="button" class="lp-trail-sheet__camp-item">
+                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #7950f2;"></span>
+                        <span class="lp-trail-sheet__camp-name">Delta</span>
+                        <span class="lp-trail-sheet__camp-hint">Open →</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" class="lp-trail-sheet__camp-item">
+                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #e64980;"></span>
+                        <span class="lp-trail-sheet__camp-name">Epsilon</span>
+                        <span class="lp-trail-sheet__camp-hint">Open →</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" class="lp-trail-sheet__camp-item">
+                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #22c55e;"></span>
+                        <span class="lp-trail-sheet__camp-name">Zeta</span>
+                        <span class="lp-trail-sheet__camp-hint">Open →</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </section>
@@ -1364,7 +1387,6 @@
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camps</span></span>
                         </span>
                       </div>
                     </div>
@@ -1421,12 +1443,7 @@
               </div>
             </div>
 
-            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp">
-              <svg class="lp-trail-base-fire__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                <path d="M12 22c-1.1-1.8-3.5-4.3-3.5-8.2 0-2.2 1.4-3.9 2.8-5.3.6.9 1.4 1.5 2.2 1.5.8 0 1.6-.6 2.2-1.5 1.4 1.4 2.8 3.1 2.8 5.3 0 3.9-2.4 6.4-3.5 8.2Z"/>
-                <path d="M12 2c0 2.5-1.8 4.5-3.5 6.5C7.8 6.5 6 4.5 6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </button>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
           </section>
         </div>
       </section>
@@ -1466,7 +1483,6 @@
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camps</span></span>
                         </span>
                       </div>
                     </div>
@@ -1489,12 +1505,10 @@
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Support</span></span>
                         </button>
-                        <button type="button" class="lp-trail-camp is-more" style="--lp-trail-accent: #57534e;" aria-label="1 more camp">
+                        <button type="button" class="lp-trail-camp is-more" style="--lp-trail-accent: #57534e;" aria-label="1 more camp" data-open-sheet="stage-sheet-f5">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                          <span class="lp-trail-camp__peg">
-                            <span class="lp-trail-camp__tent"></span>
-                            <span class="lp-trail-camp__more">+1</span>
-                          </span>
+                          <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">+1 more</span></span>
                         </button>
                       </div>
                     </div>
@@ -1537,12 +1551,32 @@
               </div>
             </div>
 
-            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp">
-              <svg class="lp-trail-base-fire__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                <path d="M12 22c-1.1-1.8-3.5-4.3-3.5-8.2 0-2.2 1.4-3.9 2.8-5.3.6.9 1.4 1.5 2.2 1.5.8 0 1.6-.6 2.2-1.5 1.4 1.4 2.8 3.1 2.8 5.3 0 3.9-2.4 6.4-3.5 8.2Z"/>
-                <path d="M12 2c0 2.5-1.8 4.5-3.5 6.5C7.8 6.5 6 4.5 6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </button>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
+
+            <div class="lp-trail-sheet" id="stage-sheet-f5" hidden>
+              <div class="lp-trail-sheet__backdrop" data-close-sheet aria-hidden="true"></div>
+              <div class="lp-trail-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="stage-sheet-f5-title">
+                <header class="lp-trail-sheet__header">
+                  <div class="lp-trail-sheet__title-row">
+                    <button type="button" class="lp-trail-sheet__back" data-close-sheet aria-label="Back to mountain"><span aria-hidden="true">‹</span></button>
+                    <h2 class="lp-trail-sheet__title" id="stage-sheet-f5-title">Stage 5</h2>
+                    <button type="button" class="lp-trail-sheet__close" data-close-sheet aria-label="Close"><span aria-hidden="true">✕</span></button>
+                  </div>
+                  <p class="lp-trail-sheet__subtitle">1 more camp · all open</p>
+                </header>
+                <div class="lp-trail-sheet__body">
+                  <ul class="lp-trail-sheet__camp-list">
+                    <li>
+                      <button type="button" class="lp-trail-sheet__camp-item">
+                        <span class="lp-trail-camp__tent" style="--lp-trail-accent: #7950f2;"></span>
+                        <span class="lp-trail-sheet__camp-name">Growth</span>
+                        <span class="lp-trail-sheet__camp-hint">Open →</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </section>
@@ -1582,7 +1616,6 @@
                       <div class="lp-trail-stage__camps">
                         <span class="lp-trail-camp is-done" style="--lp-trail-accent: #57534e;" aria-hidden="true">
                           <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent"></span></span>
-                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camps</span></span>
                         </span>
                       </div>
                     </div>
@@ -1630,12 +1663,7 @@
               </div>
             </div>
 
-            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp">
-              <svg class="lp-trail-base-fire__icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                <path d="M12 22c-1.1-1.8-3.5-4.3-3.5-8.2 0-2.2 1.4-3.9 2.8-5.3.6.9 1.4 1.5 2.2 1.5.8 0 1.6-.6 2.2-1.5 1.4 1.4 2.8 3.1 2.8 5.3 0 3.9-2.4 6.4-3.5 8.2Z"/>
-                <path d="M12 2c0 2.5-1.8 4.5-3.5 6.5C7.8 6.5 6 4.5 6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </button>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
 
             <div class="lp-trail-sheet" aria-hidden="false">
               <div class="lp-trail-sheet__backdrop" aria-hidden="true"></div>
@@ -1681,5 +1709,20 @@
 
     </div>
   </div>
+  <script>
+    document.querySelectorAll(".lp-trail-camp.is-more[data-open-sheet]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var sheet = document.getElementById(btn.getAttribute("data-open-sheet"));
+        if (sheet) sheet.hidden = false;
+      });
+    });
+
+    document.querySelectorAll("[data-close-sheet]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var sheet = btn.closest(".lp-trail-sheet");
+        if (sheet) sheet.hidden = true;
+      });
+    });
+  </script>
 </body>
 </html>
