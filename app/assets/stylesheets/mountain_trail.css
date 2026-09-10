@@ -2058,12 +2058,29 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 1rem 1.2rem 0.85rem;
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__body:has(.lp-trail-battles__scroll.is-idle) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__camp:has(.lp-trail-battles__scroll.is-idle) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
 .lp-trail.is-v4 .lp-trail-battles__scroll.is-idle {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .lp-trail.is-v4 .lp-trail-camp-idle {
@@ -2075,13 +2092,16 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   max-width: 100%;
   min-width: 0;
   margin: 0 auto;
-  padding: 0 var(--lp-space-2, 0.5rem);
+  padding: 1.15rem 1rem 1.1rem;
   text-align: center;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
 }
 
 .lp-trail.is-v4 .lp-trail-camp-idle__title {
   margin: 0;
-  font-size: var(--lp-type-title, 1.25rem);
+  font-size: 1.35rem;
   font-weight: 800;
   line-height: 1.3;
   color: var(--lp-ink);
@@ -2093,13 +2113,67 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   margin: 0;
   font-size: var(--lp-type-body, 0.95rem);
   line-height: 1.45;
-  color: var(--lp-muted);
+  color: var(--lp-ink);
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
+.lp-trail.is-v4 .lp-trail-camp-idle__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  align-self: center;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green-soft);
+  color: var(--lp-green-deep);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__pill-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--lp-green);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
 .lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer-trigger {
   margin-top: var(--lp-space-2, 0.5rem);
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer {
+  margin-top: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle:has(.lp-trail-battles__composer.is-open) .lp-trail-camp-idle__body {
+  display: none;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__scroll.is-idle:has(.lp-trail-battles__composer.is-open) {
+  justify-content: flex-end;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer-form {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open,

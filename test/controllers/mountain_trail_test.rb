@@ -278,7 +278,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match(/translation_missing/i, response.body)
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
-    assert_select ".lp-trail-camp-idle__title", text: /Start.*Base camp/
+    assert_select ".lp-trail-camp-idle__title", text: I18n.t("strategy.rpg.trail.camp_idle.start_title")
     assert_select ".lp-trail-camp-idle__body", text: I18n.t("strategy.rpg.trail.camp_idle.start_body")
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
                   text: I18n.t("strategy.rpg.trail.camp_idle.start_button")
@@ -332,8 +332,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
-    assert_select ".lp-trail-camp-idle__title", text: I18n.t("strategy.rpg.trail.camp_idle.won_title", count: 1)
-    assert_select ".lp-trail-camp-idle__body", text: /#{Regexp.escape(I18n.t("strategy.rpg.trail.camp_idle.won_body", camp: "Base camp"))}/
+    assert_select ".lp-trail-camp-idle__pill", text: I18n.t("strategy.rpg.trail.camp_idle.won_pill")
+    assert_select ".lp-trail-camp-idle__body", count: 0
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
                   text: I18n.t("strategy.rpg.trail.camp_idle.won_button")
     assert_select "#trail-battles-won-strip-#{@project.id}"
@@ -350,7 +350,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
-    assert_select ".lp-trail-camp-idle__title", text: /Keep climbing.*Base camp/
+    assert_select ".lp-trail-camp-idle__title", text: I18n.t("strategy.rpg.trail.camp_idle.keep_title")
     assert_select ".lp-trail-camp-idle__body", text: I18n.t("strategy.rpg.trail.camp_idle.keep_body")
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
                   text: I18n.t("strategy.rpg.trail.camp_idle.keep_button")
@@ -367,7 +367,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match %(action="replace" target="trail-battles-#{@project.id}"), response.body
-    assert_match I18n.t("strategy.rpg.trail.camp_idle.won_title", count: 1), response.body
+    assert_match I18n.t("strategy.rpg.trail.camp_idle.won_pill"), response.body
   end
 
   test "battle won toast host sits below camp sheet header" do
@@ -443,7 +443,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-won-strip-#{@project.id}",
-                  text: /#{I18n.t("strategy.rpg.trail.won_battles_fold")} \(1\)/
+                  text: /#{I18n.t("strategy.rpg.trail.won_battles_strip")} \(1\)/
     assert_select "#trail-battles-done-list-#{@project.id} #trail-battle-#{battle.id}.is-won"
     assert_select "#trail-battle-#{battle.id} form.lp-trail-battles__reopen-form[action=?][data-turbo-stream=?]",
                   battle_reopen_path(battle), "true"
