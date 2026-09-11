@@ -1870,10 +1870,6 @@
       margin-inline: calc(var(--lp-tap) + var(--lp-frame-nav-inset));
     }
 
-    .phone--frame2 .lp-trail-stage__nav.is-next {
-      right: calc(var(--lp-frame-nav-inset) + 42px);
-    }
-
     .phone--frame2 .lp-trail-stage__nav.is-prev {
       left: var(--lp-frame-nav-inset);
     }
@@ -1888,6 +1884,59 @@
 
     .phone--frame2 .lp-trail-camp__peg svg .lp-tent-door {
       fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 68%, #ffffff);
+    }
+
+    .phone--frame2 {
+      --map-world-y: -15%;
+      --f2-done-y-offset: 0%;
+    }
+
+    .phone--frame2 .lp-trail__world {
+      transform: translateX(-50%) translateY(var(--map-world-y));
+    }
+
+    .phone--frame2 .lp-trail-stage.is-done {
+      --lp-stage-y: calc(var(--ledge-open-y) + var(--f2-done-y-offset));
+    }
+
+    /* Terrace 1 — last finished stage: faded tents, done pill below */
+    .phone--frame2 .lp-trail-stage.is-done .lp-trail-stage__floor {
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transform: translateY(calc(-1 * var(--lp-tent-open-h)));
+    }
+
+    .phone--frame2 .lp-trail-stage.is-done .lp-trail-stage__camps {
+      opacity: 0.35;
+    }
+
+    .phone--frame2 .lp-trail-stage.is-done .lp-trail-done-badge {
+      position: static;
+      left: auto;
+      top: auto;
+      transform: none;
+      opacity: 1;
+    }
+
+    /* Terrace 2 — open stage: label 6px above tent tops */
+    .phone--frame2 .lp-trail-stage.is-open .lp-trail-stage__floor {
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .phone--frame2 .lp-trail-stage.is-open .lp-trail-stage__label {
+      align-self: center;
+      margin-inline: 0;
+    }
+
+    .phone--frame2 .lp-trail-stage.is-open .lp-trail-stage__meta {
+      display: none;
+    }
+
+    .phone--frame2 .lp-trail-stage__nav.is-next {
+      right: var(--lp-frame-nav-inset);
     }
   </style>
 </head>
@@ -2106,9 +2155,18 @@
               <div class="lp-trail__surface">
                 <div class="lp-trail__map"><div class="lp-trail__world">
                     <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-                    <div class="lp-trail__stages" id="trail-camps">
-<div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-open-y); --lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
+                    <div class="lp-trail__stages" id="trail-camps-f2">
+<div class="lp-trail-stage is-done" style="--lp-stage-x-left: var(--ledge-open-x-left); --lp-stage-x-right: var(--ledge-open-x-right);">
                     <div class="lp-trail-stage__floor">
+                      <div class="lp-trail-stage__camps">
+                        <span class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span></span>
+                      </div>
+                      <p class="lp-trail-done-badge lp-frost">Stage 1 done</p>
+                    </div>
+                    </div>
+<div class="lp-trail-stage is-open is-carousel is-pair" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
+                    <div class="lp-trail-stage__floor">
+                      <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
 <div class="lp-trail-stage__row">
                         <button type="button" class="lp-trail-stage__nav is-prev is-hidden" aria-label="Previous camps">‹</button>
                                                 <div class="lp-trail-stage__camps is-pair">
@@ -2125,11 +2183,6 @@
                         </div>
                         <button type="button" class="lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
                       </div>
-                    
-                      <div class="lp-trail-stage__meta">
-                        <p class="lp-trail-stage__label lp-frost">Stage 2 · open now</p>
-                        <p class="lp-trail-done-badge lp-frost">Stage 1 done</p>
-                      </div>
                     </div>
                     <div class="lp-trail-stage__dots" aria-hidden="true">
                         <span class="lp-trail-stage__dot is-active"></span>
@@ -2137,7 +2190,7 @@
                         <span class="lp-trail-stage__dot"></span>
                       </div>
                     </div>
-<div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog-y); --lp-stage-x-left: var(--ledge-fog-x-left); --lp-stage-x-right: var(--ledge-fog-x-right);">
+<div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog2-y); --lp-stage-x-left: var(--ledge-fog2-x-left); --lp-stage-x-right: var(--ledge-fog2-x-right);">
                     <div class="lp-trail-stage__floor">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
                       <div class="lp-trail-stage__camps">
@@ -2147,7 +2200,7 @@
                       </div>
                     </div>
                     </div>
-<div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog2-y); --lp-stage-x-left: var(--ledge-fog2-x-left); --lp-stage-x-right: var(--ledge-fog2-x-right);">
+<div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">
                     <div class="lp-trail-stage__floor">
                       <p class="lp-trail-stage__label lp-frost">Stage 4 · 2 camps</p>
                       <div class="lp-trail-stage__camps">
@@ -3187,6 +3240,7 @@
         }
       }
 
+      window.runCollisionAudit = runCollisionAudit;
       window.addEventListener('load', runCollisionAudit);
       window.addEventListener('resize', runCollisionAudit);
       runCollisionAudit();
@@ -3237,6 +3291,57 @@
       window.addEventListener('load', layoutFrame0);
       window.addEventListener('resize', layoutFrame0);
       layoutFrame0();
+    })();
+  </script>
+  <script>
+    (function () {
+      var MIN_NAME_GAP = 16;
+
+      function captionDoneGap(phone) {
+        var openStage = phone.querySelector('.lp-trail-stage.is-open');
+        var doneStage = phone.querySelector('.lp-trail-stage.is-done');
+        if (!openStage || !doneStage) return MIN_NAME_GAP;
+
+        var captionBottom = -Infinity;
+        openStage.querySelectorAll('.lp-trail-camp__caption').forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          if (rect.height > 0 && rect.bottom > captionBottom) captionBottom = rect.bottom;
+        });
+
+        var tentTop = Infinity;
+        doneStage.querySelectorAll('.lp-trail-camp__peg').forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          if (rect.height > 0 && rect.top < tentTop) tentTop = rect.top;
+        });
+
+        if (!Number.isFinite(captionBottom) || !Number.isFinite(tentTop)) return MIN_NAME_GAP;
+        return tentTop - captionBottom;
+      }
+
+      function layoutFrame2() {
+        var phone = document.querySelector('.phone--frame2');
+        if (!phone) return;
+
+        phone.style.setProperty('--map-world-y', '-15%');
+        var doneOffset = 0;
+        var attempts = 0;
+        var gapPx = 0;
+        while (attempts < 30) {
+          phone.style.setProperty('--f2-done-y-offset', doneOffset + '%');
+          gapPx = captionDoneGap(phone);
+          if (gapPx >= MIN_NAME_GAP) break;
+          doneOffset += 0.1;
+          attempts += 1;
+        }
+
+        if (typeof window.runCollisionAudit === 'function') {
+          window.runCollisionAudit();
+        }
+      }
+
+      window.addEventListener('load', layoutFrame2);
+      window.addEventListener('resize', layoutFrame2);
+      layoutFrame2();
     })();
   </script>
 </body>
