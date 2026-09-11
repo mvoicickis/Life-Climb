@@ -1814,6 +1814,81 @@
     .phone--frame0 .lp-trail-today {
       opacity: 0.55;
     }
+
+    /* Frame 2 — nine-camp plan layout fixes */
+    .phone--frame2 .lp-trail-hud {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.35rem;
+      right: 0.55rem;
+    }
+
+    .phone--frame2 .lp-trail-hud__lead {
+      display: grid;
+      gap: 0.35rem;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .phone--frame2 .lp-trail-hud .lp-trail__goal {
+      position: static;
+      left: auto;
+      top: auto;
+      transform: none;
+      flex: 0 0 auto;
+      max-width: 9.25rem;
+      pointer-events: auto;
+    }
+
+    .phone--frame2 .lp-trail-hud .lp-trail__goal-plaque {
+      padding: 0.35rem 0.5rem;
+    }
+
+    .phone--frame2 .lp-trail-hud .lp-trail__goal-title {
+      font-size: 0.72rem;
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
+    }
+
+    .phone--frame2 .lp-trail-hud .lp-trail__goal-tagline {
+      font-size: 0.58rem;
+    }
+
+    .phone--frame2 .lp-trail-stage.is-fog .lp-trail-stage__label {
+      align-self: center;
+      margin-inline: 0;
+    }
+
+    .phone--frame2 .lp-trail-stage.is-open.is-carousel .lp-trail-stage__row {
+      box-sizing: border-box;
+      max-width: 100%;
+      padding-inline: 0;
+    }
+
+    .phone--frame2 .lp-trail-stage.is-carousel .lp-trail-stage__row .lp-trail-stage__camps {
+      margin-inline: calc(var(--lp-tap) + var(--lp-frame-nav-inset));
+    }
+
+    .phone--frame2 .lp-trail-stage__nav.is-next {
+      right: calc(var(--lp-frame-nav-inset) + 42px);
+    }
+
+    .phone--frame2 .lp-trail-stage__nav.is-prev {
+      left: var(--lp-frame-nav-inset);
+    }
+
+    .phone--frame2 .lp-trail-camp__peg svg .lp-tent-body {
+      fill: var(--lp-trail-accent, #0f9488);
+    }
+
+    .phone--frame2 .lp-trail-camp__peg svg .lp-tent-shade {
+      fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 52%, #000000);
+    }
+
+    .phone--frame2 .lp-trail-camp__peg svg .lp-tent-door {
+      fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 68%, #ffffff);
+    }
   </style>
 </head>
 <body>
@@ -2003,20 +2078,28 @@
       <section class="frame-block" aria-labelledby="f2-label">
         <p class="frame-block__label" id="f2-label">Frame 2</p>
         <h2 class="frame-block__title">My plan · 9 camps · carousel</h2>
-        <div class="phone phone--map" data-frame-audit="Frame 2" role="img" aria-label="Frame 2: nine camps across four stages with open ledge carousel">
+        <div class="phone phone--map phone--frame2" data-frame-audit="Frame 2" role="img" aria-label="Frame 2: nine camps across four stages with open ledge carousel">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
-              <div class="lp-trail-hud__pill">
-                <span class="lp-trail-hud__avatar lp-rpg-avatar">
-                  <img class="lp-trail-hud__avatar-img lp-rpg-avatar__img" src="../../app/assets/images/characters/fox.png" alt="">
-                  <span class="lp-trail-hud__level lp-rpg-avatar__level">4</span>
-                </span>
-                <div class="lp-trail-hud__stats">
-                  <span class="lp-trail-hud__stat"><span aria-hidden="true">⚡</span>48</span>
-                  <span class="lp-trail-hud__stat"><span aria-hidden="true">🏕</span>1/9</span>
+              <div class="lp-trail-hud__lead">
+                <div class="lp-trail-hud__pill">
+                  <span class="lp-trail-hud__avatar lp-rpg-avatar">
+                    <img class="lp-trail-hud__avatar-img lp-rpg-avatar__img" src="../../app/assets/images/characters/fox.png" alt="">
+                    <span class="lp-trail-hud__level lp-rpg-avatar__level">4</span>
+                  </span>
+                  <div class="lp-trail-hud__stats">
+                    <span class="lp-trail-hud__stat"><span aria-hidden="true">⚡</span>48</span>
+                    <span class="lp-trail-hud__stat"><span aria-hidden="true">🏕</span>1/9</span>
+                  </div>
                 </div>
+                <button type="button" class="lp-trail-arrange">Arrange camps</button>
               </div>
-              <button type="button" class="lp-trail-arrange">Arrange camps</button>
+              <div class="lp-trail__goal">
+                <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
+                  <span class="lp-trail__goal-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
+                  <span class="lp-trail__goal-tagline">Ship the MVP</span>
+                </button>
+              </div>
             </div>
 
             <div class="lp-trail__scroll">
@@ -2031,12 +2114,12 @@
                                                 <div class="lp-trail-stage__camps is-pair">
                           <button type="button" class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
                             <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                            <span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-side" d="M34 44 L56 44 L44 6 Z"/><path class="lp-tent-front" d="M0 44 L34 44 L28 6 Z"/><path class="lp-tent-door" d="M12 44 L12 30 L20 30 L20 44 Z"/></svg></span>
+                            <span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                             <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
                           </button>
                           <button type="button" class="lp-trail-camp is-current has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
                             <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
-                            <span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-side" d="M34 44 L56 44 L44 6 Z"/><path class="lp-tent-front" d="M0 44 L34 44 L28 6 Z"/><path class="lp-tent-door" d="M12 44 L12 30 L20 30 L20 44 Z"/></svg></span>
+                            <span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                             <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
                           </button>
                         </div>
@@ -2058,20 +2141,21 @@
                     <div class="lp-trail-stage__floor">
                       <p class="lp-trail-stage__label lp-frost">Stage 3 · 3 camps</p>
                       <div class="lp-trail-stage__camps">
-                        <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-side" d="M34 44 L56 44 L44 6 Z"/><path class="lp-tent-front" d="M0 44 L34 44 L28 6 Z"/><path class="lp-tent-door" d="M12 44 L12 30 L20 30 L20 44 Z"/></svg></span></span>
-                        <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-side" d="M34 44 L56 44 L44 6 Z"/><path class="lp-tent-front" d="M0 44 L34 44 L28 6 Z"/><path class="lp-tent-door" d="M12 44 L12 30 L20 30 L20 44 Z"/></svg></span></span>
+                        <span class="lp-trail-camp has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span></span>
+                        <span class="lp-trail-camp has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span></span>
+                        <span class="lp-trail-camp has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span></span>
                       </div>
                     </div>
                     </div>
-
-                    <button type="button" class="lp-trail-stage__cloud" style="--lp-stage-y: var(--ledge-cloud-y); --lp-stage-x-left: var(--ledge-cloud-x-left); --lp-stage-x-right: var(--ledge-cloud-x-right);">1 more stage</button>
-                  </div>
-
-                  <div class="lp-trail__goal">
-                    <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
-                      <span class="lp-trail__goal-title lp-rpg-destination-carousel__title">Launch Life Climb</span>
-                      <span class="lp-trail__goal-tagline">Ship the MVP</span>
-                    </button>
+<div class="lp-trail-stage is-fog" style="--lp-stage-y: var(--ledge-fog2-y); --lp-stage-x-left: var(--ledge-fog2-x-left); --lp-stage-x-right: var(--ledge-fog2-x-right);">
+                    <div class="lp-trail-stage__floor">
+                      <p class="lp-trail-stage__label lp-frost">Stage 4 · 2 camps</p>
+                      <div class="lp-trail-stage__camps">
+                        <span class="lp-trail-camp has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span></span>
+                        <span class="lp-trail-camp has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-hidden="true"><span class="lp-trail-camp__peg"><svg class="lp-trail-camp__tent-svg lp-trail-camp__tent-svg--fog" viewBox="0 0 56 44" aria-hidden="true"><path class="lp-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="lp-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="lp-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span></span>
+                      </div>
+                    </div>
+                    </div>
                   </div>
                 </div></div>
               </div>
