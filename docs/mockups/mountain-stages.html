@@ -1195,9 +1195,20 @@
       font: inherit;
       font-size: 0.82rem;
       font-weight: 800;
+      min-height: var(--lp-tap);
       padding: 0.45rem 0.85rem;
       cursor: pointer;
       box-shadow: var(--lp-shadow-cta);
+    }
+
+    .lp-arrange-sheet__hint {
+      margin: 0;
+      padding: 0.35rem 0.85rem 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--lp-muted);
+      background: var(--lp-surface);
+      border-bottom: 1px solid var(--lp-border);
     }
 
     .lp-arrange-sheet__body {
@@ -1211,16 +1222,17 @@
 
     .lp-arrange-add-stage {
       width: 100%;
-      min-height: 2rem;
+      min-height: var(--lp-tap);
       border: 1px dashed color-mix(in srgb, var(--lp-green) 45%, var(--lp-border));
       border-radius: var(--lp-radius-field);
       background: transparent;
       color: var(--lp-muted);
       font: inherit;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      padding: 0.35rem 0.65rem;
+      padding: 0.45rem 0.65rem;
+      flex-shrink: 0;
     }
 
     .lp-arrange-stage {
@@ -1229,6 +1241,7 @@
       background: var(--lp-surface);
       box-shadow: var(--lp-shadow-card);
       overflow: visible;
+      flex-shrink: 0;
     }
 
     .lp-arrange-stage.is-folded {
@@ -1247,6 +1260,7 @@
       color: var(--lp-ink);
       cursor: pointer;
       text-align: left;
+      box-shadow: var(--lp-shadow-card);
     }
 
     .lp-arrange-stage.is-folded span:last-child {
@@ -1290,7 +1304,7 @@
       position: absolute;
       right: 0;
       top: calc(100% - 0.35rem);
-      z-index: 2;
+      z-index: 4;
       min-width: 9rem;
       max-width: calc(var(--phone-w) - 1.7rem);
       padding: 0.35rem;
@@ -1303,6 +1317,7 @@
     .lp-arrange-stage__popover button {
       display: block;
       width: 100%;
+      min-height: var(--lp-tap);
       border: 0;
       border-radius: 0.55rem;
       background: transparent;
@@ -1321,80 +1336,151 @@
       padding: 0.45rem 0.55rem 0.55rem;
     }
 
-    .lp-arrange-move-here {
-      width: 100%;
-      min-height: 2.15rem;
-      border: 1.5px dashed var(--lp-green);
-      border-radius: var(--lp-radius-field);
-      background: color-mix(in srgb, var(--lp-green) 10%, var(--lp-surface));
-      color: var(--lp-green-deep);
-      font: inherit;
-      font-size: 0.76rem;
-      font-weight: 800;
-      cursor: pointer;
-      padding: 0.4rem 0.65rem;
-    }
-
     .lp-arrange-camp-row {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
-      min-height: var(--lp-tap);
-      padding: 0.35rem 0.45rem;
+      gap: 0.5rem;
+      min-height: 3rem;
+      padding: 0.25rem 0.45rem;
       border-radius: var(--lp-radius-field);
       border: 1px solid var(--lp-border);
       background: var(--lp-paper-soft);
     }
 
-    .lp-arrange-camp-row.is-lifted {
-      border-color: var(--lp-green);
-      background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-surface));
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-green) 22%, transparent);
-    }
-
-    .lp-arrange-camp-row__handle {
-      flex-shrink: 0;
-      width: var(--lp-tap);
-      height: var(--lp-tap);
-      border: 0;
-      border-radius: 0.55rem;
-      background: transparent;
-      color: var(--lp-muted);
-      font-size: 0.95rem;
-      line-height: 1;
-      cursor: grab;
-      padding: 0;
-    }
-
     .lp-arrange-camp-row__name {
       flex: 1 1 auto;
       min-width: 0;
+      border: 0;
+      background: transparent;
+      color: var(--lp-ink);
+      font: inherit;
       font-size: 0.84rem;
       font-weight: 700;
-      overflow-wrap: normal;
-      word-break: normal;
+      line-height: 1.25;
+      text-align: left;
+      padding: 0.35rem 0;
+      cursor: pointer;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      overflow-wrap: anywhere;
     }
 
-    .lp-arrange-camp-row__nudge {
+    .lp-arrange-camp-row__stage {
+      position: relative;
       flex-shrink: 0;
-      width: 2rem;
-      height: 2rem;
+    }
+
+    .lp-arrange-camp-row__stage-chip {
+      min-height: var(--lp-tap);
+      min-width: var(--lp-tap);
       border: 1px solid var(--lp-border);
-      border-radius: 0.55rem;
+      border-radius: var(--lp-radius-pill);
       background: var(--lp-surface);
+      color: var(--lp-muted);
+      font: inherit;
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+      padding: 0.35rem 0.65rem;
+      cursor: pointer;
+    }
+
+    .lp-arrange-camp-row__stage-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.15rem);
+      z-index: 5;
+      min-width: 9.5rem;
+      max-width: calc(var(--phone-w) - 1.7rem);
+      padding: 0.35rem;
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-field);
+      background: var(--lp-surface);
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-arrange-camp-row__stage-menu button {
+      display: block;
+      width: 100%;
+      min-height: var(--lp-tap);
+      border: 0;
+      border-radius: 0.55rem;
+      background: transparent;
       color: var(--lp-ink);
       font: inherit;
       font-size: 0.82rem;
-      font-weight: 800;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.55rem 0.65rem;
       cursor: pointer;
-      padding: 0;
     }
 
-    .lp-arrange-stage.is-done .lp-arrange-stage__label {
-      color: var(--lp-muted);
+    .lp-arrange-camp-row__stage-menu button.is-current {
+      color: var(--lp-green-deep);
+    }
+
+    .lp-arrange-camp-row__stage-menu button.is-new {
+      color: var(--lp-green-deep);
+    }
+
+    .lp-arrange-camp-row__stage-menu hr {
+      border: 0;
+      border-top: 1px solid var(--lp-border);
+      margin: 0.2rem 0;
+    }
+
+    .lp-arrange-add-camp {
+      width: 100%;
+      min-height: var(--lp-tap);
+      border: 0;
+      border-radius: var(--lp-radius-field);
+      background: transparent;
+      color: var(--lp-green-deep);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-align: left;
+      padding: 0.45rem 0.45rem;
+      cursor: pointer;
+    }
+
+    .lp-arrange-toast {
+      position: absolute;
+      left: 0.85rem;
+      right: 0.85rem;
+      bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      min-height: var(--lp-tap);
+      padding: 0.55rem 0.75rem;
+      border-radius: var(--lp-radius-field);
+      background: var(--lp-ink);
+      color: var(--lp-rpg-ink);
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-arrange-toast button {
+      border: 0;
+      background: transparent;
+      color: var(--lp-green);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      min-height: var(--lp-tap);
+      padding: 0 0.35rem;
+      cursor: pointer;
+      flex-shrink: 0;
     }
 
     .phone.is-arrange-only {
+      position: relative;
       height: var(--phone-h);
       overflow: hidden;
     }
@@ -1407,10 +1493,12 @@
       min-height: 0;
     }
 
-    .phone.is-arrange-only .lp-arrange-sheet__body {
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+    .lp-arrange-stage.is-chip-menu-open .lp-arrange-stage__camps {
+      padding-bottom: 9.5rem;
+    }
+
+    .lp-arrange-stage.is-stage-menu-open .lp-arrange-stage__camps {
+      padding-bottom: 4.5rem;
     }
 
 
@@ -3093,10 +3181,10 @@
     <div class="doc__note">
       <h2>Arrange camps</h2>
       <ul>
-        <li>Highest stage at top, stage 1 at bottom — mountain-shaped list</li>
-        <li>Tap a camp to lift it (green); every stage shows a Move here spot; ↑ ↓ reorder within a stage</li>
-        <li>+ Add stage between every pair and at the top; stage menu → Delete stage (camps drop to the stage below)</li>
-        <li>Stages with 4+ camps fold to one line — tap to expand</li>
+        <li><strong>Stage order</strong> — Stage 1 at the top of the list (reads top to bottom). Previously mirrored the mountain (Stage 1 at bottom).</li>
+        <li>Tap a camp&rsquo;s <strong>Stage ▾</strong> chip to move it — menu lists open/later stages, optional Move up/down when 2+ camps, then + New stage</li>
+        <li>Tap camp name to rename; last row in each stage is <strong>+ Add camp</strong>; one <strong>+ Add stage</strong> at the very end</li>
+        <li>Finished stages fold to one row; stage ⋯ → Delete stage moves camps up and shows an Undo toast</li>
       </ul>
     </div>
 
@@ -4165,45 +4253,15 @@
       <section class="frame-block" aria-labelledby="a1-label">
         <p class="frame-block__label" id="a1-label">A1</p>
         <h2 class="frame-block__title">After onboarding · 3 stages</h2>
-        <div class="phone is-arrange-only" role="img" aria-label="A1: arrange sheet with three stages one camp each">
+        <div class="phone is-arrange-only" data-frame-audit="A1" role="img" aria-label="A1: arrange sheet with three stages one camp each">
           <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
           <div class="lp-arrange-sheet">
             <header class="lp-arrange-sheet__header">
               <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
               <button type="button" class="lp-arrange-sheet__done">Done</button>
             </header>
+            <p class="lp-arrange-sheet__hint">Tap Stage ▾ on a camp to move it.</p>
             <div class="lp-arrange-sheet__body">
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
-                  <div class="lp-arrange-stage__menu">
-                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
-                  </div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
-                  <div class="lp-arrange-stage__menu">
-                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
-                  </div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
               <div class="lp-arrange-stage">
                 <div class="lp-arrange-stage__head">
                   <span class="lp-arrange-stage__label">Stage 1 · open now</span>
@@ -4213,103 +4271,137 @@
                 </div>
                 <div class="lp-arrange-stage__camps">
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Montain</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Montain</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 1 ▾</button>
+                    </div>
                   </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
                 </div>
               </div>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu">
+                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
+                  </div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Registration &amp; Onboarding</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
+                  <div class="lp-arrange-stage__menu">
+                    <button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button>
+                  </div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Day 2 problem</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 3 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- A2 — Registration lifted -->
+      <!-- A2 — Stage chip menu open -->
       <section class="frame-block" aria-labelledby="a2-label">
         <p class="frame-block__label" id="a2-label">A2</p>
-        <h2 class="frame-block__title">Registration lifted · Move here</h2>
-        <div class="phone is-arrange-only" role="img" aria-label="A2: lifted camp with move here spots on every stage">
+        <h2 class="frame-block__title">Registration · Stage chip menu</h2>
+        <div class="phone is-arrange-only" data-frame-audit="A2" role="img" aria-label="A2: stage chip menu open on Registration and Onboarding">
           <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
           <div class="lp-arrange-sheet">
             <header class="lp-arrange-sheet__header">
               <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
               <button type="button" class="lp-arrange-sheet__done">Done</button>
             </header>
+            <p class="lp-arrange-sheet__hint">Tap Stage ▾ on a camp to move it.</p>
             <div class="lp-arrange-sheet__body">
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
-                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <button type="button" class="lp-arrange-move-here">Move here</button>
-                  <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
-                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <button type="button" class="lp-arrange-move-here">Move here</button>
-                </div>
-              </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
               <div class="lp-arrange-stage">
                 <div class="lp-arrange-stage__head">
                   <span class="lp-arrange-stage__label">Stage 1 · open now</span>
                   <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
                 </div>
                 <div class="lp-arrange-stage__camps">
-                  <button type="button" class="lp-arrange-move-here">Move here</button>
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Montain</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Montain</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 1 ▾</button>
+                    </div>
                   </div>
-                  <div class="lp-arrange-camp-row is-lifted">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
-                    <button type="button" class="lp-arrange-camp-row__nudge" aria-label="Move up">↑</button>
-                    <button type="button" class="lp-arrange-camp-row__nudge" aria-label="Move down">↓</button>
-                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
                 </div>
               </div>
+              <div class="lp-arrange-stage is-chip-menu-open">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Registration &amp; Onboarding</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                      <div class="lp-arrange-camp-row__stage-menu">
+                        <button type="button">Stage 1</button>
+                        <button type="button" class="is-current">Stage 2 ✓</button>
+                        <button type="button">Stage 3</button>
+                        <button type="button" class="is-new">+ New stage</button>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Day 2 problem</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 3 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- A3 — After move -->
+      <!-- A3 — After move to Stage 1 -->
       <section class="frame-block" aria-labelledby="a3-label">
         <p class="frame-block__label" id="a3-label">A3</p>
         <h2 class="frame-block__title">Registration moved to Stage 1</h2>
-        <div class="phone is-arrange-only" role="img" aria-label="A3: stage one has two camps, stage two has Day 2 problem">
+        <div class="phone is-arrange-only" data-frame-audit="A3" role="img" aria-label="A3: stage one has two camps, empty stage removed with undo toast">
           <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
           <div class="lp-arrange-sheet">
             <header class="lp-arrange-sheet__header">
               <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
               <button type="button" class="lp-arrange-sheet__done">Done</button>
             </header>
+            <p class="lp-arrange-sheet__hint">Tap Stage ▾ on a camp to move it.</p>
             <div class="lp-arrange-sheet__body">
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
-                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
               <div class="lp-arrange-stage">
                 <div class="lp-arrange-stage__head">
                   <span class="lp-arrange-stage__label">Stage 1 · open now</span>
@@ -4317,37 +4409,56 @@
                 </div>
                 <div class="lp-arrange-stage__camps">
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Montain</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Montain</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 1 ▾</button>
+                    </div>
                   </div>
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Registration &amp; Onboarding</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 1 ▾</button>
+                    </div>
                   </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
                 </div>
               </div>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Day 2 problem</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
             </div>
+            <div class="lp-arrange-toast"><span>Stage 2 removed ·</span><button type="button">Undo</button></div>
           </div>
         </div>
       </section>
 
-      <!-- A4 — 9 camps, folded stages -->
+      <!-- A4 — 9 camps, folded done stage -->
       <section class="frame-block" aria-labelledby="a4-label">
         <p class="frame-block__label" id="a4-label">A4</p>
-        <h2 class="frame-block__title">My 9 camps · folded stages</h2>
-        <div class="phone is-arrange-only" role="img" aria-label="A4: nine camps with stage two expanded and stages three and four folded">
+        <h2 class="frame-block__title">My 9 camps · scrollable list</h2>
+        <div class="phone is-arrange-only" data-frame-audit="A4" role="img" aria-label="A4: nine camps with done stage folded and add stage at end">
           <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
           <div class="lp-arrange-sheet">
             <header class="lp-arrange-sheet__header">
               <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
               <button type="button" class="lp-arrange-sheet__done">Done</button>
             </header>
+            <p class="lp-arrange-sheet__hint">Tap Stage ▾ on a camp to move it.</p>
             <div class="lp-arrange-sheet__body">
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <button type="button" class="lp-arrange-stage is-folded"><span>Stage 4 · 2 camps</span><span aria-hidden="true">›</span></button>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <button type="button" class="lp-arrange-stage is-folded"><span>Stage 3 · 3 camps</span><span aria-hidden="true">›</span></button>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
+              <button type="button" class="lp-arrange-stage is-folded"><span>Stage 1 · done ✓ · 1 camp</span><span aria-hidden="true">›</span></button>
               <div class="lp-arrange-stage">
                 <div class="lp-arrange-stage__head">
                   <span class="lp-arrange-stage__label">Stage 2 · open now</span>
@@ -4355,36 +4466,75 @@
                 </div>
                 <div class="lp-arrange-stage__camps">
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Montain</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Montain</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
                   </div>
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Registration &amp; Onboarding</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
                   </div>
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Day 2 problem</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
                   </div>
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Todays Page">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Today's Page</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Today&rsquo;s Page</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
                   </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
                 </div>
               </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage is-done">
+              <div class="lp-arrange-stage">
                 <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 1 · done</span>
+                  <span class="lp-arrange-stage__label">Stage 3 · later</span>
                   <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
                 </div>
                 <div class="lp-arrange-stage__camps">
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Camps">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Camps</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Notifications &amp; Icon</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 3 ▾</button>
+                    </div>
                   </div>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">AI integration</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 3 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
                 </div>
               </div>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 4 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Testing Phase</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 4 ▾</button>
+                    </div>
+                  </div>
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Marketing</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 4 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
             </div>
           </div>
         </div>
@@ -4394,16 +4544,46 @@
       <section class="frame-block" aria-labelledby="a5-label">
         <p class="frame-block__label" id="a5-label">A5</p>
         <h2 class="frame-block__title">Stage menu · Delete stage</h2>
-        <div class="phone is-arrange-only" role="img" aria-label="A5: stage menu open with delete stage command">
+        <div class="phone is-arrange-only" data-frame-audit="A5" role="img" aria-label="A5: stage three menu open with delete stage command">
           <section class="lp-trail is-bleed is-v4" aria-hidden="true"></section>
           <div class="lp-arrange-sheet">
             <header class="lp-arrange-sheet__header">
               <h2 class="lp-arrange-sheet__title">Arrange camps</h2>
               <button type="button" class="lp-arrange-sheet__done">Done</button>
             </header>
+            <p class="lp-arrange-sheet__hint">Tap Stage ▾ on a camp to move it.</p>
             <div class="lp-arrange-sheet__body">
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
               <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 1 · open now</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Montain</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 1 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <div class="lp-arrange-stage">
+                <div class="lp-arrange-stage__head">
+                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
+                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
+                </div>
+                <div class="lp-arrange-stage__camps">
+                  <div class="lp-arrange-camp-row">
+                    <button type="button" class="lp-arrange-camp-row__name">Registration &amp; Onboarding</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 2 ▾</button>
+                    </div>
+                  </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
+                </div>
+              </div>
+              <div class="lp-arrange-stage is-stage-menu-open">
                 <div class="lp-arrange-stage__head">
                   <span class="lp-arrange-stage__label">Stage 3 · later</span>
                   <div class="lp-arrange-stage__menu">
@@ -4415,37 +4595,15 @@
                 </div>
                 <div class="lp-arrange-stage__camps">
                   <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Day 2 problem">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Day 2 problem</span>
+                    <button type="button" class="lp-arrange-camp-row__name">Day 2 problem</button>
+                    <div class="lp-arrange-camp-row__stage">
+                      <button type="button" class="lp-arrange-camp-row__stage-chip">Stage 3 ▾</button>
+                    </div>
                   </div>
+                  <button type="button" class="lp-arrange-add-camp">+ Add camp</button>
                 </div>
               </div>
               <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 2 · later</span>
-                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Registration">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Registration &amp; Onboarding</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="lp-arrange-add-stage">+ Add stage</button>
-              <div class="lp-arrange-stage">
-                <div class="lp-arrange-stage__head">
-                  <span class="lp-arrange-stage__label">Stage 1 · open now</span>
-                  <div class="lp-arrange-stage__menu"><button type="button" class="lp-arrange-stage__menu-btn" aria-label="Stage menu">⋯</button></div>
-                </div>
-                <div class="lp-arrange-stage__camps">
-                  <div class="lp-arrange-camp-row">
-                    <button type="button" class="lp-arrange-camp-row__handle" aria-label="Drag Montain">⠿</button>
-                    <span class="lp-arrange-camp-row__name">Montain</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -4494,23 +4652,163 @@
         return style.textOverflow === 'ellipsis' && style.overflow === 'hidden';
       }
 
-      function clearOutlines(map) {
-        map.querySelectorAll('.collision-outline').forEach(function (n) { n.remove(); });
-        map.querySelectorAll('[data-collision-highlight]').forEach(function (el) {
+      function clearOutlines(container) {
+        container.querySelectorAll('.collision-outline').forEach(function (n) { n.remove(); });
+        container.querySelectorAll('[data-collision-highlight]').forEach(function (el) {
           el.style.outline = '';
           el.removeAttribute('data-collision-highlight');
         });
       }
 
-      function addOutline(map, rect) {
+      function addOutline(container, rect) {
         var box = document.createElement('div');
         box.className = 'collision-outline';
-        var mapRect = map.getBoundingClientRect();
-        box.style.left = (rect.left - mapRect.left) + 'px';
-        box.style.top = (rect.top - mapRect.top) + 'px';
+        var containerRect = container.getBoundingClientRect();
+        box.style.left = (rect.left - containerRect.left) + 'px';
+        box.style.top = (rect.top - containerRect.top) + 'px';
         box.style.width = rect.width + 'px';
         box.style.height = rect.height + 'px';
-        map.appendChild(box);
+        container.appendChild(box);
+      }
+
+      function markCollision(container, el, rect, collisions) {
+        collisions++;
+        addOutline(container, rect);
+        el.style.outline = '2px solid #ef4444';
+        el.setAttribute('data-collision-highlight', '1');
+        return collisions;
+      }
+
+      function shareContainer(a, b) {
+        return a.contains(b) || b.contains(a);
+      }
+
+      function shareStageOverlay(a, b) {
+        var stageA = a.closest('.lp-arrange-stage');
+        var stageB = b.closest('.lp-arrange-stage');
+        if (!stageA || stageA !== stageB) return false;
+        var overlay = a.closest('.lp-arrange-camp-row__stage-menu, .lp-arrange-stage__popover');
+        var overlayB = b.closest('.lp-arrange-camp-row__stage-menu, .lp-arrange-stage__popover');
+        if (overlay || overlayB) return true;
+        return false;
+      }
+
+      function isToastOverlay(a, b) {
+        return a.closest('.lp-arrange-toast') || b.closest('.lp-arrange-toast');
+      }
+
+      function shareMenu(a, b) {
+        var menuA = a.closest('.lp-arrange-camp-row__stage-menu, .lp-arrange-stage__popover');
+        var menuB = b.closest('.lp-arrange-camp-row__stage-menu, .lp-arrange-stage__popover');
+        if (menuA && menuA === menuB) return true;
+        if (a.closest('.lp-arrange-camp-row__stage-menu') && b.closest('.lp-arrange-camp-row__stage')) {
+          var stageWrap = a.closest('.lp-arrange-camp-row__stage');
+          if (stageWrap && stageWrap.contains(b)) return true;
+        }
+        if (a.closest('.lp-arrange-stage__popover') && b.closest('.lp-arrange-stage__menu')) {
+          var menuWrap = a.closest('.lp-arrange-stage__menu');
+          if (menuWrap && menuWrap.contains(b)) return true;
+        }
+        return false;
+      }
+
+      function isInsidePhone(el, phone) {
+        var pr = phone.getBoundingClientRect();
+        var r = el.getBoundingClientRect();
+        return !(
+          r.bottom > pr.bottom + TOLERANCE ||
+          r.top < pr.top - TOLERANCE ||
+          r.left < pr.left - TOLERANCE ||
+          r.right > pr.right + TOLERANCE
+        );
+      }
+
+      function isArrangeVisible(el, phone) {
+        if (!el || !el.getClientRects().length) return false;
+        var style = window.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        if (parseFloat(style.opacity) === 0) return false;
+        if (el.closest('[hidden]')) return false;
+        var body = phone.querySelector('.lp-arrange-sheet__body');
+        if (body) {
+          var br = body.getBoundingClientRect();
+          var r = el.getBoundingClientRect();
+          if (el.closest('.lp-arrange-sheet__body') && r.bottom > br.bottom + TOLERANCE && !el.closest('.lp-arrange-toast')) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function collectArrangeTargets(phone) {
+        var selectors = [
+          '.lp-arrange-sheet__header',
+          '.lp-arrange-sheet__hint',
+          '.lp-arrange-sheet__done',
+          '.lp-arrange-stage.is-folded',
+          '.lp-arrange-stage__head',
+          '.lp-arrange-stage__menu-btn',
+          '.lp-arrange-stage__popover',
+          '.lp-arrange-camp-row',
+          '.lp-arrange-camp-row__name',
+          '.lp-arrange-camp-row__stage-chip',
+          '.lp-arrange-camp-row__stage-menu',
+          '.lp-arrange-add-camp',
+          '.lp-arrange-add-stage',
+          '.lp-arrange-toast'
+        ];
+        var nodes = [];
+        selectors.forEach(function (sel) {
+          phone.querySelectorAll(sel).forEach(function (el) {
+            if (isArrangeVisible(el, phone)) nodes.push(el);
+          });
+        });
+        return nodes;
+      }
+
+      function auditArrange(phone) {
+        clearOutlines(phone);
+        var collisions = 0;
+        var targets = collectArrangeTargets(phone);
+        var rects = targets.map(function (el) {
+          return { el: el, rect: el.getBoundingClientRect() };
+        });
+
+        for (var i = 0; i < rects.length; i++) {
+          for (var j = i + 1; j < rects.length; j++) {
+            if (shareContainer(rects[i].el, rects[j].el)) continue;
+            if (shareStageOverlay(rects[i].el, rects[j].el)) continue;
+            if (isToastOverlay(rects[i].el, rects[j].el)) continue;
+            if (rectsOverlap(rects[i].rect, rects[j].rect)) {
+              collisions++;
+              addOutline(phone, rects[i].rect);
+              addOutline(phone, rects[j].rect);
+              rects[i].el.style.outline = '2px solid #ef4444';
+              rects[i].el.setAttribute('data-collision-highlight', '1');
+              rects[j].el.style.outline = '2px solid #ef4444';
+              rects[j].el.setAttribute('data-collision-highlight', '1');
+            }
+          }
+        }
+
+        phone.querySelectorAll('.lp-arrange-camp-row__name').forEach(function (name) {
+          if (!isArrangeVisible(name, phone)) return;
+          if (name.scrollWidth > name.clientWidth + 1) {
+            collisions++;
+            addOutline(phone, name.getBoundingClientRect());
+            name.style.outline = '2px solid #ef4444';
+            name.setAttribute('data-collision-highlight', '1');
+          }
+        });
+
+        phone.querySelectorAll('.lp-arrange-camp-row__stage-menu, .lp-arrange-stage__popover, .lp-arrange-toast').forEach(function (overlay) {
+          if (!isArrangeVisible(overlay, phone)) return;
+          if (!isInsidePhone(overlay, phone)) {
+            collisions = markCollision(phone, overlay, overlay.getBoundingClientRect(), collisions);
+          }
+        });
+
+        return collisions;
       }
 
       function collectTargets(trail) {
@@ -4590,11 +4888,21 @@
           total += count;
           lines.push(name + ': ' + count);
         });
+        document.querySelectorAll('.phone.is-arrange-only[data-frame-audit]').forEach(function (phone) {
+          var name = phone.getAttribute('data-frame-audit');
+          var count = auditArrange(phone);
+          total += count;
+          lines.push(name + ': ' + count);
+        });
         var banner = document.getElementById('collision-report');
         if (banner) {
           banner.textContent = lines.join(' · ') || '0 collisions';
           banner.classList.toggle('has-collisions', total > 0);
         }
+        if (total > 0) {
+          console.error('Collision audit failed:', lines.join(' · '));
+        }
+        return total;
       }
 
       window.runCollisionAudit = runCollisionAudit;
