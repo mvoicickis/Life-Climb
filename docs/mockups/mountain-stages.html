@@ -1696,6 +1696,124 @@
       text-transform: uppercase;
       color: var(--lp-muted);
     }
+
+    /* Frame 0 — terrace calibration (130% world, re-measured Sep 2026) */
+    .phone--frame0 {
+      --map-world-y: -15%;
+      --f0-frame-inset: 16px;
+      --f0-clamp-left: 14.96%;
+      --f0-clamp-right: 85.04%;
+      /* Mid-depth y + x from mountain-stages-bg.webp at 940×1672, grass midpoint rows */
+      --f0-t1-y: 71.95%;
+      --f0-t1-x-left: var(--f0-clamp-left);
+      --f0-t1-x: 54.89%;
+      --f0-t1-x-right: var(--f0-clamp-right);
+      --f0-t2-y: 57.95%;
+      --f0-t2-x-left: 24.15%;
+      --f0-t2-x: 52.93%;
+      --f0-t2-x-right: 81.70%;
+      --f0-t3-y: 45.93%;
+      --f0-t3-x-left: 30.11%;
+      --f0-t3-x: 51.28%;
+      --f0-t3-x-right: 72.45%;
+      --f0-t4-y: 34.93%;
+      --f0-t4-x-left: 47.55%;
+      --f0-t4-x: 52.14%;
+      --f0-t4-x-right: 61.91%;
+    }
+
+    .phone--frame0 .lp-trail__world {
+      transform: translateX(-50%) translateY(var(--map-world-y));
+    }
+
+    .phone--frame0 .lp-trail__map--anchors .terrace-anchor.is-clamped {
+      background: #f97316;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+    }
+
+    .phone--frame0 .terrace-anchor__num {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--lp-trail-font);
+      font-size: 0.5rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--lp-surface);
+      text-shadow: 0 0 2px rgba(15, 23, 42, 0.65);
+      pointer-events: none;
+    }
+
+    .phone--frame0 .lp-trail__map-guides {
+      position: absolute;
+      inset: 0;
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .phone--frame0 .lp-trail__map-guide {
+      position: absolute;
+      left: 0;
+      right: 0;
+      border-top: 1.5px dashed color-mix(in srgb, var(--lp-green) 55%, var(--lp-ink));
+      opacity: 0.95;
+    }
+
+    .phone--frame0 .lp-trail__map-guide.is-upper {
+      top: var(--f0-guide-top, 5.35rem);
+    }
+
+    .phone--frame0 .lp-trail__map-guide.is-lower {
+      top: var(--f0-guide-bottom, 78%);
+    }
+
+    .phone--frame0 .lp-trail__map-guide-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--f0-guide-top, 5.35rem);
+      height: calc(var(--f0-guide-bottom, 78%) - var(--f0-guide-top, 5.35rem));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--lp-trail-font);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--lp-green-deep) 72%, var(--lp-ink));
+      opacity: 0.72;
+      pointer-events: none;
+    }
+
+    .frame0-legend {
+      margin: 0.55rem 0 0;
+      padding: 0.65rem 0.75rem;
+      background: var(--lp-surface);
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-field);
+      font-size: 0.72rem;
+      color: var(--lp-muted);
+      max-width: var(--phone-w);
+      line-height: 1.45;
+    }
+
+    .frame0-legend strong {
+      color: var(--lp-ink);
+    }
+
+    .phone--frame0 .lp-trail-hud,
+    .phone--frame0 .lp-trail-base-fire,
+    .phone--frame0 .lp-trail__dock {
+      pointer-events: none;
+    }
+
+    .phone--frame0 .lp-trail-hud > *,
+    .phone--frame0 .lp-trail-base-fire,
+    .phone--frame0 .lp-trail-today {
+      opacity: 0.55;
+    }
   </style>
 </head>
 <body>
@@ -1741,23 +1859,63 @@
       <section class="frame-block" aria-labelledby="f0-label">
         <p class="frame-block__label" id="f0-label">Frame 0</p>
         <h2 class="frame-block__title">Measured terrace anchors</h2>
-        <div class="phone phone--map" role="img" aria-label="Frame 0: bare mountain with red dots on measured terrace anchors">
-          <div class="lp-trail__map lp-trail__map--anchors"><div class="lp-trail__world">
-            <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
-            <span class="terrace-anchor" style="left: var(--terrace-top-x-left); top: var(--terrace-top-y);" title="Top L"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-top-x); top: var(--terrace-top-y);" title="Top centre"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-top-x-right); top: var(--terrace-top-y);" title="Top R"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-third-x-left); top: var(--terrace-third-y);" title="Third L"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-third-x); top: var(--terrace-third-y);" title="Third centre"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-third-x-right); top: var(--terrace-third-y);" title="Third R"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-second-x-left); top: var(--terrace-second-y);" title="Second L"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-second-x); top: var(--terrace-second-y);" title="Second centre"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-second-x-right); top: var(--terrace-second-y);" title="Second R"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-bottom-x-left); top: var(--terrace-bottom-y);" title="Bottom L"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-bottom-x); top: var(--terrace-bottom-y);" title="Bottom centre"></span>
-            <span class="terrace-anchor" style="left: var(--terrace-bottom-x-right); top: var(--terrace-bottom-y);" title="Bottom R"></span>
-          </div></div>
+        <div class="phone phone--map phone--frame0" role="img" aria-label="Frame 0: mountain with re-measured terrace dots, usable map guides, and terrace numbers">
+          <section class="lp-trail is-bleed is-v4" aria-label="Terrace calibration">
+            <div class="lp-trail-hud" data-trail-ignore>
+              <div class="lp-trail-hud__pill">
+                <span class="lp-trail-hud__avatar lp-rpg-avatar">
+                  <img class="lp-trail-hud__avatar-img lp-rpg-avatar__img" src="../../app/assets/images/characters/fox.png" alt="">
+                  <span class="lp-trail-hud__level lp-rpg-avatar__level">1</span>
+                </span>
+                <div class="lp-trail-hud__stats">
+                  <span class="lp-trail-hud__stat"><span aria-hidden="true">⚡</span>12</span>
+                  <span class="lp-trail-hud__stat"><span aria-hidden="true">🏕</span>0/3</span>
+                </div>
+              </div>
+              <button type="button" class="lp-trail-arrange" tabindex="-1">Arrange camps</button>
+            </div>
+
+            <div class="lp-trail__scroll">
+              <div class="lp-trail__surface">
+                <div class="lp-trail__map lp-trail__map--anchors">
+                  <div class="lp-trail__world">
+                    <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
+                    <span class="terrace-anchor" style="left: var(--f0-t4-x-left); top: var(--f0-t4-y);" title="Terrace 4 left"></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t4-x); top: var(--f0-t4-y);" title="Terrace 4 centre"><span class="terrace-anchor__num">4</span></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t4-x-right); top: var(--f0-t4-y);" title="Terrace 4 right"></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t3-x-left); top: var(--f0-t3-y);" title="Terrace 3 left"></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t3-x); top: var(--f0-t3-y);" title="Terrace 3 centre"><span class="terrace-anchor__num">3</span></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t3-x-right); top: var(--f0-t3-y);" title="Terrace 3 right"></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t2-x-left); top: var(--f0-t2-y);" title="Terrace 2 left"></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t2-x); top: var(--f0-t2-y);" title="Terrace 2 centre"><span class="terrace-anchor__num">2</span></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t2-x-right); top: var(--f0-t2-y);" title="Terrace 2 right"></span>
+                    <span class="terrace-anchor is-clamped" style="left: var(--f0-t1-x-left); top: var(--f0-t1-y);" title="Terrace 1 left (clamped to frame)"></span>
+                    <span class="terrace-anchor" style="left: var(--f0-t1-x); top: var(--f0-t1-y);" title="Terrace 1 centre"><span class="terrace-anchor__num">1</span></span>
+                    <span class="terrace-anchor is-clamped" style="left: var(--f0-t1-x-right); top: var(--f0-t1-y);" title="Terrace 1 right (clamped to frame)"></span>
+                  </div>
+                  <div class="lp-trail__map-guides" aria-hidden="true">
+                    <div class="lp-trail__map-guide is-upper"></div>
+                    <div class="lp-trail__map-guide is-lower"></div>
+                    <div class="lp-trail__map-guide-label">usable map</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lp-trail__dock" data-trail-ignore>
+                <button type="button" class="lp-trail-today is-busy" tabindex="-1">
+                  <span class="lp-trail-today__copy">
+                    <span class="lp-trail-today__headline">Pick your first battle</span>
+                    <span class="lp-trail-today__sub">Next in Montain</span>
+                  </span>
+                  <span class="lp-trail-today__tick" aria-label="Win battle"></span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="lp-trail-base-fire lp-frost" tabindex="-1" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
+          </section>
         </div>
+        <p class="frame0-legend"><strong>Frame 0 legend.</strong> Dots sit at mid-depth on each terrace (halfway between back edge and front lip). Centre dots numbered 1 (bottom) → 4 (top). Terrace 1 L/R are clamped to 16px inside the frame — the real grass lip is wider and clipped by the 130% zoom. Top terrace centre re-measured to <strong>52.14%</strong> (was 59.41%). Orange dots = clamped. <strong>--map-world-y: -15%</strong> keeps terrace 1 at least 110px above the lower guide.</p>
       </section>
 
       <!-- Frame 1 — New user, 3 camps -->
@@ -2950,6 +3108,52 @@
       runCollisionAudit();
     })();
 
+  </script>
+  <script>
+    (function () {
+      var MIN_GRASS = 110;
+
+      function layoutFrame0() {
+        var phone = document.querySelector('.phone--frame0');
+        if (!phone) return;
+
+        var map = phone.querySelector('.lp-trail__map');
+        var hud = phone.querySelector('.lp-trail-hud');
+        var fire = phone.querySelector('.lp-trail-base-fire');
+        var t1 = phone.querySelector('.terrace-anchor__num');
+        if (!map || !hud || !fire || !t1) return;
+
+        var mapRect = map.getBoundingClientRect();
+        var hudRect = hud.getBoundingClientRect();
+        var fireRect = fire.getBoundingClientRect();
+        var guideTop = Math.max(0, hudRect.bottom - mapRect.top);
+        var guideBottom = Math.max(guideTop + 1, fireRect.top - mapRect.top);
+        phone.style.setProperty('--f0-guide-top', guideTop + 'px');
+        phone.style.setProperty('--f0-guide-bottom', guideBottom + 'px');
+
+        var t1Anchor = t1.closest('.terrace-anchor');
+        var worldY = -15;
+        var attempts = 0;
+        var grassPx = 0;
+        while (attempts < 12) {
+          phone.style.setProperty('--map-world-y', worldY + '%');
+          var t1Rect = t1Anchor.getBoundingClientRect();
+          grassPx = fireRect.top - t1Rect.top;
+          if (grassPx >= MIN_GRASS) break;
+          worldY -= 1;
+          attempts += 1;
+        }
+
+        var legend = phone.closest('.frame-block').querySelector('.frame0-legend');
+        if (legend) {
+          legend.innerHTML = '<strong>Frame 0 legend.</strong> Dots sit at mid-depth on each terrace (halfway between back edge and front lip). Centre dots numbered 1 (bottom) → 4 (top). Terrace 1 L/R are clamped to 16px inside the frame — the real grass lip is wider and clipped by the 130% zoom. Top terrace centre re-measured to <strong>52.14%</strong> (was 59.41%). Orange dots = clamped. <strong>--map-world-y: ' + worldY + '%</strong> keeps terrace 1 ' + Math.round(grassPx) + 'px above the lower guide (min ' + MIN_GRASS + 'px).';
+        }
+      }
+
+      window.addEventListener('load', layoutFrame0);
+      window.addEventListener('resize', layoutFrame0);
+      layoutFrame0();
+    })();
   </script>
 </body>
 </html>
