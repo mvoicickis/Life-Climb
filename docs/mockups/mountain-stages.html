@@ -1815,13 +1815,14 @@
       opacity: 0.55;
     }
 
-    /* Frames 2–5, M1–M2 — terrace layout (Frame 0 anchors at 360px) */
+    /* Frames 2–5, M1–M2, 7 — terrace layout (Frame 0 anchors at 360px) */
     .phone--frame2,
     .phone--frame3,
     .phone--frame4,
     .phone--frame5,
     .phone--frameM1,
-    .phone--frameM2 {
+    .phone--frameM2,
+    .phone--frame7 {
       --map-world-y: -15%;
       --trail-t1-y: 71.95%;
       --trail-t1-x: 54.89%;
@@ -1838,7 +1839,8 @@
     .phone--frame4 .lp-trail__world,
     .phone--frame5 .lp-trail__world,
     .phone--frameM1 .lp-trail__world,
-    .phone--frameM2 .lp-trail__world {
+    .phone--frameM2 .lp-trail__world,
+    .phone--frame7 .lp-trail__world {
       transform: translateX(-50%) translateY(var(--map-world-y));
     }
 
@@ -1847,7 +1849,8 @@
     .phone--frame4 .lp-trail-hud,
     .phone--frame5 .lp-trail-hud,
     .phone--frameM1 .lp-trail-hud,
-    .phone--frameM2 .lp-trail-hud {
+    .phone--frameM2 .lp-trail-hud,
+    .phone--frame7 .lp-trail-hud {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -1860,7 +1863,8 @@
     .phone--frame4 .lp-trail-hud__lead,
     .phone--frame5 .lp-trail-hud__lead,
     .phone--frameM1 .lp-trail-hud__lead,
-    .phone--frameM2 .lp-trail-hud__lead {
+    .phone--frameM2 .lp-trail-hud__lead,
+    .phone--frame7 .lp-trail-hud__lead {
       display: grid;
       gap: 0.35rem;
       flex: 1 1 auto;
@@ -1872,7 +1876,8 @@
     .phone--frame4 .lp-trail-hud .lp-trail__goal,
     .phone--frame5 .lp-trail-hud .lp-trail__goal,
     .phone--frameM1 .lp-trail-hud .lp-trail__goal,
-    .phone--frameM2 .lp-trail-hud .lp-trail__goal {
+    .phone--frameM2 .lp-trail-hud .lp-trail__goal,
+    .phone--frame7 .lp-trail-hud .lp-trail__goal {
       position: static;
       left: auto;
       top: auto;
@@ -1887,7 +1892,8 @@
     .phone--frame4 .lp-trail-hud .lp-trail__goal-plaque,
     .phone--frame5 .lp-trail-hud .lp-trail__goal-plaque,
     .phone--frameM1 .lp-trail-hud .lp-trail__goal-plaque,
-    .phone--frameM2 .lp-trail-hud .lp-trail__goal-plaque {
+    .phone--frameM2 .lp-trail-hud .lp-trail__goal-plaque,
+    .phone--frame7 .lp-trail-hud .lp-trail__goal-plaque {
       padding: 0.35rem 0.5rem;
     }
 
@@ -1896,7 +1902,8 @@
     .phone--frame4 .lp-trail-hud .lp-trail__goal-title,
     .phone--frame5 .lp-trail-hud .lp-trail__goal-title,
     .phone--frameM1 .lp-trail-hud .lp-trail__goal-title,
-    .phone--frameM2 .lp-trail-hud .lp-trail__goal-title {
+    .phone--frameM2 .lp-trail-hud .lp-trail__goal-title,
+    .phone--frame7 .lp-trail-hud .lp-trail__goal-title {
       font-size: 0.72rem;
       -webkit-line-clamp: 1;
       line-clamp: 1;
@@ -1907,7 +1914,8 @@
     .phone--frame4 .lp-trail-hud .lp-trail__goal-tagline,
     .phone--frame5 .lp-trail-hud .lp-trail__goal-tagline,
     .phone--frameM1 .lp-trail-hud .lp-trail__goal-tagline,
-    .phone--frameM2 .lp-trail-hud .lp-trail__goal-tagline {
+    .phone--frameM2 .lp-trail-hud .lp-trail__goal-tagline,
+    .phone--frame7 .lp-trail-hud .lp-trail__goal-tagline {
       font-size: 0.58rem;
     }
 
@@ -1916,7 +1924,8 @@
     .phone--frame4 .trail-stages,
     .phone--frame5 .trail-stages,
     .phone--frameM1 .trail-stages,
-    .phone--frameM2 .trail-stages {
+    .phone--frameM2 .trail-stages,
+    .phone--frame7 .trail-stages {
       position: absolute;
       inset: 0;
       z-index: 4;
@@ -1928,7 +1937,8 @@
     .phone--frame4 .trail-stages > *,
     .phone--frame5 .trail-stages > *,
     .phone--frameM1 .trail-stages > *,
-    .phone--frameM2 .trail-stages > * {
+    .phone--frameM2 .trail-stages > *,
+    .phone--frame7 .trail-stages > * {
       pointer-events: auto;
     }
 
@@ -1937,7 +1947,8 @@
     .phone--frame4 .trail-terrace,
     .phone--frame5 .trail-terrace,
     .phone--frameM1 .trail-terrace,
-    .phone--frameM2 .trail-terrace {
+    .phone--frameM2 .trail-terrace,
+    .phone--frame7 .trail-terrace {
       position: absolute;
       left: var(--trail-tx);
       top: var(--trail-ty);
@@ -1952,32 +1963,37 @@
     .phone--frame4 .trail-terrace--t1,
     .phone--frame5 .trail-terrace--t1,
     .phone--frameM1 .trail-terrace--t1,
-    .phone--frameM2 .trail-terrace--t1 { --trail-tx: var(--trail-t1-x); --trail-ty: var(--trail-t1-y); }
+    .phone--frameM2 .trail-terrace--t1,
+    .phone--frame7 .trail-terrace--t1 { --trail-tx: var(--trail-t1-x); --trail-ty: var(--trail-t1-y); }
     .phone--frame2 .trail-terrace--t2,
     .phone--frame3 .trail-terrace--t2,
     .phone--frame4 .trail-terrace--t2,
     .phone--frame5 .trail-terrace--t2,
     .phone--frameM1 .trail-terrace--t2,
-    .phone--frameM2 .trail-terrace--t2 { --trail-tx: var(--trail-t2-x); --trail-ty: var(--trail-t2-y); }
+    .phone--frameM2 .trail-terrace--t2,
+    .phone--frame7 .trail-terrace--t2 { --trail-tx: var(--trail-t2-x); --trail-ty: var(--trail-t2-y); }
     .phone--frame2 .trail-terrace--t3,
     .phone--frame3 .trail-terrace--t3,
     .phone--frame4 .trail-terrace--t3,
     .phone--frame5 .trail-terrace--t3,
     .phone--frameM1 .trail-terrace--t3,
-    .phone--frameM2 .trail-terrace--t3 { --trail-tx: var(--trail-t3-x); --trail-ty: var(--trail-t3-y); }
+    .phone--frameM2 .trail-terrace--t3,
+    .phone--frame7 .trail-terrace--t3 { --trail-tx: var(--trail-t3-x); --trail-ty: var(--trail-t3-y); }
     .phone--frame2 .trail-terrace--t4,
     .phone--frame3 .trail-terrace--t4,
     .phone--frame4 .trail-terrace--t4,
     .phone--frame5 .trail-terrace--t4,
     .phone--frameM1 .trail-terrace--t4,
-    .phone--frameM2 .trail-terrace--t4 { --trail-tx: var(--trail-t4-x); --trail-ty: var(--trail-t4-y); }
+    .phone--frameM2 .trail-terrace--t4,
+    .phone--frame7 .trail-terrace--t4 { --trail-tx: var(--trail-t4-x); --trail-ty: var(--trail-t4-y); }
 
     .phone--frame2 .trail-tent,
     .phone--frame3 .trail-tent,
     .phone--frame4 .trail-tent,
     .phone--frame5 .trail-tent,
     .phone--frameM1 .trail-tent,
-    .phone--frameM2 .trail-tent {
+    .phone--frameM2 .trail-tent,
+    .phone--frame7 .trail-tent {
       position: absolute;
       display: block;
       transform: translateX(-50%);
@@ -1989,7 +2005,8 @@
     .phone--frame4 .trail-tent svg,
     .phone--frame5 .trail-tent svg,
     .phone--frameM1 .trail-tent svg,
-    .phone--frameM2 .trail-tent svg {
+    .phone--frameM2 .trail-tent svg,
+    .phone--frame7 .trail-tent svg {
       display: block;
       width: 100%;
       height: 100%;
@@ -2000,7 +2017,8 @@
     .phone--frame4 .trail-tent--md,
     .phone--frame5 .trail-tent--md,
     .phone--frameM1 .trail-tent--md,
-    .phone--frameM2 .trail-tent--md {
+    .phone--frameM2 .trail-tent--md,
+    .phone--frame7 .trail-tent--md {
       width: 40px;
       height: 32px;
       bottom: 0;
@@ -2012,7 +2030,8 @@
     .phone--frame4 .trail-tent--sm,
     .phone--frame5 .trail-tent--sm,
     .phone--frameM1 .trail-tent--sm,
-    .phone--frameM2 .trail-tent--sm {
+    .phone--frameM2 .trail-tent--sm,
+    .phone--frame7 .trail-tent--sm {
       width: 32px;
       height: 26px;
       bottom: 0;
@@ -2024,20 +2043,23 @@
     .phone--frame4 .trail-tent--t1,
     .phone--frame5 .trail-tent--t1,
     .phone--frameM1 .trail-tent--t1,
-    .phone--frameM2 .trail-tent--t1 { left: 0; }
+    .phone--frameM2 .trail-tent--t1,
+    .phone--frame7 .trail-tent--t1 { left: 0; }
 
     .phone--frame2 .trail-terrace--t1.is-pair .trail-tent--t1-a,
     .phone--frame3 .trail-terrace--t1.is-pair .trail-tent--t1-a,
     .phone--frame4 .trail-terrace--t1.is-pair .trail-tent--t1-a,
     .phone--frame5 .trail-terrace--t1.is-pair .trail-tent--t1-a,
     .phone--frameM1 .trail-terrace--t1.is-pair .trail-tent--t1-a,
-    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent--t1-a { left: -22px; }
+    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent--t1-a,
+    .phone--frame7 .trail-terrace--t1.is-pair .trail-tent--t1-a { left: -22px; }
     .phone--frame2 .trail-terrace--t1.is-pair .trail-tent--t1-b,
     .phone--frame3 .trail-terrace--t1.is-pair .trail-tent--t1-b,
     .phone--frame4 .trail-terrace--t1.is-pair .trail-tent--t1-b,
     .phone--frame5 .trail-terrace--t1.is-pair .trail-tent--t1-b,
     .phone--frameM1 .trail-terrace--t1.is-pair .trail-tent--t1-b,
-    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent--t1-b { left: 22px; }
+    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent--t1-b,
+    .phone--frame7 .trail-terrace--t1.is-pair .trail-tent--t1-b { left: 22px; }
 
 
 
@@ -2046,45 +2068,52 @@
     .phone--frame4 .trail-terrace--t3.is-triple .trail-tent--t3-a,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-tent--t3-a,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-tent--t3-a,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent--t3-a { left: -44px; }
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent--t3-a,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-tent--t3-a { left: -44px; }
     .phone--frame2 .trail-terrace--t3.is-triple .trail-tent--t3-b,
     .phone--frame3 .trail-terrace--t3.is-triple .trail-tent--t3-b,
     .phone--frame4 .trail-terrace--t3.is-triple .trail-tent--t3-b,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-tent--t3-b,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-tent--t3-b,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent--t3-b { left: 0; }
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent--t3-b,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-tent--t3-b { left: 0; }
     .phone--frame2 .trail-terrace--t3.is-triple .trail-tent--t3-c,
     .phone--frame3 .trail-terrace--t3.is-triple .trail-tent--t3-c,
     .phone--frame4 .trail-terrace--t3.is-triple .trail-tent--t3-c,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-tent--t3-c,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-tent--t3-c,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent--t3-c { left: 44px; }
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent--t3-c,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-tent--t3-c { left: 44px; }
 
     .phone--frame2 .trail-terrace--t1.is-triple .trail-tent--t1-a,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-tent--t1-a,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-tent--t1-a,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-tent--t1-a,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-tent--t1-a,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent--t1-a { left: -44px; }
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent--t1-a,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-tent--t1-a { left: -44px; }
     .phone--frame2 .trail-terrace--t1.is-triple .trail-tent--t1-b,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-tent--t1-b,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-tent--t1-b,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-tent--t1-b,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-tent--t1-b,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent--t1-b { left: 0; }
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent--t1-b,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-tent--t1-b { left: 0; }
     .phone--frame2 .trail-terrace--t1.is-triple .trail-tent--t1-c,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-tent--t1-c,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-tent--t1-c,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-tent--t1-c,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-tent--t1-c,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent--t1-c { left: 44px; }
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent--t1-c,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-tent--t1-c { left: 44px; }
 
     .phone--frame2 .trail-terrace--t1.is-triple .trail-stage-badge,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-stage-badge,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-stage-badge,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-stage-badge {
       left: -96px;
       top: -16px;
     }
@@ -2094,7 +2123,8 @@
     .phone--frame4 .trail-terrace--t3.is-triple .trail-stage-badge,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-stage-badge {
       left: -96px;
       top: -16px;
     }
@@ -2104,14 +2134,16 @@
     .phone--frame4 .trail-terrace--t3.is-solo .trail-tent--t3-solo,
     .phone--frame5 .trail-terrace--t3.is-solo .trail-tent--t3-solo,
     .phone--frameM1 .trail-terrace--t3.is-solo .trail-tent--t3-solo,
-    .phone--frameM2 .trail-terrace--t3.is-solo .trail-tent--t3-solo { left: 0; }
+    .phone--frameM2 .trail-terrace--t3.is-solo .trail-tent--t3-solo,
+    .phone--frame7 .trail-terrace--t3.is-solo .trail-tent--t3-solo { left: 0; }
 
     .phone--frame2 .trail-terrace--t3.is-solo .trail-stage-badge,
     .phone--frame3 .trail-terrace--t3.is-solo .trail-stage-badge,
     .phone--frame4 .trail-terrace--t3.is-solo .trail-stage-badge,
     .phone--frame5 .trail-terrace--t3.is-solo .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t3.is-solo .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t3.is-solo .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t3.is-solo .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t3.is-solo .trail-stage-badge {
       left: -52px;
       top: -16px;
     }
@@ -2121,78 +2153,91 @@
     .phone--frame4 .trail-terrace--t3.is-triple .trail-tent-hit--t3-a,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-tent-hit--t3-a,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-tent-hit--t3-a,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-a { left: -44px; }
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-a,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-tent-hit--t3-a { left: -44px; }
     .phone--frame2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b,
     .phone--frame3 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b,
     .phone--frame4 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b { left: 0; }
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-tent-hit--t3-b { left: 0; }
     .phone--frame2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c,
     .phone--frame3 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c,
     .phone--frame4 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c,
     .phone--frame5 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c,
     .phone--frameM1 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c,
-    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c { left: 44px; }
+    .phone--frameM2 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c,
+    .phone--frame7 .trail-terrace--t3.is-triple .trail-tent-hit--t3-c { left: 44px; }
 
     .phone--frame2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a { left: -44px; }
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-tent-hit--t1-a { left: -44px; }
     .phone--frame2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b { left: 0; }
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-tent-hit--t1-b { left: 0; }
     .phone--frame2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c,
     .phone--frame3 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c,
     .phone--frame4 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c,
     .phone--frame5 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c,
     .phone--frameM1 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c,
-    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c { left: 44px; }
+    .phone--frameM2 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c,
+    .phone--frame7 .trail-terrace--t1.is-triple .trail-tent-hit--t1-c { left: 44px; }
 
     .phone--frame2 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo,
     .phone--frame3 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo,
     .phone--frame4 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo,
     .phone--frame5 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo,
     .phone--frameM1 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo,
-    .phone--frameM2 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo { left: 0; }
+    .phone--frameM2 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo,
+    .phone--frame7 .trail-terrace--t3.is-solo .trail-tent-hit--t3-solo { left: 0; }
 
     .phone--frame2 .trail-terrace--t3.is-pair .trail-tent--t3-a,
     .phone--frame3 .trail-terrace--t3.is-pair .trail-tent--t3-a,
     .phone--frame4 .trail-terrace--t3.is-pair .trail-tent--t3-a,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-tent--t3-a,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-tent--t3-a,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent--t3-a { left: -22px; }
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent--t3-a,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-tent--t3-a { left: -22px; }
     .phone--frame2 .trail-terrace--t3.is-pair .trail-tent--t3-b,
     .phone--frame3 .trail-terrace--t3.is-pair .trail-tent--t3-b,
     .phone--frame4 .trail-terrace--t3.is-pair .trail-tent--t3-b,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-tent--t3-b,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-tent--t3-b,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent--t3-b { left: 22px; }
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent--t3-b,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-tent--t3-b { left: 22px; }
     .phone--frame2 .trail-terrace--t3.is-pair .trail-tent--t3-c,
     .phone--frame3 .trail-terrace--t3.is-pair .trail-tent--t3-c,
     .phone--frame4 .trail-terrace--t3.is-pair .trail-tent--t3-c,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-tent--t3-c,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-tent--t3-c,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent--t3-c { display: none; }
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent--t3-c,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-tent--t3-c { display: none; }
 
     .phone--frame2 .trail-tent--t4-a,
     .phone--frameM1 .trail-tent--t4-a,
-    .phone--frameM2 .trail-tent--t4-a { left: -18px; }
+    .phone--frameM2 .trail-tent--t4-a,
+    .phone--frame7 .trail-tent--t4-a { left: -18px; }
     .phone--frame2 .trail-tent--t4-b,
     .phone--frameM1 .trail-tent--t4-b,
-    .phone--frameM2 .trail-tent--t4-b { left: 18px; }
+    .phone--frameM2 .trail-tent--t4-b,
+    .phone--frame7 .trail-tent--t4-b { left: 18px; }
 
     .phone--frame2 .trail-tent svg .trail-tent-body,
     .phone--frame3 .trail-tent svg .trail-tent-body,
     .phone--frame4 .trail-tent svg .trail-tent-body,
     .phone--frame5 .trail-tent svg .trail-tent-body,
     .phone--frameM1 .trail-tent svg .trail-tent-body,
-    .phone--frameM2 .trail-tent svg .trail-tent-body {
+    .phone--frameM2 .trail-tent svg .trail-tent-body,
+    .phone--frame7 .trail-tent svg .trail-tent-body {
       fill: var(--lp-trail-accent, #0f9488);
     }
 
@@ -2201,7 +2246,8 @@
     .phone--frame4 .trail-tent svg .trail-tent-shade,
     .phone--frame5 .trail-tent svg .trail-tent-shade,
     .phone--frameM1 .trail-tent svg .trail-tent-shade,
-    .phone--frameM2 .trail-tent svg .trail-tent-shade {
+    .phone--frameM2 .trail-tent svg .trail-tent-shade,
+    .phone--frame7 .trail-tent svg .trail-tent-shade {
       fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 52%, #000000);
     }
 
@@ -2210,7 +2256,8 @@
     .phone--frame4 .trail-tent svg .trail-tent-door,
     .phone--frame5 .trail-tent svg .trail-tent-door,
     .phone--frameM1 .trail-tent svg .trail-tent-door,
-    .phone--frameM2 .trail-tent svg .trail-tent-door {
+    .phone--frameM2 .trail-tent svg .trail-tent-door,
+    .phone--frame7 .trail-tent svg .trail-tent-door {
       fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 68%, #ffffff);
     }
 
@@ -2219,7 +2266,8 @@
     .phone--frame4 .trail-stage-badge,
     .phone--frame5 .trail-stage-badge,
     .phone--frameM1 .trail-stage-badge,
-    .phone--frameM2 .trail-stage-badge {
+    .phone--frameM2 .trail-stage-badge,
+    .phone--frame7 .trail-stage-badge {
       position: absolute;
       width: 24px;
       height: 24px;
@@ -2237,7 +2285,8 @@
     .phone--frame4 .trail-stage-badge__num,
     .phone--frame5 .trail-stage-badge__num,
     .phone--frameM1 .trail-stage-badge__num,
-    .phone--frameM2 .trail-stage-badge__num {
+    .phone--frameM2 .trail-stage-badge__num,
+    .phone--frame7 .trail-stage-badge__num {
       font-family: var(--lp-trail-font);
       font-size: 12px;
       font-weight: 800;
@@ -2249,7 +2298,8 @@
     .phone--frame4 .trail-stage-badge--later,
     .phone--frame5 .trail-stage-badge--later,
     .phone--frameM1 .trail-stage-badge--later,
-    .phone--frameM2 .trail-stage-badge--later {
+    .phone--frameM2 .trail-stage-badge--later,
+    .phone--frame7 .trail-stage-badge--later {
       background: var(--lp-frost);
       border: 1px solid var(--lp-border);
       backdrop-filter: blur(10px);
@@ -2261,7 +2311,8 @@
     .phone--frame4 .trail-stage-badge--later .trail-stage-badge__num,
     .phone--frame5 .trail-stage-badge--later .trail-stage-badge__num,
     .phone--frameM1 .trail-stage-badge--later .trail-stage-badge__num,
-    .phone--frameM2 .trail-stage-badge--later .trail-stage-badge__num {
+    .phone--frameM2 .trail-stage-badge--later .trail-stage-badge__num,
+    .phone--frame7 .trail-stage-badge--later .trail-stage-badge__num {
       color: var(--lp-muted);
     }
 
@@ -2270,7 +2321,8 @@
     .phone--frame4 .trail-stage-badge--done,
     .phone--frame5 .trail-stage-badge--done,
     .phone--frameM1 .trail-stage-badge--done,
-    .phone--frameM2 .trail-stage-badge--done {
+    .phone--frameM2 .trail-stage-badge--done,
+    .phone--frame7 .trail-stage-badge--done {
       background: var(--lp-surface);
       border: 1px solid var(--lp-green);
     }
@@ -2280,7 +2332,8 @@
     .phone--frame4 .trail-stage-badge--done .trail-stage-badge__num,
     .phone--frame5 .trail-stage-badge--done .trail-stage-badge__num,
     .phone--frameM1 .trail-stage-badge--done .trail-stage-badge__num,
-    .phone--frameM2 .trail-stage-badge--done .trail-stage-badge__num {
+    .phone--frameM2 .trail-stage-badge--done .trail-stage-badge__num,
+    .phone--frame7 .trail-stage-badge--done .trail-stage-badge__num {
       color: var(--lp-green-deep);
     }
 
@@ -2289,7 +2342,8 @@
     .phone--frame4 .trail-stage-badge__check,
     .phone--frame5 .trail-stage-badge__check,
     .phone--frameM1 .trail-stage-badge__check,
-    .phone--frameM2 .trail-stage-badge__check {
+    .phone--frameM2 .trail-stage-badge__check,
+    .phone--frame7 .trail-stage-badge__check {
       position: absolute;
       top: -3px;
       right: -3px;
@@ -2310,7 +2364,8 @@
     .phone--frame4 .trail-terrace--t1 .trail-stage-badge,
     .phone--frame5 .trail-terrace--t1 .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t1 .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t1 .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t1 .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t1 .trail-stage-badge {
       left: -52px;
       top: -16px;
     }
@@ -2320,7 +2375,8 @@
     .phone--frame4 .trail-terrace--t1.is-pair .trail-stage-badge,
     .phone--frame5 .trail-terrace--t1.is-pair .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t1.is-pair .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t1.is-pair .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t1.is-pair .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t1.is-pair .trail-stage-badge {
       left: -74px;
     }
 
@@ -2329,14 +2385,16 @@
     .phone--frame4 .trail-terrace--t3.is-pair .trail-stage-badge,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-stage-badge {
       left: -74px;
       top: -16px;
     }
 
     .phone--frame2 .trail-terrace--t4 .trail-stage-badge,
     .phone--frameM1 .trail-terrace--t4 .trail-stage-badge,
-    .phone--frameM2 .trail-terrace--t4 .trail-stage-badge {
+    .phone--frameM2 .trail-terrace--t4 .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t4 .trail-stage-badge {
       left: -66px;
       top: -13px;
     }
@@ -2346,7 +2404,8 @@
     .phone--frame4 .trail-stage-badge--more,
     .phone--frame5 .trail-stage-badge--more,
     .phone--frameM1 .trail-stage-badge--more,
-    .phone--frameM2 .trail-stage-badge--more {
+    .phone--frameM2 .trail-stage-badge--more,
+    .phone--frame7 .trail-stage-badge--more {
       width: 32px;
       height: 24px;
       left: 0;
@@ -2360,7 +2419,8 @@
     .phone--frame4 .trail-tent-hit,
     .phone--frame5 .trail-tent-hit,
     .phone--frameM1 .trail-tent-hit,
-    .phone--frameM2 .trail-tent-hit {
+    .phone--frameM2 .trail-tent-hit,
+    .phone--frame7 .trail-tent-hit {
       position: absolute;
       padding: 0;
       border: 0;
@@ -2374,7 +2434,8 @@
     .phone--frame4 .trail-tent-hit--md,
     .phone--frame5 .trail-tent-hit--md,
     .phone--frameM1 .trail-tent-hit--md,
-    .phone--frameM2 .trail-tent-hit--md {
+    .phone--frameM2 .trail-tent-hit--md,
+    .phone--frame7 .trail-tent-hit--md {
       width: 40px;
       height: 32px;
       bottom: 0;
@@ -2385,7 +2446,8 @@
     .phone--frame4 .trail-tent-hit--sm,
     .phone--frame5 .trail-tent-hit--sm,
     .phone--frameM1 .trail-tent-hit--sm,
-    .phone--frameM2 .trail-tent-hit--sm {
+    .phone--frameM2 .trail-tent-hit--sm,
+    .phone--frame7 .trail-tent-hit--sm {
       width: 32px;
       height: 26px;
       bottom: 0;
@@ -2397,46 +2459,54 @@
     .phone--frame4 .trail-terrace--t1.is-pair .trail-tent-hit--t1-a,
     .phone--frame5 .trail-terrace--t1.is-pair .trail-tent-hit--t1-a,
     .phone--frameM1 .trail-terrace--t1.is-pair .trail-tent-hit--t1-a,
-    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent-hit--t1-a { left: -22px; }
+    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent-hit--t1-a,
+    .phone--frame7 .trail-terrace--t1.is-pair .trail-tent-hit--t1-a { left: -22px; }
     .phone--frame2 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b,
     .phone--frame3 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b,
     .phone--frame4 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b,
     .phone--frame5 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b,
     .phone--frameM1 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b,
-    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b { left: 22px; }
+    .phone--frameM2 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b,
+    .phone--frame7 .trail-terrace--t1.is-pair .trail-tent-hit--t1-b { left: 22px; }
 
     .phone--frame2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a,
     .phone--frame3 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a,
     .phone--frame4 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a { left: -22px; }
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-tent-hit--t3-a { left: -22px; }
     .phone--frame2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b,
     .phone--frame3 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b,
     .phone--frame4 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b { left: 22px; }
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-tent-hit--t3-b { left: 22px; }
     .phone--frame2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c,
     .phone--frame3 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c,
     .phone--frame4 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c,
     .phone--frame5 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c,
     .phone--frameM1 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c,
-    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c { display: none; }
+    .phone--frameM2 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c,
+    .phone--frame7 .trail-terrace--t3.is-pair .trail-tent-hit--t3-c { display: none; }
 
     .phone--frame2 .trail-tent-hit--t4-a,
     .phone--frameM1 .trail-tent-hit--t4-a,
-    .phone--frameM2 .trail-tent-hit--t4-a { left: -18px; }
+    .phone--frameM2 .trail-tent-hit--t4-a,
+    .phone--frame7 .trail-tent-hit--t4-a { left: -18px; }
     .phone--frame2 .trail-tent-hit--t4-b,
     .phone--frameM1 .trail-tent-hit--t4-b,
-    .phone--frameM2 .trail-tent-hit--t4-b { left: 18px; }
+    .phone--frameM2 .trail-tent-hit--t4-b,
+    .phone--frame7 .trail-tent-hit--t4-b { left: 18px; }
 
     .phone--frame2 .trail-open-pill,
     .phone--frame3 .trail-open-pill,
     .phone--frame4 .trail-open-pill,
     .phone--frame5 .trail-open-pill,
     .phone--frameM1 .trail-open-pill,
-    .phone--frameM2 .trail-open-pill {
+    .phone--frameM2 .trail-open-pill,
+    .phone--frame7 .trail-open-pill {
       position: absolute;
       left: 0;
       top: -78px;
@@ -2467,7 +2537,8 @@
     .phone--frame4 .trail-t2-camp,
     .phone--frame5 .trail-t2-camp,
     .phone--frameM1 .trail-t2-camp,
-    .phone--frameM2 .trail-t2-camp {
+    .phone--frameM2 .trail-t2-camp,
+    .phone--frame7 .trail-t2-camp {
       position: absolute;
       bottom: 0;
       width: 56px;
@@ -2487,20 +2558,23 @@
     .phone--frame4 .trail-t2-camp--l,
     .phone--frame5 .trail-t2-camp--l,
     .phone--frameM1 .trail-t2-camp--l,
-    .phone--frameM2 .trail-t2-camp--l { left: -66px; }
+    .phone--frameM2 .trail-t2-camp--l,
+    .phone--frame7 .trail-t2-camp--l { left: -66px; }
     .phone--frame2 .trail-t2-camp--r,
     .phone--frame3 .trail-t2-camp--r,
     .phone--frame4 .trail-t2-camp--r,
     .phone--frame5 .trail-t2-camp--r,
     .phone--frameM1 .trail-t2-camp--r,
-    .phone--frameM2 .trail-t2-camp--r { left: 66px; }
+    .phone--frameM2 .trail-t2-camp--r,
+    .phone--frame7 .trail-t2-camp--r { left: 66px; }
 
     .phone--frame2 .trail-t2-camp .lp-trail-camp__shadow,
     .phone--frame3 .trail-t2-camp .lp-trail-camp__shadow,
     .phone--frame4 .trail-t2-camp .lp-trail-camp__shadow,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__shadow,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__shadow,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__shadow {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__shadow,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__shadow {
       position: absolute;
       left: 50%;
       bottom: 0;
@@ -2518,7 +2592,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__peg,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__peg,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__peg,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__peg {
       position: relative;
       width: 56px;
       height: 44px;
@@ -2531,7 +2606,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__peg svg,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__peg svg,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__peg svg,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__peg svg {
       width: 56px;
       height: 44px;
       display: block;
@@ -2543,7 +2619,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-body,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-body,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-body,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-body {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-body,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-body {
       fill: var(--lp-trail-accent, #0f9488);
     }
 
@@ -2552,7 +2629,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-shade,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-shade,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-shade,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-shade {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-shade,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-shade {
       fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 52%, #000000);
     }
 
@@ -2561,7 +2639,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-door,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-door,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-door,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-door {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-door,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__peg svg .trail-tent-door {
       fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 68%, #ffffff);
     }
 
@@ -2570,7 +2649,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__caption,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__caption,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__caption,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__caption {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__caption,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__caption {
       position: absolute;
       top: calc(100% + 6px);
       left: 50%;
@@ -2594,7 +2674,8 @@
     .phone--frame4 .trail-t2-camp .lp-trail-camp__title,
     .phone--frame5 .trail-t2-camp .lp-trail-camp__title,
     .phone--frameM1 .trail-t2-camp .lp-trail-camp__title,
-    .phone--frameM2 .trail-t2-camp .lp-trail-camp__title {
+    .phone--frameM2 .trail-t2-camp .lp-trail-camp__title,
+    .phone--frame7 .trail-t2-camp .lp-trail-camp__title {
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
@@ -2616,7 +2697,8 @@
     .phone--frame4 .trail-t2-camp.is-current .lp-trail-camp__caption,
     .phone--frame5 .trail-t2-camp.is-current .lp-trail-camp__caption,
     .phone--frameM1 .trail-t2-camp.is-current .lp-trail-camp__caption,
-    .phone--frameM2 .trail-t2-camp.is-current .lp-trail-camp__caption {
+    .phone--frameM2 .trail-t2-camp.is-current .lp-trail-camp__caption,
+    .phone--frame7 .trail-t2-camp.is-current .lp-trail-camp__caption {
       border: 2px solid var(--lp-green);
       font-weight: 800;
       box-shadow: 0 0 12px var(--lp-green-soft);
@@ -2627,7 +2709,8 @@
     .phone--frame4 .trail-t2-camp.is-current .lp-trail-camp__title,
     .phone--frame5 .trail-t2-camp.is-current .lp-trail-camp__title,
     .phone--frameM1 .trail-t2-camp.is-current .lp-trail-camp__title,
-    .phone--frameM2 .trail-t2-camp.is-current .lp-trail-camp__title {
+    .phone--frameM2 .trail-t2-camp.is-current .lp-trail-camp__title,
+    .phone--frame7 .trail-t2-camp.is-current .lp-trail-camp__title {
       font-weight: 800;
     }
 
@@ -2636,7 +2719,8 @@
     .phone--frame4 .trail-t2-camp.is-current .lp-trail-camp__peg::after,
     .phone--frame5 .trail-t2-camp.is-current .lp-trail-camp__peg::after,
     .phone--frameM1 .trail-t2-camp.is-current .lp-trail-camp__peg::after,
-    .phone--frameM2 .trail-t2-camp.is-current .lp-trail-camp__peg::after {
+    .phone--frameM2 .trail-t2-camp.is-current .lp-trail-camp__peg::after,
+    .phone--frame7 .trail-t2-camp.is-current .lp-trail-camp__peg::after {
       content: "";
       position: absolute;
       left: 50%;
@@ -2654,7 +2738,8 @@
     .phone--frame4 .trail-page-dots,
     .phone--frame5 .trail-page-dots,
     .phone--frameM1 .trail-page-dots,
-    .phone--frameM2 .trail-page-dots {
+    .phone--frameM2 .trail-page-dots,
+    .phone--frame7 .trail-page-dots {
       position: absolute;
       left: 0;
       top: 40px;
@@ -2671,7 +2756,8 @@
     .phone--frame4 .trail-page-dot,
     .phone--frame5 .trail-page-dot,
     .phone--frameM1 .trail-page-dot,
-    .phone--frameM2 .trail-page-dot {
+    .phone--frameM2 .trail-page-dot,
+    .phone--frame7 .trail-page-dot {
       width: 0.38rem;
       height: 0.38rem;
       border-radius: 50%;
@@ -2684,7 +2770,8 @@
     .phone--frame4 .trail-page-dot.is-active,
     .phone--frame5 .trail-page-dot.is-active,
     .phone--frameM1 .trail-page-dot.is-active,
-    .phone--frameM2 .trail-page-dot.is-active {
+    .phone--frameM2 .trail-page-dot.is-active,
+    .phone--frame7 .trail-page-dot.is-active {
       background: var(--lp-green);
       border-color: var(--lp-green);
     }
@@ -2694,7 +2781,8 @@
     .phone--frame4 .trail-t2-nav,
     .phone--frame5 .trail-t2-nav,
     .phone--frameM1 .trail-t2-nav,
-    .phone--frameM2 .trail-t2-nav {
+    .phone--frameM2 .trail-t2-nav,
+    .phone--frame7 .trail-t2-nav {
       position: absolute;
       top: calc(var(--trail-t2-y) - 22px);
       width: var(--lp-tap);
@@ -2725,7 +2813,8 @@
     .phone--frame4 .trail-t2-nav.is-prev,
     .phone--frame5 .trail-t2-nav.is-prev,
     .phone--frameM1 .trail-t2-nav.is-prev,
-    .phone--frameM2 .trail-t2-nav.is-prev {
+    .phone--frameM2 .trail-t2-nav.is-prev,
+    .phone--frame7 .trail-t2-nav.is-prev {
       left: var(--lp-frame-nav-inset);
     }
 
@@ -2734,7 +2823,8 @@
     .phone--frame4 .trail-t2-nav.is-next,
     .phone--frame5 .trail-t2-nav.is-next,
     .phone--frameM1 .trail-t2-nav.is-next,
-    .phone--frameM2 .trail-t2-nav.is-next {
+    .phone--frameM2 .trail-t2-nav.is-next,
+    .phone--frame7 .trail-t2-nav.is-next {
       right: var(--lp-frame-nav-inset);
     }
 
@@ -2743,7 +2833,8 @@
     .phone--frame4 .trail-t2-nav.is-hidden,
     .phone--frame5 .trail-t2-nav.is-hidden,
     .phone--frameM1 .trail-t2-nav.is-hidden,
-    .phone--frameM2 .trail-t2-nav.is-hidden {
+    .phone--frameM2 .trail-t2-nav.is-hidden,
+    .phone--frame7 .trail-t2-nav.is-hidden {
       display: none;
     }
 
@@ -2752,14 +2843,16 @@
     .phone--frame4 .trail-t2-camp--solo,
     .phone--frame5 .trail-t2-camp--solo,
     .phone--frameM1 .trail-t2-camp--solo,
-    .phone--frameM2 .trail-t2-camp--solo { left: 0; }
+    .phone--frameM2 .trail-t2-camp--solo,
+    .phone--frame7 .trail-t2-camp--solo { left: 0; }
 
     .phone--frame2 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption,
     .phone--frame3 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption,
     .phone--frame4 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption,
     .phone--frame5 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption,
     .phone--frameM1 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption,
-    .phone--frameM2 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption {
+    .phone--frameM2 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption,
+    .phone--frame7 .trail-t2-camp.is-wide-caption .lp-trail-camp__caption {
       width: 200px;
       min-width: 200px;
       max-width: 200px;
@@ -2770,7 +2863,8 @@
     .phone--frame4 .trail-t2-camp.is-wide-caption .lp-trail-camp__title,
     .phone--frame5 .trail-t2-camp.is-wide-caption .lp-trail-camp__title,
     .phone--frameM1 .trail-t2-camp.is-wide-caption .lp-trail-camp__title,
-    .phone--frameM2 .trail-t2-camp.is-wide-caption .lp-trail-camp__title {
+    .phone--frameM2 .trail-t2-camp.is-wide-caption .lp-trail-camp__title,
+    .phone--frame7 .trail-t2-camp.is-wide-caption .lp-trail-camp__title {
       -webkit-line-clamp: 3;
       line-clamp: 3;
     }
@@ -2780,7 +2874,8 @@
     .phone--frame4 .trail-terrace--t2.is-solo-page .trail-page-dots,
     .phone--frame5 .trail-terrace--t2.is-solo-page .trail-page-dots,
     .phone--frameM1 .trail-terrace--t2.is-solo-page .trail-page-dots,
-    .phone--frameM2 .trail-terrace--t2.is-solo-page .trail-page-dots {
+    .phone--frameM2 .trail-terrace--t2.is-solo-page .trail-page-dots,
+    .phone--frame7 .trail-terrace--t2.is-solo-page .trail-page-dots {
       top: 52px;
     }
 
@@ -2818,6 +2913,119 @@
       line-height: 1;
       display: grid;
       place-items: center;
+    }
+
+
+    .phone--frame2 .trail-camp-more,
+    .phone--frame3 .trail-camp-more,
+    .phone--frame4 .trail-camp-more,
+    .phone--frame5 .trail-camp-more,
+    .phone--frameM1 .trail-camp-more,
+    .phone--frameM2 .trail-camp-more,
+    .phone--frame7 .trail-camp-more {
+      position: absolute;
+      left: 72px;
+      bottom: 4px;
+      height: 24px;
+      min-width: 28px;
+      padding: 0 0.35rem;
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-frost);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-family: var(--lp-trail-font);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--lp-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 3;
+      transform: translateX(-50%);
+    }
+
+    .phone--frame7 .trail-terrace--t4.is-triple-more .trail-camp-more {
+      left: 82px;
+      bottom: 1px;
+    }
+
+    .phone--frame2 .trail-terrace.is-triple-more .trail-stage-badge,
+    .phone--frame3 .trail-terrace.is-triple-more .trail-stage-badge,
+    .phone--frame4 .trail-terrace.is-triple-more .trail-stage-badge,
+    .phone--frame5 .trail-terrace.is-triple-more .trail-stage-badge,
+    .phone--frameM1 .trail-terrace.is-triple-more .trail-stage-badge,
+    .phone--frameM2 .trail-terrace.is-triple-more .trail-stage-badge,
+    .phone--frame7 .trail-terrace.is-triple-more .trail-stage-badge {
+      left: -110px;
+      top: -16px;
+    }
+
+    .phone--frame2 .trail-stage-badge--range,
+    .phone--frame3 .trail-stage-badge--range,
+    .phone--frame4 .trail-stage-badge--range,
+    .phone--frame5 .trail-stage-badge--range,
+    .phone--frameM1 .trail-stage-badge--range,
+    .phone--frameM2 .trail-stage-badge--range,
+    .phone--frame7 .trail-stage-badge--range {
+      width: auto;
+      min-width: 36px;
+      height: 24px;
+      padding: 0 0.4rem;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      border-radius: var(--lp-radius-pill);
+    }
+
+    .phone--frame2 .trail-stage-badge--range .trail-stage-badge__num,
+    .phone--frame3 .trail-stage-badge--range .trail-stage-badge__num,
+    .phone--frame4 .trail-stage-badge--range .trail-stage-badge__num,
+    .phone--frame5 .trail-stage-badge--range .trail-stage-badge__num,
+    .phone--frameM1 .trail-stage-badge--range .trail-stage-badge__num,
+    .phone--frameM2 .trail-stage-badge--range .trail-stage-badge__num,
+    .phone--frame7 .trail-stage-badge--range .trail-stage-badge__num {
+      font-size: 11px;
+      letter-spacing: -0.02em;
+    }
+
+    .phone--frame2 .trail-t2-camp.is-offpage,
+    .phone--frame3 .trail-t2-camp.is-offpage,
+    .phone--frame4 .trail-t2-camp.is-offpage,
+    .phone--frame5 .trail-t2-camp.is-offpage,
+    .phone--frameM1 .trail-t2-camp.is-offpage,
+    .phone--frameM2 .trail-t2-camp.is-offpage,
+    .phone--frame7 .trail-t2-camp.is-offpage {
+      display: none;
+    }
+
+    .phone--frame2 .trail-terrace--t2.is-sliding .trail-t2-camp,
+    .phone--frame3 .trail-terrace--t2.is-sliding .trail-t2-camp,
+    .phone--frame5 .trail-terrace--t2.is-sliding .trail-t2-camp,
+    .phone--frameM1 .trail-terrace--t2.is-sliding .trail-t2-camp,
+    .phone--frameM2 .trail-terrace--t2.is-sliding .trail-t2-camp,
+    .phone--frame7 .trail-terrace--t2.is-sliding .trail-t2-camp {
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+
+    .phone--frame2 .trail-terrace--t4.is-triple .trail-tent--t4-a,
+    .phone--frame7 .trail-terrace--t4.is-triple .trail-tent--t4-a { left: -44px; }
+    .phone--frame2 .trail-terrace--t4.is-triple .trail-tent--t4-b,
+    .phone--frame7 .trail-terrace--t4.is-triple .trail-tent--t4-b { left: 0; }
+    .phone--frame2 .trail-terrace--t4.is-triple .trail-tent--t4-c,
+    .phone--frame7 .trail-terrace--t4.is-triple .trail-tent--t4-c { left: 44px; }
+    .phone--frame2 .trail-terrace--t4.is-triple .trail-tent-hit--t4-a,
+    .phone--frame7 .trail-terrace--t4.is-triple .trail-tent-hit--t4-a { left: -44px; }
+    .phone--frame2 .trail-terrace--t4.is-triple .trail-tent-hit--t4-b,
+    .phone--frame7 .trail-terrace--t4.is-triple .trail-tent-hit--t4-b { left: 0; }
+    .phone--frame2 .trail-terrace--t4.is-triple .trail-tent-hit--t4-c,
+    .phone--frame7 .trail-terrace--t4.is-triple .trail-tent-hit--t4-c { left: 44px; }
+    .phone--frame2 .trail-terrace--t4.is-triple-more .trail-stage-badge,
+    .phone--frame7 .trail-terrace--t4.is-triple-more .trail-stage-badge {
+      left: -110px;
+      top: -13px;
     }
 
     .trail-map-legend {
@@ -3043,7 +3251,7 @@
       <section class="frame-block frame-2" aria-labelledby="f2-label">
         <p class="frame-block__label" id="f2-label">Frame 2</p>
         <h2 class="frame-block__title">My plan · 9 camps · carousel</h2>
-        <div class="phone phone--map phone--frame2" data-frame-audit="Frame 2" role="img" aria-label="Frame 2: nine camps across four stages, open carousel on terrace 2">
+        <div class="phone phone--map phone--frame2" data-trail-carousel data-carousel-next="1" data-carousel-initial-page="0" data-frame-audit="Frame 2" role="img" aria-label="Frame 2: nine camps across four stages, open carousel on terrace 2">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__lead">
@@ -3082,7 +3290,7 @@
                       </div>
                       <div class="trail-terrace trail-terrace--t2">
                         <p class="trail-open-pill lp-trail-stage__label">Stage 2 · open now</p>
-                        <button type="button" class="trail-t2-camp trail-t2-camp--l has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
@@ -3092,10 +3300,24 @@
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
                         </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Today's Page">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Today's Page</span></span>
+                        </button>
+                        <div class="trail-page-dots" aria-hidden="true">
+                          <span class="trail-page-dot is-active"></span>
+                          <span class="trail-page-dot"></span>
+                        </div>
                       </div>
                       <button type="button" class="trail-t2-nav lp-trail-stage__nav is-prev is-hidden" aria-label="Previous camps">‹</button>
                       <button type="button" class="trail-t2-nav lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
-                      <div class="trail-terrace trail-terrace--t3">
+                      <div class="trail-terrace trail-terrace--t3 is-triple">
                         <button type="button" class="trail-stage-badge trail-stage-badge--later" aria-label="Stage 3, 3 camps">
                           <span class="trail-stage-badge__num">3</span>
                         </button>
@@ -3144,7 +3366,7 @@
               <tr><td>T4 (Stage 4 later)</td><td>166px</td><td>190px</td></tr>
             </tbody>
           </table>
-          Number badges on T1/T3/T4 open the stage list (see Frame 6). Mountain copy is limited to the open-stage pill and camp names.
+          Number badges on T1/T3/T4 open the stage list (see Frame 6). Finished or later terraces show at most <strong>3 tents</strong>; if a stage has more camps, show 3 tents plus a <strong>+N</strong> chip (8px right of the last tent) that opens that stage&rsquo;s list. Mountain copy is limited to the open-stage pill and camp names.
         </div>
       </section>
 
@@ -3152,7 +3374,7 @@
       <section class="frame-block frame-3" aria-labelledby="f3-label">
         <p class="frame-block__label" id="f3-label">Frame 3</p>
         <h2 class="frame-block__title">Open stage · 6 camps (carousel)</h2>
-        <div class="phone phone--map phone--frame3" data-frame-audit="Frame 3" role="img" aria-label="Frame 3: six camps on open stage with carousel, page dots, and collapsed top terrace">
+        <div class="phone phone--map phone--frame3" data-trail-carousel data-carousel-next="0" data-carousel-initial-page="0" data-frame-audit="Frame 3" role="img" aria-label="Frame 3: six camps on open stage with carousel, page dots, and collapsed top terrace">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__lead">
@@ -3197,10 +3419,30 @@
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Alpha</span></span>
                         </button>
-                        <button type="button" class="trail-t2-camp trail-t2-camp--r has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Beta">
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Beta">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Beta</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-label="Gamma">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Gamma</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-green" style="--lp-trail-accent: #12a150;" aria-label="Delta">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Delta</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Epsilon">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Epsilon</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Zeta">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Zeta</span></span>
                         </button>
                         <div class="trail-page-dots" aria-hidden="true">
                           <span class="trail-page-dot is-active"></span>
@@ -3220,8 +3462,8 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t3-b" aria-label="Stage 3, 2 camps"></button>
                       </div>
                       <div class="trail-terrace trail-terrace--t4">
-                        <button type="button" class="trail-stage-badge trail-stage-badge--later trail-stage-badge--more" aria-label="2 more stages">
-                          <span class="trail-stage-badge__num">+2</span>
+                        <button type="button" class="trail-stage-badge trail-stage-badge--later trail-stage-badge--range" aria-label="Stages 4 to 5">
+                          <span class="trail-stage-badge__num">4–5</span>
                         </button>
                       </div>
                     </div>
@@ -3243,7 +3485,7 @@
           </section>
         </div>
         <div class="trail-map-legend">
-          <strong>Frame 3 legend.</strong> Same terrace anchors as Frame 2 (360px map box): T1 474/203, T2 358/194, T3 257/186, T4 166/190. Page 1 of the open carousel shows Alpha and Beta; three page dots sit 8px below the name pills. T4 rule: if exactly one stage remains after T3, show it like T3; if two or more remain, show a <strong>+N</strong> pill (here +2 for Launch prep and Marketing). Badges and tents open the stage list (Frame 6).
+          <strong>Frame 3 legend.</strong> Same terrace anchors as Frame 2 (360px map box): T1 474/203, T2 358/194, T3 257/186, T4 166/190. Page 1 of the open carousel shows Alpha and Beta; three page dots sit 8px below the name pills. T4 rule: if exactly one stage remains after T3, show it like T3; if two or more remain, show a later-style range pill (here <strong>4–5</strong>). Finished or later terraces show max 3 tents plus a <strong>+N</strong> camp chip when needed. Badges and tents open the stage list (Frame 6).
         </div>
       </section>
 
@@ -3338,7 +3580,7 @@
       <section class="frame-block" aria-labelledby="f5-label">
         <p class="frame-block__label" id="f5-label">Frame 5</p>
         <h2 class="frame-block__title">20 camps · same one-screen map</h2>
-        <div class="phone phone--map phone--frame5" data-frame-audit="Frame 5" role="img" aria-label="Frame 5: twenty camps collapsed to four terraces on one screen">
+        <div class="phone phone--map phone--frame5" data-trail-carousel data-carousel-next="0" data-carousel-initial-page="0" data-frame-audit="Frame 5" role="img" aria-label="Frame 5: twenty camps collapsed to four terraces on one screen">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__lead">
@@ -3394,6 +3636,11 @@
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Billing</span></span>
                         </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--solo has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-label="Support">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Support</span></span>
+                        </button>
                         <div class="trail-page-dots" aria-hidden="true">
                           <span class="trail-page-dot is-active"></span>
                           <span class="trail-page-dot"></span>
@@ -3413,8 +3660,8 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t3-c" aria-label="Stage 6, 3 camps"></button>
                       </div>
                       <div class="trail-terrace trail-terrace--t4">
-                        <button type="button" class="trail-stage-badge trail-stage-badge--later trail-stage-badge--more" aria-label="2 more stages">
-                          <span class="trail-stage-badge__num">+2</span>
+                        <button type="button" class="trail-stage-badge trail-stage-badge--later trail-stage-badge--range" aria-label="Stages 7 to 8">
+                          <span class="trail-stage-badge__num">7–8</span>
                         </button>
                       </div>
                     </div>
@@ -3436,7 +3683,7 @@
           </section>
         </div>
         <div class="trail-map-legend">
-          <strong>Frame 5 legend.</strong> Same terrace anchors as Frame 2. T1 holds the last finished stage (Stage 4, 3 camps); older finished stages fold into one foot badge (<strong>1–3</strong>, centred on T1, 12px below the row — opens the stage list). Name pills: 120px default, up to 140px; 1 camp per page when a name still needs 3 lines at 140px. T4 <strong>+2</strong> covers Stages 7 and 8 (1 camp each).
+          <strong>Frame 5 legend.</strong> Same terrace anchors as Frame 2. T1 holds the last finished stage (Stage 4, 3 camps); older finished stages fold into one foot badge (<strong>1–3</strong>, centred on T1, 12px below the row — opens the stage list). Name pills: 120px default, up to 140px; 1 camp per page when a name still needs 3 lines at 140px. T4 <strong>7–8</strong> covers Stages 7 and 8 (1 camp each). Finished or later terraces show max 3 tents plus a <strong>+N</strong> camp chip when needed.
         </div>
       </section>
 
@@ -3569,7 +3816,7 @@
       <section class="frame-block" aria-labelledby="m1-label">
         <p class="frame-block__label" id="m1-label">M1</p>
         <h2 class="frame-block__title">Open stage · page 1</h2>
-        <div class="phone phone--map phone--frameM1" data-frame-audit="M1" role="img" aria-label="M1: open stage carousel page 1, Registration next, two page dots">
+        <div class="phone phone--map phone--frameM1" data-trail-carousel data-carousel-next="1" data-carousel-initial-page="0" data-frame-audit="M1" role="img" aria-label="M1: open stage carousel page 1, Registration next, two page dots">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__lead">
@@ -3607,7 +3854,7 @@
                       </div>
                       <div class="trail-terrace trail-terrace--t2">
                         <p class="trail-open-pill lp-trail-stage__label">Stage 2 · open now</p>
-                        <button type="button" class="trail-t2-camp trail-t2-camp--l has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
@@ -3616,6 +3863,16 @@
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Today's Page">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Today's Page</span></span>
                         </button>
                         <div class="trail-page-dots" aria-hidden="true">
                           <span class="trail-page-dot is-active"></span>
@@ -3664,7 +3921,7 @@
       <section class="frame-block" aria-labelledby="m2-label">
         <p class="frame-block__label" id="m2-label">M2</p>
         <h2 class="frame-block__title">After › · page 2, same bottom card</h2>
-        <div class="phone phone--map phone--frameM2" data-frame-audit="M2" role="img" aria-label="M2: open stage carousel page 2, same bottom battle card">
+        <div class="phone phone--map phone--frameM2" data-trail-carousel data-carousel-next="1" data-carousel-initial-page="1" data-frame-audit="M2" role="img" aria-label="M2: open stage carousel page 2, same bottom battle card">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__lead">
@@ -3702,12 +3959,22 @@
                       </div>
                       <div class="trail-terrace trail-terrace--t2">
                         <p class="trail-open-pill lp-trail-stage__label">Stage 2 · open now</p>
-                        <button type="button" class="trail-t2-camp trail-t2-camp--l has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Montain">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Montain</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="Registration and Onboarding">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Registration &amp; Onboarding</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Day 2 problem">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Day 2 problem</span></span>
                         </button>
-                        <button type="button" class="trail-t2-camp trail-t2-camp--r has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Today's Page">
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Today's Page">
                           <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
                           <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
                           <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Today's Page</span></span>
@@ -3754,6 +4021,143 @@
           </section>
         </div>
       </section>
+
+      
+      <!-- Frame 7 — Busy stages -->
+      <section class="frame-block" aria-labelledby="f7-label">
+        <p class="frame-block__label" id="f7-label">Frame 7</p>
+        <h2 class="frame-block__title">Busy stages · camp overflow chips</h2>
+        <div class="phone phone--map phone--frame7" data-trail-carousel data-carousel-next="0" data-carousel-initial-page="0" data-frame-audit="Frame 7" role="img" aria-label="Frame 7: busy stages with camp overflow chips on terraces">
+          <section class="lp-trail is-bleed is-v4">
+            <div class="lp-trail-hud" data-trail-ignore>
+              <div class="lp-trail-hud__lead">
+                <div class="lp-trail-hud__pill">
+                  <span class="lp-trail-hud__avatar lp-rpg-avatar">
+                    <img class="lp-trail-hud__avatar-img lp-rpg-avatar__img" src="../../app/assets/images/characters/fox.png" alt="">
+                    <span class="lp-trail-hud__level lp-rpg-avatar__level">8</span>
+                  </span>
+                  <div class="lp-trail-hud__stats">
+                    <span class="lp-trail-hud__stat"><span aria-hidden="true">⚡</span>120</span>
+                    <span class="lp-trail-hud__stat"><span aria-hidden="true">🏕</span>4/22</span>
+                  </div>
+                </div>
+                <button type="button" class="lp-trail-arrange">Arrange camps</button>
+              </div>
+              <div class="lp-trail__goal">
+                <button type="button" class="lp-trail__goal-plaque lp-frost" aria-label="Summit goal">
+                  <span class="lp-trail__goal-title lp-rpg-destination-carousel__title">Grow the business</span>
+                </button>
+              </div>
+            </div>
+            <div class="lp-trail__scroll">
+              <div class="lp-trail__surface">
+                <div class="lp-trail__map"><div class="lp-trail__world">
+                    <img class="lp-trail__photo" src="mountain-stages-bg.webp" alt="" decoding="async" width="940" height="1672">
+                    <div class="trail-stages" aria-label="Mountain terraces">
+                      <div class="trail-terrace trail-terrace--t1 is-triple is-triple-more">
+                        <button type="button" class="trail-stage-badge trail-stage-badge--done" aria-label="Stage 1, finished">
+                          <span class="trail-stage-badge__num">1</span>
+                          <span class="trail-stage-badge__check" aria-hidden="true">✓</span>
+                        </button>
+                        <span class="trail-tent trail-tent--md trail-tent--t1-a has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <span class="trail-tent trail-tent--md trail-tent--t1-b has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <span class="trail-tent trail-tent--md trail-tent--t1-c has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <button type="button" class="trail-camp-more" aria-label="1 more camp">+1</button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t1-a" aria-label="Stage 1, finished"></button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t1-b" aria-label="Stage 1, finished"></button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t1-c" aria-label="Stage 1, finished"></button>
+                      </div>
+                      <div class="trail-terrace trail-terrace--t2">
+                        <p class="trail-open-pill lp-trail-stage__label">Stage 2 · open now</p>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l is-current has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Website">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Website</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-label="App">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">App</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-label="Blog">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Blog</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-green" style="--lp-trail-accent: #12a150;" aria-label="Newsletter">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Newsletter</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--l  has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-label="Podcast">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Podcast</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--r  has-color is-blue" style="--lp-trail-accent: #4c6ef5;" aria-label="Events">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Events</span></span>
+                        </button>
+                        <button type="button" class="trail-t2-camp trail-t2-camp--solo  has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-label="Partnerships">
+                          <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
+                          <span class="lp-trail-camp__peg"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                          <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Partnerships</span></span>
+                        </button>
+                        <div class="trail-page-dots" aria-hidden="true">
+                          <span class="trail-page-dot is-active"></span>
+                          <span class="trail-page-dot"></span>
+                          <span class="trail-page-dot"></span>
+                          <span class="trail-page-dot"></span>
+                        </div>
+                      </div>
+                      <button type="button" class="trail-t2-nav lp-trail-stage__nav is-prev is-hidden" aria-label="Previous camps">‹</button>
+                      <button type="button" class="trail-t2-nav lp-trail-stage__nav is-next" aria-label="Next camps">›</button>
+                      <div class="trail-terrace trail-terrace--t3 is-triple is-triple-more">
+                        <button type="button" class="trail-stage-badge trail-stage-badge--later" aria-label="Stage 3, 5 camps">
+                          <span class="trail-stage-badge__num">3</span>
+                        </button>
+                        <span class="trail-tent trail-tent--md trail-tent--t3-a has-color is-purple" style="--lp-trail-accent: #7c3aed;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <span class="trail-tent trail-tent--md trail-tent--t3-b has-color is-green" style="--lp-trail-accent: #12a150;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <span class="trail-tent trail-tent--md trail-tent--t3-c has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <button type="button" class="trail-camp-more" aria-label="2 more camps">+2</button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t3-a" aria-label="Stage 3, 5 camps"></button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t3-b" aria-label="Stage 3, 5 camps"></button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--md trail-tent-hit--t3-c" aria-label="Stage 3, 5 camps"></button>
+                      </div>
+                      <div class="trail-terrace trail-terrace--t4 is-triple is-triple-more">
+                        <button type="button" class="trail-stage-badge trail-stage-badge--later" aria-label="Stage 4, 6 camps">
+                          <span class="trail-stage-badge__num">4</span>
+                        </button>
+                        <span class="trail-tent trail-tent--sm trail-tent--t4-a has-color is-teal" style="--lp-trail-accent: #0f9488;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <span class="trail-tent trail-tent--sm trail-tent--t4-b has-color is-coral" style="--lp-trail-accent: #e8590c;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <span class="trail-tent trail-tent--sm trail-tent--t4-c has-color is-amber" style="--lp-trail-accent: #f1a208;" aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+                        <button type="button" class="trail-camp-more" aria-label="3 more camps">+3</button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-a" aria-label="Stage 4, 6 camps"></button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-b" aria-label="Stage 4, 6 camps"></button>
+                        <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-c" aria-label="Stage 4, 6 camps"></button>
+                      </div>
+                    </div>
+                </div></div>
+              </div>
+              <div class="lp-trail__dock" data-trail-ignore>
+                <button type="button" class="lp-trail-today is-busy">
+                  <span class="lp-trail-today__copy">
+                    <span class="lp-trail-today__headline">Write homepage copy</span>
+                    <span class="lp-trail-today__sub">Next in Website</span>
+                  </span>
+                  <span class="lp-trail-today__tick" aria-label="Win battle"></span>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="lp-trail-base-fire lp-frost" aria-label="Base camp"><span aria-hidden="true">🔥</span></button>
+          </section>
+        </div>
+        <div class="trail-map-legend">
+          <strong>Frame 7 legend.</strong> Same terrace anchors as Frame 2. Finished or later terraces show at most <strong>3 tents</strong>; overflow camps use a <strong>+N</strong> chip 8px right of the last tent (opens that stage&rsquo;s list). T2 carousel: 7 camps, 4 pages; green outline on Website (next camp) when visible.
+        </div>
+      </section>
+
 
       <p class="frame-section-label">Arrange camps · commands only</p>
 
@@ -4199,6 +4603,83 @@
       runCollisionAudit();
     })();
 
+  </script>
+  <script>
+    (function () {
+      function renderCarouselPage(phone, page, animate) {
+        var terrace = phone.querySelector('.trail-terrace--t2');
+        if (!terrace) return;
+        var camps = Array.from(terrace.querySelectorAll('.trail-t2-camp'));
+        var nextIndex = parseInt(phone.getAttribute('data-carousel-next') || '0', 10);
+        var totalPages = Math.ceil(camps.length / 2);
+        var prevBtn = phone.querySelector('.trail-t2-nav.is-prev');
+        var nextBtn = phone.querySelector('.trail-t2-nav.is-next');
+        var dots = terrace.querySelectorAll('.trail-page-dot');
+
+        if (animate) terrace.classList.add('is-sliding');
+        camps.forEach(function (camp, i) {
+          var onPage = i >= page * 2 && i < page * 2 + 2;
+          camp.classList.toggle('is-offpage', !onPage);
+          camp.classList.remove('trail-t2-camp--l', 'trail-t2-camp--r', 'trail-t2-camp--solo');
+          if (!onPage) {
+            camp.classList.remove('is-current');
+            return;
+          }
+          var pageCamps = camps.filter(function (_, j) {
+            return j >= page * 2 && j < page * 2 + 2;
+          });
+          var idxInPage = i - page * 2;
+          if (pageCamps.length === 1) camp.classList.add('trail-t2-camp--solo');
+          else if (idxInPage === 0) camp.classList.add('trail-t2-camp--l');
+          else camp.classList.add('trail-t2-camp--r');
+          camp.classList.toggle('is-current', i === nextIndex);
+        });
+
+        dots.forEach(function (dot, i) {
+          dot.classList.toggle('is-active', i === page);
+        });
+        if (prevBtn) prevBtn.classList.toggle('is-hidden', page === 0);
+        if (nextBtn) nextBtn.classList.toggle('is-hidden', page >= totalPages - 1);
+        phone.setAttribute('data-carousel-page', String(page));
+
+        if (animate) {
+          window.setTimeout(function () {
+            terrace.classList.remove('is-sliding');
+          }, 240);
+        }
+      }
+
+      function initCarousels() {
+        document.querySelectorAll('[data-trail-carousel]').forEach(function (phone) {
+          var start = parseInt(phone.getAttribute('data-carousel-initial-page') || '0', 10);
+          var page = start;
+          var prevBtn = phone.querySelector('.trail-t2-nav.is-prev');
+          var nextBtn = phone.querySelector('.trail-t2-nav.is-next');
+
+          renderCarouselPage(phone, page, false);
+
+          if (prevBtn) {
+            prevBtn.addEventListener('click', function () {
+              var current = parseInt(phone.getAttribute('data-carousel-page') || '0', 10);
+              if (current > 0) renderCarouselPage(phone, current - 1, true);
+            });
+          }
+          if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
+              var camps = phone.querySelectorAll('.trail-terrace--t2 .trail-t2-camp');
+              var totalPages = Math.ceil(camps.length / 2);
+              var current = parseInt(phone.getAttribute('data-carousel-page') || '0', 10);
+              if (current < totalPages - 1) renderCarouselPage(phone, current + 1, true);
+            });
+          }
+        });
+      }
+
+      window.addEventListener('load', function () {
+        initCarousels();
+        if (window.runCollisionAudit) window.runCollisionAudit();
+      });
+    })();
   </script>
   <script>
     (function () {
