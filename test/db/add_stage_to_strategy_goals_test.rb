@@ -24,13 +24,10 @@ class AddStageToStrategyGoalsTest < ActiveSupport::TestCase
     second = @user.strategy_goals.create!(
       life_area: @area, parent: @plan, horizon: "project", title: "Second", position: 1, stage: 0
     )
-    plan_completed_at = @plan.completed_at
-    first_completed_at = first.completed_at
-
     AddStageToStrategyGoals.send(:backfill_stages!)
 
     assert_equal [ 0, 1, 2 ], [ first, second, third ].map { |camp| camp.reload.stage }
-    assert_equal plan_completed_at, @plan.reload.completed_at
-    assert_equal first_completed_at, first.reload.completed_at
+    assert_nil @plan.reload.completed_at
+    assert_nil first.reload.completed_at
   end
 end
