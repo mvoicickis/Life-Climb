@@ -67,9 +67,6 @@
       <% accent = mountain_trail_project_accent(project) %>
       <% color_key = project.tagged_color_key %>
       <% tent_offset = mountain_trail_terrace_tent_offset_px(terrace, slot) %>
-      <span class="trail-tent trail-tent--md has-color <%= "is-#{color_key}" if color_key %>"
-            style="left: <%= tent_offset %>px; --lp-trail-accent: <%= accent %>;"
-            aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
       <button type="button"
               class="trail-tent-hit trail-tent-hit--<%= slot[:slot] %> <%= "has-color is-#{color_key}" if color_key %>"
               id="trail-camp-<%= project.id %>"
@@ -81,7 +78,11 @@
               data-accent="<%= accent %>"
               data-update-url="<%= strategy_goal_path(project) %>"
               data-action="click->trail-canvas#campClick click->trail-camp-sheet#open"
-              aria-label="<%= project.title %>"></button>
+              aria-label="<%= project.title %>">
+        <span class="trail-tent trail-tent--md has-color <%= "is-#{color_key}" if color_key %>"
+              style="--lp-trail-accent: <%= accent %>;"
+              aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+      </button>
     <% end %>
     <% if terrace[:overflow].positive? %>
       <button type="button"

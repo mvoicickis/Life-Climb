@@ -5672,21 +5672,25 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-tent-hit {
   position: absolute;
   bottom: 0;
-  width: var(--lp-tent-fog-w);
+  width: var(--lp-tap, 2.75rem);
+  min-width: var(--lp-tap, 2.75rem);
   min-height: var(--lp-tap, 2.75rem);
   height: var(--lp-tent-fog-h);
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   transform: translateX(-50%) translateY(calc(-1 * var(--lp-tent-fog-h)));
 }
 
-.lp-trail.is-terraced .trail-tent {
-  position: absolute;
-  bottom: 0;
+.lp-trail.is-terraced .trail-tent-hit .trail-tent {
+  position: relative;
+  bottom: auto;
   display: block;
-  transform: translateX(-50%) translateY(calc(-1 * var(--lp-tent-fog-h)));
+  transform: none;
   filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.2));
   pointer-events: none;
 }
@@ -5979,21 +5983,18 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced.is-first-camp-reveal .lp-trail-camp:not(.is-landed),
-.lp-trail.is-terraced.is-first-camp-reveal .trail-tent:not(.is-landed),
 .lp-trail.is-terraced.is-first-camp-reveal .trail-tent-hit:not(.is-landed) {
   opacity: 0;
   pointer-events: none;
 }
 
 .lp-trail.is-terraced.is-first-camp-reveal .lp-trail-camp.is-landed,
-.lp-trail.is-terraced.is-first-camp-reveal .trail-tent.is-landed,
 .lp-trail.is-terraced.is-first-camp-reveal .trail-tent-hit.is-landed {
   animation: lp-trail-land-in 0.45s ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-trail.is-terraced.is-first-camp-reveal .lp-trail-camp,
-  .lp-trail.is-terraced.is-first-camp-reveal .trail-tent,
   .lp-trail.is-terraced.is-first-camp-reveal .trail-tent-hit {
     opacity: 1;
     animation: none;
