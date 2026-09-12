@@ -5392,7 +5392,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 /* ——— Terraced map (mountain-stages-bg) ——— */
 .lp-trail.is-terraced {
-  --map-zoom: 1.3;
+  --map-zoom: 0.84;
   --map-safe: 12px;
   --lp-tent-open-w: 56px;
   --lp-tent-open-h: 44px;
