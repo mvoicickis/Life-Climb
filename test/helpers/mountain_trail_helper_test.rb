@@ -906,7 +906,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal "terrace-sheet-overflow-1", sheet[:sheet_id]
   end
 
-  test "terrace window puts finished stage on t1 and open on t2" do
+  test "terrace window keeps open stage on t1 after earlier stage is finished" do
     camps = [
       Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
         id: 1, stage: 0, position: 0, completed?: true, holding?: false
@@ -917,10 +917,12 @@ class MountainTrailHelperTest < ActionView::TestCase
     ]
 
     groups = mountain_trail_terrace_groups(camps)
-    assert_equal :done, groups[0][:state]
-    assert_equal 0, groups[0][:stage]
-    assert_equal :open, groups[1][:state]
-    assert_equal 1, groups[1][:stage]
+    assert_equal :open, groups[0][:state]
+    assert_equal 1, groups[0][:stage]
+    assert_nil groups[1][:stage]
+    assert_equal :empty, groups[1][:state]
+    assert groups[0][:foot_badge]
+    assert_equal 1, groups[0][:foot_badge][:count]
   end
 
   test "reveal camps stagger by terrace bottom to top" do

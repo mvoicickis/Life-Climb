@@ -30,10 +30,8 @@ module MountainTrailHelper
   # Measured on the grass lip (lowest row of each shelf), not the back edge.
   MAP_ASPECT_WIDTH = 1080
   MAP_ASPECT_HEIGHT = 1350
-  # 360×640 @ 1.0× zoom: world h 450px, map ≈ 466px above dock. +15% shifts the
-  # world down so the flag tip (y≈1.9%) clears the HUD and T1 open block clears
-  # the base-camp card.
-  MAP_WORLD_Y = "15%"
+  # Image anchors to the top of the map area; open-stage chrome uses --lp-open-stage-lift.
+  MAP_WORLD_Y = "0%"
   MAP_ZOOM = 1.0
   # Front-edge y/x on mountain-stages-bg-v2.webp as fractions of image size.
   # Gaps between lips: T1–T2 18.7%, T2–T3 16.3%, T3–T4 13.6%.
@@ -313,7 +311,7 @@ module MountainTrailHelper
       last_finished: last_finished,
       max_stage: max_stage
     )
-    foot_badge = mountain_trail_foot_badge(camps, window[0], last_finished)
+    foot_badge = mountain_trail_foot_badge(camps, open_stage, last_finished)
 
     window.each_with_index.map do |slot, index|
       terrace_index = index + 1
@@ -379,38 +377,24 @@ module MountainTrailHelper
     return [ nil, nil, nil, nil ] if max_stage.nil?
 
     slots = [ nil, nil, nil, nil ]
-    if last_finished.nil?
-      slots[0] = open_stage
-      slots[1] = open_stage + 1 if open_stage + 1 <= max_stage
-      slots[2] = open_stage + 2 if open_stage + 2 <= max_stage
-      if open_stage + 3 <= max_stage
-        slots[3] =
-          if open_stage + 4 <= max_stage
-            { range_from: open_stage + 3 }
-          else
-            open_stage + 3
-          end
-      end
-    else
-      slots[0] = last_finished
-      slots[1] = open_stage
-      slots[2] = open_stage + 1 if open_stage + 1 <= max_stage
-      if open_stage + 2 <= max_stage
-        slots[3] =
-          if open_stage + 3 <= max_stage
-            { range_from: open_stage + 2 }
-          else
-            open_stage + 2
-          end
-      end
+    slots[0] = open_stage
+    slots[1] = open_stage + 1 if open_stage + 1 <= max_stage
+    slots[2] = open_stage + 2 if open_stage + 2 <= max_stage
+    if open_stage + 3 <= max_stage
+      slots[3] =
+        if open_stage + 4 <= max_stage
+          { range_from: open_stage + 3 }
+        else
+          open_stage + 3
+        end
     end
     slots
   end
 
-  def mountain_trail_foot_badge(projects, t1_stage, last_finished)
-    return nil unless last_finished && t1_stage == last_finished && last_finished.positive?
+  def mountain_trail_foot_badge(projects, open_stage, last_finished)
+    return nil unless last_finished && last_finished < open_stage
 
-    older = (0...(last_finished)).select { |stage| mountain_trail_stage_done?(projects, stage) }
+    older = (0...open_stage).select { |stage| mountain_trail_stage_done?(projects, stage) }
     return nil if older.empty?
 
     count = older.sum { |stage| (mountain_trail_projects_by_stage(projects)[stage] || []).size }

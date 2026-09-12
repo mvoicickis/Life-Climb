@@ -5600,7 +5600,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-stage-badge {
   position: absolute;
-  left: calc(-1 * var(--lp-terrace-badge-x));
+  left: var(--trail-badge-x, calc(-1 * var(--lp-terrace-badge-x)));
   top: calc(-1 * var(--lp-tent-fog-h) / 2);
   width: 24px;
   height: 24px;
@@ -5613,14 +5613,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   transform: translate(-50%, -50%);
   border: 0;
   font: inherit;
-}
-
-.lp-trail.is-terraced .trail-terrace.is-pair .trail-stage-badge {
-  left: calc(-1.4 * var(--lp-terrace-badge-x));
-}
-
-.lp-trail.is-terraced .trail-terrace.is-triple .trail-stage-badge {
-  left: calc(-1.85 * var(--lp-terrace-badge-x));
 }
 
 .lp-trail.is-terraced .trail-stage-badge__num {
@@ -5669,7 +5661,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-foot-badge {
   position: absolute;
-  left: calc(-1 * var(--lp-terrace-badge-x));
+  left: var(--trail-badge-x, calc(-1 * var(--lp-terrace-badge-x)));
   top: calc(-1 * var(--lp-tent-open-h) - var(--lp-terrace-stack-gap));
   transform: translateX(-50%);
   display: inline-flex;
