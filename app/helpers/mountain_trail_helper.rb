@@ -30,19 +30,20 @@ module MountainTrailHelper
   # Measured on the grass lip (lowest row of each shelf), not the back edge.
   MAP_ASPECT_WIDTH = 1080
   MAP_ASPECT_HEIGHT = 1350
-  # Lower the world so the painted flag tip clears the HUD without hiding T1.
+  # Push world down so the painted flag tip (y≈7%) clears the HUD; terraced scroll bg
+  # matches image sky (#a1bad0) so the exposed strip above the photo is not a green bar.
   MAP_WORLD_Y = "6%"
   MAP_ZOOM = 1.0
   # Front-edge y/x on mountain-stages-bg-v2.webp as fractions of image size.
-  # Slot index 0 → T1 (bottom). Gaps between lips: T1–T2 7.4%, T2–T3 18.7%, T3–T4 16.3%.
+  # Slot index 0 → T1 (bottom). x_left = left edge of terrace grass on the path.
   TERRACE_ANCHORS = {
-    1 => { y: 0.8222, x: 0.4426, x_left: 0.0741, x_right: 0.8111, token: "bottom" },
-    2 => { y: 0.7481, x: 0.5009, x_left: 0.0981, x_right: 0.9037, token: "second" },
-    3 => { y: 0.5615, x: 0.5269, x_left: 0.1315, x_right: 0.9231, token: "third" },
-    4 => { y: 0.3985, x: 0.5000, x_left: 0.0741, x_right: 0.9259, token: "top" }
+    1 => { y: 0.8222, x: 0.4644, x_left: 0.2352, x_right: 0.6935, token: "bottom" },
+    2 => { y: 0.7481, x: 0.4995, x_left: 0.2204, x_right: 0.7787, token: "second" },
+    3 => { y: 0.5615, x: 0.4977, x_left: 0.2963, x_right: 0.6991, token: "third" },
+    4 => { y: 0.3985, x: 0.5019, x_left: 0.3157, x_right: 0.6880, token: "top" }
   }.freeze
-  # Nudge stage badges right from x_left so they sit on grass, not cliff.
-  TERRACE_BADGE_INSET = 0.025
+  # Small inset right from x_left so badge circles sit on grass, not the lip edge.
+  TERRACE_BADGE_INSET = 0.015
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
