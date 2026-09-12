@@ -32,8 +32,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     third = Struct.new(:completed_at, :title, :parent_id, keyword_init: true).new(
       completed_at: nil, title: "Third fight", parent_id: 11
     )
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
-      11, false, false, [ battle ], 0.5, 0.7, "Base camp"
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      11, 0, 0, false, false, [ battle ], 0.5, 0.7, "Base camp"
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [ battle ], won_today: 0)
     assert_equal "win_next", card[:mode]
@@ -65,8 +65,8 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   test "today card cheers when today’s battles are already won" do
     won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
-      8, false, false, [ won ], 0.5, 0.7, "Base camp"
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      8, 0, 0, false, false, [ won ], 0.5, 0.7, "Base camp"
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 2)
     assert_equal "cheer", card[:mode]
@@ -90,8 +90,8 @@ class MountainTrailHelperTest < ActionView::TestCase
       life_journey_id: journey.id
     )
     won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
-      8, false, false, [ won ], 0.5, 0.7, "Base camp"
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      8, 0, 0, false, false, [ won ], 0.5, 0.7, "Base camp"
     )
 
     card = mountain_trail_today_card(
@@ -109,8 +109,8 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   test "today card plants next when the trail is quiet" do
     won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
-      8, false, false, [ won ], 0.5, 0.7, "Base camp"
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      8, 0, 0, false, false, [ won ], 0.5, 0.7, "Base camp"
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 0)
     assert_equal "plant_next", card[:mode]
@@ -358,8 +358,8 @@ class MountainTrailHelperTest < ActionView::TestCase
   end
 
   test "base camp add parent falls back to first pages camp when all are pages mode" do
-    pages = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      1, 0, false, true, [], 0.5, 0.6
+    pages = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
+      1, 0, 0, false, true, [], 0.5, 0.6
     )
 
     assert_equal pages, mountain_trail_base_camp_add_parent([ pages ])
@@ -395,8 +395,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     tomorrow = Struct.new(:day?, :holding?, :completed?, :repeat_daily?, :scheduled_on, :completed_at, :title).new(
       true, false, false, true, Date.current + 1, nil, "Later"
     )
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title, :position).new(
-      3, false, false, [ past, tomorrow ], 0.5, 0.7, "Base camp", 0
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      3, 0, 0, false, false, [ past, tomorrow ], 0.5, 0.7, "Base camp"
     )
 
     assert_equal [ past ], mountain_trail_base_due_battles([ camp ])
@@ -698,9 +698,9 @@ class MountainTrailHelperTest < ActionView::TestCase
     battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, false, nil, false
     )
-    camp = Struct.new(:id, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?).new(
-      1, false, false, false, [ battle ], nil, nil, false
-    )
+    camp = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, quantified?: false, children: [ battle ], trail_x: nil, trail_y: nil, holding?: false)
     marker = mountain_trail_climber_marker([ camp ])
     assert marker[:visible]
     assert_in_delta MountainTrailHelper::BASE_YFRAC, marker[:y], 0.02
@@ -716,12 +716,12 @@ class MountainTrailHelperTest < ActionView::TestCase
     open_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, false, nil, false
     )
-    cleared = Struct.new(:id, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?).new(
-      1, true, false, false, [ done_battle ], 0.48, 0.72, false
-    )
-    current = Struct.new(:id, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?).new(
-      2, false, false, false, [ won_battle, open_battle ], 0.5, 0.55, false
-    )
+    cleared = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
+    ).new(id: 1, stage: 1, position: 1, completed?: true, pages_mode?: false, quantified?: false, children: [ done_battle ], trail_x: 0.48, trail_y: 0.72, holding?: false)
+    current = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
+    ).new(id: 2, stage: 0, position: 0, completed?: false, pages_mode?: false, quantified?: false, children: [ won_battle, open_battle ], trail_x: 0.5, trail_y: 0.55, holding?: false)
     marker = mountain_trail_climber_marker([ cleared, current ])
     assert marker[:visible]
     assert marker[:y] < cleared.trail_y
@@ -732,9 +732,9 @@ class MountainTrailHelperTest < ActionView::TestCase
     done_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
       true, false, true, Time.current, false
     )
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?).new(
-      1, true, false, [ done_battle ], 0.5, 0.7, false
-    )
+    camp = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: true, pages_mode?: false, children: [ done_battle ], trail_x: 0.5, trail_y: 0.7, holding?: false)
     marker = mountain_trail_climber_marker([ camp ])
     assert_not marker[:visible]
   end

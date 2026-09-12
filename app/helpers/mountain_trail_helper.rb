@@ -813,8 +813,8 @@ module MountainTrailHelper
     list = Array(projects).compact
     return if list.empty?
 
-    open_stage = list.map { |project| project.stage.to_i }.min
-    in_stage = list.select { |project| project.stage.to_i == open_stage }
+    open_stage = list.map { |project| project.try(:stage).to_i }.min
+    in_stage = list.select { |project| project.try(:stage).to_i == open_stage }
     in_stage.min_by { |project| [ project.position.to_i, project.id ] }
   end
 
