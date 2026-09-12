@@ -29,8 +29,8 @@
        "--lp-trail-x: #{layout[:x]}; --lp-trail-y: #{layout[:y]};"
      elsif terrace.present? && slot.present?
        if terrace[:state] == :open
-         offset = mountain_trail_terrace_tent_offset_px(terrace, slot)
-         "--lp-trail-accent: #{accent}; left: #{offset}px;"
+         dx = mountain_trail_terrace_slot_dx(terrace, slot)
+         "--lp-trail-accent: #{accent}; --trail-slot-dx: #{dx.round(4)};"
        else
          "--lp-trail-accent: #{accent}; left: #{(mountain_trail_terrace_x_fraction(terrace, slot) * 100).round(2)}%;"
        end

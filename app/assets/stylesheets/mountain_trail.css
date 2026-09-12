@@ -5392,16 +5392,19 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 /* ——— Terraced map (mountain-stages-bg) ——— */
 .lp-trail.is-terraced {
-  --map-zoom: 0.84;
+  --map-zoom: 1;
+  --terrace-ui-scale: var(--map-zoom);
   --map-safe: 12px;
-  --lp-tent-open-w: 56px;
-  --lp-tent-open-h: 44px;
-  --lp-tent-fog-w: 40px;
-  --lp-tent-fog-h: 32px;
-  --lp-camp-name-min: 112px;
-  --lp-camp-name-max: 140px;
-  --lp-pill-h: 26px;
-  --lp-gap-tent-name: 6px;
+  --lp-tent-open-w: calc(56px * var(--terrace-ui-scale));
+  --lp-tent-open-h: calc(44px * var(--terrace-ui-scale));
+  --lp-tent-fog-w: calc(40px * var(--terrace-ui-scale));
+  --lp-tent-fog-h: calc(32px * var(--terrace-ui-scale));
+  --lp-camp-name-min: calc(112px * var(--terrace-ui-scale));
+  --lp-camp-name-max: calc(140px * var(--terrace-ui-scale));
+  --lp-pill-h: calc(26px * var(--terrace-ui-scale));
+  --lp-gap-tent-name: calc(6px * var(--terrace-ui-scale));
+  --lp-terrace-stack-gap: calc(8px * var(--terrace-ui-scale));
+  --lp-terrace-badge-x: calc(52px * var(--terrace-ui-scale));
   --lp-fog-opacity: 0.4;
 }
 
@@ -5546,6 +5549,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   inset: 0;
   z-index: 4;
   pointer-events: none;
+  container-type: inline-size;
+  container-name: trail-map;
 }
 
 .lp-trail.is-terraced .trail-stages > * {
@@ -5565,7 +5570,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-open-pill {
   position: absolute;
   left: 0;
-  top: calc(-1 * var(--lp-tent-open-h) - var(--lp-pill-h) - 8px);
+  top: calc(-1 * var(--lp-tent-open-h) - var(--lp-pill-h) - var(--lp-terrace-stack-gap));
   transform: translateX(-50%);
   height: var(--lp-pill-h);
   min-height: var(--lp-pill-h);
@@ -5589,7 +5594,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-stage-badge {
   position: absolute;
-  left: -52px;
+  left: calc(-1 * var(--lp-terrace-badge-x));
   top: calc(-1 * var(--lp-tent-fog-h) / 2);
   width: 24px;
   height: 24px;
@@ -5605,11 +5610,11 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .trail-terrace.is-pair .trail-stage-badge {
-  left: -74px;
+  left: calc(-1.4 * var(--lp-terrace-badge-x));
 }
 
 .lp-trail.is-terraced .trail-terrace.is-triple .trail-stage-badge {
-  left: -96px;
+  left: calc(-1.85 * var(--lp-terrace-badge-x));
 }
 
 .lp-trail.is-terraced .trail-stage-badge__num {
@@ -5648,7 +5653,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .trail-terrace--t4 .trail-stage-badge--range {
-  top: 0.35rem;
+  top: calc(0.35rem * var(--terrace-ui-scale));
   transform: translate(-50%, 0);
 }
 
@@ -5658,8 +5663,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-foot-badge {
   position: absolute;
-  left: -52px;
-  top: calc(-1 * var(--lp-tent-open-h) - 8px);
+  left: calc(-1 * var(--lp-terrace-badge-x));
+  top: calc(-1 * var(--lp-tent-open-h) - var(--lp-terrace-stack-gap));
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
@@ -5677,8 +5682,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-tent-hit {
   position: absolute;
   bottom: 0;
-  width: var(--lp-tap, 2.75rem);
-  min-width: var(--lp-tap, 2.75rem);
+  left: calc(var(--trail-slot-dx, 0) * 100cqw);
+  width: calc(2.75rem * var(--terrace-ui-scale));
+  min-width: calc(2.75rem * var(--terrace-ui-scale));
   height: var(--lp-tent-fog-h);
   min-height: var(--lp-tent-fog-h);
   padding: 0;
@@ -5695,9 +5701,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   content: "";
   position: absolute;
   left: 50%;
-  bottom: calc(-1 * (var(--lp-tap, 2.75rem) - var(--lp-tent-fog-h)));
-  width: var(--lp-tap, 2.75rem);
-  height: calc(var(--lp-tap, 2.75rem) - var(--lp-tent-fog-h));
+  bottom: calc(-1 * (2.75rem * var(--terrace-ui-scale) - var(--lp-tent-fog-h)));
+  width: calc(2.75rem * var(--terrace-ui-scale));
+  height: calc(2.75rem * var(--terrace-ui-scale) - var(--lp-tent-fog-h));
   transform: translateX(-50%);
 }
 
@@ -5741,7 +5747,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-t2-camp {
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: calc(var(--trail-slot-dx, 0) * 100cqw);
   width: var(--lp-tent-open-w);
   height: var(--lp-tent-open-h);
   padding: 0;
@@ -5753,8 +5759,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   align-items: center;
   transform: translateX(-50%) translateY(calc(-1 * var(--lp-tent-open-h)));
 }
-
-/* Open-camp left offset comes from inline style (anchor x_left/x_right). */
 
 .lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__shadow {
   position: absolute;
@@ -5826,9 +5830,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   content: "";
   position: absolute;
   left: 50%;
-  bottom: -4px;
-  width: 2.75rem;
-  height: 1rem;
+  bottom: calc(-4px * var(--terrace-ui-scale));
+  width: calc(2.75rem * var(--terrace-ui-scale));
+  height: calc(1rem * var(--terrace-ui-scale));
   transform: translateX(-50%);
   background: radial-gradient(ellipse at center, var(--lp-green-soft, rgba(87, 211, 91, 0.28)) 0%, transparent 72%);
   pointer-events: none;
@@ -5837,8 +5841,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-camp-more {
   position: absolute;
-  left: 72px;
-  bottom: 8px;
+  left: calc(72px * var(--terrace-ui-scale));
+  bottom: calc(8px * var(--terrace-ui-scale));
   transform: translateX(-50%);
   min-width: 1.5rem;
   height: 1.5rem;
