@@ -7,6 +7,9 @@
 <div id="trail-map-camps">
   <% if use_terrace_map %>
     <div class="trail-stages" id="trail-stages" data-trail-canvas-target="camps" aria-label="<%= t('strategy.rpg.what_gets_me_there') %>">
+      <% if mountain_trail_terrace_debug? %>
+        <%= render "life_journeys/trail_terrace_debug", terrace_groups: terrace_groups %>
+      <% end %>
       <% terrace_groups.each do |terrace| %>
         <%= render "life_journeys/trail_terrace",
               terrace: terrace,
