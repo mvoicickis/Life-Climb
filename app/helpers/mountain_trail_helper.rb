@@ -26,19 +26,19 @@ module MountainTrailHelper
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
 
-  # Terraced map (mountain-stages-bg.webp 940×1672) — mid-depth anchors bottom→top.
+  # Terraced map (mountain-stages-bg.webp 940×1672) — front-edge anchors bottom→top.
+  # Measured on the grass lip (lowest row of each shelf), not the back edge.
   MAP_ASPECT_WIDTH = 940
   MAP_ASPECT_HEIGHT = 1672
-  # 360×640 @ 1.3× zoom: map ≈ 464px (640 − 10 dock pad − ~90 card − 76 nav pad).
-  # HUD bottom ≈ 61px. World h ≈ 832px. -25% lifts the world 208px so terrace 1
-  # (71.95%) sits ~391px with ~73px below for the name pill above the dock, and
-  # terrace 4 (37.11%) clears the HUD with the range badge.
-  MAP_WORLD_Y = "-25%"
+  # 360×640 @ 1.3× zoom: map ≈ 464px (640 − dock). World h ≈ 832px. -31% lifts the
+  # world so terrace 1 front (77.63%) keeps the open-stage block (pill + tent +
+  # name caption) above the base-camp card.
+  MAP_WORLD_Y = "-31%"
   TERRACE_ANCHORS = {
-    1 => { y: 0.7195, x: 0.5489, x_left: 0.1496, x_right: 0.8504, token: "bottom" },
-    2 => { y: 0.5795, x: 0.5293, x_left: 0.2415, x_right: 0.8170, token: "second" },
-    3 => { y: 0.4593, x: 0.5128, x_left: 0.3011, x_right: 0.7245, token: "third" },
-    4 => { y: 0.3711, x: 0.5214, x_left: 0.4755, x_right: 0.6191, token: "top" }
+    1 => { y: 0.7763, x: 0.5181, x_left: 0.4277, x_right: 0.6085, token: "bottom" },
+    2 => { y: 0.6256, x: 0.5234, x_left: 0.4511, x_right: 0.5957, token: "second" },
+    3 => { y: 0.4916, x: 0.5218, x_left: 0.4723, x_right: 0.5713, token: "third" },
+    4 => { y: 0.3798, x: 0.5532, x_left: 0.5043, x_right: 0.6021, token: "top" }
   }.freeze
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
