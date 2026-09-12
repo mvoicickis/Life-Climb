@@ -7,7 +7,7 @@
 <div class="trail-terrace trail-terrace--t<%= terrace[:index] %> is-<%= terrace[:state] %> <%= mountain_trail_terrace_size_class(terrace) if terrace[:camps].any? %>"
      data-terrace-index="<%= terrace[:index] %>"
      data-terrace-stage="<%= terrace[:stage] %>"
-     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%;">
+     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%; --trail-badge-x: <%= ((terrace[:anchor][:x_left] - terrace[:anchor][:x]) * 100).round(3) %>cqw;">
   <% if terrace[:state] == :open && terrace[:stage].present? %>
     <p class="trail-open-pill lp-trail-stage__label">
       <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
