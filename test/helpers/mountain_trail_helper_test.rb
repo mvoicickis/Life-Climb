@@ -54,8 +54,8 @@ class MountainTrailHelperTest < ActionView::TestCase
   end
 
   test "today card asks to add a battle on an empty camp" do
-    camp = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
-      4, false, false, [], 0.5, 0.72, "Ridge"
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      4, 0, 0, false, false, [], 0.5, 0.72, "Ridge"
     )
     card = mountain_trail_today_card(projects: [ camp ], open_battles: [], won_today: 0)
     assert_equal "add_battle", card[:mode]
@@ -286,16 +286,16 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert shadow[:opacity].between?(0.2, 0.5)
   end
 
-  test "current project picks lowest open camp on trail" do
+  test "current project picks lowest open stage with an open battle" do
     battle = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
-    open_project = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      1, false, false, [ battle ], 0.5, 0.7
-    )
-    other = Struct.new(:id, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      2, false, false, [ battle ], 0.5, 0.55
-    )
+    open_project = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 1, stage: 1, position: 1, completed?: false, pages_mode?: false, children: [ battle ], trail_x: 0.5, trail_y: 0.7)
+    other = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 2, stage: 0, position: 0, completed?: false, pages_mode?: false, children: [ battle ], trail_x: 0.5, trail_y: 0.55)
     current = mountain_trail_current_project([ other, open_project ])
-    assert_equal open_project, current
+    assert_equal other, current
   end
 
   test "sort projects orders by position then id" do
@@ -334,25 +334,25 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_nil mountain_trail_base_camp_add_parent([])
   end
 
-  test "base camp add parent picks idle lowest camp when no battles exist" do
-    summit = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      1, 0, false, false, [], 0.5, 0.4
-    )
-    lower = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      2, 1, false, false, [], 0.5, 0.8
-    )
+  test "base camp add parent picks idle lowest-stage camp when no battles exist" do
+    summit = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, children: [], trail_x: 0.5, trail_y: 0.4)
+    lower = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, children: [], trail_x: 0.5, trail_y: 0.8)
 
-    assert_equal lower, mountain_trail_base_camp_add_parent([ summit, lower ])
+    assert_equal summit, mountain_trail_base_camp_add_parent([ summit, lower ])
   end
 
   test "base camp add parent picks current camp with open battles over summit" do
     battle = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
-    summit = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      1, 0, false, false, [], 0.5, 0.4
-    )
-    lower = Struct.new(:id, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y).new(
-      2, 1, false, false, [ battle ], 0.5, 0.8
-    )
+    summit = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, children: [], trail_x: 0.5, trail_y: 0.4)
+    lower = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, children: [ battle ], trail_x: 0.5, trail_y: 0.8)
 
     assert_equal lower, mountain_trail_base_camp_add_parent([ summit, lower ])
   end
@@ -737,6 +737,26 @@ class MountainTrailHelperTest < ActionView::TestCase
     )
     marker = mountain_trail_climber_marker([ camp ])
     assert_not marker[:visible]
+  end
+
+  test "stage ordering wins over trail_y for current idle and focus helpers" do
+    battle = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
+    summit = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, children: [ battle ], trail_x: 0.5, trail_y: 0.4)
+    base = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, children: [ battle ], trail_x: 0.5, trail_y: 0.8)
+    idle_summit = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 3, stage: 0, position: 0, completed?: false, pages_mode?: false, children: [], trail_x: 0.5, trail_y: 0.4)
+    idle_base = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 4, stage: 1, position: 1, completed?: false, pages_mode?: false, children: [], trail_x: 0.5, trail_y: 0.8)
+
+    assert_equal summit, mountain_trail_current_project([ summit, base ])
+    assert_equal idle_summit, mountain_trail_idle_camp([ idle_summit, idle_base ])
+    assert_equal summit, mountain_trail_focus_camp([ summit, base ])
   end
 
   test "next camp picks lowest open stage then position not trail_y" do

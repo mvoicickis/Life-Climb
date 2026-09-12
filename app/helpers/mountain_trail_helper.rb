@@ -348,15 +348,13 @@ module MountainTrailHelper
     end
   end
 
-  # Current camp: lowest on trail (highest y) with an open battle — mockup Duolingo node.
+  # Current camp: lowest open stage with an open battle, then position.
   def mountain_trail_current_project(projects)
     eligible = projects.reject(&:completed?).reject(&:pages_mode?).select do |project|
       project.children.any? { |c| c.day? && !c.holding? && !c.completed? }
     end
-    return nil if eligible.empty?
 
-    layout = mountain_trail_layout(projects)
-    eligible.max_by { |p| layout.dig(p.id, :y).to_f }
+    mountain_trail_pick_by_stage(eligible)
   end
 
   def mountain_trail_first_open_battle(project)
@@ -535,17 +533,11 @@ module MountainTrailHelper
     Array(projects).sort_by { |project| [ project.position.to_i, project.id ] }
   end
 
-  # PR2 ordering core — not wired to UI yet.
+  # Next camp on the open ledge: lowest stage, then position.
   def mountain_trail_next_camp(projects)
-    open = Array(projects)
-      .reject(&:completed?)
-      .reject(&:pages_mode?)
-      .reject(&:holding?)
-    return if open.empty?
-
-    open_stage = open.map { |p| p.stage.to_i }.min
-    in_stage = open.select { |p| p.stage.to_i == open_stage }
-    in_stage.min_by { |p| [ p.position.to_i, p.id ] }
+    mountain_trail_pick_by_stage(
+      Array(projects).reject(&:completed?).reject(&:pages_mode?).reject(&:holding?)
+    )
   end
 
   def mountain_trail_open_camps(plan)
@@ -629,15 +621,13 @@ module MountainTrailHelper
     (Date.current - start_on).to_i + 1
   end
 
-  # Lowest incomplete camp with no battles yet — meadow “add a battle” target.
+  # Lowest-stage incomplete camp with no battles yet — meadow “add a battle” target.
   def mountain_trail_idle_camp(projects)
     idle = Array(projects).reject(&:completed?).reject(&:pages_mode?).select do |project|
       project.children.none? { |child| child.day? && !child.holding? }
     end
-    return if idle.empty?
 
-    layout = mountain_trail_layout(projects)
-    idle.max_by { |project| layout.dig(project.id, :y).to_f }
+    mountain_trail_pick_by_stage(idle)
   end
 
   # Meadow plaque: one next step, or a short win.
@@ -796,7 +786,7 @@ module MountainTrailHelper
     [ raw, stepped ].max.clamp(0.0, 1.0)
   end
 
-  # Focus camp for the climber: open battles, idle camp, or lowest working camp.
+  # Focus camp for the climber: open battles, idle camp, or lowest-stage working camp.
   def mountain_trail_focus_camp(projects)
     current = mountain_trail_current_project(projects)
     return current if current
@@ -807,10 +797,8 @@ module MountainTrailHelper
     working = Array(projects).reject(&:completed?).reject(&:pages_mode?).select do |project|
       project.children.any? { |child| child.day? && !child.holding? }
     end
-    return if working.empty?
 
-    layout = mountain_trail_layout(projects)
-    working.max_by { |project| layout.dig(project.id, :y).to_f }
+    mountain_trail_pick_by_stage(working)
   end
 
   # Momentum 0..1 for embers / hero saturation (mockup energy).
@@ -821,10 +809,19 @@ module MountainTrailHelper
     [ (won * 0.5 + total * 0.15) / 6.0, 1.0 ].min + (open.positive? ? 0.05 : 0)
   end
 
+  def mountain_trail_pick_by_stage(projects)
+    list = Array(projects).compact
+    return if list.empty?
+
+    open_stage = list.map { |project| project.stage.to_i }.min
+    in_stage = list.select { |project| project.stage.to_i == open_stage }
+    in_stage.min_by { |project| [ project.position.to_i, project.id ] }
+  end
+
   def mountain_trail_viewer
     current_user if respond_to?(:current_user)
   end
-  private :mountain_trail_viewer
+  private :mountain_trail_viewer, :mountain_trail_pick_by_stage
 
   def mountain_trail_journey_habits(journey:, user:)
     return user.habits.none if journey.blank? || user.blank?
