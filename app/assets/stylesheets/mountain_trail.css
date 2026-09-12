@@ -5390,7 +5390,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   }
 }
 
-/* ——— Terraced map (mountain-stages-bg) ——— */
+/* ——— Terraced map (mountain-stages-bg-v2) ——— */
 .lp-trail.is-terraced {
   --map-zoom: 1;
   --terrace-ui-scale: var(--map-zoom);

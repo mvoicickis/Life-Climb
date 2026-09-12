@@ -26,22 +26,21 @@ module MountainTrailHelper
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
 
-  # Terraced map (mountain-stages-bg.webp 940×1672) — front-edge anchors bottom→top.
+  # Terraced map (mountain-stages-bg-v2.webp 1080×1350) — front-edge anchors bottom→top.
   # Measured on the grass lip (lowest row of each shelf), not the back edge.
-  MAP_ASPECT_WIDTH = 940
-  MAP_ASPECT_HEIGHT = 1672
-  # 360×640 @ 1.0× zoom: world h ≈ 640px, map ≈ 464px above dock. -12% lifts the
-  # painted flag tip (y≈21%) below the HUD. T1 caption and summit cannot both
-  # clear at 1.0×; -12% prioritises full-width cover + visible summit.
-  MAP_WORLD_Y = "-12%"
+  MAP_ASPECT_WIDTH = 1080
+  MAP_ASPECT_HEIGHT = 1350
+  # 360×640 @ 1.0× zoom: world h 450px, map ≈ 466px above dock. +15% shifts the
+  # world down so the flag tip (y≈1.9%) clears the HUD and T1 open block clears
+  # the base-camp card.
+  MAP_WORLD_Y = "15%"
   MAP_ZOOM = 1.0
-  # Front-edge y on mountain-stages-bg.webp; x measured at 360 CSS px viewport
-  # (720 device px) and converted to world fractions via (px + 54) / 468.
+  # Front-edge y/x on mountain-stages-bg-v2.webp as fractions of image size.
   TERRACE_ANCHORS = {
-    1 => { y: 0.7763, x: 0.5000, x_left: 0.1154, x_right: 0.8846, token: "bottom" },
-    2 => { y: 0.6256, x: 0.5267, x_left: 0.2329, x_right: 0.8205, token: "second" },
-    3 => { y: 0.4916, x: 0.5160, x_left: 0.2970, x_right: 0.7350, token: "third" },
-    4 => { y: 0.3798, x: 0.5427, x_left: 0.4359, x_right: 0.6496, token: "top" }
+    1 => { y: 0.7481, x: 0.5000, x_left: 0.2260, x_right: 0.7750, token: "bottom" },
+    2 => { y: 0.7111, x: 0.4750, x_left: 0.0000, x_right: 0.9510, token: "second" },
+    3 => { y: 0.5319, x: 0.5130, x_left: 0.2028, x_right: 0.8593, token: "third" },
+    4 => { y: 0.3926, x: 0.5111, x_left: 0.2546, x_right: 0.7833, token: "top" }
   }.freeze
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
@@ -101,13 +100,13 @@ module MountainTrailHelper
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo.variant(resize_to_limit: [ 1200, 1800 ]))
     else
-      image_path("mountain-stages-bg.webp")
+      image_path("mountain-stages-bg-v2.webp")
     end
   rescue StandardError
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo)
     else
-      image_path("mountain-stages-bg.webp")
+      image_path("mountain-stages-bg-v2.webp")
     end
   end
 
