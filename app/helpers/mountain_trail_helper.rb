@@ -36,11 +36,12 @@ module MountainTrailHelper
   MAP_WORLD_Y = "15%"
   MAP_ZOOM = 1.0
   # Front-edge y/x on mountain-stages-bg-v2.webp as fractions of image size.
+  # Gaps between lips: T1–T2 18.7%, T2–T3 16.3%, T3–T4 13.6%.
   TERRACE_ANCHORS = {
-    1 => { y: 0.7481, x: 0.5000, x_left: 0.2260, x_right: 0.7750, token: "bottom" },
-    2 => { y: 0.7111, x: 0.4750, x_left: 0.0000, x_right: 0.9510, token: "second" },
-    3 => { y: 0.5319, x: 0.5130, x_left: 0.2028, x_right: 0.8593, token: "third" },
-    4 => { y: 0.3926, x: 0.5111, x_left: 0.2546, x_right: 0.7833, token: "top" }
+    1 => { y: 0.7481, x: 0.4583, x_left: 0.2259, x_right: 0.7750, token: "bottom" },
+    2 => { y: 0.5615, x: 0.4111, x_left: 0.2972, x_right: 0.6954, token: "second" },
+    3 => { y: 0.3985, x: 0.4333, x_left: 0.3204, x_right: 0.6870, token: "third" },
+    4 => { y: 0.2630, x: 0.4685, x_left: 0.3444, x_right: 0.7287, token: "top" }
   }.freeze
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
