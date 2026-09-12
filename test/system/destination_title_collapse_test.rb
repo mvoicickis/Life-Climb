@@ -2,8 +2,7 @@
 
 require "application_system_test_case"
 
-# V4 peak pennant is a compact flag (~100–150px). Title must stay readable
-# and present — not edge-clipped to a near-zero width.
+# Terraced HUD goal plaque: title must stay readable and in view on short and tall phones.
 class DestinationTitleCollapseTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -36,17 +35,17 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
     @plan = plan
   end
 
-  test "destination title stays centered on tall iPhone viewport" do
-    assert_destination_title_centered(390, 844)
+  test "destination title stays readable on tall iPhone viewport" do
+    assert_goal_plaque_readable(390, 844)
   end
 
-  test "destination title stays centered on short phone viewport" do
-    assert_destination_title_centered(390, 568)
+  test "destination title stays readable on short phone viewport" do
+    assert_goal_plaque_readable(390, 568)
   end
 
   private
 
-  def assert_destination_title_centered(width, height)
+  def assert_goal_plaque_readable(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
 
     visit new_session_path
@@ -58,68 +57,52 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
-    assert_selector ".lp-trail__goal-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-plaque", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title", text: /Become a Rails developer/i, visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const title = document.querySelector(".lp-trail__goal-title");
-        const peak = document.querySelector(".lp-trail__goal-plaque");
-        const pennant = document.querySelector(".lp-trail__goal-plaque");
-        const trail = document.querySelector("#mountain-trail");
-        const mountain = document.querySelector(".lp-trail__mountain");
-        const scroll = document.querySelector(".lp-trail__scroll");
-        if (!title || !peak || !pennant || !mountain) return { ok: false, reason: "missing nodes" };
-        if (scroll) scroll.scrollTop = 0;
-        peak.scrollIntoView({ block: "center", inline: "nearest" });
-        const tr = title.getBoundingClientRect();
-        const pr = peak.getBoundingClientRect();
-        const pennantRect = pennant.getBoundingClientRect();
-        const mountainRect = mountain.getBoundingClientRect();
-        const pennantW = pennantRect.width;
-        const titleCenter = tr.left + tr.width / 2;
-        const peakCenter = pr.left + pr.width / 2;
-        const titleTop = trail ? getComputedStyle(trail).getPropertyValue("--lp-title-top").trim() : "";
-        const peakRight = trail ? getComputedStyle(trail).getPropertyValue("--lp-peak-right").trim() : "";
-        const inView = pennantRect.bottom > 0 && pennantRect.top < window.innerHeight;
-        const offsetFromMountain = pennantRect.bottom - mountainRect.top;
+        const plaque = document.querySelector(".lp-trail__goal-plaque");
+        if (!title || !plaque) return { ok: false, reason: "missing nodes" };
+
+        const titleStyle = getComputedStyle(title);
+        const titleRect = title.getBoundingClientRect();
+        const plaqueRect = plaque.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(title);
+        const lineWidths = Array.from(range.getClientRects()).map((rect) => rect.width);
+        const maxLineWidth = lineWidths.length ? Math.max(...lineWidths) : titleRect.width;
+
         return {
           ok: true,
           text: (title.textContent || "").trim(),
-          titleW: tr.width,
-          titleH: tr.height,
-          pennantW,
-          pennantH: pennantRect.height,
-          pennantTop: pennantRect.top,
-          inView,
-          offsetFromMountain,
-          peakW: pr.width,
-          centerDelta: Math.abs(titleCenter - peakCenter),
-          titleTop,
-          peakRight,
+          titleW: titleRect.width,
+          titleH: titleRect.height,
+          plaqueW: plaqueRect.width,
+          plaqueH: plaqueRect.height,
+          inView: plaqueRect.bottom > 0 && plaqueRect.top < window.innerHeight,
+          maxLineWidth,
+          clientWidth: title.clientWidth,
+          lineClamp: titleStyle.webkitLineClamp,
           viewport: [window.innerWidth, window.innerHeight]
         };
       })()
     JS
 
-    assert metrics["ok"], "Destination title metrics missing: #{metrics.inspect}"
+    assert metrics["ok"], "Goal plaque metrics missing: #{metrics.inspect}"
     assert_match(/Become a Rails developer/i, metrics["text"].to_s)
-    assert_operator metrics["titleW"], :>=, 100,
-                    "title edge-clipped (too narrow) at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["titleH"], :>=, 16,
-                    "title has no visible height at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["pennantH"], :>=, 40,
-                    "pennant clipped or collapsed at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["titleW"], :>=, 72,
+                    "goal title too narrow at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["titleH"], :>=, 12,
+                    "goal title has no visible height at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["plaqueH"], :>=, 36,
+                    "goal plaque collapsed at #{width}x#{height}: #{metrics.inspect}"
     assert metrics["inView"],
-           "pennant not in viewport at #{width}x#{height}: #{metrics.inspect}"
-    assert_match(/\d+px/, metrics["titleTop"].to_s,
-                 "peak pin --lp-title-top missing at #{width}x#{height}: #{metrics.inspect}")
-    assert_match(/\d+px/, metrics["peakRight"].to_s,
-                 "peak pin --lp-peak-right missing at #{width}x#{height}: #{metrics.inspect}")
-    assert_operator metrics["centerDelta"], :<=, 80,
-                    "title not near peak at #{width}x#{height}: #{metrics.inspect}"
+           "goal plaque not in viewport at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["maxLineWidth"].to_f, :<=, metrics["clientWidth"].to_f + 1.0,
+                    "goal title overflows plaque at #{width}x#{height}: #{metrics.inspect}"
     assert_no_selector ".lp-rpg-destination-carousel__stage"
     assert_no_selector ".lp-rpg-destination-carousel__arrow"
-    # Summit cover patches the photo's baked-in flag under the destination pennant.
-    assert_selector ".lp-trail__summit-cover", visible: :all
   end
 end

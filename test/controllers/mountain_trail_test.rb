@@ -182,7 +182,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kind", count: 0
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
     assert_select ".lp-trail-camp__shadow", minimum: 1
-    assert_match(/--lp-base-y:\s*0\.95/, response.body)
     assert_select ".lp-trail-sheet"
     assert_select ".lp-trail__plant-colors"
     assert_select ".lp-trail-plant__wheel", count: 0

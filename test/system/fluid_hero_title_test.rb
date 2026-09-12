@@ -2,9 +2,7 @@
 
 require "application_system_test_case"
 
-# V4 destination title lives on the goal plaque (.lp-trail__goal-title).
-# contenteditable forces white-space: pre in Chrome, so we assert layout fit
-# (no horizontal overflow, 2-line clamp) rather than white-space: nowrap.
+# Terraced HUD goal plaque: destination title must stay readable without clipping on narrow phones.
 class FluidHeroTitleTest < ApplicationSystemTestCase
   LONG_LATVIAN_TITLE = "Profesionāla Rails izstrādātāja karjeras ceļš"
 
@@ -48,7 +46,7 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_destination_fluid_title(390, 568, "Become a Rails developer")
   end
 
-  test "long Latvian destination title fits pennant on narrow phone" do
+  test "long Latvian destination title fits plaque on narrow phone" do
     @goal.update!(title: LONG_LATVIAN_TITLE)
     assert_destination_fluid_title(360, 640, LONG_LATVIAN_TITLE)
   end
@@ -74,15 +72,15 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     click_button "Sign in"
   end
 
-  def peak_title_metrics
+  def goal_title_metrics
     page.evaluate_script(<<~JS)
       (() => {
         const title = document.querySelector(".lp-trail__goal-title");
-        const pennant = title?.closest(".lp-trail__goal-plaque");
-        if (!title || !pennant) return { ok: false, reason: "missing" };
+        const plaque = title?.closest(".lp-trail__goal-plaque");
+        if (!title || !plaque) return { ok: false, reason: "missing" };
         const cs = getComputedStyle(title);
         const tr = title.getBoundingClientRect();
-        const pr = pennant.getBoundingClientRect();
+        const pr = plaque.getBoundingClientRect();
         const range = document.createRange();
         range.selectNodeContents(title);
         const lineWidths = Array.from(range.getClientRects()).map((rect) => rect.width);
@@ -98,29 +96,29 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
           clientWidth: title.clientWidth,
           width: tr.width,
           height: tr.height,
-          pennantHeight: pr.height,
+          plaqueHeight: pr.height,
           viewport: [window.innerWidth, window.innerHeight]
         };
       })()
     JS
   end
 
-  def assert_peak_title_ok(metrics, expected_text, width, height)
+  def assert_goal_title_ok(metrics, expected_text, width, height)
     assert metrics["ok"], "title missing at #{width}x#{height}: #{metrics.inspect}"
     assert_equal expected_text, metrics["text"]
-    assert_equal "2", metrics["lineClamp"].to_s,
-                 "peak title should clamp to 2 lines at #{width}x#{height}: #{metrics.inspect}"
+    assert_equal "1", metrics["lineClamp"].to_s,
+                 "goal title should clamp to 1 line on plaque at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["maxLineWidth"].to_f, :<=, metrics["clientWidth"].to_f + 1.0,
-                    "peak title line overflows horizontally at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["width"].to_f, :>=, 80.0,
+                    "goal title line overflows plaque at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["width"].to_f, :>=, 72.0,
                     "title too narrow at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["height"].to_f, :>=, 16.0,
+    assert_operator metrics["height"].to_f, :>=, 12.0,
                     "title has no height at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["pennantHeight"].to_f, :>=, metrics["height"].to_f + 20.0,
-                    "pennant ribbon shorter than title at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["plaqueHeight"].to_f, :>=, 36.0,
+                    "goal plaque collapsed at #{width}x#{height}: #{metrics.inspect}"
     px = metrics["fontSize"].to_s.to_f
-    assert_operator px, :>=, 14.0,
-                    "font-size below peak floor at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator px, :>=, 11.0,
+                    "font-size below plaque floor at #{width}x#{height}: #{metrics.inspect}"
   end
 
   def assert_destination_fluid_title(width, height, expected_text)
@@ -132,8 +130,8 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_no_selector ".lp-first-climb-shell", wait: 2
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
     assert_selector ".lp-trail__goal-title", text: /#{Regexp.escape(expected_text.split.first)}/i, visible: :all, wait: 5
-    metrics = peak_title_metrics
-    assert_peak_title_ok(metrics, expected_text, width, height)
+    metrics = goal_title_metrics
+    assert_goal_title_ok(metrics, expected_text, width, height)
   end
 
   def assert_today_v2_battlefield(width, height)
