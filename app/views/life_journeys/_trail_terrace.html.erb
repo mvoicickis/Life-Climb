@@ -66,11 +66,11 @@
       <% slot = mountain_trail_terrace_slot(project, terrace, index) %>
       <% accent = mountain_trail_project_accent(project) %>
       <% color_key = project.tagged_color_key %>
-      <% tent_offset = mountain_trail_terrace_tent_offset_px(terrace, slot) %>
+      <% slot_dx = mountain_trail_terrace_slot_dx(terrace, slot) %>
       <button type="button"
               class="trail-tent-hit trail-tent-hit--<%= slot[:slot] %> <%= "has-color is-#{color_key}" if color_key %>"
               id="trail-camp-<%= project.id %>"
-              style="left: <%= tent_offset %>px; --lp-trail-accent: <%= accent %>;"
+              style="--trail-slot-dx: <%= slot_dx.round(4) %>; --lp-trail-accent: <%= accent %>;"
               data-camp-id="<%= project.id %>"
               data-camp-title="<%= project.title %>"
               data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
