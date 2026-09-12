@@ -5405,6 +5405,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   --lp-gap-tent-name: calc(6px * var(--terrace-ui-scale));
   --lp-terrace-stack-gap: calc(8px * var(--terrace-ui-scale));
   --lp-terrace-badge-x: calc(52px * var(--terrace-ui-scale));
+  /* Lift open-stage chrome above the base-camp card without moving terrace anchors. */
+  --lp-open-stage-lift: calc(72px * var(--terrace-ui-scale));
   --lp-fog-opacity: 0.4;
 }
 
@@ -5592,6 +5594,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   pointer-events: none;
 }
 
+.lp-trail.is-terraced .trail-terrace.is-open .trail-open-pill {
+  transform: translateX(-50%) translateY(calc(-1 * var(--lp-open-stage-lift)));
+}
+
 .lp-trail.is-terraced .trail-stage-badge {
   position: absolute;
   left: calc(-1 * var(--lp-terrace-badge-x));
@@ -5758,6 +5764,14 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   flex-direction: column;
   align-items: center;
   transform: translateX(-50%) translateY(calc(-1 * var(--lp-tent-open-h)));
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-t2-camp {
+  transform: translateX(-50%) translateY(calc(-1 * var(--lp-tent-open-h) - var(--lp-open-stage-lift)));
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-camp-more {
+  bottom: calc(8px * var(--terrace-ui-scale) + var(--lp-open-stage-lift));
 }
 
 .lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__shadow {
