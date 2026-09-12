@@ -487,12 +487,22 @@ module MountainTrailHelper
     end
   end
 
-  def mountain_trail_terrace_placed_project_ids(terrace_groups)
-    Array(terrace_groups).flat_map { |terrace| Array(terrace[:camps]).map(&:id) }
+  def mountain_trail_terrace_placed_project_ids(projects, terrace_groups)
+    Array(terrace_groups).flat_map do |terrace|
+      ids = Array(terrace[:camps]).map(&:id)
+      ids.concat(Array(terrace[:hidden_camps]).map(&:id))
+      if terrace[:state] == :range
+        ids.concat(
+          mountain_trail_terrace_range_entries(projects, terrace)
+            .flat_map { |entry| entry[:camps].map(&:id) }
+        )
+      end
+      ids
+    end.uniq
   end
 
   def mountain_trail_terrace_fallback_projects(projects, terrace_groups)
-    placed = mountain_trail_terrace_placed_project_ids(terrace_groups)
+    placed = mountain_trail_terrace_placed_project_ids(projects, terrace_groups)
     mountain_trail_sort_projects(Array(projects).reject { |project| project.try(:holding?) })
       .reject { |project| placed.include?(project.id) }
   end

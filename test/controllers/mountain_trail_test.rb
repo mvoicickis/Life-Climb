@@ -59,7 +59,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
     assert_select "#trail-camp-#{holding.id}", count: 0
     assert_select ".lp-trail-hud"
-    assert_select ".lp-trail-segments"
+    assert_select ".lp-trail-segments", count: 0
     assert_select ".lp-trail__stars"
     assert_select ".lp-trail__footprints", count: 0
     assert_select "#trail-climber", count: 0
@@ -71,6 +71,24 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
     assert_select ".lp-rpg-scenic", count: 0
     assert_match(/mountain-stages-bg|mountain_photo/, response.body)
+  end
+
+  test "nine staged camps render terraced map not fallback" do
+    @plan.children.for_kind("project").destroy_all
+    9.times do |stage|
+      @plan.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "project", title: "Camp #{stage + 1}", position: 0, stage: stage
+      )
+    end
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-stages"
+    assert_select "#trail-map-camps"
+    assert_select "#trail-camps-fallback", count: 0
+    assert_select ".trail-terrace", count: 4
+    assert_select ".trail-stage-badge--range .trail-stage-badge__num", text: "4–9"
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do

@@ -859,6 +859,29 @@ class MountainTrailHelperTest < ActionView::TestCase
     range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
     assert_equal 6, range_camps.size
     assert_equal [ 3, 4, 5, 6, 7, 8 ], range_camps.map { |entry| entry[:stage] }
+    assert mountain_trail_use_terrace_map?(camps, groups)
+    assert_empty mountain_trail_terrace_fallback_projects(camps, groups)
+  end
+
+  test "use_terrace_map is false when a camp is not on any terrace surface" do
+    camp = Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+      id: 99, stage: 0, position: 0, completed?: false, holding?: false
+    )
+    groups = [
+      {
+        index: 1,
+        anchor: MountainTrailHelper::TERRACE_ANCHORS[1],
+        stage: 0,
+        state: :open,
+        camps: [],
+        hidden_camps: [],
+        overflow: 0,
+        range_label: nil
+      }
+    ]
+
+    assert_not mountain_trail_use_terrace_map?([ camp ], groups)
+    assert_equal [ camp ], mountain_trail_terrace_fallback_projects([ camp ], groups)
   end
 
   test "open terrace overflow keeps hidden camps for the sheet" do
