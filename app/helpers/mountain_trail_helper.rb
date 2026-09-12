@@ -30,10 +30,11 @@ module MountainTrailHelper
   # Measured on the grass lip (lowest row of each shelf), not the back edge.
   MAP_ASPECT_WIDTH = 940
   MAP_ASPECT_HEIGHT = 1672
-  # 360×640 @ 1.3× zoom: map ≈ 464px (640 − dock). World h ≈ 832px. -34% lifts the
-  # world so terrace 1 front (77.63%) keeps the open-stage block (pill + tent +
-  # two-line caption) above the base-camp card.
-  MAP_WORLD_Y = "-34%"
+  # 360×640: map ≈ 464px above dock; world h ≈ 537px at 0.84× zoom. -10% lifts just
+  # enough for the painted flag tip (y≈21%) to sit below the HUD while T1 front
+  # (77.63%) + caption clears the base-camp card.
+  MAP_WORLD_Y = "-10%"
+  MAP_ZOOM = 0.84
   # Front-edge y on mountain-stages-bg.webp; x measured at 360 CSS px viewport
   # (720 device px) and converted to world fractions via (px + 54) / 468.
   TERRACE_ANCHORS = {
@@ -43,7 +44,6 @@ module MountainTrailHelper
     4 => { y: 0.3798, x: 0.5427, x_left: 0.4359, x_right: 0.6496, token: "top" }
   }.freeze
   TERRACE_VIEWPORT_REF = 360
-  TERRACE_MAP_ZOOM = 1.3
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
@@ -483,11 +483,11 @@ module MountainTrailHelper
     "is-triple"
   end
 
-  # Pixel offset from terrace centre to the anchor x slot (360 CSS px ref × 1.3 zoom).
+  # Pixel offset from terrace centre to the anchor x slot (360 CSS px ref × MAP_ZOOM).
   def mountain_trail_terrace_tent_offset_px(terrace, slot)
     anchor = terrace[:anchor]
     x_frac = mountain_trail_terrace_x_fraction(terrace, slot)
-    ((x_frac - anchor[:x]) * TERRACE_VIEWPORT_REF * TERRACE_MAP_ZOOM).round
+    ((x_frac - anchor[:x]) * TERRACE_VIEWPORT_REF * MAP_ZOOM).round
   end
 
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)
