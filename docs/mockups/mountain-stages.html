@@ -3077,7 +3077,33 @@
 
     .phone--frame8 .trail-terrace--t1.is-open-terrace .trail-t2-camp--solo { left: 0; }
 
-    .lp-trail-sheet__habit-list {
+    .lp-trail-sheet__basic-progress {
+      margin: 0.55rem 0 0;
+    }
+
+    .lp-trail-sheet__basic-progress-text {
+      margin: 0 0 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+    }
+
+    .lp-trail-sheet__basic-progress-bar {
+      height: 4px;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-paper-soft);
+      overflow: hidden;
+    }
+
+    .lp-trail-sheet__basic-progress-fill {
+      display: block;
+      height: 100%;
+      width: 66.67%;
+      border-radius: inherit;
+      background: var(--lp-green);
+    }
+
+    .lp-trail-sheet__basic-list {
       list-style: none;
       margin: 0;
       padding: 0;
@@ -3085,8 +3111,8 @@
       gap: 0.45rem;
     }
 
-    .lp-trail-sheet__habit-item,
-    .lp-trail-sheet__add-habit {
+    .lp-trail-sheet__basic-item,
+    .lp-trail-sheet__add-basic {
       display: flex;
       align-items: center;
       gap: 0.65rem;
@@ -3094,29 +3120,39 @@
       min-height: 3.5rem;
       padding: 0.45rem 0.65rem;
       border-radius: var(--lp-radius-field);
-      border: 1px solid var(--lp-border);
-      background: var(--lp-surface);
+      border: 0;
+      box-shadow: none;
+      background: var(--lp-green-soft);
       text-align: left;
       font: inherit;
       cursor: pointer;
     }
 
-    .lp-trail-sheet__add-habit {
-      border-style: dashed;
+    .lp-trail-sheet__basic-item.is-done {
+      transform: translateY(2px);
+      opacity: 0.92;
+    }
+
+    .lp-trail-sheet__add-basic {
       color: var(--lp-green-deep);
       font-size: 0.82rem;
       font-weight: 800;
       background: transparent;
     }
 
-    .lp-trail-sheet__habit-name {
+    .lp-trail-sheet__basic-name {
       flex: 1;
       min-width: 0;
       font-size: 0.88rem;
       font-weight: 700;
     }
 
-    .lp-trail-sheet__habit-tick {
+    .lp-trail-sheet__basic-item.is-done .lp-trail-sheet__basic-name {
+      color: var(--lp-muted);
+      text-decoration: line-through;
+    }
+
+    .lp-trail-sheet__basic-tick {
       flex-shrink: 0;
       width: var(--lp-tap);
       height: var(--lp-tap);
@@ -3132,7 +3168,7 @@
       pointer-events: none;
     }
 
-    .lp-trail-sheet__habit-tick::before {
+    .lp-trail-sheet__basic-tick::before {
       content: "";
       width: 22px;
       height: 22px;
@@ -3140,6 +3176,20 @@
       border: 2px solid var(--lp-tick-ring);
       background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
       display: block;
+    }
+
+    .lp-trail-sheet__basic-item.is-done .lp-trail-sheet__basic-tick::before {
+      border-color: var(--lp-green);
+      background: var(--lp-green);
+    }
+
+    .lp-trail-sheet__basic-item.is-done .lp-trail-sheet__basic-tick::after {
+      content: "✓";
+      position: absolute;
+      font-size: 0.72rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #ffffff;
     }
 
     .phone--frame5 .trail-foot-badge {
@@ -3400,7 +3450,7 @@
                     <span class="terrace-anchor" style="left: var(--f0-t1-x); top: var(--f0-t1-y);" title="Terrace 1 centre"><span class="terrace-anchor__num">1</span></span>
                     <span class="terrace-anchor is-clamped" style="left: var(--f0-t1-x-right); top: var(--f0-t1-y);" title="Terrace 1 right (clamped to frame)"></span>
                     <div class="trail-base-foot">
-                      <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                      <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                       <span class="trail-base-camp__patch" aria-hidden="true"></span>
                       <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                       <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -3487,7 +3537,7 @@
                       </div>
                       <div class="trail-terrace trail-terrace--t4"></div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -3605,7 +3655,7 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-b" aria-label="Stage 4, 2 camps"></button>
                       </div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -3739,7 +3789,7 @@
                         </button>
                       </div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -3831,7 +3881,7 @@
                       </div>
                       <div class="trail-terrace trail-terrace--t4"></div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -3947,7 +3997,7 @@
                           <span class="trail-foot-badge__text">1–3</span>
                           <span class="trail-foot-badge__check" aria-hidden="true">✓</span>
                         </button>
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                         <span class="trail-base-camp__patch" aria-hidden="true"></span>
                         <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                         <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -4060,7 +4110,7 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-b" aria-label="Stage 4, 2 camps" tabindex="-1"></button>
                       </div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits" tabindex="-1">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics" tabindex="-1">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -4215,7 +4265,7 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-b" aria-label="Stage 4, 2 camps"></button>
                       </div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -4326,7 +4376,7 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-b" aria-label="Stage 4, 2 camps"></button>
                       </div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -4465,7 +4515,7 @@
                         <button type="button" class="trail-tent-hit trail-tent-hit--sm trail-tent-hit--t4-c" aria-label="Stage 4, 6 camps"></button>
                       </div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily habits">
+                        <button type="button" class="trail-base-camp" aria-label="Base camp, your daily Basics">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -4494,8 +4544,8 @@
       <!-- Frame 8 — Base camp sheet -->
       <section class="frame-block" aria-labelledby="f8-label">
         <p class="frame-block__label" id="f8-label">Frame 8</p>
-        <h2 class="frame-block__title">Base camp sheet · daily habits</h2>
-        <div class="phone phone--map phone--frame8 phone--frame2" data-frame-audit="Frame 8" role="img" aria-label="Frame 8: base camp sheet open with three daily habits">
+        <h2 class="frame-block__title">Base camp sheet · daily Basics</h2>
+        <div class="phone phone--map phone--frame8 phone--frame2" data-frame-audit="Frame 8" role="img" aria-label="Frame 8: base camp sheet open with three daily Basics">
           <section class="lp-trail is-bleed is-v4">
             <div class="lp-trail-hud" data-trail-ignore>
               <div class="lp-trail-hud__lead">
@@ -4546,7 +4596,7 @@
                       </div>
                       <div class="trail-terrace trail-terrace--t4"></div>
                       <div class="trail-base-foot">
-                        <button type="button" class="trail-base-camp is-active" aria-label="Base camp, your daily habits" aria-pressed="true">
+                        <button type="button" class="trail-base-camp is-active" aria-label="Base camp, your daily Basics" aria-pressed="true">
                           <span class="trail-base-camp__patch" aria-hidden="true"></span>
                           <span class="trail-base-camp__tent" aria-hidden="true"><svg viewBox="0 0 36 30" aria-hidden="true"><path class="trail-base-tent-body" d="M4 30 L18 4 L32 30 Z"/><path class="trail-base-tent-shade" d="M18 4 L32 30 L18 30 Z"/></svg></span>
                           <span class="trail-base-camp__label lp-frost">Base camp</span>
@@ -4575,30 +4625,36 @@
                     <h2 class="lp-trail-sheet__title" id="base-sheet-title">Base camp</h2>
                     <button type="button" class="lp-trail-sheet__close" aria-label="Close"><span aria-hidden="true">✕</span></button>
                   </div>
-                  <p class="lp-trail-sheet__subtitle">Your daily habits. They never finish.</p>
+                  <p class="lp-trail-sheet__subtitle">Basics are the small things you do every day. They never finish.</p>
+                  <div class="lp-trail-sheet__basic-progress">
+                    <p class="lp-trail-sheet__basic-progress-text">2 of 3 Basics done today</p>
+                    <div class="lp-trail-sheet__basic-progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="3" aria-label="2 of 3 Basics done today">
+                      <span class="lp-trail-sheet__basic-progress-fill"></span>
+                    </div>
+                  </div>
                 </header>
                 <div class="lp-trail-sheet__body">
-                  <ul class="lp-trail-sheet__habit-list">
+                  <ul class="lp-trail-sheet__basic-list">
                     <li>
-                      <button type="button" class="lp-trail-sheet__habit-item">
-                        <span class="lp-trail-sheet__habit-tick" aria-hidden="true"></span>
-                        <span class="lp-trail-sheet__habit-name">Water</span>
+                      <button type="button" class="lp-trail-sheet__basic-item">
+                        <span class="lp-trail-sheet__basic-tick" aria-hidden="true"></span>
+                        <span class="lp-trail-sheet__basic-name">Read</span>
                       </button>
                     </li>
                     <li>
-                      <button type="button" class="lp-trail-sheet__habit-item">
-                        <span class="lp-trail-sheet__habit-tick" aria-hidden="true"></span>
-                        <span class="lp-trail-sheet__habit-name">Walk</span>
+                      <button type="button" class="lp-trail-sheet__basic-item is-done">
+                        <span class="lp-trail-sheet__basic-tick" aria-hidden="true"></span>
+                        <span class="lp-trail-sheet__basic-name">Water</span>
                       </button>
                     </li>
                     <li>
-                      <button type="button" class="lp-trail-sheet__habit-item">
-                        <span class="lp-trail-sheet__habit-tick" aria-hidden="true"></span>
-                        <span class="lp-trail-sheet__habit-name">Read</span>
+                      <button type="button" class="lp-trail-sheet__basic-item is-done">
+                        <span class="lp-trail-sheet__basic-tick" aria-hidden="true"></span>
+                        <span class="lp-trail-sheet__basic-name">Walk</span>
                       </button>
                     </li>
                     <li>
-                      <button type="button" class="lp-trail-sheet__add-habit">+ Add habit</button>
+                      <button type="button" class="lp-trail-sheet__add-basic">+ Add Basic</button>
                     </li>
                   </ul>
                 </div>
@@ -4607,7 +4663,7 @@
           </section>
         </div>
         <div class="trail-map-legend">
-          <strong>Frame 8 legend.</strong> Base camp tent tapped — sheet like Frame 6. Title <strong>Base camp</strong>, subtitle <strong>Your daily habits. They never finish.</strong> Tick circle on the left; <strong>+ Add habit</strong> as the last row. Close with X only.
+          <strong>Frame 8 legend.</strong> App copy uses one word only: <strong>Basic</strong> (plural <strong>Basics</strong>) — replaces &ldquo;habit&rdquo; and &ldquo;Tracker&rdquo; in the UI. Base camp tent tapped — sheet like Frame 6. Title <strong>Base camp</strong>, subtitle <strong>Basics are the small things you do every day. They never finish.</strong> Progress <strong>2 of 3 Basics done today</strong> with a thin green bar (counts up only). Unticked Basics stay on top; ticked rows sink below with green fill, white check, muted strikethrough — nothing disappears. Rows use soft green checklist styling (no camp border/shadow). <strong>+ Add Basic</strong> as the last row. Close with X only.
         </div>
       </section>
 
