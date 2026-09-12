@@ -2,7 +2,7 @@
 <% terrace = local_assigns.fetch(:terrace) %>
 <% projects = local_assigns[:projects] || [] %>
 <% current_project = local_assigns[:current_project] %>
-<% next if terrace[:state] == :empty %>
+<% unless terrace[:state] == :empty %>
 
 <div class="trail-terrace trail-terrace--t<%= terrace[:index] %> is-<%= terrace[:state] %>"
      data-terrace-index="<%= terrace[:index] %>"
@@ -78,3 +78,5 @@
     <% end %>
   <% end %>
 </div>
+
+<% end %>

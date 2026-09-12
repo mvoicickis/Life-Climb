@@ -167,9 +167,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-nav.is-v4 a[href='#{life_points_path}']"
     assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
-    assert_select ".lp-trail__peak"
-    assert_select ".lp-trail__pennant"
-    assert_select ".lp-trail__peak-title"
+    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail__goal-title"
     assert_select ".lp-trail__summit-cover", count: 1
     assert_select ".lp-trail__mountain .lp-trail__dock", count: 0
     assert_select ".lp-trail__scroll > .lp-trail__dock .lp-trail-base-card"

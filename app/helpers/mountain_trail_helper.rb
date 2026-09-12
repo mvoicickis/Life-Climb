@@ -254,16 +254,16 @@ module MountainTrailHelper
   end
 
   def mountain_trail_projects_by_stage(projects)
-    Array(projects).reject(&:holding?).group_by { |project| project.stage.to_i }.transform_values do |camps|
-      camps.sort_by { |camp| [ camp.position.to_i, camp.id ] }
+    Array(projects).reject { |project| project.try(:holding?) }.group_by { |project| project.try(:stage).to_i }.transform_values do |camps|
+      camps.sort_by { |camp| [ camp.try(:position).to_i, camp.try(:id).to_i ] }
     end
   end
 
   def mountain_trail_open_stage(projects)
-    open = Array(projects).reject(&:holding?).reject(&:completed?)
+    open = Array(projects).reject { |project| project.try(:holding?) || project.try(:completed?) }
     return 0 if open.empty?
 
-    open.map { |project| project.stage.to_i }.min
+    open.map { |project| project.try(:stage).to_i }.min
   end
 
   def mountain_trail_last_finished_stage(projects)
@@ -273,7 +273,7 @@ module MountainTrailHelper
   end
 
   def mountain_trail_max_stage(projects)
-    stages = Array(projects).reject(&:holding?).map { |project| project.stage.to_i }
+    stages = Array(projects).reject { |project| project.try(:holding?) }.map { |project| project.try(:stage).to_i }
     stages.empty? ? nil : stages.max
   end
 
@@ -281,7 +281,7 @@ module MountainTrailHelper
     camps = mountain_trail_projects_by_stage(projects)[stage.to_i] || []
     return false if camps.empty?
 
-    camps.all?(&:completed?)
+    camps.all? { |camp| camp.try(:completed?) }
   end
 
   def mountain_trail_stage_label(stage)
@@ -294,7 +294,7 @@ module MountainTrailHelper
 
   # Four terrace slots bottom→top for the terraced map.
   def mountain_trail_terrace_groups(projects)
-    camps = Array(projects).reject(&:holding?)
+    camps = Array(projects).reject { |project| project.try(:holding?) }
     return [] if camps.empty?
 
     by_stage = mountain_trail_projects_by_stage(camps)
@@ -438,7 +438,8 @@ module MountainTrailHelper
 
   def mountain_trail_terrace_fallback_projects(projects, terrace_groups)
     placed = mountain_trail_terrace_placed_project_ids(terrace_groups)
-    mountain_trail_sort_projects(Array(projects).reject(&:holding?)).reject { |project| placed.include?(project.id) }
+    mountain_trail_sort_projects(Array(projects).reject { |project| project.try(:holding?) })
+      .reject { |project| placed.include?(project.id) }
   end
 
   def mountain_trail_use_terrace_map?(projects, terrace_groups)

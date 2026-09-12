@@ -825,28 +825,20 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_operator last_y, :<, 35
   end
 
-  test "reveal camp path_frac increases bottom to top for 1 3 and 5 camps" do
-    [ 1, 3, 5 ].each do |count|
-      projects = reveal_test_projects(count)
-      camps = mountain_trail_reveal_camps(projects)
-      assert_equal count, camps.size
-      fracs = camps.pluck(:path_frac)
-      assert fracs.all? { |frac| frac > 0 && frac < 1 }
-      assert_equal fracs.sort, fracs
-      expected_ys = projects.map(&:trail_y).sort.reverse.map { |y| y.round(4) }
-      assert_equal expected_ys, camps.pluck(:y)
-    end
+  test "reveal camps include terrace landing order for trail projects" do
+    projects = reveal_test_projects(3)
+    camps = mountain_trail_reveal_camps(projects)
+    assert_equal 3, camps.size
+    assert camps.all? { |entry| entry.key?(:delay_ms) }
+    assert camps.all? { |entry| entry.key?(:terrace_index) }
   end
 
-  test "reveal camps json is sorted by trail_y descending" do
+  test "reveal camps json encodes terrace landing metadata" do
     projects = reveal_test_projects(3)
     parsed = JSON.parse(mountain_trail_reveal_camps_json(projects))
-    ys = parsed.map { |camp| camp["y"] }
-    assert_equal ys.sort.reverse, ys
-    assert_equal [ "id", "path_frac", "x", "y" ], parsed.first.keys.sort
+    assert_equal 3, parsed.size
+    assert_equal [ "delay_ms", "id", "slot_index", "terrace_index" ], parsed.first.keys.sort
   end
-
-  private
 
   test "terrace window shows open stage and range badge for nine camps with none finished" do
     camps = (0...9).map do |stage|
@@ -894,14 +886,18 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert reveal.map { |entry| entry[:delay_ms] }.each_cons(2).all? { |a, b| b >= a }
   end
 
+  private
+
   def reveal_test_projects(count)
     (0...count).map do |index|
-      trail_slot_index = count - 1 - index
-      slot = MountainTrailHelper::AutoSlot.call(index: trail_slot_index, total: count)
-      Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+      Struct.new(:id, :stage, :position, :completed?, :holding?, :trail_x, :trail_y, keyword_init: true).new(
         id: index + 1,
-        trail_x: slot[:trail_x],
-        trail_y: slot[:trail_y]
+        stage: index,
+        position: 0,
+        completed?: false,
+        holding?: false,
+        trail_x: 0.5,
+        trail_y: 0.55
       )
     end
   end

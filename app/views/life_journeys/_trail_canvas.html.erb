@@ -108,6 +108,15 @@
             <span aria-hidden="true">🏕</span><%= camps_done %>/<%= all_projects.size %>
           </span>
         </div>
+        <% if plans.size > 1 %>
+          <div class="lp-trail-hud__plans" role="navigation" aria-label="<%= t('strategy.rpg.plans_kicker') %>">
+            <% plans.each do |p| %>
+              <%= link_to mountain_trail_hud_plan_title(p.title),
+                    life_journey_path(journey, goal_id: goal&.id, plan_id: p.id),
+                    class: "lp-trail-hud__plan #{'is-active' if plan&.id == p.id}" %>
+            <% end %>
+          </div>
+        <% end %>
         <%= link_to new_feedback_path, class: "lp-trail-hud__feedback" do %>
           <span aria-hidden="true">?</span> <%= t("feedback.fab_short") %>
         <% end %>
