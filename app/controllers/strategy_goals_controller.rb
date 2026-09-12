@@ -68,7 +68,7 @@ class StrategyGoalsController < ApplicationController
         respond_to do |format|
           format.turbo_stream do
             @created = goal
-            @plan = parent
+            @plan = parent.reload
             @goal = goal.root_goal
             @journey = current_user.life_journeys.active.find_by(id: goal.life_journey_id) ||
                        current_user.primary_focused_journey
