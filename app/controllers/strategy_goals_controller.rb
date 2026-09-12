@@ -42,7 +42,7 @@ class StrategyGoalsController < ApplicationController
     apply_color_key_params!(goal) if kind == "project"
     apply_camp_mode_params!(goal) if kind == "project"
     apply_trail_params!(goal) if kind == "project"
-    assign_auto_trail_slot!(goal) if kind == "project"
+    assign_open_stage!(goal) if kind == "project"
 
     if seed_win_requested? && !seed_win_allowed?(parent)
       return fail_redirect(t("strategy.bad_parent"), focus_id: parent&.id)
@@ -478,7 +478,28 @@ class StrategyGoalsController < ApplicationController
     goal.trail_y = slot[:trail_y]
   end
 
-  # Strategy / empty plant fields: park the tent on the auto trail slot before save.
+  # Terraced map: new camps land on the open stage ledge.
+  def assign_open_stage!(goal)
+    return unless goal.project?
+
+    parent = goal.parent
+    return if parent.blank?
+
+    siblings = parent.children.select do |child|
+      child.project? && !child.holding? && child != goal
+    end
+    incomplete = siblings.reject(&:completed?)
+
+    goal.stage =
+      if incomplete.any?
+        incomplete.map { |project| project.stage.to_i }.min
+      else
+        max_stage = siblings.map { |project| project.stage.to_i }.max
+        max_stage.nil? ? 0 : max_stage + 1
+      end
+  end
+
+  # Legacy auto trail slot — kept for fallback list coords when trail_x/y blank.
   def assign_auto_trail_slot!(goal)
     return unless goal.project?
     return if goal.trail_x.present? && goal.trail_y.present?

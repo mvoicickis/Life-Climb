@@ -1,0 +1,17 @@
+<%# Plain camp list when terrace layout cannot place every camp. locals: projects, current_project %>
+<% projects = local_assigns.fetch(:projects) %>
+<% current_project = local_assigns[:current_project] %>
+
+<div class="lp-trail__camps-fallback" id="trail-camps-fallback" aria-label="<%= t('strategy.rpg.trail.list_fallback') %>">
+  <% mountain_trail_sort_projects(projects).each_with_index do |project, index| %>
+    <%= render "life_journeys/trail_camp",
+          project: project,
+          projects: projects,
+          current_project: current_project,
+          terrace: nil,
+          slot: nil,
+          index: index,
+          total: projects.size,
+          fallback: true %>
+  <% end %>
+</div>

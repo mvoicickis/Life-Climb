@@ -1,0 +1,80 @@
+<%# One terrace row on the terraced map. locals: terrace, projects, current_project %>
+<% terrace = local_assigns.fetch(:terrace) %>
+<% projects = local_assigns[:projects] || [] %>
+<% current_project = local_assigns[:current_project] %>
+<% next if terrace[:state] == :empty %>
+
+<div class="trail-terrace trail-terrace--t<%= terrace[:index] %> is-<%= terrace[:state] %>"
+     data-terrace-index="<%= terrace[:index] %>"
+     data-terrace-stage="<%= terrace[:stage] %>"
+     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%;">
+  <% if terrace[:state] == :open && terrace[:stage].present? %>
+    <p class="trail-open-pill lp-trail-stage__label">
+      <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
+    </p>
+  <% elsif terrace[:state] == :range %>
+    <button type="button"
+            class="trail-stage-badge trail-stage-badge--range"
+            aria-label="<%= t('strategy.rpg.trail.terrace.range_aria', label: terrace[:range_label]) %>">
+      <span class="trail-stage-badge__num"><%= terrace[:range_label] %></span>
+    </button>
+  <% elsif terrace[:stage].present? %>
+    <button type="button"
+            class="trail-stage-badge trail-stage-badge--<%= terrace[:state] == :done ? 'done' : 'later' %>"
+            aria-label="<%= t('strategy.rpg.trail.terrace.stage_aria', stage: mountain_trail_stage_label(terrace[:stage]), state: terrace[:state]) %>">
+      <span class="trail-stage-badge__num"><%= mountain_trail_stage_label(terrace[:stage]) %></span>
+      <% if terrace[:state] == :done %>
+        <span class="trail-stage-badge__check" aria-hidden="true">✓</span>
+      <% end %>
+    </button>
+  <% end %>
+
+  <% if terrace[:foot_badge].present? %>
+    <div class="trail-foot-badge" aria-label="<%= t('strategy.rpg.trail.terrace.foot_badge_aria', count: terrace[:foot_badge][:count]) %>">
+      <span class="trail-foot-badge__check" aria-hidden="true">✓</span>
+      <span class="trail-foot-badge__count"><%= terrace[:foot_badge][:count] %></span>
+    </div>
+  <% end %>
+
+  <% if terrace[:state] == :open %>
+    <% terrace[:camps].each_with_index do |project, index| %>
+      <% slot = mountain_trail_terrace_slot(project, terrace, index) %>
+      <%= render "life_journeys/trail_camp",
+            project: project,
+            projects: projects,
+            current_project: current_project,
+            terrace: terrace,
+            slot: slot,
+            index: index,
+            total: terrace[:camps].size %>
+    <% end %>
+    <% if terrace[:overflow].positive? %>
+      <span class="trail-camp-more">+<%= terrace[:overflow] %></span>
+    <% end %>
+  <% elsif terrace[:state] != :range %>
+    <% terrace[:camps].each_with_index do |project, index| %>
+      <% slot = mountain_trail_terrace_slot(project, terrace, index) %>
+      <% accent = mountain_trail_project_accent(project) %>
+      <% color_key = project.tagged_color_key %>
+      <button type="button"
+              class="trail-tent-hit trail-tent-hit--<%= slot[:slot] %> <%= "has-color is-#{color_key}" if color_key %>"
+              id="trail-camp-<%= project.id %>"
+              style="left: <%= (mountain_trail_terrace_x_fraction(terrace, slot) * 100).round(2) %>%; --lp-trail-accent: <%= accent %>;"
+              data-camp-id="<%= project.id %>"
+              data-camp-title="<%= project.title %>"
+              data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
+              data-camp-description="<%= project.description.to_s %>"
+              data-accent="<%= accent %>"
+              data-update-url="<%= strategy_goal_path(project) %>"
+              data-action="click->trail-canvas#campClick click->trail-camp-sheet#open"
+              aria-label="<%= project.title %>">
+        <span class="trail-tent trail-tent--md has-color <%= "is-#{color_key}" if color_key %>"
+              style="--lp-trail-accent: <%= accent %>;"
+              aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+      </button>
+    <% end %>
+    <% if terrace[:overflow].positive? %>
+      <span class="trail-camp-more">+<%= terrace[:overflow] %></span>
+    <% end %>
+  <% end %>
+</div>

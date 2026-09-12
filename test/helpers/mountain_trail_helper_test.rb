@@ -848,6 +848,52 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   private
 
+  test "terrace window shows open stage and range badge for nine camps with none finished" do
+    camps = (0...9).map do |stage|
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
+      )
+    end
+
+    groups = mountain_trail_terrace_groups(camps)
+    assert_equal 4, groups.size
+    assert_equal :open, groups[0][:state]
+    assert_equal 0, groups[0][:stage]
+    assert_equal :later, groups[1][:state]
+    assert_equal 1, groups[1][:stage]
+    assert_equal :range, groups[3][:state]
+    assert_equal "4–9", groups[3][:range_label]
+  end
+
+  test "terrace window puts finished stage on t1 and open on t2" do
+    camps = [
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 1, stage: 0, position: 0, completed?: true, holding?: false
+      ),
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 2, stage: 1, position: 0, completed?: false, holding?: false
+      )
+    ]
+
+    groups = mountain_trail_terrace_groups(camps)
+    assert_equal :done, groups[0][:state]
+    assert_equal 0, groups[0][:stage]
+    assert_equal :open, groups[1][:state]
+    assert_equal 1, groups[1][:stage]
+  end
+
+  test "reveal camps stagger by terrace bottom to top" do
+    camps = (0...3).map do |stage|
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
+      )
+    end
+
+    reveal = mountain_trail_reveal_camps(camps)
+    assert reveal.all? { |entry| entry.key?(:delay_ms) }
+    assert reveal.map { |entry| entry[:delay_ms] }.each_cons(2).all? { |a, b| b >= a }
+  end
+
   def reveal_test_projects(count)
     (0...count).map do |index|
       trail_slot_index = count - 1 - index

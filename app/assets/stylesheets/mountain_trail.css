@@ -5416,3 +5416,467 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
     animation: none;
   }
 }
+
+/* ——— Terraced map (mountain-stages-bg) ——— */
+.lp-trail.is-terraced {
+  --map-zoom: 1.3;
+  --map-safe: 12px;
+  --lp-tent-open-w: 56px;
+  --lp-tent-open-h: 44px;
+  --lp-tent-fog-w: 40px;
+  --lp-tent-fog-h: 32px;
+  --lp-camp-name-min: 112px;
+  --lp-camp-name-max: 140px;
+  --lp-pill-h: 26px;
+  --lp-gap-tent-name: 6px;
+  --lp-fog-opacity: 0.4;
+}
+
+.lp-trail.is-terraced .lp-trail__scroll {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  padding-bottom: 0;
+}
+
+.lp-trail.is-terraced .lp-trail__surface {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+}
+
+.lp-trail.is-terraced .lp-trail__map {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-trail.is-terraced .lp-trail__world {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(100% * var(--map-zoom));
+  transform: translateX(-50%) translateY(var(--map-world-y, -20%));
+  transform-origin: top center;
+}
+
+.lp-trail.is-terraced .lp-trail__photo-wrap {
+  position: relative;
+  inset: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.lp-trail.is-terraced img.lp-trail__photo {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.lp-trail.is-terraced .lp-trail__mountain-foot,
+.lp-trail.is-terraced .lp-trail__peak,
+.lp-trail.is-terraced .lp-trail__climber,
+.lp-trail.is-terraced .lp-trail__footprints,
+.lp-trail.is-terraced .lp-trail__spine,
+.lp-trail.is-terraced .lp-trail__spurs,
+.lp-trail.is-terraced .lp-trail-glow,
+.lp-trail.is-terraced .lp-trail-placing {
+  display: none !important;
+}
+
+.lp-trail.is-terraced .lp-trail-hud__lead {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+.lp-trail.is-terraced .lp-trail-hud__pill {
+  flex: 0 1 auto;
+}
+
+.lp-trail.is-terraced .lp-trail__goal {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+  flex: 0 0 auto;
+  max-width: 9.25rem;
+  pointer-events: auto;
+}
+
+.lp-trail.is-terraced .lp-trail__goal-plaque {
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field, 0.85rem);
+  background: var(--lp-frost);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.35rem 0.5rem;
+  pointer-events: auto;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lp-trail.is-terraced .lp-trail__goal-title,
+.lp-trail.is-terraced .lp-trail__goal-title.lp-rpg-destination-carousel__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  font-family: var(--lp-trail-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--lp-ink, #0f172a);
+  line-height: 1.2;
+  text-align: left;
+}
+
+.lp-trail.is-terraced .lp-trail__goal-tagline {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--lp-muted, #475569);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-trail.is-terraced .lp-trail__goal-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  min-width: 11rem;
+  z-index: 25;
+}
+
+.lp-trail.is-terraced .trail-stages {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.lp-trail.is-terraced .trail-stages > * {
+  pointer-events: auto;
+}
+
+.lp-trail.is-terraced .trail-terrace {
+  position: absolute;
+  left: var(--trail-terrace-x, 50%);
+  top: var(--trail-terrace-y);
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  overflow: visible;
+}
+
+.lp-trail.is-terraced .trail-open-pill {
+  position: absolute;
+  left: 0;
+  top: calc(-1 * var(--lp-tent-open-h) - var(--lp-pill-h) - 8px);
+  transform: translateX(-50%);
+  height: var(--lp-pill-h);
+  min-height: var(--lp-pill-h);
+  margin: 0;
+  padding: 0 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 1px solid var(--lp-green, #57d35b);
+  background: var(--lp-frost);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--lp-ink, #0f172a);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  pointer-events: none;
+}
+
+.lp-trail.is-terraced .trail-stage-badge {
+  position: absolute;
+  left: -52px;
+  top: calc(-1 * var(--lp-tent-fog-h) - 16px);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 3;
+  transform: translateY(-50%);
+  border: 0;
+  font: inherit;
+}
+
+.lp-trail.is-terraced .trail-stage-badge__num {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.lp-trail.is-terraced .trail-stage-badge--later {
+  background: var(--lp-frost);
+  border: 1px solid var(--lp-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.lp-trail.is-terraced .trail-stage-badge--later .trail-stage-badge__num {
+  color: var(--lp-muted, #475569);
+}
+
+.lp-trail.is-terraced .trail-stage-badge--done {
+  background: var(--lp-green-soft, rgba(87, 211, 91, 0.28));
+  border: 1px solid var(--lp-green, #57d35b);
+}
+
+.lp-trail.is-terraced .trail-stage-badge--done .trail-stage-badge__num {
+  color: var(--lp-green-deep, #3dbd48);
+}
+
+.lp-trail.is-terraced .trail-stage-badge--range {
+  width: auto;
+  min-width: 24px;
+  padding: 0 0.35rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  background: var(--lp-frost);
+  border: 1px solid var(--lp-border);
+}
+
+.lp-trail.is-terraced .trail-stage-badge--range .trail-stage-badge__num {
+  font-size: 0.58rem;
+}
+
+.lp-trail.is-terraced .trail-foot-badge {
+  position: absolute;
+  left: -52px;
+  top: calc(-1 * var(--lp-tent-open-h) - 8px);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: var(--lp-pill-h);
+  padding: 0 0.45rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 1px solid var(--lp-green, #57d35b);
+  background: var(--lp-frost);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--lp-green-deep, #3dbd48);
+}
+
+.lp-trail.is-terraced .trail-tent-hit {
+  position: absolute;
+  bottom: 0;
+  width: var(--lp-tent-fog-w);
+  height: calc(var(--lp-tent-fog-h) + 44px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translateX(-50%);
+}
+
+.lp-trail.is-terraced .trail-tent {
+  position: absolute;
+  bottom: 0;
+  display: block;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.2));
+  pointer-events: none;
+}
+
+.lp-trail.is-terraced .trail-tent svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-trail.is-terraced .trail-tent--md {
+  width: var(--lp-tent-fog-w);
+  height: var(--lp-tent-fog-h);
+  opacity: var(--lp-fog-opacity);
+}
+
+.lp-trail.is-terraced .trail-tent svg .trail-tent-body {
+  fill: var(--lp-trail-accent, #0f9488);
+}
+
+.lp-trail.is-terraced .trail-tent svg .trail-tent-shade {
+  fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 52%, #000000);
+}
+
+.lp-trail.is-terraced .trail-tent svg .trail-tent-door {
+  fill: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 68%, #ffffff);
+}
+
+.lp-trail.is-terraced .trail-terrace.is-done .trail-tent {
+  opacity: 0.55;
+}
+
+.lp-trail.is-terraced .trail-t2-camp {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--lp-tent-open-w);
+  height: var(--lp-tent-open-h);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.lp-trail.is-terraced .trail-t2-camp--l { left: -66px; }
+.lp-trail.is-terraced .trail-t2-camp--r { left: 66px; }
+.lp-trail.is-terraced .trail-t2-camp--solo { left: 0; }
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 28px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(20, 16, 10, 0.32);
+  filter: blur(2px);
+}
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__peg {
+  position: relative;
+  width: var(--lp-tent-open-w);
+  height: var(--lp-tent-open-h);
+}
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__tent {
+  width: var(--lp-tent-open-w);
+  height: var(--lp-tent-open-h);
+}
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__ring {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+}
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__caption {
+  position: absolute;
+  top: calc(100% + var(--lp-gap-tent-name));
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--lp-camp-name-min);
+  min-width: var(--lp-camp-name-min);
+  max-width: var(--lp-camp-name-max);
+  min-height: var(--lp-pill-h);
+  padding: 0.1rem 0.38rem 0.12rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-frost);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  pointer-events: none;
+}
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__title {
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--lp-ink, #0f172a);
+  text-align: center;
+}
+
+.lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__status {
+  display: block;
+  font-size: 0.5rem;
+  font-weight: 600;
+  color: var(--lp-muted, #475569);
+}
+
+.lp-trail.is-terraced .trail-t2-camp.is-current .lp-trail-camp__caption {
+  border: 2px solid var(--lp-green, #57d35b);
+  box-shadow: 0 0 12px var(--lp-green-soft, rgba(87, 211, 91, 0.28));
+}
+
+.lp-trail.is-terraced .trail-t2-camp.is-current .lp-trail-camp__peg::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 2.75rem;
+  height: 1rem;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, var(--lp-green-soft, rgba(87, 211, 91, 0.28)) 0%, transparent 72%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.lp-trail.is-terraced .trail-camp-more {
+  position: absolute;
+  left: 72px;
+  bottom: 8px;
+  transform: translateX(-50%);
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  background: var(--lp-frost);
+  border: 1px solid var(--lp-border);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--lp-muted, #475569);
+  display: grid;
+  place-items: center;
+}
+
+.lp-trail.is-terraced .lp-trail__camps-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.lp-trail.is-terraced .lp-trail__camps-fallback .lp-trail-camp {
+  position: absolute;
+  left: calc(var(--lp-trail-x, 0.5) * 100%);
+  top: calc(var(--lp-trail-y, 0.5) * 100%);
+  transform: translate(-50%, -50%);
+}
+
+.lp-trail.is-terraced.is-first-camp-reveal .lp-trail-camp:not(.is-landed),
+.lp-trail.is-terraced.is-first-camp-reveal .trail-tent-hit:not(.is-landed) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lp-trail.is-terraced.is-first-camp-reveal .lp-trail-camp.is-landed,
+.lp-trail.is-terraced.is-first-camp-reveal .trail-tent-hit.is-landed {
+  animation: lp-trail-land-in 0.45s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-trail.is-terraced.is-first-camp-reveal .lp-trail-camp,
+  .lp-trail.is-terraced.is-first-camp-reveal .trail-tent-hit {
+    opacity: 1;
+    animation: none;
+  }
+}

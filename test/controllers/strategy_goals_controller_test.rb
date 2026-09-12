@@ -512,8 +512,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
-    assert_select "#trail-camps"
-    assert_select ".lp-trail__peak-title", text: /Goal/i
+    assert_select "#trail-map-camps"
+    assert_select ".lp-trail__goal-title", text: /Goal/i
     assert_select ".lp-trail-hud__plan", text: /Plan Alpha/i
     assert_select ".lp-trail-hud__plan", text: /Plan Beta/i
     assert_select ".lp-trail-hud__plan.is-active", text: /Plan Alpha/i
@@ -603,7 +603,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
     assert_select "#trail-camp-#{projects.first.id}[aria-label=?]", "Project 0"
-    assert_select "#trail-camps .lp-trail-camp", minimum: 3
+    assert_select "#trail-stages .trail-t2-camp", minimum: 3
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end

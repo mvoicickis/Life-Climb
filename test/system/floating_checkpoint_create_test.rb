@@ -84,24 +84,9 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
       find("input.lp-trail-plant__field").set("Notifications camp")
       find(".lp-trail-plant__submit").click
     end
-    assert_selector ".lp-trail.is-placing", wait: 3
 
-    assert_difference -> { @plan.reload.children.for_kind("project").count }, 1 do
-      page.execute_script(<<~JS)
-        (() => {
-          const mountain = document.querySelector(".lp-trail__mountain");
-          if (!mountain) return;
-          const r = mountain.getBoundingClientRect();
-          const x = r.left + r.width * 0.52;
-          const y = r.top + r.height * 0.58;
-          mountain.dispatchEvent(new MouseEvent("click", {
-            bubbles: true, cancelable: true, clientX: x, clientY: y, view: window
-          }));
-        })()
-      JS
-      assert_selector ".lp-trail-camp[aria-label='Notifications camp']", visible: :all, wait: 8
-    end
-    created = @plan.children.for_kind("project").find_by!(title: "Notifications camp")
+    assert_selector ".lp-trail-camp[aria-label='Notifications camp']", visible: :all, wait: 8
+    created = @plan.reload.children.for_kind("project").find_by!(title: "Notifications camp")
     assert_selector "#trail-camp-#{created.id}[aria-label='Notifications camp']", visible: :all, wait: 5
     assert_no_selector ".lp-rpg-section-head"
 

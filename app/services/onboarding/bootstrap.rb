@@ -125,8 +125,6 @@ module Onboarding
         Strategy::Celebrate.call(user: @user, goal: first_battle) if first_battle
       end
 
-      Strategy::PinUnplacedCamps.call(projects: projects)
-
       Result.new(journey: journey, goal: goal, plan: plan, projects: projects, first_battle: first_battle)
     rescue LifeAreas::Select::Error, Journeys::Create::Error, Focus::SetJourneys::Error,
            ActiveRecord::RecordInvalid => e
