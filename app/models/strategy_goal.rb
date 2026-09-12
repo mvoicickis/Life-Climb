@@ -360,6 +360,11 @@ class StrategyGoal < ApplicationRecord
     update!(completed_at: nil, manually_completed_at: nil)
   end
 
+  def stage=(value)
+    @stage_explicit = true if new_record? && !@assigning_stage_auto
+    super
+  end
+
   private
 
   # Phantom Today battles: open DailyTodos must not outlive their Mountain day/quest.
@@ -523,11 +528,13 @@ class StrategyGoal < ApplicationRecord
   def assign_stage_for_plan_camp
     return unless project? && parent&.plan? && !holding?
     return if stage_explicit
-    return if attribute_assigned?(:stage)
 
     siblings = StrategyGoal.where(parent_id: parent.id, horizon: "project", holding: false)
     siblings = siblings.where.not(id: id) if id.present?
+    @assigning_stage_auto = true
     self.stage = siblings.maximum(:stage).to_i + 1
+  ensure
+    @assigning_stage_auto = false
   end
 
   def scheduled_on_required_for_day
