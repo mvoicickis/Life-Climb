@@ -7,7 +7,7 @@
 <div class="trail-terrace trail-terrace--t<%= terrace[:index] %> is-<%= terrace[:state] %>"
      data-terrace-index="<%= terrace[:index] %>"
      data-terrace-stage="<%= terrace[:stage] %>"
-     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%;">
+     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%; --trail-badge-dx: <%= (terrace[:anchor][:x] - terrace[:anchor][:x_left]).round(4) %>;">
   <% if terrace[:state] == :open && terrace[:stage].present? %>
     <p class="trail-open-pill lp-trail-stage__label">
       <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
@@ -66,10 +66,11 @@
       <% slot = mountain_trail_terrace_slot(project, terrace, index) %>
       <% accent = mountain_trail_project_accent(project) %>
       <% color_key = project.tagged_color_key %>
+      <% tent_dx = mountain_trail_terrace_x_fraction(terrace, slot) - terrace[:anchor][:x] %>
       <button type="button"
               class="trail-tent-hit trail-tent-hit--<%= slot[:slot] %> <%= "has-color is-#{color_key}" if color_key %>"
               id="trail-camp-<%= project.id %>"
-              style="left: <%= (mountain_trail_terrace_x_fraction(terrace, slot) * 100).round(2) %>%; --lp-trail-accent: <%= accent %>;"
+              style="left: calc(<%= tent_dx.round(4) %> * 100vw * var(--map-zoom)); --lp-trail-accent: <%= accent %>;"
               data-camp-id="<%= project.id %>"
               data-camp-title="<%= project.title %>"
               data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
