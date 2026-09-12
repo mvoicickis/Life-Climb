@@ -73,6 +73,14 @@
               area: @created.life_area %>
       </div>
     <% end %>
-    <%= turbo_stream.open_trail_camp(@created.id) %>
+    <% overflow_sheet = mountain_trail_terrace_overflow_sheet_for(trail_projects, @created) %>
+    <% if overflow_sheet %>
+      <%= turbo_stream.open_terrace_sheet(
+            sheet_id: overflow_sheet[:sheet_id],
+            title: overflow_sheet[:title],
+            camp_id: @created.id) %>
+    <% else %>
+      <%= turbo_stream.open_trail_camp(@created.id) %>
+    <% end %>
   <% end %>
 <% end %>

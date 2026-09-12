@@ -447,6 +447,22 @@ module MountainTrailHelper
     )
   end
 
+  def mountain_trail_terrace_overflow_sheet_for(projects, camp)
+    mountain_trail_terrace_groups(projects).each do |terrace|
+      hidden = mountain_trail_terrace_overflow_camps(projects, terrace)
+      next unless hidden.any? { |candidate| candidate.id == camp.id }
+
+      return {
+        sheet_id: "terrace-sheet-overflow-#{terrace[:index]}",
+        title: I18n.t(
+          "strategy.rpg.trail.terrace.overflow_sheet_title",
+          stage: mountain_trail_stage_label(terrace[:stage])
+        )
+      }
+    end
+    nil
+  end
+
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)
     count = terrace[:camps].size
     if terrace[:state] == :open

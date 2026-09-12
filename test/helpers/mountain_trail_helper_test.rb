@@ -879,6 +879,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 1, open[:overflow]
     assert_equal [ 3 ], mountain_trail_terrace_overflow_camps(camps, open).map(&:id)
     assert_equal "Stage 1, 1 more camps", mountain_trail_terrace_overflow_aria_label(open)
+    sheet = mountain_trail_terrace_overflow_sheet_for(camps, camps.last)
+    assert_equal "terrace-sheet-overflow-1", sheet[:sheet_id]
   end
 
   test "terrace window puts finished stage on t1 and open on t2" do

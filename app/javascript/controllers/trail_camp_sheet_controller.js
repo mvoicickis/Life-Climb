@@ -61,24 +61,24 @@ export default class extends Controller {
   openTerraceSheet(event) {
     event?.preventDefault()
     event?.stopPropagation()
-    if (!this.hasTerraceSheetTarget || !this.hasTerraceSheetBodyTarget) return
-
     const btn = event.currentTarget
-    const panelId = btn.dataset.terraceSheetId
-    const title = btn.dataset.terraceSheetTitle || ""
-    if (!panelId) return
+    this.openTerraceSheetById(btn.dataset.terraceSheetId, btn.dataset.terraceSheetTitle)
+  }
+
+  openTerraceSheetById(sheetId, title, campId = null) {
+    if (!this.hasTerraceSheetTarget || !this.hasTerraceSheetBodyTarget || !sheetId) return
 
     if (this.hasSheetTarget && this.sheetTarget.classList.contains("is-open")) {
       this.teardown()
     }
 
     this.terraceSheetBodyTarget.querySelectorAll(".lp-trail-terrace-sheet__list").forEach((panel) => {
-      const match = panel.id === panelId
+      const match = panel.id === sheetId
       panel.hidden = !match
       panel.toggleAttribute("hidden", !match)
     })
 
-    if (this.hasTerraceSheetTitleTarget) this.terraceSheetTitleTarget.textContent = title
+    if (this.hasTerraceSheetTitleTarget) this.terraceSheetTitleTarget.textContent = title || ""
 
     this.terraceSheetTarget.hidden = false
     this.terraceSheetTarget.classList.add("is-open")
@@ -89,7 +89,17 @@ export default class extends Controller {
         if (keyEvent.key === "Escape") this.closeTerraceSheet(keyEvent)
       }
     }
+    document.removeEventListener("keydown", this._onTerraceKey)
     document.addEventListener("keydown", this._onTerraceKey)
+
+    if (campId) {
+      requestAnimationFrame(() => {
+        const row = this.terraceSheetBodyTarget.querySelector(
+          `.lp-trail-terrace-sheet__row[data-camp-id="${campId}"]`
+        )
+        row?.scrollIntoView({ block: "nearest" })
+      })
+    }
   }
 
   closeTerraceSheet(event) {
