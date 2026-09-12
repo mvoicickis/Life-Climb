@@ -2,7 +2,7 @@
 
 require "application_system_test_case"
 
-# V4 destination title lives on the peak pennant (.lp-trail__peak-title).
+# V4 destination title lives on the goal plaque (.lp-trail__goal-title).
 # contenteditable forces white-space: pre in Chrome, so we assert layout fit
 # (no horizontal overflow, 2-line clamp) rather than white-space: nowrap.
 class FluidHeroTitleTest < ApplicationSystemTestCase
@@ -77,8 +77,8 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
   def peak_title_metrics
     page.evaluate_script(<<~JS)
       (() => {
-        const title = document.querySelector(".lp-trail__peak-title");
-        const pennant = title?.closest(".lp-trail__pennant");
+        const title = document.querySelector(".lp-trail__goal-title");
+        const pennant = title?.closest(".lp-trail__goal-plaque");
         if (!title || !pennant) return { ok: false, reason: "missing" };
         const cs = getComputedStyle(title);
         const tr = title.getBoundingClientRect();
@@ -131,7 +131,7 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
     assert_no_selector ".lp-first-climb-shell", wait: 2
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
-    assert_selector ".lp-trail__peak-title", text: /#{Regexp.escape(expected_text.split.first)}/i, visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title", text: /#{Regexp.escape(expected_text.split.first)}/i, visible: :all, wait: 5
     metrics = peak_title_metrics
     assert_peak_title_ok(metrics, expected_text, width, height)
   end

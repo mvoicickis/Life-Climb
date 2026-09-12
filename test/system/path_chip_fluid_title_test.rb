@@ -73,7 +73,7 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
         const link = Array.from(document.querySelectorAll(".lp-trail-hud__plan")).find((el) =>
           (el.textContent || "").includes(needle)
         ) || document.querySelector(".lp-trail-hud__plan.is-active");
-        const peak = document.querySelector(".lp-trail__peak-title");
+        const peak = document.querySelector(".lp-trail__goal-title");
         if (!link && !peak) return { ok: false, reason: "missing" };
         const target = link || peak;
         const cs = getComputedStyle(target);
@@ -108,6 +108,6 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
                     "plan/peak title unexpectedly narrow: #{metrics.inspect}"
     assert_operator metrics["titleHeight"].to_f, :>=, 12.0,
                     "plan/peak title has no height: #{metrics.inspect}"
-    assert_selector ".lp-trail__peak-title", text: /Ship the product/i
+    assert_selector ".lp-trail__goal-title", text: /Ship the product/i
   end
 end

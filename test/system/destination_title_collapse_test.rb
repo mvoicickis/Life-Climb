@@ -58,13 +58,13 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
-    assert_selector ".lp-trail__peak-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
-        const title = document.querySelector(".lp-trail__peak-title");
-        const peak = document.querySelector(".lp-trail__peak");
-        const pennant = document.querySelector(".lp-trail__pennant");
+        const title = document.querySelector(".lp-trail__goal-title");
+        const peak = document.querySelector(".lp-trail__goal-plaque");
+        const pennant = document.querySelector(".lp-trail__goal-plaque");
         const trail = document.querySelector("#mountain-trail");
         const mountain = document.querySelector(".lp-trail__mountain");
         const scroll = document.querySelector(".lp-trail__scroll");

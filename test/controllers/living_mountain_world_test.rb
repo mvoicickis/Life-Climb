@@ -44,7 +44,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
-    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
     assert_select ".lp-trail-hud"
     assert_select ".lp-dash-nav__fab"
     assert_select ".lp-rpg-path", count: 0
@@ -192,11 +192,11 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Side path/
     assert_select "#trail-camp-#{launch.id}[aria-label=?]", "Launch camp"
-    assert_select ".lp-trail__peak-title", text: /#{@goal.title}/
+    assert_select ".lp-trail__goal-title", text: /#{@goal.title}/
 
     get life_journey_path(@journey, goal_id: other_goal.id)
     assert_response :success
-    assert_select ".lp-trail__peak-title", text: /Health/
+    assert_select ".lp-trail__goal-title", text: /Health/
     assert_select "#trail-camp-#{run_camp.id}[aria-label=?]", "5k camp"
   end
 
