@@ -66,10 +66,14 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-sheet.is-quest-space"
     assert_no_selector ".lp-rpg__stage-battle"
     assert_no_selector ".lp-rpg-breadcrumbs"
-    assert_selector ".lp-trail-camp", minimum: 4, visible: :all, wait: 5
+    @plan.children.for_kind("project").order(:position).each do |camp|
+      assert_selector "#trail-camp-#{camp.id}", visible: :all, wait: 5
+    end
+    first_camp = @plan.children.for_kind("project").order(:position).first
+    assert_selector "#trail-camp-#{first_camp.id} .lp-trail-camp__caption", visible: :all, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
-        const t = document.querySelector(".lp-trail__peak-title");
+        const t = document.querySelector(".lp-trail__goal-title");
         const r = t.getBoundingClientRect();
         return { w: r.width, h: r.height, text: (t.textContent || "").trim() };
       })()
@@ -78,7 +82,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator title_metrics["w"], :>=, 100, "Destination title too narrow: #{title_metrics.inspect}"
     assert_selector "#trail-camp-#{@daily_battles.id}", visible: :all, wait: 5
     assert_equal "Daily battles", find("#trail-camp-#{@daily_battles.id}", visible: :all)["aria-label"]
-    tent = page.evaluate_script("Boolean(document.querySelector('#trail-camp-#{@daily_battles.id} .lp-trail-camp__tent'))")
+    tent = page.evaluate_script("Boolean(document.querySelector('#trail-camp-#{@daily_battles.id} .trail-tent, #trail-camp-#{@daily_battles.id} .lp-trail-camp__tent'))")
     assert tent
     assert_no_selector ".lp-rpg-camp-switch"
     assert_no_selector ".lp-rpg-stat.is-mountain"

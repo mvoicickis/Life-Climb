@@ -855,6 +855,30 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 1, groups[1][:stage]
     assert_equal :range, groups[3][:state]
     assert_equal "4–9", groups[3][:range_label]
+    assert_equal "Stages 4 to 9, 6 stages", mountain_trail_terrace_range_aria_label(groups[3])
+    range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
+    assert_equal 6, range_camps.size
+    assert_equal [ 3, 4, 5, 6, 7, 8 ], range_camps.map { |entry| entry[:stage] }
+  end
+
+  test "open terrace overflow keeps hidden camps for the sheet" do
+    camps = [
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 1, stage: 0, position: 0, completed?: false, holding?: false
+      ),
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 2, stage: 0, position: 1, completed?: false, holding?: false
+      ),
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 3, stage: 0, position: 2, completed?: false, holding?: false
+      )
+    ]
+
+    groups = mountain_trail_terrace_groups(camps)
+    open = groups.find { |group| group[:state] == :open }
+    assert_equal 1, open[:overflow]
+    assert_equal [ 3 ], mountain_trail_terrace_overflow_camps(camps, open).map(&:id)
+    assert_equal "Stage 1, 1 more camps", mountain_trail_terrace_overflow_aria_label(open)
   end
 
   test "terrace window puts finished stage on t1 and open on t2" do

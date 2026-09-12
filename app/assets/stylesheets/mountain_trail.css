@@ -5839,14 +5839,143 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   min-width: 1.5rem;
   height: 1.5rem;
   padding: 0 0.35rem;
+  border: 1px solid var(--lp-border);
   border-radius: var(--lp-radius-pill, 999px);
   background: var(--lp-frost);
-  border: 1px solid var(--lp-border);
+  font-family: var(--lp-font-ui, Nunito, sans-serif);
   font-size: 0.62rem;
   font-weight: 800;
   color: var(--lp-muted, #475569);
   display: grid;
   place-items: center;
+  cursor: pointer;
+}
+
+.lp-trail-terrace-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: end center;
+  pointer-events: none;
+}
+
+.lp-trail-terrace-sheet.is-open,
+.lp-trail-terrace-sheet:not([hidden]) {
+  pointer-events: auto;
+}
+
+.lp-trail-terrace-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 23, 42, 0.36);
+}
+
+.lp-trail-terrace-sheet__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 26rem);
+  max-height: min(72dvh, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 5rem));
+  margin: 0 0 calc(env(safe-area-inset-bottom) + 4.5rem);
+  border-radius: var(--lp-radius-card, 1rem) var(--lp-radius-card, 1rem) 0 0;
+  background: var(--lp-surface, #ffffff);
+  box-shadow: var(--lp-shadow-card, 0 10px 30px rgba(15, 23, 42, 0.12));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.lp-trail-terrace-sheet__header {
+  display: grid;
+  grid-template-columns: var(--lp-tap, 2.75rem) 1fr var(--lp-tap, 2.75rem);
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem 0.15rem;
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.lp-trail-terrace-sheet__title {
+  margin: 0;
+  font-family: var(--lp-font-ui, Nunito, sans-serif);
+  font-size: var(--lp-type-sm, 0.875rem);
+  font-weight: 800;
+  color: var(--lp-ink, #0f172a);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-trail-terrace-sheet__back,
+.lp-trail-terrace-sheet__close {
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  border: 0;
+  border-radius: var(--lp-radius-field, 0.75rem);
+  background: transparent;
+  color: var(--lp-muted, #475569);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-trail-terrace-sheet__body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5rem 0.75rem 1rem;
+}
+
+.lp-trail-terrace-sheet__stage + .lp-trail-terrace-sheet__stage {
+  margin-top: 0.75rem;
+}
+
+.lp-trail-terrace-sheet__stage-label {
+  margin: 0 0 0.35rem;
+  font-family: var(--lp-font-ui, Nunito, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted, #475569);
+}
+
+.lp-trail-terrace-sheet__row {
+  width: 100%;
+  min-height: var(--lp-tap, 2.75rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field, 0.75rem);
+  background: var(--lp-paper, #f8fafc);
+  color: var(--lp-ink, #0f172a);
+  font-family: var(--lp-font-ui, Nunito, sans-serif);
+  font-size: var(--lp-type-sm, 0.875rem);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lp-trail-terrace-sheet__row + .lp-trail-terrace-sheet__row {
+  margin-top: 0.35rem;
+}
+
+.lp-trail-terrace-sheet__row-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-trail-terrace-sheet__row-chevron {
+  flex-shrink: 0;
+  color: var(--lp-muted, #475569);
+}
+
+.lp-trail.is-terraced .trail-stage-badge--range {
+  cursor: pointer;
 }
 
 .lp-trail.is-terraced .lp-trail__camps-fallback {

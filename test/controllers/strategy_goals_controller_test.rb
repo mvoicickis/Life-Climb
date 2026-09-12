@@ -602,7 +602,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
     assert_select "#trail-camp-#{projects.first.id}[aria-label=?]", "Project 0"
-    assert_select "#trail-stages .trail-t2-camp", minimum: 3
+    projects.each do |project|
+      assert_select "#trail-camp-#{project.id}[aria-label=?]", "Project #{project.position}"
+    end
+    assert_select "#trail-camp-#{projects.first.id} .lp-trail-camp__caption", text: /Project 0/
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end

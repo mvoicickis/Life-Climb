@@ -836,7 +836,10 @@ en:
         terrace:
           open_label: "Stage %{stage} · open now"
           stage_aria: "Stage %{stage}, %{state}"
-          range_aria: "Stages %{label}"
+          range_aria: "Stages %{from} to %{to}, %{count} stages"
+          overflow_aria: "Stage %{stage}, %{count} more camps"
+          overflow_sheet_title: "Stage %{stage}"
+          stage_heading: "Stage %{stage}"
           foot_badge_aria: "%{count} earlier camps finished"
         list_fallback: "List view"
         back_to_peak: "Back to %{peak}"

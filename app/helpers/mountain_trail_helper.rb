@@ -352,12 +352,14 @@ module MountainTrailHelper
         cap = state == :open ? OPEN_TERRACE_CAMP_CAP : LATER_TERRACE_CAMP_CAP
         visible = stage_camps.first(cap)
         overflow = [ stage_camps.size - visible.size, 0 ].max
+        hidden = overflow.positive? ? stage_camps.drop(cap) : []
         {
           index: terrace_index,
           anchor: anchor,
           stage: stage,
           state: state,
           camps: visible,
+          hidden_camps: hidden,
           overflow: overflow,
           range_label: nil,
           foot_badge: index.zero? ? foot_badge : nil
@@ -406,6 +408,43 @@ module MountainTrailHelper
 
     count = older.sum { |stage| (mountain_trail_projects_by_stage(projects)[stage] || []).size }
     { count: count, stages: older }
+  end
+
+  def mountain_trail_terrace_overflow_camps(projects, terrace)
+    return Array(terrace[:hidden_camps]) if terrace.key?(:hidden_camps)
+
+    return [] unless terrace[:stage].present? && terrace[:overflow].to_i.positive?
+
+    stage_camps = mountain_trail_projects_by_stage(projects)[terrace[:stage].to_i] || []
+    cap = terrace[:state] == :open ? OPEN_TERRACE_CAMP_CAP : LATER_TERRACE_CAMP_CAP
+    stage_camps.drop(cap)
+  end
+
+  def mountain_trail_terrace_range_entries(projects, terrace)
+    return [] unless terrace[:state] == :range && terrace[:range_from]
+
+    by_stage = mountain_trail_projects_by_stage(projects)
+    (terrace[:range_from].to_i..terrace[:range_to].to_i).filter_map do |stage|
+      camps = by_stage[stage] || []
+      next if camps.empty?
+
+      { stage: stage, camps: camps }
+    end
+  end
+
+  def mountain_trail_terrace_range_aria_label(terrace)
+    from = mountain_trail_stage_label(terrace[:range_from])
+    to = mountain_trail_stage_label(terrace[:range_to])
+    count = terrace[:range_to].to_i - terrace[:range_from].to_i + 1
+    I18n.t("strategy.rpg.trail.terrace.range_aria", from: from, to: to, count: count)
+  end
+
+  def mountain_trail_terrace_overflow_aria_label(terrace)
+    I18n.t(
+      "strategy.rpg.trail.terrace.overflow_aria",
+      stage: mountain_trail_stage_label(terrace[:stage]),
+      count: terrace[:overflow]
+    )
   end
 
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)

@@ -85,9 +85,9 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
       find(".lp-trail-plant__submit").click
     end
 
-    assert_selector ".lp-trail-camp[aria-label='Notifications camp']", visible: :all, wait: 8
+    assert_selector "#trail-map-camps", wait: 5
     created = @plan.reload.children.for_kind("project").find_by!(title: "Notifications camp")
-    assert_selector "#trail-camp-#{created.id}[aria-label='Notifications camp']", visible: :all, wait: 5
+    assert_selector "#trail-camp-#{created.id}[aria-label='Notifications camp']", visible: :all, wait: 8
     assert_no_selector ".lp-rpg-section-head"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
