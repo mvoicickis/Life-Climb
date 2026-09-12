@@ -30,17 +30,19 @@ module MountainTrailHelper
   # Measured on the grass lip (lowest row of each shelf), not the back edge.
   MAP_ASPECT_WIDTH = 1080
   MAP_ASPECT_HEIGHT = 1350
-  # Image anchors to the top of the map area; open-stage chrome uses --lp-open-stage-lift.
-  MAP_WORLD_Y = "0%"
+  # Lower the world so the painted flag tip clears the HUD without hiding T1.
+  MAP_WORLD_Y = "6%"
   MAP_ZOOM = 1.0
   # Front-edge y/x on mountain-stages-bg-v2.webp as fractions of image size.
-  # Gaps between lips: T1–T2 18.7%, T2–T3 16.3%, T3–T4 13.6%.
+  # Slot index 0 → T1 (bottom). Gaps between lips: T1–T2 7.4%, T2–T3 18.7%, T3–T4 16.3%.
   TERRACE_ANCHORS = {
-    1 => { y: 0.7481, x: 0.4583, x_left: 0.2259, x_right: 0.7750, token: "bottom" },
-    2 => { y: 0.5615, x: 0.4111, x_left: 0.2972, x_right: 0.6954, token: "second" },
-    3 => { y: 0.3985, x: 0.4333, x_left: 0.3204, x_right: 0.6870, token: "third" },
-    4 => { y: 0.2630, x: 0.4685, x_left: 0.3444, x_right: 0.7287, token: "top" }
+    1 => { y: 0.8222, x: 0.4426, x_left: 0.0741, x_right: 0.8111, token: "bottom" },
+    2 => { y: 0.7481, x: 0.5009, x_left: 0.0981, x_right: 0.9037, token: "second" },
+    3 => { y: 0.5615, x: 0.5269, x_left: 0.1315, x_right: 0.9231, token: "third" },
+    4 => { y: 0.3985, x: 0.5000, x_left: 0.0741, x_right: 0.9259, token: "top" }
   }.freeze
+  # Nudge stage badges right from x_left so they sit on grass, not cliff.
+  TERRACE_BADGE_INSET = 0.025
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
@@ -469,6 +471,11 @@ module MountainTrailHelper
   # Horizontal delta from terrace centre to slot, as a world-width fraction.
   def mountain_trail_terrace_slot_dx(terrace, slot)
     mountain_trail_terrace_x_fraction(terrace, slot) - terrace[:anchor][:x]
+  end
+
+  # Horizontal delta from terrace centre to stage badge (x_left + inset).
+  def mountain_trail_terrace_badge_dx(terrace)
+    terrace[:anchor][:x_left] - terrace[:anchor][:x] + TERRACE_BADGE_INSET
   end
 
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)

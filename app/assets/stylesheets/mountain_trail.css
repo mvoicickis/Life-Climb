@@ -5405,8 +5405,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   --lp-gap-tent-name: calc(6px * var(--terrace-ui-scale));
   --lp-terrace-stack-gap: calc(8px * var(--terrace-ui-scale));
   --lp-terrace-badge-x: calc(52px * var(--terrace-ui-scale));
-  /* Lift open-stage chrome above the base-camp card without moving terrace anchors. */
-  --lp-open-stage-lift: calc(72px * var(--terrace-ui-scale));
+  /* Open stage sits on the T1 anchor; no vertical lift (was pushing it one terrace high). */
+  --lp-open-stage-lift: 0px;
   --lp-fog-opacity: 0.4;
 }
 
