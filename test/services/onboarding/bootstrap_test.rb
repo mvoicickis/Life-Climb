@@ -42,6 +42,8 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal "Land first role", result.projects[1].title
     assert_equal 0, result.projects[0].position
     assert_equal 1, result.projects[1].position
+    assert_equal 0, result.projects[0].stage
+    assert_equal 1, result.projects[1].stage
 
     assert_equal 1, result.projects[0].children.for_kind("day").count
     assert_equal Date.current, result.first_battle.scheduled_on
@@ -67,6 +69,16 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert Strategy::HierarchyReady.call(user: @user, journey: journey)
     assert @user.daily_todos.where(scheduled_on: Date.current).exists?
     assert_equal 0, @user.habits.count
+  end
+
+  test "assigns sequential stages in typed camp order" do
+    result = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Three peaks",
+      camp_titles: %w[Alpha Beta Gamma]
+    )
+
+    assert_equal [ 0, 1, 2 ], result.projects.map(&:stage)
   end
 
   test "rejects empty camps" do

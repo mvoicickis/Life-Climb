@@ -49,6 +49,7 @@ class StrategyGoal < ApplicationRecord
   validates :horizon, presence: true, inclusion: { in: KINDS + LEGACY_KINDS + LEGACY_KIND.keys }
   validates :repeat, presence: true, inclusion: { in: REPEAT_KINDS }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :stage, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :unit, length: { maximum: 40 }, allow_blank: true
   validates :color_key, inclusion: { in: COLOR_KEYS }, allow_nil: true
@@ -83,8 +84,12 @@ class StrategyGoal < ApplicationRecord
   before_validation :normalize_effort_tier
   before_validation :normalize_trail_coords
   before_validation :assign_goal_due_on, if: -> { kind == "goal" }
+  before_validation :assign_stage_for_plan_camp, on: :create
+
+  attr_accessor :stage_explicit
 
   scope :ordered, -> { order(:position, :id) }
+  scope :ordered_by_stage, -> { order(:stage, :position, :id) }
   scope :for_horizon, ->(horizon) { where(horizon: horizon) }
   scope :for_kind, ->(kind) {
     keys = [ kind ]
@@ -355,6 +360,11 @@ class StrategyGoal < ApplicationRecord
     update!(completed_at: nil, manually_completed_at: nil)
   end
 
+  def stage=(value)
+    @stage_explicit = true if new_record? && !@assigning_stage_auto
+    super
+  end
+
   private
 
   # Phantom Today battles: open DailyTodos must not outlive their Mountain day/quest.
@@ -513,6 +523,19 @@ class StrategyGoal < ApplicationRecord
     return if due_on.present?
 
     self.due_on = Strategy::YearCycle.default_goal_due
+  end
+
+  def assign_stage_for_plan_camp
+    return unless project? && parent&.plan? && !holding?
+    return if stage_explicit
+
+    siblings = StrategyGoal.where(parent_id: parent.id, horizon: "project", holding: false)
+    siblings = siblings.where.not(id: id) if id.present?
+    max_stage = siblings.maximum(:stage)
+    @assigning_stage_auto = true
+    self.stage = max_stage.nil? ? 0 : max_stage + 1
+  ensure
+    @assigning_stage_auto = false
   end
 
   def scheduled_on_required_for_day

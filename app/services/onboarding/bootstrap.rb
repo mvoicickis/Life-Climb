@@ -92,6 +92,7 @@ module Onboarding
             life_area: primary_area,
             life_journey: journey,
             position: index,
+            stage: index,
             trail_x: slot[:trail_x],
             trail_y: slot[:trail_y]
           )
@@ -150,10 +151,10 @@ module Onboarding
     end
 
     def create_child!(parent:, horizon:, title:, life_area:, life_journey:, scheduled_on: nil, position: nil,
-                      trail_x: nil, trail_y: nil)
+                      stage: :__unset__, trail_x: nil, trail_y: nil)
       scope = @user.strategy_goals.where(life_area_id: life_area.id).for_kind(horizon).where(parent_id: parent.id)
       pos = position.nil? ? scope.maximum(:position).to_i + 1 : position
-      @user.strategy_goals.create!(
+      record = @user.strategy_goals.new(
         life_area: life_area,
         life_journey: life_journey,
         parent: parent,
@@ -164,6 +165,12 @@ module Onboarding
         trail_x: trail_x,
         trail_y: trail_y
       )
+      unless stage == :__unset__
+        record.stage = stage
+        record.stage_explicit = true
+      end
+      record.save!
+      record
     end
   end
 end

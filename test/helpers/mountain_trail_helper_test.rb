@@ -739,6 +739,61 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_not marker[:visible]
   end
 
+  test "next camp picks lowest open stage then position not trail_y" do
+    lower_stage = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, holding?: false, trail_x: 0.5, trail_y: 0.55)
+    higher_stage = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, :trail_x, :trail_y, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, holding?: false, trail_x: 0.5, trail_y: 0.8)
+
+    assert_equal lower_stage, mountain_trail_next_camp([ higher_stage, lower_stage ])
+  end
+
+  test "next camp is nil when all camps are complete" do
+    done = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true).new(
+      id: 1, stage: 0, position: 0, completed?: true, pages_mode?: false, holding?: false
+    )
+
+    assert_nil mountain_trail_next_camp([ done ])
+  end
+
+  test "next camp uses lowest open stage among unfinished camps" do
+    cleared = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: true, pages_mode?: false, holding?: false)
+    current = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, holding?: false)
+    later = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 3, stage: 2, position: 2, completed?: false, pages_mode?: false, holding?: false)
+
+    assert_equal current, mountain_trail_next_camp([ cleared, current, later ])
+  end
+
+  test "next camp skips pages mode camps" do
+    pages = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: true, holding?: false)
+    battle = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, holding?: false)
+
+    assert_equal battle, mountain_trail_next_camp([ pages, battle ])
+  end
+
+  test "next camp skips holding camps" do
+    holding = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, holding?: true)
+    open = Struct.new(
+      :id, :stage, :position, :completed?, :pages_mode?, :holding?, keyword_init: true
+    ).new(id: 2, stage: 1, position: 1, completed?: false, pages_mode?: false, holding?: false)
+
+    assert_equal open, mountain_trail_next_camp([ holding, open ])
+  end
+
   test "spine path d runs base to summit in viewBox space" do
     d = mountain_trail_spine_path_d
     assert_match(/\AM /, d)
