@@ -467,6 +467,33 @@ module MountainTrailHelper
     nil
   end
 
+  def mountain_trail_terrace_debug?
+    params[:terrace_debug].to_s == "1"
+  end
+
+  def mountain_trail_terrace_size_class(terrace)
+    count = terrace[:camps].size
+    return "is-solo" if count <= 1
+    return "is-pair" if count == 2
+
+    "is-triple"
+  end
+
+  # Pixel offset from terrace centre — matches mountain-stages.html frame 2.
+  def mountain_trail_terrace_tent_offset_px(terrace, slot)
+    count = terrace[:camps].size
+    case slot[:slot]
+    when :solo, :center
+      0
+    when :l, :left
+      count >= 3 ? -44 : -22
+    when :r, :right
+      count >= 3 ? 44 : 22
+    else
+      0
+    end
+  end
+
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)
     count = terrace[:camps].size
     if terrace[:state] == :open
@@ -476,6 +503,8 @@ module MountainTrailHelper
 
       { slot: :r, x: :right }
     else
+      return { slot: :solo, x: :center } if count <= 1
+
       keys = [ :left, :center, :right ]
       key = keys[index_in_terrace] || :center
       { slot: key, x: key }

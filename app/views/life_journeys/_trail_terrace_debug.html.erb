@@ -1,0 +1,29 @@
+<%# Terrace anchor calibration overlay — ?terrace_debug=1 only. locals: terrace_groups %>
+<% terrace_groups = local_assigns.fetch(:terrace_groups) %>
+
+<div class="trail-terrace-debug" aria-hidden="true">
+  <% terrace_groups.each do |terrace| %>
+    <% next if terrace[:state] == :empty %>
+    <% anchor = terrace[:anchor] %>
+    <% y = (anchor[:y] * 100).round(3) %>
+    <% x_left = (anchor[:x_left] * 100).round(3) %>
+    <% x_center = (anchor[:x] * 100).round(3) %>
+    <% x_right = (anchor[:x_right] * 100).round(3) %>
+    <% span = (anchor[:x_right] - anchor[:x_left]) * 100 %>
+
+    <div class="trail-terrace-debug__row"
+         style="top: <%= y %>%; left: <%= x_left %>%; width: <%= span.round(3) %>%;"
+         data-terrace="<%= terrace[:index] %>"></div>
+    <span class="trail-terrace-debug__dot"
+          style="left: <%= x_left %>%; top: <%= y %>%;"
+          title="T<%= terrace[:index] %> left"></span>
+    <span class="trail-terrace-debug__dot"
+          style="left: <%= x_center %>%; top: <%= y %>%;"
+          title="T<%= terrace[:index] %> centre"></span>
+    <span class="trail-terrace-debug__dot"
+          style="left: <%= x_right %>%; top: <%= y %>%;"
+          title="T<%= terrace[:index] %> right"></span>
+    <span class="trail-terrace-debug__label"
+          style="left: <%= x_center %>%; top: <%= y %>%;">T<%= terrace[:index] %></span>
+  <% end %>
+</div>

@@ -13,7 +13,7 @@
 <% ring_r = 27 %>
 <% ring_c = (2 * Math::PI * ring_r).round(2) %>
 <% ring_offset = (ring_c * (1 - progress[:ratio].to_f)).round(2) %>
-<% show_ring = progress[:total].positive? || progress[:kind] == :pages %>
+<% show_ring = terrace.blank? && (progress[:total].positive? || progress[:kind] == :pages) %>
 <% show_caption = fallback || (terrace.present? && terrace[:state] == :open) %>
 <% slot_class =
      if fallback
