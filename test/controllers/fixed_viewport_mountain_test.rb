@@ -169,5 +169,10 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_match(/overflow-y:\s*auto/, trail)
     assert_match(/height:\s*max-content/, focus_trail)
     assert_match(/max-height:\s*100%/, focus_trail)
+
+    mountain_css = Rails.root.join("app/assets/stylesheets/mountain_trail.css").read
+    v4_trail = mountain_css[/\.lp-rpg\.is-focus-phase \.lp-rpg__stage-trail\.is-v4\s*\{[^}]+\}/m]
+    assert_match(/overflow-y:\s*hidden/, v4_trail)
+    assert_match(/overscroll-behavior:\s*none/, v4_trail)
   end
 end

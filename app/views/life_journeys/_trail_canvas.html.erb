@@ -9,7 +9,6 @@
 <% projects = mountain_trail_projects(trail) %>
 <% destination_overlay = local_assigns[:destination_overlay] %>
 <% icon_starters = mountain_trail_plant_starters %>
-<% segments = mountain_trail_segments(projects) %>
 <% photo_url = mountain_trail_photo_url(journey) %>
 <% alive = local_assigns[:alive] || current_user.alive_level %>
 <% camps_done = mountain_trail_camps_done(all_projects) %>
@@ -178,13 +177,6 @@
         </div>
       <% end %>
     </div>
-    <% if segments.any? %>
-      <div class="lp-trail-segments" aria-hidden="true">
-        <% segments.each do |seg| %>
-          <span class="lp-trail-segments__bar" style="--seg-color: <%= seg[:color] %>; --seg-fill: <%= seg[:fill] %>%"></span>
-        <% end %>
-      </div>
-    <% end %>
   </div>
 
   <% if show_tour %>
