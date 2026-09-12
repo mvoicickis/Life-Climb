@@ -40,13 +40,19 @@ class StrategyGoalStageTest < ActiveSupport::TestCase
     assert_equal 5, camp.stage
   end
 
-  test "nested folder project under camp keeps default stage" do
+  test "auto assign skips when parent is not a plan" do
     host = @user.strategy_goals.create!(
       life_area: @area, parent: @plan, horizon: "project", title: "Host", position: 0
     )
-    folder = @user.strategy_goals.create!(
-      life_area: @area, parent: host, horizon: "project", title: "Steps", position: 0
+    folder = StrategyGoal.new(
+      user: @user,
+      life_area: @area,
+      parent: host,
+      horizon: "project",
+      title: "Steps",
+      position: 0
     )
+    folder.send(:assign_stage_for_plan_camp)
 
     assert_equal 0, folder.stage
   end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require Rails.root.join("db/migrate/20260912140000_add_stage_to_strategy_goals.rb")
 
 class AddStageToStrategyGoalsTest < ActiveSupport::TestCase
   setup do

@@ -531,8 +531,9 @@ class StrategyGoal < ApplicationRecord
 
     siblings = StrategyGoal.where(parent_id: parent.id, horizon: "project", holding: false)
     siblings = siblings.where.not(id: id) if id.present?
+    max_stage = siblings.maximum(:stage)
     @assigning_stage_auto = true
-    self.stage = siblings.maximum(:stage).to_i + 1
+    self.stage = max_stage.nil? ? 0 : max_stage + 1
   ensure
     @assigning_stage_auto = false
   end
