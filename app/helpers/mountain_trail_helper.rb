@@ -30,16 +30,20 @@ module MountainTrailHelper
   # Measured on the grass lip (lowest row of each shelf), not the back edge.
   MAP_ASPECT_WIDTH = 940
   MAP_ASPECT_HEIGHT = 1672
-  # 360×640 @ 1.3× zoom: map ≈ 464px (640 − dock). World h ≈ 832px. -31% lifts the
+  # 360×640 @ 1.3× zoom: map ≈ 464px (640 − dock). World h ≈ 832px. -34% lifts the
   # world so terrace 1 front (77.63%) keeps the open-stage block (pill + tent +
-  # name caption) above the base-camp card.
-  MAP_WORLD_Y = "-31%"
+  # two-line caption) above the base-camp card.
+  MAP_WORLD_Y = "-34%"
+  # Front-edge y on mountain-stages-bg.webp; x measured at 360 CSS px viewport
+  # (720 device px) and converted to world fractions via (px + 54) / 468.
   TERRACE_ANCHORS = {
-    1 => { y: 0.7763, x: 0.5181, x_left: 0.4277, x_right: 0.6085, token: "bottom" },
-    2 => { y: 0.6256, x: 0.5234, x_left: 0.4511, x_right: 0.5957, token: "second" },
-    3 => { y: 0.4916, x: 0.5218, x_left: 0.4723, x_right: 0.5713, token: "third" },
-    4 => { y: 0.3798, x: 0.5532, x_left: 0.5043, x_right: 0.6021, token: "top" }
+    1 => { y: 0.7763, x: 0.5000, x_left: 0.1154, x_right: 0.8846, token: "bottom" },
+    2 => { y: 0.6256, x: 0.5267, x_left: 0.2329, x_right: 0.8205, token: "second" },
+    3 => { y: 0.4916, x: 0.5160, x_left: 0.2970, x_right: 0.7350, token: "third" },
+    4 => { y: 0.3798, x: 0.5427, x_left: 0.4359, x_right: 0.6496, token: "top" }
   }.freeze
+  TERRACE_VIEWPORT_REF = 360
+  TERRACE_MAP_ZOOM = 1.3
   OPEN_TERRACE_CAMP_CAP = 2
   LATER_TERRACE_CAMP_CAP = 3
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
@@ -479,19 +483,11 @@ module MountainTrailHelper
     "is-triple"
   end
 
-  # Pixel offset from terrace centre — matches mountain-stages.html frame 2.
+  # Pixel offset from terrace centre to the anchor x slot (360 CSS px ref × 1.3 zoom).
   def mountain_trail_terrace_tent_offset_px(terrace, slot)
-    count = terrace[:camps].size
-    case slot[:slot]
-    when :solo, :center
-      0
-    when :l, :left
-      count >= 3 ? -44 : -22
-    when :r, :right
-      count >= 3 ? 44 : 22
-    else
-      0
-    end
+    anchor = terrace[:anchor]
+    x_frac = mountain_trail_terrace_x_fraction(terrace, slot)
+    ((x_frac - anchor[:x]) * TERRACE_VIEWPORT_REF * TERRACE_MAP_ZOOM).round
   end
 
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)
