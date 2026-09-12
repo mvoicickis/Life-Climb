@@ -1,16 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
-const TRAIL_DRAW_MS = 1600
-
-// First landing after v2 onboarding — summit, trail draw, camps land, tap tent to open sheet.
+// First landing after v2 onboarding — goal plaque, terrace camps land, tap tent to open sheet.
 export default class extends Controller {
   static targets = [
     "overlay",
     "skipHint",
-    "summit",
-    "trailLine",
-    "trailGlow",
-    "spine"
+    "summit"
   ]
 
   static values = {
@@ -26,11 +21,8 @@ export default class extends Controller {
     this._token = 0
     this._finished = false
     this._tapReady = false
-    this._trailLength = 0
 
     this.element.dataset.trailSuppressOpen = "1"
-    this.unhideSpine()
-    this.resetTrailDraw()
     this.bindFirstCampTap()
     this.playReveal()
   }
@@ -72,9 +64,10 @@ export default class extends Controller {
       await this.wait(900, token)
       if (token !== this._token) return
 
-      if (!(await this.animateTrailDraw(token))) return
+      await this.landTerraceCamps(token)
+      if (token !== this._token) return
 
-      await this.wait(600, token)
+      await this.wait(400, token)
       if (token !== this._token) return
 
       this.enterTapReady()
@@ -89,7 +82,6 @@ export default class extends Controller {
     }
 
     this._token += 1
-    this.showFullTrail()
     this.landAllCamps()
     this.showSummit()
     this.element.classList.add("is-focus-camp")
@@ -104,52 +96,23 @@ export default class extends Controller {
     this.showSkipHint()
   }
 
-  async animateTrailDraw(token) {
-    const line = this.trailLineTarget
-    const glow = this.trailGlowTarget
-    const length = line.getTotalLength()
-    this._trailLength = length
-
-    if (!length) throw new Error("trail spine length is zero")
-
-    line.style.strokeDasharray = `${length}`
-    glow.style.strokeDasharray = `${length}`
-    line.style.strokeDashoffset = `${length}`
-    glow.style.strokeDashoffset = `${length}`
-
-    const landed = new Set()
-    const campFracs = this.campsValue || []
-
-    return new Promise((resolve) => {
-      const start = performance.now()
-
-      const frame = (now) => {
-        if (token !== this._token) {
-          resolve(false)
-          return
-        }
-
-        const progress = Math.min((now - start) / TRAIL_DRAW_MS, 1)
-        const offset = length * (1 - progress)
-        line.style.strokeDashoffset = `${offset}`
-        glow.style.strokeDashoffset = `${offset}`
-
-        campFracs.forEach((camp) => {
-          if (!landed.has(camp.id) && progress >= camp.path_frac) {
-            this.landCamp(camp.id)
-            landed.add(camp.id)
+  async landTerraceCamps(token) {
+    const camps = this.campsValue || []
+    const timers = camps.map((camp) => {
+      return new Promise((resolve) => {
+        window.setTimeout(() => {
+          if (token !== this._token) {
+            resolve(false)
+            return
           }
-        })
-
-        if (progress < 1) {
-          requestAnimationFrame(frame)
-        } else {
+          this.landCamp(camp.id)
           resolve(true)
-        }
-      }
-
-      requestAnimationFrame(frame)
+        }, camp.delay_ms || 0)
+      })
     })
+
+    await Promise.all(timers)
+    return true
   }
 
   landCamp(campId) {
@@ -158,7 +121,7 @@ export default class extends Controller {
   }
 
   landAllCamps() {
-    this.element.querySelectorAll(".lp-trail-camp").forEach((camp) => {
+    this.element.querySelectorAll(".lp-trail-camp, .trail-tent-hit").forEach((camp) => {
       camp.classList.add("is-landed")
     })
   }
@@ -209,37 +172,6 @@ export default class extends Controller {
         input?.focus({ preventScroll: true })
       })
     }
-  }
-
-  unhideSpine() {
-    if (this.hasSpineTarget) {
-      this.spineTarget.hidden = false
-      this.spineTarget.removeAttribute("hidden")
-    }
-  }
-
-  resetTrailDraw() {
-    if (!this.hasTrailLineTarget || !this.hasTrailGlowTarget) return
-
-    const length = this.trailLineTarget.getTotalLength()
-    this._trailLength = length
-    if (!length) return
-
-    this.trailLineTarget.style.strokeDasharray = `${length}`
-    this.trailGlowTarget.style.strokeDasharray = `${length}`
-
-    if (this.prefersReducedMotion()) {
-      this.showFullTrail()
-    } else {
-      this.trailLineTarget.style.strokeDashoffset = `${length}`
-      this.trailGlowTarget.style.strokeDashoffset = `${length}`
-    }
-  }
-
-  showFullTrail() {
-    if (!this.hasTrailLineTarget || !this.hasTrailGlowTarget) return
-    this.trailLineTarget.style.strokeDashoffset = "0"
-    this.trailGlowTarget.style.strokeDashoffset = "0"
   }
 
   showSummit() {

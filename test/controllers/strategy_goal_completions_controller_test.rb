@@ -95,7 +95,7 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
     assert_select ".lp-trail-hud"
     assert_select ".lp-trail-segments__bar[style*='--seg-fill: 0']", minimum: 1
     assert_equal 0, Strategy::Progress.percent(@plan.reload)

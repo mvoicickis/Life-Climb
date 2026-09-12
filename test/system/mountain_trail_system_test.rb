@@ -63,7 +63,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_equal "fixed", position
   end
 
-  test "place mode clamps; blank trail tap does not plant; long-press wiring is present" do
+  test "FAB opens plant composer and camp tap opens sheet" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -72,20 +72,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#mountain-trail", wait: 5
 
-    assert_selector "[data-action*='campPointerDown']"
     assert_no_selector ".lp-trail-camp.is-dragging"
     assert_no_selector "#mountain-trail.is-relocating"
-    assert_no_selector ".lp-trail-plant.is-open"
-
-    page.execute_script(<<~JS)
-      const mountain = document.querySelector(".lp-trail__mountain");
-      const rect = mountain.getBoundingClientRect();
-      mountain.dispatchEvent(new MouseEvent("click", {
-        bubbles: true,
-        clientX: rect.left + 12,
-        clientY: rect.top + 12
-      }));
-    JS
     assert_no_selector ".lp-trail-plant.is-open"
 
     find(".lp-dash-nav__fab").click
@@ -94,47 +82,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     find(".lp-trail-plant__cancel").click
     assert_no_selector ".lp-trail-plant.is-open"
 
-    # Tap still opens the sheet. Long-press unlocks relocate; the path stays lit until the tent moves.
     open_trail_camp_sheet!(@project)
     assert_selector ".lp-trail-sheet.is-open", visible: :all
-  end
-
-  test "long-press unlocks relocate and keeps the path lit after lift" do
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-    assert_selector ".lp-dash-nav", wait: 5
-    within(".lp-dash-nav") { click_link "Mountain" }
-    assert_selector "#mountain-trail", wait: 5
-    assert_selector "#trail-camp-#{@project.id}", visible: :all
-    assert_no_selector "#mountain-trail.is-relocating"
-
-    page.execute_script(<<~JS)
-      const camp = document.querySelector("#trail-camp-#{@project.id}");
-      const rect = camp.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
-      const opts = {
-        bubbles: true, cancelable: true, pointerId: 1, pointerType: "touch",
-        clientX: x, clientY: y, button: 0
-      };
-      camp.dispatchEvent(new PointerEvent("pointerdown", opts));
-      window.__lpRelocateCamp = camp;
-      window.__lpRelocateOpts = opts;
-    JS
-    sleep 0.55
-    page.execute_script(<<~JS)
-      window.__lpRelocateCamp.dispatchEvent(new PointerEvent("pointerup", window.__lpRelocateOpts));
-    JS
-
-    assert_selector "#mountain-trail.is-relocating", wait: 3
-    assert_selector "#trail-camp-#{@project.id}.is-relocating"
-    assert_selector ".lp-trail-glow", visible: :all
-    assert_selector ".lp-trail-placing", text: /Tap the path/, visible: :all
-
-    page.execute_script("document.querySelector('.lp-trail-placing button')?.click()")
-    assert_no_selector "#mountain-trail.is-relocating"
   end
 
   test "camp sheet can move an open battle up" do
@@ -221,32 +170,6 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-trail-sheet.is-open", visible: :all
     assert_nil @battle.reload.completed_at
     assert @battle.repeat_daily?
-  end
-
-  test "closing camp sheet keeps trail scroll position" do
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    fill_in "Password", with: "password12345"
-    click_button "Sign in"
-    assert_selector ".lp-dash-nav", wait: 5
-    within(".lp-dash-nav") { click_link "Mountain" }
-    assert_selector "#mountain-trail", wait: 5
-
-    scroll_top = 420
-    page.execute_script(<<~JS)
-      const scroll = document.querySelector(".lp-trail__scroll");
-      if (scroll) scroll.scrollTop = #{scroll_top};
-    JS
-
-    page.execute_script("document.querySelector('#trail-camp-#{@project.id}').click()")
-    assert_selector ".lp-trail-sheet.is-open", visible: :all, wait: 5
-
-    find(".lp-trail-sheet__back", visible: :all).click
-    assert_no_selector ".lp-trail-sheet.is-open", visible: :all, wait: 5
-
-    restored = page.evaluate_script("document.querySelector('.lp-trail__scroll')?.scrollTop")
-    assert_operator restored.to_i, :>=, scroll_top - 5,
-      "expected trail scroll to stay near #{scroll_top}, got #{restored}"
   end
 
   test "base camp kebab closes when tapping outside" do

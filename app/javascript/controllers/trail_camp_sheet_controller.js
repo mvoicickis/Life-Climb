@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Bottom battle sheet for a trail camp marker.
 // Android back closes the sheet (history.pushState) instead of leaving Mountain.
 export default class extends Controller {
-  static targets = ["sheet", "panel", "title", "subtitle", "body", "accent"]
+  static targets = ["sheet", "panel", "title", "subtitle", "body", "accent", "terraceSheet", "terraceSheetTitle", "terraceSheetBody"]
 
   static values = {
     baseTitleFallback: String,
@@ -26,6 +26,7 @@ export default class extends Controller {
 
   disconnect() {
     window.removeEventListener("popstate", this._onPopState)
+    if (this._onTerraceKey) document.removeEventListener("keydown", this._onTerraceKey)
     this.teardown()
   }
 
@@ -38,20 +39,94 @@ export default class extends Controller {
     this.openCampById(campId)
   }
 
-  // Called after trail plant turbo stream — or on first landing with ?open_camp=.
   openCampById(campId) {
     const camp = campId && this.element.querySelector(`#trail-camp-${campId}`)
-    if (!camp) return
+    if (camp) {
+      this.open({
+        currentTarget: camp,
+        preventDefault() {},
+        stopPropagation() {},
+        defaultPrevented: false
+      })
 
-    this.open({
-      currentTarget: camp,
-      preventDefault() {},
-      stopPropagation() {},
-      defaultPrevented: false
+      const coach = this.application.getControllerForElementAndIdentifier(this.element, "trail-coach")
+      coach?.notePlanted()
+      return
+    }
+
+    const row = campId && this.element.querySelector(`.lp-trail-terrace-sheet__row[data-camp-id="${campId}"]`)
+    if (row) this.openCampFromTerraceSheet({ currentTarget: row, preventDefault() {}, stopPropagation() {} })
+  }
+
+  openTerraceSheet(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    const btn = event.currentTarget
+    this.openTerraceSheetById(btn.dataset.terraceSheetId, btn.dataset.terraceSheetTitle)
+  }
+
+  openTerraceSheetById(sheetId, title, campId = null) {
+    if (!this.hasTerraceSheetTarget || !this.hasTerraceSheetBodyTarget || !sheetId) return
+
+    if (this.hasSheetTarget && this.sheetTarget.classList.contains("is-open")) {
+      this.teardown()
+    }
+
+    this.terraceSheetBodyTarget.querySelectorAll(".lp-trail-terrace-sheet__list").forEach((panel) => {
+      const match = panel.id === sheetId
+      panel.hidden = !match
+      panel.toggleAttribute("hidden", !match)
     })
 
-    const coach = this.application.getControllerForElementAndIdentifier(this.element, "trail-coach")
-    coach?.notePlanted()
+    if (this.hasTerraceSheetTitleTarget) this.terraceSheetTitleTarget.textContent = title || ""
+
+    this.terraceSheetTarget.hidden = false
+    this.terraceSheetTarget.classList.add("is-open")
+    this.terraceSheetTarget.setAttribute("aria-hidden", "false")
+
+    if (!this._onTerraceKey) {
+      this._onTerraceKey = (keyEvent) => {
+        if (keyEvent.key === "Escape") this.closeTerraceSheet(keyEvent)
+      }
+    }
+    document.removeEventListener("keydown", this._onTerraceKey)
+    document.addEventListener("keydown", this._onTerraceKey)
+
+    if (campId) {
+      requestAnimationFrame(() => {
+        const row = this.terraceSheetBodyTarget.querySelector(
+          `.lp-trail-terrace-sheet__row[data-camp-id="${campId}"]`
+        )
+        row?.scrollIntoView({ block: "nearest" })
+      })
+    }
+  }
+
+  closeTerraceSheet(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.hasTerraceSheetTarget || this.terraceSheetTarget.hidden) return
+
+    this.terraceSheetTarget.classList.remove("is-open")
+    this.terraceSheetTarget.setAttribute("aria-hidden", "true")
+    this.terraceSheetTarget.hidden = true
+
+    if (this._onTerraceKey) {
+      document.removeEventListener("keydown", this._onTerraceKey)
+    }
+  }
+
+  closeTerraceSheetOnBackdrop(event) {
+    if (event.target === event.currentTarget || event.target.classList?.contains("lp-trail-terrace-sheet__backdrop")) {
+      this.closeTerraceSheet(event)
+    }
+  }
+
+  openCampFromTerraceSheet(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    this.closeTerraceSheet()
+    this.open(event)
   }
 
   openBase(event) {
@@ -154,7 +229,13 @@ export default class extends Controller {
   }
 
   onKeydown(event) {
-    if (event.key === "Escape") this.close(event)
+    if (event.key === "Escape") {
+      if (this.hasTerraceSheetTarget && this.terraceSheetTarget.classList.contains("is-open")) {
+        this.closeTerraceSheet(event)
+        return
+      }
+      this.close(event)
+    }
   }
 
   onPopState() {
@@ -382,6 +463,7 @@ export default class extends Controller {
 
     this.hideCampMenus()
     this.hideCampOverlays()
+    this.closeTerraceSheet()
     this.sheetTarget.classList.remove("is-open")
     this.sheetTarget.setAttribute("aria-hidden", "true")
     this.sheetTarget.hidden = true

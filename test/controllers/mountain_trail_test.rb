@@ -49,30 +49,28 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#mountain-trail"
-    assert_select "#trail-camps"
+    assert_select "#mountain-trail.lp-trail.is-terraced"
+    assert_select "#trail-map-camps"
+    assert_select "#trail-stages"
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status"
-    assert_select "#trail-spur-#{@project.id}"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
     assert_select "#trail-camp-#{holding.id}", count: 0
     assert_select ".lp-trail-hud"
     assert_select ".lp-trail-segments"
     assert_select ".lp-trail__stars"
-    assert_select ".lp-trail__footprints"
-    assert_select "#trail-climber .lp-trail__companion", count: 1
+    assert_select ".lp-trail__footprints", count: 0
+    assert_select "#trail-climber", count: 0
     assert_select ".lp-trail-camp__quick", count: 0
     assert_select ".lp-trail-camp__leader", count: 0
-    assert_select "[data-action*='campPointerDown']"
-    assert_select "[data-action*='surfacePointerDown']"
-    assert_select "[data-relocate-hint]"
+    assert_select ".lp-trail__goal-plaque"
     assert_select ".lp-trail__backlight"
     assert_select ".lp-trail-coach"
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
     assert_select ".lp-rpg-scenic", count: 0
-    assert_match(/mountain_trail_default|mountain_photo/, response.body)
+    assert_match(/mountain-stages-bg|mountain_photo/, response.body)
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do
@@ -169,10 +167,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-nav.is-v4 a[href='#{life_points_path}']"
     assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
-    assert_select ".lp-trail__peak"
-    assert_select ".lp-trail__pennant"
-    assert_select ".lp-trail__peak-title"
-    assert_select ".lp-trail__summit-cover", count: 1
+    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail__goal-title"
+    assert_select ".lp-trail.is-terraced"
     assert_select ".lp-trail__mountain .lp-trail__dock", count: 0
     assert_select ".lp-trail__scroll > .lp-trail__dock .lp-trail-base-card"
     assert_select "#mountain-trail > .lp-trail__dock", count: 0
@@ -185,7 +182,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kind", count: 0
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab"
     assert_select ".lp-trail-camp__shadow", minimum: 1
-    assert_match(/--lp-base-y:\s*0\.95/, response.body)
     assert_select ".lp-trail-sheet"
     assert_select ".lp-trail__plant-colors"
     assert_select ".lp-trail-plant__wheel", count: 0
@@ -228,14 +224,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     end
     assert_equal Mime[:turbo_stream].to_s, response.media_type
     created = @plan.children.for_kind("project").find_by!(title: "Ridge camp")
-    assert_includes response.body, "trail-camps"
+    assert_includes response.body, "trail-map-camps"
     assert_includes response.body, "trail-camp-#{created.id}"
     assert_includes response.body, 'action="open_trail_camp"'
     assert_includes response.body, 'target="mountain-trail"'
     assert_includes response.body, "camp-id=\"#{created.id}\""
-    expected = MountainTrailHelper::AutoSlot.snap(0.52, 0.44)
-    assert_in_delta expected[:trail_x], created.trail_x, 0.0001
-    assert_in_delta expected[:trail_y], created.trail_y, 0.0001
+    assert_equal @project.stage, created.stage
   end
 
   test "camp sheet lists day battles and win forms" do
@@ -459,36 +453,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_in_delta expected[:trail_y], @project.trail_y, 0.0001
   end
 
-  test "show pins unplaced camps and keeps those coords after the list changes" do
-    unplaced = @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Drift camp", position: 2
-    )
-    assert_nil unplaced.trail_x
-    assert_nil unplaced.trail_y
-
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_response :success
-    unplaced.reload
-    assert unplaced.trail_x.present?
-    assert unplaced.trail_y.present?
-    pinned_x = unplaced.trail_x
-    pinned_y = unplaced.trail_y
-
-    @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
-    @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Later camp", position: 3
-    )
-
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_response :success
-    unplaced.reload
-    assert_in_delta pinned_x, unplaced.trail_x, 0.0001
-    assert_in_delta pinned_y, unplaced.trail_y, 0.0001
-  end
-
-  test "every tent has a caption under it and no side chip" do
+  test "open terrace camps have captions; later terraces use aria-label only" do
     extra = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Ridge lookout", position: 1,
@@ -499,16 +464,14 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{extra.id}[aria-label=?]", "Ridge lookout"
-    assert_select "#trail-camps .lp-trail-camp" do
-      assert_select ".lp-trail-camp__caption .lp-trail-camp__title"
-    end
-    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__caption", text: /Base camp/
-    assert_select "#trail-camp-#{extra.id} .lp-trail-camp__caption", text: /Ridge lookout/
+    assert_select "#trail-camp-#{@project.id}.trail-t2-camp .lp-trail-camp__caption .lp-trail-camp__title", text: /Base camp/
+    assert_select "#trail-camp-#{extra.id}.trail-tent-hit .lp-trail-camp__caption", count: 0
+    assert_select "#trail-camp-#{extra.id}.trail-tent-hit"
     assert_select ".lp-trail-camp__chip", count: 0
     assert_select ".lp-trail-camp.is-chip-start", count: 0
   end
 
-  test "planting a project without coords still gets an auto trail slot" do
+  test "planting a project assigns the open stage" do
     assert_difference -> { @plan.children.for_kind("project").count }, 1 do
       post strategy_goals_path, params: {
         life_area_id: @area.id,
@@ -520,9 +483,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       }
     end
     created = @plan.children.for_kind("project").find_by!(title: "Strategy camp")
-    expected = MountainTrailHelper::AutoSlot.call(index: 1, total: 2)
-    assert_in_delta expected[:trail_x], created.trail_x, 0.0001
-    assert_in_delta expected[:trail_y], created.trail_y, 0.0001
+    assert_equal @project.stage, created.stage
   end
 
   test "finished camps leave the mountain photo and sheet" do

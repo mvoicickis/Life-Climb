@@ -32,7 +32,7 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select ".lp-trail__peak-title", text: /Ship LifePoints/i
+    assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
     assert_select ".lp-trail__peak-item", text: /Edit Destination/i
     assert_select "dialog#destination-edit-#{@goal.id}"
     assert_select ".lp-trail-hud"
@@ -54,6 +54,6 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select ".lp-trail__peak-title", text: /Debt Free/i
+    assert_select ".lp-trail__goal-title", text: /Debt Free/i
   end
 end

@@ -25,6 +25,19 @@ module MountainTrailHelper
   PEAK_X = 0.566
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
+
+  # Terraced map (mountain-stages-bg.webp 940×1672) — mid-depth anchors bottom→top.
+  MAP_ASPECT_WIDTH = 940
+  MAP_ASPECT_HEIGHT = 1672
+  MAP_WORLD_Y = "-20%"
+  TERRACE_ANCHORS = {
+    1 => { y: 0.7183, x: 0.50, x_left: 0.10, x_right: 0.90, token: "bottom" },
+    2 => { y: 0.5891, x: 0.5207, x_left: 0.2894, x_right: 0.7521, token: "second" },
+    3 => { y: 0.4743, x: 0.5176, x_left: 0.3149, x_right: 0.7202, token: "third" },
+    4 => { y: 0.3577, x: 0.5214, x_left: 0.4596, x_right: 0.7287, token: "top" }
+  }.freeze
+  OPEN_TERRACE_CAMP_CAP = 2
+  LATER_TERRACE_CAMP_CAP = 3
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
   CAMP_TENT_TITLE_LIMIT = 24
   HUD_PLAN_TITLE_LIMIT = 24
@@ -81,13 +94,13 @@ module MountainTrailHelper
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo.variant(resize_to_limit: [ 1200, 1800 ]))
     else
-      image_path("mountain_trail_default.webp")
+      image_path("mountain-stages-bg.webp")
     end
   rescue StandardError
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo)
     else
-      image_path("mountain_trail_default.webp")
+      image_path("mountain-stages-bg.webp")
     end
   end
 
@@ -240,20 +253,269 @@ module MountainTrailHelper
     (best_length / total).clamp(0.0, 1.0)
   end
 
-  # Landing order for first-camp reveal: bottom → top (trail_y desc).
-  def mountain_trail_reveal_camps(projects)
-    layout = mountain_trail_layout(Array(projects))
-    Array(projects).filter_map do |project|
-      slot = layout[project.id]
-      next unless slot
+  def mountain_trail_projects_by_stage(projects)
+    Array(projects).reject { |project| project.try(:holding?) }.group_by { |project| project.try(:stage).to_i }.transform_values do |camps|
+      camps.sort_by { |camp| [ camp.try(:position).to_i, camp.try(:id).to_i ] }
+    end
+  end
 
-      {
-        id: project.id,
-        path_frac: mountain_trail_camp_path_frac(slot[:x], slot[:y]),
-        x: slot[:x],
-        y: slot[:y]
+  def mountain_trail_open_stage(projects)
+    open = Array(projects).reject { |project| project.try(:holding?) || project.try(:completed?) }
+    return 0 if open.empty?
+
+    open.map { |project| project.try(:stage).to_i }.min
+  end
+
+  def mountain_trail_last_finished_stage(projects)
+    by_stage = mountain_trail_projects_by_stage(projects)
+    finished = by_stage.keys.select { |stage| mountain_trail_stage_done?(projects, stage) }
+    finished.empty? ? nil : finished.max
+  end
+
+  def mountain_trail_max_stage(projects)
+    stages = Array(projects).reject { |project| project.try(:holding?) }.map { |project| project.try(:stage).to_i }
+    stages.empty? ? nil : stages.max
+  end
+
+  def mountain_trail_stage_done?(projects, stage)
+    camps = mountain_trail_projects_by_stage(projects)[stage.to_i] || []
+    return false if camps.empty?
+
+    camps.all? { |camp| camp.try(:completed?) }
+  end
+
+  def mountain_trail_stage_label(stage)
+    stage.to_i + 1
+  end
+
+  def mountain_trail_terrace_range_label(from_stage, to_stage)
+    "#{mountain_trail_stage_label(from_stage)}–#{mountain_trail_stage_label(to_stage)}"
+  end
+
+  # Four terrace slots bottom→top for the terraced map.
+  def mountain_trail_terrace_groups(projects)
+    camps = Array(projects).reject { |project| project.try(:holding?) }
+    return [] if camps.empty?
+
+    by_stage = mountain_trail_projects_by_stage(camps)
+    open_stage = mountain_trail_open_stage(camps)
+    last_finished = mountain_trail_last_finished_stage(camps)
+    max_stage = mountain_trail_max_stage(camps)
+    window = mountain_trail_terrace_window(
+      open_stage: open_stage,
+      last_finished: last_finished,
+      max_stage: max_stage
+    )
+    foot_badge = mountain_trail_foot_badge(camps, window[0], last_finished)
+
+    window.each_with_index.map do |slot, index|
+      terrace_index = index + 1
+      anchor = TERRACE_ANCHORS[terrace_index]
+      if slot.nil?
+        next {
+          index: terrace_index,
+          anchor: anchor,
+          stage: nil,
+          state: :empty,
+          camps: [],
+          overflow: 0,
+          range_label: nil,
+          foot_badge: index.zero? ? foot_badge : nil
+        }
+      end
+
+      if slot.is_a?(Hash) && slot[:range_from]
+        from_stage = slot[:range_from]
+        {
+          index: terrace_index,
+          anchor: anchor,
+          stage: nil,
+          state: :range,
+          camps: [],
+          overflow: 0,
+          range_label: mountain_trail_terrace_range_label(from_stage, max_stage),
+          range_from: from_stage,
+          range_to: max_stage,
+          foot_badge: nil
+        }
+      else
+        stage = slot
+        state =
+          if stage == open_stage
+            :open
+          elsif last_finished && stage == last_finished
+            :done
+          else
+            :later
+          end
+        stage_camps = by_stage[stage] || []
+        cap = state == :open ? OPEN_TERRACE_CAMP_CAP : LATER_TERRACE_CAMP_CAP
+        visible = stage_camps.first(cap)
+        overflow = [ stage_camps.size - visible.size, 0 ].max
+        hidden = overflow.positive? ? stage_camps.drop(cap) : []
+        {
+          index: terrace_index,
+          anchor: anchor,
+          stage: stage,
+          state: state,
+          camps: visible,
+          hidden_camps: hidden,
+          overflow: overflow,
+          range_label: nil,
+          foot_badge: index.zero? ? foot_badge : nil
+        }
+      end
+    end
+  end
+
+  def mountain_trail_terrace_window(open_stage:, last_finished:, max_stage:)
+    return [ nil, nil, nil, nil ] if max_stage.nil?
+
+    slots = [ nil, nil, nil, nil ]
+    if last_finished.nil?
+      slots[0] = open_stage
+      slots[1] = open_stage + 1 if open_stage + 1 <= max_stage
+      slots[2] = open_stage + 2 if open_stage + 2 <= max_stage
+      if open_stage + 3 <= max_stage
+        slots[3] =
+          if open_stage + 4 <= max_stage
+            { range_from: open_stage + 3 }
+          else
+            open_stage + 3
+          end
+      end
+    else
+      slots[0] = last_finished
+      slots[1] = open_stage
+      slots[2] = open_stage + 1 if open_stage + 1 <= max_stage
+      if open_stage + 2 <= max_stage
+        slots[3] =
+          if open_stage + 3 <= max_stage
+            { range_from: open_stage + 2 }
+          else
+            open_stage + 2
+          end
+      end
+    end
+    slots
+  end
+
+  def mountain_trail_foot_badge(projects, t1_stage, last_finished)
+    return nil unless last_finished && t1_stage == last_finished && last_finished.positive?
+
+    older = (0...(last_finished)).select { |stage| mountain_trail_stage_done?(projects, stage) }
+    return nil if older.empty?
+
+    count = older.sum { |stage| (mountain_trail_projects_by_stage(projects)[stage] || []).size }
+    { count: count, stages: older }
+  end
+
+  def mountain_trail_terrace_overflow_camps(projects, terrace)
+    return Array(terrace[:hidden_camps]) if terrace.key?(:hidden_camps)
+
+    return [] unless terrace[:stage].present? && terrace[:overflow].to_i.positive?
+
+    stage_camps = mountain_trail_projects_by_stage(projects)[terrace[:stage].to_i] || []
+    cap = terrace[:state] == :open ? OPEN_TERRACE_CAMP_CAP : LATER_TERRACE_CAMP_CAP
+    stage_camps.drop(cap)
+  end
+
+  def mountain_trail_terrace_range_entries(projects, terrace)
+    return [] unless terrace[:state] == :range && terrace[:range_from]
+
+    by_stage = mountain_trail_projects_by_stage(projects)
+    (terrace[:range_from].to_i..terrace[:range_to].to_i).filter_map do |stage|
+      camps = by_stage[stage] || []
+      next if camps.empty?
+
+      { stage: stage, camps: camps }
+    end
+  end
+
+  def mountain_trail_terrace_range_aria_label(terrace)
+    from = mountain_trail_stage_label(terrace[:range_from])
+    to = mountain_trail_stage_label(terrace[:range_to])
+    count = terrace[:range_to].to_i - terrace[:range_from].to_i + 1
+    I18n.t("strategy.rpg.trail.terrace.range_aria", from: from, to: to, count: count)
+  end
+
+  def mountain_trail_terrace_overflow_aria_label(terrace)
+    I18n.t(
+      "strategy.rpg.trail.terrace.overflow_aria",
+      stage: mountain_trail_stage_label(terrace[:stage]),
+      count: terrace[:overflow]
+    )
+  end
+
+  def mountain_trail_terrace_overflow_sheet_for(projects, camp)
+    mountain_trail_terrace_groups(projects).each do |terrace|
+      hidden = mountain_trail_terrace_overflow_camps(projects, terrace)
+      next unless hidden.any? { |candidate| candidate.id == camp.id }
+
+      return {
+        sheet_id: "terrace-sheet-overflow-#{terrace[:index]}",
+        title: I18n.t(
+          "strategy.rpg.trail.terrace.overflow_sheet_title",
+          stage: mountain_trail_stage_label(terrace[:stage])
+        )
       }
-    end.sort_by { |camp| -camp[:y] }
+    end
+    nil
+  end
+
+  def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)
+    count = terrace[:camps].size
+    if terrace[:state] == :open
+      return { slot: :solo, x: :center } if count <= 1
+
+      return { slot: :l, x: :left } if index_in_terrace.zero?
+
+      { slot: :r, x: :right }
+    else
+      keys = [ :left, :center, :right ]
+      key = keys[index_in_terrace] || :center
+      { slot: key, x: key }
+    end
+  end
+
+  def mountain_trail_terrace_x_fraction(terrace, slot)
+    anchor = terrace[:anchor]
+    case slot[:x]
+    when :left then anchor[:x_left]
+    when :right then anchor[:x_right]
+    else anchor[:x]
+    end
+  end
+
+  def mountain_trail_terrace_placed_project_ids(terrace_groups)
+    Array(terrace_groups).flat_map { |terrace| Array(terrace[:camps]).map(&:id) }
+  end
+
+  def mountain_trail_terrace_fallback_projects(projects, terrace_groups)
+    placed = mountain_trail_terrace_placed_project_ids(terrace_groups)
+    mountain_trail_sort_projects(Array(projects).reject { |project| project.try(:holding?) })
+      .reject { |project| placed.include?(project.id) }
+  end
+
+  def mountain_trail_use_terrace_map?(projects, terrace_groups)
+    return false if Array(terrace_groups).none?
+    return false if Array(terrace_groups).all? { |terrace| terrace[:state] == :empty }
+
+    mountain_trail_terrace_fallback_projects(projects, terrace_groups).empty?
+  end
+
+  # Landing order for first-camp reveal: bottom terrace → top.
+  def mountain_trail_reveal_camps(projects)
+    mountain_trail_terrace_groups(projects).flat_map do |terrace|
+      Array(terrace[:camps]).each_with_index.map do |project, slot_index|
+        {
+          id: project.id,
+          terrace_index: terrace[:index],
+          slot_index: slot_index,
+          delay_ms: ((terrace[:index] - 1) * 400) + (slot_index * 150)
+        }
+      end
+    end
   end
 
   def mountain_trail_reveal_camps_json(projects)
@@ -376,8 +638,8 @@ module MountainTrailHelper
   def mountain_trail_camp_state(project, projects:)
     return :done if project.completed?
 
-    current = mountain_trail_current_project(projects)
-    current&.id == project.id ? :current : :open
+    next_camp = mountain_trail_next_camp(projects)
+    next_camp&.id == project.id ? :current : :open
   end
 
   def mountain_trail_camp_label(project)

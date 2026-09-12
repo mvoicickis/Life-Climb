@@ -825,37 +825,105 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_operator last_y, :<, 35
   end
 
-  test "reveal camp path_frac increases bottom to top for 1 3 and 5 camps" do
-    [ 1, 3, 5 ].each do |count|
-      projects = reveal_test_projects(count)
-      camps = mountain_trail_reveal_camps(projects)
-      assert_equal count, camps.size
-      fracs = camps.pluck(:path_frac)
-      assert fracs.all? { |frac| frac > 0 && frac < 1 }
-      assert_equal fracs.sort, fracs
-      expected_ys = projects.map(&:trail_y).sort.reverse.map { |y| y.round(4) }
-      assert_equal expected_ys, camps.pluck(:y)
-    end
+  test "reveal camps include terrace landing order for trail projects" do
+    projects = reveal_test_projects(3)
+    camps = mountain_trail_reveal_camps(projects)
+    assert_equal 3, camps.size
+    assert camps.all? { |entry| entry.key?(:delay_ms) }
+    assert camps.all? { |entry| entry.key?(:terrace_index) }
   end
 
-  test "reveal camps json is sorted by trail_y descending" do
+  test "reveal camps json encodes terrace landing metadata" do
     projects = reveal_test_projects(3)
     parsed = JSON.parse(mountain_trail_reveal_camps_json(projects))
-    ys = parsed.map { |camp| camp["y"] }
-    assert_equal ys.sort.reverse, ys
-    assert_equal [ "id", "path_frac", "x", "y" ], parsed.first.keys.sort
+    assert_equal 3, parsed.size
+    assert_equal [ "delay_ms", "id", "slot_index", "terrace_index" ], parsed.first.keys.sort
+  end
+
+  test "terrace window shows open stage and range badge for nine camps with none finished" do
+    camps = (0...9).map do |stage|
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
+      )
+    end
+
+    groups = mountain_trail_terrace_groups(camps)
+    assert_equal 4, groups.size
+    assert_equal :open, groups[0][:state]
+    assert_equal 0, groups[0][:stage]
+    assert_equal :later, groups[1][:state]
+    assert_equal 1, groups[1][:stage]
+    assert_equal :range, groups[3][:state]
+    assert_equal "4–9", groups[3][:range_label]
+    assert_equal "Stages 4 to 9, 6 stages", mountain_trail_terrace_range_aria_label(groups[3])
+    range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
+    assert_equal 6, range_camps.size
+    assert_equal [ 3, 4, 5, 6, 7, 8 ], range_camps.map { |entry| entry[:stage] }
+  end
+
+  test "open terrace overflow keeps hidden camps for the sheet" do
+    camps = [
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 1, stage: 0, position: 0, completed?: false, holding?: false
+      ),
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 2, stage: 0, position: 1, completed?: false, holding?: false
+      ),
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 3, stage: 0, position: 2, completed?: false, holding?: false
+      )
+    ]
+
+    groups = mountain_trail_terrace_groups(camps)
+    open = groups.find { |group| group[:state] == :open }
+    assert_equal 1, open[:overflow]
+    assert_equal [ 3 ], mountain_trail_terrace_overflow_camps(camps, open).map(&:id)
+    assert_equal "Stage 1, 1 more camps", mountain_trail_terrace_overflow_aria_label(open)
+    sheet = mountain_trail_terrace_overflow_sheet_for(camps, camps.last)
+    assert_equal "terrace-sheet-overflow-1", sheet[:sheet_id]
+  end
+
+  test "terrace window puts finished stage on t1 and open on t2" do
+    camps = [
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 1, stage: 0, position: 0, completed?: true, holding?: false
+      ),
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: 2, stage: 1, position: 0, completed?: false, holding?: false
+      )
+    ]
+
+    groups = mountain_trail_terrace_groups(camps)
+    assert_equal :done, groups[0][:state]
+    assert_equal 0, groups[0][:stage]
+    assert_equal :open, groups[1][:state]
+    assert_equal 1, groups[1][:stage]
+  end
+
+  test "reveal camps stagger by terrace bottom to top" do
+    camps = (0...3).map do |stage|
+      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
+      )
+    end
+
+    reveal = mountain_trail_reveal_camps(camps)
+    assert reveal.all? { |entry| entry.key?(:delay_ms) }
+    assert reveal.map { |entry| entry[:delay_ms] }.each_cons(2).all? { |a, b| b >= a }
   end
 
   private
 
   def reveal_test_projects(count)
     (0...count).map do |index|
-      trail_slot_index = count - 1 - index
-      slot = MountainTrailHelper::AutoSlot.call(index: trail_slot_index, total: count)
-      Struct.new(:id, :trail_x, :trail_y, keyword_init: true).new(
+      Struct.new(:id, :stage, :position, :completed?, :holding?, :trail_x, :trail_y, keyword_init: true).new(
         id: index + 1,
-        trail_x: slot[:trail_x],
-        trail_y: slot[:trail_y]
+        stage: index,
+        position: 0,
+        completed?: false,
+        holding?: false,
+        trail_x: 0.5,
+        trail_y: 0.55
       )
     end
   end

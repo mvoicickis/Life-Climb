@@ -68,7 +68,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "teal", camp.color_key
   end
 
-  test "creating a project without trail coords assigns an auto slot" do
+  test "creating a project without trail coords assigns the open stage" do
     post strategy_goals_path, params: {
       life_area_id: @area.id, life_journey_id: @journey.id,
       horizon: "goal", title: "Auto pin goal"
@@ -88,9 +88,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
       title: "Unplanted camp"
     }
     camp = plan.children.for_kind("project").find_by!(title: "Unplanted camp")
-    expected = MountainTrailHelper::AutoSlot.call(index: 0, total: 1)
-    assert_in_delta expected[:trail_x], camp.trail_x, 0.0001
-    assert_in_delta expected[:trail_y], camp.trail_y, 0.0001
+    assert_equal 0, camp.stage
+    assert_equal 0, camp.position
   end
 
   test "goal defaults due_on to one year from today and awards goal SP" do
@@ -512,8 +511,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
-    assert_select "#trail-camps"
-    assert_select ".lp-trail__peak-title", text: /Goal/i
+    assert_select "#trail-map-camps"
+    assert_select ".lp-trail__goal-title", text: /Goal/i
     assert_select ".lp-trail-hud__plan", text: /Plan Alpha/i
     assert_select ".lp-trail-hud__plan", text: /Plan Beta/i
     assert_select ".lp-trail-hud__plan.is-active", text: /Plan Alpha/i
@@ -543,7 +542,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select ".lp-trail__peak-title", text: /Goal/i
+    assert_select ".lp-trail__goal-title", text: /Goal/i
     assert_select "#trail-camp-#{project.id}[aria-label=?]", "Auth Mission"
     assert_select ".lp-dash-nav__fab"
     assert_select ".lp-trail-plant"
@@ -573,7 +572,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#trail-camp-#{project.id}", count: 0
-    assert_select ".lp-trail__peak-title", text: /Goal/i
+    assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 
   test "sections carousel lists path-level camps under the selected plan" do
@@ -603,7 +602,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
     assert_select "#trail-camp-#{projects.first.id}[aria-label=?]", "Project 0"
-    assert_select "#trail-camps .lp-trail-camp", minimum: 3
+    projects.each do |project|
+      assert_select "#trail-camp-#{project.id}[aria-label=?]", "Project #{project.position}"
+    end
+    assert_select "#trail-camp-#{projects.first.id} .lp-trail-camp__caption", text: /Project 0/
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end

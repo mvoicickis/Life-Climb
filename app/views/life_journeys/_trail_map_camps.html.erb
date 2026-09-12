@@ -1,0 +1,22 @@
+<%# Terraced map camps or plain fallback list. locals: projects, current_project %>
+<% projects = local_assigns.fetch(:projects) %>
+<% current_project = local_assigns[:current_project] %>
+<% terrace_groups = projects.any? ? mountain_trail_terrace_groups(projects) : [] %>
+<% use_terrace_map = mountain_trail_use_terrace_map?(projects, terrace_groups) %>
+
+<div id="trail-map-camps">
+  <% if use_terrace_map %>
+    <div class="trail-stages" id="trail-stages" data-trail-canvas-target="camps" aria-label="<%= t('strategy.rpg.what_gets_me_there') %>">
+      <% terrace_groups.each do |terrace| %>
+        <%= render "life_journeys/trail_terrace",
+              terrace: terrace,
+              projects: projects,
+              current_project: current_project %>
+      <% end %>
+    </div>
+  <% else %>
+    <%= render "life_journeys/trail_camps_fallback",
+          projects: projects,
+          current_project: current_project %>
+  <% end %>
+</div>

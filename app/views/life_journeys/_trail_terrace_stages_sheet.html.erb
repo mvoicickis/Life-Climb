@@ -1,0 +1,92 @@
+<%# Sheet listing camps hidden behind a range badge or +N overflow chip. locals: projects %>
+<% projects = local_assigns.fetch(:projects) %>
+<% terrace_groups = mountain_trail_terrace_groups(projects) %>
+
+<div class="lp-trail-terrace-sheet"
+     data-trail-camp-sheet-target="terraceSheet"
+     hidden
+     aria-hidden="true">
+  <div class="lp-trail-terrace-sheet__backdrop"
+       data-action="click->trail-camp-sheet#closeTerraceSheet"
+       aria-hidden="true"></div>
+  <div class="lp-trail-terrace-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="trail-terrace-sheet-title"
+       data-action="click->trail-camp-sheet#stop">
+    <header class="lp-trail-terrace-sheet__header">
+      <button type="button"
+              class="lp-trail-terrace-sheet__back"
+              data-action="click->trail-camp-sheet#closeTerraceSheet"
+              aria-label="<%= t('strategy.sheet.close') %>">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <h2 class="lp-trail-terrace-sheet__title"
+          id="trail-terrace-sheet-title"
+          data-trail-camp-sheet-target="terraceSheetTitle"></h2>
+      <button type="button"
+              class="lp-trail-terrace-sheet__close"
+              data-action="click->trail-camp-sheet#closeTerraceSheet"
+              aria-label="<%= t('strategy.sheet.close') %>">
+        <span aria-hidden="true">✕</span>
+      </button>
+    </header>
+    <div class="lp-trail-terrace-sheet__body" data-trail-camp-sheet-target="terraceSheetBody">
+      <% terrace_groups.each do |terrace| %>
+        <% if terrace[:state] == :range %>
+          <div id="terrace-sheet-range-<%= terrace[:index] %>"
+               class="lp-trail-terrace-sheet__list"
+               hidden>
+            <% mountain_trail_terrace_range_entries(projects, terrace).each do |entry| %>
+              <section class="lp-trail-terrace-sheet__stage">
+                <h3 class="lp-trail-terrace-sheet__stage-label">
+                  <%= t("strategy.rpg.trail.terrace.stage_heading", stage: mountain_trail_stage_label(entry[:stage])) %>
+                </h3>
+                <% entry[:camps].each do |camp| %>
+                  <% accent = mountain_trail_project_accent(camp) %>
+                  <button type="button"
+                          class="lp-trail-terrace-sheet__row"
+                          data-camp-id="<%= camp.id %>"
+                          data-camp-title="<%= camp.title %>"
+                          data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(camp) %>"
+                          data-camp-description="<%= camp.description.to_s %>"
+                          data-accent="<%= accent %>"
+                          data-action="click->trail-camp-sheet#openCampFromTerraceSheet">
+                    <span class="lp-trail-terrace-sheet__row-title"><%= camp.title %></span>
+                    <span class="lp-trail-terrace-sheet__row-chevron" aria-hidden="true">›</span>
+                  </button>
+                <% end %>
+              </section>
+            <% end %>
+          </div>
+        <% end %>
+        <% overflow_camps = mountain_trail_terrace_overflow_camps(projects, terrace) %>
+        <% if overflow_camps.any? %>
+          <div id="terrace-sheet-overflow-<%= terrace[:index] %>"
+               class="lp-trail-terrace-sheet__list"
+               hidden>
+            <section class="lp-trail-terrace-sheet__stage">
+              <h3 class="lp-trail-terrace-sheet__stage-label">
+                <%= t("strategy.rpg.trail.terrace.overflow_sheet_title", stage: mountain_trail_stage_label(terrace[:stage])) %>
+              </h3>
+              <% overflow_camps.each do |camp| %>
+                <% accent = mountain_trail_project_accent(camp) %>
+                <button type="button"
+                        class="lp-trail-terrace-sheet__row"
+                        data-camp-id="<%= camp.id %>"
+                        data-camp-title="<%= camp.title %>"
+                        data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(camp) %>"
+                        data-camp-description="<%= camp.description.to_s %>"
+                        data-accent="<%= accent %>"
+                        data-action="click->trail-camp-sheet#openCampFromTerraceSheet">
+                  <span class="lp-trail-terrace-sheet__row-title"><%= camp.title %></span>
+                  <span class="lp-trail-terrace-sheet__row-chevron" aria-hidden="true">›</span>
+                </button>
+              <% end %>
+            </section>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

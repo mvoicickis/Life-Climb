@@ -62,11 +62,11 @@ class PlanCardMenuTest < ApplicationSystemTestCase
   test "destination edit dialog is available from the peak flag menu" do
     sign_in_and_visit_mountain!
 
-    assert_selector ".lp-trail__peak-title", text: /Ship LifePoints/i, wait: 5
+    assert_selector ".lp-trail__goal-title", text: /Ship LifePoints/i, wait: 5
     assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
 
-    find(".lp-trail__flag").click
-    assert_selector ".lp-trail__peak-menu:not([hidden])", wait: 3
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     find(".lp-trail__peak-item", text: /Edit Destination/i).click
 
     assert_selector "dialog#destination-edit-#{@goal.id}[open]", wait: 3
@@ -77,7 +77,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     end
 
     assert_selector "#strategy-world", wait: 5
-    assert_selector ".lp-trail__peak-title", text: /Renamed Destination/i, wait: 5
+    assert_selector ".lp-trail__goal-title", text: /Renamed Destination/i, wait: 5
     assert_equal "Renamed Destination", @goal.reload.title
   end
 

@@ -84,28 +84,26 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
       find("input.lp-trail-plant__field").set("Notifications camp")
       find(".lp-trail-plant__submit").click
     end
-    assert_selector ".lp-trail.is-placing", wait: 3
 
-    assert_difference -> { @plan.reload.children.for_kind("project").count }, 1 do
-      page.execute_script(<<~JS)
-        (() => {
-          const mountain = document.querySelector(".lp-trail__mountain");
-          if (!mountain) return;
-          const r = mountain.getBoundingClientRect();
-          const x = r.left + r.width * 0.52;
-          const y = r.top + r.height * 0.58;
-          mountain.dispatchEvent(new MouseEvent("click", {
-            bubbles: true, cancelable: true, clientX: x, clientY: y, view: window
-          }));
-        })()
-      JS
-      assert_selector ".lp-trail-camp[aria-label='Notifications camp']", visible: :all, wait: 8
-    end
-    created = @plan.children.for_kind("project").find_by!(title: "Notifications camp")
-    assert_selector "#trail-camp-#{created.id}[aria-label='Notifications camp']", visible: :all, wait: 5
+    # postPlant fetch + Turbo.renderStreamMessage + hidePlant — wait for replace, not submit.
+    assert_no_selector ".lp-trail-plant.is-open", wait: 10
+    assert_selector "#trail-map-camps", wait: 10
+
+    created = @plan.reload.children.for_kind("project").find_by!(title: "Notifications camp")
+    assert_camp_tent_on_map!(created)
     assert_no_selector ".lp-rpg-section-head"
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/checkpoint-create-visible.png")
+  end
+
+  private
+
+  def assert_camp_tent_on_map!(camp)
+    selector = "#trail-map-camps #trail-camp-#{camp.id}[aria-label='#{camp.title}']"
+    assert_selector selector, visible: :all, wait: 10
+  rescue Minitest::Assertion => e
+    map_html = page.find("#trail-map-camps", visible: :all)["outerHTML"]
+    flunk "#{e.message}\n\n#trail-map-camps at failure:\n#{map_html}"
   end
 end

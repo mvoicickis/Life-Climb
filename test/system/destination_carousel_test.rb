@@ -43,7 +43,7 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 10
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
 
-    assert_selector ".lp-trail__peak-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
     assert_match(/Ship LifePoints/i, destination_title_text)
 
     # Switching + "New Destination" create affordances are gone.
@@ -58,7 +58,7 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-path"
 
     # Rename stays available via peak flag menu → destination edit dialog.
-    assert_selector ".lp-trail__flag[data-action*='trail-canvas#togglePeakMenu']"
+    assert_selector ".lp-trail__goal-plaque[data-action*='trail-canvas#toggleGoalMenu']"
     assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
     assert_selector ".lp-trail__peak-item", text: /Edit Destination/i, visible: :all
   end
@@ -67,7 +67,7 @@ class DestinationCarouselTest < ApplicationSystemTestCase
 
   def destination_title_text
     page.evaluate_script(<<~JS)
-      (document.querySelector(".lp-trail__peak-title")?.textContent || "").trim()
+      (document.querySelector(".lp-trail__goal-title")?.textContent || "").trim()
     JS
   end
 end

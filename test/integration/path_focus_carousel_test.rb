@@ -46,7 +46,7 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
-    assert_select ".lp-trail__peak-title", text: /Debt free/i
+    assert_select ".lp-trail__goal-title", text: /Debt free/i
     assert_select ".lp-trail-hud__plan.is-active", text: /Find a job/i
     assert_select ".lp-trail-hud__plan", text: /Learn German/i
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
@@ -65,7 +65,7 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-xp:not(.is-quiet)", count: 0
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-streak", count: 0
-    assert_select ".lp-trail__peak"
+    assert_select ".lp-trail__goal-plaque"
     assert_select "#destination-edit-#{@goal.id}"
     assert_select ".lp-trail__peak-item", text: /Edit Destination/i
     # "New Destination" create is removed (one destination per journey).
@@ -80,7 +80,7 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-trail-hud__plan.is-active", text: /Learn German/i
     assert_select ".lp-trail-hud__plan.is-active", text: /Find a job/i, count: 0
-    assert_select ".lp-trail__peak-title", text: /Debt free/i
+    assert_select ".lp-trail__goal-title", text: /Debt free/i
   end
 
   test "no destination dots or swipe UI even with multiple destinations in data" do
@@ -88,7 +88,7 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # Switching UI is gone: one static peak title is shown regardless of data.
-    assert_select ".lp-trail__peak-title", text: /Debt free/i
+    assert_select ".lp-trail__goal-title", text: /Debt free/i
     assert_select ".lp-rpg-destination-carousel", count: 0
     assert_select ".lp-rpg-destination-dots", count: 0
     assert_select ".lp-rpg-destination-carousel__arrow", count: 0
