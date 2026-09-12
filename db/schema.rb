@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_12_140000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -442,6 +442,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_140000) do
     t.string "repeat", default: "none", null: false
     t.json "repeat_weekdays"
     t.date "scheduled_on"
+    t.integer "stage", default: 0, null: false
     t.decimal "target_amount", precision: 12, scale: 2
     t.string "title", null: false
     t.decimal "trail_x", precision: 5, scale: 4
@@ -453,6 +454,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_140000) do
     t.index ["life_journey_id", "horizon"], name: "index_strategy_goals_one_holding_per_journey_horizon", unique: true, where: "holding = TRUE"
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
     t.index ["parent_id", "position"], name: "index_strategy_goals_on_parent_id_and_position"
+    t.index ["parent_id", "stage", "position"], name: "index_strategy_goals_on_parent_id_stage_and_position"
     t.index ["parent_id"], name: "index_strategy_goals_on_parent_id"
     t.index ["user_id", "horizon", "repeat"], name: "index_strategy_goals_on_user_horizon_repeat"
     t.index ["user_id", "life_area_id", "horizon"], name: "index_strategy_goals_on_user_id_and_life_area_id_and_horizon"

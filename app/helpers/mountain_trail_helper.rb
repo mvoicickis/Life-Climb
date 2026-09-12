@@ -535,6 +535,19 @@ module MountainTrailHelper
     Array(projects).sort_by { |project| [ project.position.to_i, project.id ] }
   end
 
+  # PR2 ordering core — not wired to UI yet.
+  def mountain_trail_next_camp(projects)
+    open = Array(projects)
+      .reject(&:completed?)
+      .reject(&:pages_mode?)
+      .reject(&:holding?)
+    return if open.empty?
+
+    open_stage = open.map { |p| p.stage.to_i }.min
+    in_stage = open.select { |p| p.stage.to_i == open_stage }
+    in_stage.min_by { |p| [ p.position.to_i, p.id ] }
+  end
+
   def mountain_trail_open_camps(plan)
     mountain_trail_sort_projects(
       Array(plan&.children).select { |child| child.project? && !child.holding? && !child.completed? }
