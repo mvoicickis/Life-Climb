@@ -38,6 +38,7 @@
        "--lp-trail-accent: #{accent};"
      end %>
 
+<% show_stage_pill = local_assigns[:show_stage_pill] && terrace.present? && terrace[:state] == :open && terrace[:stage].present? %>
 <button type="button"
         class="lp-trail-camp trail-t2-camp <%= slot_class %> <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %>"
         id="trail-camp-<%= project.id %>"
@@ -50,6 +51,11 @@
         data-update-url="<%= strategy_goal_path(project) %>"
         data-action="click->trail-canvas#campClick click->trail-camp-sheet#open"
         aria-label="<%= project.title %>">
+  <% if show_stage_pill %>
+    <span class="trail-open-pill lp-trail-stage__label">
+      <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
+    </span>
+  <% end %>
   <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
   <span class="lp-trail-camp__peg">
     <% if show_ring %>

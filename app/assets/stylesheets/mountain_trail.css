@@ -5573,8 +5573,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-open-pill {
   position: absolute;
-  left: 0;
-  top: calc(-1 * var(--lp-tent-open-h) - var(--lp-pill-h) - var(--lp-terrace-stack-gap));
+  left: 50%;
+  bottom: calc(100% + var(--lp-terrace-stack-gap));
   transform: translateX(-50%);
   height: var(--lp-pill-h);
   min-height: var(--lp-pill-h);
@@ -5594,12 +5594,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   color: var(--lp-ink, #0f172a);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   pointer-events: none;
-}
-
-.lp-trail.is-terraced .trail-terrace.is-open .trail-open-pill {
-  /* Above lifted tent peak: stage pill → tent → camp name (see trail-t2-camp). */
-  top: calc(-1 * (var(--lp-tent-open-h) * 2 + var(--lp-open-stage-lift) + var(--lp-terrace-stack-gap) + var(--lp-pill-h)));
-  transform: translateX(-50%);
+  z-index: 2;
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-t2-camp .lp-trail-camp__caption {
