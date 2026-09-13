@@ -66,11 +66,17 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-sheet.is-quest-space"
     assert_no_selector ".lp-rpg__stage-battle"
     assert_no_selector ".lp-rpg-breadcrumbs"
-    @plan.children.for_kind("project").order(:position).each do |camp|
-      assert_selector "#trail-camp-#{camp.id}", visible: :all, wait: 5
+    camps = @plan.children.for_kind("project").order(:position).to_a
+    assert_selector ".trail-terrace[data-terrace-index='1'] #trail-camp-#{camps[0].id}[aria-label='Authentication']", visible: :all, wait: 5
+    assert_selector "#trail-camp-#{camps[0].id} .lp-trail-camp__caption", visible: :all, wait: 5
+    assert_selector ".trail-terrace[data-terrace-index='3'] #trail-camp-#{camps[1].id}.trail-tent-hit", visible: :all, wait: 5
+    assert_selector "#terrace-sheet-range-4", visible: :all, wait: 5
+    [ camps[2], camps[3] ].each do |camp|
+      assert_selector "#terrace-sheet-range-4 .lp-trail-terrace-sheet__row[data-camp-id='#{camp.id}'] .lp-trail-terrace-sheet__row-title",
+                      text: camp.title,
+                      visible: :all,
+                      wait: 5
     end
-    first_camp = @plan.children.for_kind("project").order(:position).first
-    assert_selector "#trail-camp-#{first_camp.id} .lp-trail-camp__caption", visible: :all, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
         const t = document.querySelector(".lp-trail__goal-title");

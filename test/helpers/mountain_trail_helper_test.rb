@@ -851,14 +851,16 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 4, groups.size
     assert_equal :open, groups[0][:state]
     assert_equal 0, groups[0][:stage]
-    assert_equal :later, groups[1][:state]
-    assert_equal 1, groups[1][:stage]
+    assert_equal :empty, groups[1][:state]
+    assert_nil groups[1][:stage]
+    assert_equal :later, groups[2][:state]
+    assert_equal 1, groups[2][:stage]
     assert_equal :range, groups[3][:state]
-    assert_equal "4–9", groups[3][:range_label]
-    assert_equal "Stages 4 to 9, 6 stages", mountain_trail_terrace_range_aria_label(groups[3])
+    assert_equal "3–9", groups[3][:range_label]
+    assert_equal "Stages 3 to 9, 7 stages", mountain_trail_terrace_range_aria_label(groups[3])
     range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
-    assert_equal 6, range_camps.size
-    assert_equal [ 3, 4, 5, 6, 7, 8 ], range_camps.map { |entry| entry[:stage] }
+    assert_equal 7, range_camps.size
+    assert_equal [ 2, 3, 4, 5, 6, 7, 8 ], range_camps.map { |entry| entry[:stage] }
     assert mountain_trail_use_terrace_map?(camps, groups)
     assert_empty mountain_trail_terrace_fallback_projects(camps, groups)
   end

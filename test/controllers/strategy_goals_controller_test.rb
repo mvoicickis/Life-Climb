@@ -601,11 +601,15 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
-    assert_select "#trail-camp-#{projects.first.id}[aria-label=?]", "Project 0"
-    projects.each do |project|
-      assert_select "#trail-camp-#{project.id}[aria-label=?]", "Project #{project.position}"
+    assert_select ".trail-terrace[data-terrace-index='1'] #trail-camp-#{projects[0].id}[aria-label=?]", "Project 0"
+    assert_select "#trail-camp-#{projects[0].id} .lp-trail-camp__caption", text: /Project 0/
+    assert_select ".trail-terrace[data-terrace-index='3'] #trail-camp-#{projects[1].id}.trail-tent-hit[aria-label=?]", "Project 1"
+    assert_select "#terrace-sheet-range-4"
+    [ projects[2], projects[3] ].each do |project|
+      assert_select "#terrace-sheet-range-4 .lp-trail-terrace-sheet__row[data-camp-id=?] .lp-trail-terrace-sheet__row-title",
+                    project.id.to_s,
+                    text: project.title
     end
-    assert_select "#trail-camp-#{projects.first.id} .lp-trail-camp__caption", text: /Project 0/
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end
