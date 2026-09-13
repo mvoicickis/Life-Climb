@@ -87,8 +87,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-stages"
     assert_select "#trail-map-camps"
     assert_select "#trail-camps-fallback", count: 0
-    assert_select ".trail-terrace", count: 4
-    assert_select ".trail-stage-badge--range .trail-stage-badge__num", text: "4–9"
+    assert_select ".trail-terrace", count: 3
+    assert_select ".trail-stage-badge--range .trail-stage-badge__num", text: "3–9"
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do
@@ -484,7 +484,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{extra.id}[aria-label=?]", "Ridge lookout"
     assert_select "#trail-camp-#{@project.id}.trail-t2-camp .lp-trail-camp__caption .lp-trail-camp__title", text: /Base camp/
     assert_select "#trail-camp-#{extra.id}.trail-tent-hit .lp-trail-camp__caption", count: 0
-    assert_select "#trail-camp-#{extra.id}.trail-tent-hit"
+    assert_select ".trail-terrace[data-terrace-index='3'] #trail-camp-#{extra.id}.trail-tent-hit"
     assert_select ".lp-trail-camp__chip", count: 0
     assert_select ".lp-trail-camp.is-chip-start", count: 0
   end

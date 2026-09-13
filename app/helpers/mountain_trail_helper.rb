@@ -381,14 +381,13 @@ module MountainTrailHelper
 
     slots = [ nil, nil, nil, nil ]
     slots[0] = open_stage
-    slots[1] = open_stage + 1 if open_stage + 1 <= max_stage
-    slots[2] = open_stage + 2 if open_stage + 2 <= max_stage
-    if open_stage + 3 <= max_stage
+    slots[2] = open_stage + 1 if open_stage + 1 <= max_stage
+    if open_stage + 2 <= max_stage
       slots[3] =
-        if open_stage + 4 <= max_stage
-          { range_from: open_stage + 3 }
+        if open_stage + 3 <= max_stage
+          { range_from: open_stage + 2 }
         else
-          open_stage + 3
+          open_stage + 2
         end
     end
     slots
