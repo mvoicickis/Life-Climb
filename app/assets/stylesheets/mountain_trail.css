@@ -5604,7 +5604,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-stage-badge {
   position: absolute;
   left: var(--trail-badge-x, calc(-1 * var(--lp-terrace-badge-x)));
-  top: calc(-1 * var(--lp-tent-fog-h) * 1.5);
+  /* Fog-tent midpoint, but never more than half the gap to the terrace below. */
+  top: calc(-1 * min(var(--lp-tent-fog-h) * 1.5, 0.5 * var(--trail-badge-gap, 100cqw)));
   width: 24px;
   height: 24px;
   padding: 0;
@@ -5654,7 +5655,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .trail-terrace--t4 .trail-stage-badge--range {
-  top: calc(-1 * var(--lp-tent-fog-h) * 1.5);
+  top: calc(-1 * min(var(--lp-tent-fog-h) * 1.5, 0.5 * var(--trail-badge-gap, 100cqw)));
   transform: translate(-50%, -50%);
 }
 

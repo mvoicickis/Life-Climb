@@ -3,11 +3,12 @@
 <% projects = local_assigns[:projects] || [] %>
 <% current_project = local_assigns[:current_project] %>
 <% unless terrace[:state] == :empty %>
+<% gap_cqw = mountain_trail_terrace_badge_gap_cqw(terrace) %>
 
 <div class="trail-terrace trail-terrace--t<%= terrace[:index] %> is-<%= terrace[:state] %> <%= mountain_trail_terrace_size_class(terrace) if terrace[:camps].any? %>"
      data-terrace-index="<%= terrace[:index] %>"
      data-terrace-stage="<%= terrace[:stage] %>"
-     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%; --trail-badge-x: <%= (mountain_trail_terrace_badge_dx(terrace) * 100).round(3) %>cqw;">
+     style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%; --trail-badge-x: <%= (mountain_trail_terrace_badge_dx(terrace) * 100).round(3) %>cqw;<%= " --trail-badge-gap: #{(gap_cqw * 100).round(4)}cqw;" if gap_cqw %>">
   <% if terrace[:state] == :range %>
     <button type="button"
             class="trail-stage-badge trail-stage-badge--range"

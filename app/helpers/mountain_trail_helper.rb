@@ -479,6 +479,22 @@ module MountainTrailHelper
     terrace[:anchor][:x_left] - terrace[:anchor][:x] + TERRACE_BADGE_INSET
   end
 
+  # Image-height fraction from this terrace lip down to the next lower lip.
+  def mountain_trail_terrace_badge_gap_y(terrace)
+    lower = TERRACE_ANCHORS[terrace[:index].to_i - 1]
+    return unless lower && terrace[:anchor]
+
+    lower[:y] - terrace[:anchor][:y]
+  end
+
+  # Same gap as a world-width fraction (cqw), since badge `top` cannot use %.
+  def mountain_trail_terrace_badge_gap_cqw(terrace)
+    gap_y = mountain_trail_terrace_badge_gap_y(terrace)
+    return unless gap_y
+
+    gap_y * MAP_ASPECT_HEIGHT / MAP_ASPECT_WIDTH
+  end
+
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)
     count = terrace[:camps].size
     if terrace[:state] == :open
