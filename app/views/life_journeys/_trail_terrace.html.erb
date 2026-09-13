@@ -8,11 +8,7 @@
      data-terrace-index="<%= terrace[:index] %>"
      data-terrace-stage="<%= terrace[:stage] %>"
      style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%; --trail-badge-x: <%= (mountain_trail_terrace_badge_dx(terrace) * 100).round(3) %>cqw;">
-  <% if terrace[:state] == :open && terrace[:stage].present? %>
-    <p class="trail-open-pill lp-trail-stage__label">
-      <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
-    </p>
-  <% elsif terrace[:state] == :range %>
+  <% if terrace[:state] == :range %>
     <button type="button"
             class="trail-stage-badge trail-stage-badge--range"
             aria-label="<%= mountain_trail_terrace_range_aria_label(terrace) %>"
@@ -49,7 +45,8 @@
             terrace: terrace,
             slot: slot,
             index: index,
-            total: terrace[:camps].size %>
+            total: terrace[:camps].size,
+            show_stage_pill: index.zero? %>
     <% end %>
     <% if terrace[:overflow].positive? %>
       <button type="button"
