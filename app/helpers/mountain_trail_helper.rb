@@ -32,7 +32,7 @@ module MountainTrailHelper
   MAP_ASPECT_HEIGHT = 1350
   # Push world down so the painted flag tip (y≈7%) clears the HUD; terraced scroll bg
   # matches image sky (#a1bad0) so the exposed strip above the photo is not a green bar.
-  MAP_WORLD_Y = "6%"
+  MAP_WORLD_Y = "8%"
   MAP_ZOOM = 1.0
   # Front-edge y/x on mountain-stages-bg-v2.webp as fractions of image size.
   # Slot index 0 → T1 (bottom). x_left = left edge of terrace grass on the path.
