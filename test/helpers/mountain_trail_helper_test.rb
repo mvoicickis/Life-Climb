@@ -863,6 +863,23 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_empty mountain_trail_terrace_fallback_projects(camps, groups)
   end
 
+  test "badge gap is the y delta to the next lower terrace" do
+    t1 = { index: 1, anchor: MountainTrailHelper::TERRACE_ANCHORS[1] }
+    t2 = { index: 2, anchor: MountainTrailHelper::TERRACE_ANCHORS[2] }
+    t3 = { index: 3, anchor: MountainTrailHelper::TERRACE_ANCHORS[3] }
+    t4 = { index: 4, anchor: MountainTrailHelper::TERRACE_ANCHORS[4] }
+
+    assert_nil mountain_trail_terrace_badge_gap_y(t1)
+    assert_in_delta 0.0741, mountain_trail_terrace_badge_gap_y(t2), 0.00005
+    assert_in_delta 0.1866, mountain_trail_terrace_badge_gap_y(t3), 0.00005
+    assert_in_delta 0.1630, mountain_trail_terrace_badge_gap_y(t4), 0.00005
+    assert_in_delta(
+      mountain_trail_terrace_badge_gap_y(t2) * MountainTrailHelper::MAP_ASPECT_HEIGHT / MountainTrailHelper::MAP_ASPECT_WIDTH,
+      mountain_trail_terrace_badge_gap_cqw(t2),
+      0.00005
+    )
+  end
+
   test "use_terrace_map is false when a camp is not on any terrace surface" do
     camp = Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
       id: 99, stage: 0, position: 0, completed?: false, holding?: false
