@@ -903,7 +903,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal [ camp ], mountain_trail_terrace_fallback_projects([ camp ], groups)
   end
 
-  test "open terrace overflow keeps hidden camps for the sheet" do
+  test "open terrace keeps all camps with no overflow" do
     camps = [
       Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
         id: 1, stage: 0, position: 0, completed?: false, holding?: false
@@ -918,11 +918,19 @@ class MountainTrailHelperTest < ActionView::TestCase
 
     groups = mountain_trail_terrace_groups(camps)
     open = groups.find { |group| group[:state] == :open }
-    assert_equal 1, open[:overflow]
-    assert_equal [ 3 ], mountain_trail_terrace_overflow_camps(camps, open).map(&:id)
-    assert_equal "Stage 1, 1 more camps", mountain_trail_terrace_overflow_aria_label(open)
-    sheet = mountain_trail_terrace_overflow_sheet_for(camps, camps.last)
-    assert_equal "terrace-sheet-overflow-1", sheet[:sheet_id]
+    assert_equal [ 1, 2, 3 ], open[:camps].map(&:id)
+    assert_equal 0, open[:overflow]
+    assert_empty open[:hidden_camps]
+    assert_equal 2, mountain_trail_terrace_open_page_count(open)
+    assert_empty mountain_trail_terrace_overflow_camps(camps, open)
+    assert_nil mountain_trail_terrace_overflow_sheet_for(camps, camps.last)
+
+    slot0 = mountain_trail_terrace_slot(camps[0], open, 0)
+    slot1 = mountain_trail_terrace_slot(camps[1], open, 1)
+    slot2 = mountain_trail_terrace_slot(camps[2], open, 2)
+    assert_equal :l, slot0[:slot]
+    assert_equal :r, slot1[:slot]
+    assert_equal :solo, slot2[:slot]
   end
 
   test "terrace window keeps open stage on t1 after earlier stage is finished" do

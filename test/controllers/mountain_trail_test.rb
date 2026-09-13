@@ -489,6 +489,70 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-camp.is-chip-start", count: 0
   end
 
+  test "open terrace with three camps renders paging chrome not overflow chip" do
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge lookout", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+    third = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Summit camp", position: 2,
+      trail_x: 0.5, trail_y: 0.55, color_key: "purple"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-camp-#{@project.id}"
+    assert_select "#trail-camp-#{third.id}"
+    assert_select ".trail-terrace.is-open .trail-camp-more", count: 0
+    assert_select ".trail-terrace.is-open[data-controller~='trail-terrace-camps']"
+    assert_select ".trail-terrace.is-open .trail-terrace-camps__dots .lp-rpg-destination-dots__dot", count: 2
+    assert_select ".trail-terrace.is-open .trail-terrace-camps__nav"
+    assert_select ".trail-terrace.is-open .trail-terrace-camps__arrow.is-prev"
+    assert_select ".trail-terrace.is-open .trail-terrace-camps__arrow.is-next"
+  end
+
+  test "open terrace with two camps has no paging dots" do
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge lookout", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".trail-terrace.is-open .trail-terrace-camps__dots", count: 0
+    assert_select ".trail-terrace.is-open .trail-terrace-camps__nav[hidden]"
+  end
+
+  test "planting third open-stage camp opens trail sheet not terrace overflow" do
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge lookout", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: @plan.id,
+        horizon: "project",
+        title: "Summit camp",
+        trail_x: 0.52,
+        trail_y: 0.44,
+        color_key: "purple"
+      }, as: :turbo_stream
+    end
+
+    created = @plan.children.for_kind("project").find_by!(title: "Summit camp")
+    assert_includes response.body, 'action="open_trail_camp"'
+    assert_includes response.body, "camp-id=\"#{created.id}\""
+    assert_not_includes response.body, 'action="open_terrace_sheet"'
+    assert_not_includes response.body, "terrace-sheet-overflow"
+  end
+
   test "planting a project assigns the open stage" do
     assert_difference -> { @plan.children.for_kind("project").count }, 1 do
       post strategy_goals_path, params: {

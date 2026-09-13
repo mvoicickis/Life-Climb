@@ -39,10 +39,15 @@
      end %>
 
 <% show_stage_pill = local_assigns[:show_stage_pill] && terrace.present? && terrace[:state] == :open && terrace[:stage].present? %>
+<% terrace_camp_page = local_assigns[:terrace_camp_page] %>
 <button type="button"
         class="lp-trail-camp trail-t2-camp <%= slot_class %> <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %>"
         id="trail-camp-<%= project.id %>"
         style="<%= inline_style %>"
+        <% if terrace.present? && terrace[:state] == :open %>
+        data-trail-terrace-camps-target="camp"
+        data-camp-page="<%= terrace_camp_page if terrace_camp_page.present? %>"
+        <% end %>
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
         data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
@@ -52,7 +57,9 @@
         data-action="click->trail-canvas#campClick click->trail-camp-sheet#open"
         aria-label="<%= project.title %>">
   <% if show_stage_pill %>
-    <span class="trail-open-pill lp-trail-stage__label">
+    <span class="trail-open-pill lp-trail-stage__label"
+          data-trail-terrace-camps-target="stagePill"
+          hidden>
       <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
     </span>
   <% end %>

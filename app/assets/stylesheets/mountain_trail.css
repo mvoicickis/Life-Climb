@@ -5718,6 +5718,68 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   cursor: pointer;
 }
 
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__nav {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--lp-tent-open-h) - var(--lp-open-stage-lift) - 2.75rem);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(var(--lp-tent-open-w) * 2 + 2.5rem);
+  max-width: 88cqw;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__nav[hidden] {
+  display: none !important;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow {
+  display: grid;
+  place-items: center;
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  flex: 0 0 auto;
+  border: 1px solid var(--lp-rpg-glass-border);
+  border-radius: 999px;
+  background: var(--lp-rpg-glass);
+  color: var(--lp-rpg-ink);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow[hidden] {
+  display: none !important;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--lp-tent-open-h) - var(--lp-open-stage-lift) - 4.5rem);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots[hidden] {
+  display: none !important;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-t2-camp[hidden] {
+  display: none !important;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-open-pill[hidden] {
+  display: none !important;
+}
+
 .lp-trail-terrace-sheet {
   position: fixed;
   inset: 0;
