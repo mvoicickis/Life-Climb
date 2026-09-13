@@ -357,10 +357,16 @@ module MountainTrailHelper
             :later
           end
         stage_camps = by_stage[stage] || []
-        cap = state == :open ? OPEN_TERRACE_CAMP_CAP : LATER_TERRACE_CAMP_CAP
-        visible = stage_camps.first(cap)
-        overflow = [ stage_camps.size - visible.size, 0 ].max
-        hidden = overflow.positive? ? stage_camps.drop(cap) : []
+        if state == :open
+          visible = stage_camps
+          overflow = 0
+          hidden = []
+        else
+          cap = LATER_TERRACE_CAMP_CAP
+          visible = stage_camps.first(cap)
+          overflow = [ stage_camps.size - visible.size, 0 ].max
+          hidden = overflow.positive? ? stage_camps.drop(cap) : []
+        end
         {
           index: terrace_index,
           anchor: anchor,
@@ -460,8 +466,15 @@ module MountainTrailHelper
     params[:terrace_debug].to_s == "1"
   end
 
+  def mountain_trail_terrace_open_page_count(terrace)
+    return 1 unless terrace[:state] == :open
+
+    (terrace[:camps].size.to_f / OPEN_TERRACE_CAMP_CAP).ceil
+  end
+
   def mountain_trail_terrace_size_class(terrace)
     count = terrace[:camps].size
+    count = [ count, OPEN_TERRACE_CAMP_CAP ].min if terrace[:state] == :open
     return "is-solo" if count <= 1
     return "is-pair" if count == 2
 
@@ -499,7 +512,11 @@ module MountainTrailHelper
     if terrace[:state] == :open
       return { slot: :solo, x: :center } if count <= 1
 
-      return { slot: :l, x: :left } if index_in_terrace.zero?
+      page = index_in_terrace / OPEN_TERRACE_CAMP_CAP
+      idx_on_page = index_in_terrace % OPEN_TERRACE_CAMP_CAP
+      on_page = [ OPEN_TERRACE_CAMP_CAP, count - (page * OPEN_TERRACE_CAMP_CAP) ].min
+      return { slot: :solo, x: :center } if on_page <= 1
+      return { slot: :l, x: :left } if idx_on_page.zero?
 
       { slot: :r, x: :right }
     else
