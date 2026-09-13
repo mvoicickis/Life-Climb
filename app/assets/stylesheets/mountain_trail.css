@@ -5262,7 +5262,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .lp-trail__surface {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
   max-height: calc(100cqw * 1350 / 1080 * 1.08);
   height: auto;
@@ -5284,10 +5284,15 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   overscroll-behavior: contain;
 }
 
-/* Absorb leftover scroll space below the photo; cream dock bg, not sky strip. */
 .lp-trail.is-terraced .lp-trail__dock {
-  flex: 1 0 auto;
-  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+/* Leftover column space sits below the base camp card, not above it. */
+.lp-trail.is-terraced .lp-trail__scroll::after {
+  content: "";
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .lp-trail.is-terraced .lp-trail__world {
