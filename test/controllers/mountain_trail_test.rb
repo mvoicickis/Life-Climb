@@ -490,15 +490,18 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   end
 
   test "open terrace with three camps renders paging chrome not overflow chip" do
+    open_stage = @project.stage
     @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Ridge lookout", position: 1,
-      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber",
+      stage: open_stage
     )
     third = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Summit camp", position: 2,
-      trail_x: 0.5, trail_y: 0.55, color_key: "purple"
+      trail_x: 0.5, trail_y: 0.55, color_key: "purple",
+      stage: open_stage
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
@@ -527,10 +530,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   end
 
   test "planting third open-stage camp opens trail sheet not terrace overflow" do
+    open_stage = @project.stage
     @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Ridge lookout", position: 1,
-      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber",
+      stage: open_stage
     )
 
     assert_difference -> { @plan.children.for_kind("project").count }, 1 do
