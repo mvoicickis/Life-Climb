@@ -238,6 +238,16 @@
           <%= render "life_journeys/trail_map_camps",
                 projects: projects,
                 current_project: current_project %>
+
+          <% if plan.present? && !destination_overlay && !first_camp_reveal && all_projects.size >= 2 %>
+            <button type="button"
+                    class="lp-trail-arrange-entry"
+                    data-trail-ignore
+                    data-action="click->trail-canvas#openArrangeCamps"
+                    aria-haspopup="dialog">
+              <%= t("strategy.rpg.trail.arrange.entry") %>
+            </button>
+          <% end %>
         </div>
 
         <div class="lp-trail-plant"
@@ -565,6 +575,14 @@
         <% end %>
       </div>
     </dialog>
+  <% end %>
+
+  <% if plan.present? && !destination_overlay && !first_camp_reveal && all_projects.size >= 2 %>
+    <%= render "life_journeys/trail_arrange_camps_overlay",
+          journey: journey,
+          plan: plan,
+          projects: all_projects,
+          open_stage: mountain_trail_open_stage(all_projects) %>
   <% end %>
 
   <% if first_camp_reveal %>

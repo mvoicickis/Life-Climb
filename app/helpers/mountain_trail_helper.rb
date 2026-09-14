@@ -274,6 +274,21 @@ module MountainTrailHelper
     open.map { |project| project.try(:stage).to_i }.min
   end
 
+  # Stage-grouped camp rows for the Arrange overlay (includes completed camps).
+  def mountain_trail_arrange_groups(projects)
+    by_stage = mountain_trail_projects_by_stage(projects)
+    return [] if by_stage.empty?
+
+    open_stage = mountain_trail_open_stage(projects)
+    by_stage.keys.sort.map do |stage|
+      {
+        stage: stage,
+        open: stage == open_stage,
+        camps: by_stage[stage]
+      }
+    end
+  end
+
   def mountain_trail_last_finished_stage(projects)
     by_stage = mountain_trail_projects_by_stage(projects)
     finished = by_stage.keys.select { |stage| mountain_trail_stage_done?(projects, stage) }

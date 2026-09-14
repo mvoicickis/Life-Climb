@@ -37,6 +37,27 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     @project = @user.strategy_goals.for_kind("project").last
   end
 
+  test "single camp hides arrange entry and overlay" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-arrange-entry", count: 0
+    assert_select "#trail-arrange-camps", count: 0
+  end
+
+  test "two camps show arrange entry and overlay shell" do
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge lookout", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-arrange-entry", text: /Arrange camps/i
+    assert_select "#trail-arrange-camps[data-controller*='arrange-camps']"
+    assert_select "#trail-arrange-camps[hidden]"
+  end
+
   test "mountain show renders V4 trail canvas with camps and hides holding" do
     holding_plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal,

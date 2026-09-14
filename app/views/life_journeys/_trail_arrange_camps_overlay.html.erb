@@ -1,0 +1,83 @@
+<%# Full-screen arrange camps overlay. locals: journey, plan, projects, open_stage %>
+<% journey = local_assigns.fetch(:journey) %>
+<% plan = local_assigns.fetch(:plan) %>
+<% projects = local_assigns.fetch(:projects) %>
+<% open_stage = local_assigns.fetch(:open_stage) %>
+<% open_overlay = local_assigns.fetch(:open_overlay, false) %>
+<% groups = mountain_trail_arrange_groups(projects) %>
+<div id="trail-arrange-camps"
+     class="lp-trail-arrange"
+     data-trail-ignore
+     data-controller="arrange-camps"
+     data-arrange-camps-url-value="<%= life_journey_camp_arrangement_path(journey) %>"
+     data-arrange-camps-plan-id-value="<%= plan.id %>"
+     data-arrange-camps-csrf-value="<%= form_authenticity_token %>"
+     data-arrange-camps-saved-value="<%= t('strategy.rpg.trail.arrange.saved') %>"
+     data-arrange-camps-next-value="<%= t('strategy.rpg.trail.arrange.next') %>"
+     data-arrange-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>"
+     <%= "hidden" unless open_overlay %>
+     aria-hidden="<%= open_overlay ? 'false' : 'true' %>">
+  <header class="lp-trail-arrange__top">
+    <div class="lp-trail-arrange__title-row">
+      <button type="button"
+              class="lp-trail-arrange__back"
+              data-action="click->trail-canvas#closeArrangeCamps"
+              aria-label="<%= t('strategy.rpg.trail.arrange.back') %>">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <h1 class="lp-trail-arrange__title"><%= t("strategy.rpg.trail.arrange.title") %></h1>
+      <button type="button"
+              class="lp-trail-arrange__done"
+              data-action="click->trail-canvas#closeArrangeCamps">
+        <%= t("strategy.rpg.trail.arrange.done") %>
+      </button>
+    </div>
+    <p class="lp-trail-arrange__hint"><%= t("strategy.rpg.trail.arrange.hint") %></p>
+  </header>
+
+  <div class="lp-trail-arrange__scroll" data-arrange-camps-target="scroll">
+    <% groups.each do |group| %>
+      <section class="lp-trail-arrange-group <%= 'lp-trail-arrange-group--here' if group[:open] %>">
+        <h2 class="lp-trail-arrange-group__heading">
+          <% if group[:open] %>
+            <%= t("strategy.rpg.trail.arrange.stage_here", stage: mountain_trail_stage_label(group[:stage])) %>
+          <% else %>
+            <%= t("strategy.rpg.trail.arrange.stage", stage: mountain_trail_stage_label(group[:stage])) %>
+          <% end %>
+        </h2>
+        <ul class="lp-trail-arrange-list" data-arrange-camps-target="list" data-arrange-list>
+          <% group[:camps].each_with_index do |camp, index| %>
+            <li class="lp-trail-arrange-row lp-pointer-reorder__row"
+                data-id="<%= camp.id %>"
+                data-camp-id="<%= camp.id %>"
+                data-completed="<%= camp.completed? %>"
+                data-update-url="<%= strategy_goal_path(camp) %>">
+              <% if group[:open] && index.zero? %>
+                <span class="lp-trail-arrange-row__next" data-arrange-camps-target="nextTag"><%= t("strategy.rpg.trail.arrange.next") %></span>
+              <% end %>
+              <button type="button"
+                      class="lp-trail-arrange-row__label-btn"
+                      data-action="click->arrange-camps#beginRename"
+                      data-arrange-rename>
+                <%= camp.title %>
+              </button>
+              <% unless camp.completed? %>
+                <button type="button"
+                        class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
+                        aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
+                  <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>') %>
+                </button>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  </div>
+
+  <p class="lp-trail-arrange__toast"
+     role="status"
+     aria-live="polite"
+     data-arrange-camps-target="toast"
+     hidden></p>
+</div>
