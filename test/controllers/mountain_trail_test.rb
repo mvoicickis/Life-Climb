@@ -109,9 +109,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps"
     assert_select "#trail-camps-fallback", count: 0
     assert_select ".trail-terrace", count: 3
-    assert_select ".trail-terrace--t4.is-range .trail-stage-badge--later .trail-stage-badge__num", text: "3"
-    assert_select ".trail-terrace--t4.is-range .trail-tent-hit", count: 3
-    assert_select ".trail-terrace--t4.is-range .trail-camp-more--range-tail", text: "+4"
+    assert_select ".trail-terrace--t4.is-range .trail-stage-badge--later .trail-stage-badge__num", text: "7"
+    assert_select ".trail-terrace--t4.is-range .trail-tent-hit--range", count: 1
+    assert_select ".trail-terrace--t4.is-range .trail-camp-more", count: 0
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do

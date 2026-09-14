@@ -21,7 +21,7 @@
             data-action="click->trail-camp-sheet#openTerraceSheet"
             data-terrace-sheet-id="terrace-sheet-range-<%= terrace[:index] %>"
             data-terrace-sheet-title="<%= mountain_trail_terrace_range_aria_label(terrace) %>">
-      <span class="trail-stage-badge__num"><%= mountain_trail_stage_label(terrace[:stage]) %></span>
+      <span class="trail-stage-badge__num"><%= mountain_trail_terrace_range_badge_num(projects, terrace) %></span>
     </button>
   <% elsif terrace[:state] != :open && terrace[:stage].present? %>
     <button type="button"
@@ -91,6 +91,23 @@
         <% end %>
       </div>
     <% end %>
+  <% elsif terrace[:state] == :range %>
+    <% if terrace[:camps].any? %>
+      <% project = terrace[:camps].first %>
+      <% accent = mountain_trail_project_accent(project) %>
+      <% color_key = project.tagged_color_key %>
+      <button type="button"
+              class="trail-tent-hit trail-tent-hit--solo trail-tent-hit--range <%= "has-color is-#{color_key}" if color_key %>"
+              style="--trail-slot-dx: 0; --lp-trail-accent: <%= accent %>;"
+              aria-label="<%= mountain_trail_terrace_range_aria_label(terrace) %>"
+              data-action="click->trail-camp-sheet#openTerraceSheet"
+              data-terrace-sheet-id="terrace-sheet-range-<%= terrace[:index] %>"
+              data-terrace-sheet-title="<%= mountain_trail_terrace_range_aria_label(terrace) %>">
+        <span class="trail-tent trail-tent--md has-color <%= "is-#{color_key}" if color_key %>"
+              style="--lp-trail-accent: <%= accent %>;"
+              aria-hidden="true"><svg viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg></span>
+      </button>
+    <% end %>
   <% else %>
     <% terrace[:camps].each_with_index do |project, index| %>
       <% slot = mountain_trail_terrace_slot(project, terrace, index) %>
@@ -115,29 +132,14 @@
       </button>
     <% end %>
     <% if terrace[:overflow].positive? %>
-      <% if terrace[:state] == :range %>
-        <% last_index = terrace[:camps].size - 1 %>
-        <% last_slot = mountain_trail_terrace_slot(terrace[:camps][last_index], terrace, last_index) %>
-        <% last_dx = mountain_trail_terrace_slot_dx(terrace, last_slot) %>
-        <button type="button"
-                class="trail-camp-more trail-camp-more--range-tail"
-                style="--trail-slot-dx: <%= (last_dx + 0.055).round(4) %>;"
-                aria-label="<%= mountain_trail_terrace_range_aria_label(terrace) %>"
-                data-action="click->trail-camp-sheet#openTerraceSheet"
-                data-terrace-sheet-id="terrace-sheet-range-<%= terrace[:index] %>"
-                data-terrace-sheet-title="<%= mountain_trail_terrace_range_aria_label(terrace) %>">
-          +<%= terrace[:overflow] %>
-        </button>
-      <% else %>
-        <button type="button"
-                class="trail-camp-more"
-                aria-label="<%= mountain_trail_terrace_overflow_aria_label(terrace) %>"
-                data-action="click->trail-camp-sheet#openTerraceSheet"
-                data-terrace-sheet-id="terrace-sheet-overflow-<%= terrace[:index] %>"
-                data-terrace-sheet-title="<%= t('strategy.rpg.trail.terrace.overflow_sheet_title', stage: mountain_trail_stage_label(terrace[:stage])) %>">
-          +<%= terrace[:overflow] %>
-        </button>
-      <% end %>
+      <button type="button"
+              class="trail-camp-more"
+              aria-label="<%= mountain_trail_terrace_overflow_aria_label(terrace) %>"
+              data-action="click->trail-camp-sheet#openTerraceSheet"
+              data-terrace-sheet-id="terrace-sheet-overflow-<%= terrace[:index] %>"
+              data-terrace-sheet-title="<%= t('strategy.rpg.trail.terrace.overflow_sheet_title', stage: mountain_trail_stage_label(terrace[:stage])) %>">
+        +<%= terrace[:overflow] %>
+      </button>
     <% end %>
   <% end %>
 </div>

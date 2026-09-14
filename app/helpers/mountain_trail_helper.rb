@@ -40,7 +40,7 @@ module MountainTrailHelper
     1 => { y: 0.8222, x: 0.4644, x_left: 0.2352, x_right: 0.6935, token: "bottom" },
     2 => { y: 0.7481, x: 0.4995, x_left: 0.2204, x_right: 0.7787, token: "second" },
     3 => { y: 0.5615, x: 0.4977, x_left: 0.2963, x_right: 0.6991, token: "third" },
-    4 => { y: 0.3560, x: 0.5019, x_left: 0.3157, x_right: 0.6880, token: "top" }
+    4 => { y: 0.3960, x: 0.5019, x_left: 0.3157, x_right: 0.6880, token: "top" }
   }.freeze
   # Small inset right from x_left so badge circles sit on grass, not the lip edge.
   TERRACE_BADGE_INSET = 0.015
@@ -350,18 +350,15 @@ module MountainTrailHelper
       if slot.is_a?(Hash) && slot[:range_from]
         from_stage = slot[:range_from]
         range_camps = mountain_trail_terrace_range_camps(camps, from_stage, max_stage)
-        cap = LATER_TERRACE_CAMP_CAP
-        visible = range_camps.first(cap)
-        overflow = [ range_camps.size - visible.size, 0 ].max
-        hidden = overflow.positive? ? range_camps.drop(cap) : []
+        visible = range_camps.first(1)
         {
           index: terrace_index,
           anchor: anchor,
           stage: from_stage,
           state: :range,
           camps: visible,
-          hidden_camps: hidden,
-          overflow: overflow,
+          hidden_camps: range_camps.drop(1),
+          overflow: 0,
           range_label: nil,
           range_from: from_stage,
           range_to: max_stage,
@@ -462,6 +459,15 @@ module MountainTrailHelper
     to = mountain_trail_stage_label(terrace[:range_to])
     count = terrace[:range_to].to_i - terrace[:range_from].to_i + 1
     I18n.t("strategy.rpg.trail.terrace.range_aria", from: from, to: to, count: count)
+  end
+
+  # T4 range badge: one stage number, or stage-span count when multiple camps sit above.
+  def mountain_trail_terrace_range_badge_num(projects, terrace)
+    stage_span = terrace[:range_to].to_i - terrace[:range_from].to_i + 1
+    range_camps = mountain_trail_terrace_range_camps(projects, terrace[:range_from], terrace[:range_to])
+    return mountain_trail_stage_label(terrace[:range_from]) if range_camps.size <= 1
+
+    stage_span
   end
 
   def mountain_trail_terrace_overflow_aria_label(terrace)
