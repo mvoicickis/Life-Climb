@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG mountain terraces — mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sky-top: #d4ebe4;
+      --sky-mid: #b8d4cf;
+      --sky-horizon: #a1bad0;
+      --sky-glow: #fff8e8;
+      --range-far: #7a9aab;
+      --range-mid: #8fb0a8;
+      --range-near: #6d9488;
+      --slope-shadow: #2d4a32;
+      --slope-mid: #3d6b3a;
+      --slope-light: #5a8f4e;
+      --slope-highlight: #7cb862;
+      --slope-sun: #9ed078;
+      --grass-back: #3a6e34;
+      --grass-mid: #528c42;
+      --grass-front: #8ec468;
+      --grass-lip: #2f5a28;
+      --grass-sun-kiss: #a8d878;
+      --shelf-shadow: rgba(24, 48, 20, 0.38);
+      --mist: rgba(210, 228, 220, 0.55);
+      --mist-deep: rgba(180, 205, 195, 0.42);
+      --pine-dark: #1e3d28;
+      --pine-mid: #2d5a38;
+      --pine-light: #3d7348;
+      --rock-dark: #4a5248;
+      --rock-mid: #6a7268;
+      --rock-light: #8a9288;
+      --pennant-pole: #5c4a32;
+      --pennant-yellow: #f1c40f;
+      --pennant-shadow: #c9a008;
+      --tent-teal: #0f9488;
+      --tent-coral: #e8590c;
+      --tent-blue: #4c6ef5;
+      --pill-bg: rgba(247, 239, 226, 0.96);
+      --pill-border: rgba(90, 66, 40, 0.28);
+      --pill-ink: #1a140c;
+      --fire-core: #ffd166;
+      --fire-mid: #f0730c;
+      --fire-deep: #a33a06;
+      --fire-glow: rgba(255, 150, 50, 0.55);
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green-deep: #3dbd48;
+      --font: "Nunito", system-ui, sans-serif;
+      --phone-w: 360px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 2rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .state-block { margin-bottom: 2.75rem; }
+
+    .state-block__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .state-block__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .state-block__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      max-width: 34rem;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .phone svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: top;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>SVG mountain terraces</h1>
+    <p class="doc__lede">
+      Painted vector mountain at 360px. Shelf <code>y</code> and width come from stage index and total count
+      (same compression curve as terrace bands). Three frames: 3, 9, and 20 stages.
+    </p>
+
+    <section class="state-block" aria-labelledby="lbl-3">
+      <p class="state-block__label" id="lbl-3">Frame A</p>
+      <h2 class="state-block__title">3 stages — on stage 2</h2>
+      <p class="state-block__note">Finished shelf below, wide current terrace, softer next band toward the peak.</p>
+      <div class="phone" data-total="3" data-current="2"></div>
+    </section>
+
+    <section class="state-block" aria-labelledby="lbl-9">
+      <p class="state-block__label" id="lbl-9">Frame B</p>
+      <h2 class="state-block__title">9 stages — on stage 5</h2>
+      <p class="state-block__note">Stacked finished terraces, thin future shelves compressing upward.</p>
+      <div class="phone" data-total="9" data-current="5"></div>
+    </section>
+
+    <section class="state-block" aria-labelledby="lbl-20">
+      <p class="state-block__label" id="lbl-20">Frame C</p>
+      <h2 class="state-block__title">20 stages — on stage 12</h2>
+      <p class="state-block__note">Many faint upper shelves; finished lower terraces still countable.</p>
+      <div class="phone" data-total="20" data-current="12"></div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var W = 360;
+      var H = 480;
+      var SILHOUETTE = [
+        [0.06, 0.472, 0.528],
+        [0.14, 0.405, 0.595],
+        [0.24, 0.335, 0.665],
+        [0.34, 0.268, 0.732],
+        [0.44, 0.208, 0.792],
+        [0.54, 0.158, 0.842],
+        [0.64, 0.118, 0.882],
+        [0.74, 0.082, 0.918],
+        [0.84, 0.052, 0.948],
+        [0.94, 0.028, 0.972],
+        [1.0, 0.012, 0.988]
+      ];
+      var Y_MIN = 0.2;
+      var Y_MAX = 0.93;
+      var COMPRESS = 1.42;
+      var PEAK_X = 0.5;
+      var PEAK_Y = 0.08;
+
+      var TENT_NAMES = [
+        ["Morning run", "Read 20 min"],
+        ["Inbox zero", "Stretch"],
+        ["Deep work", "Walk"]
+      ];
+
+      function cssVar(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      }
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function silhouetteAt(y) {
+        if (y <= SILHOUETTE[0][0]) return { left: SILHOUETTE[0][1], right: SILHOUETTE[0][2] };
+        for (var i = 1; i < SILHOUETTE.length; i++) {
+          var row = SILHOUETTE[i];
+          var prev = SILHOUETTE[i - 1];
+          if (y <= row[0]) {
+            var t = (y - prev[0]) / (row[0] - prev[0]);
+            return {
+              left: lerp(prev[1], row[1], t),
+              right: lerp(prev[2], row[2], t)
+            };
+          }
+        }
+        var last = SILHOUETTE[SILHOUETTE.length - 1];
+        return { left: last[1], right: last[2] };
+      }
+
+      function stageYFrac(index, total) {
+        if (total <= 1) return Y_MAX;
+        var t = (index - 1) / (total - 1);
+        return Y_MAX - (Y_MAX - Y_MIN) * Math.pow(t, COMPRESS);
+      }
+
+      function shelfDepthFrac(total) {
+        var scale = total <= 4 ? 1 : total <= 12 ? 0.82 : 0.62;
+        return 0.052 * scale;
+      }
+
+      function bandMetrics(role, total, rank) {
+        var scale = total <= 4 ? 1 : total <= 12 ? 0.82 : 0.62;
+        switch (role) {
+          case "current":
+            return { heightFrac: 0.052 * scale, strength: 1, sharp: 1 };
+          case "next":
+            return { heightFrac: 0.034 * scale, strength: 0.82, sharp: 0.75 };
+          case "finished":
+            return { heightFrac: 0.026 * scale, strength: 0.5, sharp: 0.6 };
+          default:
+            return {
+              heightFrac: (0.014 + 0.008 * scale) * (0.55 + 0.45 * (1 - rank / Math.max(total, 1))),
+              strength: Math.max(0.22, 0.62 - rank * 0.05),
+              sharp: 0.45
+            };
+        }
+      }
+
+      function stagesToRender(total, current) {
+        var list = [];
+        for (var s = 1; s <= total; s++) {
+          if (s < current) list.push({ stage: s, role: "finished" });
+          else if (s === current) list.push({ stage: s, role: "current" });
+          else if (s === current + 1) list.push({ stage: s, role: "next" });
+          else list.push({ stage: s, role: "beyond", rank: s - current - 1 });
+        }
+        return list;
+      }
+
+      function shelfTrapezoid(yTop, yBottom) {
+        var top = silhouetteAt(yTop);
+        var bottom = silhouetteAt(yBottom);
+        var x1 = bottom.left * W;
+        var x2 = bottom.right * W;
+        var x3 = top.right * W;
+        var x4 = top.left * W;
+        var y1 = yBottom * H;
+        var y2 = yTop * H;
+        var bulge = (y1 - y2) * 0.12;
+        var midY = y1 - bulge;
+        var midX = (x1 + x2) * 0.5;
+        return {
+          path: "M" + x1 + "," + y1 + " L" + x2 + "," + y1 +
+            " L" + x3 + "," + y2 + " L" + x4 + "," + y2 +
+            " Q" + midX + "," + midY + " " + x1 + "," + y1 + " Z",
+          cx: (x1 + x2) * 0.5,
+          yLip: y1,
+          width: x2 - x1
+        };
+      }
+
+      function mountainPath() {
+        var peakX = PEAK_X * W;
+        var peakY = PEAK_Y * H;
+        var base = silhouetteAt(1);
+        var bl = base.left * W;
+        var br = base.right * W;
+        var leftMid = silhouetteAt(0.55);
+        var rightMid = silhouetteAt(0.5);
+        return "M" + bl + "," + H +
+          " L" + (leftMid.left * W) + "," + (0.55 * H) +
+          " L" + peakX + "," + peakY +
+          " L" + (rightMid.right * W) + "," + (0.5 * H) +
+          " L" + br + "," + H + " Z";
+      }
+
+      function el(name, attrs, children) {
+        var node = document.createElementNS("http://www.w3.org/2000/svg", name);
+        if (attrs) {
+          Object.keys(attrs).forEach(function (k) {
+            node.setAttribute(k, attrs[k]);
+          });
+        }
+        (children || []).forEach(function (c) {
+          if (typeof c === "string") node.appendChild(document.createTextNode(c));
+          else if (c) node.appendChild(c);
+        });
+        return node;
+      }
+
+      function grassTexture(parent, y0, y1, opacity) {
+        var rng = seededRandom(Math.floor(y0 * 1000));
+        for (var i = 0; i < 28; i++) {
+          var y = lerp(y0, y1, rng());
+          var sil = silhouetteAt(y / H);
+          var cx = lerp(sil.left, sil.right, 0.15 + rng() * 0.7) * W;
+          if (cx < W * 0.22 || cx > W * 0.78) continue;
+          var ry = 2 + rng() * 5;
+          var rx = ry * (0.8 + rng() * 0.6);
+          parent.appendChild(el("ellipse", {
+            cx: cx.toFixed(1),
+            cy: (y * H).toFixed(1),
+            rx: rx.toFixed(1),
+            ry: ry.toFixed(1),
+            fill: cssVar("--slope-highlight"),
+            opacity: (opacity * (0.08 + rng() * 0.12)).toFixed(3)
+          }));
+        }
+      }
+
+      function seededRandom(seed) {
+        return function () {
+          seed = (seed * 9301 + 49297) % 233280;
+          return seed / 233280;
+        };
+      }
+
+      function drawPine(g, x, y, scale, flip) {
+        var s = scale || 1;
+        var dir = flip ? -1 : 1;
+        var layers = [
+          { w: 22 * s, h: 16 * s, dy: 0, fill: cssVar("--pine-dark") },
+          { w: 18 * s, h: 14 * s, dy: 10 * s, fill: cssVar("--pine-mid") },
+          { w: 14 * s, h: 12 * s, dy: 18 * s, fill: cssVar("--pine-light") }
+        ];
+        g.appendChild(el("rect", {
+          x: (x - 2 * s).toFixed(1),
+          y: (y + 22 * s).toFixed(1),
+          width: (4 * s).toFixed(1),
+          height: (10 * s).toFixed(1),
+          fill: cssVar("--pennant-pole"),
+          opacity: "0.85"
+        }));
+        layers.forEach(function (layer) {
+          var pts = (x).toFixed(1) + "," + (y + layer.dy).toFixed(1) + " " +
+            (x + dir * layer.w * 0.5).toFixed(1) + "," + (y + layer.dy + layer.h).toFixed(1) + " " +
+            (x - dir * layer.w * 0.5).toFixed(1) + "," + (y + layer.dy + layer.h).toFixed(1);
+          g.appendChild(el("polygon", { points: pts, fill: layer.fill, opacity: "0.92" }));
+        });
+      }
+
+      function drawRock(g, x, y, w, h) {
+        g.appendChild(el("ellipse", {
+          cx: x.toFixed(1),
+          cy: y.toFixed(1),
+          rx: (w * 0.5).toFixed(1),
+          ry: (h * 0.45).toFixed(1),
+          fill: cssVar("--rock-mid")
+        }));
+        g.appendChild(el("ellipse", {
+          cx: (x - w * 0.15).toFixed(1),
+          cy: (y - h * 0.1).toFixed(1),
+          rx: (w * 0.35).toFixed(1),
+          ry: (h * 0.25).toFixed(1),
+          fill: cssVar("--rock-light"),
+          opacity: "0.7"
+        }));
+      }
+
+      function drawTent(g, cx, cy, accent, small, label) {
+        var tw = small ? 20 : 26;
+        var th = small ? 17 : 22;
+        var pts = cx + "," + cy + " " + (cx + tw * 0.5) + "," + (cy + th) + " " + (cx - tw * 0.5) + "," + (cy + th);
+        g.appendChild(el("polygon", {
+          points: pts,
+          fill: accent,
+          filter: "url(#tent-shadow)"
+        }));
+        g.appendChild(el("polygon", {
+          points: (cx - tw * 0.35) + "," + (cy + th * 0.35) + " " +
+            (cx + tw * 0.35) + "," + (cy + th * 0.35) + " " +
+            cx + "," + cy,
+          fill: "#fff",
+          opacity: "0.25"
+        }));
+        if (label) {
+          var pillW = Math.min(88, 8 + label.length * 5.2);
+          g.appendChild(el("rect", {
+            x: (cx - pillW / 2).toFixed(1),
+            y: (cy + th + 4).toFixed(1),
+            width: pillW.toFixed(1),
+            height: "14",
+            rx: "7",
+            fill: cssVar("--pill-bg"),
+            stroke: cssVar("--pill-border"),
+            "stroke-width": "0.8"
+          }));
+          g.appendChild(el("text", {
+            x: cx.toFixed(1),
+            y: (cy + th + 14).toFixed(1),
+            "text-anchor": "middle",
+            "font-family": "Nunito, sans-serif",
+            "font-size": "8",
+            "font-weight": "800",
+            fill: cssVar("--pill-ink")
+          }, [label]));
+        }
+      }
+
+      function drawCampfire(g, cx, cy) {
+        g.appendChild(el("ellipse", {
+          cx: cx.toFixed(1),
+          cy: (cy + 8).toFixed(1),
+          rx: "14",
+          ry: "5",
+          fill: cssVar("--fire-glow")
+        }));
+        g.appendChild(el("rect", {
+          x: (cx - 8).toFixed(1),
+          y: (cy + 5).toFixed(1),
+          width: "16",
+          height: "4",
+          rx: "2",
+          fill: cssVar("--pennant-pole")
+        }));
+        g.appendChild(el("ellipse", {
+          cx: cx.toFixed(1),
+          cy: (cy + 2).toFixed(1),
+          rx: "7",
+          ry: "9",
+          fill: cssVar("--fire-mid")
+        }));
+        g.appendChild(el("ellipse", {
+          cx: cx.toFixed(1),
+          cy: (cy - 1).toFixed(1),
+          rx: "5",
+          ry: "7",
+          fill: cssVar("--fire-core")
+        }));
+      }
+
+      function drawShelf(g, band, total) {
+        var yBottom = stageYFrac(band.stage, total);
+        var m = band.role === "beyond"
+          ? bandMetrics("beyond", total, band.rank)
+          : bandMetrics(band.role, total, 0);
+        var yTop = Math.max(Y_MIN - 0.02, yBottom - m.heightFrac);
+        var trap = shelfTrapezoid(yTop, yBottom);
+        var str = m.strength;
+        var group = el("g", { opacity: (0.35 + str * 0.65).toFixed(2) });
+
+        group.appendChild(el("path", {
+          d: trap.path,
+          fill: cssVar("--grass-back"),
+          opacity: (0.5 + str * 0.4).toFixed(2)
+        }));
+        group.appendChild(el("path", {
+          d: trap.path,
+          fill: "url(#shelf-grass)",
+          opacity: (0.55 + str * 0.4).toFixed(2)
+        }));
+
+        var lipY = trap.yLip;
+        var sil = silhouetteAt(yBottom);
+        var lipX1 = sil.left * W + trap.width * 0.06;
+        var lipX2 = sil.right * W - trap.width * 0.06;
+        group.appendChild(el("line", {
+          x1: lipX1.toFixed(1),
+          y1: lipY.toFixed(1),
+          x2: lipX2.toFixed(1),
+          y2: lipY.toFixed(1),
+          stroke: cssVar("--grass-lip"),
+          "stroke-width": (1.2 + str * 0.8).toFixed(1),
+          "stroke-linecap": "round",
+          opacity: (0.5 + str * 0.45).toFixed(2)
+        }));
+        group.appendChild(el("line", {
+          x1: lipX1.toFixed(1),
+          y1: (lipY - 1).toFixed(1),
+          x2: lipX2.toFixed(1),
+          y2: (lipY - 1).toFixed(1),
+          stroke: cssVar("--grass-sun-kiss"),
+          "stroke-width": "1",
+          opacity: (0.25 + str * 0.35).toFixed(2)
+        }));
+
+        var shadowW = trap.width * 0.76;
+        group.appendChild(el("ellipse", {
+          cx: trap.cx.toFixed(1),
+          cy: (lipY + 4).toFixed(1),
+          rx: (shadowW * 0.38).toFixed(1),
+          ry: "4",
+          fill: cssVar("--shelf-shadow"),
+          opacity: (0.2 + str * 0.35).toFixed(2)
+        }));
+
+        g.appendChild(group);
+
+        if (band.role === "current") {
+          var deck = el("g", {});
+          drawCampfire(deck, trap.cx - trap.width * 0.22, lipY - 14);
+          var names = TENT_NAMES[(band.stage - 1) % TENT_NAMES.length];
+          drawTent(deck, trap.cx - trap.width * 0.06, lipY - 20, cssVar("--tent-teal"), false, names[0]);
+          drawTent(deck, trap.cx + trap.width * 0.12, lipY - 20, cssVar("--tent-coral"), false, names[1]);
+          g.appendChild(deck);
+        } else if (band.role === "next") {
+          var nextG = el("g", { opacity: "0.58" });
+          drawTent(nextG, trap.cx, lipY - 16, cssVar("--tent-blue"), true, "Next camp");
+          g.appendChild(nextG);
+        }
+
+        return { yBottom: yBottom, yTop: yTop, strength: str };
+      }
+
+      function buildSvg(total, current) {
+        var svg = el("svg", {
+          viewBox: "0 0 " + W + " " + H,
+          width: W,
+          height: H,
+          role: "img",
+          "aria-label": total + " stages, current stage " + current
+        });
+
+        var defs = el("defs", {});
+        defs.appendChild(el("linearGradient", { id: "sky-grad", x1: "0%", y1: "0%", x2: "100%", y2: "100%" }, [
+          el("stop", { offset: "0%", "stop-color": cssVar("--sky-glow") }),
+          el("stop", { offset: "35%", "stop-color": cssVar("--sky-top") }),
+          el("stop", { offset: "70%", "stop-color": cssVar("--sky-mid") }),
+          el("stop", { offset: "100%", "stop-color": cssVar("--sky-horizon") })
+        ]));
+        defs.appendChild(el("linearGradient", { id: "slope-main", x1: "0%", y1: "0%", x2: "100%", y2: "100%" }, [
+          el("stop", { offset: "0%", "stop-color": cssVar("--slope-sun") }),
+          el("stop", { offset: "45%", "stop-color": cssVar("--slope-light") }),
+          el("stop", { offset: "100%", "stop-color": cssVar("--slope-shadow") })
+        ]));
+        defs.appendChild(el("linearGradient", { id: "slope-left", x1: "100%", y1: "0%", x2: "0%", y2: "100%" }, [
+          el("stop", { offset: "0%", "stop-color": cssVar("--slope-highlight"), "stop-opacity": "0.5" }),
+          el("stop", { offset: "100%", "stop-color": cssVar("--slope-shadow"), "stop-opacity": "0.85" })
+        ]));
+        defs.appendChild(el("linearGradient", { id: "slope-right", x1: "0%", y1: "0%", x2: "100%", y2: "100%" }, [
+          el("stop", { offset: "0%", "stop-color": cssVar("--slope-mid") }),
+          el("stop", { offset: "100%", "stop-color": cssVar("--slope-shadow") })
+        ]));
+        defs.appendChild(el("linearGradient", { id: "shelf-grass", x1: "20%", y1: "0%", x2: "80%", y2: "100%" }, [
+          el("stop", { offset: "0%", "stop-color": cssVar("--grass-front") }),
+          el("stop", { offset: "55%", "stop-color": cssVar("--grass-mid") }),
+          el("stop", { offset: "100%", "stop-color": cssVar("--grass-back") })
+        ]));
+        defs.appendChild(el("filter", { id: "tent-shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" }, [
+          el("feDropShadow", { dx: "1", dy: "2", stdDeviation: "1.5", "flood-opacity": "0.35" })
+        ]));
+        defs.appendChild(el("filter", { id: "soft-blur" }, [
+          el("feGaussianBlur", { stdDeviation: "3" })
+        ]));
+        svg.appendChild(defs);
+
+        svg.appendChild(el("rect", { width: W, height: H, fill: "url(#sky-grad)" }));
+
+        var ranges = el("g", { opacity: "0.55" });
+        ranges.appendChild(el("path", {
+          d: "M0," + (H * 0.42).toFixed(0) + " Q" + (W * 0.3) + "," + (H * 0.36) + " " + W + "," + (H * 0.4),
+          fill: "none",
+          stroke: cssVar("--range-far"),
+          "stroke-width": "28",
+          opacity: "0.35",
+          filter: "url(#soft-blur)"
+        }));
+        ranges.appendChild(el("path", {
+          d: "M0," + (H * 0.48).toFixed(0) + " Q" + (W * 0.55) + "," + (H * 0.44) + " " + W + "," + (H * 0.47),
+          fill: "none",
+          stroke: cssVar("--range-mid"),
+          "stroke-width": "22",
+          opacity: "0.4",
+          filter: "url(#soft-blur)"
+        }));
+        ranges.appendChild(el("path", {
+          d: "M0," + (H * 0.55).toFixed(0) + " L" + W + "," + (H * 0.52),
+          fill: "none",
+          stroke: cssVar("--range-near"),
+          "stroke-width": "16",
+          opacity: "0.35",
+          filter: "url(#soft-blur)"
+        }));
+        svg.appendChild(ranges);
+
+        var mtn = el("g", {});
+        var mainPath = mountainPath();
+        mtn.appendChild(el("path", { d: mainPath, fill: cssVar("--slope-mid") }));
+        mtn.appendChild(el("path", { d: mainPath, fill: "url(#slope-main)", opacity: "0.85" }));
+        mtn.appendChild(el("path", {
+          d: "M" + (silhouetteAt(0.3).left * W) + "," + (H * 0.3) +
+            " L" + (PEAK_X * W) + "," + (PEAK_Y * H) +
+            " L" + (silhouetteAt(0.35).right * W) + "," + (H * 0.35) + " Z",
+          fill: "url(#slope-left)",
+          opacity: "0.5"
+        }));
+        mtn.appendChild(el("path", {
+          d: "M" + (silhouetteAt(0.7).left * W) + "," + (H * 0.7) +
+            " L" + (silhouetteAt(0.5).right * W) + "," + (H * 0.5) +
+            " L" + (silhouetteAt(0.85).right * W) + "," + (H * 0.85) + " Z",
+          fill: "url(#slope-right)",
+          opacity: "0.45"
+        }));
+        grassTexture(mtn, H * 0.25, H * 0.95, 1);
+        svg.appendChild(mtn);
+
+        var edges = el("g", {});
+        [[0.78, 0.92, 1], [0.68, 0.82, 0.85], [0.58, 0.72, 0.7], [0.48, 0.62, 0.6]].forEach(function (row) {
+          var sil = silhouetteAt(row[0]);
+          drawPine(edges, sil.left * W + 8, row[1] * H, row[2], false);
+          drawPine(edges, sil.right * W - 8, row[2] * H, row[2] * 0.9, true);
+        });
+        drawRock(edges, silhouetteAt(0.88).left * W + 14, H * 0.9, 18, 14);
+        drawRock(edges, silhouetteAt(0.75).left * W + 10, H * 0.78, 14, 11);
+        drawRock(edges, silhouetteAt(0.82).right * W - 12, H * 0.85, 16, 12);
+        drawRock(edges, silhouetteAt(0.92).right * W - 10, H * 0.93, 12, 10);
+        svg.appendChild(edges);
+
+        var bands = stagesToRender(total, current);
+        var shelfLayer = el("g", {});
+        var mistLayer = el("g", {});
+        var shelfMeta = [];
+
+        bands.forEach(function (band) {
+          shelfMeta.push(drawShelf(shelfLayer, band, total));
+        });
+
+        for (var mi = 0; mi < shelfMeta.length - 1; mi++) {
+          var a = shelfMeta[mi];
+          var b = shelfMeta[mi + 1];
+          if (a.strength < 0.75 || a.yBottom > 0.72) continue;
+          var my = lerp(a.yTop, b.yBottom, 0.5) * H;
+          var silM = silhouetteAt(my / H);
+          var mw = (silM.right - silM.left) * W * 0.55;
+          mistLayer.appendChild(el("ellipse", {
+            cx: ((silM.left + silM.right) * 0.5 * W).toFixed(1),
+            cy: my.toFixed(1),
+            rx: (mw * 0.5).toFixed(1),
+            ry: "10",
+            fill: cssVar("--mist"),
+            filter: "url(#soft-blur)",
+            opacity: "0.7"
+          }));
+          mistLayer.appendChild(el("ellipse", {
+            cx: ((silM.left + silM.right) * 0.5 * W).toFixed(1),
+            cy: (my + 6).toFixed(1),
+            rx: (mw * 0.42).toFixed(1),
+            ry: "7",
+            fill: cssVar("--mist-deep"),
+            filter: "url(#soft-blur)",
+            opacity: "0.55"
+          }));
+        }
+
+        svg.appendChild(shelfLayer);
+        svg.appendChild(mistLayer);
+
+        var peakX = PEAK_X * W;
+        var peakY = PEAK_Y * H;
+        var summit = el("g", {});
+        summit.appendChild(el("line", {
+          x1: peakX.toFixed(1),
+          y1: (peakY + 6).toFixed(1),
+          x2: peakX.toFixed(1),
+          y2: (peakY + 22).toFixed(1),
+          stroke: cssVar("--pennant-pole"),
+          "stroke-width": "2"
+        }));
+        summit.appendChild(el("path", {
+          d: "M" + peakX + "," + peakY + " L" + (peakX + 14) + "," + (peakY + 8) + " L" + peakX + "," + (peakY + 11) + " Z",
+          fill: cssVar("--pennant-yellow")
+        }));
+        summit.appendChild(el("path", {
+          d: "M" + peakX + "," + (peakY + 2) + " L" + (peakX + 10) + "," + (peakY + 8) + " L" + peakX + "," + (peakY + 10) + " Z",
+          fill: cssVar("--pennant-shadow"),
+          opacity: "0.35"
+        }));
+        svg.appendChild(summit);
+
+        var sunWash = el("rect", {
+          x: "0",
+          y: "0",
+          width: (W * 0.55).toFixed(0),
+          height: (H * 0.5).toFixed(0),
+          fill: cssVar("--sky-glow"),
+          opacity: "0.12"
+        });
+        svg.appendChild(sunWash);
+
+        return svg;
+      }
+
+      document.querySelectorAll(".phone[data-total]").forEach(function (phone) {
+        var total = parseInt(phone.getAttribute("data-total"), 10);
+        var current = parseInt(phone.getAttribute("data-current"), 10);
+        phone.appendChild(buildSvg(total, current));
+      });
+    })();
+  </script>
+</body>
+</html>
