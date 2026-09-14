@@ -5227,7 +5227,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 /* ——— Terraced map (mountain-stages-bg-v2) ——— */
 .lp-trail.is-terraced {
   --map-zoom: 1;
-  --terrace-ui-scale: 0.9;
+  --terrace-ui-scale: 0.85;
   --lp-terrace-tap: var(--lp-tap, 2.75rem);
   --map-safe: 12px;
   --lp-stage-badge-size: calc(24px * var(--terrace-ui-scale));
@@ -5243,6 +5243,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   --lp-terrace-badge-x: calc(52px * var(--terrace-ui-scale));
   /* Lift open-stage block above the base-camp card without moving a full terrace. */
   --lp-open-stage-lift: calc(40px * var(--terrace-ui-scale));
+  --lp-terrace-arrow-gap: calc(4px * var(--terrace-ui-scale));
   --lp-fog-opacity: 0.4;
 }
 
@@ -5438,12 +5439,12 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border-radius: var(--lp-radius-pill, 999px);
   border: 1px solid var(--lp-green, #57d35b);
   background: var(--lp-frost);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   font-size: 0.58rem;
   font-weight: 600;
   color: var(--lp-ink, #0f172a);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   pointer-events: none;
   z-index: 2;
 }
@@ -5479,8 +5480,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-stage-badge--later {
   background: var(--lp-frost);
   border: 1px solid var(--lp-border);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .lp-trail.is-terraced .trail-stage-badge--later .trail-stage-badge__num {
@@ -5565,7 +5566,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   bottom: auto;
   display: block;
   transform: none;
-  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.16));
+  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.12));
   pointer-events: none;
 }
 
@@ -5630,7 +5631,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   height: calc(10px * var(--terrace-ui-scale));
   transform: translateX(-50%);
   border-radius: 50%;
-  background: rgba(20, 16, 10, 0.32);
+  background: rgba(20, 16, 10, 0.24);
   filter: blur(2px);
 }
 
@@ -5643,7 +5644,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__tent {
   width: var(--lp-tent-open-w);
   height: var(--lp-tent-open-h);
-  filter: drop-shadow(1px 1px 2px rgba(12, 22, 14, 0.3));
+  filter: drop-shadow(1px 1px 2px rgba(12, 22, 14, 0.22));
 }
 
 .lp-trail.is-terraced .trail-t2-camp .lp-trail-camp__tent::after {
@@ -5668,9 +5669,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border-radius: var(--lp-radius-pill, 999px);
   border: 0.5px solid var(--lp-border);
   background: var(--lp-frost);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   pointer-events: none;
 }
 
@@ -5763,20 +5764,16 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow.is-prev {
-  left: calc(
-    var(--trail-slot-dx-left)
-    - var(--lp-tent-open-w) * 0.5
-    - var(--lp-tap, 2.75rem) * 0.5
-    - 0.15rem
+  left: max(
+    calc(-1 * var(--trail-terrace-x-cqw, 50cqw) + var(--map-safe) + var(--lp-terrace-tap) * 0.5),
+    calc(var(--trail-slot-dx-left) - var(--lp-terrace-tap) * 0.5 - var(--lp-terrace-arrow-gap))
   );
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow.is-next {
-  left: calc(
-    var(--trail-slot-dx-right)
-    + var(--lp-tent-open-w) * 0.5
-    + var(--lp-tap, 2.75rem) * 0.5
-    + 0.15rem
+  left: min(
+    calc(100cqw - var(--trail-terrace-x-cqw, 50cqw) - var(--map-safe) - var(--lp-terrace-tap) * 0.5),
+    calc(var(--trail-slot-dx-right) + var(--lp-terrace-tap) * 0.5 + var(--lp-terrace-arrow-gap))
   );
 }
 
@@ -5804,9 +5801,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border-radius: var(--lp-radius-pill, 999px);
   border: 1px solid var(--lp-border);
   background: var(--lp-frost);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   pointer-events: none;
   z-index: 3;
 }
