@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arrange camps — mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-surface: #ffffff;
+      --lp-paper: #f8fafc;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-radius-pill: 999px;
+      --lp-tap: 2.75rem;
+      --font: "Nunito", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 1.5rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .doc__block {
+      margin-bottom: 2.5rem;
+    }
+
+    .doc__label {
+      margin: 0 0 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .phone {
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      min-height: 640px;
+      max-height: min(720px, 92dvh);
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--lp-surface);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .phone--tall {
+      min-height: 720px;
+      max-height: none;
+    }
+
+    /* —— Arrange camps screen —— */
+    .arrange {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      background: var(--lp-surface);
+    }
+
+    .arrange__top {
+      flex-shrink: 0;
+      padding: 0.35rem 0.5rem 0;
+      padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
+      border-bottom: 1px solid var(--lp-border);
+      background: var(--lp-surface);
+    }
+
+    .arrange__title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      min-height: var(--lp-tap);
+    }
+
+    .arrange__back {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0.65rem;
+      background: transparent;
+      color: var(--lp-ink);
+      cursor: pointer;
+    }
+
+    .arrange__back svg {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .arrange__title {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .arrange__done {
+      flex: 0 0 auto;
+      min-height: 44px;
+      padding: 0 0.65rem;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--lp-green-deep);
+      cursor: pointer;
+      border-radius: var(--lp-radius-pill);
+    }
+
+    .arrange__hint {
+      margin: 0;
+      padding: 0.65rem 1rem 0.85rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--lp-muted);
+      line-height: 1.4;
+    }
+
+    .arrange__scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 0 calc(1rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .arrange-group {
+      margin: 0;
+      padding: 0;
+    }
+
+    .arrange-group + .arrange-group {
+      margin-top: 0.35rem;
+    }
+
+    .arrange-group__heading {
+      margin: 0;
+      padding: 0.85rem 1rem 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--lp-muted);
+    }
+
+    .arrange-group--here .arrange-group__heading {
+      color: var(--lp-green-deep);
+    }
+
+    .arrange-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .arrange-group--here .arrange-list {
+      margin-left: 0.65rem;
+      border-left: 3px solid var(--lp-green);
+      border-radius: 0;
+    }
+
+    .arrange-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: var(--lp-tap);
+      padding: 0 0.75rem 0 1rem;
+      background: var(--lp-surface);
+      border-bottom: 1px solid var(--lp-border);
+      touch-action: none;
+    }
+
+    .arrange-group--here .arrange-row {
+      background: color-mix(in srgb, var(--lp-green) 11%, var(--lp-surface));
+      border-bottom-color: color-mix(in srgb, var(--lp-green) 22%, var(--lp-border));
+    }
+
+    .arrange-group--here .arrange-list .arrange-row:last-child {
+      border-bottom: 0;
+    }
+
+    .arrange-group:not(.arrange-group--here) .arrange-list .arrange-row:last-child {
+      border-bottom: 0;
+    }
+
+    .arrange-row__label {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+    }
+
+    .arrange-row__handle {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0.5rem;
+      background: transparent;
+      color: var(--lp-muted);
+      cursor: grab;
+      display: grid;
+      place-items: center;
+    }
+
+    .arrange-row__handle:active { cursor: grabbing; }
+
+    .arrange-row__handle svg {
+      width: 1.15rem;
+      height: 1.15rem;
+      pointer-events: none;
+    }
+
+    .arrange-row.is-dragging-source {
+      opacity: 0.35;
+    }
+
+    .arrange-row.is-lifted {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 5;
+      margin: 0 0.65rem;
+      border-radius: 0.75rem;
+      border: 1px solid color-mix(in srgb, var(--lp-green) 40%, var(--lp-border));
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .arrange-group--here .arrange-row.is-lifted {
+      background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-surface));
+    }
+
+    .arrange-drop-line {
+      height: 0;
+      margin: 0 1rem;
+      border: 0;
+      border-top: 3px solid var(--lp-green);
+      border-radius: var(--lp-radius-pill);
+      list-style: none;
+    }
+
+    .arrange-drop-line.is-hidden {
+      display: none;
+    }
+
+    .arrange__toast {
+      position: absolute;
+      left: 50%;
+      bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%) translateY(120%);
+      padding: 0.5rem 1rem;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-ink);
+      color: var(--lp-surface);
+      font-size: 0.78rem;
+      font-weight: 700;
+      opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .arrange__toast.is-visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .phone--interactive {
+      position: relative;
+    }
+
+    /* —— State 2: frozen mid-drag —— */
+    .phone--drag-demo {
+      position: relative;
+    }
+
+    .phone--drag-demo .arrange__scroll {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .drag-demo__lifted {
+      position: absolute;
+      left: 0.65rem;
+      right: 0.65rem;
+      top: 7.15rem;
+      z-index: 4;
+      border-radius: 0.75rem;
+      border: 1px solid color-mix(in srgb, var(--lp-green) 40%, var(--lp-border));
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+      transform: scale(1.02);
+    }
+
+    .drag-demo__lifted.arrange-row {
+      background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-surface));
+    }
+
+    .drag-demo__ghost {
+      opacity: 0.28;
+    }
+
+    .drag-demo__line {
+      position: absolute;
+      left: 1rem;
+      right: 1rem;
+      top: 6.55rem;
+      height: 0;
+      border-top: 3px solid var(--lp-green);
+      border-radius: var(--lp-radius-pill);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Arrange camps</h1>
+    <p class="doc__lede">360px. Drag up to prioritize; order saves on drop. Stage 1 is highlighted with a green rail.</p>
+
+    <section class="doc__block" aria-labelledby="label-default">
+      <p class="doc__label" id="label-default">1 — Default list (interactive)</p>
+      <div class="phone phone--interactive" id="phone-interactive">
+        <div class="arrange" data-arrange-live>
+          <header class="arrange__top">
+            <div class="arrange__title-row">
+              <button type="button" class="arrange__back" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <h1 class="arrange__title">Arrange camps</h1>
+              <button type="button" class="arrange__done">Done</button>
+            </div>
+            <p class="arrange__hint">Drag a camp up to work on it sooner.</p>
+          </header>
+          <div class="arrange__scroll">
+            <section class="arrange-group arrange-group--here">
+              <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
+              <ul class="arrange-list" data-arrange-list>
+                <li class="arrange-row" data-id="ship">
+                  <span class="arrange-row__label">Ship the landing page</span>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+                <li class="arrange-row" data-id="morning">
+                  <span class="arrange-row__label">Morning focus blocks</span>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+              </ul>
+            </section>
+            <section class="arrange-group">
+              <h2 class="arrange-group__heading">Stage 2</h2>
+              <ul class="arrange-list" data-arrange-list>
+                <li class="arrange-row" data-id="spanish">
+                  <span class="arrange-row__label">Spanish practice</span>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+                <li class="arrange-row" data-id="gym">
+                  <span class="arrange-row__label">Gym three times a week</span>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+              </ul>
+            </section>
+            <section class="arrange-group">
+              <h2 class="arrange-group__heading">Stage 3</h2>
+              <ul class="arrange-list" data-arrange-list>
+                <li class="arrange-row" data-id="book">
+                  <span class="arrange-row__label">Draft the novel</span>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+              </ul>
+            </section>
+          </div>
+          <p class="arrange__toast" role="status" aria-live="polite">Order saved</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc__block" aria-labelledby="label-drag">
+      <p class="doc__label" id="label-drag">2 — Mid-drag with drop line</p>
+      <div class="phone phone--tall phone--drag-demo">
+        <div class="arrange">
+          <header class="arrange__top">
+            <div class="arrange__title-row">
+              <button type="button" class="arrange__back" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <h1 class="arrange__title">Arrange camps</h1>
+              <button type="button" class="arrange__done">Done</button>
+            </div>
+            <p class="arrange__hint">Drag a camp up to work on it sooner.</p>
+          </header>
+          <div class="arrange__scroll">
+            <div class="drag-demo__line" aria-hidden="true"></div>
+            <section class="arrange-group arrange-group--here">
+              <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
+              <ul class="arrange-list">
+                <li class="arrange-row drag-demo__ghost">
+                  <span class="arrange-row__label">Morning focus blocks</span>
+                  <span class="arrange-row__handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </span>
+                </li>
+                <li class="arrange-row">
+                  <span class="arrange-row__label">Ship the landing page</span>
+                  <span class="arrange-row__handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </span>
+                </li>
+              </ul>
+            </section>
+            <div class="arrange-row drag-demo__lifted" style="padding-left: 1.65rem;">
+              <span class="arrange-row__label">Morning focus blocks</span>
+              <span class="arrange-row__handle" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+              </span>
+            </div>
+            <section class="arrange-group">
+              <h2 class="arrange-group__heading">Stage 2</h2>
+              <ul class="arrange-list">
+                <li class="arrange-row">
+                  <span class="arrange-row__label">Spanish practice</span>
+                  <span class="arrange-row__handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </span>
+                </li>
+                <li class="arrange-row">
+                  <span class="arrange-row__label">Gym three times a week</span>
+                  <span class="arrange-row__handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </span>
+                </li>
+              </ul>
+            </section>
+            <section class="arrange-group">
+              <h2 class="arrange-group__heading">Stage 3</h2>
+              <ul class="arrange-list">
+                <li class="arrange-row">
+                  <span class="arrange-row__label">Draft the novel</span>
+                  <span class="arrange-row__handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </span>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc__block" aria-labelledby="label-single">
+      <p class="doc__label" id="label-single">3 — One camp only</p>
+      <div class="phone">
+        <div class="arrange" data-arrange-live>
+          <header class="arrange__top">
+            <div class="arrange__title-row">
+              <button type="button" class="arrange__back" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <h1 class="arrange__title">Arrange camps</h1>
+              <button type="button" class="arrange__done">Done</button>
+            </div>
+            <p class="arrange__hint">Drag a camp up to work on it sooner.</p>
+          </header>
+          <div class="arrange__scroll">
+            <section class="arrange-group arrange-group--here">
+              <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
+              <ul class="arrange-list" data-arrange-list>
+                <li class="arrange-row" data-id="only">
+                  <span class="arrange-row__label">Ship the landing page</span>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+              </ul>
+            </section>
+          </div>
+          <p class="arrange__toast" role="status" aria-live="polite">Order saved</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var roots = document.querySelectorAll("[data-arrange-live]");
+      roots.forEach(function (root) {
+        var scroll = root.querySelector(".arrange__scroll");
+        var toast = root.querySelector(".arrange__toast");
+        var allRows = function () {
+          return Array.prototype.slice.call(root.querySelectorAll("[data-arrange-list] .arrange-row"));
+        };
+
+        var active = null;
+        var dropLine = document.createElement("li");
+        dropLine.className = "arrange-drop-line is-hidden";
+        dropLine.setAttribute("aria-hidden", "true");
+
+        function listForRow(row) {
+          return row.closest("[data-arrange-list]");
+        }
+
+        function clearDropUi() {
+          if (dropLine.parentNode) dropLine.parentNode.removeChild(dropLine);
+          dropLine.classList.add("is-hidden");
+          allRows().forEach(function (r) {
+            r.classList.remove("is-dragging-source");
+          });
+          if (active && active.lifted && active.lifted.parentNode) {
+            active.lifted.parentNode.removeChild(active.lifted);
+          }
+          active = null;
+        }
+
+        function showSaved() {
+          if (!toast) return;
+          toast.classList.add("is-visible");
+          window.clearTimeout(showSaved._t);
+          showSaved._t = window.setTimeout(function () {
+            toast.classList.remove("is-visible");
+          }, 1600);
+        }
+
+        function onPointerDown(e) {
+          var handle = e.target.closest(".arrange-row__handle");
+          if (!handle || !root.contains(handle)) return;
+          var row = handle.closest(".arrange-row");
+          if (!row) return;
+          e.preventDefault();
+
+          clearDropUi();
+
+          var rect = row.getBoundingClientRect();
+          var lifted = row.cloneNode(true);
+          lifted.classList.add("is-lifted");
+          var handleBtn = lifted.querySelector(".arrange-row__handle");
+          if (handleBtn) handleBtn.setAttribute("aria-hidden", "true");
+          scroll.appendChild(lifted);
+
+          row.classList.add("is-dragging-source");
+
+          active = {
+            row: row,
+            lifted: lifted,
+            pointerOffsetY: e.clientY - rect.top,
+            width: rect.width
+          };
+          positionLifted(e.clientY);
+        }
+
+        function positionLifted(clientY) {
+          if (!active) return;
+          var scrollRect = scroll.getBoundingClientRect();
+          var top = clientY - active.pointerOffsetY - scrollRect.top + scroll.scrollTop;
+          active.lifted.style.top = top + "px";
+          active.lifted.style.width = active.width + "px";
+        }
+
+        function rowAtY(clientY) {
+          var rows = allRows().filter(function (r) {
+            return r !== active.row && !r.classList.contains("is-lifted");
+          });
+          for (var i = 0; i < rows.length; i++) {
+            var box = rows[i].getBoundingClientRect();
+            var mid = box.top + box.height / 2;
+            if (clientY < mid) return { row: rows[i], before: true };
+          }
+          if (rows.length) return { row: rows[rows.length - 1], before: false };
+          return null;
+        }
+
+        function onPointerMove(e) {
+          if (!active) return;
+          positionLifted(e.clientY);
+          var hit = rowAtY(e.clientY);
+          if (!hit) {
+            if (dropLine.parentNode) dropLine.parentNode.removeChild(dropLine);
+            return;
+          }
+          var list = listForRow(hit.row);
+          if (!list) return;
+          dropLine.classList.remove("is-hidden");
+          if (hit.before) {
+            list.insertBefore(dropLine, hit.row);
+          } else if (hit.row.nextElementSibling) {
+            list.insertBefore(dropLine, hit.row.nextElementSibling);
+          } else {
+            list.appendChild(dropLine);
+          }
+        }
+
+        function onPointerUp() {
+          if (!active) return;
+          if (dropLine.parentNode && !dropLine.classList.contains("is-hidden")) {
+            dropLine.parentNode.insertBefore(active.row, dropLine);
+            showSaved();
+          }
+          clearDropUi();
+        }
+
+        root.addEventListener("pointerdown", onPointerDown);
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", onPointerUp);
+        window.addEventListener("pointercancel", onPointerUp);
+      });
+    })();
+  </script>
+</body>
+</html>
