@@ -952,6 +952,17 @@ en:
           - "Update one resume bullet"
         every_day: "Every day"
         just_once: "Just once"
+        arrange:
+          title: "Arrange camps"
+          hint: "Drag a camp up to work on it sooner."
+          back: "Back"
+          done: "Done"
+          next: "Next"
+          saved: "Order saved"
+          entry: "Arrange camps"
+          stage: "Stage %{stage}"
+          stage_here: "Stage %{stage} · you are here"
+          drag: "Drag to reorder"
         first_camp_reveal:
           skip_hint: "Tap the tent to plan your first day" # TODO: translate for lv/de/es/ru.
           setup_lead: "What's one small thing you'll do today?" # TODO: translate for lv/de/es/ru.

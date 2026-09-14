@@ -737,4 +737,29 @@ export default class extends Controller {
       document.querySelector("meta[name='csrf-token']")?.content ||
       ""
   }
+
+  openArrangeCamps(event) {
+    event?.preventDefault()
+    if (this.element.classList.contains("is-first-camp-reveal")) return
+
+    const overlay = document.getElementById("trail-arrange-camps")
+    if (!overlay) return
+
+    this.element.classList.add("is-arrange-open")
+    overlay.hidden = false
+    overlay.setAttribute("aria-hidden", "false")
+    overlay.querySelector(".lp-trail-arrange__back")?.focus()
+  }
+
+  closeArrangeCamps(event) {
+    event?.preventDefault()
+    this.element.classList.remove("is-arrange-open")
+
+    const overlay = document.getElementById("trail-arrange-camps")
+    if (!overlay) return
+
+    overlay.hidden = true
+    overlay.setAttribute("aria-hidden", "true")
+    this.element.querySelector(".lp-trail-arrange-entry")?.focus()
+  }
 }

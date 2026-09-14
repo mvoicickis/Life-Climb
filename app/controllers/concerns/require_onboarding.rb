@@ -73,6 +73,7 @@ module RequireOnboarding
       mountain_trail_tours
       first_camp_reveals
       first_camp_battles
+      camp_arrangements
       settings
       push_subscriptions
       push_configs

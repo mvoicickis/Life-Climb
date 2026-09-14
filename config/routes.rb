@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     resources :journey_targets, only: %i[ create ]
     resource :first_camp_reveal, only: :update
     resources :first_camp_battles, only: :create
+    resource :camp_arrangement, only: :update
   end
   resources :strategy_goals, only: %i[ create update destroy ] do
     member do
