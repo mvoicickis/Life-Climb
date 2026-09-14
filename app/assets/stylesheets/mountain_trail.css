@@ -6214,9 +6214,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail-arrange-entry {
   position: absolute;
-  z-index: 12;
+  z-index: 15;
   left: 50%;
-  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  top: calc(max(0.55rem, env(safe-area-inset-top, 0px)) + 3.25rem);
+  bottom: auto;
   transform: translateX(-50%);
   margin: 0;
   padding: 0.35rem 0.75rem;
