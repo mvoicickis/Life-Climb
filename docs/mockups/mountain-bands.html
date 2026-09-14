@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mountain terrace bands — mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-surface: #ffffff;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --font: "Nunito", system-ui, sans-serif;
+      --phone-w: 360px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 2rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .state-block {
+      margin-bottom: 2.75rem;
+    }
+
+    .state-block__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .state-block__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .state-block__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      max-width: 34rem;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: #8fbc6a;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .phone__mountain {
+      position: relative;
+      width: 100%;
+      line-height: 0;
+    }
+
+    .phone__photo {
+      width: 100%;
+      height: auto;
+      display: block;
+      vertical-align: top;
+    }
+
+    .phone__overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .band {
+      position: absolute;
+      left: var(--band-left);
+      width: var(--band-width);
+      top: var(--band-top);
+      height: var(--band-height);
+      transform: translateY(-100%);
+      z-index: var(--band-z, 1);
+    }
+
+    .band__fill {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(
+        var(--tl-x) 0%,
+        var(--tr-x) 0%,
+        var(--br-x) 100%,
+        var(--bl-x) 100%
+      );
+      background: linear-gradient(
+        180deg,
+        var(--band-top-color) 0%,
+        var(--band-mid-color) 55%,
+        var(--band-lip-color) 100%
+      );
+      border-radius: 1px;
+      box-shadow: var(--band-shadow);
+    }
+
+    .band__lip {
+      position: absolute;
+      left: var(--bl-x);
+      right: calc(100% - var(--br-x));
+      bottom: 0;
+      height: max(2px, calc(var(--band-height) * 0.22));
+      background: var(--band-lip-color);
+      opacity: var(--band-lip-opacity, 0.85);
+      border-radius: 0 0 2px 2px;
+    }
+
+    .band--current .band__fill {
+      filter: saturate(1.08) contrast(1.04);
+    }
+
+    .band-camps {
+      position: absolute;
+      left: 50%;
+      bottom: calc(var(--band-height) * 0.15);
+      transform: translateX(-50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.65rem;
+      z-index: 3;
+    }
+
+    .band-camps--next {
+      gap: 0;
+      opacity: 0.55;
+      filter: saturate(0.65);
+    }
+
+    .tent-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.12rem;
+    }
+
+    .tent {
+      width: var(--tent-w, 28px);
+      height: var(--tent-h, 24px);
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--tent-accent, #0f9488) 75%, #fff) 0%,
+        var(--tent-accent, #0f9488) 55%,
+        color-mix(in srgb, var(--tent-accent, #0f9488) 65%, #1a120c) 100%
+      );
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.4));
+    }
+
+    .tent-pill {
+      padding: 0.1rem 0.42rem 0.12rem;
+      border-radius: 999px;
+      background: rgba(247, 239, 226, 0.94);
+      border: 1px solid rgba(90, 66, 40, 0.28);
+      box-shadow: 0 3px 8px rgba(18, 32, 26, 0.16);
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: #1a140c;
+      white-space: nowrap;
+      max-width: 5.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .campfire {
+      position: absolute;
+      left: var(--fire-x);
+      top: var(--fire-y);
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      width: 36px;
+      height: 36px;
+    }
+
+    .campfire__glow {
+      position: absolute;
+      left: 50%;
+      bottom: 2px;
+      width: 30px;
+      height: 10px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255, 180, 60, 0.5), transparent 70%);
+    }
+
+    .campfire__flame {
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      width: 16px;
+      height: 20px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 45% 45%;
+      background: radial-gradient(ellipse at 50% 80%, #ffd166 0%, #f0730c 55%, #a33a06 100%);
+      box-shadow:
+        0 0 12px 5px rgba(255, 150, 50, 0.65),
+        0 0 22px 8px rgba(255, 120, 30, 0.3);
+      animation: flame-pulse 2.4s ease-in-out infinite;
+    }
+
+    .campfire__logs {
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 18px;
+      height: 5px;
+      transform: translateX(-50%);
+      border-radius: 2px;
+      background: linear-gradient(180deg, #5c3d24, #3d2818);
+    }
+
+    @keyframes flame-pulse {
+      0%, 100% { transform: translateX(-50%) scaleY(1); }
+      50% { transform: translateX(-50%) scaleY(1.06); }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Mountain terrace bands</h1>
+    <p class="doc__lede">
+      Plain <code>mountain-plain-v1.webp</code> at 360px. Bands are CSS overlays only — near stages are wide and sharp,
+      distant stages compress and fade. Current camp: two tents + pills; next: one soft tent; campfire on the slope below current.
+    </p>
+
+    <section class="state-block" aria-labelledby="lbl-3">
+      <p class="state-block__label" id="lbl-3">Frame A</p>
+      <h2 class="state-block__title">3 stages — on stage 2</h2>
+      <p class="state-block__note">One finished shelf below, wide current band, softer next band at the top.</p>
+      <div class="phone" data-total="3" data-current="2"></div>
+    </section>
+
+    <section class="state-block" aria-labelledby="lbl-9">
+      <p class="state-block__label" id="lbl-9">Frame B</p>
+      <h2 class="state-block__title">9 stages — on stage 5</h2>
+      <p class="state-block__note">Finished terraces stack below; thin future bands crowd toward the peak.</p>
+      <div class="phone" data-total="9" data-current="5"></div>
+    </section>
+
+    <section class="state-block" aria-labelledby="lbl-20">
+      <p class="state-block__label" id="lbl-20">Frame C</p>
+      <h2 class="state-block__title">20 stages — on stage 12</h2>
+      <p class="state-block__note">Strong perspective: many faint upper shelves, current still dominant low on the slope.</p>
+      <div class="phone" data-total="20" data-current="12"></div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var IMG = "../../app/assets/images/mountain-plain-v1.webp";
+
+      // Plain mountain silhouette (y, left, right) as fractions of image box.
+      var SILHOUETTE = [
+        [0.06, 0.472, 0.528],
+        [0.14, 0.405, 0.595],
+        [0.24, 0.335, 0.665],
+        [0.34, 0.268, 0.732],
+        [0.44, 0.208, 0.792],
+        [0.54, 0.158, 0.842],
+        [0.64, 0.118, 0.882],
+        [0.74, 0.082, 0.918],
+        [0.84, 0.052, 0.948],
+        [0.94, 0.028, 0.972],
+        [1.0, 0.012, 0.988]
+      ];
+
+      var Y_MIN = 0.2;
+      var Y_MAX = 0.93;
+      var COMPRESS = 1.42;
+
+      var TENT_NAMES = [
+        ["Morning run", "Read 20 min"],
+        ["Inbox zero", "Stretch"],
+        ["Deep work", "Walk"]
+      ];
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function silhouetteAt(y) {
+        if (y <= SILHOUETTE[0][0]) return { left: SILHOUETTE[0][1], right: SILHOUETTE[0][2] };
+        for (var i = 1; i < SILHOUETTE.length; i++) {
+          var row = SILHOUETTE[i];
+          var prev = SILHOUETTE[i - 1];
+          if (y <= row[0]) {
+            var t = (y - prev[0]) / (row[0] - prev[0]);
+            return {
+              left: lerp(prev[1], row[1], t),
+              right: lerp(prev[2], row[2], t)
+            };
+          }
+        }
+        var last = SILHOUETTE[SILHOUETTE.length - 1];
+        return { left: last[1], right: last[2] };
+      }
+
+      function stageYFrac(index, total) {
+        if (total <= 1) return Y_MAX;
+        var t = (index - 1) / (total - 1);
+        var curved = Math.pow(t, COMPRESS);
+        return Y_MAX - (Y_MAX - Y_MIN) * curved;
+      }
+
+      function bandMetrics(role, total) {
+        var scale = total <= 4 ? 1 : total <= 12 ? 0.82 : 0.62;
+        switch (role) {
+          case "current":
+            return { heightPct: 0.052 * scale, opacity: 1, sat: 1, z: 5 };
+          case "next":
+            return { heightPct: 0.034 * scale, opacity: 0.88, sat: 0.78, z: 4 };
+          case "finished":
+            return { heightPct: 0.026 * scale, opacity: 0.42, sat: 0.72, z: 2 };
+          default:
+            return {
+              heightPct: (0.014 + 0.008 * scale) * (0.55 + 0.45 * (1 - role.rank / Math.max(total, 1))),
+              opacity: Math.max(0.12, 0.38 - role.rank * 0.02),
+              sat: 0.55,
+              z: 1
+            };
+        }
+      }
+
+      function grassColors(opacity, sat) {
+        var top = "rgba(" + mix(72, 168, 58, sat) + ", " + opacity + ")";
+        var mid = "rgba(" + mix(58, 148, 48, sat) + ", " + opacity + ")";
+        var lip = "rgba(" + mix(42, 118, 38, sat) + ", " + Math.min(1, opacity * 1.1) + ")";
+        return { top: top, mid: mid, lip: lip };
+      }
+
+      function mix(lo, hi, sat) {
+        sat = Math.max(0, Math.min(1, sat));
+        return [
+          Math.round(lerp(lo, hi, sat)),
+          Math.round(lerp(lo + 20, hi + 10, sat)),
+          Math.round(lerp(lo - 10, hi - 8, sat))
+        ].join(", ");
+      }
+
+      function toLocalX(xGlobal, boxLeft, boxWidth) {
+        if (boxWidth <= 0.0001) return 50;
+        return ((xGlobal - boxLeft) / boxWidth) * 100;
+      }
+
+      function trapezoidVars(yTop, yBottom) {
+        var top = silhouetteAt(yTop);
+        var bottom = silhouetteAt(yBottom);
+        var boxLeft = bottom.left;
+        var boxWidth = bottom.right - bottom.left;
+        return {
+          "--tl-x": toLocalX(top.left, boxLeft, boxWidth) + "%",
+          "--tr-x": toLocalX(top.right, boxLeft, boxWidth) + "%",
+          "--bl-x": "0%",
+          "--br-x": "100%",
+          left: boxLeft * 100,
+          width: boxWidth * 100
+        };
+      }
+
+      function makeTent(name, accent, small) {
+        var slot = document.createElement("div");
+        slot.className = "tent-slot";
+        var tent = document.createElement("div");
+        tent.className = "tent";
+        tent.style.setProperty("--tent-accent", accent);
+        if (small) {
+          tent.style.setProperty("--tent-w", "22px");
+          tent.style.setProperty("--tent-h", "19px");
+        }
+        var pill = document.createElement("span");
+        pill.className = "tent-pill";
+        pill.textContent = name;
+        slot.appendChild(tent);
+        slot.appendChild(pill);
+        return slot;
+      }
+
+      function renderPhone(phone, total, current) {
+        phone.innerHTML = "";
+        var mountain = document.createElement("div");
+        mountain.className = "phone__mountain";
+
+        var img = document.createElement("img");
+        img.className = "phone__photo";
+        img.src = IMG;
+        img.alt = "";
+        img.decoding = "async";
+        img.width = 1092;
+        img.height = 1440;
+
+        var overlay = document.createElement("div");
+        overlay.className = "phone__overlay";
+
+        mountain.appendChild(img);
+        mountain.appendChild(overlay);
+        phone.appendChild(mountain);
+
+        var bands = [];
+        for (var s = 1; s <= total; s++) {
+          var y = stageYFrac(s, total);
+          var role;
+          if (s < current) role = "finished";
+          else if (s === current) role = "current";
+          else if (s === current + 1) role = "next";
+          else role = "beyond";
+          bands.push({ stage: s, y: y, role: role, rank: s - current - 1 });
+        }
+
+        var currentY = stageYFrac(current, total);
+        var fireY = currentY + 0.022;
+
+        bands.forEach(function (band) {
+          var m = band.role === "beyond"
+            ? bandMetrics({ rank: band.rank }, total)
+            : bandMetrics(band.role, total);
+          var heightFrac = m.heightPct;
+          var yBottom = band.y;
+          var yTop = Math.max(Y_MIN - 0.02, yBottom - heightFrac);
+          var trap = trapezoidVars(yTop, yBottom);
+          var colors = grassColors(m.opacity, m.sat);
+
+          var el = document.createElement("div");
+          el.className = "band band--" + band.role;
+          el.style.setProperty("--band-left", trap.left + "%");
+          el.style.setProperty("--band-width", trap.width + "%");
+          el.style.setProperty("--band-top", (yBottom * 100) + "%");
+          el.style.setProperty("--band-height", (heightFrac * 100) + "%");
+          el.style.setProperty("--band-z", String(m.z));
+          el.style.setProperty("--band-top-color", colors.top);
+          el.style.setProperty("--band-mid-color", colors.mid);
+          el.style.setProperty("--band-lip-color", colors.lip);
+          el.style.setProperty("--band-lip-opacity", String(Math.min(1, m.opacity * 1.05)));
+          el.style.setProperty("--tl-x", trap["--tl-x"]);
+          el.style.setProperty("--tr-x", trap["--tr-x"]);
+          el.style.setProperty("--bl-x", trap["--bl-x"]);
+          el.style.setProperty("--br-x", trap["--br-x"]);
+          if (band.role === "current" || band.role === "next") {
+            el.style.setProperty("--band-shadow", band.role === "current"
+              ? "0 2px 8px rgba(18, 40, 22, 0.35)"
+              : "0 1px 4px rgba(18, 40, 22, 0.18)");
+          } else {
+            el.style.setProperty("--band-shadow", "none");
+          }
+
+          var fill = document.createElement("div");
+          fill.className = "band__fill";
+          el.appendChild(fill);
+
+          if (band.role === "current") {
+            var camps = document.createElement("div");
+            camps.className = "band-camps";
+            var names = TENT_NAMES[(current - 1) % TENT_NAMES.length];
+            camps.appendChild(makeTent(names[0], "#0f9488", false));
+            camps.appendChild(makeTent(names[1], "#e8590c", false));
+            el.appendChild(camps);
+          } else if (band.role === "next") {
+            var nextCamps = document.createElement("div");
+            nextCamps.className = "band-camps band-camps--next";
+            nextCamps.appendChild(makeTent("Next camp", "#4c6ef5", true));
+            el.appendChild(nextCamps);
+          }
+
+          overlay.appendChild(el);
+        });
+
+        var fireSil = silhouetteAt(fireY);
+        var fireX = (fireSil.left + fireSil.right) / 2;
+        var fire = document.createElement("div");
+        fire.className = "campfire";
+        fire.style.setProperty("--fire-x", (fireX * 100) + "%");
+        fire.style.setProperty("--fire-y", (fireY * 100) + "%");
+        fire.innerHTML =
+          '<div class="campfire__glow" aria-hidden="true"></div>' +
+          '<div class="campfire__logs" aria-hidden="true"></div>' +
+          '<div class="campfire__flame" aria-hidden="true"></div>';
+        overlay.appendChild(fire);
+      }
+
+      document.querySelectorAll(".phone[data-total]").forEach(function (phone) {
+        var total = parseInt(phone.getAttribute("data-total"), 10);
+        var current = parseInt(phone.getAttribute("data-current"), 10);
+        renderPhone(phone, total, current);
+      });
+    })();
+  </script>
+</body>
+</html>
