@@ -7,7 +7,9 @@ module UserOtp
 
   OTP_ISSUER = "LifePoints"
   BACKUP_CODE_COUNT = 10
-  OTP_DRIFT = 1
+  # ROTP 6.x treats drift_behind / drift_ahead as seconds (not interval counts).
+  # 30s ≈ one TOTP window of skew tolerance on each side of "now".
+  OTP_DRIFT = 30
 
   class_methods do
     def otp_encryptor
