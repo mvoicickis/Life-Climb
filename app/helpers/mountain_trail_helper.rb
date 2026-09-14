@@ -1074,7 +1074,11 @@ module MountainTrailHelper
   end
 
   def mountain_trail_dock_open_stage_add_camp(camps, user: nil)
-    mountain_trail_dock_open_stage_camp(camps)
+    camp = mountain_trail_dock_open_stage_camp(camps)
+    return nil if camp.blank?
+    return nil if mountain_trail_camp_days(camp).any?
+
+    camp
   end
   private :mountain_trail_dock_open_stage_add_camp
 
@@ -1164,7 +1168,7 @@ module MountainTrailHelper
   private :mountain_trail_dock_open_battles
 
   def mountain_trail_dock_forward_plaque(camps)
-    camp = mountain_trail_next_camp(camps) || mountain_trail_idle_camp(camps) || mountain_trail_focus_camp(camps)
+    camp = mountain_trail_dock_open_stage_camp(camps) || mountain_trail_next_camp(camps) || mountain_trail_focus_camp(camps)
     if camp.blank?
       return meadow_plaque(
         mode: "plant_next",
