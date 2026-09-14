@@ -38,7 +38,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     terraced = @css[/\.lp-trail\.is-terraced\s*\{[^}]+\}/m]
     assert terraced, "expected .lp-trail.is-terraced root block"
     assert_includes terraced, "--map-zoom: 1"
-    assert_includes terraced, "--terrace-ui-scale: 0.9"
+    assert_includes terraced, "--terrace-ui-scale: 0.85"
     assert_includes terraced, "--lp-pill-h: calc(23px * var(--terrace-ui-scale))"
     assert_includes terraced, "--lp-terrace-tap: var(--lp-tap"
   end
@@ -61,12 +61,46 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
   end
 
   test "terraced map frost pills use lighter blur and shadow" do
-    assert_includes @css, "backdrop-filter: blur(6px)"
-    assert_includes @css, "box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05)"
+    open_pill = @css[/\.lp-trail\.is-terraced \.trail-open-pill\s*\{[^}]+\}/m]
+    assert open_pill
+    assert_includes open_pill, "backdrop-filter: blur(4px)"
+    assert_includes open_pill, "box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04)"
+
+    caption = @css[/\.lp-trail\.is-terraced \.trail-t2-camp \.lp-trail-camp__caption\s*\{[^}]+\}/m]
+    assert caption
+    assert_includes caption, "backdrop-filter: blur(4px)"
+    assert_includes caption, "box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04)"
 
     current_caption = @css[/\.lp-trail\.is-terraced \.trail-t2-camp\.is-current \.lp-trail-camp__caption\s*\{[^}]+\}/m]
     assert current_caption
     assert_includes current_caption, "border: 1.5px solid"
     refute_includes current_caption, "0 0 12px"
+  end
+
+  test "terraced tent shadows use lighter opacity" do
+    fog_tent = @css[/\.lp-trail\.is-terraced \.trail-tent-hit \.trail-tent\s*\{[^}]+\}/m]
+    assert fog_tent
+    assert_includes fog_tent, "filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.12))"
+
+    open_tent = @css[/\.lp-trail\.is-terraced \.trail-t2-camp \.lp-trail-camp__tent\s*\{[^}]+\}/m]
+    assert open_tent
+    assert_includes open_tent, "filter: drop-shadow(1px 1px 2px rgba(12, 22, 14, 0.22))"
+
+    ground = @css[/\.lp-trail\.is-terraced \.trail-t2-camp \.lp-trail-camp__shadow\s*\{[^}]+\}/m]
+    assert ground
+    assert_includes ground, "background: rgba(20, 16, 10, 0.24)"
+  end
+
+  test "open terrace paging arrows sit outside tents inside map safe area" do
+    prev = @css[/\.lp-trail\.is-terraced \.trail-terrace\.is-open \.trail-terrace-camps__arrow\.is-prev\s*\{[^}]+\}/m]
+    next_arrow = @css[/\.lp-trail\.is-terraced \.trail-terrace\.is-open \.trail-terrace-camps__arrow\.is-next\s*\{[^}]+\}/m]
+    assert prev
+    assert next_arrow
+    assert_includes prev, "var(--map-safe)"
+    assert_includes next_arrow, "var(--map-safe)"
+    refute_includes prev, "lp-tent-open-w"
+    refute_includes next_arrow, "lp-tent-open-w"
+    assert_includes prev, "var(--lp-terrace-tap)"
+    assert_includes next_arrow, "var(--lp-terrace-tap)"
   end
 end
