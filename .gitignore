@@ -32,6 +32,11 @@
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
+/config/credentials/
+
+/node_modules/
+/playwright-report/
+/test-results/
 
 
 /app/assets/builds/*
