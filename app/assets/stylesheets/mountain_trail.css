@@ -2646,7 +2646,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   display: grid;
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
-    "fire copy chev"
+    "fire main tick"
     "peek peek peek";
   align-items: center;
   column-gap: 11px;
@@ -2660,14 +2660,51 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   color: #12241f;
   text-align: left;
   font: inherit;
-  cursor: pointer;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+.lp-trail-base-card:not(.has-battle-tick) {
+  grid-template-areas:
+    "fire main main"
+    "peek peek peek";
 }
 
 .lp-trail-base-card.has-battle-tick {
   grid-template-areas:
-    "fire copy tick"
+    "fire main tick"
     "peek peek peek";
+}
+
+.lp-trail-base-card:not(.has-peek) {
+  grid-template-areas:
+    "fire main tick";
+}
+
+.lp-trail-base-card:not(.has-peek):not(.has-battle-tick) {
+  grid-template-areas:
+    "fire main main";
+}
+
+.lp-trail-base-card__main {
+  grid-area: main;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 8px;
+  min-width: 0;
+  min-height: var(--lp-tap, 2.75rem);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.lp-trail-base-card__main .lp-trail-base-card__copy {
+  grid-area: unset;
+}
+
+.lp-trail-base-card__main .lp-trail-base-card__chev {
+  grid-area: unset;
 }
 
 .lp-trail-base-card__tick-slot {
@@ -2698,10 +2735,27 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   font-size: 17px;
   background: radial-gradient(circle, #ffcf82, #ea9a3c);
   box-shadow: 0 0 0 5px rgba(234, 154, 60, 0.16);
+  flex-shrink: 0;
+}
+
+.lp-trail-base-card__fire-btn {
+  grid-area: fire;
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  cursor: pointer;
+  background: radial-gradient(circle, #ffcf82, #ea9a3c);
+  box-shadow: 0 0 0 5px rgba(234, 154, 60, 0.16);
+  flex-shrink: 0;
 }
 
 .lp-trail-base-card__copy {
-  grid-area: copy;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -2729,9 +2783,9 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail-base-card__chev {
-  grid-area: chev;
   color: #b39a6f;
   font-size: 16px;
+  flex-shrink: 0;
 }
 
 .lp-trail-base-card__peek {
@@ -2739,6 +2793,15 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  width: 100%;
+  min-height: var(--lp-tap, 2.75rem);
+  margin: 0;
+  padding: 4px 0 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 
 .lp-trail-base-card__pill {

@@ -5,31 +5,28 @@
 <% mode = today_card[:mode].to_s %>
 <% plant_mode = mode.start_with?("plant") %>
 <% pills = mountain_trail_base_pills(journey: journey, projects: projects) %>
-<% camp_open_modes = %w[battle forward add_battle] %>
-<% dock_action =
+<% main_camp_id = today_card[:camp_id].presence || mountain_trail_current_project(projects)&.id %>
+<% dock_main_action =
      if plant_mode
        "click->trail-canvas#openComposerFromFab"
-     elsif camp_open_modes.include?(mode) && today_card[:camp_id].present?
+     elsif main_camp_id.present?
        "click->trail-camp-sheet#openFromDock"
-     elsif mode.in?(%w[win_next basics])
-       "click->trail-camp-sheet#openBase"
      else
        "click->trail-camp-sheet#openBase"
      end %>
+<% base_open_action = "click->trail-camp-sheet#openBase click->trail-dock#stopBubble" %>
+<% base_open_label = t("strategy.rpg.trail.base_camp.kicker") %>
 
 <div id="trail-dock" class="lp-trail__dock" data-trail-ignore data-controller="trail-dock">
-  <div type="button"
-       class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %> <%= 'has-battle-tick' if today_card[:battle].present? %>"
-       role="button"
-       tabindex="0"
-       data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
-       <% if camp_open_modes.include?(mode) && today_card[:camp_id].present? %>
-       data-camp-id="<%= today_card[:camp_id] %>"
-       <% end %>
-       data-action="<%= dock_action %> keydown->trail-dock#keydown">
+  <div class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %> <%= 'has-battle-tick' if today_card[:battle].present? %> <%= 'has-peek' if pills[:items].any? %>"
+       data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>">
     <%= render "life_journeys/trail_base_card_inner",
           today_card: today_card,
           pills: pills,
-          plant_mode: plant_mode %>
+          plant_mode: plant_mode,
+          dock_main_action: dock_main_action,
+          base_open_action: base_open_action,
+          base_open_label: base_open_label,
+          camp_id: main_camp_id %>
   </div>
 </div>

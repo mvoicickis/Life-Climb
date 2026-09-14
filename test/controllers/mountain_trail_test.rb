@@ -193,7 +193,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#mountain-trail > .lp-trail__dock", count: 0
     assert_select ".lp-trail-base-card.is-battle.is-busy"
     assert_select ".lp-trail-base-card.has-battle-tick"
-    assert_select ".lp-trail-base-card[data-action*='openFromDock'][data-camp-id=?]", @project.id.to_s
+    assert_select ".lp-trail-base-card__main[data-action*='openFromDock'][data-camp-id=?]", @project.id.to_s
+    assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
     assert_select ".lp-trail-base-card__title", text: "Pitch the tent"
     assert_select ".lp-trail-base-card__kicker", text: /Next in/i
     assert_select ".lp-trail-base-card form[action*='battle_win'] input[name=source][value=camp_sheet]"
@@ -767,7 +768,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail-base-card.is-basics"
-    assert_select ".lp-trail-base-card[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
     assert_select "#trail-sheet-camp-base"
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
@@ -787,7 +789,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-base-battle-#{battle.id}"
     assert_select ".lp-trail-base-card.is-battle"
-    assert_select ".lp-trail-base-card[data-action*='openFromDock']"
+    assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
+    assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
   end
 end
