@@ -5244,6 +5244,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   /* Lift open-stage block above the base-camp card without moving a full terrace. */
   --lp-open-stage-lift: calc(40px * var(--terrace-ui-scale));
   --lp-terrace-arrow-gap: calc(4px * var(--terrace-ui-scale));
+  --lp-terrace-arrow-outset: calc(
+    var(--lp-camp-name-max) * 0.5 + var(--lp-terrace-arrow-gap) + var(--lp-tap, 2.75rem) * 0.5
+  );
+  --lp-terrace-dots-cluster-half: calc(2.75rem * var(--terrace-ui-scale));
   --lp-fog-opacity: 0.4;
 }
 
@@ -5749,7 +5753,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   display: grid;
   place-items: center;
   width: var(--lp-tap, 2.75rem);
+  min-width: var(--lp-tap, 2.75rem);
   height: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
   border: 1px solid var(--lp-rpg-glass-border);
   border-radius: 999px;
   background: var(--lp-rpg-glass);
@@ -5765,15 +5771,51 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow.is-prev {
   left: max(
-    calc(-1 * var(--trail-terrace-x-cqw, 50cqw) + var(--map-safe) + var(--lp-terrace-tap) * 0.5),
-    calc(var(--trail-slot-dx-left) - var(--lp-terrace-tap) * 0.5 - var(--lp-terrace-arrow-gap))
+    calc(-1 * var(--trail-terrace-x-cqw, 50cqw) + var(--map-safe) + var(--lp-tap, 2.75rem) * 0.5),
+    calc(var(--trail-slot-dx-left) - var(--lp-terrace-arrow-outset))
   );
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow.is-next {
   left: min(
-    calc(100cqw - var(--trail-terrace-x-cqw, 50cqw) - var(--map-safe) - var(--lp-terrace-tap) * 0.5),
-    calc(var(--trail-slot-dx-right) + var(--lp-terrace-tap) * 0.5 + var(--lp-terrace-arrow-gap))
+    calc(100cqw - var(--trail-terrace-x-cqw, 50cqw) - var(--map-safe) - var(--lp-tap, 2.75rem) * 0.5),
+    calc(var(--trail-slot-dx-right) + var(--lp-terrace-arrow-outset))
+  );
+}
+
+/* Narrow map / tight terraces: flank the paging dots instead of sitting on tents. */
+.lp-trail.is-terraced .trail-terrace.is-open.is-terrace-camp-arrows-dots .trail-terrace-camps__arrow {
+  bottom: auto;
+  top: calc(
+    -1 * var(--lp-open-stage-lift)
+    + calc(2px * var(--terrace-ui-scale))
+    + var(--lp-pill-h)
+    + var(--lp-terrace-stack-gap)
+  );
+  transform: translate(-50%, -50%);
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open.is-terrace-camp-arrows-dots .trail-terrace-camps__arrow.is-prev {
+  left: max(
+    calc(-1 * var(--trail-terrace-x-cqw, 50cqw) + var(--map-safe) + var(--lp-tap, 2.75rem) * 0.5),
+    calc(
+      50%
+      - var(--lp-terrace-dots-cluster-half)
+      - var(--lp-tap, 2.75rem) * 0.5
+      - var(--lp-terrace-arrow-gap)
+    )
+  );
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open.is-terrace-camp-arrows-dots .trail-terrace-camps__arrow.is-next {
+  left: min(
+    calc(100cqw - var(--trail-terrace-x-cqw, 50cqw) - var(--map-safe) - var(--lp-tap, 2.75rem) * 0.5),
+    calc(
+      50%
+      + var(--lp-terrace-dots-cluster-half)
+      + var(--lp-tap, 2.75rem) * 0.5
+      + var(--lp-terrace-arrow-gap)
+    )
   );
 }
 
