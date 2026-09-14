@@ -5720,17 +5720,13 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__nav {
   position: absolute;
-  left: 50%;
-  /* Positive top from the 0×0 terrace anchor — negative bottom sat below t1 and was clipped by .lp-trail__map overflow. */
-  top: calc(var(--lp-gap-tent-name) + var(--lp-pill-h) + 0.35rem);
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: calc(var(--lp-tent-open-w) * 2 + 2.5rem);
-  max-width: 88cqw;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__nav[hidden] {
@@ -5738,11 +5734,13 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow {
+  position: absolute;
+  bottom: calc(var(--lp-open-stage-lift) + var(--lp-tent-open-h) * 0.5);
+  transform: translate(-50%, 50%);
   display: grid;
   place-items: center;
   width: var(--lp-tap, 2.75rem);
   height: var(--lp-tap, 2.75rem);
-  flex: 0 0 auto;
   border: 1px solid var(--lp-rpg-glass-border);
   border-radius: 999px;
   background: var(--lp-rpg-glass);
@@ -5756,6 +5754,24 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   -webkit-backdrop-filter: blur(8px);
 }
 
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow.is-prev {
+  left: calc(
+    var(--trail-slot-dx-left)
+    - var(--lp-tent-open-w) * 0.5
+    - var(--lp-tap, 2.75rem) * 0.5
+    - 0.15rem
+  );
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow.is-next {
+  left: calc(
+    var(--trail-slot-dx-right)
+    + var(--lp-tent-open-w) * 0.5
+    + var(--lp-tap, 2.75rem) * 0.5
+    + 0.15rem
+  );
+}
+
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__arrow[hidden] {
   display: none !important;
 }
@@ -5763,10 +5779,36 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots {
   position: absolute;
   left: 50%;
-  top: calc(var(--lp-gap-tent-name) + var(--lp-pill-h) + var(--lp-tap, 2.75rem) + 0.55rem);
+  bottom: calc(
+    var(--lp-open-stage-lift)
+    - var(--lp-gap-tent-name)
+    - var(--lp-pill-h)
+    - 0.45rem
+  );
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.18rem 0.42rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-frost);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots .lp-rpg-destination-dots__pip {
+  background: var(--lp-muted, #475569);
+}
+
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots .lp-rpg-destination-dots__dot.is-active .lp-rpg-destination-dots__pip,
+.lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots .lp-rpg-destination-dots__dot[aria-current="true"] .lp-rpg-destination-dots__pip {
+  background: var(--lp-green-deep, #3dbd48);
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots[hidden] {
