@@ -93,7 +93,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :holding?, :children, :trail_x, :trail_y, :title).new(
       8, 0, 0, false, false, false, [ won ], 0.5, 0.7, "Ridge camp"
     )
-    card = mountain_trail_dock_card(projects: [ camp ], open_battles: [], won_today: 2)
+    card = mountain_trail_dock_card(projects: [ camp ], open_battles: [], won_today: 0)
     assert_equal "forward", card[:mode]
     assert_no_match(/all clear/i, card[:headline])
     assert_no_match(/win today/i, card[:sub].to_s)
