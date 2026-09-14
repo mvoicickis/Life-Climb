@@ -40,7 +40,7 @@ module MountainTrailHelper
     1 => { y: 0.8222, x: 0.4644, x_left: 0.2352, x_right: 0.6935, token: "bottom" },
     2 => { y: 0.7481, x: 0.4995, x_left: 0.2204, x_right: 0.7787, token: "second" },
     3 => { y: 0.5615, x: 0.4977, x_left: 0.2963, x_right: 0.6991, token: "third" },
-    4 => { y: 0.3985, x: 0.5019, x_left: 0.3157, x_right: 0.6880, token: "top" }
+    4 => { y: 0.3560, x: 0.5019, x_left: 0.3157, x_right: 0.6880, token: "top" }
   }.freeze
   # Small inset right from x_left so badge circles sit on grass, not the lip edge.
   TERRACE_BADGE_INSET = 0.015

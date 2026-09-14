@@ -903,7 +903,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_nil mountain_trail_terrace_badge_gap_y(t1)
     assert_in_delta 0.0741, mountain_trail_terrace_badge_gap_y(t2), 0.00005
     assert_in_delta 0.1866, mountain_trail_terrace_badge_gap_y(t3), 0.00005
-    assert_in_delta 0.1630, mountain_trail_terrace_badge_gap_y(t4), 0.00005
+    assert_in_delta 0.2055, mountain_trail_terrace_badge_gap_y(t4), 0.00005
     assert_in_delta(
       mountain_trail_terrace_badge_gap_y(t2) * MountainTrailHelper::MAP_ASPECT_HEIGHT / MountainTrailHelper::MAP_ASPECT_WIDTH,
       mountain_trail_terrace_badge_gap_cqw(t2),

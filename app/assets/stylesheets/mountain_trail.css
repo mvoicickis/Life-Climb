@@ -5655,9 +5655,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-terraced .trail-terrace--t4 {
-  --lp-tent-fog-w: calc(32px * var(--terrace-ui-scale));
-  --lp-tent-fog-h: calc(26px * var(--terrace-ui-scale));
-  --lp-fog-opacity: 0.28;
+  /* Same drawn size as T3 fog tents; hazy but readable over green. */
+  --lp-fog-opacity: 0.55;
 }
 
 .lp-trail.is-terraced .trail-terrace--t4 .trail-tent-hit .trail-tent {
