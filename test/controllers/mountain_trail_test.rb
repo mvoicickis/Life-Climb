@@ -756,7 +756,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
   end
 
-  test "plant next dock card shows Next camp kicker and stable base title for sheet" do
+  test "forward dock card names open stage camp when nothing fightable today" do
     @user.habits.destroy_all
     @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
@@ -766,9 +766,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-trail-base-card.is-plant-next"
-    assert_select ".lp-trail-base-card__main[data-action*='openComposerFromFab']"
-    assert_select ".lp-trail-base-card__kicker", text: /Next camp/i
+    assert_select ".lp-trail-base-card.is-forward"
+    assert_select ".lp-trail-base-card__title", text: /Base camp/i
+    assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
+    assert_select ".lp-trail-base-card__main[data-action*='openComposerFromFab']", count: 0
     assert_select ".lp-trail-base-card[data-base-title=?]", I18n.t("strategy.rpg.trail.base_camp.kicker")
   end
 
