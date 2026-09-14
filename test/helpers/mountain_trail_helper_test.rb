@@ -74,6 +74,20 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_match(/2/, card[:sub])
   end
 
+  test "dock card add battle on open stage before base due battles" do
+    battle = Struct.new(:completed_at, :title, :parent_id, keyword_init: true).new(
+      completed_at: nil, title: "Study PDC", parent_id: 99
+    )
+    camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :title).new(
+      4, 0, 0, false, false, [], 0.5, 0.72, "Second tent"
+    )
+    card = mountain_trail_dock_card(projects: [ camp ], open_battles: [ battle ], won_today: 0)
+    assert_equal "add_battle", card[:mode]
+    assert_match(/second tent/i, card[:headline])
+    assert_match(/add a battle/i, card[:sub])
+    assert_equal 4, card[:camp_id]
+  end
+
   test "dock card uses forward not cheer when today’s battles are won" do
     won = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
     camp = Struct.new(:id, :stage, :position, :completed?, :pages_mode?, :holding?, :children, :trail_x, :trail_y, :title).new(
