@@ -9,6 +9,8 @@
 <% dock_main_action =
      if plant_mode
        "click->trail-canvas#openComposerFromFab"
+     elsif mode.in?(%w[basics win_next])
+       "click->trail-camp-sheet#openBase"
      elsif main_camp_id.present?
        "click->trail-camp-sheet#openFromDock"
      else

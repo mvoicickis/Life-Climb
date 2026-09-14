@@ -746,7 +746,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail-base-card.is-plant-next"
-    assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']"
+    assert_select ".lp-trail-base-card__main[data-action*='openComposerFromFab']"
     assert_select ".lp-trail-base-card__kicker", text: /Next camp/i
     assert_select ".lp-trail-base-card[data-base-title=?]", I18n.t("strategy.rpg.trail.base_camp.kicker")
   end
