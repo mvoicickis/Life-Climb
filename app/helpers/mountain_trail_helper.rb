@@ -1033,7 +1033,7 @@ module MountainTrailHelper
 
     stage_camps = mountain_trail_open_stage_camps(camps)
     unless stage_camps.any? { |project| mountain_trail_dock_open_battles(project, user: viewer).any? }
-      add_camp = mountain_trail_idle_camp(stage_camps) || mountain_trail_dock_open_stage_camp(camps)
+      add_camp = mountain_trail_idle_camp(stage_camps)
       if add_camp
         return meadow_plaque(
           mode: "add_battle",
@@ -1132,9 +1132,9 @@ module MountainTrailHelper
     days = mountain_trail_camp_days(camp).sort_by { |day|
       [
         mountain_trail_done_today?(day, user: viewer) ? 1 : 0,
-        day.scheduled_on || Date.new(9999),
-        day.position.to_i,
-        day.id
+        (day.try(:scheduled_on) || Date.new(9999)),
+        day.try(:position).to_i,
+        day.try(:id).to_i
       ]
     }
     days.select { |day| mountain_trail_camp_due?(day) }
