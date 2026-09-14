@@ -349,14 +349,20 @@ module MountainTrailHelper
 
       if slot.is_a?(Hash) && slot[:range_from]
         from_stage = slot[:range_from]
+        range_camps = mountain_trail_terrace_range_camps(camps, from_stage, max_stage)
+        cap = LATER_TERRACE_CAMP_CAP
+        visible = range_camps.first(cap)
+        overflow = [ range_camps.size - visible.size, 0 ].max
+        hidden = overflow.positive? ? range_camps.drop(cap) : []
         {
           index: terrace_index,
           anchor: anchor,
-          stage: nil,
+          stage: from_stage,
           state: :range,
-          camps: [],
-          overflow: 0,
-          range_label: mountain_trail_terrace_range_label(from_stage, max_stage),
+          camps: visible,
+          hidden_camps: hidden,
+          overflow: overflow,
+          range_label: nil,
           range_from: from_stage,
           range_to: max_stage,
           foot_badge: nil
@@ -432,6 +438,11 @@ module MountainTrailHelper
     stage_camps = mountain_trail_projects_by_stage(projects)[terrace[:stage].to_i] || []
     cap = terrace[:state] == :open ? OPEN_TERRACE_CAMP_CAP : LATER_TERRACE_CAMP_CAP
     stage_camps.drop(cap)
+  end
+
+  def mountain_trail_terrace_range_camps(projects, from_stage, to_stage)
+    by_stage = mountain_trail_projects_by_stage(projects)
+    (from_stage.to_i..to_stage.to_i).flat_map { |stage| by_stage[stage] || [] }
   end
 
   def mountain_trail_terrace_range_entries(projects, terrace)

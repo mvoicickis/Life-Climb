@@ -5650,13 +5650,22 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border: 1px solid var(--lp-border);
 }
 
-.lp-trail.is-terraced .trail-terrace--t4 .trail-stage-badge--range {
-  top: calc(-1 * min(var(--lp-tent-fog-h) * 1.5, 0.5 * var(--trail-badge-gap, 100cqw)));
-  transform: translate(-50%, -50%);
-}
-
 .lp-trail.is-terraced .trail-stage-badge--range .trail-stage-badge__num {
   font-size: 0.58rem;
+}
+
+.lp-trail.is-terraced .trail-terrace--t4 {
+  --lp-tent-fog-w: calc(32px * var(--terrace-ui-scale));
+  --lp-tent-fog-h: calc(26px * var(--terrace-ui-scale));
+  --lp-fog-opacity: 0.28;
+}
+
+.lp-trail.is-terraced .trail-terrace--t4 .trail-tent-hit .trail-tent {
+  filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.08));
+}
+
+.lp-trail.is-terraced .trail-stage-badge--later[data-terrace-sheet-id] {
+  cursor: pointer;
 }
 
 .lp-trail.is-terraced .trail-foot-badge {
@@ -5869,6 +5878,19 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   display: grid;
   place-items: center;
   cursor: pointer;
+}
+
+.lp-trail.is-terraced .trail-camp-more--range-tail {
+  left: calc(var(--trail-slot-dx, 0) * 100cqw + calc(12px * var(--terrace-ui-scale)));
+  bottom: calc(6px * var(--terrace-ui-scale));
+  transform: none;
+  min-width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-weight: 600;
+  opacity: 0.65;
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__nav {
