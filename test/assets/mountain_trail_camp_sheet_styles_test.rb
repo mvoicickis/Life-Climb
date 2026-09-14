@@ -100,7 +100,10 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert_includes next_arrow, "var(--map-safe)"
     refute_includes prev, "lp-tent-open-w"
     refute_includes next_arrow, "lp-tent-open-w"
-    assert_includes prev, "var(--lp-terrace-tap)"
-    assert_includes next_arrow, "var(--lp-terrace-tap)"
+    assert_includes prev, "var(--lp-terrace-arrow-outset)"
+    assert_includes next_arrow, "var(--lp-terrace-arrow-outset)"
+    arrow_base = @css[/\.lp-trail\.is-terraced \.trail-terrace\.is-open \.trail-terrace-camps__arrow\s*\{[^}]+\}/m]
+    assert arrow_base
+    assert_includes arrow_base, "var(--lp-tap"
   end
 end
