@@ -1074,30 +1074,13 @@ module MountainTrailHelper
   end
 
   def mountain_trail_dock_open_stage_add_camp(camps, user: nil)
-    stage_camps = mountain_trail_open_stage_camps(camps)
-    return nil if stage_camps.empty?
+    camp = mountain_trail_dock_open_stage_camp(camps)
+    return nil if camp.blank?
+    return nil if mountain_trail_camp_days(camp).any?
 
-    idle = mountain_trail_idle_camp(stage_camps)
-    return idle if idle
-
-    stage_camps.sort_by { |project| [ project.position.to_i, project.id ] }.each do |camp|
-      next if mountain_trail_dock_camp_plant_next?(camp, user: user)
-
-      return camp
-    end
-
-    nil
+    camp
   end
-
-  def mountain_trail_dock_camp_plant_next?(camp, user: nil)
-    days = mountain_trail_camp_days(camp)
-    return false if days.empty?
-
-    return false if mountain_trail_dock_open_battles(camp, user: user).any?
-
-    days.all? { |day| mountain_trail_done_today?(day, user: user) }
-  end
-  private :mountain_trail_dock_open_stage_add_camp, :mountain_trail_dock_camp_plant_next?
+  private :mountain_trail_dock_open_stage_add_camp
 
   # Meadow plaque: one next step, or a short win.
   # open_battles: due daily rows (mountain_trail_base_due_battles), not @today_battles.
@@ -1185,7 +1168,7 @@ module MountainTrailHelper
   private :mountain_trail_dock_open_battles
 
   def mountain_trail_dock_forward_plaque(camps)
-    camp = mountain_trail_next_camp(camps) || mountain_trail_idle_camp(camps) || mountain_trail_focus_camp(camps)
+    camp = mountain_trail_dock_open_stage_camp(camps) || mountain_trail_next_camp(camps) || mountain_trail_focus_camp(camps)
     if camp.blank?
       return meadow_plaque(
         mode: "plant_next",
