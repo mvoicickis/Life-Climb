@@ -887,7 +887,9 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal [ 3 ], groups[3][:camps].map(&:id)
     assert_equal 0, groups[3][:overflow]
     assert_equal 6, groups[3][:hidden_camps].size
-    assert_equal 7, mountain_trail_terrace_range_badge_num(camps, groups[3])
+    assert_equal "Stage 2 · next", mountain_trail_terrace_next_label(groups[2])
+    assert_equal 6, mountain_trail_terrace_range_extra_stages_count(groups[3])
+    assert_equal "6 more stages", mountain_trail_terrace_range_extra_stages_label(groups[3])
     assert_equal "Stages 3 to 9, 7 stages", mountain_trail_terrace_range_aria_label(groups[3])
     range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
     assert_equal 7, range_camps.size
@@ -896,21 +898,14 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_empty mountain_trail_terrace_fallback_projects(camps, groups)
   end
 
-  test "badge gap is the y delta to the next lower terrace" do
-    t1 = { index: 1, anchor: MountainTrailHelper::TERRACE_ANCHORS[1] }
-    t2 = { index: 2, anchor: MountainTrailHelper::TERRACE_ANCHORS[2] }
-    t3 = { index: 3, anchor: MountainTrailHelper::TERRACE_ANCHORS[3] }
-    t4 = { index: 4, anchor: MountainTrailHelper::TERRACE_ANCHORS[4] }
-
-    assert_nil mountain_trail_terrace_badge_gap_y(t1)
-    assert_in_delta 0.0741, mountain_trail_terrace_badge_gap_y(t2), 0.00005
-    assert_in_delta 0.1866, mountain_trail_terrace_badge_gap_y(t3), 0.00005
-    assert_in_delta 0.1655, mountain_trail_terrace_badge_gap_y(t4), 0.00005
-    assert_in_delta(
-      mountain_trail_terrace_badge_gap_y(t2) * MountainTrailHelper::MAP_ASPECT_HEIGHT / MountainTrailHelper::MAP_ASPECT_WIDTH,
-      mountain_trail_terrace_badge_gap_cqw(t2),
-      0.00005
-    )
+  test "range extra stages label uses singular for one stage beyond the first" do
+    terrace = {
+      state: :range,
+      range_from: 2,
+      range_to: 3
+    }
+    assert_equal 1, mountain_trail_terrace_range_extra_stages_count(terrace)
+    assert_equal "1 more stage", mountain_trail_terrace_range_extra_stages_label(terrace)
   end
 
   test "use_terrace_map is false when a camp is not on any terrace surface" do

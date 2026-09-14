@@ -109,8 +109,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps"
     assert_select "#trail-camps-fallback", count: 0
     assert_select ".trail-terrace", count: 3
-    assert_select ".trail-terrace--t4.is-range .trail-stage-badge--later .trail-stage-badge__num", text: "7"
+    assert_select ".trail-stage-badge", count: 0
+    assert_select ".trail-terrace--t3.is-later .trail-terrace-next-pill", text: /Stage 2 · next/
     assert_select ".trail-terrace--t4.is-range .trail-tent-hit--range", count: 1
+    assert_select ".trail-terrace--t4.is-range .trail-terrace-range-stages-more", text: "6 more stages"
     assert_select ".trail-terrace--t4.is-range .trail-camp-more", count: 0
   end
 
@@ -511,6 +513,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id}.trail-t2-camp .lp-trail-camp__caption .lp-trail-camp__title", text: /Base camp/
     assert_select "#trail-camp-#{extra.id}.trail-tent-hit .lp-trail-camp__caption", count: 0
     assert_select ".trail-terrace[data-terrace-index='3'] #trail-camp-#{extra.id}.trail-tent-hit"
+    assert_select ".trail-terrace--t3.is-later .trail-terrace-next-pill", text: /Stage 2 · next/
     assert_select ".lp-trail-camp__chip", count: 0
     assert_select ".lp-trail-camp.is-chip-start", count: 0
   end

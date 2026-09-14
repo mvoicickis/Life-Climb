@@ -24,8 +24,10 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert_includes @css, "pointer-events: none"
   end
 
-  test "stage badge lift is clamped to half the gap to the terrace below" do
-    assert_includes @css, "min(var(--lp-tent-fog-h) * 1.5, 0.5 * var(--trail-badge-gap"
+  test "terraced map labels sit below fog tent tap targets" do
+    assert_includes @css, ".trail-terrace-next-pill"
+    assert_includes @css, ".trail-terrace-range-stages-more"
+    assert_includes @css, "bottom: calc(-1 * var(--lp-terrace-tap)"
   end
 
   test "frost token and fallback exist" do
