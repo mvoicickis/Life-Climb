@@ -5779,11 +5779,13 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots {
   position: absolute;
   left: 50%;
-  bottom: calc(
-    var(--lp-open-stage-lift)
+  /* Below tent captions (pair or solo); bottom-based placement overlapped solo caption at terrace center. */
+  top: calc(
+    -1 * var(--lp-open-stage-lift)
+    - var(--lp-tent-open-h)
     - var(--lp-gap-tent-name)
     - var(--lp-pill-h)
-    - 0.45rem
+    - 0.4rem
   );
   transform: translateX(-50%);
   display: flex;
@@ -5799,7 +5801,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   pointer-events: none;
-  z-index: 3;
+  z-index: 4;
 }
 
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots .lp-rpg-destination-dots__pip {

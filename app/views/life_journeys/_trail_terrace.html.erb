@@ -11,6 +11,7 @@
      <% if terrace[:state] == :open && terrace[:camps].any? %>
      data-controller="trail-terrace-camps"
      data-trail-terrace-camps-page-size-value="<%= MountainTrailHelper::OPEN_TERRACE_CAMP_CAP %>"
+     data-trail-terrace-camps-page-count-value="<%= mountain_trail_terrace_open_page_count(terrace) %>"
      <% end %>
      style="--trail-terrace-x: <%= (terrace[:anchor][:x] * 100).round(3) %>%; --trail-terrace-y: <%= (terrace[:anchor][:y] * 100).round(3) %>%; --trail-badge-x: <%= (mountain_trail_terrace_badge_dx(terrace) * 100).round(3) %>cqw;<%= " --trail-badge-gap: #{(gap_cqw * 100).round(4)}cqw;" if gap_cqw %><% if terrace[:state] == :open %> --trail-slot-dx-left: <%= ((terrace[:anchor][:x_left] - terrace[:anchor][:x]) * 100).round(4) %>cqw; --trail-slot-dx-right: <%= ((terrace[:anchor][:x_right] - terrace[:anchor][:x]) * 100).round(4) %>cqw;<% end %>">
   <% if terrace[:state] == :range %>
