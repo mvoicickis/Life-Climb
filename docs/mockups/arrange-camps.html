@@ -232,6 +232,19 @@
       border-bottom: 0;
     }
 
+    .arrange-row__next {
+      flex-shrink: 0;
+      padding: 0.12rem 0.42rem;
+      border-radius: var(--lp-radius-pill);
+      background: color-mix(in srgb, var(--lp-green) 24%, var(--lp-surface));
+      color: var(--lp-green-deep);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
     .arrange-row__label,
     .arrange-row__label-btn {
       flex: 1 1 auto;
@@ -418,7 +431,7 @@
 <body>
   <div class="doc">
     <h1>Arrange camps</h1>
-    <p class="doc__lede">360px. Drag up to prioritize; order saves on drop. Tap a name to rename in place. Stage 1 uses a green rail; later stages use grey.</p>
+    <p class="doc__lede">360px. Drag up to prioritize; order saves on drop. Order within stage 1 sets what Mountain calls “next” (green Next tag). Tap a name to rename in place. Stage 1 uses a green rail; later stages use grey.</p>
 
     <section class="doc__block" aria-labelledby="label-default">
       <p class="doc__label" id="label-default">1 — List, rename, and reorder</p>
@@ -510,6 +523,7 @@
               <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
               <ul class="arrange-list">
                 <li class="arrange-row">
+                  <span class="arrange-row__next">Next</span>
                   <span class="arrange-row__label">Ship the landing page</span>
                   <span class="arrange-row__handle" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
@@ -563,9 +577,9 @@
       </div>
     </section>
 
-    <section class="doc__block" aria-labelledby="label-single">
-      <p class="doc__label" id="label-single">3 — One camp only</p>
-      <div class="phone">
+    <section class="doc__block" aria-labelledby="label-stage1-trio">
+      <p class="doc__label" id="label-stage1-trio">3 — Three camps in stage 1</p>
+      <div class="phone phone--interactive">
         <div class="arrange" data-arrange-live>
           <header class="arrange__top">
             <div class="arrange__title-row">
@@ -583,8 +597,20 @@
             <section class="arrange-group arrange-group--here">
               <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
               <ul class="arrange-list" data-arrange-list>
-                <li class="arrange-row" data-id="only">
+                <li class="arrange-row" data-id="trio-a">
                   <button type="button" class="arrange-row__label-btn" data-arrange-rename>Ship the landing page</button>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+                <li class="arrange-row" data-id="trio-b">
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Morning focus blocks</button>
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </button>
+                </li>
+                <li class="arrange-row" data-id="trio-c">
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Prep investor deck</button>
                   <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
@@ -617,6 +643,29 @@
           return row.closest("[data-arrange-list]");
         }
 
+        function rowLabelEl(row) {
+          return row.querySelector(".arrange-row__label-btn, .arrange-row__input, .arrange-row__label");
+        }
+
+        function syncNextTag() {
+          root.querySelectorAll(".arrange-row__next").forEach(function (el) {
+            el.remove();
+          });
+          var stage1List = root.querySelector(".arrange-group--here [data-arrange-list]");
+          if (!stage1List) return;
+          var first = stage1List.querySelector(".arrange-row");
+          if (!first) return;
+          var tag = document.createElement("span");
+          tag.className = "arrange-row__next";
+          tag.textContent = "Next";
+          var label = rowLabelEl(first);
+          if (label) {
+            first.insertBefore(tag, label);
+          } else {
+            first.insertBefore(tag, first.firstChild);
+          }
+        }
+
         function clearDropUi() {
           if (dropLine.parentNode) dropLine.parentNode.removeChild(dropLine);
           dropLine.classList.add("is-hidden");
@@ -647,6 +696,7 @@
           btn.setAttribute("data-arrange-rename", "");
           btn.textContent = text;
           input.replaceWith(btn);
+          syncNextTag();
         }
 
         function beginEdit(row) {
@@ -766,10 +816,13 @@
           if (!active) return;
           if (dropLine.parentNode && !dropLine.classList.contains("is-hidden")) {
             dropLine.parentNode.insertBefore(active.row, dropLine);
+            syncNextTag();
             showSaved();
           }
           clearDropUi();
         }
+
+        syncNextTag();
 
         root.addEventListener("pointerdown", onPointerDown);
         window.addEventListener("pointermove", onPointerMove);
