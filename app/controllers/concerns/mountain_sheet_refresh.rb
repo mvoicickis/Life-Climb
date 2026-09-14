@@ -45,6 +45,27 @@ module MountainSheetRefresh
 
     @trail = Strategy::Trail.for(plan: @plan)
     @all_projects = helpers.mountain_trail_all_projects(@trail)
+    assign_mountain_dock_card!
+  end
+
+  def assign_mountain_dock_card!
+    return if @plan.blank?
+
+    @dock_projects = helpers.mountain_trail_open_camps(@plan)
+    base_due = helpers.mountain_trail_base_due_battles(@dock_projects)
+    today_battles = if @goal.present?
+      Strategy::Progress.battles_under(@goal).select { |battle| battle.scheduled_on == Date.current }
+    else
+      []
+    end
+    won_today = today_battles.count { |battle| battle.completed_at.present? }
+    @dock_today_card = helpers.mountain_trail_dock_card(
+      projects: @dock_projects,
+      open_battles: base_due,
+      won_today: won_today,
+      journey: @journey,
+      user: current_user
+    )
   end
 
   def mountain_goal_matches_journey?(goal, journey)

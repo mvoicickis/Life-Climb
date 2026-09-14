@@ -1,34 +1,34 @@
-<%# Pinned Base camp hut above the tab bar. locals: today_card, journey, projects %>
+<%# Pinned dock above the tab bar. locals: today_card, journey, projects %>
 <% today_card = local_assigns.fetch(:today_card) %>
 <% journey = local_assigns[:journey] || @journey %>
 <% projects = local_assigns[:projects] || [] %>
 <% mode = today_card[:mode].to_s %>
 <% plant_mode = mode.start_with?("plant") %>
 <% pills = mountain_trail_base_pills(journey: journey, projects: projects) %>
-<% hut_title = plant_mode || mode == "cheer" ? today_card[:headline] : t("strategy.rpg.trail.base_camp.title") %>
+<% main_camp_id = today_card[:camp_id].presence || mountain_trail_current_project(projects)&.id %>
+<% dock_main_action =
+     if plant_mode
+       "click->trail-canvas#openComposerFromFab"
+     elsif mode.in?(%w[basics win_next])
+       "click->trail-camp-sheet#openBase"
+     elsif main_camp_id.present?
+       "click->trail-camp-sheet#openFromDock"
+     else
+       "click->trail-camp-sheet#openBase"
+     end %>
+<% base_open_action = "click->trail-camp-sheet#openBase click->trail-dock#stopBubble" %>
+<% base_open_label = t("strategy.rpg.trail.base_camp.kicker") %>
 
-<div class="lp-trail__dock" data-trail-ignore>
-  <% if plant_mode %>
-    <button type="button"
-            class="lp-trail-base-card is-<%= mode.tr('_', '-') %>"
-            data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
-            data-action="click->trail-canvas#openComposerFromFab">
-      <%= render "life_journeys/trail_base_card_inner",
-            today_card: today_card,
-            hut_title: hut_title,
-            pills: pills,
-            plant_mode: plant_mode %>
-    </button>
-  <% else %>
-    <button type="button"
-            class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %>"
-            data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
-            data-action="click->trail-camp-sheet#openBase">
-      <%= render "life_journeys/trail_base_card_inner",
-            today_card: today_card,
-            hut_title: hut_title,
-            pills: pills,
-            plant_mode: plant_mode %>
-    </button>
-  <% end %>
+<div id="trail-dock" class="lp-trail__dock" data-trail-ignore data-controller="trail-dock">
+  <div class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %> <%= 'has-battle-tick' if today_card[:battle].present? %> <%= 'has-peek' if pills[:items].any? %>"
+       data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>">
+    <%= render "life_journeys/trail_base_card_inner",
+          today_card: today_card,
+          pills: pills,
+          plant_mode: plant_mode,
+          dock_main_action: dock_main_action,
+          base_open_action: base_open_action,
+          base_open_label: base_open_label,
+          camp_id: main_camp_id %>
+  </div>
 </div>

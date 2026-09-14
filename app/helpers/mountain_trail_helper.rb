@@ -952,6 +952,95 @@ module MountainTrailHelper
     mountain_trail_pick_by_stage(idle)
   end
 
+  # Next open camp-sheet battle at the open stage (lowest stage with incomplete days).
+  def mountain_trail_dock_next_battle(projects:, user: nil)
+    camp = mountain_trail_current_project(Array(projects))
+    return nil if camp.blank?
+
+    open = mountain_trail_dock_open_battles(camp, user: user)
+    battle = open.first
+    return nil if battle.blank?
+
+    { battle: battle, camp: camp }
+  end
+
+  # Dock card: camp fight first, then quiet forward CTAs (no cheer / win counts on Mountain).
+  def mountain_trail_dock_card(projects: [], open_battles: [], won_today: 0, journey: nil, user: nil)
+    camps = Array(projects)
+    viewer = user || mountain_trail_viewer
+
+    if camps.any? && viewer.present?
+      all_days = camps.flat_map { |project| mountain_trail_camp_days(project) }
+      mountain_trail_preload_done_today!(viewer, all_days)
+    end
+
+    dock_next = mountain_trail_dock_next_battle(projects: camps, user: viewer)
+    if dock_next
+      battle = dock_next[:battle]
+      camp = dock_next[:camp]
+      return meadow_plaque(
+        mode: "battle",
+        headline: battle.title.to_s,
+        sub: I18n.t("strategy.rpg.trail.today_card.add_sub", camp: camp.title),
+        busy: true,
+        camp_id: camp.id,
+        battle: battle,
+        camp: camp
+      )
+    end
+
+    if camps.empty?
+      return meadow_plaque(
+        mode: "plant_first",
+        headline: I18n.t("strategy.rpg.trail.today_card.plant_first_headline"),
+        sub: I18n.t("strategy.rpg.trail.today_card.plant_first_sub")
+      )
+    end
+
+    waiting = Array(open_battles).select { |battle| battle.try(:completed_at).blank? }
+    if waiting.any?
+      return meadow_plaque(
+        mode: "win_next",
+        headline: I18n.t("strategy.rpg.trail.today_card.win_headline", count: waiting.size),
+        sub: "",
+        count: waiting.size,
+        busy: true
+      )
+    end
+
+    if journey.present? && viewer.present? &&
+         mountain_trail_base_habits(journey: journey, user: viewer).any?
+      return meadow_plaque(
+        mode: "basics",
+        headline: I18n.t("strategy.rpg.trail.base_camp.title"),
+        sub: I18n.t("strategy.rpg.trail.today_card.basics_sub"),
+        busy: true
+      )
+    end
+
+    idle = mountain_trail_idle_camp(camps)
+    if idle
+      return meadow_plaque(
+        mode: "add_battle",
+        headline: I18n.t("strategy.rpg.trail.today_card.add_headline"),
+        sub: I18n.t("strategy.rpg.trail.today_card.add_sub", camp: idle.title),
+        busy: true,
+        camp_id: idle.id,
+        camp: idle
+      )
+    end
+
+    if won_today.to_i.positive?
+      return mountain_trail_dock_forward_plaque(camps)
+    end
+
+    meadow_plaque(
+      mode: "plant_next",
+      headline: I18n.t("strategy.rpg.trail.today_card.plant_next_headline"),
+      sub: I18n.t("strategy.rpg.trail.today_card.plant_next_sub")
+    )
+  end
+
   # Meadow plaque: one next step, or a short win.
   # open_battles: due daily rows (mountain_trail_base_due_battles), not @today_battles.
   def mountain_trail_today_card(projects: [], open_battles: [], won_today: 0, journey: nil, user: nil)
@@ -1015,10 +1104,55 @@ module MountainTrailHelper
     )
   end
 
-  def meadow_plaque(mode:, headline:, sub:, count: 0, badge: false, busy: false, camp_id: nil)
-    { mode: mode, headline: headline, sub: sub, count: count, badge: badge, busy: busy, camp_id: camp_id }
+  def meadow_plaque(mode:, headline:, sub:, count: 0, badge: false, busy: false, camp_id: nil, battle: nil, camp: nil)
+    {
+      mode: mode, headline: headline, sub: sub, count: count, badge: badge, busy: busy,
+      camp_id: camp_id, battle: battle, camp: camp
+    }
   end
-  private :meadow_plaque
+
+  def mountain_trail_dock_open_battles(camp, user: nil)
+    viewer = user || mountain_trail_viewer
+    days = mountain_trail_camp_days(camp).sort_by { |day|
+      [
+        mountain_trail_done_today?(day, user: viewer) ? 1 : 0,
+        day.scheduled_on || Date.new(9999),
+        day.position.to_i,
+        day.id
+      ]
+    }
+    days.select { |day| mountain_trail_camp_due?(day) }
+      .reject { |day| mountain_trail_done_today?(day, user: viewer) }
+  end
+  private :mountain_trail_dock_open_battles
+
+  def mountain_trail_dock_forward_plaque(camps)
+    camp = mountain_trail_next_camp(camps) || mountain_trail_idle_camp(camps) || mountain_trail_focus_camp(camps)
+    if camp.blank?
+      return meadow_plaque(
+        mode: "plant_next",
+        headline: I18n.t("strategy.rpg.trail.today_card.plant_next_headline"),
+        sub: I18n.t("strategy.rpg.trail.today_card.plant_next_sub")
+      )
+    end
+
+    days = mountain_trail_camp_days(camp)
+    headline = if days.empty?
+      I18n.t("strategy.rpg.trail.today_card.add_headline")
+    else
+      camp.title.to_s
+    end
+
+    meadow_plaque(
+      mode: "forward",
+      headline: headline,
+      sub: I18n.t("strategy.rpg.trail.today_card.add_sub", camp: camp.title),
+      busy: true,
+      camp_id: camp.id,
+      camp: camp
+    )
+  end
+  private :mountain_trail_dock_forward_plaque, :meadow_plaque
 
   def mountain_trail_peak_tagline(goal)
     goal&.description.to_s.strip.presence ||

@@ -23,6 +23,7 @@
   <% end %>
   <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <%= render "life_journeys/trail_climber_stream" %>
+  <%= render "life_journeys/trail_dock_stream" %>
 <% else %>
   <%= turbo_stream.replace "trail-battle-#{@battle.id}" do %>
     <%= render "life_journeys/trail_battle_row", battle: @battle %>
@@ -38,4 +39,5 @@
       <% end %>
     <% end %>
   <% end %>
+  <%= render "life_journeys/trail_dock_stream" if @dock_today_card.present? %>
 <% end %>
