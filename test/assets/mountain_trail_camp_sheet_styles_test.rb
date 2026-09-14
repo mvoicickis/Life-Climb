@@ -33,4 +33,40 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert_includes @tokens, "@supports not (backdrop-filter: blur(1px))"
     assert_includes @tokens, ".lp-frost"
   end
+
+  test "terraced map chrome scale is decoupled from photo zoom" do
+    terraced = @css[/\.lp-trail\.is-terraced\s*\{[^}]+\}/m]
+    assert terraced, "expected .lp-trail.is-terraced root block"
+    assert_includes terraced, "--map-zoom: 1"
+    assert_includes terraced, "--terrace-ui-scale: 0.9"
+    assert_includes terraced, "--lp-pill-h: calc(23px * var(--terrace-ui-scale))"
+    assert_includes terraced, "--lp-terrace-tap: var(--lp-tap"
+  end
+
+  test "terraced camp controls keep 44px tap targets with smaller drawn tents" do
+    fog_hit = @css[/\.lp-trail\.is-terraced \.trail-tent-hit\s*\{[^}]+\}/m]
+    assert fog_hit
+    assert_includes fog_hit, "min-width: var(--lp-terrace-tap)"
+    assert_includes fog_hit, "min-height: var(--lp-terrace-tap)"
+
+    fog_after = @css[/\.lp-trail\.is-terraced \.trail-tent-hit::after\s*\{[^}]+\}/m]
+    assert fog_after
+    assert_includes fog_after, "width: var(--lp-terrace-tap)"
+    refute_match(/terrace-ui-scale/, fog_after)
+
+    open_camp = @css[/\.lp-trail\.is-terraced \.trail-t2-camp\s*\{[^}]+\}/m]
+    assert open_camp
+    assert_includes open_camp, "min-width: var(--lp-terrace-tap)"
+    assert_includes open_camp, "min-height: var(--lp-terrace-tap)"
+  end
+
+  test "terraced map frost pills use lighter blur and shadow" do
+    assert_includes @css, "backdrop-filter: blur(6px)"
+    assert_includes @css, "box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05)"
+
+    current_caption = @css[/\.lp-trail\.is-terraced \.trail-t2-camp\.is-current \.lp-trail-camp__caption\s*\{[^}]+\}/m]
+    assert current_caption
+    assert_includes current_caption, "border: 1.5px solid"
+    refute_includes current_caption, "0 0 12px"
+  end
 end
