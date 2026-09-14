@@ -5721,7 +5721,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__nav {
   position: absolute;
   left: 50%;
-  bottom: calc(-1 * var(--lp-tent-open-h) - var(--lp-open-stage-lift) - 2.75rem);
+  /* Positive top from the 0×0 terrace anchor — negative bottom sat below t1 and was clipped by .lp-trail__map overflow. */
+  top: calc(var(--lp-gap-tent-name) + var(--lp-pill-h) + 0.35rem);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -5762,7 +5763,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-trail.is-terraced .trail-terrace.is-open .trail-terrace-camps__dots {
   position: absolute;
   left: 50%;
-  bottom: calc(-1 * var(--lp-tent-open-h) - var(--lp-open-stage-lift) - 4.5rem);
+  top: calc(var(--lp-gap-tent-name) + var(--lp-pill-h) + var(--lp-tap, 2.75rem) + 0.55rem);
   transform: translateX(-50%);
   pointer-events: none;
   z-index: 2;
