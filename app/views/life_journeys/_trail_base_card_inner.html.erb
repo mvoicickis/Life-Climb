@@ -32,7 +32,7 @@
     <% else %>
       <span class="lp-trail-base-card__kicker"><%= t("strategy.rpg.trail.base_camp.kicker") %></span>
     <% end %>
-    <span class="lp-trail-base-card__title"><%= today_card[:headline] %></span>
+    <span class="lp-trail-base-card__title" title="<%= today_card[:headline] %>"><%= today_card[:headline] %></span>
     <% if today_card[:sub].present? && !camp_kicker_modes.include?(mode) %>
       <span class="lp-trail-base-card__sub"><%= today_card[:sub] %></span>
     <% end %>
