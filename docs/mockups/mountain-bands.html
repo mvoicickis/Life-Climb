@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mountain terrace bands — mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-green-deep: #3dbd48;
+      --font: "Nunito", system-ui, sans-serif;
+      --phone-w: 360px;
+      --mtn-grass-back: #3a6e34;
+      --mtn-grass-mid: #528c42;
+      --mtn-grass-front: #8ec468;
+      --mtn-grass-lip: #2f5a28;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .doc {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .doc h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .doc__lede {
+      margin: 0 0 2rem;
+      font-size: 0.9rem;
+      color: var(--lp-muted);
+      max-width: 44rem;
+    }
+
+    .state-block { margin-bottom: 2.75rem; }
+
+    .state-block__label {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .state-block__title {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .state-block__note {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      max-width: 34rem;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: #8fbc6a;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.06),
+        0 24px 48px rgba(15, 23, 42, 0.12);
+    }
+
+    .phone__mountain {
+      position: relative;
+      width: 100%;
+      line-height: 0;
+    }
+
+    .phone__photo {
+      width: 100%;
+      height: auto;
+      display: block;
+      vertical-align: top;
+    }
+
+    .phone__overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .slope-haze {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--haze-height, 18%);
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(143, 188, 106, 0.12) 35%,
+        rgba(120, 160, 90, 0.38) 100%
+      );
+      z-index: 0;
+    }
+
+    .summit-cloud {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: var(--cloud-top, 6%);
+      height: 22%;
+      background: radial-gradient(
+        ellipse 90% 70% at 50% 60%,
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(210, 228, 200, 0.22) 45%,
+        transparent 72%
+      );
+      filter: blur(2px);
+      z-index: 6;
+    }
+
+    .band {
+      position: absolute;
+      left: var(--band-left);
+      width: var(--band-width);
+      top: var(--band-top);
+      height: var(--band-height);
+      transform: translateY(-100%);
+      z-index: var(--band-z, 1);
+      overflow: visible;
+    }
+
+    .band__shelf {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .band__fill {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      clip-path: polygon(
+        var(--tl-x) 0%,
+        var(--tr-x) 0%,
+        var(--br-x) var(--curve-mid-y),
+        50% var(--curve-bulge-y),
+        var(--bl-x) var(--curve-mid-y)
+      );
+      background:
+        radial-gradient(
+          ellipse 115% 95% at 50% 100%,
+          var(--grass-front) 0%,
+          var(--grass-mid) 52%,
+          var(--grass-back) 100%
+        );
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        #000 9%,
+        #000 91%,
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        #000 9%,
+        #000 91%,
+        transparent 100%
+      );
+      mix-blend-mode: multiply;
+      opacity: var(--band-fill-opacity, 0.92);
+    }
+
+    .band__lip {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 50%;
+      background: var(--lip-color);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.12),
+        0 3px 5px rgba(24, 48, 20, 0.35),
+        0 6px 10px rgba(24, 48, 20, 0.18);
+      opacity: var(--lip-opacity, 0.9);
+    }
+
+    .band__drop {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 100%;
+      height: 5px;
+      background: linear-gradient(
+        180deg,
+        rgba(35, 62, 28, 0.28) 0%,
+        transparent 100%
+      );
+      border-radius: 0 0 40% 40%;
+      opacity: var(--drop-opacity, 0.55);
+    }
+
+    .band--current .band__fill {
+      opacity: 0.98;
+      mix-blend-mode: multiply;
+    }
+
+    .band__deck {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.5rem;
+      z-index: 3;
+      transform: translateY(2px);
+    }
+
+    .band__deck--next {
+      opacity: 0.58;
+      filter: saturate(0.7);
+    }
+
+    .band-camps {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.65rem;
+    }
+
+    .tent-slot {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 0;
+    }
+
+    .tent {
+      width: var(--tent-w, 28px);
+      height: var(--tent-h, 24px);
+      flex-shrink: 0;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--tent-accent, #0f9488) 75%, #fff) 0%,
+        var(--tent-accent, #0f9488) 55%,
+        color-mix(in srgb, var(--tent-accent, #0f9488) 65%, #1a120c) 100%
+      );
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(1px 2px 3px rgba(12, 22, 14, 0.4));
+    }
+
+    .tent-pill {
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.1rem 0.42rem 0.12rem;
+      border-radius: 999px;
+      background: rgba(247, 239, 226, 0.96);
+      border: 1px solid rgba(90, 66, 40, 0.28);
+      box-shadow: 0 3px 8px rgba(18, 32, 26, 0.16);
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: #1a140c;
+      white-space: nowrap;
+      max-width: 5.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      z-index: 8;
+    }
+
+    .campfire {
+      position: relative;
+      width: 32px;
+      height: 30px;
+      flex-shrink: 0;
+      margin-right: 0.15rem;
+      margin-bottom: 1px;
+    }
+
+    .campfire__glow {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 26px;
+      height: 9px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255, 180, 60, 0.5), transparent 70%);
+    }
+
+    .campfire__flame {
+      position: absolute;
+      left: 50%;
+      bottom: 5px;
+      width: 14px;
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 45% 45%;
+      background: radial-gradient(ellipse at 50% 80%, #ffd166 0%, #f0730c 55%, #a33a06 100%);
+      box-shadow:
+        0 0 10px 4px rgba(255, 150, 50, 0.6),
+        0 0 18px 7px rgba(255, 120, 30, 0.28);
+      animation: flame-pulse 2.4s ease-in-out infinite;
+    }
+
+    .campfire__logs {
+      position: absolute;
+      left: 50%;
+      bottom: 3px;
+      width: 16px;
+      height: 4px;
+      transform: translateX(-50%);
+      border-radius: 2px;
+      background: linear-gradient(180deg, #5c3d24, #3d2818);
+    }
+
+    @keyframes flame-pulse {
+      0%, 100% { transform: translateX(-50%) scaleY(1); }
+      50% { transform: translateX(-50%) scaleY(1.06); }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>Mountain terrace bands</h1>
+    <p class="doc__lede">
+      Plain <code>mountain-plain-v1.webp</code> at 360px. Grass shelves tint the slope (lighter lip, darker back),
+      with soft ends and a front lip. Long climbs cap visible terraces and fade the rest into haze or summit cloud.
+    </p>
+
+    <section class="state-block" aria-labelledby="lbl-3">
+      <p class="state-block__label" id="lbl-3">Frame A</p>
+      <h2 class="state-block__title">3 stages — on stage 2</h2>
+      <p class="state-block__note">One finished shelf below, wide current band, softer next band at the top.</p>
+      <div class="phone" data-total="3" data-current="2"></div>
+    </section>
+
+    <section class="state-block" aria-labelledby="lbl-9">
+      <p class="state-block__label" id="lbl-9">Frame B</p>
+      <h2 class="state-block__title">9 stages — on stage 5</h2>
+      <p class="state-block__note">Finished terraces stack below; thin future bands crowd toward the peak.</p>
+      <div class="phone" data-total="9" data-current="5"></div>
+    </section>
+
+    <section class="state-block" aria-labelledby="lbl-20">
+      <p class="state-block__label" id="lbl-20">Frame C</p>
+      <h2 class="state-block__title">20 stages — on stage 12</h2>
+      <p class="state-block__note">At most four finished and eight future shelves drawn; the rest dissolve into haze and summit cloud.</p>
+      <div class="phone" data-total="20" data-current="12" data-cap-bands="true"></div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var IMG = "../../app/assets/images/mountain-plain-v1.webp";
+
+      var SILHOUETTE = [
+        [0.06, 0.472, 0.528],
+        [0.14, 0.405, 0.595],
+        [0.24, 0.335, 0.665],
+        [0.34, 0.268, 0.732],
+        [0.44, 0.208, 0.792],
+        [0.54, 0.158, 0.842],
+        [0.64, 0.118, 0.882],
+        [0.74, 0.082, 0.918],
+        [0.84, 0.052, 0.948],
+        [0.94, 0.028, 0.972],
+        [1.0, 0.012, 0.988]
+      ];
+
+      var Y_MIN = 0.2;
+      var Y_MAX = 0.93;
+      var COMPRESS = 1.42;
+      var MAX_FINISHED = 4;
+      var MAX_BEYOND = 8;
+
+      var TENT_NAMES = [
+        ["Morning run", "Read 20 min"],
+        ["Inbox zero", "Stretch"],
+        ["Deep work", "Walk"]
+      ];
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function silhouetteAt(y) {
+        if (y <= SILHOUETTE[0][0]) return { left: SILHOUETTE[0][1], right: SILHOUETTE[0][2] };
+        for (var i = 1; i < SILHOUETTE.length; i++) {
+          var row = SILHOUETTE[i];
+          var prev = SILHOUETTE[i - 1];
+          if (y <= row[0]) {
+            var t = (y - prev[0]) / (row[0] - prev[0]);
+            return {
+              left: lerp(prev[1], row[1], t),
+              right: lerp(prev[2], row[2], t)
+            };
+          }
+        }
+        var last = SILHOUETTE[SILHOUETTE.length - 1];
+        return { left: last[1], right: last[2] };
+      }
+
+      function stageYFrac(index, total) {
+        if (total <= 1) return Y_MAX;
+        var t = (index - 1) / (total - 1);
+        return Y_MAX - (Y_MAX - Y_MIN) * Math.pow(t, COMPRESS);
+      }
+
+      function bandMetrics(role, total) {
+        var scale = total <= 4 ? 1 : total <= 12 ? 0.82 : 0.62;
+        switch (role) {
+          case "current":
+            return { heightPct: 0.052 * scale, strength: 1, z: 5 };
+          case "next":
+            return { heightPct: 0.034 * scale, strength: 0.82, z: 4 };
+          case "finished":
+            return { heightPct: 0.026 * scale, strength: 0.5, z: 2 };
+          default:
+            return {
+              heightPct: (0.014 + 0.008 * scale) * (0.55 + 0.45 * (1 - role.rank / Math.max(total, 1))),
+              strength: Math.max(0.22, 0.62 - role.rank * 0.05),
+              z: 1
+            };
+        }
+      }
+
+      function grassStops(strength) {
+        var s = Math.max(0.15, Math.min(1, strength));
+        function tint(hex, lighten) {
+          var r = parseInt(hex.slice(1, 3), 16);
+          var g = parseInt(hex.slice(3, 5), 16);
+          var b = parseInt(hex.slice(5, 7), 16);
+          return "rgb(" +
+            Math.round(lerp(r, 255, lighten * 0.08)) + ", " +
+            Math.round(lerp(g, 255, lighten * 0.06)) + ", " +
+            Math.round(lerp(b, 255, lighten * 0.04)) + ")";
+        }
+        return {
+          front: tint("#8ec468", 0.15 * s),
+          mid: tint("#528c42", 0.05 * s),
+          back: tint("#3a6e34", 0),
+          lip: tint("#2f5a28", 0),
+          fillOpacity: 0.35 + s * 0.55,
+          lipOpacity: 0.45 + s * 0.5,
+          dropOpacity: 0.25 + s * 0.45
+        };
+      }
+
+      function toLocalX(xGlobal, boxLeft, boxWidth) {
+        if (boxWidth <= 0.0001) return 50;
+        return ((xGlobal - boxLeft) / boxWidth) * 100;
+      }
+
+      function trapezoidVars(yTop, yBottom) {
+        var top = silhouetteAt(yTop);
+        var bottom = silhouetteAt(yBottom);
+        var boxLeft = bottom.left;
+        var boxWidth = bottom.right - bottom.left;
+        return {
+          "--tl-x": toLocalX(top.left, boxLeft, boxWidth) + "%",
+          "--tr-x": toLocalX(top.right, boxLeft, boxWidth) + "%",
+          left: boxLeft * 100,
+          width: boxWidth * 100
+        };
+      }
+
+      function stagesToRender(total, current, capBands) {
+        var list = [];
+        var finStart = capBands ? Math.max(1, current - MAX_FINISHED) : 1;
+        var beyondEnd = capBands ? Math.min(total, current + MAX_BEYOND) : total;
+
+        for (var s = finStart; s <= total; s++) {
+          if (s < current) {
+            list.push({ stage: s, role: "finished" });
+          } else if (s === current) {
+            list.push({ stage: s, role: "current" });
+          } else if (s === current + 1) {
+            list.push({ stage: s, role: "next" });
+          } else if (s <= beyondEnd) {
+            list.push({ stage: s, role: "beyond", rank: s - current - 1 });
+          }
+        }
+
+        return {
+          bands: list,
+          hazeBelow: capBands && finStart > 1,
+          cloudAbove: capBands && beyondEnd < total,
+          hazeHeight: capBands ? Math.min(28, 10 + (finStart - 1) * 2.2) : 0
+        };
+      }
+
+      function makeTent(name, accent, small) {
+        var slot = document.createElement("div");
+        slot.className = "tent-slot";
+        var tent = document.createElement("div");
+        tent.className = "tent";
+        tent.style.setProperty("--tent-accent", accent);
+        if (small) {
+          tent.style.setProperty("--tent-w", "22px");
+          tent.style.setProperty("--tent-h", "19px");
+        }
+        var pill = document.createElement("span");
+        pill.className = "tent-pill";
+        pill.textContent = name;
+        slot.appendChild(tent);
+        slot.appendChild(pill);
+        return slot;
+      }
+
+      function makeCampfire() {
+        var fire = document.createElement("div");
+        fire.className = "campfire";
+        fire.innerHTML =
+          '<div class="campfire__glow" aria-hidden="true"></div>' +
+          '<div class="campfire__logs" aria-hidden="true"></div>' +
+          '<div class="campfire__flame" aria-hidden="true"></div>';
+        return fire;
+      }
+
+      function renderPhone(phone, total, current) {
+        var capBands = phone.getAttribute("data-cap-bands") === "true";
+        phone.innerHTML = "";
+        var mountain = document.createElement("div");
+        mountain.className = "phone__mountain";
+
+        var img = document.createElement("img");
+        img.className = "phone__photo";
+        img.src = IMG;
+        img.alt = "";
+        img.decoding = "async";
+        img.width = 1092;
+        img.height = 1440;
+
+        var overlay = document.createElement("div");
+        overlay.className = "phone__overlay";
+
+        mountain.appendChild(img);
+        mountain.appendChild(overlay);
+        phone.appendChild(mountain);
+
+        var plan = stagesToRender(total, current, capBands);
+
+        if (plan.hazeBelow) {
+          var haze = document.createElement("div");
+          haze.className = "slope-haze";
+          haze.style.setProperty("--haze-height", plan.hazeHeight + "%");
+          overlay.appendChild(haze);
+        }
+
+        if (plan.cloudAbove) {
+          var cloud = document.createElement("div");
+          cloud.className = "summit-cloud";
+          cloud.style.setProperty("--cloud-top", "5%");
+          overlay.appendChild(cloud);
+        }
+
+        plan.bands.forEach(function (band) {
+          var y = stageYFrac(band.stage, total);
+          var m = band.role === "beyond"
+            ? bandMetrics({ rank: band.rank }, total)
+            : bandMetrics(band.role, total);
+          var heightFrac = m.heightPct;
+          var yBottom = y;
+          var yTop = Math.max(Y_MIN - 0.02, yBottom - heightFrac);
+          var trap = trapezoidVars(yTop, yBottom);
+          var grass = grassStops(m.strength);
+
+          var el = document.createElement("div");
+          el.className = "band band--" + band.role;
+          el.style.setProperty("--band-left", trap.left + "%");
+          el.style.setProperty("--band-width", trap.width + "%");
+          el.style.setProperty("--band-top", (yBottom * 100) + "%");
+          el.style.setProperty("--band-height", (heightFrac * 100) + "%");
+          el.style.setProperty("--band-z", String(m.z));
+          el.style.setProperty("--grass-front", grass.front);
+          el.style.setProperty("--grass-mid", grass.mid);
+          el.style.setProperty("--grass-back", grass.back);
+          el.style.setProperty("--lip-color", grass.lip);
+          el.style.setProperty("--band-fill-opacity", String(grass.fillOpacity));
+          el.style.setProperty("--lip-opacity", String(grass.lipOpacity));
+          el.style.setProperty("--drop-opacity", String(grass.dropOpacity));
+          el.style.setProperty("--tl-x", trap["--tl-x"]);
+          el.style.setProperty("--tr-x", trap["--tr-x"]);
+          el.style.setProperty("--curve-mid-y", "96%");
+          el.style.setProperty("--curve-bulge-y", "104%");
+
+          var shelf = document.createElement("div");
+          shelf.className = "band__shelf";
+          shelf.innerHTML =
+            '<div class="band__fill"></div>' +
+            '<div class="band__lip" aria-hidden="true"></div>' +
+            '<div class="band__drop" aria-hidden="true"></div>';
+          el.appendChild(shelf);
+
+          if (band.role === "current") {
+            var deck = document.createElement("div");
+            deck.className = "band__deck";
+            deck.appendChild(makeCampfire());
+            var camps = document.createElement("div");
+            camps.className = "band-camps";
+            var names = TENT_NAMES[(current - 1) % TENT_NAMES.length];
+            camps.appendChild(makeTent(names[0], "#0f9488", false));
+            camps.appendChild(makeTent(names[1], "#e8590c", false));
+            deck.appendChild(camps);
+            el.appendChild(deck);
+          } else if (band.role === "next") {
+            var nextDeck = document.createElement("div");
+            nextDeck.className = "band__deck band__deck--next";
+            var nextCamps = document.createElement("div");
+            nextCamps.className = "band-camps";
+            nextCamps.appendChild(makeTent("Next camp", "#4c6ef5", true));
+            nextDeck.appendChild(nextCamps);
+            el.appendChild(nextDeck);
+          }
+
+          overlay.appendChild(el);
+        });
+      }
+
+      document.querySelectorAll(".phone[data-total]").forEach(function (phone) {
+        renderPhone(
+          phone,
+          parseInt(phone.getAttribute("data-total"), 10),
+          parseInt(phone.getAttribute("data-current"), 10)
+        );
+      });
+    })();
+  </script>
+</body>
+</html>

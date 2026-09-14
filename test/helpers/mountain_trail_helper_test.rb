@@ -866,7 +866,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal [ "delay_ms", "id", "slot_index", "terrace_index" ], parsed.first.keys.sort
   end
 
-  test "terrace window shows open stage and range badge for nine camps with none finished" do
+  test "terrace window shows open stage and fog tents on t4 for nine camps with none finished" do
     camps = (0...9).map do |stage|
       Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
         id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
@@ -882,7 +882,10 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal :later, groups[2][:state]
     assert_equal 1, groups[2][:stage]
     assert_equal :range, groups[3][:state]
-    assert_equal "3–9", groups[3][:range_label]
+    assert_equal 2, groups[3][:stage]
+    assert_nil groups[3][:range_label]
+    assert_equal [ 3, 4, 5 ], groups[3][:camps].map(&:id)
+    assert_equal 4, groups[3][:overflow]
     assert_equal "Stages 3 to 9, 7 stages", mountain_trail_terrace_range_aria_label(groups[3])
     range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
     assert_equal 7, range_camps.size
