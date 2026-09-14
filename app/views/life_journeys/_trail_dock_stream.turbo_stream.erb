@@ -1,0 +1,6 @@
+<%= turbo_stream.replace "trail-dock" do %>
+  <%= render "life_journeys/trail_dock",
+        today_card: @dock_today_card,
+        journey: @journey,
+        projects: @dock_projects %>
+<% end %>

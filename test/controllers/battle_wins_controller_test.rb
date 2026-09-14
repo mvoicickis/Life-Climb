@@ -140,6 +140,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "trail-toast-host", response.body
     assert_no_match(/Won “/, response.body)
     assert_match %(action="replace" target="trail-climber"), response.body
+    assert_match %(action="replace" target="trail-dock"), response.body
     assert @battle.reload.completed?
   end
 
@@ -171,7 +172,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
 
     assert_response :ok
-    assert_match %(action="remove" target="trail-battle-#{@battle.id}"), response.body
+    assert_match %(action="replace" target="trail-dock"), response.body
     assert_match "trail-battles-done-list-#{@project.id}", response.body
     assert_match /id="trail-battles-done-slot-#{@project.id}"[^>]*has-won-today/, response.body
     assert_no_match /id="trail-battles-done-slot-#{@project.id}"[^>]*\shidden/, response.body

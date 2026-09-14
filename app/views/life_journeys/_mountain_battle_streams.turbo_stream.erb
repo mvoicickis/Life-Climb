@@ -16,3 +16,4 @@
         journey: @journey %>
 <% end %>
 <%= render "life_journeys/trail_climber_stream" %>
+<%= render "life_journeys/trail_dock_stream" if @dock_today_card.present? %>
