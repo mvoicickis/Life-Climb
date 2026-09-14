@@ -461,13 +461,30 @@ module MountainTrailHelper
     I18n.t("strategy.rpg.trail.terrace.range_aria", from: from, to: to, count: count)
   end
 
-  # T4 range badge: one stage number, or stage-span count when multiple camps sit above.
-  def mountain_trail_terrace_range_badge_num(projects, terrace)
-    stage_span = terrace[:range_to].to_i - terrace[:range_from].to_i + 1
-    range_camps = mountain_trail_terrace_range_camps(projects, terrace[:range_from], terrace[:range_to])
-    return mountain_trail_stage_label(terrace[:range_from]) if range_camps.size <= 1
+  def mountain_trail_terrace_next_label(terrace)
+    return unless terrace[:state] == :later && terrace[:stage].present?
 
-    stage_span
+    I18n.t(
+      "strategy.rpg.trail.terrace.next_label",
+      stage: mountain_trail_stage_label(terrace[:stage])
+    )
+  end
+
+  # Stages in a T4 range beyond the first (for "N more stages" under the fog tent).
+  def mountain_trail_terrace_range_extra_stages_count(terrace)
+    return unless terrace[:state] == :range && terrace[:range_from] && terrace[:range_to]
+
+    span = terrace[:range_to].to_i - terrace[:range_from].to_i + 1
+    return if span <= 1
+
+    span - 1
+  end
+
+  def mountain_trail_terrace_range_extra_stages_label(terrace)
+    extra = mountain_trail_terrace_range_extra_stages_count(terrace)
+    return if extra.nil?
+
+    I18n.t("strategy.rpg.trail.terrace.later_stages_more", count: extra)
   end
 
   def mountain_trail_terrace_overflow_aria_label(terrace)
@@ -521,22 +538,6 @@ module MountainTrailHelper
   # Horizontal delta from terrace centre to stage badge (x_left + inset).
   def mountain_trail_terrace_badge_dx(terrace)
     terrace[:anchor][:x_left] - terrace[:anchor][:x] + TERRACE_BADGE_INSET
-  end
-
-  # Image-height fraction from this terrace lip down to the next lower lip.
-  def mountain_trail_terrace_badge_gap_y(terrace)
-    lower = TERRACE_ANCHORS[terrace[:index].to_i - 1]
-    return unless lower && terrace[:anchor]
-
-    lower[:y] - terrace[:anchor][:y]
-  end
-
-  # Same gap as a world-width fraction (cqw), since badge `top` cannot use %.
-  def mountain_trail_terrace_badge_gap_cqw(terrace)
-    gap_y = mountain_trail_terrace_badge_gap_y(terrace)
-    return unless gap_y
-
-    gap_y * MAP_ASPECT_HEIGHT / MAP_ASPECT_WIDTH
   end
 
   def mountain_trail_terrace_slot(_camp, terrace, index_in_terrace)

@@ -835,7 +835,10 @@ en:
         plant_submit: "Plant camp"
         terrace:
           open_label: "Stage %{stage} · open now"
-          stage_aria: "Stage %{stage}, %{state}"
+          next_label: "Stage %{stage} · next"
+          later_stages_more:
+            one: "%{count} more stage"
+            other: "%{count} more stages"
           range_aria: "Stages %{from} to %{to}, %{count} stages"
           overflow_aria: "Stage %{stage}, %{count} more camps"
           overflow_sheet_title: "Stage %{stage}"
