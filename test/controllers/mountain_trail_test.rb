@@ -767,9 +767,11 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-trail-base-card.is-basics"
+    assert_select ".lp-trail-base-card.is-add-battle"
+    assert_select ".lp-trail-base-card.has-peek"
     assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
-    assert_select ".lp-trail-base-card__main[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
+    assert_select ".lp-trail-base-card__main[data-action*='openBase']", count: 0
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
     assert_select "#trail-sheet-camp-base"
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
