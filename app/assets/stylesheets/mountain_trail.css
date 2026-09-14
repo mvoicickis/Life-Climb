@@ -2686,6 +2686,17 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   grid-template-areas:
     "fire main tick"
     "peek peek peek";
+  grid-template-columns: auto minmax(0, 1fr) var(--lp-tap, 2.75rem);
+}
+
+.lp-trail-base-card.has-battle-tick .lp-trail-base-card__main {
+  max-width: 100%;
+  overflow: hidden;
+  contain: inline-size;
+}
+
+.lp-trail-base-card.has-battle-tick .lp-trail-base-card__copy {
+  max-width: 100%;
 }
 
 .lp-trail-base-card:not(.has-peek) {
@@ -2735,6 +2746,9 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   height: var(--lp-tap, 2.75rem);
   min-width: var(--lp-tap, 2.75rem);
   min-height: var(--lp-tap, 2.75rem);
+  max-width: var(--lp-tap, 2.75rem);
+  overflow: hidden;
+  z-index: 1;
 }
 
 .lp-trail-base-card__tick-slot .lp-trail-battles__tick-form {

@@ -5,7 +5,7 @@
 <% mode = today_card[:mode].to_s %>
 <% plant_mode = mode.start_with?("plant") %>
 <% pills = mountain_trail_base_pills(journey: journey, projects: projects) %>
-<% main_camp_id = today_card[:camp_id].presence || mountain_trail_current_project(projects)&.id %>
+<% main_camp_id = today_card[:camp_id].presence || mountain_trail_dock_open_stage_camp(projects)&.id %>
 <% dock_main_action =
      if plant_mode
        "click->trail-canvas#openComposerFromFab"
