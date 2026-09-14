@@ -769,7 +769,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail-base-card.is-basics"
     assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
-    assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
+    assert_select ".lp-trail-base-card__main[data-action*='openBase']"
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
     assert_select "#trail-sheet-camp-base"
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
