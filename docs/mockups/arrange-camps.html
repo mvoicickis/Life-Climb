@@ -178,12 +178,12 @@
     }
 
     .arrange-group + .arrange-group {
-      margin-top: 0.35rem;
+      margin-top: 0.5rem;
     }
 
     .arrange-group__heading {
       margin: 0;
-      padding: 0.85rem 1rem 0.45rem;
+      padding: 1.35rem 1rem 0.45rem;
       font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 0.04em;
@@ -199,12 +199,13 @@
       list-style: none;
       margin: 0;
       padding: 0;
+      margin-left: 0.65rem;
+      border-left: 3px solid color-mix(in srgb, var(--lp-muted) 42%, var(--lp-border));
+      border-radius: 0;
     }
 
     .arrange-group--here .arrange-list {
-      margin-left: 0.65rem;
-      border-left: 3px solid var(--lp-green);
-      border-radius: 0;
+      border-left-color: var(--lp-green);
     }
 
     .arrange-row {
@@ -231,13 +232,49 @@
       border-bottom: 0;
     }
 
-    .arrange-row__label {
+    .arrange-row__label,
+    .arrange-row__label-btn {
       flex: 1 1 auto;
       min-width: 0;
       font-size: 0.95rem;
       font-weight: 700;
       color: var(--lp-ink);
       overflow-wrap: anywhere;
+    }
+
+    .arrange-row__label-btn {
+      margin: 0;
+      padding: 0.35rem 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 0.35rem;
+    }
+
+    .arrange-row__input {
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 2.25rem;
+      margin: 0;
+      padding: 0.35rem 0.55rem;
+      border: 2px solid var(--lp-green);
+      border-radius: 0.5rem;
+      background: var(--lp-surface);
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--lp-ink);
+    }
+
+    .arrange-row--editing {
+      touch-action: auto;
+    }
+
+    .arrange-row--editing .arrange-row__handle {
+      pointer-events: none;
+      opacity: 0.45;
     }
 
     .arrange-row__handle {
@@ -337,12 +374,12 @@
       position: absolute;
       left: 0.65rem;
       right: 0.65rem;
-      top: 7.15rem;
-      z-index: 4;
+      top: 5.78rem;
+      z-index: 5;
       border-radius: 0.75rem;
       border: 1px solid color-mix(in srgb, var(--lp-green) 40%, var(--lp-border));
       box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
-      transform: scale(1.02);
+      transform: scale(1.01);
     }
 
     .drag-demo__lifted.arrange-row {
@@ -357,11 +394,11 @@
       position: absolute;
       left: 1rem;
       right: 1rem;
-      top: 6.55rem;
+      top: 5.72rem;
       height: 0;
       border-top: 3px solid var(--lp-green);
       border-radius: var(--lp-radius-pill);
-      z-index: 3;
+      z-index: 4;
       pointer-events: none;
     }
 
@@ -381,10 +418,10 @@
 <body>
   <div class="doc">
     <h1>Arrange camps</h1>
-    <p class="doc__lede">360px. Drag up to prioritize; order saves on drop. Stage 1 is highlighted with a green rail.</p>
+    <p class="doc__lede">360px. Drag up to prioritize; order saves on drop. Tap a name to rename in place. Stage 1 uses a green rail; later stages use grey.</p>
 
     <section class="doc__block" aria-labelledby="label-default">
-      <p class="doc__label" id="label-default">1 — Default list (interactive)</p>
+      <p class="doc__label" id="label-default">1 — List, rename, and reorder</p>
       <div class="phone phone--interactive" id="phone-interactive">
         <div class="arrange" data-arrange-live>
           <header class="arrange__top">
@@ -404,14 +441,15 @@
               <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
               <ul class="arrange-list" data-arrange-list>
                 <li class="arrange-row" data-id="ship">
-                  <span class="arrange-row__label">Ship the landing page</span>
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Ship the landing page</button>
                   <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
                 </li>
-                <li class="arrange-row" data-id="morning">
-                  <span class="arrange-row__label">Morning focus blocks</span>
-                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
+                <li class="arrange-row arrange-row--editing" data-id="morning" data-arrange-static-edit>
+                  <label class="sr-only" for="arrange-edit-morning">Camp name</label>
+                  <input id="arrange-edit-morning" class="arrange-row__input" type="text" value="Morning focus blocks" autocomplete="off">
+                  <button type="button" class="arrange-row__handle" aria-label="Drag to reorder" tabindex="-1">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
                 </li>
@@ -421,13 +459,13 @@
               <h2 class="arrange-group__heading">Stage 2</h2>
               <ul class="arrange-list" data-arrange-list>
                 <li class="arrange-row" data-id="spanish">
-                  <span class="arrange-row__label">Spanish practice</span>
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Spanish practice</button>
                   <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
                 </li>
                 <li class="arrange-row" data-id="gym">
-                  <span class="arrange-row__label">Gym three times a week</span>
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Gym three times a week</button>
                   <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
@@ -438,7 +476,7 @@
               <h2 class="arrange-group__heading">Stage 3</h2>
               <ul class="arrange-list" data-arrange-list>
                 <li class="arrange-row" data-id="book">
-                  <span class="arrange-row__label">Draft the novel</span>
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Draft the novel</button>
                   <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
@@ -468,24 +506,24 @@
             <p class="arrange__hint">Drag a camp up to work on it sooner.</p>
           </header>
           <div class="arrange__scroll">
-            <div class="drag-demo__line" aria-hidden="true"></div>
             <section class="arrange-group arrange-group--here">
               <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
               <ul class="arrange-list">
-                <li class="arrange-row drag-demo__ghost">
-                  <span class="arrange-row__label">Morning focus blocks</span>
-                  <span class="arrange-row__handle" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
-                  </span>
-                </li>
                 <li class="arrange-row">
                   <span class="arrange-row__label">Ship the landing page</span>
                   <span class="arrange-row__handle" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </span>
                 </li>
+                <li class="arrange-row drag-demo__ghost">
+                  <span class="arrange-row__label">Morning focus blocks</span>
+                  <span class="arrange-row__handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+                  </span>
+                </li>
               </ul>
             </section>
+            <div class="drag-demo__line" aria-hidden="true"></div>
             <div class="arrange-row drag-demo__lifted" style="padding-left: 1.65rem;">
               <span class="arrange-row__label">Morning focus blocks</span>
               <span class="arrange-row__handle" aria-hidden="true">
@@ -546,7 +584,7 @@
               <h2 class="arrange-group__heading">Stage 1 · you are here</h2>
               <ul class="arrange-list" data-arrange-list>
                 <li class="arrange-row" data-id="only">
-                  <span class="arrange-row__label">Ship the landing page</span>
+                  <button type="button" class="arrange-row__label-btn" data-arrange-rename>Ship the landing page</button>
                   <button type="button" class="arrange-row__handle" aria-label="Drag to reorder">
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
                   </button>
@@ -600,11 +638,67 @@
           }, 1600);
         }
 
+        function commitEdit(row, input) {
+          var text = input.value.trim() || input.defaultValue;
+          row.classList.remove("arrange-row--editing");
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "arrange-row__label-btn";
+          btn.setAttribute("data-arrange-rename", "");
+          btn.textContent = text;
+          input.replaceWith(btn);
+        }
+
+        function beginEdit(row) {
+          if (row.classList.contains("arrange-row--editing")) return;
+          var btn = row.querySelector("[data-arrange-rename]");
+          if (!btn) return;
+          row.classList.add("arrange-row--editing");
+          var input = document.createElement("input");
+          input.className = "arrange-row__input";
+          input.type = "text";
+          input.value = btn.textContent;
+          input.defaultValue = btn.textContent;
+          input.setAttribute("autocomplete", "off");
+          btn.replaceWith(input);
+          input.focus();
+          input.select();
+          input.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              input.blur();
+            }
+          });
+          input.addEventListener("blur", function () {
+            commitEdit(row, input);
+          });
+        }
+
+        root.addEventListener("click", function (e) {
+          var renameBtn = e.target.closest("[data-arrange-rename]");
+          if (!renameBtn || !root.contains(renameBtn)) return;
+          var row = renameBtn.closest(".arrange-row");
+          if (row) beginEdit(row);
+        });
+
+        root.querySelectorAll("[data-arrange-static-edit] .arrange-row__input").forEach(function (input) {
+          var row = input.closest(".arrange-row");
+          input.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              input.blur();
+            }
+          });
+          input.addEventListener("blur", function () {
+            if (!input.value.trim()) input.value = input.defaultValue;
+          });
+        });
+
         function onPointerDown(e) {
           var handle = e.target.closest(".arrange-row__handle");
           if (!handle || !root.contains(handle)) return;
           var row = handle.closest(".arrange-row");
-          if (!row) return;
+          if (!row || row.classList.contains("arrange-row--editing")) return;
           e.preventDefault();
 
           clearDropUi();
