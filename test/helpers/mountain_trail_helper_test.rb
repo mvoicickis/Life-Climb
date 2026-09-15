@@ -851,137 +851,74 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_operator last_y, :<, 35
   end
 
-  test "reveal camps include terrace landing order for trail projects" do
+  test "reveal camps use curve index delays without terrace metadata" do
     projects = reveal_test_projects(3)
     camps = mountain_trail_reveal_camps(projects)
     assert_equal 3, camps.size
-    assert camps.all? { |entry| entry.key?(:delay_ms) }
-    assert camps.all? { |entry| entry.key?(:terrace_index) }
+    assert_equal [ 0, 150, 300 ], camps.map { |entry| entry[:delay_ms] }
+    assert camps.none? { |entry| entry.key?(:terrace_index) }
   end
 
-  test "reveal camps json encodes terrace landing metadata" do
+  test "reveal camps json encodes curve landing metadata" do
     projects = reveal_test_projects(3)
     parsed = JSON.parse(mountain_trail_reveal_camps_json(projects))
     assert_equal 3, parsed.size
-    assert_equal [ "delay_ms", "id", "slot_index", "terrace_index" ], parsed.first.keys.sort
+    assert_equal [ "delay_ms", "id", "slot_index" ], parsed.first.keys.sort
   end
 
-  test "terrace window shows open stage and fog tents on t4 for nine camps with none finished" do
-    camps = (0...9).map do |stage|
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
+  test "map nodes follow Strategy::Trail visible window including cleared camp" do
+    user = users(:one)
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Build",
+      next_win: "Launch",
+      today_mission: "Test",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.for_kind("goal").roots.first || user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Path", position: 0
+    )
+    camps = 5.times.map do |index|
+      plan.children.create!(
+        user: user, life_area: area, life_journey: journey,
+        horizon: "project", title: "Camp #{index}", position: index, stage: index
       )
     end
+    camps[0].complete!
 
-    groups = mountain_trail_terrace_groups(camps)
-    assert_equal 4, groups.size
-    assert_equal :open, groups[0][:state]
-    assert_equal 0, groups[0][:stage]
-    assert_equal :empty, groups[1][:state]
-    assert_nil groups[1][:stage]
-    assert_equal :later, groups[2][:state]
-    assert_equal 1, groups[2][:stage]
-    assert_equal :range, groups[3][:state]
-    assert_equal 2, groups[3][:stage]
-    assert_nil groups[3][:range_label]
-    assert_equal [ 3 ], groups[3][:camps].map(&:id)
-    assert_equal 0, groups[3][:overflow]
-    assert_equal 6, groups[3][:hidden_camps].size
-    assert_equal "Stage 2 · next", mountain_trail_terrace_next_label(groups[2])
-    assert_equal 6, mountain_trail_terrace_range_extra_stages_count(groups[3])
-    assert_equal "6 more stages", mountain_trail_terrace_range_extra_stages_label(groups[3])
-    assert_equal "Stages 3 to 9, 7 stages", mountain_trail_terrace_range_aria_label(groups[3])
-    range_camps = mountain_trail_terrace_range_entries(camps, groups[3])
-    assert_equal 7, range_camps.size
-    assert_equal [ 2, 3, 4, 5, 6, 7, 8 ], range_camps.map { |entry| entry[:stage] }
-    assert mountain_trail_use_terrace_map?(camps, groups)
-    assert_empty mountain_trail_terrace_fallback_projects(camps, groups)
+    trail = Strategy::Trail.for(plan: plan.reload)
+    nodes = mountain_trail_map_nodes(trail)
+    assert_operator nodes.size, :<=, 3
+    assert_includes nodes.map(&:state), :done
+    assert_includes nodes.map(&:state), :current
+    assert_includes nodes.map(&:id), camps[0].id
   end
 
-  test "range extra stages label uses singular for one stage beyond the first" do
-    terrace = {
-      state: :range,
-      range_from: 2,
-      range_to: 3
-    }
-    assert_equal 1, mountain_trail_terrace_range_extra_stages_count(terrace)
-    assert_equal "1 more stage", mountain_trail_terrace_range_extra_stages_label(terrace)
-  end
-
-  test "use_terrace_map is false when a camp is not on any terrace surface" do
-    camp = Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-      id: 99, stage: 0, position: 0, completed?: false, holding?: false
-    )
-    groups = [
-      {
-        index: 1,
-        anchor: MountainTrailHelper::TERRACE_ANCHORS[1],
-        stage: 0,
-        state: :open,
-        camps: [],
-        hidden_camps: [],
-        overflow: 0,
-        range_label: nil
-      }
+  test "map layout spreads visible camps across the curve band" do
+    nodes = [
+      Strategy::Trail::Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),
+      Strategy::Trail::Node.new(id: 2, title: "B", state: :current, pct: 10, position: 1, record: nil, y: 50),
+      Strategy::Trail::Node.new(id: 3, title: "C", state: :locked, pct: 0, position: 2, record: nil, y: 20)
     ]
-
-    assert_not mountain_trail_use_terrace_map?([ camp ], groups)
-    assert_equal [ camp ], mountain_trail_terrace_fallback_projects([ camp ], groups)
+    slots = nodes.map { |node| mountain_trail_map_layout_slot(node, nodes) }
+    assert_operator slots[0][:y], :>, slots[1][:y]
+    assert_operator slots[1][:y], :>, slots[2][:y]
+    assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slots[0][:y], 0.001
+    assert_in_delta MountainTrailHelper::TRAIL_Y_MIN, slots[2][:y], 0.001
   end
 
-  test "open terrace keeps all camps with no overflow" do
-    camps = [
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: 1, stage: 0, position: 0, completed?: false, holding?: false
-      ),
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: 2, stage: 0, position: 1, completed?: false, holding?: false
-      ),
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: 3, stage: 0, position: 2, completed?: false, holding?: false
-      )
-    ]
-
-    groups = mountain_trail_terrace_groups(camps)
-    open = groups.find { |group| group[:state] == :open }
-    assert_equal [ 1, 2, 3 ], open[:camps].map(&:id)
-    assert_equal 0, open[:overflow]
-    assert_empty open[:hidden_camps]
-    assert_equal 2, mountain_trail_terrace_open_page_count(open)
-    assert_empty mountain_trail_terrace_overflow_camps(camps, open)
-    assert_nil mountain_trail_terrace_overflow_sheet_for(camps, camps.last)
-
-    slot0 = mountain_trail_terrace_slot(camps[0], open, 0)
-    slot1 = mountain_trail_terrace_slot(camps[1], open, 1)
-    slot2 = mountain_trail_terrace_slot(camps[2], open, 2)
-    assert_equal :l, slot0[:slot]
-    assert_equal :r, slot1[:slot]
-    assert_equal :solo, slot2[:slot]
-  end
-
-  test "terrace window keeps open stage on t1 after earlier stage is finished" do
-    camps = [
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: 1, stage: 0, position: 0, completed?: true, holding?: false
-      ),
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: 2, stage: 1, position: 0, completed?: false, holding?: false
-      )
-    ]
-
-    groups = mountain_trail_terrace_groups(camps)
-    assert_equal :open, groups[0][:state]
-    assert_equal 1, groups[0][:stage]
-    assert_nil groups[1][:stage]
-    assert_equal :empty, groups[1][:state]
-    assert groups[0][:foot_badge]
-    assert_equal 1, groups[0][:foot_badge][:count]
-  end
-
-  test "reveal camps stagger by terrace bottom to top" do
+  test "reveal camps stagger base to summit by delay" do
     camps = (0...3).map do |stage|
-      Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
-        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false
+      Struct.new(:id, :stage, :position, :completed?, :holding?, :title, keyword_init: true).new(
+        id: stage + 1, stage: stage, position: 0, completed?: false, holding?: false, title: "C#{stage}"
       )
     end
 
@@ -994,14 +931,15 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   def reveal_test_projects(count)
     (0...count).map do |index|
-      Struct.new(:id, :stage, :position, :completed?, :holding?, :trail_x, :trail_y, keyword_init: true).new(
+      Struct.new(:id, :stage, :position, :completed?, :holding?, :trail_x, :trail_y, :title, keyword_init: true).new(
         id: index + 1,
         stage: index,
         position: 0,
         completed?: false,
         holding?: false,
         trail_x: 0.5,
-        trail_y: 0.55
+        trail_y: 0.55,
+        title: "Camp #{index + 1}"
       )
     end
   end

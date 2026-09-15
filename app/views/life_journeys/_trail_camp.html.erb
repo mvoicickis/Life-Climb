@@ -1,53 +1,28 @@
-<%# Camp marker on the terraced trail. locals: project, projects, terrace, slot, fallback %>
+<%# Camp marker on the curve trail. locals: project, trail_node, map_nodes, current_project %>
 <% project = local_assigns.fetch(:project) %>
-<% projects = local_assigns[:projects] || [ project ] %>
-<% terrace = local_assigns[:terrace] %>
-<% slot = local_assigns[:slot] %>
-<% fallback = local_assigns[:fallback] %>
+<% trail_node = local_assigns[:trail_node] %>
+<% map_nodes = local_assigns[:map_nodes] || [] %>
 <% color_key = project.tagged_color_key %>
 <% accent = mountain_trail_project_accent(project) %>
-<% state = mountain_trail_camp_state(project, projects: projects) %>
+<% state = trail_node&.state || mountain_trail_camp_state(project, projects: map_nodes.filter_map(&:record)) %>
 <% current = state == :current %>
+<% fogged = state == :locked %>
 <% progress = mountain_trail_camp_progress(project) %>
 <% status = mountain_trail_camp_status(project) %>
 <% ring_r = 27 %>
 <% ring_c = (2 * Math::PI * ring_r).round(2) %>
 <% ring_offset = (ring_c * (1 - progress[:ratio].to_f)).round(2) %>
-<% show_ring = terrace.blank? && (progress[:total].positive? || progress[:kind] == :pages) %>
-<% show_caption = fallback || (terrace.present? && terrace[:state] == :open) %>
-<% slot_class =
-     if fallback
-       ""
-     elsif slot.present?
-       slot[:slot] == :solo ? "trail-t2-camp--solo" : "trail-t2-camp--#{slot[:slot]}"
-     else
-       ""
-     end %>
-<% inline_style =
-     if fallback
-       layout = mountain_trail_layout_slot(project, projects: projects)
-       "--lp-trail-x: #{layout[:x]}; --lp-trail-y: #{layout[:y]};"
-     elsif terrace.present? && slot.present?
-       if terrace[:state] == :open
-         dx = mountain_trail_terrace_slot_dx(terrace, slot)
-         "--lp-trail-accent: #{accent}; --trail-slot-dx: #{dx.round(4)};"
-       else
-         "--lp-trail-accent: #{accent}; left: #{(mountain_trail_terrace_x_fraction(terrace, slot) * 100).round(2)}%;"
-       end
-     else
-       "--lp-trail-accent: #{accent};"
-     end %>
+<% show_ring = !fogged && (progress[:total].positive? || progress[:kind] == :pages) %>
+<% layout = if trail_node && map_nodes.any?
+              mountain_trail_map_layout_slot(trail_node, map_nodes)
+            else
+              mountain_trail_layout_slot(project, projects: [ project ])
+            end %>
 
-<% show_stage_pill = local_assigns[:show_stage_pill] && terrace.present? && terrace[:state] == :open && terrace[:stage].present? %>
-<% terrace_camp_page = local_assigns[:terrace_camp_page] %>
 <button type="button"
-        class="lp-trail-camp trail-t2-camp <%= slot_class %> <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %>"
+        class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %> <%= 'is-fogged' if fogged %>"
         id="trail-camp-<%= project.id %>"
-        style="<%= inline_style %>"
-        <% if terrace.present? && terrace[:state] == :open %>
-        data-trail-terrace-camps-target="camp"
-        data-camp-page="<%= terrace_camp_page if terrace_camp_page.present? %>"
-        <% end %>
+        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= accent %>;"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
         data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
@@ -56,13 +31,6 @@
         data-update-url="<%= strategy_goal_path(project) %>"
         data-action="click->trail-canvas#campClick click->trail-camp-sheet#open"
         aria-label="<%= project.title %>">
-  <% if show_stage_pill %>
-    <span class="trail-open-pill lp-trail-stage__label"
-          data-trail-terrace-camps-target="stagePill"
-          hidden>
-      <%= t("strategy.rpg.trail.terrace.open_label", stage: mountain_trail_stage_label(terrace[:stage])) %>
-    </span>
-  <% end %>
   <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
   <span class="lp-trail-camp__peg">
     <% if show_ring %>
@@ -74,15 +42,20 @@
                 transform="rotate(-90 31 31)"></circle>
       </svg>
     <% end %>
-    <span class="lp-trail-camp__tent"></span>
+    <span class="lp-trail-camp__tent" aria-hidden="true">
+      <% if fogged %>
+        <svg class="lp-trail-camp__fog-tent" viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg>
+      <% end %>
+    </span>
     <% if current %>
       <span class="lp-trail-camp__fire" aria-hidden="true"></span>
     <% end %>
+    <% if state == :done %>
+      <span class="lp-trail-camp__cleared" aria-hidden="true">✓</span>
+    <% end %>
   </span>
-  <% if show_caption %>
-    <span class="lp-trail-camp__caption">
-      <span class="lp-trail-camp__title"><%= mountain_trail_camp_caption_title(project) %></span>
-      <span class="lp-trail-camp__status"><%= status %></span>
-    </span>
-  <% end %>
+  <span class="lp-trail-camp__caption">
+    <span class="lp-trail-camp__title"><%= mountain_trail_camp_caption_title(project) %></span>
+    <span class="lp-trail-camp__status"><%= status %></span>
+  </span>
 </button>
