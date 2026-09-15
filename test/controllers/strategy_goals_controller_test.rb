@@ -993,6 +993,35 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ 1, 3, 5 ], battle.repeat_weekdays_array
   end
 
+  test "day battle title patch turbo stream replaces camp list base sheet and today row" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: project, horizon: "day",
+      title: "Old title", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: battle.id)
+
+    patch strategy_goal_path(battle), params: { title: "New title" }, as: :turbo_stream
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream].to_s, response.media_type
+    assert_match %(action="replace" target="trail-battles-#{project.id}"), response.body
+    assert_match %(action="replace" target="trail-base-sheet"), response.body
+    assert_match %(action="replace" target="#{dom_id(todo, :battlefield_row)}"), response.body
+    assert_match "New title", response.body
+    assert_equal "New title", battle.reload.title
+    assert @user.daily_todos.for_day(Date.current).exists?(title: "New title", strategy_goal_id: battle.id)
+  end
+
   test "day battles can update weekly repeat weekdays" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0

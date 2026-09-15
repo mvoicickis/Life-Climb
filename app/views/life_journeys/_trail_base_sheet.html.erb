@@ -34,8 +34,12 @@
       <ul class="lp-trail-battles__list">
         <% group[:battles].each do |battle| %>
           <li class="lp-trail-battles__row is-check" id="trail-base-battle-<%= battle.id %>"
+              data-controller="inline-title-edit"
               data-battle-id="<%= battle.id %>"
-              data-update-url="<%= strategy_goal_path(battle) %>">
+              data-inline-title-edit-update-url-value="<%= strategy_goal_path(battle) %>"
+              data-inline-title-edit-mode-value="camp"
+              data-inline-title-edit-battle-id-value="<%= battle.id %>"
+              data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>">
             <%= render "life_journeys/trail_battle_check", battle: battle %>
             <details class="lp-trail-battles__kebab"
                      data-controller="tcard-menu"
@@ -44,8 +48,7 @@
               <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
               <div class="lp-trail-battles__kebab-menu">
                 <button type="button"
-                        data-action="click->trail-battles#renameBattle"
-                        data-update-url="<%= strategy_goal_path(battle) %>"><%= t("strategy.rpg.trail.battle_rename") %></button>
+                        data-action="click->inline-title-edit#openFromMenu"><%= t("strategy.rpg.trail.battle_rename") %></button>
                 <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
                 <%= button_to t("strategy.rpg.trail.delete_battle"),
                       strategy_goal_path(battle),

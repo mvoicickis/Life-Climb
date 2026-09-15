@@ -214,6 +214,9 @@ class StrategyGoalsController < ApplicationController
         @project&.reload
         @plan&.reload
         @goal = goal.root_goal
+        if params.key?(:title)
+          @today_todo = current_user.daily_todos.for_day(Date.current).find_by(strategy_goal_id: goal.id)
+        end
       end
       prepare_world_for!(goal, focus_id: focus_id)
       respond_to do |format|

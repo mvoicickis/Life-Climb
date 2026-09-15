@@ -36,7 +36,7 @@
 <% end %>
 <% if camp_sheet %>
   <div class="lp-trail-battles__body">
-    <span class="lp-trail-battles__name"><%= battle.title %></span>
+    <span class="lp-trail-battles__name" data-inline-title-edit-target="display"><%= battle.title %></span>
     <%= render "life_journeys/trail_battle_repeat_chip", battle: battle, camp_sheet: true %>
     <% if qty_project&.unit.present? %>
       <span class="lp-trail-battles__qty-chip"><%= qty_project.unit %></span>
@@ -44,7 +44,7 @@
   </div>
 <% else %>
   <span class="lp-trail-battles__copy">
-    <span class="lp-trail-battles__name"><%= battle.title %></span>
+    <span class="lp-trail-battles__name" data-inline-title-edit-target="display"><%= battle.title %></span>
     <%= render "life_journeys/trail_battle_repeat_chip", battle: battle %>
     <% if qty_project&.unit.present? %>
       <span class="lp-trail-battles__qty-chip"><%= qty_project.unit %></span>
