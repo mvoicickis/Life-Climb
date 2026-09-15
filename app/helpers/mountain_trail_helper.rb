@@ -26,9 +26,9 @@ module MountainTrailHelper
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
 
-  # Curve map photo aspect (mountain-stages-bg-v2.webp).
-  MAP_ASPECT_WIDTH = 1080
-  MAP_ASPECT_HEIGHT = 1350
+  # Curve map photo aspect (mountain_trail_default.webp).
+  MAP_ASPECT_WIDTH = 1024
+  MAP_ASPECT_HEIGHT = 1536
   # Push world down so the painted flag tip clears the HUD.
   MAP_WORLD_Y = "8%"
   MAP_ZOOM = 1.0
@@ -88,13 +88,13 @@ module MountainTrailHelper
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo.variant(resize_to_limit: [ 1200, 1800 ]))
     else
-      image_path("mountain-stages-bg-v2.webp")
+      image_path("mountain_trail_default.webp")
     end
   rescue StandardError
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo)
     else
-      image_path("mountain-stages-bg-v2.webp")
+      image_path("mountain_trail_default.webp")
     end
   end
 
