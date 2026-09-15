@@ -45,11 +45,12 @@
           goal: @goal %>
   <% end %>
   <% if @created.project? && !@created.holding? %>
-    <% trail_projects = mountain_trail_sort_projects(@plan.children.select { |c| c.project? && !c.holding? && !c.completed? }) %>
+    <% trail = Strategy::Trail.for(plan: @plan) %>
+    <% trail_projects = mountain_trail_projects(trail) %>
     <% current_project = mountain_trail_current_project(trail_projects) %>
     <%= turbo_stream.replace "trail-map-camps" do %>
       <%= render "life_journeys/trail_map_camps",
-            projects: trail_projects,
+            trail: trail,
             current_project: current_project %>
     <% end %>
     <%= turbo_stream.append "trail-sheet-title-row" do %>
@@ -73,14 +74,6 @@
               area: @created.life_area %>
       </div>
     <% end %>
-    <% overflow_sheet = mountain_trail_terrace_overflow_sheet_for(trail_projects, @created) %>
-    <% if overflow_sheet %>
-      <%= turbo_stream.open_terrace_sheet(
-            sheet_id: overflow_sheet[:sheet_id],
-            title: overflow_sheet[:title],
-            camp_id: @created.id) %>
-    <% else %>
-      <%= turbo_stream.open_trail_camp(@created.id) %>
-    <% end %>
+    <%= turbo_stream.open_trail_camp(@created.id) %>
   <% end %>
 <% end %>

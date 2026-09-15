@@ -70,9 +70,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#mountain-trail.lp-trail.is-terraced"
+    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select "#mountain-trail.lp-trail.is-terraced", count: 0
     assert_select "#trail-map-camps"
-    assert_select "#trail-stages"
+    assert_select "#trail-camps"
+    assert_select "#trail-stages", count: 0
+    assert_select ".lp-trail__spine"
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status"
@@ -94,26 +97,27 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_match(/mountain-stages-bg|mountain_photo/, response.body)
   end
 
-  test "nine staged camps render terraced map not fallback" do
+  test "five camps show at most three on the curve window with fog and cleared" do
     @plan.children.for_kind("project").destroy_all
-    9.times do |stage|
+    camps = 5.times.map do |index|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
-        horizon: "project", title: "Camp #{stage + 1}", position: 0, stage: stage
+        horizon: "project", title: "Camp #{index + 1}", position: index, stage: index
       )
     end
+    camps[0].complete!
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-stages"
-    assert_select "#trail-map-camps"
+    assert_select "#trail-map-camps #trail-camp-#{camps[0].id}.is-done"
+    assert_select "#trail-map-camps #trail-camp-#{camps[1].id}.is-current"
+    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}[data-action*='trail-camp-sheet#open']"
+    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
+    assert_select "#trail-map-camps .lp-trail-camp", maximum: 3
+    assert_select ".trail-terrace", count: 0
     assert_select "#trail-camps-fallback", count: 0
-    assert_select ".trail-terrace", count: 3
-    assert_select ".trail-stage-badge", count: 0
-    assert_select ".trail-terrace--t3.is-later .trail-terrace-next-pill", text: /Stage 2 · next/
-    assert_select ".trail-terrace--t4.is-range .trail-tent-hit--range", count: 1
-    assert_select ".trail-terrace--t4.is-range .trail-terrace-range-stages-more", text: "6 more stages"
-    assert_select ".trail-terrace--t4.is-range .trail-camp-more", count: 0
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do
@@ -212,7 +216,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
     assert_select ".lp-trail__goal-plaque"
     assert_select ".lp-trail__goal-title"
-    assert_select ".lp-trail.is-terraced"
+    assert_select ".lp-trail.is-v4"
+    assert_select ".lp-trail.is-terraced", count: 0
     assert_select ".lp-trail__mountain .lp-trail__dock", count: 0
     assert_select ".lp-trail__scroll > .lp-trail__dock .lp-trail-base-card"
     assert_select "#mountain-trail > .lp-trail__dock", count: 0
@@ -499,7 +504,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_in_delta expected[:trail_y], @project.trail_y, 0.0001
   end
 
-  test "open terrace camps have captions; later terraces use aria-label only" do
+  test "two curve camps both show captions and stay on the map window" do
     extra = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Ridge lookout", position: 1,
@@ -510,17 +515,16 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{extra.id}[aria-label=?]", "Ridge lookout"
-    assert_select "#trail-camp-#{@project.id}.trail-t2-camp .lp-trail-camp__caption .lp-trail-camp__title", text: /Base camp/
-    assert_select "#trail-camp-#{extra.id}.trail-tent-hit .lp-trail-camp__caption", count: 0
-    assert_select ".trail-terrace[data-terrace-index='3'] #trail-camp-#{extra.id}.trail-tent-hit"
-    assert_select ".trail-terrace--t3.is-later .trail-terrace-next-pill", text: /Stage 2 · next/
+    assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__caption .lp-trail-camp__title", text: /Base camp/
+    assert_select "#trail-camp-#{extra.id}.is-locked.is-fogged .lp-trail-camp__caption .lp-trail-camp__title", text: /Ridge lookout/
+    assert_select ".trail-terrace", count: 0
     assert_select ".lp-trail-camp__chip", count: 0
     assert_select ".lp-trail-camp.is-chip-start", count: 0
   end
 
-  test "open terrace with three camps renders paging chrome not overflow chip" do
+  test "three incomplete same-stage camps still fit the trail window" do
     open_stage = @project.stage
-    @plan.children.create!(
+    second = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Ridge lookout", position: 1,
       trail_x: 0.5, trail_y: 0.55, color_key: "amber",
@@ -535,30 +539,15 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-camp-#{@project.id}"
-    assert_select "#trail-camp-#{third.id}"
-    assert_select ".trail-terrace.is-open .trail-camp-more", count: 0
-    assert_select ".trail-terrace.is-open[data-controller~='trail-terrace-camps']"
-    assert_select ".trail-terrace.is-open .trail-terrace-camps__dots .lp-rpg-destination-dots__dot", count: 2
-    assert_select ".trail-terrace.is-open .trail-terrace-camps__nav"
-    assert_select ".trail-terrace.is-open .trail-terrace-camps__arrow.is-prev"
-    assert_select ".trail-terrace.is-open .trail-terrace-camps__arrow.is-next"
+    # Plans with ≤3 camps show the full window (Trail returns all nodes).
+    assert_select "#trail-map-camps #trail-camp-#{@project.id}"
+    assert_select "#trail-map-camps #trail-camp-#{second.id}"
+    assert_select "#trail-map-camps #trail-camp-#{third.id}"
+    assert_select "#trail-map-camps .lp-trail-camp", count: 3
+    assert_select ".trail-terrace", count: 0
   end
 
-  test "open terrace with two camps has no paging dots" do
-    @plan.children.create!(
-      user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Ridge lookout", position: 1,
-      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
-    )
-
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_response :success
-    assert_select ".trail-terrace.is-open .trail-terrace-camps__dots", count: 0
-    assert_select ".trail-terrace.is-open .trail-terrace-camps__nav[hidden]"
-  end
-
-  test "planting third open-stage camp opens trail sheet not terrace overflow" do
+  test "planting a camp opens trail sheet without terrace overflow" do
     open_stage = @project.stage
     @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
@@ -602,21 +591,35 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_equal @project.stage, created.stage
   end
 
-  test "finished camps leave the mountain photo and sheet" do
-    @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
+  test "older finished camps leave the photo; latest cleared stays visible" do
+    older = @project
+    older.update!(completed_at: Time.current, manually_completed_at: Time.current)
+    cleared = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Cleared camp", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "teal"
+    )
+    cleared.update!(completed_at: Time.current, manually_completed_at: Time.current)
     still_open = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Ridge camp", position: 1,
+      horizon: "project", title: "Ridge camp", position: 2,
       trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+    fogged = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Fog camp", position: 3,
+      trail_x: 0.5, trail_y: 0.55, color_key: "purple"
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-camp-#{@project.id}", count: 0
-    assert_select "#trail-sheet-camp-#{@project.id}", count: 0
-    assert_select "#trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
+    assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{cleared.id}.is-done"
+    assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
+    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select "#trail-sheet-camp-#{still_open.id}"
-    assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /1\s*\/\s*2/
+    assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /2\s*\/\s*4/
   end
 
   test "upload and reset mountain photo" do

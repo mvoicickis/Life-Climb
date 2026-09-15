@@ -549,29 +549,44 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#rpg-add-checkpoint", count: 0
   end
 
-  test "completed camps leave the mountain photo" do
+  test "latest cleared camp stays on the mountain photo" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Done Plan", position: 0
     )
+    older = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Older Done", position: 0
+    )
     project = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Done Project", position: 0
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Done Project", position: 1
     )
-    project_leaf = practice_leaf_for!(project)
-    battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
-      title: "Done Battle", scheduled_on: Date.current, position: 0
+    still_open = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Open Camp", position: 2
     )
-    battle.complete!
-    project.complete!
-    plan.complete!
+    # Fourth camp so Trail windows (≤3 camps returns every node).
+    fogged = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Fog Camp", position: 3
+    )
+    [ older, project ].each do |camp|
+      leaf = practice_leaf_for!(camp)
+      battle = @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: leaf, horizon: "day",
+        title: "#{camp.title} Battle", scheduled_on: Date.current, position: 0
+      )
+      battle.complete!
+      camp.complete!
+    end
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select "#trail-camp-#{project.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{project.id}"
+    assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
+    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 
@@ -601,15 +616,14 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
     assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
-    assert_select ".trail-terrace[data-terrace-index='1'] #trail-camp-#{projects[0].id}[aria-label=?]", "Project 0"
+    assert_select "#trail-map-camps #trail-camp-#{projects[0].id}.is-current[aria-label=?]", "Project 0"
     assert_select "#trail-camp-#{projects[0].id} .lp-trail-camp__caption", text: /Project 0/
-    assert_select ".trail-terrace[data-terrace-index='3'] #trail-camp-#{projects[1].id}.trail-tent-hit[aria-label=?]", "Project 1"
-    assert_select "#terrace-sheet-range-4"
-    [ projects[2], projects[3] ].each do |project|
-      assert_select "#terrace-sheet-range-4 .lp-trail-terrace-sheet__row[data-camp-id=?] .lp-trail-terrace-sheet__row-title",
-                    project.id.to_s,
-                    text: project.title
-    end
+    assert_select "#trail-map-camps #trail-camp-#{projects[1].id}.is-locked.is-fogged[aria-label=?]", "Project 1"
+    assert_select "#trail-map-camps #trail-camp-#{projects[2].id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{projects[3].id}", count: 0
+    assert_select "#trail-map-camps .lp-trail-camp", maximum: 3
+    assert_select ".trail-terrace", count: 0
+    assert_select "#terrace-sheet-range-4", count: 0
     assert_select ".lp-climb-path__quests", count: 0
     assert_select "#strategy-camp-notebook", count: 0
   end

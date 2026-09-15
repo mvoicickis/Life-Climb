@@ -28,8 +28,7 @@ class FloatingCheckpointCreateTest < ApplicationSystemTestCase
     )
     camps = [
       "Authentication",
-      "Daily battles",
-      "Dashboard"
+      "Daily battles"
     ].each_with_index.map do |title, i|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,

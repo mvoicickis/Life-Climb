@@ -64,25 +64,31 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
   end
 
   test "climb path lists every camp without a lock window" do
-    5.times do |i|
+    camps = 5.times.map do |i|
       camp = @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
         horizon: "project", title: "Camp #{i}", position: i
       )
       camp.complete! if i < 2
+      camp
     end
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @plan.id)
     assert_response :success
+
+    # SR climb path still lists every camp (no lock window).
     5.times do |i|
-      camp = @plan.children.for_kind("project").find_by!(title: "Camp #{i}")
-      if i < 2
-        assert_select "#trail-camp-#{camp.id}", count: 0
-      else
-        assert_select "#trail-camp-#{camp.id}[aria-label=?]", "Camp #{i}"
-      end
+      assert_select "#climb-path-project-#{camps[i].id} .lp-climb-path__title", text: "Camp #{i}"
     end
     assert_select ".lp-climb-path__node.is-locked", count: 0
+
+    # Photo map uses Strategy::Trail's 3-node window (cleared + current + next).
+    assert_select "#trail-map-camps #trail-camp-#{camps[0].id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{camps[1].id}"
+    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}"
+    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}"
+    assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
+    assert_select "#trail-map-camps [id^=trail-camp-]", maximum: 3
   end
 
   test "climb path still renders with few camps" do

@@ -26,6 +26,8 @@
 <% climb_frac = mountain_trail_climb_fraction(all_projects) %>
 <% current_project = mountain_trail_current_project(projects) %>
 <% trail_energy = mountain_trail_energy(projects) %>
+<% map_nodes = mountain_trail_map_nodes(trail) %>
+<% sheet_camps = (map_nodes.filter_map(&:record) + projects).uniq(&:id) %>
 <% open_battle_count = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } } %>
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
@@ -34,8 +36,9 @@
 <% first_camp = first_camp_id.present? ? all_projects.find { |p| p.id == first_camp_id } : nil %>
 <% first_camp_reveal = first_camp.present? && !destination_overlay && plan.present? %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
+<% spine_settled = plan.present? && !first_camp_reveal && !destination_overlay %>
 
-<section class="lp-trail is-bleed is-v4 is-terraced<%= ' is-terrace-debug' if mountain_trail_terrace_debug? %> <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-spine-settled' if spine_settled %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
@@ -51,7 +54,7 @@
          data-trail-camp-sheet-base-title-fallback-value="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
          <% if first_camp_reveal %>
          data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
-         data-first-camp-reveal-camps-value="<%= mountain_trail_reveal_camps_json(projects) %>"
+         data-first-camp-reveal-camps-value="<%= mountain_trail_reveal_camps_json(trail) %>"
          data-first-camp-reveal-camp-title-value="<%= first_camp.title %>"
          data-first-camp-reveal-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
          data-first-camp-reveal-skip-hint-value="<%= t('strategy.rpg.trail.first_camp_reveal.skip_hint') %>"
@@ -244,8 +247,12 @@
             <div class="lp-trail__lightning" data-trail-ambient-target="lightning"></div>
           </div>
 
+          <% if plan.present? && !destination_overlay %>
+            <%= render "life_journeys/trail_spine" %>
+          <% end %>
+
           <%= render "life_journeys/trail_map_camps",
-                projects: projects,
+                trail: trail,
                 current_project: current_project %>
         </div>
 
@@ -396,7 +403,7 @@
           <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal %><%= first_camp.title %><% end %></h2>
           <% unless first_camp_reveal %>
             <div class="lp-trail-sheet__actions">
-              <% projects.each do |project| %>
+              <% sheet_camps.each do |project| %>
                 <div id="trail-sheet-menu-<%= project.id %>"
                      class="lp-trail-sheet__camp-menu"
                      data-controller="plan-card-menu"
@@ -437,7 +444,7 @@
                 goal: goal,
                 journey: journey %>
         </div>
-        <% projects.each do |project| %>
+        <% sheet_camps.each do |project| %>
           <div class="lp-trail-sheet__camp"
                id="trail-sheet-camp-<%= project.id %>"
                data-camp-panel="<%= project.id %>"
@@ -460,7 +467,7 @@
         <% end %>
       </div>
       <% unless first_camp_reveal %>
-        <% projects.each do |project| %>
+        <% sheet_camps.each do |project| %>
           <%= render "life_journeys/trail_camp_panel_overlays",
                 project: project,
                 goal: goal,
@@ -470,8 +477,6 @@
       <% end %>
     </div>
   </div>
-
-  <%= render "life_journeys/trail_terrace_stages_sheet", projects: projects %>
 
   <%# Quantity log sheet for quantified camps %>
   <div class="lp-trail-log"
