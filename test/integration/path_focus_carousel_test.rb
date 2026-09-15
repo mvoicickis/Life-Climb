@@ -47,8 +47,8 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
     assert_select ".lp-trail__goal-title", text: /Debt free/i
-    assert_select ".lp-trail-hud__plan.is-active", text: /Find a job/i
-    assert_select ".lp-trail-hud__plan", text: /Learn German/i
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Find a job/i
+    assert_select ".lp-trail__peak-item--plan", text: /Learn German/i
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
     assert_select ".lp-trail-plant"
     assert_select ".lp-rpg-paths", count: 0
@@ -78,8 +78,8 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_b.id)
     assert_response :success
 
-    assert_select ".lp-trail-hud__plan.is-active", text: /Learn German/i
-    assert_select ".lp-trail-hud__plan.is-active", text: /Find a job/i, count: 0
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Learn German/i
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Find a job/i, count: 0
     assert_select ".lp-trail__goal-title", text: /Debt free/i
   end
 

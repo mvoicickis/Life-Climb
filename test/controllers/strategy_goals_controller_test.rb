@@ -513,9 +513,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#mountain-trail.lp-trail.is-v4"
     assert_select "#trail-map-camps"
     assert_select ".lp-trail__goal-title", text: /Goal/i
-    assert_select ".lp-trail-hud__plan", text: /Plan Alpha/i
-    assert_select ".lp-trail-hud__plan", text: /Plan Beta/i
-    assert_select ".lp-trail-hud__plan.is-active", text: /Plan Alpha/i
+    assert_select ".lp-trail__peak-item--plan", text: /Plan Alpha/i
+    assert_select ".lp-trail__peak-item--plan", text: /Plan Beta/i
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Plan Alpha/i
     assert_select "#trail-camp-#{project_a.id}[aria-label=?]", "Project One"
     assert_select ".lp-climb-path__quests", count: 0
     assert_select ".lp-rpg-stats", count: 0
@@ -615,7 +615,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: projects_first_leaf.id)
     assert_response :success
-    assert_select ".lp-trail-hud__plan.is-active", text: /Main Plan/i
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Main Plan/i
     assert_select "#trail-map-camps #trail-camp-#{projects[0].id}.is-current[aria-label=?]", "Project 0"
     assert_select "#trail-camp-#{projects[0].id} .lp-trail-camp__caption", text: /Project 0/
     assert_select "#trail-map-camps #trail-camp-#{projects[1].id}.is-locked.is-fogged[aria-label=?]", "Project 1"
@@ -675,8 +675,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
-    assert_select ".lp-trail-hud__plan.is-active", text: /Find a Job/i
-    assert_select ".lp-trail-hud__plan", text: /Build SaaS/i
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Find a Job/i
+    assert_select ".lp-trail__peak-item--plan", text: /Build SaaS/i
 
     post strategy_goals_path, params: {
       life_area_id: @area.id,

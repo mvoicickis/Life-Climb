@@ -106,19 +106,19 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
   def assert_goal_title_ok(metrics, expected_text, width, height)
     assert metrics["ok"], "title missing at #{width}x#{height}: #{metrics.inspect}"
     assert_equal expected_text, metrics["text"]
-    assert_equal "1", metrics["lineClamp"].to_s,
-                 "goal title should clamp to 1 line on plaque at #{width}x#{height}: #{metrics.inspect}"
+    assert_equal "2", metrics["lineClamp"].to_s,
+                 "goal title should clamp to 2 lines on hero at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["maxLineWidth"].to_f, :<=, metrics["clientWidth"].to_f + 1.0,
                     "goal title line overflows plaque at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["width"].to_f, :>=, 72.0,
-                    "title too narrow at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["width"].to_f, :>=, 200.0,
+                    "hero title too narrow at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["height"].to_f, :>=, 12.0,
                     "title has no height at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["plaqueHeight"].to_f, :>=, 36.0,
                     "goal plaque collapsed at #{width}x#{height}: #{metrics.inspect}"
     px = metrics["fontSize"].to_s.to_f
-    assert_operator px, :>=, 11.0,
-                    "font-size below plaque floor at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator px, :>=, 14.0,
+                    "font-size below hero floor at #{width}x#{height}: #{metrics.inspect}"
   end
 
   def assert_destination_fluid_title(width, height, expected_text)

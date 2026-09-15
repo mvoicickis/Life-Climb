@@ -40,10 +40,9 @@ class PlanRailOverflowTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select ".lp-trail-hud__plans"
-    assert_select ".lp-trail-hud__plan", minimum: 6
-    assert_select ".lp-trail-hud__plan", text: /Overflow pl/i
-    assert_select ".lp-trail-hud__plan.is-active", minimum: 1
+    assert_select ".lp-trail__peak-item--plan", minimum: 6
+    assert_select ".lp-trail__peak-item--plan", text: /Overflow pl/i
+    assert_select ".lp-trail__peak-item--plan.is-active", minimum: 1
     assert_select ".lp-rpg-paths", count: 0
     assert_select ".lp-rpg-plan-rail__arrow", count: 0
     assert_select ".lp-rpg-path-focus", count: 0

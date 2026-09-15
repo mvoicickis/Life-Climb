@@ -306,6 +306,10 @@
     </section>
 
     <section class="lp-you-card is-tight">
+      <%= link_to new_feedback_path, class: "lp-you-row" do %>
+        <span class="lp-you-row__label"><span aria-hidden="true">💬</span> <%= t("feedback.fab_label") %></span>
+        <span class="lp-you-row__chev" aria-hidden="true">›</span>
+      <% end %>
       <%= link_to new_password_path, class: "lp-you-row" do %>
         <span class="lp-you-row__label"><span aria-hidden="true">🔑</span> <%= t("settings.change_password") %></span>
         <span class="lp-you-row__chev" aria-hidden="true">›</span>
