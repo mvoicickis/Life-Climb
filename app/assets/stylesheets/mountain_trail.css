@@ -1416,8 +1416,11 @@
   cursor: pointer;
 }
 
-.lp-trail__goal-title,
-.lp-trail__goal-title.lp-rpg-destination-carousel__title {
+/* Beat .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title (2-line clamp). */
+.lp-trail .lp-trail__goal-title,
+.lp-trail .lp-trail__goal-title.lp-rpg-destination-carousel__title,
+.lp-rpg.is-focus-phase .lp-trail__goal-title,
+.lp-rpg.is-focus-phase .lp-trail__goal-title.lp-rpg-destination-carousel__title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
@@ -1429,6 +1432,9 @@
   color: var(--lp-ink, #0f172a);
   line-height: 1.2;
   text-align: left;
+  white-space: normal;
+  word-break: normal;
+  text-shadow: none;
 }
 
 .lp-trail__goal-tagline {
