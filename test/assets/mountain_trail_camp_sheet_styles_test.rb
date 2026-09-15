@@ -23,13 +23,6 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert_includes @css, "pointer-events: none"
   end
 
-  test "curve map spine is shown when settled or drawing" do
-    assert_includes @css, ".lp-trail.is-spine-settled .lp-trail__spine"
-    assert_includes @css, ".lp-trail.is-spine-drawing .lp-trail__spine"
-    assert_includes @css, "lp-trail-spine-draw"
-    refute_includes @css, ".lp-trail.is-terraced .lp-trail__spine"
-  end
-
   test "fogged camps stay tappable without pointer-events none on the button" do
     fog = @css[/\.lp-trail-camp\.is-fogged\s*\{[^}]+\}/m]
     assert fog, "expected .lp-trail-camp.is-fogged block"

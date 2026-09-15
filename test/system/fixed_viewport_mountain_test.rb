@@ -70,7 +70,6 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-map-camps #trail-camp-#{camps[0].id}.is-current[aria-label='Authentication']", visible: :all, wait: 5
     assert_selector "#trail-camp-#{camps[0].id} .lp-trail-camp__caption", visible: :all, wait: 5
     assert_selector "#trail-map-camps #trail-camp-#{camps[1].id}.is-locked.is-fogged", visible: :all, wait: 5
-    assert_selector ".lp-trail__spine", visible: :all, wait: 5
     assert_no_selector ".trail-terrace"
     assert_no_selector "#terrace-sheet-range-4"
     assert_selector "#trail-map-camps .lp-trail-camp", visible: :all, maximum: 3, wait: 5

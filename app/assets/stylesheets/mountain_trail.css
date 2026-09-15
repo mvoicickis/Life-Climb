@@ -5226,64 +5226,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 /* First camp reveal after v2 onboarding */
-.lp-trail__spine {
-  display: none;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.lp-trail.is-spine-settled .lp-trail__spine,
-.lp-trail.is-spine-drawing .lp-trail__spine,
-.lp-trail.is-first-camp-reveal .lp-trail__spine {
-  display: block;
-}
-
-.lp-trail__spine-glow,
-.lp-trail__spine-line {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-}
-
-.lp-trail__spine-glow {
-  stroke: #57d35b;
-  stroke-width: 1.35;
-  opacity: 0.15;
-}
-
-.lp-trail__spine-line {
-  stroke: rgba(255, 255, 255, 0.82);
-  stroke-width: 0.55;
-}
-
-.lp-trail.is-spine-drawing .lp-trail__spine-glow,
-.lp-trail.is-spine-drawing .lp-trail__spine-line {
-  stroke-dasharray: 240;
-  stroke-dashoffset: 240;
-  animation: lp-trail-spine-draw 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.lp-trail.is-spine-settled .lp-trail__spine-glow,
-.lp-trail.is-spine-settled .lp-trail__spine-line {
-  stroke-dasharray: none;
-  stroke-dashoffset: 0;
-  animation: none;
-}
-
-@keyframes lp-trail-spine-draw {
-  to { stroke-dashoffset: 0; }
-}
-
-.lp-trail.is-first-camp-reveal .lp-trail__spine {
-  filter:
-    drop-shadow(0 0 3px color-mix(in srgb, #57d35b 40%, transparent))
-    drop-shadow(0 0 8px color-mix(in srgb, #57d35b 22%, transparent));
-}
-
 .lp-trail.is-first-camp-reveal .lp-trail__peak--reveal {
   opacity: 0;
   transform: translate(2px, calc(-100% - 8px)) scale(0.92);
@@ -5513,11 +5455,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
     transition: none;
   }
 
-  .lp-trail.is-first-camp-reveal .lp-trail__spine-line,
-  .lp-trail.is-first-camp-reveal .lp-trail__spine-glow {
-    stroke-dashoffset: 0 !important;
-  }
-
   .lp-trail.is-first-camp-reveal.is-awaiting-tap .lp-trail-camp.is-landed.is-current.is-pulsing {
     animation: none;
   }
@@ -5534,12 +5471,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-trail.is-spine-drawing .lp-trail__spine-glow,
-  .lp-trail.is-spine-drawing .lp-trail__spine-line {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-
   .lp-trail.is-first-camp-reveal .lp-trail-camp.is-landed {
     animation: none;
   }
