@@ -565,6 +565,10 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     still_open = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Open Camp", position: 2
     )
+    # Fourth camp so Trail windows (≤3 camps returns every node).
+    fogged = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Fog Camp", position: 3
+    )
     [ older, project ].each do |camp|
       leaf = practice_leaf_for!(camp)
       battle = @user.strategy_goals.create!(
@@ -581,7 +585,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{project.id}"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
-    assert_select "#trail-map-camps [id^=trail-camp-]", maximum: 3
+    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 
