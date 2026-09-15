@@ -549,29 +549,39 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#rpg-add-checkpoint", count: 0
   end
 
-  test "completed camps leave the mountain photo" do
+  test "latest cleared camp stays on the mountain photo" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Done Plan", position: 0
     )
+    older = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Older Done", position: 0
+    )
     project = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Done Project", position: 0
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Done Project", position: 1
     )
-    project_leaf = practice_leaf_for!(project)
-    battle = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: project_leaf, horizon: "day",
-      title: "Done Battle", scheduled_on: Date.current, position: 0
+    still_open = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Open Camp", position: 2
     )
-    battle.complete!
-    project.complete!
-    plan.complete!
+    [ older, project ].each do |camp|
+      leaf = practice_leaf_for!(camp)
+      battle = @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: leaf, horizon: "day",
+        title: "#{camp.title} Battle", scheduled_on: Date.current, position: 0
+      )
+      battle.complete!
+      camp.complete!
+    end
 
     get life_journey_path(@journey, focus_id: plan.id)
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select "#trail-camp-#{project.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{project.id}"
+    assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
+    assert_select "#trail-map-camps [id^=trail-camp-]", maximum: 3
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 

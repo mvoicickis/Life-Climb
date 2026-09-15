@@ -539,11 +539,11 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-camp-#{@project.id}"
-    assert_select "#trail-camp-#{second.id}"
-    # Window is current + 1 ahead — third stays off the map until the window advances.
-    assert_select "#trail-camp-#{third.id}", count: 0
-    assert_select "#trail-map-camps .lp-trail-camp", maximum: 3
+    # Plans with ≤3 camps show the full window (Trail returns all nodes).
+    assert_select "#trail-map-camps #trail-camp-#{@project.id}"
+    assert_select "#trail-map-camps #trail-camp-#{second.id}"
+    assert_select "#trail-map-camps #trail-camp-#{third.id}"
+    assert_select "#trail-map-camps .lp-trail-camp", count: 3
     assert_select ".trail-terrace", count: 0
   end
 
@@ -591,21 +591,35 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_equal @project.stage, created.stage
   end
 
-  test "finished camps leave the mountain photo and sheet" do
-    @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
+  test "older finished camps leave the photo; latest cleared stays visible" do
+    older = @project
+    older.update!(completed_at: Time.current, manually_completed_at: Time.current)
+    cleared = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Cleared camp", position: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "teal"
+    )
+    cleared.update!(completed_at: Time.current, manually_completed_at: Time.current)
     still_open = @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "project", title: "Ridge camp", position: 1,
+      horizon: "project", title: "Ridge camp", position: 2,
       trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+    fogged = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Fog camp", position: 3,
+      trail_x: 0.5, trail_y: 0.55, color_key: "purple"
     )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-camp-#{@project.id}", count: 0
-    assert_select "#trail-sheet-camp-#{@project.id}", count: 0
-    assert_select "#trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
+    assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{cleared.id}.is-done"
+    assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
+    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select "#trail-sheet-camp-#{still_open.id}"
-    assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /1\s*\/\s*2/
+    assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /2\s*\/\s*4/
   end
 
   test "upload and reset mountain photo" do
