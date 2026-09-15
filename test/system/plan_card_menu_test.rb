@@ -56,10 +56,12 @@ class PlanCardMenuTest < ApplicationSystemTestCase
 
     find(".lp-trail__peak-item--plan", text: /Beta Path/).click
     assert_selector "#strategy-world", wait: 5
+    assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_b.id), wait: 5
+    assert_includes page.current_url, "plan_id=#{@plan_b.id}"
     find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     assert_selector ".lp-trail__peak-item--plan.is-active", text: /Beta Path/, wait: 5
     assert_no_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
-    assert_includes page.current_url, "plan_id=#{@plan_b.id}"
   end
 
   test "destination edit dialog is available from the peak flag menu" do

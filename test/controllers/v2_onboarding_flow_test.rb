@@ -200,7 +200,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     journey = user.reload.primary_focused_journey
     get life_journey_path(journey)
     assert_response :success
-    assert_select ".lp-trail__companion-img[src*='fox']"
+
+    get settings_path
+    assert_response :success
+    assert_select "img[src*='characters/fox']"
   end
 
   private
