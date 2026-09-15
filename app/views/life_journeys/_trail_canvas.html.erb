@@ -36,8 +36,9 @@
 <% first_camp = first_camp_id.present? ? all_projects.find { |p| p.id == first_camp_id } : nil %>
 <% first_camp_reveal = first_camp.present? && !destination_overlay && plan.present? %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
+<% custom_mountain_photo = mountain_trail_custom_photo?(journey) %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
@@ -80,7 +81,7 @@
          data-trail-coach-xp-bar-value="<%= t('strategy.rpg.trail.coach.xp_bar') %>"
          data-trail-coach-journey-stats-value="<%= t('strategy.rpg.trail.coach.journey_stats') %>"
          <% end %>
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --map-aspect: <%= MountainTrailHelper::MAP_ASPECT_WIDTH %> / <%= MountainTrailHelper::MAP_ASPECT_HEIGHT %>; --map-world-y: <%= MountainTrailHelper::MAP_WORLD_Y %>; --lp-goal-x: 52.5%; --lp-goal-y: 11%;">
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --map-aspect: <%= MountainTrailHelper::MAP_ASPECT_WIDTH %> / <%= MountainTrailHelper::MAP_ASPECT_HEIGHT %>; --lp-goal-x: 52.5%; --lp-goal-y: 11%;">
 
   <% if destination_overlay && goal %>
     <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
@@ -220,6 +221,13 @@
                aria-hidden="true"
                data-trail-canvas-target="photoWrap"
                data-action="dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+            <% if custom_mountain_photo %>
+              <img class="lp-trail__photo-backdrop"
+                   src="<%= photo_url %>"
+                   alt=""
+                   decoding="async"
+                   aria-hidden="true">
+            <% end %>
             <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async" data-trail-canvas-target="photo">
             <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
             <div class="lp-trail__night"></div>

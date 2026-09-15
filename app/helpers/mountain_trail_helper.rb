@@ -12,11 +12,11 @@ module MountainTrailHelper
     [ 0.463, 0.512 ],
     [ 0.518, 0.555 ],
     [ 0.574, 0.531 ],
-    [ 0.623, 0.488 ],
-    [ 0.678, 0.457 ],
-    [ 0.740, 0.462 ],
-    [ 0.807, 0.518 ],
-    [ 0.875, 0.549 ],
+    [ 0.623, 0.528 ],
+    [ 0.678, 0.552 ],
+    [ 0.740, 0.547 ],
+    [ 0.807, 0.558 ],
+    [ 0.875, 0.514 ],
     [ 0.985, 0.586 ]
   ].freeze
 
@@ -29,8 +29,6 @@ module MountainTrailHelper
   # Curve map photo aspect (mountain_trail_default.webp).
   MAP_ASPECT_WIDTH = 1024
   MAP_ASPECT_HEIGHT = 1536
-  # Push world down so the painted flag tip clears the HUD.
-  MAP_WORLD_Y = "8%"
   MAP_ZOOM = 1.0
   # Tent caption under camp markers — two lines; long names still truncate in Ruby.
   CAMP_TENT_TITLE_LIMIT = 24
@@ -82,6 +80,10 @@ module MountainTrailHelper
 
   def mountain_trail_project_accent(project)
     project&.trail_accent_hex || mountain_trail_accent(project&.tagged_color_key)
+  end
+
+  def mountain_trail_custom_photo?(journey)
+    journey&.mountain_photo&.attached?
   end
 
   def mountain_trail_photo_url(journey)

@@ -289,7 +289,7 @@
   touch-action: none;
 }
 
-.lp-trail.is-relocating .lp-trail__mountain {
+.lp-trail.is-relocating .lp-trail__map {
   cursor: grabbing;
   touch-action: none;
 }
@@ -1176,7 +1176,6 @@
 }
 
 .lp-trail.is-v4 {
-  --lp-trail-photo-h: 1180px;
   --lp-trail-accent: #0f9488;
   background: #1a2a1c;
 }
@@ -1188,19 +1187,32 @@
 }
 
 .lp-trail.is-v4 .lp-trail__surface {
+  container-type: size;
+  container-name: trail-map;
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--map-aspect, 2 / 3);
   height: auto;
-  min-height: var(--lp-trail-photo-h);
+  min-height: 0;
   cursor: default;
+  --lp-trail-photo-h: 100cqh;
 }
 
-.lp-trail.is-v4 .lp-trail__mountain {
-  position: relative;
-  height: var(--lp-trail-photo-h);
+.lp-trail.is-v4 .lp-trail__map {
+  position: absolute;
+  inset: 0;
   cursor: default;
   touch-action: pan-y;
 }
 
-.lp-trail.is-v4 .lp-trail__mountain .lp-trail__photo-wrap {
+.lp-trail.is-v4 .lp-trail__world {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.lp-trail.is-v4 .lp-trail__map .lp-trail__photo-wrap {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -1212,7 +1224,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 160px;
+  height: calc(var(--lp-trail-photo-h, 540px) * 0.136);
   z-index: 2;
   pointer-events: none;
   background: linear-gradient(180deg, transparent 0%, rgba(28, 52, 32, 0.08) 70%, rgba(18, 36, 22, 0.18));
@@ -1257,16 +1269,39 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   /* TRAIL_CURVE fractions match full-frame mountain_trail_default (1024×1536). */
   object-position: center top;
   display: block;
   background: none;
   filter: saturate(1.05) contrast(1.04);
+  z-index: 1;
+}
+
+.lp-trail.is-v4.is-custom-mountain-photo img.lp-trail__photo {
+  object-position: center center;
+}
+
+.lp-trail.is-v4 .lp-trail__photo-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  transform: scale(1.14);
+  filter: blur(28px) saturate(1.08) contrast(1.02);
+  z-index: 0;
+  pointer-events: none;
+  display: block;
 }
 
 .lp-trail.is-v4.is-dormant img.lp-trail__photo {
   filter: saturate(0.55) contrast(0.95) brightness(0.92);
+}
+
+.lp-trail.is-v4.is-dormant .lp-trail__photo-backdrop {
+  filter: blur(28px) saturate(0.55) contrast(0.95) brightness(0.92);
 }
 
 /* Dark glass HUD (mockup) */
@@ -3262,7 +3297,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 /* Place mode */
-.lp-trail.is-placing .lp-trail__mountain { cursor: crosshair; }
+.lp-trail.is-placing .lp-trail__map { cursor: crosshair; }
 
 .lp-trail.is-trail-lit .lp-trail-glow {
   width: 10px;
@@ -5271,7 +5306,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-first-camp-reveal.is-focus-camp .lp-trail__scroll {
-  transform: scale(1.08) translateY(-4%);
+  transform: scale(1.04) translateY(-2%);
   transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
