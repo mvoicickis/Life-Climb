@@ -41,6 +41,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail-arrange-entry", count: 0
+    assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", count: 0
     assert_select "#trail-arrange-camps", count: 0
   end
 
@@ -53,7 +54,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-trail-arrange-entry", text: /Arrange camps/i
+    assert_select ".lp-trail-arrange-entry", count: 0
+    assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", text: /Arrange camps/i
     assert_select "#trail-arrange-camps[data-controller*='arrange-camps']"
     assert_select "#trail-arrange-camps[hidden]"
   end
@@ -618,7 +620,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select "#trail-sheet-camp-#{still_open.id}"
-    assert_select ".lp-trail-hud__stat[title=?]", I18n.t("strategy.rpg.trail.camps_done"), text: /2\s*\/\s*4/
+    assert_select ".lp-trail-hud__pill", count: 0
   end
 
   test "upload and reset mountain photo" do

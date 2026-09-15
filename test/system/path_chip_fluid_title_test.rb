@@ -70,9 +70,9 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
     page.evaluate_script(<<~JS)
       (() => {
         const needle = #{needle};
-        const link = Array.from(document.querySelectorAll(".lp-trail-hud__plan")).find((el) =>
+        const link = Array.from(document.querySelectorAll(".lp-trail__peak-item--plan")).find((el) =>
           (el.textContent || "").includes(needle)
-        ) || document.querySelector(".lp-trail-hud__plan.is-active");
+        ) || document.querySelector(".lp-trail__peak-item--plan.is-active");
         const peak = document.querySelector(".lp-trail__goal-title");
         if (!link && !peak) return { ok: false, reason: "missing" };
         const target = link || peak;
@@ -98,7 +98,8 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 10
     assert_no_selector ".lp-rpg-path"
-    assert_selector ".lp-trail-hud__plan.is-active", wait: 5
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__peak-item--plan.is-active", wait: 5
 
     metrics = path_metrics(expected_text)
     assert metrics["ok"], "HUD/peak title missing at #{width}x#{height}: #{metrics.inspect}"

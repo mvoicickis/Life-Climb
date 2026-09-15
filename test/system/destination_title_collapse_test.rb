@@ -92,7 +92,7 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
 
     assert metrics["ok"], "Goal plaque metrics missing: #{metrics.inspect}"
     assert_match(/Become a Rails developer/i, metrics["text"].to_s)
-    assert_operator metrics["titleW"], :>=, 72,
+    assert_operator metrics["titleW"], :>=, 200,
                     "goal title too narrow at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["titleH"], :>=, 12,
                     "goal title has no visible height at #{width}x#{height}: #{metrics.inspect}"

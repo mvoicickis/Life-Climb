@@ -1419,36 +1419,35 @@
   background: transparent;
 }
 
-/* HUD goal plaque (was scoped to .lp-trail.is-terraced; keep after de-terrace). */
+/* HUD hero goal title (full-width over photo). */
 .lp-trail-hud__lead {
   display: flex;
-  align-items: flex-start;
-  gap: 0.45rem;
-}
-
-.lp-trail-hud__pill {
-  flex: 0 1 auto;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 0;
 }
 
 .lp-trail__goal {
-  position: static;
-  left: auto;
-  top: auto;
-  transform: none;
-  flex: 0 0 auto;
-  max-width: 9.25rem;
+  position: relative;
+  width: 100%;
+  max-width: none;
   pointer-events: auto;
 }
 
-.lp-trail__goal-plaque {
-  border: 1px solid var(--lp-border);
-  border-radius: var(--lp-radius-field, 0.85rem);
-  background: var(--lp-frost);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 0.35rem 0.5rem;
+.lp-trail__goal-plaque.lp-trail__goal-hero {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--lp-radius-card, 1rem);
+  background: var(--lp-rpg-glass, rgba(8, 12, 18, 0.8));
+  backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
+  -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
+  box-shadow: var(--lp-rpg-glass-shadow, 0 18px 42px rgba(0, 0, 0, 0.44));
+  padding: 0.55rem 0.75rem;
   pointer-events: auto;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -1459,37 +1458,44 @@
 .lp-rpg.is-focus-phase .lp-trail__goal-title.lp-rpg-destination-carousel__title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  font-family: var(--lp-trail-display);
-  font-size: 0.72rem;
+  font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
+  font-size: clamp(1rem, 3.2vw + 0.35rem, 1.55rem);
   font-weight: 800;
-  color: var(--lp-ink, #0f172a);
+  color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
   line-height: 1.2;
-  text-align: left;
+  text-align: center;
   white-space: normal;
   word-break: normal;
+  overflow-wrap: anywhere;
   text-shadow: none;
-}
-
-.lp-trail__goal-tagline {
-  display: block;
-  margin-top: 0.1rem;
-  font-size: 0.58rem;
-  font-weight: 600;
-  color: var(--lp-muted, #475569);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .lp-trail__goal-menu {
   position: absolute;
   top: calc(100% + 0.35rem);
-  left: 0;
-  min-width: 11rem;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: min(16rem, calc(100vw - 1.5rem));
+  max-width: calc(100vw - 1.5rem);
   z-index: 25;
+  padding: 0.35rem;
+  border-radius: var(--lp-radius-field, 0.85rem);
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  background: var(--lp-rpg-glass-strong, rgba(6, 10, 16, 0.9));
+  backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
+  -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
+  box-shadow: var(--lp-rpg-glass-shadow, 0 18px 42px rgba(0, 0, 0, 0.44));
+}
+
+.lp-trail__peak-item--plan.is-active {
+  color: var(--lp-rpg-green, #57d35b);
+}
+
+.lp-trail__peak-item--plan {
+  text-decoration: none;
 }
 
 /* Destination pennant — MountainV4 mockup: right+translate, pole on summit */
@@ -1620,7 +1626,7 @@
   pointer-events: auto;
 }
 
-.lp-trail__peak-item {
+.lp-trail__goal-menu .lp-trail__peak-item {
   display: block;
   width: 100%;
   text-align: left;
@@ -1630,11 +1636,13 @@
   border-radius: 0.5rem;
   font: inherit;
   font-weight: 700;
-  color: var(--lp-trail-ink);
+  color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
   cursor: pointer;
 }
 
-.lp-trail__peak-item:hover { background: rgba(28,36,32,0.06); }
+.lp-trail__goal-menu .lp-trail__peak-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
 
 @keyframes lp-trail-flag-flutter {
   0%, 100% { transform: skewX(0deg); }
@@ -5514,27 +5522,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 /* —— Arrange camps overlay —— */
 .lp-trail.is-arrange-open .lp-trail__map {
   pointer-events: none;
-}
-
-.lp-trail-arrange-entry {
-  position: absolute;
-  z-index: 15;
-  left: 50%;
-  top: calc(max(0.55rem, env(safe-area-inset-top, 0px)) + 3.25rem);
-  bottom: auto;
-  transform: translateX(-50%);
-  margin: 0;
-  padding: 0.35rem 0.75rem;
-  border: 0;
-  border-radius: var(--lp-radius-pill, 999px);
-  background: color-mix(in srgb, var(--lp-surface, #fff) 88%, transparent);
-  color: var(--lp-muted, #475569);
-  font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
-  font-size: 0.78rem;
-  font-weight: 700;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-ink, #0f172a) 8%, transparent);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .lp-trail-arrange {

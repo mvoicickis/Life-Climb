@@ -127,7 +127,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-trail-hud"
-    assert_select ".lp-trail-hud__stat", minimum: 1
+    assert_select ".lp-trail__goal-hero", minimum: 1
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_select "#trail-sheet-body form[action*='battle_win']"

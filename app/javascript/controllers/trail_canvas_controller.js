@@ -30,7 +30,6 @@ export default class extends Controller {
     "accentHex",
     "campMode",
     "peakTitle",
-    "peakTagline",
     "photoWrap",
     "photo",
     "clouds"
@@ -563,12 +562,6 @@ export default class extends Controller {
     await this.patchGoal({ title })
   }
 
-  async commitPeakTagline(event) {
-    const text = (event.currentTarget.textContent || "").trim()
-    if (!this.goalUpdateUrlValue) return
-    await this.patchGoal({ description: text })
-  }
-
   async patchGoal(fields) {
     const token = this.csrfToken()
     const body = new FormData()
@@ -740,7 +733,9 @@ export default class extends Controller {
 
   openArrangeCamps(event) {
     event?.preventDefault()
+    event?.stopPropagation()
     if (this.element.classList.contains("is-first-camp-reveal")) return
+    if (this.hasPeakMenuTarget) this.peakMenuTarget.hidden = true
 
     const overlay = document.getElementById("trail-arrange-camps")
     if (!overlay) return
@@ -760,6 +755,6 @@ export default class extends Controller {
 
     overlay.hidden = true
     overlay.setAttribute("aria-hidden", "true")
-    this.element.querySelector(".lp-trail-arrange-entry")?.focus()
+    this.element.querySelector(".lp-trail__goal-plaque")?.focus()
   }
 }

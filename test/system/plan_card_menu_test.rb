@@ -49,14 +49,19 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-plan-rail"
     assert_no_selector ".lp-rpg-path__menu-btn"
 
-    assert_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/
-    assert_selector ".lp-trail-hud__plan", text: /Beta Path/
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
+    assert_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
+    assert_selector ".lp-trail__peak-item--plan", text: /Beta Path/
 
-    find(".lp-trail-hud__plan", text: /Beta Path/).click
+    find(".lp-trail__peak-item--plan", text: /Beta Path/).click
     assert_selector "#strategy-world", wait: 5
-    assert_selector ".lp-trail-hud__plan.is-active", text: /Beta Path/, wait: 5
-    assert_no_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/
+    assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_b.id), wait: 5
     assert_includes page.current_url, "plan_id=#{@plan_b.id}"
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
+    assert_selector ".lp-trail__peak-item--plan.is-active", text: /Beta Path/, wait: 5
+    assert_no_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
   end
 
   test "destination edit dialog is available from the peak flag menu" do
@@ -83,8 +88,9 @@ class PlanCardMenuTest < ApplicationSystemTestCase
 
   test "V4 has no plan card delete menu; HUD plans and destination edit remain" do
     sign_in_and_visit_mountain!
-    assert_selector ".lp-trail-hud__plan.is-active", text: /Alpha Path/, wait: 5
-    assert_selector ".lp-trail-hud__plan", text: /Beta Path/
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/, wait: 5
+    assert_selector ".lp-trail__peak-item--plan", text: /Beta Path/
     assert_no_selector ".lp-rpg-path__menu"
     assert_no_selector ".lp-rpg-path__menu-item.is-danger"
     assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all

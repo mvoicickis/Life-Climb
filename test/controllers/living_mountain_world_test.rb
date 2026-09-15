@@ -190,7 +190,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: plan_b.id)
     assert_response :success
-    assert_select ".lp-trail-hud__plan.is-active", text: /Side path/
+    assert_select ".lp-trail__peak-item--plan.is-active", text: /Side path/
     assert_select "#trail-camp-#{launch.id}[aria-label=?]", "Launch camp"
     assert_select ".lp-trail__goal-title", text: /#{@goal.title}/
 
