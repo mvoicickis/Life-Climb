@@ -36,9 +36,8 @@
 <% first_camp = first_camp_id.present? ? all_projects.find { |p| p.id == first_camp_id } : nil %>
 <% first_camp_reveal = first_camp.present? && !destination_overlay && plan.present? %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
-<% spine_settled = plan.present? && !first_camp_reveal && !destination_overlay %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-spine-settled' if spine_settled %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
@@ -246,10 +245,6 @@
             </div>
             <div class="lp-trail__lightning" data-trail-ambient-target="lightning"></div>
           </div>
-
-          <% if plan.present? && !destination_overlay %>
-            <%= render "life_journeys/trail_spine" %>
-          <% end %>
 
           <%= render "life_journeys/trail_map_camps",
                 trail: trail,

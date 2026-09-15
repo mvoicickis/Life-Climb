@@ -75,7 +75,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps"
     assert_select "#trail-camps"
     assert_select "#trail-stages", count: 0
-    assert_select ".lp-trail__spine"
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status"

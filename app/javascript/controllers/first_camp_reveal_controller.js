@@ -40,7 +40,6 @@ export default class extends Controller {
     this.unbindFirstCampTap()
     delete this.element.dataset.trailSuppressOpen
     this.element.classList.remove("is-first-camp-reveal", "is-focus-camp", "is-awaiting-tap")
-    this.element.classList.add("is-spine-settled")
     this.overlayTarget?.remove()
     const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
     if (sheet?._openCampId) {
@@ -57,8 +56,6 @@ export default class extends Controller {
         return
       }
 
-      this.element.classList.add("is-spine-drawing")
-
       await this.wait(500, token)
       if (token !== this._token) return
 
@@ -73,7 +70,6 @@ export default class extends Controller {
       await this.wait(400, token)
       if (token !== this._token) return
 
-      this.settleSpine()
       this.enterTapReady()
     } catch (error) {
       this.recoverToTapReady(error)
@@ -88,14 +84,8 @@ export default class extends Controller {
     this._token += 1
     this.landAllCamps()
     this.showSummit()
-    this.settleSpine()
     this.element.classList.add("is-focus-camp")
     this.enterTapReady({ pulse: !this.prefersReducedMotion() })
-  }
-
-  settleSpine() {
-    this.element.classList.remove("is-spine-drawing")
-    this.element.classList.add("is-spine-settled")
   }
 
   enterTapReady({ pulse = true } = {}) {
