@@ -3,6 +3,7 @@
   todo = local_assigns[:todo]
   mission = local_assigns[:mission]
   qty_project = nil
+  strategy_battle = nil
   if mission
     title = mission.title
     project = nil
@@ -16,6 +17,7 @@
     complete_params = {}
     row_id = dom_id(todo, :battlefield_row)
     qty_project = todo.strategy_goal&.quantified_path_project
+    strategy_battle = todo.strategy_goal
   end
   camp_style = battlefield_camp_style(project)
   camp_label = project&.title.presence || t("dash.battlefield.no_camp")
@@ -23,7 +25,18 @@
 
 <article class="lp-today-v2-row"
          id="<%= row_id %>"
-         data-controller="<%= ['today-battle-row', ('quantity-complete' if qty_project)].compact.join(' ') %>"
+         data-controller="<%= [
+           'today-battle-row',
+           ('quantity-complete' if qty_project),
+           ('inline-title-edit' if strategy_battle)
+         ].compact.join(' ') %>"
+         <% if strategy_battle %>
+         data-inline-title-edit-update-url-value="<%= strategy_goal_path(strategy_battle) %>"
+         data-inline-title-edit-mode-value="today"
+         data-inline-title-edit-battle-id-value="<%= strategy_battle.id %>"
+         data-inline-title-edit-todo-id-value="<%= todo.id %>"
+         data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>"
+         <% end %>
          data-action="click->today-battle-row#activate"
          <% if todo %>
          data-todo-id="<%= todo.id %>"
@@ -69,7 +82,16 @@
     <% end %>
   <% end %>
 
-  <p class="lp-today-v2-row__title"><%= title %></p>
+  <% if strategy_battle %>
+    <button type="button"
+            class="lp-today-v2-row__title lp-today-v2-row__title-btn"
+            data-inline-title-edit-target="display"
+            data-action="click->inline-title-edit#open">
+      <%= title %>
+    </button>
+  <% else %>
+    <p class="lp-today-v2-row__title"><%= title %></p>
+  <% end %>
 
   <span class="lp-today-v2-row__camp"
         style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">

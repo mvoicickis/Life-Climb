@@ -263,6 +263,29 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   user-select: none;
 }
 
+.lp-today-v2-row__title-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  width: 100%;
+}
+
+.lp-today-v2-row__title-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0.125rem 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--today-ink);
+  line-height: 1.25;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-surface);
+}
+
 .lp-today-v2-row__camp {
   flex: none;
   max-width: 42%;

@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   activate(event) {
     const target = event.target
-    if (target.closest("button, input, a, dialog")) return
+    if (target.closest("button, input, a, dialog, .lp-today-v2-row__title-btn")) return
 
     const form = this.element.querySelector("form.lp-today-v2-row__check-form")
     if (!form) return
