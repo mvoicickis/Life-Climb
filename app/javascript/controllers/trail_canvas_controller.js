@@ -713,7 +713,7 @@ export default class extends Controller {
   coordsFromClient(clientX, clientY) {
     const mountain = this.hasMountainTarget
       ? this.mountainTarget
-      : this.surfaceTarget?.querySelector(".lp-trail__mountain")
+      : this.surfaceTarget?.querySelector(".lp-trail__map")
     const surface = mountain || (this.hasSurfaceTarget ? this.surfaceTarget : this.element)
     const rect = surface.getBoundingClientRect()
     if (!rect.width || !rect.height) return null

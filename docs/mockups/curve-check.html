@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRAIL_CURVE check</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+    }
+    .frame {
+      position: relative;
+      width: min(100vw, 1024px);
+      aspect-ratio: 1024 / 1536;
+    }
+    .frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+    .dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      margin: -7px 0 0 -7px;
+      border-radius: 50%;
+      background: #e11;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+      font: 700 9px/10px system-ui, sans-serif;
+      color: #fff;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="frame" id="frame">
+    <img src="../../app/assets/images/mountain_trail_default.webp" alt="" width="1024" height="1536" decoding="async">
+  </div>
+  <script>
+    // TRAIL_CURVE from mountain_trail_helper.rb — [yFrac, xFrac]
+    const TRAIL_CURVE = [
+      [0.236, 0.545],
+      [0.297, 0.549],
+      [0.352, 0.562],
+      [0.408, 0.536],
+      [0.463, 0.512],
+      [0.518, 0.555],
+      [0.574, 0.531],
+      [0.623, 0.528],
+      [0.678, 0.552],
+      [0.740, 0.547],
+      [0.807, 0.558],
+      [0.875, 0.514],
+      [0.985, 0.586]
+    ];
+    const frame = document.getElementById("frame");
+    TRAIL_CURVE.forEach(([y, x], i) => {
+      const el = document.createElement("span");
+      el.className = "dot";
+      el.style.left = (x * 100) + "%";
+      el.style.top = (y * 100) + "%";
+      el.textContent = String(i + 1);
+      el.title = (i + 1) + ": y=" + y + ", x=" + x;
+      frame.appendChild(el);
+    });
+  </script>
+</body>
+</html>
