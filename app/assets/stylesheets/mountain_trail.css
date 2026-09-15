@@ -1258,7 +1258,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 40%;
+  /* TRAIL_CURVE fractions match full-frame mountain_trail_default (1024×1536). */
+  object-position: center top;
   display: block;
   background: none;
   filter: saturate(1.05) contrast(1.04);
