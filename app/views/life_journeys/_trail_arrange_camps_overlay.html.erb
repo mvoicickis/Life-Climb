@@ -14,6 +14,7 @@
      data-arrange-camps-csrf-value="<%= form_authenticity_token %>"
      data-arrange-camps-saved-value="<%= t('strategy.rpg.trail.arrange.saved') %>"
      data-arrange-camps-next-value="<%= t('strategy.rpg.trail.arrange.next') %>"
+     data-arrange-camps-new-stage-value="<%= t('strategy.rpg.trail.arrange.new_stage_drop') %>"
      data-arrange-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>"
      <%= "hidden" unless open_overlay %>
      aria-hidden="<%= open_overlay ? 'false' : 'true' %>">
@@ -73,6 +74,11 @@
         </ul>
       </section>
     <% end %>
+
+    <section class="lp-trail-arrange-new-stage" hidden data-arrange-camps-target="newStage">
+      <p class="lp-trail-arrange-new-stage__label"><%= t("strategy.rpg.trail.arrange.new_stage_drop") %></p>
+      <ul class="lp-trail-arrange-list" data-arrange-new-stage-list></ul>
+    </section>
   </div>
 
   <p class="lp-trail-arrange__toast"

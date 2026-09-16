@@ -48,6 +48,21 @@ class StrategyArrangeCampsTest < ActiveSupport::TestCase
     assert_equal [ 0, 1, 2 ], [ @a, @b, @c ].map(&:position)
   end
 
+  test "empty groups are stripped and positions stay contiguous" do
+    Strategy::ArrangeCamps.call(
+      user: @user,
+      plan: @plan,
+      groups: [
+        { camp_ids: [ @a.id, @b.id ] },
+        { camp_ids: [] },
+        { camp_ids: [ @c.id ] }
+      ]
+    )
+
+    assert_equal [ 0, 0, 1 ], [ @a.reload.stage, @b.reload.stage, @c.reload.stage ]
+    assert_equal [ 0, 1, 2 ], [ @a.position, @b.position, @c.position ]
+  end
+
   test "completed camp stage updates when layout renumbers" do
     @a.complete!
     @a.update_columns(stage: 0, position: 0)

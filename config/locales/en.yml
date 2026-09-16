@@ -966,6 +966,7 @@ en:
           stage: "Stage %{stage}"
           stage_here: "Stage %{stage} · you are here"
           drag: "Drag to reorder"
+          new_stage_drop: "Drop here for a new stage"
         first_camp_reveal:
           skip_hint: "Tap the tent to plan your first day" # TODO: translate for lv/de/es/ru.
           setup_lead: "What's one small thing you'll do today?" # TODO: translate for lv/de/es/ru.
