@@ -3,6 +3,7 @@
 <% plan = local_assigns.fetch(:plan) %>
 <% projects = local_assigns.fetch(:projects) %>
 <% open_stage = local_assigns.fetch(:open_stage) %>
+<% focus_stage = local_assigns[:focus_stage] %>
 <% open_overlay = local_assigns.fetch(:open_overlay, false) %>
 <% groups = mountain_trail_arrange_groups(projects) %>
 <div id="trail-arrange-camps"
@@ -10,12 +11,15 @@
      data-trail-ignore
      data-controller="arrange-camps"
      data-arrange-camps-url-value="<%= life_journey_camp_arrangement_path(journey) %>"
+     data-arrange-camps-reopen-url-value="<%= reopen_life_journey_camp_arrangement_path(journey) %>"
+     data-arrange-camps-stage-camp-url-value="<%= stage_camp_life_journey_camp_arrangement_path(journey) %>"
      data-arrange-camps-plan-id-value="<%= plan.id %>"
      data-arrange-camps-csrf-value="<%= form_authenticity_token %>"
      data-arrange-camps-saved-value="<%= t('strategy.rpg.trail.arrange.saved') %>"
      data-arrange-camps-next-value="<%= t('strategy.rpg.trail.arrange.next') %>"
      data-arrange-camps-new-stage-value="<%= t('strategy.rpg.trail.arrange.new_stage_drop') %>"
      data-arrange-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>"
+     <% if focus_stage.present? %>data-arrange-camps-focus-stage-value="<%= focus_stage %>"<% end %>
      <%= "hidden" unless open_overlay %>
      aria-hidden="<%= open_overlay ? 'false' : 'true' %>">
   <header class="lp-trail-arrange__top">
@@ -38,8 +42,16 @@
 
   <div class="lp-trail-arrange__scroll" data-arrange-camps-target="scroll">
     <% groups.each do |group| %>
-      <section class="lp-trail-arrange-group <%= 'lp-trail-arrange-group--here' if group[:open] %>">
+      <section class="lp-trail-arrange-group <%= 'lp-trail-arrange-group--here' if group[:open] %>"
+               data-stage="<%= group[:stage] %>">
         <h2 class="lp-trail-arrange-group__heading">
+          <% if group[:finished] %>
+            <span class="lp-trail-arrange-group__tick" aria-label="<%= t('strategy.rpg.trail.arrange.stage_complete') %>">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true">
+                <path d="M9.55 17.6 4.9 12.95l1.4-1.4 3.25 3.25L17.7 6.65l1.4 1.4z"/>
+              </svg>
+            </span>
+          <% end %>
           <% if group[:open] %>
             <%= t("strategy.rpg.trail.arrange.stage_here", stage: mountain_trail_stage_label(group[:stage])) %>
           <% else %>
@@ -48,7 +60,7 @@
         </h2>
         <ul class="lp-trail-arrange-list" data-arrange-camps-target="list" data-arrange-list>
           <% group[:camps].each_with_index do |camp, index| %>
-            <li class="lp-trail-arrange-row lp-pointer-reorder__row"
+            <li class="lp-trail-arrange-row lp-pointer-reorder__row <%= 'lp-trail-arrange-row--done' if camp.completed? %>"
                 data-id="<%= camp.id %>"
                 data-camp-id="<%= camp.id %>"
                 data-completed="<%= camp.completed? %>"
@@ -62,7 +74,14 @@
                       data-arrange-rename>
                 <%= camp.title %>
               </button>
-              <% unless camp.completed? %>
+              <% if group[:finished] && camp.completed? && !camp.quantified? %>
+                <button type="button"
+                        class="lp-trail-arrange-row__open-again"
+                        data-action="click->arrange-camps#openAgain"
+                        data-camp-id="<%= camp.id %>">
+                  <%= t("strategy.rpg.trail.arrange.open_again") %>
+                </button>
+              <% elsif !camp.completed? %>
                 <button type="button"
                         class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
                         aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
@@ -72,6 +91,20 @@
             </li>
           <% end %>
         </ul>
+        <% if group[:finished] %>
+          <div class="lp-trail-arrange-add-camp" data-arrange-add-stage="<%= group[:stage] %>">
+            <label class="sr-only" for="arrange-add-camp-<%= group[:stage] %>"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></label>
+            <input id="arrange-add-camp-<%= group[:stage] %>"
+                   type="text"
+                   class="lp-trail-arrange-add-camp__input"
+                   maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                   placeholder="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
+                   autocomplete="off"
+                   data-action="keydown->arrange-camps#addStageCampKeydown"
+                   data-stage="<%= group[:stage] %>">
+            <span class="lp-trail-arrange-add-camp__hint" aria-hidden="true"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></span>
+          </div>
+        <% end %>
       </section>
     <% end %>
 

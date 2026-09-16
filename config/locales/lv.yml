@@ -379,6 +379,11 @@ lv:
           - "Read 10 pages"
           - "Move $20 to savings"
           - "Update one resume bullet"
+        arrange: # TODO: translate
+          open_again: "Open again"
+          add_camp_here: "+ Add a camp here"
+          add_camp_placeholder: "New camp name"
+          stage_complete: "Stage complete"
         every_day: "Katru dienu"
         just_once: "Tikai vienreiz"
         log_a_number: "Pierakstīt skaitli"

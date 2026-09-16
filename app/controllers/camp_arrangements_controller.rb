@@ -6,7 +6,7 @@ class CampArrangementsController < ApplicationController
 
   before_action :require_planning_v2
   before_action :set_journey
-  before_action :set_plan
+  before_action :set_plan, only: %i[update stage_camp]
 
   def update
     groups = parse_groups(params[:groups])
@@ -26,6 +26,46 @@ class CampArrangementsController < ApplicationController
     end
   end
 
+  def reopen
+    camp = find_journey_camp(params[:camp_id])
+    return head :not_found if camp.blank?
+
+    @plan = camp.parent
+    return head :not_found if @plan.blank? || !@plan.plan?
+
+    Strategy::ReopenPlanCamp.call(user: current_user, camp: camp)
+    @focus_stage = camp.reload.stage.to_i
+    load_trail_context
+
+    respond_to do |format|
+      format.turbo_stream { render :reopen }
+      format.html { redirect_to life_journey_path(@journey, goal_id: @goal&.id, plan_id: @plan.id), status: :see_other }
+    end
+  rescue Strategy::ReopenPlanCamp::Invalid
+    head :unprocessable_entity
+  end
+
+  def stage_camp
+    title = params[:title].to_s.strip
+    return head :unprocessable_entity if title.blank?
+
+    camp = Strategy::CreatePlanStageCamp.call(
+      user: current_user,
+      plan: @plan,
+      stage: params[:stage],
+      title: title
+    )
+    @focus_stage = camp.stage.to_i
+    load_trail_context
+
+    respond_to do |format|
+      format.turbo_stream { render :stage_camp }
+      format.html { redirect_to life_journey_path(@journey, goal_id: @goal&.id, plan_id: @plan.id), status: :see_other }
+    end
+  rescue Strategy::CreatePlanStageCamp::Invalid, Strategy::PlaceCampOnStage::Invalid
+    head :unprocessable_entity
+  end
+
   private
 
   def require_planning_v2
@@ -39,10 +79,25 @@ class CampArrangementsController < ApplicationController
   end
 
   def set_plan
-    @plan = current_user.strategy_goals.find_by(id: params[:plan_id], horizon: "plan")
-    return if @plan.present?
+    @plan = current_user.strategy_goals.for_kind("plan").find_by(id: params[:plan_id])
+    return head :not_found if @plan.blank?
 
-    head :unprocessable_entity
+    owned =
+      @plan.life_journey_id == @journey.id ||
+      (@plan.life_journey_id.blank? && @plan.life_area_id == @journey.life_area_id)
+    return if owned
+
+    head :not_found
+  end
+
+  def find_journey_camp(camp_id)
+    camp = current_user.strategy_goals.for_kind("project").not_holding.find_by(id: camp_id)
+    return nil if camp.blank?
+
+    owned =
+      camp.life_journey_id == @journey.id ||
+      (camp.life_journey_id.blank? && camp.life_area_id == @journey.life_area_id)
+    owned ? camp : nil
   end
 
   def parse_groups(raw)

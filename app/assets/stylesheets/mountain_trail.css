@@ -5621,6 +5621,9 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail-arrange-group__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   margin: 0 0 0.5rem;
   padding-left: 0.65rem;
   font-size: 0.72rem;
@@ -5629,6 +5632,12 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   text-transform: uppercase;
   color: var(--lp-muted, #475569);
   border-left: 3px solid color-mix(in srgb, var(--lp-ink, #0f172a) 12%, transparent);
+}
+
+.lp-trail-arrange-group__tick {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--lp-green-deep, #3dbd48);
 }
 
 .lp-trail-arrange-group--here .lp-trail-arrange-group__heading {
@@ -5653,6 +5662,15 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail-arrange-group--here .lp-trail-arrange-row {
   background: color-mix(in srgb, var(--lp-green, #57d35b) 8%, var(--lp-surface, #fff));
+}
+
+.lp-trail-arrange-row--done {
+  color: var(--lp-muted, #475569);
+}
+
+.lp-trail-arrange-row--done .lp-trail-arrange-row__label-btn {
+  text-decoration: line-through;
+  color: var(--lp-muted, #475569);
 }
 
 .lp-trail-arrange-row__next {
@@ -5692,6 +5710,62 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   font-family: inherit;
   font-size: 0.92rem;
   font-weight: 700;
+}
+
+.lp-trail-arrange-row__open-again {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  border-radius: var(--lp-radius-field, 12px);
+  background: color-mix(in srgb, var(--lp-green, #57d35b) 16%, var(--lp-surface, #fff));
+  color: var(--lp-green-deep, #3dbd48);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lp-trail-arrange-add-camp {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+  padding: 0.35rem 0.25rem 0.35rem 0.65rem;
+}
+
+.lp-trail-arrange-add-camp__input {
+  width: 100%;
+  min-height: var(--lp-tap, 2.75rem);
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border: 1.5px dashed var(--lp-border, #e2e8f0);
+  border-radius: var(--lp-radius-field, 12px);
+  background: var(--lp-paper, #f8fafc);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lp-ink, #0f172a);
+}
+
+.lp-trail-arrange-add-camp__input:focus {
+  outline: none;
+  border-color: var(--lp-green, #57d35b);
+  border-style: solid;
+  background: var(--lp-surface, #fff);
+}
+
+.lp-trail-arrange-add-camp__hint {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--lp-muted, #475569);
 }
 
 .lp-trail-arrange-row__handle {
