@@ -957,6 +957,53 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert StrategyGoal.exists?(plan.id)
   end
 
+  test "deleting a goal removes plan camps and battles under it" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Spine goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Spine plan", position: 0
+    )
+    camp = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Spine camp", position: 0
+    )
+    battle = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: camp, horizon: "day",
+      title: "Spine battle", scheduled_on: Date.current, position: 0
+    )
+    ids = [ goal.id, plan.id, camp.id, battle.id ]
+
+    delete strategy_goal_path(goal)
+
+    assert_response :redirect
+    ids.each { |id| assert_not StrategyGoal.exists?(id), "expected strategy_goal #{id} gone" }
+  end
+
+  test "deleting a goal does not lower Battle strength or streak" do
+    @user.update!(total_points: 42, climb_streak_days: 3, climb_streak_on: Date.current)
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Points goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Points plan", position: 0
+    )
+    camp = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Points camp", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: camp, horizon: "day",
+      title: "Points battle", scheduled_on: Date.current, position: 0
+    )
+
+    delete strategy_goal_path(goal)
+
+    assert_response :redirect
+    @user.reload
+    assert_equal 42, @user.total_points
+    assert_equal 3, @user.climb_streak_days
+    assert_equal Date.current, @user.climb_streak_on
+  end
+
   test "open day battles can swap position with move" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0

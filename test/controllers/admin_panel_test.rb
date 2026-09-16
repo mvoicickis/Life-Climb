@@ -151,6 +151,43 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     assert_not LifeJourney.exists?(journey.id)
   end
 
+  test "admin can delete account whose goal has plan camps and battles" do
+    allow_extra_climbs!(@other)
+    Onboarding::Run.call(
+      user: @other,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "App in production",
+      current_reality: "Still building",
+      next_win: "Launch Beta",
+      today_mission: "Write one test",
+      closer_percent: 20
+    )
+    journey = @other.reload.primary_focused_journey
+    area = journey.life_area
+    goal = @other.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Account spine goal", position: 0
+    )
+    plan = @other.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Account spine plan", position: 0
+    )
+    camp = @other.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: plan, horizon: "project", title: "Account spine camp", position: 0
+    )
+    battle = @other.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: camp, horizon: "day",
+      title: "Account spine battle", scheduled_on: Date.current, position: 0
+    )
+    ids = [ goal.id, plan.id, camp.id, battle.id ]
+
+    sign_in_as @admin
+    assert_difference "User.count", -1 do
+      delete admin_user_path(@other)
+    end
+    assert_redirected_to admin_users_path
+    ids.each { |id| assert_not StrategyGoal.exists?(id) }
+  end
+
   test "non admin cannot promote via direct url" do
     sign_in_as @user
     patch promote_admin_user_path(@other)

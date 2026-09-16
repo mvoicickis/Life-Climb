@@ -136,7 +136,11 @@ class StrategyGoalsController < ApplicationController
     next_focus_id = was_project ? next_sibling_project_id(goal) : nil
     @removed_was_day = goal.day?
     stash_destroyed_goal!(goal) if goal.day? || goal.project?
-    goal.destroy!
+    if goal.goal?
+      StrategyGoal.with_holding_destroy { goal.destroy! }
+    else
+      goal.destroy!
+    end
     Strategy::SyncCompletion.resync!(node: parent) if was_plan || was_project
     prepare_world_for_area!(area_id, focus_id: next_focus_id || parent_id)
     @removed_id = removed_id
