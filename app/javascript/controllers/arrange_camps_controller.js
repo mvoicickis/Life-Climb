@@ -6,12 +6,15 @@ export default class extends Controller {
 
   static values = {
     url: String,
+    reopenUrl: String,
+    stageCampUrl: String,
     planId: Number,
     csrf: String,
     saved: String,
     next: String,
     newStage: String,
-    maxLength: { type: Number, default: 120 }
+    maxLength: { type: Number, default: 120 },
+    focusStage: Number
   }
 
   connect() {
@@ -22,6 +25,7 @@ export default class extends Controller {
       this.element.setAttribute("aria-hidden", "false")
     }
     this.bindDrag()
+    this.focusAddInput()
   }
 
   disconnect() {
@@ -137,6 +141,91 @@ export default class extends Controller {
     }
 
     window.location.reload()
+  }
+
+  async openAgain(event) {
+    event.preventDefault()
+    const campId = event.currentTarget.dataset.campId
+    if (!campId || !this.reopenUrlValue) return
+
+    const token = this.csrfValue || document.querySelector("meta[name='csrf-token']")?.content
+    const body = new FormData()
+    body.set("camp_id", campId)
+    body.set("authenticity_token", token || "")
+
+    const response = await fetch(this.reopenUrlValue, {
+      method: "POST",
+      headers: {
+        Accept: "text/vnd.turbo-stream.html",
+        "X-CSRF-Token": token || ""
+      },
+      body,
+      credentials: "same-origin"
+    })
+
+    if (response.ok) {
+      const html = await response.text()
+      if (html.includes("turbo-stream")) {
+        window.Turbo?.renderStreamMessage?.(html)
+      }
+      return
+    }
+
+    window.location.reload()
+  }
+
+  addStageCampKeydown(event) {
+    if (event.key !== "Enter") return
+    event.preventDefault()
+    this.addStageCamp(event)
+  }
+
+  async addStageCamp(event) {
+    const input = event.currentTarget
+    const title = input.value.trim()
+    const stage = input.dataset.stage
+    if (!title || stage == null || !this.stageCampUrlValue) return
+
+    const token = this.csrfValue || document.querySelector("meta[name='csrf-token']")?.content
+    const body = new FormData()
+    body.set("plan_id", String(this.planIdValue))
+    body.set("stage", String(stage))
+    body.set("title", title)
+    body.set("authenticity_token", token || "")
+
+    this._refocusStage = stage
+
+    const response = await fetch(this.stageCampUrlValue, {
+      method: "POST",
+      headers: {
+        Accept: "text/vnd.turbo-stream.html",
+        "X-CSRF-Token": token || ""
+      },
+      body,
+      credentials: "same-origin"
+    })
+
+    if (response.ok) {
+      const html = await response.text()
+      if (html.includes("turbo-stream")) {
+        window.Turbo?.renderStreamMessage?.(html)
+      }
+      return
+    }
+
+    window.location.reload()
+  }
+
+  focusAddInput() {
+    const stage = this.hasFocusStageValue ? this.focusStageValue : this._refocusStage
+    if (stage == null || stage === "") return
+
+    requestAnimationFrame(() => {
+      const input = this.element.querySelector(
+        `.lp-trail-arrange-add-camp__input[data-stage="${stage}"]`
+      )
+      input?.focus()
+    })
   }
 
   showSaved() {

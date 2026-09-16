@@ -126,4 +126,75 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
   end
+
+  test "reopen finished camp returns turbo stream and moves you are here" do
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_b.update_columns(stage: 1, position: 1)
+    @camp_c.update_columns(stage: 2, position: 2)
+    battle = @camp_a.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
+    )
+    battle.complete!
+    @camp_a.complete!
+    Strategy::SyncCompletion.call(project: @camp_a)
+
+    post reopen_life_journey_camp_arrangement_path(@journey),
+         params: { camp_id: @camp_a.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_match("trail-arrange-camps", response.body)
+    assert_match(/you are here/i, response.body)
+    assert_nil @camp_a.reload.completed_at
+    assert_equal 1, @camp_a.children.reload.count { |d| d.day? && !d.completed? }
+  end
+
+  test "stage_camp adds camp on finished stage" do
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_b.update_columns(stage: 1, position: 1)
+    @camp_c.update_columns(stage: 2, position: 2)
+    @camp_a.complete!
+    Strategy::SyncCompletion.call(project: @camp_a)
+
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      post stage_camp_life_journey_camp_arrangement_path(@journey),
+           params: { plan_id: @plan.id, stage: 0, title: "Fresh camp" },
+           as: :turbo_stream
+    end
+
+    assert_response :success
+    created = @plan.children.for_kind("project").find_by!(title: "Fresh camp")
+    assert_equal 0, created.stage
+    assert_operator created.position, :<, @camp_b.reload.position
+    assert_match("Fresh camp", response.body)
+    assert_match(/you are here/i, response.body)
+  end
+
+  test "reopen with another users camp_id returns 404 and changes nothing" do
+    other = users(:two)
+    other.update!(planning_version: 2)
+    allow_extra_climbs!(other)
+    other_area = other.life_areas.first || other.life_areas.create!(key: "career", number: 9)
+    other_goal = other.strategy_goals.create!(life_area: other_area, horizon: "goal", title: "Other", position: 0)
+    other_plan = other.strategy_goals.create!(
+      life_area: other_area, parent: other_goal, horizon: "plan", title: "Other plan", position: 0
+    )
+    foreign = other.strategy_goals.create!(
+      life_area: other_area, parent: other_plan, horizon: "project", title: "Foreign", position: 0, stage: 0
+    )
+    foreign.complete!
+
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_a.complete!
+    before = @camp_a.reload.attributes.slice("completed_at", "stage", "position")
+
+    post reopen_life_journey_camp_arrangement_path(@journey),
+         params: { camp_id: foreign.id },
+         as: :turbo_stream
+
+    assert_response :not_found
+    assert_equal before["completed_at"], @camp_a.reload.completed_at
+    assert foreign.reload.completed?
+  end
 end

@@ -292,6 +292,7 @@ module MountainTrailHelper
       {
         stage: stage,
         open: stage == open_stage,
+        finished: mountain_trail_stage_done?(projects, stage),
         camps: by_stage[stage]
       }
     end

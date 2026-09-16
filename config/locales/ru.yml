@@ -263,6 +263,11 @@ ru:
           - "Read 10 pages"
           - "Move $20 to savings"
           - "Update one resume bullet"
+        arrange: # TODO: translate
+          open_again: "Open again"
+          add_camp_here: "+ Add a camp here"
+          add_camp_placeholder: "New camp name"
+          stage_complete: "Stage complete"
         base_camp:
           add_habit: "Add basic"  # TODO: translate
     help:
