@@ -45,6 +45,7 @@ export default class extends Controller {
       newStageList,
       newStageZone: this.hasNewStageTarget ? this.newStageTarget : null,
       scrollRoot: this.hasScrollTarget ? this.scrollTarget : null,
+      edgeScrollBandPx: window.matchMedia("(max-width: 360px)").matches ? 48 : 64,
       rowSelector: ".lp-pointer-reorder__row",
       handleSelector: ".lp-pointer-reorder__handle",
       placeholderClass: "lp-pointer-reorder__placeholder",
@@ -65,10 +66,6 @@ export default class extends Controller {
     if (this.hasNewStageTarget) {
       this.newStageTarget.hidden = false
     }
-    if (this.hasScrollTarget) {
-      this._prevTouchAction = this.scrollTarget.style.touchAction
-      this.scrollTarget.style.touchAction = "none"
-    }
   }
 
   endArranging() {
@@ -80,10 +77,6 @@ export default class extends Controller {
         if (list) list.innerHTML = ""
         this.newStageTarget.hidden = true
       }
-    }
-    if (this.hasScrollTarget) {
-      this.scrollTarget.style.touchAction = this._prevTouchAction || ""
-      this._prevTouchAction = null
     }
   }
 
