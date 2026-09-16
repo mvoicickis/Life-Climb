@@ -69,6 +69,23 @@ class StrategyGoalHoldingReparentTest < ActiveSupport::TestCase
     assert_not StrategyGoal.exists?(camp.id)
   end
 
+  test "with_holding_destroy resets after raise so camp destroy still reparents" do
+    assert_raises(RuntimeError) do
+      StrategyGoal.with_holding_destroy { raise "boom" }
+    end
+    assert_nil Thread.current[:strategy_goal_allow_holding_destroy]
+
+    day = @project.children.for_kind("day").ordered.first
+    day.update!(completed_at: Time.current)
+    day_id = day.id
+
+    @project.destroy!
+
+    kept = StrategyGoal.find(day_id)
+    holding = Strategy::HoldingProject.ensure!(user: @user, journey: @journey)
+    assert_equal holding.id, kept.parent_id
+  end
+
   test "goal percent ignores a holding plan" do
     before = Strategy::Progress.percent(@goal)
     Strategy::HoldingProject.ensure!(user: @user, journey: @journey)

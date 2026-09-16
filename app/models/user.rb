@@ -334,6 +334,13 @@ class User < ApplicationRecord
       active_dream&.life_areas&.filled&.ordered&.first
   end
 
+  # dependent: :destroy on strategy_goals runs as before_destroy callbacks, which
+  # sit outside around_destroy. Wrap the whole destroy so camp→holding reparent
+  # cannot create a strategy_goals.parent_id row under a dying destination goal.
+  def destroy
+    StrategyGoal.with_holding_destroy { super }
+  end
+
   private
 
   # Keep legacy man/woman rows valid until re-pick; validate new writes only.

@@ -104,6 +104,8 @@ class StrategyGoal < ApplicationRecord
   scope :not_holding, -> { where(holding: false) }
 
   def self.with_holding_destroy
+    # Thread-local (not a class var) so Puma workers keep per-request isolation.
+    # ensure restores the prior value even when yield raises.
     prior = Thread.current[:strategy_goal_allow_holding_destroy]
     Thread.current[:strategy_goal_allow_holding_destroy] = true
     yield
@@ -665,6 +667,9 @@ class StrategyGoal < ApplicationRecord
   end
 
   # Snapshot → move → reset cached children → verify. Do not reorder.
+  # When a destination goal (or the whole user) is destroyed, callers wrap
+  # destroy in StrategyGoal.with_holding_destroy so this reparent is skipped —
+  # otherwise a new holding plan under the dying goal blocks strategy_goals.parent_id.
   def reparent_descendant_battles_to_holding!
     return unless project?
     return if holding?
