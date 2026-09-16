@@ -143,10 +143,6 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_match(/plant the next camp/i, card[:headline])
   end
 
-  test "peak tagline falls back to default" do
-    assert_equal I18n.t("strategy.rpg.trail.peak_tagline_default"), mountain_trail_peak_tagline(nil)
-  end
-
   test "climb fraction is zero with no projects" do
     assert_in_delta 0.0, mountain_trail_climb_fraction([]), 0.001
   end

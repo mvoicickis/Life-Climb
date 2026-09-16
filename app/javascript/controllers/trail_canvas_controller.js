@@ -12,7 +12,6 @@ export default class extends Controller {
     "plantDescription",
     "plantSubmit",
     "peakMenu",
-    "editDialog",
     "advanced",
     "metricFields",
     "metricFollow",
@@ -30,8 +29,6 @@ export default class extends Controller {
     "accentHex",
     "campMode",
     "peakTitle",
-    "photoWrap",
-    "photo",
     "clouds"
   ]
 
@@ -42,7 +39,6 @@ export default class extends Controller {
     lifeAreaId: Number,
     goalId: Number,
     goalUpdateUrl: String,
-    journeyUpdateUrl: String,
     csrf: String,
     curve: { type: Array, default: [] },
     quantityLogUrl: String
@@ -105,18 +101,6 @@ export default class extends Controller {
     const open = this.peakMenuTarget.hasAttribute("hidden")
     this.peakMenuTarget.toggleAttribute("hidden", !open)
     event.currentTarget?.setAttribute("aria-expanded", open ? "true" : "false")
-  }
-
-  editDestination(event) {
-    event?.preventDefault()
-    event?.stopPropagation()
-    if (this.hasPeakMenuTarget) this.peakMenuTarget.hidden = true
-    if (this.hasEditDialogTarget) this.editDialogTarget.showModal()
-  }
-
-  closeEdit(event) {
-    event?.preventDefault()
-    if (this.hasEditDialogTarget) this.editDialogTarget.close()
   }
 
   async submitPlant(event) {
@@ -580,50 +564,6 @@ export default class extends Controller {
         credentials: "same-origin"
       })
     } catch (_e) { /* inline edit is best-effort */ }
-  }
-
-  photoDragOver(event) {
-    event.preventDefault()
-    this.photoWrapTarget?.classList.add("is-dragover")
-  }
-
-  photoDragLeave(event) {
-    event.preventDefault()
-    this.photoWrapTarget?.classList.remove("is-dragover")
-  }
-
-  async photoDrop(event) {
-    event.preventDefault()
-    this.photoWrapTarget?.classList.remove("is-dragover")
-    const file = event.dataTransfer?.files?.[0]
-    if (!file || !this.journeyUpdateUrlValue) return
-
-    const body = new FormData()
-    body.set("mountain_photo_intent", "upload")
-    body.set("life_journey[mountain_photo]", file)
-    body.set("_method", "patch")
-    const token = this.csrfToken()
-    if (token) body.set("authenticity_token", token)
-
-    try {
-      const response = await fetch(this.journeyUpdateUrlValue, {
-        method: "POST",
-        headers: {
-          Accept: "text/html",
-          "X-CSRF-Token": token,
-          "X-Requested-With": "XMLHttpRequest"
-        },
-        body,
-        credentials: "same-origin"
-      })
-      if (response.redirected) {
-        window.location.href = response.url
-      } else {
-        window.location.reload()
-      }
-    } catch (_e) {
-      window.location.reload()
-    }
   }
 
   bindScrollParallax() {

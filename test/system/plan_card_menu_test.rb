@@ -3,7 +3,7 @@
 require "application_system_test_case"
 
 # V4 dropped the plan rail overflow menu. Multi-plan focus uses HUD links;
-# destination rename lives on the peak flag → #destination-edit-GOALID.
+# destination rename is inline on the peak title.
 class PlanCardMenuTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -64,36 +64,33 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_no_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
   end
 
-  test "destination edit dialog is available from the peak flag menu" do
+  test "peak title is editable inline from the trail" do
     sign_in_and_visit_mountain!
 
     assert_selector ".lp-trail__goal-title", text: /Ship LifePoints/i, wait: 5
-    assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
+    assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all
 
-    find(".lp-trail__goal-plaque").click
-    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
-    find(".lp-trail__peak-item", text: /Edit Destination/i).click
-
-    assert_selector "dialog#destination-edit-#{@goal.id}[open]", wait: 3
-    within("dialog#destination-edit-#{@goal.id}") do
-      assert_field "title", with: "Ship LifePoints"
-      fill_in "title", with: "Renamed Destination"
-      click_button "Save"
-    end
+    page.execute_script(<<~JS)
+      const el = document.querySelector(".lp-trail__goal-title");
+      el.focus();
+      el.textContent = "Renamed Destination";
+      el.dispatchEvent(new Event("blur", { bubbles: true }));
+    JS
 
     assert_selector "#strategy-world", wait: 5
-    assert_selector ".lp-trail__goal-title", text: /Renamed Destination/i, wait: 5
     assert_equal "Renamed Destination", @goal.reload.title
+    assert_selector ".lp-trail__goal-title", text: /Renamed Destination/i, wait: 5
   end
 
-  test "V4 has no plan card delete menu; HUD plans and destination edit remain" do
+  test "V4 has no plan card delete menu; HUD plans and delete goal remain" do
     sign_in_and_visit_mountain!
     find(".lp-trail__goal-plaque").click
     assert_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/, wait: 5
     assert_selector ".lp-trail__peak-item--plan", text: /Beta Path/
     assert_no_selector ".lp-rpg-path__menu"
     assert_no_selector ".lp-rpg-path__menu-item.is-danger"
-    assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
+    assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all
+    assert_selector ".lp-trail__peak-item", text: /Delete goal/i, visible: :all
     assert StrategyGoal.exists?(@plan_a.id)
     assert StrategyGoal.exists?(@plan_b.id)
   end

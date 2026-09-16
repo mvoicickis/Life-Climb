@@ -944,11 +944,6 @@ module MountainTrailHelper
   end
   private :mountain_trail_dock_forward_plaque, :meadow_plaque
 
-  def mountain_trail_peak_tagline(goal)
-    goal&.description.to_s.strip.presence ||
-      I18n.t("strategy.rpg.trail.peak_tagline_default")
-  end
-
   # Fraction of climb behind the companion (camps completed / total).
   def mountain_trail_climb_fraction(projects)
     total = projects.size
