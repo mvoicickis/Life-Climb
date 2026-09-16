@@ -40,6 +40,11 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
       parent_id: @plan.id, horizon: "project", title: "Camp B"
     }
     @camp_b = @plan.children.find_by!(horizon: "project", title: "Camp B")
+    post strategy_goals_path, params: {
+      life_area_id: @area.id, life_journey_id: @journey.id,
+      parent_id: @plan.id, horizon: "project", title: "Camp C"
+    }
+    @camp_c = @plan.children.find_by!(horizon: "project", title: "Camp C")
   end
 
   test "update reorders camps and returns turbo stream" do
@@ -47,7 +52,8 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
           params: {
             plan_id: @plan.id,
             "groups[0][camp_ids][]" => @camp_b.id,
-            "groups[1][camp_ids][]" => @camp_a.id
+            "groups[1][camp_ids][]" => @camp_a.id,
+            "groups[2][camp_ids][]" => @camp_c.id
           },
           as: :turbo_stream
 
@@ -56,8 +62,61 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
     assert_match("trail-map-camps", response.body)
     assert_equal 0, @camp_b.reload.stage
     assert_equal 1, @camp_a.reload.stage
+    assert_equal 2, @camp_c.reload.stage
     assert_equal 0, @camp_b.position
     assert_equal 1, @camp_a.position
+    assert_equal 2, @camp_c.position
+  end
+
+  test "update merges camp into existing stage" do
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_b.update_columns(stage: 1, position: 1)
+    @camp_c.update_columns(stage: 2, position: 2)
+
+    patch life_journey_camp_arrangement_path(@journey),
+          params: {
+            plan_id: @plan.id,
+            groups: {
+              "0" => { camp_ids: [ @camp_a.id, @camp_b.id ] },
+              "1" => { camp_ids: [ @camp_c.id ] }
+            }
+          },
+          as: :turbo_stream
+
+    assert_response :success
+    assert_match("trail-arrange-camps", response.body)
+    assert_equal 0, @camp_a.reload.stage
+    assert_equal 0, @camp_b.reload.stage
+    assert_equal 1, @camp_c.reload.stage
+    assert_equal 0, @camp_a.position
+    assert_equal 1, @camp_b.position
+    assert_equal 2, @camp_c.position
+  end
+
+  test "update appends camp as new trailing stage" do
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_b.update_columns(stage: 1, position: 1)
+    @camp_c.update_columns(stage: 2, position: 2)
+
+    patch life_journey_camp_arrangement_path(@journey),
+          params: {
+            plan_id: @plan.id,
+            groups: {
+              "0" => { camp_ids: [ @camp_a.id ] },
+              "1" => { camp_ids: [ @camp_c.id ] },
+              "2" => { camp_ids: [ @camp_b.id ] }
+            }
+          },
+          as: :turbo_stream
+
+    assert_response :success
+    assert_match("trail-arrange-camps", response.body)
+    assert_equal 0, @camp_a.reload.stage
+    assert_equal 1, @camp_c.reload.stage
+    assert_equal 2, @camp_b.reload.stage
+    assert_equal 0, @camp_a.position
+    assert_equal 1, @camp_c.position
+    assert_equal 2, @camp_b.position
   end
 
   test "update rejects invalid payload" do

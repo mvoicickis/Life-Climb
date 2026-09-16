@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { createPointerReorder } from "lib/pointer_reorder"
 
 export default class extends Controller {
-  static targets = [ "scroll", "list", "toast", "nextTag" ]
+  static targets = [ "scroll", "list", "toast", "nextTag", "newStage" ]
 
   static values = {
     url: String,
@@ -10,6 +10,7 @@ export default class extends Controller {
     csrf: String,
     saved: String,
     next: String,
+    newStage: String,
     maxLength: { type: Number, default: 120 }
   }
 
@@ -32,13 +33,25 @@ export default class extends Controller {
     const lists = this.listTargets.length ? this.listTargets : [...this.element.querySelectorAll("[data-arrange-list]")]
     if (lists.length === 0) return
 
+    const stageSections = [...this.element.querySelectorAll(".lp-trail-arrange-group")].map((section) => ({
+      list: section.querySelector("[data-arrange-list]")
+    })).filter((section) => section.list)
+
+    const newStageList = this.element.querySelector("[data-arrange-new-stage-list]")
+
     this.pointerReorder = createPointerReorder({
       listRoots: lists,
+      stageSections,
+      newStageList,
+      newStageZone: this.hasNewStageTarget ? this.newStageTarget : null,
+      scrollRoot: this.hasScrollTarget ? this.scrollTarget : null,
       rowSelector: ".lp-pointer-reorder__row",
       handleSelector: ".lp-pointer-reorder__handle",
       placeholderClass: "lp-pointer-reorder__placeholder",
       draggingClass: "is-dragging",
       canDragRow: (row) => row.dataset.completed !== "true",
+      onDragStart: () => this.beginArranging(),
+      onDragEnd: () => this.endArranging(),
       onReorder: () => this.saveOrder()
     })
   }
@@ -47,11 +60,48 @@ export default class extends Controller {
     this.bindDrag()
   }
 
+  beginArranging() {
+    this.element.classList.add("is-arranging")
+    if (this.hasNewStageTarget) {
+      this.newStageTarget.hidden = false
+    }
+    if (this.hasScrollTarget) {
+      this._prevTouchAction = this.scrollTarget.style.touchAction
+      this.scrollTarget.style.touchAction = "none"
+    }
+  }
+
+  endArranging() {
+    this.element.classList.remove("is-arranging")
+    if (this.hasNewStageTarget) {
+      const list = this.newStageTarget.querySelector("[data-arrange-new-stage-list]")
+      const hasRows = Boolean(list?.querySelector(".lp-pointer-reorder__row"))
+      if (!hasRows) {
+        if (list) list.innerHTML = ""
+        this.newStageTarget.hidden = true
+      }
+    }
+    if (this.hasScrollTarget) {
+      this.scrollTarget.style.touchAction = this._prevTouchAction || ""
+      this._prevTouchAction = null
+    }
+  }
+
   buildGroups() {
-    const lists = this.listTargets.length ? this.listTargets : [...this.element.querySelectorAll("[data-arrange-list]")]
-    return lists.map((list) => ({
-      camp_ids: [...list.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId)
-    }))
+    const groups = []
+
+    this.element.querySelectorAll(".lp-trail-arrange-group [data-arrange-list]").forEach((list) => {
+      const camp_ids = [...list.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId)
+      if (camp_ids.length) groups.push({ camp_ids })
+    })
+
+    const newStageList = this.element.querySelector("[data-arrange-new-stage-list]")
+    if (newStageList) {
+      const camp_ids = [...newStageList.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId)
+      if (camp_ids.length) groups.push({ camp_ids })
+    }
+
+    return groups
   }
 
   async saveOrder() {

@@ -5590,6 +5590,32 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   -webkit-overflow-scrolling: touch;
 }
 
+.lp-trail-arrange.is-arranging .lp-trail-arrange__scroll {
+  padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.lp-trail-arrange-new-stage {
+  margin-top: 1.25rem;
+  padding: 0.65rem 0.75rem;
+  min-height: var(--lp-tap, 2.75rem);
+  border-radius: var(--lp-radius-field, 12px);
+  border: 2px dashed color-mix(in srgb, var(--lp-green, #57d35b) 55%, transparent);
+  background: color-mix(in srgb, var(--lp-green, #57d35b) 6%, transparent);
+}
+
+.lp-trail-arrange-new-stage__label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-muted, #475569);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail-arrange-new-stage .lp-trail-arrange-list:empty {
+  display: none;
+}
+
 .lp-trail-arrange-group + .lp-trail-arrange-group {
   margin-top: 1.25rem;
 }
