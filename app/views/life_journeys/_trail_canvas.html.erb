@@ -47,7 +47,6 @@
          data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
          data-trail-canvas-goal-id-value="<%= goal&.id.to_i %>"
          data-trail-canvas-goal-update-url-value="<%= goal ? strategy_goal_path(goal) : '' %>"
-         data-trail-canvas-journey-update-url-value="<%= life_journey_path(journey) %>"
          data-trail-canvas-journey-id-value="<%= journey.id %>"
          data-trail-canvas-life-area-id-value="<%= area.id %>"
          data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
@@ -128,16 +127,6 @@
                       role: "menuitem" %>
               <% end %>
             <% end %>
-            <label class="lp-trail__peak-item">
-              <%= t("strategy.rpg.trail.upload_photo") %>
-              <%= form_with url: life_journey_path(journey), method: :patch, html: { enctype: "multipart/form-data", class: "lp-trail__photo-form" } do %>
-                <%= hidden_field_tag :mountain_photo_intent, "upload" %>
-                <%= file_field_tag "life_journey[mountain_photo]",
-                      accept: "image/jpeg,image/png,image/webp",
-                      class: "lp-trail__photo-file",
-                      onchange: "this.form.requestSubmit()" %>
-              <% end %>
-            </label>
             <% if journey.mountain_photo.attached? %>
               <%= button_to t("strategy.rpg.trail.reset_photo"),
                     life_journey_path(journey),
@@ -146,16 +135,6 @@
                     class: "lp-trail__peak-item is-reset",
                     form: { class: "lp-trail__photo-form" } %>
             <% end %>
-            <button type="button"
-                    class="lp-trail__peak-item"
-                    data-action="click->trail-canvas#editDestination">
-              <%= t("strategy.rpg.edit_destination") %>
-            </button>
-            <%= button_to t("strategy.rpg.trail.mark_reached"),
-                  strategy_goal_manual_completion_path(goal),
-                  method: :post,
-                  class: "lp-trail__peak-item",
-                  form: { class: "lp-trail__photo-form", data: { turbo_confirm: t("strategy.rpg.trail.mark_reached_confirm") } } %>
             <%= button_to t("strategy.rpg.trail.delete_destination"),
                   strategy_goal_path(goal),
                   method: :delete,
@@ -190,13 +169,10 @@
   <div class="lp-trail__scroll" data-trail-canvas-target="scroll">
     <div class="lp-trail__surface" data-trail-canvas-target="surface">
       <div class="lp-trail__map"
-           data-trail-canvas-target="mountain"
-           data-action="dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+           data-trail-canvas-target="mountain">
         <div class="lp-trail__world">
-          <div class="lp-trail__photo-wrap lp-trail__photo-drop"
-               aria-hidden="true"
-               data-trail-canvas-target="photoWrap"
-               data-action="dragover->trail-canvas#photoDragOver dragleave->trail-canvas#photoDragLeave drop->trail-canvas#photoDrop">
+          <div class="lp-trail__photo-wrap"
+               aria-hidden="true">
             <% if custom_mountain_photo %>
               <img class="lp-trail__photo-backdrop"
                    src="<%= photo_url %>"
@@ -204,7 +180,7 @@
                    decoding="async"
                    aria-hidden="true">
             <% end %>
-            <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async" data-trail-canvas-target="photo">
+            <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async">
             <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
             <div class="lp-trail__night"></div>
             <div class="lp-trail__haze"></div>
@@ -540,25 +516,6 @@
           current_project: local_assigns[:current_project],
           focus: local_assigns[:focus] %>
   </details>
-
-  <% if goal %>
-    <dialog class="lp-strategy-sheet is-goal" id="destination-edit-<%= goal.id %>" data-trail-canvas-target="editDialog">
-      <div class="lp-strategy-sheet__panel">
-        <header class="lp-strategy-sheet__head">
-          <h2 class="lp-strategy-sheet__title"><%= t("strategy.rpg.edit_destination") %></h2>
-          <button type="button" class="lp-strategy-sheet__close" data-action="click->trail-canvas#closeEdit" aria-label="<%= t('strategy.sheet.close') %>">×</button>
-        </header>
-        <%= form_with url: strategy_goal_path(goal), method: :patch, class: "lp-strategy-sheet__form", data: { turbo: false } do %>
-          <%= text_field_tag :title, goal.title, required: true, maxlength: 120, class: "lp-strategy-sheet__input" %>
-          <%= text_field_tag :description, goal.description,
-                maxlength: 200,
-                class: "lp-strategy-sheet__input",
-                placeholder: t("strategy.rpg.trail.peak_tagline_default") %>
-          <%= submit_tag t("strategy.rpg.save"), class: "lp-strategy-sheet__submit" %>
-        <% end %>
-      </div>
-    </dialog>
-  <% end %>
 
   <% if show_arrange_camps %>
     <%= render "life_journeys/trail_arrange_camps_overlay",

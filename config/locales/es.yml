@@ -264,6 +264,8 @@ es:
           - "Move $20 to savings"
           - "Update one resume bullet"
         arrange: # TODO: translate
+          title: "Change camp order"
+          entry: "Change camp order"
           open_again: "Open again"
           add_camp_here: "+ Add a camp here"
           add_camp_placeholder: "New camp name"

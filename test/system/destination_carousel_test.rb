@@ -57,10 +57,11 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-plan-rail"
     assert_no_selector ".lp-rpg-path"
 
-    # Rename stays available via peak flag menu → destination edit dialog.
+    # Rename is inline on the peak title; trail menu no longer has Edit Destination.
     assert_selector ".lp-trail__goal-plaque[data-action*='trail-canvas#toggleGoalMenu']"
-    assert_selector "dialog#destination-edit-#{@goal.id}", visible: :all
-    assert_selector ".lp-trail__peak-item", text: /Edit Destination/i, visible: :all
+    assert_selector ".lp-trail__goal-title[contenteditable]"
+    assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all
+    assert_no_selector ".lp-trail__peak-item", text: /Edit Destination/i, visible: :all
   end
 
   private

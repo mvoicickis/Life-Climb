@@ -891,7 +891,7 @@ en:
           plant_first: "Tap + to plant your first camp." # TODO: translate for lv/de/es/ru.
           open_camp: "Open your camp and add today’s battle." # TODO: translate for lv/de/es/ru.
           win_battle: "Tick a battle to win it — that’s a day’s progress." # TODO: translate for lv/de/es/ru.
-          rename_flag: "Tap your flag any time to rename your destination." # TODO: translate for lv/de/es/ru.
+          rename_flag: "Tap your goal name to change it." # TODO: translate for lv/de/es/ru.
           xp_bar: "Your XP and camps done live in the bar up top." # TODO: translate for lv/de/es/ru.
           journey_stats: "Every number you log becomes a stat under Journey." # TODO: translate for lv/de/es/ru.
         today_card:
@@ -934,10 +934,9 @@ en:
           cancel: "Cancel"
         default_unit_times: "times"
         default_unit_pages: "pages"
-        upload_photo: "Change photo"
-        reset_photo: "Use default photo"
+        reset_photo: "Remove my photo"
         photo_updated: "Mountain photo updated."
-        photo_reset: "Back to the default mountain."
+        photo_reset: "Photo removed."
         photo_missing: "Choose a photo to upload."
         battle_placeholder: "Battle for today"
         add_battle: "Add battle"
@@ -956,13 +955,13 @@ en:
         every_day: "Every day"
         just_once: "Just once"
         arrange:
-          title: "Arrange camps"
+          title: "Change camp order"
           hint: "Drag a camp up to work on it sooner."
           back: "Back"
           done: "Done"
           next: "Next"
           saved: "Order saved"
-          entry: "Arrange camps"
+          entry: "Change camp order"
           stage: "Stage %{stage}"
           stage_here: "Stage %{stage} · you are here"
           drag: "Drag to reorder"
@@ -1057,10 +1056,8 @@ en:
         win_toast: "Won"
         quick_complete: "Quick win"
         quick_win_toast: "Won “%{title}”"
-        mark_reached: "Mark destination reached"
-        mark_reached_confirm: "Mark this destination as reached? You can reopen it later from Strategy."
-        delete_destination: "Delete destination"
-        delete_destination_confirm: "Delete this destination and everything under it? This cannot be undone."
+        delete_destination: "Delete goal"
+        delete_destination_confirm: "Delete this goal and all its camps and battles. This can't be undone."
         camp_mode_label: "Camp type"
         camp_mode_battles: "Daily battles"
         camp_mode_pages: "Page tracker"

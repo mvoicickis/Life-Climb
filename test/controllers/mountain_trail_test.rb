@@ -55,9 +55,32 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail-arrange-entry", count: 0
-    assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", text: /Arrange camps/i
+    assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", text: /Change camp order/i
     assert_select "#trail-arrange-camps[data-controller*='arrange-camps']"
     assert_select "#trail-arrange-camps[hidden]"
+  end
+
+  test "goal menu keeps delete and reset photo without edit change photo or mark reached" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail__peak-item", text: /Edit Destination/i, count: 0
+    assert_select ".lp-trail__peak-item", text: /Change photo/i, count: 0
+    assert_select ".lp-trail__peak-item", text: /Mark destination reached/i, count: 0
+    assert_select ".lp-trail__peak-item", text: /Delete goal/i
+    assert_select ".lp-trail__peak-item", text: /Remove my photo/i, count: 0
+    assert_select "dialog#destination-edit-#{@goal.id}", count: 0
+    assert_select ".lp-trail__photo-drop", count: 0
+
+    photo = fixture_file_upload("mountain_trail_default.jpg", "image/jpeg")
+    patch life_journey_path(@journey), params: {
+      mountain_photo_intent: "upload",
+      life_journey: { mountain_photo: photo }
+    }
+    assert_redirected_to life_journey_path(@journey)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail__peak-item", text: /Remove my photo/i
   end
 
   test "mountain show renders V4 trail canvas with camps and hides holding" do

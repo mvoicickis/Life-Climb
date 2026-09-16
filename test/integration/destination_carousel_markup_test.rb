@@ -33,8 +33,10 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg.is-v4-phone"
     assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
-    assert_select ".lp-trail__peak-item", text: /Edit Destination/i
-    assert_select "dialog#destination-edit-#{@goal.id}"
+    assert_select ".lp-trail__goal-title[contenteditable]"
+    assert_select ".lp-trail__peak-item", text: /Edit Destination/i, count: 0
+    assert_select "dialog#destination-edit-#{@goal.id}", count: 0
+    assert_select ".lp-trail__peak-item", text: /Delete goal/i
     assert_select ".lp-trail-hud"
 
     # No switching or extra-create affordances remain.
