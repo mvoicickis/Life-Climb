@@ -38,6 +38,14 @@ export function createPointerReorder(options) {
     }
   }
 
+  function edgeScrollLimits(root) {
+    const maxScroll = Math.max(0, root.scrollHeight - root.clientHeight)
+    return {
+      atTop: root.scrollTop <= 0,
+      atBottom: root.scrollTop >= maxScroll
+    }
+  }
+
   function tickEdgeScroll() {
     state.edgeScrollRaf = null
     if (!state.activeDrag || !opts.scrollRoot) return
@@ -47,17 +55,30 @@ export function createPointerReorder(options) {
     const band = opts.edgeScrollBandPx
     const step = opts.edgeScrollStepPx
     const y = state.lastClientY
-    let delta = 0
+    const inBand = y < rect.top + band || y > rect.bottom - band
+    if (!inBand) return
 
+    let delta = 0
     if (y < rect.top + band) {
       delta = -step
     } else if (y > rect.bottom - band) {
       delta = step
     }
 
-    if (delta !== 0) {
+    const { atTop, atBottom } = edgeScrollLimits(root)
+    const canScroll = (delta < 0 && !atTop) || (delta > 0 && !atBottom)
+
+    if (delta !== 0 && canScroll) {
+      const prevScrollTop = root.scrollTop
       root.scrollTop += delta
-      updatePlaceholderPosition(y)
+      if (root.scrollTop !== prevScrollTop) {
+        updatePlaceholderPosition(y)
+      }
+    }
+
+    const limits = edgeScrollLimits(root)
+    const stillCanScroll = (delta < 0 && !limits.atTop) || (delta > 0 && !limits.atBottom)
+    if (delta !== 0 && stillCanScroll) {
       state.edgeScrollRaf = requestAnimationFrame(tickEdgeScroll)
     }
   }
@@ -116,95 +137,96 @@ export function createPointerReorder(options) {
     drag.row.style.left = `${drag.anchorLeft}px`
   }
 
-  function listForPlaceholder(clientY) {
-    for (const root of listRoots) {
-      const rect = root.getBoundingClientRect()
-      if (clientY >= rect.top && clientY <= rect.bottom) return root
-    }
-    let best = listRoots[0]
-    let bestDist = Infinity
-    for (const root of listRoots) {
-      const rect = root.getBoundingClientRect()
-      const mid = rect.top + rect.height / 2
-      const dist = Math.abs(clientY - mid)
-      if (dist < bestDist) {
-        bestDist = dist
-        best = root
-      }
-    }
-    return best
-  }
+  // Geometry is valid for one drag session only; turbo replace or mid-drag height changes stale these numbers.
+  function captureDropGeometry(draggedRow) {
+    const startScrollTop = opts.scrollRoot?.scrollTop ?? 0
+    const rows = allRows()
+      .filter((row) => row !== draggedRow)
+      .map((row) => {
+        const rect = row.getBoundingClientRect()
+        return { row, midY: rect.top + rect.height / 2 }
+      })
 
-  function updatePlaceholderPositionMulti(clientY) {
-    const drag = state.activeDrag
-    if (!drag) return
-
+    let newStageZone = null
     const zone = opts.newStageZone
-    const newList = opts.newStageList
-    if (zone && newList && !zone.hidden) {
-      const zoneRect = zone.getBoundingClientRect()
-      if (clientY >= zoneRect.top && clientY <= zoneRect.bottom) {
-        newList.appendChild(drag.placeholder)
-        drag.homeList = newList
-        return
-      }
+    if (zone && !zone.hidden) {
+      const rect = zone.getBoundingClientRect()
+      newStageZone = { top: rect.top, bottom: rect.bottom }
     }
 
-    const rows = allRows().filter((row) => row !== drag.row)
-    for (const other of rows) {
-      const rect = other.getBoundingClientRect()
-      const mid = rect.top + rect.height / 2
-      if (clientY < mid) {
-        other.parentElement.insertBefore(drag.placeholder, other)
-        drag.homeList = other.parentElement
-        return
-      }
-    }
-
-    if (rows.length) {
-      const last = rows[rows.length - 1]
-      last.parentElement.appendChild(drag.placeholder)
-      drag.homeList = last.parentElement
-      return
-    }
-
-    const lastSection = stageSections[stageSections.length - 1]
-    if (lastSection?.list) {
-      lastSection.list.appendChild(drag.placeholder)
-      drag.homeList = lastSection.list
-    }
+    return { startScrollTop, rows, newStageZone }
   }
 
-  function updatePlaceholderPositionSingle(clientY) {
-    const drag = state.activeDrag
-    if (!drag) return
+  function currentPlacement(placeholder) {
+    const parent = placeholder.parentElement
+    let el = placeholder.nextElementSibling
+    while (el && !el.matches(opts.rowSelector)) {
+      el = el.nextElementSibling
+    }
+    return { parent, beforeNode: el }
+  }
 
-    const listRoot = listForPlaceholder(clientY)
-    const rows = rowsInList(listRoot).filter((row) => row !== drag.row)
-    let inserted = false
+  function placementEqual(a, b) {
+    return Boolean(a && b && a.parent === b.parent && a.beforeNode === b.beforeNode)
+  }
 
-    for (const other of rows) {
-      const rect = other.getBoundingClientRect()
-      const mid = rect.top + rect.height / 2
-      if (clientY < mid) {
-        listRoot.insertBefore(drag.placeholder, other)
-        inserted = true
-        break
+  function targetFromGeometry(adjustedY, geometry) {
+    if (multiList && geometry.newStageZone && opts.newStageList) {
+      const zone = geometry.newStageZone
+      if (adjustedY >= zone.top && adjustedY <= zone.bottom) {
+        return { parent: opts.newStageList, beforeNode: null }
       }
     }
 
-    if (!inserted) {
-      listRoot.appendChild(drag.placeholder)
+    for (const entry of geometry.rows) {
+      if (adjustedY < entry.midY) {
+        return { parent: entry.row.parentElement, beforeNode: entry.row }
+      }
     }
-    drag.homeList = listRoot
+
+    if (geometry.rows.length) {
+      const last = geometry.rows[geometry.rows.length - 1]
+      return { parent: last.row.parentElement, beforeNode: null }
+    }
+
+    if (multiList) {
+      const lastSection = stageSections[stageSections.length - 1]
+      if (lastSection?.list) {
+        return { parent: lastSection.list, beforeNode: null }
+      }
+    }
+
+    return { parent: listRoots[0], beforeNode: null }
+  }
+
+  function applyPlaceholderTarget(target) {
+    const drag = state.activeDrag
+    if (!drag || !target?.parent) return
+
+    if (target.beforeNode) {
+      target.parent.insertBefore(drag.placeholder, target.beforeNode)
+    } else {
+      target.parent.appendChild(drag.placeholder)
+    }
+    drag.homeList = target.parent
+    drag.placement = target
   }
 
   function updatePlaceholderPosition(clientY) {
-    if (multiList) {
-      updatePlaceholderPositionMulti(clientY)
-    } else {
-      updatePlaceholderPositionSingle(clientY)
+    const drag = state.activeDrag
+    if (!drag?.geometry) return
+
+    const scrollTop = opts.scrollRoot?.scrollTop ?? 0
+    if (clientY === drag.lastPlacementY && scrollTop === drag.lastPlacementScrollTop) {
+      return
     }
+    drag.lastPlacementY = clientY
+    drag.lastPlacementScrollTop = scrollTop
+
+    const adjustedY = clientY + (scrollTop - drag.geometry.startScrollTop)
+    const target = targetFromGeometry(adjustedY, drag.geometry)
+    if (placementEqual(drag.placement, target)) return
+    applyPlaceholderTarget(target)
   }
 
   function placeholderIndex() {
@@ -223,12 +245,14 @@ export function createPointerReorder(options) {
   function startDrag(handle, row, pointerId, startY) {
     const rowRect = row.getBoundingClientRect()
     const homeList = row.parentElement
+    const fromList = homeList
+    const fromIndex = rowsInList(homeList).indexOf(row)
+    const originNext = row.nextSibling
     const placeholder = document.createElement("li")
     placeholder.className = opts.placeholderClass
     placeholder.setAttribute("aria-hidden", "true")
     placeholder.style.height = `${rowRect.height}px`
 
-    homeList.insertBefore(placeholder, row)
     document.body.appendChild(row)
 
     row.classList.add(opts.draggingClass)
@@ -236,11 +260,17 @@ export function createPointerReorder(options) {
     row.style.left = `${rowRect.left}px`
     row.style.top = `${rowRect.top}px`
 
+    homeList.insertBefore(placeholder, originNext)
+
     try {
       handle.setPointerCapture(pointerId)
     } catch (_) {
       // capture may fail on some browsers
     }
+
+    opts.onDragStart?.()
+
+    const geometry = captureDropGeometry(row)
 
     state.activeDrag = {
       handle,
@@ -251,11 +281,14 @@ export function createPointerReorder(options) {
       anchorLeft: rowRect.left,
       dragId: row.dataset.id,
       homeList,
-      fromList: homeList,
-      fromIndex: rowsInList(homeList).indexOf(row)
+      fromList,
+      fromIndex,
+      geometry,
+      placement: currentPlacement(placeholder),
+      lastPlacementY: startY,
+      lastPlacementScrollTop: geometry.startScrollTop
     }
     state.dragId = row.dataset.id
-    opts.onDragStart?.()
   }
 
   function finishDrag(row) {
@@ -367,11 +400,17 @@ export function createPointerReorder(options) {
     document.addEventListener("pointercancel", onUp)
   }
 
+  function onHandleContextMenu(event) {
+    event.preventDefault()
+  }
+
   function bindHandlesIn(root) {
     if (!root) return
     root.querySelectorAll(opts.handleSelector).forEach((handle) => {
       handle.removeEventListener("pointerdown", onHandlePointerDown)
+      handle.removeEventListener("contextmenu", onHandleContextMenu)
       handle.addEventListener("pointerdown", onHandlePointerDown)
+      handle.addEventListener("contextmenu", onHandleContextMenu)
     })
   }
 
@@ -379,6 +418,7 @@ export function createPointerReorder(options) {
     if (!root) return
     root.querySelectorAll(opts.handleSelector).forEach((handle) => {
       handle.removeEventListener("pointerdown", onHandlePointerDown)
+      handle.removeEventListener("contextmenu", onHandleContextMenu)
     })
   }
 
