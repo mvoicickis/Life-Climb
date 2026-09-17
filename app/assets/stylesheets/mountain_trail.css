@@ -494,15 +494,17 @@
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0.12rem;
-  max-width: min(9rem, 42%);
+  width: min(9rem, var(--lp-trail-caption-max, 9rem));
+  max-width: min(9rem, var(--lp-trail-caption-max, 9rem));
   pointer-events: none;
   text-align: center;
 }
 
 .lp-trail-more {
   position: absolute;
-  left: 11%;
-  top: calc(max(0.55rem, env(safe-area-inset-top)) + 4.85rem);
+  left: calc(var(--lp-trail-more-x, 0.5) * 100%);
+  top: calc(var(--lp-trail-more-y, 0.26) * 100%);
+  transform: translate(-50%, -100%);
   z-index: 3;
   pointer-events: auto;
   padding: 0.4rem 0.65rem;
@@ -536,7 +538,7 @@
   color: #1a140c;
   line-height: 1.15;
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   word-break: normal;
   text-shadow:
     0 0 4px rgba(255, 252, 245, 0.95),

@@ -593,7 +593,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
-    assert_select ".lp-trail-more", text: "1 more camp"
+    assert_select ".lp-trail-more", text: "1 more camp ahead"
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 

@@ -15,8 +15,10 @@
             map_mode: true %>
     <% end %>
     <% if hidden_ahead.positive? %>
+      <% chip_slot = mountain_trail_map_more_chip_slot(map_nodes) %>
       <button type="button"
               class="lp-trail-more"
+              style="--lp-trail-more-x: <%= chip_slot[:x] %>; --lp-trail-more-y: <%= chip_slot[:y] %>;"
               data-action="click->trail-canvas#openArrangeCamps"
               aria-label="<%= t('strategy.rpg.trail.more_camps', count: hidden_ahead) %>">
         <%= t("strategy.rpg.trail.more_camps", count: hidden_ahead) %>

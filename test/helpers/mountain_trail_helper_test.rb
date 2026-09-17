@@ -952,6 +952,19 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_operator mountain_trail_map_peg_scale(nodes[1], nodes), :<, 1.0
   end
 
+  test "peg scale floors at 0.75 on peak-side tents" do
+    nodes = (0...4).map do |index|
+      Strategy::Trail::Node.new(
+        id: index + 1, title: "C#{index}", state: :locked, pct: 0, position: index, record: nil, y: 0
+      )
+    end
+    nodes[0].state = :current
+    peak_scale = mountain_trail_map_peg_scale(nodes[3], nodes)
+    assert_in_delta 0.75, peak_scale, 0.001
+    base_scale = mountain_trail_map_peg_scale(nodes[1], nodes)
+    assert_operator base_scale, :>, peak_scale
+  end
+
   test "reveal camps stagger base to summit by delay" do
     camps = (0...3).map do |stage|
       Struct.new(:id, :stage, :position, :completed?, :holding?, :title, keyword_init: true).new(
