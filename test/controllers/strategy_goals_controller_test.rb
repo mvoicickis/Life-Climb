@@ -585,7 +585,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{project.id}"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
-    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
@@ -618,10 +618,11 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__peak-item--plan.is-active", text: /Main Plan/i
     assert_select "#trail-map-camps #trail-camp-#{projects[0].id}.is-current[aria-label=?]", "Project 0"
     assert_select "#trail-camp-#{projects[0].id} .lp-trail-camp__caption", text: /Project 0/
-    assert_select "#trail-map-camps #trail-camp-#{projects[1].id}.is-locked.is-fogged[aria-label=?]", "Project 1"
-    assert_select "#trail-map-camps #trail-camp-#{projects[2].id}", count: 0
-    assert_select "#trail-map-camps #trail-camp-#{projects[3].id}", count: 0
-    assert_select "#trail-map-camps .lp-trail-camp", maximum: 3
+    assert_select "#trail-map-camps #trail-camp-#{projects[1].id}.is-locked:not(.is-fogged)[aria-label=?]", "Project 1"
+    assert_select "#trail-map-camps #trail-camp-#{projects[2].id}.is-locked:not(.is-fogged)"
+    assert_select "#trail-map-camps #trail-camp-#{projects[3].id}.is-locked:not(.is-fogged)"
+    assert_select "#trail-map-camps .lp-trail-camp", count: 4
+    assert_select ".lp-trail-more", count: 0
     assert_select ".trail-terrace", count: 0
     assert_select "#terrace-sheet-range-4", count: 0
     assert_select ".lp-climb-path__quests", count: 0

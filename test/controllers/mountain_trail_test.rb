@@ -122,9 +122,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_match(/mountain_trail_default|mountain_photo/, response.body)
   end
 
-  test "five camps show at most three on the curve window with fog and cleared" do
+  test "six camps show four on the curve with open ahead tents and more chip" do
     @plan.children.for_kind("project").destroy_all
-    camps = 5.times.map do |index|
+    camps = 6.times.map do |index|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
         horizon: "project", title: "Camp #{index + 1}", position: index, stage: index
@@ -136,13 +136,30 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-map-camps #trail-camp-#{camps[0].id}.is-done"
     assert_select "#trail-map-camps #trail-camp-#{camps[1].id}.is-current"
-    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps #trail-camp-#{camps[2].id}[data-action*='trail-camp-sheet#open']"
-    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
-    assert_select "#trail-map-camps .lp-trail-camp", maximum: 3
+    assert_select "#trail-map-camps #trail-camp-#{camps[5].id}", count: 0
+    assert_select "#trail-map-camps .lp-trail-camp", count: 4
+    assert_select ".lp-trail-more", text: "2 more camps"
     assert_select ".trail-terrace", count: 0
     assert_select "#trail-camps-fallback", count: 0
+  end
+
+  test "four camps on path hide the more chip" do
+    @plan.children.for_kind("project").destroy_all
+    4.times do |index|
+      @plan.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "project", title: "Camp #{index + 1}", position: index, stage: index
+      )
+    end
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-map-camps .lp-trail-camp", count: 4
+    assert_select ".lp-trail-more", count: 0
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do
@@ -541,7 +558,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{extra.id}[aria-label=?]", "Ridge lookout"
     assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__caption .lp-trail-camp__title", text: /Base camp/
-    assert_select "#trail-camp-#{extra.id}.is-locked.is-fogged .lp-trail-camp__caption .lp-trail-camp__title", text: /Ridge lookout/
+    assert_select "#trail-camp-#{extra.id}.is-locked:not(.is-fogged) .lp-trail-camp__caption .lp-trail-camp__title", text: /Ridge lookout/
     assert_select ".trail-terrace", count: 0
     assert_select ".lp-trail-camp__chip", count: 0
     assert_select ".lp-trail-camp.is-chip-start", count: 0
@@ -641,7 +658,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{cleared.id}.is-done"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
-    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked.is-fogged"
+    assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__pill", count: 0

@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Vertical 3-slot trail window: previous cleared / current (largest) / next fogged.
+// Vertical 3-slot trail window for legacy RPG trail (not the V4 curve map).
 // Slot index comes from the server (focus_id). Camp switching is Turbo navigation —
 // do not shift slots client-side or the battle sheet will desync.
 export default class extends Controller {

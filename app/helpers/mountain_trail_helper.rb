@@ -108,12 +108,33 @@ module MountainTrailHelper
     mountain_trail_all_projects(trail).reject(&:completed?)
   end
 
-  # Camps drawn on the photo: Strategy::Trail window (cleared + current + next fogged).
+  # Camps drawn on the photo: Strategy::Trail visible window (up to four along the path).
   def mountain_trail_map_nodes(trail)
     Array(trail&.visible_nodes)
   end
 
-  # Spread the 1–3 visible camps across TRAIL_Y_MIN..TRAIL_Y_MAX (ignore stored trail_x/y
+  # Camps after the visible slice — not cleared camps dropped behind the window.
+  def mountain_trail_map_hidden_ahead_count(trail)
+    nodes = Array(trail&.nodes)
+    visible = mountain_trail_map_nodes(trail)
+    return 0 if nodes.empty? || visible.empty?
+
+    last_idx = nodes.index { |node| node.id == visible.last.id }
+    return 0 if last_idx.nil?
+
+    nodes.length - 1 - last_idx
+  end
+
+  # Distance scale for non-current peg visuals (base = 1.0, peak-side ≈ 0.6).
+  def mountain_trail_map_peg_scale(node, visible_nodes)
+    return 1.0 if node.state == :current
+
+    y = mountain_trail_map_layout_slot(node, visible_nodes)[:y].to_f
+    t = ((y - TRAIL_Y_MIN) / (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(0.0, 1.0)
+    (0.6 + (0.4 * t)).round(3)
+  end
+
+  # Spread the 1–4 visible camps across TRAIL_Y_MIN..TRAIL_Y_MAX (ignore stored trail_x/y
   # so a long plan does not pack tents into a thin band). Climb order: first node = base
   # (high y); AutoSlot index 0 is peak-side (low y), so reverse.
   def mountain_trail_map_layout_slot(node, visible_nodes)
