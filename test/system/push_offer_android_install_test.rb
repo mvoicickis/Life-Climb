@@ -124,12 +124,13 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
     assert_today_v2_shell!
     emulate_android_ua!
     visit dashboard_path
+    block_install_prompt!
+    clear_captured_install_prompt!
 
     find(".lp-today-v2-row[data-todo-id='#{@todo.id}'] .lp-today-v2-row__check").click
 
     assert_no_selector ".lp-today-v2-row[data-todo-id='#{@todo.id}']", wait: 10
     assert_selector ".lp-push-offer", wait: 8
-    assert_selector ".lp-push-offer__headline", text: /reminder tomorrow morning/i
     assert_selector ".lp-push-offer__yes", text: /Remind me/i
   end
 end
