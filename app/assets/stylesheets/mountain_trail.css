@@ -1902,15 +1902,22 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   flex-shrink: 0;
   padding: 0.55rem 0.65rem 1.35rem 0.45rem;
   padding-top: calc(0.55rem + env(safe-area-inset-top, 0px));
-  background: linear-gradient(
-    180deg,
-    var(--lp-frost) 0%,
-    color-mix(in srgb, var(--lp-frost) 72%, transparent) 58%,
-    transparent 100%
-  );
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 0;
+  background: var(--lp-paper-soft);
+  border-bottom: 1px solid var(--lp-border);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-trail.is-v4 .lp-trail-sheet__header {
+    background: linear-gradient(
+      180deg,
+      var(--lp-frost) 0%,
+      color-mix(in srgb, var(--lp-frost) 72%, transparent) 58%,
+      transparent 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 0;
+  }
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__back {
