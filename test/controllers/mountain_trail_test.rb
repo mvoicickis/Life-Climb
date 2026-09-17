@@ -657,6 +657,11 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       horizon: "project", title: "Far camp", position: 4,
       trail_x: 0.5, trail_y: 0.55, color_key: "teal"
     )
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Summit camp", position: 5,
+      trail_x: 0.5, trail_y: 0.55, color_key: "purple"
+    )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success

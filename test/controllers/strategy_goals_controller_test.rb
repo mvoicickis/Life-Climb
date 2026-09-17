@@ -572,6 +572,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Far Camp", position: 4
     )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Summit Camp", position: 5
+    )
     [ older, project ].each do |camp|
       leaf = practice_leaf_for!(camp)
       battle = @user.strategy_goals.create!(
