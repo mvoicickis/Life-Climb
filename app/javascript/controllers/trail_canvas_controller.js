@@ -140,6 +140,7 @@ export default class extends Controller {
     this._onPeakMenuPointer = (event) => this.onPeakMenuPointerDown(event)
     this._onPeakMenuKey = (event) => this.onPeakMenuKeydown(event)
     document.addEventListener("pointerdown", this._onPeakMenuPointer)
+    document.addEventListener("mousedown", this._onPeakMenuPointer)
     document.addEventListener("keydown", this._onPeakMenuKey)
     this._peakMenuDismissBound = true
   }
@@ -147,6 +148,7 @@ export default class extends Controller {
   unbindPeakMenuDismiss() {
     if (!this._peakMenuDismissBound) return
     document.removeEventListener("pointerdown", this._onPeakMenuPointer)
+    document.removeEventListener("mousedown", this._onPeakMenuPointer)
     document.removeEventListener("keydown", this._onPeakMenuKey)
     this._peakMenuDismissBound = false
   }

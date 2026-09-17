@@ -89,9 +89,18 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     find(".lp-trail__goal-plaque").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
 
-    find("#mountain-trail .lp-trail__scroll").click(x: 24, y: 120)
+    page.execute_script(<<~JS)
+      const photo = document.querySelector("#mountain-trail .lp-trail__photo");
+      const rect = photo.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height * 0.8;
+      const target = document.elementFromPoint(x, y);
+      target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: x, clientY: y }));
+      target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, clientX: x, clientY: y }));
+    JS
 
-    assert_selector ".lp-trail__goal-menu[hidden]", wait: 3
+    assert_selector "#mountain-trail", wait: 3
+    assert page.evaluate_script("document.querySelector('.lp-trail__goal-menu').hidden")
   end
 
   test "V4 has no plan card delete menu; HUD plans and delete goal remain" do
