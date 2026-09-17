@@ -50,6 +50,27 @@ class ClimbRewardFlowTest < ActionDispatch::IntegrationTest
     assert_match(/data-battle-day-ap-gained-value="#{ap}"/, response.body)
   end
 
+  test "personal best still celebrates on Today while climb reward modal stays hidden" do
+    refute Climb::Reward.modal_enabled?
+    @user.update!(best_day_ap: 5)
+
+    post complete_daily_todo_path(@todo)
+    assert_redirected_to dashboard_path
+
+    ap = flash[:ap_gained].to_i
+    assert flash[:battle_celebrate].present?
+    assert flash[:climb_reward].present?, "payload still built for easy re-enable"
+    assert flash[:climb_boss].present?
+    assert_operator ap, :>, 0
+
+    follow_redirect!
+    assert_response :success
+    assert_select "#climb-reward", count: 0
+    assert_match(/data-battle-day-celebrate-value="true"/, response.body)
+    assert_match(/data-battle-day-boss-value="true"/, response.body)
+    assert_match(/data-battle-day-ap-gained-value="#{ap}"/, response.body)
+  end
+
   test "when all items are done day is marked won on Today V2" do
     # Clear leftover onboarding mission so the day can fully clear via checkboxes.
     @user.missions.for_day.primary.incomplete.find_each do |mission|

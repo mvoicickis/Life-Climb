@@ -3,6 +3,13 @@
 module Climb
   # Builds a short post-win climb reward payload for flash → UI.
   class Reward
+    # Flip to true to show shared/_climb_reward modal again.
+    MODAL_ENABLED = false
+
+    def self.modal_enabled?
+      MODAL_ENABLED
+    end
+
     def self.for_battle(user:, awarded:, goal: nil, streak_days: nil, boss: false, personal_best: false, earned_freeze: false)
       mountain = Strategy::Mountain.for(goal: goal)
       status = Climb::Streak.status(user: user)
