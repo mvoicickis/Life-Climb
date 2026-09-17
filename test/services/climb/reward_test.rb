@@ -58,4 +58,8 @@ class Climb::RewardTest < ActiveSupport::TestCase
     assert_equal "project", reward[:kind]
     refute_equal "boss", reward[:kind]
   end
+
+  test "modal is gated off by default" do
+    refute Climb::Reward.modal_enabled?
+  end
 end

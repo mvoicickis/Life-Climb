@@ -1,4 +1,6 @@
 <%# Short climb reward beat after a win. locals: reward (Hash) %>
+<%# Hidden via Climb::Reward::MODAL_ENABLED — flip that constant to restore. %>
+<% return unless Climb::Reward.modal_enabled? %>
 <% reward = local_assigns[:reward] || @climb_reward %>
 <% return if reward.blank? %>
 <% boss = reward[:kind].to_s == "boss" || reward["kind"].to_s == "boss" %>

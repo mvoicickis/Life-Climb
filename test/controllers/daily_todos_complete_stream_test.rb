@@ -94,17 +94,20 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"false\"", response.body
   end
 
-  test "turbo stream personal best milestone renders climb reward dialog in host" do
+  test "turbo stream personal best milestone keeps celebrate but hides climb reward modal" do
     @user.update!(best_day_ap: 5)
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match 'turbo-stream action="update" target="climb-reward-host"', response.body
-    assert_match 'id="climb-reward"', response.body
-    assert_match "data-climb-reward-auto-value=\"true\"", response.body
+    refute Climb::Reward.modal_enabled?
     assert_match "data-battle-day-stream-bridge-boss-value=\"true\"", response.body
-    assert_match "lp-climb-reward is-boss", response.body
+    assert_match "data-battle-day-stream-bridge-celebrate-value=\"true\"", response.body
+    assert_match "data-battle-day-stream-bridge-ap-gained-value=\"#{GameRules::BATTLE_TODO_LP}\"", response.body
+    # Modal gated off — host update may be empty; dialog must not appear.
+    assert_no_match 'id="climb-reward"', response.body
+    assert_no_match "lp-climb-reward is-boss", response.body
+    assert_no_match "data-climb-reward-auto-value=\"true\"", response.body
   end
 
   test "win form requests turbo stream" do
