@@ -3548,6 +3548,7 @@ en:
       promoted: "User is now an admin."
       demoted: "Admin access removed."
       cannot_delete_self: "You cannot delete your own admin account."
+      delete_blocked_stripe: "Subscription not cancelled. Nothing was deleted. Try again."
       cannot_demote_self: "You cannot remove your own admin access."
       name: "Name"
       email: "Email"

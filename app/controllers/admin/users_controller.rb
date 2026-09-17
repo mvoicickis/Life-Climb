@@ -48,9 +48,25 @@ module Admin
         redirect_to admin_users_path, alert: t("admin.users.cannot_delete_self") and return
       end
 
+      begin
+        Billing::CancelSubscription.call(user: @user)
+      rescue Stripe::StripeError => e
+        Rails.logger.error("[billing] cancel on delete failed: #{e.message}")
+        redirect_to admin_users_path, alert: t("admin.users.delete_blocked_stripe") and return
+      end
+
+      subscription_id = @user.stripe_subscription_id
       # Break circular FK: users.focus_building_id → buildings → users
       @user.update_columns(focus_building_id: nil)
-      @user.destroy!
+      begin
+        @user.destroy!
+      rescue StandardError
+        Rails.logger.error(
+          "[admin] user delete failed after subscription cancel " \
+          "user_id=#{@user.id} stripe_subscription_id=#{subscription_id}"
+        )
+        raise
+      end
       redirect_to admin_users_path, notice: t("admin.users.deleted")
     end
 
