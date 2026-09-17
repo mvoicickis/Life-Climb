@@ -61,6 +61,15 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
     )
   end
 
+  def block_install_prompt!
+    page.execute_script(<<~JS)
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, { capture: true });
+    JS
+  end
+
   def capture_install_prompt!
     page.execute_script(<<~JS)
       const evt = new Event("beforeinstallprompt", { cancelable: true });
@@ -71,7 +80,12 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
   end
 
   test "android with install prompt shows add to home screen after win" do
-    sign_in_and_visit_today!
+    visit new_session_path
+    block_install_prompt!
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_today_v2_shell!
     emulate_android_ua!
     visit dashboard_path
     capture_install_prompt!
@@ -85,7 +99,12 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
   end
 
   test "android without install prompt falls back to remind me" do
-    sign_in_and_visit_today!
+    visit new_session_path
+    block_install_prompt!
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_today_v2_shell!
     emulate_android_ua!
     visit dashboard_path
 
