@@ -1777,7 +1777,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
-  --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
+  --lp-frost: var(--lp-surface);
   --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
   position: relative;
   background: var(--lp-paper-soft);
@@ -1805,16 +1805,20 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   box-shadow: none;
 }
 
-@supports not (backdrop-filter: blur(1px)) {
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .lp-trail.is-v4 .lp-trail-sheet__panel {
-    --lp-frost: color-mix(in srgb, #ffffff 92%, transparent);
+    --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
   }
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__camp-bg {
   position: absolute;
-  inset: 0;
-  opacity: 0.34;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: auto;
+  height: min(34dvh, 12.5rem);
+  opacity: 0.28;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
@@ -2080,7 +2084,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-sheet__body {
   position: relative;
   z-index: 1;
-  background: transparent;
+  background: var(--lp-paper-soft);
   color: var(--lp-ink);
   max-width: 100%;
   min-width: 0;
