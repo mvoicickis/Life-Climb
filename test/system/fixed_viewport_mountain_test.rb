@@ -69,10 +69,10 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     camps = @plan.children.for_kind("project").order(:position).to_a
     assert_selector "#trail-map-camps #trail-camp-#{camps[0].id}.is-current[aria-label='Authentication']", visible: :all, wait: 5
     assert_selector "#trail-camp-#{camps[0].id} .lp-trail-camp__caption", visible: :all, wait: 5
-    assert_selector "#trail-map-camps #trail-camp-#{camps[1].id}.is-locked.is-fogged", visible: :all, wait: 5
+    assert_selector "#trail-map-camps #trail-camp-#{camps[1].id}.is-locked:not(.is-fogged)", visible: :all, wait: 5
     assert_no_selector ".trail-terrace"
     assert_no_selector "#terrace-sheet-range-4"
-    assert_selector "#trail-map-camps .lp-trail-camp", visible: :all, maximum: 3, wait: 5
+    assert_selector "#trail-map-camps .lp-trail-camp", visible: :all, maximum: 4, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
         const t = document.querySelector(".lp-trail__goal-title");
@@ -84,7 +84,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator title_metrics["w"], :>=, 72, "Destination title too narrow: #{title_metrics.inspect}"
     assert_selector "#trail-camp-#{@daily_battles.id}", visible: :all, wait: 5
     assert_equal "Daily battles", find("#trail-camp-#{@daily_battles.id}", visible: :all)["aria-label"]
-    assert_selector "#trail-camp-#{@daily_battles.id}.is-fogged", visible: :all
+    assert_no_selector "#trail-camp-#{@daily_battles.id}.is-fogged", visible: :all
     assert_no_selector ".lp-rpg-camp-switch"
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)

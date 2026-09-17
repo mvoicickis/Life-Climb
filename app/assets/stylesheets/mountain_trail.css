@@ -399,6 +399,20 @@
   pointer-events: none;
 }
 
+.lp-trail-camp__peg-visual {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+  scale: var(--lp-trail-peg-scale, 1);
+}
+
+.lp-trail-camp.is-current .lp-trail-camp__peg-visual {
+  scale: 1;
+}
+
 .lp-trail-camp__ring {
   position: absolute;
   left: 50%;
@@ -480,9 +494,35 @@
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0.12rem;
-  max-width: 9rem;
+  max-width: min(9rem, 42%);
   pointer-events: none;
   text-align: center;
+}
+
+.lp-trail-more {
+  position: absolute;
+  left: 11%;
+  top: calc(max(0.55rem, env(safe-area-inset-top)) + 4.85rem);
+  z-index: 3;
+  pointer-events: auto;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  font-family: var(--lp-trail-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--lp-rpg-ink, #f8fafc);
+  background: var(--lp-rpg-glass, rgba(8, 18, 14, 0.78));
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.22));
+  box-shadow: var(--lp-rpg-glass-shadow, 0 6px 16px rgba(0, 0, 0, 0.35));
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  max-width: calc(100% - 1.5rem);
+  white-space: nowrap;
+  min-height: var(--lp-tap, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lp-trail-camp__title {
@@ -496,6 +536,8 @@
   color: #1a140c;
   line-height: 1.15;
   white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
   text-shadow:
     0 0 4px rgba(255, 252, 245, 0.95),
     0 1px 2px rgba(255, 248, 235, 0.9);

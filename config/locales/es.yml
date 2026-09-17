@@ -266,6 +266,9 @@ es:
           - "Read 10 pages"
           - "Move $20 to savings"
           - "Update one resume bullet"
+        more_camps: # TODO: translate
+          one: "%{count} more camp"
+          other: "%{count} more camps"
         arrange: # TODO: translate
           title: "Change camp order"
           entry: "Change camp order"

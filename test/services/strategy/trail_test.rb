@@ -76,10 +76,57 @@ class StrategyTrailTest < ActiveSupport::TestCase
     @plan.children.for_kind("project").ordered.limit(2).each(&:complete!)
 
     trail = Strategy::Trail.for(plan: @plan.reload)
-    assert_operator trail.visible_nodes.size, :<=, 3
-    assert_equal 3, trail.visible_nodes.size
+    assert_operator trail.visible_nodes.size, :<=, 4
+    assert_equal 4, trail.visible_nodes.size
     assert_includes trail.visible_nodes.map(&:state), :current
     assert_equal 5, trail.nodes.size
+    assert_equal trail.nodes[1].id, trail.visible_nodes.first.id
+  end
+
+  test "visible window uses array index when position column has gaps" do
+    first = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "A", position: 0
+    )
+    second = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "B", position: 50
+    )
+    third = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "C", position: 100
+    )
+    first.complete!
+
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal [ first.id, second.id, third.id ], trail.visible_nodes.map(&:id)
+  end
+
+  test "visible window shows last four when current is last camp" do
+    camps = 6.times.map do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+        title: "Camp #{i}", position: i
+      )
+    end
+    camps.first(5).each(&:complete!)
+
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal camps.last(4).map(&:id), trail.visible_nodes.map(&:id)
+    assert_equal :current, trail.visible_nodes.last.state
+  end
+
+  test "visible window shows last four when every camp is done" do
+    camps = 5.times.map do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+        title: "Camp #{i}", position: i
+      )
+    end
+    camps.each(&:complete!)
+
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal camps.last(4).map(&:id), trail.visible_nodes.map(&:id)
   end
 
   test "habit-linked improvement project skips sequential lock" do

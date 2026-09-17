@@ -1,12 +1,13 @@
-<%# Camp marker on the curve trail. locals: project, trail_node, map_nodes, current_project %>
+<%# Camp marker on the curve trail. locals: project, trail_node, map_nodes, current_project, map_mode %>
 <% project = local_assigns.fetch(:project) %>
 <% trail_node = local_assigns[:trail_node] %>
 <% map_nodes = local_assigns[:map_nodes] || [] %>
+<% map_mode = local_assigns[:map_mode] %>
 <% color_key = project.tagged_color_key %>
 <% accent = mountain_trail_project_accent(project) %>
 <% state = trail_node&.state || mountain_trail_camp_state(project, projects: map_nodes.filter_map(&:record)) %>
 <% current = state == :current %>
-<% fogged = state == :locked %>
+<% fogged = !map_mode && state == :locked %>
 <% progress = mountain_trail_camp_progress(project) %>
 <% status = mountain_trail_camp_status(project) %>
 <% ring_r = 27 %>
@@ -18,6 +19,7 @@
             else
               mountain_trail_layout_slot(project, projects: [ project ])
             end %>
+<% peg_scale = map_mode && trail_node ? mountain_trail_map_peg_scale(trail_node, map_nodes) : 1 %>
 
 <button type="button"
         class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %> <%= 'is-fogged' if fogged %>"
@@ -33,26 +35,28 @@
         aria-label="<%= project.title %>">
   <span class="lp-trail-camp__shadow" aria-hidden="true"></span>
   <span class="lp-trail-camp__peg">
-    <% if show_ring %>
-      <svg class="lp-trail-camp__ring" viewBox="0 0 62 62" aria-hidden="true">
-        <circle class="lp-trail-camp__ring-bg" cx="31" cy="31" r="<%= ring_r %>"></circle>
-        <circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="<%= ring_r %>"
-                stroke-dasharray="<%= ring_c %>"
-                stroke-dashoffset="<%= ring_offset %>"
-                transform="rotate(-90 31 31)"></circle>
-      </svg>
-    <% end %>
-    <span class="lp-trail-camp__tent" aria-hidden="true">
-      <% if fogged %>
-        <svg class="lp-trail-camp__fog-tent" viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg>
+    <span class="lp-trail-camp__peg-visual" style="--lp-trail-peg-scale: <%= peg_scale %>;">
+      <% if show_ring %>
+        <svg class="lp-trail-camp__ring" viewBox="0 0 62 62" aria-hidden="true">
+          <circle class="lp-trail-camp__ring-bg" cx="31" cy="31" r="<%= ring_r %>"></circle>
+          <circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="<%= ring_r %>"
+                  stroke-dasharray="<%= ring_c %>"
+                  stroke-dashoffset="<%= ring_offset %>"
+                  transform="rotate(-90 31 31)"></circle>
+        </svg>
+      <% end %>
+      <span class="lp-trail-camp__tent" aria-hidden="true">
+        <% if fogged %>
+          <svg class="lp-trail-camp__fog-tent" viewBox="0 0 56 44" aria-hidden="true"><path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/><path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/><path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/></svg>
+        <% end %>
+      </span>
+      <% if current %>
+        <span class="lp-trail-camp__fire" aria-hidden="true"></span>
+      <% end %>
+      <% if state == :done %>
+        <span class="lp-trail-camp__cleared" aria-hidden="true">✓</span>
       <% end %>
     </span>
-    <% if current %>
-      <span class="lp-trail-camp__fire" aria-hidden="true"></span>
-    <% end %>
-    <% if state == :done %>
-      <span class="lp-trail-camp__cleared" aria-hidden="true">✓</span>
-    <% end %>
   </span>
   <span class="lp-trail-camp__caption">
     <span class="lp-trail-camp__title"><%= mountain_trail_camp_caption_title(project) %></span>

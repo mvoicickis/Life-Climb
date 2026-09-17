@@ -5,8 +5,8 @@ module Strategy
   # Phase 1 trail nodes = Projects under a Plan.
   # Phase 2 can swap nodes to Programs without rewriting the views.
   class Trail
-    # Default server window: previous cleared + current + next fogged.
-    VISIBLE_AHEAD = 1
+    # Map window: up to four camps along trail order (array index, not position column).
+    VISIBLE_MAX = 4
     VISIBLE_BEHIND = 1
 
     Node = Struct.new(
@@ -118,11 +118,21 @@ module Strategy
     end
 
     def focused_sequence(nodes, current)
-      return nodes if nodes.size <= (VISIBLE_BEHIND + VISIBLE_AHEAD + 1)
+      return nodes if nodes.size <= VISIBLE_MAX
 
-      idx = current ? current.position : 0
-      from = [ idx - VISIBLE_BEHIND, 0 ].max
-      to = [ idx + VISIBLE_AHEAD, nodes.length - 1 ].min
+      unless current
+        return nodes.last(VISIBLE_MAX)
+      end
+
+      idx = nodes.index { |node| node.id == current.id } || 0
+      from = idx.zero? ? 0 : idx - VISIBLE_BEHIND
+      to = from + VISIBLE_MAX - 1
+
+      if to >= nodes.length
+        to = nodes.length - 1
+        from = [ to - VISIBLE_MAX + 1, 0 ].max
+      end
+
       nodes[from..to]
     end
 

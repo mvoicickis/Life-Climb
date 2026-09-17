@@ -82,13 +82,14 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     end
     assert_select ".lp-climb-path__node.is-locked", count: 0
 
-    # Photo map uses Strategy::Trail's 3-node window (cleared + current + next).
+    # Photo map uses Strategy::Trail's four-camp window (drops oldest cleared behind).
     assert_select "#trail-map-camps #trail-camp-#{camps[0].id}", count: 0
-    assert_select "#trail-map-camps #trail-camp-#{camps[1].id}"
-    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}"
+    assert_select "#trail-map-camps #trail-camp-#{camps[1].id}.is-done"
+    assert_select "#trail-map-camps #trail-camp-#{camps[2].id}.is-current"
     assert_select "#trail-map-camps #trail-camp-#{camps[3].id}"
-    assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
-    assert_select "#trail-map-camps [id^=trail-camp-]", maximum: 3
+    assert_select "#trail-map-camps #trail-camp-#{camps[4].id}"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
+    assert_select ".lp-trail-more", count: 0
   end
 
   test "climb path still renders with few camps" do
