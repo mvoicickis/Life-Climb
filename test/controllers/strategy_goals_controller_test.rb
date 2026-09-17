@@ -569,6 +569,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     fogged = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Fog Camp", position: 3
     )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Far Camp", position: 4
+    )
     [ older, project ].each do |camp|
       leaf = practice_leaf_for!(camp)
       battle = @user.strategy_goals.create!(
@@ -586,7 +589,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{project.id}"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
-    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
+    assert_select ".lp-trail-more", text: "1 more camp"
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 

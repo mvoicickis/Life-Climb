@@ -652,6 +652,11 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       horizon: "project", title: "Fog camp", position: 3,
       trail_x: 0.5, trail_y: 0.55, color_key: "purple"
     )
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Far camp", position: 4,
+      trail_x: 0.5, trail_y: 0.55, color_key: "teal"
+    )
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
@@ -659,7 +664,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{cleared.id}.is-done"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
-    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
+    assert_select ".lp-trail-more", text: "1 more camp"
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__pill", count: 0
   end

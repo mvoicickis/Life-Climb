@@ -84,7 +84,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_operator title_metrics["w"], :>=, 72, "Destination title too narrow: #{title_metrics.inspect}"
     assert_selector "#trail-camp-#{@daily_battles.id}", visible: :all, wait: 5
     assert_equal "Daily battles", find("#trail-camp-#{@daily_battles.id}", visible: :all)["aria-label"]
-    assert_selector "#trail-camp-#{@daily_battles.id}.is-fogged", visible: :all
+    assert_no_selector "#trail-camp-#{@daily_battles.id}.is-fogged", visible: :all
     assert_no_selector ".lp-rpg-camp-switch"
     assert_no_selector ".lp-rpg-stat.is-mountain"
     assert_no_text(/you are here · \d+%/i)
