@@ -33,7 +33,8 @@ class DestinationCarouselMarkupTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg.is-v4-phone"
     assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
-    assert_select ".lp-trail__goal-title[contenteditable]"
+    assert_select ".lp-trail__goal-title[contenteditable]", count: 0
+    assert_select "button[data-action*='editGoalNameFromMenu']", text: /Edit name/i
     assert_select ".lp-trail__peak-item", text: /Edit Destination/i, count: 0
     assert_select "dialog#destination-edit-#{@goal.id}", count: 0
     assert_select ".lp-trail__peak-item", text: /Delete goal/i
