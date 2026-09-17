@@ -84,14 +84,13 @@
 
 <% unless @uncompleted %>
   <%= turbo_stream.append "today-dash-root" do %>
-    <div data-controller="battle-day-stream-bridge"
-         data-battle-day-stream-bridge-celebrate-value="<%= @stream_celebrate ? 'true' : 'false' %>"
-         data-battle-day-stream-bridge-ap-gained-value="<%= @stream_ap_gained %>"
-         data-battle-day-stream-bridge-boss-value="<%= @stream_boss ? 'true' : 'false' %>"
-         data-battle-day-stream-bridge-all-clear-value="<%= @battlefield_health.all_clear? ? 'true' : 'false' %>"
-         data-battle-day-stream-bridge-win-number-value="<%= @stream_win_number %>"
-         data-battle-day-stream-bridge-push-offer-eligible-value="<%= @stream_push_offer_eligible ? 'true' : 'false' %>"
-         hidden></div>
+    <%= render "shared/battle_day_stream_bridge",
+          celebrate: @stream_celebrate,
+          ap_gained: @stream_ap_gained,
+          boss: @stream_boss,
+          all_clear: @battlefield_health.all_clear?,
+          win_number: @stream_win_number,
+          push_offer_eligible: @stream_push_offer_eligible %>
   <% end %>
 
   <% if @stream_climb_reward.present? %>
@@ -100,3 +99,4 @@
     <% end %>
   <% end %>
 <% end %>
+

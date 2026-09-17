@@ -41,3 +41,14 @@
   <% end %>
   <%= render "life_journeys/trail_dock_stream" if @dock_today_card.present? %>
 <% end %>
+
+<% if @awarded.to_i.positive? || @stream_push_offer_eligible %>
+  <%= turbo_stream.append "strategy-world" do %>
+    <%= render "shared/battle_day_stream_bridge",
+          celebrate: true,
+          ap_gained: @awarded.to_i,
+          boss: false,
+          win_number: @win_number.to_i,
+          push_offer_eligible: @stream_push_offer_eligible %>
+  <% end %>
+<% end %>

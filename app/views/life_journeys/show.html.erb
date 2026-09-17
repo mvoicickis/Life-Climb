@@ -111,6 +111,19 @@
   <% end %>
 
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
+
+  <%= render "dashboard/push_offer_host",
+        host_id: "mountain-push-offer-host",
+        host_class: "lp-push-offer-host is-mountain" %>
+
+  <% if flash[:battle_celebrate].present? || flash[:ap_gained].to_i.positive? %>
+    <%= render "shared/battle_day_stream_bridge",
+          celebrate: flash[:battle_celebrate].present? || flash[:ap_gained].to_i.positive?,
+          ap_gained: flash[:ap_gained].to_i,
+          boss: flash[:climb_boss].present?,
+          win_number: flash[:win_number].to_i,
+          push_offer_eligible: flash[:push_offer_eligible].present? %>
+  <% end %>
 </div>
 
 <%= render "shared/lp_dash_nav",

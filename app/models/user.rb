@@ -301,12 +301,17 @@ class User < ApplicationRecord
     update!(install_offer_installed_at: Time.current)
   end
 
-  def push_offer_eligible?(win_number:)
+  def push_offer_eligible?(win_number: nil)
     return false if push_subscriptions.exists?
     return false if push_offer_permission_denied_at.present?
     return false if push_offer_dismiss_count >= PUSH_OFFER_MAX_ASKS
+    return false if push_offer_shown_today?
 
-    win_number.to_i.between?(1, PUSH_OFFER_MAX_ASKS)
+    true
+  end
+
+  def mark_push_offer_shown!(date: push_offer_local_date)
+    update!(push_offer_last_shown_on: date)
   end
 
   def mark_push_offer_dismissed!
@@ -322,6 +327,20 @@ class User < ApplicationRecord
     return if push_offer_permission_denied_at.present?
 
     update!(push_offer_permission_denied_at: Time.current)
+  end
+
+  def push_offer_local_date
+    zone = notification_preference&.time_zone
+    return Date.current if zone.blank?
+
+    Time.current.in_time_zone(zone).to_date
+  rescue ArgumentError, TZInfo::InvalidTimezoneIdentifier
+    Date.current
+  end
+
+  def push_offer_shown_today?
+    push_offer_last_shown_on.present? &&
+      push_offer_last_shown_on == push_offer_local_date
   end
 
   def alive_level

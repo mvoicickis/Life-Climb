@@ -51,14 +51,15 @@ module Strategy
       keyword_init: true
     )
 
-    def self.for(user:, session: nil, journey: nil)
-      new(user:, session:, journey:).call
+    def self.for(user:, session: nil, journey: nil, date: Date.current)
+      new(user:, session:, journey:, date:).call
     end
 
-    def initialize(user:, session: nil, journey: nil)
+    def initialize(user:, session: nil, journey: nil, date: Date.current)
       @user = user
       @session = session
       @journey = journey || user&.primary_focused_journey
+      @date = date
       @goal = resolve_goal
     end
 
@@ -92,7 +93,7 @@ module Strategy
     end
 
     def todays_todos
-      @todays_todos ||= @user.daily_todos.for_day(Date.current).ordered.to_a
+      @todays_todos ||= @user.daily_todos.for_day(@date).ordered.to_a
     end
 
     # Today-winnability short-circuit — separate from tier eligibility.

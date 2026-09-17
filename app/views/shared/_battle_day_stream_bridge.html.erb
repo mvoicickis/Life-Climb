@@ -1,0 +1,9 @@
+<%# Shared one-shot bridge: stream response triggers battle-day:celebrate without a reload. %>
+<div data-controller="battle-day-stream-bridge"
+     data-battle-day-stream-bridge-celebrate-value="<%= local_assigns.fetch(:celebrate, false) ? 'true' : 'false' %>"
+     data-battle-day-stream-bridge-ap-gained-value="<%= local_assigns.fetch(:ap_gained, 0).to_i %>"
+     data-battle-day-stream-bridge-boss-value="<%= local_assigns.fetch(:boss, false) ? 'true' : 'false' %>"
+     data-battle-day-stream-bridge-all-clear-value="<%= local_assigns.fetch(:all_clear, false) ? 'true' : 'false' %>"
+     data-battle-day-stream-bridge-win-number-value="<%= local_assigns.fetch(:win_number, 0).to_i %>"
+     data-battle-day-stream-bridge-push-offer-eligible-value="<%= local_assigns.fetch(:push_offer_eligible, false) ? 'true' : 'false' %>"
+     hidden></div>

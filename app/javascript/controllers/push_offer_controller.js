@@ -7,11 +7,12 @@ import {
   isIos
 } from "push_subscription"
 
-// Post-win push reminder offer — shown after battle celebration on wins 1–3.
+// Post-win push reminder offer — after celebration when eligible (no subscription, under ask cap).
 export default class extends Controller {
   static values = {
     dismissUrl: String,
     deniedUrl: String,
+    shownUrl: String,
     vapidUrl: String,
     subscribeUrl: String,
     settingsUrl: String,
@@ -27,11 +28,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("[lp-push-offer-debug] push-offer#connect", {
-      hostHidden: this.element.hidden,
-      hasDismissUrl: Boolean(this.dismissUrlValue),
-      hasSubscribeUrl: Boolean(this.subscribeUrlValue)
-    })
     ensureCapture()
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
@@ -42,43 +38,20 @@ export default class extends Controller {
   }
 
   onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false, winNumber = 0 } = {}) {
-    const detail = {
-      celebrate: Boolean(celebrate),
-      apGained: Number(apGained) || 0,
-      pushOfferEligible: Boolean(pushOfferEligible),
-      winNumber: Number(winNumber) || 0
-    }
-    console.log("[lp-push-offer-debug] push-offer#onCelebrate", detail)
+    if (!pushOfferEligible) return
+    if (!celebrate && !(Number(apGained) > 0)) return
 
-    if (!detail.pushOfferEligible) {
-      console.log("[lp-push-offer-debug] push-offer#onCelebrate skip: pushOfferEligible is false")
-      return
-    }
-    if (!detail.celebrate && !(detail.apGained > 0)) {
-      console.log("[lp-push-offer-debug] push-offer#onCelebrate skip: no celebrate and no AP")
-      return
-    }
-
-    console.log("[lp-push-offer-debug] push-offer#onCelebrate scheduling prepareOffer in 1400ms")
     window.setTimeout(() => this.prepareOffer(), 1400)
   }
 
   async prepareOffer() {
-    console.log("[lp-push-offer-debug] push-offer#prepareOffer start")
     const state = await getPushSubscriptionState()
-    console.log("[lp-push-offer-debug] push-offer#prepareOffer subscription state", state)
 
-    if (state.subscribed) {
-      console.log("[lp-push-offer-debug] push-offer#prepareOffer skip: already subscribed in browser")
-      return
-    }
-    if (state.permission === "denied") {
-      console.log("[lp-push-offer-debug] push-offer#prepareOffer skip: Notification.permission denied")
-      return
-    }
+    if (state.subscribed) return
+    if (state.permission === "denied") return
 
-    console.log("[lp-push-offer-debug] push-offer#prepareOffer rendering card")
     this.renderCard()
+    await this.markShown()
   }
 
   renderCard() {
@@ -139,6 +112,27 @@ export default class extends Controller {
     card.appendChild(actions)
     host.appendChild(card)
     this.cardElement = card
+  }
+
+  async markShown() {
+    if (!this.shownUrlValue) return
+
+    try {
+      const response = await fetch(this.shownUrlValue, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
+        }
+      })
+      if (!response.ok) {
+        // Keep card visible — eligibility may still allow another try until shown sticks.
+        return
+      }
+    } catch (_error) {
+      // Network failure — leave card up.
+    }
   }
 
   async enable(event) {

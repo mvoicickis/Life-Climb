@@ -230,8 +230,8 @@ en:
       dismiss: "Not now"
       dismissed: "Alright. I'll be in Settings if you change your mind."
     push_offer:
-      headline: "Want a reminder tomorrow morning?"
-      yes_label: "Yes, remind me"
+      headline: "Get a reminder tomorrow morning"
+      yes_label: "Remind me"
       not_now: "Not now"
       ios_headline: "Add Life Climb to your home screen"
       ios_body: "Morning reminders need the app on your home screen on iPhone."

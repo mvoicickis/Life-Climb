@@ -10,4 +10,9 @@ class PushOffersController < ApplicationController
     current_user.mark_push_offer_permission_denied!
     head :no_content
   end
+
+  def shown
+    current_user.mark_push_offer_shown!
+    head :no_content
+  end
 end

@@ -108,3 +108,8 @@ en:
       "3": "New day, new step. What's today's Battle?"
       "4": "Morning — one small move sets the tone."
       "5": "Today's a clean slate. What's the plan?"
+    morning_push:
+      battle_title: "Today's battle"
+      battle_body: "%{title}. Win it today."
+      plan_title: "Plan today"
+      plan_body: "Pick one battle for today."
