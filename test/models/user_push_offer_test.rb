@@ -8,16 +8,16 @@ class UserPushOfferTest < ActiveSupport::TestCase
     @user.update!(
       push_offer_dismiss_count: 0,
       push_offer_dismissed_at: nil,
-      push_offer_permission_denied_at: nil
+      push_offer_permission_denied_at: nil,
+      push_offer_last_shown_on: nil
     )
     @user.push_subscriptions.delete_all
+    @user.notification_preference&.destroy
   end
 
-  test "eligible on wins 1 through 3" do
-    assert @user.push_offer_eligible?(win_number: 1)
-    assert @user.push_offer_eligible?(win_number: 2)
-    assert @user.push_offer_eligible?(win_number: 3)
-    refute @user.push_offer_eligible?(win_number: 4)
+  test "eligible on win 5 without subscription" do
+    assert @user.push_offer_eligible?(win_number: 5)
+    assert @user.push_offer_eligible?
   end
 
   test "not eligible with existing subscription" do
@@ -31,7 +31,26 @@ class UserPushOfferTest < ActiveSupport::TestCase
     refute @user.push_offer_eligible?(win_number: 1)
   end
 
-  test "soft dismiss allows later wins until max asks" do
+  test "not eligible after shown today" do
+    travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
+      @user.mark_push_offer_shown!
+      assert_equal Date.new(2026, 8, 6), @user.reload.push_offer_last_shown_on
+      refute @user.push_offer_eligible?(win_number: 5)
+    end
+  end
+
+  test "eligible again next local day" do
+    @user.create_notification_preference!(time_zone: "Europe/Berlin")
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 20, 0, 0) do
+      @user.mark_push_offer_shown!
+    end
+
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 7, 8, 0, 0) do
+      assert @user.reload.push_offer_eligible?(win_number: 5)
+    end
+  end
+
+  test "soft dismiss allows until max asks" do
     @user.mark_push_offer_dismissed!
     assert_equal 1, @user.reload.push_offer_dismiss_count
     assert @user.push_offer_eligible?(win_number: 2)
@@ -48,6 +67,6 @@ class UserPushOfferTest < ActiveSupport::TestCase
   test "permission denied is permanent" do
     @user.mark_push_offer_permission_denied!
     refute @user.push_offer_eligible?(win_number: 1)
-    refute @user.push_offer_eligible?(win_number: 2)
+    refute @user.push_offer_eligible?(win_number: 5)
   end
 end

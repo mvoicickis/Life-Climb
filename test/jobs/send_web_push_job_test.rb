@@ -182,4 +182,29 @@ class SendWebPushJobTest < ActiveJob::TestCase
     payload = JSON.parse(@last_kwargs[:message])
     assert_equal %w[quick_add snooze], payload["actions"].map { |a| a["action"] }
   end
+
+  test "morning kind preserves title and body" do
+    delivered = SendWebPushJob.perform_now(
+      @user.id,
+      {
+        "title" => "Today's battle",
+        "body" => "Ship it. Win it today.",
+        "kind" => "morning"
+      }
+    )
+
+    assert delivered
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "Today's battle", payload["title"]
+    assert_equal "Ship it. Win it today.", payload["body"]
+  end
+
+  test "returns false when all subscriptions fail" do
+    WebPush.define_singleton_method(:payload_send) do |**_kwargs|
+      raise StandardError, "fail"
+    end
+
+    delivered = SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
+    refute delivered
+  end
 end

@@ -28,6 +28,14 @@ class PushOffersControllerTest < ActionDispatch::IntegrationTest
     assert @user.reload.push_offer_permission_denied_at.present?
   end
 
+  test "shown records local day" do
+    travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
+      patch shown_push_offer_path
+      assert_response :no_content
+      assert_equal Date.new(2026, 8, 6), @user.reload.push_offer_last_shown_on
+    end
+  end
+
   test "requires authentication" do
     sign_out
     delete push_offer_path

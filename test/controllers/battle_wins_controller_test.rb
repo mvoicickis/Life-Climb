@@ -141,7 +141,44 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Won “/, response.body)
     assert_match %(action="replace" target="trail-climber"), response.body
     assert_match %(action="replace" target="trail-dock"), response.body
+    assert_match "battle-day-stream-bridge", response.body
     assert @battle.reload.completed?
+  end
+
+  test "mountain turbo win includes push offer bridge when eligible" do
+    @user.update!(
+      push_offer_dismiss_count: 0,
+      push_offer_dismissed_at: nil,
+      push_offer_permission_denied_at: nil,
+      push_offer_last_shown_on: nil
+    )
+    @user.push_subscriptions.delete_all
+
+    post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
+
+    assert_response :ok
+    assert_match "battle-day-stream-bridge", response.body
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"true\"", response.body
+    assert_match "data-battle-day-stream-bridge-win-number-value=", response.body
+  end
+
+  test "mountain html redirect sets push offer flash" do
+    @user.update!(
+      push_offer_dismiss_count: 0,
+      push_offer_dismissed_at: nil,
+      push_offer_permission_denied_at: nil,
+      push_offer_last_shown_on: nil
+    )
+    @user.push_subscriptions.delete_all
+
+    post battle_win_path(@battle)
+    assert_response :redirect
+    assert flash[:push_offer_eligible]
+    assert flash[:win_number].to_i.positive?
+
+    follow_redirect!
+    assert_response :success
+    assert_select "#mountain-push-offer-host[data-controller='push-offer']"
   end
 
   test "camp sheet undo via reopen keeps life points" do

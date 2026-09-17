@@ -1,6 +1,6 @@
 name: Morning nudge
 
-# Every 2 hours — app filters to each user's local 7–9am window.
+# Every 2 hours — app filters to each user's local 7–11am window.
 # Requires repo secrets: CRON_SECRET, APP_BASE_URL (e.g. https://lifepoints.onrender.com)
 on:
   schedule:
@@ -21,7 +21,7 @@ jobs:
             echo "Missing CRON_SECRET or APP_BASE_URL repo secrets."
             exit 1
           fi
-          curl -fsS -X POST \
+          curl -fsS --retry 3 --max-time 120 -X POST \
             -H "Authorization: Bearer ${CRON_SECRET}" \
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \

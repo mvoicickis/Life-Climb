@@ -34,6 +34,13 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     dismiss_onboarding_missions!(@user)
+    @user.update!(
+      push_offer_dismiss_count: 0,
+      push_offer_dismissed_at: nil,
+      push_offer_permission_denied_at: nil,
+      push_offer_last_shown_on: nil
+    )
+    @user.push_subscriptions.delete_all
     @todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
   end
 
@@ -71,6 +78,15 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
 
   test "push offer bridge is false after permission denied" do
     @user.update!(push_offer_permission_denied_at: Time.current)
+
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    assert_response :ok
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"false\"", response.body
+  end
+
+  test "push offer bridge is false after already shown today" do
+    @user.update!(push_offer_last_shown_on: Date.current)
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
 

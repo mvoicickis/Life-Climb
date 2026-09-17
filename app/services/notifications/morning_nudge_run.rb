@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Notifications
-  # Cron-driven morning nudge: users without a Today battle, in local 7–9am.
+  # Cron-driven morning nudge: every subscribed user, local 7–11am, once per local day.
   class MorningNudgeRun
-    MORNING_HOURS = (7..9).freeze
+    MORNING_HOURS = (7..11).freeze
     KIND = "morning"
 
     Result = Struct.new(:considered, :sent, :skipped, keyword_init: true)
@@ -46,28 +46,32 @@ module Notifications
 
       local_date = local_time.to_date
       return false if pref.last_morning_nudge_sent_on == local_date
-      return false if user.daily_todos.for_day(Date.current).exists?
 
       gate = NotificationGate.allow?(user: user, kind: KIND)
       return false unless gate.allowed?
 
       locale = user.locale.presence || I18n.default_locale
-      body = PhraseBank.morning_nudge(locale: locale)
+      copy = MorningNudgeCopy.for(user: user, date: local_date, locale: locale)
 
-      SendWebPushJob.perform_now(
+      delivered = SendWebPushJob.perform_now(
         user.id,
         {
-          "title" => I18n.t("notifications.actions.morning_title", locale: locale),
-          "body" => body,
+          "title" => copy.title,
+          "body" => copy.body,
           "url" => "/dashboard",
           "kind" => KIND
         }
       )
 
+      return false unless delivered
+
       pref.update!(last_morning_nudge_sent_on: local_date)
       true
     rescue ArgumentError, TZInfo::InvalidTimezoneIdentifier => e
       Rails.logger.warn("[MorningNudgeRun] skip user=#{user.id} #{e.class}: #{e.message}")
+      false
+    rescue StandardError => e
+      Rails.logger.warn("[MorningNudgeRun] fail user=#{user.id} #{e.class}: #{e.message}")
       false
     end
   end

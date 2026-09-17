@@ -16,6 +16,16 @@ class BattleWinsController < ApplicationController
     result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
     result.flash.each { |key, value| flash[key] = value }
 
+    if result.flash[:battle_celebrate]
+      @win_number = current_user.daily_todos.where.not(completed_at: nil).count
+      @stream_push_offer_eligible = current_user.push_offer_eligible?(win_number: @win_number)
+      flash[:win_number] = @win_number
+      flash[:push_offer_eligible] = @stream_push_offer_eligible
+    else
+      @win_number = 0
+      @stream_push_offer_eligible = false
+    end
+
     respond_to_quick_win(journey, result.battle, awarded: result.awarded)
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
@@ -45,6 +55,8 @@ class BattleWinsController < ApplicationController
         flash.discard(:battle_celebrate)
         flash.discard(:climb_boss)
         flash.discard(:climb_reward)
+        flash.discard(:win_number)
+        flash.discard(:push_offer_eligible)
         render :create, status: :ok
       end
       format.html do

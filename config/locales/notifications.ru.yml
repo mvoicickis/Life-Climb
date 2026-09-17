@@ -107,3 +107,9 @@ ru:
       "3": "Новый день, новый шаг. Какая сегодня Battle?"
       "4": "Утро — один маленький шаг задаёт тон."
       "5": "Сегодня чистый лист. Какой план?"
+    # TODO: translate
+    morning_push:
+      battle_title: "Today's battle"
+      battle_body: "%{title}. Win it today."
+      plan_title: "Plan today"
+      plan_body: "Pick one battle for today."
