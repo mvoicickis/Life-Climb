@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { syncAppBadge } from "app_badge"
 
 // One-shot bridge: stream response triggers battle-day win without a reload.
 export default class extends Controller {
@@ -8,7 +9,8 @@ export default class extends Controller {
     boss: Boolean,
     allClear: Boolean,
     winNumber: Number,
-    pushOfferEligible: Boolean
+    pushOfferEligible: Boolean,
+    openCount: Number
   }
 
   connect() {
@@ -42,6 +44,8 @@ export default class extends Controller {
     }
 
     if (root) root.classList.toggle("is-battle-won", this.allClearValue)
+
+    syncAppBadge(this.openCountValue)
 
     this.element.remove()
   }

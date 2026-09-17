@@ -22,6 +22,7 @@
   data-battle-day-boss-value="<%= flash[:climb_boss].present? ? 'true' : 'false' %>"
   data-battle-day-win-number-value="<%= flash[:win_number].to_i %>"
   data-battle-day-push-offer-eligible-value="<%= flash[:push_offer_eligible] ? 'true' : 'false' %>"
+  data-battle-day-open-count-value="<%= @battle_open_count.to_i %>"
   <% if battlefield_ui %>
   data-today-notch-fight-toast-value="<%= t('dash.battlefield.fight_toast') %>"
   data-today-notch-share-toast-value="<%= t('dash.battlefield.share_toast') %>"

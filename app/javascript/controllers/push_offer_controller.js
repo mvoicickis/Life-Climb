@@ -13,6 +13,7 @@ export default class extends Controller {
     dismissUrl: String,
     deniedUrl: String,
     shownUrl: String,
+    installedUrl: String,
     vapidUrl: String,
     subscribeUrl: String,
     settingsUrl: String,
@@ -173,7 +174,26 @@ export default class extends Controller {
 
     const result = await promptInstall()
     if (result.outcome === "accepted") {
+      await this.markInstalled()
       this.hideCard()
+    }
+  }
+
+  async markInstalled() {
+    if (!this.installedUrlValue) return
+
+    try {
+      const response = await fetch(this.installedUrlValue, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
+        }
+      })
+      if (!response.ok) throw new Error("request failed")
+    } catch (_error) {
+      /* still hide card locally */
     }
   }
 

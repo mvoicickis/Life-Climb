@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { syncAppBadge } from "app_badge"
 
 // Subtle juice for Complete Battle — confetti, ring close, AP float, camp nudge.
 export default class extends Controller {
@@ -9,10 +10,12 @@ export default class extends Controller {
     apGained: Number,
     boss: Boolean,
     winNumber: Number,
-    pushOfferEligible: Boolean
+    pushOfferEligible: Boolean,
+    openCount: Number
   }
 
   connect() {
+    syncAppBadge(this.openCountValue)
     this._streamCelebrateHandler = (event) => {
       if (event.detail?.source === this) return
       this.triggerWin(event.detail || {}, { dispatch: false })
