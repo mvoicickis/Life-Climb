@@ -89,8 +89,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     find(".lp-trail__goal-plaque").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
 
-    scroll = find("#mountain-trail .lp-trail__scroll")
-    page.driver.browser.action.move_to(scroll.native, 40, 420).click.perform
+    find("#mountain-trail .lp-trail__scroll").click(x: 24, y: 120)
 
     assert_selector ".lp-trail__goal-menu[hidden]", wait: 3
   end
