@@ -310,6 +310,8 @@ lv:
           cancel: "Atcelt"
         plant:
           kicker: "Nākamā nometne"
+        coach:
+          rename_flag: "Tap your goal name to open the menu." # TODO: translate
         back_to_peak: "Atpakaļ uz %{peak}"
         base_camp:
           kicker: "Bāzes nometne"
@@ -397,7 +399,6 @@ lv:
           one: "%{count} cīņa gatava šeit"
           other: "%{count} cīņas gatavas šeit"
         camp_status:
-          empty: "Nekas nav ieplānots"
           cleared: "Viss padarīts"
           ready:
             one: "%{count} cīņa gatava"

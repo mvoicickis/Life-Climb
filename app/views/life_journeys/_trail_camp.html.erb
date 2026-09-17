@@ -56,6 +56,8 @@
   </span>
   <span class="lp-trail-camp__caption">
     <span class="lp-trail-camp__title"><%= mountain_trail_camp_caption_title(project) %></span>
-    <span class="lp-trail-camp__status"><%= status %></span>
+    <% if status.present? %>
+      <span class="lp-trail-camp__status"><%= status %></span>
+    <% end %>
   </span>
 </button>

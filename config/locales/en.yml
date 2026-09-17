@@ -891,7 +891,7 @@ en:
           plant_first: "Tap + to plant your first camp." # TODO: translate for lv/de/es/ru.
           open_camp: "Open your camp and add today’s battle." # TODO: translate for lv/de/es/ru.
           win_battle: "Tick a battle to win it — that’s a day’s progress." # TODO: translate for lv/de/es/ru.
-          rename_flag: "Tap your goal name to change it." # TODO: translate for lv/de/es/ru.
+          rename_flag: "Tap your goal name to open the menu."
           xp_bar: "Your XP and camps done live in the bar up top." # TODO: translate for lv/de/es/ru.
           journey_stats: "Every number you log becomes a stat under Journey." # TODO: translate for lv/de/es/ru.
         today_card:
@@ -1014,7 +1014,6 @@ en:
           one: "%{count} battle ready here"
           other: "%{count} battles ready here"
         camp_status:
-          empty: "Nothing planned"
           cleared: "All cleared"
           ready:
             one: "%{count} battle ready"
