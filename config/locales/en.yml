@@ -1056,6 +1056,7 @@ en:
         win_toast: "Won"
         quick_complete: "Quick win"
         quick_win_toast: "Won “%{title}”"
+        edit_goal_name: "Edit name"
         delete_destination: "Delete goal"
         delete_destination_confirm: "Delete this goal and all its camps and battles. This can't be undone."
         camp_mode_label: "Camp type"

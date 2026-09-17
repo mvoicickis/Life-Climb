@@ -403,6 +403,7 @@ lv:
             one: "%{count} cīņa gatava"
             other: "%{count} cīņas gatavas"
         camp_fold: "Nometne"
+        edit_goal_name: "Edit name" # TODO: translate
         edit_camp: "Rediģēt"
         edit_camp_description: "Apraksts"
         delete_camp: "Dzēst"

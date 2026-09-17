@@ -1435,6 +1435,11 @@
   pointer-events: auto;
 }
 
+.lp-trail__goal-plaque-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
 .lp-trail__goal-plaque.lp-trail__goal-hero {
   display: block;
   width: 100%;
@@ -1471,6 +1476,34 @@
   word-break: normal;
   overflow-wrap: anywhere;
   text-shadow: none;
+}
+
+.lp-trail__goal-title-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--lp-radius-card, 1rem);
+  background: var(--lp-rpg-glass, rgba(8, 12, 18, 0.8));
+  backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
+  -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
+  box-shadow: var(--lp-rpg-glass-shadow, 0 18px 42px rgba(0, 0, 0, 0.44));
+  padding: 0.55rem 0.75rem;
+  font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
+  font-size: max(1rem, 16px);
+  font-weight: 800;
+  color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-trail__goal-title-input:focus {
+  outline: 2px solid var(--lp-rpg-green, #57d35b);
+  outline-offset: 2px;
 }
 
 .lp-trail__goal-menu {

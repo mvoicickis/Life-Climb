@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { attachTitleLimit } from "lib/title_limit"
 
 // Mountain terraced trail: FAB opens composer, camps land on stage ledges.
 export default class extends Controller {
@@ -29,6 +30,8 @@ export default class extends Controller {
     "accentHex",
     "campMode",
     "peakTitle",
+    "peakTitleInput",
+    "peakPlaque",
     "clouds"
   ]
 
@@ -41,19 +44,26 @@ export default class extends Controller {
     goalUpdateUrl: String,
     csrf: String,
     curve: { type: Array, default: [] },
-    quantityLogUrl: String
+    quantityLogUrl: String,
+    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" }
   }
 
   connect() {
     this._logContext = null
+    this._editingTitle = false
+    this._goalTitlePrevious = ""
+    this._peakMenuDismissBound = false
     this.bindFab()
     this.bindScrollParallax()
     this.syncAccentFromSwatch()
+    this.bindGoalTitleInput()
   }
 
   disconnect() {
     this.unbindFab()
     this.unbindScrollParallax()
+    this.unbindPeakMenuDismiss()
+    this.teardownGoalTitleEdit()
   }
 
   bindFab() {
@@ -91,16 +101,183 @@ export default class extends Controller {
   }
 
   toggleGoalMenu(event) {
+    if (this._editingTitle) return
     this.togglePeakMenu(event)
   }
 
   togglePeakMenu(event) {
     event?.preventDefault()
     event?.stopPropagation()
-    if (!this.hasPeakMenuTarget) return
+    if (!this.hasPeakMenuTarget || this._editingTitle) return
     const open = this.peakMenuTarget.hasAttribute("hidden")
-    this.peakMenuTarget.toggleAttribute("hidden", !open)
-    event.currentTarget?.setAttribute("aria-expanded", open ? "true" : "false")
+    if (open) {
+      this.openPeakMenu(event?.currentTarget)
+    } else {
+      this.closePeakMenu(event?.currentTarget)
+    }
+  }
+
+  openPeakMenu(plaqueButton = null) {
+    if (!this.hasPeakMenuTarget) return
+    this.peakMenuTarget.hidden = false
+    this.peakMenuTarget.removeAttribute("hidden")
+    const plaque = plaqueButton || (this.hasPeakPlaqueTarget ? this.peakPlaqueTarget : null)
+    plaque?.setAttribute("aria-expanded", "true")
+    this.bindPeakMenuDismiss()
+  }
+
+  closePeakMenu(plaqueButton = null) {
+    if (!this.hasPeakMenuTarget) return
+    this.peakMenuTarget.hidden = true
+    this.peakMenuTarget.setAttribute("hidden", "")
+    const plaque = plaqueButton || (this.hasPeakPlaqueTarget ? this.peakPlaqueTarget : null)
+    plaque?.setAttribute("aria-expanded", "false")
+    this.unbindPeakMenuDismiss()
+  }
+
+  bindPeakMenuDismiss() {
+    if (this._peakMenuDismissBound) return
+    this._onPeakMenuPointer = (event) => this.onPeakMenuPointerDown(event)
+    this._onPeakMenuKey = (event) => this.onPeakMenuKeydown(event)
+    document.addEventListener("pointerdown", this._onPeakMenuPointer)
+    document.addEventListener("keydown", this._onPeakMenuKey)
+    this._peakMenuDismissBound = true
+  }
+
+  unbindPeakMenuDismiss() {
+    if (!this._peakMenuDismissBound) return
+    document.removeEventListener("pointerdown", this._onPeakMenuPointer)
+    document.removeEventListener("keydown", this._onPeakMenuKey)
+    this._peakMenuDismissBound = false
+  }
+
+  peakMenuHitTarget(event) {
+    const target = event.target
+    if (!target?.closest) return false
+    if (target.closest(".lp-trail__goal-menu")) return true
+    if (target.closest(".lp-trail__goal-plaque")) return true
+    if (this._editingTitle && this.hasPeakTitleInputTarget && target.closest(".lp-trail__goal-title-input")) {
+      return true
+    }
+    return false
+  }
+
+  onPeakMenuPointerDown(event) {
+    if (this.peakMenuHitTarget(event)) return
+    if (this.hasPeakMenuTarget && !this.peakMenuTarget.hasAttribute("hidden") && !this.peakMenuTarget.hidden) {
+      this.closePeakMenu()
+    }
+  }
+
+  onPeakMenuKeydown(event) {
+    if (event.key !== "Escape") return
+    if (this._editingTitle) {
+      event.preventDefault()
+      this.cancelGoalTitleEdit()
+      return
+    }
+    if (this.hasPeakMenuTarget && !this.peakMenuTarget.hasAttribute("hidden") && !this.peakMenuTarget.hidden) {
+      event.preventDefault()
+      this.closePeakMenu()
+    }
+  }
+
+  editGoalNameFromMenu(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    this.closePeakMenu()
+    if (!this.hasPeakTitleTarget || !this.hasPeakTitleInputTarget || !this.hasPeakPlaqueTarget) return
+
+    this._goalTitlePrevious = (this.peakTitleTarget.textContent || "").trim()
+    this.peakTitleInputTarget.value = this._goalTitlePrevious
+    this._editingTitle = true
+    this.peakPlaqueTarget.hidden = true
+    this.peakTitleInputTarget.hidden = false
+    this._titleLimit?.detach()
+    this._titleLimit = attachTitleLimit(this.peakTitleInputTarget, { template: this.atMaxTemplateValue })
+    this.peakTitleInputTarget.focus()
+    this.peakTitleInputTarget.select()
+  }
+
+  bindGoalTitleInput() {
+    if (!this.hasPeakTitleInputTarget) return
+    const input = this.peakTitleInputTarget
+    this._onGoalTitleBlur = () => this.onGoalTitleBlur()
+    this._onGoalTitleKeydown = (event) => this.onGoalTitleKeydown(event)
+    input.addEventListener("blur", this._onGoalTitleBlur)
+    input.addEventListener("keydown", this._onGoalTitleKeydown)
+  }
+
+  onGoalTitleBlur() {
+    if (!this._editingTitle) return
+    void this.commitGoalTitleEdit()
+  }
+
+  onGoalTitleKeydown(event) {
+    if (!this._editingTitle) return
+    if (event.key === "Enter") {
+      event.preventDefault()
+      void this.commitGoalTitleEdit()
+    }
+    if (event.key === "Escape") {
+      event.preventDefault()
+      this.cancelGoalTitleEdit()
+    }
+  }
+
+  async commitGoalTitleEdit() {
+    if (!this._editingTitle || !this.hasPeakTitleInputTarget || !this.hasPeakTitleTarget) return
+
+    const title = this.peakTitleInputTarget.value.trim()
+    const previous = this._goalTitlePrevious
+
+    if (!title || title === previous) {
+      this.cancelGoalTitleEdit()
+      return
+    }
+
+    const saved = await this.patchGoal({ title })
+    if (saved) {
+      this.peakTitleTarget.textContent = title
+    } else {
+      this.peakTitleTarget.textContent = previous
+      this.peakTitleInputTarget.value = previous
+    }
+    this.finishGoalTitleEdit()
+  }
+
+  cancelGoalTitleEdit() {
+    if (!this._editingTitle) return
+    if (this.hasPeakTitleTarget) {
+      this.peakTitleTarget.textContent = this._goalTitlePrevious
+    }
+    if (this.hasPeakTitleInputTarget) {
+      this.peakTitleInputTarget.value = this._goalTitlePrevious
+    }
+    this.finishGoalTitleEdit()
+  }
+
+  finishGoalTitleEdit() {
+    this._editingTitle = false
+    this._titleLimit?.detach()
+    this._titleLimit = null
+
+    if (this.hasPeakTitleInputTarget) {
+      this.peakTitleInputTarget.hidden = true
+    }
+    if (this.hasPeakPlaqueTarget) {
+      this.peakPlaqueTarget.hidden = false
+      this.peakPlaqueTarget.focus({ preventScroll: true })
+    }
+  }
+
+  teardownGoalTitleEdit() {
+    if (!this._editingTitle) return
+    this._editingTitle = false
+    this._titleLimit?.detach()
+    this._titleLimit = null
+    if (this.hasPeakTitleInputTarget) this.peakTitleInputTarget.hidden = true
+    if (this.hasPeakPlaqueTarget) this.peakPlaqueTarget.hidden = false
   }
 
   async submitPlant(event) {
@@ -532,28 +709,15 @@ export default class extends Controller {
     }
   }
 
-  peakTitleKey(event) {
-    if (event.key === "Enter") {
-      event.preventDefault()
-      event.currentTarget?.blur()
-    }
-  }
-
-  async commitPeakTitle(event) {
-    const el = event.currentTarget
-    const title = (el.textContent || "").trim()
-    if (!title || !this.goalUpdateUrlValue) return
-    await this.patchGoal({ title })
-  }
-
   async patchGoal(fields) {
+    if (!this.goalUpdateUrlValue) return false
     const token = this.csrfToken()
     const body = new FormData()
     Object.entries(fields).forEach(([k, v]) => body.set(k, v))
     body.set("_method", "patch")
     if (token) body.set("authenticity_token", token)
     try {
-      await fetch(this.goalUpdateUrlValue, {
+      const response = await fetch(this.goalUpdateUrlValue, {
         method: "POST",
         headers: {
           Accept: "text/vnd.turbo-stream.html, text/html",
@@ -563,7 +727,10 @@ export default class extends Controller {
         body,
         credentials: "same-origin"
       })
-    } catch (_e) { /* inline edit is best-effort */ }
+      return response.ok
+    } catch (_e) {
+      return false
+    }
   }
 
   bindScrollParallax() {
@@ -675,7 +842,7 @@ export default class extends Controller {
     event?.preventDefault()
     event?.stopPropagation()
     if (this.element.classList.contains("is-first-camp-reveal")) return
-    if (this.hasPeakMenuTarget) this.peakMenuTarget.hidden = true
+    this.closePeakMenu()
 
     const overlay = document.getElementById("trail-arrange-camps")
     if (!overlay) return
