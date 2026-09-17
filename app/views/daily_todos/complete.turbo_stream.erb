@@ -90,7 +90,8 @@
           boss: @stream_boss,
           all_clear: @battlefield_health.all_clear?,
           win_number: @stream_win_number,
-          push_offer_eligible: @stream_push_offer_eligible %>
+          push_offer_eligible: @stream_push_offer_eligible,
+          open_count: @battle_open_count %>
   <% end %>
 
   <% if @stream_climb_reward.present? %>

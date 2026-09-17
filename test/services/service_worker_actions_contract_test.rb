@@ -21,6 +21,17 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, "handleNotificationAction"
   end
 
+  test "push handler syncs app badge from payload without notification tag" do
+    assert_includes @source, "syncAppBadgeFromPayload"
+    assert_includes @source, "navigator.setAppBadge"
+    assert_includes @source, "navigator.clearAppBadge"
+    refute_includes @source, "tag:"
+  end
+
+  test "notificationclick clears app badge before opening app" do
+    assert_includes @source, "clearAppBadgeSafe"
+  end
+
   test "cache version bumped for snooze actions" do
     assert_includes @source, 'CACHE_VERSION = "v8"'
   end

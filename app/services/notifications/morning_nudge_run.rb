@@ -53,13 +53,16 @@ module Notifications
       locale = user.locale.presence || I18n.default_locale
       copy = MorningNudgeCopy.for(user: user, date: local_date, locale: locale)
 
+      badge = Today::BattleOpenCount.for(user: user, on: local_date)
+
       delivered = SendWebPushJob.perform_now(
         user.id,
         {
           "title" => copy.title,
           "body" => copy.body,
           "url" => "/dashboard",
-          "kind" => KIND
+          "kind" => KIND,
+          "badge" => badge
         }
       )
 

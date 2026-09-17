@@ -41,6 +41,8 @@ module Notifications
 
     test "sends battle copy when incomplete todo exists on local day" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
+        seed_climb!(@user, today_mission: "Warm up")
+        @user.daily_todos.delete_all
         @user.daily_todos.create!(
           title: "Write tests",
           aspect_key: "career",
@@ -56,6 +58,9 @@ module Notifications
         assert_equal "Today's battle", @last_payload["title"]
         assert_equal "Write tests. Win it today.", @last_payload["body"]
         assert_equal "/dashboard", @last_payload["url"]
+        expected_badge = Today::BattleOpenCount.for(user: @user, on: Date.new(2026, 8, 6))
+        assert_equal expected_badge, @last_payload["badge"]
+        assert expected_badge.positive?
         assert_equal Date.new(2026, 8, 6), @pref.reload.last_morning_nudge_sent_on
       end
     end
@@ -66,6 +71,7 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal "Plan today", @last_payload["title"]
         assert_equal "Pick one battle for today.", @last_payload["body"]
+        assert_equal 0, @last_payload["badge"]
       end
     end
 
@@ -84,6 +90,7 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal "Plan today", @last_payload["title"]
         assert_equal "Pick one battle for today.", @last_payload["body"]
+        assert_equal 0, @last_payload["badge"]
       end
     end
 

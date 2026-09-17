@@ -53,6 +53,24 @@ function notificationActions(data) {
   return DEFAULT_ACTIONS
 }
 
+async function syncAppBadgeFromPayload(data) {
+  try {
+    if (data.badge === undefined || data.badge === null) return
+    const count = Number.parseInt(String(data.badge), 10)
+    if (!Number.isFinite(count) || count <= 0) {
+      if (typeof navigator.clearAppBadge === "function") {
+        await navigator.clearAppBadge()
+      }
+      return
+    }
+    if (typeof navigator.setAppBadge === "function") {
+      await navigator.setAppBadge(count)
+    }
+  } catch (_error) {
+    /* Badging API unsupported in this context */
+  }
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
@@ -119,8 +137,23 @@ self.addEventListener("push", (event) => {
     ...intensityOptions(data.intensity)
   }
 
-  event.waitUntil(self.registration.showNotification(title, options))
+  event.waitUntil(
+    (async () => {
+      await self.registration.showNotification(title, options)
+      await syncAppBadgeFromPayload(data)
+    })()
+  )
 })
+
+async function clearAppBadgeSafe() {
+  try {
+    if (typeof navigator.clearAppBadge === "function") {
+      await navigator.clearAppBadge()
+    }
+  } catch (_error) {
+    /* unsupported */
+  }
+}
 
 self.addEventListener("notificationclick", (event) => {
   const action = event.action || ""
@@ -128,12 +161,22 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close()
 
   if (ACTION_PATHS[action]) {
-    event.waitUntil(handleNotificationAction(action, data))
+    event.waitUntil(
+      (async () => {
+        await clearAppBadgeSafe()
+        await handleNotificationAction(action, data)
+      })()
+    )
     return
   }
 
   const targetUrl = data.url || "/dashboard"
-  event.waitUntil(openApp(targetUrl))
+  event.waitUntil(
+    (async () => {
+      await clearAppBadgeSafe()
+      await openApp(targetUrl)
+    })()
+  )
 })
 
 async function handleNotificationAction(action, data) {
