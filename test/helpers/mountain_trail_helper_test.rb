@@ -161,7 +161,7 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   test "camp status is empty, ready, or cleared" do
     empty = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [], false)
-    assert_equal "Nothing planned", mountain_trail_camp_status(empty)
+    assert_nil mountain_trail_camp_status(empty)
 
     done = Struct.new(:day?, :holding?, :completed?).new(true, false, true)
     open = Struct.new(:day?, :holding?, :completed?).new(true, false, false)

@@ -63,6 +63,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   test "goal menu keeps delete and reset photo without edit change photo or mark reached" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
+    assert_select ".lp-trail__peak-item", text: /Edit name/i
     assert_select ".lp-trail__peak-item", text: /Edit Destination/i, count: 0
     assert_select ".lp-trail__peak-item", text: /Change photo/i, count: 0
     assert_select ".lp-trail__peak-item", text: /Mark destination reached/i, count: 0
@@ -102,7 +103,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-stages", count: 0
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
-    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
     assert_select "#trail-camp-#{holding.id}", count: 0

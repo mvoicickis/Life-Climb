@@ -47,6 +47,7 @@
          data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
          data-trail-canvas-goal-id-value="<%= goal&.id.to_i %>"
          data-trail-canvas-goal-update-url-value="<%= goal ? strategy_goal_path(goal) : '' %>"
+         data-trail-canvas-at-max-template-value="<%= t('title_limit.at_max') %>"
          data-trail-canvas-journey-id-value="<%= journey.id %>"
          data-trail-canvas-life-area-id-value="<%= area.id %>"
          data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
@@ -98,19 +99,34 @@
     <div class="lp-trail-hud__lead">
       <% if goal && !destination_overlay %>
         <div class="lp-trail__goal<%= ' is-visible' if first_camp_reveal %>" <% if first_camp_reveal %>data-first-camp-reveal-target="summit"<% end %>>
-          <button type="button"
-                  class="lp-trail__goal-plaque lp-trail__goal-hero"
-                  data-action="click->trail-canvas#toggleGoalMenu"
-                  aria-haspopup="menu"
-                  aria-expanded="false"
-                  aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
-            <span class="lp-trail__goal-title lp-rpg-destination-carousel__title"
-                  contenteditable="plaintext-only"
-                  spellcheck="false"
-                  data-trail-canvas-target="peakTitle"
-                  data-action="blur->trail-canvas#commitPeakTitle keydown->trail-canvas#peakTitleKey"><%= peak_title %></span>
-          </button>
+          <div class="lp-trail__goal-plaque-wrap">
+            <button type="button"
+                    class="lp-trail__goal-plaque lp-trail__goal-hero"
+                    data-trail-canvas-target="peakPlaque"
+                    data-action="click->trail-canvas#toggleGoalMenu"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
+              <span class="lp-trail__goal-title lp-rpg-destination-carousel__title"
+                    data-trail-canvas-target="peakTitle"><%= peak_title %></span>
+            </button>
+            <input type="text"
+                   class="lp-trail__goal-title-input"
+                   hidden
+                   autocomplete="off"
+                   enterkeyhint="done"
+                   spellcheck="false"
+                   maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                   data-trail-canvas-target="peakTitleInput"
+                   aria-label="<%= t('strategy.rpg.trail.edit_goal_name') %>">
+          </div>
           <div class="lp-trail__goal-menu" data-trail-canvas-target="peakMenu" role="menu" hidden>
+            <button type="button"
+                    class="lp-trail__peak-item"
+                    role="menuitem"
+                    data-action="click->trail-canvas#editGoalNameFromMenu">
+              <%= t("strategy.rpg.trail.edit_goal_name") %>
+            </button>
             <% if show_arrange_camps %>
               <button type="button"
                       class="lp-trail__peak-item"

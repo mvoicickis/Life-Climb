@@ -241,6 +241,8 @@ de:
           prompt_generic: "How much?"  # TODO: translate
         plant:
           kicker: "Next camp"  # TODO: translate
+        coach:
+          rename_flag: "Tap your goal name to open the menu." # TODO: translate
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         camp_idle:
           start_title: "Your climb starts here"  # TODO: translate
@@ -252,6 +254,7 @@ de:
           keep_body: "Pick one small thing you can finish today."  # TODO: translate
           keep_button: "+ Add battle"  # TODO: translate
         won_battles_strip: "Won"  # TODO: translate
+        edit_goal_name: "Edit name" # TODO: translate
         daily: "Do this every day" # TODO: translate
         seed_battle_hint: "Win this one to get moving." # TODO: translate
         battle_suggestions: # TODO: translate

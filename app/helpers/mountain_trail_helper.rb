@@ -564,11 +564,11 @@ module MountainTrailHelper
   def mountain_trail_camp_status(project)
     progress = mountain_trail_camp_progress(project)
     if progress[:kind] == :pages
-      return strategy_quantity_progress_label(project).presence || I18n.t("strategy.rpg.trail.camp_status.empty")
+      return strategy_quantity_progress_label(project).presence
     end
 
     if progress[:total].zero?
-      I18n.t("strategy.rpg.trail.camp_status.empty")
+      nil
     elsif progress[:open].zero?
       I18n.t("strategy.rpg.trail.camp_status.cleared")
     else

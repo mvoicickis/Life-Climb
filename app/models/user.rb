@@ -341,7 +341,23 @@ class User < ApplicationRecord
     StrategyGoal.with_holding_destroy { super }
   end
 
+  before_destroy :destroy_strategy_goals_depth_first, prepend: true
+
   private
+
+  # Wipe the goal tree leaves-first so Postgres never deletes a parent row while
+  # children still hold strategy_goals.parent_id (LifeArea also cascades goals).
+  def destroy_strategy_goals_depth_first
+    return unless strategy_goals.exists?
+
+    loop do
+      parent_ids = strategy_goals.where.not(parent_id: nil).select(:parent_id)
+      leaves = strategy_goals.where.not(id: parent_ids)
+      break unless leaves.exists?
+
+      leaves.find_each(&:destroy!)
+    end
+  end
 
   # Keep legacy man/woman rows valid until re-pick; validate new writes only.
   def validate_character_value?

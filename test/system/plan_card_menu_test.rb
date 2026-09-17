@@ -3,7 +3,7 @@
 require "application_system_test_case"
 
 # V4 dropped the plan rail overflow menu. Multi-plan focus uses HUD links;
-# destination rename is inline on the peak title.
+# destination rename is via the goal menu → Edit name.
 class PlanCardMenuTest < ApplicationSystemTestCase
   setup do
     @user = users(:one)
@@ -64,22 +64,43 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_no_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
   end
 
-  test "peak title is editable inline from the trail" do
+  test "goal menu Edit name saves on Enter" do
     sign_in_and_visit_mountain!
 
     assert_selector ".lp-trail__goal-title", text: /Ship LifePoints/i, wait: 5
     assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all
 
-    page.execute_script(<<~JS)
-      const el = document.querySelector(".lp-trail__goal-title");
-      el.focus();
-      el.textContent = "Renamed Destination";
-      el.dispatchEvent(new Event("blur", { bubbles: true }));
-    JS
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
+    click_button "Edit name"
+
+    input = find(".lp-trail__goal-title-input", wait: 3)
+    input.set("Renamed Destination")
+    input.send_keys(:enter)
 
     assert_selector "#strategy-world", wait: 5
     assert_equal "Renamed Destination", @goal.reload.title
     assert_selector ".lp-trail__goal-title", text: /Renamed Destination/i, wait: 5
+  end
+
+  test "goal menu closes on outside tap" do
+    sign_in_and_visit_mountain!
+
+    find(".lp-trail__goal-plaque").click
+    assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
+
+    page.execute_script(<<~JS)
+      const photo = document.querySelector("#mountain-trail .lp-trail__photo");
+      const rect = photo.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height * 0.8;
+      const target = document.elementFromPoint(x, y);
+      target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: x, clientY: y }));
+      target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, clientX: x, clientY: y }));
+    JS
+
+    assert_selector "#mountain-trail", wait: 3
+    assert page.evaluate_script("document.querySelector('.lp-trail__goal-menu').hidden")
   end
 
   test "V4 has no plan card delete menu; HUD plans and delete goal remain" do
