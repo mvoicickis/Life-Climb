@@ -94,6 +94,44 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"false\"", response.body
   end
 
+  test "push offer bridge is false when push_endpoint matches stored subscription" do
+    endpoint = "https://fcm.googleapis.com/fcm/send/device-a"
+    PushSubscription.create!(
+      user: @user,
+      endpoint: endpoint,
+      p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTsHJQDSiUC_nNAw0QQxmlYjXz12WA0NedmzVoY_o0U0K2pU",
+      auth: "tBHItJI5svbpez7KI4CCXg"
+    )
+
+    post complete_daily_todo_path(@todo), params: { push_endpoint: endpoint }, as: :turbo_stream
+
+    assert_response :ok
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"false\"", response.body
+  end
+
+  test "push offer bridge is true when stored subscription is for another endpoint" do
+    PushSubscription.create!(
+      user: @user,
+      endpoint: "https://fcm.googleapis.com/fcm/send/browser-tab",
+      p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTsHJQDSiUC_nNAw0QQxmlYjXz12WA0NedmzVoY_o0U0K2pU",
+      auth: "tBHItJI5svbpez7KI4CCXg"
+    )
+
+    post complete_daily_todo_path(@todo),
+         params: { push_endpoint: "https://fcm.googleapis.com/fcm/send/installed-app" },
+         as: :turbo_stream
+
+    assert_response :ok
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"true\"", response.body
+  end
+
+  test "complete form includes push_endpoint hidden field" do
+    get dashboard_path
+
+    assert_response :success
+    assert_select "form.lp-today-v2-row__check-form input.js-push-endpoint-field[name=push_endpoint]"
+  end
+
   test "turbo stream personal best milestone keeps celebrate but hides climb reward modal" do
     @user.update!(best_day_ap: 5)
 

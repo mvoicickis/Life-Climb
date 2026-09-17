@@ -61,6 +61,7 @@
           },
           class: "lp-today-v2-row__check",
           aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+      <%= render "shared/push_endpoint_hidden" %>
     <% end %>
     <%= render "dashboard/dash_battlefield_quantity_sheet", todo: todo, project: qty_project %>
   <% else %>
@@ -79,6 +80,7 @@
           },
           class: "lp-today-v2-row__check",
           aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+      <%= render "shared/push_endpoint_hidden" %>
     <% end %>
   <% end %>
 

@@ -6,6 +6,11 @@ export function isIos() {
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
 }
 
+export function isAndroid() {
+  if (typeof navigator === "undefined") return false
+  return /Android/i.test(navigator.userAgent)
+}
+
 export function canEnablePushHere() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false
   if (isIos() && !isStandalonePwa()) return false

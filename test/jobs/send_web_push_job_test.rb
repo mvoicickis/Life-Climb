@@ -50,6 +50,16 @@ class SendWebPushJobTest < ActiveJob::TestCase
     end
   end
 
+  test "destroys invalid subscriptions" do
+    WebPush.define_singleton_method(:payload_send) do |**_kwargs|
+      raise WebPush::InvalidSubscription.new(FakeResponse.new("not found", "#<Fake 404>"), "push.example")
+    end
+
+    assert_difference -> { PushSubscription.count }, -1 do
+      SendWebPushJob.perform_now(@user.id, { "title" => "Hi" })
+    end
+  end
+
   test "no-ops when user is missing" do
     assert_nothing_raised do
       SendWebPushJob.perform_now(-1, { "title" => "Hi" })

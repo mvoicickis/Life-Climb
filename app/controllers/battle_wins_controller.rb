@@ -3,6 +3,7 @@
 # Win one Strategy battle from the Mountain world map, then return to the climb.
 class BattleWinsController < ApplicationController
   include MountainSheetRefresh
+  include PushOfferEndpoint
   def create
     battle = current_user.strategy_goals.battles.find(params[:id])
     journey = battle.life_journey || current_user.primary_focused_journey
@@ -18,7 +19,7 @@ class BattleWinsController < ApplicationController
 
     if result.flash[:battle_celebrate]
       @win_number = current_user.daily_todos.where.not(completed_at: nil).count
-      @stream_push_offer_eligible = current_user.push_offer_eligible?(win_number: @win_number)
+      @stream_push_offer_eligible = push_offer_eligible_for_win(win_number: @win_number)
       flash[:win_number] = @win_number
       flash[:push_offer_eligible] = @stream_push_offer_eligible
     else
