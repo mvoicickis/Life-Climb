@@ -106,4 +106,134 @@ class AdminUserDestroyAccountTest < ActionDispatch::IntegrationTest
     assert_equal 0, StrategyQuantityLog.where(user_id: @target.id).count
     assert_equal 0, DailyTodo.where(user_id: @target.id).count
   end
+
+  test "admin delete cancels stripe subscription then removes user" do
+    @target.update_columns(stripe_subscription_id: "sub_delete_test", subscription_status: "active")
+    canceled_id = nil
+
+    with_singleton_stubs(
+      Stripe::Subscription => {
+        cancel: ->(subscription_id) {
+          canceled_id = subscription_id
+          Stripe::Subscription.construct_from(id: subscription_id, object: "subscription", status: "canceled")
+        }
+      }
+    ) do
+      sign_in_as @admin
+      assert_difference "User.count", -1 do
+        delete admin_user_path(@target)
+      end
+    end
+
+    assert_equal "sub_delete_test", canceled_id
+    assert_redirected_to admin_users_path
+    assert_not User.exists?(@target.id)
+  end
+
+  test "admin delete without subscription skips stripe cancel" do
+    cancel_called = false
+
+    with_singleton_stubs(
+      Stripe::Subscription => {
+        cancel: ->(*) {
+          cancel_called = true
+          raise "cancel should not be called"
+        }
+      }
+    ) do
+      sign_in_as @admin
+      assert_difference "User.count", -1 do
+        delete admin_user_path(@target)
+      end
+    end
+
+    refute cancel_called
+    assert_not User.exists?(@target.id)
+  end
+
+  test "admin delete blocked when stripe cancel fails" do
+    @target.update_columns(stripe_subscription_id: "sub_stripe_fail", subscription_status: "active")
+
+    with_singleton_stubs(
+      Stripe::Subscription => {
+        cancel: ->(*) { raise Stripe::APIError.new("network down") }
+      }
+    ) do
+      sign_in_as @admin
+      assert_no_difference "User.count" do
+        delete admin_user_path(@target)
+      end
+    end
+
+    assert_redirected_to admin_users_path
+    assert_equal I18n.t("admin.users.delete_blocked_stripe"), flash[:alert]
+    assert User.exists?(@target.id)
+  end
+
+  test "admin delete skips stripe cancel when subscription already canceled" do
+    @target.update_columns(
+      stripe_subscription_id: "sub_already_canceled",
+      subscription_status: "canceled"
+    )
+    cancel_called = false
+
+    with_singleton_stubs(
+      Stripe::Subscription => {
+        cancel: ->(*) {
+          cancel_called = true
+          raise "cancel should not be called"
+        }
+      }
+    ) do
+      sign_in_as @admin
+      assert_difference "User.count", -1 do
+        delete admin_user_path(@target)
+      end
+    end
+
+    refute cancel_called
+    assert_not User.exists?(@target.id)
+  end
+
+  test "admin delete re-raises when destroy fails after subscription cancel" do
+    @target.update_columns(stripe_subscription_id: "sub_destroy_fail", subscription_status: "active")
+    target_id = @target.id
+    cancel_called = false
+
+    with_singleton_stubs(
+      Stripe::Subscription => {
+        cancel: ->(subscription_id) {
+          cancel_called = true
+          Stripe::Subscription.construct_from(id: subscription_id, object: "subscription", status: "canceled")
+        }
+      }
+    ) do
+      with_destroy_stub_failing_for_user(target_id) do
+        sign_in_as @admin
+        assert_raises(ActiveRecord::RecordNotDestroyed) do
+          delete admin_user_path(@target)
+        end
+      end
+    end
+
+    assert cancel_called
+    assert User.exists?(target_id)
+  end
+
+  private
+
+  def with_destroy_stub_failing_for_user(user_id)
+    original_destroy = User.instance_method(:destroy!)
+    User.define_method(:destroy!) do |&block|
+      if id == user_id
+        raise ActiveRecord::RecordNotDestroyed.new("stubbed destroy failure", self)
+      end
+
+      original_destroy.bind(self).call
+    end
+
+    yield
+  ensure
+    User.define_method(:destroy!, original_destroy)
+  end
 end
