@@ -918,6 +918,19 @@ lv:
       cta: "Add to home screen"
       dismiss: "Not now"
       dismissed: "Alright. I'll be in Settings if you change your mind."
+    # TODO: translate
+    push_offer:
+      headline: "Get a reminder tomorrow morning"
+      yes_label: "Remind me"
+      not_now: "Not now"
+      ios_headline: "Add Life Climb to your home screen"
+      ios_body: "Morning reminders need the app on your home screen on iPhone."
+      ios_install: "Add to home screen"
+      android_headline: "Morning nudge on your home screen"
+      android_body: "Add Life Climb to your home screen, then we'll ask for a morning reminder."
+      android_install: "Add to home screen"
+      unsupported: "Reminders aren't supported in this browser. Try Settings on a phone."
+      settings_link: "Open Settings"
     commitment:
       tier_label: "Dienas solījums"
       # TODO: translate

@@ -4,6 +4,7 @@ import {
   canEnablePushHere,
   enablePushSubscription,
   getPushSubscriptionState,
+  isAndroid,
   isIos
 } from "push_subscription"
 
@@ -23,6 +24,9 @@ export default class extends Controller {
     iosHeadline: String,
     iosBody: String,
     iosInstallLabel: String,
+    androidHeadline: String,
+    androidBody: String,
+    androidInstallLabel: String,
     unsupportedMessage: String,
     enabledMessage: String,
     settingsLinkLabel: String
@@ -32,17 +36,46 @@ export default class extends Controller {
     ensureCapture()
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
+    this.syncPushEndpointFields()
+    this.syncStandaloneSubscription()
   }
 
   disconnect() {
     document.removeEventListener("battle-day:celebrate", this._celebrateHandler)
   }
 
-  onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false, winNumber = 0 } = {}) {
+  onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false } = {}) {
     if (!pushOfferEligible) return
     if (!celebrate && !(Number(apGained) > 0)) return
 
     window.setTimeout(() => this.prepareOffer(), 1400)
+  }
+
+  async syncPushEndpointFields() {
+    const state = await getPushSubscriptionState()
+    const endpoint = state.endpoint || ""
+    document.querySelectorAll(".js-push-endpoint-field").forEach((input) => {
+      input.value = endpoint
+    })
+  }
+
+  async syncStandaloneSubscription() {
+    if (!isStandalonePwa()) return
+
+    const state = await getPushSubscriptionState()
+    if (state.subscribed) return
+    if (state.permission === "denied") return
+    if (state.permission !== "granted") return
+
+    try {
+      await enablePushSubscription({
+        vapidUrl: this.vapidUrlValue,
+        subscribeUrl: this.subscribeUrlValue
+      })
+      await this.syncPushEndpointFields()
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   async prepareOffer() {
@@ -52,7 +85,18 @@ export default class extends Controller {
     if (state.permission === "denied") return
 
     this.renderCard()
-    await this.markShown()
+  }
+
+  cardMode() {
+    const iosInstallNeeded = isIos() && !isStandalonePwa() && !canEnablePushHere()
+    const androidInstallNeeded =
+      isAndroid() && !isStandalonePwa() && canPrompt() && canEnablePushHere()
+    const unsupported = !canEnablePushHere() && !iosInstallNeeded
+
+    if (iosInstallNeeded) return "ios_install"
+    if (androidInstallNeeded) return "android_install"
+    if (unsupported) return "unsupported"
+    return "remind"
   }
 
   renderCard() {
@@ -60,40 +104,55 @@ export default class extends Controller {
     host.hidden = false
     host.innerHTML = ""
 
+    const mode = this.cardMode()
+
     const card = document.createElement("div")
     card.className = "lp-push-offer"
     card.setAttribute("role", "dialog")
     card.setAttribute("aria-live", "polite")
 
-    const iosInstallNeeded = isIos() && !isStandalonePwa() && !canEnablePushHere()
-    const unsupported = !canEnablePushHere() && !iosInstallNeeded
-
     const headline = document.createElement("p")
     headline.className = "lp-push-offer__headline"
-    headline.textContent = iosInstallNeeded
-      ? this.iosHeadlineValue
-      : (unsupported ? this.unsupportedMessageValue : this.headlineValue)
+    if (mode === "ios_install") {
+      headline.textContent = this.iosHeadlineValue
+    } else if (mode === "android_install") {
+      headline.textContent = this.androidHeadlineValue
+    } else if (mode === "unsupported") {
+      headline.textContent = this.unsupportedMessageValue
+    } else {
+      headline.textContent = this.headlineValue
+    }
     card.appendChild(headline)
 
-    if (iosInstallNeeded && this.iosBodyValue) {
+    if (mode === "ios_install" && this.iosBodyValue) {
       const body = document.createElement("p")
       body.className = "lp-push-offer__body"
       body.textContent = this.iosBodyValue
+      card.appendChild(body)
+    } else if (mode === "android_install" && this.androidBodyValue) {
+      const body = document.createElement("p")
+      body.className = "lp-push-offer__body"
+      body.textContent = this.androidBodyValue
       card.appendChild(body)
     }
 
     const actions = document.createElement("div")
     actions.className = "lp-push-offer__actions"
 
-    if (!unsupported) {
+    if (mode !== "unsupported") {
       const yes = document.createElement("button")
       yes.type = "button"
       yes.className = "lp-cta lp-push-offer__yes"
-      yes.textContent = iosInstallNeeded ? this.iosInstallLabelValue : this.yesLabelValue
-      yes.addEventListener("click", (event) => {
-        if (iosInstallNeeded) this.install(event)
-        else this.enable(event)
-      })
+      if (mode === "ios_install") {
+        yes.textContent = this.iosInstallLabelValue
+        yes.addEventListener("click", (event) => this.install(event))
+      } else if (mode === "android_install") {
+        yes.textContent = this.androidInstallLabelValue
+        yes.addEventListener("click", (event) => this.installThenEnable(event))
+      } else {
+        yes.textContent = this.yesLabelValue
+        yes.addEventListener("click", (event) => this.enable(event))
+      }
       actions.appendChild(yes)
     } else if (this.settingsUrlValue) {
       const settings = document.createElement("a")
@@ -113,27 +172,22 @@ export default class extends Controller {
     card.appendChild(actions)
     host.appendChild(card)
     this.cardElement = card
+    this.markShown()
   }
 
-  async markShown() {
+  markShown() {
     if (!this.shownUrlValue) return
 
-    try {
-      const response = await fetch(this.shownUrlValue, {
-        method: "PATCH",
-        credentials: "same-origin",
-        headers: {
-          Accept: "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
-        }
-      })
-      if (!response.ok) {
-        // Keep card visible — eligibility may still allow another try until shown sticks.
-        return
+    fetch(this.shownUrlValue, {
+      method: "PATCH",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
       }
-    } catch (_error) {
-      // Network failure — leave card up.
-    }
+    }).catch(() => {
+      /* Network failure — leave card up. */
+    })
   }
 
   async enable(event) {
@@ -153,9 +207,49 @@ export default class extends Controller {
         return
       }
 
+      await this.syncPushEndpointFields()
       this.hideCard()
     } catch (error) {
       console.error(error)
+      this.hideCard()
+    }
+  }
+
+  async installThenEnable(event) {
+    event.preventDefault()
+
+    if (isStandalonePwa()) {
+      await this.enable(event)
+      return
+    }
+
+    if (!canPrompt()) {
+      await this.enable(event)
+      return
+    }
+
+    const result = await promptInstall()
+    if (result.outcome !== "accepted") return
+
+    await this.markInstalled()
+
+    try {
+      const enableResult = await enablePushSubscription({
+        vapidUrl: this.vapidUrlValue,
+        subscribeUrl: this.subscribeUrlValue
+      })
+
+      if (!enableResult.ok) {
+        this.markShown()
+        this.hideCard()
+        return
+      }
+
+      await this.syncPushEndpointFields()
+      this.hideCard()
+    } catch (error) {
+      console.error(error)
+      this.markShown()
       this.hideCard()
     }
   }

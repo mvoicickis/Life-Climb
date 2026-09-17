@@ -20,15 +20,38 @@ class UserPushOfferTest < ActiveSupport::TestCase
     assert @user.push_offer_eligible?
   end
 
-  test "not eligible with existing subscription" do
+  test "not eligible when endpoint matches stored subscription" do
+    endpoint = "https://push.example/push-offer-test"
     PushSubscription.create!(
       user: @user,
-      endpoint: "https://push.example/push-offer-test",
+      endpoint: endpoint,
       p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTsHJQDSiUC_nNAw0QQxmlYjXz12WA0NedmzVoY_o0U0K2pU",
       auth: "tBHItJI5svbpez7KI4CCXg"
     )
 
-    refute @user.push_offer_eligible?(win_number: 1)
+    refute @user.push_offer_eligible?(endpoint: endpoint)
+  end
+
+  test "eligible when another device has a subscription but endpoint not sent" do
+    PushSubscription.create!(
+      user: @user,
+      endpoint: "https://push.example/other-device",
+      p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTsHJQDSiUC_nNAw0QQxmlYjXz12WA0NedmzVoY_o0U0K2pU",
+      auth: "tBHItJI5svbpez7KI4CCXg"
+    )
+
+    assert @user.push_offer_eligible?
+  end
+
+  test "eligible when another device has a subscription but this endpoint is different" do
+    PushSubscription.create!(
+      user: @user,
+      endpoint: "https://push.example/browser-tab",
+      p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTsHJQDSiUC_nNAw0QQxmlYjXz12WA0NedmzVoY_o0U0K2pU",
+      auth: "tBHItJI5svbpez7KI4CCXg"
+    )
+
+    assert @user.push_offer_eligible?(endpoint: "https://push.example/installed-app")
   end
 
   test "not eligible after shown today" do

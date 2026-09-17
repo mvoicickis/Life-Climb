@@ -301,8 +301,12 @@ class User < ApplicationRecord
     update!(install_offer_installed_at: Time.current)
   end
 
-  def push_offer_eligible?(win_number: nil)
-    return false if push_subscriptions.exists?
+  def push_offer_eligible?(win_number: nil, endpoint: nil)
+    normalized = endpoint.to_s.strip
+    if normalized.present?
+      return false if push_subscriptions.exists?(endpoint: normalized)
+    end
+
     return false if push_offer_permission_denied_at.present?
     return false if push_offer_dismiss_count >= PUSH_OFFER_MAX_ASKS
     return false if push_offer_shown_today?

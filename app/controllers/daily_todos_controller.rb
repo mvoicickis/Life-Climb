@@ -2,6 +2,7 @@
 
 class DailyTodosController < ApplicationController
   include Dashboard::TodaySurface
+  include PushOfferEndpoint
 
   # Freeform battles are planned on Strategy and synced to Today.
   # Today completes / undoes / removes / sets times on already-fed battles.
@@ -75,7 +76,7 @@ class DailyTodosController < ApplicationController
       flash[:battle_celebrate] = true
       @win_number ||= current_user.daily_todos.where.not(completed_at: nil).count
       flash[:win_number] = @win_number
-      flash[:push_offer_eligible] = current_user.push_offer_eligible?(win_number: @win_number)
+      flash[:push_offer_eligible] = push_offer_eligible_for_win(win_number: @win_number)
       maybe_milestone_climb_reward!(
         awarded: result.awarded,
         streak: result.streak,
@@ -162,7 +163,7 @@ class DailyTodosController < ApplicationController
       @stream_boss = flash[:climb_boss].present?
       @stream_climb_reward = flash[:climb_reward]
       @stream_win_number = @win_number.to_i
-      @stream_push_offer_eligible = current_user.push_offer_eligible?(win_number: @stream_win_number)
+      @stream_push_offer_eligible = push_offer_eligible_for_win(win_number: @stream_win_number)
     end
   end
 
