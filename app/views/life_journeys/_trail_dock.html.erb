@@ -20,7 +20,7 @@
 <% base_open_label = t("strategy.rpg.trail.base_camp.kicker") %>
 
 <div id="trail-dock" class="lp-trail__dock" data-trail-ignore data-controller="trail-dock">
-  <div class="lp-trail-base-card is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %> <%= 'has-battle-tick' if today_card[:battle].present? %> <%= 'has-peek' if pills[:items].any? %>"
+  <div class="lp-trail-base-card has-base-row is-<%= mode.tr('_', '-') %> <%= 'is-busy' if today_card[:busy] %> <%= 'has-battle-tick' if today_card[:battle].present? %>"
        data-base-title="<%= t('strategy.rpg.trail.base_camp.kicker') %>">
     <%= render "life_journeys/trail_base_card_inner",
           today_card: today_card,

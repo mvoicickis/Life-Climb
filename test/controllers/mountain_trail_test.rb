@@ -266,7 +266,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-base-card.is-battle.is-busy"
     assert_select ".lp-trail-base-card.has-battle-tick"
     assert_select ".lp-trail-base-card__main[data-action*='openFromDock'][data-camp-id=?]", @project.id.to_s
-    assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
+    assert_select ".lp-trail-base-card.has-base-row"
+    assert_select ".lp-trail-base-card__base-row[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__base-label", text: I18n.t("strategy.rpg.trail.base_camp.kicker")
     assert_select ".lp-trail-base-card__title", text: "Pitch the tent"
     assert_select ".lp-trail-base-card__kicker", text: /Next in/i
     assert_select ".lp-trail-base-card form[action*='battle_win'] input[name=source][value=camp_sheet]"
@@ -851,8 +853,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail-base-card.is-add-battle"
-    assert_select ".lp-trail-base-card.has-peek"
-    assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
+    assert_select ".lp-trail-base-card.has-base-row"
+    assert_select ".lp-trail-base-card__base-row[data-action*='openBase']"
     assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
     assert_select ".lp-trail-base-card__main[data-action*='openBase']", count: 0
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
@@ -875,7 +877,38 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-battle-#{battle.id}"
     assert_select ".lp-trail-base-card.is-battle"
     assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
-    assert_select ".lp-trail-base-card__peek[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__base-row[data-action*='openBase']"
     assert_select ".lp-trail-base-card[data-action*='openComposerFromFab']", count: 0
+  end
+
+  test "battle dock base row shows Base camp and one full habit name plus two for three trackers" do
+    @user.habits.destroy_all
+    [ "Do a Lecture", "Do german clases", "Read philosophy chapters" ].each_with_index do |name, index|
+      @user.habits.create!(
+        name: name,
+        unit: "times",
+        points: 5,
+        frequency: "daily",
+        active: true,
+        show_on_home: true,
+        stat_type: "growth",
+        life_journey_id: @journey.id,
+        position: index
+      )
+    end
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current,
+      position: 0, repeat: "daily"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-base-card.is-battle"
+    assert_select ".lp-trail-base-card__base-label", text: I18n.t("strategy.rpg.trail.base_camp.kicker")
+    assert_select ".lp-trail-base-card__base-row[data-action*='openBase']"
+    assert_select ".lp-trail-base-card__pill", text: "Do a Lecture"
+    assert_select ".lp-trail-base-card__pill.is-more", text: "+2"
+    refute_match(/Do a Lectur\.\.\./, response.body)
   end
 end

@@ -661,7 +661,8 @@ module MountainTrailHelper
       }
     end
 
-    { items: items.first(3), extra: [ items.size - 3, 0 ].max }
+    total = items.size
+    { items: items.first(3), extra: [ total - 3, 0 ].max, total: total }
   end
 
   def mountain_trail_sort_projects(projects)

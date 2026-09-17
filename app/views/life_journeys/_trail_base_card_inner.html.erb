@@ -7,16 +7,9 @@
 <% camp_id = local_assigns[:camp_id] %>
 <% mode = today_card[:mode].to_s %>
 <% camp_kicker_modes = %w[battle forward add_battle] %>
-<% if pills[:items].any? %>
-  <span class="lp-trail-base-card__fire" aria-hidden="true">🔥</span>
-<% else %>
-  <button type="button"
-          class="lp-trail-base-card__fire-btn"
-          data-action="<%= base_open_action %>"
-          aria-label="<%= base_open_label %>">
-    <span aria-hidden="true">🔥</span>
-  </button>
-<% end %>
+<% pill_total = pills[:total].to_i %>
+<% first_pill = pills[:items].first %>
+<% more_count = pill_total > 1 ? pill_total - 1 : 0 %>
 <div class="lp-trail-base-card__main"
      role="button"
      tabindex="0"
@@ -47,16 +40,26 @@
     <%= render "life_journeys/trail_battle_check", battle: today_card[:battle] %>
   </span>
 <% end %>
-<% if pills[:items].any? %>
-  <button type="button"
-          class="lp-trail-base-card__peek"
-          data-action="<%= base_open_action %>"
-          aria-label="<%= base_open_label %>">
-    <% pills[:items].each do |pill| %>
-      <span class="lp-trail-base-card__pill"><%= pill[:name].truncate(16) %> <b><%= pill[:count] %>d</b></span>
+<button type="button"
+        class="lp-trail-base-card__base-row"
+        data-action="<%= base_open_action %>"
+        aria-label="<%= base_open_label %>">
+  <span class="lp-trail-base-card__base-head">
+    <svg class="lp-trail-base-card__base-tent" viewBox="0 0 56 44" aria-hidden="true">
+      <path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/>
+      <path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/>
+      <path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/>
+    </svg>
+    <span class="lp-trail-base-card__base-label"><%= t("strategy.rpg.trail.base_camp.kicker") %></span>
+  </span>
+  <span class="lp-trail-base-card__pills">
+    <% if first_pill.present? %>
+      <span class="lp-trail-base-card__pill"><%= first_pill[:name] %></span>
+      <% if more_count.positive? %>
+        <span class="lp-trail-base-card__pill is-more"><%= t("strategy.rpg.trail.base_camp.more", count: more_count) %></span>
+      <% end %>
+    <% else %>
+      <span class="lp-trail-base-card__pill is-add"><%= t("strategy.rpg.trail.base_camp.add_placeholder") %></span>
     <% end %>
-    <% if pills[:extra].positive? %>
-      <span class="lp-trail-base-card__pill is-more"><%= t("strategy.rpg.trail.base_camp.more", count: pills[:extra]) %></span>
-    <% end %>
-  </button>
-<% end %>
+  </span>
+</button>

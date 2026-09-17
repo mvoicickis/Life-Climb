@@ -10,7 +10,7 @@ export default class extends Controller {
     if (event.key !== "Enter" && event.key !== " ") return
     if (event.target.closest(".lp-trail-battles__tick-form")) return
     if (event.target.closest(".lp-trail-base-card__fire-btn")) return
-    if (event.target.closest(".lp-trail-base-card__peek")) return
+    if (event.target.closest(".lp-trail-base-card__base-row")) return
 
     event.preventDefault()
     event.currentTarget.click()

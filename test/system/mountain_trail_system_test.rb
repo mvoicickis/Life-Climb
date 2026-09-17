@@ -117,7 +117,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector ".lp-trail-base-card", wait: 5
 
-    find(".lp-trail-base-card__peek").click
+    find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
 
     within("#trail-base-sheet") do
@@ -183,7 +183,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector ".lp-trail-base-card", wait: 5
 
-    find(".lp-trail-base-card__peek").click
+    find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
     find("#trail-base-sheet .lp-trail-battles__kebab-btn").click
     assert_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
