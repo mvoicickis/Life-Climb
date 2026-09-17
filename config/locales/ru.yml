@@ -267,8 +267,8 @@ ru:
           - "Move $20 to savings"
           - "Update one resume bullet"
         more_camps: # TODO: translate
-          one: "%{count} more camp"
-          other: "%{count} more camps"
+          one: "%{count} more camp ahead"
+          other: "%{count} more camps ahead"
         arrange: # TODO: translate
           title: "Change camp order"
           entry: "Change camp order"

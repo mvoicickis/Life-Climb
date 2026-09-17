@@ -125,13 +125,32 @@ module MountainTrailHelper
     nodes.length - 1 - last_idx
   end
 
-  # Distance scale for non-current peg visuals (base = 1.0, peak-side ≈ 0.6).
+  # Distance scale for non-current peg visuals (base = 1.0, peak-side floored at 0.75).
   def mountain_trail_map_peg_scale(node, visible_nodes)
     return 1.0 if node.state == :current
 
     y = mountain_trail_map_layout_slot(node, visible_nodes)[:y].to_f
     t = ((y - TRAIL_Y_MIN) / (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(0.0, 1.0)
-    (0.6 + (0.4 * t)).round(3)
+    (0.75 + (0.25 * t)).round(3)
+  end
+
+  # Sky slot for the “more camps ahead” chip — above the peak-side tent, below the goal bar.
+  def mountain_trail_map_more_chip_slot(visible_nodes)
+    nodes = Array(visible_nodes)
+    return { x: PEAK_X, y: 0.26 } if nodes.empty?
+
+    slot = mountain_trail_map_layout_slot(nodes.last, nodes)
+    y_tent = slot[:y].to_f
+    y_chip = (y_tent - 0.055).clamp(PEAK_Y + 0.05, y_tent - 0.02)
+    { x: slot[:x].to_f.round(4), y: y_chip.round(4) }
+  end
+
+  # Caption width in rem — 9rem default, narrowed near map edges so labels stay on the photo.
+  def mountain_trail_map_caption_max_rem(x_frac)
+    x = x_frac.to_f.clamp(0.0, 1.0)
+    side = [ x, 1.0 - x ].min
+    edge_limited = (2 * side * 22.5 - 0.75).round(2)
+    [ 9.0, edge_limited ].min.clamp(5.0, 9.0)
   end
 
   # Spread the 1–4 visible camps across TRAIL_Y_MIN..TRAIL_Y_MAX (ignore stored trail_x/y

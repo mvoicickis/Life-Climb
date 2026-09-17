@@ -142,7 +142,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{camps[5].id}", count: 0
     assert_select "#trail-map-camps .lp-trail-camp", count: 4
-    assert_select ".lp-trail-more", text: "2 more camps"
+    assert_select ".lp-trail-more", text: "2 more camps ahead"
     assert_select ".trail-terrace", count: 0
     assert_select "#trail-camps-fallback", count: 0
   end
@@ -670,7 +670,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
-    assert_select ".lp-trail-more", text: "1 more camp"
+    assert_select ".lp-trail-more", text: "1 more camp ahead"
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__pill", count: 0
   end
