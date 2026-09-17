@@ -40,6 +40,14 @@ export function canPrompt() {
   return deferredPrompt != null
 }
 
+export function clearDeferredInstallPrompt() {
+  deferredPrompt = null
+}
+
+if (typeof window !== "undefined") {
+  window.__lpClearInstallPrompt = clearDeferredInstallPrompt
+}
+
 export function onInstallPromptChange(fn) {
   listeners.add(fn)
   return () => listeners.delete(fn)

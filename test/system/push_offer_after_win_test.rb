@@ -53,6 +53,13 @@ class PushOfferAfterWinTest < ApplicationSystemTestCase
     @todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
   end
 
+  def teardown
+    page.driver.browser.execute_cdp("Emulation.setUserAgentOverride", userAgent: "")
+    page.execute_script("window.__lpClearInstallPrompt?.()")
+  rescue StandardError
+    nil
+  end
+
   def browser_console_errors
     page.driver.browser.logs.get(:browser).select { |entry| entry.level == "SEVERE" }
   end

@@ -44,6 +44,23 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
     @todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
   end
 
+  def teardown
+    reset_emulated_user_agent!
+    clear_captured_install_prompt!
+  end
+
+  def reset_emulated_user_agent!
+    page.driver.browser.execute_cdp("Emulation.setUserAgentOverride", userAgent: "")
+  rescue StandardError
+    nil
+  end
+
+  def clear_captured_install_prompt!
+    page.execute_script("window.__lpClearInstallPrompt?.()")
+  rescue StandardError
+    nil
+  end
+
   def sign_in_and_visit_today!
     visit new_session_path
     fill_in "Email", with: @user.email_address
