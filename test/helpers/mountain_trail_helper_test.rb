@@ -4,6 +4,7 @@ require "test_helper"
 
 class MountainTrailHelperTest < ActionView::TestCase
   include MountainTrailHelper
+  include StrategyHelper
   include ClimbTestHelper
 
   test "day count is one-indexed from journey created_at" do
@@ -1007,21 +1008,24 @@ class MountainTrailHelperTest < ActionView::TestCase
   end
 
   test "show arrange camps requires two path projects" do
-    trail = Strategy::Trail::Result.new(nodes: [], visible_nodes: [], current_node: nil)
-    plan = Struct.new(:id).new(1)
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Ship auth")
+    plan = user.strategy_goals.for_kind("goal").roots.first.children.for_kind("plan").not_holding.ordered.first
+    trail = Strategy::Trail.for(plan: plan.reload)
 
+    assert_equal 1, mountain_trail_all_projects(trail).size
     refute mountain_trail_show_arrange_camps?(trail: trail, plan: plan)
 
-    projects = 2.times.map do |i|
-      Struct.new(:id, :holding?, :completed?, keyword_init: true).new(id: i + 1, holding?: false, completed?: false)
-    end
-    nodes = projects.map.with_index do |project, index|
-      Strategy::Trail::Node.new(
-        id: project.id, title: "C#{index}", state: :current, pct: 0,
-        position: index, record: project, y: 50
-      )
-    end
-    trail_two = Strategy::Trail::Result.new(nodes: nodes, visible_nodes: nodes, current_node: nodes.first)
+    plan.children.create!(
+      user: user,
+      life_area: journey.life_area,
+      life_journey: journey,
+      horizon: "project",
+      title: "Second camp",
+      position: 1,
+      stage: 1
+    )
+    trail_two = Strategy::Trail.for(plan: plan.reload)
     assert mountain_trail_show_arrange_camps?(trail: trail_two, plan: plan)
     refute mountain_trail_show_arrange_camps?(trail: trail_two, plan: plan, first_camp_reveal: true)
   end
