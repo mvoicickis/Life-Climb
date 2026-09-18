@@ -1,0 +1,31 @@
+<div class="lp-delete-sheet"
+     data-arrange-camps-target="deleteSheet"
+     data-action="click->arrange-camps#backdropCloseDelete"
+     hidden>
+  <div class="lp-delete-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="arrange-delete-sheet-title"
+       data-action="click->arrange-camps#stopDeletePanelClick">
+    <h2 class="lp-delete-sheet__title"
+        id="arrange-delete-sheet-title"
+        data-arrange-camps-target="deleteTitle"></h2>
+    <p class="lp-delete-sheet__desc" data-arrange-camps-target="deleteDesc"></p>
+    <p class="lp-delete-sheet__desc lp-delete-sheet__desc--quantified"
+       data-arrange-camps-target="deleteQuantifiedLine"
+       hidden></p>
+    <div class="lp-delete-sheet__footer">
+      <button type="button"
+              class="lp-delete-sheet__btn is-delete"
+              data-arrange-camps-target="deleteConfirm"
+              data-action="click->arrange-camps#confirmDelete">
+        <%= t("strategy.rpg.trail.arrange.delete_confirm") %>
+      </button>
+      <button type="button"
+              class="lp-delete-sheet__btn is-keep"
+              data-action="click->arrange-camps#closeDelete">
+        <%= t("strategy.rpg.trail.arrange.delete_keep") %>
+      </button>
+    </div>
+  </div>
+</div>

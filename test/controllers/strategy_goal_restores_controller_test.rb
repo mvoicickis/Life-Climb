@@ -46,6 +46,66 @@ class StrategyGoalRestoresControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
+  test "restoring deleted project reparents battles from holding" do
+    holding = Strategy::HoldingProject.ensure!(user: @user, journey: @journey)
+    loose = holding.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Always loose", scheduled_on: Date.current, position: 0
+    )
+    project = @user.strategy_goals.create!(
+      title: "Camp with fight", horizon: "project", parent: @plan,
+      life_area: @area, life_journey: @journey, position: 1, stage: 1
+    )
+    battle = project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Move back", scheduled_on: Date.current, position: 0
+    )
+
+    delete strategy_goal_path(project)
+    assert_equal holding.id, battle.reload.parent_id
+
+    post strategy_goal_restores_path
+    restored = @user.strategy_goals.find_by!(title: "Camp with fight")
+    assert_not_equal project.id, restored.id
+    assert_equal restored.id, battle.reload.parent_id
+    assert_equal holding.id, loose.reload.parent_id
+  end
+
+  test "restored project keeps stage position and completed state" do
+    project = @user.strategy_goals.create!(
+      title: "Placed camp", horizon: "project", parent: @plan,
+      life_area: @area, life_journey: @journey, position: 2, stage: 1,
+      completed_at: 1.hour.ago
+    )
+    delete strategy_goal_path(project)
+
+    post strategy_goal_restores_path
+    restored = @user.strategy_goals.find_by!(title: "Placed camp")
+    assert_equal 1, restored.stage
+    assert_equal 2, restored.position
+    assert restored.completed?
+  end
+
+  test "restore does not duplicate today todos for reparented battles" do
+    project = @user.strategy_goals.create!(
+      title: "Todo camp", horizon: "project", parent: @plan,
+      life_area: @area, life_journey: @journey, position: 0, stage: 0
+    )
+    battle = project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Today fight", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    count_before = @user.daily_todos.where(strategy_goal_id: battle.id, scheduled_on: Date.current).count
+
+    delete strategy_goal_path(project)
+    post strategy_goal_restores_path
+
+    count_after = @user.daily_todos.where(strategy_goal_id: battle.id, scheduled_on: Date.current).count
+    assert_equal count_before, count_after
+    assert_equal 1, count_after
+  end
+
   test "missing stash redirects with alert" do
     post strategy_goal_restores_path
     assert_response :redirect

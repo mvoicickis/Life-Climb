@@ -5726,6 +5726,105 @@ body.is-arrange-open .lp-dash-nav__fab {
   font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
 }
 
+.lp-trail-arrange.is-delete-sheet-open::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  background: color-mix(in srgb, var(--lp-ink, #0f172a) 40%, transparent);
+}
+
+.lp-delete-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 100%;
+  padding: 0;
+}
+
+.lp-delete-sheet__panel {
+  border-radius: var(--lp-radius-card, 20px) var(--lp-radius-card, 20px) 0 0;
+  border: 1px solid var(--lp-border, rgba(15, 23, 42, 0.1));
+  border-bottom: 0;
+  background: var(--lp-surface, #fff);
+  padding: 1.25rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--lp-shadow-card, 0 14px 36px rgba(15, 23, 42, 0.08));
+  color: var(--lp-ink, #0f172a);
+}
+
+.lp-delete-sheet__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.lp-delete-sheet__desc {
+  margin: 0.65rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--lp-muted, #475569);
+}
+
+.lp-delete-sheet__desc--quantified {
+  margin-top: 0.35rem;
+}
+
+.lp-delete-sheet__footer {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+}
+
+.lp-delete-sheet__btn {
+  width: 100%;
+  min-height: var(--lp-tap, 2.75rem);
+  padding: 0.65rem 1rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 0;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lp-delete-sheet__btn.is-delete {
+  background: var(--rpg-red, #ef4444);
+  color: #fff;
+}
+
+.lp-delete-sheet__btn.is-delete:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.lp-delete-sheet__btn.is-keep {
+  background: var(--lp-surface, #fff);
+  color: var(--lp-ink, #0f172a);
+  border: 1px solid var(--lp-border, rgba(15, 23, 42, 0.1));
+  font-weight: 700;
+}
+
+body.is-arrange-open #trail-toast-host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 70;
+  pointer-events: none;
+}
+
+body.is-arrange-open #trail-toast-host .lp-toast {
+  pointer-events: auto;
+}
+
 .lp-trail-arrange__top {
   flex-shrink: 0;
   padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 1rem 0.5rem;
@@ -5942,6 +6041,34 @@ body.is-arrange-open .lp-dash-nav__fab {
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--lp-muted, #475569);
+}
+
+.lp-trail-arrange-row__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-top: 0.1rem;
+}
+
+.lp-trail-arrange-row__trash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--lp-tap, 2.75rem);
+  height: var(--lp-tap, 2.75rem);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--lp-radius-field, 12px);
+  background: transparent;
+  color: var(--lp-muted, #475569);
+  cursor: pointer;
+}
+
+.lp-trail-arrange-row__trash svg {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .lp-trail-arrange-row__handle {

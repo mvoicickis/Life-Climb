@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class StrategyGoalsController < ApplicationController
+  include CampArrangementTrailRefresh
+
   before_action :require_planning_v2
   before_action :set_life_area, only: :create
 
@@ -119,7 +121,12 @@ class StrategyGoalsController < ApplicationController
   def destroy
     goal = current_user.strategy_goals.find(params[:id])
     if goal.holding?
-      return fail_redirect(t("strategy.bad_parent"), area_id: goal.life_area_id, focus_id: goal.parent_id)
+      return respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.html do
+          fail_redirect(t("strategy.bad_parent"), area_id: goal.life_area_id, focus_id: goal.parent_id)
+        end
+      end
     end
     area_id = goal.life_area_id
     parent_id = goal.parent_id
@@ -135,14 +142,34 @@ class StrategyGoalsController < ApplicationController
     next_plan_id = was_plan ? next_sibling_plan_id(goal) : nil
     next_focus_id = was_project ? next_sibling_project_id(goal) : nil
     @removed_was_day = goal.day?
-    stash_destroyed_goal!(goal) if goal.day? || goal.project?
-    if goal.goal?
-      StrategyGoal.with_holding_destroy { goal.destroy! }
-    else
-      goal.destroy!
+    @removed_was_project = false
+    stash_destroyed_goal!(goal) if goal.day? || (goal.project? && !goal.quantified?)
+
+    begin
+      if goal.goal?
+        StrategyGoal.with_holding_destroy { goal.destroy! }
+      else
+        goal.destroy!
+      end
+    rescue ActiveRecord::RecordNotDestroyed
+      return respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.html do
+          fail_redirect(t("strategy.removed"), area_id: area_id, focus_id: parent_id)
+        end
+      end
     end
+
     Strategy::SyncCompletion.resync!(node: parent) if was_plan || was_project
     prepare_world_for_area!(area_id, focus_id: next_focus_id || parent_id)
+    if was_project && plan_for_project.present? && @journey.present?
+      @removed_was_project = true
+      assign_camp_arrangement_trail_refresh!(
+        plan: plan_for_project,
+        journey: @journey,
+        arrange_overlay_open: params[:arrange_open].present?
+      )
+    end
     @removed_id = removed_id
     respond_to do |format|
       format.turbo_stream { render :destroy }
@@ -159,6 +186,11 @@ class StrategyGoalsController < ApplicationController
                     ),
                     notice: t("strategy.removed"), status: :see_other
       end
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.turbo_stream { head :not_found }
+      format.html { raise }
     end
   end
 
@@ -541,9 +573,17 @@ class StrategyGoalsController < ApplicationController
 
   # Short-lived undo snapshot for Mountain toast (flat node only; 5s TTL).
   def stash_destroyed_goal!(goal)
+    reparented_battle_ids =
+      if goal.project?
+        Strategy::Progress.battles_under(goal).map(&:id)
+      else
+        []
+      end
+
     session[:last_destroyed_goal] = {
       "user_id" => current_user.id,
       "stamped_at" => Time.current.to_i,
+      "reparented_battle_ids" => reparented_battle_ids,
       "attrs" => {
         "title" => goal.title,
         "horizon" => goal.horizon,
@@ -552,6 +592,10 @@ class StrategyGoalsController < ApplicationController
         "life_journey_id" => goal.life_journey_id,
         "user_id" => goal.user_id,
         "position" => goal.position,
+        "stage" => goal.stage,
+        "due_on" => goal.due_on,
+        "completed_at" => goal.completed_at,
+        "manually_completed_at" => goal.manually_completed_at,
         "scheduled_on" => goal.scheduled_on,
         "repeat" => goal.repeat,
         "repeat_weekdays" => goal.repeat_weekdays,

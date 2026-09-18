@@ -979,6 +979,13 @@ en:
           add_camp_here: "+ Add a camp here"
           add_camp_placeholder: "New camp name"
           stage_complete: "Stage complete"
+          delete_title: "Delete %{title}"
+          delete_body: "Its battles move to %{holding}. Your points stay."
+          delete_body_quantified: "Its logged amounts are deleted too."
+          delete_confirm: "Delete camp"
+          delete_keep: "Keep it"
+          delete_failed: "Could not delete camp. Try again."
+          delete_aria: "Delete %{title}"
         first_camp_reveal:
           skip_hint: "Tap the tent to plan your first day" # TODO: translate for lv/de/es/ru.
           setup_lead: "What's one small thing you'll do today?" # TODO: translate for lv/de/es/ru.

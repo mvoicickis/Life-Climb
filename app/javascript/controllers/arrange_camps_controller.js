@@ -2,7 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 import { createPointerReorder } from "lib/pointer_reorder"
 
 export default class extends Controller {
-  static targets = [ "scroll", "list", "toast", "nextTag", "newStage" ]
+  static targets = [
+    "scroll", "list", "toast", "nextTag", "newStage",
+    "deleteSheet", "deleteTitle", "deleteDesc", "deleteQuantifiedLine", "deleteConfirm"
+  ]
 
   static values = {
     url: String,
@@ -14,20 +17,32 @@ export default class extends Controller {
     next: String,
     newStage: String,
     maxLength: { type: Number, default: 120 },
-    focusStage: Number
+    focusStage: Number,
+    openOverlay: Boolean,
+    deleteTitleTemplate: String,
+    deleteBody: String,
+    deleteBodyQuantified: String,
+    deleteFailed: String
   }
 
   connect() {
     this.pointerReorder = null
+    this.deleting = false
+    this.pendingDeleteUrl = null
     this._clearBodyArrangeOpen = this.clearBodyArrangeOpen.bind(this)
     document.addEventListener("turbo:before-visit", this._clearBodyArrangeOpen)
     document.addEventListener("turbo:before-cache", this._clearBodyArrangeOpen)
 
     const trail = document.getElementById("mountain-trail")
-    if (trail?.classList.contains("is-arrange-open")) {
+    const shouldBeOpen =
+      this.hasOpenOverlayValue && this.openOverlayValue ||
+      trail?.classList.contains("is-arrange-open") ||
+      (!this.element.hidden && this.element.getAttribute("aria-hidden") === "false")
+
+    if (shouldBeOpen) {
       this.element.hidden = false
       this.element.setAttribute("aria-hidden", "false")
-      document.body.classList.add("is-arrange-open")
+      this.setArrangeOpen(true)
     }
     this.bindDrag()
     this.focusAddInput()
@@ -41,8 +56,12 @@ export default class extends Controller {
   }
 
   clearBodyArrangeOpen() {
-    document.body.classList.remove("is-arrange-open")
-    document.getElementById("mountain-trail")?.classList.remove("is-arrange-open")
+    this.setArrangeOpen(false)
+  }
+
+  setArrangeOpen(open) {
+    document.body.classList.toggle("is-arrange-open", open)
+    document.getElementById("mountain-trail")?.classList.toggle("is-arrange-open", open)
   }
 
   closeFromOverlay(event) {
@@ -65,7 +84,109 @@ export default class extends Controller {
     if (this.element.querySelector(".lp-trail-arrange-row.is-editing")) return
 
     event.preventDefault()
+    if (this.isDeleteSheetOpen()) {
+      this.closeDelete()
+      return
+    }
     this.closeFromOverlay(event)
+  }
+
+  openDelete(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const row = event.currentTarget.closest(".lp-pointer-reorder__row")
+    if (!row) return
+
+    const title = row.dataset.campTitle || ""
+    const url = row.dataset.deleteUrl
+    if (!url) return
+
+    this.pendingDeleteUrl = url
+    if (this.hasDeleteTitleTarget) {
+      const template = this.deleteTitleTemplateValue || "Delete %{title}"
+      this.deleteTitleTarget.textContent = template.replace("%{title}", title)
+    }
+    if (this.hasDeleteDescTarget) {
+      this.deleteDescTarget.textContent = this.deleteBodyValue || ""
+    }
+    if (this.hasDeleteQuantifiedLineTarget) {
+      const quantified = row.dataset.quantified === "true"
+      this.deleteQuantifiedLineTarget.hidden = !quantified
+      if (quantified) {
+        this.deleteQuantifiedLineTarget.textContent = this.deleteBodyQuantifiedValue || ""
+      }
+    }
+    if (this.hasDeleteSheetTarget) {
+      this.deleteSheetTarget.hidden = false
+      this.element.classList.add("is-delete-sheet-open")
+    }
+    this.hasDeleteConfirmTarget && (this.deleteConfirmTarget.disabled = false)
+  }
+
+  closeDelete() {
+    this.pendingDeleteUrl = null
+    if (this.hasDeleteSheetTarget) {
+      this.deleteSheetTarget.hidden = true
+    }
+    this.element.classList.remove("is-delete-sheet-open")
+    this.deleting = false
+    if (this.hasDeleteConfirmTarget) {
+      this.deleteConfirmTarget.disabled = false
+    }
+  }
+
+  isDeleteSheetOpen() {
+    return this.hasDeleteSheetTarget && !this.deleteSheetTarget.hidden
+  }
+
+  backdropCloseDelete(event) {
+    if (event.target === event.currentTarget) {
+      event.preventDefault()
+      this.closeDelete()
+    }
+  }
+
+  stopDeletePanelClick(event) {
+    event.stopPropagation()
+  }
+
+  async confirmDelete(event) {
+    event.preventDefault()
+    if (this.deleting || !this.pendingDeleteUrl) return
+
+    this.deleting = true
+    if (this.hasDeleteConfirmTarget) {
+      this.deleteConfirmTarget.disabled = true
+    }
+
+    const token = this.csrfValue || document.querySelector("meta[name='csrf-token']")?.content
+    const url = new URL(this.pendingDeleteUrl, window.location.origin)
+    url.searchParams.set("arrange_open", "1")
+
+    const response = await fetch(url.toString(), {
+      method: "DELETE",
+      headers: {
+        Accept: "text/vnd.turbo-stream.html",
+        "X-CSRF-Token": token || ""
+      },
+      credentials: "same-origin"
+    })
+
+    if (response.ok) {
+      this.closeDelete()
+      const html = await response.text()
+      if (html.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
+        window.Turbo.renderStreamMessage(html)
+      }
+      this.deleting = false
+      return
+    }
+
+    this.deleting = false
+    if (this.hasDeleteConfirmTarget) {
+      this.deleteConfirmTarget.disabled = false
+    }
+    this.showToast(this.deleteFailedValue || "Could not delete camp.")
   }
 
   bindDrag() {
@@ -286,6 +407,18 @@ export default class extends Controller {
       )
       input?.focus()
     })
+  }
+
+  showToast(message) {
+    if (!this.hasToastTarget) return
+    this.toastTarget.textContent = message
+    this.toastTarget.hidden = false
+    this.toastTarget.classList.add("is-visible")
+    window.clearTimeout(this._toastTimer)
+    this._toastTimer = window.setTimeout(() => {
+      this.toastTarget.classList.remove("is-visible")
+      this.toastTarget.hidden = true
+    }, 2600)
   }
 
   showSaved() {

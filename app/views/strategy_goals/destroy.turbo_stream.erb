@@ -2,13 +2,20 @@
   <%= turbo_stream.remove "trail-battle-#{@removed_id}" %>
   <%= turbo_stream.remove "trail-base-battle-#{@removed_id}" %>
 <% end %>
-<%= turbo_stream.append "strategy-world" do %>
-  <meta data-rpg-refresh="1">
+
+<% if @removed_was_project %>
+  <%= render "life_journeys/camp_arrangement_trail_streams" %>
+<% else %>
+  <%= turbo_stream.append "strategy-world" do %>
+    <meta data-rpg-refresh="1">
+  <% end %>
 <% end %>
+
 <% if flash[:trail_undo].present? %>
   <%= turbo_stream.update "trail-toast-host" do %>
     <%= render "life_journeys/trail_toast",
           title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
-          restore: true %>
+          restore: true,
+          restore_arrange_open: @arrange_overlay_open %>
   <% end %>
 <% end %>
