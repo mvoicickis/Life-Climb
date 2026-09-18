@@ -63,14 +63,13 @@ class CampArrangeAddTest < ApplicationSystemTestCase
     assert_selector ".lp-trail-plant.is-open", wait: 3
     assert page.evaluate_script("document.body.classList.contains('is-arrange-open')")
 
-    fill_in placeholder: /What do you want to get better at/i, with: "Delta camp"
-    find(".lp-trail-plant__submit").click
-
-    camp = nil
-    using_wait_time(10) do
-      camp = plan.reload.children.for_kind("project").find_by(title: "Delta camp")
-      assert camp, "expected Delta camp to be created"
+    within(".lp-trail-plant.is-open") do
+      fill_in placeholder: /What do you want to get better at/i, with: "Delta camp"
+      find(".lp-trail-plant__submit").click
     end
+
+    assert_no_selector ".lp-trail-plant.is-open", wait: 10
+    camp = plan.reload.children.for_kind("project").find_by!(title: "Delta camp")
     assert_equal before + 1, plan.children.for_kind("project").count
     assert_selector "#trail-camp-#{camp.id}", wait: 8
     assert page.evaluate_script("document.getElementById('trail-arrange-camps').hidden")
