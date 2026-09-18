@@ -23,9 +23,6 @@ export default class extends Controller {
 
   toggled() {
     if (!this.hasDetailsTarget) return
-    // #region agent log
-    fetch("http://127.0.0.1:7492/ingest/974e48fd-716c-47fa-a3fb-3664893cfcb4",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"90b2a0"},body:JSON.stringify({sessionId:"90b2a0",location:"tcard_menu_controller.js:toggled",message:"kebab toggled",data:{open:this.detailsTarget.open,inBaseSheet:!!this.element.closest("#trail-base-sheet")},timestamp:Date.now(),hypothesisId:"H2"})}).catch(()=>{});
-    // #endregion
     if (this.detailsTarget.open) {
       window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
       this.portalToBody()

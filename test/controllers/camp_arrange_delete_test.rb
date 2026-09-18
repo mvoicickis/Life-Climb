@@ -23,11 +23,26 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
     User.find_by!(email_address: email)
   end
 
+  def assert_stream_replaces_arrange_overlay(body)
+    assert_match(/action="replace"[^>]*target="trail-arrange-camps"/, body)
+  end
+
+  def assert_stream_removes_arrange_overlay(body)
+    assert_match(/action="remove"[^>]*target="trail-arrange-camps"/, body)
+  end
+
+  def mountain_path_for(user)
+    journey = user.primary_focused_journey
+    plan = user.strategy_goals.for_kind("plan").not_holding.first
+    goal = plan.root_goal
+    life_journey_path(journey, goal_id: goal.id, plan_id: plan.id)
+  end
+
   test "delete camp from arrange moves won battle to holding without lowering points" do
     user = finish_onboarding!(
       email: "camp-delete@example.com",
       goal: "Ship the app",
-      camps: [ "Alpha camp", "Beta camp" ]
+      camps: [ "Alpha camp", "Beta camp", "Gamma camp" ]
     )
     journey = user.primary_focused_journey
     plan = user.strategy_goals.for_kind("plan").not_holding.first
@@ -70,7 +85,7 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
     assert_equal streak_days, user.climb_streak_days
     assert_equal streak_on, user.climb_streak_on
 
-    assert_match %(replace.*trail-arrange-camps), response.body
+    assert_stream_replaces_arrange_overlay(response.body)
     assert_match(/aria-hidden="false"/, response.body)
   end
 
@@ -85,9 +100,9 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
 
     delete strategy_goal_path(camp, arrange_open: 1), as: :turbo_stream
     assert_response :success
-    assert_match %(remove.*trail-arrange-camps), response.body
+    assert_stream_removes_arrange_overlay(response.body)
 
-    get life_journey_path(user.primary_focused_journey)
+    get mountain_path_for(user)
     assert_response :success
     assert_select "#trail-arrange-camps", count: 0
     assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", count: 0
@@ -104,7 +119,7 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
 
     delete strategy_goal_path(camp, arrange_open: 1), as: :turbo_stream
     assert_response :success
-    assert_match %(replace.*trail-arrange-camps), response.body
+    assert_stream_replaces_arrange_overlay(response.body)
     assert_match(/aria-hidden="false"/, response.body)
   end
 
@@ -162,7 +177,7 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
     journey = user.primary_focused_journey
     holding = Strategy::HoldingProject.ensure!(user: user, journey: journey)
 
-    get life_journey_path(journey)
+    get mountain_path_for(user)
     assert_response :success
     assert_select "#trail-arrange-camps .lp-trail-arrange-row__trash", minimum: 2
     assert_select "#trail-arrange-camps [data-camp-id=?] .lp-trail-arrange-row__trash", holding.id.to_s, count: 0
