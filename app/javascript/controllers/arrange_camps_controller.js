@@ -19,10 +19,15 @@ export default class extends Controller {
 
   connect() {
     this.pointerReorder = null
+    this._clearBodyArrangeOpen = this.clearBodyArrangeOpen.bind(this)
+    document.addEventListener("turbo:before-visit", this._clearBodyArrangeOpen)
+    document.addEventListener("turbo:before-cache", this._clearBodyArrangeOpen)
+
     const trail = document.getElementById("mountain-trail")
     if (trail?.classList.contains("is-arrange-open")) {
       this.element.hidden = false
       this.element.setAttribute("aria-hidden", "false")
+      document.body.classList.add("is-arrange-open")
     }
     this.bindDrag()
     this.focusAddInput()
@@ -30,6 +35,37 @@ export default class extends Controller {
 
   disconnect() {
     this.pointerReorder?.destroy()
+    document.removeEventListener("turbo:before-visit", this._clearBodyArrangeOpen)
+    document.removeEventListener("turbo:before-cache", this._clearBodyArrangeOpen)
+    this.clearBodyArrangeOpen()
+  }
+
+  clearBodyArrangeOpen() {
+    document.body.classList.remove("is-arrange-open")
+    document.getElementById("mountain-trail")?.classList.remove("is-arrange-open")
+  }
+
+  closeFromOverlay(event) {
+    event?.preventDefault()
+    const trail = document.getElementById("mountain-trail")
+    const canvas = trail && this.application.getControllerForElementAndIdentifier(trail, "trail-canvas")
+    if (canvas) {
+      canvas.closeArrangeCamps(event)
+      return
+    }
+
+    this.clearBodyArrangeOpen()
+    this.element.hidden = true
+    this.element.setAttribute("aria-hidden", "true")
+  }
+
+  closeOnEscape(event) {
+    if (event.key !== "Escape") return
+    if (this.element.hidden) return
+    if (this.element.querySelector(".lp-trail-arrange-row.is-editing")) return
+
+    event.preventDefault()
+    this.closeFromOverlay(event)
   }
 
   bindDrag() {
@@ -84,18 +120,49 @@ export default class extends Controller {
     }
   }
 
+  // Finished ids first (by data-position), then active ids — preserves Trail order.
   buildGroups() {
-    const groups = []
-
-    this.element.querySelectorAll(".lp-trail-arrange-group [data-arrange-list]").forEach((list) => {
-      const camp_ids = [...list.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId)
-      if (camp_ids.length) groups.push({ camp_ids })
+    const finishedByStage = new Map()
+    this.element.querySelectorAll("[data-arrange-finished-list] [data-camp-id]").forEach((el) => {
+      const stage = Number(el.dataset.stage)
+      const id = el.dataset.campId
+      if (!id) return
+      if (!finishedByStage.has(stage)) finishedByStage.set(stage, [])
+      finishedByStage.get(stage).push({
+        id,
+        position: Number(el.dataset.position || 0)
+      })
     })
+    finishedByStage.forEach((rows, stage) => {
+      finishedByStage.set(
+        stage,
+        rows
+          .sort((a, b) => a.position - b.position || Number(a.id) - Number(b.id))
+          .map((row) => row.id)
+      )
+    })
+
+    const activeByStage = new Map()
+    this.element.querySelectorAll(".lp-trail-arrange-group[data-stage]").forEach((section) => {
+      const stage = Number(section.dataset.stage)
+      const list = section.querySelector("[data-arrange-list]")
+      const campIds = list
+        ? [...list.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId).filter(Boolean)
+        : []
+      activeByStage.set(stage, campIds)
+    })
+
+    const stageKeys = [...new Set([...finishedByStage.keys(), ...activeByStage.keys()])].sort((a, b) => a - b)
+    const groups = stageKeys.map((stage) => {
+      const finishedIds = finishedByStage.get(stage) || []
+      const activeIds = activeByStage.get(stage) || []
+      return { camp_ids: finishedIds.concat(activeIds) }
+    }).filter((group) => group.camp_ids.length)
 
     const newStageList = this.element.querySelector("[data-arrange-new-stage-list]")
     if (newStageList) {
-      const camp_ids = [...newStageList.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId)
-      if (camp_ids.length) groups.push({ camp_ids })
+      const campIds = [...newStageList.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId).filter(Boolean)
+      if (campIds.length) groups.push({ camp_ids: campIds })
     }
 
     return groups

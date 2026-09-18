@@ -34,7 +34,12 @@
 <% first_camp_id = journey&.first_camp_reveal_camp_id %>
 <% first_camp = first_camp_id.present? ? all_projects.find { |p| p.id == first_camp_id } : nil %>
 <% first_camp_reveal = first_camp.present? && !destination_overlay && plan.present? %>
-<% show_arrange_camps = plan.present? && !destination_overlay && !first_camp_reveal && all_projects.size >= 2 %>
+<% show_arrange_camps = mountain_trail_show_arrange_camps?(
+      trail: trail,
+      plan: plan,
+      destination_overlay: destination_overlay,
+      first_camp_reveal: first_camp_reveal
+    ) %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
 <% custom_mountain_photo = mountain_trail_custom_photo?(journey) %>
 
@@ -532,14 +537,6 @@
           current_project: local_assigns[:current_project],
           focus: local_assigns[:focus] %>
   </details>
-
-  <% if show_arrange_camps %>
-    <%= render "life_journeys/trail_arrange_camps_overlay",
-          journey: journey,
-          plan: plan,
-          projects: all_projects,
-          open_stage: mountain_trail_open_stage(all_projects) %>
-  <% end %>
 
   <% if first_camp_reveal %>
     <div id="first-camp-reveal-overlay"

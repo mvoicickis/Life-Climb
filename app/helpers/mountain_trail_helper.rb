@@ -338,6 +338,37 @@ module MountainTrailHelper
     end
   end
 
+  # Stages that still have incomplete camps — completed camps live under Finished.
+  def mountain_trail_arrange_active_groups(projects)
+    by_stage = mountain_trail_projects_by_stage(projects)
+    return [] if by_stage.empty?
+
+    by_stage.keys.sort.filter_map do |stage|
+      active = Array(by_stage[stage]).reject { |camp| camp.try(:completed?) }
+      next if active.empty?
+
+      {
+        stage: stage,
+        camps: active
+      }
+    end
+  end
+
+  def mountain_trail_arrange_finished_camps(projects)
+    Array(projects)
+      .reject { |project| project.try(:holding?) }
+      .select { |project| project.try(:completed?) }
+      .sort_by { |camp| [ camp.try(:stage).to_i, camp.try(:position).to_i, camp.try(:id).to_i ] }
+  end
+
+  def mountain_trail_visible_camp_ids(trail)
+    mountain_trail_map_nodes(trail).map(&:id)
+  end
+
+  def mountain_trail_show_arrange_camps?(trail:, plan:, destination_overlay: false, first_camp_reveal: false)
+    plan.present? && !destination_overlay && !first_camp_reveal && mountain_trail_all_projects(trail).size >= 2
+  end
+
   def mountain_trail_last_finished_stage(projects)
     by_stage = mountain_trail_projects_by_stage(projects)
     finished = by_stage.keys.select { |stage| mountain_trail_stage_done?(projects, stage) }

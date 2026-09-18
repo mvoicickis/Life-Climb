@@ -5,11 +5,16 @@
 <% open_stage = local_assigns.fetch(:open_stage) %>
 <% focus_stage = local_assigns[:focus_stage] %>
 <% open_overlay = local_assigns.fetch(:open_overlay, false) %>
-<% groups = mountain_trail_arrange_groups(projects) %>
+<% trail = local_assigns[:trail] %>
+<% visible_camp_ids = local_assigns.fetch(:visible_camp_ids) { mountain_trail_visible_camp_ids(trail) } %>
+<% visible_camp_ids = Array(visible_camp_ids).map(&:to_i) %>
+<% active_groups = mountain_trail_arrange_active_groups(projects) %>
+<% finished_camps = mountain_trail_arrange_finished_camps(projects) %>
 <div id="trail-arrange-camps"
      class="lp-trail-arrange"
      data-trail-ignore
      data-controller="arrange-camps"
+     data-action="keydown@window->arrange-camps#closeOnEscape"
      data-arrange-camps-url-value="<%= life_journey_camp_arrangement_path(journey) %>"
      data-arrange-camps-reopen-url-value="<%= reopen_life_journey_camp_arrangement_path(journey) %>"
      data-arrange-camps-stage-camp-url-value="<%= stage_camp_life_journey_camp_arrangement_path(journey) %>"
@@ -26,14 +31,14 @@
     <div class="lp-trail-arrange__title-row">
       <button type="button"
               class="lp-trail-arrange__back"
-              data-action="click->trail-canvas#closeArrangeCamps"
+              data-action="click->arrange-camps#closeFromOverlay"
               aria-label="<%= t('strategy.rpg.trail.arrange.back') %>">
         <span aria-hidden="true">‹</span>
       </button>
       <h1 class="lp-trail-arrange__title"><%= t("strategy.rpg.trail.arrange.title") %></h1>
       <button type="button"
               class="lp-trail-arrange__done"
-              data-action="click->trail-canvas#closeArrangeCamps">
+              data-action="click->arrange-camps#closeFromOverlay">
         <%= t("strategy.rpg.trail.arrange.done") %>
       </button>
     </div>
@@ -41,77 +46,88 @@
   </header>
 
   <div class="lp-trail-arrange__scroll" data-arrange-camps-target="scroll">
-    <% groups.each do |group| %>
-      <section class="lp-trail-arrange-group <%= 'lp-trail-arrange-group--here' if group[:open] %>"
+    <% active_groups.each_with_index do |group, index| %>
+      <section class="lp-trail-arrange-group"
                data-stage="<%= group[:stage] %>">
         <h2 class="lp-trail-arrange-group__heading">
-          <% if group[:finished] %>
-            <span class="lp-trail-arrange-group__tick" aria-label="<%= t('strategy.rpg.trail.arrange.stage_complete') %>">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true">
-                <path d="M9.55 17.6 4.9 12.95l1.4-1.4 3.25 3.25L17.7 6.65l1.4 1.4z"/>
-              </svg>
-            </span>
-          <% end %>
-          <% if group[:open] %>
-            <%= t("strategy.rpg.trail.arrange.stage_here", stage: mountain_trail_stage_label(group[:stage])) %>
-          <% else %>
-            <%= t("strategy.rpg.trail.arrange.stage", stage: mountain_trail_stage_label(group[:stage])) %>
-          <% end %>
+          <%= t("strategy.rpg.trail.arrange.step", step: index + 1) %>
         </h2>
         <ul class="lp-trail-arrange-list" data-arrange-camps-target="list" data-arrange-list>
-          <% group[:camps].each_with_index do |camp, index| %>
-            <li class="lp-trail-arrange-row lp-pointer-reorder__row <%= 'lp-trail-arrange-row--done' if camp.completed? %>"
+          <% group[:camps].each do |camp| %>
+            <li class="lp-trail-arrange-row lp-pointer-reorder__row"
                 data-id="<%= camp.id %>"
                 data-camp-id="<%= camp.id %>"
-                data-completed="<%= camp.completed? %>"
+                data-completed="false"
                 data-update-url="<%= strategy_goal_path(camp) %>">
-              <% if group[:open] && index.zero? %>
-                <span class="lp-trail-arrange-row__next" data-arrange-camps-target="nextTag"><%= t("strategy.rpg.trail.arrange.next") %></span>
-              <% end %>
+              <div class="lp-trail-arrange-row__body">
+                <button type="button"
+                        class="lp-trail-arrange-row__label-btn"
+                        data-action="click->arrange-camps#beginRename"
+                        data-arrange-rename>
+                  <%= camp.title %>
+                </button>
+                <% if visible_camp_ids.include?(camp.id) %>
+                  <span class="lp-trail-arrange-row__mountain"><%= t("strategy.rpg.trail.arrange.on_mountain") %></span>
+                <% end %>
+              </div>
               <button type="button"
-                      class="lp-trail-arrange-row__label-btn"
-                      data-action="click->arrange-camps#beginRename"
-                      data-arrange-rename>
-                <%= camp.title %>
+                      class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
+                      aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
+                <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>') %>
               </button>
-              <% if group[:finished] && camp.completed? && !camp.quantified? %>
-                <button type="button"
-                        class="lp-trail-arrange-row__open-again"
-                        data-action="click->arrange-camps#openAgain"
-                        data-camp-id="<%= camp.id %>">
-                  <%= t("strategy.rpg.trail.arrange.open_again") %>
-                </button>
-              <% elsif !camp.completed? %>
-                <button type="button"
-                        class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
-                        aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
-                  <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>') %>
-                </button>
-              <% end %>
             </li>
           <% end %>
         </ul>
-        <% if group[:finished] %>
-          <div class="lp-trail-arrange-add-camp" data-arrange-add-stage="<%= group[:stage] %>">
-            <label class="sr-only" for="arrange-add-camp-<%= group[:stage] %>"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></label>
-            <input id="arrange-add-camp-<%= group[:stage] %>"
-                   type="text"
-                   class="lp-trail-arrange-add-camp__input"
-                   maxlength="<%= StrategyGoal::TITLE_MAX %>"
-                   placeholder="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
-                   autocomplete="off"
-                   data-action="keydown->arrange-camps#addStageCampKeydown"
-                   data-stage="<%= group[:stage] %>">
-            <span class="lp-trail-arrange-add-camp__hint" aria-hidden="true"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></span>
-          </div>
-        <% end %>
       </section>
+    <% end %>
+
+    <%# Add-camp inputs for stages that are fully finished (no active list section). %>
+    <% finished_only_stages = finished_camps.map { |c| c.stage.to_i }.uniq - active_groups.map { |g| g[:stage] } %>
+    <% finished_only_stages.sort.each do |stage| %>
+      <div class="lp-trail-arrange-add-camp" data-arrange-add-stage="<%= stage %>">
+        <label class="sr-only" for="arrange-add-camp-<%= stage %>"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></label>
+        <input id="arrange-add-camp-<%= stage %>"
+               type="text"
+               class="lp-trail-arrange-add-camp__input"
+               maxlength="<%= StrategyGoal::TITLE_MAX %>"
+               placeholder="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
+               autocomplete="off"
+               data-action="keydown->arrange-camps#addStageCampKeydown"
+               data-stage="<%= stage %>">
+        <span class="lp-trail-arrange-add-camp__hint" aria-hidden="true"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></span>
+      </div>
     <% end %>
 
     <section class="lp-trail-arrange-new-stage" hidden data-arrange-camps-target="newStage">
       <p class="lp-trail-arrange-new-stage__label"><%= t("strategy.rpg.trail.arrange.new_stage_drop") %></p>
       <ul class="lp-trail-arrange-list" data-arrange-new-stage-list></ul>
     </section>
+
+    <% if finished_camps.any? %>
+      <details class="lp-trail-arrange-finished">
+        <summary class="lp-trail-arrange-finished__summary">
+          <%= t("strategy.rpg.trail.arrange.finished", count: finished_camps.size) %>
+        </summary>
+        <ul class="lp-trail-arrange-finished__list" data-arrange-finished-list>
+          <% finished_camps.each do |camp| %>
+            <li class="lp-trail-arrange-finished__item"
+                data-camp-id="<%= camp.id %>"
+                data-stage="<%= camp.stage.to_i %>"
+                data-position="<%= camp.position.to_i %>">
+              <span class="lp-trail-arrange-finished__title"><%= camp.title %></span>
+              <% if !camp.quantified? %>
+                <button type="button"
+                        class="lp-trail-arrange-row__open-again"
+                        data-action="click->arrange-camps#openAgain"
+                        data-camp-id="<%= camp.id %>">
+                  <%= t("strategy.rpg.trail.arrange.open_again") %>
+                </button>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
   </div>
 
   <p class="lp-trail-arrange__toast"

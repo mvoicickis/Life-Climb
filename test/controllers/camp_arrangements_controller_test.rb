@@ -127,7 +127,7 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "reopen finished camp returns turbo stream and moves you are here" do
+  test "reopen finished camp returns turbo stream and shows camp in active list" do
     @camp_a.update_columns(stage: 0, position: 0)
     @camp_b.update_columns(stage: 1, position: 1)
     @camp_c.update_columns(stage: 2, position: 2)
@@ -145,7 +145,8 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match("trail-arrange-camps", response.body)
-    assert_match(/you are here/i, response.body)
+    assert_match(/data-camp-id="#{@camp_a.id}"/, response.body)
+    assert_match(/lp-pointer-reorder__row/, response.body)
     assert_nil @camp_a.reload.completed_at
     assert_equal 1, @camp_a.children.reload.count { |d| d.day? && !d.completed? }
   end
@@ -168,7 +169,36 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, created.stage
     assert_operator created.position, :<, @camp_b.reload.position
     assert_match("Fresh camp", response.body)
-    assert_match(/you are here/i, response.body)
+    assert_match(/Step 1/, response.body)
+  end
+
+  test "update with finished-first current order leaves stage and position unchanged" do
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_b.update_columns(stage: 0, position: 1)
+    @camp_c.update_columns(stage: 1, position: 2)
+    @camp_a.complete!
+
+    before = {
+      a: @camp_a.reload.attributes.slice("stage", "position"),
+      b: @camp_b.reload.attributes.slice("stage", "position"),
+      c: @camp_c.reload.attributes.slice("stage", "position")
+    }
+
+    # Same order UI buildGroups would send: finished first within stage, then active.
+    patch life_journey_camp_arrangement_path(@journey),
+          params: {
+            plan_id: @plan.id,
+            groups: {
+              "0" => { camp_ids: [ @camp_a.id, @camp_b.id ] },
+              "1" => { camp_ids: [ @camp_c.id ] }
+            }
+          },
+          as: :turbo_stream
+
+    assert_response :success
+    assert_equal before[:a], @camp_a.reload.attributes.slice("stage", "position")
+    assert_equal before[:b], @camp_b.reload.attributes.slice("stage", "position")
+    assert_equal before[:c], @camp_c.reload.attributes.slice("stage", "position")
   end
 
   test "reopen with another users camp_id returns 404 and changes nothing" do

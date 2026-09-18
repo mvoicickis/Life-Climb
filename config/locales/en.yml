@@ -962,7 +962,7 @@ en:
           other: "%{count} more camps ahead"
         arrange:
           title: "Change camp order"
-          hint: "Drag a camp up to work on it sooner."
+          hint: "Drag ⠿ to change the order."
           back: "Back"
           done: "Done"
           next: "Next"
@@ -970,6 +970,9 @@ en:
           entry: "Change camp order"
           stage: "Stage %{stage}"
           stage_here: "Stage %{stage} · you are here"
+          step: "Step %{step}"
+          on_mountain: "⛰ On your Mountain"
+          finished: "Finished (%{count})"
           drag: "Drag to reorder"
           new_stage_drop: "Drop here for a new stage"
           open_again: "Open again"
@@ -1656,7 +1659,7 @@ en:
     need_goal: "Create your goal first."
     holding:
       plan_title: "lp.holding.plan"
-      project_title: "lp.holding.project"
+      project_title: "Extra battles"
     celebrate:
       goal: "Goal locked · planning +%{sp}"
       first_plan: "First plan · planning +%{sp}"

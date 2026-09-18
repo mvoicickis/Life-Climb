@@ -110,6 +110,27 @@
     </div>
   <% end %>
 
+  <% first_camp_reveal_on_show =
+       @journey&.first_camp_reveal_camp_id.present? &&
+       plan.present? &&
+       !first_climb &&
+       mountain_trail_all_projects(trail).any? { |p| p.id == @journey.first_camp_reveal_camp_id } %>
+  <% if mountain_trail_show_arrange_camps?(
+         trail: trail,
+         plan: plan,
+         destination_overlay: false,
+         first_camp_reveal: first_camp_reveal_on_show
+       ) %>
+    <% arrange_projects = mountain_trail_all_projects(trail) %>
+    <%= render "life_journeys/trail_arrange_camps_overlay",
+          journey: @journey,
+          plan: plan,
+          projects: arrange_projects,
+          trail: trail,
+          visible_camp_ids: mountain_trail_visible_camp_ids(trail),
+          open_stage: mountain_trail_open_stage(arrange_projects) %>
+  <% end %>
+
   <%= render "shared/climb_reward", reward: climb_reward if climb_reward.present? %>
 
   <%= render "dashboard/push_offer_host",
