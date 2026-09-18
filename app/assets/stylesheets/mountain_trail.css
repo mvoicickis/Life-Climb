@@ -5724,18 +5724,23 @@ body.is-arrange-open .lp-dash-nav__fab {
   display: none !important;
 }
 
-body.is-trail-plant-open > .lp-trail-plant.is-open,
-body.is-trail-plant-open > .lp-trail-plant:not([hidden]) {
+body.is-trail-plant-open #mountain-trail.lp-trail {
+  isolation: auto;
+  position: relative;
+  z-index: 71;
+}
+
+body.is-trail-plant-open #trail-arrange-camps {
+  pointer-events: none;
+}
+
+body.is-trail-plant-open #mountain-trail .lp-trail-plant.is-open {
   position: fixed;
   inset: 0;
   z-index: 70;
   width: 100%;
   max-width: 100%;
   pointer-events: auto;
-}
-
-body.is-trail-plant-open.is-arrange-open > .lp-trail-plant.is-open {
-  z-index: 70;
 }
 
 .lp-trail-arrange {
