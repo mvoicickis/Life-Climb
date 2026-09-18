@@ -33,7 +33,7 @@ module Strategy
         )
         camp.stage_explicit = true
         camp.save!
-        Strategy::PlaceCampOnStage.call(plan: @plan, camp: camp, stage: @stage)
+        Strategy::PlaceCampOnNewTerrace.place_on_stage!(plan: @plan, camp: camp, stage: @stage)
         Strategy::Celebrate.call(user: @user, goal: camp)
         Strategy::SyncCompletion.resync!(node: camp.reload)
       end

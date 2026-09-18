@@ -44,43 +44,41 @@ class CampArrangeAddTest < ApplicationSystemTestCase
     assert page.evaluate_script("document.body.classList.contains('is-arrange-open')")
   end
 
-  def begin_add_camp!
-    click_button "+ Add a camp"
-    assert_selector ".lp-trail-arrange-add.is-editing", wait: 3
-    find(".lp-trail-arrange-add__input")
-  end
-
   setup do
     page.driver.browser.manage.window.resize_to(360, 800)
   end
 
-  test "enter saves camps and keeps the same input focused" do
+  test "add camp opens plant sheet above arrange and creates camp on success" do
     user = setup_user_with_camps!(
-      email: "camp-add-focus@example.com",
+      email: "camp-plant-add@example.com",
       camps: [ "Alpha", "Beta", "Gamma" ]
     )
+    plan = user.strategy_goals.for_kind("plan").not_holding.first
+    before = plan.children.for_kind("project").count
+
     sign_in_and_visit_mountain!(user)
     open_arrange_overlay!
-    begin_add_camp!
 
-    page.execute_script("window.__addInputNode = document.querySelector('.lp-trail-arrange-add__input')")
+    click_button "+ Add a camp"
+    assert_selector ".lp-trail-plant.is-open", wait: 3
+    assert page.evaluate_script("document.body.classList.contains('is-arrange-open')")
 
-    input = find(".lp-trail-arrange-add__input")
-    input.set("Delta camp")
-    input.send_keys(:enter)
-    assert_selector ".lp-pointer-reorder__row", text: "Delta camp", wait: 5
-    assert page.evaluate_script("document.querySelector('.lp-trail-arrange-add__input') === window.__addInputNode")
-    assert page.evaluate_script("document.querySelector('.lp-trail-arrange-add__input') === document.activeElement")
+    within(".lp-trail-plant.is-open") do
+      fill_in placeholder: /What do you want to get better at/i, with: "Delta camp"
+      find(".lp-trail-plant__submit").click
+    end
 
-    input.set("Epsilon camp")
-    input.send_keys(:enter)
-    assert_selector ".lp-pointer-reorder__row", text: "Epsilon camp", wait: 5
-    assert page.evaluate_script("document.querySelector('.lp-trail-arrange-add__input') === window.__addInputNode")
+    assert_no_selector ".lp-trail-plant.is-open", wait: 10
+    camp = plan.reload.children.for_kind("project").find_by!(title: "Delta camp")
+    assert_equal before + 1, plan.children.for_kind("project").count
+    assert_selector "#trail-camp-#{camp.id}", wait: 8
+    assert page.evaluate_script("document.getElementById('trail-arrange-camps').hidden")
+    assert_not page.evaluate_script("document.body.classList.contains('is-arrange-open')")
   end
 
-  test "escape cancels add without creating a camp" do
+  test "escape closes plant first while arrange stays open" do
     user = setup_user_with_camps!(
-      email: "camp-add-esc@example.com",
+      email: "camp-plant-esc@example.com",
       camps: [ "One", "Two" ]
     )
     plan = user.strategy_goals.for_kind("plan").not_holding.first
@@ -88,81 +86,14 @@ class CampArrangeAddTest < ApplicationSystemTestCase
 
     sign_in_and_visit_mountain!(user)
     open_arrange_overlay!
-    begin_add_camp!
+    click_button "+ Add a camp"
+    assert_selector ".lp-trail-plant.is-open", wait: 3
 
-    input = find(".lp-trail-arrange-add__input")
-    input.set("Ghost camp")
-    input.send_keys(:escape)
+    fill_in placeholder: /What do you want to get better at/i, with: "Ghost camp"
+    find("body").send_keys(:escape)
 
-    assert_no_selector ".lp-trail-arrange-add.is-editing"
+    assert_no_selector ".lp-trail-plant.is-open", wait: 3
+    assert_selector "#trail-arrange-camps:not([hidden])"
     assert_equal before, plan.reload.children.for_kind("project").count
-    assert_no_selector ".lp-pointer-reorder__row", text: "Ghost camp"
-  end
-
-  test "blur after enter does not create a duplicate camp" do
-    user = setup_user_with_camps!(
-      email: "camp-add-blur@example.com",
-      camps: [ "One", "Two" ]
-    )
-    plan = user.strategy_goals.for_kind("plan").not_holding.first
-
-    sign_in_and_visit_mountain!(user)
-    open_arrange_overlay!
-    begin_add_camp!
-
-    input = find(".lp-trail-arrange-add__input")
-    input.set("Solo camp")
-    input.send_keys(:enter)
-    assert_selector ".lp-pointer-reorder__row", text: "Solo camp", wait: 5
-    page.execute_script("document.querySelector('.lp-trail-arrange-add__input').blur()")
-
-    assert_equal 1, plan.reload.children.for_kind("project").where(title: "Solo camp").count
-  end
-
-  test "after add new row drag handle is bound once" do
-    user = setup_user_with_camps!(
-      email: "camp-add-drag@example.com",
-      camps: [ "Base", "Ridge" ]
-    )
-    sign_in_and_visit_mountain!(user)
-    open_arrange_overlay!
-    begin_add_camp!
-
-    input = find(".lp-trail-arrange-add__input")
-    input.set("New peak")
-    input.send_keys(:enter)
-    assert_selector ".lp-pointer-reorder__row", text: "New peak", wait: 5
-
-    dragging = false
-    using_wait_time(5) do
-      50.times do
-        dragging = page.evaluate_script(<<~'JS')
-          (() => {
-            const row = document.querySelector(".lp-pointer-reorder__row[data-camp-title='New peak']");
-            const handle = row?.querySelector(".lp-pointer-reorder__handle");
-            if (!row || !handle) return false;
-            const rect = handle.getBoundingClientRect();
-            handle.dispatchEvent(new PointerEvent("pointerdown", {
-              bubbles: true,
-              cancelable: true,
-              button: 0,
-              pointerId: 99,
-              pointerType: "mouse",
-              isPrimary: true,
-              clientX: rect.left + 4,
-              clientY: rect.top + 4
-            }));
-            return row.classList.contains("is-dragging");
-          })()
-        JS
-        break if dragging
-        sleep 0.1
-      end
-    end
-    assert dragging, "expected pointer reorder to bind the new row after turbo stream render"
-
-    page.execute_script(<<~JS)
-      document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 99 }));
-    JS
   end
 end

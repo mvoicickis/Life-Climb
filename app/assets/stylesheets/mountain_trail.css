@@ -1247,6 +1247,7 @@
   inset: 0;
   cursor: default;
   touch-action: pan-y;
+  pointer-events: auto;
 }
 
 .lp-trail.is-v4 .lp-trail__world {
@@ -1261,6 +1262,7 @@
   inset: 0;
   overflow: hidden;
   height: 100%;
+  pointer-events: auto;
 }
 
 .lp-trail.is-v4 .lp-trail__mountain-foot {
@@ -1320,6 +1322,7 @@
   background: none;
   filter: saturate(1.05) contrast(1.04);
   z-index: 1;
+  pointer-events: auto;
 }
 
 .lp-trail.is-v4.is-custom-mountain-photo img.lp-trail__photo {
@@ -3708,12 +3711,14 @@ body:has(.lp-rpg.is-v4-phone) .lp-feedback-fab {
 
 /* Cover app chrome while composing — native modal feel on Android. */
 html:has(.lp-trail.is-v4 .lp-trail-plant.is-open),
-body:has(.lp-trail.is-v4 .lp-trail-plant.is-open) {
+body:has(.lp-trail.is-v4 .lp-trail-plant.is-open),
+body.is-trail-plant-open {
   overflow: hidden;
 }
 
 body:has(.lp-trail.is-v4 .lp-trail-plant.is-open) .lp-dash-nav,
-body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])) .lp-dash-nav {
+body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])) .lp-dash-nav,
+body.is-trail-plant-open .lp-dash-nav {
   visibility: hidden;
   pointer-events: none;
 }
@@ -3826,6 +3831,14 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   font-size: 0.72rem;
   color: #7d8278;
   font-weight: 500;
+}
+
+.lp-trail-plant__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-ink, #0f172a);
 }
 
 .lp-trail-plant__field {
@@ -5713,6 +5726,26 @@ body.is-arrange-open .lp-dash-nav__fab {
   display: none !important;
 }
 
+body.is-trail-plant-open #mountain-trail.lp-trail {
+  isolation: auto;
+  position: relative;
+  z-index: 71;
+}
+
+body.is-trail-plant-open #trail-arrange-camps {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+body.is-trail-plant-open #mountain-trail .lp-trail-plant.is-open {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  width: 100%;
+  max-width: 100%;
+  pointer-events: auto;
+}
+
 .lp-trail-arrange {
   position: fixed;
   inset: 0;
@@ -6034,32 +6067,6 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   cursor: pointer;
 }
 
-.lp-trail-arrange-add__input {
-  display: none;
-  width: 100%;
-  margin: 0;
-  padding: 0.55rem 0.65rem;
-  border: 2px solid color-mix(in srgb, var(--lp-green-deep, #3dbd48) 35%, var(--lp-ink, #0f172a) 8%);
-  border-radius: var(--lp-radius-field, 12px);
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--lp-ink, #0f172a);
-  background: var(--lp-surface, #fff);
-}
-
-.lp-trail-arrange-add__input:focus {
-  outline: none;
-}
-
-.lp-trail-arrange-add.is-editing .lp-trail-arrange-add__btn {
-  display: none;
-}
-
-.lp-trail-arrange-add.is-editing .lp-trail-arrange-add__input {
-  display: block;
-}
-
 .lp-trail-arrange-row__actions {
   flex-shrink: 0;
   display: flex;
@@ -6079,7 +6086,7 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   border: 0;
   border-radius: var(--lp-radius-field, 12px);
   background: transparent;
-  color: var(--lp-muted, #475569);
+  color: var(--lp-muted-dark);
   cursor: pointer;
 }
 
@@ -6099,7 +6106,7 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--lp-muted, #475569);
+  color: var(--lp-muted-dark);
   cursor: grab;
   touch-action: none;
   user-select: none;

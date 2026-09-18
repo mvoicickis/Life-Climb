@@ -16,7 +16,6 @@
      data-action="keydown@window->arrange-camps#closeOnEscape"
      data-arrange-camps-url-value="<%= life_journey_camp_arrangement_path(journey) %>"
      data-arrange-camps-reopen-url-value="<%= reopen_life_journey_camp_arrangement_path(journey) %>"
-     data-arrange-camps-stage-camp-url-value="<%= stage_camp_life_journey_camp_arrangement_path(journey) %>"
      data-arrange-camps-plan-id-value="<%= plan.id %>"
      data-arrange-camps-csrf-value="<%= form_authenticity_token %>"
      data-arrange-camps-saved-value="<%= t('strategy.rpg.trail.arrange.saved') %>"
@@ -27,7 +26,6 @@
      data-arrange-camps-delete-body-value="<%= t('strategy.rpg.trail.arrange.delete_body', holding: t('strategy.holding.project_title')) %>"
      data-arrange-camps-delete-body-quantified-value="<%= t('strategy.rpg.trail.arrange.delete_body_quantified') %>"
      data-arrange-camps-delete-failed-value="<%= t('strategy.rpg.trail.arrange.delete_failed') %>"
-     data-arrange-camps-add-failed-value="<%= t('strategy.rpg.trail.arrange.add_camp_failed') %>"
      data-arrange-camps-open-overlay-value="<%= open_overlay %>"
      <%= "hidden" unless open_overlay %>
      aria-hidden="<%= open_overlay ? 'false' : 'true' %>">
@@ -57,22 +55,12 @@
             visible_camp_ids: visible_camp_ids %>
     <% end %>
 
-    <div id="trail-arrange-add-camp"
-         class="lp-trail-arrange-add"
-         data-arrange-camps-target="addCamp">
+    <div id="trail-arrange-add-camp" class="lp-trail-arrange-add">
       <button type="button"
               class="lp-trail-arrange-add__btn"
-              data-action="click->arrange-camps#openAddCamp">
+              data-action="click->arrange-camps#openPlantFromArrange">
         <%= t("strategy.rpg.trail.arrange.add_camp") %>
       </button>
-      <input type="text"
-             class="lp-trail-arrange-add__input"
-             maxlength="<%= StrategyGoal::TITLE_MAX %>"
-             placeholder="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
-             autocomplete="off"
-             aria-label="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
-             data-arrange-camps-target="addInput"
-             data-action="keydown->arrange-camps#addCampKeydown blur->arrange-camps#addCampBlur">
     </div>
 
     <section class="lp-trail-arrange-new-stage" hidden data-arrange-camps-target="newStage">

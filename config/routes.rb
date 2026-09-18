@@ -55,7 +55,6 @@ Rails.application.routes.draw do
     resources :first_camp_battles, only: :create
     resource :camp_arrangement, only: :update do
       post :reopen
-      post :stage_camp
     end
   end
   resources :strategy_goals, only: %i[ create update destroy ] do

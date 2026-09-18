@@ -4,14 +4,12 @@ import { createPointerReorder } from "lib/pointer_reorder"
 export default class extends Controller {
   static targets = [
     "scroll", "list", "toast", "nextTag", "newStage",
-    "deleteSheet", "deleteTitle", "deleteDesc", "deleteQuantifiedLine", "deleteConfirm",
-    "addCamp", "addInput"
+    "deleteSheet", "deleteTitle", "deleteDesc", "deleteQuantifiedLine", "deleteConfirm"
   ]
 
   static values = {
     url: String,
     reopenUrl: String,
-    stageCampUrl: String,
     planId: Number,
     csrf: String,
     saved: String,
@@ -19,7 +17,6 @@ export default class extends Controller {
     newStage: String,
     maxLength: { type: Number, default: 120 },
     openOverlay: Boolean,
-    addFailed: String,
     deleteTitleTemplate: String,
     deleteBody: String,
     deleteBodyQuantified: String,
@@ -30,14 +27,9 @@ export default class extends Controller {
     this.pointerReorder = null
     this.deleting = false
     this.pendingDeleteUrl = null
-    this._addSaving = false
-    this._skipAddBlur = false
-    this._pendingBindDrag = false
     this._clearBodyArrangeOpen = this.clearBodyArrangeOpen.bind(this)
-    this._afterStreamRender = this.afterStreamRender.bind(this)
     document.addEventListener("turbo:before-visit", this._clearBodyArrangeOpen)
     document.addEventListener("turbo:before-cache", this._clearBodyArrangeOpen)
-    document.addEventListener("turbo:after-stream-render", this._afterStreamRender)
 
     const trail = document.getElementById("mountain-trail")
     const shouldBeOpen =
@@ -56,14 +48,7 @@ export default class extends Controller {
     this.pointerReorder?.destroy()
     document.removeEventListener("turbo:before-visit", this._clearBodyArrangeOpen)
     document.removeEventListener("turbo:before-cache", this._clearBodyArrangeOpen)
-    document.removeEventListener("turbo:after-stream-render", this._afterStreamRender)
     this.clearBodyArrangeOpen()
-  }
-
-  afterStreamRender() {
-    if (!this._pendingBindDrag) return
-    this._pendingBindDrag = false
-    requestAnimationFrame(() => this.bindDrag())
   }
 
   clearBodyArrangeOpen() {
@@ -75,10 +60,24 @@ export default class extends Controller {
     document.getElementById("mountain-trail")?.classList.toggle("is-arrange-open", open)
   }
 
+  trailCanvas() {
+    const trail = document.getElementById("mountain-trail")
+    if (!trail) return null
+    return this.application.getControllerForElementAndIdentifier(trail, "trail-canvas")
+  }
+
+  openPlantFromArrange(event) {
+    event?.preventDefault()
+    this.trailCanvas()?.openPlantFromArrange()
+  }
+
   closeFromOverlay(event) {
     event?.preventDefault()
-    const trail = document.getElementById("mountain-trail")
-    const canvas = trail && this.application.getControllerForElementAndIdentifier(trail, "trail-canvas")
+    const canvas = this.trailCanvas()
+    if (canvas?.isPlantOpen?.()) {
+      canvas.closePlant(event)
+      return
+    }
     if (canvas) {
       canvas.closeArrangeCamps(event)
       return
@@ -94,11 +93,10 @@ export default class extends Controller {
     if (this.element.hidden) return
     if (this.element.querySelector(".lp-trail-arrange-row.is-editing")) return
 
+    const canvas = this.trailCanvas()
+    if (canvas?.isPlantOpen?.()) return
+
     event.preventDefault()
-    if (this.isAddCampEditing()) {
-      this.cancelAddCamp()
-      return
-    }
     if (this.isDeleteSheetOpen()) {
       this.closeDelete()
       return
@@ -368,94 +366,6 @@ export default class extends Controller {
     }
 
     window.location.reload()
-  }
-
-  isAddCampEditing() {
-    return this.hasAddCampTarget && this.addCampTarget.classList.contains("is-editing")
-  }
-
-  openAddCamp(event) {
-    event.preventDefault()
-    if (!this.hasAddCampTarget || !this.hasAddInputTarget) return
-    this.addCampTarget.classList.add("is-editing")
-    this.addInputTarget.focus()
-  }
-
-  cancelAddCamp() {
-    if (!this.hasAddCampTarget || !this.hasAddInputTarget) return
-    this.addCampTarget.classList.remove("is-editing")
-    this.addInputTarget.value = ""
-  }
-
-  addCampKeydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault()
-      this.cancelAddCamp()
-      return
-    }
-    if (event.key !== "Enter") return
-    event.preventDefault()
-    if (this._addSaving) return
-    this._skipAddBlur = true
-    this.saveAddCamp().finally(() => {
-      this._skipAddBlur = false
-    })
-  }
-
-  addCampBlur() {
-    if (this._skipAddBlur || this._addSaving) return
-    if (!this.isAddCampEditing()) return
-    this.saveAddCamp()
-  }
-
-  async saveAddCamp() {
-    if (this._addSaving || !this.hasAddInputTarget || !this.stageCampUrlValue) return
-
-    const input = this.addInputTarget
-    const title = input.value.trim()
-    if (!title) return
-
-    this._addSaving = true
-    const token = this.csrfValue || document.querySelector("meta[name='csrf-token']")?.content
-    const body = new FormData()
-    body.set("plan_id", String(this.planIdValue))
-    body.set("stage", "last")
-    body.set("title", title)
-    body.set("authenticity_token", token || "")
-
-    try {
-      const response = await fetch(this.stageCampUrlValue, {
-        method: "POST",
-        headers: {
-          Accept: "text/vnd.turbo-stream.html",
-          "X-CSRF-Token": token || ""
-        },
-        body,
-        credentials: "same-origin"
-      })
-
-      if (response.ok) {
-        const html = await response.text()
-        if (html.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
-          this._pendingBindDrag = true
-          window.Turbo.renderStreamMessage(html)
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              if (!this._pendingBindDrag) return
-              this._pendingBindDrag = false
-              this.bindDrag()
-            })
-          })
-        }
-        input.value = ""
-        input.focus()
-        return
-      }
-
-      this.showToast(this.addFailedValue || "Could not add camp. Try again.")
-    } finally {
-      this._addSaving = false
-    }
   }
 
   showToast(message) {

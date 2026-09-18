@@ -56,6 +56,7 @@
          data-trail-canvas-journey-id-value="<%= journey.id %>"
          data-trail-canvas-life-area-id-value="<%= area.id %>"
          data-trail-canvas-quantity-log-url-value="<%= strategy_quantity_logs_path %>"
+         data-trail-canvas-plant-failed-value="<%= t('strategy.rpg.trail.arrange.add_camp_failed') %>"
          data-trail-camp-sheet-base-title-fallback-value="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
          <% if first_camp_reveal %>
          data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
@@ -231,7 +232,9 @@
                 trail: trail,
                 current_project: current_project %>
         </div>
+      </div>
 
+      <div id="trail-plant-home">
         <div class="lp-trail-plant"
              data-trail-canvas-target="plantForm"
              data-action="click->trail-canvas#stop"
@@ -244,7 +247,7 @@
           <form class="lp-trail-plant__panel"
                 action="<%= strategy_goals_path %>"
                 method="post"
-                data-turbo="true"
+                data-turbo="false"
                 data-action="submit->trail-canvas#submitPlant">
             <input type="hidden" name="accent_hex" value="" data-trail-canvas-target="accentHex">
             <input type="hidden" name="camp_mode" value="battles" data-trail-canvas-target="campMode">
@@ -253,8 +256,16 @@
             <input type="hidden" name="life_journey_id" value="<%= journey.id %>">
             <input type="hidden" name="parent_id" value="<%= plan&.id %>">
             <input type="hidden" name="horizon" value="project">
+            <input type="hidden"
+                   name="new_terrace_stage"
+                   value=""
+                   data-trail-canvas-target="newTerraceStage">
             <h3 class="lp-trail-plant__title"><%= t("strategy.rpg.trail.plant_kicker") %></h3>
             <p class="lp-trail-plant__sub"><%= t("strategy.rpg.trail.plant_hint", destination: peak_title) %></p>
+            <p class="lp-trail-plant__error"
+               role="alert"
+               hidden
+               data-trail-canvas-target="plantError"></p>
             <input type="text"
                    name="title"
                    required
@@ -335,7 +346,10 @@
                       data-action="click->trail-canvas#closePlant">
                 <%= t("strategy.rpg.cancel") %>
               </button>
-              <button type="submit" class="lp-trail-plant__submit" data-trail-canvas-target="plantSubmit">
+              <button type="button"
+                      class="lp-trail-plant__submit"
+                      data-trail-canvas-target="plantSubmit"
+                      data-action="click->trail-canvas#submitPlant">
                 <%= t("strategy.rpg.trail.plant_submit") %>
               </button>
             </div>

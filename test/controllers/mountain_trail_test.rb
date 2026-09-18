@@ -96,6 +96,28 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
                   text: /Step 2/
   end
 
+  test "five active terrace stages each show one Step heading in order" do
+    @project.update_columns(stage: 0, position: 0)
+    4.times do |i|
+      @plan.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "project", title: "Ridge #{i}", position: i + 1, stage: i + 1,
+        trail_x: 0.5, trail_y: 0.55 - (i * 0.03), color_key: "amber"
+      )
+    end
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+
+    assert_select "#trail-arrange-camps .lp-trail-arrange-group", count: 5
+    (0..4).each do |stage|
+      assert_select "#trail-arrange-camps .lp-trail-arrange-group[data-stage='#{stage}'] .lp-trail-arrange-group__heading",
+                    text: /Step #{stage + 1}/
+      assert_select "#trail-arrange-camps .lp-trail-arrange-group[data-stage='#{stage}'] .lp-trail-arrange-group__heading",
+                    count: 1
+    end
+  end
+
   test "goal menu keeps delete and reset photo without edit change photo or mark reached" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success

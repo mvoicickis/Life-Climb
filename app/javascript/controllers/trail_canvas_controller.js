@@ -12,6 +12,8 @@ export default class extends Controller {
     "plantTitle",
     "plantDescription",
     "plantSubmit",
+    "newTerraceStage",
+    "plantError",
     "peakMenu",
     "advanced",
     "metricFields",
@@ -45,7 +47,8 @@ export default class extends Controller {
     csrf: String,
     curve: { type: Array, default: [] },
     quantityLogUrl: String,
-    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" }
+    atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" },
+    plantFailed: String
   }
 
   connect() {
@@ -53,10 +56,12 @@ export default class extends Controller {
     this._editingTitle = false
     this._goalTitlePrevious = ""
     this._peakMenuDismissBound = false
+    this._plantFromArrange = false
     this.bindFab()
     this.bindScrollParallax()
     this.syncAccentFromSwatch()
     this.bindGoalTitleInput()
+    this.bindPlantEscape()
   }
 
   disconnect() {
@@ -64,6 +69,7 @@ export default class extends Controller {
     this.unbindScrollParallax()
     this.unbindPeakMenuDismiss()
     this.teardownGoalTitleEdit()
+    this.unbindPlantEscape()
   }
 
   bindFab() {
@@ -84,6 +90,33 @@ export default class extends Controller {
     event?.preventDefault()
     event?.stopPropagation()
     this.openPlant()
+  }
+
+  openPlantFromArrange() {
+    this._plantFromArrange = true
+    if (this.hasNewTerraceStageTarget) this.newTerraceStageTarget.value = "1"
+    this.openPlant({ syncFocus: true })
+  }
+
+  isPlantOpen() {
+    return this.hasPlantFormTarget && this.plantFormTarget.classList.contains("is-open")
+  }
+
+  bindPlantEscape() {
+    this._plantEscapeHandler = (event) => {
+      if (event.key !== "Escape") return
+      if (!this.isPlantOpen()) return
+      event.preventDefault()
+      event.stopPropagation()
+      this.closePlant(event)
+    }
+    window.addEventListener("keydown", this._plantEscapeHandler, true)
+  }
+
+  unbindPlantEscape() {
+    if (this._plantEscapeHandler) {
+      window.removeEventListener("keydown", this._plantEscapeHandler, true)
+    }
   }
 
   campClick(_event) {
@@ -480,9 +513,14 @@ export default class extends Controller {
       if (quantity.rangeMin) body.set("range_min", String(quantity.rangeMin))
       if (quantity.rangeMax) body.set("range_max", String(quantity.rangeMax))
     }
+    if (this._plantFromArrange) {
+      body.set("new_terrace_stage", "1")
+    }
     this.appendContext(body)
     const token = this.csrfToken()
     if (token) body.set("authenticity_token", token)
+
+    const fromArrange = this._plantFromArrange
 
     try {
       const response = await fetch(url, {
@@ -498,8 +536,17 @@ export default class extends Controller {
 
       const contentType = response.headers.get("content-type") || ""
       if (contentType.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
+        if (!response.ok) {
+          this.showPlantError(this.plantFailedValue || "Could not add camp. Try again.")
+          return
+        }
         window.Turbo.renderStreamMessage(await response.text())
         this.hidePlant()
+        if (fromArrange) this.closeArrangeCamps()
+        return
+      }
+      if (!response.ok) {
+        this.showPlantError(this.plantFailedValue || "Could not add camp. Try again.")
         return
       }
       if (response.redirected) {
@@ -508,6 +555,10 @@ export default class extends Controller {
       }
       window.location.reload()
     } catch (_error) {
+      if (fromArrange) {
+        this.showPlantError(this.plantFailedValue || "Could not add camp. Try again.")
+        return
+      }
       window.location.reload()
     }
   }
@@ -757,27 +808,49 @@ export default class extends Controller {
     if (this._parallaxRaf) cancelAnimationFrame(this._parallaxRaf)
   }
 
-  openPlant() {
+  openPlant({ syncFocus = false } = {}) {
     if (!this.hasPlantFormTarget) return
+    this.clearPlantError()
+    document.body.classList.add("is-trail-plant-open")
     this.plantFormTarget.classList.add("is-open")
     this.plantFormTarget.hidden = false
     this.plantFormTarget.setAttribute("aria-hidden", "false")
 
-    requestAnimationFrame(() => {
+    if (syncFocus) {
       this.plantTitleTarget?.focus({ preventScroll: true })
-    })
+    } else {
+      requestAnimationFrame(() => {
+        this.plantTitleTarget?.focus({ preventScroll: true })
+      })
+    }
   }
 
   hidePlant() {
     if (!this.hasPlantFormTarget) return
+    this._plantFromArrange = false
+    if (this.hasNewTerraceStageTarget) this.newTerraceStageTarget.value = ""
+    this.clearPlantError()
     this.plantFormTarget.classList.remove("is-open")
     this.plantFormTarget.hidden = true
     this.plantFormTarget.setAttribute("aria-hidden", "true")
+    document.body.classList.remove("is-trail-plant-open")
     if (this.hasPlantTitleTarget) this.plantTitleTarget.value = ""
     if (this.hasPlantDescriptionTarget) this.plantDescriptionTarget.value = ""
     this.resetMetricFlow()
     if (this.hasAdvancedTarget) this.advancedTarget.hidden = true
     this.plantFormTarget.querySelector(".lp-trail-plant__advanced-toggle")?.setAttribute("aria-expanded", "false")
+  }
+
+  showPlantError(message) {
+    if (!this.hasPlantErrorTarget) return
+    this.plantErrorTarget.textContent = message
+    this.plantErrorTarget.hidden = false
+  }
+
+  clearPlantError() {
+    if (!this.hasPlantErrorTarget) return
+    this.plantErrorTarget.textContent = ""
+    this.plantErrorTarget.hidden = true
   }
 
   appendContext(body) {
