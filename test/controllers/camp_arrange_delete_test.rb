@@ -20,7 +20,9 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: goal } }
     patch v2_onboarding_url(step: "camps"), params: { onboarding: { camp_titles: camps } }
     follow_redirect!
-    User.find_by!(email_address: email)
+    user = User.find_by!(email_address: email)
+    user.primary_focused_journey.clear_first_camp_reveal!
+    user
   end
 
   def assert_stream_replaces_arrange_overlay(body)
