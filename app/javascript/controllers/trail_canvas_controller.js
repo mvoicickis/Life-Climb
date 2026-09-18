@@ -65,6 +65,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.restorePlantHome()
     this.unbindFab()
     this.unbindScrollParallax()
     this.unbindPeakMenuDismiss()
@@ -811,6 +812,7 @@ export default class extends Controller {
   openPlant({ syncFocus = false } = {}) {
     if (!this.hasPlantFormTarget) return
     this.clearPlantError()
+    this.portalPlantToBody()
     this.plantFormTarget.classList.add("is-open")
     this.plantFormTarget.hidden = false
     this.plantFormTarget.setAttribute("aria-hidden", "false")
@@ -832,6 +834,7 @@ export default class extends Controller {
     this.plantFormTarget.classList.remove("is-open")
     this.plantFormTarget.hidden = true
     this.plantFormTarget.setAttribute("aria-hidden", "true")
+    this.restorePlantHome()
     if (this.hasPlantTitleTarget) this.plantTitleTarget.value = ""
     if (this.hasPlantDescriptionTarget) this.plantDescriptionTarget.value = ""
     this.resetMetricFlow()
@@ -849,6 +852,24 @@ export default class extends Controller {
     if (!this.hasPlantErrorTarget) return
     this.plantErrorTarget.textContent = ""
     this.plantErrorTarget.hidden = true
+  }
+
+  portalPlantToBody() {
+    if (!this.hasPlantFormTarget) return
+    if (this.plantFormTarget.parentElement === document.body) return
+    this._plantHome = document.getElementById("trail-plant-home")
+    document.body.appendChild(this.plantFormTarget)
+    document.body.classList.add("is-trail-plant-open")
+  }
+
+  restorePlantHome() {
+    if (!this.hasPlantFormTarget) return
+    document.body.classList.remove("is-trail-plant-open")
+    if (this.plantFormTarget.parentElement !== document.body) return
+    const home = this._plantHome || document.getElementById("trail-plant-home")
+    if (home) {
+      home.appendChild(this.plantFormTarget)
+    }
   }
 
   appendContext(body) {

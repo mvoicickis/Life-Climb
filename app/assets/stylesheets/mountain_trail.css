@@ -1247,6 +1247,7 @@
   inset: 0;
   cursor: default;
   touch-action: pan-y;
+  pointer-events: auto;
 }
 
 .lp-trail.is-v4 .lp-trail__world {
@@ -3708,12 +3709,14 @@ body:has(.lp-rpg.is-v4-phone) .lp-feedback-fab {
 
 /* Cover app chrome while composing — native modal feel on Android. */
 html:has(.lp-trail.is-v4 .lp-trail-plant.is-open),
-body:has(.lp-trail.is-v4 .lp-trail-plant.is-open) {
+body:has(.lp-trail.is-v4 .lp-trail-plant.is-open),
+body.is-trail-plant-open {
   overflow: hidden;
 }
 
 body:has(.lp-trail.is-v4 .lp-trail-plant.is-open) .lp-dash-nav,
-body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])) .lp-dash-nav {
+body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])) .lp-dash-nav,
+body.is-trail-plant-open .lp-dash-nav {
   visibility: hidden;
   pointer-events: none;
 }
@@ -5721,10 +5724,18 @@ body.is-arrange-open .lp-dash-nav__fab {
   display: none !important;
 }
 
-body.is-arrange-open .lp-trail-plant.is-open {
+body.is-trail-plant-open > .lp-trail-plant.is-open,
+body.is-trail-plant-open > .lp-trail-plant:not([hidden]) {
   position: fixed;
   inset: 0;
-  z-index: 65;
+  z-index: 70;
+  width: 100%;
+  max-width: 100%;
+  pointer-events: auto;
+}
+
+body.is-trail-plant-open.is-arrange-open > .lp-trail-plant.is-open {
+  z-index: 70;
 }
 
 .lp-trail-arrange {
