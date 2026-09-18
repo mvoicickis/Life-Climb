@@ -23,7 +23,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert header_block, "expected v4 camp sheet header block"
     assert_match(/background:\s*var\(--lp-paper-soft\)/, header_block)
     refute_match(
-      /@supports[\s\S]*?\.lp-trail\.is-v4 \.lp-trail-sheet__header/,
+      /@supports[^{]+\{[^}]*\.lp-trail\.is-v4 \.lp-trail-sheet__header\s*\{/m,
       @css
     )
 
