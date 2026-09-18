@@ -150,14 +150,31 @@ class CampArrangeAddTest < ApplicationSystemTestCase
         el.querySelector(".lp-trail-arrange-row__label-btn")?.textContent?.trim() === "New peak"
       );
       if (!row) throw new Error("row missing");
+      const targetList = document.querySelector(".lp-trail-arrange-group [data-arrange-list]");
+      if (!targetList) throw new Error("target list missing");
+      const targetRect = targetList.getBoundingClientRect();
       const handle = row.querySelector(".lp-pointer-reorder__handle");
       const rect = handle.getBoundingClientRect();
-      const down = { bubbles: true, cancelable: true, pointerId: 42, button: 0, clientX: rect.left + 4, clientY: rect.top + 4 };
-      handle.dispatchEvent(new PointerEvent("pointerdown", down));
-      handle.dispatchEvent(new PointerEvent("pointermove", { ...down, clientY: rect.top - 120 }));
-      handle.dispatchEvent(new PointerEvent("pointerup", { ...down, clientY: rect.top - 120 }));
+      const pointerId = 42;
+      const base = {
+        bubbles: true,
+        cancelable: true,
+        pointerId,
+        pointerType: "mouse",
+        isPrimary: true,
+        button: 0,
+        buttons: 1
+      };
+      handle.dispatchEvent(new PointerEvent("pointerdown", { ...base, clientX: rect.left + 6, clientY: rect.top + 6 }));
+      const targetY = targetRect.top + targetRect.height / 2;
+      for (let y = rect.top; y >= targetY; y -= 24) {
+        handle.dispatchEvent(new PointerEvent("pointermove", { ...base, clientX: targetRect.left + 20, clientY: y }));
+      }
+      handle.dispatchEvent(new PointerEvent("pointermove", { ...base, clientX: targetRect.left + 20, clientY: targetY }));
+      handle.dispatchEvent(new PointerEvent("pointerup", { ...base, clientX: targetRect.left + 20, clientY: targetY, buttons: 0 }));
     JS
 
+    assert_selector ".lp-trail-arrange__toast.is-visible", text: /Order saved/i, wait: 5
     assert page.evaluate_script("window.__arrangePatches === 1"), "expected one reorder save"
   end
 end
