@@ -1322,6 +1322,7 @@
   background: none;
   filter: saturate(1.05) contrast(1.04);
   z-index: 1;
+  pointer-events: auto;
 }
 
 .lp-trail.is-v4.is-custom-mountain-photo img.lp-trail__photo {
