@@ -45,7 +45,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-arrange-camps", count: 0
   end
 
-  test "two camps show arrange entry and overlay shell" do
+  test "two camps show arrange entry and overlay shell outside trail" do
     @plan.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "project", title: "Ridge lookout", position: 1,
@@ -58,6 +58,42 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", text: /Change camp order/i
     assert_select "#trail-arrange-camps[data-controller*='arrange-camps']"
     assert_select "#trail-arrange-camps[hidden]"
+    assert_select "#mountain-trail #trail-arrange-camps", count: 0
+    assert_select "#strategy-world #trail-arrange-camps", count: 1
+    assert_select ".lp-trail-arrange-row__next", count: 0
+    assert_select ".lp-trail-arrange__hint", text: /Drag ⠿ to change the order/
+    assert_match(/On your Mountain/, response.body)
+  end
+
+  test "arrange overlay moves finished camps under Finished and renumbers steps" do
+    stage0 = @project
+    stage0.update_columns(stage: 0, position: 0)
+    stage0.complete!
+
+    stage1_a = @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Ridge lookout", position: 1, stage: 1,
+      trail_x: 0.5, trail_y: 0.55, color_key: "amber"
+    )
+    @plan.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "project", title: "Summit push", position: 2, stage: 2,
+      trail_x: 0.52, trail_y: 0.4, color_key: "teal"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+
+    assert_select "#trail-arrange-camps .lp-trail-arrange-finished__summary", text: /Finished \(1\)/
+    assert_select "#trail-arrange-camps .lp-trail-arrange-finished__title", text: stage0.title
+    assert_select "#trail-arrange-camps .lp-trail-arrange-group [data-camp-id=?]", stage0.id.to_s, count: 0
+    assert_select "#trail-arrange-camps .lp-pointer-reorder__row[data-camp-id=?]", stage0.id.to_s, count: 0
+
+    assert_select "#trail-arrange-camps .lp-trail-arrange-group[data-stage='1'] .lp-trail-arrange-group__heading",
+                  text: /Step 1/
+    assert_select "#trail-arrange-camps .lp-trail-arrange-group[data-stage='1'] [data-camp-id=?]", stage1_a.id.to_s
+    assert_select "#trail-arrange-camps .lp-trail-arrange-group[data-stage='2'] .lp-trail-arrange-group__heading",
+                  text: /Step 2/
   end
 
   test "goal menu keeps delete and reset photo without edit change photo or mark reached" do

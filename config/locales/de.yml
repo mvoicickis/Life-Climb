@@ -10,7 +10,7 @@ de:
   strategy:
     holding:
       plan_title: "lp.holding.plan"
-      project_title: "lp.holding.project"
+      project_title: "Extra battles" # TODO: translate
     add_another_plan: "Weiteren Plan hinzufügen"
     add_another_project: "Weiteres Projekt hinzufügen"
     add_another_battle: "Weitere Schlacht hinzufügen"
@@ -271,7 +271,11 @@ de:
           other: "%{count} more camps ahead"
         arrange: # TODO: translate
           title: "Change camp order"
+          hint: "Drag ⠿ to change the order."
           entry: "Change camp order"
+          step: "Step %{step}"
+          on_mountain: "⛰ On your Mountain"
+          finished: "Finished (%{count})"
           open_again: "Open again"
           add_camp_here: "+ Add a camp here"
           add_camp_placeholder: "New camp name"

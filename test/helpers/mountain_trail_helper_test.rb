@@ -977,6 +977,55 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert reveal.map { |entry| entry[:delay_ms] }.each_cons(2).all? { |a, b| b >= a }
   end
 
+  test "arrange active groups omit completed stages and finished camps lists them" do
+    done = Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+      id: 1, stage: 0, position: 0, completed?: true, holding?: false
+    )
+    open_a = Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+      id: 2, stage: 1, position: 1, completed?: false, holding?: false
+    )
+    open_b = Struct.new(:id, :stage, :position, :completed?, :holding?, keyword_init: true).new(
+      id: 3, stage: 1, position: 2, completed?: false, holding?: false
+    )
+    projects = [ done, open_a, open_b ]
+
+    active = mountain_trail_arrange_active_groups(projects)
+    assert_equal [ 1 ], active.map { |g| g[:stage] }
+    assert_equal [ 2, 3 ], active.first[:camps].map(&:id)
+
+    finished = mountain_trail_arrange_finished_camps(projects)
+    assert_equal [ 1 ], finished.map(&:id)
+  end
+
+  test "visible camp ids match Strategy::Trail visible_nodes" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Ship auth")
+    plan = user.strategy_goals.for_kind("goal").roots.first.children.for_kind("plan").not_holding.ordered.first
+    trail = Strategy::Trail.for(plan: plan.reload)
+
+    assert_equal trail.visible_nodes.map(&:id), mountain_trail_visible_camp_ids(trail)
+  end
+
+  test "show arrange camps requires two path projects" do
+    trail = Strategy::Trail::Result.new(nodes: [], visible_nodes: [], current_node: nil)
+    plan = Struct.new(:id).new(1)
+
+    refute mountain_trail_show_arrange_camps?(trail: trail, plan: plan)
+
+    projects = 2.times.map do |i|
+      Struct.new(:id, :holding?, :completed?, keyword_init: true).new(id: i + 1, holding?: false, completed?: false)
+    end
+    nodes = projects.map.with_index do |project, index|
+      Strategy::Trail::Node.new(
+        id: project.id, title: "C#{index}", state: :current, pct: 0,
+        position: index, record: project, y: 50
+      )
+    end
+    trail_two = Strategy::Trail::Result.new(nodes: nodes, visible_nodes: nodes, current_node: nodes.first)
+    assert mountain_trail_show_arrange_camps?(trail: trail_two, plan: plan)
+    refute mountain_trail_show_arrange_camps?(trail: trail_two, plan: plan, first_camp_reveal: true)
+  end
+
   private
 
   def reveal_test_projects(count)

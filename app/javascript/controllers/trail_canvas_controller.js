@@ -849,7 +849,7 @@ export default class extends Controller {
     const overlay = document.getElementById("trail-arrange-camps")
     if (!overlay) return
 
-    this.element.classList.add("is-arrange-open")
+    this.setArrangeOpen(true)
     overlay.hidden = false
     overlay.setAttribute("aria-hidden", "false")
     overlay.querySelector(".lp-trail-arrange__back")?.focus()
@@ -857,7 +857,7 @@ export default class extends Controller {
 
   closeArrangeCamps(event) {
     event?.preventDefault()
-    this.element.classList.remove("is-arrange-open")
+    this.setArrangeOpen(false)
 
     const overlay = document.getElementById("trail-arrange-camps")
     if (!overlay) return
@@ -865,5 +865,10 @@ export default class extends Controller {
     overlay.hidden = true
     overlay.setAttribute("aria-hidden", "true")
     this.element.querySelector(".lp-trail__goal-plaque")?.focus()
+  }
+
+  setArrangeOpen(open) {
+    this.element.classList.toggle("is-arrange-open", open)
+    document.body.classList.toggle("is-arrange-open", open)
   }
 }
