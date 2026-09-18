@@ -26,7 +26,8 @@ export default class extends Controller {
     if (this.detailsTarget.open) {
       window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
       this.portalToBody()
-      this.bindDocument()
+      // Defer so the opening tap is not treated as an outside dismiss (capture listeners).
+      requestAnimationFrame(() => this.bindDocument())
       this.positionMenu()
       window.addEventListener("resize", this._onReposition)
       window.visualViewport?.addEventListener("resize", this._onReposition)

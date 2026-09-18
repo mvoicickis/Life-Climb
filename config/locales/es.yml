@@ -279,6 +279,13 @@ es:
           open_again: "Open again"
           add_camp_here: "+ Add a camp here"
           add_camp_placeholder: "New camp name"
+          delete_title: "Delete %{title}" # TODO: translate for lv/de/es/ru.
+          delete_body: "Its battles move to %{holding}. Your points stay." # TODO: translate for lv/de/es/ru.
+          delete_body_quantified: "Its logged amounts are deleted too." # TODO: translate for lv/de/es/ru.
+          delete_confirm: "Delete camp" # TODO: translate for lv/de/es/ru.
+          delete_keep: "Keep it" # TODO: translate for lv/de/es/ru.
+          delete_failed: "Could not delete camp. Try again." # TODO: translate for lv/de/es/ru.
+          delete_aria: "Delete %{title}" # TODO: translate for lv/de/es/ru.
           stage_complete: "Stage complete"
         base_camp:
           add_habit: "Add basic"  # TODO: translate

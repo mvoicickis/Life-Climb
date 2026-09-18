@@ -24,7 +24,12 @@
      data-arrange-camps-next-value="<%= t('strategy.rpg.trail.arrange.next') %>"
      data-arrange-camps-new-stage-value="<%= t('strategy.rpg.trail.arrange.new_stage_drop') %>"
      data-arrange-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>"
+     data-arrange-camps-delete-title-template-value="<%= t('strategy.rpg.trail.arrange.delete_title', title: '%{title}') %>"
+     data-arrange-camps-delete-body-value="<%= t('strategy.rpg.trail.arrange.delete_body', holding: t('strategy.holding.project_title')) %>"
+     data-arrange-camps-delete-body-quantified-value="<%= t('strategy.rpg.trail.arrange.delete_body_quantified') %>"
+     data-arrange-camps-delete-failed-value="<%= t('strategy.rpg.trail.arrange.delete_failed') %>"
      <% if focus_stage.present? %>data-arrange-camps-focus-stage-value="<%= focus_stage %>"<% end %>
+     data-arrange-camps-open-overlay-value="<%= open_overlay %>"
      <%= "hidden" unless open_overlay %>
      aria-hidden="<%= open_overlay ? 'false' : 'true' %>">
   <header class="lp-trail-arrange__top">
@@ -57,8 +62,11 @@
             <li class="lp-trail-arrange-row lp-pointer-reorder__row"
                 data-id="<%= camp.id %>"
                 data-camp-id="<%= camp.id %>"
+                data-camp-title="<%= camp.title %>"
+                data-quantified="<%= camp.quantified? %>"
                 data-completed="false"
-                data-update-url="<%= strategy_goal_path(camp) %>">
+                data-update-url="<%= strategy_goal_path(camp) %>"
+                data-delete-url="<%= strategy_goal_path(camp) %>">
               <div class="lp-trail-arrange-row__body">
                 <button type="button"
                         class="lp-trail-arrange-row__label-btn"
@@ -70,11 +78,19 @@
                   <span class="lp-trail-arrange-row__mountain"><%= t("strategy.rpg.trail.arrange.on_mountain") %></span>
                 <% end %>
               </div>
-              <button type="button"
-                      class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
-                      aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
-                <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>') %>
-              </button>
+              <div class="lp-trail-arrange-row__actions">
+                <button type="button"
+                        class="lp-trail-arrange-row__trash"
+                        data-action="click->arrange-camps#openDelete"
+                        aria-label="<%= t('strategy.rpg.trail.arrange.delete_aria', title: camp.title) %>">
+                  <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM7 9h2v9H7V9z"/></svg>') %>
+                </button>
+                <button type="button"
+                        class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
+                        aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
+                  <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>') %>
+                </button>
+              </div>
             </li>
           <% end %>
         </ul>
@@ -129,6 +145,8 @@
       </details>
     <% end %>
   </div>
+
+  <%= render "life_journeys/trail_arrange_delete_sheet" %>
 
   <p class="lp-trail-arrange__toast"
      role="status"

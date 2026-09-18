@@ -1,0 +1,29 @@
+<%= turbo_stream.replace "trail-map-camps" do %>
+  <%= render "life_journeys/trail_map_camps",
+        trail: @trail,
+        current_project: @current_project %>
+<% end %>
+
+<%= turbo_stream.replace "trail-dock" do %>
+  <%= render "life_journeys/trail_dock",
+        today_card: @today_card,
+        journey: @journey,
+        projects: @projects %>
+<% end %>
+
+<% if @show_arrange_camps %>
+  <%= turbo_stream.replace "trail-arrange-camps" do %>
+    <%= render "life_journeys/trail_arrange_camps_overlay",
+          journey: @journey,
+          plan: @plan,
+          projects: @arrange_projects,
+          trail: @trail,
+          visible_camp_ids: mountain_trail_visible_camp_ids(@trail),
+          open_stage: @open_stage,
+          open_overlay: @arrange_overlay_open %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "trail-arrange-camps" %>
+<% end %>
+
+<%= render "life_journeys/trail_climber_stream" %>
