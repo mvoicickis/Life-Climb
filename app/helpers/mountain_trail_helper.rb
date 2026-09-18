@@ -380,6 +380,10 @@ module MountainTrailHelper
     stages.empty? ? nil : stages.max
   end
 
+  def mountain_trail_next_arrange_stage(projects)
+    (mountain_trail_max_stage(projects) || -1) + 1
+  end
+
   def mountain_trail_stage_done?(projects, stage)
     camps = mountain_trail_projects_by_stage(projects)[stage.to_i] || []
     return false if camps.empty?

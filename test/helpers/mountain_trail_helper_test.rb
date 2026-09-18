@@ -1007,6 +1007,12 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal trail.visible_nodes.map(&:id), mountain_trail_visible_camp_ids(trail)
   end
 
+  test "next arrange stage follows max stage" do
+    projects = reveal_test_projects(3)
+    assert_equal 3, mountain_trail_next_arrange_stage(projects)
+    assert_equal 0, mountain_trail_next_arrange_stage([])
+  end
+
   test "show arrange camps requires two path projects" do
     user = users(:one)
     journey = seed_climb!(user, today_mission: "Ship auth")
