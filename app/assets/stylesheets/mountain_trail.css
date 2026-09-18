@@ -5731,7 +5731,8 @@ body.is-trail-plant-open #mountain-trail.lp-trail {
 }
 
 body.is-trail-plant-open #trail-arrange-camps {
-  pointer-events: none;
+  display: none !important;
+  pointer-events: none !important;
 }
 
 body.is-trail-plant-open #mountain-trail .lp-trail-plant.is-open {
