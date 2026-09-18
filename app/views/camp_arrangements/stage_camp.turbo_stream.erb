@@ -1,3 +1,11 @@
+<% visible_camp_ids = mountain_trail_visible_camp_ids(@trail) %>
+<%= turbo_stream.before "trail-arrange-add-camp" do %>
+  <%= render "life_journeys/trail_arrange_active_group",
+        group: { stage: @created_camp.stage.to_i, camps: [ @created_camp ] },
+        step_number: @insert_step_number,
+        visible_camp_ids: visible_camp_ids %>
+<% end %>
+
 <%= turbo_stream.replace "trail-map-camps" do %>
   <%= render "life_journeys/trail_map_camps",
         trail: @trail,
@@ -11,14 +19,4 @@
         projects: @projects %>
 <% end %>
 
-<%= turbo_stream.replace "trail-arrange-camps" do %>
-  <%= render "life_journeys/trail_arrange_camps_overlay",
-        journey: @journey,
-        plan: @plan,
-        projects: @arrange_projects,
-        trail: @trail,
-        visible_camp_ids: mountain_trail_visible_camp_ids(@trail),
-        open_stage: @open_stage,
-        focus_stage: @focus_stage,
-        open_overlay: true %>
-<% end %>
+<%= render "life_journeys/trail_climber_stream" %>

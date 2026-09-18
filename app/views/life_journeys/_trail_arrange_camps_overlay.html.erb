@@ -3,7 +3,6 @@
 <% plan = local_assigns.fetch(:plan) %>
 <% projects = local_assigns.fetch(:projects) %>
 <% open_stage = local_assigns.fetch(:open_stage) %>
-<% focus_stage = local_assigns[:focus_stage] %>
 <% open_overlay = local_assigns.fetch(:open_overlay, false) %>
 <% trail = local_assigns[:trail] %>
 <% visible_camp_ids = local_assigns.fetch(:visible_camp_ids) { mountain_trail_visible_camp_ids(trail) } %>
@@ -28,7 +27,7 @@
      data-arrange-camps-delete-body-value="<%= t('strategy.rpg.trail.arrange.delete_body', holding: t('strategy.holding.project_title')) %>"
      data-arrange-camps-delete-body-quantified-value="<%= t('strategy.rpg.trail.arrange.delete_body_quantified') %>"
      data-arrange-camps-delete-failed-value="<%= t('strategy.rpg.trail.arrange.delete_failed') %>"
-     <% if focus_stage.present? %>data-arrange-camps-focus-stage-value="<%= focus_stage %>"<% end %>
+     data-arrange-camps-add-failed-value="<%= t('strategy.rpg.trail.arrange.add_camp_failed') %>"
      data-arrange-camps-open-overlay-value="<%= open_overlay %>"
      <%= "hidden" unless open_overlay %>
      aria-hidden="<%= open_overlay ? 'false' : 'true' %>">
@@ -52,67 +51,29 @@
 
   <div class="lp-trail-arrange__scroll" data-arrange-camps-target="scroll">
     <% active_groups.each_with_index do |group, index| %>
-      <section class="lp-trail-arrange-group"
-               data-stage="<%= group[:stage] %>">
-        <h2 class="lp-trail-arrange-group__heading">
-          <%= t("strategy.rpg.trail.arrange.step", step: index + 1) %>
-        </h2>
-        <ul class="lp-trail-arrange-list" data-arrange-camps-target="list" data-arrange-list>
-          <% group[:camps].each do |camp| %>
-            <li class="lp-trail-arrange-row lp-pointer-reorder__row"
-                data-id="<%= camp.id %>"
-                data-camp-id="<%= camp.id %>"
-                data-camp-title="<%= camp.title %>"
-                data-quantified="<%= camp.quantified? %>"
-                data-completed="false"
-                data-update-url="<%= strategy_goal_path(camp) %>"
-                data-delete-url="<%= strategy_goal_path(camp) %>">
-              <div class="lp-trail-arrange-row__body">
-                <button type="button"
-                        class="lp-trail-arrange-row__label-btn"
-                        data-action="click->arrange-camps#beginRename"
-                        data-arrange-rename>
-                  <%= camp.title %>
-                </button>
-                <% if visible_camp_ids.include?(camp.id) %>
-                  <span class="lp-trail-arrange-row__mountain"><%= t("strategy.rpg.trail.arrange.on_mountain") %></span>
-                <% end %>
-              </div>
-              <div class="lp-trail-arrange-row__actions">
-                <button type="button"
-                        class="lp-trail-arrange-row__trash"
-                        data-action="click->arrange-camps#openDelete"
-                        aria-label="<%= t('strategy.rpg.trail.arrange.delete_aria', title: camp.title) %>">
-                  <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM7 9h2v9H7V9z"/></svg>') %>
-                </button>
-                <button type="button"
-                        class="lp-trail-arrange-row__handle lp-pointer-reorder__handle"
-                        aria-label="<%= t('strategy.rpg.trail.arrange.drag') %>">
-                  <%= raw('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>') %>
-                </button>
-              </div>
-            </li>
-          <% end %>
-        </ul>
-      </section>
+      <%= render "life_journeys/trail_arrange_active_group",
+            group: group,
+            step_number: index + 1,
+            visible_camp_ids: visible_camp_ids %>
     <% end %>
 
-    <%# Add-camp inputs for stages that are fully finished (no active list section). %>
-    <% finished_only_stages = finished_camps.map { |c| c.stage.to_i }.uniq - active_groups.map { |g| g[:stage] } %>
-    <% finished_only_stages.sort.each do |stage| %>
-      <div class="lp-trail-arrange-add-camp" data-arrange-add-stage="<%= stage %>">
-        <label class="sr-only" for="arrange-add-camp-<%= stage %>"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></label>
-        <input id="arrange-add-camp-<%= stage %>"
-               type="text"
-               class="lp-trail-arrange-add-camp__input"
-               maxlength="<%= StrategyGoal::TITLE_MAX %>"
-               placeholder="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
-               autocomplete="off"
-               data-action="keydown->arrange-camps#addStageCampKeydown"
-               data-stage="<%= stage %>">
-        <span class="lp-trail-arrange-add-camp__hint" aria-hidden="true"><%= t("strategy.rpg.trail.arrange.add_camp_here") %></span>
-      </div>
-    <% end %>
+    <div id="trail-arrange-add-camp"
+         class="lp-trail-arrange-add"
+         data-arrange-camps-target="addCamp">
+      <button type="button"
+              class="lp-trail-arrange-add__btn"
+              data-action="click->arrange-camps#openAddCamp">
+        <%= t("strategy.rpg.trail.arrange.add_camp") %>
+      </button>
+      <input type="text"
+             class="lp-trail-arrange-add__input"
+             maxlength="<%= StrategyGoal::TITLE_MAX %>"
+             placeholder="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
+             autocomplete="off"
+             aria-label="<%= t('strategy.rpg.trail.arrange.add_camp_placeholder') %>"
+             data-arrange-camps-target="addInput"
+             data-action="keydown->arrange-camps#addCampKeydown blur->arrange-camps#addCampBlur">
+    </div>
 
     <section class="lp-trail-arrange-new-stage" hidden data-arrange-camps-target="newStage">
       <p class="lp-trail-arrange-new-stage__label"><%= t("strategy.rpg.trail.arrange.new_stage_drop") %></p>

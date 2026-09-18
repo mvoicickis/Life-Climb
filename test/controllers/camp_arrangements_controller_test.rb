@@ -170,6 +170,28 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
     assert_operator created.position, :<, @camp_b.reload.position
     assert_match("Fresh camp", response.body)
     assert_match(/Step 1/, response.body)
+    assert_match(/action="before"[^>]*target="trail-arrange-add-camp"/, response.body)
+    refute_match(/action="replace"[^>]*target="trail-arrange-camps"/, response.body)
+  end
+
+  test "stage_camp with stage last appends new terrace step" do
+    @camp_a.update_columns(stage: 0, position: 0)
+    @camp_b.update_columns(stage: 1, position: 1)
+    @camp_c.update_columns(stage: 2, position: 2)
+
+    assert_difference -> { @plan.children.for_kind("project").count }, 1 do
+      post stage_camp_life_journey_camp_arrangement_path(@journey),
+           params: { plan_id: @plan.id, stage: "last", title: "Summit camp" },
+           as: :turbo_stream
+    end
+
+    assert_response :success
+    created = @plan.children.for_kind("project").find_by!(title: "Summit camp")
+    assert_equal 3, created.stage
+    assert_match(/action="before"[^>]*target="trail-arrange-add-camp"/, response.body)
+    assert_match("Summit camp", response.body)
+    assert_match(/Step 4/, response.body)
+    refute_match(/action="replace"[^>]*target="trail-arrange-camps"/, response.body)
   end
 
   test "update with finished-first current order leaves stage and position unchanged" do

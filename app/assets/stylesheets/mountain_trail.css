@@ -6013,39 +6013,51 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   cursor: pointer;
 }
 
-.lp-trail-arrange-add-camp {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.35rem;
-  padding: 0.35rem 0.25rem 0.35rem 0.65rem;
+.lp-trail-arrange-add {
+  margin-top: 1.25rem;
 }
 
-.lp-trail-arrange-add-camp__input {
+.lp-trail-arrange-add__btn {
+  display: flex;
+  align-items: center;
   width: 100%;
   min-height: var(--lp-tap, 2.75rem);
-  margin: 0;
-  padding: 0.35rem 0.65rem;
-  border: 1.5px dashed var(--lp-border, #e2e8f0);
+  padding: 0.5rem 0.65rem;
+  border: 0;
   border-radius: var(--lp-radius-field, 12px);
-  background: var(--lp-paper, #f8fafc);
+  background: transparent;
   font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--lp-ink, #0f172a);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--lp-green-deep, #3dbd48);
+  text-align: left;
+  cursor: pointer;
 }
 
-.lp-trail-arrange-add-camp__input:focus {
-  outline: none;
-  border-color: var(--lp-green, #57d35b);
-  border-style: solid;
+.lp-trail-arrange-add__input {
+  display: none;
+  width: 100%;
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  border: 2px solid color-mix(in srgb, var(--lp-green-deep, #3dbd48) 35%, var(--lp-ink, #0f172a) 8%);
+  border-radius: var(--lp-radius-field, 12px);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--lp-ink, #0f172a);
   background: var(--lp-surface, #fff);
 }
 
-.lp-trail-arrange-add-camp__hint {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--lp-muted, #475569);
+.lp-trail-arrange-add__input:focus {
+  outline: none;
+}
+
+.lp-trail-arrange-add.is-editing .lp-trail-arrange-add__btn {
+  display: none;
+}
+
+.lp-trail-arrange-add.is-editing .lp-trail-arrange-add__input {
+  display: block;
 }
 
 .lp-trail-arrange-row__actions {

@@ -277,8 +277,9 @@ de:
           on_mountain: "⛰ On your Mountain"
           finished: "Finished (%{count})"
           open_again: "Open again"
-          add_camp_here: "+ Add a camp here"
-          add_camp_placeholder: "New camp name"
+          add_camp: "+ Add a camp" # TODO: translate for de.
+          add_camp_placeholder: "New camp name" # TODO: translate for de.
+          add_camp_failed: "Could not add camp. Try again." # TODO: translate for de.
           delete_title: "Delete %{title}" # TODO: translate for lv/de/es/ru.
           delete_body: "Its battles move to %{holding}. Your points stay." # TODO: translate for lv/de/es/ru.
           delete_body_quantified: "Its logged amounts are deleted too." # TODO: translate for lv/de/es/ru.
