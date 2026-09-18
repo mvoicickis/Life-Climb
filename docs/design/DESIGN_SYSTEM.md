@@ -1,87 +1,80 @@
-# LifePoints Brand & Design System
+# Life Climb — Design System
 
-## Canonical visual guide
+**Token source:** [`app/assets/tailwind/application.css`](../../app/assets/tailwind/application.css) `:root` (lines 3281–3386). Use CSS variables only — do not hardcode hex in new UI.
 
-Use this board as the source of truth for colour, type, mountain art, and UI chrome:
+## Brand feel
 
-- [`docs/design/BRAND_GUIDE_LIFE_GREEN.jpg`](BRAND_GUIDE_LIFE_GREEN.jpg) (also `.webp`)
+Light mode only. Clean, calm, Apple-like: soft page wash, white cards, generous spacing, one green accent. **One mountain. Today’s battle.**
 
-**Note:** that board still shows the retired leaf sprout in places — treat it as historical for colour/type only. The **mountain circle mark** is law for product UI.
+Product chrome (Home, Strategy, Journey, You, Settings, sheets, forms) stays on the light palette. **Exception:** the marketing landing page (`.lp-landing-body`) uses a dark cinematic shell — not a user theme toggle.
 
-Landing hero / scene assets live in `public/branding/`.
-
-## Brand idea
-
-LifePoints helps a person pick one mountain, build the climb on **Strategy** (goal → plans → projects → battles), fight on **Today** for **Action Points**, and reflect on **Journey**. Finished **projects** move mountain percent — battles win the day, not the year. Strategy Points reward planning. Proof you are becoming more alive.
-
-Feeling: **One mountain. Today’s battle.** Hope + invitation on a clean light shell, with Life Green as the action color.
-
-Legacy lockup tagline “SMALL STEPS. BIG LIFE.” remains on some PNG assets — prefer the live slogan for new marketing lockups; do not regenerate bitmaps unless intentionally redesigning.
+Assets: `public/branding/` (logo, mark, hero). Mountain circle mark is canonical for product UI. Retired leaf sprout — do not use.
 
 ## Voice
 
-- Short sentences. Never explain with a long paragraph what one short line can say.
-- Human, not corporate. Say “Pick your mountain,” not “Select your primary objective.”
-- Show, don’t list. One real example (“Run for 15 minutes”) beats five abstract words.
-- No fake urgency. Never use countdown timers, scarcity copy, or streak-shame language.
+Short, human copy. No fake urgency, streak-shame, or “productivity” jargon. Say Action Points / AP in player chrome, not bare “LP”.
 
-**Use often:** mountain · climb · battle · plan · project · expedition · Action Points · Strategy Points · alive · closer  
+## Colour (app chrome)
 
-**Avoid:** streak · habit · tracker · productivity · grind · hustle · bare “LP” in player chrome (say Action Points / AP)
+| Role | Token | Value |
+|------|--------|--------|
+| Page background | `--lp-paper` | `#f8fafc` |
+| Soft bands | `--lp-paper-soft` | `#eef2f7` |
+| Tracks / mist | `--lp-mist` | `#e2e8f0` |
+| Cards / elevated | `--lp-surface`, `--lp-elevated` | `#ffffff` |
+| Primary text | `--lp-ink` | `#0f172a` |
+| Secondary headings | `--lp-charcoal` | `#334155` |
+| Muted text | `--lp-muted` | `#475569` |
+| Borders | `--lp-border` | `rgba(15, 23, 42, 0.1)` |
+| Primary accent | `--lp-green` | `#57d35b` |
+| Accent hover / pressed | `--lp-green-deep` | `#3dbd48` |
+| Soft green wash | `--lp-green-soft` | `rgba(87, 211, 91, 0.28)` |
+| Destructive actions only | `--rpg-red` | `#ef4444` |
+| Reward flash only | `--lp-gold` | `#d4a017` |
 
-## Colour — Life Green (app-wide)
+**CTA note:** `.lp-cta` still backgrounds with `--lp-teal` (`#3ec9c0`). New work should use `--lp-green` / `--lp-green-deep`; aligning `.lp-cta` is a follow-up PR.
 
-| Role | Token / hex | Use |
-|------|-------------|-----|
-| Page / app bg | `--lp-paper` `#FFFFFF` | Landing, Home, Journey, auth |
-| Soft band / mist | `--lp-mist` `#F1F5F9` | Alternating sections, tracks, soft chips |
-| Ink | `--lp-ink` `#0F172A` | Body, titles, **Action Points numbers**, mountain % |
-| Charcoal | `--lp-charcoal` `#334155` | Secondary headings |
-| Muted / slate | `--lp-muted` `#64748B` | Supporting lines |
-| Primary / CTA | `--lp-green` `#22C55E` | Buttons, links, progress fills |
-| Primary deep | `--lp-green-deep` `#16A34A` | Hover / Emerald |
-| Soft green | `--lp-green-soft` `#86EFAC` | Light washes, soft fills |
-| Dawn wash | `#ECFDF5 → #FFFFFF` | Landing hero veil / closing atmosphere |
-| Reward flash only | `--lp-gold` `#F59E0B` | `+AP` toast / confetti only |
+**Mountain overlay:** HUD chips and labels on trail art may use `--lp-rpg-*` frosted glass (light tints in `:root`) for contrast on scenery — not dark modals.
 
-**Hard readability rule:** Action Points chips and standing totals use deep ink on white/mist chips. Amber/gold is never the digit color.
-
-Legacy aliases (`--lp-teal`, `--lp-forest`, `--lp-neon`, `--lp-emerald`) resolve to Life Green so older class names stay on-brand.
-
-Life-area accents (Love, Growth, Mind, Health, Wealth, Home) are for category marks only — not page chrome.
+Life-area accent colours are for category marks only, not page chrome.
 
 ## Typography
 
-- **Font:** Nunito — single family across landing and app.
-- **Display:** weight 800–900 + `--lp-type-display-*` tokens — headlines, mountain / journey names.
-- **UI / body:** weight 400–700 + `--lp-type-ui-*` tokens — body copy, labels, buttons.
-- Load upright (400–900) and italic (400, 500, 700) via Google Fonts `ital,wght` axis.
+- **Family:** `--lp-font-ui` / `--lp-font-display` — Nunito, system-ui fallback.
+- **Display headlines:** `--lp-type-display-lg` / `-md` / `-sm` (fluid clamp) — weight **700–900**, tight letter-spacing on large titles.
+- **Body & UI:** `--lp-type-ui-lg` / `-md` / `-sm` — weight **400–700** for copy and labels.
+- **Buttons:** weight **800**, pill shape (`--lp-radius-pill`).
+- **Small labels / kickers:** ~`0.68rem`, weight **800**, uppercase, wide letter-spacing.
 
-## Icons & imagery
+## Layout, radius, shadow
 
-- Canonical logo (lockup): `public/branding/lifepoints-logo.png` — mountain circle + LifePoints wordmark + “SMALL STEPS. BIG LIFE.”
-- Canonical mark (icon crop): `public/branding/lifepoints-mark.png` — circular mountain mark for favicon, app icon, BMC avatar, nav (soft expedition badge; keep — do not swap for battle iconography in this era)
-- App icon / favicon: `public/icon.png`, `public/favicon.ico`, `public/icon.svg` — all derived from the same mark crop (`?v=7` cache bump)
-- **Canonical share / OG only:** `public/og-lifepoints-brand.png` (1200×630). Legacy: `og-lifepoints-logo.png`, `og-lifepoints.png`, `og-lifepoints-neon.png`, `og-share.png` — do not wire into meta tags
-- Landing hero: mountain path + summit flag (`public/branding/landing-hero-mountain.webp`)
-- Thin, single-line icons for steps and UI.
-- Emoji allowed **only** for Life Areas (and Home hero area mark).
-- No stock photos of people.
-- Full-bleed mountain path art on light paper heroes — never a navy void marketing shell.
-- Retired: leaf sprout mark (`lifepoints-leaf-mark.png`) — do not use for new UI.
+- **Spacing:** `--lp-space-1` … `--lp-space-4`; card padding `--lp-pad-card`.
+- **Tap targets:** min `--lp-tap` (2.75rem).
+- **Cards:** `--lp-radius-card` (1.25rem), `--lp-shadow-card`.
+- **Fields:** `--lp-radius-field` (0.85rem).
+- **Primary buttons:** `--lp-radius-pill`, `--lp-shadow-cta` on green CTAs (onboarding uses `--lp-green`).
 
-## Surface map
+Prefer whitespace over dense stacks. Long labels wrap; design for **360px** width first.
+
+## Surfaces
 
 | Surface | Shell |
 |---------|--------|
-| Landing | Soft green dawn hero/closing + white/mist mid sections |
-| Auth | Light dawn paper + Life Green CTAs |
-| Onboarding | `.lp-game` paper (same as Home) |
-| Today / Strategy / Journey / You | `.lp-game` paper + white cards |
+| App (`.lp-game`) | `--lp-paper` + white `--lp-surface` cards |
+| Onboarding | Same light shell as app |
+| Auth | Light paper + green CTAs |
+| Landing | Dark exception (scoped tokens on `.lp-landing-body`) |
 
-## Hard product rules (UI)
+No dark mode in product settings. Do not add dark sheets, dark settings panels, or `prefers-color-scheme` chrome.
 
-- **No streaks.** Mountain % and next step drive emotion.
-- **One mountain %** everywhere (Today = Strategy = Journey) — project-gated; battles do not move year %.
-- **Copy tone:** warm, meaning-first; gap = distance to the mountain, not guilt.
-- **Motion:** brand fade, mountain drift, CTA pulse, amber only on `+AP` flash; respect `prefers-reduced-motion`.
+## Product rules (UI)
+
+- No streak UI; mountain % and next step carry progress emotion.
+- One mountain % across Today / Strategy / Journey (project-gated).
+- AP totals: ink on white/mist chips; gold only for `+AP` celebration, not standing digits.
+- Respect `prefers-reduced-motion` for motion.
+
+## Related docs
+
+- Engineering map: [`RAILS_IMPLEMENTATION.md`](RAILS_IMPLEMENTATION.md)
+- HTML mockups: [`mockups/README.md`](mockups/README.md)
