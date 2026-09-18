@@ -1777,7 +1777,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
-  --lp-frost: var(--lp-surface);
+  --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
   --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
   position: relative;
   background: var(--lp-paper-soft);
@@ -1805,20 +1805,16 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   box-shadow: none;
 }
 
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+@supports not (backdrop-filter: blur(1px)) {
   .lp-trail.is-v4 .lp-trail-sheet__panel {
-    --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
+    --lp-frost: color-mix(in srgb, #ffffff 92%, transparent);
   }
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__camp-bg {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: auto;
-  height: min(34dvh, 12.5rem);
-  opacity: 0.28;
+  inset: 0;
+  opacity: 0.34;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
@@ -1904,20 +1900,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding-top: calc(0.55rem + env(safe-area-inset-top, 0px));
   background: var(--lp-paper-soft);
   border-bottom: 1px solid var(--lp-border);
-}
-
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lp-trail.is-v4 .lp-trail-sheet__header {
-    background: linear-gradient(
-      180deg,
-      var(--lp-frost) 0%,
-      color-mix(in srgb, var(--lp-frost) 72%, transparent) 58%,
-      transparent 100%
-    );
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 0;
-  }
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__back {
@@ -2091,7 +2073,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-sheet__body {
   position: relative;
   z-index: 1;
-  background: var(--lp-paper-soft);
+  background: transparent;
   color: var(--lp-ink);
   max-width: 100%;
   min-width: 0;
@@ -2206,6 +2188,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   border-radius: var(--lp-radius-card);
   border: 1px solid var(--lp-border);
   box-shadow: var(--lp-shadow-card);
+  background: var(--lp-paper-soft);
 }
 
 .lp-trail.is-v4 .lp-trail-camp-idle__title {
@@ -2304,7 +2287,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
     border-width 0.28s ease;
   max-height: 11rem;
   overflow: hidden;
-  background: var(--lp-frost);
+  background: var(--lp-paper-soft);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open.is-exiting {
@@ -2591,6 +2574,16 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.4rem;
+}
+
+.lp-trail.is-v4 .lp-trail-base-sheet .lp-trail-battles__row.is-check {
+  gap: 0.5rem;
+  min-height: var(--lp-tap);
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  background: var(--lp-paper-soft);
 }
 
 .lp-trail-battles__row.is-ticking {
@@ -5164,6 +5157,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   border-radius: var(--lp-radius-card);
   border: 1px solid var(--lp-border);
   box-shadow: var(--lp-shadow-card);
+  background: var(--lp-paper-soft);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__composer-row {
@@ -5224,6 +5218,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   gap: 0.35rem;
   min-height: var(--lp-tap);
   padding: 0 1.2rem env(safe-area-inset-bottom, 0px);
+  background: var(--lp-paper-soft);
   border: 0;
   border-top: 1px solid var(--lp-border);
   font: inherit;
