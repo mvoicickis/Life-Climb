@@ -35,15 +35,17 @@ export default class extends Controller {
 
     const trail = document.getElementById("mountain-trail")
     const shouldBeOpen =
-      this.hasOpenOverlayValue && this.openOverlayValue ||
-      trail?.classList.contains("is-arrange-open") ||
-      (!this.element.hidden && this.element.getAttribute("aria-hidden") === "false")
+      (this.hasOpenOverlayValue && this.openOverlayValue) ||
+      trail?.classList.contains("is-arrange-open")
 
     if (shouldBeOpen) {
       this.element.hidden = false
       this.element.setAttribute("aria-hidden", "false")
       this.setArrangeOpen(true)
     }
+    // #region agent log
+    fetch("http://127.0.0.1:7492/ingest/974e48fd-716c-47fa-a3fb-3664893cfcb4",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"90b2a0"},body:JSON.stringify({sessionId:"90b2a0",location:"arrange_camps_controller.js:connect",message:"arrange overlay connect",data:{shouldBeOpen,openOverlayValue:this.hasOpenOverlayValue?this.openOverlayValue:null,trailArrangeOpen:trail?.classList.contains("is-arrange-open"),hidden:this.element.hidden,ariaHidden:this.element.getAttribute("aria-hidden")},timestamp:Date.now(),hypothesisId:"H1"})}).catch(()=>{});
+    // #endregion
     this.bindDrag()
     this.focusAddInput()
   }

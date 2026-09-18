@@ -126,6 +126,7 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
     camp.strategy_quantity_logs.create!(
       user: user,
       amount: 5,
+      unit: "pages",
       logged_on: Date.current
     )
 

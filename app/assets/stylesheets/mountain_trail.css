@@ -5726,6 +5726,11 @@ body.is-arrange-open .lp-dash-nav__fab {
   font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
 }
 
+.lp-trail-arrange[hidden] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 .lp-trail-arrange.is-delete-sheet-open::before {
   content: "";
   position: absolute;
