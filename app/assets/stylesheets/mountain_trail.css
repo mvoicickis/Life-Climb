@@ -1262,6 +1262,7 @@
   inset: 0;
   overflow: hidden;
   height: 100%;
+  pointer-events: auto;
 }
 
 .lp-trail.is-v4 .lp-trail__mountain-foot {
