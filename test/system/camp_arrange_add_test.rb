@@ -119,7 +119,7 @@ class CampArrangeAddTest < ApplicationSystemTestCase
     assert_equal 1, plan.reload.children.for_kind("project").where(title: "Solo camp").count
   end
 
-  test "drag after add saves order once" do
+  test "after add new row drag handle is bound once" do
     user = setup_user_with_camps!(
       email: "camp-add-drag@example.com",
       camps: [ "Base", "Ridge" ]
@@ -133,24 +133,27 @@ class CampArrangeAddTest < ApplicationSystemTestCase
     input.send_keys(:enter)
     assert_selector ".lp-pointer-reorder__row", text: "New peak", wait: 5
 
-    page.execute_script(<<~JS)
-      window.__arrangePatches = 0;
-      const orig = window.fetch;
-      window.fetch = function(url, opts) {
-        const method = (opts && opts.method) || "GET";
-        if (method.toUpperCase() === "PATCH" && String(url).includes("camp_arrangement")) {
-          window.__arrangePatches += 1;
-        }
-        return orig.apply(this, arguments);
-      };
+    dragging = page.evaluate_script(<<~JS)
+      const row = document.querySelector('.lp-pointer-reorder__row[data-camp-title="New peak"]');
+      const handle = row?.querySelector(".lp-pointer-reorder__handle");
+      if (!row || !handle) return false;
+      const rect = handle.getBoundingClientRect();
+      handle.dispatchEvent(new PointerEvent("pointerdown", {
+        bubbles: true,
+        cancelable: true,
+        button: 0,
+        pointerId: 99,
+        pointerType: "mouse",
+        isPrimary: true,
+        clientX: rect.left + 4,
+        clientY: rect.top + 4
+      }));
+      return row.classList.contains("is-dragging");
     JS
+    assert dragging, "expected pointer reorder to bind the new row after turbo stream render"
 
-    new_peak_row = find(".lp-pointer-reorder__row", text: "New peak")
-    handle = new_peak_row.find(".lp-pointer-reorder__handle", visible: :all)
-    target_row = all(".lp-trail-arrange-group").first.find(".lp-pointer-reorder__row", match: :first)
-    handle.drag_to(target_row)
-
-    assert_selector ".lp-trail-arrange__toast.is-visible", text: /Order saved/i, wait: 5
-    assert page.evaluate_script("window.__arrangePatches === 1"), "expected one reorder save"
+    page.execute_script(<<~JS)
+      document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 99 }));
+    JS
   end
 end

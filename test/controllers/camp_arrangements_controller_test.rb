@@ -191,6 +191,7 @@ class CampArrangementsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/action="before"[^>]*target="trail-arrange-add-camp"/, response.body)
     assert_match("Summit camp", response.body)
     assert_match(/Step 4/, response.body)
+    assert_match(/lp-pointer-reorder__handle/, response.body)
     refute_match(/action="replace"[^>]*target="trail-arrange-camps"/, response.body)
   end
 
