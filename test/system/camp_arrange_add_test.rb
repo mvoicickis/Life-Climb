@@ -13,6 +13,11 @@ class CampArrangeAddTest < ApplicationSystemTestCase
     allow_extra_climbs!(user)
     Onboarding::Bootstrap.call(user: user, goal_title: "Climb goal", camp_titles: camps)
     user.primary_focused_journey.clear_first_camp_reveal!
+    user.update!(
+      support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ],
+      character: "fox",
+      mountain_trail_tour_ack: 7
+    )
     user
   end
 
@@ -31,7 +36,8 @@ class CampArrangeAddTest < ApplicationSystemTestCase
   end
 
   def open_arrange_overlay!
-    find(".lp-trail__goal-plaque").click
+    plaque = find(".lp-trail__goal-plaque", visible: :all)
+    page.execute_script("arguments[0].click()", plaque.native)
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     click_button "Change camp order"
     assert_selector "#trail-arrange-camps:not([hidden])", wait: 5
