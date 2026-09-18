@@ -133,25 +133,32 @@ class CampArrangeAddTest < ApplicationSystemTestCase
     input.send_keys(:enter)
     assert_selector ".lp-pointer-reorder__row", text: "New peak", wait: 5
 
-    dragging = page.evaluate_script(<<~'JS')
-      (() => {
-        const row = document.querySelector(".lp-pointer-reorder__row[data-camp-title='New peak']");
-        const handle = row?.querySelector(".lp-pointer-reorder__handle");
-        if (!row || !handle) return false;
-        const rect = handle.getBoundingClientRect();
-        handle.dispatchEvent(new PointerEvent("pointerdown", {
-          bubbles: true,
-          cancelable: true,
-          button: 0,
-          pointerId: 99,
-          pointerType: "mouse",
-          isPrimary: true,
-          clientX: rect.left + 4,
-          clientY: rect.top + 4
-        }));
-        return row.classList.contains("is-dragging");
-      })()
-    JS
+    dragging = false
+    using_wait_time(5) do
+      50.times do
+        dragging = page.evaluate_script(<<~'JS')
+          (() => {
+            const row = document.querySelector(".lp-pointer-reorder__row[data-camp-title='New peak']");
+            const handle = row?.querySelector(".lp-pointer-reorder__handle");
+            if (!row || !handle) return false;
+            const rect = handle.getBoundingClientRect();
+            handle.dispatchEvent(new PointerEvent("pointerdown", {
+              bubbles: true,
+              cancelable: true,
+              button: 0,
+              pointerId: 99,
+              pointerType: "mouse",
+              isPrimary: true,
+              clientX: rect.left + 4,
+              clientY: rect.top + 4
+            }));
+            return row.classList.contains("is-dragging");
+          })()
+        JS
+        break if dragging
+        sleep 0.1
+      end
+    end
     assert dragging, "expected pointer reorder to bind the new row after turbo stream render"
 
     page.execute_script(<<~JS)

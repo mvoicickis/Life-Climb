@@ -439,6 +439,13 @@ export default class extends Controller {
         if (html.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
           this._pendingBindDrag = true
           window.Turbo.renderStreamMessage(html)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (!this._pendingBindDrag) return
+              this._pendingBindDrag = false
+              this.bindDrag()
+            })
+          })
         }
         input.value = ""
         input.focus()
