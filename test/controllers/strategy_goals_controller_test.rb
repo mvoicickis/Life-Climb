@@ -1140,4 +1140,70 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     patch strategy_goal_path(battle), params: { track_quantity: "0" }
     assert_not battle.reload.quantified?
   end
+
+  test "new_terrace_stage places camp on next terrace after existing stages" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    4.times do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
+        title: "Camp #{i}", position: i, stage: i
+      )
+    end
+
+    assert_difference -> { plan.children.for_kind("project").count }, 1 do
+      post strategy_goals_path, params: {
+        life_area_id: @area.id,
+        life_journey_id: @journey.id,
+        parent_id: plan.id,
+        horizon: "project",
+        title: "Terrace top",
+        new_terrace_stage: "1",
+        color_key: "teal"
+      }, as: :turbo_stream
+    end
+
+    camp = plan.children.for_kind("project").find_by!(title: "Terrace top")
+    assert_equal 4, camp.stage
+    assert_response :success
+  end
+
+  test "project create without new_terrace_stage lands on min incomplete stage" do
+    goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Plan", position: 0
+    )
+    done = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
+      title: "Done", position: 0, stage: 0
+    )
+    open_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
+      title: "Open A", position: 1, stage: 1
+    )
+    @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
+      title: "Open B", position: 2, stage: 2
+    )
+    done.complete!
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: plan.id,
+      horizon: "project",
+      title: "Join open A",
+      color_key: "teal"
+    }, as: :turbo_stream
+
+    camp = plan.children.for_kind("project").find_by!(title: "Join open A")
+    assert_equal open_a.stage, camp.stage
+    assert_response :success
+  end
 end

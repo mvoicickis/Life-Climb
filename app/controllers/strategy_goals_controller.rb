@@ -44,13 +44,17 @@ class StrategyGoalsController < ApplicationController
     apply_color_key_params!(goal) if kind == "project"
     apply_camp_mode_params!(goal) if kind == "project"
     apply_trail_params!(goal) if kind == "project"
-    assign_open_stage!(goal) if kind == "project"
+    new_terrace_stage = new_terrace_stage_requested? && kind == "project" && parent&.plan?
+    assign_open_stage!(goal) if kind == "project" && !new_terrace_stage
 
     if seed_win_requested? && !seed_win_allowed?(parent)
       return fail_redirect(t("strategy.bad_parent"), focus_id: parent&.id)
     end
 
     if goal.save
+      if new_terrace_stage
+        Strategy::PlaceCampOnNewTerrace.call(plan: parent, camp: goal)
+      end
       celebration = Strategy::Celebrate.call(user: current_user, goal: goal)
       Strategy::CascadeToDaily.sync_goal!(user: current_user, goal: goal) if goal.day?
       apply_cascaded_todo_times!(goal) if goal.day?
@@ -515,6 +519,10 @@ class StrategyGoalsController < ApplicationController
     slot = MountainTrailHelper::AutoSlot.snap(goal.trail_x, goal.trail_y)
     goal.trail_x = slot[:trail_x]
     goal.trail_y = slot[:trail_y]
+  end
+
+  def new_terrace_stage_requested?
+    params[:new_terrace_stage].present?
   end
 
   # Terraced map: new camps land on the open stage ledge.

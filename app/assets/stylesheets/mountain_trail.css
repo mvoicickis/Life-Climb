@@ -3828,6 +3828,14 @@ body:has(.lp-trail.is-v4 .lp-trail-plant:not([hidden]):not([aria-hidden="true"])
   font-weight: 500;
 }
 
+.lp-trail-plant__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-ink, #0f172a);
+}
+
 .lp-trail-plant__field {
   width: 100%;
   box-sizing: border-box;
@@ -5713,6 +5721,12 @@ body.is-arrange-open .lp-dash-nav__fab {
   display: none !important;
 }
 
+body.is-arrange-open .lp-trail-plant.is-open {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+}
+
 .lp-trail-arrange {
   position: fixed;
   inset: 0;
@@ -6034,32 +6048,6 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   cursor: pointer;
 }
 
-.lp-trail-arrange-add__input {
-  display: none;
-  width: 100%;
-  margin: 0;
-  padding: 0.55rem 0.65rem;
-  border: 2px solid color-mix(in srgb, var(--lp-green-deep, #3dbd48) 35%, var(--lp-ink, #0f172a) 8%);
-  border-radius: var(--lp-radius-field, 12px);
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--lp-ink, #0f172a);
-  background: var(--lp-surface, #fff);
-}
-
-.lp-trail-arrange-add__input:focus {
-  outline: none;
-}
-
-.lp-trail-arrange-add.is-editing .lp-trail-arrange-add__btn {
-  display: none;
-}
-
-.lp-trail-arrange-add.is-editing .lp-trail-arrange-add__input {
-  display: block;
-}
-
 .lp-trail-arrange-row__actions {
   flex-shrink: 0;
   display: flex;
@@ -6079,7 +6067,7 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   border: 0;
   border-radius: var(--lp-radius-field, 12px);
   background: transparent;
-  color: var(--lp-muted, #475569);
+  color: var(--lp-muted-dark);
   cursor: pointer;
 }
 
@@ -6099,7 +6087,7 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--lp-muted, #475569);
+  color: var(--lp-muted-dark);
   cursor: grab;
   touch-action: none;
   user-select: none;

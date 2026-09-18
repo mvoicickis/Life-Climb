@@ -6,7 +6,7 @@ class CampArrangementsController < ApplicationController
 
   before_action :require_planning_v2
   before_action :set_journey
-  before_action :set_plan, only: %i[update stage_camp]
+  before_action :set_plan, only: :update
 
   def update
     groups = parse_groups(params[:groups])
@@ -44,30 +44,6 @@ class CampArrangementsController < ApplicationController
     head :unprocessable_entity
   end
 
-  def stage_camp
-    title = params[:title].to_s.strip
-    return head :unprocessable_entity if title.blank?
-
-    stage = stage_camp_param_stage
-    camp = Strategy::CreatePlanStageCamp.call(
-      user: current_user,
-      plan: @plan,
-      stage: stage,
-      title: title
-    )
-    @created_camp = camp
-    load_trail_context
-    active_groups = mountain_trail_arrange_active_groups(@arrange_projects)
-    @insert_step_number = active_groups.index { |group| group[:stage] == camp.stage.to_i } + 1
-
-    respond_to do |format|
-      format.turbo_stream { render :stage_camp }
-      format.html { redirect_to life_journey_path(@journey, goal_id: @goal&.id, plan_id: @plan.id), status: :see_other }
-    end
-  rescue Strategy::CreatePlanStageCamp::Invalid, Strategy::PlaceCampOnStage::Invalid
-    head :unprocessable_entity
-  end
-
   private
 
   def require_planning_v2
@@ -100,17 +76,6 @@ class CampArrangementsController < ApplicationController
       camp.life_journey_id == @journey.id ||
       (camp.life_journey_id.blank? && camp.life_area_id == @journey.life_area_id)
     owned ? camp : nil
-  end
-
-  def stage_camp_param_stage
-    raw = params[:stage]
-    if raw.blank? || raw.to_s == "last"
-      mountain_trail_next_arrange_stage(
-        mountain_trail_all_projects(Strategy::Trail.for(plan: @plan.reload))
-      )
-    else
-      raw.to_i
-    end
   end
 
   def parse_groups(raw)
