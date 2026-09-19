@@ -62,6 +62,17 @@
       --slot-x-3: 0.5462;
       --slot-x-2: 0.5508;
       --slot-x-1: 0.5173;
+      /* Trail curve samples above slot 3 (path toward ridge) */
+      --ridge-x: 0.546;
+      --ridge-y: 0.392;
+      --trail-dot-1-x: 0.544;
+      --trail-dot-1-y: 0.465;
+      --trail-dot-2-x: 0.541;
+      --trail-dot-2-y: 0.428;
+      --trail-dot-3-x: 0.547;
+      --trail-dot-3-y: 0.382;
+      --lp-trail-idle: color-mix(in srgb, var(--lp-muted) 48%, var(--lp-paper));
+      --lp-trail-idle-deep: color-mix(in srgb, var(--lp-muted) 62%, var(--lp-ink));
     }
 
     * { box-sizing: border-box; }
@@ -349,70 +360,94 @@
       place-items: center;
     }
 
-    /* “More camps” hint — slot 4, quieter than camp names (0.62rem / 700) */
-    .lp-trail-more-hint {
-      position: absolute;
-      left: calc(var(--lp-trail-x) * 100%);
-      top: calc(var(--lp-trail-y) * 100%);
-      transform: translate(-50%, -50%);
-      z-index: 3;
-      max-width: 50%;
-      margin: 0;
+    /* “6 more camps” — quieter than camp names (0.62rem / 700) */
+    .lp-trail-more-copy {
       font-family: var(--lp-trail-display);
       font-size: 0.52rem;
       font-weight: 500;
       color: var(--lp-muted);
       line-height: 1.2;
-      text-align: center;
       white-space: nowrap;
     }
 
-    .lp-trail-more-hint--soft-pill {
+    .lp-trail-on-path {
+      position: absolute;
+      left: calc(var(--lp-trail-x) * 100%);
+      top: calc(var(--lp-trail-y) * 100%);
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* 1 · Pill on the dirt path at the ridge */
+    .lp-trail-ridge-pill {
+      max-width: 50%;
+      margin: 0;
       padding: 0.14rem 0.44rem;
       border-radius: var(--lp-radius-pill);
       background: color-mix(in srgb, var(--lp-surface) 68%, transparent);
       border: 1px solid color-mix(in srgb, var(--lp-muted) 22%, var(--lp-border));
-      box-shadow: none;
+      text-align: center;
       text-shadow: none;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-paper) 40%, transparent);
     }
 
-    .lp-trail-more-hint--text {
-      padding: 0;
-      background: transparent;
-      border: 0;
+    /* 2 · Fading dots along the trail */
+    .lp-trail-path-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: var(--lp-radius-pill);
+      background: color-mix(in srgb, var(--lp-muted) 80%, var(--lp-trail-muted));
+      opacity: var(--trail-fade, 0.45);
+      box-shadow:
+        0 0 3px var(--lp-trail-caption-paper),
+        0 0 1px color-mix(in srgb, var(--lp-surface) 75%, transparent);
+    }
+
+    .lp-trail-more-label--beside {
+      transform: translate(0.42rem, -50%);
+      text-align: left;
       text-shadow:
         0 0 4px var(--lp-trail-caption-paper),
-        0 1px 3px color-mix(in srgb, var(--lp-trail-cream) 88%, transparent),
-        0 0 1px color-mix(in srgb, var(--lp-surface) 80%, transparent);
+        0 1px 3px color-mix(in srgb, var(--lp-trail-cream) 88%, transparent);
     }
 
-    .lp-trail-more-hint--dots {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.28rem;
-      padding: 0.14rem 0.44rem 0.14rem 0.38rem;
+    /* 3 · Ghost tent in slot 4 */
+    .lp-trail-camp--ghost {
+      z-index: 3;
+      pointer-events: none;
+      cursor: default;
+      opacity: 1;
+    }
+
+    .lp-trail-camp--ghost .lp-trail-camp__peg-visual {
+      opacity: 0.5;
+    }
+
+    .lp-trail-camp--ghost .lp-trail-camp__tent {
+      --lp-trail-accent: var(--lp-trail-idle);
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-trail-idle) 80%, var(--lp-surface)) 0%,
+        var(--lp-trail-idle) 55%,
+        var(--lp-trail-idle-deep) 100%
+      );
+      filter: drop-shadow(1px 2px 2px color-mix(in srgb, var(--lp-ink) 15%, transparent));
+    }
+
+    .lp-trail-camp--ghost .lp-trail-camp__caption {
+      padding: 0.1rem 0.38rem 0.12rem;
       border-radius: var(--lp-radius-pill);
-      background: color-mix(in srgb, var(--lp-surface) 68%, transparent);
-      border: 1px solid color-mix(in srgb, var(--lp-muted) 22%, var(--lp-border));
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: color-mix(in srgb, var(--lp-surface) 72%, transparent);
+      border: 1px solid color-mix(in srgb, var(--lp-muted) 18%, var(--lp-border));
     }
 
-    .lp-trail-more-hint__dots {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.14rem;
-      flex-shrink: 0;
-    }
-
-    .lp-trail-more-hint__dots span {
-      width: 3px;
-      height: 3px;
-      border-radius: var(--lp-radius-pill);
-      background: color-mix(in srgb, var(--lp-muted) 75%, var(--lp-trail-muted));
-      box-shadow: 0 0 2px color-mix(in srgb, var(--lp-paper) 70%, transparent);
+    .lp-trail-camp--ghost .lp-trail-camp__title {
+      font-weight: 500;
+      color: var(--lp-muted);
+      text-shadow: none;
     }
 
     .lp-trail__dock {
@@ -570,13 +605,13 @@
 <body>
   <h1>Mountain — three visible camps</h1>
   <p class="lede">
-    Production-style map at 360px. Frames <strong>1–3</strong> compare “6 more camps” treatments in slot 4 (same text/size);
-    lower three camp slots match today’s four-camp band. <strong>B</strong> and <strong>C</strong> unchanged. Open from repo root for the photo.
+    Frames <strong>1–3</strong> place the “6 more camps” hint <em>on the trail</em> (ridge / dots / ghost tent), not on open sky.
+    Lower three camp slots unchanged. <strong>B</strong> and <strong>C</strong> below. Open from repo root for the photo.
   </p>
 
   <div class="strip">
     <div class="frame-wrap">
-      <p class="frame-label">1 · Soft white pill</p>
+      <p class="frame-label">1 · Pill on ridge</p>
       <div class="phone lp-trail is-v4">
         <div class="phone__map">
           <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" width="1024" height="1536" decoding="async">
@@ -585,7 +620,7 @@
             <div class="lp-trail__goal-plaque"><span class="lp-trail__goal-title">Learn German to B1 level</span></div>
           </div>
           <div class="lp-trail__camps">
-            <p class="lp-trail-more-hint lp-trail-more-hint--soft-pill" style="--lp-trail-x: var(--slot-x-4); --lp-trail-y: var(--slot-y-4);">6 more camps</p>
+            <p class="lp-trail-on-path lp-trail-ridge-pill lp-trail-more-copy" style="--lp-trail-x: var(--ridge-x); --lp-trail-y: var(--ridge-y);">6 more camps</p>
             <button type="button" class="lp-trail-camp is-locked" style="--lp-trail-x: var(--slot-x-3); --lp-trail-y: var(--slot-y-3); --lp-trail-accent: var(--lp-trail-accent-purple);">
               <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent" aria-hidden="true"></span></span>
               <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camp 4</span></span>
@@ -631,7 +666,7 @@
     </div>
 
     <div class="frame-wrap">
-      <p class="frame-label">2 · Text on trail</p>
+      <p class="frame-label">2 · Trail dots</p>
       <div class="phone lp-trail is-v4">
         <div class="phone__map">
           <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" width="1024" height="1536" decoding="async">
@@ -640,7 +675,10 @@
             <div class="lp-trail__goal-plaque"><span class="lp-trail__goal-title">Learn German to B1 level</span></div>
           </div>
           <div class="lp-trail__camps">
-            <p class="lp-trail-more-hint lp-trail-more-hint--text" style="--lp-trail-x: var(--slot-x-4); --lp-trail-y: var(--slot-y-4);">6 more camps</p>
+            <span class="lp-trail-on-path lp-trail-path-dot" style="--lp-trail-x: var(--trail-dot-1-x); --lp-trail-y: var(--trail-dot-1-y); --trail-fade: 0.55;" aria-hidden="true"></span>
+            <span class="lp-trail-on-path lp-trail-path-dot" style="--lp-trail-x: var(--trail-dot-2-x); --lp-trail-y: var(--trail-dot-2-y); --trail-fade: 0.38;" aria-hidden="true"></span>
+            <span class="lp-trail-on-path lp-trail-path-dot" style="--lp-trail-x: var(--trail-dot-3-x); --lp-trail-y: var(--trail-dot-3-y); --trail-fade: 0.22;" aria-hidden="true"></span>
+            <p class="lp-trail-on-path lp-trail-more-copy lp-trail-more-label--beside" style="--lp-trail-x: var(--trail-dot-3-x); --lp-trail-y: var(--trail-dot-3-y);">6 more camps</p>
             <button type="button" class="lp-trail-camp is-locked" style="--lp-trail-x: var(--slot-x-3); --lp-trail-y: var(--slot-y-3); --lp-trail-accent: var(--lp-trail-accent-purple);">
               <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent" aria-hidden="true"></span></span>
               <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camp 4</span></span>
@@ -686,7 +724,7 @@
     </div>
 
     <div class="frame-wrap">
-      <p class="frame-label">3 · Pill + trail dots</p>
+      <p class="frame-label">3 · Ghost tent</p>
       <div class="phone lp-trail is-v4">
         <div class="phone__map">
           <img class="lp-trail__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" width="1024" height="1536" decoding="async">
@@ -695,10 +733,16 @@
             <div class="lp-trail__goal-plaque"><span class="lp-trail__goal-title">Learn German to B1 level</span></div>
           </div>
           <div class="lp-trail__camps">
-            <p class="lp-trail-more-hint lp-trail-more-hint--dots" style="--lp-trail-x: var(--slot-x-4); --lp-trail-y: var(--slot-y-4);">
-              <span class="lp-trail-more-hint__dots" aria-hidden="true"><span></span><span></span><span></span></span>
-              6 more camps
-            </p>
+            <div class="lp-trail-camp lp-trail-camp--ghost" style="--lp-trail-x: var(--slot-x-4); --lp-trail-y: var(--slot-y-4);" aria-hidden="true">
+              <span class="lp-trail-camp__peg">
+                <span class="lp-trail-camp__peg-visual">
+                  <span class="lp-trail-camp__tent" aria-hidden="true"></span>
+                </span>
+              </span>
+              <span class="lp-trail-camp__caption">
+                <span class="lp-trail-camp__title lp-trail-more-copy">6 more camps</span>
+              </span>
+            </div>
             <button type="button" class="lp-trail-camp is-locked" style="--lp-trail-x: var(--slot-x-3); --lp-trail-y: var(--slot-y-3); --lp-trail-accent: var(--lp-trail-accent-purple);">
               <span class="lp-trail-camp__peg"><span class="lp-trail-camp__tent" aria-hidden="true"></span></span>
               <span class="lp-trail-camp__caption"><span class="lp-trail-camp__title">Camp 4</span></span>
