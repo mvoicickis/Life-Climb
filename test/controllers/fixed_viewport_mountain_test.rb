@@ -181,5 +181,17 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     v4_trail = mountain_css[/\.lp-rpg\.is-focus-phase \.lp-rpg__stage-trail\.is-v4\s*\{[^}]+\}/m]
     assert_match(/overflow-y:\s*hidden/, v4_trail)
     assert_match(/overscroll-behavior:\s*none/, v4_trail)
+
+    dock = mountain_css[/\.lp-trail\.is-v4 \.lp-trail__dock\s*\{[^}]+\}/m]
+    assert dock.present?, "expected V4 dock rule in mountain_trail.css"
+    assert_match(/env\(safe-area-inset-bottom/, dock)
+    refute_match(/4\.75rem/, dock)
+    refute_match(/4\.85rem/, dock)
+    refute_match(/5\.5rem/, dock)
+
+    assert_match(
+      /padding-bottom:\s*calc\(4\.85rem \+ env\(safe-area-inset-bottom\)\)/,
+      shell
+    )
   end
 end
