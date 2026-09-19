@@ -50,6 +50,7 @@
       --lp-trail-wood: color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink));
       --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted));
       --summit-pole-h: 1.75rem;
+      --summit-pole-bury: 0.55rem;
       --summit-banner-text: 0.62rem;
     }
 
@@ -203,6 +204,24 @@
 
     .summit-flag.is-sign-center .summit-flag__pole {
       z-index: 0;
+      height: calc(var(--summit-pole-h) + var(--summit-pole-bury));
+      margin-bottom: calc(-1 * var(--summit-pole-bury));
+      border-radius: 1px 1px 0 0;
+    }
+
+    .summit-flag.is-sign-center .summit-flag__socket {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 0.62rem;
+      height: 0.2rem;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 30%, transparent);
+      filter: blur(1.5px);
+      opacity: 0.9;
+      z-index: 3;
+      pointer-events: none;
     }
 
     .summit-flag__banner-wrap {
@@ -856,13 +875,20 @@
         config.goal +
         "</p></div></div>";
 
+      const planted = config.layout === "sign-center";
+      const groundMark = planted
+        ? '<span class="summit-flag__socket" aria-hidden="true"></span>'
+        : '<span class="summit-flag__shadow"></span>';
+      const rock = planted ? "" : '<span class="summit-flag__rock"></span>';
+
       const plant =
         '<div class="summit-flag__plant" aria-hidden="true">' +
-        '<span class="summit-flag__shadow"></span>' +
+        groundMark +
         '<div class="summit-flag__mast">' +
         banner +
         '<span class="summit-flag__pole"></span></div>' +
-        '<span class="summit-flag__rock"></span></div>';
+        rock +
+        "</div>";
 
       wrap.innerHTML = '<div class="summit-flag__row">' + plant + "</div>";
       return wrap;
@@ -981,7 +1007,7 @@
       label: "2",
       layout: "sign-center",
       goal: GOAL_LONG,
-      note: "Banner centred on the pole like a held sign; pole sits behind the cloth."
+      note: "Banner centred on the pole; pole buried into the peak (no dish base)."
     }));
     strip.appendChild(buildFrame({
       label: "3",
