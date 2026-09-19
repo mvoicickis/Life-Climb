@@ -130,29 +130,7 @@ module Strategy
 
       to = pinned_idx
       from = [ to - VISIBLE_MAX + 1, 0 ].max
-      adjusted = nodes[from..to]
-
-      # region agent log
-      File.open(Rails.root.join(".cursor/debug-13d410.log"), "a") do |f|
-        f.puts(
-          {
-            sessionId: "13d410",
-            hypothesisId: "H1",
-            location: "strategy/trail.rb:focused_sequence",
-            message: "ensure_visible_id shifted map window",
-            data: {
-              ensure_visible_id: ensure_visible_id,
-              default_ids: slice.map(&:id),
-              adjusted_ids: adjusted.map(&:id),
-              pinned_idx: pinned_idx
-            },
-            timestamp: (Time.now.to_f * 1000).to_i
-          }.to_json
-        )
-      end
-      # endregion
-
-      adjusted
+      nodes[from..to]
     end
 
     def default_focused_slice(nodes, current)
