@@ -49,7 +49,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-plan-rail"
     assert_no_selector ".lp-rpg-path__menu-btn"
 
-    find(".lp-trail__goal-plaque").click
+    find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     assert_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
     assert_selector ".lp-trail__peak-item--plan", text: /Beta Path/
@@ -58,7 +58,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector "#strategy-world", wait: 5
     assert_current_path life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan_b.id), wait: 5
     assert_includes page.current_url, "plan_id=#{@plan_b.id}"
-    find(".lp-trail__goal-plaque").click
+    find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     assert_selector ".lp-trail__peak-item--plan.is-active", text: /Beta Path/, wait: 5
     assert_no_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/
@@ -70,7 +70,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector ".lp-trail__goal-title", text: /Ship LifePoints/i, wait: 5
     assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all
 
-    find(".lp-trail__goal-plaque").click
+    find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     click_button "Edit name"
 
@@ -86,7 +86,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
   test "goal menu closes on outside tap" do
     sign_in_and_visit_mountain!
 
-    find(".lp-trail__goal-plaque").click
+    find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
 
     page.execute_script(<<~JS)
@@ -105,7 +105,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
 
   test "V4 has no plan card delete menu; HUD plans and delete goal remain" do
     sign_in_and_visit_mountain!
-    find(".lp-trail__goal-plaque").click
+    find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__peak-item--plan.is-active", text: /Alpha Path/, wait: 5
     assert_selector ".lp-trail__peak-item--plan", text: /Beta Path/
     assert_no_selector ".lp-rpg-path__menu"

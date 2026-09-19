@@ -140,6 +140,19 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail__peak-item", text: /Remove my photo/i
+    assert_select ".lp-trail.is-custom-mountain-photo"
+    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail__summit", count: 0
+  end
+
+  test "default mountain photo shows summit banner without top plaque" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail__summit-banner"
+    assert_select ".lp-trail__goal-title", text: /Trail summit/i
+    assert_select ".lp-trail__goal-plaque", count: 0
+    assert_select ".lp-trail-hud", count: 0
   end
 
   test "mountain show renders V4 trail canvas with camps and hides holding" do
@@ -165,14 +178,17 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
     assert_select "#trail-camp-#{holding.id}", count: 0
-    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail-hud", count: 0
     assert_select ".lp-trail-segments", count: 0
     assert_select ".lp-trail__stars"
     assert_select ".lp-trail__footprints", count: 0
     assert_select "#trail-climber", count: 0
     assert_select ".lp-trail-camp__quick", count: 0
     assert_select ".lp-trail-camp__leader", count: 0
-    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail__summit"
+    assert_select ".lp-trail__summit-banner"
+    assert_select ".lp-trail__goal-plaque", count: 0
+    assert_select ".lp-trail__goal-title"
     assert_select ".lp-trail__backlight"
     assert_select ".lp-trail-coach"
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
@@ -201,6 +217,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{camps[5].id}", count: 0
     assert_select "#trail-map-camps .lp-trail-camp", count: 3
     assert_select ".lp-trail-more", text: "3 more camps"
+    assert_select ".lp-trail__summit"
     assert_select ".trail-terrace", count: 0
     assert_select "#trail-camps-fallback", count: 0
   end
@@ -343,7 +360,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-nav.is-v4 a[href='#{life_points_path}']"
     assert_select ".lp-dash-nav.is-v4 a[href='#{dashboard_path}']"
-    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail__summit-banner"
+    assert_select ".lp-trail__goal-plaque", count: 0
     assert_select ".lp-trail__goal-title"
     assert_select ".lp-trail.is-v4"
     assert_select ".lp-trail.is-terraced", count: 0

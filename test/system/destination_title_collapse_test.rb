@@ -57,18 +57,18 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase", wait: 10
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
-    assert_selector ".lp-trail__goal-plaque", visible: :all, wait: 5
+    assert_selector ".lp-trail__summit-banner", visible: :all, wait: 5
     assert_selector ".lp-trail__goal-title", text: /Become a Rails developer/i, visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const title = document.querySelector(".lp-trail__goal-title");
-        const plaque = document.querySelector(".lp-trail__goal-plaque");
-        if (!title || !plaque) return { ok: false, reason: "missing nodes" };
+        const banner = document.querySelector(".lp-trail__summit-banner");
+        if (!title || !banner) return { ok: false, reason: "missing nodes" };
 
         const titleStyle = getComputedStyle(title);
         const titleRect = title.getBoundingClientRect();
-        const plaqueRect = plaque.getBoundingClientRect();
+        const bannerRect = banner.getBoundingClientRect();
         const range = document.createRange();
         range.selectNodeContents(title);
         const lineWidths = Array.from(range.getClientRects()).map((rect) => rect.width);
@@ -79,9 +79,9 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
           text: (title.textContent || "").trim(),
           titleW: titleRect.width,
           titleH: titleRect.height,
-          plaqueW: plaqueRect.width,
-          plaqueH: plaqueRect.height,
-          inView: plaqueRect.bottom > 0 && plaqueRect.top < window.innerHeight,
+          bannerW: bannerRect.width,
+          bannerH: bannerRect.height,
+          inView: bannerRect.bottom > 0 && bannerRect.top < window.innerHeight,
           maxLineWidth,
           clientWidth: title.clientWidth,
           lineClamp: titleStyle.webkitLineClamp,
@@ -90,18 +90,18 @@ class DestinationTitleCollapseTest < ApplicationSystemTestCase
       })()
     JS
 
-    assert metrics["ok"], "Goal plaque metrics missing: #{metrics.inspect}"
+    assert metrics["ok"], "Summit banner metrics missing: #{metrics.inspect}"
     assert_match(/Become a Rails developer/i, metrics["text"].to_s)
-    assert_operator metrics["titleW"], :>=, 200,
-                    "goal title too narrow at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["titleH"], :>=, 12,
+    assert_operator metrics["bannerW"], :>=, 80,
+                    "summit banner too narrow at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["titleH"], :>=, 8,
                     "goal title has no visible height at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["plaqueH"], :>=, 36,
-                    "goal plaque collapsed at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["bannerH"], :>=, 36,
+                    "summit banner collapsed at #{width}x#{height}: #{metrics.inspect}"
     assert metrics["inView"],
-           "goal plaque not in viewport at #{width}x#{height}: #{metrics.inspect}"
+           "summit banner not in viewport at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["maxLineWidth"].to_f, :<=, metrics["clientWidth"].to_f + 1.0,
-                    "goal title overflows plaque at #{width}x#{height}: #{metrics.inspect}"
+                    "goal title overflows banner at #{width}x#{height}: #{metrics.inspect}"
     assert_no_selector ".lp-rpg-destination-carousel__stage"
     assert_no_selector ".lp-rpg-destination-carousel__arrow"
   end

@@ -179,8 +179,51 @@ class MountainTrailHelperTest < ActionView::TestCase
   end
 
   test "peak coordinates sit on default mountain photo summit" do
-    assert_in_delta 0.566, MountainTrailHelper::PEAK_X, 0.001
-    assert_in_delta 0.22, MountainTrailHelper::PEAK_Y, 0.001
+    assert_in_delta 0.532, MountainTrailHelper::PEAK_X, 0.001
+    assert_in_delta 0.218, MountainTrailHelper::PEAK_Y, 0.001
+  end
+
+  test "summit anchor returns peak fractions for default photo" do
+    user = users(:one)
+    area = user.life_areas.first || user.life_areas.create!(key: "career", number: 9)
+    journey = user.life_journeys.create!(
+      life_area: area, title: "Summit", ideal_scene: "Done", current_reality: "Building"
+    )
+    goal = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0
+    )
+    anchor = mountain_trail_summit_anchor(goal: goal, journey: journey)
+
+    assert_in_delta MountainTrailHelper::PEAK_X, anchor[:x], 0.001
+    assert_in_delta MountainTrailHelper::PEAK_Y, anchor[:y], 0.001
+  end
+
+  test "summit anchor is nil for custom mountain photo" do
+    user = users(:one)
+    area = user.life_areas.first || user.life_areas.create!(key: "career", number: 9)
+    journey = user.life_journeys.create!(
+      life_area: area, title: "Summit", ideal_scene: "Done", current_reality: "Building"
+    )
+    goal = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0
+    )
+    journey.mountain_photo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/mountain_trail_default.jpg")),
+      filename: "custom.jpg",
+      content_type: "image/jpeg"
+    )
+
+    assert_nil mountain_trail_summit_anchor(goal: goal, journey: journey)
+  end
+
+  test "summit anchor is nil without a goal" do
+    user = users(:one)
+    area = user.life_areas.first || user.life_areas.create!(key: "career", number: 9)
+    journey = user.life_journeys.create!(
+      life_area: area, title: "Summit", ideal_scene: "Done", current_reality: "Building"
+    )
+
+    assert_nil mountain_trail_summit_anchor(goal: nil, journey: journey)
   end
 
   test "point on curve returns x within trail bounds" do

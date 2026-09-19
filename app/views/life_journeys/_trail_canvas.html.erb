@@ -84,11 +84,11 @@
          data-trail-coach-plant-first-value="<%= t('strategy.rpg.trail.coach.plant_first') %>"
          data-trail-coach-open-camp-value="<%= t('strategy.rpg.trail.coach.open_camp') %>"
          data-trail-coach-win-battle-value="<%= t('strategy.rpg.trail.coach.win_battle') %>"
-         data-trail-coach-rename-flag-value="<%= t('strategy.rpg.trail.coach.rename_flag') %>"
+         data-trail-coach-rename-flag-value="<%= custom_mountain_photo ? t('strategy.rpg.trail.coach.rename_flag') : t('strategy.rpg.trail.coach.rename_flag_summit') %>"
          data-trail-coach-xp-bar-value="<%= t('strategy.rpg.trail.coach.xp_bar') %>"
          data-trail-coach-journey-stats-value="<%= t('strategy.rpg.trail.coach.journey_stats') %>"
          <% end %>
-         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --map-aspect: <%= MountainTrailHelper::MAP_ASPECT_WIDTH %> / <%= MountainTrailHelper::MAP_ASPECT_HEIGHT %>; --lp-goal-x: 52.5%; --lp-goal-y: 11%;">
+         style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --map-aspect: <%= MountainTrailHelper::MAP_ASPECT_WIDTH %> / <%= MountainTrailHelper::MAP_ASPECT_HEIGHT %>;">
 
   <% if destination_overlay && goal %>
     <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
@@ -101,73 +101,73 @@
     <span class="lp-trail__cloud is-4"></span>
   </div>
 
-  <%# Dark glass HUD over photo (mockup) %>
+  <%# Custom photo: keep top plaque until summit placement exists. Default photo: summit ribbon in world. %>
+  <% if goal && !destination_overlay && custom_mountain_photo %>
   <div class="lp-trail-hud" data-trail-ignore>
     <div class="lp-trail-hud__lead">
-      <% if goal && !destination_overlay %>
-        <div class="lp-trail__goal<%= ' is-visible' if first_camp_reveal %>" <% if first_camp_reveal %>data-first-camp-reveal-target="summit"<% end %>>
-          <div class="lp-trail__goal-plaque-wrap">
-            <button type="button"
-                    class="lp-trail__goal-plaque lp-trail__goal-hero"
-                    data-trail-canvas-target="peakPlaque"
-                    data-action="click->trail-canvas#toggleGoalMenu"
-                    aria-haspopup="menu"
-                    aria-expanded="false"
-                    aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
-              <span class="lp-trail__goal-title lp-rpg-destination-carousel__title"
-                    data-trail-canvas-target="peakTitle"><%= peak_title %></span>
-            </button>
-            <input type="text"
-                   class="lp-trail__goal-title-input"
-                   hidden
-                   autocomplete="off"
-                   enterkeyhint="done"
-                   spellcheck="false"
-                   maxlength="<%= StrategyGoal::TITLE_MAX %>"
-                   data-trail-canvas-target="peakTitleInput"
-                   aria-label="<%= t('strategy.rpg.trail.edit_goal_name') %>">
-          </div>
-          <div class="lp-trail__goal-menu" data-trail-canvas-target="peakMenu" role="menu" hidden>
+      <div class="lp-trail__goal<%= ' is-visible' if first_camp_reveal %>" <% if first_camp_reveal %>data-first-camp-reveal-target="summit"<% end %>>
+        <div class="lp-trail__goal-plaque-wrap">
+          <button type="button"
+                  class="lp-trail__goal-plaque lp-trail__goal-hero"
+                  data-trail-canvas-target="peakPlaque"
+                  data-action="click->trail-canvas#toggleGoalMenu"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
+            <span class="lp-trail__goal-title lp-rpg-destination-carousel__title"
+                  data-trail-canvas-target="peakTitle"><%= peak_title %></span>
+          </button>
+          <input type="text"
+                 class="lp-trail__goal-title-input"
+                 hidden
+                 autocomplete="off"
+                 enterkeyhint="done"
+                 spellcheck="false"
+                 maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                 data-trail-canvas-target="peakTitleInput"
+                 aria-label="<%= t('strategy.rpg.trail.edit_goal_name') %>">
+        </div>
+        <div class="lp-trail__goal-menu" data-trail-canvas-target="peakMenu" role="menu" hidden>
+          <button type="button"
+                  class="lp-trail__peak-item"
+                  role="menuitem"
+                  data-action="click->trail-canvas#editGoalNameFromMenu">
+            <%= t("strategy.rpg.trail.edit_goal_name") %>
+          </button>
+          <% if show_arrange_camps %>
             <button type="button"
                     class="lp-trail__peak-item"
                     role="menuitem"
-                    data-action="click->trail-canvas#editGoalNameFromMenu">
-              <%= t("strategy.rpg.trail.edit_goal_name") %>
+                    data-action="click->trail-canvas#openArrangeCamps">
+              <%= t("strategy.rpg.trail.arrange.entry") %>
             </button>
-            <% if show_arrange_camps %>
-              <button type="button"
-                      class="lp-trail__peak-item"
-                      role="menuitem"
-                      data-action="click->trail-canvas#openArrangeCamps">
-                <%= t("strategy.rpg.trail.arrange.entry") %>
-              </button>
+          <% end %>
+          <% if plans.size > 1 %>
+            <% plans.each do |p| %>
+              <%= link_to mountain_trail_hud_plan_title(p.title),
+                    life_journey_path(journey, goal_id: goal.id, plan_id: p.id),
+                    class: "lp-trail__peak-item lp-trail__peak-item--plan #{'is-active' if plan&.id == p.id}",
+                    role: "menuitem" %>
             <% end %>
-            <% if plans.size > 1 %>
-              <% plans.each do |p| %>
-                <%= link_to mountain_trail_hud_plan_title(p.title),
-                      life_journey_path(journey, goal_id: goal.id, plan_id: p.id),
-                      class: "lp-trail__peak-item lp-trail__peak-item--plan #{'is-active' if plan&.id == p.id}",
-                      role: "menuitem" %>
-              <% end %>
-            <% end %>
-            <% if journey.mountain_photo.attached? %>
-              <%= button_to t("strategy.rpg.trail.reset_photo"),
-                    life_journey_path(journey),
-                    method: :patch,
-                    params: { mountain_photo_intent: "reset" },
-                    class: "lp-trail__peak-item is-reset",
-                    form: { class: "lp-trail__photo-form" } %>
-            <% end %>
-            <%= button_to t("strategy.rpg.trail.delete_destination"),
-                  strategy_goal_path(goal),
-                  method: :delete,
-                  class: "lp-trail__peak-item is-danger",
-                  form: { class: "lp-trail__photo-form", data: { turbo_confirm: t("strategy.rpg.trail.delete_destination_confirm") } } %>
-          </div>
+          <% end %>
+          <% if journey.mountain_photo.attached? %>
+            <%= button_to t("strategy.rpg.trail.reset_photo"),
+                  life_journey_path(journey),
+                  method: :patch,
+                  params: { mountain_photo_intent: "reset" },
+                  class: "lp-trail__peak-item is-reset",
+                  form: { class: "lp-trail__photo-form" } %>
+          <% end %>
+          <%= button_to t("strategy.rpg.trail.delete_destination"),
+                strategy_goal_path(goal),
+                method: :delete,
+                class: "lp-trail__peak-item is-danger",
+                form: { class: "lp-trail__photo-form", data: { turbo_confirm: t("strategy.rpg.trail.delete_destination_confirm") } } %>
         </div>
-      <% end %>
+      </div>
     </div>
   </div>
+  <% end %>
 
   <% if show_tour %>
     <aside class="lp-trail-coach"
@@ -228,6 +228,17 @@
             </div>
             <div class="lp-trail__lightning" data-trail-ambient-target="lightning"></div>
           </div>
+
+          <% if goal && !destination_overlay && !custom_mountain_photo %>
+            <%= render "life_journeys/trail_summit_banner",
+                  goal: goal,
+                  journey: journey,
+                  plan: plan,
+                  plans: plans,
+                  peak_title: peak_title,
+                  show_arrange_camps: show_arrange_camps,
+                  first_camp_reveal: first_camp_reveal %>
+          <% end %>
 
           <%= render "life_journeys/trail_map_camps",
                 trail: trail,

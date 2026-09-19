@@ -112,7 +112,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
         const root = document.querySelector('.lp-rpg.is-focus-phase');
         const trail = document.querySelector('.lp-rpg__stage-trail, .lp-rpg__stage-sections');
         const stage = document.querySelector('.lp-rpg__stage.is-planning');
-        const chrome = document.querySelector('.lp-rpg__chrome-top, .lp-trail-hud');
+        const chrome = document.querySelector('.lp-rpg__chrome-top, .lp-trail-hud, .lp-trail__summit');
         const stats = document.querySelector('.lp-rpg__chrome-bottom, .lp-rpg-stats');
         const visible = Array.from(document.querySelectorAll('.lp-trail-camp')).filter((el) => {
           const r = el.getBoundingClientRect();
@@ -140,7 +140,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_includes %w[hidden clip], metrics["htmlOverflow"]
     assert_includes %w[hidden clip], metrics["bodyOverflow"]
     assert_equal false, metrics["statsPresent"], "bottom XP/streak/glow strip should be gone: #{metrics.inspect}"
-    assert metrics["hasChrome"], "expected trail HUD chrome: #{metrics.inspect}"
+    assert metrics["hasChrome"], "expected summit banner or trail HUD chrome: #{metrics.inspect}"
 
     assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-568px.png")
     assert File.exist?("/opt/cursor/artifacts/screenshots/practice-category-focus-cta-568px.png")

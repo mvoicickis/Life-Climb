@@ -36,8 +36,8 @@ class CampArrangeAddTest < ApplicationSystemTestCase
   end
 
   def open_arrange_overlay!
-    plaque = find(".lp-trail__goal-plaque", visible: :all)
-    page.execute_script("arguments[0].click()", plaque.native)
+    banner = find(".lp-trail__summit-banner", visible: :all)
+    page.execute_script("arguments[0].click()", banner.native)
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
     click_button "Change camp order"
     assert_selector "#trail-arrange-camps:not([hidden])", wait: 5

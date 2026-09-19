@@ -57,7 +57,8 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-plan-rail"
     assert_no_selector ".lp-rpg-path"
 
-    assert_selector ".lp-trail__goal-plaque[data-action*='trail-canvas#toggleGoalMenu']"
+    assert_selector ".lp-trail__summit-banner[data-action*='trail-canvas#toggleGoalMenu']"
+    assert_no_selector ".lp-trail__goal-plaque"
     assert_no_selector ".lp-trail__goal-title[contenteditable]"
     assert_selector ".lp-trail__peak-item", text: /Edit name/i, visible: :all
     assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all

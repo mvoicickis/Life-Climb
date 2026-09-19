@@ -96,7 +96,7 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
-    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail__summit"
     assert_select ".lp-trail-segments", count: 0
     assert_equal 0, Strategy::Progress.percent(@plan.reload)
     assert_select ".lp-rpg-path", count: 0
