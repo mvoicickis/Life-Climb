@@ -37,6 +37,7 @@
       --lp-green-deep: #3dbd48;
       --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
       --lp-label-on-photo: color-mix(in srgb, var(--lp-surface) 78%, var(--lp-muted));
+      --lp-basic-count-w: 4.75rem;
     }
 
     * { box-sizing: border-box; }
@@ -203,7 +204,16 @@
       padding: var(--lp-space-3) var(--lp-space-3) var(--lp-space-2);
       display: flex;
       flex-direction: column;
-      gap: var(--lp-space-3);
+    }
+
+    .sheet-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--lp-space-2);
+    }
+
+    .sheet-group + .sheet-group {
+      margin-top: var(--lp-space-4);
     }
 
     .section-label {
@@ -225,52 +235,64 @@
     }
 
     .row-card {
-      display: flex;
-      align-items: center;
-      gap: var(--lp-space-2);
-      min-height: var(--lp-tap);
-      padding: var(--lp-space-2) var(--lp-space-3);
+      min-width: 0;
+      max-width: 100%;
       border-radius: var(--lp-radius-card);
       border: 1px solid var(--lp-border);
       background: var(--lp-surface);
       box-shadow: var(--lp-shadow-card);
     }
 
-    .row-card__main {
-      flex: 1 1 auto;
-      min-width: 0;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: var(--lp-space-3);
+    .row-card--basic {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--lp-space-2);
+      min-height: var(--lp-tap);
+      padding: var(--lp-space-2) var(--lp-space-3);
+    }
+
+    .row-card__trail {
+      display: grid;
+      grid-template-columns: var(--lp-basic-count-w) var(--lp-tap);
+      align-items: center;
+      gap: var(--lp-space-2);
+      flex-shrink: 0;
     }
 
     .row-card__title {
+      min-width: 0;
       font-size: var(--lp-type-ui-md);
       font-weight: 800;
       line-height: 1.25;
       color: var(--lp-ink);
-      overflow-wrap: anywhere;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .row-card__amount {
-      flex: 0 0 auto;
+      justify-self: end;
+      min-width: var(--lp-basic-count-w);
       font-size: var(--lp-type-ui-sm);
       font-weight: 700;
       color: var(--lp-muted);
       white-space: nowrap;
+      text-align: right;
     }
 
-    .row-card__amount:empty {
-      display: none;
+    .row-card__amount:empty::before {
+      content: "\00a0";
+      visibility: hidden;
     }
 
     .row-card__add {
-      flex: 0 0 auto;
+      justify-self: end;
+      box-sizing: border-box;
       margin: 0;
-      min-width: var(--lp-tap);
-      min-height: var(--lp-tap);
-      padding: 0 var(--lp-space-2);
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+      padding: 0;
       border: 0;
       border-radius: var(--lp-radius-pill);
       background: var(--lp-green);
@@ -284,7 +306,11 @@
     }
 
     .row-card--battle {
+      display: flex;
       align-items: flex-start;
+      gap: var(--lp-space-2);
+      min-height: var(--lp-tap);
+      padding: var(--lp-space-2) var(--lp-space-3);
     }
 
     .row-card__tick {
@@ -305,6 +331,12 @@
       display: flex;
       flex-direction: column;
       gap: 0.15rem;
+    }
+
+    .row-card__stack .row-card__title {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
     }
 
     .row-card__camp {
@@ -345,6 +377,13 @@
       font: inherit;
       font-size: var(--lp-type-ui-md);
       font-weight: 700;
+      outline: none;
+    }
+
+    .sheet-add__input:focus {
+      outline: 2px solid color-mix(in srgb, var(--lp-green) 55%, transparent);
+      outline-offset: 2px;
+      border-color: color-mix(in srgb, var(--lp-green) 35%, var(--lp-border));
     }
 
     .sheet-add__input::placeholder {
@@ -419,40 +458,44 @@
           </header>
 
           <div class="sheet-body">
-            <p class="section-label">Basics</p>
-            <ul class="row-list">
-              <li class="row-card">
-                <div class="row-card__main">
-                  <span class="row-card__title">Study PDC</span>
-                  <span class="row-card__amount"></span>
-                </div>
-                <button type="button" class="row-card__add">+1</button>
-              </li>
-              <li class="row-card">
-                <div class="row-card__main">
+            <section class="sheet-group">
+              <p class="section-label">Basics</p>
+              <ul class="row-list">
+                <li class="row-card row-card--basic">
+                  <span class="row-card__title">Read pages from the big blue book</span>
+                  <div class="row-card__trail">
+                    <span class="row-card__amount"></span>
+                    <button type="button" class="row-card__add">+1</button>
+                  </div>
+                </li>
+                <li class="row-card row-card--basic">
                   <span class="row-card__title">German Study</span>
-                  <span class="row-card__amount">2 lessons</span>
-                </div>
-                <button type="button" class="row-card__add">+1</button>
-              </li>
-            </ul>
+                  <div class="row-card__trail">
+                    <span class="row-card__amount">2 lessons</span>
+                    <button type="button" class="row-card__add">+1</button>
+                  </div>
+                </li>
+              </ul>
+            </section>
 
-            <p class="section-label">From your camps</p>
-            <ul class="row-list">
-              <li class="row-card row-card--battle">
-                <span class="row-card__tick" aria-hidden="true"></span>
-                <div class="row-card__stack">
-                  <span class="row-card__title">Check your notes from work</span>
-                  <p class="row-card__camp">None condition Jadghouse</p>
-                </div>
-              </li>
-            </ul>
+            <section class="sheet-group">
+              <p class="section-label">From your camps</p>
+              <ul class="row-list">
+                <li class="row-card row-card--battle">
+                  <span class="row-card__tick" aria-hidden="true"></span>
+                  <div class="row-card__stack">
+                    <span class="row-card__title">Check your notes from work</span>
+                    <p class="row-card__camp">None condition Jadghouse</p>
+                  </div>
+                </li>
+              </ul>
+            </section>
           </div>
 
           <div class="sheet-add">
             <label class="sheet-add__field">
               <span class="visually-hidden">Add a Basic</span>
-              <input class="sheet-add__input" type="text" placeholder="Add a Basic" readonly aria-label="Add a Basic">
+              <input class="sheet-add__input" type="text" placeholder="Add a Basic" aria-label="Add a Basic">
             </label>
             <label class="sheet-add__toggle">
               <span class="sheet-add__switch" aria-hidden="true"></span>
@@ -485,7 +528,7 @@
 
           <div class="sheet-add">
             <label class="sheet-add__field">
-              <input class="sheet-add__input" type="text" placeholder="Add a Basic" readonly aria-label="Add a Basic">
+              <input class="sheet-add__input" type="text" placeholder="Add a Basic" aria-label="Add a Basic">
             </label>
             <label class="sheet-add__toggle">
               <span class="sheet-add__switch" aria-hidden="true"></span>
