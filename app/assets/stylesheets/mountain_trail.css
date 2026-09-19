@@ -4451,14 +4451,6 @@ body.is-trail-plant-open .lp-dash-nav {
   .lp-trail.is-v4 .lp-trail-plant__panel {
     padding: 0.85rem 0.85rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
   }
-
-  .lp-trail.is-v4 .lp-trail-sheet__panel {
-    width: min(100% - 2rem, 28rem);
-    max-width: 28rem;
-    left: 0;
-    right: 0;
-    margin-inline: auto;
-  }
 }
 
 .lp-trail-plant__actions {
@@ -5902,14 +5894,6 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   font-size: 0.82rem;
   font-weight: 700;
   color: #b45309;
-}
-
-@media (max-width: 360px) {
-  .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__panel {
-    width: 100%;
-    max-width: 100%;
-    margin-inline: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

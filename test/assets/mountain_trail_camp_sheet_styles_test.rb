@@ -64,6 +64,21 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     )
   end
 
+  test "no media query narrows camp sheet panel below full width" do
+    refute_match(
+      /@media[^{]*\{[\s\S]*?\.lp-trail-sheet__panel[\s\S]*?max-width:\s*28rem/m,
+      @css
+    )
+    refute_match(
+      /@media[^{]*\{[\s\S]*?\.lp-trail-sheet__panel[\s\S]*?min\(100%\s*-\s*2rem/m,
+      @css
+    )
+
+    panel_blocks = @css.scan(/\.lp-trail\.is-v4 \.lp-trail-sheet__panel\s*\{[^}]+\}/m)
+    assert panel_blocks.any? { |block| block.match?(/width:\s*100%/) && block.match?(/max-width:\s*100%/) },
+           "expected v4 camp sheet panel to use full width"
+  end
+
   test "camp sheet panel uses shared viewport variables and full height" do
     assert_includes @css, "--lp-sheet-vh"
     assert_includes @css, "--lp-keyboard-inset"
