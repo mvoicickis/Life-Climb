@@ -118,8 +118,10 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_operator metrics["bannerHeight"].to_f, :>=, 36.0,
                     "summit banner collapsed at #{width}x#{height}: #{metrics.inspect}"
     px = metrics["fontSize"].to_s.to_f
-    assert_in_delta 9.92, px, 1.5,
-                    "font-size should match camp caption (0.62rem) at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator px, :>=, 9.5,
+                    "summit label should be at least camp caption size at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator px, :<=, 14.0,
+                    "summit label font-size unexpectedly large at #{width}x#{height}: #{metrics.inspect}"
   end
 
   def assert_destination_fluid_title(width, height, expected_text)

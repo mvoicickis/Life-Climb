@@ -1786,6 +1786,7 @@
 .lp-trail.is-v4 .lp-trail__summit {
   --lp-summit-pole-bury: 0.52rem;
   --lp-summit-stack-bottom: 1.24rem;
+  --lp-summit-title-size: clamp(0.62rem, 2.5vw + 0.45rem, 0.82rem);
   --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink, #0f172a) 70%, var(--lp-muted, #475569));
   position: absolute;
   left: calc(var(--lp-summit-x, 0.532) * 100%);
@@ -1896,11 +1897,11 @@
   justify-content: center;
   box-sizing: border-box;
   min-width: 5.5rem;
-  max-width: min(10.5rem, calc(100vw - 2.25rem));
+  max-width: min(11rem, calc(100vw - 2rem));
   width: max-content;
   min-height: var(--lp-tap, 2.75rem);
   margin: 0;
-  padding: 0.4rem 0.65rem;
+  padding: 0.42rem 0.72rem;
   border: 0;
   cursor: pointer;
   clip-path: polygon(
@@ -1942,12 +1943,16 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   margin: 0;
-  padding: 0 0.12rem;
+  padding: 0 0.1rem;
   font-family: var(--lp-font-ui, var(--lp-trail-font));
-  font-size: 0.62rem;
+  font-size: var(--lp-summit-title-size, clamp(0.62rem, 2.5vw + 0.45rem, 0.82rem));
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.18;
   letter-spacing: -0.01em;
   color: var(--lp-surface, #ffffff);
   text-align: center;

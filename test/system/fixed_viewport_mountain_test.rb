@@ -75,13 +75,24 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-map-camps .lp-trail-camp", visible: :all, maximum: 3, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
-        const t = document.querySelector(".lp-trail__goal-title");
-        const r = t.getBoundingClientRect();
-        return { w: r.width, h: r.height, text: (t.textContent || "").trim() };
+        const banner = document.querySelector(".lp-trail__summit-banner");
+        const title = banner?.querySelector(".lp-trail__goal-title");
+        if (!banner || !title) return { ok: false };
+        const br = banner.getBoundingClientRect();
+        return {
+          ok: true,
+          w: br.width,
+          h: br.height,
+          text: (title.textContent || "").trim()
+        };
       })()
     JS
+    assert title_metrics["ok"], "Summit banner missing: #{title_metrics.inspect}"
     assert_match(/Ship the MVP/i, title_metrics["text"])
-    assert_operator title_metrics["w"], :>=, 72, "Destination title too narrow: #{title_metrics.inspect}"
+    assert_operator title_metrics["w"], :>=, 80,
+                    "Summit pennant too narrow at 568px: #{title_metrics.inspect}"
+    assert_operator title_metrics["h"], :>=, 36,
+                    "Summit pennant collapsed at 568px: #{title_metrics.inspect}"
     assert_selector "#trail-camp-#{@daily_battles.id}", visible: :all, wait: 5
     assert_equal "Daily battles", find("#trail-camp-#{@daily_battles.id}", visible: :all)["aria-label"]
     assert_no_selector "#trail-camp-#{@daily_battles.id}.is-fogged", visible: :all
