@@ -10,9 +10,9 @@
   <style>
     /* Tokens mirrored from app/assets/tailwind/application.css (:root, light) */
     :root {
-      /* Nudge summit anchor on mountain_trail_default.webp (fractions of map box). */
-      --summit-x: 0.566;
-      --summit-y: 0.22;
+      /* Summit anchor on mountain_trail_default.webp (fractions of trail stage / photo frame). */
+      --summit-x: 0.532;
+      --summit-y: 0.218;
       --phone-w: 360px;
       --map-aspect: 1024 / 1536;
       --lp-font-ui: "Nunito", system-ui, sans-serif;
@@ -93,6 +93,21 @@
       max-width: var(--phone-w);
     }
 
+    .strip--responsive .frame-wrap {
+      flex: 0 0 auto;
+      width: var(--phone-w);
+      max-width: var(--phone-w);
+    }
+
+    h2.strip-heading {
+      margin: 1.25rem 0 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
     .frame-label {
       margin: 0 0 0.5rem;
       font-size: 0.85rem;
@@ -126,12 +141,28 @@
       flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
       background: color-mix(in srgb, var(--lp-green-deep) 35%, var(--lp-paper));
+    }
+
+    /* Same coordinate space as camps: 1024×1536 photo fractions, not viewport %. */
+    .phone-shell__trail-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: var(--map-aspect);
+      flex-shrink: 0;
+      max-height: 100%;
+      margin-inline: auto;
     }
 
     .phone-shell__photo-wrap {
       position: absolute;
       inset: 0;
+      overflow: hidden;
+      pointer-events: none;
     }
 
     .phone-shell__photo {
@@ -139,9 +170,10 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center top;
       display: block;
+      filter: saturate(1.05) contrast(1.04);
     }
 
     .phone-shell__layer {
@@ -745,10 +777,12 @@
 <body>
   <h1>Summit flag — final round</h1>
   <p class="lede">
-    Wide ribbon banner on a short planted pole at <code>--summit-x</code> / <code>--summit-y</code>.
+    Summit anchor is a fraction of the 1024×1536 trail stage (same box as camps, <code>object-fit: contain</code>).
     Goal text at camp-name size (0.62rem), two lines max. No top plaque.
   </p>
   <div class="strip" id="strip"></div>
+  <h2 class="strip-heading">Frame 2 — peak anchor at width</h2>
+  <div class="strip strip--responsive" id="strip-responsive"></div>
 
   <script>
     const PHOTO = "../../app/assets/images/mountain_trail_default.webp";
@@ -933,20 +967,9 @@
       return nav;
     }
 
-    function buildFrame(config) {
-      const wrap = document.createElement("div");
-      wrap.className = "frame-wrap";
-
-      const label = document.createElement("p");
-      label.className = "frame-label";
-      label.textContent = config.label;
-      wrap.appendChild(label);
-
-      const shell = document.createElement("div");
-      shell.className = "phone-shell";
-
-      const map = document.createElement("div");
-      map.className = "phone-shell__map";
+    function buildTrailStage(flagConfig) {
+      const stage = document.createElement("div");
+      stage.className = "phone-shell__trail-stage";
 
       const photoWrap = document.createElement("div");
       photoWrap.className = "phone-shell__photo-wrap";
@@ -954,13 +977,14 @@
       img.className = "phone-shell__photo";
       img.src = PHOTO;
       img.alt = "";
+      img.decoding = "async";
       photoWrap.appendChild(img);
-      map.appendChild(photoWrap);
+      stage.appendChild(photoWrap);
 
       const layer = document.createElement("div");
       layer.className = "phone-shell__layer";
 
-      layer.appendChild(summitFlag(config));
+      layer.appendChild(summitFlag(flagConfig));
 
       const visibleCount = CAMPS.length;
       const layouts = CAMPS.map((_, i) => mapLayoutSlot(i, visibleCount));
@@ -977,7 +1001,28 @@
       more.style.setProperty("--lp-trail-more-y", chip.y.toFixed(4));
       layer.appendChild(more);
 
-      map.appendChild(layer);
+      stage.appendChild(layer);
+      return stage;
+    }
+
+    function buildFrame(config) {
+      const wrap = document.createElement("div");
+      wrap.className = "frame-wrap";
+      if (config.phoneW) {
+        wrap.style.setProperty("--phone-w", config.phoneW + "px");
+      }
+
+      const label = document.createElement("p");
+      label.className = "frame-label";
+      label.textContent = config.label;
+      wrap.appendChild(label);
+
+      const shell = document.createElement("div");
+      shell.className = "phone-shell";
+
+      const map = document.createElement("div");
+      map.className = "phone-shell__map";
+      map.appendChild(buildTrailStage(config));
       shell.appendChild(map);
 
       const dock = document.createElement("div");
@@ -988,10 +1033,12 @@
 
       wrap.appendChild(shell);
 
-      const note = document.createElement("p");
-      note.className = "frame-note";
-      note.textContent = config.note;
-      wrap.appendChild(note);
+      if (config.note) {
+        const note = document.createElement("p");
+        note.className = "frame-note";
+        note.textContent = config.note;
+        wrap.appendChild(note);
+      }
 
       return wrap;
     }
@@ -1015,6 +1062,19 @@
       goal: GOAL_SHORT,
       note: "Same right-flying ribbon with a short goal on one line."
     }));
+
+    const responsive = document.getElementById("strip-responsive");
+    const frame2 = {
+      layout: "sign-center",
+      goal: GOAL_LONG
+    };
+    [320, 360, 430].forEach((phoneW) => {
+      responsive.appendChild(buildFrame({
+        label: phoneW + "px",
+        phoneW,
+        ...frame2
+      }));
+    });
   </script>
 </body>
 </html>
