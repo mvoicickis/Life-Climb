@@ -100,7 +100,9 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
     section_label = @css[/\.lp-trail-base-sheet__section-label\s*\{[^}]+\}/m]
     assert section_label, "expected base camp section label block"
-    assert_match(/color:\s*var\(--lp-muted\)/, section_label)
+    assert_match(/color:\s*var\(--lp-ink\)/, section_label)
+    assert_match(/text-shadow:[\s\S]*var\(--lp-paper\)/, section_label)
+    refute_match(/text-transform:\s*uppercase/, section_label)
     refute_match(/background:/, section_label)
   end
 end
