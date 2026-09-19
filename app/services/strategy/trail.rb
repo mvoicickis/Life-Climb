@@ -19,12 +19,13 @@ module Strategy
       keyword_init: true
     )
 
-    def self.for(plan:)
-      new(plan:).call
+    def self.for(plan:, ensure_visible_id: nil)
+      new(plan:, ensure_visible_id:).call
     end
 
-    def initialize(plan:)
+    def initialize(plan:, ensure_visible_id: nil)
       @plan = plan
+      @ensure_visible_id = ensure_visible_id
     end
 
     def call
@@ -36,10 +37,12 @@ module Strategy
       nxt = nodes.find { |n| n.state == :locked && current && n.position > current.position } ||
             nodes.find { |n| n.state == :current && n != current }
 
+      visible = focused_sequence(nodes, current, ensure_visible_id: @ensure_visible_id)
+
       Result.new(
         progress: @plan.progress_percent.to_i,
         nodes: nodes,
-        visible_nodes: focused_sequence(nodes, current),
+        visible_nodes: visible,
         current_node: current,
         next_node: nxt,
         plan: @plan,
@@ -117,7 +120,42 @@ module Strategy
       false
     end
 
-    def focused_sequence(nodes, current)
+    def focused_sequence(nodes, current, ensure_visible_id: nil)
+      slice = default_focused_slice(nodes, current)
+      return slice if ensure_visible_id.blank?
+      return slice if slice.any? { |node| node.id == ensure_visible_id }
+
+      pinned_idx = nodes.index { |node| node.id == ensure_visible_id }
+      return slice if pinned_idx.nil?
+
+      to = pinned_idx
+      from = [ to - VISIBLE_MAX + 1, 0 ].max
+      adjusted = nodes[from..to]
+
+      # region agent log
+      File.open(Rails.root.join(".cursor/debug-13d410.log"), "a") do |f|
+        f.puts(
+          {
+            sessionId: "13d410",
+            hypothesisId: "H1",
+            location: "strategy/trail.rb:focused_sequence",
+            message: "ensure_visible_id shifted map window",
+            data: {
+              ensure_visible_id: ensure_visible_id,
+              default_ids: slice.map(&:id),
+              adjusted_ids: adjusted.map(&:id),
+              pinned_idx: pinned_idx
+            },
+            timestamp: (Time.now.to_f * 1000).to_i
+          }.to_json
+        )
+      end
+      # endregion
+
+      adjusted
+    end
+
+    def default_focused_slice(nodes, current)
       return nodes if nodes.size <= VISIBLE_MAX
 
       unless current

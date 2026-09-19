@@ -129,6 +129,25 @@ class StrategyTrailTest < ActiveSupport::TestCase
     assert_equal camps.last(3).map(&:id), trail.visible_nodes.map(&:id)
   end
 
+  test "ensure_visible_id slides window to include newly planted camp" do
+    camps = 3.times.map do |i|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+        title: "Camp #{i}", position: i
+      )
+    end
+    fourth = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Camp 3", position: 3
+    )
+
+    default = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal camps.map(&:id), default.visible_nodes.map(&:id)
+
+    trail = Strategy::Trail.for(plan: @plan.reload, ensure_visible_id: fourth.id)
+    assert_equal [ camps[1].id, camps[2].id, fourth.id ], trail.visible_nodes.map(&:id)
+  end
+
   test "habit-linked improvement project skips sequential lock" do
     habit = habits(:one)
     first = @user.strategy_goals.create!(

@@ -45,7 +45,7 @@
           goal: @goal %>
   <% end %>
   <% if @created.project? && !@created.holding? %>
-    <% trail = Strategy::Trail.for(plan: @plan) %>
+    <% trail = Strategy::Trail.for(plan: @plan, ensure_visible_id: @created.id) %>
     <% trail_projects = mountain_trail_projects(trail) %>
     <% current_project = mountain_trail_current_project(trail_projects) %>
     <%= turbo_stream.replace "trail-map-camps" do %>

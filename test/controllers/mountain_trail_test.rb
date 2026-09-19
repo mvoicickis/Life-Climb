@@ -220,7 +220,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-more", text: "1 more camp"
   end
 
-  test "plant add fourth camp hides new tent outside three-camp window today" do
+  test "plant add fourth camp shifts map window to include new tent" do
     [ "Beta", "Gamma" ].each_with_index do |title, index|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
@@ -238,36 +238,15 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     delta = @plan.reload.children.for_kind("project").find_by!(title: "Delta camp")
-    trail = Strategy::Trail.for(plan: @plan)
-    refute_includes trail.visible_nodes.map(&:id), delta.id
+    beta = @plan.children.for_kind("project").find_by!(title: "Beta")
+    gamma = @plan.children.for_kind("project").find_by!(title: "Gamma")
+    trail = Strategy::Trail.for(plan: @plan, ensure_visible_id: delta.id)
+    assert_equal [ beta.id, gamma.id, delta.id ], trail.visible_nodes.map(&:id)
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_select "#trail-camp-#{delta.id}", count: 0
-    assert_select "#trail-map-camps .lp-trail-camp", count: 3
-    assert_select ".lp-trail-more", text: "1 more camp"
-  end
-
-  test "plant add fourth camp shows new tent on mountain map turbo stream" do
-    [ "Beta", "Gamma" ].each_with_index do |title, index|
-      @plan.children.create!(
-        user: @user, life_area: @area, life_journey: @journey,
-        horizon: "project", title: title, position: index + 1, stage: index + 1
-      )
-    end
-
-    post strategy_goals_path, params: {
-      life_area_id: @area.id,
-      life_journey_id: @journey.id,
-      parent_id: @plan.id,
-      horizon: "project",
-      title: "Delta camp"
-    }, as: :turbo_stream
-
-    assert_response :success
-    delta = @plan.reload.children.for_kind("project").find_by!(title: "Delta camp")
     assert_select "turbo-stream[action='replace'][target='trail-map-camps']" do
       assert_select "#trail-camp-#{delta.id}"
     end
+    assert_select ".lp-trail-more", count: 0
   end
 
   test "weekly battle row shows weekday chip and omits every day from kebab" do
