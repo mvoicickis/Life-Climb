@@ -51,6 +51,9 @@
       --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted));
       --summit-pole-h: 1.75rem;
       --summit-pole-bury: 0.55rem;
+      --summit-pole-h-center: 0.82rem;
+      --summit-pole-bury-center: 0.52rem;
+      --summit-banner-gap-center: 0.42rem;
       --summit-banner-text: 0.62rem;
     }
 
@@ -234,24 +237,38 @@
       box-shadow: 1px 0 0 color-mix(in srgb, var(--lp-surface) 25%, transparent);
     }
 
+    .summit-flag.is-sign-center .summit-flag__plant {
+      transform: translateY(-0.08rem);
+      filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--lp-ink) 20%, transparent));
+    }
+
+    .summit-flag.is-sign-center .summit-flag__mast {
+      transform: rotate(-1.75deg);
+      transform-origin: bottom center;
+    }
+
     .summit-flag.is-sign-center .summit-flag__pole {
       z-index: 0;
-      height: calc(var(--summit-pole-h) + var(--summit-pole-bury));
-      margin-bottom: calc(-1 * var(--summit-pole-bury));
+      width: 3px;
+      height: calc(var(--summit-pole-h-center) + var(--summit-pole-bury-center));
+      margin-bottom: calc(-1 * var(--summit-pole-bury-center));
       border-radius: 1px 1px 0 0;
+      box-shadow:
+        1px 0 0 color-mix(in srgb, var(--lp-surface) 18%, transparent),
+        0 1px 2px color-mix(in srgb, var(--lp-ink) 22%, transparent);
     }
 
     .summit-flag.is-sign-center .summit-flag__socket {
       position: absolute;
       left: 50%;
-      bottom: 0;
-      width: 0.62rem;
-      height: 0.2rem;
-      transform: translateX(-50%);
+      bottom: -0.04rem;
+      width: 0.78rem;
+      height: 0.22rem;
+      transform: translateX(-50%) rotate(-1.75deg);
       border-radius: 50%;
-      background: color-mix(in srgb, var(--lp-ink) 30%, transparent);
-      filter: blur(1.5px);
-      opacity: 0.9;
+      background: color-mix(in srgb, var(--lp-ink) 36%, transparent);
+      filter: blur(2px);
+      opacity: 0.92;
       z-index: 3;
       pointer-events: none;
     }
@@ -271,9 +288,19 @@
     }
 
     .summit-flag.is-sign-center .summit-flag__banner-wrap {
+      bottom: calc(100% + var(--summit-banner-gap-center));
       transform: translateX(-50%);
       transform-origin: 50% 100%;
+      filter: drop-shadow(0 7px 11px color-mix(in srgb, var(--lp-ink) 20%, transparent));
       animation-name: summit-banner-flutter-center;
+    }
+
+    .summit-flag.is-sign-center .summit-flag__banner-lift {
+      left: 12%;
+      right: 10%;
+      bottom: -0.2rem;
+      height: 0.36rem;
+      opacity: 0.75;
     }
 
     .summit-flag__banner {
@@ -408,8 +435,8 @@
     }
 
     @keyframes summit-banner-flutter-center {
-      0%, 100% { transform: translateX(-50%) rotate(0deg); }
-      50% { transform: translateX(-50%) rotate(-0.5deg); }
+      0%, 100% { transform: translateX(-50%); }
+      50% { transform: translateX(-50%) rotate(-0.55deg); }
     }
 
     .lp-trail-camp {
