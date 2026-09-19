@@ -527,6 +527,31 @@
   justify-content: center;
 }
 
+/* Quiet ridge milestone — contrast from opaque surface + paper shadow (no blur dependency). */
+.lp-trail.is-v4 .lp-trail-more {
+  transform: translate(-50%, -50%);
+  padding: 0.14rem 0.44rem;
+  min-height: 0;
+  max-width: 50%;
+  font-size: 0.52rem;
+  font-weight: 500;
+  color: var(--lp-muted, #475569);
+  background: var(--lp-surface, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--lp-muted, #475569) 22%, var(--lp-border, rgba(15, 23, 42, 0.1)));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-paper, #f8fafc) 55%, transparent);
+  text-shadow:
+    0 0 4px color-mix(in srgb, var(--lp-paper, #f8fafc) 96%, transparent),
+    0 1px 3px color-mix(in srgb, var(--lp-paper, #f8fafc) 88%, transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .lp-trail.is-v4 .lp-trail-more {
+    background: color-mix(in srgb, var(--lp-surface, #ffffff) 92%, transparent);
+  }
+}
+
 .lp-trail-camp__title {
   display: -webkit-box;
   -webkit-box-orient: vertical;

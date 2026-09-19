@@ -22,6 +22,10 @@ module MountainTrailHelper
 
   TRAIL_Y_MIN = 0.32
   TRAIL_Y_MAX = 0.88
+  # Four peg positions on the map; three tents use the lower slots, ridge pill sits on-trail above the top tent.
+  MAP_LAYOUT_SLOTS = 4
+  RIDGE_STEP_ABOVE_TOP = 0.115
+  MIN_CLEAR_ABOVE_TENT = 0.05
   PEAK_X = 0.566
   # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
   PEAK_Y = 0.22
@@ -108,7 +112,7 @@ module MountainTrailHelper
     mountain_trail_all_projects(trail).reject(&:completed?)
   end
 
-  # Camps drawn on the photo: Strategy::Trail visible window (up to four along the path).
+  # Camps drawn on the photo: Strategy::Trail visible window (up to three along the path).
   def mountain_trail_map_nodes(trail)
     Array(trail&.visible_nodes)
   end
@@ -134,15 +138,17 @@ module MountainTrailHelper
     (0.75 + (0.25 * t)).round(3)
   end
 
-  # Sky slot for the “more camps ahead” chip — above the peak-side tent, below the goal bar.
+  # Ridge “more camps” pill — on TRAIL_CURVE, above the peak-side tent, clear of captions.
   def mountain_trail_map_more_chip_slot(visible_nodes)
     nodes = Array(visible_nodes)
-    return { x: PEAK_X, y: 0.26 } if nodes.empty?
+    return { x: PEAK_X, y: PEAK_Y } if nodes.empty?
 
-    slot = mountain_trail_map_layout_slot(nodes.last, nodes)
-    y_tent = slot[:y].to_f
-    y_chip = (y_tent - 0.055).clamp(PEAK_Y + 0.05, y_tent - 0.02)
-    { x: slot[:x].to_f.round(4), y: y_chip.round(4) }
+    top = mountain_trail_map_layout_slot(nodes.last, nodes)
+    y_top = top[:y].to_f
+    y_min = TRAIL_CURVE.first[0].to_f
+    y_ridge = (y_top - RIDGE_STEP_ABOVE_TOP).clamp(y_min, y_top - MIN_CLEAR_ABOVE_TENT)
+    x_ridge = AutoSlot.x_for(y_ridge)
+    { x: x_ridge.to_f.round(4), y: y_ridge.round(4) }
   end
 
   # Caption width in rem — 9rem default, narrowed near map edges so labels stay on the photo.
@@ -153,15 +159,13 @@ module MountainTrailHelper
     [ 9.0, edge_limited ].min.clamp(5.0, 9.0)
   end
 
-  # Spread the 1–4 visible camps across TRAIL_Y_MIN..TRAIL_Y_MAX (ignore stored trail_x/y
-  # so a long plan does not pack tents into a thin band). Climb order: first node = base
-  # (high y); AutoSlot index 0 is peak-side (low y), so reverse.
+  # Map visible camps onto the lower slots of a fixed four-peg ladder (ignore stored trail_x/y).
+  # Climb order: first node = base (high y); slot index 0 is peak-side (low y), so reverse.
   def mountain_trail_map_layout_slot(node, visible_nodes)
     nodes = Array(visible_nodes)
-    total = [ nodes.size, 1 ].max
     index = nodes.index { |candidate| candidate.id == node.id } || 0
-    slot_index = total == 1 ? 0 : (total - 1 - index)
-    slot = AutoSlot.call(index: slot_index, total: total)
+    slot_index = MAP_LAYOUT_SLOTS - 1 - index
+    slot = AutoSlot.call(index: slot_index, total: MAP_LAYOUT_SLOTS)
     {
       x: slot[:trail_x].to_f.round(4),
       y: slot[:trail_y].to_f.round(4)

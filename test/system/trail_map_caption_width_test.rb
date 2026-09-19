@@ -53,7 +53,7 @@ class TrailMapCaptionWidthTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#mountain-trail.lp-trail.is-v4", visible: :all, wait: 5
-    assert_selector "#trail-map-camps .lp-trail-camp", count: 4, visible: :all, wait: 5
+    assert_selector "#trail-map-camps .lp-trail-camp", count: 3, visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {

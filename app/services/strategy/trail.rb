@@ -5,8 +5,8 @@ module Strategy
   # Phase 1 trail nodes = Projects under a Plan.
   # Phase 2 can swap nodes to Programs without rewriting the views.
   class Trail
-    # Map window: up to four camps along trail order (array index, not position column).
-    VISIBLE_MAX = 4
+    # Map window: up to three camps along trail order (array index, not position column).
+    VISIBLE_MAX = 3
     VISIBLE_BEHIND = 1
 
     Node = Struct.new(

@@ -72,7 +72,7 @@ class FixedViewportMountainSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-map-camps #trail-camp-#{camps[1].id}.is-locked:not(.is-fogged)", visible: :all, wait: 5
     assert_no_selector ".trail-terrace"
     assert_no_selector "#terrace-sheet-range-4"
-    assert_selector "#trail-map-camps .lp-trail-camp", visible: :all, maximum: 4, wait: 5
+    assert_selector "#trail-map-camps .lp-trail-camp", visible: :all, maximum: 3, wait: 5
     title_metrics = page.evaluate_script(<<~JS)
       (() => {
         const t = document.querySelector(".lp-trail__goal-title");
