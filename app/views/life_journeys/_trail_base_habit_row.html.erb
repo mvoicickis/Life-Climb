@@ -5,7 +5,7 @@
     <div class="lp-trail-base-sheet__basic-row">
       <span class="lp-trail-battles__name"><%= habit.name %></span>
       <span class="lp-trail-battles__basics-amt">
-        <% if habit.today_amount.positive? %>
+        <% if habit.logged_on?(Date.current) %>
           <%= t("strategy.rpg.trail.base_camp.basics.amount",
                 amount: format_amount(habit.today_amount),
                 unit: habit.unit) %>

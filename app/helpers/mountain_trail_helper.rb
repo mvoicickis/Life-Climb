@@ -686,16 +686,6 @@ module MountainTrailHelper
       }
     end
 
-    if items.empty?
-      dailies = Array(projects).flat_map { |project|
-        mountain_trail_camp_days(project).select { |battle| mountain_trail_base_due?(battle) }
-      }
-      items = dailies.first(4).map { |battle|
-        started = battle.created_at&.to_date || Date.current
-        { name: battle.title, count: (Date.current - started).to_i + 1 }
-      }
-    end
-
     total = items.size
     { items: items.first(3), extra: [ total - 3, 0 ].max, total: total }
   end

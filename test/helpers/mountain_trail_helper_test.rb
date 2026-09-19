@@ -1038,6 +1038,27 @@ class MountainTrailHelperTest < ActionView::TestCase
 
   private
 
+  test "base pills stay empty when journey has no habits even if daily battles are due" do
+    @user = users(:one)
+    seed_climb!(@user, area_key: "career", title: "Ship", today_mission: "Test")
+    journey = @user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.find(&:plan?)
+    project = plan.children.for_kind("project").first
+    @user.habits.destroy_all
+    project.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "day", title: "Pitch the tent", scheduled_on: Date.current,
+      position: 0, repeat: "daily"
+    )
+
+    pills = mountain_trail_base_pills(journey: journey, projects: [ project ], user: @user)
+
+    assert_empty pills[:items]
+    assert_equal 0, pills[:total]
+  end
+
   def reveal_test_projects(count)
     (0...count).map do |index|
       Struct.new(:id, :stage, :position, :completed?, :holding?, :trail_x, :trail_y, :title, keyword_init: true).new(

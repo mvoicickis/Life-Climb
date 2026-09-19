@@ -19,6 +19,18 @@ class HabitsMountainTest < ActionDispatch::IntegrationTest
     @user.habits.destroy_all
   end
 
+  test "fresh quantity basic on base sheet hides zero count until first log" do
+    post habits_path, params: mountain_habit_params(
+      name: "Read",
+      quantity_checkin: "1",
+      unit: "pages"
+    ), as: :turbo_stream
+
+    assert_response :ok
+    assert_match "Read", response.body
+    refute_match "0 pages", response.body
+  end
+
   test "mountain create validation shows error on base sheet and preserves name" do
     long_name = "a" * 121
     post habits_path, params: mountain_habit_params(name: long_name), as: :turbo_stream
