@@ -422,6 +422,23 @@
       box-shadow: 0 1px 3px color-mix(in srgb, var(--lp-ink) 18%, transparent);
     }
 
+    .sheet-add__submit {
+      width: 100%;
+      min-height: var(--lp-tap);
+      margin: 0;
+      padding: 0 var(--lp-space-3);
+      border: 0;
+      border-radius: var(--lp-radius-pill);
+      background: linear-gradient(180deg, var(--lp-green) 0%, var(--lp-green-deep) 100%);
+      color: var(--lp-surface);
+      font: inherit;
+      font-size: var(--lp-type-ui-md);
+      font-weight: 800;
+      line-height: 1;
+      cursor: default;
+      box-shadow: var(--lp-shadow-cta);
+    }
+
     .hint-line {
       margin: 0;
       padding: 0 var(--lp-space-1);
@@ -501,6 +518,7 @@
               <span class="sheet-add__switch" aria-hidden="true"></span>
               Log a number
             </label>
+            <button type="button" class="sheet-add__submit">Add Basic</button>
           </div>
         </div>
       </div>
@@ -534,6 +552,7 @@
               <span class="sheet-add__switch" aria-hidden="true"></span>
               Log a number
             </label>
+            <button type="button" class="sheet-add__submit">Add Basic</button>
           </div>
         </div>
       </div>
