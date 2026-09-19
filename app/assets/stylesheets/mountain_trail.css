@@ -2593,9 +2593,18 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 0.35rem 0.4rem;
 }
 
-.lp-trail.is-v4 .lp-trail-base-sheet .lp-trail-battles__row.is-check {
+.lp-trail.is-v4 .lp-trail-base-sheet .lp-trail-battles__row.is-check,
+.lp-trail.is-v4 .lp-trail-base-sheet .lp-trail-battles__row.is-basics {
   gap: 0.5rem;
   min-height: var(--lp-tap);
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  background: var(--lp-paper-soft);
+}
+
+.lp-trail.is-v4 .lp-trail-base-sheet .lp-trail-battles__composer.is-dock {
   padding: 0.7rem 0.85rem;
   border-radius: var(--lp-radius-card);
   border: 1px solid var(--lp-border);
@@ -3305,11 +3314,12 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail-battles__basics-add {
   margin: 0;
   min-width: 2.75rem;
+  min-height: var(--lp-tap);
   padding: 0.35rem 0.55rem;
   border: 0;
   border-radius: 0.55rem;
-  background: rgba(124, 58, 237, 0.22);
-  color: #c4b5fd;
+  background: var(--lp-green);
+  color: #fff;
   font-size: 0.88rem;
   font-weight: 800;
   line-height: 1.1;
