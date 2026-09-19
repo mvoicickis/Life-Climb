@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summit flag — goal label options (360px)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Tokens mirrored from app/assets/tailwind/application.css (:root, light) */
+    :root {
+      --phone-w: 360px;
+      --map-aspect: 1024 / 1536;
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --lp-tap: 2.75rem;
+      --lp-radius-card: 1.25rem;
+      --lp-radius-field: 0.85rem;
+      --lp-radius-pill: 999px;
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --lp-surface: #ffffff;
+      --lp-paper: #f8fafc;
+      --lp-paper-soft: #eef2f7;
+      --lp-elevated: #ffffff;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-teal: #3ec9c0;
+      --lp-teal-deep: #2aa9a1;
+      --lp-gold: #d4a017;
+      --lp-amber: #ffb347;
+      --lp-hot: #ff7a45;
+      --rpg-blue: #3b82f6;
+      --rpg-amber: #f59e0b;
+      --rpg-gold: #d4a017;
+      --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
+      --lp-rpg-glass: rgba(255, 255, 255, 0.88);
+      --lp-rpg-glass-strong: rgba(255, 255, 255, 0.96);
+      --lp-rpg-glass-border: rgba(15, 23, 42, 0.1);
+      --lp-rpg-glass-blur: 18px;
+      --lp-rpg-glass-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+      --lp-rpg-ink: rgba(15, 23, 42, 0.96);
+      --lp-rpg-muted: rgba(71, 85, 105, 0.88);
+      --lp-rpg-gold-soft: rgba(212, 160, 23, 0.18);
+      --lp-trail-wood: color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink));
+      --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted));
+      --lp-peak-x: 0.566;
+      --lp-peak-y: 0.22;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      padding: 1.25rem 1rem 2.5rem;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .lede {
+      margin: 0 0 1rem;
+      max-width: 54rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      line-height: 1.45;
+    }
+
+    .strip {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scroll-snap-type: x mandatory;
+      align-items: flex-start;
+    }
+
+    .frame-wrap {
+      flex: 0 0 var(--phone-w);
+      scroll-snap-align: start;
+      max-width: var(--phone-w);
+    }
+
+    .frame-label {
+      margin: 0 0 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: var(--lp-teal-deep);
+    }
+
+    .frame-note {
+      margin: 0.45rem 0 0;
+      font-size: 0.7rem;
+      color: var(--lp-muted);
+      line-height: 1.4;
+      max-width: var(--phone-w);
+    }
+
+    .phone-shell {
+      width: var(--phone-w);
+      max-width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--lp-paper-soft);
+      box-shadow: var(--lp-shadow-card);
+      display: flex;
+      flex-direction: column;
+      height: min(100dvh, 720px);
+      max-height: 720px;
+    }
+
+    .phone-shell__map {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--lp-green-deep) 35%, var(--lp-paper));
+    }
+
+    .phone-shell__photo-wrap {
+      position: absolute;
+      inset: 0;
+    }
+
+    .phone-shell__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .phone-shell__hud {
+      position: absolute;
+      top: max(0.45rem, env(safe-area-inset-top));
+      left: 0.5rem;
+      right: 0.5rem;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .phone-shell__hud > * { pointer-events: auto; }
+
+    .phone-shell__layer {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .phone-shell__layer > * { pointer-events: auto; }
+
+    .lp-trail__goal { position: relative; width: 100%; }
+
+    .lp-trail__goal-plaque {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--lp-rpg-glass-border);
+      border-radius: var(--lp-radius-card);
+      background: var(--lp-rpg-glass);
+      backdrop-filter: blur(var(--lp-rpg-glass-blur));
+      -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur));
+      box-shadow: var(--lp-rpg-glass-shadow);
+      padding: 0.55rem 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+
+    .lp-trail__goal-plaque.is-blank {
+      min-height: calc(2 * 1.2em + 1.1rem);
+      cursor: default;
+    }
+
+    .lp-trail__goal-title {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      font-size: clamp(1rem, 3.2vw + 0.35rem, 1.55rem);
+      font-weight: 800;
+      color: var(--lp-rpg-ink);
+      line-height: 1.2;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .lp-trail__goal-plaque.is-blank .lp-trail__goal-title {
+      visibility: hidden;
+    }
+
+    /* Summit finish flag — pole foot on peak, small rectangular cloth (not a tent) */
+    .summit-flag {
+      position: absolute;
+      left: calc(var(--lp-peak-x) * 100%);
+      top: calc(var(--lp-peak-y) * 100%);
+      transform: translate(-50%, -100%);
+      z-index: 16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: calc(var(--phone-w) - 1.25rem);
+      pointer-events: none;
+    }
+
+    .summit-flag__plant {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      filter: drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink) 35%, transparent));
+    }
+
+    .summit-flag__top {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .summit-flag__cloth {
+      width: 1.35rem;
+      height: 0.85rem;
+      margin-bottom: 0.05rem;
+      background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--lp-green) 88%, var(--lp-surface)),
+        var(--lp-green-deep)
+      );
+      border-radius: 0 2px 2px 0;
+      box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 45%, transparent);
+      transform-origin: 0% 100%;
+      animation: summit-flag-wave 3.2s ease-in-out infinite;
+    }
+
+    .summit-flag__pole {
+      width: 3px;
+      height: 1.65rem;
+      flex-shrink: 0;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-trail-wood) 70%, var(--lp-surface)),
+        var(--lp-trail-wood-deep)
+      );
+      border-radius: 0 0 1px 1px;
+    }
+
+    .summit-flag__ground {
+      width: 0.55rem;
+      height: 0.18rem;
+      margin-top: -1px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--lp-ink) 25%, transparent);
+      opacity: 0.55;
+    }
+
+    .summit-flag__pill {
+      margin-top: 0.28rem;
+      padding: 0.22rem 0.5rem;
+      max-width: min(10.5rem, calc(var(--phone-w) - 2rem));
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+      font-size: 0.58rem;
+      font-weight: 800;
+      line-height: 1.25;
+      color: var(--lp-ink);
+      text-align: center;
+      overflow-wrap: anywhere;
+      pointer-events: auto;
+    }
+
+    .summit-flag__pill--on-peak {
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    @keyframes summit-flag-wave {
+      0%, 100% { transform: skewY(0deg) scaleX(1); }
+      50% { transform: skewY(-4deg) scaleX(0.96); }
+    }
+
+    .lp-trail-camp {
+      position: absolute;
+      left: calc(var(--lp-trail-x, 0.5) * 100%);
+      top: calc(var(--lp-trail-y, 0.5) * 100%);
+      transform: translate(-50%, -100%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .lp-trail-camp.is-current { z-index: 5; }
+
+    .lp-trail-camp__peg {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: end center;
+      pointer-events: none;
+    }
+
+    .lp-trail-camp__peg-visual {
+      position: relative;
+      display: grid;
+      place-items: end center;
+      width: 100%;
+      height: 100%;
+      transform-origin: bottom center;
+      scale: var(--lp-trail-peg-scale, 1);
+    }
+
+    .lp-trail-camp__ring {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 62px;
+      height: 62px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .lp-trail-camp__ring-bg,
+    .lp-trail-camp__ring-fg {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .lp-trail-camp__ring-bg {
+      stroke: color-mix(in srgb, var(--lp-rpg-ink) 45%, transparent);
+    }
+
+    .lp-trail-camp__ring-fg { stroke: var(--lp-trail-accent, var(--lp-teal)); }
+
+    .lp-trail-camp__tent {
+      width: 28px;
+      height: 24px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-trail-accent, var(--lp-teal)) 78%, var(--lp-paper)) 0%,
+        var(--lp-trail-accent, var(--lp-teal)) 55%,
+        color-mix(in srgb, var(--lp-trail-accent, var(--lp-teal)) 70%, var(--lp-ink)) 100%
+      );
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink) 45%, transparent));
+      position: relative;
+    }
+
+    .lp-trail-camp__tent::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 10px;
+      height: 10px;
+      transform: translateX(-50%);
+      background: color-mix(in srgb, var(--lp-trail-accent, var(--lp-teal)) 40%, var(--lp-ink));
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__tent {
+      width: 34px;
+      height: 30px;
+      filter:
+        drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink) 45%, transparent))
+        drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent, var(--lp-teal)) 50%, transparent));
+    }
+
+    .lp-trail-camp__fire {
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      width: 11px;
+      height: 11px;
+      margin-left: 8px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 50% 60%,
+        var(--lp-amber),
+        var(--rpg-amber) 60%,
+        color-mix(in srgb, var(--lp-hot) 85%, var(--lp-ink))
+      );
+      box-shadow: 0 0 10px 4px color-mix(in srgb, var(--rpg-amber) 65%, transparent);
+    }
+
+    .lp-trail-camp__caption {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.2rem;
+      width: min(9rem, var(--lp-trail-caption-max, 9rem));
+      max-width: min(9rem, var(--lp-trail-caption-max, 9rem));
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .lp-trail-camp__title {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: color-mix(in srgb, var(--lp-ink) 92%, var(--lp-paper));
+      line-height: 1.15;
+      text-shadow:
+        0 0 4px color-mix(in srgb, var(--lp-paper) 95%, transparent),
+        0 1px 2px color-mix(in srgb, var(--lp-paper) 90%, transparent);
+    }
+
+    .lp-trail-camp__status {
+      display: block;
+      margin-top: 0.08rem;
+      font-size: 0.52rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      line-height: 1.2;
+      white-space: nowrap;
+      text-shadow:
+        0 0 4px color-mix(in srgb, var(--lp-paper) 95%, transparent),
+        0 1px 2px color-mix(in srgb, var(--lp-paper) 90%, transparent);
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__caption {
+      padding: 0.12rem 0.4rem 0.14rem;
+      border-radius: var(--lp-radius-pill);
+      background: color-mix(in srgb, var(--lp-paper) 94%, var(--lp-gold));
+      border: 1px solid color-mix(in srgb, var(--lp-gold) 28%, var(--lp-muted));
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__title {
+      font-weight: 800;
+      text-shadow: none;
+      color: var(--lp-ink);
+    }
+
+    .lp-trail-more {
+      position: absolute;
+      left: calc(var(--lp-trail-more-x, 0.5) * 100%);
+      top: calc(var(--lp-trail-more-y, 0.4) * 100%);
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      border: 0;
+      border-radius: var(--lp-radius-pill);
+      font-family: var(--lp-font-ui);
+      font-size: 0.52rem;
+      font-weight: 500;
+      color: var(--lp-muted);
+      background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+      border: 1px solid color-mix(in srgb, var(--lp-muted) 22%, var(--lp-border));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-paper) 55%, transparent);
+      text-shadow:
+        0 0 4px color-mix(in srgb, var(--lp-paper) 96%, transparent),
+        0 1px 3px color-mix(in srgb, var(--lp-paper) 88%, transparent);
+      padding: 0.14rem 0.44rem;
+      white-space: nowrap;
+      max-width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .phone-shell__dock {
+      flex: 0 0 auto;
+      background: color-mix(in srgb, var(--lp-paper) 92%, transparent);
+      border-top: 1px solid color-mix(in srgb, var(--lp-ink) 6%, transparent);
+      padding: 10px 12px 10px;
+    }
+
+    .lp-trail-base-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-rows: var(--lp-tap) auto;
+      grid-template-areas:
+        "fire main tick"
+        "peek peek peek";
+      align-items: center;
+      column-gap: 11px;
+      row-gap: 8px;
+      width: 100%;
+      padding: 13px 14px 14px;
+      border-radius: 20px;
+      border: 1.5px solid color-mix(in srgb, var(--lp-gold) 35%, var(--lp-paper));
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--lp-paper) 96%, var(--lp-gold)),
+        color-mix(in srgb, var(--lp-paper-soft) 88%, var(--rpg-gold))
+      );
+      color: var(--lp-ink);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--lp-ink) 16%, transparent);
+      overflow: hidden;
+    }
+
+    .lp-trail-base-card__fire {
+      grid-area: fire;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      background: radial-gradient(circle, var(--lp-amber), var(--rpg-amber));
+      box-shadow: 0 0 0 5px var(--lp-rpg-gold-soft);
+    }
+
+    .lp-trail-base-card__main {
+      grid-area: main;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      max-height: var(--lp-tap);
+      overflow: hidden;
+    }
+
+    .lp-trail-base-card__copy {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      overflow: hidden;
+    }
+
+    .lp-trail-base-card__kicker {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: color-mix(in srgb, var(--lp-gold) 65%, var(--lp-muted));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lp-trail-base-card__title {
+      font-size: 15.5px;
+      font-weight: 900;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lp-trail-base-card__tick-slot {
+      grid-area: tick;
+      display: grid;
+      place-items: center;
+      width: var(--lp-tap);
+      height: var(--lp-tap);
+    }
+
+    .lp-trail-battles__box {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--lp-tick-ring);
+      background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
+    }
+
+    .lp-trail-base-card__peek {
+      grid-area: peek;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      font: inherit;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .lp-trail-base-card__pill {
+      background: var(--lp-paper);
+      border: 1px solid color-mix(in srgb, var(--lp-gold) 25%, var(--lp-paper-soft));
+      border-radius: var(--lp-radius-pill);
+      padding: 5px 10px;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: color-mix(in srgb, var(--lp-muted) 85%, var(--lp-ink));
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lp-trail-base-card__pill b {
+      color: var(--rpg-amber);
+      font-weight: 900;
+    }
+
+    .lp-bottom-nav {
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.25rem;
+      align-items: center;
+      padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom));
+      background: color-mix(in srgb, var(--lp-paper) 94%, transparent);
+      border-top: 1px solid color-mix(in srgb, var(--lp-green) 12%, var(--lp-border));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .lp-bottom-nav__link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      text-decoration: none;
+      min-height: var(--lp-tap);
+      justify-content: center;
+    }
+
+    .lp-bottom-nav__link.is-active {
+      color: var(--lp-green-deep);
+    }
+
+    .lp-bottom-nav__icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .lp-bottom-nav__icon svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Summit flag — where should the goal name live?</h1>
+  <p class="lede">
+    Three 360px frames, light mode, default mountain photo. Same three visible camps and quiet
+    “7 more camps” ridge pill as production. Green finish flag planted on the peak (not a tent).
+    Goal test string: <strong>Learn German to B1 level</strong>.
+  </p>
+  <div class="strip" id="strip"></div>
+
+  <script>
+    const PHOTO = "../../app/assets/images/mountain_trail_default.webp";
+    const GOAL = "Learn German to B1 level";
+    const PEAK_X = 0.566;
+    const PEAK_Y = 0.22;
+    const MAP_LAYOUT_SLOTS = 4;
+    const TRAIL_Y_MIN = 0.32;
+    const TRAIL_Y_MAX = 0.88;
+    const RIDGE_STEP_ABOVE_TOP = 0.115;
+    const MIN_CLEAR_ABOVE_TENT = 0.05;
+    const TRAIL_CURVE = [
+      [0.236, 0.545], [0.297, 0.549], [0.352, 0.562], [0.408, 0.536],
+      [0.463, 0.512], [0.518, 0.555], [0.574, 0.531], [0.623, 0.528],
+      [0.678, 0.552], [0.740, 0.547], [0.807, 0.558], [0.875, 0.514],
+      [0.985, 0.586]
+    ];
+    const CAMP_ACCENTS = [
+      "var(--lp-teal)",
+      "var(--rpg-blue)",
+      "var(--lp-hot)"
+    ];
+    const CAMPS = [
+      { title: "Daily vocabulary", state: "current", ring: true, status: "3 battles ready" },
+      { title: "Grammar drills", state: "open", ring: false },
+      { title: "Listening practice", state: "open", ring: false }
+    ];
+
+    function xFor(yFrac) {
+      const curve = TRAIL_CURVE;
+      if (yFrac <= curve[0][0]) return curve[0][1];
+      if (yFrac >= curve[curve.length - 1][0]) return curve[curve.length - 1][1];
+      for (let i = 0; i < curve.length - 1; i += 1) {
+        const [y0, x0] = curve[i];
+        const [y1, x1] = curve[i + 1];
+        if (yFrac >= y0 && yFrac <= y1) {
+          const k = (yFrac - y0) / (y1 - y0);
+          return x0 + k * (x1 - x0);
+        }
+      }
+      return 0.5;
+    }
+
+    function yForSlot(slotIndex, totalSlots) {
+      if (totalSlots <= 0) return 0.58;
+      const t = totalSlots === 1 ? 0.5 : slotIndex / (totalSlots - 1);
+      return TRAIL_Y_MIN + t * (TRAIL_Y_MAX - TRAIL_Y_MIN);
+    }
+
+    function mapLayoutSlot(nodeIndex, visibleCount) {
+      const slotIndex = MAP_LAYOUT_SLOTS - 1 - nodeIndex;
+      const y = yForSlot(slotIndex, MAP_LAYOUT_SLOTS);
+      return { x: xFor(y), y };
+    }
+
+    function moreChipSlot(visibleCount) {
+      const top = mapLayoutSlot(visibleCount - 1, visibleCount);
+      const yTop = top.y;
+      const yMin = TRAIL_CURVE[0][0];
+      const yRidge = Math.max(yMin, Math.min(yTop - MIN_CLEAR_ABOVE_TENT, yTop - RIDGE_STEP_ABOVE_TOP));
+      return { x: xFor(yRidge), y: yRidge };
+    }
+
+    function captionMaxRem(x) {
+      const side = Math.min(x, 1 - x);
+      return Math.min(9, Math.max(5, 2 * side * 22.5 - 0.75));
+    }
+
+    function pegScale(y, isCurrent) {
+      if (isCurrent) return 1;
+      const t = (y - TRAIL_Y_MIN) / (TRAIL_Y_MAX - TRAIL_Y_MIN);
+      return 0.75 + 0.25 * Math.min(1, Math.max(0, t));
+    }
+
+    function ringSvg() {
+      return (
+        '<svg class="lp-trail-camp__ring" viewBox="0 0 62 62" aria-hidden="true">' +
+        '<circle class="lp-trail-camp__ring-bg" cx="31" cy="31" r="27"></circle>' +
+        '<circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="27"></circle>' +
+        "</svg>"
+      );
+    }
+
+    function campButton(camp, layout, accent) {
+      const current = camp.state === "current";
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "lp-trail-camp" + (current ? " is-current" : "");
+      el.style.setProperty("--lp-trail-x", layout.x.toFixed(4));
+      el.style.setProperty("--lp-trail-y", layout.y.toFixed(4));
+      el.style.setProperty("--lp-trail-accent", accent);
+      el.style.setProperty("--lp-trail-caption-max", captionMaxRem(layout.x) + "rem");
+      el.style.setProperty("--lp-trail-peg-scale", String(pegScale(layout.y, current)));
+
+      let pegInner = "";
+      if (camp.ring) pegInner += ringSvg();
+      pegInner += '<span class="lp-trail-camp__tent" aria-hidden="true"></span>';
+      if (current) pegInner += '<span class="lp-trail-camp__fire" aria-hidden="true"></span>';
+
+      let caption = '<span class="lp-trail-camp__title">' + camp.title + "</span>";
+      if (current && camp.status) {
+        caption += '<span class="lp-trail-camp__status">' + camp.status + "</span>";
+      }
+
+      el.innerHTML =
+        '<span class="lp-trail-camp__peg"><span class="lp-trail-camp__peg-visual">' +
+        pegInner + "</span></span>" +
+        '<span class="lp-trail-camp__caption">' + caption + "</span>";
+      return el;
+    }
+
+    function summitFlag(config) {
+      const wrap = document.createElement("div");
+      wrap.className = "summit-flag";
+      wrap.style.setProperty("--lp-peak-x", String(PEAK_X));
+      wrap.style.setProperty("--lp-peak-y", String(PEAK_Y));
+
+      let labelHtml = "";
+      if (config.summitLabel === "pill") {
+        labelHtml = '<p class="summit-flag__pill">' + GOAL + "</p>";
+      } else if (config.summitLabel === "peak") {
+        labelHtml = '<p class="summit-flag__pill summit-flag__pill--on-peak">' + GOAL + "</p>";
+      }
+
+      wrap.innerHTML =
+        '<div class="summit-flag__plant" aria-hidden="true">' +
+        '<div class="summit-flag__top">' +
+        '<span class="summit-flag__cloth"></span>' +
+        '<span class="summit-flag__pole"></span>' +
+        "</div>" +
+        '<span class="summit-flag__ground"></span>' +
+        "</div>" +
+        labelHtml;
+      return wrap;
+    }
+
+    function goalPlaque(mode) {
+      if (mode === "hidden") return null;
+      const goal = document.createElement("div");
+      goal.className = "lp-trail__goal";
+      const blank = mode === "blank";
+      goal.innerHTML =
+        '<button type="button" class="lp-trail__goal-plaque' + (blank ? " is-blank" : "") + '">' +
+        '<span class="lp-trail__goal-title">' + (blank ? "\u00a0" : GOAL) + "</span></button>";
+      return goal;
+    }
+
+    function dockCard() {
+      const card = document.createElement("div");
+      card.className = "lp-trail-base-card has-battle-tick has-peek";
+      card.innerHTML =
+        '<span class="lp-trail-base-card__fire" aria-hidden="true">🔥</span>' +
+        '<div class="lp-trail-base-card__main"><span class="lp-trail-base-card__copy">' +
+        '<span class="lp-trail-base-card__kicker">Next in Daily vocabulary</span>' +
+        '<span class="lp-trail-base-card__title">Review 10 new words</span>' +
+        "</span></div>" +
+        '<span class="lp-trail-base-card__tick-slot">' +
+        '<span class="lp-trail-battles__box" aria-hidden="true"></span></span>' +
+        '<div class="lp-trail-base-card__peek">' +
+        '<span class="lp-trail-base-card__pill">Do a lecture <b>1 day</b></span></div>';
+      return card;
+    }
+
+    function bottomNav() {
+      const nav = document.createElement("nav");
+      nav.className = "lp-bottom-nav";
+      nav.setAttribute("aria-label", "Primary");
+      const iconMountain =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/><path d="M12 5.5 V8"/></svg>';
+      const iconHome =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M4 10.5 L12 4 L20 10.5"/><path d="M6.5 9.5 V19.5 H17.5 V9.5"/></svg>';
+      const iconYou =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/></svg>';
+      nav.innerHTML =
+        '<span class="lp-bottom-nav__link"><span class="lp-bottom-nav__icon" aria-hidden="true">' +
+        iconHome + "</span><span>Home</span></span>" +
+        '<span class="lp-bottom-nav__link is-active"><span class="lp-bottom-nav__icon" aria-hidden="true">' +
+        iconMountain + "</span><span>Journey</span></span>" +
+        '<span class="lp-bottom-nav__link"><span class="lp-bottom-nav__icon" aria-hidden="true">' +
+        iconYou + "</span><span>You</span></span>";
+      return nav;
+    }
+
+    function buildFrame(config) {
+      const wrap = document.createElement("div");
+      wrap.className = "frame-wrap";
+
+      const label = document.createElement("p");
+      label.className = "frame-label";
+      label.textContent = config.label;
+      wrap.appendChild(label);
+
+      const shell = document.createElement("div");
+      shell.className = "phone-shell";
+
+      const map = document.createElement("div");
+      map.className = "phone-shell__map";
+
+      const photoWrap = document.createElement("div");
+      photoWrap.className = "phone-shell__photo-wrap";
+      const img = document.createElement("img");
+      img.className = "phone-shell__photo";
+      img.src = PHOTO;
+      img.alt = "";
+      photoWrap.appendChild(img);
+      map.appendChild(photoWrap);
+
+      const plaque = goalPlaque(config.plaque);
+      if (plaque) {
+        const hud = document.createElement("div");
+        hud.className = "phone-shell__hud";
+        hud.appendChild(plaque);
+        map.appendChild(hud);
+      }
+
+      const layer = document.createElement("div");
+      layer.className = "phone-shell__layer";
+
+      layer.appendChild(summitFlag(config));
+
+      const visibleCount = CAMPS.length;
+      const layouts = CAMPS.map((_, i) => mapLayoutSlot(i, visibleCount));
+      CAMPS.forEach((camp, i) => {
+        layer.appendChild(campButton(camp, layouts[i], CAMP_ACCENTS[i]));
+      });
+
+      const chip = moreChipSlot(visibleCount);
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "lp-trail-more";
+      more.textContent = "7 more camps";
+      more.style.setProperty("--lp-trail-more-x", chip.x.toFixed(4));
+      more.style.setProperty("--lp-trail-more-y", chip.y.toFixed(4));
+      layer.appendChild(more);
+
+      map.appendChild(layer);
+      shell.appendChild(map);
+
+      const dock = document.createElement("div");
+      dock.className = "phone-shell__dock";
+      dock.appendChild(dockCard());
+      shell.appendChild(dock);
+      shell.appendChild(bottomNav());
+
+      wrap.appendChild(shell);
+
+      const note = document.createElement("p");
+      note.className = "frame-note";
+      note.textContent = config.note;
+      wrap.appendChild(note);
+
+      return wrap;
+    }
+
+    const strip = document.getElementById("strip");
+    strip.appendChild(buildFrame({
+      label: "1 — Goal on white pill under flag; no top plaque",
+      plaque: "hidden",
+      summitLabel: "pill",
+      note: "Summit carries the destination; top HUD slot is free for stats or nothing."
+    }));
+    strip.appendChild(buildFrame({
+      label: "2 — Flag only; goal stays on top plaque",
+      plaque: "full",
+      summitLabel: "none",
+      note: "No duplicate name on the peak — flag is a visual finish line only."
+    }));
+    strip.appendChild(buildFrame({
+      label: "3 — Goal under flag; empty top plaque (reserved space)",
+      plaque: "blank",
+      summitLabel: "peak",
+      note: "Plaque keeps two-line height so you can see what else could sit there."
+    }));
+  </script>
+</body>
+</html>
