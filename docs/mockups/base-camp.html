@@ -100,8 +100,8 @@
     .sheet-phone {
       width: var(--phone-w);
       max-width: 100%;
-      height: min(740px, 92dvh);
-      min-height: 680px;
+      height: 720px;
+      min-height: 720px;
       border-radius: var(--lp-radius-card);
       overflow: hidden;
       position: relative;
@@ -135,6 +135,7 @@
       flex-direction: column;
       flex: 1 1 auto;
       min-height: 0;
+      height: 100%;
     }
 
     .sheet-header {
@@ -233,6 +234,11 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--lp-muted);
+      line-height: 1.2;
+    }
+
+    .section-label--reserve {
+      visibility: hidden;
     }
 
     .row-list {
@@ -349,7 +355,10 @@
 
     .sheet-add {
       flex-shrink: 0;
-      margin: 0 var(--lp-space-4) calc(var(--lp-space-4) + env(safe-area-inset-bottom, 0px));
+      margin-top: auto;
+      margin-right: var(--lp-space-4);
+      margin-bottom: calc(var(--lp-space-4) + env(safe-area-inset-bottom, 0px));
+      margin-left: var(--lp-space-4);
       padding: var(--lp-space-3) var(--lp-space-4);
       border-radius: var(--lp-radius-card);
       border: 1px solid var(--lp-border);
@@ -437,14 +446,6 @@
       box-shadow: var(--lp-shadow-cta);
     }
 
-    .sheet-phone--filled .sheet-add__submit {
-      box-sizing: border-box;
-      background: var(--lp-surface);
-      color: var(--lp-green-deep);
-      border: 2px solid var(--lp-green);
-      box-shadow: none;
-    }
-
     .starter-card {
       padding: var(--lp-space-3) var(--lp-space-4);
       display: flex;
@@ -494,7 +495,7 @@
   <div class="frames">
     <div class="frame">
       <p class="frame__label">Filled</p>
-      <div class="sheet-phone sheet-phone--filled" role="img" aria-label="Base camp with Basics and camp battle">
+      <div class="sheet-phone" role="img" aria-label="Base camp with Basics and camp battle">
         <div class="sheet-phone__photo" aria-hidden="true">
           <img src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
         </div>
@@ -545,8 +546,8 @@
 
           <div class="sheet-add">
             <label class="sheet-add__field">
-              <span class="visually-hidden">Add a Basic</span>
-              <input class="sheet-add__input" type="text" placeholder="Add a Basic" aria-label="Add a Basic">
+              <span class="visually-hidden">What will you do every day?</span>
+              <input class="sheet-add__input" type="text" placeholder="What will you do every day?" aria-label="What will you do every day?">
             </label>
             <label class="sheet-add__toggle">
               <span class="sheet-add__switch" aria-hidden="true"></span>
@@ -560,7 +561,7 @@
 
     <div class="frame">
       <p class="frame__label">Empty state</p>
-      <div class="sheet-phone sheet-phone--empty" role="img" aria-label="Base camp with no Basics yet">
+      <div class="sheet-phone" role="img" aria-label="Base camp with no Basics yet">
         <div class="sheet-phone__photo" aria-hidden="true">
           <img src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
         </div>
@@ -575,14 +576,17 @@
           </header>
 
           <div class="sheet-body">
-            <div class="row-card starter-card">
-              <p class="starter-card__title lp-text-title">Add the first thing you do every day.</p>
-              <ul class="example-pills">
-                <li><button type="button" class="example-pill">20 push-ups</button></li>
-                <li><button type="button" class="example-pill">Read 5 pages</button></li>
-                <li><button type="button" class="example-pill">One German lesson</button></li>
-              </ul>
-            </div>
+            <section class="sheet-group">
+              <p class="section-label section-label--reserve" aria-hidden="true">Basics</p>
+              <div class="row-card starter-card">
+                <p class="starter-card__title lp-text-title">Add the first thing you do every day.</p>
+                <ul class="example-pills">
+                  <li><button type="button" class="example-pill">20 push-ups</button></li>
+                  <li><button type="button" class="example-pill">Read 5 pages</button></li>
+                  <li><button type="button" class="example-pill">One German lesson</button></li>
+                </ul>
+              </div>
+            </section>
           </div>
 
           <div class="sheet-add">
