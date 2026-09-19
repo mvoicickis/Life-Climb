@@ -565,7 +565,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     still_open = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Open Camp", position: 2
     )
-    # Fourth camp so Trail windows (≤3 camps returns every node).
+    # Extra camps so the map uses a three-camp window plus ridge pill.
     fogged = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project", title: "Fog Camp", position: 3
     )
@@ -592,8 +592,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{project.id}"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
-    assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
-    assert_select ".lp-trail-more", text: "1 more camp ahead"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
+    assert_select ".lp-trail-more", text: "2 more camps"
     assert_select ".lp-trail__goal-title", text: /Goal/i
   end
 
@@ -627,9 +627,9 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{projects[0].id} .lp-trail-camp__caption", text: /Project 0/
     assert_select "#trail-map-camps #trail-camp-#{projects[1].id}.is-locked:not(.is-fogged)[aria-label=?]", "Project 1"
     assert_select "#trail-map-camps #trail-camp-#{projects[2].id}.is-locked:not(.is-fogged)"
-    assert_select "#trail-map-camps #trail-camp-#{projects[3].id}.is-locked:not(.is-fogged)"
-    assert_select "#trail-map-camps .lp-trail-camp", count: 4
-    assert_select ".lp-trail-more", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{projects[3].id}", count: 0
+    assert_select "#trail-map-camps .lp-trail-camp", count: 3
+    assert_select ".lp-trail-more", text: "1 more camp"
     assert_select ".trail-terrace", count: 0
     assert_select "#terrace-sheet-range-4", count: 0
     assert_select ".lp-climb-path__quests", count: 0

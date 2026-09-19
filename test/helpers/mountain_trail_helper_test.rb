@@ -893,7 +893,7 @@ class MountainTrailHelperTest < ActionView::TestCase
 
     trail = Strategy::Trail.for(plan: plan.reload)
     nodes = mountain_trail_map_nodes(trail)
-    assert_operator nodes.size, :<=, 4
+    assert_operator nodes.size, :<=, 3
     assert_includes nodes.map(&:state), :done
     assert_includes nodes.map(&:state), :current
     assert_includes nodes.map(&:id), camps[0].id
@@ -909,19 +909,34 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_operator slots[0][:y], :>, slots[1][:y]
     assert_operator slots[1][:y], :>, slots[2][:y]
     assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slots[0][:y], 0.001
-    assert_in_delta MountainTrailHelper::TRAIL_Y_MIN, slots[2][:y], 0.001
+    slot_one_y = MountainTrailHelper::AutoSlot.y_for(1, MountainTrailHelper::MAP_LAYOUT_SLOTS)
+    assert_in_delta slot_one_y, slots[2][:y], 0.001
   end
 
-  test "map layout spreads four visible camps across the curve band" do
-    nodes = (1..4).map do |id|
-      Strategy::Trail::Node.new(
-        id: id, title: "C#{id}", state: :locked, pct: 0, position: id - 1, record: nil, y: 0
-      )
-    end
-    nodes[0].state = :current
-    slots = nodes.map { |node| mountain_trail_map_layout_slot(node, nodes) }
+  test "map layout uses lower slots of the four-peg ladder" do
+    one = [ Strategy::Trail::Node.new(id: 1, title: "A", state: :current, pct: 0, position: 0, record: nil, y: 0) ]
+    slot = mountain_trail_map_layout_slot(one.first, one)
+    assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slot[:y], 0.001
+
+    two = [
+      Strategy::Trail::Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),
+      Strategy::Trail::Node.new(id: 2, title: "B", state: :current, pct: 0, position: 1, record: nil, y: 50)
+    ]
+    slots = two.map { |node| mountain_trail_map_layout_slot(node, two) }
     assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slots[0][:y], 0.001
-    assert_in_delta MountainTrailHelper::TRAIL_Y_MIN, slots[3][:y], 0.001
+    slot_two_y = MountainTrailHelper::AutoSlot.y_for(2, MountainTrailHelper::MAP_LAYOUT_SLOTS)
+    assert_in_delta slot_two_y, slots[1][:y], 0.001
+  end
+
+  test "more chip sits on trail above the peak-side tent" do
+    nodes = (1..3).map do |id|
+      Strategy::Trail::Node.new(id: id, title: "C#{id}", state: :locked, pct: 0, position: id - 1, record: nil, y: 0)
+    end
+    top = mountain_trail_map_layout_slot(nodes.last, nodes)
+    chip = mountain_trail_map_more_chip_slot(nodes)
+    assert_operator chip[:y], :<, top[:y].to_f
+    assert_operator (top[:y].to_f - chip[:y]), :>=, MountainTrailHelper::MIN_CLEAR_ABOVE_TENT
+    assert_in_delta MountainTrailHelper::AutoSlot.x_for(chip[:y]), chip[:x], 0.001
   end
 
   test "hidden ahead count ignores cleared camps dropped behind the window" do
@@ -934,14 +949,14 @@ class MountainTrailHelperTest < ActionView::TestCase
     nodes[1].state = :current
     trail = Strategy::Trail::Result.new(
       nodes: nodes,
-      visible_nodes: nodes[0..3],
+      visible_nodes: nodes[0..2],
       current_node: nodes[1],
       progress: 0,
       next_node: nodes[2],
       plan: nil,
       label: ""
     )
-    assert_equal 2, mountain_trail_map_hidden_ahead_count(trail)
+    assert_equal 3, mountain_trail_map_hidden_ahead_count(trail)
   end
 
   test "peg scale is full size for current camp" do

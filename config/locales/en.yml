@@ -958,8 +958,8 @@ en:
         every_day: "Every day"
         just_once: "Just once"
         more_camps:
-          one: "%{count} more camp ahead"
-          other: "%{count} more camps ahead"
+          one: "%{count} more camp"
+          other: "%{count} more camps"
         arrange:
           title: "Change camp order"
           hint: "Drag ⠿ to change the order."

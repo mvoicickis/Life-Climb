@@ -5,8 +5,8 @@ module Strategy
   # Phase 1 trail nodes = Projects under a Plan.
   # Phase 2 can swap nodes to Programs without rewriting the views.
   class Trail
-    # Map window: up to four camps along trail order (array index, not position column).
-    VISIBLE_MAX = 4
+    # Map window: up to three camps along trail order (array index, not position column).
+    VISIBLE_MAX = 3
     VISIBLE_BEHIND = 1
 
     Node = Struct.new(
@@ -19,12 +19,13 @@ module Strategy
       keyword_init: true
     )
 
-    def self.for(plan:)
-      new(plan:).call
+    def self.for(plan:, ensure_visible_id: nil)
+      new(plan:, ensure_visible_id:).call
     end
 
-    def initialize(plan:)
+    def initialize(plan:, ensure_visible_id: nil)
       @plan = plan
+      @ensure_visible_id = ensure_visible_id
     end
 
     def call
@@ -36,10 +37,12 @@ module Strategy
       nxt = nodes.find { |n| n.state == :locked && current && n.position > current.position } ||
             nodes.find { |n| n.state == :current && n != current }
 
+      visible = focused_sequence(nodes, current, ensure_visible_id: @ensure_visible_id)
+
       Result.new(
         progress: @plan.progress_percent.to_i,
         nodes: nodes,
-        visible_nodes: focused_sequence(nodes, current),
+        visible_nodes: visible,
         current_node: current,
         next_node: nxt,
         plan: @plan,
@@ -117,7 +120,20 @@ module Strategy
       false
     end
 
-    def focused_sequence(nodes, current)
+    def focused_sequence(nodes, current, ensure_visible_id: nil)
+      slice = default_focused_slice(nodes, current)
+      return slice if ensure_visible_id.blank?
+      return slice if slice.any? { |node| node.id == ensure_visible_id }
+
+      pinned_idx = nodes.index { |node| node.id == ensure_visible_id }
+      return slice if pinned_idx.nil?
+
+      to = pinned_idx
+      from = [ to - VISIBLE_MAX + 1, 0 ].max
+      nodes[from..to]
+    end
+
+    def default_focused_slice(nodes, current)
       return nodes if nodes.size <= VISIBLE_MAX
 
       unless current

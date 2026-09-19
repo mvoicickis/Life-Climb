@@ -180,7 +180,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_match(/mountain_trail_default|mountain_photo/, response.body)
   end
 
-  test "six camps show four on the curve with open ahead tents and more chip" do
+  test "six camps show three on the curve with ridge more chip" do
     @plan.children.for_kind("project").destroy_all
     camps = 6.times.map do |index|
       @plan.children.create!(
@@ -196,16 +196,16 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{camps[1].id}.is-current"
     assert_select "#trail-map-camps #trail-camp-#{camps[2].id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps #trail-camp-#{camps[2].id}[data-action*='trail-camp-sheet#open']"
-    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}.is-locked:not(.is-fogged)"
+    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{camps[5].id}", count: 0
-    assert_select "#trail-map-camps .lp-trail-camp", count: 4
-    assert_select ".lp-trail-more", text: "2 more camps ahead"
+    assert_select "#trail-map-camps .lp-trail-camp", count: 3
+    assert_select ".lp-trail-more", text: "3 more camps"
     assert_select ".trail-terrace", count: 0
     assert_select "#trail-camps-fallback", count: 0
   end
 
-  test "four camps on path hide the more chip" do
+  test "four camps on path show one more chip on the ridge" do
     @plan.children.for_kind("project").destroy_all
     4.times do |index|
       @plan.children.create!(
@@ -216,7 +216,36 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-map-camps .lp-trail-camp", count: 4
+    assert_select "#trail-map-camps .lp-trail-camp", count: 3
+    assert_select ".lp-trail-more", text: "1 more camp"
+  end
+
+  test "plant add fourth camp shifts map window to include new tent" do
+    [ "Beta", "Gamma" ].each_with_index do |title, index|
+      @plan.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "project", title: title, position: index + 1, stage: index + 1
+      )
+    end
+
+    post strategy_goals_path, params: {
+      life_area_id: @area.id,
+      life_journey_id: @journey.id,
+      parent_id: @plan.id,
+      horizon: "project",
+      title: "Delta camp"
+    }, as: :turbo_stream
+
+    assert_response :success
+    delta = @plan.reload.children.for_kind("project").find_by!(title: "Delta camp")
+    beta = @plan.children.for_kind("project").find_by!(title: "Beta")
+    gamma = @plan.children.for_kind("project").find_by!(title: "Gamma")
+    trail = Strategy::Trail.for(plan: @plan, ensure_visible_id: delta.id)
+    assert_equal [ beta.id, gamma.id, delta.id ], trail.visible_nodes.map(&:id)
+
+    assert_select "turbo-stream[action='replace'][target='trail-map-camps']" do
+      assert_select "#trail-camp-#{delta.id}"
+    end
     assert_select ".lp-trail-more", count: 0
   end
 
@@ -730,8 +759,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{cleared.id}.is-done"
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
-    assert_select "#trail-map-camps [id^=trail-camp-]", count: 4
-    assert_select ".lp-trail-more", text: "1 more camp ahead"
+    assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
+    assert_select ".lp-trail-more", text: "2 more camps"
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__pill", count: 0
   end

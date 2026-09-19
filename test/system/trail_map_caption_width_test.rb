@@ -44,7 +44,7 @@ class TrailMapCaptionWidthTest < ApplicationSystemTestCase
     host.practice_tasks.create!(user: @user, title: "Wire login", position: 0)
   end
 
-  test "four camp map captions stay wide and wrap on word boundaries at 360px" do
+  test "three camp map captions stay wide and wrap on word boundaries at 360px" do
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -53,7 +53,7 @@ class TrailMapCaptionWidthTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id, focus_id: @current.id)
     assert_selector "#mountain-trail.lp-trail.is-v4", visible: :all, wait: 5
-    assert_selector "#trail-map-camps .lp-trail-camp", count: 4, visible: :all, wait: 5
+    assert_selector "#trail-map-camps .lp-trail-camp", count: 3, visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
@@ -67,7 +67,7 @@ class TrailMapCaptionWidthTest < ApplicationSystemTestCase
       })()
     JS
 
-    assert_equal 4, metrics.length
+    assert_equal 3, metrics.length
     metrics.each do |row|
       assert_operator row["width"], :>=, 80,
                      "caption too narrow (#{row['width']}px) for “#{row['text']}”"
