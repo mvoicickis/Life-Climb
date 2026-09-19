@@ -8,10 +8,15 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     @app_css = Rails.root.join("app/assets/tailwind/application.css").read
   end
 
-  test "camp sheet panel stays solid while body is see-through" do
+  test "camp sheet panel is see-through while body stays transparent" do
     panel_block = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__panel\s*\{[^}]+\}/m]
     assert panel_block, "expected v4 camp sheet panel block"
-    assert_match(/background:\s*var\(--lp-paper-soft\)/, panel_block)
+    assert_match(/background:\s*transparent/, panel_block)
+    refute_match(/background:\s*var\(--lp-paper-soft\)/, panel_block)
+
+    camp_bg = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__camp-bg\s*\{[^}]+\}/m]
+    assert camp_bg, "expected v4 camp photo layer block"
+    assert_match(/opacity:\s*1/, camp_bg)
 
     body_block = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__body\s*\{[^}]+\}/m]
     assert body_block, "expected v4 camp sheet body block"
