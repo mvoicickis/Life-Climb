@@ -85,7 +85,7 @@ export default class extends Controller {
       root.style.setProperty("--lp-trail-warm", "0")
     }
 
-    const misty = this.dormantValue || (!isDay && cycleFrac < 0.2) || (isDay && (cycleFrac < 0.08 || cycleFrac > 0.92))
+    const misty = (!isDay && cycleFrac < 0.2) || (isDay && (cycleFrac < 0.08 || cycleFrac > 0.92))
     const showEmbers = !isDay || hrs >= 17
     this.toggleMist(misty)
     this.toggleEmbers(showEmbers)
@@ -140,12 +140,12 @@ export default class extends Controller {
     root.style.setProperty("--lp-trail-moon-y", "16%")
     root.style.setProperty("--lp-trail-night", isDay ? "0" : "0.28")
     root.style.setProperty("--lp-trail-warm", "0")
-    root.style.setProperty("--lp-trail-mist", this.dormantValue ? "0.4" : "0")
+    root.style.setProperty("--lp-trail-mist", "0")
     root.style.setProperty("--lp-trail-backlight-size", "360px")
     root.style.setProperty("--lp-trail-backlight", isDay ? "0.3" : "0.08")
     root.style.setProperty("--lp-trail-stars", isDay ? "0" : "0.55")
     root.style.setProperty("--lp-trail-wind-opacity", "0")
-    root.classList.toggle("is-mist", this.dormantValue)
+    root.classList.remove("is-mist")
     root.classList.remove("is-embers")
     this.syncEmberIntensity()
   }
@@ -166,7 +166,7 @@ export default class extends Controller {
 
   toggleMist(on) {
     this.element.classList.toggle("is-mist", on)
-    this.element.style.setProperty("--lp-trail-mist", on ? (this.dormantValue ? "0.4" : "0.28") : "0")
+    this.element.style.setProperty("--lp-trail-mist", on ? "0.28" : "0")
     if (this.hasMistTarget) this.mistTarget.classList.toggle("is-on", on)
   }
 

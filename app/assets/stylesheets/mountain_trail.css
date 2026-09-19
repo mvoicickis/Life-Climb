@@ -131,10 +131,6 @@
   transition: filter 1.2s ease;
 }
 
-.lp-trail.is-dormant .lp-trail__photo-wrap {
-  filter: saturate(0.55) contrast(0.95) brightness(0.92);
-}
-
 .lp-trail__night {
   position: absolute;
   top: 0;
@@ -1545,14 +1541,6 @@
   z-index: 0;
   pointer-events: none;
   display: block;
-}
-
-.lp-trail.is-v4.is-dormant img.lp-trail__photo {
-  filter: saturate(0.55) contrast(0.95) brightness(0.92);
-}
-
-.lp-trail.is-v4.is-dormant .lp-trail__photo-backdrop {
-  filter: blur(28px) saturate(0.55) contrast(0.95) brightness(0.92);
 }
 
 /* Dark glass HUD (mockup) */
