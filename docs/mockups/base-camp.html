@@ -36,7 +36,6 @@
       --lp-green: #57d35b;
       --lp-green-deep: #3dbd48;
       --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
-      --lp-label-on-photo: color-mix(in srgb, var(--lp-surface) 78%, var(--lp-muted));
       --lp-basic-count-w: 4.75rem;
     }
 
@@ -222,8 +221,7 @@
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--lp-label-on-photo);
-      text-shadow: 0 1px 2px color-mix(in srgb, var(--lp-ink) 55%, transparent);
+      color: var(--lp-muted);
     }
 
     .row-list {
@@ -439,14 +437,27 @@
       box-shadow: var(--lp-shadow-cta);
     }
 
-    .hint-line {
+    .empty-card {
+      padding: var(--lp-space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--lp-space-2);
+    }
+
+    .empty-card__title {
       margin: 0;
-      padding: 0 var(--lp-space-1);
+      font-size: var(--lp-type-ui-md);
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--lp-ink);
+    }
+
+    .empty-card__hint {
+      margin: 0;
       font-size: var(--lp-type-ui-sm);
       font-weight: 600;
       line-height: 1.45;
-      color: var(--lp-label-on-photo);
-      text-shadow: 0 1px 2px color-mix(in srgb, var(--lp-ink) 55%, transparent);
+      color: var(--lp-muted);
     }
   </style>
 </head>
@@ -541,7 +552,13 @@
           </header>
 
           <div class="sheet-body">
-            <p class="hint-line">Like: 20 push-ups, read 5 pages, one German lesson.</p>
+            <section class="sheet-group">
+              <p class="section-label">Basics</p>
+              <div class="row-card empty-card">
+                <p class="empty-card__title">Nothing here yet. Add the first thing you do every day.</p>
+                <p class="empty-card__hint">Like: 20 push-ups, read 5 pages, one German lesson.</p>
+              </div>
+            </section>
           </div>
 
           <div class="sheet-add">
