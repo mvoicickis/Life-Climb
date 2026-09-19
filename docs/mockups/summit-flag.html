@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Summit flag — goal label options (360px)</title>
+  <title>Summit flag — round 2 · cloth vs side pill (360px)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -140,17 +140,6 @@
       display: block;
     }
 
-    .phone-shell__hud {
-      position: absolute;
-      top: max(0.45rem, env(safe-area-inset-top));
-      left: 0.5rem;
-      right: 0.5rem;
-      z-index: 20;
-      pointer-events: none;
-    }
-
-    .phone-shell__hud > * { pointer-events: auto; }
-
     .phone-shell__layer {
       position: absolute;
       inset: 0;
@@ -160,48 +149,7 @@
 
     .phone-shell__layer > * { pointer-events: auto; }
 
-    .lp-trail__goal { position: relative; width: 100%; }
-
-    .lp-trail__goal-plaque {
-      display: block;
-      width: 100%;
-      border: 1px solid var(--lp-rpg-glass-border);
-      border-radius: var(--lp-radius-card);
-      background: var(--lp-rpg-glass);
-      backdrop-filter: blur(var(--lp-rpg-glass-blur));
-      -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur));
-      box-shadow: var(--lp-rpg-glass-shadow);
-      padding: 0.55rem 0.75rem;
-      text-align: center;
-      cursor: pointer;
-      font: inherit;
-      color: inherit;
-    }
-
-    .lp-trail__goal-plaque.is-blank {
-      min-height: calc(2 * 1.2em + 1.1rem);
-      cursor: default;
-    }
-
-    .lp-trail__goal-title {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      overflow: hidden;
-      font-size: clamp(1rem, 3.2vw + 0.35rem, 1.55rem);
-      font-weight: 800;
-      color: var(--lp-rpg-ink);
-      line-height: 1.2;
-      margin: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .lp-trail__goal-plaque.is-blank .lp-trail__goal-title {
-      visibility: hidden;
-    }
-
-    /* Summit finish flag — pole foot on peak, small rectangular cloth (not a tent) */
+    /* Summit finish flag — pennant on pole, rock foot, ground shadow */
     .summit-flag {
       position: absolute;
       left: calc(var(--lp-peak-x) * 100%);
@@ -211,90 +159,187 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      max-width: calc(var(--phone-w) - 1.25rem);
+      max-width: calc(var(--phone-w) - 1rem);
       pointer-events: none;
+    }
+
+    .summit-flag__row {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 0.35rem;
+      max-width: 100%;
     }
 
     .summit-flag__plant {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
-      filter: drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink) 35%, transparent));
+      flex-shrink: 0;
+      filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--lp-ink) 28%, transparent));
     }
 
-    .summit-flag__top {
+    .summit-flag__mast {
       display: flex;
       flex-direction: row;
       align-items: flex-end;
       justify-content: center;
-      gap: 0;
     }
 
-    .summit-flag__cloth {
-      width: 1.35rem;
-      height: 0.85rem;
-      margin-bottom: 0.05rem;
+    .summit-flag__pennant-wrap {
+      margin-right: -1px;
+      margin-bottom: 0.12rem;
+      transform-origin: 100% 88%;
+      animation: summit-flag-flutter 3.4s ease-in-out infinite;
+    }
+
+    .summit-flag__pennant {
+      position: relative;
+      max-width: 4.65rem;
+      min-width: 2.35rem;
+      min-height: 1.55rem;
+      padding: 0.28rem 0.42rem 0.3rem 0.62rem;
+      clip-path: polygon(14% 0, 100% 0, 100% 100%, 14% 100%, 0 50%);
       background: linear-gradient(
-        145deg,
-        color-mix(in srgb, var(--lp-green) 88%, var(--lp-surface)),
-        var(--lp-green-deep)
+        118deg,
+        color-mix(in srgb, var(--lp-green) 92%, var(--lp-surface)) 0%,
+        var(--lp-green) 42%,
+        var(--lp-green-deep) 100%
       );
-      border-radius: 0 2px 2px 0;
-      box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 45%, transparent);
-      transform-origin: 0% 100%;
-      animation: summit-flag-wave 3.2s ease-in-out infinite;
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 50%, transparent),
+        inset -3px 0 6px color-mix(in srgb, var(--lp-green-deep) 35%, var(--lp-ink));
+    }
+
+    .summit-flag__pennant::before {
+      content: "";
+      position: absolute;
+      left: 16%;
+      top: 10%;
+      bottom: 10%;
+      width: 1px;
+      background: color-mix(in srgb, var(--lp-ink) 14%, transparent);
+      pointer-events: none;
+    }
+
+    .summit-flag__pennant::after {
+      content: "";
+      position: absolute;
+      right: 12%;
+      top: 18%;
+      width: 38%;
+      height: 55%;
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--lp-surface) 22%, transparent),
+        transparent 70%
+      );
+      pointer-events: none;
+    }
+
+    .summit-flag.is-short .summit-flag__pennant {
+      max-width: 3.65rem;
+      min-height: 1.35rem;
+      padding: 0.32rem 0.38rem 0.32rem 0.58rem;
+    }
+
+    .summit-flag.is-bare-cloth .summit-flag__pennant {
+      min-width: 1.2rem;
+      max-width: 1.2rem;
+      min-height: 1.05rem;
+      padding: 0;
+    }
+
+    .summit-flag__cloth-text {
+      position: relative;
+      z-index: 1;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      overflow: hidden;
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      font-size: 0.5rem;
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -0.01em;
+      color: var(--lp-surface);
+      text-align: left;
+      overflow-wrap: anywhere;
+      text-shadow: 0 1px 0 color-mix(in srgb, var(--lp-green-deep) 75%, var(--lp-ink));
+    }
+
+    .summit-flag.is-short .summit-flag__cloth-text {
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
     }
 
     .summit-flag__pole {
-      width: 3px;
-      height: 1.65rem;
+      width: 4px;
+      height: 2.35rem;
       flex-shrink: 0;
       background: linear-gradient(
         180deg,
-        color-mix(in srgb, var(--lp-trail-wood) 70%, var(--lp-surface)),
-        var(--lp-trail-wood-deep)
+        color-mix(in srgb, var(--lp-trail-wood) 55%, var(--lp-surface)),
+        var(--lp-trail-wood-deep) 78%,
+        color-mix(in srgb, var(--lp-ink) 35%, var(--lp-trail-wood-deep))
       );
-      border-radius: 0 0 1px 1px;
+      border-radius: 1px 1px 0 0;
+      box-shadow: 1px 0 0 color-mix(in srgb, var(--lp-surface) 25%, transparent);
     }
 
-    .summit-flag__ground {
-      width: 0.55rem;
-      height: 0.18rem;
-      margin-top: -1px;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--lp-ink) 25%, transparent);
-      opacity: 0.55;
+    .summit-flag__rock {
+      width: 0.9rem;
+      height: 0.38rem;
+      margin-top: -2px;
+      border-radius: 45% 45% 35% 35%;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink)),
+        color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted))
+      );
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--lp-paper) 25%, transparent),
+        0 2px 3px color-mix(in srgb, var(--lp-ink) 30%, transparent);
     }
 
-    .summit-flag__pill {
-      margin-top: 0.28rem;
-      padding: 0.22rem 0.5rem;
-      max-width: min(10.5rem, calc(var(--phone-w) - 2rem));
+    .summit-flag__shadow {
+      width: 1.15rem;
+      height: 0.4rem;
+      margin-top: 0.06rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 22%, transparent);
+      filter: blur(2px);
+      opacity: 0.85;
+    }
+
+    .summit-flag__side-pill {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 5.75rem;
+      margin: 0 0 0.55rem;
+      padding: 0.22rem 0.45rem;
       border-radius: var(--lp-radius-pill);
       background: var(--lp-surface);
       border: 1px solid var(--lp-border);
       box-shadow: var(--lp-shadow-card);
-      font-size: 0.58rem;
+      font-size: 0.5rem;
       font-weight: 800;
-      line-height: 1.25;
+      line-height: 1.22;
       color: var(--lp-ink);
-      text-align: center;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
       overflow-wrap: anywhere;
       pointer-events: auto;
     }
 
-    .summit-flag__pill--on-peak {
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    @keyframes summit-flag-wave {
-      0%, 100% { transform: skewY(0deg) scaleX(1); }
-      50% { transform: skewY(-4deg) scaleX(0.96); }
+    @keyframes summit-flag-flutter {
+      0%, 100% { transform: skewX(0deg) rotate(0deg); }
+      50% { transform: skewX(-5deg) rotate(-1.5deg); }
     }
 
     .lp-trail-camp {
@@ -660,17 +705,17 @@
   </style>
 </head>
 <body>
-  <h1>Summit flag — where should the goal name live?</h1>
+  <h1>Summit flag — round 2</h1>
   <p class="lede">
-    Three 360px frames, light mode, default mountain photo. Same three visible camps and quiet
-    “7 more camps” ridge pill as production. Green finish flag planted on the peak (not a tent).
-    Goal test string: <strong>Learn German to B1 level</strong>.
+    Three 360px frames, light mode, no top plaque. Pennant finish flag planted on the peak (pole,
+    rock foot, ground shadow). Same camps and quiet “7 more camps” pill as round 1.
   </p>
   <div class="strip" id="strip"></div>
 
   <script>
     const PHOTO = "../../app/assets/images/mountain_trail_default.webp";
-    const GOAL = "Learn German to B1 level";
+    const GOAL_LONG = "Learn German to B1 level";
+    const GOAL_SHORT = "Run a marathon";
     const PEAK_X = 0.566;
     const PEAK_Y = 0.22;
     const MAP_LAYOUT_SLOTS = 4;
@@ -780,38 +825,41 @@
 
     function summitFlag(config) {
       const wrap = document.createElement("div");
-      wrap.className = "summit-flag";
+      const shortGoal = config.goal.length < 24;
+      wrap.className =
+        "summit-flag" +
+        (shortGoal ? " is-short" : "") +
+        (config.mode === "side-pill" ? " is-bare-cloth" : "");
       wrap.style.setProperty("--lp-peak-x", String(PEAK_X));
       wrap.style.setProperty("--lp-peak-y", String(PEAK_Y));
 
-      let labelHtml = "";
-      if (config.summitLabel === "pill") {
-        labelHtml = '<p class="summit-flag__pill">' + GOAL + "</p>";
-      } else if (config.summitLabel === "peak") {
-        labelHtml = '<p class="summit-flag__pill summit-flag__pill--on-peak">' + GOAL + "</p>";
-      }
+      const clothText =
+        config.mode === "side-pill"
+          ? ""
+          : '<p class="summit-flag__cloth-text">' + config.goal + "</p>";
+
+      const pennant =
+        '<div class="summit-flag__pennant-wrap">' +
+        '<div class="summit-flag__pennant">' + clothText + "</div></div>";
+
+      const plant =
+        '<div class="summit-flag__plant" aria-hidden="true">' +
+        '<div class="summit-flag__mast">' + pennant +
+        '<span class="summit-flag__pole"></span></div>' +
+        '<span class="summit-flag__rock"></span></div>';
+
+      const sidePill =
+        config.mode === "side-pill"
+          ? '<p class="summit-flag__side-pill">' + config.goal + "</p>"
+          : "";
 
       wrap.innerHTML =
-        '<div class="summit-flag__plant" aria-hidden="true">' +
-        '<div class="summit-flag__top">' +
-        '<span class="summit-flag__cloth"></span>' +
-        '<span class="summit-flag__pole"></span>' +
+        '<div class="summit-flag__row">' +
+        plant +
+        sidePill +
         "</div>" +
-        '<span class="summit-flag__ground"></span>' +
-        "</div>" +
-        labelHtml;
+        '<span class="summit-flag__shadow" aria-hidden="true"></span>';
       return wrap;
-    }
-
-    function goalPlaque(mode) {
-      if (mode === "hidden") return null;
-      const goal = document.createElement("div");
-      goal.className = "lp-trail__goal";
-      const blank = mode === "blank";
-      goal.innerHTML =
-        '<button type="button" class="lp-trail__goal-plaque' + (blank ? " is-blank" : "") + '">' +
-        '<span class="lp-trail__goal-title">' + (blank ? "\u00a0" : GOAL) + "</span></button>";
-      return goal;
     }
 
     function dockCard() {
@@ -877,14 +925,6 @@
       photoWrap.appendChild(img);
       map.appendChild(photoWrap);
 
-      const plaque = goalPlaque(config.plaque);
-      if (plaque) {
-        const hud = document.createElement("div");
-        hud.className = "phone-shell__hud";
-        hud.appendChild(plaque);
-        map.appendChild(hud);
-      }
-
       const layer = document.createElement("div");
       layer.className = "phone-shell__layer";
 
@@ -926,22 +966,22 @@
 
     const strip = document.getElementById("strip");
     strip.appendChild(buildFrame({
-      label: "1 — Goal on white pill under flag; no top plaque",
-      plaque: "hidden",
-      summitLabel: "pill",
-      note: "Summit carries the destination; top HUD slot is free for stats or nothing."
+      label: "1",
+      mode: "cloth",
+      goal: GOAL_LONG,
+      note: "Long goal on the pennant at fixed 8px type — extra lines clip, no micro-shrinking."
     }));
     strip.appendChild(buildFrame({
-      label: "2 — Flag only; goal stays on top plaque",
-      plaque: "full",
-      summitLabel: "none",
-      note: "No duplicate name on the peak — flag is a visual finish line only."
+      label: "2",
+      mode: "side-pill",
+      goal: GOAL_LONG,
+      note: "Blank pennant; goal on a white pill beside the pole."
     }));
     strip.appendChild(buildFrame({
-      label: "3 — Goal under flag; empty top plaque (reserved space)",
-      plaque: "blank",
-      summitLabel: "peak",
-      note: "Plaque keeps two-line height so you can see what else could sit there."
+      label: "3",
+      mode: "cloth",
+      goal: GOAL_SHORT,
+      note: "Short goal on the cloth — best-case readability on the pennant."
     }));
   </script>
 </body>
