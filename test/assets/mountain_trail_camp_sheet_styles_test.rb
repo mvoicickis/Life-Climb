@@ -86,4 +86,17 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert fog, "expected .lp-trail-camp.is-fogged block"
     refute_match(/pointer-events:\s*none/, fog)
   end
+
+  test "base camp basics rows and dock composer use opaque paper-soft cards" do
+    assert_match(
+      /\.lp-trail\.is-v4 \.lp-trail-base-sheet \.lp-trail-battles__row\.is-basics[\s\S]*?background:\s*var\(--lp-paper-soft\)/m,
+      @css
+    )
+
+    base_composer = @css[
+      /\.lp-trail\.is-v4 \.lp-trail-base-sheet \.lp-trail-battles__composer\.is-dock\s*\{[^}]+\}/m
+    ]
+    assert base_composer, "expected v4 base camp dock composer block"
+    assert_match(/background:\s*var\(--lp-paper-soft\)/, base_composer)
+  end
 end
