@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Summit flag — round 3 · planted anchor (360px)</title>
+  <title>Summit flag — final · ribbon banner (360px)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -49,7 +49,8 @@
       --lp-rpg-gold-soft: rgba(212, 160, 23, 0.18);
       --lp-trail-wood: color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink));
       --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted));
-      --summit-pole-h: 3.35rem;
+      --summit-pole-h: 1.75rem;
+      --summit-banner-text: 0.62rem;
     }
 
     * { box-sizing: border-box; }
@@ -151,7 +152,7 @@
 
     .phone-shell__layer > * { pointer-events: auto; }
 
-    /* Summit finish flag — anchor point on peak; pole grows up; cloth at masthead */
+    /* Summit ribbon — short pole on anchor; wide banner at masthead */
     .summit-flag {
       position: absolute;
       left: calc(var(--summit-x) * 100%);
@@ -167,20 +168,14 @@
       left: 0;
       bottom: 0;
       transform: translateX(-50%);
-      display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      gap: 0.35rem;
-      max-width: calc(var(--phone-w) - 1rem);
+      max-width: calc(var(--phone-w) - 0.75rem);
     }
 
     .summit-flag__plant {
       display: flex;
       flex-direction: column;
       align-items: center;
-      flex-shrink: 0;
       position: relative;
-      filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--lp-ink) 28%, transparent));
     }
 
     .summit-flag__mast {
@@ -188,102 +183,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 4px;
-    }
-
-    .summit-flag__pennant-wrap {
-      position: absolute;
-      left: 50%;
-      bottom: 100%;
-      transform: translateX(-100%);
-      transform-origin: 100% 100%;
-      margin-bottom: -1px;
-      animation: summit-flag-flutter 3.4s ease-in-out infinite;
-    }
-
-    .summit-flag__pennant {
-      position: relative;
-      max-width: 4.65rem;
-      min-width: 2.35rem;
-      min-height: 1.55rem;
-      padding: 0.28rem 0.42rem 0.3rem 0.62rem;
-      clip-path: polygon(14% 0, 100% 0, 100% 100%, 14% 100%, 0 50%);
-      background: linear-gradient(
-        118deg,
-        color-mix(in srgb, var(--lp-green) 92%, var(--lp-surface)) 0%,
-        var(--lp-green) 42%,
-        var(--lp-green-deep) 100%
-      );
-      box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 50%, transparent),
-        inset -3px 0 6px color-mix(in srgb, var(--lp-green-deep) 35%, var(--lp-ink));
-    }
-
-    .summit-flag__pennant::before {
-      content: "";
-      position: absolute;
-      left: 16%;
-      top: 10%;
-      bottom: 10%;
-      width: 1px;
-      background: color-mix(in srgb, var(--lp-ink) 14%, transparent);
-      pointer-events: none;
-    }
-
-    .summit-flag__pennant::after {
-      content: "";
-      position: absolute;
-      right: 12%;
-      top: 18%;
-      width: 38%;
-      height: 55%;
-      background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--lp-surface) 22%, transparent),
-        transparent 70%
-      );
-      pointer-events: none;
-    }
-
-    .summit-flag.is-short .summit-flag__pennant {
-      max-width: 3.65rem;
-      min-height: 1.35rem;
-      padding: 0.32rem 0.38rem 0.32rem 0.58rem;
-    }
-
-    .summit-flag.is-bare-cloth .summit-flag__pennant {
-      min-width: 1.2rem;
-      max-width: 1.2rem;
-      min-height: 1.05rem;
-      padding: 0;
-    }
-
-    .summit-flag__cloth-text {
-      position: relative;
-      z-index: 1;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
-      line-clamp: 4;
-      overflow: hidden;
-      margin: 0;
-      font-family: var(--lp-font-ui);
-      font-size: 0.5rem;
-      font-weight: 800;
-      line-height: 1.22;
-      letter-spacing: -0.01em;
-      color: var(--lp-surface);
-      text-align: left;
-      overflow-wrap: anywhere;
-      text-shadow: 0 1px 0 color-mix(in srgb, var(--lp-green-deep) 75%, var(--lp-ink));
-    }
-
-    .summit-flag.is-short .summit-flag__cloth-text {
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
     }
 
     .summit-flag__pole {
+      position: relative;
+      z-index: 1;
       width: 4px;
       height: var(--summit-pole-h);
       flex-shrink: 0;
@@ -295,6 +199,127 @@
       );
       border-radius: 1px 1px 0 0;
       box-shadow: 1px 0 0 color-mix(in srgb, var(--lp-surface) 25%, transparent);
+    }
+
+    .summit-flag.is-sign-center .summit-flag__pole {
+      z-index: 0;
+    }
+
+    .summit-flag__banner-wrap {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% - 1px);
+      margin-bottom: 0;
+      transform-origin: 0% 100%;
+      filter: drop-shadow(0 5px 8px color-mix(in srgb, var(--lp-ink) 18%, transparent));
+      animation: summit-banner-flutter-right 3.6s ease-in-out infinite;
+    }
+
+    .summit-flag.is-fly-right .summit-flag__banner-wrap {
+      transform: translate(4px, 0);
+    }
+
+    .summit-flag.is-sign-center .summit-flag__banner-wrap {
+      transform: translateX(-50%);
+      transform-origin: 50% 100%;
+      animation-name: summit-banner-flutter-center;
+    }
+
+    .summit-flag__banner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-width: 5.5rem;
+      max-width: min(10.5rem, calc(var(--phone-w) - 2.25rem));
+      width: max-content;
+      padding: 0.4rem 0.85rem 0.4rem 0.55rem;
+      clip-path: polygon(
+        0 0,
+        calc(100% - 0.62rem) 0,
+        100% 50%,
+        calc(100% - 0.62rem) 100%,
+        0 100%
+      );
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--lp-green) 90%, var(--lp-surface)) 0%,
+        var(--lp-green) 38%,
+        var(--lp-green-deep) 100%
+      );
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 45%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, var(--lp-green-deep) 40%, var(--lp-ink));
+    }
+
+    .summit-flag.is-sign-center .summit-flag__banner {
+      padding-left: 0.65rem;
+      padding-right: 0.65rem;
+      clip-path: polygon(
+        0.62rem 0,
+        calc(100% - 0.62rem) 0,
+        100% 50%,
+        calc(100% - 0.62rem) 100%,
+        0.62rem 100%,
+        0 50%
+      );
+    }
+
+    .summit-flag__banner::after {
+      content: "";
+      position: absolute;
+      inset: 0.12rem 0.72rem 0.12rem 0.42rem;
+      border-radius: 2px;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lp-surface) 12%, transparent);
+    }
+
+    .summit-flag.is-sign-center .summit-flag__banner::after {
+      inset: 0.12rem 0.55rem;
+    }
+
+    .summit-flag__banner-lift {
+      position: absolute;
+      left: 8%;
+      right: 6%;
+      bottom: -0.28rem;
+      height: 0.42rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 20%, transparent);
+      filter: blur(3px);
+      opacity: 0.85;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .summit-flag__banner-text {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      padding: 0 0.12rem;
+      font-family: var(--lp-font-ui);
+      font-size: var(--summit-banner-text);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--lp-surface);
+      text-align: left;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      text-shadow: 0 1px 0 color-mix(in srgb, var(--lp-green-deep) 70%, var(--lp-ink));
+    }
+
+    .summit-flag.is-one-line .summit-flag__banner-text {
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: block;
     }
 
     .summit-flag__rock {
@@ -326,32 +351,14 @@
       pointer-events: none;
     }
 
-    .summit-flag__side-pill {
-      flex: 0 1 auto;
-      min-width: 0;
-      max-width: 5.75rem;
-      margin: 0 0 0.55rem;
-      padding: 0.22rem 0.45rem;
-      border-radius: var(--lp-radius-pill);
-      background: var(--lp-surface);
-      border: 1px solid var(--lp-border);
-      box-shadow: var(--lp-shadow-card);
-      font-size: 0.5rem;
-      font-weight: 800;
-      line-height: 1.22;
-      color: var(--lp-ink);
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      overflow: hidden;
-      overflow-wrap: anywhere;
-      pointer-events: auto;
+    @keyframes summit-banner-flutter-right {
+      0%, 100% { transform: translate(4px, 0) rotate(0deg); }
+      50% { transform: translate(4px, -1px) rotate(0.6deg); }
     }
 
-    @keyframes summit-flag-flutter {
-      0%, 100% { transform: translateX(-100%) skewX(0deg) rotate(0deg); }
-      50% { transform: translateX(-100%) skewX(-5deg) rotate(-1.5deg); }
+    @keyframes summit-banner-flutter-center {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      50% { transform: translateX(-50%) rotate(-0.5deg); }
     }
 
     .lp-trail-camp {
@@ -717,10 +724,10 @@
   </style>
 </head>
 <body>
-  <h1>Summit flag — round 2</h1>
+  <h1>Summit flag — final round</h1>
   <p class="lede">
-    Three 360px frames, light mode, no top plaque. Pennant finish flag planted on the peak (pole,
-    rock foot, ground shadow). Same camps and quiet “7 more camps” pill as round 1.
+    Wide ribbon banner on a short planted pole at <code>--summit-x</code> / <code>--summit-y</code>.
+    Goal text at camp-name size (0.62rem), two lines max. No top plaque.
   </p>
   <div class="strip" id="strip"></div>
 
@@ -835,37 +842,29 @@
 
     function summitFlag(config) {
       const wrap = document.createElement("div");
-      const shortGoal = config.goal.length < 24;
+      const oneLine = config.goal.length < 20;
       wrap.className =
-        "summit-flag" +
-        (shortGoal ? " is-short" : "") +
-        (config.mode === "side-pill" ? " is-bare-cloth" : "");
-      const clothText =
-        config.mode === "side-pill"
-          ? ""
-          : '<p class="summit-flag__cloth-text">' + config.goal + "</p>";
+        "summit-flag is-" +
+        config.layout +
+        (oneLine ? " is-one-line" : "");
 
-      const pennant =
-        '<div class="summit-flag__pennant-wrap">' +
-        '<div class="summit-flag__pennant">' + clothText + "</div></div>";
+      const banner =
+        '<div class="summit-flag__banner-wrap">' +
+        '<span class="summit-flag__banner-lift" aria-hidden="true"></span>' +
+        '<div class="summit-flag__banner">' +
+        '<p class="summit-flag__banner-text">' +
+        config.goal +
+        "</p></div></div>";
 
       const plant =
         '<div class="summit-flag__plant" aria-hidden="true">' +
         '<span class="summit-flag__shadow"></span>' +
-        '<div class="summit-flag__mast">' + pennant +
+        '<div class="summit-flag__mast">' +
+        banner +
         '<span class="summit-flag__pole"></span></div>' +
         '<span class="summit-flag__rock"></span></div>';
 
-      const sidePill =
-        config.mode === "side-pill"
-          ? '<p class="summit-flag__side-pill">' + config.goal + "</p>"
-          : "";
-
-      wrap.innerHTML =
-        '<div class="summit-flag__row">' +
-        plant +
-        sidePill +
-        "</div>";
+      wrap.innerHTML = '<div class="summit-flag__row">' + plant + "</div>";
       return wrap;
     }
 
@@ -974,21 +973,21 @@
     const strip = document.getElementById("strip");
     strip.appendChild(buildFrame({
       label: "1",
-      mode: "cloth",
+      layout: "fly-right",
       goal: GOAL_LONG,
-      note: "Long goal on the pennant at fixed 8px type — extra lines clip, no micro-shrinking."
+      note: "Ribbon flies right from the pole; long goal in two lines at camp-name size."
     }));
     strip.appendChild(buildFrame({
       label: "2",
-      mode: "side-pill",
+      layout: "sign-center",
       goal: GOAL_LONG,
-      note: "Blank pennant; goal on a white pill beside the pole."
+      note: "Banner centred on the pole like a held sign; pole sits behind the cloth."
     }));
     strip.appendChild(buildFrame({
       label: "3",
-      mode: "cloth",
+      layout: "fly-right",
       goal: GOAL_SHORT,
-      note: "Short goal on the cloth — best-case readability on the pennant."
+      note: "Same right-flying ribbon with a short goal on one line."
     }));
   </script>
 </body>
