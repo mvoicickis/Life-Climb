@@ -8,70 +8,92 @@
 <% daily_count = groups.sum { |group| group[:battles].size } %>
 <% basics = journey.present? ?
      mountain_trail_base_habits(journey: journey, user: current_user) : [] %>
+<% submitted_name = local_assigns[:submitted_name].presence || @submitted_habit_name %>
+<% form_error = local_assigns[:form_error].presence || flash.now[:alert] %>
+<% qty_on = local_assigns.fetch(:submitted_quantity_checkin) { @submitted_quantity_checkin } %>
+<% submitted_unit = local_assigns[:submitted_unit].presence || @submitted_unit %>
+<% unit_value = submitted_unit.presence || t("strategy.rpg.trail.default_unit_times") %>
 
 <div class="lp-trail-battles lp-trail-base-sheet"
      id="trail-base-sheet"
      data-controller="trail-battles"
      data-trail-battles-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>">
-  <% if basics.any? %>
-    <p class="lp-trail-battles__kind is-basics"><%= t("strategy.rpg.trail.base_camp.basics.kind") %></p>
-    <ul class="lp-trail-battles__list lp-trail-base-sheet__basics">
-      <% basics.each do |habit| %>
-        <%= render "life_journeys/trail_base_habit_row",
-              habit: habit,
-              journey: journey,
-              goal: goal,
-              plan: plan %>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if daily_count.positive? %>
-  <p class="lp-trail-battles__kind is-daily"><%= t("strategy.rpg.trail.base_camp.kind") %></p>
-  <p class="lp-trail-battles__stats"><%= t("strategy.rpg.trail.base_camp.sub", count: daily_count) %></p>
+  <div class="lp-trail-base-sheet__groups">
+    <% if basics.any? %>
+      <section class="lp-trail-base-sheet__group">
+        <p class="lp-trail-base-sheet__section-label"><%= t("strategy.rpg.trail.base_camp.basics.kind") %></p>
+        <ul class="lp-trail-battles__list lp-trail-base-sheet__basics">
+          <% basics.each do |habit| %>
+            <%= render "life_journeys/trail_base_habit_row",
+                  habit: habit,
+                  journey: journey,
+                  goal: goal,
+                  plan: plan %>
+          <% end %>
+        </ul>
+      </section>
+    <% elsif journey && goal && plan %>
+      <section class="lp-trail-base-sheet__group">
+        <%= render "life_journeys/trail_base_starter" %>
+      </section>
+    <% end %>
 
-  <% groups.each do |group| %>
-      <p class="lp-trail-base-sheet__grp"><%= group[:project].title %></p>
-      <ul class="lp-trail-battles__list">
-        <% group[:battles].each do |battle| %>
-          <li class="lp-trail-battles__row is-check" id="trail-base-battle-<%= battle.id %>"
-              data-controller="inline-title-edit"
-              data-battle-id="<%= battle.id %>"
-              data-inline-title-edit-update-url-value="<%= strategy_goal_path(battle) %>"
-              data-inline-title-edit-mode-value="camp"
-              data-inline-title-edit-battle-id-value="<%= battle.id %>"
-              data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>">
-            <%= render "life_journeys/trail_battle_check", battle: battle %>
-            <details class="lp-trail-battles__kebab"
-                     data-controller="tcard-menu"
-                     data-tcard-menu-target="details"
-                     data-action="toggle->tcard-menu#toggled">
-              <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
-              <div class="lp-trail-battles__kebab-menu">
-                <button type="button"
-                        data-action="click->inline-title-edit#openFromMenu"><%= t("strategy.rpg.trail.battle_rename") %></button>
-                <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
-                <%= button_to t("strategy.rpg.trail.delete_battle"),
-                      strategy_goal_path(battle),
-                      method: :delete,
-                      class: "is-danger",
-                      form: {
-                        data: {
-                          turbo: true,
-                          turbo_confirm: t("strategy.rpg.trail.delete_battle_body", title: battle.title),
-                          action: "submit->trail-battles#stashBattleDelete"
-                        }
-                      } %>
-              </div>
-            </details>
-          </li>
-        <% end %>
-      </ul>
-  <% end %>
-  <% end %>
+    <% if daily_count.positive? %>
+      <section class="lp-trail-base-sheet__group">
+        <p class="lp-trail-base-sheet__section-label"><%= t("strategy.rpg.trail.base_camp.from_camps") %></p>
+        <ul class="lp-trail-battles__list">
+          <% groups.each do |group| %>
+            <% group[:battles].each do |battle| %>
+              <li class="lp-trail-battles__row is-check" id="trail-base-battle-<%= battle.id %>"
+                  data-controller="inline-title-edit"
+                  data-battle-id="<%= battle.id %>"
+                  data-inline-title-edit-update-url-value="<%= strategy_goal_path(battle) %>"
+                  data-inline-title-edit-mode-value="camp"
+                  data-inline-title-edit-battle-id-value="<%= battle.id %>"
+                  data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>">
+                <div class="lp-trail-base-sheet__battle-main">
+                  <%= render "life_journeys/trail_battle_check", battle: battle %>
+                  <p class="lp-trail-base-sheet__battle-camp"><%= group[:project].title %></p>
+                </div>
+                <details class="lp-trail-battles__kebab"
+                         data-controller="tcard-menu"
+                         data-tcard-menu-target="details"
+                         data-action="toggle->tcard-menu#toggled">
+                  <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
+                  <div class="lp-trail-battles__kebab-menu">
+                    <button type="button"
+                            data-action="click->inline-title-edit#openFromMenu"><%= t("strategy.rpg.trail.battle_rename") %></button>
+                    <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
+                    <%= button_to t("strategy.rpg.trail.delete_battle"),
+                          strategy_goal_path(battle),
+                          method: :delete,
+                          class: "is-danger",
+                          form: {
+                            data: {
+                              turbo: true,
+                              turbo_confirm: t("strategy.rpg.trail.delete_battle_body", title: battle.title),
+                              action: "submit->trail-battles#stashBattleDelete"
+                            }
+                          } %>
+                  </div>
+                </details>
+              </li>
+            <% end %>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  </div>
 
   <% if journey && goal && plan %>
     <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
     <div class="lp-trail-battles__composer is-dock">
+    <% if form_error.present? %>
+      <p class="lp-trail-base-sheet__form-error"
+         role="alert"
+         aria-labelledby="trail-base-form-error"><%= form_error %></p>
+      <span id="trail-base-form-error" class="sr-only"><%= t("strategy.rpg.trail.base_camp.form_error_aria") %></span>
+    <% end %>
     <%= form_with url: habits_path,
           method: :post,
           class: "lp-trail-battles__add",
@@ -89,7 +111,7 @@
       <div class="lp-trail-battles__add-row is-base" data-trail-battles-target="addRow">
         <label class="lp-trail-battles__field">
           <span class="sr-only"><%= t("strategy.rpg.trail.base_camp.add_placeholder") %></span>
-          <%= text_field_tag "habit[name]", nil,
+          <%= text_field_tag "habit[name]", submitted_name,
                 required: true,
                 maxlength: 120,
                 class: "lp-trail-battles__input",
@@ -103,22 +125,24 @@
                  class="lp-trail-battles__daily-check sr-only"
                  name="habit[quantity_checkin]"
                  value="1"
+                 <%= "checked" if qty_on %>
                  data-trail-battles-target="quantityToggle"
                  data-action="change->trail-battles#toggleQuantity">
           <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-          <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.log_a_number") %></span>
+          <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.base_camp.count_toggle") %></span>
         </label>
-        <%= text_field_tag "habit[unit]", t("strategy.rpg.trail.default_unit_times"),
+        <%= text_field_tag "habit[unit]", unit_value,
               maxlength: 40,
               class: "lp-trail-battles__unit sr-only",
               autocomplete: "off",
               data: { trail_battles_target: "unitField" },
               aria: { hidden: true } %>
-        <label class="lp-trail-battles__unit-field" data-trail-battles-target="unitWrap" hidden>
+        <label class="lp-trail-battles__unit-field" data-trail-battles-target="unitWrap" <%= qty_on ? nil : "hidden" %>>
           <span class="sr-only"><%= t("strategy.rpg.trail.unit_placeholder") %></span>
           <input type="text"
                  maxlength="40"
                  class="lp-trail-battles__unit"
+                 value="<%= unit_value if qty_on %>"
                  placeholder="<%= t("strategy.rpg.trail.unit_placeholder") %>"
                  autocomplete="off"
                  data-trail-battles-target="unitMirrorField"

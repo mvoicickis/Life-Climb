@@ -97,5 +97,10 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     ]
     assert base_composer, "expected v4 base camp dock composer block"
     assert_match(/background:\s*var\(--lp-paper-soft\)/, base_composer)
+
+    section_label = @css[/\.lp-trail-base-sheet__section-label\s*\{[^}]+\}/m]
+    assert section_label, "expected base camp section label block"
+    assert_match(/color:\s*var\(--lp-muted\)/, section_label)
+    refute_match(/background:/, section_label)
   end
 end

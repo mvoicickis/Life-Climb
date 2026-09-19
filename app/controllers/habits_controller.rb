@@ -68,6 +68,9 @@ class HabitsController < ApplicationController
         redirect_to dashboard_path, notice: "Added. Start logging today — small steps count."
       end
     elsif mountain_create?
+      @submitted_habit_name = params.dig(:habit, :name).to_s
+      @submitted_quantity_checkin = params.dig(:habit, :quantity_checkin).to_s == "1"
+      @submitted_unit = params.dig(:habit, :unit).presence
       respond_to do |format|
         format.turbo_stream do
           flash.now[:alert] = @habit.errors.full_messages.to_sentence

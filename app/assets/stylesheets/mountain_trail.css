@@ -1038,6 +1038,182 @@
 
 .lp-trail-base-sheet {
   --lp-trail-add-dock: 7.5rem;
+  --lp-basic-count-w: 4.75rem;
+  padding-inline: var(--lp-space-4);
+}
+
+.lp-trail-base-sheet__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lp-space-4);
+}
+
+.lp-trail-base-sheet__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lp-space-2);
+  min-width: 0;
+}
+
+.lp-trail-base-sheet__section-label {
+  margin: 0;
+  font-size: var(--lp-type-label, 0.6875rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-trail-base-sheet__basics {
+  margin-bottom: 0;
+}
+
+.lp-trail-base-sheet .lp-trail-battles__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lp-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-trail-base-sheet__basic-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--lp-basic-count-w) auto;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-trail-base-sheet__basic-row.is-check {
+  grid-template-columns: auto minmax(0, 1fr) var(--lp-basic-count-w);
+}
+
+.lp-trail-base-sheet__basic-row .lp-trail-battles__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  font-size: var(--lp-type-body, 0.9375rem);
+  font-weight: 700;
+  color: var(--lp-ink);
+}
+
+.lp-trail-base-sheet__basic-row.is-check .lp-trail-battles__tick,
+.lp-trail-base-sheet__basic-row.is-check .lp-trail-battles__tick-form {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.lp-trail-base-sheet__basic-row.is-check .lp-trail-battles__name {
+  grid-column: 2;
+}
+
+.lp-trail-base-sheet__basic-row.is-check .lp-trail-battles__basics-amt {
+  grid-column: 3;
+}
+
+.lp-trail-base-sheet__basic-row .lp-trail-battles__basics-amt {
+  justify-self: end;
+  text-align: right;
+  min-height: 1.1em;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-trail-base-sheet__basic-row .lp-trail-battles__basics-act {
+  justify-self: end;
+}
+
+.lp-trail-base-sheet__battle-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: start;
+  column-gap: 0.5rem;
+  row-gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-trail-base-sheet__battle-main .lp-trail-battles__tick,
+.lp-trail-base-sheet__battle-main .lp-trail-battles__tick-form {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+.lp-trail-base-sheet__battle-main .lp-trail-battles__copy {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.lp-trail-base-sheet__battle-camp {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+  text-transform: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-trail-base-sheet__starter {
+  padding: var(--lp-space-4);
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  background: var(--lp-surface);
+}
+
+.lp-trail-base-sheet__starter-title {
+  margin: 0 0 var(--lp-space-3);
+  font-size: var(--lp-type-body, 0.9375rem);
+  font-weight: 800;
+  color: var(--lp-ink);
+  line-height: 1.35;
+}
+
+.lp-trail-base-sheet__starter-pills {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lp-space-2);
+}
+
+.lp-trail-base-sheet__example-pill {
+  margin: 0;
+  width: 100%;
+  min-height: var(--lp-tap);
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  font-family: var(--lp-font-ui);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lp-trail-base-sheet__form-error {
+  margin: 0 0 var(--lp-space-2);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  line-height: 1.35;
+}
+
+.lp-trail-base-sheet .lp-trail-battles__row.is-basics {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .lp-trail-battles__dock-spacer {
@@ -3278,10 +3454,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail-battles__kind.is-basics {
   background: #e8e0f4;
   color: #5b3d8f;
-}
-
-.lp-trail-base-sheet__basics {
-  margin-bottom: 0.85rem;
 }
 
 .lp-trail-battles__row.is-basics {

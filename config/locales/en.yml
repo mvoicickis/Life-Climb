@@ -1047,19 +1047,28 @@ en:
         base_camp:
           kicker: "Base camp"
           title: "Where you return every day"
+          header_tagline: "Things you do every day."
           basics:
-            kind: "Daily"
+            kind: "Basics"
             amount: "%{amount} %{unit}"
             undo: "Undo"
+          from_camps: "From your camps"
           kind: "Every day · no finish line"
           sub:
             one: "1 daily tracker. Missing a day takes nothing away."
             other: "%{count} daily trackers. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
           empty: "Optional — add something you repeat every day."
           more: "+%{count}"
-          add_placeholder: "Add a daily tracker"
-          add_habit: "Add daily tracker"
-          habit_added: "Daily tracker added."
+          add_placeholder: "What will you do every day?"
+          dock_add_pill: "Add a Basic"
+          add_habit: "Add Basic"
+          habit_added: "Basic added."
+          count_toggle: "Count how many"
+          starter_title: "Add the first thing you do every day."
+          starter_example_1: "20 push-ups"
+          starter_example_2: "Read 5 pages"
+          starter_example_3: "One German lesson"
+          form_error_aria: "Could not add Basic"
           daily_hint: "Shows up again tomorrow."
           amount_hint: "Ask how many, like pages. Leave off for a simple tick."
         won_battles:
