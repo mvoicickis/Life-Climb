@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mountain top — summit, trail copy, tap hints (360px)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Tokens mirrored from app/assets/tailwind/application.css (:root light) */
+    :root {
+      --phone-w: 360px;
+      --map-aspect: 1024 / 1536;
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --lp-tap: 2.75rem;
+      --lp-space-2: 0.55rem;
+      --lp-radius-card: 1.25rem;
+      --lp-radius-field: 0.85rem;
+      --lp-radius-pill: 999px;
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+      --lp-surface: #ffffff;
+      --lp-paper: #f8fafc;
+      --lp-paper-soft: #eef2f7;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-green-soft: rgba(87, 211, 91, 0.28);
+      --lp-gold: #d4a017;
+      --lp-amber: #ffb347;
+      --rpg-amber: #f59e0b;
+      --lp-rpg-gold-soft: rgba(212, 160, 23, 0.18);
+      --lp-rpg-glass: rgba(255, 255, 255, 0.88);
+      --lp-rpg-glass-border: rgba(15, 23, 42, 0.1);
+      --lp-rpg-glass-blur: 18px;
+      --lp-rpg-glass-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+      --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
+      --lp-trail-camp-idle: color-mix(in srgb, var(--lp-muted) 42%, var(--lp-paper));
+      --lp-trail-camp-idle-deep: color-mix(in srgb, var(--lp-muted) 58%, var(--lp-ink));
+      --lp-trail-pole: color-mix(in srgb, var(--lp-muted) 35%, var(--lp-paper));
+      --lp-trail-pole-deep: color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink));
+      --lp-text-on-map: 0 0 4px color-mix(in srgb, var(--lp-paper) 96%, transparent),
+        0 1px 3px color-mix(in srgb, var(--lp-paper) 92%, transparent);
+      --peak-x: 56.6%;
+      --peak-y: 22%;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      padding: 1.25rem 1rem 2.5rem;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .lede {
+      margin: 0 0 1rem;
+      max-width: 54rem;
+      font-size: 0.82rem;
+      color: var(--lp-muted);
+      line-height: 1.45;
+    }
+
+    .strip {
+      display: flex;
+      gap: 1.25rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scroll-snap-type: x mandatory;
+      align-items: flex-start;
+    }
+
+    .frame-wrap {
+      flex: 0 0 var(--phone-w);
+      scroll-snap-align: start;
+      max-width: var(--phone-w);
+    }
+
+    .frame-label {
+      margin: 0 0 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--lp-green-deep);
+    }
+
+    .frame-note {
+      margin: 0.5rem 0 0;
+      font-size: 0.72rem;
+      color: var(--lp-muted);
+      line-height: 1.4;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--lp-paper-soft);
+      box-shadow: var(--lp-shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone__map {
+      position: relative;
+      width: 100%;
+      aspect-ratio: var(--map-aspect);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .phone__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center top;
+      display: block;
+    }
+
+    .phone__layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .phone__layer > * { pointer-events: auto; }
+
+    /* ——— Summit flag (finish — not a camp) ——— */
+    .summit {
+      position: absolute;
+      left: var(--peak-x);
+      top: var(--peak-y);
+      transform: translate(-50%, 0);
+      z-index: 16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: calc(var(--phone-w) - 1.5rem);
+    }
+
+    .summit__flag {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      cursor: default;
+      font: inherit;
+    }
+
+    .summit__pennant {
+      width: 2.35rem;
+      height: 1.65rem;
+      margin-bottom: -1px;
+      clip-path: polygon(0 0, 78% 0, 100% 50%, 78% 100%, 0 100%);
+      background: linear-gradient(
+        135deg,
+        var(--lp-surface),
+        color-mix(in srgb, var(--lp-green) 22%, var(--lp-surface))
+      );
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+      position: relative;
+    }
+
+    .summit__pennant::after {
+      content: "";
+      position: absolute;
+      inset: 0.28rem 0.55rem 0.28rem 0.35rem;
+      border-radius: 2px;
+      background: color-mix(in srgb, var(--lp-green) 55%, transparent);
+    }
+
+    .summit__pole {
+      width: 3px;
+      height: 2.75rem;
+      border-radius: 0 0 2px 2px;
+      background: linear-gradient(180deg, var(--lp-trail-pole), var(--lp-trail-pole-deep));
+      box-shadow: 1px 1px 2px color-mix(in srgb, var(--lp-ink) 18%, transparent);
+    }
+
+    .trail-pill {
+      margin-top: 0.35rem;
+      padding: 0.28rem 0.65rem;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+      line-height: 1.25;
+      text-align: center;
+      max-width: 11rem;
+      text-shadow: none;
+    }
+
+    .summit .trail-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.35rem 0.75rem;
+      max-width: 12.5rem;
+    }
+
+    /* ——— Camps ——— */
+    .camp {
+      position: absolute;
+      left: calc(var(--x) * 100%);
+      top: calc(var(--y) * 100%);
+      transform: translate(-50%, -100%);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .camp.is-quiet { z-index: 4; cursor: default; opacity: 0.92; }
+
+    .camp__peg {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: end center;
+    }
+
+    .camp__ring {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 62px;
+      height: 62px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .camp__ring circle {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .camp__ring-bg { stroke: color-mix(in srgb, var(--lp-ink) 12%, transparent); }
+
+    .camp.is-current .camp__ring-fg {
+      stroke: var(--lp-green);
+      filter: drop-shadow(0 0 6px var(--lp-green-soft));
+    }
+
+    .camp__dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--lp-trail-camp-idle);
+      border: 2px solid color-mix(in srgb, var(--lp-muted) 35%, var(--lp-surface));
+      box-shadow: var(--lp-text-on-map);
+    }
+
+    .camp__tent {
+      width: 26px;
+      height: 22px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-trail-camp-idle) 80%, var(--lp-surface)) 0%,
+        var(--lp-trail-camp-idle) 55%,
+        var(--lp-trail-camp-idle-deep) 100%
+      );
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(1px 2px 2px color-mix(in srgb, var(--lp-ink) 22%, transparent));
+    }
+
+    .camp.is-current .camp__tent {
+      width: 32px;
+      height: 28px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-green) 35%, var(--lp-surface)) 0%,
+        color-mix(in srgb, var(--lp-green) 75%, var(--lp-ink)) 100%
+      );
+      filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--lp-ink) 25%, transparent));
+    }
+
+    .camp__caption {
+      margin-top: 0.15rem;
+      max-width: 8.5rem;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .camp__title {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: color-mix(in srgb, var(--lp-ink) 88%, var(--lp-paper));
+      line-height: 1.15;
+      text-shadow: var(--lp-text-on-map);
+    }
+
+    .camp.is-quiet .camp__title {
+      font-weight: 600;
+      color: color-mix(in srgb, var(--lp-muted) 92%, var(--lp-ink));
+    }
+
+    .camp__hint {
+      display: block;
+      margin-top: 0.12rem;
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: var(--lp-green-deep);
+      text-shadow: var(--lp-text-on-map);
+    }
+
+    .trail-count {
+      position: absolute;
+      left: calc(var(--x) * 100%);
+      top: calc(var(--y) * 100%);
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      border: 0;
+      padding: 0.32rem 0.7rem;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
+      border: 1px solid var(--lp-border);
+      box-shadow: var(--lp-shadow-card);
+      font-family: var(--lp-font-ui);
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    /* ——— Dock ——— */
+    .phone__dock {
+      flex-shrink: 0;
+      background: color-mix(in srgb, var(--lp-paper) 94%, transparent);
+      border-top: 1px solid color-mix(in srgb, var(--lp-ink) 6%, transparent);
+      padding: 10px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .dock-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        "main tick"
+        "base base";
+      gap: 8px 10px;
+      padding: 13px 14px 12px;
+      border-radius: 20px;
+      border: 1.5px solid color-mix(in srgb, var(--lp-gold) 32%, var(--lp-paper));
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--lp-paper) 96%, var(--lp-gold)),
+        color-mix(in srgb, var(--lp-paper-soft) 88%, var(--lp-gold))
+      );
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--lp-ink) 12%, transparent);
+    }
+
+    .dock-card__main {
+      grid-area: main;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dock-card__kicker {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: color-mix(in srgb, var(--lp-gold) 55%, var(--lp-muted));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dock-card__title {
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dock-card__tick {
+      grid-area: tick;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      align-self: start;
+      padding-top: 2px;
+    }
+
+    .dock-card__tick-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--lp-tick-ring);
+      background: var(--lp-surface);
+      flex-shrink: 0;
+    }
+
+    .dock-card__tick-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      white-space: nowrap;
+    }
+
+    .dock-card__base {
+      grid-area: base;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      min-height: var(--lp-tap);
+      padding: 0.35rem 0.5rem 0.35rem 0.45rem;
+      border: 0;
+      border-radius: var(--lp-radius-field);
+      background: color-mix(in srgb, var(--lp-surface) 88%, transparent);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .dock-card__base-head {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-width: 0;
+    }
+
+    .dock-card__base-tent {
+      width: 1.35rem;
+      height: 1.05rem;
+      flex-shrink: 0;
+    }
+
+    .dock-card__base-tent .trail-tent-body { fill: color-mix(in srgb, var(--lp-green-deep) 70%, var(--lp-muted)); }
+    .dock-card__base-tent .trail-tent-shade { fill: color-mix(in srgb, var(--lp-green-deep) 45%, var(--lp-ink)); }
+    .dock-card__base-tent .trail-tent-door { fill: color-mix(in srgb, var(--lp-ink) 25%, var(--lp-surface)); }
+
+    .dock-card__base-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+    }
+
+    .dock-card__base-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+      justify-content: flex-end;
+    }
+
+    .dock-card__pill {
+      padding: 4px 9px;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
+      border: 1px solid color-mix(in srgb, var(--lp-gold) 22%, var(--lp-border));
+      font-size: 11px;
+      font-weight: 800;
+      color: color-mix(in srgb, var(--lp-muted) 80%, var(--lp-ink));
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dock-card__base-chev {
+      flex-shrink: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1;
+      color: color-mix(in srgb, var(--lp-muted) 70%, var(--lp-ink));
+    }
+  </style>
+</head>
+<body>
+  <h1>Mountain top — wayfinding mockup</h1>
+  <p class="lede">
+    Two 360px frames on the default mountain photo. Light surfaces, one green accent on the active camp only.
+    Summit is a flag (not a tent). Copy and affordances answer: where does the climb end, and what do I tap?
+  </p>
+
+  <div class="strip">
+    <!-- Frame A: returning climber -->
+    <div class="frame-wrap">
+      <p class="frame-label">A · On the trail (several camps)</p>
+      <div class="phone">
+        <div class="phone__map">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async" width="1024" height="1536">
+          <div class="phone__layer">
+            <div class="summit" aria-hidden="false">
+              <div class="summit__flag" aria-label="Goal: Run a half marathon">
+                <span class="summit__pennant" aria-hidden="true"></span>
+                <span class="summit__pole" aria-hidden="true"></span>
+              </div>
+              <p class="trail-pill">Run a half marathon</p>
+            </div>
+
+            <p class="trail-count" style="--x: 0.545; --y: 0.36;">6 camps to the top</p>
+
+            <button type="button" class="camp is-quiet" style="--x: 0.518; --y: 0.48;" aria-label="Tempo hills">
+              <span class="camp__peg"><span class="camp__tent" aria-hidden="true"></span></span>
+              <span class="camp__caption"><span class="camp__title">Tempo hills</span></span>
+            </button>
+            <button type="button" class="camp is-quiet" style="--x: 0.562; --y: 0.58;" aria-label="10K race pace">
+              <span class="camp__peg"><span class="camp__tent" aria-hidden="true"></span></span>
+              <span class="camp__caption"><span class="camp__title">10K race pace</span></span>
+            </button>
+            <button type="button" class="camp is-current" style="--x: 0.498; --y: 0.70;" aria-label="Easy 5K week — tap to open">
+              <span class="camp__peg">
+                <svg class="camp__ring" viewBox="0 0 62 62" aria-hidden="true">
+                  <circle class="camp__ring-bg" cx="31" cy="31" r="27"></circle>
+                  <circle class="camp__ring-fg" cx="31" cy="31" r="27"></circle>
+                </svg>
+                <span class="camp__tent" aria-hidden="true"></span>
+              </span>
+              <span class="camp__caption">
+                <span class="camp__title">Easy 5K week</span>
+                <span class="camp__hint">Tap to open</span>
+              </span>
+            </button>
+            <button type="button" class="camp is-quiet" style="--x: 0.545; --y: 0.82;" aria-label="First long run">
+              <span class="camp__peg"><span class="camp__tent" aria-hidden="true"></span></span>
+              <span class="camp__caption"><span class="camp__title">First long run</span></span>
+            </button>
+          </div>
+        </div>
+        <div class="phone__dock">
+          <div class="dock-card">
+            <div class="dock-card__main">
+              <span class="dock-card__kicker">Next in Easy 5K week</span>
+              <span class="dock-card__title">Run 3 easy kilometres</span>
+            </div>
+            <div class="dock-card__tick">
+              <span class="dock-card__tick-circle" aria-hidden="true"></span>
+              <span class="dock-card__tick-label">Done</span>
+            </div>
+            <button type="button" class="dock-card__base" aria-label="Open base camp">
+              <span class="dock-card__base-head">
+                <svg class="dock-card__base-tent" viewBox="0 0 56 44" aria-hidden="true">
+                  <path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/>
+                  <path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/>
+                  <path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/>
+                </svg>
+                <span class="dock-card__base-label">Base camp</span>
+              </span>
+              <span class="dock-card__base-pills">
+                <span class="dock-card__pill">Stretch after run</span>
+              </span>
+              <span class="dock-card__base-chev" aria-hidden="true">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="frame-note">Only the current camp rings green with “Tap to open”. Trail pill replaces “more camps ahead”.</p>
+    </div>
+
+    <!-- Frame B: brand-new user -->
+    <div class="frame-wrap">
+      <p class="frame-label">B · Brand-new climber</p>
+      <div class="phone">
+        <div class="phone__map">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" decoding="async" width="1024" height="1536">
+          <div class="phone__layer">
+            <div class="summit">
+              <div class="summit__flag" aria-label="Goal: Run a half marathon">
+                <span class="summit__pennant" aria-hidden="true"></span>
+                <span class="summit__pole" aria-hidden="true"></span>
+              </div>
+              <p class="trail-pill">Run a half marathon</p>
+            </div>
+
+            <p class="trail-count" style="--x: 0.52; --y: 0.42;">6 camps to the top</p>
+
+            <button type="button" class="camp is-current" style="--x: 0.545; --y: 0.84;" aria-label="Easy 5K week — tap to open">
+              <span class="camp__peg">
+                <svg class="camp__ring" viewBox="0 0 62 62" aria-hidden="true">
+                  <circle class="camp__ring-bg" cx="31" cy="31" r="27"></circle>
+                  <circle class="camp__ring-fg" cx="31" cy="31" r="27"></circle>
+                </svg>
+                <span class="camp__tent" aria-hidden="true"></span>
+              </span>
+              <span class="camp__caption">
+                <span class="camp__title">Easy 5K week</span>
+                <span class="camp__hint">Tap to open</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="phone__dock">
+          <div class="dock-card">
+            <div class="dock-card__main">
+              <span class="dock-card__kicker">Next in Easy 5K week</span>
+              <span class="dock-card__title">Run 3 easy kilometres</span>
+            </div>
+            <div class="dock-card__tick">
+              <span class="dock-card__tick-circle" aria-hidden="true"></span>
+              <span class="dock-card__tick-label">Done</span>
+            </div>
+            <button type="button" class="dock-card__base" aria-label="Open base camp">
+              <span class="dock-card__base-head">
+                <svg class="dock-card__base-tent" viewBox="0 0 56 44" aria-hidden="true">
+                  <path class="trail-tent-body" d="M6 44 L28 6 L50 44 Z"/>
+                  <path class="trail-tent-shade" d="M28 6 L50 44 L28 44 Z"/>
+                  <path class="trail-tent-door" d="M22 44 L22 30 L34 30 L34 44 Z"/>
+                </svg>
+                <span class="dock-card__base-label">Base camp</span>
+              </span>
+              <span class="dock-card__base-pills">
+                <span class="dock-card__pill">Add a habit</span>
+              </span>
+              <span class="dock-card__base-chev" aria-hidden="true">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="frame-note">One camp at the foot, flag and goal at the summit — empty slope shows the climb ahead.</p>
+    </div>
+  </div>
+</body>
+</html>
