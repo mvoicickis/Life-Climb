@@ -24,6 +24,8 @@
   --lp-trail-mist: 0;
   --lp-trail-night: 0;
   --lp-trail-warm: 0;
+  /* Sky haze wash over the photo; lower = brighter daylight. Stops below scale from this. */
+  --lp-trail-haze-top: 0.07;
 
   position: relative;
   width: 100%;
@@ -158,10 +160,10 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(176, 196, 214, 0.22) 0%,
-    rgba(176, 196, 214, 0.18) 12%,
-    rgba(182, 199, 213, 0.12) 30%,
-    rgba(190, 203, 212, 0.06) 52%,
+    rgba(176, 196, 214, var(--lp-trail-haze-top)) 0%,
+    rgba(176, 196, 214, calc(var(--lp-trail-haze-top) * 0.8182)) 12%,
+    rgba(182, 199, 213, calc(var(--lp-trail-haze-top) * 0.5455)) 30%,
+    rgba(190, 203, 212, calc(var(--lp-trail-haze-top) * 0.2727)) 52%,
     rgba(198, 208, 212, 0) 74%
   );
 }
