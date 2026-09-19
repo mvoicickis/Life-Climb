@@ -200,9 +200,10 @@
       flex: 1 1 auto;
       min-height: 0;
       overflow-y: auto;
-      padding: var(--lp-space-3) var(--lp-space-3) var(--lp-space-2);
+      padding: var(--lp-space-4);
       display: flex;
       flex-direction: column;
+      gap: var(--lp-space-4);
     }
 
     .sheet-group {
@@ -211,8 +212,18 @@
       gap: var(--lp-space-2);
     }
 
-    .sheet-group + .sheet-group {
-      margin-top: var(--lp-space-4);
+    .lp-text-title {
+      font-size: var(--lp-type-ui-md);
+      font-weight: 800;
+      line-height: 1.25;
+      color: var(--lp-ink);
+    }
+
+    .lp-text-helper {
+      font-size: var(--lp-type-ui-sm);
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--lp-muted);
     }
 
     .section-label {
@@ -247,7 +258,7 @@
       align-items: center;
       gap: var(--lp-space-2);
       min-height: var(--lp-tap);
-      padding: var(--lp-space-2) var(--lp-space-3);
+      padding: var(--lp-space-2) var(--lp-space-4);
     }
 
     .row-card__trail {
@@ -260,10 +271,6 @@
 
     .row-card__title {
       min-width: 0;
-      font-size: var(--lp-type-ui-md);
-      font-weight: 800;
-      line-height: 1.25;
-      color: var(--lp-ink);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -272,9 +279,6 @@
     .row-card__amount {
       justify-self: end;
       min-width: var(--lp-basic-count-w);
-      font-size: var(--lp-type-ui-sm);
-      font-weight: 700;
-      color: var(--lp-muted);
       white-space: nowrap;
       text-align: right;
     }
@@ -308,7 +312,7 @@
       align-items: flex-start;
       gap: var(--lp-space-2);
       min-height: var(--lp-tap);
-      padding: var(--lp-space-2) var(--lp-space-3);
+      padding: var(--lp-space-2) var(--lp-space-4);
     }
 
     .row-card__tick {
@@ -339,18 +343,14 @@
 
     .row-card__camp {
       margin: 0;
-      font-size: var(--lp-type-ui-sm);
-      font-weight: 600;
-      line-height: 1.35;
-      color: var(--lp-muted);
       text-transform: none;
       letter-spacing: normal;
     }
 
     .sheet-add {
       flex-shrink: 0;
-      margin: 0 var(--lp-space-3) calc(var(--lp-space-3) + env(safe-area-inset-bottom, 0px));
-      padding: var(--lp-space-3);
+      margin: 0 var(--lp-space-4) calc(var(--lp-space-4) + env(safe-area-inset-bottom, 0px));
+      padding: var(--lp-space-3) var(--lp-space-4);
       border-radius: var(--lp-radius-card);
       border: 1px solid var(--lp-border);
       background: var(--lp-surface);
@@ -437,27 +437,50 @@
       box-shadow: var(--lp-shadow-cta);
     }
 
-    .empty-card {
-      padding: var(--lp-space-3);
+    .sheet-phone--filled .sheet-add__submit {
+      box-sizing: border-box;
+      background: var(--lp-surface);
+      color: var(--lp-green-deep);
+      border: 2px solid var(--lp-green);
+      box-shadow: none;
+    }
+
+    .starter-card {
+      padding: var(--lp-space-3) var(--lp-space-4);
       display: flex;
       flex-direction: column;
+      gap: var(--lp-space-3);
+    }
+
+    .starter-card__title {
+      margin: 0;
+    }
+
+    .example-pills {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
       gap: var(--lp-space-2);
     }
 
-    .empty-card__title {
+    .example-pill {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: var(--lp-tap);
       margin: 0;
-      font-size: var(--lp-type-ui-md);
-      font-weight: 800;
-      line-height: 1.35;
-      color: var(--lp-ink);
-    }
-
-    .empty-card__hint {
-      margin: 0;
-      font-size: var(--lp-type-ui-sm);
-      font-weight: 600;
-      line-height: 1.45;
+      padding: 0 var(--lp-space-4);
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
       color: var(--lp-muted);
+      font: inherit;
+      font-size: var(--lp-type-ui-sm);
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: left;
+      cursor: default;
     }
   </style>
 </head>
@@ -471,7 +494,7 @@
   <div class="frames">
     <div class="frame">
       <p class="frame__label">Filled</p>
-      <div class="sheet-phone" role="img" aria-label="Base camp with Basics and camp battle">
+      <div class="sheet-phone sheet-phone--filled" role="img" aria-label="Base camp with Basics and camp battle">
         <div class="sheet-phone__photo" aria-hidden="true">
           <img src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
         </div>
@@ -490,16 +513,16 @@
               <p class="section-label">Basics</p>
               <ul class="row-list">
                 <li class="row-card row-card--basic">
-                  <span class="row-card__title">Read pages from the big blue book</span>
+                  <span class="row-card__title lp-text-title">Read pages from the big blue book</span>
                   <div class="row-card__trail">
-                    <span class="row-card__amount"></span>
+                    <span class="row-card__amount lp-text-helper"></span>
                     <button type="button" class="row-card__add">+1</button>
                   </div>
                 </li>
                 <li class="row-card row-card--basic">
-                  <span class="row-card__title">German Study</span>
+                  <span class="row-card__title lp-text-title">German Study</span>
                   <div class="row-card__trail">
-                    <span class="row-card__amount">2 lessons</span>
+                    <span class="row-card__amount lp-text-helper">2 lessons</span>
                     <button type="button" class="row-card__add">+1</button>
                   </div>
                 </li>
@@ -512,8 +535,8 @@
                 <li class="row-card row-card--battle">
                   <span class="row-card__tick" aria-hidden="true"></span>
                   <div class="row-card__stack">
-                    <span class="row-card__title">Check your notes from work</span>
-                    <p class="row-card__camp">None condition Jadghouse</p>
+                    <span class="row-card__title lp-text-title">Check your notes from work</span>
+                    <p class="row-card__camp lp-text-helper">None condition Jadghouse</p>
                   </div>
                 </li>
               </ul>
@@ -527,7 +550,7 @@
             </label>
             <label class="sheet-add__toggle">
               <span class="sheet-add__switch" aria-hidden="true"></span>
-              Log a number
+              Count how many
             </label>
             <button type="button" class="sheet-add__submit">Add Basic</button>
           </div>
@@ -537,7 +560,7 @@
 
     <div class="frame">
       <p class="frame__label">Empty state</p>
-      <div class="sheet-phone" role="img" aria-label="Base camp with no Basics yet">
+      <div class="sheet-phone sheet-phone--empty" role="img" aria-label="Base camp with no Basics yet">
         <div class="sheet-phone__photo" aria-hidden="true">
           <img src="../../public/images/camp_fire_default.webp" alt="" decoding="async">
         </div>
@@ -552,22 +575,23 @@
           </header>
 
           <div class="sheet-body">
-            <section class="sheet-group">
-              <p class="section-label">Basics</p>
-              <div class="row-card empty-card">
-                <p class="empty-card__title">Nothing here yet. Add the first thing you do every day.</p>
-                <p class="empty-card__hint">Like: 20 push-ups, read 5 pages, one German lesson.</p>
-              </div>
-            </section>
+            <div class="row-card starter-card">
+              <p class="starter-card__title lp-text-title">Add the first thing you do every day.</p>
+              <ul class="example-pills">
+                <li><button type="button" class="example-pill">20 push-ups</button></li>
+                <li><button type="button" class="example-pill">Read 5 pages</button></li>
+                <li><button type="button" class="example-pill">One German lesson</button></li>
+              </ul>
+            </div>
           </div>
 
           <div class="sheet-add">
             <label class="sheet-add__field">
-              <input class="sheet-add__input" type="text" placeholder="Add a Basic" aria-label="Add a Basic">
+              <input class="sheet-add__input" type="text" placeholder="What will you do every day?" aria-label="What will you do every day?">
             </label>
             <label class="sheet-add__toggle">
               <span class="sheet-add__switch" aria-hidden="true"></span>
-              Log a number
+              Count how many
             </label>
             <button type="button" class="sheet-add__submit">Add Basic</button>
           </div>
