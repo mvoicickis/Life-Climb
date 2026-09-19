@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Summit flag — round 2 · cloth vs side pill (360px)</title>
+  <title>Summit flag — round 3 · planted anchor (360px)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* Tokens mirrored from app/assets/tailwind/application.css (:root, light) */
     :root {
+      /* Nudge summit anchor on mountain_trail_default.webp (fractions of map box). */
+      --summit-x: 0.566;
+      --summit-y: 0.22;
       --phone-w: 360px;
       --map-aspect: 1024 / 1536;
       --lp-font-ui: "Nunito", system-ui, sans-serif;
@@ -46,8 +49,7 @@
       --lp-rpg-gold-soft: rgba(212, 160, 23, 0.18);
       --lp-trail-wood: color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink));
       --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted));
-      --lp-peak-x: 0.566;
-      --lp-peak-y: 0.22;
+      --summit-pole-h: 3.35rem;
     }
 
     * { box-sizing: border-box; }
@@ -149,26 +151,27 @@
 
     .phone-shell__layer > * { pointer-events: auto; }
 
-    /* Summit finish flag — pennant on pole, rock foot, ground shadow */
+    /* Summit finish flag — anchor point on peak; pole grows up; cloth at masthead */
     .summit-flag {
       position: absolute;
-      left: calc(var(--lp-peak-x) * 100%);
-      top: calc(var(--lp-peak-y) * 100%);
-      transform: translate(-50%, -100%);
+      left: calc(var(--summit-x) * 100%);
+      top: calc(var(--summit-y) * 100%);
+      width: 0;
+      height: 0;
       z-index: 16;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-width: calc(var(--phone-w) - 1rem);
       pointer-events: none;
     }
 
     .summit-flag__row {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      transform: translateX(-50%);
       display: flex;
       flex-direction: row;
       align-items: flex-end;
       gap: 0.35rem;
-      max-width: 100%;
+      max-width: calc(var(--phone-w) - 1rem);
     }
 
     .summit-flag__plant {
@@ -176,20 +179,25 @@
       flex-direction: column;
       align-items: center;
       flex-shrink: 0;
+      position: relative;
       filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--lp-ink) 28%, transparent));
     }
 
     .summit-flag__mast {
+      position: relative;
       display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      width: 4px;
     }
 
     .summit-flag__pennant-wrap {
-      margin-right: -1px;
-      margin-bottom: 0.12rem;
-      transform-origin: 100% 88%;
+      position: absolute;
+      left: 50%;
+      bottom: 100%;
+      transform: translateX(-100%);
+      transform-origin: 100% 100%;
+      margin-bottom: -1px;
       animation: summit-flag-flutter 3.4s ease-in-out infinite;
     }
 
@@ -277,7 +285,7 @@
 
     .summit-flag__pole {
       width: 4px;
-      height: 2.35rem;
+      height: var(--summit-pole-h);
       flex-shrink: 0;
       background: linear-gradient(
         180deg,
@@ -292,7 +300,7 @@
     .summit-flag__rock {
       width: 0.9rem;
       height: 0.38rem;
-      margin-top: -2px;
+      margin-top: -3px;
       border-radius: 45% 45% 35% 35%;
       background: linear-gradient(
         180deg,
@@ -305,13 +313,17 @@
     }
 
     .summit-flag__shadow {
+      position: absolute;
+      left: 50%;
+      bottom: -0.12rem;
       width: 1.15rem;
       height: 0.4rem;
-      margin-top: 0.06rem;
+      transform: translateX(-50%);
       border-radius: 50%;
-      background: color-mix(in srgb, var(--lp-ink) 22%, transparent);
+      background: color-mix(in srgb, var(--lp-ink) 28%, transparent);
       filter: blur(2px);
-      opacity: 0.85;
+      opacity: 0.9;
+      pointer-events: none;
     }
 
     .summit-flag__side-pill {
@@ -338,8 +350,8 @@
     }
 
     @keyframes summit-flag-flutter {
-      0%, 100% { transform: skewX(0deg) rotate(0deg); }
-      50% { transform: skewX(-5deg) rotate(-1.5deg); }
+      0%, 100% { transform: translateX(-100%) skewX(0deg) rotate(0deg); }
+      50% { transform: translateX(-100%) skewX(-5deg) rotate(-1.5deg); }
     }
 
     .lp-trail-camp {
@@ -716,8 +728,6 @@
     const PHOTO = "../../app/assets/images/mountain_trail_default.webp";
     const GOAL_LONG = "Learn German to B1 level";
     const GOAL_SHORT = "Run a marathon";
-    const PEAK_X = 0.566;
-    const PEAK_Y = 0.22;
     const MAP_LAYOUT_SLOTS = 4;
     const TRAIL_Y_MIN = 0.32;
     const TRAIL_Y_MAX = 0.88;
@@ -830,9 +840,6 @@
         "summit-flag" +
         (shortGoal ? " is-short" : "") +
         (config.mode === "side-pill" ? " is-bare-cloth" : "");
-      wrap.style.setProperty("--lp-peak-x", String(PEAK_X));
-      wrap.style.setProperty("--lp-peak-y", String(PEAK_Y));
-
       const clothText =
         config.mode === "side-pill"
           ? ""
@@ -844,6 +851,7 @@
 
       const plant =
         '<div class="summit-flag__plant" aria-hidden="true">' +
+        '<span class="summit-flag__shadow"></span>' +
         '<div class="summit-flag__mast">' + pennant +
         '<span class="summit-flag__pole"></span></div>' +
         '<span class="summit-flag__rock"></span></div>';
@@ -857,8 +865,7 @@
         '<div class="summit-flag__row">' +
         plant +
         sidePill +
-        "</div>" +
-        '<span class="summit-flag__shadow" aria-hidden="true"></span>';
+        "</div>";
       return wrap;
     }
 
