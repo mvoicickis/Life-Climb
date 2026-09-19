@@ -76,11 +76,11 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     page.evaluate_script(<<~JS)
       (() => {
         const title = document.querySelector(".lp-trail__goal-title");
-        const plaque = title?.closest(".lp-trail__goal-plaque");
-        if (!title || !plaque) return { ok: false, reason: "missing" };
+        const banner = title?.closest(".lp-trail__summit-banner");
+        if (!title || !banner) return { ok: false, reason: "missing" };
         const cs = getComputedStyle(title);
         const tr = title.getBoundingClientRect();
-        const pr = plaque.getBoundingClientRect();
+        const br = banner.getBoundingClientRect();
         const range = document.createRange();
         range.selectNodeContents(title);
         const lineWidths = Array.from(range.getClientRects()).map((rect) => rect.width);
@@ -96,7 +96,8 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
           clientWidth: title.clientWidth,
           width: tr.width,
           height: tr.height,
-          plaqueHeight: pr.height,
+          bannerHeight: br.height,
+          bannerWidth: br.width,
           viewport: [window.innerWidth, window.innerHeight]
         };
       })()
@@ -107,18 +108,20 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert metrics["ok"], "title missing at #{width}x#{height}: #{metrics.inspect}"
     assert_equal expected_text, metrics["text"]
     assert_equal "2", metrics["lineClamp"].to_s,
-                 "goal title should clamp to 2 lines on hero at #{width}x#{height}: #{metrics.inspect}"
+                 "goal title should clamp to 2 lines on summit at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["maxLineWidth"].to_f, :<=, metrics["clientWidth"].to_f + 1.0,
-                    "goal title line overflows plaque at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["width"].to_f, :>=, 200.0,
-                    "hero title too narrow at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["height"].to_f, :>=, 12.0,
+                    "goal title line overflows banner at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["bannerWidth"].to_f, :>=, 80.0,
+                    "summit banner too narrow at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["height"].to_f, :>=, 8.0,
                     "title has no height at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["plaqueHeight"].to_f, :>=, 36.0,
-                    "goal plaque collapsed at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["bannerHeight"].to_f, :>=, 36.0,
+                    "summit banner collapsed at #{width}x#{height}: #{metrics.inspect}"
     px = metrics["fontSize"].to_s.to_f
-    assert_operator px, :>=, 14.0,
-                    "font-size below hero floor at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator px, :>=, 9.5,
+                    "summit label should be at least camp caption size at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator px, :<=, 14.0,
+                    "summit label font-size unexpectedly large at #{width}x#{height}: #{metrics.inspect}"
   end
 
   def assert_destination_fluid_title(width, height, expected_text)

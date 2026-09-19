@@ -26,9 +26,9 @@ module MountainTrailHelper
   MAP_LAYOUT_SLOTS = 4
   RIDGE_STEP_ABOVE_TOP = 0.115
   MIN_CLEAR_ABOVE_TENT = 0.05
-  PEAK_X = 0.566
-  # Default photo summit (baked-in flag tip on mountain_trail_default ≈ 0.22).
-  PEAK_Y = 0.22
+  # Default photo summit tip (mountain_trail_default.webp frame-2 anchor).
+  PEAK_X = 0.532
+  PEAK_Y = 0.218
 
   # Curve map photo aspect (mountain_trail_default.webp).
   MAP_ASPECT_WIDTH = 1024
@@ -88,6 +88,14 @@ module MountainTrailHelper
 
   def mountain_trail_custom_photo?(journey)
     journey&.mountain_photo&.attached?
+  end
+
+  # Photo-fraction summit for the goal ribbon. Nil on custom photos (plaque stays in HUD).
+  def mountain_trail_summit_anchor(goal:, journey:)
+    return nil if goal.blank?
+    return nil if mountain_trail_custom_photo?(journey)
+
+    { x: PEAK_X, y: PEAK_Y }
   end
 
   def mountain_trail_photo_url(journey)

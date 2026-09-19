@@ -191,6 +191,7 @@ export default class extends Controller {
     if (!target?.closest) return false
     if (target.closest(".lp-trail__goal-menu")) return true
     if (target.closest(".lp-trail__goal-plaque")) return true
+    if (target.closest(".lp-trail__summit-banner")) return true
     if (this._editingTitle && this.hasPeakTitleInputTarget && target.closest(".lp-trail__goal-title-input")) {
       return true
     }
@@ -875,6 +876,7 @@ export default class extends Controller {
       target.closest(".lp-trail-hud") ||
       target.closest(".lp-trail-today") ||
       target.closest(".lp-trail__peak") ||
+      target.closest(".lp-trail__summit") ||
       target.closest(".lp-trail-placing") ||
       target.closest(".lp-trail-log") ||
       target.closest("[data-trail-ignore]")
@@ -937,7 +939,10 @@ export default class extends Controller {
 
     overlay.hidden = true
     overlay.setAttribute("aria-hidden", "true")
-    this.element.querySelector(".lp-trail__goal-plaque")?.focus()
+    const goalControl =
+      this.element.querySelector(".lp-trail__summit-banner") ||
+      this.element.querySelector(".lp-trail__goal-plaque")
+    goalControl?.focus()
   }
 
   setArrangeOpen(open) {

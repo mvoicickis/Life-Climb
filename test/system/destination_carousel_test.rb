@@ -43,7 +43,8 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_selector "#strategy-world.lp-rpg.is-v4-phone", wait: 10
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
 
-    assert_selector ".lp-trail__goal-title.lp-rpg-destination-carousel__title", visible: :all, wait: 5
+    assert_selector ".lp-trail__summit-banner", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title", text: /Ship LifePoints/i, visible: :all, wait: 5
     assert_match(/Ship LifePoints/i, destination_title_text)
 
     # Switching + "New Destination" create affordances are gone.
@@ -57,11 +58,42 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_no_selector ".lp-rpg-plan-rail"
     assert_no_selector ".lp-rpg-path"
 
-    assert_selector ".lp-trail__goal-plaque[data-action*='trail-canvas#toggleGoalMenu']"
+    assert_selector ".lp-trail__summit-banner[data-action*='trail-canvas#toggleGoalMenu']"
+    assert_no_selector ".lp-trail__goal-plaque"
     assert_no_selector ".lp-trail__goal-title[contenteditable]"
     assert_selector ".lp-trail__peak-item", text: /Edit name/i, visible: :all
     assert_no_selector "dialog#destination-edit-#{@goal.id}", visible: :all
     assert_no_selector ".lp-trail__peak-item", text: /Edit Destination/i, visible: :all
+  end
+
+  test "custom mountain photo keeps top goal plaque without summit banner" do
+    @journey.mountain_photo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/mountain_trail_default.jpg")),
+      filename: "custom-mountain.jpg",
+      content_type: "image/jpeg"
+    )
+
+    page.driver.browser.manage.window.resize_to(390, 844)
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 8
+
+    visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
+    assert_selector "#mountain-trail.lp-trail.is-v4.is-custom-mountain-photo", wait: 10
+    assert_selector ".lp-trail-hud", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-plaque", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title.lp-rpg-destination-carousel__title",
+                    text: /Ship LifePoints/i, visible: :all, wait: 5
+    assert_no_selector ".lp-trail__summit-banner", visible: :all
+    assert_no_selector ".lp-trail__summit", visible: :all
+
+    assert_no_selector ".lp-rpg-destination-carousel.is-single"
+    assert_no_selector ".lp-rpg-destination-carousel.is-multi"
+    assert_no_selector ".lp-rpg-destination-carousel__arrow"
+    assert_no_selector ".lp-rpg-destination-add"
   end
 
   private

@@ -98,7 +98,7 @@ class PathChipFluidTitleTest < ApplicationSystemTestCase
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: plan.id)
     assert_selector "#strategy-world.lp-rpg.is-focus-phase.is-v4-phone", wait: 10
     assert_no_selector ".lp-rpg-path"
-    find(".lp-trail__goal-plaque").click
+    find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__peak-item--plan.is-active", wait: 5
 
     metrics = path_metrics(expected_text)

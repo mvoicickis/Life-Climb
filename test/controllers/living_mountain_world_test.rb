@@ -45,7 +45,8 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
     assert_select ".lp-trail__goal-title", text: /Ship LifePoints/i
-    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail__summit"
+    assert_select ".lp-trail-hud", count: 0
     assert_select ".lp-dash-nav__fab"
     assert_select ".lp-rpg-path", count: 0
     assert_select "[data-controller*=strategy-rpg]"
@@ -71,7 +72,7 @@ class LivingMountainWorldTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#trail-camp-#{project.id}[aria-label=?]", "First climb"
-    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail__summit"
     assert_select ".lp-rpg__stage-battle", count: 0
     assert_select ".lp-qs-board", count: 0
   end

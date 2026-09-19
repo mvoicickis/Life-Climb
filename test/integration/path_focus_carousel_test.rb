@@ -65,7 +65,8 @@ class PathFocusCarouselTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-xp:not(.is-quiet)", count: 0
     assert_select ".lp-rpg-hud__chips .lp-rpg-chip.is-streak", count: 0
-    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail__summit-banner"
+    assert_select ".lp-trail__goal-plaque", count: 0
     assert_select "#destination-edit-#{@goal.id}", count: 0
     assert_select ".lp-trail__peak-item", text: /Edit Destination/i, count: 0
     assert_select ".lp-trail__peak-item", text: /Delete goal/i

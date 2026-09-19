@@ -43,7 +43,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-focus-phase.is-v4-phone"
     assert_select "#mountain-trail.lp-trail.is-v4"
-    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail__summit"
     assert_select ".lp-rpg__stage.is-planning.is-v4"
     assert_select ".lp-rpg__stage-trail.is-v4"
     assert_select "#trail-camp-#{project.id}[aria-label=?]", "Resume"
@@ -127,8 +127,9 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project_leaf.id)
     assert_response :success
 
-    assert_select ".lp-trail-hud"
-    assert_select ".lp-trail__goal-hero", minimum: 1
+    assert_select ".lp-trail__summit"
+    assert_select ".lp-trail__summit-banner", minimum: 1
+    assert_select ".lp-trail__goal-plaque", count: 0
     assert_select ".lp-rpg-stat.is-mountain", count: 0
     assert_select ".lp-rpg-sheet__cue", count: 0
     assert_select "#trail-sheet-body form[action*='battle_win']"

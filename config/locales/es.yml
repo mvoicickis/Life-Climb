@@ -243,6 +243,7 @@ es:
           kicker: "Next camp"  # TODO: translate
         coach:
           rename_flag: "Tap your goal name to open the menu." # TODO: translate
+          rename_flag_summit: "Tap your goal on the summit to open the menu." # TODO: translate
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         camp_idle:
           start_title: "Your climb starts here"  # TODO: translate
