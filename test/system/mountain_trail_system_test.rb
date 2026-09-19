@@ -121,15 +121,15 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
 
     within("#trail-base-sheet") do
-      fill_in placeholder: "Add a daily tracker", with: "Read"
+      fill_in placeholder: I18n.t("strategy.rpg.trail.base_camp.add_placeholder"), with: "Read"
       find("label.is-qty").click
-      click_button "Add daily tracker"
+      click_button I18n.t("strategy.rpg.trail.base_camp.add_habit")
     end
 
     assert_selector "#trail-base-sheet", text: /Read/, visible: :all, wait: 5
-    assert_selector "#trail-base-sheet .lp-trail-battles__kind.is-basics", visible: :all, wait: 5
+    assert_selector "#trail-base-sheet .lp-trail-base-sheet__section-label", visible: :all, wait: 5
     assert_selector "#trail-base-sheet .lp-trail-battles__basics-add", visible: :all, wait: 5
-    assert_selector "#trail-base-sheet", text: /0 pages/i, visible: :all, wait: 5
+    assert_no_selector "#trail-base-sheet", text: /0 pages/i, visible: :all
   end
 
   test "winning a camp battle swaps the row and keeps the sheet open" do

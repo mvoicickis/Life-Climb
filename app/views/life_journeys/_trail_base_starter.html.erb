@@ -1,0 +1,13 @@
+<div class="lp-trail-base-sheet__starter">
+  <p class="lp-trail-base-sheet__starter-title"><%= t("strategy.rpg.trail.base_camp.starter_title") %></p>
+  <div class="lp-trail-base-sheet__starter-pills">
+    <% %w[starter_example_1 starter_example_2 starter_example_3].each do |key| %>
+      <button type="button"
+              class="lp-trail-base-sheet__example-pill"
+              data-action="click->trail-battles#fillStarterExample"
+              data-trail-battles-example-param="<%= t("strategy.rpg.trail.base_camp.#{key}") %>">
+        <%= t("strategy.rpg.trail.base_camp.#{key}") %>
+      </button>
+    <% end %>
+  </div>
+</div>

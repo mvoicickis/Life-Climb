@@ -19,6 +19,27 @@ class HabitsMountainTest < ActionDispatch::IntegrationTest
     @user.habits.destroy_all
   end
 
+  test "fresh quantity basic on base sheet hides zero count until first log" do
+    post habits_path, params: mountain_habit_params(
+      name: "Read",
+      quantity_checkin: "1",
+      unit: "pages"
+    ), as: :turbo_stream
+
+    assert_response :ok
+    assert_match "Read", response.body
+    refute_match "0 pages", response.body
+  end
+
+  test "mountain create validation shows error on base sheet and preserves name" do
+    long_name = "a" * 121
+    post habits_path, params: mountain_habit_params(name: long_name), as: :turbo_stream
+
+    assert_response :unprocessable_entity
+    assert_match "lp-trail-base-sheet__form-error", response.body
+    assert_select "input[name='habit[name]'][value=?]", long_name
+  end
+
   test "mountain create turbo stream refreshes trail-base-sheet with quantity habit" do
     assert_difference "Habit.count", 1 do
       post habits_path, params: mountain_habit_params(
@@ -32,7 +53,7 @@ class HabitsMountainTest < ActionDispatch::IntegrationTest
     assert_includes @response.media_type, "turbo-stream"
     assert_match "trail-base-sheet", response.body
     assert_match "Read", response.body
-    assert_match "0 pages", response.body
+    refute_match "0 pages", response.body
 
     habit = @user.habits.find_by!(name: "Read")
     assert habit.quantity_checkin?

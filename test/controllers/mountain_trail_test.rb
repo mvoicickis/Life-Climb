@@ -327,6 +327,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-base-card.has-base-row"
     assert_select ".lp-trail-base-card__base-row[data-action*='openBase']"
     assert_select ".lp-trail-base-card__base-label", text: I18n.t("strategy.rpg.trail.base_camp.kicker")
+    assert_select ".lp-trail-base-card__pill.is-add", text: I18n.t("strategy.rpg.trail.base_camp.dock_add_pill")
     assert_select ".lp-trail-base-card__title", text: "Pitch the tent"
     assert_select ".lp-trail-base-card__kicker", text: /Next in/i
     assert_select ".lp-trail-base-card form[action*='battle_win'] input[name=source][value=camp_sheet]"
@@ -809,7 +810,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", text: I18n.t("strategy.rpg.trail.base_camp.basics.kind")
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
     assert_select "#trail-base-habit-#{habit.id}", text: /12 pages/
     assert_select "#trail-base-habit-#{habit.id} form[action*='daily_logs']"
@@ -842,7 +843,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", text: I18n.t("strategy.rpg.trail.base_camp.basics.kind")
     assert_select "#trail-base-habit-#{habit.id}.is-check"
     assert_select "#trail-base-habit-#{habit.id}", text: /Meditate/
     assert_select "#trail-base-habit-#{habit.id} form[action=?]", completions_path(habit_id: habit.id)
@@ -870,11 +871,21 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-battles__kind.is-basics"
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", text: I18n.t("strategy.rpg.trail.base_camp.basics.kind")
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__empty", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
+  end
+
+  test "base camp sheet shows starter when no basics habits" do
+    @user.habits.destroy_all
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__starter"
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__example-pill", count: 3
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", count: 0
   end
 
   test "forward dock card names open stage camp when nothing fightable today" do
@@ -919,6 +930,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-camp-base"
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__stats", count: 0
+    assert_select "#trail-base-sheet .lp-trail-base-sheet__starter", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__empty", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
   end

@@ -28,6 +28,9 @@ export default class extends Controller {
     this._pickDays = new Set()
     this._pickDaysUrl = null
     this.styleDailyRow()
+    if (this.hasQuantityToggleTarget && this.quantityToggleTarget.checked) {
+      this.syncQuantityFields()
+    }
     this.styleQuantityRow()
     if (this.openComposerOnConnectValue) {
       this.openComposerOnConnectValue = false
@@ -70,6 +73,14 @@ export default class extends Controller {
   toggleQuantity() {
     this.syncQuantityFields()
     this.styleQuantityRow()
+  }
+
+  fillStarterExample(event) {
+    const example = event.params.example
+    if (!this.hasTitleFieldTarget || !example) return
+    this.titleFieldTarget.value = example
+    this.titleFieldTarget.dispatchEvent(new Event("input", { bubbles: true }))
+    this.titleFieldTarget.focus()
   }
 
   syncQuantityFields() {

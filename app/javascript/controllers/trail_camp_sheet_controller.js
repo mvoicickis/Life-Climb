@@ -7,6 +7,7 @@ export default class extends Controller {
 
   static values = {
     baseTitleFallback: String,
+    baseTagline: String,
     dismissUrl: String,
     revealPending: Boolean
   }
@@ -146,7 +147,7 @@ export default class extends Controller {
       this.accentTarget.dataset.accent = accent
     }
     if (this.hasTitleTarget) this.titleTarget.textContent = this.baseTitle()
-    this.setSubtitle("")
+    this.setSubtitle(this.baseTaglineValue || "")
 
     this.revealBodyFor({ dataset: { campId: "base" } })
     this._openCampId = "base"

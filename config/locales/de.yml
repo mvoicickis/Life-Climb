@@ -289,7 +289,24 @@ de:
           delete_aria: "Delete %{title}" # TODO: translate for lv/de/es/ru.
           stage_complete: "Stage complete"
         base_camp:
-          add_habit: "Add basic"  # TODO: translate
+          kicker: "Base camp"  # TODO: translate
+          title: "Where you return every day"  # TODO: translate
+          header_tagline: "Things you do every day."  # TODO: translate
+          basics:
+            kind: "Basics"  # TODO: translate
+            amount: "%{amount} %{unit}"  # TODO: translate
+            undo: "Undo"  # TODO: translate
+          from_camps: "From your camps"  # TODO: translate
+          add_placeholder: "What will you do every day?"  # TODO: translate
+          dock_add_pill: "Add a Basic"  # TODO: translate
+          add_habit: "Add Basic"  # TODO: translate
+          habit_added: "Basic added."  # TODO: translate
+          count_toggle: "Count how many"  # TODO: translate
+          starter_title: "Add the first thing you do every day."  # TODO: translate
+          starter_example_1: "20 push-ups"  # TODO: translate
+          starter_example_2: "Read 5 pages"  # TODO: translate
+          starter_example_3: "One German lesson"  # TODO: translate
+          form_error_aria: "Could not add Basic"  # TODO: translate
     help:
       cta_onboarding: "Hilf mir, diesen Berg klarer zu machen"
     first_climb:
