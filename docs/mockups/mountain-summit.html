@@ -36,7 +36,6 @@
       --lp-trail-camp-idle-deep: color-mix(in srgb, var(--lp-muted) 58%, var(--lp-ink));
       --lp-trail-pole: color-mix(in srgb, var(--lp-muted) 35%, var(--lp-paper));
       --lp-trail-pole-deep: color-mix(in srgb, var(--lp-muted) 55%, var(--lp-ink));
-      --lp-trail-post: color-mix(in srgb, var(--lp-muted) 30%, var(--lp-ink));
       --lp-text-on-map: 0 0 4px color-mix(in srgb, var(--lp-paper) 96%, transparent),
         0 1px 3px color-mix(in srgb, var(--lp-paper) 92%, transparent);
       --lp-nav-bg: color-mix(in srgb, var(--lp-paper) 94%, var(--lp-green) 6%);
@@ -212,26 +211,37 @@
       overflow-wrap: anywhere;
     }
 
-    .signpost {
+    /* Quiet “more camps” hint — on the path, quieter than camp captions */
+    .trail-milestone {
       position: absolute;
       left: calc(var(--x) * 100%);
       top: calc(var(--y) * 100%);
-      transform: translate(-50%, -100%);
-      z-index: 8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      max-width: 50%;
+      margin: 0;
+      text-align: center;
+      line-height: 1.2;
+      font-size: 0.5rem;
+      font-weight: 600;
+      color: var(--lp-muted);
     }
 
-    .signpost__board {
-      margin-bottom: 0.15rem;
+    .trail-milestone--pill {
+      padding: 0.14rem 0.45rem;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
+      border: 1px solid var(--lp-border);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--lp-ink) 6%, transparent);
+      text-shadow: none;
     }
 
-    .signpost__post {
-      width: 4px;
-      height: 1.35rem;
-      border-radius: 2px;
-      background: linear-gradient(180deg, var(--lp-trail-post), var(--lp-trail-pole-deep));
+    .trail-milestone--text {
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      text-shadow: var(--lp-text-on-map);
     }
 
     .camp {
@@ -415,9 +425,9 @@
   </p>
 
   <div class="strip">
-    <!-- Frame A -->
+    <!-- Frame A1 -->
     <div class="frame-wrap">
-      <p class="frame-label">A · Normal (3 camps + signpost)</p>
+      <p class="frame-label">A · Small pill on trail</p>
       <div class="phone">
         <div class="phone__map">
           <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" width="1024" height="1536" decoding="async">
@@ -430,10 +440,7 @@
               <p class="white-pill">Learn German to B1 level</p>
             </div>
 
-            <div class="signpost" style="--x: 0.542; --y: 0.46;" aria-hidden="true">
-              <p class="white-pill signpost__board">6 camps to the top</p>
-              <span class="signpost__post"></span>
-            </div>
+            <p class="trail-milestone trail-milestone--pill" style="--x: 0.542; --y: 0.46;">6 more camps</p>
 
             <div class="camp" style="--x: 0.536; --y: 0.54;">
               <span class="camp__tent" aria-hidden="true"></span>
@@ -468,7 +475,60 @@
           <a class="phone__nav-link" href="#"><span class="phone__nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/></svg></span>You</a>
         </nav>
       </div>
-      <p class="frame-note">Signpost sits where the “more camps” chip lives today; goal owns the summit band.</p>
+      <p class="frame-note">Milestone pill on the path — smaller and greyer than camp names.</p>
+    </div>
+
+    <!-- Frame A2 -->
+    <div class="frame-wrap">
+      <p class="frame-label">A · Text only (compare)</p>
+      <div class="phone">
+        <div class="phone__map">
+          <img class="phone__photo" src="../../app/assets/images/mountain_trail_default.webp" alt="" width="1024" height="1536" decoding="async">
+          <div class="phone__layer">
+            <div class="summit">
+              <div class="summit__flag" aria-hidden="true">
+                <span class="summit__pennant"></span>
+                <span class="summit__pole"></span>
+              </div>
+              <p class="white-pill">Learn German to B1 level</p>
+            </div>
+
+            <p class="trail-milestone trail-milestone--text" style="--x: 0.542; --y: 0.46;">6 more camps</p>
+
+            <div class="camp" style="--x: 0.536; --y: 0.54;">
+              <span class="camp__tent" aria-hidden="true"></span>
+              <span class="camp__title">Daily vocab</span>
+            </div>
+            <div class="camp" style="--x: 0.551; --y: 0.71;">
+              <span class="camp__tent" aria-hidden="true"></span>
+              <span class="camp__title">Grammar drills</span>
+            </div>
+            <div class="camp" style="--x: 0.528; --y: 0.88;">
+              <span class="camp__tent" aria-hidden="true"></span>
+              <span class="camp__title">First lesson</span>
+            </div>
+          </div>
+        </div>
+        <div class="phone__dock">
+          <div class="dock-card">
+            <div class="dock-card__main">
+              <span class="dock-card__kicker">Next in Grammar drills</span>
+              <span class="dock-card__title">Complete lesson 4 exercises</span>
+            </div>
+            <span class="dock-card__tick" aria-hidden="true"></span>
+            <button type="button" class="dock-card__base">
+              <span class="dock-card__base-label">Base camp</span>
+              <span class="dock-card__pill">10 min listening</span>
+            </button>
+          </div>
+        </div>
+        <nav class="phone__nav" aria-label="Primary">
+          <a class="phone__nav-link" href="#"><span class="phone__nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 L12 4 L20 10.5"/><path d="M6.5 9.5 V19.5 H17.5 V9.5"/></svg></span>Home</a>
+          <a class="phone__nav-link is-active" href="#"><span class="phone__nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/><path d="M12 5.5 V8"/></svg></span>Journey</a>
+          <a class="phone__nav-link" href="#"><span class="phone__nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/></svg></span>You</a>
+        </nav>
+      </div>
+      <p class="frame-note">Same spot — grey label with paper shadow, no pill.</p>
     </div>
 
     <!-- Frame B -->
