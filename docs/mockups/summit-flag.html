@@ -54,6 +54,7 @@
       --summit-pole-h-center: 0.82rem;
       --summit-pole-bury-center: 0.52rem;
       --summit-banner-gap-center: 0.42rem;
+      --summit-stack-bottom: calc(var(--summit-pole-h-center) + var(--summit-banner-gap-center));
       --summit-banner-text: 0.62rem;
     }
 
@@ -243,16 +244,24 @@
     }
 
     .summit-flag.is-sign-center .summit-flag__mast {
+      position: relative;
+      width: auto;
+      min-width: 3px;
+      padding-bottom: var(--summit-stack-bottom);
       transform: rotate(-1.75deg);
       transform-origin: bottom center;
     }
 
     .summit-flag.is-sign-center .summit-flag__pole {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: calc(-1 * var(--summit-pole-bury-center));
       z-index: 0;
       width: 3px;
-      height: calc(var(--summit-pole-h-center) + var(--summit-pole-bury-center));
-      margin-bottom: calc(-1 * var(--summit-pole-bury-center));
-      border-radius: 1px 1px 0 0;
+      height: auto;
+      margin-bottom: 0;
+      border-radius: 1px;
       box-shadow:
         1px 0 0 color-mix(in srgb, var(--lp-surface) 18%, transparent),
         0 1px 2px color-mix(in srgb, var(--lp-ink) 22%, transparent);
@@ -288,7 +297,10 @@
     }
 
     .summit-flag.is-sign-center .summit-flag__banner-wrap {
-      bottom: calc(100% + var(--summit-banner-gap-center));
+      position: relative;
+      left: 50%;
+      bottom: auto;
+      z-index: 2;
       transform: translateX(-50%);
       transform-origin: 50% 100%;
       filter: drop-shadow(0 7px 11px color-mix(in srgb, var(--lp-ink) 20%, transparent));
@@ -298,9 +310,9 @@
     .summit-flag.is-sign-center .summit-flag__banner-lift {
       left: 12%;
       right: 10%;
-      bottom: -0.2rem;
-      height: 0.36rem;
-      opacity: 0.75;
+      bottom: -0.18rem;
+      height: 0.34rem;
+      opacity: 0.72;
     }
 
     .summit-flag__banner {
