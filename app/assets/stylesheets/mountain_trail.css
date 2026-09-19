@@ -1057,11 +1057,13 @@
 
 .lp-trail-base-sheet__section-label {
   margin: 0;
-  font-size: var(--lp-type-label, 0.6875rem);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--lp-muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  text-shadow:
+    0 0 6px var(--lp-paper),
+    0 0 14px var(--lp-paper),
+    0 1px 2px var(--lp-paper);
 }
 
 .lp-trail-base-sheet__basics {
