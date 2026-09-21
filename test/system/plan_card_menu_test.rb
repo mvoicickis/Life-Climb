@@ -90,7 +90,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
 
     page.execute_script(<<~JS)
-      const photo = document.querySelector("#mountain-trail .lp-trail__photo");
+      const photo = document.querySelector("#mountain-trail .lp-trail__photo--day, #mountain-trail .lp-trail__photo");
       const rect = photo.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
       const y = rect.top + rect.height * 0.8;
