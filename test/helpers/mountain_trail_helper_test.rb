@@ -995,11 +995,22 @@ class MountainTrailHelperTest < ActionView::TestCase
       Strategy::Trail::Node.new(id: 3, title: "C", state: :locked, pct: 0, position: 2, record: nil, y: 20)
     ]
     slots = nodes.map { |node| mountain_trail_map_layout_slot(node, nodes, builtin_map: true) }
-    assert_in_delta 0.940, slots[0][:y], 0.001
-    assert_in_delta 0.761, slots[1][:y], 0.001
-    assert_in_delta 0.561, slots[2][:y], 0.001
-    assert_in_delta 0.25, slots[0][:width_frac], 0.001
-    assert_in_delta 0.11, slots[2][:width_frac], 0.001
+    MountainTrailHelper::BUILTIN_TENT_SLOTS.each_with_index do |expected, index|
+      assert_in_delta expected[:y], slots[index][:y], 0.001
+      assert_in_delta expected[:x], slots[index][:x], 0.001
+      assert_in_delta expected[:width], slots[index][:width_frac], 0.001
+    end
+  end
+
+  test "builtin tent slots sit left of trail curve with right edge on path" do
+    MountainTrailHelper::BUILTIN_TENT_SLOTS.each do |slot|
+      path_x = MountainTrailHelper::AutoSlot.x_for(slot[:y])
+      tent_right = slot[:x] + (slot[:width] / 2.0)
+      assert_in_delta path_x, tent_right, 0.002,
+                      "tent at y=#{slot[:y]} should meet path at x=#{path_x}"
+      assert_operator tent_right, :<=, path_x + 0.001
+      assert_operator slot[:x] - (slot[:width] / 2.0), :>=, 0.0
+    end
   end
 
   test "builtin map single camp uses nearest bottom slot" do
