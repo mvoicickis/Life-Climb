@@ -512,7 +512,7 @@
 
 .lp-trail-map-sign {
   position: absolute;
-  top: max(0.35rem, env(safe-area-inset-top, 0px));
+  top: calc(env(safe-area-inset-top, 0px) + 48px);
   left: max(0.4rem, env(safe-area-inset-left, 0px));
   z-index: 20;
   display: flex;
