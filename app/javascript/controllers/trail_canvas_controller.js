@@ -334,7 +334,7 @@ export default class extends Controller {
     const color =
       form.querySelector("input[name='color_key']:checked")?.value ||
       form.querySelector("input[name='color_key']")?.value ||
-      "teal"
+      "green"
 
     const quantity = this.readQuantityFields(form)
 

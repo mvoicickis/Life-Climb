@@ -40,6 +40,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   test "single camp hides arrange entry and overlay" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
+    assert_select "img.lp-trail-camp__tent-img[src*='mountain_tent_blue']"
     assert_select ".lp-trail-arrange-entry", count: 0
     assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", count: 0
     assert_select "#trail-arrange-camps", count: 0
@@ -403,6 +404,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-camp__shadow", minimum: 1
     assert_select ".lp-trail-sheet"
     assert_select ".lp-trail__plant-colors"
+    assert_select ".lp-trail__plant-colors input[name='color_key']", count: 4
+    assert_select ".lp-trail__plant-colors input[name='color_key'][value=green][checked]"
+    assert_no_match %r{mountain_tent\.webp}, response.body
     assert_select ".lp-trail-plant__wheel", count: 0
     assert_select ".lp-trail-plant__hue-range", count: 0
     assert_select ".lp-trail-plant__metric-card.is-selected", count: 0

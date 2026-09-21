@@ -62,6 +62,25 @@ module MountainTrailHelper
     "gray" => "#57534e"
   }.freeze
 
+  PICKER_FROM_TAGGED = {
+    "green" => "green",
+    "amber" => "amber",
+    "purple" => "purple",
+    "blue" => "blue",
+    "teal" => "blue",
+    "coral" => "amber",
+    "pink" => "purple",
+    "gray" => "green"
+  }.freeze
+  PICKER_DEFAULT = "green"
+
+  TENT_IMAGE_BY_PICKER = {
+    "green" => "mountain_tent_green.webp",
+    "amber" => "mountain_tent_yellow.webp",
+    "purple" => "mountain_tent_purple.webp",
+    "blue" => "mountain_tent_blue.webp"
+  }.freeze
+
   # Fixed star map from MountainV4 mockup: [x%, y%, opacity].
   MOUNTAIN_STARS = [
     [ 8, 10, 0.9 ], [ 15, 25, 0.6 ], [ 22, 8, 0.8 ], [ 30, 30, 0.5 ], [ 38, 14, 0.7 ],
@@ -97,6 +116,19 @@ module MountainTrailHelper
 
   def mountain_trail_project_accent(project)
     project&.trail_accent_hex || mountain_trail_accent(project&.tagged_color_key)
+  end
+
+  # Maps stored tag (or nil) to one of StrategyGoal::PICKER_COLOR_KEYS for UI and tents.
+  def mountain_trail_picker_color_key(tagged_key)
+    key = tagged_key.to_s.presence
+    return PICKER_DEFAULT if key.blank?
+
+    PICKER_FROM_TAGGED.fetch(key, PICKER_DEFAULT)
+  end
+
+  def mountain_trail_tent_image(project)
+    picker = mountain_trail_picker_color_key(project&.tagged_color_key)
+    TENT_IMAGE_BY_PICKER.fetch(picker)
   end
 
   def mountain_trail_custom_photo?(journey)
