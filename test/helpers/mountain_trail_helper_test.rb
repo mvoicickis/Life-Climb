@@ -1002,14 +1002,37 @@ class MountainTrailHelperTest < ActionView::TestCase
     end
   end
 
-  test "builtin tent slots sit left of trail curve with right edge on path" do
-    MountainTrailHelper::BUILTIN_TENT_SLOTS.each do |slot|
+  test "builtin bottom tent slot keeps right edge on trail curve" do
+    slot = MountainTrailHelper::BUILTIN_TENT_SLOTS[0]
+    path_x = MountainTrailHelper::AutoSlot.x_for(slot[:y])
+    tent_right = slot[:x] + (slot[:width] / 2.0)
+    assert_in_delta path_x, tent_right, 0.002
+    assert_operator slot[:x] - (slot[:width] / 2.0), :>=, 0.0
+  end
+
+  test "builtin middle and top tent slots centre on trail curve" do
+    MountainTrailHelper::BUILTIN_TENT_SLOTS.drop(1).each do |slot|
       path_x = MountainTrailHelper::AutoSlot.x_for(slot[:y])
-      tent_right = slot[:x] + (slot[:width] / 2.0)
-      assert_in_delta path_x, tent_right, 0.002,
-                      "tent at y=#{slot[:y]} should meet path at x=#{path_x}"
-      assert_operator tent_right, :<=, path_x + 0.001
-      assert_operator slot[:x] - (slot[:width] / 2.0), :>=, 0.0
+      assert_in_delta path_x, slot[:x], 0.002,
+                      "tent at y=#{slot[:y]} should centre on path at x=#{path_x}"
+    end
+  end
+
+  test "builtin tent slots leave vertical room for captions at 360px wide" do
+    viewport_w = 360
+    viewport_h = viewport_w * MountainTrailHelper::MAP_ASPECT_HEIGHT / MountainTrailHelper::MAP_ASPECT_WIDTH.to_f
+    caption_px = 28
+    margin_px = 4
+    slots = MountainTrailHelper::BUILTIN_TENT_SLOTS
+
+    (0...(slots.size - 1)).each do |index|
+      lower = slots[index]
+      upper = slots[index + 1]
+      tent_h_px = lower[:width] * viewport_w * MountainTrailHelper::TENT_IMG_HEIGHT_OVER_WIDTH
+      gap_px = (lower[:y] - upper[:y]) * viewport_h
+      required_px = tent_h_px + caption_px + margin_px
+      assert_operator gap_px, :>=, required_px - 1,
+                      "slot #{index} caption should clear slot #{index + 1} tent at 360px"
     end
   end
 
