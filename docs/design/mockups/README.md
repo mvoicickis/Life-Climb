@@ -1,3 +1,11 @@
+> **Archive — not current product specification**
+>
+> This document is an archive of historical design concepts.
+> It is **not** the current product specification.
+>
+> - Current UI documentation: [`docs/ui_design.md`](../../ui_design.md)
+> - Current product vision: [`docs/vision.md`](../../vision.md)
+
 # LifePoints mockups index
 
 High-fidelity concepts for the Close-the-Gap redesign. Visual system: [`DESIGN_SYSTEM.md`](../DESIGN_SYSTEM.md).
@@ -34,3 +42,11 @@ High-fidelity concepts for the Close-the-Gap redesign. Visual system: [`DESIGN_S
 Companion PNG assets live in [`app/assets/images/characters/`](../../app/assets/images/characters/) (`birdie`, `bee`, `bear`, `fox`, `horse`, `raven`).
 
 Production partials (wire later): `_character_picker`, `_lp_bottom_nav`.
+
+## Historical Context
+
+These mockups influenced LifePoints’ direction: the mountain metaphor, Ideal vs Present gap, character identity, and celebration moments.
+
+The shipped product has since diverged in places. Navigation is now **Mountain · Today · Journey · You** (not Life Map–first). Hierarchy is **Goal → Plan → Project → Battle** on Strategy, with Mountain Focus as the climb UI. Visual chrome on Mountain is a dark RPG scenic climb rather than the light Home dashboard shown as “canonical” above.
+
+Treat this folder as design history and inspiration. Do not implement screens from this index as if they were the current spec.
