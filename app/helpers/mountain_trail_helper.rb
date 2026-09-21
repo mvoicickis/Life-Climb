@@ -32,10 +32,11 @@ module MountainTrailHelper
   BUILTIN_TENT_SLOTS = [
     { x: 0.376, y: 0.860, width: 0.25 },
     { x: 0.480, y: 0.680, width: 0.15 },
-    { x: 0.478, y: 0.520, width: 0.11 }
+    { x: 0.478, y: 0.470, width: 0.11 }
   ].freeze
   BUILTIN_TENT_WIDTH_REF = 0.25
   TENT_IMG_HEIGHT_OVER_WIDTH = 144.0 / 256.0
+  CAMPFIRE_GAP_REM = 0.14
   # Default photo summit tip (mountain_trail_day.webp).
   PEAK_X = 0.542
   PEAK_Y = 0.208
@@ -219,6 +220,16 @@ module MountainTrailHelper
   def mountain_trail_map_tent_scale(node, visible_nodes, builtin_map:)
     width = mountain_trail_map_tent_width_frac(node, visible_nodes, builtin_map: builtin_map)
     (width / BUILTIN_TENT_WIDTH_REF).round(4)
+  end
+
+  # Map tent image height as a fraction of map width (matches 100cqw × width_frac layout).
+  def mountain_trail_map_tent_height_frac(node, visible_nodes, builtin_map:)
+    mountain_trail_map_tent_width_frac(node, visible_nodes, builtin_map: builtin_map) * TENT_IMG_HEIGHT_OVER_WIDTH
+  end
+
+  def mountain_trail_map_campfire_gap_rem(node, visible_nodes, builtin_map:)
+    gap = CAMPFIRE_GAP_REM * mountain_trail_map_tent_scale(node, visible_nodes, builtin_map: builtin_map)
+    gap.round(4)
   end
 
   # Caption width in rem — 9rem default, narrowed near map edges so labels stay on the photo.
