@@ -10122,7 +10122,6 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 .lp-dash-nav__link.is-active {
   color: var(--rpg-green, var(--lp-green));
-  background: rgba(87, 211, 91, 0.14);
 }
 
 .lp-dash-confetti {
