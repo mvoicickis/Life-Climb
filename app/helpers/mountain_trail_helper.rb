@@ -3,34 +3,41 @@
 # Places path projects on the Mountain V4 photo trail.
 # Coordinates are fractions: x across the canvas, y down from the peak.
 module MountainTrailHelper
-  # Traced path on the default 1024×1536 mountain photo (yFrac, xFrac).
+  # Traced path on the default 1024×1536 day/night mountain photos (yFrac, xFrac).
   TRAIL_CURVE = [
-    [ 0.236, 0.545 ],
-    [ 0.297, 0.549 ],
-    [ 0.352, 0.562 ],
-    [ 0.408, 0.536 ],
-    [ 0.463, 0.512 ],
-    [ 0.518, 0.555 ],
-    [ 0.574, 0.531 ],
-    [ 0.623, 0.528 ],
-    [ 0.678, 0.552 ],
-    [ 0.740, 0.547 ],
-    [ 0.807, 0.558 ],
-    [ 0.875, 0.514 ],
-    [ 0.985, 0.586 ]
+    [ 0.248, 0.555 ],
+    [ 0.286, 0.526 ],
+    [ 0.311, 0.593 ],
+    [ 0.342, 0.548 ],
+    [ 0.366, 0.607 ],
+    [ 0.398, 0.544 ],
+    [ 0.433, 0.577 ],
+    [ 0.471, 0.478 ],
+    [ 0.502, 0.578 ],
+    [ 0.547, 0.455 ],
+    [ 0.590, 0.595 ],
+    [ 0.645, 0.475 ],
+    [ 0.690, 0.608 ],
+    [ 0.756, 0.499 ],
+    [ 0.805, 0.617 ],
+    [ 0.893, 0.431 ],
+    [ 0.990, 0.523 ]
   ].freeze
 
-  TRAIL_Y_MIN = 0.32
-  TRAIL_Y_MAX = 0.88
+  TRAIL_Y_MIN = 0.26
+  TRAIL_Y_MAX = 0.93
   # Four peg positions on the map; three tents use the lower slots, ridge pill sits on-trail above the top tent.
   MAP_LAYOUT_SLOTS = 4
   RIDGE_STEP_ABOVE_TOP = 0.115
   MIN_CLEAR_ABOVE_TENT = 0.05
-  # Default photo summit tip (mountain_trail_default.webp frame-2 anchor).
-  PEAK_X = 0.532
-  PEAK_Y = 0.218
+  # Default photo summit tip (mountain_trail_day.webp).
+  PEAK_X = 0.542
+  PEAK_Y = 0.208
 
-  # Curve map photo aspect (mountain_trail_default.webp).
+  BUILTIN_DAY_PHOTO = "mountain_trail_day.webp"
+  BUILTIN_NIGHT_PHOTO = "mountain_trail_night.webp"
+
+  # Curve map photo aspect (mountain_trail_day.webp).
   MAP_ASPECT_WIDTH = 1024
   MAP_ASPECT_HEIGHT = 1536
   MAP_ZOOM = 1.0
@@ -102,14 +109,30 @@ module MountainTrailHelper
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo.variant(resize_to_limit: [ 1200, 1800 ]))
     else
-      image_path("mountain_trail_default.webp")
+      image_path(BUILTIN_DAY_PHOTO)
     end
   rescue StandardError
     if journey&.mountain_photo&.attached?
       url_for(journey.mountain_photo)
     else
-      image_path("mountain_trail_default.webp")
+      image_path(BUILTIN_DAY_PHOTO)
     end
+  end
+
+  def mountain_trail_night_photo_url(journey)
+    return nil if mountain_trail_custom_photo?(journey)
+
+    image_path(BUILTIN_NIGHT_PHOTO)
+  end
+
+  # true = day, false = night, nil = unknown (use browser clock on first paint).
+  def mountain_trail_daytime?(user:, at: Time.current)
+    zone = user&.notification_preference&.time_zone
+    return nil if zone.blank?
+
+    local = at.in_time_zone(zone)
+    hrs = local.hour + (local.min / 60.0)
+    hrs >= 6 && hrs < 18
   end
 
   def mountain_trail_all_projects(trail)
