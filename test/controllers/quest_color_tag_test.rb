@@ -132,6 +132,6 @@ class QuestColorTagTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#climb-path-project-#{quest.id} .lp-climb-path__project.has-color.is-coral"
     assert_select "#climb-path-project-#{quest.id} .lp-climb-path__title", text: /Edit me/
-    assert_select "#section-edit-#{quest.id} .lp-color-swatch.is-coral input[checked]"
+    assert_select "#section-edit-#{quest.id} .lp-color-swatch.is-amber input[checked]"
   end
 end

@@ -1197,6 +1197,38 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 0, pills[:total]
   end
 
+  test "picker color maps stored tags to the four camp colours" do
+    assert_equal "green", mountain_trail_picker_color_key(nil)
+    assert_equal "green", mountain_trail_picker_color_key("")
+    assert_equal "green", mountain_trail_picker_color_key("green")
+    assert_equal "amber", mountain_trail_picker_color_key("amber")
+    assert_equal "purple", mountain_trail_picker_color_key("purple")
+    assert_equal "blue", mountain_trail_picker_color_key("blue")
+    assert_equal "blue", mountain_trail_picker_color_key("teal")
+    assert_equal "amber", mountain_trail_picker_color_key("coral")
+    assert_equal "purple", mountain_trail_picker_color_key("pink")
+    assert_equal "green", mountain_trail_picker_color_key("gray")
+  end
+
+  test "tent image follows picker colour including legacy tags" do
+    expected = {
+      nil => "mountain_tent_green.webp",
+      "green" => "mountain_tent_green.webp",
+      "amber" => "mountain_tent_yellow.webp",
+      "purple" => "mountain_tent_purple.webp",
+      "blue" => "mountain_tent_blue.webp",
+      "teal" => "mountain_tent_blue.webp",
+      "coral" => "mountain_tent_yellow.webp",
+      "pink" => "mountain_tent_purple.webp",
+      "gray" => "mountain_tent_green.webp"
+    }
+
+    expected.each do |tag, filename|
+      project = StrategyGoal.new(color_key: tag)
+      assert_equal filename, mountain_trail_tent_image(project), "tag #{tag.inspect}"
+    end
+  end
+
   def reveal_test_projects(count)
     (0...count).map do |index|
       Struct.new(:id, :stage, :position, :completed?, :holding?, :trail_x, :trail_y, :title, keyword_init: true).new(

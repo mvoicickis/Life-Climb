@@ -1,5 +1,5 @@
 <%# locals: selected: nil, form_id: "color", name: :color_key %>
-<% selected = local_assigns[:selected].to_s.presence %>
+<% selected = mountain_trail_picker_color_key(local_assigns[:selected]) %>
 <% form_id = local_assigns.fetch(:form_id, "color") %>
 <% field_name = local_assigns.fetch(:name, :color_key) %>
 <% group_id = "#{form_id}-color" %>
@@ -9,7 +9,7 @@
   <div class="lp-color-swatches__row" role="radiogroup" aria-labelledby="<%= group_id %>-legend">
     <span id="<%= group_id %>-legend" class="sr-only"><%= t("strategy.rpg.quest_color_label") %></span>
     <%= hidden_field_tag field_name, "", id: nil %>
-    <% StrategyGoal::COLOR_KEYS.each do |key| %>
+    <% StrategyGoal::PICKER_COLOR_KEYS.each do |key| %>
       <% input_id = "#{group_id}-#{key}" %>
       <label class="lp-color-swatch is-<%= key %>" for="<%= input_id %>" title="<%= t("strategy.rpg.quest_colors.#{key}") %>">
         <%= radio_button_tag field_name, key, selected == key,

@@ -379,7 +379,7 @@
             <% end %>
             <p class="lp-trail-plant__flag-label"><%= t("strategy.rpg.trail.flag_colour") %></p>
             <div class="lp-trail__plant-colors" role="radiogroup" aria-label="<%= t('strategy.rpg.quest_color_label') %>">
-              <% StrategyGoal::COLOR_KEYS.each_with_index do |key, i| %>
+              <% StrategyGoal::PICKER_COLOR_KEYS.each do |key| %>
                 <label class="lp-trail__swatch is-<%= key %>">
                   <input type="radio"
                          name="color_key"
@@ -387,7 +387,7 @@
                          class="sr-only"
                          data-action="change->trail-canvas#colorPicked"
                          data-hex="<%= MountainTrailHelper::ACCENT_HEX[key] %>"
-                         <%= "checked" if i.zero? %>>
+                         <%= "checked" if key == "green" %>>
                   <span class="lp-trail__swatch-dot" aria-hidden="true"></span>
                   <span class="lp-trail__swatch-check" aria-hidden="true">✓</span>
                   <span class="sr-only"><%= t("strategy.rpg.quest_colors.#{key}") %></span>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mountain camps — map sign + tent art (360px)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Brand tokens from app/assets/tailwind/application.css (:root light) */
+    :root {
+      --phone-w: 360px;
+      --map-aspect: 1024 / 1536;
+      --lp-font-display: "Nunito", system-ui, sans-serif;
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --lp-type-display-lg: clamp(1.35rem, 4.8vw + 0.4rem, 2.1rem);
+      --lp-type-display-md: clamp(1.15rem, 3.2vw + 0.35rem, 1.55rem);
+      --lp-type-display-sm: clamp(1rem, 2.4vw + 0.3rem, 1.2rem);
+      --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
+      --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
+      --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
+      --lp-space-1: 0.35rem;
+      --lp-space-2: 0.55rem;
+      --lp-space-3: 0.75rem;
+      --lp-space-4: 1rem;
+      --lp-tap: 2.75rem;
+      --lp-radius-card: 1.25rem;
+      --lp-radius-field: 0.85rem;
+      --lp-radius-pill: 999px;
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+      --lp-frost: var(--lp-surface);
+      --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
+      --lp-accent-battles: #2dd4bf;
+      --lp-accent-quests: #a78bfa;
+      --lp-accent-habits: #f59e0b;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-green-soft: rgba(87, 211, 91, 0.28);
+      --lp-teal: #3ec9c0;
+      --lp-teal-deep: #2aa9a1;
+      --lp-amber: #ffb347;
+      --lp-hot: #ff7a45;
+      --lp-gold: #d4a017;
+      --lp-paper: #f8fafc;
+      --lp-paper-soft: #eef2f7;
+      --lp-mist: #e2e8f0;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-muted-dark: #64748b;
+      --lp-surface: #ffffff;
+      --lp-elevated: #ffffff;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --rpg-amber: #f59e0b;
+      --lp-rpg-glass: rgba(255, 255, 255, 0.88);
+      --lp-rpg-glass-border: rgba(15, 23, 42, 0.1);
+      --lp-rpg-glass-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+      --lp-rpg-ink: rgba(15, 23, 42, 0.96);
+      --lp-trail-wood: color-mix(in srgb, var(--lp-ink) 72%, var(--lp-muted));
+      --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink) 70%, var(--lp-muted));
+      --lp-trail-accent: var(--lp-teal);
+      --lp-summit-pole-bury: 0.52rem;
+      --lp-summit-stack-bottom: 1.24rem;
+      --lp-summit-title-size: clamp(0.62rem, 2.5vw + 0.45rem, 0.82rem);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      background: var(--lp-paper-soft);
+      color: var(--lp-ink);
+      padding: 1.25rem 1rem 2.5rem;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: var(--lp-type-display-sm);
+      font-weight: 900;
+    }
+
+    .lede {
+      margin: 0 0 1rem;
+      max-width: 54rem;
+      font-size: var(--lp-type-ui-sm);
+      color: var(--lp-muted);
+      line-height: 1.45;
+    }
+
+    .strip {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scroll-snap-type: x mandatory;
+      align-items: flex-start;
+    }
+
+    .frame-wrap {
+      flex: 0 0 var(--phone-w);
+      scroll-snap-align: start;
+      max-width: var(--phone-w);
+    }
+
+    .frame-label {
+      margin: 0 0 0.5rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--lp-teal-deep);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      max-width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--lp-paper-soft);
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .phone__map {
+      position: relative;
+      width: 100%;
+      aspect-ratio: var(--map-aspect);
+      overflow: hidden;
+    }
+
+    .phone__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center top;
+      display: block;
+    }
+
+    .phone__layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .phone__layer > * { pointer-events: auto; }
+
+    /* Map sign (proposed) */
+    .map-sign {
+      position: absolute;
+      top: max(0.35rem, env(safe-area-inset-top));
+      left: 0.4rem;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: var(--lp-tap);
+      min-height: var(--lp-tap);
+      padding: 0.15rem 0.2rem 0.1rem;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      max-width: calc(var(--phone-w) - 0.8rem);
+    }
+
+    .map-sign__pill {
+      position: relative;
+      z-index: 2;
+      margin-bottom: -0.42rem;
+      padding: 0.18rem 0.42rem;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-surface);
+      color: var(--lp-ink);
+      font-size: 0.56rem;
+      font-weight: 800;
+      line-height: 1.2;
+      box-shadow: var(--lp-shadow-card);
+      border: 1px solid var(--lp-border);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .map-sign.is-no-label .map-sign__pill {
+      display: none;
+    }
+
+    .map-sign__map {
+      width: 72px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--lp-ink) 18%, transparent));
+    }
+
+    /* Summit flag — production lp-trail.is-v4 */
+    .lp-trail__summit {
+      position: absolute;
+      left: calc(var(--lp-summit-x, 0.542) * 100%);
+      top: calc(var(--lp-summit-y, 0.208) * 100%);
+      width: 0;
+      height: 0;
+      z-index: 16;
+      pointer-events: none;
+    }
+
+    .lp-trail__summit-row {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      transform: translateX(-50%);
+      max-width: calc(var(--phone-w) - 0.75rem);
+      pointer-events: none;
+    }
+
+    .lp-trail__summit-plant {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transform: translateY(-0.08rem);
+      filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--lp-ink) 20%, transparent));
+    }
+
+    .lp-trail__summit-mast {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: var(--lp-summit-stack-bottom);
+      transform: rotate(-1.75deg);
+      transform-origin: bottom center;
+    }
+
+    .lp-trail__summit-pole {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: calc(-1 * var(--lp-summit-pole-bury));
+      z-index: 0;
+      width: 3px;
+      transform: translateX(-50%);
+      border-radius: 1px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--lp-trail-wood) 55%, var(--lp-surface)),
+        var(--lp-trail-wood-deep) 78%,
+        color-mix(in srgb, var(--lp-ink) 35%, var(--lp-trail-wood-deep))
+      );
+      box-shadow:
+        1px 0 0 color-mix(in srgb, var(--lp-surface) 18%, transparent),
+        0 1px 2px color-mix(in srgb, var(--lp-ink) 22%, transparent);
+    }
+
+    .lp-trail__summit-socket {
+      position: absolute;
+      left: 50%;
+      bottom: -0.04rem;
+      width: 0.78rem;
+      height: 0.22rem;
+      transform: translateX(-50%) rotate(-1.75deg);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 36%, transparent);
+      filter: blur(2px);
+      opacity: 0.92;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .lp-trail__summit-banner-wrap {
+      position: relative;
+      left: 50%;
+      z-index: 2;
+      transform: translateX(-50%);
+      transform-origin: 50% 100%;
+      filter: drop-shadow(0 7px 11px color-mix(in srgb, var(--lp-ink) 20%, transparent));
+      animation: lp-summit-banner-flutter 3.6s ease-in-out infinite;
+      pointer-events: auto;
+    }
+
+    .lp-trail__summit-banner-lift {
+      position: absolute;
+      left: 12%;
+      right: 10%;
+      bottom: -0.18rem;
+      height: 0.34rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 20%, transparent);
+      filter: blur(3px);
+      opacity: 0.72;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .lp-trail__summit-banner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 5.5rem;
+      max-width: min(11rem, calc(var(--phone-w) - 2rem));
+      min-height: var(--lp-tap);
+      margin: 0;
+      padding: 0.42rem 0.72rem;
+      border: 0;
+      cursor: pointer;
+      clip-path: polygon(
+        0.62rem 0,
+        calc(100% - 0.62rem) 0,
+        100% 50%,
+        calc(100% - 0.62rem) 100%,
+        0.62rem 100%,
+        0 50%
+      );
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--lp-green) 90%, var(--lp-surface)) 0%,
+        var(--lp-green) 38%,
+        var(--lp-green-deep) 100%
+      );
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 45%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, var(--lp-green-deep) 40%, var(--lp-ink));
+      pointer-events: auto;
+      font: inherit;
+    }
+
+    .lp-trail__summit-banner::after {
+      content: "";
+      position: absolute;
+      inset: 0.12rem 0.55rem;
+      border-radius: 2px;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lp-surface) 12%, transparent);
+    }
+
+    .lp-trail__summit-banner-text {
+      position: relative;
+      z-index: 1;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      margin: 0;
+      padding: 0 0.1rem;
+      font-size: var(--lp-summit-title-size);
+      font-weight: 800;
+      line-height: 1.18;
+      color: var(--lp-surface);
+      text-align: center;
+      overflow-wrap: anywhere;
+      text-shadow: 0 1px 0 color-mix(in srgb, var(--lp-green-deep) 70%, var(--lp-ink));
+    }
+
+    @keyframes lp-summit-banner-flutter {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      50% { transform: translateX(-50%) rotate(-1.2deg); }
+    }
+
+    /* Camps on trail */
+    .lp-trail-camp {
+      position: absolute;
+      left: calc(var(--lp-trail-x, 0.5) * 100%);
+      top: calc(var(--lp-trail-y, 0.5) * 100%);
+      transform: translate(-50%, -100%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .lp-trail-camp.is-current { z-index: 5; }
+    .lp-trail-camp.is-done { opacity: 0.88; }
+
+    .lp-trail-camp__shadow {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: calc(var(--lp-tent-width-frac, 0.25) * var(--phone-w) * 0.72);
+      height: calc(0.45rem * var(--lp-tent-scale, 1));
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--lp-ink) 32%, transparent);
+      filter: blur(2px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .lp-trail-camp__peg {
+      position: relative;
+      display: grid;
+      place-items: end center;
+      pointer-events: none;
+    }
+
+    .lp-trail-camp__peg-visual {
+      position: relative;
+      display: grid;
+      place-items: end center;
+      width: calc(var(--lp-tent-width-frac, 0.25) * var(--phone-w));
+      transform-origin: bottom center;
+    }
+
+    .lp-trail-camp__tent-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink) 40%, transparent));
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__tent-img {
+      filter:
+        drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink) 40%, transparent))
+        drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent) 45%, transparent));
+    }
+
+    .lp-trail-camp__fire {
+      position: absolute;
+      left: 100%;
+      bottom: 0;
+      height: calc(
+        var(--lp-tent-width-frac, 0.25) * var(--phone-w) * var(--lp-tent-img-h-over-w, 0.5625)
+      );
+      width: auto;
+      margin-left: calc(0.14rem * var(--lp-tent-scale, 1));
+      display: block;
+      object-fit: contain;
+      object-position: bottom;
+      pointer-events: none;
+    }
+
+    .lp-trail-camp__cleared {
+      position: absolute;
+      right: calc(-0.1rem * var(--lp-tent-scale, 1));
+      top: calc(-0.15rem * var(--lp-tent-scale, 1));
+      display: grid;
+      place-items: center;
+      width: calc(1.1rem * var(--lp-tent-scale, 1));
+      height: calc(1.1rem * var(--lp-tent-scale, 1));
+      min-width: 12px;
+      min-height: 12px;
+      border-radius: var(--lp-radius-pill);
+      background: var(--lp-green-deep);
+      color: var(--lp-surface);
+      font-size: max(12px, calc(0.65rem * var(--lp-tent-scale, 1)));
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: 0 1px 4px color-mix(in srgb, var(--lp-ink) 25%, transparent);
+    }
+
+    .lp-trail-camp__caption {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: var(--lp-caption-gap, calc(0.12rem * var(--lp-tent-scale, 1)));
+      width: min(9rem, var(--lp-trail-caption-max, 9rem));
+      max-width: min(9rem, var(--lp-trail-caption-max, 9rem));
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .lp-trail-camp__title {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      font-size: max(12px, calc(0.62rem * var(--lp-tent-scale, 1)));
+      font-weight: 700;
+      color: color-mix(in srgb, var(--lp-ink) 92%, var(--lp-paper));
+      line-height: 1.15;
+      text-shadow:
+        0 0 4px color-mix(in srgb, var(--lp-paper) 95%, transparent),
+        0 1px 2px color-mix(in srgb, var(--lp-paper) 90%, transparent);
+    }
+
+    .lp-trail-camp__status {
+      display: block;
+      margin-top: calc(0.08rem * var(--lp-tent-scale, 1));
+      font-size: max(12px, calc(0.52rem * var(--lp-tent-scale, 1)));
+      font-weight: 800;
+      color: var(--lp-muted);
+      line-height: 1.2;
+      white-space: nowrap;
+      text-shadow:
+        0 0 4px color-mix(in srgb, var(--lp-paper) 95%, transparent),
+        0 1px 2px color-mix(in srgb, var(--lp-paper) 90%, transparent);
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__caption {
+      margin-top: max(var(--lp-caption-gap), 0.42rem);
+      padding:
+        calc(0.12rem * var(--lp-tent-scale, 1))
+        calc(0.4rem * var(--lp-tent-scale, 1))
+        calc(0.14rem * var(--lp-tent-scale, 1));
+      border-radius: var(--lp-radius-pill);
+      background: color-mix(in srgb, var(--lp-paper) 94%, var(--lp-gold));
+      border: 1px solid color-mix(in srgb, var(--lp-gold) 28%, var(--lp-muted));
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__title {
+      font-weight: 800;
+      text-shadow: none;
+      color: var(--lp-ink);
+    }
+
+    .lp-trail-camp.is-current .lp-trail-camp__status {
+      text-shadow: none;
+    }
+
+    .overlap-note {
+      margin: 0.75rem 0 0;
+      max-width: 54rem;
+      font-size: var(--lp-type-ui-sm);
+      color: var(--lp-muted);
+      line-height: 1.45;
+    }
+
+    .overlap-note strong {
+      color: var(--lp-ink);
+    }
+  </style>
+</head>
+<body>
+  <h1>Mountain — map sign + tent webp</h1>
+  <p class="lede">
+    Three 360×(1024/1536) frames. Tent centres and bases from Marek reference
+    <code>TENT_SLOTS</code> (not trail-curve snap). Open from repo root for images.
+  </p>
+  <div class="strip" id="strip"></div>
+  <p class="overlap-note" id="overlap-note" hidden></p>
+
+  <script>
+    const PHOTO_DAY = "../../app/assets/images/mountain_trail_day.webp";
+    const PHOTO_NIGHT = "../../app/assets/images/mountain_trail_night.webp";
+    const TENT_IMG = "../../app/assets/images/mountain_tent_green.webp";
+    const CAMPFIRE_IMG = "../../app/assets/images/mountain_campfire.webp";
+    const MAP_IMG = "../../app/assets/images/mountain_map.webp";
+    const TENT_IMG_H_OVER_W = 144 / 256;
+
+    const PEAK_X = 0.542;
+    const PEAK_Y = 0.208;
+    const MAP_H_OVER_W = 1536 / 1024;
+    const TENT_W_REF = 0.25;
+
+    const TENT_SLOTS = [
+      { x: 0.460, y: 0.940, width: 0.25 },
+      { x: 0.435, y: 0.761, width: 0.15 },
+      { x: 0.462, y: 0.561, width: 0.11 }
+    ];
+
+    const FRAMES = [
+      { id: "A", label: "Day · 7 camps ahead", photo: PHOTO_DAY, aheadLabel: "7 camps ahead" },
+      { id: "B", label: "Night · 1 camp ahead", photo: PHOTO_NIGHT, aheadLabel: "1 camp ahead" },
+      { id: "C", label: "Day · map only (0 ahead)", photo: PHOTO_DAY, aheadLabel: null }
+    ];
+
+    const CAMPS = [
+      { state: "done", title: "Emergency fund" },
+      { state: "current", title: "Save €500", status: "2 battles ready" },
+      { state: "locked", title: "Invest monthly" }
+    ];
+
+    function tentHeightFrac(widthFrac) {
+      return widthFrac * TENT_IMG_H_OVER_W / MAP_H_OVER_W;
+    }
+
+    function tentExtents(slot) {
+      const h = tentHeightFrac(slot.width);
+      return {
+        left: slot.x - slot.width / 2,
+        right: slot.x + slot.width / 2,
+        top: slot.y - h,
+        bottom: slot.y
+      };
+    }
+
+    const FRAME_H_PX = 360 * MAP_H_OVER_W;
+    const DEFAULT_CAPTION_GAP_REM = 0.12;
+    const MIN_CAPTION_GAP_REM = 0;
+    const CAPTION_GAP_STEP_REM = 0.02;
+
+    function remToYFrac(rem) {
+      return (rem * 16) / FRAME_H_PX;
+    }
+
+    function captionHeightFrac(scale, isCurrent) {
+      const titlePx = Math.max(12, 9.92 * scale);
+      const statusPx = isCurrent ? Math.max(12, 8.32 * scale) : 0;
+      const padPx = isCurrent ? (0.12 + 0.14 + 0.08) * 16 * scale : 0;
+      return (titlePx * 1.15 + statusPx + padPx) / FRAME_H_PX;
+    }
+
+    function captionExtents(slot, scale, gapRem, isCurrent) {
+      const top = slot.y + remToYFrac(gapRem);
+      const height = captionHeightFrac(scale, isCurrent);
+      const halfW = isCurrent
+        ? Math.min(0.16, slot.width * 0.65 + 0.05)
+        : Math.min(0.12, slot.width * 0.5 + 0.03);
+      return {
+        left: slot.x - halfW,
+        right: slot.x + halfW,
+        top,
+        bottom: top + height
+      };
+    }
+
+    function rectsOverlap(a, b) {
+      return (
+        a.left < b.right &&
+        a.right > b.left &&
+        a.top < b.bottom &&
+        a.bottom > b.top
+      );
+    }
+
+    function resolveCaptionGap(index, scale, isCurrent) {
+      if (index === 0) {
+        return { gapRem: DEFAULT_CAPTION_GAP_REM * scale, stillOverlaps: false };
+      }
+      const slot = TENT_SLOTS[index];
+      const tentBelow = tentExtents(TENT_SLOTS[index - 1]);
+      let gapRem = DEFAULT_CAPTION_GAP_REM * scale;
+      while (gapRem > MIN_CAPTION_GAP_REM + 0.0001) {
+        if (!rectsOverlap(captionExtents(slot, scale, gapRem, isCurrent), tentBelow)) {
+          return { gapRem, stillOverlaps: false };
+        }
+        gapRem = Math.max(MIN_CAPTION_GAP_REM, gapRem - CAPTION_GAP_STEP_REM);
+      }
+      const stillOverlaps = rectsOverlap(
+        captionExtents(slot, scale, MIN_CAPTION_GAP_REM, isCurrent),
+        tentBelow
+      );
+      return { gapRem: MIN_CAPTION_GAP_REM, stillOverlaps };
+    }
+
+    const CAPTION_GAPS = CAMPS.map((camp, index) => {
+      const scale = TENT_SLOTS[index].width / TENT_W_REF;
+      const isCurrent = camp.state === "current";
+      if (camp.state === "done") {
+        return { gapRem: DEFAULT_CAPTION_GAP_REM * scale, stillOverlaps: false };
+      }
+      return resolveCaptionGap(index, scale, isCurrent);
+    });
+
+    function campSlot(index) {
+      const slot = TENT_SLOTS[index];
+      const gap = CAPTION_GAPS[index];
+      return {
+        x: slot.x,
+        y: slot.y,
+        widthFrac: slot.width,
+        scale: slot.width / TENT_W_REF,
+        captionGapRem: gap.gapRem
+      };
+    }
+
+    function captionMaxRem(x) {
+      const side = Math.min(x, 1 - x);
+      const edgeLimited = 2 * side * 22.5 - 0.75;
+      return Math.min(9, Math.max(5, edgeLimited));
+    }
+
+    function summitBlock() {
+      return (
+        '<div class="lp-trail__summit" style="--lp-summit-x:' + PEAK_X + ';--lp-summit-y:' + PEAK_Y + '">' +
+        '<div class="lp-trail__summit-row"><div class="lp-trail__summit-plant">' +
+        '<div class="lp-trail__summit-mast">' +
+        '<div class="lp-trail__summit-banner-wrap">' +
+        '<span class="lp-trail__summit-banner-lift" aria-hidden="true"></span>' +
+        '<button type="button" class="lp-trail__summit-banner" aria-label="Summit goal">' +
+        '<span class="lp-trail__summit-banner-text">Financial freedom</span></button></div>' +
+        '<span class="lp-trail__summit-pole" aria-hidden="true"></span></div>' +
+        '<span class="lp-trail__summit-socket" aria-hidden="true"></span></div></div></div>'
+      );
+    }
+
+    function mapSign(label) {
+      const noLabel = label == null;
+      const pill = noLabel
+        ? ""
+        : '<span class="map-sign__pill">' + label + "</span>";
+      return (
+        '<button type="button" class="map-sign' + (noLabel ? " is-no-label" : "") + '"' +
+        ' aria-label="' + (noLabel ? "Camp map" : label + " — open camp list") + '">' +
+        pill +
+        '<img class="map-sign__map" src="' + MAP_IMG + '" width="72" height="70" alt="" decoding="async">' +
+        "</button>"
+      );
+    }
+
+    function campButton(camp, layout) {
+      const current = camp.state === "current";
+      const done = camp.state === "done";
+      const classes = ["lp-trail-camp", "is-" + camp.state];
+      if (current) classes.push("is-current");
+
+      let pegInner =
+        '<img class="lp-trail-camp__tent-img" src="' + TENT_IMG + '" width="256" height="144" alt="" decoding="async">';
+      if (current) {
+        pegInner +=
+          '<img class="lp-trail-camp__fire" src="' + CAMPFIRE_IMG + '" width="117" height="160" alt="" decoding="async">';
+      }
+      if (done) pegInner += '<span class="lp-trail-camp__cleared" aria-hidden="true">✓</span>';
+
+      let caption = "";
+      if (current) {
+        caption =
+          '<span class="lp-trail-camp__caption">' +
+          '<span class="lp-trail-camp__title">' + camp.title + "</span>" +
+          (camp.status
+            ? '<span class="lp-trail-camp__status">' + camp.status + "</span>"
+            : "") +
+          "</span>";
+      } else if (!done) {
+        caption =
+          '<span class="lp-trail-camp__caption">' +
+          '<span class="lp-trail-camp__title">' + camp.title + "</span></span>";
+      }
+
+      return (
+        '<button type="button" class="' + classes.join(" ") + '"' +
+        ' style="--lp-trail-x:' + layout.x.toFixed(4) + ";--lp-trail-y:" + layout.y.toFixed(4) + ";" +
+        "--lp-tent-width-frac:" + layout.widthFrac.toFixed(4) + ";" +
+        "--lp-tent-img-h-over-w:" + TENT_IMG_H_OVER_W + ";" +
+        "--lp-tent-scale:" + layout.scale.toFixed(4) + ";" +
+        "--lp-trail-caption-max:" + captionMaxRem(layout.x) + "rem;" +
+        "--lp-caption-gap:" + layout.captionGapRem.toFixed(3) + 'rem"' +
+        ' aria-label="' + camp.title + '">' +
+        '<span class="lp-trail-camp__shadow" aria-hidden="true"></span>' +
+        '<span class="lp-trail-camp__peg"><span class="lp-trail-camp__peg-visual">' +
+        pegInner + "</span></span>" + caption + "</button>"
+      );
+    }
+
+    function buildFrame(config) {
+      const wrap = document.createElement("div");
+      wrap.className = "frame-wrap";
+      wrap.innerHTML = '<p class="frame-label">' + config.id + ". " + config.label + "</p>";
+
+      const phone = document.createElement("div");
+      phone.className = "phone";
+
+      const map = document.createElement("div");
+      map.className = "phone__map";
+
+      const photo = document.createElement("img");
+      photo.className = "phone__photo";
+      photo.src = config.photo;
+      photo.alt = "";
+      photo.width = 1024;
+      photo.height = 1536;
+      map.appendChild(photo);
+
+      const layer = document.createElement("div");
+      layer.className = "phone__layer";
+      layer.innerHTML = mapSign(config.aheadLabel) + summitBlock();
+
+      CAMPS.forEach((camp, index) => {
+        layer.insertAdjacentHTML("beforeend", campButton(camp, campSlot(index)));
+      });
+
+      map.appendChild(layer);
+      phone.appendChild(map);
+      wrap.appendChild(phone);
+      return wrap;
+    }
+
+    const strip = document.getElementById("strip");
+    FRAMES.forEach((frame) => strip.appendChild(buildFrame(frame)));
+
+    const overlapNote = document.getElementById("overlap-note");
+    const still = CAMPS.map((camp, index) => {
+      if (camp.state === "done" || !CAPTION_GAPS[index].stillOverlaps) return null;
+      return (
+        "“" + camp.title + "” (slot " + index + ", gap " +
+        CAPTION_GAPS[index].gapRem.toFixed(2) + "rem)"
+      );
+    }).filter(Boolean);
+
+    if (still.length) {
+      overlapNote.hidden = false;
+      overlapNote.innerHTML =
+        "<strong>Caption overlap after minimum gap:</strong> " +
+        still.join("; ") +
+        ". Tents stay on <code>TENT_SLOTS</code>; only caption margin was tightened.";
+    } else {
+      overlapNote.hidden = false;
+      overlapNote.textContent =
+        "Caption clearance: no overlap with the tent below after gap adjustment (if needed).";
+    }
+  </script>
+</body>
+</html>

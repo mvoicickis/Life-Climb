@@ -11,6 +11,7 @@ class StrategyGoal < ApplicationRecord
   LEGACY_KIND = { "year" => "goal" }.freeze
   REPEAT_KINDS = %w[none daily weekly].freeze
   COLOR_KEYS = %w[teal coral amber purple blue green pink gray].freeze
+  PICKER_COLOR_KEYS = %w[green amber purple blue].freeze
   CAMP_MODES = %w[battles pages].freeze
   QUANTITY_KINDS = %w[none up down range].freeze
   EFFORT_TIERS = %w[light steady heavy].freeze

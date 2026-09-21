@@ -141,6 +141,8 @@ ru:
     rpg:
       one_destination_only: "Вы покоряете одну вершину за раз. Измените эту цель вместо добавления новой."
       one_plan_only: "Один план на вершину — так проще. Измените текущий план вместо добавления нового."
+      quest_colors:
+        amber: "Yellow"  # TODO: translate
       destination: "Цель"
       destinations: "Твои цели"
       destination_prev: "Предыдущая цель"
