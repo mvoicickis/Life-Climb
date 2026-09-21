@@ -249,32 +249,36 @@
                      data-trail-ambient-target="nightPhoto">
               <% end %>
             <% end %>
-            <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
-            <div class="lp-trail__night"></div>
-            <div class="lp-trail__haze"></div>
-            <div class="lp-trail__warm"></div>
+            <% unless builtin_photos %>
+              <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
+              <div class="lp-trail__night"></div>
+              <div class="lp-trail__haze"></div>
+              <div class="lp-trail__warm"></div>
+              <div class="lp-trail__snow" data-trail-ambient-target="snow"></div>
+            <% end %>
             <div class="lp-trail__summit-glow"></div>
-            <div class="lp-trail__snow" data-trail-ambient-target="snow"></div>
           </div>
 
-          <div class="lp-trail__ambient" aria-hidden="true">
-            <% if custom_mountain_photo %>
-            <div class="lp-trail__stars" data-trail-ambient-target="stars">
-              <% MountainTrailHelper::MOUNTAIN_STARS.each do |sx, sy, sop| %>
-                <span class="lp-trail__star" style="left: <%= sx %>%; top: <%= sy %>%; opacity: <%= sop %>"></span>
+          <% unless builtin_photos %>
+            <div class="lp-trail__ambient" aria-hidden="true">
+              <% if custom_mountain_photo %>
+              <div class="lp-trail__stars" data-trail-ambient-target="stars">
+                <% MountainTrailHelper::MOUNTAIN_STARS.each do |sx, sy, sop| %>
+                  <span class="lp-trail__star" style="left: <%= sx %>%; top: <%= sy %>%; opacity: <%= sop %>"></span>
+                <% end %>
+              </div>
               <% end %>
+              <div class="lp-trail__mist" data-trail-ambient-target="mist"></div>
+              <div class="lp-trail__embers" data-trail-ambient-target="embers">
+                <span class="lp-trail__ember"></span>
+                <span class="lp-trail__ember"></span>
+                <span class="lp-trail__ember"></span>
+                <span class="lp-trail__ember"></span>
+                <span class="lp-trail__ember"></span>
+              </div>
+              <div class="lp-trail__lightning" data-trail-ambient-target="lightning"></div>
             </div>
-            <% end %>
-            <div class="lp-trail__mist" data-trail-ambient-target="mist"></div>
-            <div class="lp-trail__embers" data-trail-ambient-target="embers">
-              <span class="lp-trail__ember"></span>
-              <span class="lp-trail__ember"></span>
-              <span class="lp-trail__ember"></span>
-              <span class="lp-trail__ember"></span>
-              <span class="lp-trail__ember"></span>
-            </div>
-            <div class="lp-trail__lightning" data-trail-ambient-target="lightning"></div>
-          </div>
+          <% end %>
 
           <% if goal && !destination_overlay && !custom_mountain_photo %>
             <%= render "life_journeys/trail_summit_banner",

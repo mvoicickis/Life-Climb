@@ -144,6 +144,14 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__goal-plaque"
     assert_select ".lp-trail-hud"
     assert_select ".lp-trail__summit", count: 0
+    assert_select ".lp-trail__backlight"
+    assert_select ".lp-trail__haze"
+    assert_select ".lp-trail__warm"
+    assert_select ".lp-trail__mist"
+    assert_select ".lp-trail__embers"
+    assert_select ".lp-trail__lightning"
+    assert_select ".lp-trail__snow"
+    assert_select ".lp-trail__ambient"
   end
 
   test "default mountain photo shows summit banner without top plaque" do
@@ -189,7 +197,14 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__summit-banner"
     assert_select ".lp-trail__goal-plaque", count: 0
     assert_select ".lp-trail__goal-title"
-    assert_select ".lp-trail__backlight"
+    assert_select ".lp-trail__backlight", count: 0
+    assert_select ".lp-trail__haze", count: 0
+    assert_select ".lp-trail__warm", count: 0
+    assert_select ".lp-trail__snow", count: 0
+    assert_select ".lp-trail__ambient", count: 0
+    assert_select ".lp-trail__mist", count: 0
+    assert_select ".lp-trail__embers", count: 0
+    assert_select ".lp-trail__lightning", count: 0
     assert_select ".lp-trail-coach"
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__fab"
     assert_select ".lp-rpg-scenic", count: 0
