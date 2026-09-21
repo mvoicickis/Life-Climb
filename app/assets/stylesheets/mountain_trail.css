@@ -1716,11 +1716,11 @@
   background: transparent;
 }
 
-/* HUD hero goal title (full-width over photo). */
+/* HUD goal control — centred glass button (same as summit peak). */
 .lp-trail-hud__lead {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   width: 100%;
   gap: 0;
 }
@@ -1730,49 +1730,18 @@
   width: 100%;
   max-width: none;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.lp-trail__goal-plaque-wrap {
-  width: 100%;
+.lp-trail__summit-glass-hud {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  max-width: calc(100% - 32px);
   min-width: 0;
-}
-
-.lp-trail__goal-plaque.lp-trail__goal-hero {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
-  border-radius: var(--lp-radius-card, 1rem);
-  background: var(--lp-rpg-glass, rgba(8, 12, 18, 0.8));
-  backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
-  -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
-  box-shadow: var(--lp-rpg-glass-shadow, 0 18px 42px rgba(0, 0, 0, 0.44));
-  padding: 0.55rem 0.75rem;
-  pointer-events: auto;
-  text-align: center;
-  cursor: pointer;
-}
-
-/* Beat .lp-rpg.is-focus-phase .lp-rpg-destination-carousel__title (2-line clamp). */
-.lp-trail .lp-trail__goal-title,
-.lp-trail .lp-trail__goal-title.lp-rpg-destination-carousel__title,
-.lp-rpg.is-focus-phase .lp-trail__goal-title,
-.lp-rpg.is-focus-phase .lp-trail__goal-title.lp-rpg-destination-carousel__title {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
-  font-size: clamp(1rem, 3.2vw + 0.35rem, 1.55rem);
-  font-weight: 800;
-  color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
-  line-height: 1.2;
-  text-align: center;
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: anywhere;
-  text-shadow: none;
 }
 
 .lp-trail__goal-title-input {
@@ -1782,7 +1751,7 @@
   box-sizing: border-box;
   margin: 0;
   border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.1));
-  border-radius: var(--lp-radius-card, 1rem);
+  border-radius: var(--lp-radius-field, 0.85rem);
   background: var(--lp-rpg-glass, rgba(8, 12, 18, 0.8));
   backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
   -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur, 18px));
@@ -1791,7 +1760,7 @@
   font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
   font-size: max(1rem, 16px);
   font-weight: 800;
-  color: var(--lp-rpg-ink, rgba(248, 250, 252, 0.98));
+  color: var(--lp-ink, #0f172a);
   line-height: 1.2;
   text-align: center;
   overflow-wrap: anywhere;
@@ -1828,111 +1797,59 @@
   text-decoration: none;
 }
 
-/* Summit goal ribbon — frame 2 (centred on photo-fraction peak) */
-.lp-trail.is-v4 .lp-trail__summit {
-  --lp-summit-pole-bury: 0.52rem;
+/* Summit glass goal control (built-in peak + custom HUD) */
+.lp-trail.is-v4 {
+  --lp-summit-glass-fill-fallback: rgba(255, 255, 255, 0.28);
+  --lp-summit-glass-fill-night-fallback: rgba(255, 255, 255, 0.32);
+  --lp-summit-glass-border-fallback: rgba(255, 255, 255, 0.6);
+  --lp-summit-glass-border-top-fallback: rgba(255, 255, 255, 0.88);
+  --lp-summit-glass-glow-fallback: rgba(255, 255, 255, 0.7);
+  --lp-summit-glass-fill: var(--lp-summit-glass-fill-fallback);
+  --lp-summit-glass-border: var(--lp-summit-glass-border-fallback);
+  --lp-summit-glass-border-top: var(--lp-summit-glass-border-top-fallback);
+  --lp-summit-glass-blur: 12px;
+  --lp-summit-glass-radius: 0.75rem;
+  --lp-summit-glass-max-w: calc(100% - 32px);
   --lp-summit-stack-bottom: 1.24rem;
   --lp-summit-title-size: clamp(0.62rem, 2.5vw + 0.45rem, 0.82rem);
-  --lp-trail-wood-deep: color-mix(in srgb, var(--lp-ink, #0f172a) 70%, var(--lp-muted, #475569));
+  --lp-summit-glass-label-shadow: none;
+}
+
+@supports (background: color-mix(in srgb, white 50%, transparent)) {
+  .lp-trail.is-v4 {
+    --lp-summit-glass-fill: color-mix(in srgb, var(--lp-surface, #ffffff) 28%, transparent);
+    --lp-summit-glass-border: color-mix(in srgb, var(--lp-surface, #ffffff) 60%, transparent);
+    --lp-summit-glass-border-top: color-mix(in srgb, var(--lp-surface, #ffffff) 88%, transparent);
+    --lp-summit-glass-glow-fallback: color-mix(in srgb, var(--lp-surface, #ffffff) 70%, transparent);
+  }
+}
+
+.lp-trail.is-v4.is-night {
+  --lp-summit-glass-fill: var(--lp-summit-glass-fill-night-fallback);
+  --lp-summit-glass-label-shadow: 0 1px 2px rgba(15, 23, 42, 0.35);
+}
+
+@supports (background: color-mix(in srgb, white 50%, transparent)) {
+  .lp-trail.is-v4.is-night {
+    --lp-summit-glass-fill: color-mix(in srgb, var(--lp-surface, #ffffff) 32%, transparent);
+    --lp-summit-glass-label-shadow:
+      0 1px 2px color-mix(in srgb, var(--lp-ink, #0f172a) 35%, transparent);
+  }
+}
+
+.lp-trail.is-v4 .lp-trail__summit {
   position: absolute;
-  left: calc(var(--lp-summit-x, 0.532) * 100%);
-  top: calc(var(--lp-summit-y, 0.218) * 100%);
-  width: 0;
-  height: 0;
+  left: calc(var(--lp-summit-x, 0.542) * 100%);
+  top: calc(var(--lp-summit-y, 0.208) * 100%);
+  transform: translate(-50%, calc(-100% - var(--lp-summit-stack-bottom)));
+  width: max-content;
+  max-width: var(--lp-summit-glass-max-w);
   z-index: 16;
   pointer-events: none;
 }
 
-.lp-trail.is-v4 .lp-trail__summit-row {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  transform: translateX(-50%);
-  max-width: calc(100vw - 0.75rem);
-  pointer-events: none;
-}
-
-.lp-trail.is-v4 .lp-trail__summit-plant {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  transform: translateY(-0.08rem);
-  filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--lp-ink, #0f172a) 20%, transparent));
-}
-
-.lp-trail.is-v4 .lp-trail__summit-mast {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: auto;
-  min-width: 3px;
-  padding-bottom: var(--lp-summit-stack-bottom);
-  transform: rotate(-1.75deg);
-  transform-origin: bottom center;
-}
-
-.lp-trail.is-v4 .lp-trail__summit-pole {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: calc(-1 * var(--lp-summit-pole-bury));
-  z-index: 0;
-  width: 3px;
-  height: auto;
-  margin: 0;
-  transform: translateX(-50%);
-  border-radius: 1px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--lp-trail-wood) 55%, var(--lp-surface, #ffffff)),
-    var(--lp-trail-wood-deep) 78%,
-    color-mix(in srgb, var(--lp-ink, #0f172a) 35%, var(--lp-trail-wood-deep))
-  );
-  box-shadow:
-    1px 0 0 color-mix(in srgb, var(--lp-surface, #ffffff) 18%, transparent),
-    0 1px 2px color-mix(in srgb, var(--lp-ink, #0f172a) 22%, transparent);
-}
-
-.lp-trail.is-v4 .lp-trail__summit-socket {
-  position: absolute;
-  left: 50%;
-  bottom: -0.04rem;
-  width: 0.78rem;
-  height: 0.22rem;
-  transform: translateX(-50%) rotate(-1.75deg);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--lp-ink, #0f172a) 36%, transparent);
-  filter: blur(2px);
-  opacity: 0.92;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.lp-trail.is-v4 .lp-trail__summit-banner-wrap {
-  position: relative;
-  left: 50%;
-  z-index: 2;
-  transform: translateX(-50%);
-  transform-origin: 50% 100%;
-  filter: drop-shadow(0 7px 11px color-mix(in srgb, var(--lp-ink, #0f172a) 20%, transparent));
-  animation: lp-summit-banner-flutter 3.6s ease-in-out infinite;
+.lp-trail.is-v4 .lp-trail__summit .lp-trail__summit-banner {
   pointer-events: auto;
-}
-
-.lp-trail.is-v4 .lp-trail__summit-banner-lift {
-  position: absolute;
-  left: 12%;
-  right: 10%;
-  bottom: -0.18rem;
-  height: 0.34rem;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--lp-ink, #0f172a) 20%, transparent);
-  filter: blur(3px);
-  opacity: 0.72;
-  z-index: 0;
-  pointer-events: none;
 }
 
 .lp-trail.is-v4 .lp-trail__summit-banner {
@@ -1942,49 +1859,74 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: 5.5rem;
-  max-width: min(11rem, calc(100vw - 2rem));
   width: max-content;
+  max-width: 100%;
+  min-width: 120px;
   min-height: var(--lp-tap, 2.75rem);
   margin: 0;
-  padding: 0.42rem 0.72rem;
-  border: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--lp-summit-glass-radius);
+  border: 1px solid var(--lp-summit-glass-border);
   cursor: pointer;
-  clip-path: polygon(
-    0.62rem 0,
-    calc(100% - 0.62rem) 0,
-    100% 50%,
-    calc(100% - 0.62rem) 100%,
-    0.62rem 100%,
-    0 50%
-  );
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--lp-green, #57d35b) 90%, var(--lp-surface, #ffffff)) 0%,
-    var(--lp-green, #57d35b) 38%,
-    var(--lp-green-deep, #3dbd48) 100%
-  );
+  font: inherit;
+  overflow: hidden;
+  background: var(--lp-summit-glass-fill);
+  backdrop-filter: blur(var(--lp-summit-glass-blur));
+  -webkit-backdrop-filter: blur(var(--lp-summit-glass-blur));
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--lp-surface, #ffffff) 45%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--lp-green-deep, #3dbd48) 40%, var(--lp-ink, #0f172a));
+    var(--lp-shadow-card, 0 14px 36px rgba(15, 23, 42, 0.08)),
+    inset 0 1px 0 var(--lp-summit-glass-border-top);
+  transition: transform 120ms ease, box-shadow 120ms ease;
   pointer-events: auto;
-}
-
-.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner {
-  max-width: min(9rem, calc(100vw - 5.75rem));
-}
-
-.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner-wrap {
-  transform: translateX(calc(-50% + 0.65rem));
 }
 
 .lp-trail.is-v4 .lp-trail__summit-banner::after {
   content: "";
   position: absolute;
-  inset: 0.12rem 0.55rem;
-  border-radius: 2px;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 2px;
   pointer-events: none;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lp-surface, #ffffff) 12%, transparent);
+  background: radial-gradient(
+    ellipse 100% 180% at 50% 100%,
+    var(--lp-summit-glass-border-top-fallback) 0%,
+    var(--lp-summit-glass-glow-fallback) 42%,
+    transparent 72%
+  );
+}
+
+@supports (background: color-mix(in srgb, white 50%, transparent)) {
+  .lp-trail.is-v4 .lp-trail__summit-banner::after {
+    background: radial-gradient(
+      ellipse 100% 180% at 50% 100%,
+      color-mix(in srgb, var(--lp-surface, #ffffff) 92%, transparent) 0%,
+      color-mix(in srgb, var(--lp-surface, #ffffff) 45%, transparent) 42%,
+      transparent 72%
+    );
+  }
+}
+
+.lp-trail.is-v4 .lp-trail__summit-banner:hover,
+.lp-trail.is-v4 .lp-trail__summit-banner:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    var(--lp-shadow-card, 0 14px 36px rgba(15, 23, 42, 0.08)),
+    inset 0 1px 0 var(--lp-summit-glass-border-top);
+  outline: none;
+}
+
+.lp-trail.is-v4 .lp-trail__summit-banner:focus-visible {
+  outline: 2px solid var(--lp-summit-glass-border);
+  outline-offset: 2px;
+}
+
+.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit {
+  transform: translate(calc(-50% + 0.65rem), calc(-100% - var(--lp-summit-stack-bottom)));
+}
+
+.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner {
+  max-width: min(9rem, calc(100vw - 5.75rem));
 }
 
 .lp-trail.is-v4 .lp-trail__summit-banner-text,
@@ -1997,24 +1939,30 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+  overflow: hidden;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
   max-width: 100%;
   margin: 0;
-  padding: 0 0.1rem;
+  padding: 0 0.05rem;
   font-family: var(--lp-font-ui, var(--lp-trail-font));
   font-size: var(--lp-summit-title-size, clamp(0.62rem, 2.5vw + 0.45rem, 0.82rem));
   font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.01em;
-  color: var(--lp-surface, #ffffff);
+  color: var(--lp-ink, #0f172a);
   text-align: center;
-  overflow: hidden;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   white-space: normal;
   word-break: normal;
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--lp-green-deep, #3dbd48) 70%, var(--lp-ink, #0f172a));
+  hyphens: none;
+  text-shadow: var(--lp-summit-glass-label-shadow);
+}
+
+.lp-trail.is-v4.is-night .lp-trail__summit-banner-text,
+.lp-trail.is-v4.is-night .lp-trail__summit-banner-text.lp-trail__goal-title {
+  color: var(--lp-surface, #ffffff);
 }
 
 .lp-trail.is-v4 .lp-trail__summit .lp-trail__goal-menu {
@@ -2035,23 +1983,10 @@
   z-index: 20;
 }
 
-@keyframes lp-summit-banner-flutter {
-  0%, 100% { transform: translateX(-50%); }
-  50% { transform: translateX(-50%) translateY(-1px) rotate(0.45deg); }
-}
-
-.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner-wrap {
-  animation-name: lp-summit-banner-flutter-map-sign;
-}
-
-@keyframes lp-summit-banner-flutter-map-sign {
-  0%, 100% { transform: translateX(calc(-50% + 0.65rem)); }
-  50% { transform: translateX(calc(-50% + 0.65rem)) translateY(-1px) rotate(0.45deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lp-trail.is-v4 .lp-trail__summit-banner-wrap {
-    animation: none;
+@supports (background: color-mix(in srgb, white 50%, transparent)) {
+  .lp-trail.is-v4.is-night {
+    --lp-summit-glass-label-shadow:
+      0 1px 2px color-mix(in srgb, var(--lp-ink, #0f172a) 35%, transparent);
   }
 }
 
@@ -5918,7 +5853,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 /* First camp reveal after v2 onboarding */
 .lp-trail.is-first-camp-reveal .lp-trail__summit--reveal {
   opacity: 0;
-  transform: scale(0.92);
+  transform: translate(-50%, calc(-100% - var(--lp-summit-stack-bottom, 1.24rem))) scale(0.92);
   transition:
     opacity 0.8s ease,
     transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
@@ -5926,7 +5861,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-first-camp-reveal .lp-trail__summit--reveal.is-visible {
   opacity: 1;
-  transform: scale(1);
+  transform: translate(-50%, calc(-100% - var(--lp-summit-stack-bottom, 1.24rem))) scale(1);
 }
 
 .lp-trail.is-first-camp-reveal .lp-trail-camp {

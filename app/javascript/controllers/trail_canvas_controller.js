@@ -190,7 +190,7 @@ export default class extends Controller {
     const target = event.target
     if (!target?.closest) return false
     if (target.closest(".lp-trail__goal-menu")) return true
-    if (target.closest(".lp-trail__goal-plaque")) return true
+    if (target.closest(".lp-trail__summit-glass-hud")) return true
     if (target.closest(".lp-trail__summit-banner")) return true
     if (this._editingTitle && this.hasPeakTitleInputTarget && target.closest(".lp-trail__goal-title-input")) {
       return true
@@ -941,7 +941,7 @@ export default class extends Controller {
     overlay.setAttribute("aria-hidden", "true")
     const goalControl =
       this.element.querySelector(".lp-trail__summit-banner") ||
-      this.element.querySelector(".lp-trail__goal-plaque")
+      this.element.querySelector(".lp-trail__summit-glass-hud")
     goalControl?.focus()
   }
 

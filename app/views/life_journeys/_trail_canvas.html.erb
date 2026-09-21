@@ -117,22 +117,13 @@
     <span class="lp-trail__cloud is-4"></span>
   </div>
 
-  <%# Custom photo: keep top plaque until summit placement exists. Default photo: summit ribbon in world. %>
+  <%# Custom photo: glass goal control in HUD. Default photo: summit control on the peak. %>
   <% if goal && !destination_overlay && custom_mountain_photo %>
   <div class="lp-trail-hud" data-trail-ignore>
     <div class="lp-trail-hud__lead">
       <div class="lp-trail__goal<%= ' is-visible' if first_camp_reveal %>" <% if first_camp_reveal %>data-first-camp-reveal-target="summit"<% end %>>
-        <div class="lp-trail__goal-plaque-wrap">
-          <button type="button"
-                  class="lp-trail__goal-plaque lp-trail__goal-hero"
-                  data-trail-canvas-target="peakPlaque"
-                  data-action="click->trail-canvas#toggleGoalMenu"
-                  aria-haspopup="menu"
-                  aria-expanded="false"
-                  aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
-            <span class="lp-trail__goal-title lp-rpg-destination-carousel__title"
-                  data-trail-canvas-target="peakTitle"><%= peak_title %></span>
-          </button>
+        <div class="lp-trail__summit-glass-hud">
+          <%= render "life_journeys/trail_summit_glass_button", peak_title: peak_title %>
           <input type="text"
                  class="lp-trail__goal-title-input"
                  hidden

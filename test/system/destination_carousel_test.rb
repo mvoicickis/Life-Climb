@@ -66,7 +66,7 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     assert_no_selector ".lp-trail__peak-item", text: /Edit Destination/i, visible: :all
   end
 
-  test "custom mountain photo keeps top goal plaque without summit banner" do
+  test "custom mountain photo shows glass HUD goal control without on-trail summit" do
     @journey.mountain_photo.attach(
       io: File.open(Rails.root.join("test/fixtures/files/mountain_trail_default.jpg")),
       filename: "custom-mountain.jpg",
@@ -84,10 +84,10 @@ class DestinationCarouselTest < ApplicationSystemTestCase
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
     assert_selector "#mountain-trail.lp-trail.is-v4.is-custom-mountain-photo", wait: 10
     assert_selector ".lp-trail-hud", visible: :all, wait: 5
-    assert_selector ".lp-trail__goal-plaque", visible: :all, wait: 5
-    assert_selector ".lp-trail__goal-title.lp-rpg-destination-carousel__title",
-                    text: /Ship LifePoints/i, visible: :all, wait: 5
-    assert_no_selector ".lp-trail__summit-banner", visible: :all
+    assert_selector ".lp-trail__summit-glass-hud", visible: :all, wait: 5
+    assert_selector ".lp-trail__summit-banner", visible: :all, wait: 5
+    assert_selector ".lp-trail__goal-title", text: /Ship LifePoints/i, visible: :all, wait: 5
+    assert_no_selector ".lp-trail__goal-plaque"
     assert_no_selector ".lp-trail__summit", visible: :all
 
     assert_no_selector ".lp-rpg-destination-carousel.is-single"

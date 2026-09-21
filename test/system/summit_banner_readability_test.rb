@@ -61,6 +61,7 @@ class SummitBannerReadabilityTest < ApplicationSystemTestCase
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
     assert_selector ".lp-trail-map-sign", visible: :all, wait: 5
     assert_selector ".lp-trail__summit-banner", visible: :all, wait: 5
+    assert_no_selector ".lp-trail__summit-pole", visible: :all
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
@@ -115,8 +116,8 @@ class SummitBannerReadabilityTest < ApplicationSystemTestCase
                     "goal should use at most 2 lines at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["summitFontPx"].to_f, :>=, metrics["campFontPx"].to_f,
                     "summit label should be at least camp caption size at #{width}x#{height}: #{metrics.inspect}"
-    assert_operator metrics["bannerW"].to_f, :>=, 80.0,
-                    "summit pennant too narrow at #{width}x#{height}: #{metrics.inspect}"
+    assert_operator metrics["bannerW"].to_f, :>=, 120.0,
+                    "summit glass button too narrow at #{width}x#{height}: #{metrics.inspect}"
     assert_operator metrics["bannerH"].to_f, :>=, 36.0,
                     "summit pennant collapsed at #{width}x#{height}: #{metrics.inspect}"
     assert metrics["inView"],
