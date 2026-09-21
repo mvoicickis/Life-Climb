@@ -142,7 +142,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail__peak-item", text: /Remove my photo/i
     assert_select ".lp-trail.is-custom-mountain-photo"
-    assert_select ".lp-trail__goal-plaque"
+    assert_select ".lp-trail__summit-glass-hud"
+    assert_select ".lp-trail__summit-banner"
+    assert_select ".lp-trail__goal-plaque", count: 0
     assert_select ".lp-trail-hud"
     assert_select ".lp-trail__summit", count: 0
     assert_select ".lp-trail__backlight"
@@ -155,11 +157,32 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__ambient"
   end
 
-  test "default mountain photo shows summit banner without top plaque" do
+  test "custom mountain photo shows centred glass HUD goal control without on-trail summit" do
+    photo = fixture_file_upload("mountain_trail_default.jpg", "image/jpeg")
+    patch life_journey_path(@journey), params: {
+      mountain_photo_intent: "upload",
+      life_journey: { mountain_photo: photo }
+    }
+    assert_redirected_to life_journey_path(@journey)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail.is-custom-mountain-photo"
+    assert_select ".lp-trail-hud"
+    assert_select ".lp-trail__summit-glass-hud"
+    assert_select ".lp-trail__summit-banner"
+    assert_select ".lp-trail__goal-title", text: /Trail summit/i
+    assert_select ".lp-trail__summit", count: 0
+    assert_select ".lp-trail__summit-pole", count: 0
+    assert_select ".lp-trail__goal-plaque", count: 0
+  end
+
+  test "default mountain photo shows summit glass banner without top plaque" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select ".lp-trail__summit-banner"
     assert_select ".lp-trail__goal-title", text: /Trail summit/i
+    assert_select ".lp-trail__summit-pole", count: 0
     assert_select ".lp-trail__goal-plaque", count: 0
     assert_select ".lp-trail-hud", count: 0
   end

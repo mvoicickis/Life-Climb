@@ -1,4 +1,4 @@
-<%# Goal ribbon on the default photo summit. locals: goal, journey, plan, plans, peak_title, show_arrange_camps, first_camp_reveal %>
+<%# Goal control on the default photo summit. locals: goal, journey, plan, plans, peak_title, show_arrange_camps, first_camp_reveal %>
 <% goal = local_assigns.fetch(:goal) %>
 <% journey = local_assigns.fetch(:journey) %>
 <% plan = local_assigns[:plan] %>
@@ -12,27 +12,7 @@
      style="--lp-summit-x: <%= summit_anchor[:x] %>; --lp-summit-y: <%= summit_anchor[:y] %>;"
      data-trail-ignore
      <% if first_camp_reveal %>data-first-camp-reveal-target="summit"<% end %>>
-  <div class="lp-trail__summit-row">
-    <div class="lp-trail__summit-plant">
-      <div class="lp-trail__summit-mast">
-        <div class="lp-trail__summit-banner-wrap">
-          <span class="lp-trail__summit-banner-lift" aria-hidden="true"></span>
-          <button type="button"
-                  class="lp-trail__summit-banner"
-                  data-trail-canvas-target="peakPlaque"
-                  data-action="click->trail-canvas#toggleGoalMenu"
-                  aria-haspopup="menu"
-                  aria-expanded="false"
-                  aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
-            <span class="lp-trail__summit-banner-text lp-trail__goal-title"
-                  data-trail-canvas-target="peakTitle"><%= peak_title %></span>
-          </button>
-        </div>
-        <span class="lp-trail__summit-pole" aria-hidden="true"></span>
-      </div>
-      <span class="lp-trail__summit-socket" aria-hidden="true"></span>
-    </div>
-  </div>
+  <%= render "life_journeys/trail_summit_glass_button", peak_title: peak_title %>
   <input type="text"
          class="lp-trail__goal-title-input lp-trail__summit-title-input"
          hidden

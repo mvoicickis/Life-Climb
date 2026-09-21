@@ -1,0 +1,12 @@
+<%# Frosted glass summit / goal control. locals: peak_title %>
+<% peak_title = local_assigns.fetch(:peak_title) %>
+<button type="button"
+        class="lp-trail__summit-banner"
+        data-trail-canvas-target="peakPlaque"
+        data-action="click->trail-canvas#toggleGoalMenu"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-label="<%= t('strategy.rpg.trail.photo_menu') %>">
+  <span class="lp-trail__summit-banner-text lp-trail__goal-title"
+        data-trail-canvas-target="peakTitle"><%= peak_title %></span>
+</button>
