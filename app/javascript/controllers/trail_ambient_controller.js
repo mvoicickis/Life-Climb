@@ -17,6 +17,16 @@ export default class extends Controller {
 
   connect() {
     this._reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (this.builtinPhotosValue) {
+      if (this._reduced) {
+        this.applyBuiltinPhotosStatic()
+      } else {
+        this.tickBuiltinPhotos()
+        this._timer = window.setInterval(() => this.tickBuiltinPhotos(), 60_000)
+      }
+      return
+    }
+
     if (this._reduced) {
       this.applyStatic()
       return
@@ -33,6 +43,31 @@ export default class extends Controller {
     if (this._lightningTimer) window.clearTimeout(this._lightningTimer)
     this._timer = null
     this._lightningTimer = null
+  }
+
+  tickBuiltinPhotos() {
+    const now = new Date()
+    const hrs = now.getHours() + now.getMinutes() / 60
+    const isDay = hrs >= 6 && hrs < 18
+    const root = this.element
+
+    root.classList.toggle("is-day", isDay)
+    root.classList.toggle("is-night", !isDay)
+    root.classList.toggle("is-dormant", this.dormantValue)
+    root.classList.remove("is-stars", "is-snow", "is-mist", "is-embers")
+    this.ensureNightPhotoLoaded(isDay)
+  }
+
+  applyBuiltinPhotosStatic() {
+    const root = this.element
+    const hrs = new Date().getHours()
+    const isDay = hrs >= 6 && hrs < 18
+
+    root.classList.toggle("is-day", isDay)
+    root.classList.toggle("is-night", !isDay)
+    root.classList.toggle("is-dormant", this.dormantValue)
+    root.classList.remove("is-stars", "is-snow", "is-mist", "is-embers")
+    this.ensureNightPhotoLoaded(isDay)
   }
 
   tick() {
