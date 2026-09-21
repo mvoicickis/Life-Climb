@@ -8,6 +8,7 @@ export default class extends Controller {
   ]
   static values = {
     dormant: Boolean,
+    builtinPhotos: Boolean,
     campsDone: { type: Number, default: 0 },
     campsTotal: { type: Number, default: 0 },
     openBattles: { type: Number, default: 0 },
@@ -51,7 +52,11 @@ export default class extends Controller {
     root.classList.toggle("is-day", isDay)
     root.classList.toggle("is-night", !isDay)
     root.classList.toggle("is-dormant", this.dormantValue)
-    root.classList.toggle("is-stars", !isDay)
+    if (!this.builtinPhotosValue) {
+      root.classList.toggle("is-stars", !isDay)
+    } else {
+      root.classList.remove("is-stars")
+    }
     root.classList.toggle("is-snow", this.isSnowSeason(now))
 
     const backlightSize = Math.round(300 + (1 - sunElev) * 260)
@@ -65,6 +70,10 @@ export default class extends Controller {
       : "0.08")
     root.style.setProperty("--lp-trail-wind-opacity", windOpacity.toFixed(3))
     root.style.setProperty("--lp-trail-stars", (!isDay ? (0.35 + Math.sin(cycleFrac * Math.PI) * 0.55) : 0).toFixed(3))
+
+    if (this.builtinPhotosValue) {
+      this.ensureNightPhotoLoaded(isDay)
+    }
 
     if (isDay) {
       root.style.setProperty("--lp-trail-sun-x", "56.6%")
@@ -80,8 +89,12 @@ export default class extends Controller {
     } else {
       root.style.setProperty("--lp-trail-moon-x", `${x}%`)
       root.style.setProperty("--lp-trail-moon-y", `${y}%`)
-      const nightDepth = Math.sin(cycleFrac * Math.PI)
-      root.style.setProperty("--lp-trail-night", (0.12 + nightDepth * 0.5).toFixed(3))
+      if (this.builtinPhotosValue) {
+        root.style.setProperty("--lp-trail-night", "0")
+      } else {
+        const nightDepth = Math.sin(cycleFrac * Math.PI)
+        root.style.setProperty("--lp-trail-night", (0.12 + nightDepth * 0.5).toFixed(3))
+      }
       root.style.setProperty("--lp-trail-warm", "0")
     }
 
@@ -132,13 +145,22 @@ export default class extends Controller {
     root.classList.toggle("is-day", isDay)
     root.classList.toggle("is-night", !isDay)
     root.classList.toggle("is-dormant", this.dormantValue)
-    root.classList.toggle("is-stars", !isDay)
+    if (!this.builtinPhotosValue) {
+      root.classList.toggle("is-stars", !isDay)
+    } else {
+      root.classList.remove("is-stars")
+    }
     root.classList.toggle("is-snow", this.isSnowSeason())
     root.style.setProperty("--lp-trail-sun-x", "56.6%")
     root.style.setProperty("--lp-trail-sun-y", "20%")
     root.style.setProperty("--lp-trail-moon-x", "72%")
     root.style.setProperty("--lp-trail-moon-y", "16%")
-    root.style.setProperty("--lp-trail-night", isDay ? "0" : "0.28")
+    if (this.builtinPhotosValue) {
+      this.ensureNightPhotoLoaded(isDay)
+      root.style.setProperty("--lp-trail-night", "0")
+    } else {
+      root.style.setProperty("--lp-trail-night", isDay ? "0" : "0.28")
+    }
     root.style.setProperty("--lp-trail-warm", "0")
     root.style.setProperty("--lp-trail-mist", "0")
     root.style.setProperty("--lp-trail-backlight-size", "360px")
@@ -173,5 +195,13 @@ export default class extends Controller {
   toggleEmbers(on) {
     this.element.classList.toggle("is-embers", on)
     if (this.hasEmbersTarget) this.embersTarget.classList.toggle("is-on", on)
+  }
+
+  ensureNightPhotoLoaded(isDay) {
+    if (isDay) return
+    const img = this.element.querySelector(".lp-trail__photo--night")
+    if (!img || img.getAttribute("src")) return
+    const src = img.dataset.src
+    if (src) img.src = src
   }
 }

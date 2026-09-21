@@ -42,8 +42,11 @@
     ) %>
 <% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
 <% custom_mountain_photo = mountain_trail_custom_photo?(journey) %>
+<% builtin_photos = !custom_mountain_photo %>
+<% builtin_daytime = builtin_photos ? mountain_trail_daytime?(user: current_user) : nil %>
+<% night_photo_url = mountain_trail_night_photo_url(journey) %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %> <%= 'is-builtin-mountain-photos' if builtin_photos %> <%= 'is-day' if builtin_daytime == true %> <%= 'is-night' if builtin_daytime == false %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
@@ -69,6 +72,7 @@
          data-trail-camp-sheet-reveal-pending-value="true"
          <% end %>
          data-trail-ambient-dormant-value="<%= dormant %>"
+         data-trail-ambient-builtin-photos-value="<%= builtin_photos %>"
          data-trail-ambient-camps-done-value="<%= camps_done %>"
          data-trail-ambient-camps-total-value="<%= all_projects.size %>"
          data-trail-ambient-open-battles-value="<%= open_battle_count %>"
@@ -89,6 +93,18 @@
          data-trail-coach-journey-stats-value="<%= t('strategy.rpg.trail.coach.journey_stats') %>"
          <% end %>
          style="--lp-summit-glow: <%= (0.16 + summit_glow * 0.5).round(3) %>; --lp-climb-frac: <%= climb_frac.round(3) %>; --lp-trail-energy: <%= trail_energy.round(3) %>; --map-aspect: <%= MountainTrailHelper::MAP_ASPECT_WIDTH %> / <%= MountainTrailHelper::MAP_ASPECT_HEIGHT %>;">
+
+  <% if builtin_photos && builtin_daytime.nil? %>
+    <%= javascript_tag(nonce: true) do %>
+(function () {
+  var root = document.getElementById("mountain-trail");
+  if (!root) return;
+  var h = new Date().getHours() + new Date().getMinutes() / 60;
+  var isDay = h >= 6 && h < 18;
+  root.classList.add(isDay ? "is-day" : "is-night");
+})();
+    <% end %>
+  <% end %>
 
   <% if destination_overlay && goal %>
     <%= render "life_journeys/trail_destination_overlay", goal: goal, journey: journey %>
@@ -202,8 +218,37 @@
                    alt=""
                    decoding="async"
                    aria-hidden="true">
+              <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async">
+            <% else %>
+              <img class="lp-trail__photo lp-trail__photo--day" src="<%= photo_url %>" alt="" decoding="async">
+              <% if builtin_daytime == false %>
+                <img class="lp-trail__photo lp-trail__photo--night"
+                     id="mountain-trail-night-photo"
+                     src="<%= night_photo_url %>"
+                     alt=""
+                     decoding="async"
+                     data-trail-ambient-target="nightPhoto">
+              <% else %>
+                <% if builtin_daytime.nil? %>
+                  <%= javascript_tag(nonce: true) do %>
+(function () {
+  var root = document.getElementById("mountain-trail");
+  var night = document.getElementById("mountain-trail-night-photo");
+  if (!root || !night || !root.classList.contains("is-night")) return;
+  if (night.dataset.src) night.src = night.dataset.src;
+})();
+                  <% end %>
+                <% end %>
+                <img class="lp-trail__photo lp-trail__photo--night"
+                     id="mountain-trail-night-photo"
+                     src=""
+                     data-src="<%= night_photo_url %>"
+                     alt=""
+                     loading="lazy"
+                     decoding="async"
+                     data-trail-ambient-target="nightPhoto">
+              <% end %>
             <% end %>
-            <img class="lp-trail__photo" src="<%= photo_url %>" alt="" decoding="async">
             <div class="lp-trail__backlight" data-trail-ambient-target="backlight"></div>
             <div class="lp-trail__night"></div>
             <div class="lp-trail__haze"></div>
@@ -213,11 +258,13 @@
           </div>
 
           <div class="lp-trail__ambient" aria-hidden="true">
+            <% if custom_mountain_photo %>
             <div class="lp-trail__stars" data-trail-ambient-target="stars">
               <% MountainTrailHelper::MOUNTAIN_STARS.each do |sx, sy, sop| %>
                 <span class="lp-trail__star" style="left: <%= sx %>%; top: <%= sy %>%; opacity: <%= sop %>"></span>
               <% end %>
             </div>
+            <% end %>
             <div class="lp-trail__mist" data-trail-ambient-target="mist"></div>
             <div class="lp-trail__embers" data-trail-ambient-target="embers">
               <span class="lp-trail__ember"></span>

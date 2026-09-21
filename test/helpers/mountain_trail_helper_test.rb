@@ -179,8 +179,54 @@ class MountainTrailHelperTest < ActionView::TestCase
   end
 
   test "peak coordinates sit on default mountain photo summit" do
-    assert_in_delta 0.532, MountainTrailHelper::PEAK_X, 0.001
-    assert_in_delta 0.218, MountainTrailHelper::PEAK_Y, 0.001
+    assert_in_delta 0.542, MountainTrailHelper::PEAK_X, 0.001
+    assert_in_delta 0.208, MountainTrailHelper::PEAK_Y, 0.001
+  end
+
+  test "default photo url uses day webp" do
+    user = users(:one)
+    area = user.life_areas.first || user.life_areas.create!(key: "career", number: 9)
+    journey = user.life_journeys.create!(
+      life_area: area, title: "Day", ideal_scene: "Done", current_reality: "Building"
+    )
+
+    assert_includes mountain_trail_photo_url(journey), "mountain_trail_day.webp"
+    assert_includes mountain_trail_night_photo_url(journey), "mountain_trail_night.webp"
+  end
+
+  test "custom mountain photo url does not use builtin day or night assets" do
+    user = users(:one)
+    area = user.life_areas.first || user.life_areas.create!(key: "career", number: 9)
+    journey = user.life_journeys.create!(
+      life_area: area, title: "Custom", ideal_scene: "Done", current_reality: "Building"
+    )
+    journey.mountain_photo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/mountain_trail_default.jpg")),
+      filename: "custom.jpg",
+      content_type: "image/jpeg"
+    )
+
+    assert_not_includes mountain_trail_photo_url(journey), "mountain_trail_day.webp"
+    assert_nil mountain_trail_night_photo_url(journey)
+  end
+
+  test "mountain_trail_daytime boundaries in stored time zone" do
+    user = users(:one)
+    user.notification_preference&.destroy
+    user.create_notification_preference!(time_zone: "UTC")
+    zone = ActiveSupport::TimeZone["UTC"]
+
+    assert_equal false, mountain_trail_daytime?(user: user, at: zone.local(2026, 3, 21, 5, 59))
+    assert_equal true, mountain_trail_daytime?(user: user, at: zone.local(2026, 3, 21, 6, 0))
+    assert_equal true, mountain_trail_daytime?(user: user, at: zone.local(2026, 3, 21, 17, 59))
+    assert_equal false, mountain_trail_daytime?(user: user, at: zone.local(2026, 3, 21, 18, 0))
+  end
+
+  test "mountain_trail_daytime is nil without stored time zone" do
+    user = users(:one)
+    user.notification_preference&.destroy
+
+    assert_nil mountain_trail_daytime?(user: user)
   end
 
   test "summit anchor returns peak fractions for default photo" do
