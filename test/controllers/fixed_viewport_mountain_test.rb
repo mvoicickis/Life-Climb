@@ -184,6 +184,11 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_match(/overflow-y:\s*hidden/, v4_trail)
     assert_match(/overscroll-behavior:\s*none/, v4_trail)
 
+    v4_phone = mountain_css[/\.lp-rpg\.is-v4-phone\s*\{[^}]+\}/m]
+    assert v4_phone.present?, "expected .lp-rpg.is-v4-phone rule in mountain_trail.css"
+    assert_match(/background:\s*var\(--lp-paper\)/, v4_phone)
+    refute_match(/#0b120e/, v4_phone)
+
     dock = mountain_css[/\.lp-trail\.is-v4 \.lp-trail__dock\s*\{[^}]+\}/m]
     assert dock.present?, "expected V4 dock rule in mountain_trail.css"
     assert_match(/env\(safe-area-inset-bottom/, dock)
