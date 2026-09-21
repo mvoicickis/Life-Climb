@@ -15,6 +15,9 @@
 <%= turbo_stream.replace "trail-map-camps" do %>
   <%= render "life_journeys/trail_map_camps",
         trail: trail,
-        current_project: current_project %>
+        current_project: current_project,
+        plan: @plan,
+        journey: @journey,
+        builtin_photos: !mountain_trail_custom_photo?(@journey) %>
 <% end %>
 <%= turbo_stream.remove "first-camp-reveal-overlay" %>

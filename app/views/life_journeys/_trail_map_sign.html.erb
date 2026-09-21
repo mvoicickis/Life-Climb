@@ -1,0 +1,30 @@
+<%# Top-left map sign — opens camp arrange overlay. locals: trail, plan, journey, destination_overlay, first_camp_reveal %>
+<% trail = local_assigns.fetch(:trail) %>
+<% plan = local_assigns.fetch(:plan) %>
+<% journey = local_assigns[:journey] %>
+<% destination_overlay = local_assigns[:destination_overlay] %>
+<% first_camp_reveal = local_assigns[:first_camp_reveal] %>
+<% show_sign = mountain_trail_show_arrange_camps?(
+      trail: trail,
+      plan: plan,
+      destination_overlay: destination_overlay,
+      first_camp_reveal: first_camp_reveal
+    ) %>
+<% if show_sign %>
+  <% camps_ahead = mountain_trail_map_camps_ahead_count(trail) %>
+  <button type="button"
+          class="lp-trail-map-sign<%= " is-no-label" if camps_ahead.zero? %>"
+          data-trail-ignore
+          data-action="click->trail-canvas#openArrangeCamps"
+          aria-label="<%= camps_ahead.positive? ? t("strategy.rpg.trail.camps_ahead", count: camps_ahead) : t("strategy.rpg.trail.map_sign_aria") %>">
+    <% if camps_ahead.positive? %>
+      <span class="lp-trail-map-sign__pill"><%= t("strategy.rpg.trail.camps_ahead", count: camps_ahead) %></span>
+    <% end %>
+    <%= image_tag "mountain_map.webp",
+          class: "lp-trail-map-sign__map",
+          width: 72,
+          height: 70,
+          alt: "",
+          decoding: "async" %>
+  </button>
+<% end %>

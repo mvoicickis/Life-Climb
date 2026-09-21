@@ -173,7 +173,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camps"
     assert_select "#trail-stages", count: 0
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
-    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent-img"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
@@ -196,7 +196,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_match(/mountain_trail_day|mountain_trail_night|mountain_photo/, response.body)
   end
 
-  test "six camps show three on the curve with ridge more chip" do
+  test "six camps show three on the curve with map sign camps ahead" do
     @plan.children.for_kind("project").destroy_all
     camps = 6.times.map do |index|
       @plan.children.create!(
@@ -216,13 +216,14 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{camps[5].id}", count: 0
     assert_select "#trail-map-camps .lp-trail-camp", count: 3
-    assert_select ".lp-trail-more", text: "3 more camps"
+    assert_select ".lp-trail-map-sign__pill", text: "4 camps ahead"
+    assert_select ".lp-trail-more", count: 0
     assert_select ".lp-trail__summit"
     assert_select ".trail-terrace", count: 0
     assert_select "#trail-camps-fallback", count: 0
   end
 
-  test "four camps on path show one more chip on the ridge" do
+  test "four camps on path show map sign with camps ahead count" do
     @plan.children.for_kind("project").destroy_all
     4.times do |index|
       @plan.children.create!(
@@ -234,7 +235,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-map-camps .lp-trail-camp", count: 3
-    assert_select ".lp-trail-more", text: "1 more camp"
+    assert_select ".lp-trail-map-sign__pill", text: "3 camps ahead"
+    assert_select ".lp-trail-more", count: 0
   end
 
   test "plant add fourth camp shifts map window to include new tent" do
@@ -263,6 +265,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "turbo-stream[action='replace'][target='trail-map-camps']" do
       assert_select "#trail-camp-#{delta.id}"
     end
+    assert_select ".lp-trail-map-sign__pill", text: "3 camps ahead"
     assert_select ".lp-trail-more", count: 0
   end
 
@@ -455,8 +458,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
                   strategy_goal_manual_completion_path(@project)
     assert_select "#trail-sheet-menu-#{@project.id} form.lp-climb-path__menu-form[action=?]",
                   strategy_goal_path(@project)
-    assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__tent-img"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__fire"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__ring", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__title", text: /Base camp/
     markup = css_select("#trail-battles-#{@project.id}").first.to_s
     assert_includes markup, "lp-trail-battles__composer-trigger"
@@ -778,7 +782,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
-    assert_select ".lp-trail-more", text: "2 more camps"
+    assert_select ".lp-trail-map-sign__pill", text: "3 camps ahead"
+    assert_select ".lp-trail-more", count: 0
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__pill", count: 0
   end

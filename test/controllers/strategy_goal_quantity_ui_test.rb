@@ -66,7 +66,7 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select "#trail-camp-#{project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__tent-img"
     assert_select "#trail-camp-#{project.id}[aria-label=?]", "Debt payoff"
     assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", count: 0
     assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar", count: 0
@@ -80,7 +80,7 @@ class StrategyGoalQuantityUiTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: project.id)
     assert_response :success
-    assert_select "#trail-camp-#{project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{project.id} .lp-trail-camp__tent-img"
     assert_select "#trail-camp-#{project.id} .lp-trail-camp__meta", count: 0
     assert_select "#trail-camp-#{project.id} .lp-trail__camp-bar", count: 0
   end
