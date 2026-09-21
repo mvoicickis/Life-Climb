@@ -167,7 +167,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#mountain-trail.lp-trail.is-v4"
+    assert_select "#mountain-trail.lp-trail.is-v4.is-builtin-mountain-photos"
     assert_select "#mountain-trail.lp-trail.is-terraced", count: 0
     assert_select "#trail-map-camps"
     assert_select "#trail-camps"
@@ -180,7 +180,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-#{holding.id}", count: 0
     assert_select ".lp-trail-hud", count: 0
     assert_select ".lp-trail-segments", count: 0
-    assert_select ".lp-trail__stars"
+    assert_select ".lp-trail__stars", count: 0
     assert_select ".lp-trail__footprints", count: 0
     assert_select "#trail-climber", count: 0
     assert_select ".lp-trail-camp__quick", count: 0
