@@ -1962,6 +1962,14 @@
   pointer-events: auto;
 }
 
+.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner {
+  max-width: min(9rem, calc(100vw - 5.75rem));
+}
+
+.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner-wrap {
+  transform: translateX(calc(-50% + 0.65rem));
+}
+
 .lp-trail.is-v4 .lp-trail__summit-banner::after {
   content: "";
   position: absolute;
@@ -2022,6 +2030,15 @@
 @keyframes lp-summit-banner-flutter {
   0%, 100% { transform: translateX(-50%); }
   50% { transform: translateX(-50%) translateY(-1px) rotate(0.45deg); }
+}
+
+.lp-trail.is-v4:has(.lp-trail-map-sign) .lp-trail__summit-banner-wrap {
+  animation-name: lp-summit-banner-flutter-map-sign;
+}
+
+@keyframes lp-summit-banner-flutter-map-sign {
+  0%, 100% { transform: translateX(calc(-50% + 0.65rem)); }
+  50% { transform: translateX(calc(-50% + 0.65rem)) translateY(-1px) rotate(0.45deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -54,7 +54,7 @@
             current_project: current_project,
             plan: @plan,
             journey: @journey,
-            builtin_photos: !helpers.mountain_trail_custom_photo?(@journey) %>
+            builtin_photos: !mountain_trail_custom_photo?(@journey) %>
     <% end %>
     <%= turbo_stream.append "trail-sheet-title-row" do %>
       <div id="trail-sheet-menu-<%= @created.id %>"
