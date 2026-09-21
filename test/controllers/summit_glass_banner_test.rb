@@ -15,7 +15,8 @@ class SummitGlassBannerTest < ActionDispatch::IntegrationTest
       current_reality: "Climbing",
       next_win: "Camp two",
       today_mission: "Steps",
-      closer_percent: 15
+      closer_percent: 15,
+      route_mission: true
     )
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
