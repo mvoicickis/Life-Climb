@@ -64,7 +64,7 @@
          data-trail-camp-sheet-base-tagline-value="<%= t('strategy.rpg.trail.base_camp.header_tagline') %>"
          <% if first_camp_reveal %>
          data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
-         data-first-camp-reveal-camps-value="<%= mountain_trail_reveal_camps_json(trail) %>"
+         data-first-camp-reveal-camps-value="<%= mountain_trail_reveal_camps_json(trail, builtin_map: builtin_photos) %>"
          data-first-camp-reveal-camp-title-value="<%= first_camp.title %>"
          data-first-camp-reveal-dismiss-url-value="<%= life_journey_first_camp_reveal_path(journey) %>"
          data-first-camp-reveal-skip-hint-value="<%= t('strategy.rpg.trail.first_camp_reveal.skip_hint') %>"
@@ -289,7 +289,12 @@
 
           <%= render "life_journeys/trail_map_camps",
                 trail: trail,
-                current_project: current_project %>
+                current_project: current_project,
+                plan: plan,
+                journey: journey,
+                builtin_photos: builtin_photos,
+                destination_overlay: destination_overlay,
+                first_camp_reveal: first_camp_reveal %>
         </div>
       </div>
 

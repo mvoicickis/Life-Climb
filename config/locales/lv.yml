@@ -394,6 +394,10 @@ lv:
         more_camps: # TODO: translate
           one: "%{count} more camp"
           other: "%{count} more camps"
+        camps_ahead: # TODO: translate
+          one: "%{count} camp ahead"
+          other: "%{count} camps ahead"
+        map_sign_aria: "Camp map" # TODO: translate
         arrange: # TODO: translate
           title: "Change camp order"
           hint: "Drag ⠿ to change the order."

@@ -1,10 +1,20 @@
-<%# Curve map: up to 4 tents from Strategy::Trail visible_nodes. locals: trail, current_project %>
+<%# Curve map: up to 3 tents from Strategy::Trail visible_nodes. locals: trail, current_project, plan, journey, builtin_photos %>
 <% trail = local_assigns.fetch(:trail) %>
 <% current_project = local_assigns[:current_project] %>
+<% plan = local_assigns[:plan] %>
+<% journey = local_assigns[:journey] %>
+<% builtin_photos = local_assigns.fetch(:builtin_photos, true) %>
+<% destination_overlay = local_assigns[:destination_overlay] %>
+<% first_camp_reveal = local_assigns[:first_camp_reveal] %>
 <% map_nodes = mountain_trail_map_nodes(trail) %>
-<% hidden_ahead = mountain_trail_map_hidden_ahead_count(trail) %>
 
 <div id="trail-map-camps">
+  <%= render "life_journeys/trail_map_sign",
+        trail: trail,
+        plan: plan,
+        journey: journey,
+        destination_overlay: destination_overlay,
+        first_camp_reveal: first_camp_reveal %>
   <div class="lp-trail__camps" id="trail-camps" data-trail-canvas-target="camps" aria-label="<%= t('strategy.rpg.what_gets_me_there') %>">
     <% map_nodes.each do |node| %>
       <%= render "life_journeys/trail_camp",
@@ -12,17 +22,8 @@
             trail_node: node,
             map_nodes: map_nodes,
             current_project: current_project,
-            map_mode: true %>
-    <% end %>
-    <% if hidden_ahead.positive? %>
-      <% chip_slot = mountain_trail_map_more_chip_slot(map_nodes) %>
-      <button type="button"
-              class="lp-trail-more"
-              style="--lp-trail-more-x: <%= chip_slot[:x] %>; --lp-trail-more-y: <%= chip_slot[:y] %>;"
-              data-action="click->trail-canvas#openArrangeCamps"
-              aria-label="<%= t('strategy.rpg.trail.more_camps', count: hidden_ahead) %>">
-        <%= t("strategy.rpg.trail.more_camps", count: hidden_ahead) %>
-      </button>
+            map_mode: true,
+            builtin_map: builtin_photos %>
     <% end %>
   </div>
 </div>

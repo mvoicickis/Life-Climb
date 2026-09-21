@@ -26,10 +26,16 @@ module MountainTrailHelper
 
   TRAIL_Y_MIN = 0.26
   TRAIL_Y_MAX = 0.93
-  # Four peg positions on the map; three tents use the lower slots, ridge pill sits on-trail above the top tent.
+  # Four peg positions on the map; three tents use the lower slots on custom photos.
   MAP_LAYOUT_SLOTS = 4
-  RIDGE_STEP_ABOVE_TOP = 0.115
-  MIN_CLEAR_ABOVE_TENT = 0.05
+  # Built-in day/night art — tent centre (x), base (y), width as fraction of frame width.
+  BUILTIN_TENT_SLOTS = [
+    { x: 0.460, y: 0.940, width: 0.25 },
+    { x: 0.435, y: 0.761, width: 0.15 },
+    { x: 0.462, y: 0.561, width: 0.11 }
+  ].freeze
+  BUILTIN_TENT_WIDTH_REF = 0.25
+  TENT_IMG_HEIGHT_OVER_WIDTH = 144.0 / 256.0
   # Default photo summit tip (mountain_trail_day.webp).
   PEAK_X = 0.542
   PEAK_Y = 0.208
@@ -148,38 +154,39 @@ module MountainTrailHelper
     Array(trail&.visible_nodes)
   end
 
-  # Camps after the visible slice — not cleared camps dropped behind the window.
-  def mountain_trail_map_hidden_ahead_count(trail)
+  # Uncleared plan camps after the current node (map sign label).
+  def mountain_trail_map_camps_ahead_count(trail)
     nodes = Array(trail&.nodes)
-    visible = mountain_trail_map_nodes(trail)
-    return 0 if nodes.empty? || visible.empty?
+    return 0 if nodes.empty?
 
-    last_idx = nodes.index { |node| node.id == visible.last.id }
-    return 0 if last_idx.nil?
+    current_idx = nodes.index { |node| node.state == :current }
+    return 0 if current_idx.nil?
 
-    nodes.length - 1 - last_idx
+    nodes[(current_idx + 1)..].count { |node| node.state != :done }
   end
 
-  # Distance scale for non-current peg visuals (base = 1.0, peak-side floored at 0.75).
-  def mountain_trail_map_peg_scale(node, visible_nodes)
-    return 1.0 if node.state == :current
+  # Distance scale for custom-photo map tents (base = 1.0, peak-side floored at 0.75).
+  def mountain_trail_map_peg_scale(node, visible_nodes, builtin_map: false)
+    return 1.0 if builtin_map
 
-    y = mountain_trail_map_layout_slot(node, visible_nodes)[:y].to_f
+    y = mountain_trail_map_layout_slot(node, visible_nodes, builtin_map: false)[:y].to_f
     t = ((y - TRAIL_Y_MIN) / (TRAIL_Y_MAX - TRAIL_Y_MIN)).clamp(0.0, 1.0)
     (0.75 + (0.25 * t)).round(3)
   end
 
-  # Ridge “more camps” pill — on TRAIL_CURVE, above the peak-side tent, clear of captions.
-  def mountain_trail_map_more_chip_slot(visible_nodes)
-    nodes = Array(visible_nodes)
-    return { x: PEAK_X, y: PEAK_Y } if nodes.empty?
+  def mountain_trail_map_tent_width_frac(node, visible_nodes, builtin_map:)
+    layout = mountain_trail_map_layout_slot(node, visible_nodes, builtin_map: builtin_map)
+    if builtin_map
+      layout[:width_frac].to_f
+    else
+      scale = mountain_trail_map_peg_scale(node, visible_nodes, builtin_map: false)
+      (BUILTIN_TENT_WIDTH_REF * scale).round(4)
+    end
+  end
 
-    top = mountain_trail_map_layout_slot(nodes.last, nodes)
-    y_top = top[:y].to_f
-    y_min = TRAIL_CURVE.first[0].to_f
-    y_ridge = (y_top - RIDGE_STEP_ABOVE_TOP).clamp(y_min, y_top - MIN_CLEAR_ABOVE_TENT)
-    x_ridge = AutoSlot.x_for(y_ridge)
-    { x: x_ridge.to_f.round(4), y: y_ridge.round(4) }
+  def mountain_trail_map_tent_scale(node, visible_nodes, builtin_map:)
+    width = mountain_trail_map_tent_width_frac(node, visible_nodes, builtin_map: builtin_map)
+    (width / BUILTIN_TENT_WIDTH_REF).round(4)
   end
 
   # Caption width in rem — 9rem default, narrowed near map edges so labels stay on the photo.
@@ -192,15 +199,25 @@ module MountainTrailHelper
 
   # Map visible camps onto the lower slots of a fixed four-peg ladder (ignore stored trail_x/y).
   # Climb order: first node = base (high y); slot index 0 is peak-side (low y), so reverse.
-  def mountain_trail_map_layout_slot(node, visible_nodes)
+  def mountain_trail_map_layout_slot(node, visible_nodes, builtin_map: false)
     nodes = Array(visible_nodes)
     index = nodes.index { |candidate| candidate.id == node.id } || 0
-    slot_index = MAP_LAYOUT_SLOTS - 1 - index
-    slot = AutoSlot.call(index: slot_index, total: MAP_LAYOUT_SLOTS)
-    {
-      x: slot[:trail_x].to_f.round(4),
-      y: slot[:trail_y].to_f.round(4)
-    }
+
+    if builtin_map
+      slot = BUILTIN_TENT_SLOTS[index] || BUILTIN_TENT_SLOTS.last
+      {
+        x: slot[:x].to_f.round(4),
+        y: slot[:y].to_f.round(4),
+        width_frac: slot[:width].to_f
+      }
+    else
+      slot_index = MAP_LAYOUT_SLOTS - 1 - index
+      slot = AutoSlot.call(index: slot_index, total: MAP_LAYOUT_SLOTS)
+      {
+        x: slot[:trail_x].to_f.round(4),
+        y: slot[:trail_y].to_f.round(4)
+      }
+    end
   end
 
   # Shared auto-layout so show-pin and create use the same slot as the renderer.
@@ -431,7 +448,7 @@ module MountainTrailHelper
   end
 
   # Landing order for first-camp reveal: base → summit along the visible curve window.
-  def mountain_trail_reveal_camps(trail_or_projects)
+  def mountain_trail_reveal_camps(trail_or_projects, builtin_map: false)
     nodes =
       if trail_or_projects.respond_to?(:visible_nodes)
         mountain_trail_map_nodes(trail_or_projects)
@@ -451,7 +468,9 @@ module MountainTrailHelper
       end
 
     # Base (high y) first so tents land from foot toward peak.
-    ordered = nodes.sort_by { |node| -mountain_trail_map_layout_slot(node, nodes)[:y].to_f }
+    ordered = nodes.sort_by { |node|
+      -mountain_trail_map_layout_slot(node, nodes, builtin_map: builtin_map)[:y].to_f
+    }
     ordered.each_with_index.map do |node, index|
       {
         id: node.id,
@@ -461,8 +480,8 @@ module MountainTrailHelper
     end
   end
 
-  def mountain_trail_reveal_camps_json(trail_or_projects)
-    mountain_trail_reveal_camps(trail_or_projects).to_json
+  def mountain_trail_reveal_camps_json(trail_or_projects, builtin_map: false)
+    mountain_trail_reveal_camps(trail_or_projects, builtin_map: builtin_map).to_json
   end
 
   # Segment rail: one bar per camp with fill % and accent.

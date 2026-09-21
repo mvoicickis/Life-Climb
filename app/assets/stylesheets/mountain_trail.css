@@ -498,31 +498,67 @@
   text-align: center;
 }
 
-.lp-trail-more {
+#trail-map-camps {
   position: absolute;
-  left: calc(var(--lp-trail-more-x, 0.5) * 100%);
-  top: calc(var(--lp-trail-more-y, 0.26) * 100%);
-  transform: translate(-50%, -100%);
-  z-index: 3;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+#trail-map-camps .lp-trail-map-sign,
+#trail-map-camps .lp-trail-camp {
   pointer-events: auto;
-  padding: 0.4rem 0.65rem;
-  border-radius: 999px;
-  font-family: var(--lp-trail-display);
-  font-size: 0.62rem;
-  font-weight: 800;
-  color: var(--lp-rpg-ink, #f8fafc);
-  background: var(--lp-rpg-glass, rgba(8, 18, 14, 0.78));
-  border: 1px solid var(--lp-rpg-glass-border, rgba(255, 255, 255, 0.22));
-  box-shadow: var(--lp-rpg-glass-shadow, 0 6px 16px rgba(0, 0, 0, 0.35));
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  max-width: calc(100% - 1.5rem);
-  white-space: nowrap;
-  min-height: var(--lp-tap, 2.75rem);
-  display: inline-flex;
+}
+
+.lp-trail-map-sign {
+  position: absolute;
+  top: max(0.35rem, env(safe-area-inset-top, 0px));
+  left: max(0.4rem, env(safe-area-inset-left, 0px));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
+  padding: 0.15rem 0.2rem 0.1rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  max-width: min(11rem, calc(100% - 0.8rem));
+}
+
+.lp-trail-map-sign__pill {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -0.42rem;
+  padding: 0.18rem 0.42rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  background: var(--lp-surface, #ffffff);
+  color: var(--lp-ink, #0f172a);
+  font-family: var(--lp-font-ui, var(--lp-trail-display));
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.2;
+  box-shadow: var(--lp-shadow-card, 0 14px 36px rgba(15, 23, 42, 0.08));
+  border: 1px solid var(--lp-border, rgba(15, 23, 42, 0.1));
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-trail-map-sign.is-no-label .lp-trail-map-sign__pill {
+  display: none;
+}
+
+.lp-trail-map-sign__map {
+  width: 72px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--lp-ink, #0f172a) 18%, transparent));
 }
 
 /* Quiet ridge milestone — contrast from opaque surface + paper shadow (no blur dependency). */
@@ -2039,8 +2075,104 @@
   filter: drop-shadow(0 0 10px rgba(255, 248, 220, 0.7));
 }
 
-.lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__tent {
+.lp-trail.is-v4 .lp-trail-camp.is-current:not(.is-map-tent) .lp-trail-camp__tent {
   animation: lp-trail-camp-pulse 2.4s ease-in-out infinite;
+}
+
+.lp-trail.is-v4 .lp-trail__map {
+  container-type: inline-size;
+  container-name: trail-map;
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__peg {
+  width: auto;
+  height: auto;
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__peg-visual {
+  position: relative;
+  width: calc(var(--lp-tent-width-frac, 0.25) * 100cqw);
+  max-width: 100%;
+  scale: 1;
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__tent-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink, #0f172a) 40%, transparent));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__tent-img {
+  filter:
+    drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink, #0f172a) 40%, transparent))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent) 45%, transparent));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__fire {
+  position: absolute;
+  left: 100%;
+  bottom: 0;
+  height: 100%;
+  width: auto;
+  margin-left: calc(0.14rem * var(--lp-tent-scale, 1));
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  animation: none;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__shadow {
+  width: calc(var(--lp-tent-width-frac, 0.25) * 100cqw * 0.72);
+  height: calc(0.45rem * var(--lp-tent-scale, 1));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__cleared {
+  right: calc(-0.1rem * var(--lp-tent-scale, 1));
+  top: calc(-0.15rem * var(--lp-tent-scale, 1));
+  width: calc(1.1rem * var(--lp-tent-scale, 1));
+  height: calc(1.1rem * var(--lp-tent-scale, 1));
+  min-width: 12px;
+  min-height: 12px;
+  font-size: max(12px, calc(0.65rem * var(--lp-tent-scale, 1)));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__title {
+  font-size: max(12px, calc(0.62rem * var(--lp-tent-scale, 1)));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__status {
+  margin-top: calc(0.08rem * var(--lp-tent-scale, 1));
+  font-size: max(12px, calc(0.52rem * var(--lp-tent-scale, 1)));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__caption {
+  margin-top: max(0.12rem, 0.42rem);
+  padding:
+    calc(0.12rem * var(--lp-tent-scale, 1))
+    calc(0.4rem * var(--lp-tent-scale, 1))
+    calc(0.14rem * var(--lp-tent-scale, 1));
+  border-radius: var(--lp-radius-pill, 999px);
+  background: color-mix(in srgb, var(--lp-paper, #f8fafc) 94%, var(--lp-gold, #d4a017));
+  border: 1px solid color-mix(in srgb, var(--lp-gold, #d4a017) 28%, var(--lp-muted, #475569));
+  box-shadow: var(--lp-shadow-card, 0 14px 36px rgba(15, 23, 42, 0.08));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__title {
+  font-weight: 800;
+  text-shadow: none;
+  color: var(--lp-ink, #0f172a);
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__status {
+  text-shadow: none;
 }
 
 @keyframes lp-trail-camp-pulse {

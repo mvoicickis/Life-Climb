@@ -988,47 +988,43 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_includes nodes.map(&:id), camps[0].id
   end
 
-  test "map layout spreads visible camps across the curve band" do
+  test "builtin map layout uses fixed tent slots bottom-up" do
     nodes = [
       Strategy::Trail::Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),
       Strategy::Trail::Node.new(id: 2, title: "B", state: :current, pct: 10, position: 1, record: nil, y: 50),
       Strategy::Trail::Node.new(id: 3, title: "C", state: :locked, pct: 0, position: 2, record: nil, y: 20)
     ]
-    slots = nodes.map { |node| mountain_trail_map_layout_slot(node, nodes) }
-    assert_operator slots[0][:y], :>, slots[1][:y]
-    assert_operator slots[1][:y], :>, slots[2][:y]
-    assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slots[0][:y], 0.001
-    slot_one_y = MountainTrailHelper::AutoSlot.y_for(1, MountainTrailHelper::MAP_LAYOUT_SLOTS)
-    assert_in_delta slot_one_y, slots[2][:y], 0.001
+    slots = nodes.map { |node| mountain_trail_map_layout_slot(node, nodes, builtin_map: true) }
+    assert_in_delta 0.940, slots[0][:y], 0.001
+    assert_in_delta 0.761, slots[1][:y], 0.001
+    assert_in_delta 0.561, slots[2][:y], 0.001
+    assert_in_delta 0.25, slots[0][:width_frac], 0.001
+    assert_in_delta 0.11, slots[2][:width_frac], 0.001
   end
 
-  test "map layout uses lower slots of the four-peg ladder" do
+  test "builtin map single camp uses nearest bottom slot" do
     one = [ Strategy::Trail::Node.new(id: 1, title: "A", state: :current, pct: 0, position: 0, record: nil, y: 0) ]
-    slot = mountain_trail_map_layout_slot(one.first, one)
+    slot = mountain_trail_map_layout_slot(one.first, one, builtin_map: true)
+    assert_in_delta MountainTrailHelper::BUILTIN_TENT_SLOTS[0][:y], slot[:y], 0.001
+    assert_in_delta MountainTrailHelper::BUILTIN_TENT_SLOTS[0][:width], slot[:width_frac], 0.001
+  end
+
+  test "custom map layout uses lower slots of the four-peg ladder" do
+    one = [ Strategy::Trail::Node.new(id: 1, title: "A", state: :current, pct: 0, position: 0, record: nil, y: 0) ]
+    slot = mountain_trail_map_layout_slot(one.first, one, builtin_map: false)
     assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slot[:y], 0.001
 
     two = [
       Strategy::Trail::Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),
       Strategy::Trail::Node.new(id: 2, title: "B", state: :current, pct: 0, position: 1, record: nil, y: 50)
     ]
-    slots = two.map { |node| mountain_trail_map_layout_slot(node, two) }
+    slots = two.map { |node| mountain_trail_map_layout_slot(node, two, builtin_map: false) }
     assert_in_delta MountainTrailHelper::TRAIL_Y_MAX, slots[0][:y], 0.001
     slot_two_y = MountainTrailHelper::AutoSlot.y_for(2, MountainTrailHelper::MAP_LAYOUT_SLOTS)
     assert_in_delta slot_two_y, slots[1][:y], 0.001
   end
 
-  test "more chip sits on trail above the peak-side tent" do
-    nodes = (1..3).map do |id|
-      Strategy::Trail::Node.new(id: id, title: "C#{id}", state: :locked, pct: 0, position: id - 1, record: nil, y: 0)
-    end
-    top = mountain_trail_map_layout_slot(nodes.last, nodes)
-    chip = mountain_trail_map_more_chip_slot(nodes)
-    assert_operator chip[:y], :<, top[:y].to_f
-    assert_operator (top[:y].to_f - chip[:y]), :>=, MountainTrailHelper::MIN_CLEAR_ABOVE_TENT
-    assert_in_delta MountainTrailHelper::AutoSlot.x_for(chip[:y]), chip[:x], 0.001
-  end
-
-  test "hidden ahead count ignores cleared camps dropped behind the window" do
+  test "camps ahead counts uncleared nodes after current" do
     nodes = (0...6).map do |index|
       Strategy::Trail::Node.new(
         id: index + 1, title: "C#{index}", state: :locked, pct: 0, position: index, record: nil, y: 0
@@ -1045,28 +1041,32 @@ class MountainTrailHelperTest < ActionView::TestCase
       plan: nil,
       label: ""
     )
-    assert_equal 3, mountain_trail_map_hidden_ahead_count(trail)
+    assert_equal 4, mountain_trail_map_camps_ahead_count(trail)
   end
 
-  test "peg scale is full size for current camp" do
+  test "builtin tent width does not depend on camp state" do
     nodes = [
       Strategy::Trail::Node.new(id: 1, title: "A", state: :current, pct: 0, position: 0, record: nil, y: 80),
       Strategy::Trail::Node.new(id: 2, title: "B", state: :locked, pct: 0, position: 1, record: nil, y: 20)
     ]
-    assert_equal 1.0, mountain_trail_map_peg_scale(nodes[0], nodes)
-    assert_operator mountain_trail_map_peg_scale(nodes[1], nodes), :<, 1.0
+    current_w = mountain_trail_map_tent_width_frac(nodes[0], nodes, builtin_map: true)
+    locked_w = mountain_trail_map_tent_width_frac(nodes[1], nodes, builtin_map: true)
+    assert_in_delta 0.25, current_w, 0.001
+    assert_in_delta 0.15, locked_w, 0.001
+    assert_equal 1.0, mountain_trail_map_peg_scale(nodes[0], nodes, builtin_map: true)
   end
 
-  test "peg scale floors at 0.75 on peak-side tents" do
+  test "custom peg scale ignores current state and floors at 0.75 on peak-side tents" do
     nodes = (0...4).map do |index|
       Strategy::Trail::Node.new(
         id: index + 1, title: "C#{index}", state: :locked, pct: 0, position: index, record: nil, y: 0
       )
     end
     nodes[0].state = :current
-    peak_scale = mountain_trail_map_peg_scale(nodes[3], nodes)
+    nodes[3].state = :current
+    peak_scale = mountain_trail_map_peg_scale(nodes[3], nodes, builtin_map: false)
+    base_scale = mountain_trail_map_peg_scale(nodes[0], nodes, builtin_map: false)
     assert_in_delta 0.75, peak_scale, 0.001
-    base_scale = mountain_trail_map_peg_scale(nodes[1], nodes)
     assert_operator base_scale, :>, peak_scale
   end
 

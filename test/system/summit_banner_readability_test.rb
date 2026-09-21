@@ -59,14 +59,14 @@ class SummitBannerReadabilityTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey.reload, goal_id: @goal.id, plan_id: @plan.id)
     assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
-    assert_selector ".lp-trail-more", visible: :all, wait: 5
+    assert_selector ".lp-trail-map-sign", visible: :all, wait: 5
     assert_selector ".lp-trail__summit-banner", visible: :all, wait: 5
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const banner = document.querySelector(".lp-trail__summit-banner");
         const title = banner?.querySelector(".lp-trail__goal-title");
-        const more = document.querySelector(".lp-trail-more");
+        const more = document.querySelector(".lp-trail-map-sign");
         const campTitle = document.querySelector(".lp-trail-camp__title");
         if (!banner || !title || !more || !campTitle) {
           return { ok: false, reason: "missing nodes" };
