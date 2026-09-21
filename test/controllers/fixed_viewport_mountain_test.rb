@@ -89,7 +89,7 @@ class FixedViewportMountainTest < ActionDispatch::IntegrationTest
     assert_select "#trail-map-camps #trail-camp-#{camps[3].id}"
     assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
-    assert_select ".lp-trail-map-sign__pill", text: /camp ahead/
+    assert_select ".lp-trail-map-sign__pill", text: /camps ahead/
     assert_select ".lp-trail-more", count: 0
   end
 

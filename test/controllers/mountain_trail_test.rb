@@ -265,7 +265,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "turbo-stream[action='replace'][target='trail-map-camps']" do
       assert_select "#trail-camp-#{delta.id}"
     end
-    assert_select ".lp-trail-map-sign__pill", text: "2 camps ahead"
+    assert_select ".lp-trail-map-sign__pill", text: "3 camps ahead"
     assert_select ".lp-trail-more", count: 0
   end
 
