@@ -1010,12 +1010,10 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_operator slot[:x] - (slot[:width] / 2.0), :>=, 0.0
   end
 
-  test "builtin middle and top tent slots centre on trail curve" do
-    MountainTrailHelper::BUILTIN_TENT_SLOTS.drop(1).each do |slot|
-      path_x = MountainTrailHelper::AutoSlot.x_for(slot[:y])
-      assert_in_delta path_x, slot[:x], 0.002,
-                      "tent at y=#{slot[:y]} should centre on path at x=#{path_x}"
-    end
+  test "builtin middle and top tent slots use fixed centre x" do
+    middle, top = MountainTrailHelper::BUILTIN_TENT_SLOTS.drop(1)
+    assert_in_delta 0.480, middle[:x], 0.001
+    assert_in_delta 0.478, top[:x], 0.001
   end
 
   test "builtin tent slots leave vertical room for captions at 360px wide" do

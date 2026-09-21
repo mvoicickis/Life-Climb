@@ -31,8 +31,8 @@ module MountainTrailHelper
   # Built-in day/night art — tent centre (x), base (y), width as fraction of frame width.
   BUILTIN_TENT_SLOTS = [
     { x: 0.376, y: 0.860, width: 0.25 },
-    { x: 0.5784, y: 0.680, width: 0.15 },
-    { x: 0.5288, y: 0.520, width: 0.11 }
+    { x: 0.480, y: 0.680, width: 0.15 },
+    { x: 0.478, y: 0.520, width: 0.11 }
   ].freeze
   BUILTIN_TENT_WIDTH_REF = 0.25
   TENT_IMG_HEIGHT_OVER_WIDTH = 144.0 / 256.0
