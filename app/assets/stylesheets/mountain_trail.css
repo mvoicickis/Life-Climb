@@ -2044,11 +2044,16 @@
   container-name: trail-map;
 }
 
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent {
+  min-width: 0;
+  min-height: 0;
+}
+
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__peg {
   width: auto;
   height: auto;
-  min-width: var(--lp-tap, 2.75rem);
-  min-height: var(--lp-tap, 2.75rem);
+  min-width: 0;
+  min-height: 0;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -2078,9 +2083,9 @@
   position: absolute;
   left: 100%;
   bottom: 0;
-  height: 100%;
+  height: calc(var(--lp-tent-height-frac, 0.140625) * 100cqw);
   width: auto;
-  margin-left: calc(0.14rem * var(--lp-tent-scale, 1));
+  margin-left: calc(var(--lp-campfire-gap-rem, 0.14) * 1rem);
   border-radius: 0;
   background: none;
   box-shadow: none;

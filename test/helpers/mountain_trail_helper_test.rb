@@ -1076,6 +1076,26 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 4, mountain_trail_map_camps_ahead_count(trail)
   end
 
+  test "campfire height and gap track builtin tent slot width" do
+    nodes = (0...3).map do |index|
+      Strategy::Trail::Node.new(
+        id: index + 1, title: "C#{index}", state: :locked, pct: 0, position: index, record: nil, y: 0
+      )
+    end
+    nodes[0].state = :current
+
+    base_w = mountain_trail_map_tent_width_frac(nodes[0], nodes, builtin_map: true)
+    top_w = mountain_trail_map_tent_width_frac(nodes[2], nodes, builtin_map: true)
+    base_h = mountain_trail_map_tent_height_frac(nodes[0], nodes, builtin_map: true)
+    top_h = mountain_trail_map_tent_height_frac(nodes[2], nodes, builtin_map: true)
+
+    assert_in_delta base_w * MountainTrailHelper::TENT_IMG_HEIGHT_OVER_WIDTH, base_h, 0.0001
+    assert_in_delta top_w / base_w, top_h / base_h, 0.0001
+    assert_in_delta MountainTrailHelper::CAMPFIRE_GAP_REM * mountain_trail_map_tent_scale(nodes[2], nodes, builtin_map: true),
+                    mountain_trail_map_campfire_gap_rem(nodes[2], nodes, builtin_map: true),
+                    0.0001
+  end
+
   test "builtin tent width does not depend on camp state" do
     nodes = [
       Strategy::Trail::Node.new(id: 1, title: "A", state: :current, pct: 0, position: 0, record: nil, y: 80),
