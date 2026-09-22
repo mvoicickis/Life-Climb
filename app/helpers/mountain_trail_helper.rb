@@ -902,14 +902,6 @@ module MountainTrailHelper
     true
   end
 
-  # Camp sheet: prompt to manually finish when every open battle is cleared but camp is not done.
-  def mountain_trail_finish_camp_card?(project, open_battles:, won_battles:, days:)
-    return false if project.blank? || project.completed?
-    return false if days.blank?
-
-    open_battles.empty? && won_battles.any?
-  end
-
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
     return false unless battle.try(:repeat_daily?) || battle.try(:repeat_weekly?)
