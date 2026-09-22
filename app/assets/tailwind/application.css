@@ -1088,6 +1088,10 @@
   --lp-green: #57d35b;
   --lp-green-deep: #3dbd48;
   --lp-green-soft: rgba(87, 211, 91, 0.28);
+  --lp-picker-green: var(--lp-green);
+  --lp-picker-amber: #f59e0b;
+  --lp-picker-purple: #a78bfa;
+  --lp-picker-blue: #60a5fa;
   --lp-teal: #3ec9c0;
   --lp-teal-deep: #2aa9a1;
     --lp-teal-deep: var(--lp-green-deep);
@@ -3310,6 +3314,10 @@
   --lp-green: #57d35b;
   --lp-green-deep: #3dbd48;
   --lp-green-soft: rgba(87, 211, 91, 0.28);
+  --lp-picker-green: var(--lp-green);
+  --lp-picker-amber: #f59e0b;
+  --lp-picker-purple: #a78bfa;
+  --lp-picker-blue: #60a5fa;
   --lp-teal: #3ec9c0;
   --lp-teal-deep: #2aa9a1;
   --lp-amber: #ffb347;
@@ -25130,10 +25138,10 @@ a.lp-rpg-camp-row {
 }
 .lp-color-swatch.is-teal .lp-color-swatch__dot { background: #2dd4bf; }
 .lp-color-swatch.is-coral .lp-color-swatch__dot { background: #e2604f; }
-.lp-color-swatch.is-amber .lp-color-swatch__dot { background: #f59e0b; }
-.lp-color-swatch.is-purple .lp-color-swatch__dot { background: #a78bfa; }
-.lp-color-swatch.is-blue .lp-color-swatch__dot { background: #60a5fa; }
-.lp-color-swatch.is-green .lp-color-swatch__dot { background: #57d35b; }
+.lp-color-swatch.is-amber .lp-color-swatch__dot { background: var(--lp-picker-amber); }
+.lp-color-swatch.is-purple .lp-color-swatch__dot { background: var(--lp-picker-purple); }
+.lp-color-swatch.is-blue .lp-color-swatch__dot { background: var(--lp-picker-blue); }
+.lp-color-swatch.is-green .lp-color-swatch__dot { background: var(--lp-picker-green); }
 .lp-color-swatch.is-pink .lp-color-swatch__dot { background: #f472b6; }
 .lp-color-swatch.is-gray .lp-color-swatch__dot { background: #9aa6b2; }
 .lp-color-swatch:hover .lp-color-swatch__dot,
@@ -25149,10 +25157,10 @@ a.lp-rpg-camp-row {
 }
 .lp-color-swatch.is-teal { color: #2dd4bf; }
 .lp-color-swatch.is-coral { color: #e2604f; }
-.lp-color-swatch.is-amber { color: #f59e0b; }
-.lp-color-swatch.is-purple { color: #a78bfa; }
-.lp-color-swatch.is-blue { color: #60a5fa; }
-.lp-color-swatch.is-green { color: #57d35b; }
+.lp-color-swatch.is-amber { color: var(--lp-picker-amber); }
+.lp-color-swatch.is-purple { color: var(--lp-picker-purple); }
+.lp-color-swatch.is-blue { color: var(--lp-picker-blue); }
+.lp-color-swatch.is-green { color: var(--lp-picker-green); }
 .lp-color-swatch.is-pink { color: #f472b6; }
 .lp-color-swatch.is-gray { color: #9aa6b2; }
 

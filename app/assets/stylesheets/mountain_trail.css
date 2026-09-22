@@ -2045,8 +2045,8 @@
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent {
-  min-width: 0;
-  min-height: 0;
+  min-width: var(--lp-tap, 2.75rem);
+  min-height: var(--lp-tap, 2.75rem);
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__peg {
@@ -2061,52 +2061,92 @@
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__peg-visual {
   position: relative;
-  width: calc(var(--lp-tent-width-frac, 0.25) * 100cqw);
+  display: grid;
+  place-items: end center;
+  width: calc(62px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
   max-width: 100%;
+  transform-origin: bottom center;
   scale: 1;
 }
 
-.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__tent-img {
-  width: 100%;
-  height: auto;
-  display: block;
-  filter: drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink, #0f172a) 40%, transparent));
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__ring {
+  width: calc(62px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  height: calc(62px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
 }
 
-.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__tent-img {
-  filter:
-    drop-shadow(1px 2px 3px color-mix(in srgb, var(--lp-ink, #0f172a) 40%, transparent))
-    drop-shadow(0 0 10px color-mix(in srgb, var(--lp-trail-accent) 45%, transparent));
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__ring-bg,
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__ring-fg {
+  stroke-width: var(--lp-ring-stroke, 4px);
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__tent {
+  width: calc(28px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  height: calc(24px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  background: var(--lp-trail-accent, #0f9488);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--lp-trail-accent, #0f9488) 78%, var(--lp-surface, #fff)) 0%,
+      var(--lp-trail-accent, #0f9488) 55%,
+      color-mix(in srgb, var(--lp-trail-accent, #0f9488) 70%, var(--lp-ink, #0f172a)) 100%
+    );
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__tent::after {
+  width: calc(10px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  height: calc(10px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  background: color-mix(in srgb, var(--lp-trail-accent, #0f9488) 40%, var(--lp-ink, #0f172a));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__tent {
+  width: calc(34px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  height: calc(30px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  animation: lp-trail-camp-pulse 2.4s ease-in-out infinite;
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent.is-current .lp-trail-camp__tent::after {
+  width: calc(12px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  height: calc(12px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__fire {
-  position: absolute;
-  left: 100%;
-  bottom: 0;
-  height: calc(var(--lp-tent-height-frac, 0.140625) * 100cqw);
-  width: auto;
-  margin-left: calc(var(--lp-campfire-gap-rem, 0.14) * 1rem);
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-  animation: none;
-  object-fit: contain;
-  object-position: bottom;
+  display: block;
+  bottom: calc(-2px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  width: calc(11px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  height: calc(11px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+  margin-left: calc(8px * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
+}
+
+.lp-trail.is-v4 .lp-trail-camp.is-map-tent:not(.is-current) .lp-trail-camp__fire {
+  display: none;
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__shadow {
-  width: calc(var(--lp-tent-width-frac, 0.25) * 100cqw * 0.72);
-  height: calc(0.45rem * var(--lp-tent-scale, 1));
+  width: calc(62px * var(--lp-camp-scale, var(--lp-tent-scale, 1)) * 0.72);
+  height: calc(0.45rem * var(--lp-camp-scale, var(--lp-tent-scale, 1)));
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__cleared {
-  right: calc(-0.1rem * var(--lp-tent-scale, 1));
-  top: calc(-0.15rem * var(--lp-tent-scale, 1));
-  width: calc(1.1rem * var(--lp-tent-scale, 1));
-  height: calc(1.1rem * var(--lp-tent-scale, 1));
-  min-width: 12px;
-  min-height: 12px;
-  font-size: max(12px, calc(0.65rem * var(--lp-tent-scale, 1)));
+  --lp-done-badge-frac: 0.46;
+  --lp-tent-emblem-anchor-x: 0.75;
+  --lp-tent-emblem-anchor-y: 0.7;
+  right: auto;
+  top: auto;
+  width: calc(28px * var(--lp-camp-scale, var(--lp-tent-scale, 1)) * var(--lp-done-badge-frac));
+  height: calc(28px * var(--lp-camp-scale, var(--lp-tent-scale, 1)) * var(--lp-done-badge-frac));
+  min-width: 10px;
+  min-height: 10px;
+  font-size: calc(28px * var(--lp-camp-scale, var(--lp-tent-scale, 1)) * var(--lp-done-badge-frac) * 0.42);
+  border: 2px solid var(--lp-surface, #fff);
+  left: calc(
+    50% + 28px * var(--lp-camp-scale, var(--lp-tent-scale, 1)) *
+    (var(--lp-tent-emblem-anchor-x) - 0.5)
+  );
+  bottom: calc(
+    24px * var(--lp-camp-scale, var(--lp-tent-scale, 1)) *
+    (1 - var(--lp-tent-emblem-anchor-y))
+  );
+  transform: translate(-50%, -50%);
 }
 
 .lp-trail.is-v4 .lp-trail-camp.is-map-tent .lp-trail-camp__title {
@@ -4429,10 +4469,10 @@ body.is-trail-plant-open .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail__swatch.is-teal { color: #0f9488; }
 .lp-trail.is-v4 .lp-trail__swatch.is-coral { color: #e8590c; }
-.lp-trail.is-v4 .lp-trail__swatch.is-amber { color: #f1a208; }
-.lp-trail.is-v4 .lp-trail__swatch.is-purple { color: #7c3aed; }
-.lp-trail.is-v4 .lp-trail__swatch.is-blue { color: #4c6ef5; }
-.lp-trail.is-v4 .lp-trail__swatch.is-green { color: #12a150; }
+.lp-trail.is-v4 .lp-trail__swatch.is-amber { color: var(--lp-picker-amber); }
+.lp-trail.is-v4 .lp-trail__swatch.is-purple { color: var(--lp-picker-purple); }
+.lp-trail.is-v4 .lp-trail__swatch.is-blue { color: var(--lp-picker-blue); }
+.lp-trail.is-v4 .lp-trail__swatch.is-green { color: var(--lp-picker-green); }
 .lp-trail.is-v4 .lp-trail__swatch.is-pink { color: #d6336c; }
 .lp-trail.is-v4 .lp-trail__swatch.is-gray { color: #57534e; }
 

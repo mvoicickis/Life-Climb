@@ -443,14 +443,27 @@ export default class extends Controller {
   }
 
   colorPicked(event) {
-    const hex = event.currentTarget?.dataset?.hex
+    const input = event.currentTarget
+    const hex = input?.dataset?.hex
+    const pickerFill = input?.dataset?.pickerFill
     if (hex && this.hasAccentHexTarget) this.accentHexTarget.value = hex
+    this.applyTrailAccentPreview(pickerFill || hex)
   }
 
   syncAccentFromSwatch() {
     const checked = this.plantFormTarget?.querySelector("input[name='color_key']:checked")
     const hex = checked?.dataset?.hex
+    const pickerFill = checked?.dataset?.pickerFill
     if (hex && this.hasAccentHexTarget) this.accentHexTarget.value = hex
+    this.applyTrailAccentPreview(pickerFill || hex)
+  }
+
+  applyTrailAccentPreview(accent) {
+    if (!accent) return
+    this.element.querySelectorAll("#trail-map-camps .lp-trail-camp").forEach((camp) => {
+      camp.style.setProperty("--lp-trail-accent", accent)
+      camp.dataset.accent = accent
+    })
   }
 
   readQuantityFields(form) {

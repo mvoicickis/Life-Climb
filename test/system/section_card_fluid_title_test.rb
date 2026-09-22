@@ -82,7 +82,7 @@ class SectionCardFluidTitleTest < ApplicationSystemTestCase
         const el = document.querySelector("#trail-camp-#{section.id}");
         if (!el) return { ok: false };
         const r = el.getBoundingClientRect();
-        const tent = el.querySelector(".lp-trail-camp__tent-img, .lp-trail-camp__tent");
+        const tent = el.querySelector(".lp-trail-camp__tent");
         const caption = el.querySelector(".lp-trail-camp__caption .lp-trail-camp__title");
         return {
           ok: true,

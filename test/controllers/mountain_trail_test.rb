@@ -37,10 +37,24 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     @project = @user.strategy_goals.for_kind("project").last
   end
 
+  test "map tents use css markup not webp images" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-map-camps .lp-trail-camp.is-map-tent .lp-trail-camp__tent", minimum: 1
+    assert_select "#trail-map-camps img.lp-trail-camp__tent-img", count: 0
+    assert_select "#trail-map-camps img.lp-trail-camp__fire", count: 0
+    assert_select "#trail-map-camps .lp-trail-camp.is-current .lp-trail-camp__ring", minimum: 1
+    assert_select "#trail-map-camps .lp-trail-camp.is-current .lp-trail-camp__fire", minimum: 1
+  end
+
   test "single camp hides arrange entry and overlay" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "img.lp-trail-camp__tent-img[src*='mountain_tent_blue']"
+    assert_select "#trail-camp-#{@project.id}.is-map-tent .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent-img", count: 0
+    assert_select "#trail-camp-#{@project.id} img.lp-trail-camp__fire", count: 0
+    assert_includes response.body, "var(--lp-picker-blue)"
     assert_select ".lp-trail-arrange-entry", count: 0
     assert_select ".lp-trail__goal-menu button[data-action*='openArrangeCamps']", count: 0
     assert_select "#trail-arrange-camps", count: 0
@@ -205,7 +219,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camps"
     assert_select "#trail-stages", count: 0
     assert_select "#trail-camp-#{@project.id}[aria-label=?]", "Base camp"
-    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent-img"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent"
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__tent-img", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__status", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__sign", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__post", count: 0
@@ -500,9 +515,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
                   strategy_goal_manual_completion_path(@project)
     assert_select "#trail-sheet-menu-#{@project.id} form.lp-climb-path__menu-form[action=?]",
                   strategy_goal_path(@project)
-    assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__tent-img"
+    assert_select "#trail-camp-#{@project.id}.is-current .lp-trail-camp__tent"
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__fire"
-    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__ring", count: 0
+    assert_select "#trail-camp-#{@project.id} .lp-trail-camp__ring"
+    assert_select "#trail-camp-#{@project.id} img.lp-trail-camp__fire", count: 0
     assert_select "#trail-camp-#{@project.id} .lp-trail-camp__title", text: /Base camp/
     markup = css_select("#trail-battles-#{@project.id}").first.to_s
     assert_includes markup, "lp-trail-battles__composer-trigger"

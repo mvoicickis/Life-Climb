@@ -30,13 +30,20 @@ module MountainTrailHelper
   MAP_LAYOUT_SLOTS = 4
   # Built-in day/night art — tent centre (x), base (y), width as fraction of frame width.
   BUILTIN_TENT_SLOTS = [
-    { x: 0.376, y: 0.860, width: 0.25 },
-    { x: 0.480, y: 0.680, width: 0.15 },
-    { x: 0.478, y: 0.470, width: 0.11 }
+    { x: 0.426, y: 0.885, width: 0.248 },
+    { x: 0.480, y: 0.680, width: 0.195 },
+    { x: 0.478, y: 0.470, width: 0.143 }
   ].freeze
   BUILTIN_TENT_WIDTH_REF = 0.25
-  TENT_IMG_HEIGHT_OVER_WIDTH = 144.0 / 256.0
-  CAMPFIRE_GAP_REM = 0.14
+  TENT_CSS_HEIGHT_OVER_WIDTH = 24.0 / 28.0
+  MAP_CAMP_RING_R = 27
+  MAP_CAMP_RING_SIZE_PX = 62
+  PICKER_FILL_VAR = {
+    "green" => "var(--lp-picker-green)",
+    "amber" => "var(--lp-picker-amber)",
+    "purple" => "var(--lp-picker-purple)",
+    "blue" => "var(--lp-picker-blue)"
+  }.freeze
   # Default photo summit tip (mountain_trail_day.webp).
   PEAK_X = 0.542
   PEAK_Y = 0.208
@@ -74,13 +81,6 @@ module MountainTrailHelper
     "gray" => "green"
   }.freeze
   PICKER_DEFAULT = "green"
-
-  TENT_IMAGE_BY_PICKER = {
-    "green" => "mountain_tent_green.webp",
-    "amber" => "mountain_tent_yellow.webp",
-    "purple" => "mountain_tent_purple.webp",
-    "blue" => "mountain_tent_blue.webp"
-  }.freeze
 
   # Fixed star map from MountainV4 mockup: [x%, y%, opacity].
   MOUNTAIN_STARS = [
@@ -127,9 +127,39 @@ module MountainTrailHelper
     PICKER_FROM_TAGGED.fetch(key, PICKER_DEFAULT)
   end
 
-  def mountain_trail_tent_image(project)
-    picker = mountain_trail_picker_color_key(project&.tagged_color_key)
-    TENT_IMAGE_BY_PICKER.fetch(picker)
+  def mountain_trail_picker_fill(project_or_tag)
+    key = picker_key_for_fill(project_or_tag)
+    PICKER_FILL_VAR.fetch(key)
+  end
+
+  def picker_key_for_fill(project_or_tag)
+    tagged = project_or_tag.is_a?(StrategyGoal) ? project_or_tag.tagged_color_key : project_or_tag
+    mountain_trail_picker_color_key(tagged)
+  end
+
+  def mountain_trail_map_ring_stroke_px(camp_scale)
+    [ 2.0, 4.0 * camp_scale.to_f ].max.round(2)
+  end
+
+  def mountain_trail_camp_ring_svg(progress_ratio)
+    ratio = progress_ratio.to_f.clamp(0.0, 1.0)
+    ring_c = (2 * Math::PI * MAP_CAMP_RING_R).round(2)
+    offset = (ring_c * (1 - ratio)).round(2)
+    fg = if ratio.positive?
+      <<~SVG.squish
+        <circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="#{MAP_CAMP_RING_R}"
+          stroke-dasharray="#{ring_c}" stroke-dashoffset="#{offset}" transform="rotate(-90 31 31)"></circle>
+      SVG
+    else
+      ""
+    end
+    <<~SVG.squish
+      <svg class="lp-trail-camp__ring" viewBox="0 0 62 62" aria-hidden="true">
+        <circle class="lp-trail-camp__ring-bg" cx="31" cy="31" r="#{MAP_CAMP_RING_R}"></circle>
+        #{fg}
+      </svg>
+    SVG
+      .html_safe
   end
 
   def mountain_trail_custom_photo?(journey)
@@ -224,12 +254,7 @@ module MountainTrailHelper
 
   # Map tent image height as a fraction of map width (matches 100cqw × width_frac layout).
   def mountain_trail_map_tent_height_frac(node, visible_nodes, builtin_map:)
-    mountain_trail_map_tent_width_frac(node, visible_nodes, builtin_map: builtin_map) * TENT_IMG_HEIGHT_OVER_WIDTH
-  end
-
-  def mountain_trail_map_campfire_gap_rem(node, visible_nodes, builtin_map:)
-    gap = CAMPFIRE_GAP_REM * mountain_trail_map_tent_scale(node, visible_nodes, builtin_map: builtin_map)
-    gap.round(4)
+    mountain_trail_map_tent_width_frac(node, visible_nodes, builtin_map: builtin_map) * TENT_CSS_HEIGHT_OVER_WIDTH
   end
 
   # Caption width in rem — 9rem default, narrowed near map edges so labels stay on the photo.

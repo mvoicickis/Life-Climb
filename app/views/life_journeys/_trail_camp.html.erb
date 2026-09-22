@@ -6,8 +6,10 @@
 <% builtin_map = local_assigns.fetch(:builtin_map, false) %>
 <% color_key = project.tagged_color_key %>
 <% accent = mountain_trail_project_accent(project) %>
+<% map_fill = map_mode ? mountain_trail_picker_fill(project) : accent %>
 <% state = trail_node&.state || mountain_trail_camp_state(project, projects: map_nodes.filter_map(&:record)) %>
 <% current = state == :current %>
+<% done = state == :done %>
 <% fogged = !map_mode && state == :locked %>
 <% status = mountain_trail_camp_status(project) %>
 <% layout = if trail_node && map_nodes.any?
@@ -17,18 +19,18 @@
             end %>
 <% tent_width_frac = map_mode && trail_node ? mountain_trail_map_tent_width_frac(trail_node, map_nodes, builtin_map: builtin_map) : nil %>
 <% tent_scale = map_mode && trail_node ? mountain_trail_map_tent_scale(trail_node, map_nodes, builtin_map: builtin_map) : 1 %>
-<% tent_height_frac = map_mode && trail_node ? mountain_trail_map_tent_height_frac(trail_node, map_nodes, builtin_map: builtin_map) : nil %>
-<% campfire_gap_rem = map_mode && trail_node ? mountain_trail_map_campfire_gap_rem(trail_node, map_nodes, builtin_map: builtin_map) : nil %>
+<% ring_stroke_px = map_mode ? mountain_trail_map_ring_stroke_px(tent_scale) : nil %>
+<% progress_ratio = current ? mountain_trail_camp_progress(project)[:ratio] : 0 %>
 
 <button type="button"
         class="lp-trail-camp <%= "has-color is-#{color_key}" if color_key %> is-<%= state %> <%= 'is-pages' if project.pages_mode? %> <%= 'is-fogged' if fogged %> <%= 'is-map-tent' if map_mode %>"
         id="trail-camp-<%= project.id %>"
-        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= accent %>; --lp-trail-caption-max: <%= mountain_trail_map_caption_max_rem(layout[:x]) %>rem;<%= " --lp-tent-width-frac: #{tent_width_frac}; --lp-tent-height-frac: #{tent_height_frac}; --lp-tent-scale: #{tent_scale}; --lp-campfire-gap-rem: #{campfire_gap_rem};" if map_mode %>"
+        style="--lp-trail-x: <%= layout[:x] %>; --lp-trail-y: <%= layout[:y] %>; --lp-trail-accent: <%= map_fill %>; --lp-trail-caption-max: <%= mountain_trail_map_caption_max_rem(layout[:x]) %>rem;<%= " --lp-tent-width-frac: #{tent_width_frac}; --lp-tent-scale: #{tent_scale}; --lp-camp-scale: #{tent_scale}; --lp-ring-stroke: #{ring_stroke_px}px;" if map_mode %>"
         data-camp-id="<%= project.id %>"
         data-camp-title="<%= project.title %>"
         data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
         data-camp-description="<%= project.description.to_s %>"
-        data-accent="<%= accent %>"
+        data-accent="<%= map_fill %>"
         data-update-url="<%= strategy_goal_path(project) %>"
         data-action="click->trail-canvas#campClick click->trail-camp-sheet#open"
         aria-label="<%= project.title %>">
@@ -36,21 +38,12 @@
   <span class="lp-trail-camp__peg">
     <span class="lp-trail-camp__peg-visual">
       <% if map_mode %>
-        <%= image_tag mountain_trail_tent_image(project),
-              class: "lp-trail-camp__tent-img",
-              width: 256,
-              height: 164,
-              alt: "",
-              decoding: "async",
-              aria: { hidden: true } %>
         <% if current %>
-          <%= image_tag "mountain_campfire.webp",
-                class: "lp-trail-camp__fire",
-                width: 117,
-                height: 160,
-                alt: "",
-                decoding: "async",
-                aria: { hidden: true } %>
+          <%= mountain_trail_camp_ring_svg(progress_ratio) %>
+        <% end %>
+        <span class="lp-trail-camp__tent" aria-hidden="true"></span>
+        <% if current %>
+          <span class="lp-trail-camp__fire" aria-hidden="true"></span>
         <% end %>
       <% else %>
         <span class="lp-trail-camp__tent" aria-hidden="true">
@@ -59,7 +52,7 @@
           <% end %>
         </span>
       <% end %>
-      <% if state == :done %>
+      <% if done %>
         <span class="lp-trail-camp__cleared" aria-hidden="true">✓</span>
       <% end %>
     </span>
