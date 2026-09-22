@@ -53,8 +53,8 @@ class BattleWinSaveFailureTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "##{dom_id(@todo, :battlefield_row)}.lp-today-v2-row", count: 1
     assert_select "##{dom_id(@todo, :battlefield_row)} form.lp-today-v2-row__check-form button:not([disabled])", count: 1
-    assert_select "##{dom_id(@todo, :battlefield_row)} [data-juicy-feedback-win-not-saved-value]",
-                  text: I18n.t("dash.battlefield.win_not_saved")
+    assert_select "##{dom_id(@todo, :battlefield_row)} form[data-juicy-feedback-win-not-saved-value=?]",
+                  I18n.t("dash.battlefield.win_not_saved")
   end
 
   test "Today turbo win ArgumentError from CompleteTodo returns 422" do
