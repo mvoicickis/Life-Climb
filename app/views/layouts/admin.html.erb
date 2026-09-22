@@ -16,7 +16,7 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="lp-min-h-screen antialiased lp-admin">
+  <body class="lp-min-h-screen antialiased lp-admin" data-controller="offline-page-cache">
     <header class="lp-admin__top">
       <div class="lp-admin__top-inner">
         <div class="lp-admin__brand">
@@ -37,7 +37,11 @@
         </nav>
         <div class="lp-admin__actions">
           <%= link_to t("admin.nav.app"), dashboard_path, class: "lp-admin__ghost" %>
-          <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "lp-admin__ghost is-danger" %>
+          <%= button_to t("nav.sign_out"),
+                session_path,
+                method: :delete,
+                class: "lp-admin__ghost is-danger",
+                form: { data: { action: "submit->offline-page-cache#clearBeforeSignOut" } } %>
         </div>
       </div>
     </header>

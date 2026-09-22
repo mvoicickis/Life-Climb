@@ -6,6 +6,10 @@ en:
       renewal: "%B %-d, %Y"
       dash_weekday: "%A"
   app_name: "Life Climb"
+  offline:
+    snapshot_banner: "You're offline. Last updated at %{time}."
+    snapshot_banner_yesterday: "You're offline. Last updated yesterday at %{time}."
+    snapshot_banner_dated: "You're offline. Last updated %{date} at %{time}."
   title_limit:
     at_max: "%{count} of %{max} letters used"
   companion:

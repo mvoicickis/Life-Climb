@@ -32,8 +32,10 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, "clearAppBadgeSafe"
   end
 
-  test "cache version bumped for snooze actions" do
-    assert_includes @source, 'CACHE_VERSION = "v8"'
+  test "cache version bumped for offline page cache" do
+    assert_includes @source, 'CACHE_VERSION = "v9"'
+    assert_includes @source, "PAGE_CACHE_NAME"
+    assert_includes @source, '-pages'
   end
 
   test "documents match navigate destination document or Accept html" do
@@ -42,13 +44,42 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, 'accept.includes("text/html")'
   end
 
-  test "documents are network-only and never cache.put" do
-    document_fn = @source[/async function networkOnlyDocument[\s\S]*?(?=async function networkOnlyNoStore)/]
+  test "full page documents skip turbo frame and turbo stream accept" do
+    assert_includes @source, "isFullPageDocument"
+    assert_includes @source, 'request.headers.get("Turbo-Frame")'
+    assert_includes @source, "text/vnd.turbo-stream.html"
+  end
+
+  test "offline page cache only puts allowed dashboard and life journey paths" do
+    network_fn = @source[/async function networkFirstOfflinePage[\s\S]*?(?=async function putPageCache)/]
+    assert network_fn.present?, "expected networkFirstOfflinePage in the service worker"
+    assert_includes network_fn, "isAllowedPageCachePath"
+    assert_includes network_fn, "response.status === 200"
+    assert_includes network_fn, "!response.redirected"
+    assert_includes network_fn, "isCacheableHtmlDocument"
+
+    put_fn = @source[/async function putPageCache[\s\S]*?(?=async function matchPageCache)/]
+    assert put_fn.present?, "expected putPageCache in the service worker"
+    assert_includes put_fn, "cache.put"
+    assert_includes @source, 'pathname === "/dashboard"'
+    assert_includes @source, "/^\\/life_journeys\\/\\d+$/"
+  end
+
+  test "networkOnlyDocument never cache puts" do
+    document_fn = @source[/async function networkOnlyDocument[\s\S]*?(?=async function offlineDocumentFallback)/]
     assert document_fn.present?, "expected networkOnlyDocument in the service worker"
     refute_includes document_fn, "cache.put"
+  end
+
+  test "static assets never cache html responses" do
     assert_includes @source, "application/xhtml+xml"
     assert_includes @source, "text/vnd.turbo-stream.html"
     assert_includes @source, "!isHtmlContentType(response)"
+  end
+
+  test "clear page cache message handler" do
+    assert_includes @source, "CLEAR_PAGE_CACHE"
+    assert_includes @source, "caches.delete(PAGE_CACHE_NAME)"
   end
 
   test "install skipWaiting runs even if precache fails" do
@@ -64,6 +95,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert activate.present?, "expected activate listener in the service worker"
     assert_includes activate, 'key.startsWith("lifepoints-")'
     assert_includes activate, "caches.delete(key)"
+    assert_includes activate, "PAGE_CACHE_NAME"
     assert_includes activate, "await self.clients.claim()"
   end
 end

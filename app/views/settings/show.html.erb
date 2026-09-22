@@ -338,7 +338,12 @@
         <%= button_to restart_new_player_experience_developer_tools_path,
               method: :post,
               class: "lp-you-row",
-              form: { data: { turbo_confirm: t("developer.tools.restart_npe_confirm") } } do %>
+              form: {
+                data: {
+                  turbo_confirm: t("developer.tools.restart_npe_confirm"),
+                  action: "submit->offline-page-cache#clearBeforeRestart"
+                }
+              } do %>
           <span class="lp-you-row__label"><span aria-hidden="true">🧪</span> <%= t("developer.tools.restart_npe") %></span>
           <span class="lp-you-row__chev" aria-hidden="true">›</span>
         <% end %>
@@ -349,7 +354,10 @@
       <p class="lp-you-sr"><%= t("developer.tools.title") %></p>
     <% end %>
 
-    <%= button_to session_path, method: :delete, class: "lp-you-signout" do %>
+    <%= button_to session_path,
+          method: :delete,
+          class: "lp-you-signout",
+          form: { data: { action: "submit->offline-page-cache#clearBeforeSignOut" } } do %>
       <%= t("nav.sign_out") %>
     <% end %>
 

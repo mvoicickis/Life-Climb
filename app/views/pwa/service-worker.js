@@ -1,5 +1,6 @@
-const CACHE_VERSION = "v8"
+const CACHE_VERSION = "v9"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
+const PAGE_CACHE_NAME = `${CACHE_NAME}-pages`
 const OFFLINE_URL = "/offline.html"
 const ASSET_DESTINATIONS = ["style", "script", "font", "image"]
 const HTML_CONTENT_TYPES = [
@@ -91,7 +92,12 @@ self.addEventListener("activate", (event) => {
       const keys = await caches.keys()
       await Promise.all(
         keys
-          .filter((key) => key.startsWith("lifepoints-") && key !== CACHE_NAME)
+          .filter(
+            (key) =>
+              key.startsWith("lifepoints-") &&
+              key !== CACHE_NAME &&
+              key !== PAGE_CACHE_NAME
+          )
           .map((key) => caches.delete(key))
       )
       await self.clients.claim()
@@ -103,7 +109,12 @@ self.addEventListener("fetch", (event) => {
   const { request } = event
   if (request.method !== "GET") return
 
-  if (isDocumentRequest(request)) {
+  if (isFullPageDocument(request)) {
+    const url = new URL(request.url)
+    if (url.origin === self.location.origin && isOfflinePageNavigationPath(url.pathname)) {
+      event.respondWith(networkFirstOfflinePage(request))
+      return
+    }
     event.respondWith(networkOnlyDocument(request))
     return
   }
@@ -114,6 +125,12 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(networkOnlyNoStore(request))
+})
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "CLEAR_PAGE_CACHE") {
+    event.waitUntil(caches.delete(PAGE_CACHE_NAME))
+  }
 })
 
 self.addEventListener("push", (event) => {
@@ -252,6 +269,41 @@ function isDocumentRequest(request) {
   )
 }
 
+function isFullPageDocument(request) {
+  if (!isDocumentRequest(request)) return false
+  if (request.headers.get("Turbo-Frame")) return false
+  const accept = request.headers.get("accept") || ""
+  if (accept.includes("text/vnd.turbo-stream.html")) return false
+  return true
+}
+
+function isOfflinePageNavigationPath(pathname) {
+  return (
+    pathname === "/" ||
+    pathname === "/dashboard" ||
+    /^\/life_journeys\/\d+$/.test(pathname)
+  )
+}
+
+function isAllowedPageCachePath(pathname) {
+  return pathname === "/dashboard" || /^\/life_journeys\/\d+$/.test(pathname)
+}
+
+function pageCacheLookupPath(pathname) {
+  return pathname === "/" ? "/dashboard" : pathname
+}
+
+function pageCacheRequestForPath(pathname) {
+  const path = pageCacheLookupPath(pathname)
+  return new Request(new URL(path, self.location.origin).href, { method: "GET" })
+}
+
+function isCacheableHtmlDocument(response) {
+  const contentType = response.headers.get("content-type") || ""
+  if (contentType.includes("text/vnd.turbo-stream.html")) return false
+  return contentType.includes("text/html") || contentType.includes("application/xhtml+xml")
+}
+
 function isStaticAsset(request) {
   return ASSET_DESTINATIONS.includes(request.destination)
 }
@@ -266,10 +318,69 @@ async function networkOnlyDocument(request) {
     const response = await fetch(request)
     return response
   } catch (_error) {
-    const cache = await caches.open(CACHE_NAME)
-    const offline = await cache.match(OFFLINE_URL)
-    return offline || Response.error()
+    return offlineDocumentFallback()
   }
+}
+
+async function offlineDocumentFallback() {
+  const cache = await caches.open(CACHE_NAME)
+  const offline = await cache.match(OFFLINE_URL)
+  return offline || Response.error()
+}
+
+async function networkFirstOfflinePage(request) {
+  const url = new URL(request.url)
+  try {
+    const response = await fetch(request)
+    const finalUrl = new URL(response.url)
+    if (
+      response.ok &&
+      response.status === 200 &&
+      !response.redirected &&
+      response.type === "basic" &&
+      isCacheableHtmlDocument(response) &&
+      isAllowedPageCachePath(finalUrl.pathname)
+    ) {
+      await putPageCache(finalUrl.pathname, response)
+    }
+    return response
+  } catch (_error) {
+    const cached = await matchPageCache(pageCacheLookupPath(url.pathname))
+    if (cached) return cached
+    return offlineDocumentFallback()
+  }
+}
+
+async function putPageCache(pathname, response) {
+  const cachedAt = new Date().toISOString()
+  const clone = response.clone()
+  const headers = new Headers(clone.headers)
+  headers.set("X-LP-Page-Cached-At", cachedAt)
+  const body = await clone.arrayBuffer()
+  const stored = new Response(body, {
+    status: 200,
+    statusText: clone.statusText,
+    headers
+  })
+  const cache = await caches.open(PAGE_CACHE_NAME)
+  await cache.put(pageCacheRequestForPath(pathname), stored)
+}
+
+async function matchPageCache(pathname) {
+  const cache = await caches.open(PAGE_CACHE_NAME)
+  const cached = await cache.match(pageCacheRequestForPath(pathname))
+  if (!cached) return null
+
+  const cachedAt = cached.headers.get("X-LP-Page-Cached-At") || new Date().toISOString()
+  const html = await cached.text()
+  const meta = `<meta name="lp-offline-snapshot-at" content="${cachedAt.replace(/"/g, "&quot;")}">`
+  const injected = html.includes("<head>")
+    ? html.replace("<head>", `<head>${meta}`)
+    : `${meta}${html}`
+
+  return new Response(injected, {
+    headers: { "Content-Type": "text/html; charset=utf-8" }
+  })
 }
 
 async function networkOnlyNoStore(request) {

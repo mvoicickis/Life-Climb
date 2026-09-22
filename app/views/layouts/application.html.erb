@@ -33,9 +33,19 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="lp-min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>">
+  <body class="lp-min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>"
+        <% if authenticated? %>
+          data-controller="offline-page-cache"
+          <% if content_for?(:lp_game) %>
+            data-offline-page-cache-snapshot-banner-value="<%= t("offline.snapshot_banner") %>"
+            data-offline-page-cache-snapshot-banner-yesterday-value="<%= t("offline.snapshot_banner_yesterday") %>"
+            data-offline-page-cache-snapshot-banner-dated-value="<%= t("offline.snapshot_banner_dated") %>"
+          <% end %>
+        <% end %>>
     <%= render "shared/admin_banners" %>
     <% if authenticated? && content_for?(:lp_game) %>
+      <%= render "shared/offline_snapshot_banner" %>
+      <%= tag.meta name: "lp-user-id", content: current_user.id %>
       <% unless content_for?(:lp_hide_top_nav) %>
       <nav class="lp-top-nav" aria-label="Main">
         <div class="lp-top-nav__inner">

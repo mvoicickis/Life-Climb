@@ -43,7 +43,12 @@
           <p class="app-menu-label"><%= t("nav.language") %></p>
           <%= render "shared/locale_switcher", variant: :menu %>
           <div class="app-menu-divider" role="separator"></div>
-          <%= button_to t("nav.sign_out"), session_path, method: :delete, class: "app-menu-item app-menu-item--danger w-full text-left", role: "menuitem" %>
+          <%= button_to t("nav.sign_out"),
+                session_path,
+                method: :delete,
+                class: "app-menu-item app-menu-item--danger w-full text-left",
+                role: "menuitem",
+                form: { data: { action: "submit->offline-page-cache#clearBeforeSignOut" } } %>
         </div>
       </div>
     </div>

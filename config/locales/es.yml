@@ -5,6 +5,10 @@ es:
       long: "%-d %b"
       renewal: "%-d de %B de %Y"
   app_name: "LifePoints"
+  offline:
+    snapshot_banner: "You're offline. Last updated at %{time}." # TODO: translate
+    snapshot_banner_yesterday: "You're offline. Last updated yesterday at %{time}." # TODO: translate
+    snapshot_banner_dated: "You're offline. Last updated %{date} at %{time}." # TODO: translate
   companion:
     prompt_title: "Pick who climbs with you" # TODO: translate
   strategy:
