@@ -2,28 +2,44 @@
 
 # Mountain sticky mark-complete / reopen for Plans and Projects.
 class StrategyGoalCompletionsController < ApplicationController
+  include MountainSheetRefresh
+
   before_action :require_planning_v2
   before_action :set_goal
   before_action :reject_holding
 
   def create
     unless @goal.plan? || @goal.project? || @goal.goal?
-      return redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
+      return respond_invalid
     end
 
     @goal.manually_complete!
     Strategy::SyncCompletion.resync!(node: @goal)
-    redirect_to mountain_return_path, status: :see_other
+    return_path = mountain_return_path
+    assign_mountain_sheet_for!(@goal.reload)
+    respond_to do |format|
+      format.turbo_stream { render :create, status: :ok }
+      format.html { redirect_to return_path, status: :see_other }
+    end
+  rescue ActiveRecord::RecordInvalid
+    respond_failure
   end
 
   def destroy
     unless @goal.plan? || @goal.project?
-      return redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
+      return respond_invalid
     end
 
     @goal.manually_reopen!
     Strategy::SyncCompletion.resync!(node: @goal)
-    redirect_to mountain_return_path, status: :see_other
+    return_path = mountain_return_path
+    assign_mountain_sheet_for!(@goal.reload)
+    respond_to do |format|
+      format.turbo_stream { render :destroy, status: :ok }
+      format.html { redirect_to return_path, status: :see_other }
+    end
+  rescue ActiveRecord::RecordInvalid
+    respond_failure
   end
 
   private
@@ -65,6 +81,20 @@ class StrategyGoalCompletionsController < ApplicationController
   def fallback_path
     journey = current_user.primary_focused_journey
     journey ? life_journey_path(journey) : dashboard_path
+  end
+
+  def respond_invalid
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+      format.html { redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other }
+    end
+  end
+
+  def respond_failure
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+      format.html { redirect_to fallback_path, alert: t("dash.battlefield.win_not_saved"), status: :see_other }
+    end
   end
 
   def require_planning_v2

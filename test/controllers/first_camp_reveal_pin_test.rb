@@ -58,7 +58,7 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-trail.is-first-camp-reveal", count: 0
     assert_select "#trail-sheet-menu-#{@first_camp.id} .lp-trail-sheet__menu-btn"
-    assert_select ".lp-trail-sheet__close"
+    assert_select ".lp-trail-sheet__close", count: 0
   end
 
   test "completing pinned camp does not show setup on another camp" do

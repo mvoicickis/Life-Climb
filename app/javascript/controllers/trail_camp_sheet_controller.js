@@ -197,6 +197,7 @@ export default class extends Controller {
     const title = this.campTitleFor(camp)
     if (this.hasTitleTarget) this.titleTarget.textContent = title
     this.setSubtitle(camp.dataset.campDescription || "")
+    this.resetTitleBadge()
 
     this.revealBodyFor(camp)
     this._openCampId = camp.dataset.campId || null
@@ -423,6 +424,15 @@ export default class extends Controller {
     if (!root) return null
 
     return this.application.getControllerForElementAndIdentifier(root, "trail-battles")
+  }
+
+  resetTitleBadge() {
+    const badge = document.getElementById("trail-sheet-title-badge")
+    if (!badge) return
+
+    badge.hidden = true
+    badge.setAttribute("hidden", "")
+    this.panelTarget?.classList.remove("is-camp-finished")
   }
 
   setSubtitle(text) {

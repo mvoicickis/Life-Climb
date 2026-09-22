@@ -42,7 +42,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
     idle = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-idle\s*\{[^}]+\}/m]
     assert idle, "expected camp idle card block"
-    assert_match(/background:\s*var\(--lp-paper-soft\)/, idle)
+    assert_match(/background:\s*var\(--lp-surface\)/, idle)
 
     composer = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__composer-form\s*\{[^}]+\}/m]
     assert composer, "expected composer form block"
@@ -50,7 +50,8 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
     won_strip = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__won-strip\s*\{[^}]+\}/m]
     assert won_strip, "expected won strip block"
-    assert_match(/background:\s*var\(--lp-paper-soft\)/, won_strip)
+    assert_match(/background:\s*var\(--lp-surface\)/, won_strip)
+    assert_match(/border-radius:\s*var\(--lp-radius-pill\)/, won_strip)
   end
 
   test "lp-frost uses solid surface by default with glass only in supports" do

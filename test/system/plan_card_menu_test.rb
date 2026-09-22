@@ -88,15 +88,7 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     find(".lp-trail__summit-banner").click
     assert_selector ".lp-trail__goal-menu:not([hidden])", wait: 3
 
-    page.execute_script(<<~JS)
-      const photo = document.querySelector("#mountain-trail .lp-trail__photo--day, #mountain-trail .lp-trail__photo");
-      const rect = photo.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height * 0.8;
-      const target = document.elementFromPoint(x, y);
-      target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: x, clientY: y }));
-      target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, clientX: x, clientY: y }));
-    JS
+    find("#mountain-trail .lp-trail__photo--day, #mountain-trail .lp-trail__photo", match: :first, wait: 5).click
 
     assert_selector "#mountain-trail", wait: 3
     assert page.evaluate_script("document.querySelector('.lp-trail__goal-menu').hidden")
