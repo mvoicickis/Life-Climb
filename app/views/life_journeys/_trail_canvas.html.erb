@@ -378,6 +378,7 @@
                          class="sr-only"
                          data-action="change->trail-canvas#colorPicked"
                          data-hex="<%= MountainTrailHelper::ACCENT_HEX[key] %>"
+                         data-picker-fill="<%= MountainTrailHelper::PICKER_FILL_VAR[key] %>"
                          <%= "checked" if key == "green" %>>
                   <span class="lp-trail__swatch-dot" aria-hidden="true"></span>
                   <span class="lp-trail__swatch-check" aria-hidden="true">✓</span>

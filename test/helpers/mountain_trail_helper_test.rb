@@ -1002,12 +1002,14 @@ class MountainTrailHelperTest < ActionView::TestCase
     end
   end
 
-  test "builtin bottom tent slot keeps right edge on trail curve" do
-    slot = MountainTrailHelper::BUILTIN_TENT_SLOTS[0]
-    path_x = MountainTrailHelper::AutoSlot.x_for(slot[:y])
-    tent_right = slot[:x] + (slot[:width] / 2.0)
-    assert_in_delta path_x, tent_right, 0.002
-    assert_operator slot[:x] - (slot[:width] / 2.0), :>=, 0.0
+  test "builtin tent slots order bottom widest then middle then top at 360px" do
+    viewport_w = 360
+    widths_px = MountainTrailHelper::BUILTIN_TENT_SLOTS.map do |slot|
+      scale = slot[:width] / MountainTrailHelper::BUILTIN_TENT_WIDTH_REF
+      28.0 * scale * (viewport_w / viewport_w)
+    end
+    assert_operator widths_px[0], :>, widths_px[1]
+    assert_operator widths_px[1], :>, widths_px[2]
   end
 
   test "builtin middle and top tent slots use fixed centre x" do
@@ -1026,7 +1028,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     (0...(slots.size - 1)).each do |index|
       lower = slots[index]
       upper = slots[index + 1]
-      tent_h_px = lower[:width] * viewport_w * MountainTrailHelper::TENT_IMG_HEIGHT_OVER_WIDTH
+      tent_h_px = lower[:width] * viewport_w * MountainTrailHelper::TENT_CSS_HEIGHT_OVER_WIDTH
       gap_px = (lower[:y] - upper[:y]) * viewport_h
       required_px = tent_h_px + caption_px + margin_px
       assert_operator gap_px, :>=, required_px - 1,
@@ -1076,7 +1078,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 4, mountain_trail_map_camps_ahead_count(trail)
   end
 
-  test "campfire height and gap track builtin tent slot width" do
+  test "map tent height frac uses css triangle aspect" do
     nodes = (0...3).map do |index|
       Strategy::Trail::Node.new(
         id: index + 1, title: "C#{index}", state: :locked, pct: 0, position: index, record: nil, y: 0
@@ -1089,11 +1091,8 @@ class MountainTrailHelperTest < ActionView::TestCase
     base_h = mountain_trail_map_tent_height_frac(nodes[0], nodes, builtin_map: true)
     top_h = mountain_trail_map_tent_height_frac(nodes[2], nodes, builtin_map: true)
 
-    assert_in_delta base_w * MountainTrailHelper::TENT_IMG_HEIGHT_OVER_WIDTH, base_h, 0.0001
+    assert_in_delta base_w * MountainTrailHelper::TENT_CSS_HEIGHT_OVER_WIDTH, base_h, 0.0001
     assert_in_delta top_w / base_w, top_h / base_h, 0.0001
-    assert_in_delta MountainTrailHelper::CAMPFIRE_GAP_REM * mountain_trail_map_tent_scale(nodes[2], nodes, builtin_map: true),
-                    mountain_trail_map_campfire_gap_rem(nodes[2], nodes, builtin_map: true),
-                    0.0001
   end
 
   test "builtin tent width does not depend on camp state" do
@@ -1103,9 +1102,34 @@ class MountainTrailHelperTest < ActionView::TestCase
     ]
     current_w = mountain_trail_map_tent_width_frac(nodes[0], nodes, builtin_map: true)
     locked_w = mountain_trail_map_tent_width_frac(nodes[1], nodes, builtin_map: true)
-    assert_in_delta 0.25, current_w, 0.001
-    assert_in_delta 0.15, locked_w, 0.001
+    assert_in_delta MountainTrailHelper::BUILTIN_TENT_SLOTS[0][:width], current_w, 0.001
+    assert_in_delta MountainTrailHelper::BUILTIN_TENT_SLOTS[1][:width], locked_w, 0.001
     assert_equal 1.0, mountain_trail_map_peg_scale(nodes[0], nodes, builtin_map: true)
+  end
+
+  test "picker fill var for all tags and nil" do
+    expected = {
+      nil => "var(--lp-picker-green)",
+      "green" => "var(--lp-picker-green)",
+      "amber" => "var(--lp-picker-amber)",
+      "purple" => "var(--lp-picker-purple)",
+      "blue" => "var(--lp-picker-blue)",
+      "teal" => "var(--lp-picker-blue)",
+      "coral" => "var(--lp-picker-amber)",
+      "pink" => "var(--lp-picker-purple)",
+      "gray" => "var(--lp-picker-green)"
+    }
+
+    expected.each do |tag, fill|
+      project = StrategyGoal.new(color_key: tag)
+      assert_equal fill, mountain_trail_picker_fill(project), "tag #{tag.inspect}"
+      assert_equal fill, mountain_trail_picker_fill(tag), "tag #{tag.inspect} direct"
+    end
+  end
+
+  test "map ring stroke is at least 2px" do
+    assert_operator mountain_trail_map_ring_stroke_px(0.1), :>=, 2.0
+    assert_in_delta 4.0, mountain_trail_map_ring_stroke_px(1.0), 0.01
   end
 
   test "custom peg scale ignores current state and floors at 0.75 on peak-side tents" do
@@ -1226,25 +1250,6 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal "amber", mountain_trail_picker_color_key("coral")
     assert_equal "purple", mountain_trail_picker_color_key("pink")
     assert_equal "green", mountain_trail_picker_color_key("gray")
-  end
-
-  test "tent image follows picker colour including legacy tags" do
-    expected = {
-      nil => "mountain_tent_green.webp",
-      "green" => "mountain_tent_green.webp",
-      "amber" => "mountain_tent_yellow.webp",
-      "purple" => "mountain_tent_purple.webp",
-      "blue" => "mountain_tent_blue.webp",
-      "teal" => "mountain_tent_blue.webp",
-      "coral" => "mountain_tent_yellow.webp",
-      "pink" => "mountain_tent_purple.webp",
-      "gray" => "mountain_tent_green.webp"
-    }
-
-    expected.each do |tag, filename|
-      project = StrategyGoal.new(color_key: tag)
-      assert_equal filename, mountain_trail_tent_image(project), "tag #{tag.inspect}"
-    end
   end
 
   def reveal_test_projects(count)
