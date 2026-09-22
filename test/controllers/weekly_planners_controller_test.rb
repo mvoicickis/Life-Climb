@@ -98,10 +98,8 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
       post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
       assert_redirected_to life_journey_path(@journey)
       follow_redirect!
-      notice = flash[:notice].to_s + response.body
-      assert_match(/1 thing set across 1 day slot/i, notice)
-      assert_no_match(/=>/, notice)
-      assert_no_match(/\{"title"/, notice)
+      assert_nil flash[:notice]
+      assert_select ".lp-flash", count: 0
 
       assert_equal 1, @user.strategy_goals.for_kind("day").where(title: "Ship landing").count
       assert @user.daily_todos.for_day(date).exists?(title: "Ship landing")
@@ -140,9 +138,8 @@ class WeeklyPlannersControllerTest < ActionDispatch::IntegrationTest
       date = Strategy::WeeklyPlanner::Definition.eligible_dates(@user).first
       post weekly_planner_path(plan_id: @plan.id), params: { dates: [ date.iso8601 ] }
       assert_redirected_to life_journey_path(@journey)
-      assert_match(/1 thing set across 1 day slot/i, flash[:notice].to_s)
-      assert_match(/They’ll show on Today/i, flash[:notice].to_s)
-      assert_no_match(/One day only/, flash[:notice].to_s)
+      follow_redirect!
+      assert_select ".lp-flash", count: 0
     end
   end
 

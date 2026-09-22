@@ -72,7 +72,6 @@ lv:
       projects: "Mainīt projektu"
     rename: "Pārdēvēt"
     save_name: "Saglabāt nosaukumu"
-    renamed: "Pārdēvēts."
     help:
       cta: "Palīdzi man"
       cta_goal: "Palīdzi man definēt šo mērķi"
@@ -262,7 +261,6 @@ lv:
       mark_complete: "Atzīmēt kā pabeigtu"
       reopen: "Atvērt no jauna"
       manually_closed: "Aizvērts manuāli"
-      manual_complete_notice: "Atzīmēts kā pabeigts · %{title}"
       manual_complete_invalid: "Var atzīmēt tikai plānus un projektus."
       delete_plan: "Dzēst plānu"
       delete_plan_title: "Dzēst plānu?"
@@ -337,7 +335,6 @@ lv:
           add_placeholder: "What will you do every day?" # TODO: translate
           dock_add_pill: "Add a Basic" # TODO: translate
           add_habit: "Add Basic" # TODO: translate
-          habit_added: "Basic added." # TODO: translate
           count_toggle: "Count how many" # TODO: translate
           starter_title: "Add the first thing you do every day." # TODO: translate
           starter_example_1: "20 push-ups" # TODO: translate
@@ -471,7 +468,6 @@ lv:
         deleted_toast: "Dzēsts “%{title}”"
         restored: "Atjaunots “%{title}”"
         undo_expired: "Par vēlu, lai atsauktu."
-        battle_reopened: "Cīņa atvērta no jauna."
         battle_stats: "%{open} atvērtas · %{won} uzvarētas"
         quick_complete: "Ātrā uzvara"
         quick_win_toast: "Uzvarēts “%{title}”"
@@ -689,7 +685,6 @@ lv:
       how_many: "Cik %{unit}?"
       log_confirm: "Saglabāt"
       amount_required: "Ieraksti, cik %{unit}."
-      logged: "Pierakstīts virzienā uz %{unit}."
     save_changes: "Saglabāt izmaiņas"
     horizons:
       project: "Nometne"

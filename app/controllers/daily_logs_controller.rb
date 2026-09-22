@@ -95,6 +95,7 @@ class DailyLogsController < ApplicationController
   end
 
   def respond_after_log!(flash_opts = {})
+    flash_opts = flash_opts.except(:notice) if mountain_return?
     respond_to do |format|
       format.turbo_stream do
         if mountain_return?

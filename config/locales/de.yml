@@ -27,7 +27,6 @@ de:
       projects: "Projekt wechseln"
     rename: "Umbenennen"
     save_name: "Name speichern"
-    renamed: "Umbenannt."
     next_action:
       plan_route:
         title: "Plane deine Route"
@@ -197,7 +196,6 @@ de:
       mark_complete: "Als erledigt markieren"
       reopen: "Wieder öffnen"
       manually_closed: "Manuell geschlossen"
-      manual_complete_notice: "Als erledigt markiert · %{title}"
       manual_complete_invalid: "Nur Pläne und Projekte können als erledigt markiert werden."
       delete_plan: "Plan löschen"
       delete_plan_title: "Plan löschen?"
@@ -310,7 +308,6 @@ de:
           add_placeholder: "What will you do every day?"  # TODO: translate
           dock_add_pill: "Add a Basic"  # TODO: translate
           add_habit: "Add Basic"  # TODO: translate
-          habit_added: "Basic added."  # TODO: translate
           count_toggle: "Count how many"  # TODO: translate
           starter_title: "Add the first thing you do every day."  # TODO: translate
           starter_example_1: "20 push-ups"  # TODO: translate

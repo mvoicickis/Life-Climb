@@ -102,7 +102,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     goal = @user.strategy_goals.for_kind("goal").last
     assert_equal Strategy::YearCycle.default_goal_due, goal.due_on
     assert_equal 100, @user.reload.strategy_points
-    assert_match(/Goal locked|Goal created/i, flash[:notice].to_s)
+    assert_nil flash[:notice]
     assert_equal 100, flash[:sp_gained].to_i
 
     get life_journey_path(@journey)
@@ -756,7 +756,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-rpg-section-head", count: 0
     assert_select ".lp-rpg-practice-cats__hint", count: 0
     assert_select ".lp-rpg-practice-focus.is-entered", count: 0
-    assert_match(/Checkpoint added|Launch prep/i, flash[:notice].to_s + response.body)
+    assert_select ".lp-flash", count: 0
   end
 
   test "day schedule toggle plans practice for today via scheduled_on" do
@@ -806,7 +806,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     patch strategy_goal_path(goal), params: { title: "New Goal" }
     assert_redirected_to life_journey_path(@journey, goal_id: goal.id)
     assert_equal "New Goal", goal.reload.title
-    assert_match(/Renamed/i, flash[:notice].to_s)
+    assert_nil flash[:notice]
 
     patch strategy_goal_path(plan), params: { title: "New Plan" }
     assert_equal "New Plan", plan.reload.title

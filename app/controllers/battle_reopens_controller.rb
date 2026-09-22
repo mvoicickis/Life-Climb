@@ -29,9 +29,7 @@ class BattleReopensController < ApplicationController
     respond_to do |format|
       format.turbo_stream { render :create, status: :ok }
       format.html do
-        redirect_to mountain_return_path(journey, battle),
-                    notice: t("strategy.rpg.trail.battle_reopened"),
-                    status: :see_other
+        redirect_to mountain_return_path(journey, battle), status: :see_other
       end
     end
   end

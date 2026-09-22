@@ -126,6 +126,42 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-menu-#{@project_a.id} button", text: I18n.t("strategy.rpg.trail.reopen_camp"), count: 0
   end
 
+  test "finish camp redirect has no flash and camp order shell is reachable" do
+    post strategy_goal_manual_completion_path(@project_a)
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-flash", count: 0
+    assert @project_a.reload.completed?
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-arrange-camps"
+    assert_select ".lp-trail-arrange__back"
+
+    patch life_journey_camp_arrangement_path(@journey),
+          params: {
+            plan_id: @plan.id,
+            "groups[0][camp_ids][]" => @project_a.id,
+            "groups[1][camp_ids][]" => @project_b.id
+          }
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-flash", count: 0
+  end
+
+  test "invalid manual complete shows dismissible alert on mountain" do
+    day = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @project_a, horizon: "day",
+      title: "Battle", position: 0, scheduled_on: Date.current
+    )
+    post strategy_goal_manual_completion_path(day)
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-flash--alert[role=alert]"
+    assert_select ".lp-flash--alert[data-controller~='lp-flash'][data-action*='lp-flash#dismiss']"
+    assert_equal "1", response.headers["X-LP-No-Page-Cache"]
+  end
+
   test "climb path keeps menu on a manually closed project for reopen" do
     post strategy_goal_manual_completion_path(@project_a)
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project_a.id)

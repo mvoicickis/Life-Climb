@@ -16,7 +16,6 @@ en:
     prompt_title: "Pick who climbs with you"
   battle:
     lp_reason: "Battle win: %{title}"
-    completed_notice: "Battle complete. +%{lp} Action Points"
     win: "Win battle"
   dash:
     promise: "One mountain. Today’s battle."
@@ -666,7 +665,6 @@ en:
       mark_complete: "Mark complete"
       reopen: "Reopen"
       manually_closed: "Manually closed"
-      manual_complete_notice: "Marked complete · %{title}"
       manual_complete_invalid: "Only camps can be marked complete." # TODO: translate for lv/de/es/ru.
       delete_plan: "Delete Plan"
       delete_plan_title: "Delete Plan?"
@@ -683,7 +681,6 @@ en:
       checkpoint_name_placeholder: "Camp name" # TODO: translate for lv/de/es/ru.
       checkpoint_description_placeholder: "What makes this milestone matter?"
       create_checkpoint: "Create Camp" # TODO: translate for lv/de/es/ru.
-      checkpoint_added: "Camp added · %{title}" # TODO: translate for lv/de/es/ru.
       practice_categories: "Practice categories"
       project_sections: "Sections" # TODO: translate for lv/de/es/ru.
       what_gets_me_there: "What gets me there"
@@ -943,8 +940,6 @@ en:
         default_unit_times: "times"
         default_unit_pages: "pages"
         reset_photo: "Remove my photo"
-        photo_updated: "Mountain photo updated."
-        photo_reset: "Photo removed."
         photo_missing: "Choose a photo to upload."
         battle_placeholder: "Battle for today"
         add_battle: "Add battle"
@@ -1021,7 +1016,6 @@ en:
         deleted_toast: "Deleted “%{title}”"
         restored: "Restored “%{title}”"
         undo_expired: "Too late to undo."
-        battle_reopened: "Battle reopened."
         no_open_battles: "Add the smallest thing that moves this camp forward."
         camp_idle:
           start_title: "Your climb starts here"
@@ -1071,7 +1065,6 @@ en:
           add_placeholder: "What will you do every day?"
           dock_add_pill: "Add a Basic"
           add_habit: "Add Basic"
-          habit_added: "Basic added."
           count_toggle: "Count how many"
           starter_title: "Add the first thing you do every day."
           starter_example_1: "20 push-ups"
@@ -1101,7 +1094,6 @@ en:
         session_wins_toast: "%{count} won this session"
         default_plan_title: "This season"
         destination_blank: "Name your destination first."
-        destination_planted: "Flag planted — now add your first camp on the trail."
         destination_overlay:
           step: "Step 1 of 3"
           title: "Where do you want to be in a year?"
@@ -1188,8 +1180,6 @@ en:
         easy: "Easy"
         medium: "Medium"
         hard: "Hard"
-    hierarchy_gate:
-      notice: "Name your next plan and today’s action on Mountain — then Today unlocks."
     breadcrumb: "Mountain path"
     intro_lead: "Plan the climb here."
     intro_body: "One decision at a time. On Today you do the work and earn Action Points. Season ends %{date}."
@@ -1413,7 +1403,6 @@ en:
       unit_placeholder: "pages, €, emails…"
       how_many: "How many %{unit}?"
       log_confirm: "Log it"
-      logged: "Logged toward %{unit}."
       amount_required: "Enter how many %{unit}."
     sheet:
       edit: "Edit"
@@ -1669,11 +1658,9 @@ en:
     week_breakdown_bonus: "Week breakdown complete"
     created: "Saved · planning +%{sp}"
     removed: "Removed."
-    renamed: "Renamed."
     rename: "Rename"
     save_name: "Save name"
     save_changes: "Save Changes"
-    brief_saved: "Scale notes saved."
     synced:
       one: "Today’s fight is ready."
       other: "Today’s fights are ready (%{count})."
@@ -1826,12 +1813,9 @@ en:
       oaths_hint: "Guidelines you won't break while climbing. Short vows work best."
       skip: "Skip for now"
       skip_confirm: "Skip this layer and unlock the next?"
-      skipped: "Skipped %{layer}."
       skipped_summary: "Skipped for now"
-      layer_saved: "%{layer} locked in."
       reedit: "Edit"
       save_progress: "Update"
-      progress_saved: "Progress updated."
       need_goal: "Name your goal to continue."
       need_layer: "Write something here, or Skip for now."
       need_one_item: "Add at least one item, or Skip for now."
@@ -1858,7 +1842,6 @@ en:
       target_kind_count: "Countable"
       target_value_placeholder: "700"
       target_unit_placeholder: "pages"
-      target_saved: "Target saved."
       target_logged: "Logged toward %{title}."
       target_completed: "Target complete: %{title}."
       target_need_title: "Name the target."
@@ -2753,7 +2736,6 @@ en:
     improve:
       cta: "Create a Camp to improve this" # TODO: translate for lv/de/es/ru.
       hint: "Adds a Camp on your Mountain, linked to this Tracker." # TODO: translate for lv/de/es/ru.
-      created: "Camp created: %{title}" # TODO: translate for lv/de/es/ru.
       project_title: "Improve %{name}"
       plan_title: "%{name} focus"
       need_attention: "Mark this Tracker as needing attention first."

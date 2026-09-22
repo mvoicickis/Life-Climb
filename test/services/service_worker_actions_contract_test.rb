@@ -56,7 +56,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes network_fn, "isAllowedPageCachePath"
     assert_includes network_fn, "response.status === 200"
     assert_includes network_fn, "!response.redirected"
-    assert_includes network_fn, "isCacheableHtmlDocument"
+    assert_includes network_fn, "X-LP-No-Page-Cache"
 
     put_fn = @source[/async function putPageCache[\s\S]*?(?=async function matchPageCache)/]
     assert put_fn.present?, "expected putPageCache in the service worker"

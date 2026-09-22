@@ -12,7 +12,7 @@ class JourneyTargetsController < ApplicationController
     target.kind = target.kind.presence || "oneshot"
     target.target_value = 1 if target.oneshot? && target.target_value.to_f <= 0
     if target.save
-      redirect_back fallback_location: life_journey_path(@journey), notice: t("journeys.climb.target_saved")
+      redirect_back fallback_location: life_journey_path(@journey)
     else
       redirect_back fallback_location: life_journey_path(@journey),
                     alert: target.errors.full_messages.to_sentence.presence || t("journeys.climb.target_need_title")
@@ -36,7 +36,7 @@ class JourneyTargetsController < ApplicationController
   def destroy
     journey = @target.life_journey
     @target.destroy!
-    redirect_back fallback_location: life_journey_path(journey), notice: t("journeys.climb.target_saved")
+    redirect_back fallback_location: life_journey_path(journey)
   end
 
   private

@@ -78,9 +78,8 @@ class PlanCardMenuTest < ApplicationSystemTestCase
     input.set("Renamed Destination")
     input.send_keys(:enter)
 
-    assert_selector "#strategy-world", wait: 5
+    assert_selector ".lp-trail__goal-title", text: /Renamed Destination/i, wait: 10
     assert_equal "Renamed Destination", @goal.reload.title
-    assert_selector ".lp-trail__goal-title", text: /Renamed Destination/i, wait: 5
   end
 
   test "goal menu closes on outside tap" do

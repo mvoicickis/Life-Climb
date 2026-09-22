@@ -18197,11 +18197,17 @@ button.lp-strategy-overflow {
 }
 
 .lp-flash {
-  position: sticky;
-  top: 0.5rem;
-  z-index: 40;
-  margin: 0.5rem 0.75rem 0;
+  position: relative;
+  z-index: 15;
+  margin: max(0.5rem, env(safe-area-inset-top, 0px)) 0.75rem 0;
+  min-height: var(--lp-tap, 2.75rem);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+}
+
+.lp-flash.is-dismissed,
+.lp-flash[hidden] {
+  display: none !important;
 }
 
 .lp-game .lp-flash--notice {
