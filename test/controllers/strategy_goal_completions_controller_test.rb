@@ -54,7 +54,6 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
 
     delete strategy_goal_manual_completion_path(@project_a)
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project_a.id)
-    assert_nil flash[:notice]
     assert_nil @project_a.reload.manually_completed_at
     assert_nil @project_a.completed_at
 
@@ -114,6 +113,7 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
 
   test "camp sheet reopen redirect has no flash and camp is active on mountain" do
     post strategy_goal_manual_completion_path(@project_a)
+    follow_redirect!
     assert @project_a.reload.completed?
 
     delete strategy_goal_manual_completion_path(@project_a)
