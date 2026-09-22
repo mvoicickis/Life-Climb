@@ -46,7 +46,6 @@ class StrategyQuantityLogsController < ApplicationController
                       plan_id: plan&.id,
                       focus_id: camp&.id
                     ),
-                    notice: I18n.t("strategy.quantity.logged", unit: project.unit),
                     status: :see_other
       end
     end

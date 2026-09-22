@@ -338,6 +338,7 @@ async function networkFirstOfflinePage(request) {
       response.status === 200 &&
       !response.redirected &&
       response.type === "basic" &&
+      response.headers.get("X-LP-No-Page-Cache") !== "1" &&
       isCacheableHtmlDocument(response) &&
       isAllowedPageCachePath(finalUrl.pathname)
     ) {

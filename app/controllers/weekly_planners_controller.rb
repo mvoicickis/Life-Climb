@@ -36,7 +36,6 @@ class WeeklyPlannersController < ApplicationController
 
     if result.next_step.completed?
       redirect_to life_journey_path(@journey),
-                  notice: result.ack.presence || default_done_flash(result.next_step),
                   status: :see_other
     else
       flash[:weekly_planner_ack] = result.ack if result.ack.present?

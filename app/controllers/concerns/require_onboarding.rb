@@ -34,7 +34,7 @@ module RequireOnboarding
 
     journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
     if journey
-      redirect_to life_journey_path(journey), notice: I18n.t("strategy.hierarchy_gate.notice")
+      redirect_to life_journey_path(journey), status: :see_other
     else
       redirect_to new_life_journey_path
     end

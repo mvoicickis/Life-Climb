@@ -77,9 +77,7 @@ class BattleWinsController < ApplicationController
         render :create, status: :ok
       end
       format.html do
-        redirect_to mountain_return_path(journey, battle),
-                    notice: I18n.t("battle.completed_notice", lp: awarded),
-                    status: :see_other
+        redirect_to mountain_return_path(journey, battle), status: :see_other
       end
     end
   end

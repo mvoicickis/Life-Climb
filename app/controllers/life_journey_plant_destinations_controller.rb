@@ -18,7 +18,6 @@ class LifeJourneyPlantDestinationsController < ApplicationController
                   goal_id: result.goal.id,
                   plan_id: result.plan.id
                 ),
-                notice: (result.created? ? t("strategy.rpg.trail.destination_planted") : nil),
                 status: :see_other
   rescue ArgumentError => e
     redirect_to life_journey_path(@journey, goal_id: @goal.id),

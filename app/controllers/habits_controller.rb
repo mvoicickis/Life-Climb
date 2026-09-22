@@ -50,7 +50,7 @@ class HabitsController < ApplicationController
       if mountain_create?
         respond_to do |format|
           format.turbo_stream { render :create, status: :ok }
-          format.html { redirect_to mountain_after_create_path, notice: t("strategy.rpg.trail.base_camp.habit_added") }
+          format.html { redirect_to mountain_after_create_path, status: :see_other }
         end
       elsif params[:source].to_s == "commitment_gap"
         notice = if @habit.quantity_checkin?
@@ -133,7 +133,7 @@ class HabitsController < ApplicationController
     if mountain
       respond_to do |format|
         format.turbo_stream { render :destroy, status: :ok }
-        format.html { redirect_to mountain_after_mountain_path, notice: "Removed.", status: :see_other }
+        format.html { redirect_to mountain_after_mountain_path, status: :see_other }
       end
     else
       flash[:turbo_clear_cache] = true

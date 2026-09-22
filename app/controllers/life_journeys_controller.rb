@@ -52,7 +52,7 @@ class LifeJourneysController < ApplicationController
     if params[:strategy_brief].present?
       @journey.update_strategy_brief!(params.require(:strategy_brief).permit(*LifeJourney::STRATEGY_BRIEF_KEYS))
       redirect_to life_journey_path(@journey, horizon: params[:horizon].presence || "brief"),
-                  notice: t("strategy.brief_saved"), status: :see_other
+                  status: :see_other
       return
     end
 
@@ -101,13 +101,13 @@ class LifeJourneysController < ApplicationController
       photo = params.dig(:life_journey, :mountain_photo)
       if photo.present?
         @journey.mountain_photo.attach(photo)
-        redirect_to life_journey_path(@journey), notice: t("strategy.rpg.trail.photo_updated"), status: :see_other
+        redirect_to life_journey_path(@journey), status: :see_other
       else
         redirect_to life_journey_path(@journey), alert: t("strategy.rpg.trail.photo_missing"), status: :see_other
       end
     when "reset"
       @journey.mountain_photo.purge_later if @journey.mountain_photo.attached?
-      redirect_to life_journey_path(@journey), notice: t("strategy.rpg.trail.photo_reset"), status: :see_other
+      redirect_to life_journey_path(@journey), status: :see_other
     else
       redirect_to life_journey_path(@journey), status: :see_other
     end
@@ -553,7 +553,7 @@ class LifeJourneysController < ApplicationController
     if closer.present?
       @journey.update!(gap_percent: (100.0 - closer.to_f).clamp(0, 100).round(2))
     end
-    climb_redirect(notice: t("journeys.climb.progress_saved"))
+    climb_redirect
   end
 
   def skip_layer!(layer)
@@ -566,7 +566,7 @@ class LifeJourneysController < ApplicationController
     flash[:unlocked_layer] = next_layer
     climb_redirect(
       to: life_journey_path(@journey, edit: next_layer),
-      notice: t("journeys.climb.skipped", layer: t("journeys.sections.#{section_key(layer)}"))
+      status: :see_other
     )
   end
 
@@ -676,7 +676,7 @@ class LifeJourneysController < ApplicationController
     flash[:unlocked_layer] = next_layer
     climb_redirect(
       to: life_journey_path(@journey, edit: next_layer),
-      notice: t("journeys.climb.layer_saved", layer: t("journeys.sections.#{section_key(layer)}"))
+      status: :see_other
     )
   end
 

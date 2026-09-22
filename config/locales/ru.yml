@@ -27,7 +27,6 @@ ru:
       projects: "Сменить проект"
     rename: "Переименовать"
     save_name: "Сохранить имя"
-    renamed: "Переименовано."
     next_action:
       plan_route:
         title: "Спланируй маршрут"
@@ -197,7 +196,6 @@ ru:
       mark_complete: "Отметить готовым"
       reopen: "Открыть снова"
       manually_closed: "Закрыто вручную"
-      manual_complete_notice: "Отмечено готовым · %{title}"
       manual_complete_invalid: "Можно отмечать только планы и проекты."
       delete_plan: "Удалить план"
       delete_plan_title: "Удалить план?"
@@ -310,7 +308,6 @@ ru:
           add_placeholder: "What will you do every day?"  # TODO: translate
           dock_add_pill: "Add a Basic"  # TODO: translate
           add_habit: "Add Basic"  # TODO: translate
-          habit_added: "Basic added."  # TODO: translate
           count_toggle: "Count how many"  # TODO: translate
           starter_title: "Add the first thing you do every day."  # TODO: translate
           starter_example_1: "20 push-ups"  # TODO: translate

@@ -2,6 +2,7 @@
 
 class StrategyGoalsController < ApplicationController
   include CampArrangementTrailRefresh
+  include MountainQuietFlash
 
   before_action :require_planning_v2
   before_action :set_life_area, only: :create
@@ -81,9 +82,10 @@ class StrategyGoalsController < ApplicationController
             render :create
           end
           format.html do
-            redirect_to strategy_redirect_path(**create_redirect_params(goal)),
-                        notice: create_notice(goal, celebration),
-                        status: :see_other
+            redirect_with_mountain_quiet_notice(
+              strategy_redirect_path(**create_redirect_params(goal)),
+              notice: create_notice(goal, celebration)
+            )
           end
         end
       elsif goal.day? && parent&.project?
@@ -107,15 +109,17 @@ class StrategyGoalsController < ApplicationController
             render :create
           end
           format.html do
-            redirect_to strategy_redirect_path(**create_redirect_params(goal)),
-                        notice: create_notice(goal, celebration),
-                        status: :see_other
+            redirect_with_mountain_quiet_notice(
+              strategy_redirect_path(**create_redirect_params(goal)),
+              notice: create_notice(goal, celebration)
+            )
           end
         end
       else
-        redirect_to strategy_redirect_path(**create_redirect_params(goal)),
-                    notice: create_notice(goal, celebration),
-                    status: :see_other
+        redirect_with_mountain_quiet_notice(
+          strategy_redirect_path(**create_redirect_params(goal)),
+          notice: create_notice(goal, celebration)
+        )
       end
     else
       fail_redirect(goal.errors.full_messages.to_sentence, focus_id: parent&.id)
@@ -178,17 +182,19 @@ class StrategyGoalsController < ApplicationController
     respond_to do |format|
       format.turbo_stream { render :destroy }
       format.html do
-        redirect_to after_destroy_path(
-                      area_id: area_id,
-                      parent_id: parent_id,
-                      was_plan: was_plan,
-                      was_project: was_project,
-                      next_plan_id: next_plan_id,
-                      next_focus_id: next_focus_id,
-                      plan_id: plan_for_project&.id,
-                      goal_id: root_id
-                    ),
-                    notice: t("strategy.removed"), status: :see_other
+        redirect_with_mountain_quiet_notice(
+          after_destroy_path(
+            area_id: area_id,
+            parent_id: parent_id,
+            was_plan: was_plan,
+            was_project: was_project,
+            next_plan_id: next_plan_id,
+            next_focus_id: next_focus_id,
+            plan_id: plan_for_project&.id,
+            goal_id: root_id
+          ),
+          notice: t("strategy.removed")
+        )
       end
     end
   rescue ActiveRecord::RecordNotFound
@@ -266,7 +272,7 @@ class StrategyGoalsController < ApplicationController
         else
           format.turbo_stream { render :update }
           format.html do
-            redirect_to after_update_path(goal), notice: t("strategy.renamed"), status: :see_other
+            redirect_with_mountain_quiet_notice(after_update_path(goal), notice: t("strategy.renamed"))
           end
         end
       end
@@ -717,11 +723,7 @@ class StrategyGoalsController < ApplicationController
   end
 
   def create_notice(goal, celebration)
-    return celebration[:notice] if celebration[:notice].present?
-
-    if goal.project?
-      I18n.t("strategy.rpg.checkpoint_added", title: goal.title)
-    end
+    celebration[:notice].presence
   end
 
   def strategy_redirect_path(area_id: @life_area&.id, focus_id: nil, goal_id: nil, peek: nil, sheet: nil, plan_id: nil)

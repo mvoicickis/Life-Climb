@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   include SetLocale
   include RequireOnboarding
   include AdminImpersonationReadOnly
+  include OfflinePageCacheHeaders
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
