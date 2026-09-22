@@ -74,8 +74,11 @@
               turbo: true,
               turbo_stream: true,
               controller: "juicy-feedback",
-              action: "submit->juicy-feedback#play",
-              juicy_feedback_suppress_reload_celebrate_value: true
+              action: "submit->juicy-feedback#play turbo:submit-end->juicy-feedback#winSubmitEnd",
+              juicy_feedback_suppress_reload_celebrate_value: true,
+              juicy_feedback_defer_reward_value: true,
+              juicy_feedback_strength_label_value: t("dash.action_points_hint"),
+              juicy_feedback_win_not_saved_value: t("dash.battlefield.win_not_saved")
             }
           },
           class: "lp-today-v2-row__check",

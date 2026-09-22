@@ -1,5 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 import { TITLE_MAX, attachTitleLimit } from "lib/title_limit"
+import {
+  clearWinSaveNotice,
+  lockWinSubmit,
+  rollbackTrailWinRow,
+  showWinSaveNotice,
+  turboSubmitOk
+} from "lib/battle_win_feedback"
 
 // Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
@@ -21,7 +28,8 @@ export default class extends Controller {
     parentId: Number,
     atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" },
     needDays: String,
-    openComposerOnConnect: { type: Boolean, default: false }
+    openComposerOnConnect: { type: Boolean, default: false },
+    winNotSaved: { type: String, default: "" }
   }
 
   connect() {
@@ -313,40 +321,57 @@ export default class extends Controller {
   }
 
   optimisticTick(event) {
-    const row = event.target.closest?.(".lp-trail-battles__row")
-    if (!row) return
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
+
+    const row = form.closest?.(".lp-trail-battles__row")
+    if (!row || row.dataset.winInFlight === "1") return
+
+    if (form.dataset.allowWinSubmit === "1") return
+
+    event.preventDefault()
+    clearWinSaveNotice(row)
+    lockWinSubmit(row, true)
     row.classList.add("is-ticking")
     row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
+    form.dataset.allowWinSubmit = "1"
+    form.requestSubmit()
   }
 
   prepareWin(event) {
     const form = event.target
     if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
 
-    const row = form.closest(".lp-trail-battles__row.is-open")
-    if (!row || row.classList.contains("is-exiting")) return
-
-    if (row.dataset.winAnimating === "1") return
-
-    event.preventDefault()
-    row.dataset.winAnimating = "1"
-    row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
-
-    const onExit = (transitionEvent) => {
-      if (transitionEvent.propertyName !== "transform") return
-      row.removeEventListener("transitionend", onExit)
-      delete row.dataset.winAnimating
-      form.requestSubmit()
+    if (form.dataset.allowWinSubmit === "1") {
+      delete form.dataset.allowWinSubmit
+      return
     }
 
-    row.classList.add("is-exiting")
-    row.addEventListener("transitionend", onExit)
+    const row = form.closest(".lp-trail-battles__row.is-open")
+    if (!row || row.dataset.winInFlight === "1") return
+
+    event.preventDefault()
+    clearWinSaveNotice(row)
+    lockWinSubmit(row, true)
+    row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
+    form.dataset.allowWinSubmit = "1"
+    form.requestSubmit()
   }
 
   winSubmitted(event) {
     const form = event.target
     if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
-    if (!event.detail?.success) return
+
+    const row = form.closest(".lp-trail-battles__row")
+    lockWinSubmit(row, false)
+    delete form.dataset.allowWinSubmit
+
+    if (!turboSubmitOk(event)) {
+      rollbackTrailWinRow(row)
+      const message = this.winNotSavedValue
+      if (message && row) showWinSaveNotice(row, message)
+      return
+    }
 
     this.scheduleWinToastDismiss()
     this.scheduleCampOverlayResync()

@@ -846,6 +846,7 @@ lv:
       day_n: "%{count}. diena"
       count: "%{done}/%{total}"
       no_camp: "Nometne"
+      win_not_saved: "Not saved. Tap to try again."  # TODO: translate
       win_battle: "Uzvarēt %{title}"
       more_waiting:
         one: "Vēl %{count} cīņa Kalnā"

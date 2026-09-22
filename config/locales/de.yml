@@ -621,6 +621,7 @@ de:
         one: "1 battle waiting"  # TODO: translate
         other: "%{count} battles waiting"  # TODO: translate
       mountain_tertiary: "Open Mountain →"  # TODO: translate
+      win_not_saved: "Not saved. Tap to try again."  # TODO: translate
       win_state:
         day_won:
           kicker: "Day won"  # TODO: translate

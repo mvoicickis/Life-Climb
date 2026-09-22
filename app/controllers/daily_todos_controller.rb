@@ -49,39 +49,43 @@ class DailyTodosController < ApplicationController
         return
       end
 
-      begin
-        @win_number = current_user.daily_todos.where.not(completed_at: nil).count + 1
-        result = Battles::CompleteTodo.call(
-          todo: todo,
-          user: current_user,
-          session: session,
-          amount: params[:amount]
-        )
-      rescue ArgumentError
-        redirect_to dashboard_path, alert: t("dash.checklist_finish_objectives"), status: :see_other
-        return
-      rescue ActiveRecord::RecordInvalid => e
-        Rails.logger.error(
-          "[DailyTodosController#complete] #{e.class}: #{e.message} " \
-          "(record=#{e.record.class.name}##{e.record&.id})"
-        )
-        redirect_to dashboard_path,
-                    alert: e.record.errors.full_messages.to_sentence.presence || t("dash.timeline.time_save_failed"),
-                    status: :see_other
-        return
-      end
+      todo.reload
+      if todo.completed?
+        assign_idempotent_today_win!
+      else
+        begin
+          @win_number = current_user.daily_todos.where.not(completed_at: nil).count + 1
+          result = Battles::CompleteTodo.call(
+            todo: todo,
+            user: current_user,
+            session: session,
+            amount: params[:amount]
+          )
+        rescue ArgumentError
+          respond_today_win_failure!(t("dash.checklist_finish_objectives"))
+          return
+        rescue ActiveRecord::RecordInvalid => e
+          Rails.logger.error(
+            "[DailyTodosController#complete] #{e.class}: #{e.message} " \
+            "(record=#{e.record.class.name}##{e.record&.id})"
+          )
+          alert = e.record.errors.full_messages.to_sentence.presence || t("dash.timeline.time_save_failed")
+          respond_today_win_failure!(alert)
+          return
+        end
 
-      @result = result
-      flash[:ap_gained] = result.awarded
-      flash[:battle_celebrate] = true
-      @win_number ||= current_user.daily_todos.where.not(completed_at: nil).count
-      flash[:win_number] = @win_number
-      flash[:push_offer_eligible] = push_offer_eligible_for_win(win_number: @win_number)
-      maybe_milestone_climb_reward!(
-        awarded: result.awarded,
-        streak: result.streak,
-        personal_best: result.personal_best_new
-      )
+        @result = result
+        flash[:ap_gained] = result.awarded
+        flash[:battle_celebrate] = true
+        @win_number ||= current_user.daily_todos.where.not(completed_at: nil).count
+        flash[:win_number] = @win_number
+        flash[:push_offer_eligible] = push_offer_eligible_for_win(win_number: @win_number)
+        maybe_milestone_climb_reward!(
+          awarded: result.awarded,
+          streak: result.streak,
+          personal_best: result.personal_best_new
+        )
+      end
     end
     Journeys::SyncClimbFromToday.call(user: current_user)
 
@@ -135,6 +139,26 @@ class DailyTodosController < ApplicationController
   end
 
   private
+
+  def assign_idempotent_today_win!
+    @result = Battles::CompleteTodo::Result.new(
+      streak: Climb::Streak.status(user: current_user),
+      personal_best_new: false,
+      awarded: 0
+    )
+    @win_number = current_user.daily_todos.where.not(completed_at: nil).count
+    flash[:ap_gained] = 0
+    flash[:battle_celebrate] = false
+    flash[:win_number] = @win_number
+    flash[:push_offer_eligible] = false
+  end
+
+  def respond_today_win_failure!(alert)
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+      format.html { redirect_to dashboard_path, alert: alert, status: :see_other }
+    end
+  end
 
   def assign_today_complete_stream!
     @journey = current_user.primary_focused_journey
