@@ -87,6 +87,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
   end
 
   test "camp sheet can move an open battle up" do
+    @battle.update!(repeat: "none")
     later = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Pack the bags", scheduled_on: Date.current, position: 1
@@ -103,8 +104,15 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector ".lp-trail-camp__status", text: /battles? ready/i, visible: :all
 
     open_trail_camp_sheet!(@project)
-    within("#trail-battle-#{later.id}", visible: :all) { find(".lp-trail-battles__kebab-btn", visible: :all).click }
-    click_button "Move up"
+    assert_selector "#trail-battles-list-#{@project.id} .lp-trail-battles__row.is-open",
+                    count: 2, visible: :all, wait: 5
+
+    move_up = I18n.t("strategy.rpg.trail.battle_move_up")
+    within("#trail-battle-#{later.id}", visible: :all) do
+      find(".lp-trail-battles__kebab-btn", visible: :all).click
+      assert_selector ".lp-trail-battles__kebab[open]", wait: 3
+      within(".lp-trail-battles__kebab-menu", visible: :all) { click_button move_up }
+    end
     assert_selector "#trail-battles-#{@project.id} .lp-trail-battles__list li:first-child", text: /Pack the bags/, visible: :all, wait: 5
   end
 
