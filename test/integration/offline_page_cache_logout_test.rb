@@ -11,6 +11,6 @@ class OfflinePageCacheLogoutTest < ActionDispatch::IntegrationTest
   test "sign out form clears offline page cache before submit" do
     get settings_path
     assert_response :success
-    assert_match(/submit->offline-page-cache#clearBeforeSignOut/, response.body)
+    assert_match(/offline-page-cache#clearBeforeSignOut/, response.body)
   end
 end

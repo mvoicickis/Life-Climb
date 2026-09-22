@@ -35,7 +35,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   test "cache version bumped for offline page cache" do
     assert_includes @source, 'CACHE_VERSION = "v9"'
     assert_includes @source, "PAGE_CACHE_NAME"
-    assert_includes @source, '-pages'
+    assert_includes @source, "-pages"
   end
 
   test "documents match navigate destination document or Accept html" do
