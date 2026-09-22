@@ -325,37 +325,34 @@ export default class extends Controller {
     if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
 
     const row = form.closest?.(".lp-trail-battles__row")
-    if (!row || row.dataset.winInFlight === "1") return
+    if (!row) return
 
-    if (form.dataset.allowWinSubmit === "1") return
+    if (row.dataset.winInFlight === "1") {
+      event.preventDefault()
+      return
+    }
 
-    event.preventDefault()
     clearWinSaveNotice(row)
     lockWinSubmit(row, true)
     row.classList.add("is-ticking")
     row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
-    form.dataset.allowWinSubmit = "1"
-    form.requestSubmit()
   }
 
   prepareWin(event) {
-    const form = event.target
+    const form = event.currentTarget
     if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
 
-    if (form.dataset.allowWinSubmit === "1") {
-      delete form.dataset.allowWinSubmit
+    const row = form.closest(".lp-trail-battles__row.is-open")
+    if (!row) return
+
+    if (row.dataset.winInFlight === "1") {
+      event.preventDefault()
       return
     }
 
-    const row = form.closest(".lp-trail-battles__row.is-open")
-    if (!row || row.dataset.winInFlight === "1") return
-
-    event.preventDefault()
     clearWinSaveNotice(row)
     lockWinSubmit(row, true)
     row.querySelector(".lp-trail-battles__box")?.classList.add("is-won")
-    form.dataset.allowWinSubmit = "1"
-    form.requestSubmit()
   }
 
   winSubmitted(event) {
@@ -364,7 +361,6 @@ export default class extends Controller {
 
     const row = form.closest(".lp-trail-battles__row")
     lockWinSubmit(row, false)
-    delete form.dataset.allowWinSubmit
 
     if (!turboSubmitOk(event)) {
       rollbackTrailWinRow(row)
