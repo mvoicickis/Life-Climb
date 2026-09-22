@@ -42,7 +42,7 @@ class BattleWinSaveFailureTest < ActionDispatch::IntegrationTest
     invalid = DailyTodo.new
     invalid.errors.add(:base, "stub save failure")
 
-    Battles::CompleteTodo.stub(:call, ->(*) { raise ActiveRecord::RecordInvalid.new(invalid) }) do
+    with_singleton_method_stub(Battles::CompleteTodo, :call, ->(*) { raise ActiveRecord::RecordInvalid.new(invalid) }) do
       post complete_daily_todo_path(@todo), as: :turbo_stream
     end
 
@@ -58,7 +58,7 @@ class BattleWinSaveFailureTest < ActionDispatch::IntegrationTest
   end
 
   test "Today turbo win ArgumentError from CompleteTodo returns 422" do
-    Battles::CompleteTodo.stub(:call, ->(*) { raise ArgumentError, "checklist" }) do
+    with_singleton_method_stub(Battles::CompleteTodo, :call, ->(*) { raise ArgumentError, "checklist" }) do
       post complete_daily_todo_path(@todo), as: :turbo_stream
     end
 
@@ -70,7 +70,7 @@ class BattleWinSaveFailureTest < ActionDispatch::IntegrationTest
     invalid = StrategyGoal.new
     invalid.errors.add(:base, "stub save failure")
 
-    Battles::WinFromMountain.stub(:call, ->(*) { raise ActiveRecord::RecordInvalid.new(invalid) }) do
+    with_singleton_method_stub(Battles::WinFromMountain, :call, ->(*) { raise ActiveRecord::RecordInvalid.new(invalid) }) do
       post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
     end
 
@@ -89,5 +89,16 @@ class BattleWinSaveFailureTest < ActionDispatch::IntegrationTest
 
     post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
     assert_response :ok
+  end
+
+  private
+
+  def with_singleton_method_stub(object, method_name, impl)
+    singleton = object.singleton_class
+    original = singleton.instance_method(method_name)
+    singleton.define_method(method_name, impl)
+    yield
+  ensure
+    singleton.define_method(method_name, original)
   end
 end

@@ -321,7 +321,7 @@ export default class extends Controller {
   }
 
   optimisticTick(event) {
-    const form = event.target
+    const form = event.currentTarget
     if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
 
     const row = form.closest?.(".lp-trail-battles__row")
@@ -359,7 +359,7 @@ export default class extends Controller {
   }
 
   winSubmitted(event) {
-    const form = event.target
+    const form = event.target.closest?.(".lp-trail-battles__tick-form") || event.target
     if (!form?.classList?.contains("lp-trail-battles__tick-form")) return
 
     const row = form.closest(".lp-trail-battles__row")
