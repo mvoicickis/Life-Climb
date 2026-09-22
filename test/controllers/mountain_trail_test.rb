@@ -577,7 +577,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
   end
 
-  test "idle state B shows won today copy when battles cleared" do
+  test "all battles won shows finish camp card and won strip" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
@@ -589,10 +589,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
-    assert_select ".lp-trail-camp-idle__pill-text", text: I18n.t("strategy.rpg.trail.camp_idle.won_pill")
-    assert_select ".lp-trail-camp-idle__body", count: 0
-    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
-                  text: I18n.t("strategy.rpg.trail.camp_idle.won_button")
+    assert_select "#trail-camp-finish-#{@project.id}", text: /All battles won!/
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__cta"
     assert_select "#trail-battles-won-strip-#{@project.id}"
   end
 
@@ -613,7 +611,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
                   text: I18n.t("strategy.rpg.trail.camp_idle.keep_button")
   end
 
-  test "winning last camp sheet battle replaces battles frame with idle state B" do
+  test "winning last camp sheet battle replaces battles frame with finish card" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Last open fight", scheduled_on: Date.current, position: 0
@@ -624,7 +622,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match %(action="replace" target="trail-battles-#{@project.id}"), response.body
-    assert_match I18n.t("strategy.rpg.trail.camp_idle.won_pill"), response.body
+    assert_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
   end
 
   test "battle won toast host sits below camp sheet header" do

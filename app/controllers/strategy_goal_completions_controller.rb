@@ -15,10 +15,11 @@ class StrategyGoalCompletionsController < ApplicationController
 
     @goal.manually_complete!
     Strategy::SyncCompletion.resync!(node: @goal)
+    return_path = mountain_return_path
     assign_mountain_sheet_for!(@goal.reload)
     respond_to do |format|
       format.turbo_stream { render :create, status: :ok }
-      format.html { redirect_to mountain_return_path, status: :see_other }
+      format.html { redirect_to return_path, status: :see_other }
     end
   rescue ActiveRecord::RecordInvalid
     respond_failure
@@ -31,10 +32,11 @@ class StrategyGoalCompletionsController < ApplicationController
 
     @goal.manually_reopen!
     Strategy::SyncCompletion.resync!(node: @goal)
+    return_path = mountain_return_path
     assign_mountain_sheet_for!(@goal.reload)
     respond_to do |format|
       format.turbo_stream { render :destroy, status: :ok }
-      format.html { redirect_to mountain_return_path, status: :see_other }
+      format.html { redirect_to return_path, status: :see_other }
     end
   rescue ActiveRecord::RecordInvalid
     respond_failure
