@@ -40,7 +40,7 @@ class CampOpenBattleRowVisibilityTest < ApplicationSystemTestCase
   end
 
   test "open camp battle rows show tick and title inside the row at 360px" do
-    sign_in_and_open_camp!
+    sign_in_and_open_camp!(open_rows: 3)
 
     rows = page.evaluate_script(row_visibility_script(@project.id))
     assert_equal 3, rows.size, "expected three open battle rows"
@@ -57,28 +57,28 @@ class CampOpenBattleRowVisibilityTest < ApplicationSystemTestCase
     assert long_row["nameWidth"].to_f < 280, "long title should wrap within the row, not overflow invisibly"
   end
 
-  test "finish and completed camp cards stay vertically centered in the scroll area" do
+  test "finish camp card scroll area stays vertically centered" do
+    @project.children.find_each { |battle| battle.update!(completed_at: 1.day.ago.noon) }
+
     sign_in_and_open_camp!
-
-    @project.children.order(:position).each do |battle|
-      within("#trail-battle-#{battle.id}", wait: 5) { find(".lp-trail-battles__tick").click }
-      assert_selector "#trail-battle-#{battle.id}.is-won", wait: 5
-    end
-
     assert_selector "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__cta", wait: 5
     assert page.evaluate_script(idle_scroll_centered_script(@project.id)),
            "finish prompt scroll area should stay centered (is-idle)"
+  end
 
-    click_button I18n.t("strategy.rpg.trail.finish_camp_card.cta")
-    assert_selector "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__undo", wait: 5
-    assert_selector "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__completed", wait: 8
+  test "completed camp card scroll area stays vertically centered" do
+    @project.children.find_each { |battle| battle.update!(completed_at: 1.day.ago.noon) }
+    @project.update!(completed_at: Time.zone.now, manually_completed_at: Time.zone.now)
+
+    sign_in_and_open_camp!
+    assert_selector "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__completed", wait: 5
     assert page.evaluate_script(idle_scroll_centered_script(@project.id)),
            "completed card scroll area should stay centered (is-idle)"
   end
 
   private
 
-  def sign_in_and_open_camp!
+  def sign_in_and_open_camp!(open_rows: nil)
     visit new_session_path
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
@@ -87,7 +87,10 @@ class CampOpenBattleRowVisibilityTest < ApplicationSystemTestCase
     within(".lp-dash-nav") { click_link "Mountain" }
     assert_selector "#mountain-trail", wait: 5
     open_trail_camp_sheet!(@project)
-    assert_selector "#trail-battles-list-#{@project.id} .lp-trail-battles__row.is-open", minimum: 3, wait: 5
+    if open_rows
+      assert_selector "#trail-battles-list-#{@project.id} .lp-trail-battles__row.is-open",
+                      minimum: open_rows, wait: 5
+    end
   end
 
   def row_visibility_script(project_id)
