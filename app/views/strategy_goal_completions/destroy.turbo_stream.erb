@@ -13,5 +13,11 @@
     <%= render "life_journeys/trail_camp_sheet_menu", project: @project %>
   </div>
 <% end %>
+<% if @plan.present? && @journey.present? %>
+  <%= render "life_journeys/trail_map_camp_stream",
+        plan: @plan,
+        journey: @journey,
+        project: @project %>
+<% end %>
 <%= render "life_journeys/trail_dock_stream" if @dock_today_card.present? %>
 <%= render "life_journeys/trail_climber_stream" %>

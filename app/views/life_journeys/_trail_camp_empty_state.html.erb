@@ -3,30 +3,23 @@
 <% variant = local_assigns.fetch(:variant) %>
 <% add_form = local_assigns.fetch(:add_form) %>
 
-<div class="lp-trail-camp-idle lp-frost<%= " lp-trail-camp-idle--won" if variant == :won %>">
-  <% if variant == :won %>
-    <p class="lp-trail-camp-idle__pill">
-      <span class="lp-trail-camp-idle__pill-check" aria-hidden="true">✓</span>
-      <span class="lp-trail-camp-idle__pill-text"><%= t("strategy.rpg.trail.camp_idle.won_pill") %></span>
-    </p>
-  <% else %>
-    <h3 class="lp-trail-camp-idle__title">
-      <% case variant %>
-      <% when :start %>
-        <%= t("strategy.rpg.trail.camp_idle.start_title") %>
-      <% when :keep %>
-        <%= t("strategy.rpg.trail.camp_idle.keep_title") %>
-      <% end %>
-    </h3>
-    <p class="lp-trail-camp-idle__body">
-      <% case variant %>
-      <% when :start %>
-        <%= t("strategy.rpg.trail.camp_idle.start_body") %>
-      <% when :keep %>
-        <%= t("strategy.rpg.trail.camp_idle.keep_body") %>
-      <% end %>
-    </p>
-  <% end %>
+<div class="lp-trail-camp-idle">
+  <h3 class="lp-trail-camp-idle__title">
+    <% case variant %>
+    <% when :start %>
+      <%= t("strategy.rpg.trail.camp_idle.start_title") %>
+    <% when :keep %>
+      <%= t("strategy.rpg.trail.camp_idle.keep_title") %>
+    <% end %>
+  </h3>
+  <p class="lp-trail-camp-idle__body">
+    <% case variant %>
+    <% when :start %>
+      <%= t("strategy.rpg.trail.camp_idle.start_body") %>
+    <% when :keep %>
+      <%= t("strategy.rpg.trail.camp_idle.keep_body") %>
+    <% end %>
+  </p>
   <button type="button"
           class="lp-trail-battles__composer-trigger"
           data-trail-battles-target="composerTrigger"
@@ -34,8 +27,6 @@
     <% case variant %>
     <% when :start %>
       <%= t("strategy.rpg.trail.camp_idle.start_button") %>
-    <% when :won %>
-      <%= t("strategy.rpg.trail.camp_idle.won_button") %>
     <% when :keep %>
       <%= t("strategy.rpg.trail.camp_idle.keep_button") %>
     <% end %>

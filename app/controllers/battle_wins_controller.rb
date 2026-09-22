@@ -63,8 +63,15 @@ class BattleWinsController < ApplicationController
       open_remaining = days.count do |day|
         helpers.mountain_trail_camp_due?(day) && !helpers.mountain_trail_done_today?(day)
       end
-      won_today_count = days.count { |day| helpers.mountain_trail_won_today?(day) }
-      @replace_camp_battles = open_remaining.zero? && won_today_count.positive?
+      open_battles = days.select { |day| helpers.mountain_trail_camp_due?(day) }
+                        .reject { |day| helpers.mountain_trail_done_today?(day) }
+      won_battles = days.select { |day| helpers.mountain_trail_done_today?(day) }
+      @replace_camp_battles = helpers.mountain_trail_finish_camp_card?(
+        @project,
+        open_battles: open_battles,
+        won_battles: won_battles,
+        days: days
+      )
     end
     respond_to do |format|
       format.turbo_stream do

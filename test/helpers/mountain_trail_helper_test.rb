@@ -1284,4 +1284,47 @@ class MountainTrailHelperTest < ActionView::TestCase
       )
     end
   end
+
+  test "finish camp card requires all one-shot battles won and no repeating battles" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Finish card gate")
+    project = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    project.children.find { |day| day.day? && day.title == "Finish card gate" }.update!(completed_at: 1.day.ago.noon)
+    daily = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "Daily habit",
+      scheduled_on: Date.current,
+      repeat: "daily",
+      position: 0
+    )
+    one_shot = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: "One shot",
+      scheduled_on: Date.current,
+      position: 1
+    )
+    one_shot.update!(completed_at: 1.day.ago.noon)
+    project.reload
+    days = project.children.select(&:day?).reject(&:holding?)
+    mountain_trail_preload_done_today!(user, days)
+    open = days.select { |day| mountain_trail_camp_due?(day) }
+      .reject { |day| mountain_trail_done_today?(day, user: user) }
+    won = days.select { |day| mountain_trail_done_today?(day, user: user) }
+
+    refute mountain_trail_finish_camp_card?(project, open_battles: open, won_battles: won, days: days)
+
+    daily.destroy!
+    project.reload
+    days = project.children.select(&:day?).reject(&:holding?)
+    open = days.select { |day| mountain_trail_camp_due?(day) }
+      .reject { |day| mountain_trail_done_today?(day, user: user) }
+    won = days.select { |day| mountain_trail_done_today?(day, user: user) }
+    assert mountain_trail_finish_camp_card?(project, open_battles: open, won_battles: won, days: days)
+  end
 end
