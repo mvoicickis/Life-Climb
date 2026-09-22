@@ -49,6 +49,82 @@ class TrailCampFinishCardTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__add"
   end
 
+  test "finish card shows when one-shot battle was won yesterday" do
+    @battle.update!(completed_at: 1.day.ago.noon)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
+    assert_response :success
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__cta"
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__add"
+  end
+
+  test "daily battle won today does not show finish card" do
+    @battle.update!(repeat: "daily")
+    Strategy::CascadeToDaily.call(user: @user, life_area: @area)
+    todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: @battle.id)
+    Battles::CompleteTodo.call(todo: todo, user: @user, session: {})
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
+    assert_response :success
+    assert_select "#trail-camp-finish-#{@project.id}", count: 0
+    assert_select ".lp-trail-camp-idle__title", text: I18n.t("strategy.rpg.trail.camp_idle.keep_title")
+  end
+
+  test "completed camp renders finished card with reopen and no finish cta" do
+    post strategy_goal_manual_completion_path(@project)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
+    assert_response :success
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__completed"
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__reopen"
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__cta", count: 0
+  end
+
+  test "completed camp shows next camp button when another camp is open" do
+    next_project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp B", position: 1, stage: 1
+    )
+    post strategy_goal_manual_completion_path(@project)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__next", text: /Camp B/
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__next[data-camp-id='#{next_project.id}']"
+  end
+
+  test "completed camp omits next camp button when no open camp remains" do
+    post strategy_goal_manual_completion_path(@project)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
+    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__next", count: 0
+  end
+
+  test "finish camp turbo stream refreshes trail map with done and current camps" do
+    camp_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp B", position: 1, stage: 1
+    )
+    post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
+    post strategy_goal_manual_completion_path(@project), as: :turbo_stream
+
+    assert_response :success
+    assert_select "turbo-stream[action='replace'][target='trail-map-camps']"
+    assert_match(/id="trail-camp-#{@project.id}"[^>]*is-done/, response.body)
+    assert_match(/id="trail-camp-#{camp_b.id}"[^>]*is-current/, response.body)
+  end
+
+  test "reopen camp turbo stream restores trail map current camp" do
+    camp_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp B", position: 1, stage: 1
+    )
+    post strategy_goal_manual_completion_path(@project), as: :turbo_stream
+    delete strategy_goal_manual_completion_path(@project), as: :turbo_stream
+
+    assert_response :success
+    assert_select "turbo-stream[action='replace'][target='trail-map-camps']"
+    assert_match(/id="trail-camp-#{@project.id}"[^>]*is-current/, response.body)
+    refute_match(/id="trail-camp-#{@project.id}"[^>]*is-done/, response.body)
+    refute_match(/id="trail-camp-#{camp_b.id}"[^>]*is-current/, response.body)
+  end
+
   test "finish camp turbo stream succeeds and shows undo card" do
     post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
 

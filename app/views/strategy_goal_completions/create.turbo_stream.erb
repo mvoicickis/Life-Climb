@@ -1,5 +1,14 @@
 <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
-  <%= render "life_journeys/trail_camp_finish_card", project: @project, state: :undo %>
+  <%= render "life_journeys/trail_camp_finish_card",
+        project: @project,
+        plan: @plan,
+        state: :undo %>
+<% end %>
+<% if @plan.present? && @journey.present? %>
+  <%= render "life_journeys/trail_map_camp_stream",
+        plan: @plan,
+        journey: @journey,
+        project: @project %>
 <% end %>
 <%= turbo_stream.replace "trail-sheet-menu-#{@project.id}" do %>
   <div id="trail-sheet-menu-<%= @project.id %>"

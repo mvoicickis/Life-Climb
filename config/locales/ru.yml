@@ -264,6 +264,7 @@ ru:
           cta: "Finish camp"  # TODO: translate
           add_another: "Add another battle"  # TODO: translate
           finished: "Camp finished"  # TODO: translate
+          next_camp: "Next camp: %{name}"  # TODO: translate
         edit_goal_name: "Edit name" # TODO: translate
         daily: "Do this every day" # TODO: translate
         seed_battle_hint: "Win this one to get moving." # TODO: translate

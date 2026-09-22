@@ -1,0 +1,14 @@
+<%# Turbo: refresh curve tents after camp completion changes. locals: plan, journey, project (optional) %>
+<% plan = local_assigns.fetch(:plan) %>
+<% journey = local_assigns.fetch(:journey) %>
+<% project = local_assigns[:project] %>
+<% trail = Strategy::Trail.for(plan: plan, ensure_visible_id: project&.id) %>
+<% current_project = mountain_trail_current_project(mountain_trail_projects(trail)) %>
+<%= turbo_stream.replace "trail-map-camps" do %>
+  <%= render "life_journeys/trail_map_camps",
+        trail: trail,
+        current_project: current_project,
+        plan: plan,
+        journey: journey,
+        builtin_photos: !mountain_trail_custom_photo?(journey) %>
+<% end %>

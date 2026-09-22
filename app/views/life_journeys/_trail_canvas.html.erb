@@ -466,14 +466,14 @@
            data-trail-camp-sheet-target="subtitle"
            hidden></p>
       </header>
-      <div id="trail-toast-host" class="lp-trail-toast-host" aria-live="polite">
-        <% if flash[:trail_undo].present? %>
-          <%= render "life_journeys/trail_toast",
-                title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
-                restore: true %>
-        <% end %>
-      </div>
       <div class="lp-trail-sheet__body" data-trail-camp-sheet-target="body" id="trail-sheet-body">
+        <div id="trail-toast-host" class="lp-trail-toast-host" aria-live="polite">
+          <% if flash[:trail_undo].present? %>
+            <%= render "life_journeys/trail_toast",
+                  title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
+                  restore: true %>
+          <% end %>
+        </div>
         <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
           <%= image_tag "camp_fire_default.webp",
                 class: "lp-trail-sheet__camp-bg-photo",

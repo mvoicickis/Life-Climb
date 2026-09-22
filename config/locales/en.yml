@@ -1017,6 +1017,7 @@ en:
           cta: "Finish camp"
           add_another: "Add another battle"
           finished: "Camp finished"
+          next_camp: "Next camp: %{name}"
         reopen_camp: "Reopen"
         undo: "Undo"
         deleted_toast: "Deleted “%{title}”"

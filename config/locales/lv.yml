@@ -447,6 +447,7 @@ lv:
           cta: "Finish camp" # TODO: translate
           add_another: "Add another battle" # TODO: translate
           finished: "Camp finished" # TODO: translate
+          next_camp: "Next camp: %{name}" # TODO: translate
         reopen_camp: "Atvērt no jauna"
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         camp_idle:

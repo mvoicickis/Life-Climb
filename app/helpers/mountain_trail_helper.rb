@@ -902,12 +902,15 @@ module MountainTrailHelper
     true
   end
 
-  # Camp sheet: prompt to manually finish when every open battle is cleared but camp is not done.
+  # Camp sheet: finish prompt when all one-shot battles are won and camp is not completed.
+  # Repeating (daily/weekly) battles use :keep idle instead — dailies “clear” again each day.
   def mountain_trail_finish_camp_card?(project, open_battles:, won_battles:, days:)
     return false if project.blank? || project.completed?
     return false if days.blank?
+    return false unless open_battles.empty?
+    return false if days.any?(&:repeat_recurring?)
 
-    open_battles.empty? && won_battles.any?
+    days.all? { |day| mountain_trail_done_today?(day) }
   end
 
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
