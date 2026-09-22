@@ -1365,6 +1365,29 @@ body:has(.lp-today-v2-eod-takeover) #today-dash-nav {
   text-underline-offset: 0.15em;
 }
 
+.lp-offline-snapshot-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 120;
+  padding: calc(0.45rem + env(safe-area-inset-top, 0px)) 0.75rem 0.45rem;
+  background: var(--lp-paper);
+  border-bottom: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-offline-snapshot-banner__text {
+  margin: 0 auto;
+  max-width: 22.5rem;
+  font-family: var(--lp-font-ui);
+  font-size: var(--lp-type-sm, 0.8125rem);
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--lp-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-today-v2-eod-win__glow,
   .lp-today-v2-hp-bar.is-pulse,
