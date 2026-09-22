@@ -1310,8 +1310,9 @@ class MountainTrailHelperTest < ActionView::TestCase
       position: 1
     )
     one_shot.update!(completed_at: 1.day.ago.noon)
-    mountain_trail_preload_done_today!(user, project.children.select(&:day?))
+    project.reload
     days = project.children.select(&:day?).reject(&:holding?)
+    mountain_trail_preload_done_today!(user, days)
     open = days.select { |day| mountain_trail_camp_due?(day) }
       .reject { |day| mountain_trail_done_today?(day, user: user) }
     won = days.select { |day| mountain_trail_done_today?(day, user: user) }
