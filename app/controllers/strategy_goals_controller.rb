@@ -272,7 +272,14 @@ class StrategyGoalsController < ApplicationController
         else
           format.turbo_stream { render :update }
           format.html do
-            redirect_with_mountain_quiet_notice(after_update_path(goal), notice: t("strategy.renamed"))
+            path = after_update_path(goal)
+            notice =
+              if mountain_life_journey_show_path?(path)
+                nil
+              else
+                I18n.t("strategy.renamed", default: "Renamed.")
+              end
+            redirect_with_mountain_quiet_notice(path, notice: notice)
           end
         end
       end
