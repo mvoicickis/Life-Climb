@@ -32,8 +32,14 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
       @css
     )
 
-    open_row = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open[\s\S]*?background:\s*var\(--lp-paper-soft\)/m]
-    assert open_row, "expected opaque camp battle rows"
+    open_row = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open[\s\S]*?background:\s*var\(--lp-surface\)/m]
+    assert open_row, "expected opaque camp battle rows on surface"
+
+    open_body = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open \.lp-trail-battles__body\s*\{[^}]+\}/m]
+    assert open_body, "expected camp open battle body block"
+    assert_match(/flex:\s*1\s+1\s+auto/, open_body)
+    assert_match(/min-width:\s*0/, open_body)
+    refute_match(/width:\s*100%/, open_body)
 
     base_row = @css[
       /\.lp-trail\.is-v4 \.lp-trail-base-sheet \.lp-trail-battles__row\.is-check[\s\S]*?background:\s*var\(--lp-paper-soft\)/m

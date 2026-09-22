@@ -2963,7 +2963,14 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
     border-width 0.28s ease;
   max-height: 11rem;
   overflow: hidden;
-  background: var(--lp-paper-soft);
+  background: var(--lp-surface);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__row.is-open.lp-frost,
+.lp-trail.is-v4 .lp-trail-battles__row.is-open.is-check.lp-frost {
+  background: var(--lp-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open.is-exiting {
@@ -3009,7 +3016,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__body {
   flex: 1 1 auto;
   min-width: 0;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -3018,7 +3024,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open .lp-trail-battles__name {
   display: block;
-  width: 100%;
+  max-width: 100%;
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.35;
