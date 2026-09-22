@@ -23,7 +23,7 @@ class StrategyGoalCompletionsController < ApplicationController
 
     @goal.manually_reopen!
     Strategy::SyncCompletion.resync!(node: @goal)
-    redirect_to mountain_return_path, notice: t("strategy.rpg.manual_reopen_notice", title: @goal.title), status: :see_other
+    redirect_to mountain_return_path, status: :see_other
   end
 
   private

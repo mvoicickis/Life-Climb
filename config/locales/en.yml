@@ -667,7 +667,6 @@ en:
       reopen: "Reopen"
       manually_closed: "Manually closed"
       manual_complete_notice: "Marked complete · %{title}"
-      manual_reopen_notice: "Reopened · %{title}"
       manual_complete_invalid: "Only camps can be marked complete." # TODO: translate for lv/de/es/ru.
       delete_plan: "Delete Plan"
       delete_plan_title: "Delete Plan?"

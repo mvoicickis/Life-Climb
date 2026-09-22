@@ -263,7 +263,6 @@ lv:
       reopen: "Atvērt no jauna"
       manually_closed: "Aizvērts manuāli"
       manual_complete_notice: "Atzīmēts kā pabeigts · %{title}"
-      manual_reopen_notice: "Atvērts no jauna · %{title}"
       manual_complete_invalid: "Var atzīmēt tikai plānus un projektus."
       delete_plan: "Dzēst plānu"
       delete_plan_title: "Dzēst plānu?"

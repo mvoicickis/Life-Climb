@@ -198,7 +198,6 @@ es:
       reopen: "Reabrir"
       manually_closed: "Cerrado a mano"
       manual_complete_notice: "Marcado como listo · %{title}"
-      manual_reopen_notice: "Reabierto · %{title}"
       manual_complete_invalid: "Solo se pueden marcar planes y proyectos."
       delete_plan: "Eliminar plan"
       delete_plan_title: "¿Eliminar plan?"

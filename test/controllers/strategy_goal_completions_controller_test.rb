@@ -54,6 +54,7 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
 
     delete strategy_goal_manual_completion_path(@project_a)
     assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project_a.id)
+    assert_nil flash[:notice]
     assert_nil @project_a.reload.manually_completed_at
     assert_nil @project_a.completed_at
 
@@ -109,6 +110,20 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal :done, states[@project_a.id]
     assert_equal :current, states[@project_b.id]
+  end
+
+  test "camp sheet reopen redirect has no flash and camp is active on mountain" do
+    post strategy_goal_manual_completion_path(@project_a)
+    assert @project_a.reload.completed?
+
+    delete strategy_goal_manual_completion_path(@project_a)
+    follow_redirect!
+    assert_response :success
+    assert_select ".lp-flash", count: 0
+    assert_not @project_a.reload.completed?
+    assert_select "#trail-camp-#{@project_a.id}.is-current"
+    assert_select "#trail-sheet-menu-#{@project_a.id} button", text: I18n.t("strategy.rpg.trail.finish_camp")
+    assert_select "#trail-sheet-menu-#{@project_a.id} button", text: I18n.t("strategy.rpg.trail.reopen_camp"), count: 0
   end
 
   test "climb path keeps menu on a manually closed project for reopen" do
