@@ -1,38 +1,13 @@
-<%# Finish / completed camp cards. locals: project, state:, plan:, add_form: (prompt only) %>
+<%# Finish-camp prompt when all battles are won. locals: project, state:, add_form: (prompt only) %>
 <% project = local_assigns.fetch(:project) %>
 <% state = local_assigns.fetch(:state, :prompt) %>
-<% plan = local_assigns[:plan] %>
 <% add_form = local_assigns[:add_form] %>
-<% next_camp = plan ? mountain_trail_next_camp(plan.children.select(&:project?)) : nil %>
 <% hidden = state == :hidden %>
 <div id="trail-camp-finish-<%= project.id %>"
      class="lp-trail-camp-finish<%= ' is-hidden' if hidden %>"
      data-controller="trail-camp-finish"
      data-trail-camp-finish-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
      <%= "hidden" if hidden %>>
-  <% if state == :completed %>
-  <div class="lp-trail-camp-idle lp-trail-camp-finish__completed"
-       data-trail-camp-finish-target="completedCard">
-    <div class="lp-trail-camp-finish__icon" aria-hidden="true">✓</div>
-    <p class="lp-trail-camp-finish__status"><%= t("strategy.rpg.trail.finish_camp_card.finished") %></p>
-    <% if next_camp.present? %>
-      <button type="button"
-              class="lp-trail-camp-finish__next"
-              data-action="click->trail-camp-sheet#openCampById"
-              data-camp-id="<%= next_camp.id %>">
-        <span class="lp-trail-camp-finish__next-label"><%= t("strategy.rpg.trail.finish_camp_card.next_camp", name: next_camp.title) %></span>
-      </button>
-    <% end %>
-    <%= button_to t("strategy.rpg.trail.reopen_camp"),
-          strategy_goal_manual_completion_path(project),
-          method: :delete,
-          class: "lp-trail-camp-finish__reopen",
-          form: {
-            class: "lp-trail-camp-finish__reopen-form",
-            data: { turbo: true }
-          } %>
-  </div>
-  <% else %>
   <div class="lp-trail-camp-idle"
        data-trail-camp-finish-target="promptCard"
        <%= "hidden" unless state == :prompt %>>
@@ -95,28 +70,4 @@
           },
           data: { trail_camp_finish_target: "undoButton" } %>
   </div>
-
-  <div class="lp-trail-camp-idle lp-trail-camp-finish__completed"
-       data-trail-camp-finish-target="completedCard"
-       <%= "hidden" unless state == :completed %>>
-    <div class="lp-trail-camp-finish__icon" aria-hidden="true">✓</div>
-    <p class="lp-trail-camp-finish__status"><%= t("strategy.rpg.trail.finish_camp_card.finished") %></p>
-    <% if next_camp.present? %>
-      <button type="button"
-              class="lp-trail-camp-finish__next"
-              data-action="click->trail-camp-sheet#openCampById"
-              data-camp-id="<%= next_camp.id %>">
-        <span class="lp-trail-camp-finish__next-label"><%= t("strategy.rpg.trail.finish_camp_card.next_camp", name: next_camp.title) %></span>
-      </button>
-    <% end %>
-    <%= button_to t("strategy.rpg.trail.reopen_camp"),
-          strategy_goal_manual_completion_path(project),
-          method: :delete,
-          class: "lp-trail-camp-finish__reopen",
-          form: {
-            class: "lp-trail-camp-finish__reopen-form",
-            data: { turbo: true }
-          } %>
-  </div>
-  <% end %>
 </div>

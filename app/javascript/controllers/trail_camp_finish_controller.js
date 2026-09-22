@@ -1,9 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import { clearWinSaveNotice, lockWinSubmit, showWinSaveNotice, turboSubmitOk } from "lib/battle_win_feedback"
 
-// In-sheet finish camp card: optimistic lock, undo window, completed card after settle.
+// In-sheet finish camp card: optimistic lock, undo window, no toast.
 export default class extends Controller {
-  static targets = ["promptCard", "undoCard", "completedCard", "finishForm", "finishButton", "undoForm", "undoButton", "saveNotice"]
+  static targets = ["promptCard", "undoCard", "finishForm", "finishButton", "undoForm", "undoButton", "saveNotice"]
 
   static values = {
     winNotSaved: { type: String, default: "" }
@@ -51,7 +51,7 @@ export default class extends Controller {
     }
 
     this.showUndoCard()
-    this.updateSheetBadge(true)
+    this.markCampFinished(true)
     this.scheduleSettle()
   }
 
@@ -81,17 +81,34 @@ export default class extends Controller {
     }
 
     this.showPromptCard()
-    this.updateSheetBadge(false)
+    this.markCampFinished(false)
+  }
+
+  markCampFinished(on) {
+    const projectId = this.element.id?.replace("trail-camp-finish-", "")
+    if (!projectId) return
+
+    const camp = document.getElementById(`trail-camp-${projectId}`)
+    if (!camp) return
+
+    camp.classList.toggle("is-done", on)
+    camp.classList.toggle("is-current", !on)
+    let cleared = camp.querySelector(".lp-trail-camp__cleared")
+    if (on && !cleared) {
+      cleared = document.createElement("span")
+      cleared.className = "lp-trail-camp__cleared"
+      cleared.setAttribute("aria-hidden", "true")
+      cleared.textContent = "✓"
+      camp.querySelector(".lp-trail-camp__peg-visual")?.appendChild(cleared)
+    } else if (!on) {
+      cleared?.remove()
+    }
   }
 
   showUndoCard() {
     if (this.hasPromptCardTarget) {
       this.promptCardTarget.hidden = true
       this.promptCardTarget.setAttribute("hidden", "")
-    }
-    if (this.hasCompletedCardTarget) {
-      this.completedCardTarget.hidden = true
-      this.completedCardTarget.setAttribute("hidden", "")
     }
     if (this.hasUndoCardTarget) {
       this.undoCardTarget.hidden = false
@@ -107,10 +124,6 @@ export default class extends Controller {
       this.undoCardTarget.hidden = true
       this.undoCardTarget.setAttribute("hidden", "")
     }
-    if (this.hasCompletedCardTarget) {
-      this.completedCardTarget.hidden = true
-      this.completedCardTarget.setAttribute("hidden", "")
-    }
     if (this.hasPromptCardTarget) {
       this.promptCardTarget.hidden = false
       this.promptCardTarget.removeAttribute("hidden")
@@ -121,26 +134,6 @@ export default class extends Controller {
     this.updateSheetBadge(false)
   }
 
-  showCompletedCard() {
-    window.clearTimeout(this._undoTimer)
-    this._undoTimer = null
-    if (this.hasPromptCardTarget) {
-      this.promptCardTarget.hidden = true
-      this.promptCardTarget.setAttribute("hidden", "")
-    }
-    if (this.hasUndoCardTarget) {
-      this.undoCardTarget.hidden = true
-      this.undoCardTarget.setAttribute("hidden", "")
-    }
-    if (this.hasCompletedCardTarget) {
-      this.completedCardTarget.hidden = false
-      this.completedCardTarget.removeAttribute("hidden")
-    }
-    this.element.classList.remove("is-hidden")
-    this.element.removeAttribute("hidden")
-    this.updateSheetBadge(true)
-  }
-
   scheduleSettle() {
     window.clearTimeout(this._undoTimer)
     this._undoTimer = window.setTimeout(() => this.settleFinished(), 5000)
@@ -148,7 +141,9 @@ export default class extends Controller {
 
   settleFinished() {
     this._undoTimer = null
-    this.showCompletedCard()
+    this.element.classList.add("is-hidden")
+    this.element.setAttribute("hidden", "")
+    this.updateSheetBadge(true)
   }
 
   updateSheetBadge(on) {

@@ -2219,7 +2219,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
   --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
   position: relative;
-  background: var(--lp-paper-soft);
+  background: transparent;
   color: var(--lp-ink);
   border-top: 0;
   left: 0;
@@ -2512,7 +2512,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 .lp-trail.is-v4 .lp-trail-sheet__body {
   position: relative;
   z-index: 1;
-  margin-top: 0;
   background: transparent;
   color: var(--lp-ink);
   max-width: 100%;
@@ -2525,16 +2524,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   scroll-padding-bottom: 7.5rem;
-}
-
-.lp-trail.is-v4 .lp-trail-sheet__body .lp-trail-toast-host {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  padding: 0 1rem 0.5rem;
-  pointer-events: none;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__camp {
@@ -2888,55 +2877,6 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
-}
-
-.lp-trail.is-v4 .lp-trail-camp-finish__next {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: var(--lp-tap);
-  margin-top: 0.35rem;
-  padding: 0.75rem 1rem;
-  border: 0;
-  border-radius: var(--lp-radius-pill);
-  background: var(--lp-green);
-  color: var(--lp-surface);
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 800;
-  box-shadow: var(--lp-shadow-cta);
-  cursor: pointer;
-}
-
-.lp-trail.is-v4 .lp-trail-camp-finish__next-label {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.lp-trail.is-v4 .lp-trail-camp-finish__reopen-form {
-  margin: 0;
-}
-
-.lp-trail.is-v4 .lp-trail-camp-finish__reopen {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  min-height: var(--lp-tap);
-  margin: 0.35rem 0 0;
-  padding: 0.35rem 0.75rem;
-  border: 0;
-  background: transparent;
-  color: var(--lp-muted);
-  font: inherit;
-  font-size: var(--lp-type-ui-md);
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open.has-win-save-notice,
