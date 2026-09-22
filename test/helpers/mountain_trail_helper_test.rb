@@ -1018,6 +1018,16 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_in_delta 0.478, top[:x], 0.001
   end
 
+  test "builtin middle tent base sits on trail curve at its x" do
+    middle = MountainTrailHelper::BUILTIN_TENT_SLOTS[1]
+    top_y = MountainTrailHelper::BUILTIN_TENT_SLOTS[2][:y]
+    bottom_y = MountainTrailHelper::BUILTIN_TENT_SLOTS[0][:y]
+    curve_y = MountainTrailHelper::AutoSlot.y_for_x(middle[:x], between: [ top_y, bottom_y ], prefer_y: 0.680)
+    assert curve_y, "expected trail y for x=#{middle[:x]}"
+    assert_in_delta curve_y, middle[:y], 0.0005
+    assert_in_delta middle[:x], MountainTrailHelper::AutoSlot.x_for(middle[:y]), 0.002
+  end
+
   test "builtin tent slots leave vertical room for captions at 360px wide" do
     viewport_w = 360
     viewport_h = viewport_w * MountainTrailHelper::MAP_ASPECT_HEIGHT / MountainTrailHelper::MAP_ASPECT_WIDTH.to_f
@@ -1031,6 +1041,14 @@ class MountainTrailHelperTest < ActionView::TestCase
       tent_h_px = lower[:width] * viewport_w * MountainTrailHelper::TENT_CSS_HEIGHT_OVER_WIDTH
       gap_px = (lower[:y] - upper[:y]) * viewport_h
       required_px = tent_h_px + caption_px + margin_px
+      if index == 1
+        mid_scale = lower[:width] / MountainTrailHelper::BUILTIN_TENT_WIDTH_REF
+        top_scale = upper[:width] / MountainTrailHelper::BUILTIN_TENT_WIDTH_REF
+        ring_above_px = (MountainTrailHelper::MAP_CAMP_RING_SIZE_PX * 0.52 + MountainTrailHelper::MAP_CAMP_RING_R) * mid_scale
+        top_tent_above_px = 28 * top_scale
+        top_caption_below_px = caption_px
+        required_px = top_tent_above_px + top_caption_below_px + margin_px + ring_above_px
+      end
       assert_operator gap_px, :>=, required_px - 1,
                       "slot #{index} caption should clear slot #{index + 1} tent at 360px"
     end
