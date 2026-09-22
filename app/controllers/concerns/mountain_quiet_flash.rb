@@ -13,8 +13,10 @@ module MountainQuietFlash
     options[:status] ||= :see_other
     if mountain_life_journey_show_path?(path)
       redirect_to path, **options
-    else
+    elsif notice.present?
       redirect_to path, **options, notice: notice
+    else
+      redirect_to path, **options
     end
   end
 end
