@@ -198,7 +198,6 @@ ru:
       reopen: "Открыть снова"
       manually_closed: "Закрыто вручную"
       manual_complete_notice: "Отмечено готовым · %{title}"
-      manual_reopen_notice: "Снова открыто · %{title}"
       manual_complete_invalid: "Можно отмечать только планы и проекты."
       delete_plan: "Удалить план"
       delete_plan_title: "Удалить план?"
