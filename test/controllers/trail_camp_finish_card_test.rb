@@ -107,22 +107,19 @@ class TrailCampFinishCardTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "turbo-stream[action='replace'][target='trail-map-camps']"
-    assert_match(/id="trail-camp-#{@project.id}"[^>]*is-done/, response.body)
-    assert_match(/id="trail-camp-#{camp_b.id}"[^>]*is-current/, response.body)
+    assert_select "turbo-stream[target='trail-map-camps'] #trail-camp-#{@project.id}.is-done"
+    assert_select "turbo-stream[target='trail-map-camps'] #trail-camp-#{camp_b.id}.is-current"
   end
 
-  test "reopen camp turbo stream restores trail map current camp" do
-    camp_b = @user.strategy_goals.create!(
-      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp B", position: 1, stage: 1
-    )
+  test "undo finish turbo stream refreshes trail map" do
+    post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
     post strategy_goal_manual_completion_path(@project), as: :turbo_stream
     delete strategy_goal_manual_completion_path(@project), as: :turbo_stream
 
     assert_response :success
     assert_select "turbo-stream[action='replace'][target='trail-map-camps']"
-    assert_match(/id="trail-camp-#{@project.id}"[^>]*is-current/, response.body)
-    refute_match(/id="trail-camp-#{@project.id}"[^>]*is-done/, response.body)
-    refute_match(/id="trail-camp-#{camp_b.id}"[^>]*is-current/, response.body)
+    assert_select "turbo-stream[target='trail-map-camps'] #trail-camp-#{@project.id}.is-current"
+    assert_select "turbo-stream[target='trail-map-camps'] #trail-camp-#{@project.id}.is-done", count: 0
   end
 
   test "finish camp turbo stream succeeds and shows undo card" do

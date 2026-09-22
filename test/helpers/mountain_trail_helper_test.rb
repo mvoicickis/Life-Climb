@@ -1318,6 +1318,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     refute mountain_trail_finish_camp_card?(project, open_battles: open, won_battles: won, days: days)
 
     daily.destroy!
+    project.reload
     days = project.children.select(&:day?).reject(&:holding?)
     open = days.select { |day| mountain_trail_camp_due?(day) }
       .reject { |day| mountain_trail_done_today?(day, user: user) }
