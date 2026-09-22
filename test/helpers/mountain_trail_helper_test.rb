@@ -1289,7 +1289,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     user = users(:one)
     journey = seed_climb!(user, today_mission: "Finish card gate")
     project = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
-    project.children.select(&:day?).find_by!(title: "Finish card gate").update!(completed_at: 1.day.ago.noon)
+    project.children.find { |day| day.day? && day.title == "Finish card gate" }.update!(completed_at: 1.day.ago.noon)
     daily = user.strategy_goals.create!(
       life_area: journey.life_area,
       life_journey: journey,
