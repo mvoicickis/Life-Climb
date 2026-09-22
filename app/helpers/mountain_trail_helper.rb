@@ -30,7 +30,7 @@ module MountainTrailHelper
   MAP_LAYOUT_SLOTS = 4
   # Built-in day/night art — tent centre (x), base (y), width as fraction of frame width.
   BUILTIN_TENT_SLOTS = [
-    { x: 0.426, y: 0.8976, width: 0.248 },
+    { x: 0.426, y: 0.885, width: 0.248 },
     { x: 0.480, y: 0.680, width: 0.195 },
     { x: 0.478, y: 0.470, width: 0.143 }
   ].freeze
@@ -128,12 +128,13 @@ module MountainTrailHelper
   end
 
   def mountain_trail_picker_fill(project_or_tag)
-    key = if project_or_tag.is_a?(StrategyGoal)
-            mountain_trail_picker_color_key(project_or_tag.tagged_color_key)
-          else
-            mountain_trail_picker_color_key(project_or_tag)
-          end
+    key = picker_key_for_fill(project_or_tag)
     PICKER_FILL_VAR.fetch(key)
+  end
+
+  def picker_key_for_fill(project_or_tag)
+    tagged = project_or_tag.is_a?(StrategyGoal) ? project_or_tag.tagged_color_key : project_or_tag
+    mountain_trail_picker_color_key(tagged)
   end
 
   def mountain_trail_map_ring_stroke_px(camp_scale)
@@ -145,19 +146,20 @@ module MountainTrailHelper
     ring_c = (2 * Math::PI * MAP_CAMP_RING_R).round(2)
     offset = (ring_c * (1 - ratio)).round(2)
     fg = if ratio.positive?
-           <<~SVG.squish
-             <circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="#{MAP_CAMP_RING_R}"
-               stroke-dasharray="#{ring_c}" stroke-dashoffset="#{offset}" transform="rotate(-90 31 31)"></circle>
-           SVG
-         else
-           ""
-         end
+      <<~SVG.squish
+        <circle class="lp-trail-camp__ring-fg" cx="31" cy="31" r="#{MAP_CAMP_RING_R}"
+          stroke-dasharray="#{ring_c}" stroke-dashoffset="#{offset}" transform="rotate(-90 31 31)"></circle>
+      SVG
+    else
+      ""
+    end
     <<~SVG.squish
       <svg class="lp-trail-camp__ring" viewBox="0 0 62 62" aria-hidden="true">
         <circle class="lp-trail-camp__ring-bg" cx="31" cy="31" r="#{MAP_CAMP_RING_R}"></circle>
         #{fg}
       </svg>
     SVG
+      .html_safe
   end
 
   def mountain_trail_custom_photo?(journey)
