@@ -1,13 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
+import {
+  floatBattleStrength,
+  lockWinSubmit,
+  showWinSaveNotice,
+  clearWinSaveNotice,
+  turboSubmitOk,
+  winSubmitHostFromForm
+} from "lib/battle_win_feedback"
 
-// Click-time bounce + flat particle burst + optional "+N AP" float.
-// When suppressReloadCelebrate is true (battle Win), set a sessionStorage
-// flag so battle_day skips its post-reload celebrate (no double juice).
+// Click-time bounce + flat particle burst + optional "+N Battle strength" float.
+// When suppressReloadCelebrate is true (battle Win), defer strength float until
+// turbo submit succeeds; set sessionStorage so battle_day skips post-reload celebrate.
 const SUPPRESS_KEY = "lpJuicySuppressCelebrate"
 
 export default class extends Controller {
   static values = {
     suppressReloadCelebrate: { type: Boolean, default: false },
+    deferReward: { type: Boolean, default: false },
+    strengthLabel: { type: String, default: "Battle strength" },
+    winNotSaved: { type: String, default: "" },
     delay: { type: Number, default: 500 },
     popAmount: { type: Number, default: 0 }
   }
@@ -25,21 +36,43 @@ export default class extends Controller {
       if (qty && !qty.readyToSubmit) return
     }
 
+    const rowHost = winSubmitHostFromForm(this.element)
+    if (this.deferRewardValue && rowHost?.dataset?.winInFlight === "1") {
+      event.preventDefault()
+      return
+    }
+
     event.preventDefault()
     if (this.playing) return
     this.playing = true
 
-    const host = this.element.closest(".lp-dash-tcard, .lp-dash-checklist__obj") || this.element
+    const host = this.element.closest(".lp-dash-tcard, .lp-dash-checklist__obj, .lp-today-v2-row") || this.element
     const amount = this.resolvedAmount(host)
     const popAmount = this.resolvedPopAmount()
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const battleWin = this.deferRewardValue
 
     if (!reduceMotion) {
       this.bounce(host)
       this.burst(host)
       if (popAmount > 0) this.floatHabitPop(host, popAmount)
     }
-    if (amount > 0) this.floatAp(host, amount)
+    if (!battleWin && amount > 0) this.floatAp(host, amount)
+
+    if (battleWin) {
+      clearWinSaveNotice(rowHost)
+      lockWinSubmit(rowHost, true)
+      this.allowNextSubmit = true
+      this.playing = false
+      window.requestAnimationFrame(() => {
+        if (typeof this.element.requestSubmit === "function") {
+          this.element.requestSubmit()
+        } else {
+          this.element.submit()
+        }
+      })
+      return
+    }
 
     if (this.suppressReloadCelebrateValue) {
       try {
@@ -59,6 +92,31 @@ export default class extends Controller {
         this.element.submit()
       }
     }, wait)
+  }
+
+  winSubmitEnd(event) {
+    if (!this.deferRewardValue) return
+
+    const rowHost = winSubmitHostFromForm(event.target)
+    lockWinSubmit(rowHost, false)
+    this.playing = false
+
+    if (turboSubmitOk(event)) {
+      const host = rowHost || this.element.closest(".lp-today-v2-row") || this.element
+      const amount = this.resolvedAmount(host)
+      if (amount > 0) floatBattleStrength(host, amount, this.strengthLabelValue)
+      if (this.suppressReloadCelebrateValue) {
+        try {
+          window.sessionStorage.setItem(SUPPRESS_KEY, "1")
+        } catch (_err) {
+          // storage unavailable
+        }
+      }
+      return
+    }
+
+    const message = this.winNotSavedValue
+    if (message && rowHost) showWinSaveNotice(rowHost, message)
   }
 
   resolvedAmount(host) {
@@ -111,11 +169,6 @@ export default class extends Controller {
   }
 
   floatAp(host, amount) {
-    const chip = document.createElement("span")
-    chip.className = "lp-juicy-ap"
-    chip.textContent = `+${amount} AP`
-    host.appendChild(chip)
-    requestAnimationFrame(() => chip.classList.add("is-shown"))
-    window.setTimeout(() => chip.remove(), 900)
+    floatBattleStrength(host, amount, this.strengthLabelValue)
   }
 }

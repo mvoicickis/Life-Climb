@@ -5324,6 +5324,16 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   transform: translateY(-1.1rem);
 }
 
+.lp-battle-win-save-notice {
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 0 0 0 2.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-dash-tcard.is-juicy,
   .lp-dash-checklist__obj.is-juicy {

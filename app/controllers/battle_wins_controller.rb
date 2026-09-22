@@ -14,7 +14,23 @@ class BattleWinsController < ApplicationController
                   status: :see_other and return
     end
 
-    result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
+    begin
+      result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error(
+        "[BattleWinsController#create] #{e.class}: #{e.message} " \
+        "(record=#{e.record.class.name}##{e.record&.id})"
+      )
+      alert = e.record.errors.full_messages.to_sentence.presence || t("dash.timeline.time_save_failed")
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.html do
+          redirect_to mountain_return_path(journey, battle), alert: alert, status: :see_other
+        end
+      end
+      return
+    end
+
     result.flash.each { |key, value| flash[key] = value }
 
     if result.flash[:battle_celebrate]

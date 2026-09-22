@@ -2710,6 +2710,11 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   background: transparent;
 }
 
+.lp-trail.is-v4 .lp-trail-battles__row.is-open.has-win-save-notice,
+.lp-trail.is-v4 .lp-trail-battles__row.is-open.is-check.has-win-save-notice {
+  flex-wrap: wrap;
+}
+
 .lp-trail.is-v4 .lp-trail-battles__row.is-open,
 .lp-trail.is-v4 .lp-trail-battles__row.is-open.is-check {
   display: flex;

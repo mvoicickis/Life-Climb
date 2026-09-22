@@ -139,7 +139,7 @@ export default class extends Controller {
     const host = this.hasLpTotalTarget ? this.lpTotalTarget.parentElement : this.element
     const chip = document.createElement("span")
     chip.className = "lp-dash__ap-float"
-    chip.textContent = `+${this.apGainedValue} AP`
+    chip.textContent = `+${this.apGainedValue} Battle strength`
     host.appendChild(chip)
     window.setTimeout(() => chip.remove(), 1200)
   }

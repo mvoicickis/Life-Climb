@@ -76,6 +76,7 @@ en:
           headline: "“%{title}” is scheduled"
           sub: "Coming %{date} — keep the climb alive until then."
       no_camp: "Camp"
+      win_not_saved: "Not saved. Tap to try again."
       win_battle: "Win %{title}"
       fight_toast: "Tap a battle above to fight it"
       more_waiting:

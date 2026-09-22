@@ -201,6 +201,10 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   gap: 0.5rem;
 }
 
+.lp-today-v2-row.has-win-save-notice {
+  flex-wrap: wrap;
+}
+
 .lp-today-v2-row {
   position: relative;
   display: flex;
