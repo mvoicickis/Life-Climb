@@ -433,6 +433,12 @@
          role="dialog"
          aria-modal="true"
          aria-labelledby="trail-sheet-title">
+      <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
+        <%= image_tag "camp_fire_default.webp",
+              class: "lp-trail-sheet__camp-bg-photo",
+              alt: "",
+              decoding: "async" %>
+      </div>
       <div class="lp-trail-sheet__glow" data-trail-camp-sheet-target="accent" aria-hidden="true"></div>
       <header class="lp-trail-sheet__header">
         <div class="lp-trail-sheet__title-row" id="trail-sheet-title-row">
@@ -444,10 +450,7 @@
               <span aria-hidden="true">‹</span>
             </button>
           <% end %>
-          <div class="lp-trail-sheet__title-wrap">
-            <span id="trail-sheet-title-badge" class="lp-trail-sheet__camp-done" hidden aria-hidden="true">✓</span>
-            <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal %><%= first_camp.title %><% end %></h2>
-          </div>
+          <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal %><%= first_camp.title %><% end %></h2>
           <% unless first_camp_reveal %>
             <div class="lp-trail-sheet__actions">
               <% sheet_camps.each do |project| %>
@@ -459,6 +462,12 @@
                   <%= render "life_journeys/trail_camp_sheet_menu", project: project %>
                 </div>
               <% end %>
+              <button type="button"
+                      class="lp-trail-sheet__close"
+                      data-action="click->trail-camp-sheet#close"
+                      aria-label="<%= t('strategy.sheet.close') %>">
+                <span aria-hidden="true">✕</span>
+              </button>
             </div>
           <% end %>
         </div>
@@ -466,20 +475,14 @@
            data-trail-camp-sheet-target="subtitle"
            hidden></p>
       </header>
+      <div id="trail-toast-host" class="lp-trail-toast-host" aria-live="polite">
+        <% if flash[:trail_undo].present? %>
+          <%= render "life_journeys/trail_toast",
+                title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
+                restore: true %>
+        <% end %>
+      </div>
       <div class="lp-trail-sheet__body" data-trail-camp-sheet-target="body" id="trail-sheet-body">
-        <div id="trail-toast-host" class="lp-trail-toast-host" aria-live="polite">
-          <% if flash[:trail_undo].present? %>
-            <%= render "life_journeys/trail_toast",
-                  title: flash[:trail_undo][:title] || flash[:trail_undo]["title"],
-                  restore: true %>
-          <% end %>
-        </div>
-        <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
-          <%= image_tag "camp_fire_default.webp",
-                class: "lp-trail-sheet__camp-bg-photo",
-                alt: "",
-                decoding: "async" %>
-        </div>
         <div class="lp-trail-sheet__camp"
              id="trail-sheet-camp-base"
              data-camp-panel="base"

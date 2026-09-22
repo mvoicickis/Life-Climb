@@ -8,20 +8,19 @@
 <% days = days.sort_by { |d| [ mountain_trail_done_today?(d) ? 1 : 0, d.scheduled_on || Date.new(9999), d.position.to_i, d.id ] } %>
 <% open_battles = days.select { |d| mountain_trail_camp_due?(d) }.reject { |d| mountain_trail_done_today?(d) } %>
 <% won_battles = days.select { |d| mountain_trail_done_today?(d) } %>
+<% won_today_count = days.count { |d| mountain_trail_won_today?(d) } %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
-<% show_finish_card = mountain_trail_finish_camp_card?(project, open_battles: open_battles, won_battles: won_battles, days: days) %>
 <% camp_idle_variant =
      if open_battles.any? || pages_mode
        nil
      elsif days.empty?
        :start
-     elsif show_finish_card
-       nil
-     elsif days.any?
+     elsif won_today_count.positive?
+       :won
+     else
        :keep
      end %>
-<% center_idle_scroll = show_finish_card || project.completed? || camp_idle_variant.present? %>
 <% open_composer = local_assigns[:open_composer] %>
 <% accent = mountain_trail_project_accent(project) %>
 <% add_form = capture do %>
@@ -123,19 +122,8 @@
       </button>
     </div>
   <% else %>
-    <div class="lp-trail-battles__scroll<%= " is-idle" if center_idle_scroll %>">
-      <% if project.completed? %>
-        <%= render "life_journeys/trail_camp_finish_card",
-              project: project,
-              plan: plan,
-              state: :completed %>
-      <% elsif show_finish_card %>
-        <%= render "life_journeys/trail_camp_finish_card",
-              project: project,
-              plan: plan,
-              state: :prompt,
-              add_form: add_form %>
-      <% elsif camp_idle_variant %>
+    <div class="lp-trail-battles__scroll<%= " is-idle" if camp_idle_variant %>">
+      <% if camp_idle_variant %>
         <%= render "life_journeys/trail_camp_empty_state",
               project: project,
               variant: camp_idle_variant,

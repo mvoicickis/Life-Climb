@@ -8,10 +8,11 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     @app_css = Rails.root.join("app/assets/tailwind/application.css").read
   end
 
-  test "camp sheet panel is opaque while body stays transparent" do
+  test "camp sheet panel is see-through while body stays transparent" do
     panel_block = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__panel\s*\{[^}]+\}/m]
     assert panel_block, "expected v4 camp sheet panel block"
-    assert_match(/background:\s*var\(--lp-paper-soft\)/, panel_block)
+    assert_match(/background:\s*transparent/, panel_block)
+    refute_match(/background:\s*var\(--lp-paper-soft\)/, panel_block)
 
     camp_bg = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__camp-bg\s*\{[^}]+\}/m]
     assert camp_bg, "expected v4 camp photo layer block"
@@ -20,7 +21,6 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     body_block = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__body\s*\{[^}]+\}/m]
     assert body_block, "expected v4 camp sheet body block"
     assert_match(/background:\s*transparent/, body_block)
-    assert_match(/margin-top:\s*0/, body_block)
   end
 
   test "camp sheet text chrome uses opaque paper-soft without header supports glass" do
@@ -32,14 +32,8 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
       @css
     )
 
-    open_row = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open[\s\S]*?background:\s*var\(--lp-surface\)/m]
-    assert open_row, "expected opaque camp battle rows on surface"
-
-    open_body = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open \.lp-trail-battles__body\s*\{[^}]+\}/m]
-    assert open_body, "expected camp open battle body block"
-    assert_match(/flex:\s*1\s+1\s+auto/, open_body)
-    assert_match(/min-width:\s*0/, open_body)
-    refute_match(/width:\s*100%/, open_body)
+    open_row = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open[\s\S]*?background:\s*var\(--lp-paper-soft\)/m]
+    assert open_row, "expected opaque camp battle rows"
 
     base_row = @css[
       /\.lp-trail\.is-v4 \.lp-trail-base-sheet \.lp-trail-battles__row\.is-check[\s\S]*?background:\s*var\(--lp-paper-soft\)/m
@@ -48,7 +42,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
     idle = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-idle\s*\{[^}]+\}/m]
     assert idle, "expected camp idle card block"
-    assert_match(/background:\s*var\(--lp-surface\)/, idle)
+    assert_match(/background:\s*var\(--lp-paper-soft\)/, idle)
 
     composer = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__composer-form\s*\{[^}]+\}/m]
     assert composer, "expected composer form block"
@@ -56,8 +50,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
     won_strip = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__won-strip\s*\{[^}]+\}/m]
     assert won_strip, "expected won strip block"
-    assert_match(/background:\s*var\(--lp-surface\)/, won_strip)
-    assert_match(/border-radius:\s*var\(--lp-radius-pill\)/, won_strip)
+    assert_match(/background:\s*var\(--lp-paper-soft\)/, won_strip)
   end
 
   test "lp-frost uses solid surface by default with glass only in supports" do

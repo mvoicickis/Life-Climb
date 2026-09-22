@@ -503,7 +503,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-sheet-camp-#{@project.id}"
     assert_select ".lp-trail-sheet__back"
-    assert_select ".lp-trail-sheet__close", count: 0
+    assert_select ".lp-trail-sheet__close", count: 1
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
     assert_select "#trail-battles-#{@project.id} input[name=source][value=camp_sheet]"
@@ -577,7 +577,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-menu-#{@project.id} .lp-trail-sheet__menu-btn"
   end
 
-  test "all battles won shows finish camp card and won strip" do
+  test "idle state B shows won today copy when battles cleared" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
@@ -589,8 +589,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
-    assert_select "#trail-camp-finish-#{@project.id}", text: /All battles won!/
-    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__cta"
+    assert_select ".lp-trail-camp-idle__pill-text", text: I18n.t("strategy.rpg.trail.camp_idle.won_pill")
+    assert_select ".lp-trail-camp-idle__body", count: 0
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger",
+                  text: I18n.t("strategy.rpg.trail.camp_idle.won_button")
     assert_select "#trail-battles-won-strip-#{@project.id}"
   end
 
@@ -611,7 +613,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
                   text: I18n.t("strategy.rpg.trail.camp_idle.keep_button")
   end
 
-  test "winning last camp sheet battle replaces battles frame with finish card" do
+  test "winning last camp sheet battle replaces battles frame with idle state B" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Last open fight", scheduled_on: Date.current, position: 0
@@ -622,21 +624,21 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match %(action="replace" target="trail-battles-#{@project.id}"), response.body
-    assert_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
+    assert_match I18n.t("strategy.rpg.trail.camp_idle.won_pill"), response.body
   end
 
-  test "battle won toast host sits inside camp sheet body over photo" do
+  test "battle won toast host sits below camp sheet header" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select ".lp-trail-sheet__body #trail-toast-host.lp-trail-toast-host"
+    assert_select ".lp-trail-sheet__panel #trail-toast-host.lp-trail-toast-host"
     header_index = response.body.index("lp-trail-sheet__header")
-    body_index = response.body.index('id="trail-sheet-body"')
     toast_index = response.body.index('id="trail-toast-host"')
+    body_index = response.body.index('id="trail-sheet-body"')
     assert header_index, "expected camp sheet header"
-    assert body_index, "expected camp sheet body"
     assert toast_index, "expected trail toast host"
-    assert_operator header_index, :<, body_index
-    assert_operator body_index, :<, toast_index
+    assert body_index, "expected camp sheet body"
+    assert_operator header_index, :<, toast_index
+    assert_operator toast_index, :<, body_index
   end
 
   test "camp sheet does not show project check panel" do
