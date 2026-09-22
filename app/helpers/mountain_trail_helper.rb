@@ -31,7 +31,7 @@ module MountainTrailHelper
   # Built-in day/night art — tent centre (x), base (y), width as fraction of frame width.
   BUILTIN_TENT_SLOTS = [
     { x: 0.426, y: 0.885, width: 0.248 },
-    { x: 0.480, y: 0.680, width: 0.195 },
+    { x: 0.480, y: 0.6467, width: 0.195 },
     { x: 0.478, y: 0.470, width: 0.143 }
   ].freeze
   BUILTIN_TENT_WIDTH_REF = 0.25
@@ -319,6 +319,33 @@ module MountainTrailHelper
       end
 
       0.5
+    end
+
+    # y on TRAIL_CURVE where the path crosses x_frac (between two slot y values).
+    def y_for_x(x_frac, between: nil, prefer_y: nil)
+      x = x_frac.to_f
+      low, high = Array(between).map(&:to_f)
+      low, high = high, low if low && high && low > high
+      hits = []
+
+      (0...(TRAIL_CURVE.length - 1)).each do |i|
+        y0, x0 = TRAIL_CURVE[i]
+        y1, x1 = TRAIL_CURVE[i + 1]
+        next if x0 == x1
+        next unless (x0 - x) * (x1 - x) <= 0
+
+        k = (x - x0) / (x1 - x0)
+        y = y0 + (k * (y1 - y0))
+        next if low && y <= low
+        next if high && y >= high
+
+        hits << y
+      end
+
+      return nil if hits.empty?
+      return hits.min if prefer_y.nil?
+
+      hits.min_by { |y| (y - prefer_y.to_f).abs }
     end
 
     # Nearest point on the painted dirt path (polyline of TRAIL_CURVE).
