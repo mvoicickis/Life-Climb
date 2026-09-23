@@ -1,0 +1,50 @@
+---
+description: Life Climb rules. Apply to every task.
+alwaysApply: true
+---
+# Life Climb
+
+Rails 8, Hotwire/Turbo, Stimulus, importmap, Tailwind (no Node), minitest. SQLite local, Postgres on Render. Auto-deploy on merge to main.
+
+## Git and PRs
+- Every new PR: `git fetch`, new branch `cursor/<name>` off `origin/main`. Never reuse a merged branch. Say the branch name before any push.
+- One concern per PR. More than ~5 files, or a fix mixed with a refactor: split it and say why.
+- Base main, not Draft. `gh pr create` fails here: push, then give me `https://github.com/mvoicickis/Life-Climb/compare/main...<branch>`.
+- Merge with `gh pr merge <n> --merge` only. Never `--admin`. If a check fails, stop and report.
+- Mockups in `docs/mockups/` are never committed unless we build them.
+
+## Running things
+- Auto-run `bundle install` only. Never run tests, migrations, deploys, a web server, headless Chrome, or screenshots. Write the file, report the path, I check it myself.
+- CI is the test run. `test` blocks; system-test, lint and scans don't, but every failure is real. Never rerun CI to clear a failure: read `gh run view <id> --log-failed` first.
+- Cursor's cloud workspace has its own database, separate from local.
+
+## Reporting
+- "Merged" means `gh pr view` says MERGED.
+- Green tests don't mean fixed. Say what you changed; I check it live on the phone.
+- For any 500, get the real exception from Render logs before theorising. When a fix doesn't hold, check deploy state, cache, and a stale local repo first.
+
+## Code traps
+- Scope every Journey/Goal/Plan/Project lookup through `current_user`. Never `Model.find(params[:id])`.
+- Don't change `Strategy::Progress` or `SyncCompletion`. Mountain % is camp-gated; changing it makes camps auto-complete and reopen.
+- "Camp done" counts one-shot battles only. `mountain_trail_done_today?` counts daily battles every day.
+- Battles are won from Today and Mountain through one shared completion path.
+- Removing a section: find what else reads its data. Changing a shared function: check every caller.
+- Service worker: bump the version on any change and keep `service_worker_actions_contract_test` in step.
+- Stripe: subscription writes only through webhooks (`Billing::SyncSubscription`).
+- Tests: assert state, not matching timestamps. Passing on SQLite can still fail on Postgres.
+
+## UI
+- Every screen works at 360px with a long name. Nothing cut off on the right edge.
+- CSS: never `width: 100%` on a flex child inside `overflow: hidden`. Use `flex: 1; min-width: 0`.
+- Colors only from `:root` tokens in `app/assets/tailwind/application.css`. No hex. Light mode only, no dark surfaces.
+- Inputs 16px or bigger. Call `focus()` right inside the tap handler. Bottom-fixed elements use `env(safe-area-inset-bottom)`.
+- Every fetch checks `response.ok`. One tap = one request. On failure put the old value back and show "Not saved. Tap to try again." Rewards show only after the server says yes.
+- Enter and blur both save: save once. Escape never saves.
+- Mountain is quiet: no toast, no flash message. Today celebrates.
+
+## Copy
+- User words: Journey, Camp, Battle, Mountain, Battle strength, Planning power. Never Plan, Project, AP, SP, checkpoint.
+- Words an 8-year-old knows. Commands, not questions. No abbreviations ("3 days", not "3d").
+- Numbers only count up. No deficit copy; show nothing at zero. Missing a day costs nothing.
+- Never ship copy telling the user to do something that doesn't work.
+- Locales: English, plus lv/de/es/ru with the English text and `# TODO: translate`. All five files, every time. Never yes/no/on/off as YAML keys.
