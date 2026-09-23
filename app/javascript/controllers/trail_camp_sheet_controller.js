@@ -15,9 +15,12 @@ export default class extends Controller {
   connect() {
     this._onKey = (event) => this.onKeydown(event)
     this._onPopState = () => this.onPopState()
-    this._onViewport = () => {
+    this._onViewportResize = () => {
       this.syncViewportInsets()
       this.ensureFocusedVisible()
+    }
+    this._onViewportScroll = () => {
+      this.syncViewportInsets()
     }
     this._openCampId = null
     this._pushedHistory = false
@@ -259,9 +262,9 @@ export default class extends Controller {
   bindViewportGuards() {
     this.unbindViewportGuards()
     this.syncViewportInsets()
-    window.addEventListener("resize", this._onViewport)
-    window.visualViewport?.addEventListener("resize", this._onViewport)
-    window.visualViewport?.addEventListener("scroll", this._onViewport)
+    window.addEventListener("resize", this._onViewportResize)
+    window.visualViewport?.addEventListener("resize", this._onViewportResize)
+    window.visualViewport?.addEventListener("scroll", this._onViewportScroll)
 
     this._onInputFocus = () => this.ensureFocusedVisible()
     if (this.hasPanelTarget) {
@@ -272,9 +275,9 @@ export default class extends Controller {
   }
 
   unbindViewportGuards() {
-    window.removeEventListener("resize", this._onViewport)
-    window.visualViewport?.removeEventListener("resize", this._onViewport)
-    window.visualViewport?.removeEventListener("scroll", this._onViewport)
+    window.removeEventListener("resize", this._onViewportResize)
+    window.visualViewport?.removeEventListener("resize", this._onViewportResize)
+    window.visualViewport?.removeEventListener("scroll", this._onViewportScroll)
 
     if (this._onInputFocus && this.hasPanelTarget) {
       this.panelTarget.querySelectorAll("input, textarea").forEach((input) => {
@@ -289,15 +292,35 @@ export default class extends Controller {
     const sheet = this.sheetTarget
     const viewport = window.visualViewport
 
+    let keyboardOpen = false
+    let keyboardInset = "0px"
+    let sheetVh = null
+
     if (viewport) {
-      const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
-      if (inset > 0) {
-        sheet.style.setProperty("--lp-keyboard-inset", `${inset}px`)
-        sheet.style.setProperty("--lp-sheet-vh", `${viewport.height}px`)
-      } else {
-        sheet.style.setProperty("--lp-keyboard-inset", "0px")
-        sheet.style.removeProperty("--lp-sheet-vh")
+      const heightGap = window.innerHeight - viewport.height
+      keyboardOpen = heightGap > 120
+      if (keyboardOpen) {
+        const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+        keyboardInset = `${inset}px`
+        sheetVh = `${viewport.height}px`
       }
+    }
+
+    if (
+      this._viewportKeyboardOpen === keyboardOpen &&
+      this._viewportKeyboardInset === keyboardInset &&
+      this._viewportSheetVh === sheetVh
+    ) {
+      return
+    }
+
+    this._viewportKeyboardOpen = keyboardOpen
+    this._viewportKeyboardInset = keyboardInset
+    this._viewportSheetVh = sheetVh
+
+    if (keyboardOpen) {
+      sheet.style.setProperty("--lp-keyboard-inset", keyboardInset)
+      sheet.style.setProperty("--lp-sheet-vh", sheetVh)
     } else {
       sheet.style.setProperty("--lp-keyboard-inset", "0px")
       sheet.style.removeProperty("--lp-sheet-vh")
@@ -307,6 +330,9 @@ export default class extends Controller {
   resetViewportInsets() {
     if (!this.hasSheetTarget) return
 
+    this._viewportKeyboardOpen = false
+    this._viewportKeyboardInset = "0px"
+    this._viewportSheetVh = null
     this.sheetTarget.style.removeProperty("--lp-sheet-vh")
     this.sheetTarget.style.removeProperty("--lp-keyboard-inset")
   }
