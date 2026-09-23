@@ -32,8 +32,8 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
       @css
     )
 
-    open_row = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open[\s\S]*?background:\s*var\(--lp-paper-soft\)/m]
-    assert open_row, "expected opaque camp battle rows"
+    open_row = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open[\s\S]*?background:\s*var\(--lp-surface\)/m]
+    assert open_row, "expected opaque camp battle rows on surface"
 
     base_row = @css[
       /\.lp-trail\.is-v4 \.lp-trail-base-sheet \.lp-trail-battles__row\.is-check[\s\S]*?background:\s*var\(--lp-paper-soft\)/m
@@ -42,7 +42,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
     idle = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-idle\s*\{[^}]+\}/m]
     assert idle, "expected camp idle card block"
-    assert_match(/background:\s*var\(--lp-paper-soft\)/, idle)
+    assert_match(/background:\s*var\(--lp-surface\)/, idle)
 
     composer = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__composer-form\s*\{[^}]+\}/m]
     assert composer, "expected composer form block"
@@ -88,6 +88,28 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
       /\.lp-trail\.is-v4\.is-first-camp-reveal \.lp-trail-sheet__panel[\s\S]*?max-height:\s*82%/,
       @css
     )
+  end
+
+  test "open camp sheet masks map with paper-soft and stage pins photo" do
+    open_sheet = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet\.is-open[\s\S]*?\}/m]
+    assert open_sheet, "expected v4 open camp sheet block"
+    assert_match(/background:\s*var\(--lp-paper-soft\)/, open_sheet)
+
+    stage = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__stage\s*\{[^}]+\}/m]
+    assert stage, "expected v4 camp sheet stage block"
+    assert_match(/overflow:\s*hidden/, stage)
+    assert_match(/min-height:\s*0/, stage)
+
+    camp_bg = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__camp-bg\s*\{[^}]+\}/m]
+    assert_match(/background:\s*var\(--lp-paper-soft\)/, camp_bg)
+  end
+
+  test "open battle row body flexes without width 100 percent" do
+    body_rule = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open \.lp-trail-battles__body\s*\{[^}]+\}/m]
+    assert body_rule, "expected open battle row body block"
+    assert_match(/flex:\s*1/, body_rule)
+    assert_match(/min-width:\s*0/, body_rule)
+    refute_match(/width:\s*100%/, body_rule)
   end
 
   test "camp sheet backdrop is non-interactive when full height" do
