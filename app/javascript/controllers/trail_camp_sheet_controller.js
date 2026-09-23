@@ -290,12 +290,17 @@ export default class extends Controller {
     const viewport = window.visualViewport
 
     if (viewport) {
-      sheet.style.setProperty("--lp-sheet-vh", `${viewport.height}px`)
       const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
-      sheet.style.setProperty("--lp-keyboard-inset", `${inset}px`)
+      if (inset > 0) {
+        sheet.style.setProperty("--lp-keyboard-inset", `${inset}px`)
+        sheet.style.setProperty("--lp-sheet-vh", `${viewport.height}px`)
+      } else {
+        sheet.style.setProperty("--lp-keyboard-inset", "0px")
+        sheet.style.removeProperty("--lp-sheet-vh")
+      }
     } else {
-      sheet.style.setProperty("--lp-sheet-vh", `${window.innerHeight}px`)
       sheet.style.setProperty("--lp-keyboard-inset", "0px")
+      sheet.style.removeProperty("--lp-sheet-vh")
     }
   }
 

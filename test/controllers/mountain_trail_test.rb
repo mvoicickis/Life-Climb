@@ -503,7 +503,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-sheet-camp-#{@project.id}"
     assert_select ".lp-trail-sheet__back"
-    assert_select ".lp-trail-sheet__close", count: 1
+    assert_select ".lp-trail-sheet__stage #trail-sheet-body"
     assert_select "#trail-battles-#{@project.id} #trail-battle-#{battle.id}", text: /Pack the tent/
     assert_select "#trail-battles-#{@project.id} form[action*='battle_win']"
     assert_select "#trail-battles-#{@project.id} input[name=source][value=camp_sheet]"
