@@ -87,7 +87,7 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     post strategy_goal_manual_completion_path(camp), as: :turbo_stream
     assert_response :success
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.back_to_mountain"), response.body
-    refute_match %(data-camp-id=), response.body
+    refute_match I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camp.title), response.body
   end
 
   test "next open camp after finish is not the finished camp and map stream targets it" do

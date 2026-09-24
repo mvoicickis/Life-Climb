@@ -44,6 +44,7 @@ class StrategyGoalCompletionsController < ApplicationController
 
   def set_goal
     @goal = current_user.strategy_goals.find(params[:strategy_goal_id])
+    @completion_target = @goal
   end
 
   def reject_holding
@@ -86,22 +87,23 @@ class StrategyGoalCompletionsController < ApplicationController
   end
 
   def mountain_return_path
-    journey = current_user.life_journeys.active.find_by(life_area_id: @goal.life_area_id) ||
+    target = @completion_target || @goal
+    journey = current_user.life_journeys.active.find_by(life_area_id: target.life_area_id) ||
               current_user.primary_focused_journey
     return fallback_path if journey.blank?
 
-    case @goal.kind
+    case target.kind
     when "goal"
-      life_journey_path(journey, goal_id: @goal.id)
+      life_journey_path(journey, goal_id: target.id)
     when "plan"
-      life_journey_path(journey, goal_id: @goal.parent_id, plan_id: @goal.id)
+      life_journey_path(journey, goal_id: target.parent_id, plan_id: target.id)
     when "project"
-      plan = @goal.parent&.plan? ? @goal.parent : @goal.ancestor_chain.reverse.find(&:plan?)
+      plan = target.parent&.plan? ? target.parent : target.ancestor_chain.reverse.find(&:plan?)
       life_journey_path(
         journey,
-        goal_id: @goal.root_goal&.id,
+        goal_id: target.root_goal&.id,
         plan_id: plan&.id,
-        focus_id: @goal.id
+        focus_id: target.id
       )
     else
       life_journey_path(journey)
