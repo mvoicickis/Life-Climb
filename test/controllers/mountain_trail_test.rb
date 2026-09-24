@@ -580,7 +580,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   test "idle state B shows won today copy when battles cleared" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
-      horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0
+      horizon: "day", title: "Won fight", scheduled_on: Date.current, position: 0,
+      repeat: "daily"
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @area)
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
@@ -613,7 +614,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
                   text: I18n.t("strategy.rpg.trail.camp_idle.keep_button")
   end
 
-  test "winning last camp sheet battle replaces battles frame with idle state B" do
+  test "winning last camp sheet battle replaces battles frame with finish composer and card" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Last open fight", scheduled_on: Date.current, position: 0
@@ -624,7 +625,9 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match %(action="replace" target="trail-battles-#{@project.id}"), response.body
-    assert_match I18n.t("strategy.rpg.trail.camp_idle.won_pill"), response.body
+    assert_match "is-finish-composer", response.body
+    assert_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
+    assert_match %(action="replace" target="trail-camp-finish-#{@project.id}"), response.body
   end
 
   test "battle won toast host sits below camp sheet header" do
