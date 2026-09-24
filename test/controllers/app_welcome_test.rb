@@ -48,18 +48,23 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
   test "today renders welcome overlay with landing hero title" do
     get dashboard_path
     assert_response :success
-    assert_select "#lp-app-welcome[hidden][aria-hidden='true'] .lp-app-welcome__headline",
-      text: I18n.t("landing.hero_title")
-    assert_select "img[srcset*='icon.png?v=8'][sizes='192px']"
+    assert_welcome_icon_splash_layout!
     assert_welcome_boot_script!
   end
 
   test "mountain renders welcome overlay with landing hero title" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "#lp-app-welcome[hidden][aria-hidden='true'] .lp-app-welcome__headline",
-      text: I18n.t("landing.hero_title")
+    assert_welcome_icon_splash_layout!
     assert_welcome_boot_script!
+  end
+
+  test "manifest keeps root start_url for onboarding handoff" do
+    get pwa_manifest_path(format: :json)
+    assert_response :success
+    manifest = JSON.parse(response.body)
+    assert_equal "/", manifest["start_url"]
+    assert_equal "/", manifest["scope"]
   end
 
   test "landing does not render welcome" do
@@ -100,9 +105,18 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_match(/lp-app-welcome/, css)
     assert_match(/--lp-app-welcome-duration:\s*1\.2s/, css)
     assert_match(/lp-app-welcome-skip-exit/, css)
+    assert_match(/--lp-app-welcome-icon:\s*200px/, css)
+    assert_match(/\.lp-app-welcome__headline[\s\S]*position:\s*absolute/, css)
   end
 
   private
+
+  def assert_welcome_icon_splash_layout!
+    assert_select "#lp-app-welcome .lp-app-welcome__stage > .lp-app-welcome__icon img[src='/icon.png?v=8'][width='200'][height='200']"
+    assert_select "#lp-app-welcome .lp-app-welcome__stage > .lp-app-welcome__headline",
+      text: I18n.t("landing.hero_title")
+    assert_select "#lp-app-welcome .lp-app-welcome__stack", count: 0
+  end
 
   def assert_welcome_boot_script!
     assert_match(/lpAppWelcomeShown/, response.body)

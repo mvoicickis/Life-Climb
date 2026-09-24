@@ -2,7 +2,7 @@
 
 :root {
   --lp-app-welcome-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --lp-app-welcome-icon: 192px;
+  --lp-app-welcome-icon: 200px;
   --lp-app-welcome-rise: -1.35rem;
   --lp-app-welcome-duration: 1.2s;
   --lp-app-welcome-exit: 0.3s;
@@ -29,19 +29,15 @@ html.lp-app-welcome-pending #lp-app-welcome {
   animation: lp-app-welcome-overlay var(--lp-app-welcome-duration) var(--lp-app-welcome-ease) forwards;
 }
 
-.lp-app-welcome__stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 100%;
-  padding: 0 1.25rem;
+.lp-app-welcome__stage {
+  position: relative;
+  width: var(--lp-app-welcome-icon);
+  height: var(--lp-app-welcome-icon);
 }
 
 .lp-app-welcome__icon {
   width: var(--lp-app-welcome-icon);
   height: var(--lp-app-welcome-icon);
-  flex: none;
   transform: translateY(0) scale(1);
   opacity: 1;
   animation: lp-app-welcome-icon var(--lp-app-welcome-duration) var(--lp-app-welcome-ease) forwards;
@@ -54,8 +50,11 @@ html.lp-app-welcome-pending #lp-app-welcome {
 }
 
 .lp-app-welcome__headline {
-  margin: 1.15rem 0 0;
-  width: 100%;
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 1.15rem);
+  margin: 0;
+  width: max-content;
   max-width: calc(100vw - 2.5rem);
   text-align: center;
   font-family: var(--lp-font-ui);
@@ -65,8 +64,9 @@ html.lp-app-welcome-pending #lp-app-welcome {
   letter-spacing: -0.02em;
   text-wrap: balance;
   color: var(--lp-ink);
-  transform: translateY(10px);
+  transform: translateX(-50%) translateY(10px);
   opacity: 0;
+  pointer-events: none;
   animation: lp-app-welcome-headline var(--lp-app-welcome-duration) var(--lp-app-welcome-ease) forwards;
 }
 
@@ -105,19 +105,19 @@ html.lp-app-welcome-pending #lp-app-welcome {
 @keyframes lp-app-welcome-headline {
   0%,
   22.5% {
-    transform: translateY(10px);
+    transform: translateX(-50%) translateY(10px);
     opacity: 0;
   }
   55% {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
   75% {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
   100% {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
     opacity: 0;
   }
 }
@@ -175,14 +175,15 @@ html.lp-app-welcome-skip-exit .lp-app-welcome__headline {
     animation: lp-app-welcome-overlay-reduced var(--lp-app-welcome-duration) ease forwards;
   }
 
-  .lp-app-welcome__icon,
-  .lp-app-welcome__headline {
+  .lp-app-welcome__icon {
     animation: none !important;
     transform: none;
     opacity: 1;
   }
 
   .lp-app-welcome__headline {
+    animation: none !important;
+    transform: translateX(-50%);
     opacity: 0;
   }
 
