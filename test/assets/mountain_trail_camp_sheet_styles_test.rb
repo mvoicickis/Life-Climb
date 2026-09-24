@@ -114,13 +114,13 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     card = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish__card\s*\{[^}]+\}/m]
     assert card, "expected finish camp card block"
     assert_match(/pointer-events:\s*auto/, card)
-    assert_match(/width:\s*auto/, card)
-    refute_match(/width:\s*100%/, card)
+    assert_match(/^\s*width:\s*auto;/m, card)
+    refute_match(/^\s*width:\s*100%;/m, card)
 
     idle_on_finish = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish \.lp-trail-camp-idle\s*\{[^}]+\}/m]
     assert idle_on_finish, "expected finish overlay idle card width override"
-    assert_match(/width:\s*auto/, idle_on_finish)
-    refute_match(/width:\s*100%/, idle_on_finish)
+    assert_match(/^\s*width:\s*auto;/m, idle_on_finish)
+    refute_match(/^\s*width:\s*100%;/m, idle_on_finish)
   end
 
   test "finish card open hides duplicate add battle pill" do
