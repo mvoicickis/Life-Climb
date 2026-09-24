@@ -62,6 +62,7 @@
          data-trail-canvas-plant-failed-value="<%= t('strategy.rpg.trail.arrange.add_camp_failed') %>"
          data-trail-camp-sheet-base-title-fallback-value="<%= t('strategy.rpg.trail.base_camp.kicker') %>"
          data-trail-camp-sheet-base-tagline-value="<%= t('strategy.rpg.trail.base_camp.header_tagline') %>"
+         data-trail-camp-sheet-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
          <% if first_camp_reveal %>
          data-first-camp-reveal-camp-id-value="<%= first_camp.id %>"
          data-first-camp-reveal-camps-value="<%= mountain_trail_reveal_camps_json(trail, builtin_map: builtin_photos) %>"
@@ -470,6 +471,16 @@
           <% end %>
         </div>
       </header>
+      <% finish_undo_bar_camp = sheet_camps.first %>
+      <% if finish_undo_bar_camp %>
+        <%= render "life_journeys/trail_camp_finish_undo_bar", finished_camp: finish_undo_bar_camp, visible: false %>
+      <% else %>
+        <div id="trail-sheet-finish-undo-bar"
+             class="lp-trail-sheet__finish-undo-bar"
+             data-trail-camp-sheet-target="finishUndoBar"
+             hidden
+             aria-hidden="true"></div>
+      <% end %>
       <div class="lp-trail-sheet__stage" id="trail-sheet-stage">
         <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
           <%= image_tag "camp_fire_default.webp",

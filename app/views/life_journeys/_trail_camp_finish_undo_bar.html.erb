@@ -1,0 +1,33 @@
+<%# Sheet undo bar after auto-next. locals: finished_camp, visible: %>
+<% finished_camp = local_assigns.fetch(:finished_camp) %>
+<% visible = local_assigns.fetch(:visible, false) %>
+<div id="trail-sheet-finish-undo-bar"
+     class="lp-trail-sheet__finish-undo-bar"
+     data-trail-camp-sheet-target="finishUndoBar"
+     <%= "hidden" unless visible %>
+     aria-hidden="<%= visible ? "false" : "true" %>">
+  <%= button_to strategy_goal_manual_completion_path(finished_camp),
+        method: :delete,
+        class: "lp-trail-sheet__finish-undo-bar-btn",
+        form: {
+          class: "lp-trail-sheet__finish-undo-bar-form",
+          data: {
+            turbo: true,
+            trail_camp_sheet_target: "barUndoForm",
+            action: "turbo:submit-start->trail-camp-sheet#beginBarUndo turbo:submit-end->trail-camp-sheet#barUndoEnded"
+          }
+        },
+        data: {
+          trail_camp_sheet_target: "barUndoButton",
+          action: "click->trail-camp-sheet#barUndoClick"
+        } do %>
+    <span><%= t("strategy.rpg.trail.finish_camp_card.finished") %></span>
+    <span aria-hidden="true">·</span>
+    <span class="is-undo"><%= t("strategy.rpg.trail.undo") %></span>
+  <% end %>
+  <p class="lp-trail-sheet__finish-undo-bar-notice"
+     data-trail-camp-sheet-target="barSaveNotice"
+     data-action="click->trail-camp-sheet#retryBarUndo"
+     role="status"
+     hidden></p>
+</div>

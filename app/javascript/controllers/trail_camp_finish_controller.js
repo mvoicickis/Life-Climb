@@ -7,7 +7,7 @@ const RESTORE_EVENT = "lp-trail-finish-card:restore"
 export default class extends Controller {
   static targets = [
     "promptCard", "undoCard", "settledCard", "finishForm", "finishButton",
-    "undoForm", "undoButton", "reopenForm", "reopenButton", "saveNotice"
+    "undoForm", "undoButton", "reopenForm", "reopenButton", "saveNotice", "autoProgress"
   ]
 
   static values = {
@@ -15,6 +15,7 @@ export default class extends Controller {
     finishedUndo: { type: Boolean, default: false },
     finishedSettled: { type: Boolean, default: false },
     projectId: String,
+    nextCampId: String,
     winNotSaved: { type: String, default: "" },
     undoLabel: { type: String, default: "" },
     reopenLabel: { type: String, default: "" }
@@ -30,6 +31,15 @@ export default class extends Controller {
       this.campSheetController()?.showCampOverlays(this.projectIdValue)
       this.campSheetController()?.syncFinishCardPanelOpen(this.projectIdValue)
       this.scheduleSettle()
+      if (this.nextCampIdValue) {
+        requestAnimationFrame(() => {
+          if (this.hasAutoProgressTarget) this.autoProgressTarget.classList.add("is-running")
+        })
+        this.campSheetController()?.startFinishCampAutoNext({
+          finishedCampId: this.projectIdValue,
+          nextCampId: this.nextCampIdValue
+        })
+      }
     } else if (this.finishedSettledValue) {
       this.campSheetController()?.showCampOverlays(this.projectIdValue)
       if (this.sheetOpenForThisCamp()) {
@@ -69,6 +79,14 @@ export default class extends Controller {
       event.preventDefault()
       event.stopPropagation()
     }
+  }
+
+  openNextCampNow(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (!this.nextCampIdValue) return
+
+    this.campSheetController()?.openNextCampAfterFinish(this.nextCampIdValue, this.projectIdValue)
   }
 
   reopenClick(event) {
@@ -120,6 +138,9 @@ export default class extends Controller {
       window.clearTimeout(this._undoTimer)
       this._undoTimer = null
     }
+    const sheet = this.campSheetController()
+    sheet?.cancelPendingAutoOpen()
+    sheet?.hideFinishUndoBar({ force: false })
     if (this.hasUndoButtonTarget) this.undoButtonTarget.disabled = true
     lockWinSubmit(this.element, true)
   }

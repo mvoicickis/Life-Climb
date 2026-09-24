@@ -52,8 +52,11 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     assert_match %(action="replace" target="trail-camp-finish-#{camp_a.id}"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.finished"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camp_b.title), response.body
-    assert_match %(data-action="click->trail-camp-sheet#openFromDock"), response.body
-    assert_match %(data-camp-id="#{camp_b.id}"), response.body
+    assert_match %(data-action="click->trail-camp-finish#openNextCampNow"), response.body
+    assert_match %(data-trail-camp-finish-next-camp-id-value="#{camp_b.id}"), response.body
+    assert_match "lp-trail-camp-finish__progress", response.body
+    assert_match %(action="replace" target="trail-sheet-finish-undo-bar"), response.body
+    assert_match strategy_goal_manual_completion_path(camp_a), response.body
     assert_match %(action="replace" target="trail-map-camps"), response.body
     refute_match %(action="replace" target="trail-battles-#{camp_a.id}"), response.body
 
@@ -90,6 +93,10 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.back_to_mountain"), response.body
     refute_match I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camp.title), response.body
+    refute_match "data-trail-camp-finish-next-camp-id-value", response.body
+    refute_match "lp-trail-camp-finish__progress", response.body
+    assert_match %(action="replace" target="trail-sheet-finish-undo-bar"), response.body
+    assert_match 'id="trail-sheet-finish-undo-bar"', response.body
   end
 
   test "next open camp after finish is not the finished camp and map stream targets it" do
@@ -104,10 +111,32 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     post strategy_goal_manual_completion_path(camps[0]), as: :turbo_stream
     assert_response :success
     next_camp = camps[1]
-    assert_match %(data-camp-id="#{next_camp.id}"), response.body
+    assert_match %(data-trail-camp-finish-next-camp-id-value="#{next_camp.id}"), response.body
     assert_match %(action="replace" target="trail-map-camps"), response.body
     refute next_camp.reload.completed?
     refute_equal camps[0].id, next_camp.id
     refute_match I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camps[0].title), response.body
+  end
+
+  test "bar undo stream reopens finished camp battles and clears undo bar" do
+    camp_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp Alpha", position: 0, stage: 0
+    )
+    camp_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp Beta", position: 1, stage: 1
+    )
+    win_all_battles!(camp_a)
+    post strategy_goal_manual_completion_path(camp_a), as: :turbo_stream
+    assert camp_a.reload.manually_completed?
+
+    delete strategy_goal_manual_completion_path(camp_a), as: :turbo_stream
+    assert_response :success
+
+    assert_match %(action="replace" target="trail-battles-#{camp_a.id}"), response.body
+    assert_match %(action="replace" target="trail-camp-finish-#{camp_a.id}"), response.body
+    assert_match %(action="replace" target="trail-sheet-finish-undo-bar"), response.body
+    assert_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
+    refute camp_a.reload.manually_completed?
+    refute_includes response.body, I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camp_b.title)
   end
 end

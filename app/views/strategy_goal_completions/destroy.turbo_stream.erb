@@ -24,6 +24,13 @@
       <%= render "life_journeys/trail_camp_sheet_menu", project: @project %>
     </div>
   <% end %>
+  <%= turbo_stream.replace "trail-sheet-finish-undo-bar" do %>
+    <div id="trail-sheet-finish-undo-bar"
+         class="lp-trail-sheet__finish-undo-bar"
+         data-trail-camp-sheet-target="finishUndoBar"
+         hidden
+         aria-hidden="true"></div>
+  <% end %>
   <% if @plan.present? && @journey.present? %>
     <%= render "life_journeys/trail_map_camp_stream",
           plan: @plan,
