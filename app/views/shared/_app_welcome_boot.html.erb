@@ -2,7 +2,9 @@
 (function () {
   var STORAGE_KEY = "lpAppWelcomeShown";
   var PAPER_THEME = "<%= theme_color_for_request %>";
-  var DURATION_MS = 1500;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var DURATION_MS = reduced ? 200 : 1200;
+  var EXIT_MS = reduced ? 200 : 300;
 
   function restoreThemeColors() {
     document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
@@ -12,18 +14,38 @@
     });
   }
 
-  function dismiss() {
-    if (window.__lpAppWelcomeTimer) {
-      clearTimeout(window.__lpAppWelcomeTimer);
-      window.__lpAppWelcomeTimer = null;
-    }
-    document.documentElement.classList.remove("lp-app-welcome-pending");
+  function finishDismiss() {
+    var root = document.documentElement;
+    root.classList.remove("lp-app-welcome-pending", "lp-app-welcome-skip-exit");
     restoreThemeColors();
     var overlay = document.getElementById("lp-app-welcome");
     if (overlay) overlay.setAttribute("hidden", "");
   }
 
+  function dismiss() {
+    if (window.__lpAppWelcomeTimer) {
+      clearTimeout(window.__lpAppWelcomeTimer);
+      window.__lpAppWelcomeTimer = null;
+    }
+    finishDismiss();
+  }
+
+  function skipWithExit() {
+    if (window.__lpAppWelcomeTimer) {
+      clearTimeout(window.__lpAppWelcomeTimer);
+      window.__lpAppWelcomeTimer = null;
+    }
+    var root = document.documentElement;
+    if (!root.classList.contains("lp-app-welcome-pending")) {
+      finishDismiss();
+      return;
+    }
+    root.classList.add("lp-app-welcome-skip-exit");
+    window.__lpAppWelcomeTimer = window.setTimeout(finishDismiss, EXIT_MS);
+  }
+
   window.__lpDismissAppWelcome = dismiss;
+  window.__lpSkipAppWelcome = skipWithExit;
 
   function arm() {
     try {
