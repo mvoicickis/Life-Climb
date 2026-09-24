@@ -253,6 +253,10 @@ ru:
           body: "Add a battle, or finish this camp to climb higher."  # TODO: translate
           add_another: "Add another battle"  # TODO: translate
           finish: "Finish camp"  # TODO: translate
+          finished: "Camp finished"  # TODO: translate
+          next_camp: "Next camp: %{name}"  # TODO: translate
+          back_to_mountain: "Back to Mountain"  # TODO: translate
+          reopen_camp: "Reopen camp"  # TODO: translate
         camp_idle:
           start_title: "Your climb starts here"  # TODO: translate
           start_body: "Pick one small thing you can finish today. Small wins get you to the top."  # TODO: translate

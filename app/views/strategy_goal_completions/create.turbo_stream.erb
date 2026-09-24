@@ -1,0 +1,62 @@
+<% if @project.present? %>
+  <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_finish_card",
+          project: @project,
+          plan: @plan,
+          goal: @goal,
+          next_camp: @next_camp,
+          state: :finished_undo %>
+  <% end %>
+  <%= turbo_stream.replace "trail-sheet-menu-#{@project.id}" do %>
+    <div id="trail-sheet-menu-<%= @project.id %>"
+         class="lp-trail-sheet__camp-menu"
+         data-controller="plan-card-menu"
+         data-camp-menu-panel="<%= @project.id %>">
+      <%= render "life_journeys/trail_camp_sheet_menu", project: @project %>
+    </div>
+  <% end %>
+  <% if @mount_next_camp_sheet && @next_camp.present? %>
+    <%= turbo_stream.append "trail-sheet-title-row" do %>
+      <div id="trail-sheet-menu-<%= @next_camp.id %>"
+           class="lp-trail-sheet__camp-menu"
+           data-controller="plan-card-menu"
+           data-camp-menu-panel="<%= @next_camp.id %>"
+           hidden>
+        <%= render "life_journeys/trail_camp_sheet_menu", project: @next_camp %>
+      </div>
+    <% end %>
+    <%= turbo_stream.append "trail-sheet-body" do %>
+      <div class="lp-trail-sheet__camp"
+           id="trail-sheet-camp-<%= @next_camp.id %>"
+           data-camp-panel="<%= @next_camp.id %>"
+           hidden>
+        <%= render "life_journeys/trail_camp_battles",
+              project: @next_camp,
+              goal: @goal,
+              plan: @plan,
+              area: @next_camp.life_area %>
+      </div>
+    <% end %>
+    <%= turbo_stream.append "trail-sheet-stage" do %>
+      <%= render "life_journeys/trail_camp_finish_card",
+            project: @next_camp,
+            plan: @plan,
+            goal: @goal,
+            next_camp: nil,
+            state: :hidden %>
+    <% end %>
+    <%= turbo_stream.append "trail-sheet-panel-overlays" do %>
+      <%= render "life_journeys/trail_camp_panel_overlays",
+            project: @next_camp,
+            goal: @goal,
+            plan: @plan,
+            area: @next_camp.life_area %>
+    <% end %>
+  <% end %>
+  <% if @plan.present? && @journey.present? %>
+    <%= render "life_journeys/trail_map_camp_stream",
+          plan: @plan,
+          journey: @journey,
+          ensure_visible_id: @next_camp&.id || @project.id %>
+  <% end %>
+<% end %>

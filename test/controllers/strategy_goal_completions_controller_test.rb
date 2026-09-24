@@ -162,6 +162,19 @@ class StrategyGoalCompletionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "1", response.headers["X-LP-No-Page-Cache"]
   end
 
+  test "menu finish still redirects html without turbo stream body" do
+    post strategy_goal_manual_completion_path(@project_a)
+    assert_redirected_to life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project_a.id)
+    refute_match "turbo-stream", @response.body
+  end
+
+  test "turbo stream finish returns completed card without redirect" do
+    post strategy_goal_manual_completion_path(@project_a), as: :turbo_stream
+    assert_response :success
+    assert_nil response.headers["Location"]
+    assert_match %(action="replace" target="trail-camp-finish-#{@project_a.id}"), response.body
+  end
+
   test "climb path keeps menu on a manually closed project for reopen" do
     post strategy_goal_manual_completion_path(@project_a)
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project_a.id)

@@ -1,0 +1,25 @@
+<% if @project.present? %>
+  <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_finish_card",
+          project: @project,
+          plan: @plan,
+          goal: @goal,
+          next_camp: @next_camp,
+          state: mountain_trail_finish_camp_card?(@project) ? :prompt : :hidden,
+          visible: mountain_trail_finish_camp_card?(@project) %>
+  <% end %>
+  <%= turbo_stream.replace "trail-sheet-menu-#{@project.id}" do %>
+    <div id="trail-sheet-menu-<%= @project.id %>"
+         class="lp-trail-sheet__camp-menu"
+         data-controller="plan-card-menu"
+         data-camp-menu-panel="<%= @project.id %>">
+      <%= render "life_journeys/trail_camp_sheet_menu", project: @project %>
+    </div>
+  <% end %>
+  <% if @plan.present? && @journey.present? %>
+    <%= render "life_journeys/trail_map_camp_stream",
+          plan: @plan,
+          journey: @journey,
+          ensure_visible_id: @project.id %>
+  <% end %>
+<% end %>
