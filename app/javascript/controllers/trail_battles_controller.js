@@ -17,7 +17,7 @@ export default class extends Controller {
     "descriptionDialog", "descriptionField", "sessionToast", "addRow",
     "pickDaysDialog", "weekdaysRow", "pickDaysError",
     "composer", "composerTrigger", "composerForm", "composerAddBtn",
-    "winToast"
+    "winToast", "idleFinishForm", "idleFinishButton", "idleFinishNotice"
   ]
 
   static values = {
@@ -738,6 +738,61 @@ export default class extends Controller {
         input.blur()
       }
     })
+  }
+
+  idleFinishClick(event) {
+    if (this.element.dataset.idleFinishInFlight === "1") {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  beginIdleFinish(event) {
+    if (this.element.dataset.idleFinishInFlight === "1") {
+      event.preventDefault()
+      return
+    }
+
+    this.clearIdleFinishNotice()
+    this.element.dataset.idleFinishInFlight = "1"
+    if (this.hasIdleFinishButtonTarget) this.idleFinishButtonTarget.disabled = true
+    lockWinSubmit(this.element, true)
+  }
+
+  idleFinishEnded(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-camp-idle__finish-form")) return
+
+    lockWinSubmit(this.element, false)
+    delete this.element.dataset.idleFinishInFlight
+    if (this.hasIdleFinishButtonTarget) this.idleFinishButtonTarget.disabled = false
+
+    if (!turboSubmitOk(event)) {
+      const message = this.winNotSavedValue
+      if (message) this.showIdleFinishNotice(message)
+    }
+  }
+
+  retryIdleFinish(event) {
+    event.preventDefault()
+    if (!this.hasIdleFinishNoticeTarget || this.idleFinishNoticeTarget.hidden) return
+    if (!this.hasIdleFinishFormTarget) return
+    this.clearIdleFinishNotice()
+    this.idleFinishFormTarget.requestSubmit()
+  }
+
+  showIdleFinishNotice(message) {
+    if (!this.hasIdleFinishNoticeTarget) return
+    this.idleFinishNoticeTarget.textContent = message
+    this.idleFinishNoticeTarget.hidden = false
+    this.idleFinishNoticeTarget.removeAttribute("hidden")
+  }
+
+  clearIdleFinishNotice() {
+    if (!this.hasIdleFinishNoticeTarget) return
+    this.idleFinishNoticeTarget.textContent = ""
+    this.idleFinishNoticeTarget.hidden = true
+    this.idleFinishNoticeTarget.setAttribute("hidden", "")
   }
 
 }

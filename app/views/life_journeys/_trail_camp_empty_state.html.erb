@@ -40,6 +40,29 @@
       <%= t("strategy.rpg.trail.camp_idle.keep_button") %>
     <% end %>
   </button>
+  <% if variant == :won && mountain_trail_idle_finish_camp?(project) %>
+    <%= button_to t("strategy.rpg.trail.finish_camp_card.finish"),
+          strategy_goal_manual_completion_path(project),
+          method: :post,
+          class: "lp-trail-camp-idle__finish",
+          form: {
+            class: "lp-trail-camp-idle__finish-form",
+            data: {
+              turbo: true,
+              trail_battles_target: "idleFinishForm",
+              action: "turbo:submit-start->trail-battles#beginIdleFinish turbo:submit-end->trail-battles#idleFinishEnded"
+            }
+          },
+          data: {
+            trail_battles_target: "idleFinishButton",
+            action: "click->trail-battles#idleFinishClick"
+          } %>
+    <p class="lp-trail-camp-idle__finish-notice"
+       data-trail-battles-target="idleFinishNotice"
+       data-action="click->trail-battles#retryIdleFinish"
+       role="status"
+       hidden></p>
+  <% end %>
   <div class="lp-trail-battles__composer"
        data-trail-battles-target="composer">
     <div class="lp-trail-battles__composer-form"

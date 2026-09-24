@@ -140,6 +140,19 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert_match(/display:\s*none/, rule)
   end
 
+  test "finish card open hides body idle scroll not finish overlay card" do
+    rule = @css[
+      /\.lp-trail\.is-v4 \.lp-trail-sheet__panel\.is-finish-card-open \.lp-trail-sheet__body \.lp-trail-battles__scroll\.is-idle\s*\{[^}]+\}/m
+    ]
+    assert rule, "expected is-finish-card-open body idle scroll hide rule"
+    assert_match(/display:\s*none/, rule)
+
+    refute_match(
+      /\.lp-trail\.is-v4 \.lp-trail-sheet__panel\.is-finish-card-open \.lp-trail-camp-idle\s*\{/,
+      @css
+    )
+  end
+
   test "open battle row body flexes without width 100 percent" do
     body_rule = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open \.lp-trail-battles__body\s*\{[^}]+\}/m]
     assert body_rule, "expected open battle row body block"
