@@ -2762,6 +2762,106 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   margin: 0;
 }
 
+.lp-trail.is-v4 .lp-trail-camp-finish__progress {
+  width: 100%;
+  height: 3px;
+  margin-top: 0.15rem;
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-ink) 10%, transparent);
+  overflow: hidden;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__progress-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: var(--lp-green);
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__progress.is-running .lp-trail-camp-finish__progress-fill {
+  animation: lp-trail-finish-auto-next-fill 2s linear forwards;
+}
+
+@keyframes lp-trail-finish-auto-next-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-trail.is-v4 .lp-trail-camp-finish__progress.is-running .lp-trail-camp-finish__progress-fill {
+    animation: none;
+    width: 0%;
+  }
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--lp-surface);
+  border-bottom: 1px solid var(--lp-border);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--lp-ink) 6%, transparent);
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar[hidden] {
+  display: none !important;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar-form {
+  margin: 0;
+  max-width: 100%;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar-btn {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 800;
+  color: var(--lp-muted);
+  text-align: center;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar-btn .is-undo {
+  color: var(--lp-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar-notice {
+  margin: 0;
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 700;
+  color: var(--lp-muted);
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__finish-undo-bar-notice[hidden] {
+  display: none !important;
+}
+
 .lp-trail.is-v4 .lp-trail-camp-finish__secondary {
   display: flex;
   align-items: center;

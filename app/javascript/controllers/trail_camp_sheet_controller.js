@@ -1,15 +1,23 @@
 import { Controller } from "@hotwired/stimulus"
+import { lockWinSubmit, turboSubmitOk } from "lib/battle_win_feedback"
+
+const AUTO_NEXT_MS = 2000
+const FINISH_UNDO_BAR_MS = 5000
 
 // Bottom battle sheet for a trail camp marker.
 // Android back closes the sheet (history.pushState) instead of leaving Mountain.
 export default class extends Controller {
-  static targets = ["sheet", "panel", "title", "subtitle", "body", "accent", "terraceSheet", "terraceSheetTitle", "terraceSheetBody"]
+  static targets = [
+    "sheet", "panel", "title", "subtitle", "body", "accent", "terraceSheet", "terraceSheetTitle", "terraceSheetBody",
+    "finishUndoBar", "barUndoForm", "barUndoButton", "barSaveNotice"
+  ]
 
   static values = {
     baseTitleFallback: String,
     baseTagline: String,
     dismissUrl: String,
-    revealPending: Boolean
+    revealPending: Boolean,
+    winNotSaved: { type: String, default: "" }
   }
 
   connect() {
@@ -24,6 +32,12 @@ export default class extends Controller {
     }
     this._openCampId = null
     this._pushedHistory = false
+    this._autoNextTimer = null
+    this._barHideTimer = null
+    this._finishUndoBarActive = false
+    this._finishUndoBarNextCampId = null
+    this._finishUndoBarFinishedCampId = null
+    this._barUndoInFlight = false
     window.addEventListener("popstate", this._onPopState)
     this.maybeOpenFromQuery()
   }
@@ -31,6 +45,7 @@ export default class extends Controller {
   disconnect() {
     window.removeEventListener("popstate", this._onPopState)
     if (this._onTerraceKey) document.removeEventListener("keydown", this._onTerraceKey)
+    this.clearFinishCampTimers()
     this.teardown()
   }
 
@@ -152,6 +167,7 @@ export default class extends Controller {
     if (this.hasTitleTarget) this.titleTarget.textContent = this.baseTitle()
     this.setSubtitle(this.baseTaglineValue || "")
 
+    this.onBeforeCampOpen("base")
     this.revealBodyFor({ dataset: { campId: "base" } })
     this._openCampId = "base"
     this.hideCampMenus()
@@ -186,6 +202,8 @@ export default class extends Controller {
 
     const camp = event?.currentTarget
     if (!camp || !this.hasSheetTarget) return
+
+    this.onBeforeCampOpen(camp.dataset.campId)
 
     const alreadyOpen = this.sheetTarget.classList.contains("is-open") && !this.sheetTarget.hidden
 
@@ -510,10 +528,171 @@ export default class extends Controller {
     })
   }
 
+  startFinishCampAutoNext({ finishedCampId, nextCampId }) {
+    if (!finishedCampId || !nextCampId) return
+
+    this.cancelPendingAutoOpen()
+    this._pendingAutoNext = { finishedCampId: String(finishedCampId), nextCampId: String(nextCampId) }
+    this._autoNextTimer = window.setTimeout(() => {
+      this._autoNextTimer = null
+      const pending = this._pendingAutoNext
+      this._pendingAutoNext = null
+      if (!pending) return
+
+      this.openCampById(pending.nextCampId)
+      this.showFinishUndoBar(pending.finishedCampId, pending.nextCampId)
+    }, AUTO_NEXT_MS)
+  }
+
+  openNextCampAfterFinish(nextCampId, finishedCampId) {
+    if (!nextCampId || !finishedCampId) return
+
+    this.cancelPendingAutoOpen()
+    this.openCampById(nextCampId)
+    this.showFinishUndoBar(finishedCampId, nextCampId)
+  }
+
+  cancelPendingAutoOpen() {
+    if (this._autoNextTimer) {
+      window.clearTimeout(this._autoNextTimer)
+      this._autoNextTimer = null
+    }
+    this._pendingAutoNext = null
+  }
+
+  clearFinishCampTimers() {
+    this.cancelPendingAutoOpen()
+    if (this._barHideTimer) {
+      window.clearTimeout(this._barHideTimer)
+      this._barHideTimer = null
+    }
+  }
+
+  onBeforeCampOpen(campId) {
+    this.cancelPendingAutoOpen()
+    if (!this._finishUndoBarActive || !this._finishUndoBarNextCampId) return
+    if (String(campId) === String(this._finishUndoBarNextCampId)) return
+
+    this.hideFinishUndoBar({ force: false })
+  }
+
+  showFinishUndoBar(finishedCampId, nextCampId) {
+    if (!this.hasFinishUndoBarTarget) return
+
+    this._finishUndoBarActive = true
+    this._finishUndoBarFinishedCampId = String(finishedCampId)
+    this._finishUndoBarNextCampId = String(nextCampId)
+    this.clearBarSaveNotice()
+
+    this.finishUndoBarTarget.hidden = false
+    this.finishUndoBarTarget.removeAttribute("hidden")
+    this.finishUndoBarTarget.setAttribute("aria-hidden", "false")
+
+    if (this._barHideTimer) window.clearTimeout(this._barHideTimer)
+    this._barHideTimer = window.setTimeout(() => {
+      this._barHideTimer = null
+      this.hideFinishUndoBar({ force: false })
+    }, FINISH_UNDO_BAR_MS)
+  }
+
+  hideFinishUndoBar({ force = false } = {}) {
+    if (!force && this._barUndoInFlight) return
+
+    if (this._barHideTimer) {
+      window.clearTimeout(this._barHideTimer)
+      this._barHideTimer = null
+    }
+
+    this._finishUndoBarActive = false
+    this._finishUndoBarNextCampId = null
+    this._finishUndoBarFinishedCampId = null
+
+    if (!this.hasFinishUndoBarTarget) return
+
+    this.finishUndoBarTarget.hidden = true
+    this.finishUndoBarTarget.setAttribute("hidden", "")
+    this.finishUndoBarTarget.setAttribute("aria-hidden", "true")
+    this.clearBarSaveNotice()
+  }
+
+  barUndoClick(event) {
+    if (this._barUndoInFlight) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  beginBarUndo(event) {
+    if (this._barUndoInFlight) {
+      event.preventDefault()
+      return
+    }
+
+    this.clearBarSaveNotice()
+    this._barUndoInFlight = true
+    if (this._barHideTimer) {
+      window.clearTimeout(this._barHideTimer)
+      this._barHideTimer = null
+    }
+    if (this.hasBarUndoButtonTarget) this.barUndoButtonTarget.disabled = true
+    lockWinSubmit(this.finishUndoBarTarget, true)
+  }
+
+  barUndoEnded(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-sheet__finish-undo-bar-form")) return
+
+    lockWinSubmit(this.finishUndoBarTarget, false)
+    this._barUndoInFlight = false
+    if (this.hasBarUndoButtonTarget) this.barUndoButtonTarget.disabled = false
+
+    const finishedCampId = this._finishUndoBarFinishedCampId
+
+    if (!turboSubmitOk(event)) {
+      const message = this.winNotSavedValue
+      if (message) this.showBarSaveNotice(message)
+      if (this._finishUndoBarActive && finishedCampId) {
+        if (this._barHideTimer) window.clearTimeout(this._barHideTimer)
+        this._barHideTimer = window.setTimeout(() => {
+          this._barHideTimer = null
+          this.hideFinishUndoBar({ force: false })
+        }, FINISH_UNDO_BAR_MS)
+      }
+      return
+    }
+
+    this.hideFinishUndoBar({ force: true })
+    if (finishedCampId) this.openCampById(finishedCampId)
+  }
+
+  retryBarUndo(event) {
+    event.preventDefault()
+    if (!this.hasBarSaveNoticeTarget || this.barSaveNoticeTarget.hidden) return
+    if (!this.hasBarUndoFormTarget) return
+    this.clearBarSaveNotice()
+    this.barUndoFormTarget.requestSubmit()
+  }
+
+  showBarSaveNotice(message) {
+    if (!this.hasBarSaveNoticeTarget) return
+    this.barSaveNoticeTarget.textContent = message
+    this.barSaveNoticeTarget.hidden = false
+    this.barSaveNoticeTarget.removeAttribute("hidden")
+  }
+
+  clearBarSaveNotice() {
+    if (!this.hasBarSaveNoticeTarget) return
+    this.barSaveNoticeTarget.textContent = ""
+    this.barSaveNoticeTarget.hidden = true
+    this.barSaveNoticeTarget.setAttribute("hidden", "")
+  }
+
   teardown() {
     document.removeEventListener("keydown", this._onKey)
     this.unbindViewportGuards()
     this.resetViewportInsets()
+    this.clearFinishCampTimers()
+    this.hideFinishUndoBar({ force: true })
     if (!this.hasSheetTarget) return
 
     if (this.revealPendingValue && this.hasDismissUrlValue) {

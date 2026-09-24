@@ -20,6 +20,9 @@
      data-trail-camp-finish-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
      data-trail-camp-finish-undo-label-value="<%= t('strategy.rpg.trail.undo') %>"
      data-trail-camp-finish-reopen-label-value="<%= t('strategy.rpg.trail.finish_camp_card.reopen_camp') %>"
+     <% if state == :finished_undo && next_camp.present? %>
+     data-trail-camp-finish-next-camp-id-value="<%= next_camp.id %>"
+     <% end %>
      <%= "hidden" if hidden %>
      aria-hidden="<%= hidden ? "true" : "false" %>">
   <% if state == :prompt && visible %>
@@ -75,6 +78,13 @@
               trail_camp_finish_target: "undoButton",
               action: "click->trail-camp-finish#undoClick"
             } %>
+      <% if next_camp.present? %>
+        <div class="lp-trail-camp-finish__progress"
+             data-trail-camp-finish-target="autoProgress"
+             aria-hidden="true">
+          <span class="lp-trail-camp-finish__progress-fill"></span>
+        </div>
+      <% end %>
       <p class="lp-trail-camp-finish__save-notice"
          data-trail-camp-finish-target="saveNotice"
          data-action="click->trail-camp-finish#retryUndo"

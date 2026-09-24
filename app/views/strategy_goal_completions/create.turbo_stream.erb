@@ -15,6 +15,17 @@
       <%= render "life_journeys/trail_camp_sheet_menu", project: @project %>
     </div>
   <% end %>
+  <%= turbo_stream.replace "trail-sheet-finish-undo-bar" do %>
+    <% if @next_camp.present? %>
+      <%= render "life_journeys/trail_camp_finish_undo_bar", finished_camp: @project, visible: false %>
+    <% else %>
+      <div id="trail-sheet-finish-undo-bar"
+           class="lp-trail-sheet__finish-undo-bar"
+           data-trail-camp-sheet-target="finishUndoBar"
+           hidden
+           aria-hidden="true"></div>
+    <% end %>
+  <% end %>
   <% if @mount_next_camp_sheet && @next_camp.present? %>
     <%= turbo_stream.append "trail-sheet-title-row" do %>
       <div id="trail-sheet-menu-<%= @next_camp.id %>"
