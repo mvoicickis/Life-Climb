@@ -2615,6 +2615,150 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   padding: 0.65rem 1.1rem 0.75rem;
 }
 
+.lp-trail.is-v4 .lp-trail-battles__scroll.is-finish-composer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer.is-finish-pinned {
+  margin-top: auto;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0.5rem 1.1rem 5.5rem;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish.is-hidden {
+  display: none !important;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__card {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 1rem 0.9rem 0.95rem;
+  text-align: center;
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  background: var(--lp-surface);
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0 auto 0.15rem;
+  border-radius: 50%;
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__body {
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--lp-muted);
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__form {
+  margin: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--lp-tap);
+  margin-top: 0.15rem;
+  padding: 0.75rem var(--lp-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+  box-shadow: var(--lp-shadow-cta);
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--lp-tap);
+  margin-top: 0.15rem;
+  padding: 0.75rem var(--lp-space-3);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__secondary:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__save-notice {
+  margin: 0.35rem 0 0;
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 700;
+  color: var(--lp-muted);
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__save-notice[hidden] {
+  display: none !important;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__body:has(.lp-trail-battles__scroll.is-idle) {
   display: flex;
   flex-direction: column;

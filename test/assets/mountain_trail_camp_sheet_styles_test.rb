@@ -104,6 +104,17 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert_match(/background:\s*var\(--lp-paper-soft\)/, camp_bg)
   end
 
+  test "finish camp overlay passes pointer events to card only" do
+    finish = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish\s*\{[^}]+\}/m]
+    assert finish, "expected finish camp overlay block"
+    assert_match(/pointer-events:\s*none/, finish)
+    assert_match(/z-index:\s*2/, finish)
+
+    card = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish__card\s*\{[^}]+\}/m]
+    assert card, "expected finish camp card block"
+    assert_match(/pointer-events:\s*auto/, card)
+  end
+
   test "open battle row body flexes without width 100 percent" do
     body_rule = @css[/\.lp-trail\.is-v4 \.lp-trail-battles__row\.is-open \.lp-trail-battles__body\s*\{[^}]+\}/m]
     assert body_rule, "expected open battle row body block"

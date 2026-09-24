@@ -248,6 +248,11 @@ ru:
           rename_flag: "Tap your goal name to open the menu." # TODO: translate
           rename_flag_summit: "Tap your goal on the summit to open the menu." # TODO: translate
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
+        finish_camp_card:
+          title: "All battles won!"  # TODO: translate
+          body: "Add a battle, or finish this camp to climb higher."  # TODO: translate
+          add_another: "Add another battle"  # TODO: translate
+          finish: "Finish camp"  # TODO: translate
         camp_idle:
           start_title: "Your climb starts here"  # TODO: translate
           start_body: "Pick one small thing you can finish today. Small wins get you to the top."  # TODO: translate

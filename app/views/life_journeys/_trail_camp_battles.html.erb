@@ -11,8 +11,9 @@
 <% won_today_count = days.count { |d| mountain_trail_won_today?(d) } %>
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
+<% show_finish_card = mountain_trail_finish_camp_card?(project) %>
 <% camp_idle_variant =
-     if open_battles.any? || pages_mode
+     if open_battles.any? || pages_mode || show_finish_card
        nil
      elsif days.empty?
        :start
@@ -21,6 +22,7 @@
      else
        :keep
      end %>
+<% composer_only = show_finish_card && !pages_mode %>
 <% open_composer = local_assigns[:open_composer] %>
 <% accent = mountain_trail_project_accent(project) %>
 <% add_form = capture do %>
@@ -122,24 +124,26 @@
       </button>
     </div>
   <% else %>
-    <div class="lp-trail-battles__scroll<%= " is-idle" if camp_idle_variant %>">
+    <div class="lp-trail-battles__scroll<%= " is-idle" if camp_idle_variant %><%= " is-finish-composer" if composer_only %>">
       <% if camp_idle_variant %>
         <%= render "life_journeys/trail_camp_empty_state",
               project: project,
               variant: camp_idle_variant,
               add_form: add_form %>
       <% else %>
-        <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
-          <% open_battles.each_with_index do |battle, index| %>
-            <%= render "life_journeys/trail_battle_row",
-                  battle: battle,
-                  done: false,
-                  show_move_up: index.positive?,
-                  show_move_down: index < open_battles.size - 1 %>
-          <% end %>
-        </ul>
+        <% unless composer_only %>
+          <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+            <% open_battles.each_with_index do |battle, index| %>
+              <%= render "life_journeys/trail_battle_row",
+                    battle: battle,
+                    done: false,
+                    show_move_up: index.positive?,
+                    show_move_down: index < open_battles.size - 1 %>
+            <% end %>
+          </ul>
+        <% end %>
 
-        <div class="lp-trail-battles__composer"
+        <div class="lp-trail-battles__composer<%= " is-finish-pinned" if composer_only %>"
              data-trail-battles-target="composer">
           <button type="button"
                   class="lp-trail-battles__composer-trigger"

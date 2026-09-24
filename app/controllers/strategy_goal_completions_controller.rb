@@ -13,7 +13,15 @@ class StrategyGoalCompletionsController < ApplicationController
 
     @goal.manually_complete!
     Strategy::SyncCompletion.resync!(node: @goal)
-    redirect_to mountain_return_path, status: :see_other
+    respond_to do |format|
+      format.html { redirect_to mountain_return_path, status: :see_other }
+      format.turbo_stream { redirect_to mountain_return_path, status: :see_other }
+    end
+  rescue ActiveRecord::RecordInvalid
+    respond_to do |format|
+      format.html { redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other }
+      format.turbo_stream { head :unprocessable_entity }
+    end
   end
 
   def destroy

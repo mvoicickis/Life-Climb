@@ -65,6 +65,7 @@ class BattleWinsController < ApplicationController
       end
       won_today_count = days.count { |day| helpers.mountain_trail_won_today?(day) }
       @replace_camp_battles = open_remaining.zero? && won_today_count.positive?
+      @show_finish_camp_card = helpers.mountain_trail_finish_camp_card?(@project)
     end
     respond_to do |format|
       format.turbo_stream do
