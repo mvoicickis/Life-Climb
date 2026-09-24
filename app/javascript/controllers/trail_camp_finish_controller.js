@@ -17,6 +17,8 @@ export default class extends Controller {
     this._dismissed = false
     this._boundRestore = this.onRestore.bind(this)
     document.addEventListener(RESTORE_EVENT, this._boundRestore)
+    this.revealQualifiedOverlay()
+    if (this.sheetOpenForThisCamp()) this.campSheetController()?.syncFinishCardPanelOpen(this.projectIdValue)
   }
 
   disconnect() {
@@ -67,6 +69,7 @@ export default class extends Controller {
     this._dismissed = true
     this.element.classList.add("is-hidden")
     this.element.setAttribute("aria-hidden", "true")
+    this.campSheetController()?.syncFinishCardPanelOpen(this.projectIdValue)
 
     const battles = document.getElementById(`trail-battles-${this.projectIdValue}`)
     const controller = this.application.getControllerForElementAndIdentifier(battles, "trail-battles")
@@ -84,12 +87,32 @@ export default class extends Controller {
     this._dismissed = false
     this.element.classList.remove("is-hidden")
     this.clearSaveNotice()
+    this.revealQualifiedOverlay()
+  }
 
+  revealQualifiedOverlay() {
+    if (!this.qualifiedValue || this._dismissed) return
+    if (!this.element.querySelector(".lp-trail-camp-finish__card")) return
+    if (!this.sheetOpenForThisCamp()) return
+
+    this.campSheetController()?.showCampOverlays(this.projectIdValue)
+  }
+
+  campSheetController() {
     const sheet = document.querySelector("[data-controller~='trail-camp-sheet']")
-    const campSheet = sheet
-      ? this.application.getControllerForElementAndIdentifier(sheet, "trail-camp-sheet")
-      : null
-    campSheet?.showCampOverlays(this.projectIdValue)
+    if (!sheet) return null
+
+    return this.application.getControllerForElementAndIdentifier(sheet, "trail-camp-sheet")
+  }
+
+  sheetOpenForThisCamp() {
+    const campSheet = this.campSheetController()
+    if (!campSheet?.hasSheetTarget) return false
+
+    const sheet = campSheet.sheetTarget
+    if (sheet.hidden || !sheet.classList.contains("is-open")) return false
+
+    return String(campSheet._openCampId) === String(this.projectIdValue)
   }
 
   retryFinish(event) {

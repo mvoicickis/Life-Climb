@@ -405,6 +405,31 @@ export default class extends Controller {
       this.panelTarget.classList.toggle("has-won-today", panelHasWon)
       this.panelTarget.classList.remove("is-won-panel-open")
     }
+
+    this.syncFinishCardPanelOpen(campId)
+  }
+
+  finishCardVisibleForCamp(campId) {
+    if (!campId || !this.hasSheetTarget) return false
+
+    const overlay = this.sheetTarget.querySelector(
+      `[data-camp-overlay-panel="${campId}"].lp-trail-camp-finish`
+    )
+    if (!overlay || overlay.hidden) return false
+    if (!overlay.querySelector(".lp-trail-camp-finish__card")) return false
+    if (overlay.classList.contains("is-hidden")) return false
+
+    return true
+  }
+
+  syncFinishCardPanelOpen(campId) {
+    if (!this.hasPanelTarget) return
+
+    const open =
+      campId &&
+      String(campId) === String(this._openCampId) &&
+      this.finishCardVisibleForCamp(campId)
+    this.panelTarget.classList.toggle("is-finish-card-open", open)
   }
 
   hideCampOverlays() {
@@ -417,7 +442,7 @@ export default class extends Controller {
     })
 
     if (this.hasPanelTarget) {
-      this.panelTarget.classList.remove("has-won-today", "is-won-panel-open")
+      this.panelTarget.classList.remove("has-won-today", "is-won-panel-open", "is-finish-card-open")
     }
   }
 
