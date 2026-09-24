@@ -180,6 +180,33 @@ class MountainTrailHelperTest < ActionView::TestCase
     refute mountain_trail_finish_camp_card?(camp, user: user)
   end
 
+  test "idle finish link for recurring camp not completed" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Daily habit")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    camp.children.find_by!(horizon: "day", title: "Daily habit").update!(repeat: "daily")
+
+    assert mountain_trail_idle_finish_camp?(camp)
+  end
+
+  test "idle finish link false for one-shot camp" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Once")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+
+    refute mountain_trail_idle_finish_camp?(camp)
+  end
+
+  test "idle finish link false for completed camp" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Daily habit")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    camp.children.find_by!(horizon: "day", title: "Daily habit").update!(repeat: "daily")
+    camp.update!(completed_at: Time.current, manually_completed_at: Time.current)
+
+    refute mountain_trail_idle_finish_camp?(camp)
+  end
+
   test "finish camp card false with open battle" do
     user = users(:one)
     seed_climb!(user, today_mission: "Still open")

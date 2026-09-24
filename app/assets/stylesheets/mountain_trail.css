@@ -2811,6 +2811,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   display: none;
 }
 
+.lp-trail.is-v4 .lp-trail-sheet__panel.is-finish-card-open .lp-trail-sheet__body .lp-trail-battles__scroll.is-idle {
+  display: none;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__body:has(.lp-trail-battles__scroll.is-idle) {
   display: flex;
   flex-direction: column;
@@ -2907,6 +2911,45 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer-trigger {
   margin-top: var(--lp-space-2, 0.5rem);
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__finish-form {
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__finish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--lp-tap);
+  margin: 0;
+  padding: 0.35rem var(--lp-space-3);
+  border: 0;
+  border-radius: var(--lp-radius-pill);
+  background: transparent;
+  color: var(--lp-muted);
+  font: inherit;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__finish-notice {
+  margin: 0;
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 700;
+  color: var(--lp-muted);
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-idle__finish-notice[hidden] {
+  display: none !important;
 }
 
 .lp-trail.is-v4 .lp-trail-camp-idle .lp-trail-battles__composer {

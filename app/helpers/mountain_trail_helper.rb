@@ -924,6 +924,13 @@ module MountainTrailHelper
     open.empty?
   end
 
+  # Won-today idle sheet: offer manual camp finish when battles repeat (daily/weekly).
+  def mountain_trail_idle_finish_camp?(project)
+    return false if project.blank? || project.completed?
+
+    mountain_trail_camp_days(project).any?(&:repeat_recurring?)
+  end
+
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
     return false unless battle.try(:repeat_daily?) || battle.try(:repeat_weekly?)
