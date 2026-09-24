@@ -924,11 +924,11 @@ module MountainTrailHelper
     open.empty?
   end
 
-  # Won-today idle sheet: offer manual camp finish when battles repeat (daily/weekly).
+  # Won-today idle sheet: manual finish when the finish overlay card does not qualify.
   def mountain_trail_idle_finish_camp?(project)
     return false if project.blank? || project.completed?
 
-    mountain_trail_camp_days(project).any?(&:repeat_recurring?)
+    true
   end
 
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
