@@ -52,7 +52,7 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     assert_match %(action="replace" target="trail-camp-finish-#{camp_a.id}"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.finished"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camp_b.title), response.body
-    assert_match %(data-action="click->trail-camp-sheet#openFromDock"), response.body
+    assert_match %(data-action="click->trail-camp-finish#openNextCampNow"), response.body
     assert_match %(data-trail-camp-finish-next-camp-id-value="#{camp_b.id}"), response.body
     assert_match "lp-trail-camp-finish__progress", response.body
     assert_match %(action="replace" target="trail-sheet-finish-undo-bar"), response.body
