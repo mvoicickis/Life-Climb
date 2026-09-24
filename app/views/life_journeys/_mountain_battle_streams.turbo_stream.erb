@@ -6,6 +6,11 @@
           plan: @plan,
           area: @project.life_area %>
   <% end %>
+  <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_finish_card",
+          project: @project,
+          visible: mountain_trail_finish_camp_card?(@project) %>
+  <% end %>
 <% end %>
 <%= turbo_stream.replace "trail-base-sheet" do %>
   <%= render "life_journeys/trail_base_sheet",

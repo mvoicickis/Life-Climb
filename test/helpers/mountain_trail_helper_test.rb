@@ -160,6 +160,53 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal "Learn German", mountain_trail_hud_plan_title("Learn German")
   end
 
+  test "finish camp card when all one-shot battles won any day" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Earlier win")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    battle = camp.children.find_by!(horizon: "day", title: "Earlier win")
+    battle.update!(completed_at: 2.days.ago)
+
+    assert mountain_trail_finish_camp_card?(camp, user: user)
+  end
+
+  test "finish camp card false for daily battle camp" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Daily habit")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    battle = camp.children.find_by!(horizon: "day", title: "Daily habit")
+    battle.update!(repeat: "daily", completed_at: Time.current)
+
+    refute mountain_trail_finish_camp_card?(camp, user: user)
+  end
+
+  test "finish camp card false with open battle" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Still open")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+
+    refute mountain_trail_finish_camp_card?(camp, user: user)
+  end
+
+  test "finish camp card false for completed camp" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Done camp")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    camp.children.find_by!(horizon: "day").update!(completed_at: Time.current)
+    camp.update!(completed_at: Time.current, manually_completed_at: Time.current)
+
+    refute mountain_trail_finish_camp_card?(camp, user: user)
+  end
+
+  test "finish camp card false with no battles" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Lonely camp")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    camp.children.where(horizon: "day").destroy_all
+
+    refute mountain_trail_finish_camp_card?(camp, user: user)
+  end
+
   test "camp status is empty, ready, or cleared" do
     empty = Struct.new(:pages_mode?, :quantified?, :children, :completed?).new(false, false, [], false)
     assert_nil mountain_trail_camp_status(empty)

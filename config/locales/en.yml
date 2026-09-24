@@ -1011,6 +1011,11 @@ en:
         delete_camp: "Delete"
         finish_camp: "Mark finished"
         finish_camp_confirm: "Mark this camp finished? You can reopen it later."
+        finish_camp_card:
+          title: "All battles won!"
+          body: "Add a battle, or finish this camp to climb higher."
+          add_another: "Add another battle"
+          finish: "Finish camp"
         reopen_camp: "Reopen"
         undo: "Undo"
         deleted_toast: "Deleted “%{title}”"

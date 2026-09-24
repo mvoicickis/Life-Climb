@@ -902,6 +902,21 @@ module MountainTrailHelper
     true
   end
 
+  # Camp sheet finish overlay: all one-shot battles won (any day), no recurring battles.
+  def mountain_trail_finish_camp_card?(project, user: nil)
+    return false if project.blank? || project.completed?
+
+    days = mountain_trail_camp_days(project)
+    return false if days.empty?
+    return false if days.any?(&:repeat_recurring?)
+    return false unless days.all? { |day| day.completed_at.present? }
+
+    viewer = user || mountain_trail_viewer
+    open = days.select { |day| mountain_trail_camp_due?(day) }
+               .reject { |day| mountain_trail_done_today?(day, user: viewer) }
+    open.empty?
+  end
+
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
     return false unless battle.try(:repeat_daily?) || battle.try(:repeat_weekly?)

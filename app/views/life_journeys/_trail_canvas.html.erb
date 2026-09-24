@@ -511,6 +511,11 @@
           </div>
         <% end %>
         </div>
+        <% sheet_camps.each do |project| %>
+          <%= render "life_journeys/trail_camp_finish_card",
+                project: project,
+                visible: mountain_trail_finish_camp_card?(project) %>
+        <% end %>
       </div>
       <% unless first_camp_reveal %>
         <% sheet_camps.each do |project| %>

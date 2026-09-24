@@ -21,6 +21,11 @@
             area: @project.life_area %>
     <% end %>
   <% end %>
+  <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_finish_card",
+          project: @project,
+          visible: @show_finish_camp_card %>
+  <% end %>
   <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <%= render "life_journeys/trail_climber_stream" %>
   <%= render "life_journeys/trail_dock_stream" %>

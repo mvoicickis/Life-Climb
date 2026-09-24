@@ -1,4 +1,9 @@
 <% if @created.day? && @project.present? %>
+  <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_finish_card",
+          project: @project,
+          visible: false %>
+  <% end %>
   <% if @seed_win || @created.completed? || @prior_open_count.zero? %>
     <%= turbo_stream.replace "trail-battles-#{@project.id}" do %>
       <%= render "life_journeys/trail_camp_battles",
