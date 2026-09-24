@@ -6,12 +6,14 @@ const RESTORE_EVENT = "lp-trail-finish-card:restore"
 // Stage overlay: finish camp prompt and completed-card undo window.
 export default class extends Controller {
   static targets = [
-    "promptCard", "undoCard", "finishForm", "finishButton", "undoForm", "undoButton", "saveNotice"
+    "promptCard", "undoCard", "settledCard", "finishForm", "finishButton",
+    "undoForm", "undoButton", "reopenForm", "reopenButton", "saveNotice"
   ]
 
   static values = {
     qualified: { type: Boolean, default: false },
     finishedUndo: { type: Boolean, default: false },
+    finishedSettled: { type: Boolean, default: false },
     projectId: String,
     winNotSaved: { type: String, default: "" },
     undoLabel: { type: String, default: "" },
@@ -28,6 +30,11 @@ export default class extends Controller {
       this.campSheetController()?.showCampOverlays(this.projectIdValue)
       this.campSheetController()?.syncFinishCardPanelOpen(this.projectIdValue)
       this.scheduleSettle()
+    } else if (this.finishedSettledValue) {
+      this.campSheetController()?.showCampOverlays(this.projectIdValue)
+      if (this.sheetOpenForThisCamp()) {
+        this.campSheetController()?.syncFinishCardPanelOpen(this.projectIdValue)
+      }
     } else {
       this.revealQualifiedOverlay()
       if (this.sheetOpenForThisCamp()) {
@@ -59,6 +66,13 @@ export default class extends Controller {
 
   undoClick(event) {
     if (this.element.dataset.finishInFlight === "1" || this.element.dataset.undoInFlight === "1") {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  reopenClick(event) {
+    if (this.element.dataset.finishInFlight === "1" || this.element.dataset.reopenInFlight === "1") {
       event.preventDefault()
       event.stopPropagation()
     }
@@ -203,6 +217,44 @@ export default class extends Controller {
     if (!this.hasUndoFormTarget) return
     this.clearSaveNotice()
     this.undoFormTarget.requestSubmit()
+  }
+
+  beginReopen(event) {
+    if (this.element.dataset.finishInFlight === "1") {
+      event.preventDefault()
+      return
+    }
+    if (this.element.dataset.reopenInFlight === "1") {
+      event.preventDefault()
+      return
+    }
+
+    this.clearSaveNotice()
+    this.element.dataset.reopenInFlight = "1"
+    if (this.hasReopenButtonTarget) this.reopenButtonTarget.disabled = true
+    lockWinSubmit(this.element, true)
+  }
+
+  reopenEnded(event) {
+    const form = event.target
+    if (!form?.classList?.contains("lp-trail-camp-finish__reopen-form")) return
+
+    lockWinSubmit(this.element, false)
+    delete this.element.dataset.reopenInFlight
+    if (this.hasReopenButtonTarget) this.reopenButtonTarget.disabled = false
+
+    if (!turboSubmitOk(event)) {
+      const message = this.winNotSavedValue
+      if (message) this.showSaveNotice(message)
+    }
+  }
+
+  retryReopen(event) {
+    event.preventDefault()
+    if (!this.hasSaveNoticeTarget || this.saveNoticeTarget.hidden) return
+    if (!this.hasReopenFormTarget) return
+    this.clearSaveNotice()
+    this.reopenFormTarget.requestSubmit()
   }
 
   showSaveNotice(message) {

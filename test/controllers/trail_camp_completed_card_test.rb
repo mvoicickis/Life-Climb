@@ -73,6 +73,7 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     delete strategy_goal_manual_completion_path(camp), as: :turbo_stream
     assert_response :success
 
+    assert_match %(action="replace" target="trail-battles-#{camp.id}"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
     refute_match I18n.t("strategy.rpg.trail.finish_camp_card.finished"), response.body
     refute camp.reload.manually_completed?

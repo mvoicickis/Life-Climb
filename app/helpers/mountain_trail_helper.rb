@@ -931,6 +931,21 @@ module MountainTrailHelper
     true
   end
 
+  # Finish overlay slot: :finished_settled, :prompt, or :hidden.
+  def mountain_trail_finish_card_state(project, user: nil)
+    return :hidden if project.blank?
+    return :finished_settled if project.completed?
+
+    mountain_trail_finish_camp_card?(project, user: user) ? :prompt : :hidden
+  end
+
+  def mountain_trail_finish_card_next_camp(project, plan:)
+    return nil if project.blank? || plan.blank?
+
+    open_camps = mountain_trail_open_camps(plan).reject { |camp| camp.id == project.id }
+    mountain_trail_next_camp(open_camps)
+  end
+
   # Daily template still due today (scheduled_on moves to tomorrow after a win).
   def mountain_trail_base_due?(battle)
     return false unless battle.try(:repeat_daily?) || battle.try(:repeat_weekly?)

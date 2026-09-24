@@ -74,13 +74,14 @@ class TrailCampFinishCardTest < ActionDispatch::IntegrationTest
     assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__card", count: 0
   end
 
-  test "completed camp does not show finish card" do
+  test "completed camp shows settled card not finish prompt" do
     @battle.complete!
     @project.update!(completed_at: Time.current, manually_completed_at: Time.current)
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @project.id)
     assert_response :success
-    assert_select "#trail-camp-finish-#{@project.id} .lp-trail-camp-finish__card", count: 0
+    assert_select "#trail-camp-finish-#{@project.id} [data-trail-camp-finish-target='settledCard']"
+    assert_select "#trail-camp-finish-#{@project.id} [data-trail-camp-finish-target='promptCard']", count: 0
   end
 
   test "two camps only shows finish card for open qualifying camp" do
