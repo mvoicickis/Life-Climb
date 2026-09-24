@@ -2,36 +2,42 @@
 
 # Mountain sticky mark-complete / reopen for Plans and Projects.
 class StrategyGoalCompletionsController < ApplicationController
+  include MountainSheetRefresh
+
   before_action :require_planning_v2
   before_action :set_goal
   before_action :reject_holding
 
   def create
     unless @goal.plan? || @goal.project? || @goal.goal?
-      return redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
+      return respond_invalid
     end
 
     @goal.manually_complete!
     Strategy::SyncCompletion.resync!(node: @goal)
+    assign_completion_stream_context!
     respond_to do |format|
+      format.turbo_stream { render :create, status: :ok }
       format.html { redirect_to mountain_return_path, status: :see_other }
-      format.turbo_stream { redirect_to mountain_return_path, status: :see_other }
     end
   rescue ActiveRecord::RecordInvalid
-    respond_to do |format|
-      format.html { redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other }
-      format.turbo_stream { head :unprocessable_entity }
-    end
+    respond_failure
   end
 
   def destroy
     unless @goal.plan? || @goal.project?
-      return redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
+      return respond_invalid
     end
 
     @goal.manually_reopen!
     Strategy::SyncCompletion.resync!(node: @goal)
-    redirect_to mountain_return_path, status: :see_other
+    assign_completion_stream_context!
+    respond_to do |format|
+      format.turbo_stream { render :destroy, status: :ok }
+      format.html { redirect_to mountain_return_path, status: :see_other }
+    end
+  rescue ActiveRecord::RecordInvalid
+    respond_failure
   end
 
   private
@@ -45,6 +51,38 @@ class StrategyGoalCompletionsController < ApplicationController
 
     redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
     throw :abort
+  end
+
+  def assign_completion_stream_context!
+    assign_mountain_sheet_for!(@goal.reload)
+    @project = @goal if @goal.project?
+    return if @plan.blank?
+
+    open_camps = helpers.mountain_trail_open_camps(@plan)
+    open_camps = open_camps.reject { |camp| camp.id == @project&.id }
+    @next_camp = helpers.mountain_trail_next_camp(open_camps)
+    @mount_next_camp_sheet = next_camp_needs_sheet_mount?
+  end
+
+  def next_camp_needs_sheet_mount?
+    return false if @next_camp.blank? || @plan.blank?
+
+    trail = Strategy::Trail.for(plan: @plan, ensure_visible_id: @next_camp.id)
+    !helpers.mountain_trail_sheet_camp_ids(trail).include?(@next_camp.id)
+  end
+
+  def respond_invalid
+    respond_to do |format|
+      format.html { redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other }
+      format.turbo_stream { head :unprocessable_entity }
+    end
+  end
+
+  def respond_failure
+    respond_to do |format|
+      format.html { redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other }
+      format.turbo_stream { head :unprocessable_entity }
+    end
   end
 
   def mountain_return_path

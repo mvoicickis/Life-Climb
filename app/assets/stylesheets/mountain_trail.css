@@ -2721,6 +2721,47 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   cursor: pointer;
 }
 
+.lp-trail.is-v4 .lp-trail-camp-finish__cta-text {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__status {
+  margin: 0;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__undo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-width: var(--lp-tap);
+  min-height: var(--lp-tap);
+  margin: 0;
+  padding: 0.35rem var(--lp-space-3);
+  border: 0;
+  border-radius: var(--lp-radius-pill);
+  background: transparent;
+  color: var(--lp-muted);
+  font: inherit;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__undo-form {
+  margin: 0;
+}
+
 .lp-trail.is-v4 .lp-trail-camp-finish__secondary {
   display: flex;
   align-items: center;

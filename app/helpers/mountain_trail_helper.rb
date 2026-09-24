@@ -856,6 +856,13 @@ module MountainTrailHelper
     )
   end
 
+  # Camp ids with a pre-rendered sheet panel (matches _trail_canvas sheet_camps).
+  def mountain_trail_sheet_camp_ids(trail)
+    map_nodes = mountain_trail_map_nodes(trail)
+    projects = mountain_trail_projects(trail)
+    (map_nodes.filter_map(&:record) + projects).map(&:id).uniq
+  end
+
   # Parent for base-camp daily creates — matches is-current marker, then idle camp.
   def mountain_trail_base_camp_add_parent(projects)
     ordered = mountain_trail_sort_projects(projects)

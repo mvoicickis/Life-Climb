@@ -416,10 +416,11 @@ export default class extends Controller {
       `[data-camp-overlay-panel="${campId}"].lp-trail-camp-finish`
     )
     if (!overlay || overlay.hidden) return false
-    if (!overlay.querySelector(".lp-trail-camp-finish__card")) return false
     if (overlay.classList.contains("is-hidden")) return false
+    if (overlay.querySelector("[data-trail-camp-finish-target='promptCard']")) return true
+    if (overlay.querySelector("[data-trail-camp-finish-target='undoCard']")) return true
 
-    return true
+    return false
   }
 
   syncFinishCardPanelOpen(campId) {

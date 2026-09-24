@@ -123,6 +123,16 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     refute_match(/^\s*width:\s*100%;/m, idle_on_finish)
   end
 
+  test "completed card next camp label ellipsizes on one line" do
+    cta_text = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish__cta-text\s*\{[^}]+\}/m]
+    assert cta_text, "expected finish camp cta text block"
+    assert_match(/text-overflow:\s*ellipsis/, cta_text)
+    assert_match(/white-space:\s*nowrap/, cta_text)
+
+    undo = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish__undo\s*\{[^}]+\}/m]
+    assert undo, "expected finish camp undo button block"
+  end
+
   test "finish card open hides duplicate add battle pill" do
     rule = @css[
       /\.lp-trail\.is-v4 \.lp-trail-sheet__panel\.is-finish-card-open \.lp-trail-battles__composer-trigger\s*\{[^}]+\}/m
