@@ -31,6 +31,9 @@
         double-loads those sheets and lets a stale builds/tailwind.css win the cascade. %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <% if content_for?(:app_welcome) %>
+      <%= render "shared/app_welcome_boot" %>
+    <% end %>
   </head>
 
   <body class="lp-min-h-screen antialiased <%= authenticated? ? (content_for?(:lp_game) ? 'lp-game text-[var(--lp-ink)]' : 'studio-app text-[var(--studio-ink)]') : 'lp-auth text-[var(--lp-ink)]' %>"
@@ -42,6 +45,9 @@
             data-offline-page-cache-snapshot-banner-dated-value="<%= t("offline.snapshot_banner_dated") %>"
           <% end %>
         <% end %>>
+    <% if content_for?(:app_welcome) %>
+      <%= render "shared/app_welcome" %>
+    <% end %>
     <%= render "shared/admin_banners" %>
     <% if authenticated? && content_for?(:lp_game) %>
       <%= render "shared/offline_snapshot_banner" %>

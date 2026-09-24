@@ -1,0 +1,65 @@
+<%= javascript_tag(nonce: true) do %>
+(function () {
+  var STORAGE_KEY = "lpAppWelcomeShown";
+  var PAPER_THEME = "<%= theme_color_for_request %>";
+  var DURATION_MS = 1500;
+
+  function restoreThemeColors() {
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+      var restore = meta.getAttribute("data-lp-theme-restore");
+      if (restore != null) meta.setAttribute("content", restore);
+      meta.removeAttribute("data-lp-theme-restore");
+    });
+  }
+
+  function dismiss() {
+    if (window.__lpAppWelcomeTimer) {
+      clearTimeout(window.__lpAppWelcomeTimer);
+      window.__lpAppWelcomeTimer = null;
+    }
+    document.documentElement.classList.remove("lp-app-welcome-pending");
+    restoreThemeColors();
+    var overlay = document.getElementById("lp-app-welcome");
+    if (overlay) overlay.setAttribute("hidden", "");
+  }
+
+  window.__lpDismissAppWelcome = dismiss;
+
+  function arm() {
+    try {
+      if (!window.matchMedia("(display-mode: standalone)").matches) return;
+      if (sessionStorage.getItem(STORAGE_KEY)) return;
+      var nav = window.performance && window.performance.getEntriesByType
+        ? window.performance.getEntriesByType("navigation")[0]
+        : null;
+      if (nav && nav.type !== "navigate") return;
+
+      sessionStorage.setItem(STORAGE_KEY, "1");
+      document.documentElement.classList.add("lp-app-welcome-pending");
+
+      document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+        if (!meta.hasAttribute("data-lp-theme-restore")) {
+          meta.setAttribute("data-lp-theme-restore", meta.getAttribute("content") || PAPER_THEME);
+        }
+        meta.setAttribute("content", PAPER_THEME);
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        if (!document.documentElement.classList.contains("lp-app-welcome-pending")) return;
+        var overlay = document.getElementById("lp-app-welcome");
+        if (overlay) overlay.removeAttribute("hidden");
+      });
+
+      window.__lpAppWelcomeTimer = window.setTimeout(dismiss, DURATION_MS);
+    } catch (_error) {
+      /* private mode / unsupported */
+    }
+  }
+
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) dismiss();
+  });
+
+  arm();
+})();
+<% end %>
