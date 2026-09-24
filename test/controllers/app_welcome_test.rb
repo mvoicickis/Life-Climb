@@ -104,7 +104,8 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_match(/display-mode:\s*standalone/, response.body)
     assert_match(/lp-app-welcome-pending/, response.body)
     assert_match(/__lpDismissAppWelcome/, response.body)
-    assert_match(/setTimeout\(dismiss,\s*1500\)/, response.body)
+    assert_match(/DURATION_MS\s*=\s*1500/, response.body)
+    assert_match(/setTimeout\(dismiss,\s*DURATION_MS\)/, response.body)
   end
 
   def assert_no_welcome_boot_script!
