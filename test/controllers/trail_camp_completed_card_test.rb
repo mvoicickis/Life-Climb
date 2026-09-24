@@ -52,6 +52,7 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     assert_match %(action="replace" target="trail-camp-finish-#{camp_a.id}"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.finished"), response.body
     assert_match I18n.t("strategy.rpg.trail.finish_camp_card.next_camp", name: camp_b.title), response.body
+    assert_match %(data-action="click->trail-camp-sheet#openFromDock"), response.body
     assert_match %(data-camp-id="#{camp_b.id}"), response.body
     assert_match %(action="replace" target="trail-map-camps"), response.body
     refute_match %(action="replace" target="trail-battles-#{camp_a.id}"), response.body

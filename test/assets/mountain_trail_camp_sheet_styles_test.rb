@@ -114,8 +114,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     card = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish__card\s*\{[^}]+\}/m]
     assert card, "expected finish camp card block"
     assert_match(/pointer-events:\s*auto/, card)
-    assert_match(/^\s*width:\s*auto;/m, card)
-    refute_match(/^\s*width:\s*100%;/m, card)
+    assert_match(/^\s*width:\s*100%;/m, card)
 
     idle_on_finish = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish \.lp-trail-camp-idle\s*\{[^}]+\}/m]
     assert idle_on_finish, "expected finish overlay idle card width override"

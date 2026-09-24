@@ -57,7 +57,7 @@
       <% if next_camp.present? %>
         <button type="button"
                 class="lp-trail-camp-finish__cta"
-                data-action="click->trail-camp-sheet#openCampById"
+                data-action="click->trail-camp-sheet#openFromDock"
                 data-camp-id="<%= next_camp.id %>">
           <span class="lp-trail-camp-finish__cta-text"><%= t("strategy.rpg.trail.finish_camp_card.next_camp", name: next_camp.title) %></span>
         </button>
