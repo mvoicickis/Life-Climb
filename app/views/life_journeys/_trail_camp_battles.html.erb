@@ -12,8 +12,9 @@
 <% quantified = project.quantified? %>
 <% pages_mode = project.pages_mode? %>
 <% show_finish_card = mountain_trail_finish_camp_card?(project) %>
+<% camp_sheet_completed = project.completed? %>
 <% camp_idle_variant =
-     if open_battles.any? || pages_mode || show_finish_card
+     if open_battles.any? || pages_mode || show_finish_card || camp_sheet_completed
        nil
      elsif days.empty?
        :start
@@ -124,8 +125,9 @@
       </button>
     </div>
   <% else %>
-    <div class="lp-trail-battles__scroll<%= " is-idle" if camp_idle_variant %><%= " is-finish-composer" if composer_only %>">
-      <% if camp_idle_variant %>
+    <div class="lp-trail-battles__scroll<%= " is-idle" if camp_idle_variant %><%= " is-finish-composer" if composer_only %><%= " is-camp-completed" if camp_sheet_completed %>">
+      <% if camp_sheet_completed %>
+      <% elsif camp_idle_variant %>
         <%= render "life_journeys/trail_camp_empty_state",
               project: project,
               variant: camp_idle_variant,

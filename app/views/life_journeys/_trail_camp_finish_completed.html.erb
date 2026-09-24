@@ -1,0 +1,18 @@
+<%# Shared completed overlay body. locals: project, next_camp: %>
+<% project = local_assigns.fetch(:project) %>
+<% next_camp = local_assigns[:next_camp] %>
+<p class="lp-trail-camp-finish__status"><%= t("strategy.rpg.trail.finish_camp_card.finished") %></p>
+<% if next_camp.present? %>
+  <button type="button"
+          class="lp-trail-camp-finish__cta"
+          data-action="click->trail-camp-sheet#openFromDock"
+          data-camp-id="<%= next_camp.id %>">
+    <span class="lp-trail-camp-finish__cta-text"><%= t("strategy.rpg.trail.finish_camp_card.next_camp", name: next_camp.title) %></span>
+  </button>
+<% else %>
+  <button type="button"
+          class="lp-trail-camp-finish__cta"
+          data-action="click->trail-camp-sheet#close">
+    <span class="lp-trail-camp-finish__cta-text"><%= t("strategy.rpg.trail.finish_camp_card.back_to_mountain") %></span>
+  </button>
+<% end %>

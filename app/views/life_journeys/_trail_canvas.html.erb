@@ -512,9 +512,14 @@
         <% end %>
         </div>
         <% sheet_camps.each do |project| %>
+          <% finish_state = mountain_trail_finish_card_state(project) %>
           <%= render "life_journeys/trail_camp_finish_card",
                 project: project,
-                visible: mountain_trail_finish_camp_card?(project) %>
+                plan: plan,
+                goal: goal,
+                next_camp: mountain_trail_finish_card_next_camp(project, plan: plan),
+                state: finish_state,
+                visible: finish_state == :prompt %>
         <% end %>
       </div>
       <div id="trail-sheet-panel-overlays">

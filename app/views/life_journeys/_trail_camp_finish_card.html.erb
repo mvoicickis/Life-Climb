@@ -1,9 +1,13 @@
 <%# Finish / completed camp overlay. locals: project, state:, plan:, goal:, next_camp:, visible: %>
 <% project = local_assigns.fetch(:project) %>
-<% state = local_assigns.fetch(:state, :prompt) %>
+<% state = local_assigns.fetch(:state) { mountain_trail_finish_card_state(project) } %>
 <% plan = local_assigns[:plan] %>
+<% goal = local_assigns[:goal] %>
 <% next_camp = local_assigns[:next_camp] %>
-<% visible = local_assigns.fetch(:visible, state == :prompt && mountain_trail_finish_camp_card?(project)) %>
+<% if next_camp.nil? && plan.present? %>
+  <% next_camp = mountain_trail_finish_card_next_camp(project, plan: plan) %>
+<% end %>
+<% visible = local_assigns.fetch(:visible, state == :prompt) %>
 <% hidden = state == :hidden %>
 <div id="trail-camp-finish-<%= project.id %>"
      class="lp-trail-camp-finish"
@@ -11,6 +15,7 @@
      data-camp-overlay-panel="<%= project.id %>"
      data-trail-camp-finish-qualified-value="<%= visible %>"
      data-trail-camp-finish-finished-undo-value="<%= state == :finished_undo %>"
+     data-trail-camp-finish-finished-settled-value="<%= state == :finished_settled %>"
      data-trail-camp-finish-project-id-value="<%= project.id %>"
      data-trail-camp-finish-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
      data-trail-camp-finish-undo-label-value="<%= t('strategy.rpg.trail.undo') %>"
@@ -53,21 +58,7 @@
   <% elsif state == :finished_undo %>
     <div class="lp-trail-camp-finish__card lp-trail-camp-idle lp-trail-camp-finish__undo-wrap"
          data-trail-camp-finish-target="undoCard">
-      <p class="lp-trail-camp-finish__status"><%= t("strategy.rpg.trail.finish_camp_card.finished") %></p>
-      <% if next_camp.present? %>
-        <button type="button"
-                class="lp-trail-camp-finish__cta"
-                data-action="click->trail-camp-sheet#openFromDock"
-                data-camp-id="<%= next_camp.id %>">
-          <span class="lp-trail-camp-finish__cta-text"><%= t("strategy.rpg.trail.finish_camp_card.next_camp", name: next_camp.title) %></span>
-        </button>
-      <% else %>
-        <button type="button"
-                class="lp-trail-camp-finish__cta"
-                data-action="click->trail-camp-sheet#close">
-          <span class="lp-trail-camp-finish__cta-text"><%= t("strategy.rpg.trail.finish_camp_card.back_to_mountain") %></span>
-        </button>
-      <% end %>
+      <%= render "life_journeys/trail_camp_finish_completed", project: project, next_camp: next_camp %>
       <%= button_to t("strategy.rpg.trail.undo"),
             strategy_goal_manual_completion_path(project),
             method: :delete,
@@ -87,6 +78,32 @@
       <p class="lp-trail-camp-finish__save-notice"
          data-trail-camp-finish-target="saveNotice"
          data-action="click->trail-camp-finish#retryUndo"
+         role="status"
+         hidden></p>
+    </div>
+  <% elsif state == :finished_settled %>
+    <div class="lp-trail-camp-finish__card lp-trail-camp-idle lp-trail-camp-finish__undo-wrap"
+         data-trail-camp-finish-target="settledCard">
+      <%= render "life_journeys/trail_camp_finish_completed", project: project, next_camp: next_camp %>
+      <%= button_to t("strategy.rpg.trail.finish_camp_card.reopen_camp"),
+            strategy_goal_manual_completion_path(project),
+            method: :delete,
+            class: "lp-trail-camp-finish__undo",
+            form: {
+              class: "lp-trail-camp-finish__reopen-form",
+              data: {
+                turbo: true,
+                trail_camp_finish_target: "reopenForm",
+                action: "turbo:submit-start->trail-camp-finish#beginReopen turbo:submit-end->trail-camp-finish#reopenEnded"
+              }
+            },
+            data: {
+              trail_camp_finish_target: "reopenButton",
+              action: "click->trail-camp-finish#reopenClick"
+            } %>
+      <p class="lp-trail-camp-finish__save-notice"
+         data-trail-camp-finish-target="saveNotice"
+         data-action="click->trail-camp-finish#retryReopen"
          role="status"
          hidden></p>
     </div>

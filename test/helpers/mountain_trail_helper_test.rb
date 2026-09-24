@@ -207,6 +207,32 @@ class MountainTrailHelperTest < ActionView::TestCase
     refute mountain_trail_idle_finish_camp?(camp)
   end
 
+  test "finish card state settled when camp completed" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Done")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    camp.update!(completed_at: Time.current, manually_completed_at: Time.current)
+
+    assert_equal :finished_settled, mountain_trail_finish_card_state(camp, user: user)
+  end
+
+  test "finish card state prompt when finish card qualifies" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Earlier win")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+    camp.children.find_by!(horizon: "day").update!(completed_at: 2.days.ago)
+
+    assert_equal :prompt, mountain_trail_finish_card_state(camp, user: user)
+  end
+
+  test "finish card state hidden for open camp" do
+    user = users(:one)
+    seed_climb!(user, today_mission: "Still open")
+    camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+
+    assert_equal :hidden, mountain_trail_finish_card_state(camp, user: user)
+  end
+
   test "finish camp card false with open battle" do
     user = users(:one)
     seed_climb!(user, today_mission: "Still open")

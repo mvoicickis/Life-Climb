@@ -1,12 +1,20 @@
 <% if @project.present? %>
+  <% finish_state = mountain_trail_finish_card_state(@project) %>
   <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
     <%= render "life_journeys/trail_camp_finish_card",
           project: @project,
           plan: @plan,
           goal: @goal,
           next_camp: @next_camp,
-          state: mountain_trail_finish_camp_card?(@project) ? :prompt : :hidden,
-          visible: mountain_trail_finish_camp_card?(@project) %>
+          state: finish_state,
+          visible: finish_state == :prompt %>
+  <% end %>
+  <%= turbo_stream.replace "trail-battles-#{@project.id}" do %>
+    <%= render "life_journeys/trail_camp_battles",
+          project: @project,
+          goal: @goal,
+          plan: @plan,
+          area: @project.life_area %>
   <% end %>
   <%= turbo_stream.replace "trail-sheet-menu-#{@project.id}" do %>
     <div id="trail-sheet-menu-<%= @project.id %>"

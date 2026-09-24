@@ -419,6 +419,7 @@ export default class extends Controller {
     if (overlay.classList.contains("is-hidden")) return false
     if (overlay.querySelector("[data-trail-camp-finish-target='promptCard']")) return true
     if (overlay.querySelector("[data-trail-camp-finish-target='undoCard']")) return true
+    if (overlay.querySelector("[data-trail-camp-finish-target='settledCard']")) return true
 
     return false
   }
