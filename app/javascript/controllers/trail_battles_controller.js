@@ -387,7 +387,6 @@ export default class extends Controller {
       this.resyncCampOverlaysAfterWin()
     }
 
-    document.addEventListener("turbo:render", finish, { once: true })
     requestAnimationFrame(() => requestAnimationFrame(finish))
   }
 

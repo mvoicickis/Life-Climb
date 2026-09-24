@@ -109,10 +109,26 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     assert finish, "expected finish camp overlay block"
     assert_match(/pointer-events:\s*none/, finish)
     assert_match(/z-index:\s*2/, finish)
+    assert_match(/padding-inline:\s*var\(--lp-space-4,\s*1rem\)/, finish)
 
     card = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish__card\s*\{[^}]+\}/m]
     assert card, "expected finish camp card block"
     assert_match(/pointer-events:\s*auto/, card)
+    assert_match(/^\s*width:\s*auto;/m, card)
+    refute_match(/^\s*width:\s*100%;/m, card)
+
+    idle_on_finish = @css[/\.lp-trail\.is-v4 \.lp-trail-camp-finish \.lp-trail-camp-idle\s*\{[^}]+\}/m]
+    assert idle_on_finish, "expected finish overlay idle card width override"
+    assert_match(/^\s*width:\s*auto;/m, idle_on_finish)
+    refute_match(/^\s*width:\s*100%;/m, idle_on_finish)
+  end
+
+  test "finish card open hides duplicate add battle pill" do
+    rule = @css[
+      /\.lp-trail\.is-v4 \.lp-trail-sheet__panel\.is-finish-card-open \.lp-trail-battles__composer-trigger\s*\{[^}]+\}/m
+    ]
+    assert rule, "expected is-finish-card-open composer trigger hide rule"
+    assert_match(/display:\s*none/, rule)
   end
 
   test "open battle row body flexes without width 100 percent" do

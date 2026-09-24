@@ -2633,9 +2633,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
-  padding: 0.5rem 1.1rem 5.5rem;
+  padding-block: 0.5rem 5.5rem;
+  padding-inline: var(--lp-space-4, 1rem);
   box-sizing: border-box;
   pointer-events: none;
 }
@@ -2646,9 +2647,10 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail-camp-finish__card {
   pointer-events: auto;
-  width: 100%;
+  width: auto;
   max-width: 100%;
   min-width: 0;
+  align-self: stretch;
   margin: 0 auto;
   padding: 1rem 0.9rem 0.95rem;
   text-align: center;
@@ -2757,6 +2759,15 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
 
 .lp-trail.is-v4 .lp-trail-camp-finish__save-notice[hidden] {
   display: none !important;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish .lp-trail-camp-idle {
+  width: auto;
+  max-width: 100%;
+}
+
+.lp-trail.is-v4 .lp-trail-sheet__panel.is-finish-card-open .lp-trail-battles__composer-trigger {
+  display: none;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__body:has(.lp-trail-battles__scroll.is-idle) {
