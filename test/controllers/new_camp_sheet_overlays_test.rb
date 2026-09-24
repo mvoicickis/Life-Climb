@@ -20,7 +20,7 @@ class NewCampSheetOverlaysTest < ActionDispatch::IntegrationTest
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_area(@area.id).for_kind("goal").roots.first
-    @plan = @goal.children.for_kind("plan").first
+    @plan = @user.strategy_goals.for_kind("plan").not_holding.first
   end
 
   test "creating a camp on mountain appends finish slot and won strip targets" do
