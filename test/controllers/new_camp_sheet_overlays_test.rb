@@ -20,7 +20,9 @@ class NewCampSheetOverlaysTest < ActionDispatch::IntegrationTest
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_area(@area.id).for_kind("goal").roots.first
-    @plan = @user.strategy_goals.for_kind("plan").not_holding.first
+    @plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan", title: "Overlay path", position: 0
+    )
   end
 
   test "creating a camp on mountain appends finish slot and won strip targets" do
