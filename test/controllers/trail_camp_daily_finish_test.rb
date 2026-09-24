@@ -48,6 +48,27 @@ class TrailCampDailyFinishTest < ActionDispatch::IntegrationTest
     battle
   end
 
+  test "won idle one-shot camp with off-day weekly shows finish camp link" do
+    off_day = (Date.current.wday + 1) % 7
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Off-day weekly", scheduled_on: Date.current,
+      repeat: "weekly", repeat_weekdays: [ off_day ], position: 0
+    )
+    @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Won today", scheduled_on: Date.current, position: 1
+    ).update!(completed_at: Time.current)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+
+    assert_select "#trail-battles-#{@project.id} .lp-trail-battles__scroll.is-idle"
+    refute_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
+    assert_select "#trail-battles-#{@project.id} button.lp-trail-camp-idle__finish",
+                  text: I18n.t("strategy.rpg.trail.finish_camp_card.finish")
+  end
+
   test "won idle daily camp shows finish camp link with turbo form" do
     win_daily_battle_today!
 

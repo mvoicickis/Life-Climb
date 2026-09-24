@@ -189,12 +189,12 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert mountain_trail_idle_finish_camp?(camp)
   end
 
-  test "idle finish link false for one-shot camp" do
+  test "idle finish link for one-shot camp not completed" do
     user = users(:one)
     seed_climb!(user, today_mission: "Once")
     camp = user.strategy_goals.find_by!(horizon: "project", title: "Auth")
 
-    refute mountain_trail_idle_finish_camp?(camp)
+    assert mountain_trail_idle_finish_camp?(camp)
   end
 
   test "idle finish link false for completed camp" do
