@@ -470,7 +470,7 @@
           <% end %>
         </div>
       </header>
-      <div class="lp-trail-sheet__stage">
+      <div class="lp-trail-sheet__stage" id="trail-sheet-stage">
         <div class="lp-trail-sheet__camp-bg" aria-hidden="true">
           <%= image_tag "camp_fire_default.webp",
                 class: "lp-trail-sheet__camp-bg-photo",
@@ -517,15 +517,17 @@
                 visible: mountain_trail_finish_camp_card?(project) %>
         <% end %>
       </div>
-      <% unless first_camp_reveal %>
-        <% sheet_camps.each do |project| %>
-          <%= render "life_journeys/trail_camp_panel_overlays",
-                project: project,
-                goal: goal,
-                plan: plan,
-                area: area %>
+      <div id="trail-sheet-panel-overlays">
+        <% unless first_camp_reveal %>
+          <% sheet_camps.each do |project| %>
+            <%= render "life_journeys/trail_camp_panel_overlays",
+                  project: project,
+                  goal: goal,
+                  plan: plan,
+                  area: area %>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
     </div>
   </div>
 

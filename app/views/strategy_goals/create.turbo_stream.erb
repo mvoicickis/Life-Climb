@@ -82,6 +82,21 @@
               area: @created.life_area %>
       </div>
     <% end %>
+    <%= turbo_stream.remove "trail-camp-finish-#{@created.id}" %>
+    <%= turbo_stream.append "trail-sheet-stage" do %>
+      <%= render "life_journeys/trail_camp_finish_card",
+            project: @created,
+            visible: mountain_trail_finish_camp_card?(@created) %>
+    <% end %>
+    <%= turbo_stream.remove "trail-camp-win-toast-slot-#{@created.id}" %>
+    <%= turbo_stream.remove "trail-battles-done-slot-#{@created.id}" %>
+    <%= turbo_stream.append "trail-sheet-panel-overlays" do %>
+      <%= render "life_journeys/trail_camp_panel_overlays",
+            project: @created,
+            goal: @goal,
+            plan: @plan,
+            area: @created.life_area %>
+    <% end %>
     <%= turbo_stream.open_trail_camp(@created.id) %>
   <% end %>
 <% end %>
