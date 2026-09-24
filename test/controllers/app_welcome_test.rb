@@ -48,14 +48,17 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
   test "today renders welcome overlay with landing hero title" do
     get dashboard_path
     assert_response :success
-    assert_select "#lp-app-welcome[hidden][aria-hidden='true']", text: /#{Regexp.escape(I18n.t("landing.hero_title"))}/
+    assert_select "#lp-app-welcome[hidden][aria-hidden='true'] .lp-app-welcome__headline",
+      text: I18n.t("landing.hero_title")
+    assert_select "img[srcset*='icon.png?v=8'][sizes='192px']"
     assert_welcome_boot_script!
   end
 
   test "mountain renders welcome overlay with landing hero title" do
     get life_journey_path(@journey)
     assert_response :success
-    assert_select "#lp-app-welcome[hidden][aria-hidden='true']", text: /#{Regexp.escape(I18n.t("landing.hero_title"))}/
+    assert_select "#lp-app-welcome[hidden][aria-hidden='true'] .lp-app-welcome__headline",
+      text: I18n.t("landing.hero_title")
     assert_welcome_boot_script!
   end
 
@@ -95,6 +98,8 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     css = Rails.root.join("app/assets/stylesheets/app_welcome.css").read
     assert_match(/prefers-reduced-motion:\s*reduce/, css)
     assert_match(/lp-app-welcome/, css)
+    assert_match(/--lp-app-welcome-duration:\s*1\.2s/, css)
+    assert_match(/lp-app-welcome-skip-exit/, css)
   end
 
   private
@@ -104,8 +109,10 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_match(/display-mode:\s*standalone/, response.body)
     assert_match(/lp-app-welcome-pending/, response.body)
     assert_match(/__lpDismissAppWelcome/, response.body)
-    assert_match(/DURATION_MS\s*=\s*1500/, response.body)
+    assert_match(/DURATION_MS = reduced \? 200 : 1200/, response.body)
+    assert_match(/EXIT_MS = reduced \? 200 : 300/, response.body)
     assert_match(/setTimeout\(dismiss,\s*DURATION_MS\)/, response.body)
+    assert_match(/__lpSkipAppWelcome/, response.body)
   end
 
   def assert_no_welcome_boot_script!
