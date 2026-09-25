@@ -34,6 +34,7 @@ class FirstCampBattlesControllerTest < ActionDispatch::IntegrationTest
     @journey.reload
     @project.reload
     refute @journey.first_camp_reveal_pending?
+    assert @journey.first_camp_win_nudge_pending?
 
     battle = @project.children.for_kind("day").sole
     assert_equal "Write the README", battle.title

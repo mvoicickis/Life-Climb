@@ -1,0 +1,25 @@
+<%# Camp sheet battles: setup, first-camp win prompt, or normal list. locals: project, goal, plan, area, journey %>
+<% project = local_assigns.fetch(:project) %>
+<% journey = local_assigns[:journey] %>
+<% area = local_assigns[:area] || project.life_area %>
+<% goal = local_assigns[:goal] || project.root_goal %>
+<% plan = local_assigns[:plan] || (project.parent if project.parent&.plan?) %>
+<% if journey.present? %>
+  <% mountain_trail_reconcile_first_camp_win_nudge!(journey, project) %>
+<% end %>
+<% if journey.present? && mountain_trail_show_first_camp_win_prompt?(journey, project) %>
+  <% battle = mountain_trail_camp_open_battles(project).first %>
+  <%= render "life_journeys/first_camp_battle_win_prompt",
+        project: project,
+        battle: battle,
+        goal: goal,
+        plan: plan,
+        area: area,
+        journey: journey %>
+<% else %>
+  <%= render "life_journeys/trail_camp_battles",
+        project: project,
+        goal: goal,
+        plan: plan,
+        area: area %>
+<% end %>

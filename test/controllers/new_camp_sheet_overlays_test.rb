@@ -71,6 +71,13 @@ class NewCampSheetOverlaysTest < ActionDispatch::IntegrationTest
     }, as: :turbo_stream
     battle = camp.children.for_kind("day").find_by!(title: "Solo battle")
 
+    warmup = camp.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Prior win", scheduled_on: Date.current - 1.day, position: 99
+    )
+    warmup_todo = Strategy::CascadeToDaily.sync_goal!(user: @user, goal: warmup)
+    Battles::CompleteTodo.call(todo: warmup_todo, user: @user, session: {})
+
     post battle_win_path(battle), params: { source: "camp_sheet" }, as: :turbo_stream
     assert_response :success
     assert_match %(action="replace" target="trail-camp-finish-#{camp.id}"), response.body

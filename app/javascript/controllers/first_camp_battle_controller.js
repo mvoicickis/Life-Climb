@@ -45,6 +45,11 @@ export default class extends Controller {
       "first-camp-reveal"
     )
     reveal?.finish()
+
+    const trail = document.getElementById("mountain-trail")
+    if (trail) {
+      trail.setAttribute("data-trail-camp-sheet-reveal-pending-value", "false")
+    }
   }
 
   showError(message) {

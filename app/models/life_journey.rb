@@ -115,6 +115,32 @@ class LifeJourney < ApplicationRecord
     self.setup_flags = flags
   end
 
+  def first_camp_pinned_camp_id
+    setup_flag(Onboarding::Bootstrap::FIRST_CAMP_ID_FLAG).presence&.to_i
+  end
+
+  def first_camp_win_nudge_pending?
+    setup_flag(Onboarding::Bootstrap::FIRST_CAMP_WIN_NUDGE_FLAG) == "pending"
+  end
+
+  def set_first_camp_win_nudge!
+    flags = (setup_flags.presence || {}).stringify_keys.merge(
+      Onboarding::Bootstrap::FIRST_CAMP_WIN_NUDGE_FLAG => "pending"
+    )
+    update_columns(setup_flags: flags, updated_at: Time.current)
+    self.setup_flags = flags
+  end
+
+  def clear_first_camp_win_nudge!
+    return unless first_camp_win_nudge_pending?
+
+    flags = (setup_flags.presence || {}).stringify_keys.merge(
+      Onboarding::Bootstrap::FIRST_CAMP_WIN_NUDGE_FLAG => "done"
+    )
+    update_columns(setup_flags: flags, updated_at: Time.current)
+    self.setup_flags = flags
+  end
+
   def layer_done?(layer)
     setup_flag(layer) == "done"
   end

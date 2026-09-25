@@ -1,0 +1,29 @@
+<%# Sheet header title row. locals: sheet_camps, first_camp_reveal, first_camp, mountain_nav: %>
+<% sheet_camps = local_assigns.fetch(:sheet_camps) %>
+<% first_camp_reveal = local_assigns.fetch(:first_camp_reveal, false) %>
+<% first_camp = local_assigns[:first_camp] %>
+<% mountain_nav = local_assigns.fetch(:mountain_nav) %>
+<div class="lp-trail-sheet__title-row" id="trail-sheet-title-row">
+  <% unless first_camp_reveal %>
+    <button type="button"
+            class="lp-trail-sheet__back"
+            data-action="click->trail-camp-sheet#close"
+            aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: mountain_nav) %>">
+      <span aria-hidden="true">‹</span>
+    </button>
+  <% end %>
+  <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal && first_camp %><%= first_camp.title %><% end %></h2>
+  <% unless first_camp_reveal %>
+    <div class="lp-trail-sheet__actions">
+      <% sheet_camps.each do |project| %>
+        <div id="trail-sheet-menu-<%= project.id %>"
+             class="lp-trail-sheet__camp-menu"
+             data-controller="plan-card-menu"
+             data-camp-menu-panel="<%= project.id %>"
+             hidden>
+          <%= render "life_journeys/trail_camp_sheet_menu", project: project %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

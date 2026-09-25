@@ -14,6 +14,8 @@ class BattleWinsController < ApplicationController
                   status: :see_other and return
     end
 
+    @first_win_celebration = !current_user.battle_won_once?
+
     begin
       result = Battles::WinFromMountain.call(battle: battle, user: current_user, session: session)
     rescue ActiveRecord::RecordInvalid => e
@@ -32,6 +34,7 @@ class BattleWinsController < ApplicationController
     end
 
     result.flash.each { |key, value| flash[key] = value }
+    FirstCampWinNudge.clear_after_battle_win!(user: current_user, battle: result.battle)
 
     if result.flash[:battle_celebrate]
       @win_number = current_user.daily_todos.where.not(completed_at: nil).count

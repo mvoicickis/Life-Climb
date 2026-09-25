@@ -52,6 +52,7 @@ Rails.application.routes.draw do
     resource :completion, only: :create, controller: "journey_completions"
     resources :journey_targets, only: %i[ create ]
     resource :first_camp_reveal, only: :update
+    resource :first_camp_win_nudge, only: :update
     resources :first_camp_battles, only: :create
     resource :camp_arrangement, only: :update do
       post :reopen

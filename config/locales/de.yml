@@ -247,9 +247,13 @@ de:
         coach:
           rename_flag: "Tap your goal name to open the menu." # TODO: translate
           rename_flag_summit: "Tap your goal on the summit to open the menu." # TODO: translate
+        first_camp_reveal:
+          tap_when_done: "Tap the circle when it's done."  # TODO: translate
+          do_it_later: "Do it later"  # TODO: translate
         no_open_battles: "Add the smallest thing that moves this camp forward." # TODO: translate
         finish_camp_card:
           title: "All battles won!"  # TODO: translate
+          first_win_title: "First battle won!"  # TODO: translate
           body: "Add a battle, or finish this camp to climb higher."  # TODO: translate
           add_another: "Add another battle"  # TODO: translate
           finish: "Finish camp"  # TODO: translate

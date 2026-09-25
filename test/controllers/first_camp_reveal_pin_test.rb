@@ -100,7 +100,8 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "trail-sheet-camp-#{@first_camp.id}", response.body
-    assert_match "lp-trail-battles", response.body
+    assert_match "lp-first-camp-win-prompt", response.body
     refute @journey.reload.first_camp_reveal_pending?
+    assert @journey.first_camp_win_nudge_pending?
   end
 end

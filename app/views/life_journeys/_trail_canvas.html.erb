@@ -436,30 +436,11 @@
          aria-labelledby="trail-sheet-title">
       <div class="lp-trail-sheet__glow" data-trail-camp-sheet-target="accent" aria-hidden="true"></div>
       <header class="lp-trail-sheet__header">
-        <div class="lp-trail-sheet__title-row" id="trail-sheet-title-row">
-          <% unless first_camp_reveal %>
-            <button type="button"
-                    class="lp-trail-sheet__back"
-                    data-action="click->trail-camp-sheet#close"
-                    aria-label="<%= t('strategy.rpg.trail.back_to_peak', peak: mountain_nav) %>">
-              <span aria-hidden="true">‹</span>
-            </button>
-          <% end %>
-          <h2 class="lp-trail-sheet__title" id="trail-sheet-title" data-trail-camp-sheet-target="title"><% if first_camp_reveal %><%= first_camp.title %><% end %></h2>
-          <% unless first_camp_reveal %>
-            <div class="lp-trail-sheet__actions">
-              <% sheet_camps.each do |project| %>
-                <div id="trail-sheet-menu-<%= project.id %>"
-                     class="lp-trail-sheet__camp-menu"
-                     data-controller="plan-card-menu"
-                     data-camp-menu-panel="<%= project.id %>"
-                     hidden>
-                  <%= render "life_journeys/trail_camp_sheet_menu", project: project %>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
+        <%= render "life_journeys/trail_sheet_title_row",
+              sheet_camps: sheet_camps,
+              first_camp_reveal: first_camp_reveal,
+              first_camp: first_camp,
+              mountain_nav: mountain_nav %>
         <p class="lp-trail-sheet__subtitle"
            data-trail-camp-sheet-target="subtitle"
            hidden></p>
@@ -513,11 +494,12 @@
                     area: area,
                     journey: journey
                 else
-                  render "life_journeys/trail_camp_battles",
+                  render "life_journeys/camp_sheet_battles",
                     project: project,
                     goal: goal,
                     plan: plan,
-                    area: area
+                    area: area,
+                    journey: journey
                 end %>
           </div>
         <% end %>
@@ -534,7 +516,7 @@
         <% end %>
       </div>
       <div id="trail-sheet-panel-overlays">
-        <% unless first_camp_reveal %>
+        <% unless first_camp_reveal && first_camp.present? %>
           <% sheet_camps.each do |project| %>
             <%= render "life_journeys/trail_camp_panel_overlays",
                   project: project,
