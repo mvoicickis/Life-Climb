@@ -59,6 +59,7 @@ module Battles
       Today::OvershootBonus.sync!(user: @user)
 
       Analytics::TrackFirstBattleWon.call(user: @user)
+      FirstCampWinNudge.clear_after_battle_win!(user: @user, battle: @todo.strategy_goal)
 
       Result.new(streak: streak, personal_best_new: pb.new_record, awarded: awarded)
     end

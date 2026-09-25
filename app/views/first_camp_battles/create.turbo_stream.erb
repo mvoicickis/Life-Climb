@@ -1,13 +1,28 @@
+<%= turbo_stream.replace "trail-sheet-title-row" do %>
+  <%= render "life_journeys/trail_sheet_title_row",
+        sheet_camps: @sheet_camps,
+        first_camp_reveal: false,
+        first_camp: nil,
+        mountain_nav: t("dashboard.nav.mountain") %>
+<% end %>
 <%= turbo_stream.replace "trail-sheet-camp-#{@project.id}" do %>
   <div class="lp-trail-sheet__camp"
        id="trail-sheet-camp-<%= @project.id %>"
        data-camp-panel="<%= @project.id %>">
-    <%= render "life_journeys/trail_camp_battles",
+    <%= render "life_journeys/camp_sheet_battles",
           project: @project,
           goal: @goal,
           plan: @plan,
-          area: @area %>
+          area: @area,
+          journey: @journey %>
   </div>
+<% end %>
+<%= turbo_stream.append "trail-sheet-panel-overlays" do %>
+  <%= render "life_journeys/trail_camp_panel_overlays",
+        project: @project,
+        goal: @goal,
+        plan: @plan,
+        area: @area %>
 <% end %>
 <% trail = Strategy::Trail.for(plan: @plan) %>
 <% projects = mountain_trail_projects(trail) %>

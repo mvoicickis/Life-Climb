@@ -6472,6 +6472,42 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   color: #b45309;
 }
 
+.lp-first-camp-win-prompt__coach {
+  margin: 0.75rem 0 0;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 700;
+  color: var(--lp-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.lp-first-camp-win-prompt__later {
+  display: block;
+  margin: 0.55rem auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 700;
+  color: var(--lp-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.lp-first-camp-win-prompt .lp-trail-battles__box {
+  width: 2rem;
+  height: 2rem;
+  border-width: 2.5px;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__title.is-first-win {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-trail.is-first-camp-reveal .lp-trail__summit--reveal,
   .lp-trail.is-first-camp-reveal .lp-trail-camp,

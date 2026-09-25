@@ -12,6 +12,7 @@ module Onboarding
     BOOTSTRAP_FLAG = "onboarding_bootstrap".freeze
     FIRST_CAMP_REVEAL_FLAG = "first_camp_reveal".freeze
     FIRST_CAMP_ID_FLAG = "first_camp_id".freeze
+    FIRST_CAMP_WIN_NUDGE_FLAG = "first_camp_win_nudge".freeze
     MAX_CAMPS = 20
 
     Result = Struct.new(:journey, :goal, :plan, :projects, :first_battle, keyword_init: true)

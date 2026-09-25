@@ -1,0 +1,33 @@
+<%# First camp — one open battle, coach to win, optional dismiss. locals: project, battle, journey, goal, plan, area %>
+<% project = local_assigns.fetch(:project) %>
+<% battle = local_assigns.fetch(:battle) %>
+<% journey = local_assigns.fetch(:journey) %>
+<% area = local_assigns[:area] || project.life_area %>
+<% goal = local_assigns[:goal] || project.root_goal %>
+<% plan = local_assigns[:plan] || (project.parent if project.parent&.plan?) %>
+<% accent = mountain_trail_project_accent(project) %>
+
+<div class="lp-trail-battles lp-first-camp-win-prompt"
+     id="trail-battles-<%= project.id %>"
+     style="--lp-trail-accent: <%= accent %>"
+     data-controller="trail-battles first-camp-win-prompt"
+     data-project-id="<%= project.id %>"
+     data-trail-battles-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
+     data-first-camp-win-prompt-dismiss-url-value="<%= life_journey_first_camp_win_nudge_path(journey) %>"
+     data-action="turbo:submit-end->trail-battles#winSubmitted">
+  <div class="lp-trail-battles__scroll">
+    <ul class="lp-trail-battles__list" id="trail-battles-list-<%= project.id %>">
+      <li class="lp-trail-battles__row is-open is-check lp-frost lp-first-camp-win-prompt__row"
+          id="trail-battle-<%= battle.id %>"
+          data-battle-id="<%= battle.id %>">
+        <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true %>
+      </li>
+    </ul>
+    <p class="lp-first-camp-win-prompt__coach"><%= t("strategy.rpg.trail.first_camp_reveal.tap_when_done") %></p>
+    <button type="button"
+            class="lp-first-camp-win-prompt__later"
+            data-action="click->first-camp-win-prompt#dismissLater">
+      <%= t("strategy.rpg.trail.first_camp_reveal.do_it_later") %>
+    </button>
+  </div>
+</div>

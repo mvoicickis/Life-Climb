@@ -8,6 +8,7 @@
   <% next_camp = mountain_trail_finish_card_next_camp(project, plan: plan) %>
 <% end %>
 <% visible = local_assigns.fetch(:visible, state == :prompt) %>
+<% first_win = local_assigns.fetch(:first_win, false) %>
 <% hidden = state == :hidden %>
 <div id="trail-camp-finish-<%= project.id %>"
      class="lp-trail-camp-finish"
@@ -28,9 +29,15 @@
   <% if state == :prompt && visible %>
     <div class="lp-trail-camp-finish__card lp-trail-camp-idle"
          data-trail-camp-finish-target="promptCard">
-      <div class="lp-trail-camp-finish__icon" aria-hidden="true">✓</div>
-      <h3 class="lp-trail-camp-finish__title"><%= t("strategy.rpg.trail.finish_camp_card.title") %></h3>
-      <p class="lp-trail-camp-finish__body"><%= t("strategy.rpg.trail.finish_camp_card.body") %></p>
+      <% unless first_win %>
+        <div class="lp-trail-camp-finish__icon" aria-hidden="true">✓</div>
+      <% end %>
+      <h3 class="lp-trail-camp-finish__title<%= " is-first-win" if first_win %>">
+        <%= first_win ? t("strategy.rpg.trail.finish_camp_card.first_win_title") : t("strategy.rpg.trail.finish_camp_card.title") %>
+      </h3>
+      <% unless first_win %>
+        <p class="lp-trail-camp-finish__body"><%= t("strategy.rpg.trail.finish_camp_card.body") %></p>
+      <% end %>
       <button type="button"
               class="lp-trail-camp-finish__cta"
               data-action="click->trail-camp-finish#addAnotherBattle">

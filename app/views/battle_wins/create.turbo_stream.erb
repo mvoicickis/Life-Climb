@@ -24,7 +24,10 @@
   <%= turbo_stream.replace "trail-camp-finish-#{@project.id}" do %>
     <%= render "life_journeys/trail_camp_finish_card",
           project: @project,
-          visible: @show_finish_camp_card %>
+          plan: @plan,
+          goal: @goal,
+          visible: @show_finish_camp_card,
+          first_win: @first_win_celebration %>
   <% end %>
   <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <%= render "life_journeys/trail_climber_stream" %>

@@ -30,6 +30,7 @@ class FirstCampBattlesController < ApplicationController
       )
       Strategy::CascadeToDaily.sync_goal!(user: current_user, goal: battle)
       @journey.clear_first_camp_reveal!
+      @journey.set_first_camp_win_nudge!
     end
 
     @project = project.reload
@@ -38,6 +39,8 @@ class FirstCampBattlesController < ApplicationController
     @area = project.life_area
     days = @project.children.select(&:day?).reject(&:holding?)
     helpers.mountain_trail_preload_done_today!(current_user, days)
+    trail = Strategy::Trail.for(plan: @plan)
+    @sheet_camps = helpers.mountain_trail_all_projects(trail)
 
     respond_to do |format|
       format.turbo_stream

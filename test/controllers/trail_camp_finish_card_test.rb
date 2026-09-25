@@ -38,13 +38,34 @@ class TrailCampFinishCardTest < ActionDispatch::IntegrationTest
   end
 
   test "turbo win shows finish card when last battle is won" do
+    @user.daily_todos.where.not(completed_at: nil).delete_all
+
     post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
     assert_response :success
 
     assert_match(/trail-camp-finish-#{@project.id}/, @response.body)
-    assert_match(/All battles won!/, @response.body)
+    assert_match(/First battle won!/, @response.body)
     assert_match(/Add another battle/, @response.body)
     assert_match(/Finish camp/, @response.body)
+  end
+
+  test "turbo win when user already won before shows all battles won title" do
+    other = @user.strategy_goals.create!(
+      life_area: @area,
+      life_journey: @journey,
+      parent: @project,
+      horizon: "day",
+      title: "Warm-up",
+      scheduled_on: Date.current - 1.day,
+      position: 9
+    )
+    other_todo = Strategy::CascadeToDaily.sync_goal!(user: @user, goal: other)
+    Battles::CompleteTodo.call(todo: other_todo, user: @user, session: {})
+
+    post battle_win_path(@battle), params: { source: "camp_sheet" }, as: :turbo_stream
+    assert_response :success
+    assert_match(/All battles won!/, @response.body)
+    refute_match(/First battle won!/, @response.body)
   end
 
   test "finish card shows for one-shot won yesterday without idle keep copy" do

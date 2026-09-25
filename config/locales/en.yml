@@ -1001,6 +1001,8 @@ en:
           pick_days: "Pick days of the week" # TODO: translate for lv/de/es/ru.
           weekdays_label: "Days of the week" # TODO: translate for lv/de/es/ru.
           need_days: "Pick at least one day." # TODO: translate for lv/de/es/ru.
+          tap_when_done: "Tap the circle when it's done." # TODO: translate for lv/de/es/ru.
+          do_it_later: "Do it later" # TODO: translate for lv/de/es/ru.
         log_a_number: "Log a number"
         just_tick: "Just a tick"
         unit_placeholder: "pages"
@@ -1013,6 +1015,7 @@ en:
         finish_camp_confirm: "Mark this camp finished? You can reopen it later."
         finish_camp_card:
           title: "All battles won!"
+          first_win_title: "First battle won!" # TODO: translate for lv/de/es/ru.
           body: "Add a battle, or finish this camp to climb higher."
           add_another: "Add another battle"
           finish: "Finish camp"

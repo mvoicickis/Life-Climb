@@ -721,6 +721,30 @@ module MountainTrailHelper
     Array(project&.children).select { |child| child.day? && !child.holding? }
   end
 
+  def mountain_trail_camp_open_battles(project, user: nil)
+    days = mountain_trail_camp_days(project)
+    viewer = user || mountain_trail_viewer
+    mountain_trail_preload_done_today!(viewer, days)
+    days.select { |day| mountain_trail_camp_due?(day) }
+        .reject { |day| mountain_trail_done_today?(day, user: viewer) }
+  end
+
+  def mountain_trail_show_first_camp_win_prompt?(journey, project, user: nil)
+    return false if journey.blank? || project.blank?
+    return false unless journey.first_camp_win_nudge_pending?
+    return false unless journey.first_camp_pinned_camp_id == project.id
+
+    mountain_trail_camp_open_battles(project, user: user).size == 1
+  end
+
+  def mountain_trail_reconcile_first_camp_win_nudge!(journey, project, user: nil)
+    return unless journey&.first_camp_win_nudge_pending?
+    return unless journey.first_camp_pinned_camp_id == project.id
+    return if mountain_trail_show_first_camp_win_prompt?(journey, project, user: user)
+
+    journey.clear_first_camp_win_nudge!
+  end
+
   # Preload today's DailyTodos for Mountain camp rows (one query per render surface).
   def mountain_trail_preload_done_today!(user, battles)
     ids = Array(battles).filter_map(&:id)
