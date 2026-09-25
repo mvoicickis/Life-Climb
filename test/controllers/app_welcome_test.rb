@@ -101,14 +101,17 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_no_welcome_boot_script!
   end
 
-  test "welcome stylesheet includes reduced motion rules" do
+  test "welcome stylesheet includes reduced motion rules and readable headline timing" do
     css = Rails.root.join("app/assets/stylesheets/app_welcome.css").read
+    critical = Rails.root.join("app/views/shared/_app_welcome_critical.html.erb").read
     assert_match(/prefers-reduced-motion:\s*reduce/, css)
     assert_match(/lp-app-welcome/, css)
-    assert_match(/--lp-app-welcome-duration:\s*1\.2s/, css)
     assert_match(/lp-app-welcome-skip-exit/, css)
     assert_match(/--lp-app-welcome-icon:\s*200px/, css)
     assert_match(/\.lp-app-welcome__headline[\s\S]*position:\s*absolute/, css)
+    assert_welcome_headline_timing!(css)
+    assert_welcome_headline_timing!(critical)
+    assert_equal welcome_duration_token(css), welcome_duration_token(critical)
   end
 
   private
@@ -129,6 +132,8 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_match(/__lpDismissAppWelcome/, boot_script)
     assert_match(/__lpSkipAppWelcome/, boot_script)
     assert_match(/__lpStartAppWelcomeTimer/, boot_script)
+    assert_match(/setTimeout\(dismiss,\s*DURATION_MS\)/, boot_script)
+    assert_match(/DURATION_MS = reduced \? 200 :/, boot_script)
     assert_no_match(/DOMContentLoaded/, boot_script)
   end
 
@@ -141,6 +146,16 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
   def welcome_boot_script_html
     doc = Nokogiri::HTML(response.body)
     doc.css("script").map(&:text).find { |js| js.include?("lpAppWelcomeShown") }
+  end
+
+  def assert_welcome_headline_timing!(source)
+    assert_match(/@keyframes lp-app-welcome-headline/, source)
+    assert_match(/40%\s*\{[^}]*opacity:\s*1/, source)
+    assert_match(/85%\s*\{[^}]*opacity:\s*1/, source)
+  end
+
+  def welcome_duration_token(source)
+    source[/(--lp-app-welcome-duration:\s*[^;]+)/, 1]&.strip
   end
 
   def assert_no_welcome_boot_script!
