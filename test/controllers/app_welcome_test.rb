@@ -149,7 +149,7 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
   end
 
   def assert_welcome_headline_timing!(source)
-    block = source[/@keyframes lp-app-welcome-headline[\s\S]*?^\}/m]
+    block = source[/@keyframes lp-app-welcome-headline[\s\S]*?^\s*\}/m]
     assert block, "expected lp-app-welcome-headline keyframes"
     assert_match(/40%\s*\{[\s\S]*opacity:\s*1/, block)
     assert_match(/85%\s*\{[\s\S]*opacity:\s*1/, block)
