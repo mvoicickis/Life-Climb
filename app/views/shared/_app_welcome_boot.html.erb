@@ -3,7 +3,7 @@
   var STORAGE_KEY = "lpAppWelcomeShown";
   var PAPER_THEME = "<%= theme_color_for_request %>";
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var DURATION_MS = reduced ? 200 : 1200;
+  var DURATION_MS = reduced ? 200 : 2000;
   var EXIT_MS = reduced ? 200 : 300;
 
   function restoreThemeColors() {

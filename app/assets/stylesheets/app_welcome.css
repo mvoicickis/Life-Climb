@@ -4,7 +4,7 @@
   --lp-app-welcome-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --lp-app-welcome-icon: 200px;
   --lp-app-welcome-rise: -1.35rem;
-  --lp-app-welcome-duration: 1.2s;
+  --lp-app-welcome-duration: 2s;
   --lp-app-welcome-exit: 0.3s;
 }
 
@@ -70,7 +70,7 @@ html.lp-app-welcome-pending #lp-app-welcome {
   animation: lp-app-welcome-headline var(--lp-app-welcome-duration) var(--lp-app-welcome-ease) forwards;
 }
 
-/* 1200ms: hold 150 | icon 500 from 150 | headline +120 | hold ~350 | exit 300 */
+/* 2000ms: icon keyframes unchanged; headline visible by 800ms (40%), hold to 85%, exit 300ms */
 @keyframes lp-app-welcome-overlay {
   0%,
   75% {
@@ -104,15 +104,15 @@ html.lp-app-welcome-pending #lp-app-welcome {
 
 @keyframes lp-app-welcome-headline {
   0%,
-  22.5% {
+  30% {
     transform: translateX(-50%) translateY(10px);
     opacity: 0;
   }
-  55% {
+  40% {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
-  75% {
+  85% {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
