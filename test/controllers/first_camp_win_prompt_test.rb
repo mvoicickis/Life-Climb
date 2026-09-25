@@ -35,7 +35,7 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert @journey.reload.first_camp_win_nudge_pending?
     refute @journey.first_camp_reveal_pending?
     assert_match "lp-first-camp-win-prompt", response.body
-    assert_match I18n.t("strategy.rpg.trail.first_camp_reveal.tap_when_done"), response.body
+    assert_includes response.body, "lp-first-camp-win-prompt__coach"
     assert_match I18n.t("strategy.rpg.trail.first_camp_reveal.do_it_later"), response.body
     refute_equal @seed.id, @project.reload.children.for_kind("day").sole.id
   end
@@ -86,5 +86,4 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     refute_match "lp-first-camp-win-prompt", response.body
     assert @user.daily_todos.for_day.exists?(strategy_goal_id: @project.children.for_kind("day").sole.id)
   end
-
 end

@@ -615,6 +615,13 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   end
 
   test "winning last camp sheet battle replaces battles frame with finish composer and card" do
+    warmup = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Prior win", scheduled_on: Date.current - 1.day, position: 99
+    )
+    warmup_todo = Strategy::CascadeToDaily.sync_goal!(user: @user, goal: warmup)
+    Battles::CompleteTodo.call(todo: warmup_todo, user: @user, session: {})
+
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Last open fight", scheduled_on: Date.current, position: 0
