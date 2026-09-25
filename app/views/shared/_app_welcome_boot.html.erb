@@ -47,6 +47,12 @@
   window.__lpDismissAppWelcome = dismiss;
   window.__lpSkipAppWelcome = skipWithExit;
 
+  window.__lpStartAppWelcomeTimer = function () {
+    if (!document.documentElement.classList.contains("lp-app-welcome-pending")) return;
+    if (window.__lpAppWelcomeTimer) return;
+    window.__lpAppWelcomeTimer = window.setTimeout(dismiss, DURATION_MS);
+  };
+
   function arm() {
     try {
       if (!window.matchMedia("(display-mode: standalone)").matches) return;
@@ -65,14 +71,6 @@
         }
         meta.setAttribute("content", PAPER_THEME);
       });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        if (!document.documentElement.classList.contains("lp-app-welcome-pending")) return;
-        var overlay = document.getElementById("lp-app-welcome");
-        if (overlay) overlay.removeAttribute("hidden");
-      });
-
-      window.__lpAppWelcomeTimer = window.setTimeout(dismiss, DURATION_MS);
     } catch (_error) {
       /* private mode / unsupported */
     }

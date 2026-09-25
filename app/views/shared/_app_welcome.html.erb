@@ -14,3 +14,13 @@
     <p class="lp-app-welcome__headline"><%= t("landing.hero_title") %></p>
   </div>
 </div>
+<%= javascript_tag(nonce: true) do %>
+(function () {
+  if (!document.documentElement.classList.contains("lp-app-welcome-pending")) return;
+  var overlay = document.getElementById("lp-app-welcome");
+  if (overlay) overlay.removeAttribute("hidden");
+  if (typeof window.__lpStartAppWelcomeTimer === "function") {
+    window.__lpStartAppWelcomeTimer();
+  }
+})();
+<% end %>

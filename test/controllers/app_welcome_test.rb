@@ -50,6 +50,7 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_welcome_icon_splash_layout!
     assert_welcome_boot_script!
+    assert_welcome_early_paint!
   end
 
   test "mountain renders welcome overlay with landing hero title" do
@@ -57,6 +58,7 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_welcome_icon_splash_layout!
     assert_welcome_boot_script!
+    assert_welcome_early_paint!
   end
 
   test "manifest keeps root start_url for onboarding handoff" do
@@ -119,14 +121,26 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
   end
 
   def assert_welcome_boot_script!
-    assert_match(/lpAppWelcomeShown/, response.body)
-    assert_match(/display-mode:\s*standalone/, response.body)
-    assert_match(/lp-app-welcome-pending/, response.body)
-    assert_match(/__lpDismissAppWelcome/, response.body)
-    assert_match(/DURATION_MS = reduced \? 200 : 1200/, response.body)
-    assert_match(/EXIT_MS = reduced \? 200 : 300/, response.body)
-    assert_match(/setTimeout\(dismiss,\s*DURATION_MS\)/, response.body)
-    assert_match(/__lpSkipAppWelcome/, response.body)
+    boot_script = welcome_boot_script_html
+    assert boot_script.present?, "expected welcome boot script in response"
+    assert_match(/lpAppWelcomeShown/, boot_script)
+    assert_match(/display-mode:\s*standalone/, boot_script)
+    assert_match(/lp-app-welcome-pending/, boot_script)
+    assert_match(/__lpDismissAppWelcome/, boot_script)
+    assert_match(/__lpSkipAppWelcome/, boot_script)
+    assert_match(/__lpStartAppWelcomeTimer/, boot_script)
+    assert_no_match(/DOMContentLoaded/, boot_script)
+  end
+
+  def assert_welcome_early_paint!
+    assert_select "body > #lp-app-welcome", count: 1
+    assert_select "head style", minimum: 1
+    assert_match(/__lpStartAppWelcomeTimer/, response.body)
+  end
+
+  def welcome_boot_script_html
+    doc = Nokogiri::HTML(response.body)
+    doc.css("script").map(&:text).find { |js| js.include?("lpAppWelcomeShown") }
   end
 
   def assert_no_welcome_boot_script!
