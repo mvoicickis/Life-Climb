@@ -20,14 +20,18 @@
       <li class="lp-trail-battles__row is-open is-check lp-frost lp-first-camp-win-prompt__row"
           id="trail-battle-<%= battle.id %>"
           data-battle-id="<%= battle.id %>">
-        <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true %>
+        <div class="lp-first-camp-win-prompt__stack">
+          <div class="lp-first-camp-win-prompt__battle">
+            <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true %>
+          </div>
+          <p class="lp-first-camp-win-prompt__coach"><%= t("strategy.rpg.trail.first_camp_reveal.tap_when_done") %></p>
+          <button type="button"
+                  class="lp-first-camp-win-prompt__later"
+                  data-action="click->first-camp-win-prompt#dismissLater">
+            <%= t("strategy.rpg.trail.first_camp_reveal.do_it_later") %>
+          </button>
+        </div>
       </li>
     </ul>
-    <p class="lp-first-camp-win-prompt__coach"><%= t("strategy.rpg.trail.first_camp_reveal.tap_when_done") %></p>
-    <button type="button"
-            class="lp-first-camp-win-prompt__later"
-            data-action="click->first-camp-win-prompt#dismissLater">
-      <%= t("strategy.rpg.trail.first_camp_reveal.do_it_later") %>
-    </button>
   </div>
 </div>

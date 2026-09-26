@@ -30,7 +30,7 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
   end
 
   test "save shows win prompt with coach and circle" do
-    save_first_battle!
+    battle = save_first_battle!
 
     assert @journey.reload.first_camp_win_nudge_pending?
     refute @journey.first_camp_reveal_pending?
@@ -38,6 +38,11 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "lp-first-camp-win-prompt__coach"
     assert_match I18n.t("strategy.rpg.trail.first_camp_reveal.do_it_later"), response.body
     refute_equal @seed.id, @project.reload.children.for_kind("day").sole.id
+
+    assert_select "#trail-battle-#{battle.id} .lp-first-camp-win-prompt__coach",
+                  text: I18n.t("strategy.rpg.trail.first_camp_reveal.tap_when_done")
+    assert_select "#trail-battle-#{battle.id} .lp-first-camp-win-prompt__later",
+                  text: I18n.t("strategy.rpg.trail.first_camp_reveal.do_it_later")
   end
 
   test "reload with nudge pending shows win prompt not setup form" do
