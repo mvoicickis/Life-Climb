@@ -1388,6 +1388,75 @@ body:has(.lp-today-v2-eod-takeover) #today-dash-nav {
   color: var(--lp-muted);
 }
 
+.lp-legacy-host-banner {
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--lp-radius-card, 1rem);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-legacy-host-banner[hidden] {
+  display: none !important;
+}
+
+html.lp-app-welcome-pending .lp-legacy-host-banner {
+  display: none !important;
+}
+
+.lp-legacy-host-banner__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.lp-legacy-host-banner__body {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--lp-muted);
+}
+
+.lp-legacy-host-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.55rem;
+}
+
+.lp-legacy-host-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--lp-tap, 2.75rem);
+  padding: 0 1rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: #fff;
+  background: var(--lp-green-deep);
+  box-shadow: var(--lp-shadow-cta);
+}
+
+.lp-legacy-host-banner__later {
+  min-height: var(--lp-tap, 2.75rem);
+  padding: 0 0.5rem;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  cursor: pointer;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-today-v2-eod-win__glow,
   .lp-today-v2-hp-bar.is-pulse,

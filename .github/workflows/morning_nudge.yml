@@ -1,7 +1,7 @@
 name: Morning nudge
 
 # Every 2 hours — app filters to each user's local 7–11am window.
-# Requires repo secrets: CRON_SECRET, APP_BASE_URL (e.g. https://lifepoints.onrender.com)
+# Requires repo secrets: CRON_SECRET, APP_BASE_URL (e.g. https://lifeclimb.app)
 on:
   schedule:
     - cron: "0 */2 * * *"

@@ -5,6 +5,11 @@ de:
       long: "%-d. %b"
       renewal: "%-d. %B %Y"
   app_name: "LifePoints"
+  legacy_host_banner:
+    title: "Life Climb has a new home" # TODO: translate
+    body: "Open it at lifeclimb.app, sign in, and add it to your home screen." # TODO: translate
+    open: "Open lifeclimb.app" # TODO: translate
+    later: "Later" # TODO: translate
   offline:
     snapshot_banner: "You're offline. Last updated at %{time}." # TODO: translate
     snapshot_banner_yesterday: "You're offline. Last updated yesterday at %{time}." # TODO: translate

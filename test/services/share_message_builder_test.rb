@@ -3,7 +3,7 @@ require "test_helper"
 class ShareMessageBuilderTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
-    @url = "https://lifepoints.onrender.com/"
+    @url = "https://lifeclimb.app/"
     @previous_locale = I18n.locale
     I18n.locale = :en
   end

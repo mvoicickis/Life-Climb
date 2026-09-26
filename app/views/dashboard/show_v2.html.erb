@@ -29,6 +29,9 @@
   data-today-notch-share-toast-value="<%= t('dash.battlefield.share_toast') %>"
   data-today-notch-recap-text-value="<%= recap_share %>"
   <% end %>>
+  <% if show_legacy_host_banner? %>
+    <%= render "dashboard/legacy_host_banner" %>
+  <% end %>
   <% if battlefield_ui %>
     <div id="today-battlefield-header">
       <%= render "dashboard/dash_battlefield_header",

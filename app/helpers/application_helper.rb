@@ -59,6 +59,11 @@ module ApplicationHelper
   end
 
   CANONICAL_HOST = "lifeclimb.app"
+  LEGACY_RENDER_HOST_SUFFIX = ".onrender.com"
+
+  def show_legacy_host_banner?
+    request.host.to_s.end_with?(LEGACY_RENDER_HOST_SUFFIX)
+  end
 
   def canonical_base_url
     host = ENV["APP_HOST"].presence || CANONICAL_HOST
