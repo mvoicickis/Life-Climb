@@ -6472,67 +6472,21 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   color: #b45309;
 }
 
-.lp-trail.is-v4 .lp-first-camp-win-prompt .lp-trail-battles__row.is-open.is-check {
-  flex-direction: column;
-  align-items: stretch;
+.lp-trail.is-v4 .lp-trail-battles__row.is-open:has(.lp-trail-battles__first-camp-hint) {
   max-height: none;
   overflow: visible;
 }
 
-.lp-first-camp-win-prompt__stack {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  min-width: 0;
-  gap: 0;
-}
-
-.lp-first-camp-win-prompt__battle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  min-width: 0;
-}
-
-.lp-first-camp-win-prompt__coach {
-  margin: 0.65rem 0 0;
-  padding-inline: var(--lp-space-4, 1rem);
-  min-width: 0;
+.lp-trail.is-v4 .lp-trail-battles__first-camp-hint {
+  margin: 0.35rem 0 0;
+  padding: 0;
   font-size: var(--lp-type-ui-md);
-  font-weight: 700;
-  color: var(--lp-muted);
-  text-align: center;
+  font-weight: 600;
   line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-.lp-first-camp-win-prompt__later {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-width: 0;
-  min-height: var(--lp-tap);
-  margin: 0.15rem 0 0;
-  padding: 0 var(--lp-space-4, 1rem);
-  border: 0;
-  background: transparent;
-  font: inherit;
-  font-size: 1rem;
-  font-weight: 700;
   color: var(--lp-muted);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.lp-first-camp-win-prompt .lp-trail-battles__box {
-  width: 2rem;
-  height: 2rem;
-  border-width: 2.5px;
+  text-align: left;
+  overflow-wrap: anywhere;
+  width: 100%;
 }
 
 .lp-trail.is-v4 .lp-trail-camp-finish__title.is-first-win {

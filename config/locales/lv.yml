@@ -448,7 +448,6 @@ lv:
         finish_camp_confirm: "Atzīmēt šo nometni kā pabeigtu? Vēlāk to varēsi atvērt no jauna."
         first_camp_reveal:
           tap_when_done: "Tap the circle when it's done."  # TODO: translate
-          do_it_later: "Do it later"  # TODO: translate
         finish_camp_card:
           title: "All battles won!"  # TODO: translate
           first_win_title: "First battle won!"  # TODO: translate

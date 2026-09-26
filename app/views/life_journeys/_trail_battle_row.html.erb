@@ -34,7 +34,7 @@
       data-inline-title-edit-mode-value="camp"
       data-inline-title-edit-battle-id-value="<%= battle.id %>"
       data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>">
-    <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true %>
+    <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true, first_camp_win_hint: local_assigns[:first_camp_win_hint] %>
     <details class="lp-trail-battles__kebab"
              data-controller="tcard-menu"
              data-tcard-menu-target="details"

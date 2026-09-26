@@ -25,6 +25,8 @@
      end %>
 <% composer_only = show_finish_card && !pages_mode %>
 <% open_composer = local_assigns[:open_composer] %>
+<% first_camp_win_hint = local_assigns[:first_camp_win_hint] == true %>
+<% journey = local_assigns[:journey] %>
 <% accent = mountain_trail_project_accent(project) %>
 <% add_form = capture do %>
   <%= form_with url: strategy_goals_path,
@@ -35,7 +37,7 @@
           action: "submit->trail-battles#parseDraft turbo:submit-start->trail-battles#beginAddSubmit turbo:submit-end->trail-battles#battleAdded"
         } do %>
     <%= hidden_field_tag :life_area_id, area.id %>
-    <%= hidden_field_tag :life_journey_id, project.life_journey_id.presence || @journey&.id %>
+    <%= hidden_field_tag :life_journey_id, project.life_journey_id.presence || journey&.id || @journey&.id %>
     <%= hidden_field_tag :parent_id, project.id %>
     <%= hidden_field_tag :horizon, "day" %>
     <%= hidden_field_tag :scheduled_on, Date.current %>
@@ -93,7 +95,7 @@
      data-session-win-template="<%= t('strategy.rpg.trail.session_wins_toast') %>"
      data-trail-battles-create-url-value="<%= strategy_goals_path %>"
      data-trail-battles-life-area-id-value="<%= area.id %>"
-     data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || @journey&.id %>"
+     data-trail-battles-life-journey-id-value="<%= project.life_journey_id.presence || journey&.id || @journey&.id %>"
      data-trail-battles-parent-id-value="<%= project.id %>"
      data-trail-battles-at-max-template-value="<%= t('title_limit.at_max') %>"
      data-trail-battles-need-days-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_days') %>"
@@ -140,7 +142,8 @@
                     battle: battle,
                     done: false,
                     show_move_up: index.positive?,
-                    show_move_down: index < open_battles.size - 1 %>
+                    show_move_down: index < open_battles.size - 1,
+                    first_camp_win_hint: first_camp_win_hint && open_battles.size == 1 && index.zero? %>
             <% end %>
           </ul>
         <% end %>

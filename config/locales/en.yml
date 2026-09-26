@@ -1007,7 +1007,6 @@ en:
           weekdays_label: "Days of the week" # TODO: translate for lv/de/es/ru.
           need_days: "Pick at least one day." # TODO: translate for lv/de/es/ru.
           tap_when_done: "Tap the circle when it's done." # TODO: translate for lv/de/es/ru.
-          do_it_later: "Do it later" # TODO: translate for lv/de/es/ru.
         log_a_number: "Log a number"
         just_tick: "Just a tick"
         unit_placeholder: "pages"
