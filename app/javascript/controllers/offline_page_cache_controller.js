@@ -33,11 +33,28 @@ export default class extends Controller {
   }
 
   async clearBeforeSignOut(event) {
-    event.preventDefault()
     const form = event.currentTarget
-    await withOfflinePageCacheClearTimeout(clearOfflinePageCache())
-    clearOfflinePageCacheUserBinding()
-    this.submitForm(form)
+    if (form.dataset.cacheCleared === "1") {
+      delete form.dataset.cacheCleared
+      return
+    }
+
+    event.preventDefault()
+
+    try {
+      await withOfflinePageCacheClearTimeout(clearOfflinePageCache())
+      clearOfflinePageCacheUserBinding()
+    } catch (_error) {
+      /* still sign out */
+    }
+
+    form.dataset.cacheCleared = "1"
+    try {
+      this.submitForm(form)
+    } catch (_error) {
+      delete form.dataset.cacheCleared
+      form.submit()
+    }
   }
 
   async clearBeforeRestart(event) {
