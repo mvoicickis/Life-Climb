@@ -62,7 +62,8 @@ module Notifications
           "body" => copy.body,
           "url" => "/dashboard",
           "kind" => KIND,
-          "badge" => badge
+          "badge" => badge,
+          "tag" => "daily-nudge"
         }
       )
 

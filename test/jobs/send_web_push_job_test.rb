@@ -184,29 +184,30 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal %w[quick_add mark_done], payload["actions"].map { |a| a["action"] }
   end
 
-  test "actions use snooze when no Today battle exists" do
+  test "morning kind sends empty actions" do
     @user.daily_todos.delete_all
     refute @user.daily_todos.for_day(Date.current).exists?
 
     SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "morning" })
     payload = JSON.parse(@last_kwargs[:message])
-    assert_equal %w[quick_add snooze], payload["actions"].map { |a| a["action"] }
+    assert_equal [], payload["actions"]
   end
 
   test "morning kind preserves title and body" do
     delivered = SendWebPushJob.perform_now(
       @user.id,
       {
-        "title" => "Today's battle",
-        "body" => "Ship it. Win it today.",
+        "title" => "⛰ Get my driving license",
+        "body" => "You wanted this. Go get it.",
         "kind" => "morning"
       }
     )
 
     assert delivered
     payload = JSON.parse(@last_kwargs[:message])
-    assert_equal "Today's battle", payload["title"]
-    assert_equal "Ship it. Win it today.", payload["body"]
+    assert_equal "⛰ Get my driving license", payload["title"]
+    assert_equal "You wanted this. Go get it.", payload["body"]
+    assert_equal [], payload["actions"]
   end
 
   test "returns false when all subscriptions fail" do

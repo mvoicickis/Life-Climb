@@ -39,9 +39,9 @@ module Notifications
       WebPush.define_singleton_method(:payload_send, @original_payload_send)
     end
 
-    test "sends battle copy when incomplete todo exists on local day" do
+    test "sends goal title and weekday body when incomplete todo exists on local day" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        seed_climb!(@user, today_mission: "Warm up")
+        seed_climb!(@user, title: "Get my driving license", today_mission: "Warm up")
         @user.daily_todos.delete_all
         @user.daily_todos.create!(
           title: "Write tests",
@@ -55,9 +55,10 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "morning", @last_payload["kind"]
-        assert_equal "Today's battle", @last_payload["title"]
-        assert_equal "Write tests. Win it today.", @last_payload["body"]
+        assert_equal "⛰ Get my driving license", @last_payload["title"]
+        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
         assert_equal "/dashboard", @last_payload["url"]
+        assert_equal "daily-nudge", @last_payload["tag"]
         expected_badge = Today::BattleOpenCount.for(user: @user, on: Date.new(2026, 8, 6))
         assert_equal expected_badge, @last_payload["badge"]
         assert expected_badge.positive?
@@ -65,31 +66,27 @@ module Notifications
       end
     end
 
-    test "sends plan copy when nothing planned" do
+    test "sends plan title when nothing planned" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
         assert_equal "Plan today", @last_payload["title"]
-        assert_equal "Pick one battle for today.", @last_payload["body"]
+        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal "daily-nudge", @last_payload["tag"]
         assert_equal 0, @last_payload["badge"]
       end
     end
 
-    test "sends plan copy when every battle today is done" do
+    test "still sends weekday body when every battle today is done" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        todo = @user.daily_todos.create!(
-          title: "Already won",
-          aspect_key: "career",
-          scheduled_on: Date.new(2026, 8, 6),
-          position: 0,
-          lp_reward: 10
-        )
+        seed_climb!(@user, title: "Get my driving license")
+        todo = @user.daily_todos.for_day(Date.new(2026, 8, 6)).first
         todo.update!(completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
-        assert_equal "Plan today", @last_payload["title"]
-        assert_equal "Pick one battle for today.", @last_payload["body"]
+        assert_equal "⛰ Get my driving license", @last_payload["title"]
+        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
         assert_equal 0, @last_payload["badge"]
       end
     end
@@ -102,7 +99,7 @@ module Notifications
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
-        assert_match(/Win it today/, @last_payload["body"])
+        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
       end
     end
 
@@ -132,9 +129,11 @@ module Notifications
           lp_reward: 10
         )
 
+        seed_climb!(@user, title: "Get my driving license")
+
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
-        assert_equal "Berlin day battle. Win it today.", @last_payload["body"]
+        assert_equal "This is why you started. Keep going.", @last_payload["body"]
         assert_equal Date.new(2026, 8, 7), @pref.reload.last_morning_nudge_sent_on
       end
     end

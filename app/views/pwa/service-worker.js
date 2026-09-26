@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v9"
+const CACHE_VERSION = "v10"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const PAGE_CACHE_NAME = `${CACHE_NAME}-pages`
 const OFFLINE_URL = "/offline.html"
@@ -50,7 +50,7 @@ function intensityOptions(intensity) {
 }
 
 function notificationActions(data) {
-  if (Array.isArray(data.actions) && data.actions.length > 0) return data.actions
+  if (Array.isArray(data.actions)) return data.actions
   return DEFAULT_ACTIONS
 }
 
@@ -153,6 +153,7 @@ self.addEventListener("push", (event) => {
     },
     ...intensityOptions(data.intensity)
   }
+  if (data.tag) options.tag = data.tag
 
   event.waitUntil(
     (async () => {

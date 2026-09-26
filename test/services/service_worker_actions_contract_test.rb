@@ -21,11 +21,16 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, "handleNotificationAction"
   end
 
-  test "push handler syncs app badge from payload without notification tag" do
+  test "push handler syncs app badge and passes notification tag from payload" do
     assert_includes @source, "syncAppBadgeFromPayload"
     assert_includes @source, "navigator.setAppBadge"
     assert_includes @source, "navigator.clearAppBadge"
-    refute_includes @source, "tag:"
+    assert_includes @source, "if (data.tag) options.tag = data.tag"
+  end
+
+  test "notificationActions honors empty actions array for morning push" do
+    assert_includes @source, "if (Array.isArray(data.actions)) return data.actions"
+    refute_match(/data\.actions\.length > 0/, @source)
   end
 
   test "notificationclick clears app badge before opening app" do
@@ -33,7 +38,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   end
 
   test "cache version bumped for offline page cache" do
-    assert_includes @source, 'CACHE_VERSION = "v9"'
+    assert_includes @source, 'CACHE_VERSION = "v10"'
     assert_includes @source, "PAGE_CACHE_NAME"
     assert_includes @source, "-pages"
   end

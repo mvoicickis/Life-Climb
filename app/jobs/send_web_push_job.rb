@@ -49,6 +49,12 @@ class SendWebPushJob < ApplicationJob
     end
 
     message["token"] = user.signed_id(purpose: :notification_action, expires_in: 30.days)
+
+    if kind == "morning"
+      message["actions"] = []
+      return
+    end
+
     I18n.with_locale(user.locale.presence || I18n.default_locale) do
       action_day = morning_action_day(user, kind)
       has_battle = user.daily_todos.for_day(action_day).exists?

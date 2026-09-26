@@ -7,45 +7,74 @@ module Notifications
     setup do
       @user = users(:one)
       @user.daily_todos.delete_all
-      @date = Date.new(2026, 8, 6)
+      @user.life_journeys.delete_all
+      @user.strategy_goals.delete_all
     end
 
-    test "incomplete battle uses battle title and body with name" do
+    test "uses goal title with mountain prefix" do
+      seed_climb!(@user, title: "Get my driving license", today_mission: "Warm up")
+      date = Date.new(2026, 8, 4) # Tuesday
+
+      copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
+
+      assert_equal "⛰ Get my driving license", copy.title
+      assert_equal "You wanted this. Go get it.", copy.body
+    end
+
+    test "truncates long goal title at forty graphemes" do
+      long_title = "Build a sustainable side business that earns on its own"
+      seed_climb!(@user, title: long_title, today_mission: "Step one")
+      date = Date.new(2026, 8, 4)
+
+      copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
+
+      assert copy.title.start_with?("⛰ ")
+      assert copy.title.end_with?("…")
+      assert_operator copy.title.delete_prefix("⛰ ").each_grapheme_cluster.count, :<=, 41
+    end
+
+    test "latvian goal title is preserved" do
+      seed_climb!(@user, title: "Iemācīties vācu valodu līdz B1", today_mission: "Vocabulary")
+      date = Date.new(2026, 8, 4)
+
+      copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
+
+      assert_equal "⛰ Iemācīties vācu valodu līdz B1", copy.title
+    end
+
+    test "no journey uses plan title and weekday body" do
+      date = Date.new(2026, 8, 6) # Thursday
+
+      copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
+
+      assert_equal "Plan today", copy.title
+      assert_equal "Big goals fall to small steps. Take one.", copy.body
+    end
+
+    test "weekday body follows date not server default" do
+      seed_climb!(@user, title: "Get my driving license")
+      berlin_tuesday = Date.new(2026, 8, 4)
+
+      copy = MorningNudgeCopy.for(user: @user, date: berlin_tuesday, locale: :en)
+
+      assert_equal "You wanted this. Go get it.", copy.body
+    end
+
+    test "body ignores incomplete battle title" do
+      seed_climb!(@user, title: "Get my driving license")
+      date = Date.new(2026, 8, 3) # Monday
       @user.daily_todos.create!(
-        title: "Ship auth",
+        title: "Secret battle name",
         aspect_key: "career",
-        scheduled_on: @date,
+        scheduled_on: date,
         position: 0,
         lp_reward: 10
       )
 
-      copy = MorningNudgeCopy.for(user: @user, date: @date, locale: :en)
+      copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
 
-      assert_equal "Today's battle", copy.title
-      assert_equal "Ship auth. Win it today.", copy.body
-    end
-
-    test "all battles done today uses plan copy" do
-      todo = @user.daily_todos.create!(
-        title: "Ship auth",
-        aspect_key: "career",
-        scheduled_on: @date,
-        position: 0,
-        lp_reward: 10
-      )
-      todo.update!(completed_at: Time.zone.local(2026, 8, 6, 9, 0, 0))
-
-      copy = MorningNudgeCopy.for(user: @user, date: @date, locale: :en)
-
-      assert_equal "Plan today", copy.title
-      assert_equal "Pick one battle for today.", copy.body
-    end
-
-    test "nothing planned uses plan copy" do
-      copy = MorningNudgeCopy.for(user: @user, date: @date, locale: :en)
-
-      assert_equal "Plan today", copy.title
-      assert_equal "Pick one battle for today.", copy.body
+      assert_equal "New week. Make it count.", copy.body
+      refute_includes copy.body, "Secret battle"
     end
   end
 end
