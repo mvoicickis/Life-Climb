@@ -41,6 +41,9 @@
     <% if qty_project&.unit.present? %>
       <span class="lp-trail-battles__qty-chip"><%= qty_project.unit %></span>
     <% end %>
+    <% if local_assigns[:first_camp_win_hint] %>
+      <p class="lp-trail-battles__first-camp-hint"><%= t("strategy.rpg.trail.first_camp_reveal.tap_when_done") %></p>
+    <% end %>
   </div>
 <% else %>
   <span class="lp-trail-battles__copy">
