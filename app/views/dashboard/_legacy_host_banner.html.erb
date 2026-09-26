@@ -1,0 +1,23 @@
+<div id="lp-legacy-host-banner"
+     class="lp-legacy-host-banner"
+     role="region"
+     aria-labelledby="lp-legacy-host-banner-title"
+     data-controller="legacy-host-banner"
+     hidden>
+  <h2 id="lp-legacy-host-banner-title" class="lp-legacy-host-banner__title">
+    <%= t("legacy_host_banner.title") %>
+  </h2>
+  <p class="lp-legacy-host-banner__body"><%= t("legacy_host_banner.body") %></p>
+  <div class="lp-legacy-host-banner__actions">
+    <a href="https://lifeclimb.app/dashboard"
+       class="lp-legacy-host-banner__cta"
+       rel="noopener noreferrer">
+      <%= t("legacy_host_banner.open") %>
+    </a>
+    <button type="button"
+            class="lp-legacy-host-banner__later"
+            data-action="click->legacy-host-banner#snooze">
+      <%= t("legacy_host_banner.later") %>
+    </button>
+  </div>
+</div>

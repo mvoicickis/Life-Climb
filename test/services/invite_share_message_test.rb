@@ -5,7 +5,7 @@ require "test_helper"
 class InviteShareMessageTest < ActiveSupport::TestCase
   test "builds invite body and full message with landing url" do
     I18n.with_locale(:en) do
-      url = "https://lifepoints.onrender.com/?s=lp"
+      url = "https://lifeclimb.app/?s=lp"
       body = InviteShareMessage.body(landing_url: url)
       full = InviteShareMessage.call(landing_url: url)
 

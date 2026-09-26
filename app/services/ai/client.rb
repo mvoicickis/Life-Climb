@@ -40,7 +40,7 @@ module Ai
       base_url: ENV["AI_BASE_URL"],
       model: ENV["AI_STRATEGY_MODEL"],
       timeout: ENV.fetch("AI_TIMEOUT_SECONDS", DEFAULT_TIMEOUT).to_i,
-      site_url: ENV.fetch("AI_SITE_URL", "https://lifepoints.onrender.com"),
+      site_url: ENV.fetch("AI_SITE_URL", "https://lifeclimb.app"),
       site_name: ENV.fetch("AI_SITE_NAME", "LifePoints"),
       http: nil
     )

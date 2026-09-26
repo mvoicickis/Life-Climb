@@ -6,6 +6,11 @@ en:
       renewal: "%B %-d, %Y"
       dash_weekday: "%A"
   app_name: "Life Climb"
+  legacy_host_banner:
+    title: "Life Climb has a new home"
+    body: "Open it at lifeclimb.app, sign in, and add it to your home screen."
+    open: "Open lifeclimb.app"
+    later: "Later"
   offline:
     snapshot_banner: "You're offline. Last updated at %{time}."
     snapshot_banner_yesterday: "You're offline. Last updated yesterday at %{time}."
