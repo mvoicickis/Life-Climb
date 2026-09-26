@@ -113,3 +113,10 @@ lv:
       battle_body: "%{title}. Win it today."
       plan_title: "Plan today"
       plan_body: "Pick one battle for today."
+      weekday_sun: "Your future self will thank you. Start now." # TODO: translate
+      weekday_mon: "New week. Make it count." # TODO: translate
+      weekday_tue: "You wanted this. Go get it." # TODO: translate
+      weekday_wed: "Do one small thing for this today." # TODO: translate
+      weekday_thu: "Big goals fall to small steps. Take one." # TODO: translate
+      weekday_fri: "This is why you started. Keep going." # TODO: translate
+      weekday_sat: "Five minutes today moves you closer." # TODO: translate
