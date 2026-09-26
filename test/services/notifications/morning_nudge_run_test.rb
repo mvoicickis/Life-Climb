@@ -80,8 +80,13 @@ module Notifications
     test "still sends weekday body when every battle today is done" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         seed_climb!(@user, title: "Get my driving license")
-        todo = @user.daily_todos.for_day(Date.new(2026, 8, 6)).first
-        todo.update!(completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
+        @user.daily_todos.for_day(Date.new(2026, 8, 6)).find_each do |todo|
+          todo.update!(completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
+        end
+        journey = @user.reload.primary_focused_journey
+        journey.missions.for_day(Date.new(2026, 8, 6)).primary.find_each do |mission|
+          mission.update!(status: "completed", completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
+        end
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
