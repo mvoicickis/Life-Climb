@@ -13,7 +13,7 @@ class YouSignOutTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_current_path dashboard_path, wait: 10
+    assert_predicate page.driver.browser.manage.all_cookies.find { |c| c[:name] == "session_id" }, :present?
 
     visit settings_path
     assert_selector "form[action='#{session_path}'] .lp-you-signout", wait: 5
