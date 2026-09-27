@@ -1,12 +1,20 @@
 <% if @uncompleted %>
+  <%= turbo_stream.remove dom_id(@todo, :battlefield_row) %>
   <%= turbo_stream.append "today-battlefield-rows" do %>
     <%= render "dashboard/dash_battlefield_row",
           todo: @todo,
           mission: nil,
-          journey: @journey %>
+          journey: @journey,
+          row_state: :open %>
   <% end %>
 <% else %>
-  <%= turbo_stream.remove dom_id(@todo, :battlefield_row) %>
+  <%= turbo_stream.replace dom_id(@todo, :battlefield_row) do %>
+    <%= render "dashboard/dash_battlefield_row",
+          todo: @todo,
+          mission: nil,
+          journey: @journey,
+          row_state: :pending_won %>
+  <% end %>
 <% end %>
 
 <%= turbo_stream.update "today-battlefield-count" do %>
@@ -29,14 +37,17 @@
         streak: @climb_streak %>
 <% end %>
 
-<% if @battlefield_health.all_clear? %>
-  <%= turbo_stream.replace "today-battlefield-body" do %>
-    <div id="today-battlefield-body">
-      <div id="today-battlefield-inline-ack-host">
-        <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
-      </div>
-    </div>
+<%= turbo_stream.update "today-battlefield-inline-ack-host" do %>
+  <% if @battlefield_health.all_clear? %>
+    <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
   <% end %>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-won-shell" do %>
+  <%= render "dashboard/dash_battlefield_won_shell",
+        done_todos: @done_todos,
+        exclude_todo: (@uncompleted ? nil : @todo),
+        journey: @journey %>
 <% end %>
 
 <% if habits_enabled? %>
@@ -100,4 +111,3 @@
     <% end %>
   <% end %>
 <% end %>
-

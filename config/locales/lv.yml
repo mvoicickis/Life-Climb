@@ -863,6 +863,9 @@ lv:
       no_camp: "Nometne"
       win_not_saved: "Not saved. Tap to try again."  # TODO: translate
       win_battle: "Uzvarēt %{title}"
+      unwin_battle: "Undo win for %{title}"  # TODO: translate
+      won_today: "Won today (%{count})"  # TODO: translate
+      undo: "Undo"  # TODO: translate
       more_waiting:
         one: "Vēl %{count} cīņa Kalnā"
         other: "Vēl %{count} cīņas Kalnā"

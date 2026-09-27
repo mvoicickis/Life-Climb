@@ -188,6 +188,7 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-dash-next", count: 0
     assert_battle_row_absent!(title: "Send five emails")
+    assert_won_battle_row!(title: "Send five emails", todo: todo)
     assert_select "[data-commitment-progress]", count: 0
   end
 

@@ -41,10 +41,12 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     assert_today_v2_all_clear_shell!
     assert_selector ".lp-dash-nav.is-today-v2", visible: true, wait: 5
     assert_no_legacy_today_shell!
-    assert_no_selector ".lp-today-v2-row"
+    assert_no_selector "#today-battlefield-rows .lp-today-v2-row"
     assert_battle_row_absent!(title: @todo.title)
+    assert_selector "#today-battlefield-won-label", text: "Won today (5)", visible: :all, wait: 5
     5.times do |i|
       assert_battle_row_absent!(title: "Win #{i + 1}")
+      assert_won_battle_row!(title: "Win #{i + 1}")
     end
     assert_selector "#today-end-of-day", wait: 5
     assert_selector ".lp-today-v2-inline-ack", text: /All battles won today/, visible: :all, wait: 5

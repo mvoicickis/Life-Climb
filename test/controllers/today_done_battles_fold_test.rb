@@ -29,6 +29,7 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_battle_row_absent!(title: @todo.title)
+    assert_won_battle_row!(title: @todo.title, todo: @todo)
     assert_battle_row!(title: other.title)
     assert_select ".lp-dash-done-fold", count: 0
     assert_select ".lp-dash-timeline", count: 0
@@ -41,6 +42,7 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_battle_row_absent!(title: @todo.title)
+    assert_won_battle_row!(title: @todo.title, todo: @todo)
     assert_select ".lp-dash-timeline", count: 0
     assert_select ".lp-dash-done-fold", count: 0
     assert_select ".lp-today-v2-notch.is-end-day", count: 1
@@ -63,5 +65,6 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-timeline__item[data-starts-at]", count: 0
     assert_battle_row!(title: open.title)
     assert_battle_row_absent!(title: @todo.title)
+    assert_won_battle_row!(title: @todo.title, todo: @todo)
   end
 end

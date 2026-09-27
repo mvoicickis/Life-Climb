@@ -28,7 +28,8 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
     assert_select ".lp-today-v2-eod-win__stats", text: /You won 1 of 1 battle/
     assert_select ".lp-today-v2-mountain-link.is-tertiary", text: I18n.t("dash.battlefield.mountain_tertiary")
-    assert_select ".lp-today-v2-row", count: 0
+    assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
+    assert_select "#today-battlefield-won-list .lp-today-v2-row", count: 1
   end
 
   test "completing last battle shows win takeover without camp check on step 1" do
@@ -42,16 +43,19 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_no_match "today-battlefield-win", response.body
   end
 
-  test "completing last battle via turbo stream swaps rows for inline ack and end-of-day host" do
+  test "completing last battle via turbo stream keeps body rows host won shell inline ack and end-of-day" do
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match 'id="today-battlefield-body"', response.body
+    assert_match %(target="#{dom_id(@todo, :battlefield_row)}"), response.body
+    assert_match "is-pending-won", response.body
+    assert_match "today-battlefield-won-shell", response.body
     assert_match "today-end-of-day-host", response.body
     assert_match I18n.t("dash.end_of_day.inline_ack.battles"), response.body
     assert_match "lp-today-v2-eod-win", response.body
     assert_match I18n.t("dash.battlefield.mountain_tertiary"), response.body
     assert_no_match I18n.t("dash.battlefield.mountain_all_clear"), response.body
+    assert_no_match %(turbo-stream action="replace" target="today-battlefield-body"), response.body
     assert_no_match "is-clear", response.body
   end
 end

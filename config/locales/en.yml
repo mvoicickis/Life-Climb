@@ -86,6 +86,9 @@ en:
       no_camp: "Camp"
       win_not_saved: "Not saved. Tap to try again."
       win_battle: "Win %{title}"
+      unwin_battle: "Undo win for %{title}"
+      won_today: "Won today (%{count})"
+      undo: "Undo"
       fight_toast: "Tap a battle above to fight it"
       more_waiting:
         one: "%{count} more battle on Mountain"

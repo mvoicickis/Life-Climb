@@ -51,6 +51,7 @@ class TodayChecklistShellMobileTest < ApplicationSystemTestCase
     patch_practice_task!(@second)
     visit dashboard_path
     assert_battle_row_absent!(title: "Volume 0")
+    assert_won_battle_row!(title: "Volume 0", todo: @todo)
     assert_no_selector ".lp-dash-done-fold"
     assert @first.reload.completed?
     assert @second.reload.completed?

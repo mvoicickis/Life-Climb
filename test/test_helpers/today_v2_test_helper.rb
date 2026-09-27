@@ -47,21 +47,38 @@ module TodayV2TestHelper
 
   def assert_battle_row!(title:, camp: nil, todo: nil)
     if integration_test?
-      assert_select ".lp-today-v2-row__title", text: title
-      assert_select ".lp-today-v2-row__camp", text: /#{Regexp.escape(camp)}/ if camp
-      assert_select ".lp-today-v2-row[data-todo-id=?]", todo.id.to_s if todo
+      assert_select "#today-battlefield-rows .lp-today-v2-row__title", text: title
+      assert_select "#today-battlefield-rows .lp-today-v2-row__camp", text: /#{Regexp.escape(camp)}/ if camp
+      assert_select "#today-battlefield-rows .lp-today-v2-row[data-todo-id=?]", todo.id.to_s if todo
     else
-      assert_selector ".lp-today-v2-row__title", text: title
-      assert_selector ".lp-today-v2-row__camp", text: /#{Regexp.escape(camp)}/ if camp
-      assert_selector ".lp-today-v2-row[data-todo-id='#{todo.id}']" if todo
+      assert_selector "#today-battlefield-rows .lp-today-v2-row__title", text: title
+      assert_selector "#today-battlefield-rows .lp-today-v2-row__camp", text: /#{Regexp.escape(camp)}/ if camp
+      assert_selector "#today-battlefield-rows .lp-today-v2-row[data-todo-id='#{todo.id}']" if todo
     end
   end
 
   def assert_battle_row_absent!(title:)
     if integration_test?
-      assert_select ".lp-today-v2-row__title", text: title, count: 0
+      assert_select "#today-battlefield-rows .lp-today-v2-row__title", text: title, count: 0
     else
-      assert_no_selector ".lp-today-v2-row__title", text: title
+      assert_no_selector "#today-battlefield-rows .lp-today-v2-row__title", text: title
+    end
+  end
+
+  def assert_won_battle_row!(title:, todo: nil, wait: 5)
+    if integration_test?
+      assert_select "#today-battlefield-won-list .lp-today-v2-row__title", text: title
+      assert_select "#today-battlefield-won-list .lp-today-v2-row[data-todo-id=?]", todo.id.to_s if todo
+    else
+      assert_selector "#today-battlefield-won-list .lp-today-v2-row__title",
+                      text: title,
+                      visible: :all,
+                      wait: wait
+      if todo
+        assert_selector "#today-battlefield-won-list .lp-today-v2-row[data-todo-id='#{todo.id}']",
+                        visible: :all,
+                        wait: wait
+      end
     end
   end
 

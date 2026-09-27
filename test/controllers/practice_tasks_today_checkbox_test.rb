@@ -40,6 +40,8 @@ class PracticeTasksTodayCheckboxTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_battle_row_absent!(title: "Polish Today")
+    todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Polish Today")
+    assert_won_battle_row!(title: "Polish Today", todo: todo)
     assert_select "dialog.lp-dash-quest-sheet", count: 0
   end
 end

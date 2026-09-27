@@ -1,7 +1,8 @@
-<%# Today V2 — single battle row or route mission. locals: todo, mission, journey %>
+<%# Today V2 — single battle row or route mission. locals: todo, mission, journey, row_state (:open, :pending_won, :won) %>
 <%
   todo = local_assigns[:todo]
   mission = local_assigns[:mission]
+  row_state = local_assigns.fetch(:row_state, :open).to_sym
   qty_project = nil
   strategy_battle = nil
   if mission
@@ -10,6 +11,7 @@
     complete_url = mission_completion_path(mission)
     complete_params = { aspect_key: mission.aspect_key }
     row_id = dom_id(mission, :battlefield_row)
+    win_form = true
   else
     title = todo.title
     project = todo.visible_path_project
@@ -18,18 +20,22 @@
     row_id = dom_id(todo, :battlefield_row)
     qty_project = todo.strategy_goal&.quantified_path_project
     strategy_battle = todo.strategy_goal
+    win_form = row_state == :open
   end
   camp_style = battlefield_camp_style(project)
   camp_label = project&.title.presence || t("dash.battlefield.no_camp")
+  row_classes = [ "lp-today-v2-row" ]
+  row_classes << "is-struck" if row_state.in?(%i[pending_won won])
+  row_classes << "is-pending-won" if row_state == :pending_won
+  row_classes << "is-won-row" if row_state == :won
+  controllers = [ "today-battle-row" ]
+  controllers << "quantity-complete" if qty_project
+  controllers << "inline-title-edit" if strategy_battle
+  controllers << "today-battle-pending-win" if row_state == :pending_won
 %>
-
-<article class="lp-today-v2-row"
+<article class="<%= row_classes.join(" ") %>"
          id="<%= row_id %>"
-         data-controller="<%= [
-           'today-battle-row',
-           ('quantity-complete' if qty_project),
-           ('inline-title-edit' if strategy_battle)
-         ].compact.join(' ') %>"
+         data-controller="<%= controllers.join(" ") %>"
          <% if strategy_battle %>
          data-inline-title-edit-update-url-value="<%= strategy_goal_path(strategy_battle) %>"
          data-inline-title-edit-mode-value="today"
@@ -61,10 +67,11 @@
           },
           class: "lp-today-v2-row__check",
           aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+      <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
       <%= render "shared/push_endpoint_hidden" %>
     <% end %>
     <%= render "dashboard/dash_battlefield_quantity_sheet", todo: todo, project: qty_project %>
-  <% else %>
+  <% elsif win_form %>
     <%= button_to complete_url,
           method: :post,
           params: complete_params,
@@ -83,6 +90,20 @@
           },
           class: "lp-today-v2-row__check",
           aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+      <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+      <%= render "shared/push_endpoint_hidden" %>
+    <% end %>
+  <% else %>
+    <%= button_to complete_url,
+          method: :post,
+          params: complete_params,
+          form: {
+            class: "lp-today-v2-row__check-form",
+            data: { turbo: true, turbo_stream: true }
+          },
+          class: "lp-today-v2-row__check",
+          aria: { label: t("dash.battlefield.unwin_battle", title: title) } do %>
+      <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box is-won"></span></span>
       <%= render "shared/push_endpoint_hidden" %>
     <% end %>
   <% end %>
@@ -98,8 +119,20 @@
     <p class="lp-today-v2-row__title"><%= title %></p>
   <% end %>
 
-  <span class="lp-today-v2-row__camp"
-        style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">
-    <%= camp_label %>
-  </span>
+  <% unless row_state == :won %>
+    <span class="lp-today-v2-row__camp"
+          style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">
+      <%= camp_label %>
+    </span>
+  <% end %>
+
+  <% if row_state == :pending_won %>
+    <button type="button"
+            class="lp-today-row__undo"
+            hidden
+            data-today-battle-pending-win-target="undo"
+            data-action="click->today-battle-pending-win#undo">
+      <%= t("dash.battlefield.undo") %>
+    </button>
+  <% end %>
 </article>
