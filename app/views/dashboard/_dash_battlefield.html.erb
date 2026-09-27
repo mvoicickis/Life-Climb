@@ -12,65 +12,65 @@
 %>
 
 <section class="lp-today-v2-field" id="today-battlefield-field" aria-label="<%= t('dash.battlefield.title') %>">
-  <div class="lp-today-v2-field__head">
-    <h2 class="lp-today-v2-field__title"><%= t("dash.battlefield.title") %></h2>
-    <span class="lp-today-v2-field__count" id="today-battlefield-count" data-today-v2-target="fieldCount">
-      <%= t("dash.battlefield.count", done: health.done_count, total: health.total_count) %>
-    </span>
-  </div>
+  <div class="lp-today-group-card">
+    <div class="lp-today-group-card__head">
+      <h2 class="lp-today-v2-field__title"><%= t("dash.battlefield.title") %></h2>
+      <%= render "dashboard/dash_battlefield_count", health: health %>
+    </div>
 
-  <div id="today-battlefield-body">
-    <% if health.empty? %>
-      <div class="lp-today-v2-empty">
-        <%= t("dash.battlefield.empty_html").html_safe %>
-      </div>
+    <div id="today-battlefield-body">
+      <% if health.empty? %>
+        <div class="lp-today-v2-empty">
+          <%= t("dash.battlefield.empty_html").html_safe %>
+        </div>
+      <% else %>
+        <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
+          <% if include_mission && mission %>
+            <%= render "dashboard/dash_battlefield_row",
+                  todo: nil,
+                  mission: mission,
+                  journey: journey %>
+          <% end %>
+
+          <% open_todos.each do |todo| %>
+            <%= render "dashboard/dash_battlefield_row",
+                  todo: todo,
+                  mission: nil,
+                  journey: journey,
+                  row_state: :open %>
+          <% end %>
+        </div>
+
+        <div id="today-battlefield-inline-ack-host">
+          <% if all_clear %>
+            <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
+          <% end %>
+        </div>
+
+        <%= render "dashboard/dash_battlefield_won_shell",
+              done_todos: done_todos,
+              journey: journey %>
+      <% end %>
+    </div>
+
+    <div id="today-battles-waiting-host">
+      <% if @battles_waiting_count.to_i.positive? && !all_clear %>
+        <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
+          <%= t("dash.battlefield.more_waiting", count: @battles_waiting_count) %>
+        </p>
+      <% end %>
+    </div>
+
+    <% if all_clear || !health.empty? %>
+      <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
+    <% elsif handoff %>
+      <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
+            handoff[:href] || mountain_href,
+            class: "lp-today-v2-mountain-link is-open" %>
     <% else %>
-      <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
-        <% if include_mission && mission %>
-          <%= render "dashboard/dash_battlefield_row",
-                todo: nil,
-                mission: mission,
-                journey: journey %>
-        <% end %>
-
-        <% open_todos.each do |todo| %>
-          <%= render "dashboard/dash_battlefield_row",
-                todo: todo,
-                mission: nil,
-                journey: journey,
-                row_state: :open %>
-        <% end %>
-      </div>
-
-      <div id="today-battlefield-inline-ack-host">
-        <% if all_clear %>
-          <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
-        <% end %>
-      </div>
-
-      <%= render "dashboard/dash_battlefield_won_shell",
-            done_todos: done_todos,
-            journey: journey %>
+      <%= link_to t("dash.battlefield.mountain_need"),
+            mountain_href,
+            class: "lp-today-v2-mountain-link is-open" %>
     <% end %>
   </div>
-
-  <div id="today-battles-waiting-host">
-    <% if @battles_waiting_count.to_i.positive? && !all_clear %>
-      <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
-        <%= t("dash.battlefield.more_waiting", count: @battles_waiting_count) %>
-      </p>
-    <% end %>
-  </div>
-
-  <% if all_clear || !health.empty? %>
-    <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
-  <% elsif handoff %>
-    <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
-          handoff[:href] || mountain_href,
-          class: "lp-today-v2-mountain-link is-open" %>
-  <% else %>
-    <%= link_to t("dash.battlefield.mountain_need"),
-          mountain_href,
-          class: "lp-today-v2-mountain-link is-open" %>
-  <% end %>
 </section>

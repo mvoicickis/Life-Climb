@@ -855,6 +855,7 @@ lv:
       title: "Šodienas kaujaslauks"
       risk_cleared: "Viss padarīts."
       risk_empty: "Šodienas sarakstā vēl nav cīņu."
+      risk_before_first_win: "Win a battle to move the bar."  # TODO: translate
       mountain_need: "Vajag vēl vienu cīņu? Atver Kalnu"
       mountain_all_clear: "Atver Kalnu"
       empty_html: "Šodien nav atvērtu cīņu.<br>Dodies uz Kalnu, lai atvērtu nometni un pievienotu cīņu."

@@ -108,23 +108,28 @@
     <% end %>
   <% end %>
 
-  <% if strategy_battle %>
-    <button type="button"
-            class="lp-today-v2-row__title lp-today-v2-row__title-btn"
-            data-inline-title-edit-target="display"
-            data-action="click->inline-title-edit#open">
-      <%= title %>
-    </button>
-  <% else %>
-    <p class="lp-today-v2-row__title"><%= title %></p>
-  <% end %>
+  <div class="lp-today-v2-row__copy">
+    <div class="lp-today-v2-row__title-line">
+      <% if strategy_battle %>
+        <button type="button"
+                class="lp-today-v2-row__title lp-today-v2-row__title-btn"
+                data-inline-title-edit-target="display"
+                data-action="click->inline-title-edit#open">
+          <%= title %>
+        </button>
+      <% else %>
+        <p class="lp-today-v2-row__title"><%= title %></p>
+      <% end %>
 
-  <% unless row_state == :won %>
-    <span class="lp-today-v2-row__camp"
-          style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">
-      <%= camp_label %>
-    </span>
-  <% end %>
+      <% unless row_state == :won %>
+        <span class="lp-today-v2-row__camp-inline"><%= camp_label %></span>
+        <span class="lp-today-v2-row__camp"
+              style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">
+          <%= camp_label %>
+        </span>
+      <% end %>
+    </div>
+  </div>
 
   <% if row_state == :pending_won %>
     <button type="button"

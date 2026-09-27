@@ -36,8 +36,8 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
 
     assert_today_v2_shell!
     assert_no_legacy_today_shell!
-    assert_selector ".lp-today-v2-header__avatar-img"
-    assert_selector ".lp-today-v2-header__hp-num"
+    assert_selector ".lp-today-v2-header--compact"
+    assert_selector ".lp-today-v2-hp-bar"
     assert_selector ".lp-today-v2-hp-bar"
     assert_selector ".lp-dash-anytime"
 

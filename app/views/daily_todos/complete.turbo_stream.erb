@@ -17,10 +17,8 @@
   <% end %>
 <% end %>
 
-<%= turbo_stream.update "today-battlefield-count" do %>
-  <%= t("dash.battlefield.count",
-        done: @battlefield_health.done_count,
-        total: @battlefield_health.total_count) %>
+<%= turbo_stream.replace "today-battlefield-count" do %>
+  <%= render "dashboard/dash_battlefield_count", health: @battlefield_health %>
 <% end %>
 
 <%= turbo_stream.update "today-battles-waiting-host" do %>
@@ -32,9 +30,11 @@
 <% end %>
 
 <%= turbo_stream.replace "today-battlefield-header" do %>
-  <%= render "dashboard/dash_battlefield_header",
-        health: @battlefield_health,
-        streak: @climb_streak %>
+  <div id="today-battlefield-header">
+    <%= render "dashboard/dash_battlefield_header",
+          health: @battlefield_health,
+          streak: @climb_streak %>
+  </div>
 <% end %>
 
 <%= turbo_stream.update "today-battlefield-inline-ack-host" do %>

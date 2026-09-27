@@ -4,25 +4,26 @@
 <% basics_all_done = habits.present? && habits.all?(&:survived_today?) %>
 <% battles_all_clear = @battlefield_health&.all_clear? %>
 <% basics_focus = battles_all_clear && habits.present? && !basics_all_done %>
+<% done_n = habits.count(&:survived_today?) %>
 <section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>" aria-label="<%= t('dash.anytime.title') %>">
-  <header class="lp-dash-anytime__head">
-    <h2><%= t("dash.anytime.title") %></h2>
-    <% done_n = habits.count(&:survived_today?) %>
-    <% if habits.any? %>
-      <em class="lp-dash-anytime__count"><%= done_n %>/<%= habits.size %></em>
-    <% end %>
-    <span class="lp-dash-anytime__ln" aria-hidden="true"></span>
-  </header>
-
-  <% if basics_all_done && battles_all_clear %>
-    <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
-  <% elsif habits.blank? %>
-    <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
-  <% else %>
-    <ul class="lp-dash-anytime__list">
-      <% habits.each do |habit| %>
-        <%= render "dashboard/dash_habit_slot", habit: habit %>
+  <div class="lp-today-group-card">
+    <div class="lp-today-group-card__head">
+      <h2><%= t("dash.anytime.title") %></h2>
+      <% if habits.any? %>
+        <em class="lp-dash-anytime__count"<%= " hidden" if done_n.zero? %>><%= done_n %>/<%= habits.size %></em>
       <% end %>
-    </ul>
-  <% end %>
+    </div>
+
+    <% if basics_all_done && battles_all_clear %>
+      <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
+    <% elsif habits.blank? %>
+      <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
+    <% else %>
+      <ul class="lp-dash-anytime__list lp-today-group-list">
+        <% habits.each do |habit| %>
+          <%= render "dashboard/dash_habit_slot", habit: habit %>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
 </section>

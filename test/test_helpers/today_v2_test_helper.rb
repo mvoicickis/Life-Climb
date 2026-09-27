@@ -52,7 +52,7 @@ module TodayV2TestHelper
       assert_select "#today-battlefield-rows .lp-today-v2-row[data-todo-id=?]", todo.id.to_s if todo
     else
       assert_selector "#today-battlefield-rows .lp-today-v2-row__title", text: title
-      assert_selector "#today-battlefield-rows .lp-today-v2-row__camp", text: /#{Regexp.escape(camp)}/ if camp
+      assert_selector "#today-battlefield-rows .lp-today-v2-row__camp-inline", text: /#{Regexp.escape(camp)}/ if camp
       assert_selector "#today-battlefield-rows .lp-today-v2-row[data-todo-id='#{todo.id}']" if todo
     end
   end

@@ -45,7 +45,7 @@ class LifepointsTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav.is-today-v2", wait: 5
     assert_selector ".lp-dash-nav__link", text: /Today/i
     assert_selector ".lp-dash-nav__link", text: /Mountain/i
-    assert_text user.display_name
+    assert_selector ".lp-today-v2-header__name", text: /Ship LifePoints/
     assert_today_v2_shell!
     assert_battle_row!(title: "First fight", camp: "Camp")
     assert_no_legacy_today_shell!
