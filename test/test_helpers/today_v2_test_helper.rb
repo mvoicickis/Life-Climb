@@ -65,13 +65,20 @@ module TodayV2TestHelper
     end
   end
 
-  def assert_won_battle_row!(title:, todo: nil)
+  def assert_won_battle_row!(title:, todo: nil, wait: 5)
     if integration_test?
       assert_select "#today-battlefield-won-list .lp-today-v2-row__title", text: title
       assert_select "#today-battlefield-won-list .lp-today-v2-row[data-todo-id=?]", todo.id.to_s if todo
     else
-      assert_selector "#today-battlefield-won-list .lp-today-v2-row__title", text: title
-      assert_selector "#today-battlefield-won-list .lp-today-v2-row[data-todo-id='#{todo.id}']" if todo
+      assert_selector "#today-battlefield-won-list .lp-today-v2-row__title",
+                      text: title,
+                      visible: :all,
+                      wait: wait
+      if todo
+        assert_selector "#today-battlefield-won-list .lp-today-v2-row[data-todo-id='#{todo.id}']",
+                        visible: :all,
+                        wait: wait
+      end
     end
   end
 
