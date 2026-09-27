@@ -55,6 +55,7 @@ class ObjectiveQuantityOptInMobileTest < ApplicationSystemTestCase
     patch_practice_task!(@plain)
     visit dashboard_path
     assert_battle_row_absent!(title: "Read Atomic Habits")
+    assert_won_battle_row!(title: "Read Atomic Habits", todo: @todo)
     assert_no_selector ".lp-dash-done-fold"
     assert @plain.reload.completed?
     assert @host.reload.completed?

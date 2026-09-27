@@ -31,7 +31,8 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-plan", count: 0
     assert_select "a", text: "Reopen day"
     assert_select ".lp-today-v2-notch.is-day-closed", count: 1
-    assert_select ".lp-today-v2-rows", count: 0
+    assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
+    assert_select "#today-battlefield-won-list .lp-today-v2-row", minimum: 1
   end
 
   test "POST create blocked when open battles remain" do
@@ -62,7 +63,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
     assert_select ".lp-today-v2-eod-win", count: 0
     assert_select ".lp-today-v2-inline-ack", text: /All battles won today/
-    assert_select ".lp-today-v2-rows", count: 0
+    assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
     assert_select ".lp-today-v2-notch.is-end-day", count: 1
   end
 end

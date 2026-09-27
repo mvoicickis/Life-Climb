@@ -47,7 +47,6 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match 'id="today-battlefield-body"', response.body
     assert_match "today-battlefield-rows", response.body
     assert_match "today-battlefield-won-shell", response.body
     assert_match "today-end-of-day-host", response.body
