@@ -23,6 +23,17 @@ export function rollbackTrailWinRow(row) {
   row.querySelector(".lp-trail-battles__box")?.classList.remove("is-won")
 }
 
+export function rollbackTodayWinRow(row) {
+  if (!row) return
+
+  row.classList.remove("is-struck", "is-pending-won", "is-sliding", "is-won-row")
+  row.style.transform = ""
+  row.style.opacity = ""
+  delete row.dataset.winInFlight
+  row.removeAttribute("aria-busy")
+  row.querySelector(".lp-today-v2-row__box")?.classList.remove("is-won")
+}
+
 export function showWinSaveNotice(host, message) {
   if (!host || !message) return
 

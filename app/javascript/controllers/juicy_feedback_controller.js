@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import {
   floatBattleStrength,
   lockWinSubmit,
+  rollbackTodayWinRow,
   showWinSaveNotice,
   clearWinSaveNotice,
   turboSubmitOk,
@@ -62,6 +63,8 @@ export default class extends Controller {
     if (battleWin) {
       clearWinSaveNotice(rowHost)
       lockWinSubmit(rowHost, true)
+      rowHost?.classList.add("is-struck")
+      rowHost?.querySelector(".lp-today-v2-row__box")?.classList.add("is-won")
       this.allowNextSubmit = true
       this.playing = false
       window.requestAnimationFrame(() => {
@@ -115,6 +118,7 @@ export default class extends Controller {
       return
     }
 
+    rollbackTodayWinRow(rowHost)
     const message = this.winNotSavedValue
     if (message && rowHost) showWinSaveNotice(rowHost, message)
   }

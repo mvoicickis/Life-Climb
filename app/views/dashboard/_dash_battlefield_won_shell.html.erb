@@ -1,0 +1,24 @@
+<%# locals: done_todos, exclude_todo: nil %>
+<%
+  done_todos = Array(local_assigns.fetch(:done_todos) { @done_todos })
+  exclude_todo = local_assigns[:exclude_todo]
+  listed = done_todos.reject { |t| exclude_todo && t.id == exclude_todo.id }
+  count = done_todos.size
+%>
+<div id="today-battlefield-won-shell"<%= " hidden" if count.zero? %>>
+  <details class="lp-today-v2-won" id="today-battlefield-won-group">
+    <summary class="lp-today-v2-won__summary">
+      <span id="today-battlefield-won-label"><%= t("dash.battlefield.won_today", count: count) %></span>
+      <span class="lp-today-v2-won__chev" aria-hidden="true">▾</span>
+    </summary>
+    <div class="lp-today-v2-won__list" id="today-battlefield-won-list">
+      <% listed.each do |todo| %>
+        <%= render "dashboard/dash_battlefield_row",
+              todo: todo,
+              mission: nil,
+              journey: local_assigns[:journey],
+              row_state: :won %>
+      <% end %>
+    </div>
+  </details>
+</div>

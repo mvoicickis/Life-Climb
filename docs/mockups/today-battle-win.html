@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today battle win — Now vs New (360px)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../app/assets/stylesheets/today_v2.css">
+  <style>
+    :root {
+      --phone-w: 360px;
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --lp-tap: 2.75rem;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-muted-dark: #64748b;
+      --lp-paper: #f8fafc;
+      --lp-surface: #ffffff;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --lp-radius-card: 1.25rem;
+      --today-ink: #f7ead9;
+      --today-muted: rgba(247, 234, 217, 0.5);
+      --today-card: rgba(255, 255, 255, 0.05);
+      --today-card-border: rgba(255, 255, 255, 0.1);
+      --today-safe: #4ade80;
+      --lp-tick-ring: color-mix(in srgb, var(--today-ink) 35%, transparent);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      padding: 1rem 0 2rem;
+      overflow-x: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      padding: 0 1rem;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .lede {
+      margin: 0 0 1rem;
+      padding: 0 1rem;
+      max-width: 52rem;
+      font-size: 0.8rem;
+      color: var(--lp-muted);
+      line-height: 1.45;
+    }
+
+    .strip {
+      display: flex;
+      gap: 1.25rem;
+      width: max-content;
+      padding: 0 1rem 0.5rem;
+      align-items: flex-start;
+    }
+
+    .frame-wrap {
+      flex: 0 0 var(--phone-w);
+      width: var(--phone-w);
+    }
+
+    .frame-label {
+      margin: 0 0 0.45rem 0.15rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-muted-dark);
+    }
+
+    .frame-label.is-new { color: var(--lp-green-deep); }
+
+    .surface-opacity {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: var(--phone-w);
+      max-width: 100%;
+      margin: 0 0 0.5rem 0.15rem;
+    }
+
+    .surface-opacity__label {
+      flex: none;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--lp-muted-dark);
+      white-space: nowrap;
+    }
+
+    .surface-opacity__slider {
+      flex: 1;
+      min-width: 0;
+      height: 1.25rem;
+      margin: 0;
+      accent-color: var(--lp-green-deep);
+      cursor: pointer;
+    }
+
+    .surface-opacity__value {
+      flex: none;
+      min-width: 2.5rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--lp-ink);
+      text-align: right;
+    }
+
+    .phone.panel--new {
+      position: relative;
+      background: var(--lp-paper);
+      color: var(--lp-ink);
+    }
+
+    .panel--new .lp-today-photo-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .panel--new .lp-today-photo-bg img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 0%;
+    }
+
+    .panel--new {
+      --lp-gutter: 1rem;
+      --lp-card-surface-pct: 35%;
+      --lp-ink-soft: color-mix(in srgb, var(--lp-ink) 70%, transparent);
+    }
+
+    .panel--new .lp-today-scroll {
+      position: relative;
+      z-index: 2;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .panel--new .lp-dash.is-today-v2 {
+      max-width: none;
+      margin: 0;
+      min-height: min-content;
+      padding: 0.35rem 0 0;
+      gap: 0;
+      color: var(--lp-ink);
+    }
+
+    .panel--new .lp-today-scroll__pad {
+      padding: 0 var(--lp-gutter) 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .panel--new #today-battle-surface {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .panel--new .lp-today-group-card {
+      flex: 0 0 auto;
+      width: 100%;
+      background: color-mix(in srgb, var(--lp-surface) var(--lp-card-surface-pct), transparent);
+      backdrop-filter: blur(16px) saturate(1.2);
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-card);
+      box-shadow: var(--lp-shadow-card);
+      overflow: hidden;
+    }
+
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .panel--new .lp-today-group-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+    }
+
+    .panel--new .lp-today-group-card--goal {
+      padding: 0.45rem 0.75rem 0.5rem;
+    }
+
+    .panel--new .lp-today-v2-header--compact .lp-today-v2-header__goal-line {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .panel--new .lp-today-v2-header--compact .lp-today-v2-header__hp-block {
+      flex: none;
+      text-align: right;
+    }
+
+    .panel--new .lp-today-v2-header__hp-label[hidden],
+    .panel--new [data-habit-amount][hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-today-group-card__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.3rem 0.75rem;
+      border-bottom: 1px solid var(--lp-border);
+    }
+
+    .panel--new .lp-today-group-card__head .lp-today-v2-field__title,
+    .panel--new .lp-today-group-card__head h2 {
+      margin: 0;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--lp-ink-soft);
+    }
+
+    .panel--new .lp-today-group-card__meta,
+    .panel--new .lp-today-v2-field__count,
+    .panel--new .lp-dash-anytime__count {
+      font-size: 0.68rem;
+      font-weight: 800;
+      font-style: normal;
+      color: var(--lp-ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .panel--new .lp-today-group-card__meta[hidden],
+    .panel--new .lp-today-v2-field__count[hidden],
+    .panel--new .lp-dash-anytime__count[hidden],
+    .panel--new .lp-today-v2-header__hp-num[hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-today-v2-header {
+      margin: 0;
+    }
+
+    .panel--new .lp-today-v2-header--compact .lp-today-v2-hp-bar {
+      margin-top: 0.35rem;
+      height: 0.375rem;
+    }
+
+    .panel--new .lp-today-v2-risk {
+      margin: 0.3rem 0 0;
+      font-size: 0.68rem;
+      line-height: 1.35;
+    }
+
+    .panel--new .lp-today-v2-risk[hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-today-v2-header__name {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      color: var(--lp-ink);
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      line-height: 1.2;
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
+    .panel--new .lp-today-v2-header__hp-label,
+    .panel--new .lp-today-v2-risk {
+      color: var(--lp-ink-soft);
+      text-shadow: none;
+    }
+
+    .panel--new .lp-today-v2-header__hp-num.is-neutral {
+      color: var(--lp-ink);
+    }
+
+    .panel--new .lp-today-v2-hp-bar {
+      background: color-mix(in srgb, var(--lp-ink) 12%, transparent);
+    }
+
+    .panel--new .lp-today-v2-hp-bar__fill.is-neutral {
+      background: var(--lp-green);
+    }
+
+    .panel--new .lp-today-v2-field {
+      margin: 0;
+    }
+
+    .panel--new .lp-dash-anytime {
+      margin: 0;
+    }
+
+    .panel--new .lp-today-v2-rows,
+    .panel--new .lp-dash-anytime__list.lp-today-group-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .panel--new .lp-today-group-won[hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-today-group-won {
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .panel--new .lp-today-v2-won__summary {
+      padding: 0.55rem 0.75rem;
+      color: var(--lp-ink-soft);
+    }
+
+    .panel--new .lp-today-v2-won__list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 0;
+    }
+
+    .panel--new .lp-today-v2-won__list .lp-today-v2-row {
+      border-radius: 0;
+    }
+
+    .panel--new .lp-today-v2-won__list .lp-today-v2-row + .lp-today-v2-row {
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: 720px;
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(ellipse 120% 60% at 50% 0%, rgba(232, 72, 47, 0.14), transparent 55%),
+        linear-gradient(165deg, #241812, #170f0a 55%, #100a06);
+      color: var(--today-ink);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.12),
+        0 14px 32px rgba(15, 23, 42, 0.18);
+    }
+
+    .lp-dash-today {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 1rem 1rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .lp-today-v2-field__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .lp-today-v2-field__title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--today-ink);
+    }
+
+    .lp-today-v2-field__count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--today-muted);
+      white-space: nowrap;
+    }
+
+    .lp-today-v2-rows {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .lp-today-v2-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.6875rem 0.75rem;
+      background: var(--today-card);
+      border: 1px solid var(--today-card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .lp-today-v2-row.is-busy { pointer-events: none; }
+
+    .lp-today-v2-row__stripe {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--lp-green);
+    }
+
+    /* —— Now: production 24px empty box —— */
+    .panel--now .lp-today-v2-row__tick-slot {
+      width: 1.5rem;
+      height: 1.5rem;
+      flex: none;
+      margin-left: 0.25rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .panel--now .lp-today-v2-row__box {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 7px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+    }
+
+    /* —— New: photo hero + iOS grouped card —— */
+    .panel--new .lp-today-v2-row {
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.35rem 0.75rem;
+      min-height: 3rem;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .panel--new .lp-today-v2-rows .lp-today-v2-row + .lp-today-v2-row {
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .panel--new .lp-today-v2-row__stripe,
+    .panel--new .lp-today-v2-row__camp {
+      display: none;
+    }
+
+    .panel--new .lp-today-v2-row__copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel--new .lp-today-v2-row__title-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.35rem;
+      min-width: 0;
+    }
+
+    .panel--new .lp-today-v2-row__title,
+    .panel--new .lp-dash-tcard__title {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      color: var(--lp-ink);
+      font-weight: 700;
+      font-size: 0.875rem;
+      line-height: 1.25;
+    }
+
+    .panel--new .lp-today-v2-row__camp-inline,
+    .panel--new .lp-dash-tcard__meta {
+      flex: none;
+      margin: 0;
+      max-width: 42%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-style: normal;
+      line-height: 1.25;
+      color: var(--lp-ink-soft);
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .panel--new .lp-today-v2-row__camp-inline[hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-today-habit-row {
+      cursor: default;
+    }
+
+    .panel--new .lp-dash-habit__act {
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.4rem;
+      min-height: 44px;
+    }
+
+    .panel--new .lp-dash-habit__amount {
+      margin: 0;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-style: normal;
+      line-height: 1.25;
+      color: var(--lp-ink-soft);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .panel--new .lp-dash-habit__amount[hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-dash-habit__qb {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      border: 2px solid var(--lp-muted);
+      background: transparent;
+      color: var(--lp-ink-soft);
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      box-shadow: none;
+      transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        color 0.12s ease,
+        transform 0.1s ease;
+    }
+
+    .panel--new .lp-dash-habit__qb:active {
+      transform: scale(0.96);
+    }
+
+    .panel--new .lp-dash-habit__qb.is-flash {
+      background: var(--lp-green);
+      border-color: var(--lp-green);
+      color: var(--lp-surface);
+    }
+
+    .panel--new .lp-today-v2-row__tick-slot {
+      width: 1.5rem;
+      height: 1.5rem;
+      flex: none;
+      margin-left: 0.25rem;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .panel--new .lp-today-v2-row__tick-slot::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 44px;
+      height: 44px;
+      transform: translate(-50%, -50%);
+    }
+
+    .panel--new .lp-today-v2-row__box {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--lp-muted);
+      background: transparent;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+
+    .panel--new .lp-today-v2-row__box.is-won {
+      background: var(--lp-green);
+      border-color: var(--lp-green);
+      animation: tick-pop 280ms ease;
+    }
+
+    @keyframes tick-pop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .panel--new .lp-today-v2-row__box.is-won::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0.28rem;
+      height: 0.55rem;
+      margin-top: -0.32rem;
+      margin-left: -0.16rem;
+      border: solid var(--lp-surface);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .panel--new .lp-today-v2-won {
+      margin: 0;
+      border: 0;
+      background: transparent;
+      border-radius: 0;
+    }
+
+    .panel--new .lp-today-v2-won__summary {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: var(--lp-ink-soft);
+    }
+
+    .panel--new .lp-today-v2-row.is-won-row {
+      opacity: 0.62;
+      box-shadow: none;
+    }
+
+    .panel--new .lp-today-row__undo {
+      flex: none;
+      margin: 0;
+      padding: 0.15rem 0 0.15rem 0.35rem;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--lp-ink-soft);
+      cursor: pointer;
+    }
+
+    .panel--new .lp-today-row__undo[hidden] {
+      display: none;
+    }
+
+    .panel--new .lp-dash-anytime__list.lp-today-group-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .panel--new .lp-dash-anytime__list.lp-today-group-list > li + li {
+      border-top: 1px solid var(--lp-border);
+    }
+
+    .panel--new > .lp-dash-nav.is-today-v2 {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+    }
+
+
+    .panel--new .lp-juicy-ap {
+      color: var(--lp-ink);
+    }
+
+    .lp-today-v2-row__title {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--today-ink);
+      line-height: 1.25;
+      transition: color 0.15s ease;
+    }
+
+    .lp-today-v2-row.is-struck .lp-today-v2-row__title {
+      text-decoration: line-through;
+      color: var(--today-muted);
+    }
+
+    .lp-today-v2-row__camp {
+      flex: none;
+      max-width: 38%;
+      font-size: 0.625rem;
+      font-weight: 700;
+      border-radius: 99px;
+      padding: 0.1875rem 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--lp-green);
+      background: rgba(87, 211, 91, 0.15);
+    }
+
+    .lp-today-v2-row.is-won-row {
+      opacity: 0.55;
+      cursor: pointer;
+    }
+
+    .panel--new .lp-today-v2-row.is-won-row .lp-today-v2-row__title,
+    .panel--new .lp-today-v2-row.is-struck .lp-today-v2-row__title {
+      text-decoration: line-through;
+      color: var(--lp-ink-soft);
+    }
+
+    .panel--new .lp-today-v2-row.is-struck .lp-today-v2-row__title {
+      transition: color 0.12s ease;
+    }
+
+    .lp-today-v2-row.is-won-row .lp-today-v2-row__camp {
+      opacity: 0.85;
+    }
+
+    .lp-today-v2-won {
+      margin-top: 0.35rem;
+      border-radius: 12px;
+      border: 1px solid var(--today-card-border);
+      background: rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    .lp-today-v2-won__summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--today-muted);
+      cursor: pointer;
+    }
+
+    .lp-today-v2-won__summary::-webkit-details-marker { display: none; }
+
+    .lp-today-v2-won__chev {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      transition: transform 0.2s ease;
+    }
+
+    .lp-today-v2-won[open] .lp-today-v2-won__chev {
+      transform: rotate(180deg);
+    }
+
+    .lp-today-v2-won__list {
+      display: grid;
+      gap: 0.35rem;
+      padding: 0 0.5rem 0.55rem;
+    }
+
+    .lp-today-v2-row.is-sliding {
+      z-index: 5;
+      transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.4s ease,
+        margin 0.45s ease;
+    }
+
+    .lp-today-v2-row.is-juicy {
+      animation: lp-juicy-bounce 500ms ease;
+    }
+
+    @keyframes lp-juicy-bounce {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.03); }
+      65% { transform: scale(0.98); }
+      100% { transform: scale(1); }
+    }
+
+    .lp-today-v2-row.is-leaving {
+      animation: todayClearOut 0.3s ease forwards;
+      pointer-events: none;
+    }
+
+    @keyframes todayClearOut {
+      0% { opacity: 1; transform: scale(1) translateX(0); }
+      100% { opacity: 0; transform: scale(0.92) translateX(14px); }
+    }
+
+    .lp-juicy-burst {
+      pointer-events: none;
+      position: absolute;
+      right: 2.5rem;
+      top: 50%;
+      width: 0;
+      height: 0;
+      z-index: 20;
+    }
+
+    .lp-juicy-burst span {
+      position: absolute;
+      width: 0.4rem;
+      height: 0.4rem;
+      border-radius: 0.1rem;
+      animation: lp-juicy-burst var(--d) ease-out forwards;
+    }
+
+    @keyframes lp-juicy-burst {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--x), var(--y)) scale(0.35); opacity: 0; }
+    }
+
+    .lp-juicy-ap {
+      pointer-events: none;
+      position: absolute;
+      right: 0.75rem;
+      top: 0.35rem;
+      z-index: 21;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--lp-green);
+      opacity: 0;
+      transform: translateY(0.35rem);
+      transition: opacity 160ms ease, transform 420ms ease;
+    }
+
+    .lp-juicy-ap.is-shown {
+      opacity: 1;
+      transform: translateY(-1.1rem);
+    }
+
+    .mock-hint {
+      margin: 0.5rem 0 0;
+      padding: 0 0.15rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--lp-muted);
+      line-height: 1.35;
+    }
+
+    .mock-reset {
+      margin-top: 0.45rem;
+      padding: 0.45rem 0.75rem;
+      border: 1px solid #d8dee6;
+      border-radius: 999px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--lp-muted);
+      cursor: pointer;
+    }
+
+    .lp-dash-nav {
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.25rem;
+      padding: 0.5rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+      background: rgba(16, 10, 6, 0.92);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .lp-dash-nav__link {
+      display: grid;
+      justify-items: center;
+      gap: 0.15rem;
+      padding: 0.35rem;
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: var(--today-muted);
+      text-align: center;
+    }
+
+    .lp-dash-nav__link.is-active { color: var(--today-ink); }
+
+    .lp-dash-nav__icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 0.35rem;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .lp-dash-nav__link.is-active .lp-dash-nav__icon {
+      background: rgba(87, 211, 91, 0.25);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lp-today-v2-row.is-juicy { animation: none; }
+      .lp-juicy-burst { display: none; }
+      .lp-today-v2-row.is-sliding { transition: none; }
+      .lp-juicy-ap, .lp-juicy-ap.is-shown { transition: none; transform: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Today battle win — Now vs New</h1>
+  <p class="lede">Tap <strong>Call my mum</strong> on the <strong>New</strong> phone (whole row). Full Today layout on the photo: header, Battles + Basics grouped cards, production nav. Inline Undo ~4s, then slide to <em>Won today</em>.</p>
+
+  <div class="strip">
+    <div class="frame-wrap">
+      <p class="frame-label">Now — shipped</p>
+      <div class="phone panel--now" id="panel-now" data-panel="now">
+        <div class="lp-dash-today">
+          <div class="lp-today-v2-field">
+            <div class="lp-today-v2-field__head">
+              <h2 class="lp-today-v2-field__title">Battles</h2>
+              <span class="lp-today-v2-field__count" data-count>0/3</span>
+            </div>
+            <div class="lp-today-v2-rows" data-open-rows>
+              <article class="lp-today-v2-row" data-battle data-lp="3" data-title="Call my mum">
+                <span class="lp-today-v2-row__stripe" aria-hidden="true"></span>
+                <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                <p class="lp-today-v2-row__title">Call my mum</p>
+                <span class="lp-today-v2-row__camp">Stay close</span>
+              </article>
+              <article class="lp-today-v2-row" data-static-row>
+                <span class="lp-today-v2-row__stripe" aria-hidden="true"></span>
+                <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                <p class="lp-today-v2-row__title">10 minute walk</p>
+                <span class="lp-today-v2-row__camp">Stay close</span>
+              </article>
+              <article class="lp-today-v2-row" data-static-row>
+                <span class="lp-today-v2-row__stripe" aria-hidden="true"></span>
+                <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                <p class="lp-today-v2-row__title">Drink water</p>
+                <span class="lp-today-v2-row__camp">Body</span>
+              </article>
+            </div>
+          </div>
+        </div>
+        <nav class="lp-dash-nav" aria-label="Main">
+          <span class="lp-dash-nav__link is-active"><span class="lp-dash-nav__icon" aria-hidden="true"></span>Today</span>
+          <span class="lp-dash-nav__link"><span class="lp-dash-nav__icon" aria-hidden="true"></span>Mountain</span>
+          <span class="lp-dash-nav__link"><span class="lp-dash-nav__icon" aria-hidden="true"></span>You</span>
+        </nav>
+      </div>
+      <p class="mock-hint" data-status-now>Tap the first battle row.</p>
+      <button type="button" class="mock-reset" data-reset="now">Reset Now</button>
+    </div>
+
+    <div class="frame-wrap">
+      <p class="frame-label is-new">New — proposal</p>
+      <div class="surface-opacity" data-surface-opacity>
+        <label class="surface-opacity__label" for="card-opacity-slider">Card white</label>
+        <input
+          type="range"
+          class="surface-opacity__slider"
+          id="card-opacity-slider"
+          min="35"
+          max="100"
+          value="35"
+          step="1"
+          aria-valuemin="35"
+          aria-valuemax="100"
+          aria-valuenow="35"
+          data-card-opacity-slider>
+        <span class="surface-opacity__value" data-card-opacity-value>35%</span>
+      </div>
+      <div class="phone panel--new" id="panel-new" data-panel="new">
+        <div class="lp-today-photo-bg" aria-hidden="true">
+          <img id="today-bg-new" src="../../app/assets/images/today_background.webp" alt="" decoding="async">
+        </div>
+        <div class="lp-today-scroll">
+          <div id="today-dash-root" class="lp-dash is-today-v2">
+            <div class="lp-today-scroll__pad">
+              <div id="today-battlefield-header">
+                <div class="lp-today-group-card lp-today-group-card--goal">
+                  <header class="lp-today-v2-header lp-today-v2-header--compact" aria-label="Today's progress">
+                    <div class="lp-today-v2-header__goal-line">
+                      <p class="lp-today-v2-header__name">Stay close to family</p>
+                      <div class="lp-today-v2-header__hp-block">
+                        <span class="lp-today-v2-header__hp-num is-neutral" data-hp-num hidden>0</span>
+                        <span class="lp-today-v2-header__hp-label" data-hp-label hidden>Battles done</span>
+                      </div>
+                    </div>
+                    <div class="lp-today-v2-hp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" data-hp-bar>
+                      <span class="lp-today-v2-hp-bar__fill is-neutral" style="width: 0%" data-hp-fill></span>
+                    </div>
+                    <p class="lp-today-v2-risk" data-risk-hint>Win a battle to move the bar.</p>
+                  </header>
+                </div>
+              </div>
+
+              <div id="today-battle-surface">
+                <section class="lp-today-v2-field" id="today-battlefield-field" aria-label="Battles">
+                  <div class="lp-today-group-card">
+                    <div class="lp-today-group-card__head">
+                      <h2 class="lp-today-v2-field__title">Battles</h2>
+                      <span class="lp-today-v2-field__count" data-field-count hidden>0/3</span>
+                    </div>
+                    <div class="lp-today-v2-rows" data-open-rows>
+                      <article class="lp-today-v2-row" data-battle data-lp="3" data-title="Call my mum">
+                        <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                        <div class="lp-today-v2-row__copy">
+                          <div class="lp-today-v2-row__title-line">
+                            <p class="lp-today-v2-row__title">Call my mum</p>
+                            <span class="lp-today-v2-row__camp-inline">Stay close</span>
+                          </div>
+                        </div>
+                        <button type="button" class="lp-today-row__undo" hidden>Undo</button>
+                      </article>
+                      <article class="lp-today-v2-row" data-static-row>
+                        <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                        <div class="lp-today-v2-row__copy">
+                          <div class="lp-today-v2-row__title-line">
+                            <p class="lp-today-v2-row__title">10 minute walk</p>
+                            <span class="lp-today-v2-row__camp-inline">Stay close</span>
+                          </div>
+                        </div>
+                      </article>
+                      <article class="lp-today-v2-row" data-static-row>
+                        <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                        <div class="lp-today-v2-row__copy">
+                          <div class="lp-today-v2-row__title-line">
+                            <p class="lp-today-v2-row__title">Stretch for 5 minutes</p>
+                            <span class="lp-today-v2-row__camp-inline">Body</span>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                    <div class="lp-today-group-won" data-won-shell hidden>
+                      <details class="lp-today-v2-won" data-won-group>
+                        <summary class="lp-today-v2-won__summary">
+                          <span data-won-label>Won today (0)</span>
+                          <span class="lp-today-v2-won__chev" aria-hidden="true">▾</span>
+                        </summary>
+                        <div class="lp-today-v2-won__list" data-won-list></div>
+                      </details>
+                    </div>
+                  </div>
+                </section>
+
+                <div id="today-anytime-host">
+                  <section class="lp-dash-anytime" aria-label="Basics">
+                    <div class="lp-today-group-card">
+                      <div class="lp-today-group-card__head">
+                        <h2>Basics</h2>
+                        <em class="lp-dash-anytime__count" data-basics-count hidden>0/2</em>
+                      </div>
+                      <ul class="lp-dash-anytime__list lp-today-group-list">
+                        <li>
+                          <article class="lp-today-v2-row lp-today-habit-row" data-static-row>
+                            <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                            <div class="lp-today-v2-row__copy">
+                              <div class="lp-today-v2-row__title-line">
+                                <b class="lp-dash-tcard__title">Sleep 7 hours</b>
+                              </div>
+                            </div>
+                          </article>
+                        </li>
+                        <li>
+                          <article class="lp-today-v2-row lp-today-habit-row" data-habit-quantity>
+                            <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+                            <div class="lp-today-v2-row__copy">
+                              <div class="lp-today-v2-row__title-line">
+                                <b class="lp-dash-tcard__title">Drink water</b>
+                              </div>
+                            </div>
+                            <div class="lp-dash-habit__act">
+                              <span class="lp-dash-habit__amount" data-habit-amount hidden></span>
+                              <button type="button" class="lp-dash-habit__qb" data-habit-add aria-label="Add 1 glass">+1</button>
+                            </div>
+                          </article>
+                        </li>
+                      </ul>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav class="lp-dash-nav is-today-v2" aria-label="Primary">
+          <span class="lp-dash-nav__link is-active">
+            <span class="lp-dash-nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v6.2c0 4.3 3.1 7.4 7.5 8.8 4.4-1.4 7.5-4.5 7.5-8.8V6L12 3Z"/></svg>
+            </span>
+            <span>Today</span>
+          </span>
+          <span class="lp-dash-nav__link">
+            <span class="lp-dash-nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/><path d="M12 5.5 V8"/></svg>
+            </span>
+            <span>Mountain</span>
+          </span>
+          <div class="lp-dash-nav__fab-slot">
+            <button type="button" class="lp-today-v2-notch is-fight" aria-label="Fight">
+              <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 3.5 5 13l1.5 1.5m3.5-11L19 13l-1.5 1.5M7 16.5h10M9 20h6"/></svg>
+              <span class="lp-today-v2-notch__badge">2</span>
+            </button>
+            <span class="lp-today-v2-notch-label is-fight">Fight</span>
+          </div>
+          <span class="lp-dash-nav__link">
+            <span class="lp-dash-nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17 L9 11 L13 14.5 L20 7"/><path d="M15 7 H20 V12"/></svg>
+            </span>
+            <span>Stats</span>
+          </span>
+          <span class="lp-dash-nav__link">
+            <span class="lp-dash-nav__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/></svg>
+            </span>
+            <span>You</span>
+          </span>
+        </nav>
+      </div>
+      <p class="mock-hint" data-status-new>Tap the first battle. Undo on the row (~4s), or tap a won row later.</p>
+      <button type="button" class="mock-reset" data-reset="new">Reset New</button>
+    </div>
+  </div>
+
+  <template id="battle-row-template">
+    <article class="lp-today-v2-row" data-battle data-lp="3" data-title="Call my mum">
+      <span class="lp-today-v2-row__stripe" aria-hidden="true"></span>
+      <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+      <p class="lp-today-v2-row__title">Call my mum</p>
+      <span class="lp-today-v2-row__camp">Stay close</span>
+    </article>
+  </template>
+
+  <template id="battle-row-template-new">
+    <article class="lp-today-v2-row" data-battle data-lp="3" data-title="Call my mum">
+      <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+      <div class="lp-today-v2-row__copy">
+        <div class="lp-today-v2-row__title-line">
+          <p class="lp-today-v2-row__title">Call my mum</p>
+          <span class="lp-today-v2-row__camp-inline">Stay close</span>
+        </div>
+      </div>
+      <button type="button" class="lp-today-row__undo" hidden>Undo</button>
+    </article>
+  </template>
+
+  <script>
+    (function () {
+      const BURST_COLORS = ["#57d35b", "#f59e0b", "#38bdf8", "#f472b6", "#a3e635"]
+      const SERVER_MS_NOW = 380
+      const SERVER_MS_NEW = 300
+      const UNDO_HOLD_MS = 4000
+      const BATTLE_TOTAL = 3
+
+      function burst(host) {
+        const root = document.createElement("div")
+        root.className = "lp-juicy-burst"
+        root.setAttribute("aria-hidden", "true")
+        for (let i = 0; i < 12; i += 1) {
+          const bit = document.createElement("span")
+          const angle = (Math.PI * 2 * i) / 12
+          const dist = 28 + Math.random() * 36
+          bit.style.setProperty("--x", `${Math.cos(angle) * dist}px`)
+          bit.style.setProperty("--y", `${Math.sin(angle) * dist}px`)
+          bit.style.setProperty("--d", `${380 + Math.random() * 220}ms`)
+          bit.style.background = BURST_COLORS[i % BURST_COLORS.length]
+          root.appendChild(bit)
+        }
+        host.appendChild(root)
+        window.setTimeout(() => root.remove(), 800)
+      }
+
+      function floatAp(host, amount) {
+        const chip = document.createElement("span")
+        chip.className = "lp-juicy-ap"
+        chip.setAttribute("aria-hidden", "true")
+        chip.textContent = `+${amount} Battle strength`
+        host.appendChild(chip)
+        requestAnimationFrame(() => chip.classList.add("is-shown"))
+        window.setTimeout(() => chip.remove(), 900)
+      }
+
+      function bounce(host) {
+        host.classList.remove("is-juicy")
+        void host.offsetWidth
+        host.classList.add("is-juicy")
+        window.setTimeout(() => host.classList.remove("is-juicy"), 700)
+      }
+
+      function setCount(panel, done, total) {
+        const el = panel.querySelector("[data-count]")
+        if (el) el.textContent = `${done}/${total}`
+      }
+
+      function freshBattleRow() {
+        return document.getElementById("battle-row-template").content.firstElementChild.cloneNode(true)
+      }
+
+      function freshBattleRowNew() {
+        return document.getElementById("battle-row-template-new").content.firstElementChild.cloneNode(true)
+      }
+
+      function setupNow() {
+        const panel = document.getElementById("panel-now")
+        const status = document.querySelector("[data-status-now]")
+        const openRows = panel.querySelector("[data-open-rows]")
+        let busy = false
+        const total = 3
+
+        function reset() {
+          busy = false
+          openRows.querySelector("[data-battle]")?.remove()
+          openRows.prepend(freshBattleRow())
+          setCount(panel, 0, total)
+          status.textContent = "Tap the first battle row."
+        }
+
+        panel.addEventListener("click", (event) => {
+          const row = event.target.closest("[data-battle]")
+          if (!row || busy) return
+          busy = true
+          row.classList.add("is-busy")
+          status.textContent = "Bounce + confetti… (empty box stays)"
+
+          bounce(row)
+          burst(row)
+
+          window.setTimeout(() => {
+            status.textContent = "Server OK — Battle strength float."
+            floatAp(row, Number(row.dataset.lp) || 3)
+          }, SERVER_MS_NOW)
+
+          window.setTimeout(() => {
+            status.textContent = "Row disappears (turbo remove)."
+            row.classList.add("is-leaving")
+            setCount(panel, 1, total)
+          }, SERVER_MS_NOW + 420)
+
+          window.setTimeout(() => {
+            row.remove()
+            row.classList.remove("is-leaving", "is-busy")
+            busy = false
+            status.textContent = "Done. Reset to try again."
+          }, SERVER_MS_NOW + 720)
+        })
+
+        document.querySelector('[data-reset="now"]')?.addEventListener("click", reset)
+        reset()
+      }
+
+      function setupNew() {
+        const panel = document.getElementById("panel-new")
+        const status = document.querySelector("[data-status-new]")
+        const openRows = panel.querySelector("[data-open-rows]")
+        const wonShell = panel.querySelector("[data-won-shell]")
+        const wonGroup = panel.querySelector("[data-won-group]")
+        const wonList = panel.querySelector("[data-won-list]")
+        const wonLabel = panel.querySelector("[data-won-label]")
+        const fieldCount = panel.querySelector("[data-field-count]")
+        const hpNum = panel.querySelector("[data-hp-num]")
+        const hpFill = panel.querySelector("[data-hp-fill]")
+        const hpBar = panel.querySelector("[data-hp-bar]")
+        const hpLabel = panel.querySelector("[data-hp-label]")
+        const basicsCount = panel.querySelector("[data-basics-count]")
+        const habitAmount = panel.querySelector("[data-habit-amount]")
+        const habitAdd = panel.querySelector("[data-habit-add]")
+        const riskHint = panel.querySelector("[data-risk-hint]")
+        let wonCount = 0
+        let hasEverWon = false
+        let openBattleCount = BATTLE_TOTAL
+        let glasses = 0
+        let busy = false
+        let pendingRow = null
+        let pendingTimer = null
+
+        function setProgress() {
+          const done = wonCount
+          const open = Math.max(0, openBattleCount)
+          const total = done + open
+          if (fieldCount) {
+            if (done === 0) {
+              fieldCount.hidden = true
+            } else {
+              fieldCount.hidden = false
+              fieldCount.textContent = done === 1 ? "1 won" : `${done} won`
+            }
+          }
+          if (hpNum) {
+            if (done === 0) {
+              hpNum.hidden = true
+              if (hpLabel) hpLabel.hidden = true
+            } else {
+              hpNum.hidden = false
+              hpNum.textContent = String(done)
+              if (hpLabel) hpLabel.hidden = false
+            }
+          }
+          if (hpFill) hpFill.style.width = `${total ? Math.round((done / total) * 100) : 0}%`
+          if (hpBar) hpBar.setAttribute("aria-valuenow", String(done))
+          const basicsDone = glasses > 0 ? 1 : 0
+          if (basicsCount) {
+            if (basicsDone === 0) {
+              basicsCount.hidden = true
+            } else {
+              basicsCount.hidden = false
+              basicsCount.textContent = `${basicsDone} of 2`
+            }
+          }
+          if (riskHint) {
+            riskHint.hidden = hasEverWon
+          }
+          fitRowCamps()
+        }
+
+        function fitRowCamps() {
+          panel.querySelectorAll(".lp-today-v2-row__title-line").forEach((line) => {
+            const camp = line.querySelector(".lp-today-v2-row__camp-inline")
+            if (!camp) return
+            camp.hidden = false
+            if (line.scrollWidth > line.clientWidth + 1) {
+              camp.hidden = true
+            }
+          })
+        }
+
+        function updateWonLabel() {
+          wonLabel.textContent = `Won today (${wonCount})`
+          if (wonShell) wonShell.hidden = wonCount === 0
+          setProgress()
+        }
+
+        function clearPending() {
+          window.clearTimeout(pendingTimer)
+          pendingTimer = null
+          pendingRow = null
+        }
+
+        function hideRowUndo(row) {
+          const undo = row?.querySelector(".lp-today-row__undo")
+          if (undo) undo.hidden = true
+          row?.classList.remove("is-pending-undo")
+        }
+
+        function resetRowWinState(row) {
+          if (!row) return
+          hideRowUndo(row)
+          row.classList.remove("is-struck", "is-busy", "is-sliding")
+          row.style.transform = ""
+          row.style.opacity = ""
+          const box = row.querySelector(".lp-today-v2-row__box")
+          if (box) box.classList.remove("is-won")
+        }
+
+        function reset() {
+          busy = false
+          clearPending()
+          wonCount = 0
+          hasEverWon = false
+          openBattleCount = BATTLE_TOTAL
+          glasses = 0
+          if (habitAmount) {
+            habitAmount.textContent = ""
+            habitAmount.hidden = true
+          }
+          if (habitAdd) habitAdd.classList.remove("is-flash")
+          wonList.innerHTML = ""
+          wonGroup.open = false
+          if (wonShell) wonShell.hidden = true
+          updateWonLabel()
+          openRows.querySelector("[data-battle]")?.remove()
+          openRows.prepend(freshBattleRowNew())
+          if (riskHint) riskHint.hidden = false
+          fitRowCamps()
+          status.textContent = "Tap the first battle. Undo on the row (~4s), or tap a won row later."
+        }
+
+        window.addEventListener("resize", fitRowCamps)
+
+        habitAdd?.addEventListener("click", (event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          glasses += 1
+          habitAdd.classList.remove("is-flash")
+          void habitAdd.offsetWidth
+          habitAdd.classList.add("is-flash")
+          window.setTimeout(() => habitAdd.classList.remove("is-flash"), 300)
+          if (habitAmount && glasses > 0) {
+            habitAmount.hidden = false
+            habitAmount.textContent = glasses === 1 ? "1 glass" : `${glasses} glasses`
+          }
+          setProgress()
+        })
+
+        function slideToWon(row) {
+          hideRowUndo(row)
+          if (wonCount === 0 && wonShell) {
+            wonShell.hidden = false
+            wonGroup.open = false
+          }
+          const target = wonShell || wonGroup
+          const groupRect = target.getBoundingClientRect()
+          const rowRect = row.getBoundingClientRect()
+          const dy = groupRect.top - rowRect.top + 6
+
+          row.classList.add("is-sliding")
+          row.style.transform = `translateY(${dy}px)`
+          row.style.opacity = "0.5"
+
+          window.setTimeout(() => {
+            row.classList.remove("is-sliding", "is-busy")
+            row.style.transform = ""
+            row.style.opacity = ""
+            row.classList.add("is-won-row")
+            row.removeAttribute("data-battle")
+            row.dataset.won = "1"
+            const box = row.querySelector(".lp-today-v2-row__box")
+            if (box) box.classList.add("is-won")
+            row.querySelector(".lp-today-row__undo")?.remove()
+            wonList.prepend(row)
+            wonCount += 1
+            hasEverWon = true
+            openBattleCount = Math.max(0, openBattleCount - 1)
+            updateWonLabel()
+            busy = false
+            clearPending()
+            status.textContent = "In Won today — tap row to undo."
+          }, 480)
+        }
+
+        function undoPending(row) {
+          if (!row) return
+          clearPending()
+          resetRowWinState(row)
+          busy = false
+          status.textContent = "Undone — battle open again."
+        }
+
+        function undoWon(row) {
+          if (!row || busy) return
+          clearPending()
+          busy = true
+          row.classList.remove("is-won-row")
+          row.removeAttribute("data-won")
+          row.dataset.battle = ""
+          resetRowWinState(row)
+          if (row.parentElement === wonList) row.remove()
+          const fresh = freshBattleRowNew()
+          openRows.prepend(fresh)
+          wonCount = Math.max(0, wonCount - 1)
+          openBattleCount = Math.min(BATTLE_TOTAL, openBattleCount + 1)
+          updateWonLabel()
+          busy = false
+          status.textContent = "Undone — back in open battles."
+        }
+
+        function beginPendingWin(row) {
+          const undo = row.querySelector(".lp-today-row__undo")
+          if (undo) undo.hidden = false
+          row.classList.add("is-pending-undo")
+          pendingRow = row
+          pendingTimer = window.setTimeout(() => {
+            status.textContent = "Sliding into Won today…"
+            slideToWon(row)
+          }, UNDO_HOLD_MS)
+        }
+
+        panel.addEventListener("click", (event) => {
+          const undoBtn = event.target.closest(".lp-today-row__undo")
+          if (undoBtn) {
+            event.preventDefault()
+            event.stopPropagation()
+            const row = undoBtn.closest(".lp-today-v2-row")
+            if (row?.dataset.battle !== undefined && row.dataset.won !== "1") {
+              undoPending(row)
+            }
+            return
+          }
+
+          const wonRow = event.target.closest("[data-won]")
+          if (wonRow) {
+            event.preventDefault()
+            undoWon(wonRow)
+            return
+          }
+
+          const row = event.target.closest("[data-battle]")
+          if (!row || busy) return
+          busy = true
+          row.classList.add("is-busy", "is-struck")
+          const box = row.querySelector(".lp-today-v2-row__box")
+          if (box) box.classList.add("is-won")
+          status.textContent = "Tick + strike + confetti. Undo on the right."
+
+          requestAnimationFrame(() => {
+            bounce(row)
+            burst(row)
+          })
+
+          window.setTimeout(() => {
+            status.textContent = "Server OK — Battle strength float."
+            floatAp(row, Number(row.dataset.lp) || 3)
+          }, SERVER_MS_NEW)
+
+          beginPendingWin(row)
+        })
+
+        document.querySelector('[data-reset="new"]')?.addEventListener("click", reset)
+        reset()
+      }
+
+      function loadTodayBackground() {
+        const img = document.getElementById("today-bg-new")
+        if (!img) return
+        const paths = [
+          "../../app/assets/images/today_background.webp",
+          "../../../../Pictures/montain/today_background.webp"
+        ]
+        let attempt = 0
+        img.addEventListener("error", () => {
+          attempt += 1
+          if (attempt < paths.length) img.src = paths[attempt]
+        })
+        img.src = paths[0]
+      }
+
+      function setupCardOpacitySlider() {
+        const panel = document.getElementById("panel-new")
+        const slider = document.querySelector("[data-card-opacity-slider]")
+        const valueEl = document.querySelector("[data-card-opacity-value]")
+        if (!panel || !slider || !valueEl) return
+
+        function applyOpacity(pct) {
+          panel.style.setProperty("--lp-card-surface-pct", `${pct}%`)
+          valueEl.textContent = `${pct}%`
+          slider.setAttribute("aria-valuenow", String(pct))
+        }
+
+        slider.addEventListener("input", () => {
+          applyOpacity(Number(slider.value))
+        })
+
+        applyOpacity(Number(slider.value))
+      }
+
+      setupNow()
+      setupNew()
+      setupCardOpacitySlider()
+      loadTodayBackground()
+    })()
+  </script>
+</body>
+</html>

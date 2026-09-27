@@ -44,15 +44,28 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     @todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)
   end
 
-  test "completing a battle as turbo stream removes row without redirecting" do
+  test "completing a battle as turbo stream replaces row with pending won without redirecting" do
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
     assert_includes @response.media_type, "turbo-stream"
-    assert_match %(action="remove" target="#{dom_id(@todo, :battlefield_row)}"), response.body
+    assert_no_match %(action="remove" target="#{dom_id(@todo, :battlefield_row)}"), response.body
+    assert_match %(action="replace" target="#{dom_id(@todo, :battlefield_row)}"), response.body
+    assert_match "today-battlefield-won-shell", response.body
     assert_match "today-battlefield-count", response.body
     assert_match "battle-day-stream-bridge", response.body
     assert @todo.reload.completed?
+  end
+
+  test "uncomplete turbo stream does not append celebrate bridge" do
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+    assert_response :ok
+
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    assert_response :ok
+    assert_no_match "battle-day-stream-bridge", response.body
+    refute @todo.reload.completed?
   end
 
   test "Today turbo win still renders celebrate bridge independently of camp sheet wins" do

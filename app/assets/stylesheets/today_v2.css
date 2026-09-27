@@ -234,18 +234,161 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 }
 
 .lp-today-v2-row__check {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 7px;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  background: transparent;
   flex: none;
   margin-left: 0.25rem;
   padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
   appearance: none;
   display: grid;
   place-items: center;
+  color: inherit;
+}
+
+.lp-today-v2-row__tick-slot {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.lp-today-v2-row__tick-slot::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2.75rem;
+  height: 2.75rem;
+  transform: translate(-50%, -50%);
+}
+
+.lp-today-v2-row__box {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--today-muted);
+  background: transparent;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+
+.lp-today-v2-row__box.is-won {
+  background: var(--lp-green);
+  border-color: var(--lp-green);
+  animation: todayTickPop 280ms ease;
+}
+
+@keyframes todayTickPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.lp-today-v2-row__box.is-won::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.28rem;
+  height: 0.55rem;
+  margin-top: -0.32rem;
+  margin-left: -0.16rem;
+  border: solid var(--lp-surface);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.lp-today-v2-row.is-struck .lp-today-v2-row__title {
+  text-decoration: line-through;
+  color: var(--today-muted);
+}
+
+.lp-today-v2-row.is-won-row {
+  opacity: 0.62;
+}
+
+.lp-today-v2-row.is-won-row .lp-today-v2-row__title {
+  text-decoration: line-through;
+  color: var(--today-muted);
+}
+
+.lp-today-v2-row.is-sliding {
+  z-index: 5;
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease;
+}
+
+.lp-today-row__undo {
+  flex: none;
+  margin: 0;
+  padding: 0.15rem 0 0.15rem 0.35rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--today-muted);
+  cursor: pointer;
+}
+
+.lp-today-row__undo[hidden] {
+  display: none;
+}
+
+#today-battlefield-inline-ack-host {
+  margin-top: 0.5rem;
+}
+
+#today-battlefield-won-shell {
+  margin-top: 0.5rem;
+}
+
+#today-battlefield-won-shell[hidden] {
+  display: none;
+}
+
+.lp-today-v2-won {
+  border-radius: 12px;
+  border: 1px solid var(--today-card-border);
+  background: rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.lp-today-v2-won__summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--today-muted);
+  cursor: pointer;
+}
+
+.lp-today-v2-won__summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-today-v2-won__chev {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.lp-today-v2-won__list .lp-today-v2-row {
+  border-radius: 0;
+  border: 0;
+  border-top: 1px solid var(--today-card-border);
+}
+
+.lp-today-v2-won__list .lp-today-v2-row:first-child {
+  border-top: 0;
 }
 
 .lp-today-v2-row__check-form {
@@ -1463,7 +1606,13 @@ html.lp-app-welcome-pending .lp-legacy-host-banner {
   .lp-today-v2-mountain-link.is-clear,
   .lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-end-day,
   .lp-today-v2-row.is-leaving,
+  .lp-today-v2-row.is-sliding,
+  .lp-today-v2-row__box.is-won,
   .lp-today-v2-recap {
     animation: none !important;
+  }
+
+  .lp-today-v2-row.is-sliding {
+    transition: none;
   }
 }

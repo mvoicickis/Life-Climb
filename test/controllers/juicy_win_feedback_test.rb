@@ -59,13 +59,23 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
                   todo.id, complete_daily_todo_path(todo)
   end
 
-  test "completed battle disappears from battlefield rows" do
+  test "completed battle moves out of open rows into won today shell" do
     todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
     post complete_daily_todo_path(todo)
     follow_redirect!
 
-    assert_battle_row_absent!(title: todo.title)
+    assert_select "#today-battlefield-rows .lp-today-v2-row", text: /#{todo.title}/, count: 0
+    assert_select "#today-battlefield-won-list .lp-today-v2-row", text: /#{todo.title}/, count: 1
     assert_select ".lp-dash-done-fold", count: 0
+  end
+
+  test "battle row uses ring tick markup and win feedback form" do
+    todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Write tests")
+    get dashboard_path
+    assert_response :success
+
+    assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__tick-slot .lp-today-v2-row__box",
+                  todo.id
   end
 
   test "habit section renders on Today V2 when habits are enabled" do

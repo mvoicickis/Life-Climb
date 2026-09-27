@@ -1,7 +1,8 @@
-<%# Today V2 — open battle rows. locals: health, open_todos, journey, include_mission, mission, prompt %>
+<%# Today V2 — open battle rows. locals: health, open_todos, done_todos, journey, include_mission, mission, prompt %>
 <%
   health = local_assigns.fetch(:health)
   open_todos = Array(local_assigns.fetch(:open_todos) { @open_todos })
+  done_todos = Array(local_assigns.fetch(:done_todos) { @done_todos })
   journey = local_assigns.fetch(:journey) { @journey }
   include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
   mission = local_assigns[:mission] || @mission
@@ -19,11 +20,7 @@
   </div>
 
   <div id="today-battlefield-body">
-    <% if all_clear %>
-      <div id="today-battlefield-inline-ack-host">
-        <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
-      </div>
-    <% elsif health.empty? %>
+    <% if health.empty? %>
       <div class="lp-today-v2-empty">
         <%= t("dash.battlefield.empty_html").html_safe %>
       </div>
@@ -40,9 +37,20 @@
           <%= render "dashboard/dash_battlefield_row",
                 todo: todo,
                 mission: nil,
-                journey: journey %>
+                journey: journey,
+                row_state: :open %>
         <% end %>
       </div>
+
+      <div id="today-battlefield-inline-ack-host">
+        <% if all_clear %>
+          <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
+        <% end %>
+      </div>
+
+      <%= render "dashboard/dash_battlefield_won_shell",
+            done_todos: done_todos,
+            journey: journey %>
     <% end %>
   </div>
 
