@@ -45,8 +45,8 @@ class TodayBattlefieldWonRoadTest < ActionDispatch::IntegrationTest
     assert_match %(turbo-stream action="replace" target="#{dom_id(@todo, :battlefield_row)}"), response.body
     assert_no_match %(turbo-stream action="replace" target="today-battlefield-body"), response.body
     assert_match "today-battlefield-won-shell", response.body
-    assert_match "today-battlefield-inline-ack-host", response.body
-    assert_match I18n.t("dash.end_of_day.inline_ack.battles"), response.body
+    assert_match "today-eod-ack-host", response.body
+    assert_match I18n.t("dash.end_of_day.ack.all_battles_won", count: 1), response.body
     assert_match "battle-day-stream-bridge", response.body
     assert_match 'data-battle-day-stream-bridge-celebrate-value="true"', response.body
   end
@@ -66,6 +66,6 @@ class TodayBattlefieldWonRoadTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "#today-battlefield-rows ##{dom_id(@todo, :battlefield_row)}", count: 1
-    assert_select "#today-battlefield-inline-ack-host .lp-today-v2-inline-ack", count: 0
+    assert_select "#today-eod-ack-host .lp-today-v2-eod-ack", count: 0
   end
 end

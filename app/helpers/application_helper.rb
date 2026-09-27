@@ -323,12 +323,31 @@ module ApplicationHelper
     end
   end
 
-  def end_of_day_share_text(health)
+  def end_of_day_share_text(health, strategy_goal: nil, journey: nil)
     return "" if health.blank?
 
-    t("dash.end_of_day.share_text",
-      title: health.result_title,
-      stats: end_of_day_recap_stats(health))
+    goal = active_goal_title(strategy_goal: strategy_goal, journey: journey)
+    t("dash.end_of_day.share_recap",
+      count: health.done_count,
+      goal: goal)
+  end
+
+  def end_of_day_battles_won_line(health)
+    return "" if health.blank?
+
+    t("dash.end_of_day.steps.win.battles_won", count: health.done_count)
+  end
+
+  def end_of_day_recap_camp_line(progress)
+    progress ||= {}
+    total = progress[:camps_total].to_i
+    return "" if total <= 0
+
+    current_camp = [ progress[:camps_completed].to_i + 1, total ].min
+    t("dash.end_of_day.steps.win.camp_line",
+      current: current_camp,
+      total: total,
+      label: progress[:ridge_label])
   end
 
   def end_of_day_mountain_progress(strategy_goal, mountain)
@@ -353,7 +372,7 @@ module ApplicationHelper
       t("dash.end_of_day.steps.closed.mountain_meta",
         current: current_camp,
         total: total,
-        label: progress[:ridge_label])
+        label: progress[:ridge_label].to_s)
     else
       progress[:ridge_label].to_s
     end

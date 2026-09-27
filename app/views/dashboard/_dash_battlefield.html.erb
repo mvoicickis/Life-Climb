@@ -41,12 +41,6 @@
           <% end %>
         </div>
 
-        <div id="today-battlefield-inline-ack-host">
-          <% if all_clear %>
-            <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
-          <% end %>
-        </div>
-
         <%= render "dashboard/dash_battlefield_won_shell",
               done_todos: done_todos,
               journey: journey %>
@@ -61,9 +55,9 @@
       <% end %>
     </div>
 
-    <% if all_clear || !health.empty? %>
+    <% if !health.empty? %>
       <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
-    <% elsif handoff %>
+    <% elsif !all_clear && handoff %>
       <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
             handoff[:href] || mountain_href,
             class: "lp-today-v2-mountain-link is-open" %>
@@ -74,3 +68,8 @@
     <% end %>
   </div>
 </section>
+<div id="today-eod-ack-host">
+  <% if all_clear %>
+    <%= render "dashboard/dash_eod_ack", health: health, journey: journey %>
+  <% end %>
+</div>

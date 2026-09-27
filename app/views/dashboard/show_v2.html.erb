@@ -9,7 +9,7 @@
 <%
   battlefield_ui = !@show_plan_route
   recap_share = if @battlefield_health
-    end_of_day_share_text(@battlefield_health)
+    end_of_day_share_text(@battlefield_health, strategy_goal: @strategy_goal, journey: @journey)
   end
 %>
 
@@ -64,7 +64,7 @@
                   health: @battlefield_health,
                   streak: @climb_streak,
                   step: @eod_step,
-                  recap_share: end_of_day_share_text(@battlefield_health) %>
+                  recap_share: recap_share %>
           </div>
         <% elsif !@show_plan_route %>
           <div id="today-end-of-day-host"></div>

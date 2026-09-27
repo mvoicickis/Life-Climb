@@ -1875,3 +1875,257 @@ body:has(.lp-dash.is-today-v2.is-today-photo) {
 .lp-dash.is-today-v2.is-today-photo #today-battlefield-rows .lp-today-v2-row:last-child {
   scroll-margin-bottom: calc(5.5rem + env(safe-area-inset-bottom) + 1rem);
 }
+
+/* End of day — photo mode (frosted card, light ink) */
+.lp-dash.is-today-v2.is-today-photo .lp-today-photo-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-scroll__pad {
+  flex: 1;
+  min-height: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo #today-end-of-day-host:has(.lp-today-v2-eod-takeover) {
+  position: static;
+  inset: auto;
+  z-index: 1;
+  flex: none;
+  margin-top: auto;
+  padding: 0;
+  max-width: none;
+  background: none;
+  overflow: visible;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-takeover {
+  flex: none;
+  width: 100%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-step {
+  flex: none;
+  animation: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__body {
+  padding: 0.85rem 0.75rem 0.75rem;
+  min-width: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-label,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__section-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-title {
+  margin: 0.35rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-label + .lp-today-v2-eod-card__goal-title {
+  margin-top: 0.35rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__tick {
+  flex-shrink: 0;
+  color: var(--lp-green-deep);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__moon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__status,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__command {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0.65rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__command {
+  display: block;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-title + .lp-today-v2-eod-card__detail,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-bar + .lp-today-v2-eod-card__detail {
+  margin-top: 0.65rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__detail {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-bar {
+  height: 0.35rem;
+  margin-top: 0.65rem;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--lp-ink) 10%, transparent);
+  overflow: hidden;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__goal-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--lp-green-deep);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__form {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__form--link {
+  margin-top: 0.35rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__primary {
+  width: 100%;
+  margin-top: 0.75rem;
+  min-height: var(--lp-tap);
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-green-deep);
+  color: var(--lp-surface);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__share-pill {
+  width: 100%;
+  min-height: var(--lp-tap);
+  padding: 0 1rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 999px;
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  margin-top: 0.35rem;
+  padding: 0 0.5rem;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+  text-align: center;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__link--reopen {
+  margin-top: 0.75rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__section-label,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-card__section-label {
+  margin-top: 0.75rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__camps {
+  margin-top: 0.65rem;
+  margin-bottom: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__camp {
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__camp.is-selected {
+  border: 2px solid var(--lp-ink);
+  color: var(--lp-ink);
+  background: var(--lp-surface);
+  box-shadow: 0 0 0 1px var(--lp-ink);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__input {
+  margin-top: 0.75rem;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__input::placeholder {
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__empty {
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__actions {
+  margin-top: 0.65rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-ack {
+  margin: 0;
+}

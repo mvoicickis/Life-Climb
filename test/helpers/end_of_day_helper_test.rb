@@ -23,4 +23,20 @@ class EndOfDayHelperTest < ActionView::TestCase
     assert_includes end_of_day_recap_stats(health), "You won 2 of 3 battles"
     assert_includes end_of_day_recap_stats(health), "67 percent"
   end
+
+  test "end_of_day_share_text uses goal and battle count" do
+    health = Today::BattlefieldHealth.call(open_count: 0, total_count: 3)
+    journey = LifeJourney.new(title: "Journey")
+
+    text = end_of_day_share_text(health, strategy_goal: nil, journey: journey)
+    assert_includes text, "3 battles"
+    assert_includes text, "Journey"
+    assert_includes text, "lifeclimb.app"
+  end
+
+  test "end_of_day_battles_won_line uses singular copy" do
+    health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
+
+    assert_equal "1 battle won", end_of_day_battles_won_line(health)
+  end
 end

@@ -172,7 +172,11 @@ class DailyTodosController < ApplicationController
     assign_end_of_day!
     @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
     @climb_streak = Climb::Streak.status(user: current_user)
-    @recap_share = helpers.end_of_day_share_text(@battlefield_health)
+    @recap_share = helpers.end_of_day_share_text(
+      @battlefield_health,
+      strategy_goal: @strategy_goal,
+      journey: @journey
+    )
 
     if @uncompleted
       @stream_ap_gained = 0
