@@ -27,7 +27,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-card__kicker", text: /See you tomorrow/
     assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
     assert_select ".lp-today-v2-eod-ack", count: 1
-    assert_select ".lp-today-v2-eod-plan", count: 0
+    assert_select ".lp-today-v2-eod-step--plan", count: 0
     assert_select "a", text: "Reopen day"
     assert_select ".lp-today-v2-notch.is-day-closed", count: 1
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
@@ -43,7 +43,7 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_select ".lp-today-v2-field", count: 1
-    assert_select ".lp-today-v2-eod-closed", count: 0
+    assert_select ".lp-today-v2-eod-step--closed", count: 0
   end
 
   test "DELETE destroy reopens day to step 2 plan" do
@@ -52,13 +52,13 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     post today_end_day_path
     follow_redirect!
-    assert_select ".lp-today-v2-eod-closed", count: 1
+    assert_select ".lp-today-v2-eod-step--closed", count: 1
 
     delete today_end_day_path
     assert_redirected_to dashboard_path
     follow_redirect!
 
-    assert_select ".lp-today-v2-eod-closed", count: 0
+    assert_select ".lp-today-v2-eod-step--closed", count: 0
     assert_select ".lp-today-v2-eod-card__command", text: "Write one thing you will do tomorrow."
     assert_select ".lp-today-v2-eod-step--win", count: 0
     assert_select ".lp-today-v2-eod-ack", count: 1

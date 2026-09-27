@@ -46,7 +46,7 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-card__detail", text: "1 battle won"
     assert_select ".lp-today-v2-eod-card__primary", text: "Continue"
     assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
-    assert_select ".lp-today-v2-eod-plan", count: 0
+    assert_select ".lp-today-v2-eod-step--plan", count: 0
     assert_select ".lp-dash-anytime.is-focus", count: 0
   end
 
@@ -72,7 +72,7 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     post today_eod_acknowledge_path
     follow_redirect!
 
-    assert_select ".lp-today-v2-eod-plan", count: 1
+    assert_select ".lp-today-v2-eod-step--plan", count: 1
     assert_select ".lp-dash-project-check", count: 0
     assert_select ".lp-today-v2-end-of-day__camp-check", count: 0
   end
