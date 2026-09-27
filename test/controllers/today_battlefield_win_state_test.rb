@@ -47,7 +47,8 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match "today-battlefield-rows", response.body
+    assert_match %(target="#{dom_id(@todo, :battlefield_row)}"), response.body
+    assert_match "is-pending-won", response.body
     assert_match "today-battlefield-won-shell", response.body
     assert_match "today-end-of-day-host", response.body
     assert_match I18n.t("dash.end_of_day.inline_ack.battles"), response.body
