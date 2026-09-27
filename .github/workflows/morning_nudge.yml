@@ -1,14 +1,14 @@
-name: Morning nudge
+name: Daily nudge
 
-# Every 2 hours — app filters to each user's local 7–11am window.
+# Hourly at :17 UTC — app filters to each user's local morning (7–11) and evening (19–21) windows.
 # Requires repo secrets: CRON_SECRET, APP_BASE_URL (e.g. https://lifeclimb.app)
 on:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 jobs:
-  morning-nudge:
+  daily-nudge:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger morning nudges
@@ -26,3 +26,8 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
             "${APP_BASE_URL%/}/notifications/morning_nudge"
+          curl -fsS --retry 3 --max-time 120 -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            "${APP_BASE_URL%/}/notifications/evening_nudge"

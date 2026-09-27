@@ -36,7 +36,7 @@ class SendWebPushJob < ApplicationJob
     message["intensity"] = preference&.intensity.presence || "normal"
 
     kind = message["kind"].to_s
-    unless kind == "morning"
+    unless kind.in?(%w[morning evening])
       if Notifications::PhraseBank::TRIGGERS.include?(kind)
         category = Onboarding::Categories.resolve_for(user: user, explicit: message["category"])
         locale = user.locale.presence || I18n.default_locale
@@ -50,7 +50,7 @@ class SendWebPushJob < ApplicationJob
 
     message["token"] = user.signed_id(purpose: :notification_action, expires_in: 30.days)
 
-    if kind == "morning"
+    if kind.in?(%w[morning evening])
       message["actions"] = []
       return
     end
