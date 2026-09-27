@@ -125,7 +125,9 @@ en:
       invalid_camp: "Pick an open camp on Mountain first."
       saved: "Saved for tomorrow — %{title} (+%{count} planning points)"
       saved_today: "Added for today — %{title}"
-      share_recap: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
+      share_recap:
+        one: "Today I won %{count} battle toward my goal: %{goal} ⛰ lifeclimb.app"
+        other: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
       share_text: "%{title}. %{stats} on Life Climb"
       ack:
         all_battles_won:

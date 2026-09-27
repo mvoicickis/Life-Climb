@@ -672,7 +672,9 @@ ru:
     end_of_day:
       goal_label: "Your goal"
       open_mountain: "Open Mountain"
-      share_recap: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
+      share_recap:
+        one: "Today I won %{count} battle toward my goal: %{goal} ⛰ lifeclimb.app"
+        other: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
       ack:
         all_battles_won:
           one: "All %{count} battle won today"
