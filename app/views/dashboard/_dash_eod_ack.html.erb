@@ -1,0 +1,25 @@
+<%# locals: health, journey %>
+<% health = local_assigns.fetch(:health) %>
+<% journey = local_assigns.fetch(:journey) %>
+<% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: journey) %>
+<% mountain_href = journey ? life_journey_path(journey) : new_life_journey_path %>
+
+<section class="lp-today-v2-eod-ack" aria-label="<%= t('dash.end_of_day.title') %>">
+  <div class="lp-today-group-card">
+    <div class="lp-today-group-card__body lp-today-v2-eod-card__body">
+      <%= render "dashboard/dash_eod_goal_heading", goal_title: goal_title %>
+      <p class="lp-today-v2-eod-card__status" role="status">
+        <span class="lp-today-v2-eod-card__tick" aria-hidden="true">✓</span>
+        <%= t("dash.end_of_day.ack.all_battles_won", count: health.done_count) %>
+      </p>
+      <%= button_to t("dash.battlefield.notch_end_day"),
+            today_end_day_path,
+            method: :post,
+            form: { class: "lp-today-v2-eod-card__form", data: { turbo: false } },
+            class: "lp-today-v2-eod-card__primary" %>
+      <%= link_to t("dash.end_of_day.open_mountain"),
+            mountain_href,
+            class: "lp-today-v2-eod-card__link" %>
+    </div>
+  </div>
+</section>

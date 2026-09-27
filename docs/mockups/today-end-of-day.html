@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today end of day — New (360px)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../app/assets/stylesheets/today_v2.css">
+  <style>
+    :root {
+      --phone-w: 360px;
+      --phone-h: 680px;
+      --lp-font-ui: "Nunito", system-ui, sans-serif;
+      --lp-tap: 2.75rem;
+      --lp-green: #57d35b;
+      --lp-green-deep: #3dbd48;
+      --lp-ink: #0f172a;
+      --lp-muted: #475569;
+      --lp-paper: #f8fafc;
+      --lp-surface: #ffffff;
+      --lp-border: rgba(15, 23, 42, 0.1);
+      --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --lp-radius-card: 1.25rem;
+      --lp-radius-field: 0.875rem;
+      --lp-ink-soft: color-mix(in srgb, var(--lp-ink) 70%, transparent);
+      --lp-card-surface-pct: 35%;
+      --lp-gutter: 1rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--lp-font-ui);
+      background: #eef2f7;
+      color: var(--lp-ink);
+      padding: 1rem 0 2rem;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      padding: 0 1rem;
+      font-size: 1.05rem;
+      font-weight: 900;
+      max-width: var(--phone-w);
+      width: 100%;
+    }
+
+    .lede {
+      margin: 0 0 0.75rem;
+      padding: 0 1rem;
+      font-size: 0.78rem;
+      color: var(--lp-muted);
+      line-height: 1.45;
+      max-width: var(--phone-w);
+      width: 100%;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      padding: 0 1rem 0.75rem;
+      max-width: var(--phone-w);
+      width: 100%;
+    }
+
+    .tabs button {
+      min-height: 2rem;
+      padding: 0 0.65rem;
+      border: 1px solid var(--lp-border);
+      border-radius: 999px;
+      background: var(--lp-surface);
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--lp-ink);
+      cursor: pointer;
+    }
+
+    .tabs button.is-active {
+      border-color: var(--lp-green-deep);
+      background: color-mix(in srgb, var(--lp-green) 18%, var(--lp-surface));
+      color: var(--lp-green-deep);
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 24px 48px rgba(0, 0, 0, 0.14);
+      position: relative;
+      background: var(--lp-paper);
+      color: var(--lp-ink);
+    }
+
+    .lp-today-photo-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .lp-today-photo-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 0%;
+      display: block;
+    }
+
+    .phone__main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.5rem var(--lp-gutter) 0.35rem;
+    }
+
+    .eod-step {
+      display: none;
+      width: 100%;
+    }
+
+    .eod-step.is-active {
+      display: block;
+    }
+
+    .lp-today-group-card {
+      width: 100%;
+      min-width: 0;
+      flex: 0 0 auto;
+      background: color-mix(in srgb, var(--lp-surface) var(--lp-card-surface-pct), transparent);
+      backdrop-filter: blur(16px) saturate(1.2);
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      border: 1px solid var(--lp-border);
+      border-radius: var(--lp-radius-card);
+      box-shadow: var(--lp-shadow-card);
+      overflow: hidden;
+    }
+
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .lp-today-group-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+      }
+    }
+
+    .lp-today-group-card__body {
+      padding: 0.85rem 0.75rem 0.75rem;
+      min-width: 0;
+    }
+
+    .eod-ack__status {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.35rem;
+      margin: 0.65rem 0 0;
+      font-size: 0.92rem;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .eod-ack__tick {
+      flex-shrink: 0;
+      color: var(--lp-green-deep);
+      font-size: 0.85rem;
+      line-height: 1.35;
+    }
+
+    .eod-btn-primary {
+      width: 100%;
+      margin-top: 0.75rem;
+      min-height: var(--lp-tap);
+      padding: 0 1rem;
+      border: 0;
+      border-radius: var(--lp-radius-field);
+      background: var(--lp-green-deep);
+      color: var(--lp-surface);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .eod-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--lp-tap);
+      margin-top: 0.35rem;
+      padding: 0 0.5rem;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--lp-ink-soft);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+      cursor: pointer;
+    }
+
+    .eod-recap__kicker {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--lp-ink-soft);
+    }
+
+    .eod-plan__goal-name + .eod-recap__detail {
+      margin-top: 0.65rem;
+    }
+
+    .eod-recap__detail {
+      margin: 0.35rem 0 0;
+      font-size: 0.92rem;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .eod-recap__actions {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+
+    .eod-btn-share-pill {
+      width: 100%;
+      min-height: var(--lp-tap);
+      padding: 0 1rem;
+      border: 1px solid var(--lp-border);
+      border-radius: 999px;
+      background: var(--lp-surface);
+      color: var(--lp-ink);
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--lp-shadow-card);
+    }
+
+    .eod-plan__goal-label,
+    .eod-plan__camp-label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--lp-ink-soft);
+    }
+
+    .eod-plan__goal-name {
+      margin: 0.35rem 0 0;
+      font-size: 1.35rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .eod-plan__command {
+      margin: 0.65rem 0 0;
+      font-size: 0.92rem;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--lp-ink);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .eod-plan__camp-label {
+      margin-top: 0.75rem;
+    }
+
+    .eod-plan__chip {
+      margin: 0.65rem 0 0;
+      padding: 0.55rem 0.75rem;
+      border-radius: var(--lp-radius-field);
+      background: color-mix(in srgb, var(--lp-ink) 4%, transparent);
+      border: 1px solid var(--lp-border);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--lp-ink-soft);
+    }
+
+    .eod-plan__camps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+
+    .eod-plan__camp {
+      min-height: 2.25rem;
+      padding: 0 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--lp-border);
+      background: var(--lp-surface);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--lp-ink-soft);
+      cursor: pointer;
+    }
+
+    .eod-plan__camp.is-selected {
+      border-color: var(--lp-ink);
+      border-width: 2px;
+      color: var(--lp-ink);
+      background: var(--lp-surface);
+      box-shadow: 0 0 0 1px var(--lp-ink);
+    }
+
+    .eod-plan__input {
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 0.85rem 0.9rem;
+      border-radius: var(--lp-radius-field);
+      border: 1px solid var(--lp-border);
+      background: var(--lp-surface);
+      color: var(--lp-ink);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .eod-closed__kicker {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--lp-ink-soft);
+    }
+
+    .eod-closed__kicker-icon {
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .eod-closed__goal-bar {
+      height: 0.35rem;
+      margin-top: 0.65rem;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--lp-ink) 10%, transparent);
+      overflow: hidden;
+    }
+
+    .eod-closed__goal-fill {
+      display: block;
+      height: 100%;
+      width: 42%;
+      border-radius: 99px;
+      background: var(--lp-green-deep);
+    }
+
+    .eod-closed__goal-bar + .eod-recap__detail {
+      margin-top: 0.65rem;
+    }
+
+    .eod-closed__line[hidden] {
+      display: none;
+    }
+
+    .eod-closed__reopen {
+      margin-top: 0.75rem;
+    }
+
+    .phone .lp-dash-nav.is-today-v2 {
+      position: relative;
+      z-index: 2;
+      flex: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Today — End of day (New)</h1>
+  <p class="lede">360px. Production copy and order: ack → recap → plan bridge → sign-off. Tap through the card; tabs jump a step.</p>
+
+  <div class="tabs" role="tablist" aria-label="Jump to step">
+    <button type="button" class="is-active" role="tab" data-step="ack">Ack</button>
+    <button type="button" role="tab" data-step="recap">Recap</button>
+    <button type="button" role="tab" data-step="plan">Plan bridge</button>
+    <button type="button" role="tab" data-step="closed">See you tomorrow</button>
+  </div>
+
+  <div class="phone" id="phone-new" data-eod-flow>
+    <div class="lp-today-photo-bg" aria-hidden="true">
+      <img src="../../app/assets/images/today_background.webp" alt="" decoding="async">
+    </div>
+
+    <div class="phone__main">
+      <!-- Ack -->
+      <div class="eod-step is-active" data-eod-step="ack">
+        <div class="lp-today-group-card">
+          <div class="lp-today-group-card__body">
+            <span class="eod-plan__goal-label">Your goal</span>
+            <h2 class="eod-plan__goal-name">Stay close to family</h2>
+            <p class="eod-ack__status" role="status">
+              <span class="eod-ack__tick" aria-hidden="true">✓</span>
+              All 3 battles won today
+            </p>
+            <button type="button" class="eod-btn-primary" data-eod-next>End day</button>
+            <button type="button" class="eod-link" data-no-advance>Open Mountain</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recap -->
+      <div class="eod-step" data-eod-step="recap">
+        <div class="lp-today-group-card">
+          <div class="lp-today-group-card__body">
+            <p class="eod-recap__kicker">
+              <span class="eod-ack__tick" aria-hidden="true">✓</span>
+              You won today
+            </p>
+            <h2 class="eod-plan__goal-name">Stay close to family</h2>
+            <p class="eod-recap__detail">3 battles won</p>
+            <p class="eod-recap__detail">Camp 2 of 5: Halfway ridge</p>
+            <div class="eod-recap__actions">
+              <button type="button" class="eod-btn-primary" data-eod-next>Continue</button>
+              <button type="button" class="eod-btn-share-pill" data-no-advance>Share my day</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan: dash_eod_step_plan -->
+      <div class="eod-step" data-eod-step="plan">
+        <div class="lp-today-group-card">
+          <div class="lp-today-group-card__body">
+            <span class="eod-plan__goal-label">Your goal</span>
+            <h2 class="eod-plan__goal-name">Stay close to family</h2>
+            <p class="eod-plan__command">Write one thing you will do tomorrow.</p>
+            <span class="eod-plan__camp-label">Camp</span>
+            <div class="eod-plan__camps" role="list">
+              <button type="button" class="eod-plan__camp is-selected" role="listitem" data-camp>Halfway ridge</button>
+              <button type="button" class="eod-plan__camp" role="listitem" data-camp>River crossing</button>
+            </div>
+            <input type="text" class="eod-plan__input" id="plan-input" placeholder="e.g. Call my mum" aria-label="e.g. Call my mum">
+            <button type="button" class="eod-btn-primary" id="plan-save">Save for tomorrow</button>
+            <button type="button" class="eod-link" data-eod-next data-eod-skip>Skip for today</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Closed -->
+      <div class="eod-step" data-eod-step="closed">
+        <div class="lp-today-group-card">
+          <div class="lp-today-group-card__body">
+            <p class="eod-closed__kicker">
+              <span class="eod-closed__kicker-icon" aria-hidden="true">🌙</span>
+              See you tomorrow
+            </p>
+            <h2 class="eod-plan__goal-name">Stay close to family</h2>
+            <div class="eod-closed__goal-bar" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" aria-label="Stay close to family">
+              <span class="eod-closed__goal-fill"></span>
+            </div>
+            <p class="eod-recap__detail eod-closed__line" id="closed-tomorrow" hidden>Tomorrow: Call my mum</p>
+            <p class="eod-recap__detail eod-closed__line">🔥 12 days in a row</p>
+            <button type="button" class="eod-link eod-closed__reopen" data-no-advance>Reopen day</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="lp-dash-nav is-today-v2" aria-label="Primary" id="today-nav">
+      <span class="lp-dash-nav__link is-active"><span class="lp-dash-nav__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6.2c0 4.3 3.1 7.4 7.5 8.8 4.4-1.4 7.5-4.5 7.5-8.8V6L12 3Z"/></svg></span><span>Today</span></span>
+      <span class="lp-dash-nav__link"><span class="lp-dash-nav__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/><path d="M12 5.5 V8"/></svg></span><span>Mountain</span></span>
+      <div class="lp-dash-nav__fab-slot">
+        <span class="lp-today-v2-notch is-end-day" id="nav-notch" aria-label="End day"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="#fff" stroke-width="2.3"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="lp-today-v2-notch-label is-end-day" id="nav-notch-label">End day</span>
+      </div>
+      <span class="lp-dash-nav__link"><span class="lp-dash-nav__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17 L9 11 L13 14.5 L20 7"/><path d="M15 7 H20 V12"/></svg></span><span>Stats</span></span>
+      <span class="lp-dash-nav__link"><span class="lp-dash-nav__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2 C6.8 15.8 9 14 12 14 C15 14 17.2 15.8 18.5 19.2"/></svg></span><span>You</span></span>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      const ORDER = ["ack", "recap", "plan", "closed"];
+      const root = document.querySelector("[data-eod-flow]");
+      const tabs = document.querySelectorAll(".tabs button[data-step]");
+      const steps = document.querySelectorAll("[data-eod-step]");
+      const notch = document.getElementById("nav-notch");
+      const notchLabel = document.getElementById("nav-notch-label");
+      const planSave = document.getElementById("plan-save");
+      const planInput = document.getElementById("plan-input");
+      const closedTomorrow = document.getElementById("closed-tomorrow");
+      let current = "ack";
+      let tomorrowBattle = null;
+
+      function syncClosedTomorrow() {
+        if (!closedTomorrow) return;
+        if (tomorrowBattle) {
+          closedTomorrow.textContent = "Tomorrow: " + tomorrowBattle;
+          closedTomorrow.hidden = false;
+        } else {
+          closedTomorrow.hidden = true;
+        }
+      }
+
+      function setStep(step) {
+        if (!ORDER.includes(step)) return;
+        current = step;
+        tabs.forEach((tab) => {
+          const on = tab.dataset.step === step;
+          tab.classList.toggle("is-active", on);
+          tab.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        steps.forEach((el) => {
+          el.classList.toggle("is-active", el.dataset.eodStep === step);
+        });
+        const closed = step === "closed";
+        notch.classList.toggle("is-day-closed", closed);
+        notch.classList.toggle("is-end-day", !closed);
+        notchLabel.classList.toggle("is-day-closed", closed);
+        notchLabel.classList.toggle("is-end-day", !closed);
+        notchLabel.textContent = closed ? "Day closed" : "End day";
+        notch.setAttribute("aria-label", closed ? "Day closed" : "End day");
+        if (closed) syncClosedTomorrow();
+      }
+
+      function nextStep() {
+        const i = ORDER.indexOf(current);
+        if (i >= 0 && i < ORDER.length - 1) setStep(ORDER[i + 1]);
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => setStep(tab.dataset.step));
+      });
+
+      root.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-eod-next]");
+        if (target) {
+          event.preventDefault();
+          if (target.hasAttribute("data-eod-skip")) {
+            tomorrowBattle = null;
+          }
+          nextStep();
+        }
+      });
+
+      document.querySelectorAll("[data-camp]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-camp]").forEach((b) => b.classList.remove("is-selected"));
+          btn.classList.add("is-selected");
+        });
+      });
+
+      planSave.addEventListener("click", () => {
+        tomorrowBattle = planInput.value.trim() || "Call my mum";
+        syncClosedTomorrow();
+      });
+
+      setStep("ack");
+    })();
+  </script>
+</body>
+</html>

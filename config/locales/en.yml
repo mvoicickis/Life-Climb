@@ -116,6 +116,8 @@ en:
         other: "%{title} — %{done}/%{total} battles won · %{hp} health held on Life Climb"
     end_of_day:
       title: "End of day"
+      goal_label: "Your goal"
+      open_mountain: "Open Mountain"
       close_day: "Close day"
       reopen_day: "Reopen day"
       share_day: "Share your day"
@@ -123,7 +125,14 @@ en:
       invalid_camp: "Pick an open camp on Mountain first."
       saved: "Saved for tomorrow — %{title} (+%{count} planning points)"
       saved_today: "Added for today — %{title}"
+      share_recap:
+        one: "Today I won %{count} battle toward my goal: %{goal} ⛰ lifeclimb.app"
+        other: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
       share_text: "%{title}. %{stats} on Life Climb"
+      ack:
+        all_battles_won:
+          one: "All %{count} battle won today"
+          other: "All %{count} battles won today"
       recap_stats:
         full_health:
           one: "You won %{done} of %{total} battle. You kept all your health."
@@ -140,21 +149,31 @@ en:
         no_camps: "Open a camp on Mountain when you are ready to plan tomorrow."
       steps:
         win:
-          kicker: "Day %{day}"
+          kicker: "You won today"
           title: "You cleared the field"
-          continue: "Tap to continue"
+          battles_won:
+            one: "%{count} battle won"
+            other: "%{count} battles won"
+          camp_line: "Camp %{current} of %{total}: %{label}"
+          continue: "Continue"
+          share_my_day: "Share my day"
         plan:
           title: "What are you certain you can do tomorrow?"
-          placeholder: "Something small you will do"
+          goal_command: "Write one thing you will do tomorrow."
+          camp_label: "Camp"
+          placeholder: "e.g. Call my mum"
           planning_points: "+%{count} planning points"
           save_tomorrow: "Save for tomorrow"
           add_today_prompt: "Want to add one more for today?"
           add_today: "Add for today"
-          skip: "Skip — I'm done for today"
+          skip: "Skip for today"
+          done_for_today: "Done for today"
           saved_label: "Saved for tomorrow"
         closed:
           title: "See you tomorrow"
+          tomorrow: "Tomorrow: %{title}"
           streak: "%{count}-day streak"
+          streak_days: "🔥 %{count} days in a row"
           mountain_label: "Your mountain"
           mountain_meta: "Camp %{current} of %{total} · %{label}"
           share: "Share your day"

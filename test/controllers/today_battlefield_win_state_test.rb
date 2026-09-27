@@ -23,11 +23,11 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#today-battlefield-win", count: 0
-    assert_select ".lp-today-v2-inline-ack", text: /All battles won today/
+    assert_select ".lp-today-v2-eod-ack", count: 1
     assert_select "#today-end-of-day", count: 1
-    assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
-    assert_select ".lp-today-v2-eod-win__stats", text: /You won 1 of 1 battle/
-    assert_select ".lp-today-v2-mountain-link.is-tertiary", text: I18n.t("dash.battlefield.mountain_tertiary")
+    assert_select ".lp-today-v2-eod-step--win", count: 1
+    assert_select ".lp-today-v2-eod-card__detail", text: "1 battle won"
+    assert_select ".lp-today-v2-eod-card__link", text: I18n.t("dash.end_of_day.open_mountain")
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
     assert_select "#today-battlefield-won-list .lp-today-v2-row", count: 1
   end
@@ -36,9 +36,9 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match "lp-today-v2-eod-win", response.body
+    assert_match "lp-today-v2-eod-step--win", response.body
     assert_match "today-end-of-day", response.body
-    assert_match I18n.t("dash.end_of_day.inline_ack.battles"), response.body
+    assert_match I18n.t("dash.end_of_day.ack.all_battles_won", count: 1), response.body
     assert_no_match "lp-dash-project-check", response.body
     assert_no_match "today-battlefield-win", response.body
   end
@@ -51,9 +51,9 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_match "is-pending-won", response.body
     assert_match "today-battlefield-won-shell", response.body
     assert_match "today-end-of-day-host", response.body
-    assert_match I18n.t("dash.end_of_day.inline_ack.battles"), response.body
-    assert_match "lp-today-v2-eod-win", response.body
-    assert_match I18n.t("dash.battlefield.mountain_tertiary"), response.body
+    assert_match I18n.t("dash.end_of_day.ack.all_battles_won", count: 1), response.body
+    assert_match "lp-today-v2-eod-step--win", response.body
+    assert_match I18n.t("dash.end_of_day.open_mountain"), response.body
     assert_no_match I18n.t("dash.battlefield.mountain_all_clear"), response.body
     assert_no_match %(turbo-stream action="replace" target="today-battlefield-body"), response.body
     assert_no_match "is-clear", response.body

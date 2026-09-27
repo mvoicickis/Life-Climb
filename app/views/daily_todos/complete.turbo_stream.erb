@@ -37,9 +37,9 @@
   </div>
 <% end %>
 
-<%= turbo_stream.update "today-battlefield-inline-ack-host" do %>
+<%= turbo_stream.update "today-eod-ack-host" do %>
   <% if @battlefield_health.all_clear? %>
-    <%= render "dashboard/dash_battlefield_inline_ack", variant: :battles %>
+    <%= render "dashboard/dash_eod_ack", health: @battlefield_health, journey: @journey %>
   <% end %>
 <% end %>
 

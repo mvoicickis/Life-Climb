@@ -5,7 +5,6 @@
   step = local_assigns.fetch(:step) { @eod_step }
   tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles) { @tomorrow_battles })
   camps = Array(local_assigns.fetch(:camps) { @end_of_day_camps })
-  recap_share = local_assigns[:recap_share]
   flow_active = Today::EodFlow.flow_active?(step)
   closed_active = step == :closed
 %>
@@ -23,7 +22,6 @@
           streak: streak,
           tomorrow_battles: tomorrow_battles,
           mountain: @mountain,
-          strategy_goal: @strategy_goal,
-          recap_share: recap_share %>
+          strategy_goal: @strategy_goal %>
   <% end %>
 </section>

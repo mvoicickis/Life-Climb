@@ -27,7 +27,8 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-today-v2-inline-ack", text: /All battles won today/
+    assert_select ".lp-today-v2-eod-ack", count: 1
+    assert_select ".lp-today-v2-eod-card__status", text: /All 1 battle won today/
     assert_select "#today-end-of-day", count: 0
     assert_select ".lp-dash-anytime.is-focus", count: 1
     assert_select "#today_habit_#{@habit.id}", count: 1
@@ -41,10 +42,11 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#today-end-of-day.lp-today-v2-eod-takeover.is-flow", count: 1
-    assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
-    assert_select ".lp-today-v2-eod-win__stats", text: /You won 1 of 1 battle/
+    assert_select ".lp-today-v2-eod-step--win", count: 1
+    assert_select ".lp-today-v2-eod-card__detail", text: "1 battle won"
+    assert_select ".lp-today-v2-eod-card__primary", text: "Continue"
     assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
-    assert_select ".lp-today-v2-eod-plan", count: 0
+    assert_select ".lp-today-v2-eod-step--plan", count: 0
     assert_select ".lp-dash-anytime.is-focus", count: 0
   end
 
@@ -56,10 +58,9 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
 
-    assert_select ".lp-today-v2-eod-plan__title", text: "What are you certain you can do tomorrow?"
-    assert_select ".lp-today-v2-eod-plan__primary", text: "Save for tomorrow"
-    assert_select ".lp-today-v2-eod-plan__today-prompt", count: 0
-    assert_select ".lp-today-v2-eod-win", count: 0
+    assert_select ".lp-today-v2-eod-card__command", text: "Write one thing you will do tomorrow."
+    assert_select ".lp-today-v2-eod-card__primary", text: "Save for tomorrow"
+    assert_select ".lp-today-v2-eod-step--win", count: 0
   end
 
   test "plan step does not show camp check on Today" do
@@ -71,12 +72,12 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     post today_eod_acknowledge_path
     follow_redirect!
 
-    assert_select ".lp-today-v2-eod-plan", count: 1
+    assert_select ".lp-today-v2-eod-step--plan", count: 1
     assert_select ".lp-dash-project-check", count: 0
     assert_select ".lp-today-v2-end-of-day__camp-check", count: 0
   end
 
-  test "plan tomorrow battle creates scheduled day goal and stays on step 2 with today prompt" do
+  test "plan save shows tomorrow line and done for today instead of skip" do
     @todo.update!(completed_at: Time.current)
     @habit.completions.create!(user: @user, completed_on: Date.current, points_awarded: 5)
     project = @user.strategy_goals.for_kind("project").first
@@ -93,11 +94,11 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     battle = @user.strategy_goals.find_by!(horizon: "day", title: "Outline deck")
     assert_equal Date.current + 1.day, battle.scheduled_on
     assert_equal project.id, battle.parent_id
-    assert_select ".lp-today-v2-eod-plan__chip", text: /Outline deck/
-    assert_select ".lp-today-v2-eod-plan__today-prompt", text: "Want to add one more for today?"
-    assert_select ".lp-today-v2-eod-plan__today-panel[hidden]", count: 1
-    assert_select ".lp-today-v2-eod-closed", count: 0
-    assert_select ".lp-today-v2-eod-plan", count: 1
+    assert_select ".lp-today-v2-eod-card__detail", text: "Tomorrow: Outline deck"
+    assert_select ".lp-today-v2-eod-card__primary", text: "Done for today"
+    assert_select ".lp-today-v2-eod-card__link", text: "Skip for today", count: 0
+    assert_select ".lp-today-v2-eod-step--closed", count: 0
+    assert_select ".lp-today-v2-eod-step--plan", count: 1
   end
 
   test "add for today exits flow and clears acknowledge" do

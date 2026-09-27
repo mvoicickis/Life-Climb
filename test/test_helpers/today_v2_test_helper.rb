@@ -6,11 +6,11 @@ module TodayV2TestHelper
     if integration_test?
       assert_select ".lp-dash.is-today-v2", count: 1
       assert_select "#today-end-of-day", count: 1
-      assert_select ".lp-today-v2-eod-win__title", text: "You cleared the field"
+      assert_select ".lp-today-v2-eod-card__goal-title", minimum: 1
+      assert_select ".lp-today-v2-eod-step--win", count: 1
     else
       assert_selector ".lp-dash.is-today-v2", count: 1
-      assert_selector ".lp-today-v2-eod-win__title",
-                      text: "You cleared the field",
+      assert_selector ".lp-today-v2-eod-step--win",
                       visible: :all,
                       wait: 5
       assert_selector "#today-end-of-day", visible: :all

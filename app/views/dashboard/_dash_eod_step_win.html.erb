@@ -1,22 +1,35 @@
-<%# Step 1 — win moment only. locals: health, streak %>
+<%# Step 1 — recap. locals: health, streak %>
 <%
   health = local_assigns.fetch(:health)
-  streak = local_assigns[:streak]
-  streak_days = streak.respond_to?(:days) ? streak.days.to_i : 1
-  streak_days = 1 if streak_days <= 0
+  goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey)
+  progress = end_of_day_mountain_progress(@strategy_goal, @mountain)
+  camp_line = end_of_day_recap_camp_line(progress)
 %>
 
 <div class="lp-today-v2-eod-step lp-today-v2-eod-step--win">
-  <%= button_to today_eod_acknowledge_path,
-        method: :post,
-        class: "lp-today-v2-eod-win",
-        form: { class: "lp-today-v2-eod-win__form" } do %>
-    <div class="lp-today-v2-eod-win__glow" aria-hidden="true">
-      <span class="lp-today-v2-eod-win__icon">✓</span>
+  <div class="lp-today-group-card">
+    <div class="lp-today-group-card__body lp-today-v2-eod-card__body">
+      <p class="lp-today-v2-eod-card__kicker">
+        <span class="lp-today-v2-eod-card__tick" aria-hidden="true">✓</span>
+        <%= t("dash.end_of_day.steps.win.kicker") %>
+      </p>
+      <h2 class="lp-today-v2-eod-card__goal-title"><%= goal_title %></h2>
+      <p class="lp-today-v2-eod-card__detail"><%= end_of_day_battles_won_line(health) %></p>
+      <% if camp_line.present? %>
+        <p class="lp-today-v2-eod-card__detail"><%= camp_line %></p>
+      <% end %>
+      <div class="lp-today-v2-eod-card__actions">
+        <%= button_to t("dash.end_of_day.steps.win.continue"),
+              today_eod_acknowledge_path,
+              method: :post,
+              form: { class: "lp-today-v2-eod-card__form" },
+              class: "lp-today-v2-eod-card__primary" %>
+        <button type="button"
+                class="lp-today-v2-eod-card__share-pill"
+                data-action="click->today-notch#shareRecap">
+          <%= t("dash.end_of_day.steps.win.share_my_day") %>
+        </button>
+      </div>
     </div>
-    <p class="lp-today-v2-eod-win__day"><%= t("dash.end_of_day.steps.win.kicker", day: streak_days) %></p>
-    <h2 class="lp-today-v2-eod-win__title"><%= t("dash.end_of_day.steps.win.title") %></h2>
-    <p class="lp-today-v2-eod-win__stats"><%= end_of_day_recap_stats(health) %></p>
-    <p class="lp-today-v2-eod-win__tap"><%= t("dash.end_of_day.steps.win.continue") %></p>
-  <% end %>
+  </div>
 </div>

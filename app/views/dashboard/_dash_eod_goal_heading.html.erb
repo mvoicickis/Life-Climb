@@ -1,0 +1,7 @@
+<%# locals: goal_title, show_label (optional, default true) %>
+<% goal_title = local_assigns.fetch(:goal_title) %>
+<% show_label = local_assigns.fetch(:show_label, true) %>
+<% if show_label %>
+  <span class="lp-today-v2-eod-card__goal-label"><%= t("dash.end_of_day.goal_label") %></span>
+<% end %>
+<h2 class="lp-today-v2-eod-card__goal-title"><%= goal_title %></h2>
