@@ -12,14 +12,16 @@ module Notifications
     end
 
     test "daily battle todo completed on date counts as win" do
-      seed_climb!(@user, today_mission: "Stretch daily")
-      battle = @user.strategy_goals.find_by!(horizon: "day", title: "Stretch daily")
-      battle.update!(repeat: "daily")
-      Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area, from: @date, to: @date)
-      todo = @user.daily_todos.for_day(@date).find_by!(strategy_goal_id: battle.id)
-      todo.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 6, 10, 0, 0))
+      travel_to Time.find_zone!(@zone).local(2026, 8, 6, 12, 0, 0) do
+        seed_climb!(@user, today_mission: "Stretch daily")
+        battle = @user.strategy_goals.find_by!(horizon: "day", title: "Stretch daily")
+        battle.update!(repeat: "daily")
+        Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area, from: @date, to: @date)
+        todo = @user.daily_todos.for_day(@date).find_by!(strategy_goal_id: battle.id)
+        todo.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 6, 10, 0, 0))
 
-      assert BattleWinsOnLocalDate.any?(user: @user, date: @date, time_zone: @zone)
+        assert BattleWinsOnLocalDate.any?(user: @user, date: @date, time_zone: @zone)
+      end
     end
 
     test "one-shot completed on local date counts as win" do
