@@ -143,7 +143,7 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
     assert_selector ".lp-dash-nav.is-today-v2", wait: 8
     within(".lp-dash-nav") { click_link "Today" } if page.has_css?(".lp-dash-nav__link", text: /Today/i)
     assert_today_v2_shell!
-    assert_selector ".lp-today-v2-header__avatar-img", visible: :all
+    assert_selector ".lp-today-v2-header--compact", visible: :all
     assert_selector ".lp-today-v2-field", visible: :all
     assert_battle_row!(title: "Write one test", camp: "Rails camp")
     assert_no_selector ".lp-dash-climb"

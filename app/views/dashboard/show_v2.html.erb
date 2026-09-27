@@ -4,7 +4,7 @@
 <% content_for :app_welcome, true %>
 <% content_for :head do %>
   <meta name="view-transition" content="same-origin">
-  <meta name="theme-color" content="#100a06">
+  <meta name="theme-color" content="<%= theme_color_for_request %>">
 <% end %>
 <%
   battlefield_ui = !@show_plan_route
@@ -15,7 +15,7 @@
 
 <div
   id="today-dash-root"
-  class="lp-dash<%= ' is-today-v2' if battlefield_ui %><%= ' is-battle-won' if battlefield_ui && @battlefield_health&.all_clear? %>"
+  class="lp-dash<%= ' is-today-v2 is-today-photo' if battlefield_ui %><%= ' is-battle-won' if battlefield_ui && @battlefield_health&.all_clear? %>"
   data-controller="<%= ['battle-day', ('today-notch' if battlefield_ui)].compact.join(' ') %>"
   data-battle-day-closer-value="<%= @closer %>"
   data-battle-day-celebrate-value="<%= @battle_celebrate ? 'true' : 'false' %>"
@@ -33,33 +33,44 @@
     <%= render "dashboard/legacy_host_banner" %>
   <% end %>
   <% if battlefield_ui %>
-    <div id="today-battlefield-header">
-      <%= render "dashboard/dash_battlefield_header",
-            health: @battlefield_health,
-            streak: @climb_streak %>
-    </div>
-
-    <% if flash[:human_win].present? %>
-      <div class="lp-dash-human-win" role="status">
-        <p class="lp-dash-human-win__body"><%= flash[:human_win] %></p>
+    <div class="lp-today-photo-shell">
+      <div class="lp-today-photo-bg" aria-hidden="true">
+        <%= image_tag "today_background.webp",
+              alt: "",
+              decoding: "async",
+              class: "lp-today-photo-bg__img" %>
       </div>
-    <% end %>
 
-    <div id="today-battle-surface">
-      <%= render "dashboard/today_battlefield_surface" %>
-    </div>
+      <div class="lp-today-scroll__pad">
+        <div id="today-battlefield-header">
+          <%= render "dashboard/dash_battlefield_header",
+                health: @battlefield_health,
+                streak: @climb_streak %>
+        </div>
 
-    <% if !@show_plan_route && (@end_of_day_ready || @battlefield_day_ended) %>
-      <div id="today-end-of-day-host">
-        <%= render "dashboard/dash_end_of_day",
-              health: @battlefield_health,
-              streak: @climb_streak,
-              step: @eod_step,
-              recap_share: end_of_day_share_text(@battlefield_health) %>
+        <% if flash[:human_win].present? %>
+          <div class="lp-dash-human-win" role="status">
+            <p class="lp-dash-human-win__body"><%= flash[:human_win] %></p>
+          </div>
+        <% end %>
+
+        <div id="today-battle-surface">
+          <%= render "dashboard/today_battlefield_surface" %>
+        </div>
+
+        <% if !@show_plan_route && (@end_of_day_ready || @battlefield_day_ended) %>
+          <div id="today-end-of-day-host">
+            <%= render "dashboard/dash_end_of_day",
+                  health: @battlefield_health,
+                  streak: @climb_streak,
+                  step: @eod_step,
+                  recap_share: end_of_day_share_text(@battlefield_health) %>
+          </div>
+        <% elsif !@show_plan_route %>
+          <div id="today-end-of-day-host"></div>
+        <% end %>
       </div>
-    <% elsif !@show_plan_route %>
-      <div id="today-end-of-day-host"></div>
-    <% end %>
+    </div>
   <% else %>
     <%
       @notice_stack = Today::NoticeStack.call(

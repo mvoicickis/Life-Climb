@@ -634,6 +634,7 @@ de:
     # TODO: translate
     battlefield:
       progress_label: "Battles done"  # TODO: translate
+      risk_before_first_win: "Win a battle to move the bar."  # TODO: translate
       risk_open:
         one: "1 battle waiting"  # TODO: translate
         other: "%{count} battles waiting"  # TODO: translate

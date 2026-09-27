@@ -1,39 +1,36 @@
-<%# Today V2 — battles-done header. locals: health %>
+<%# Today V2 — compact goal card header. locals: health %>
 <% health = local_assigns.fetch(:health) %>
 <% progress_pct = health.total_count.positive? ? health.hp : 0 %>
+<% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
+<% show_hp_meta = health.done_count.positive? %>
+<% show_risk_hint = !current_user.battle_won_once? %>
 
-<header class="lp-today-v2-header" aria-label="<%= t('dash.battlefield.progress_label') %>">
-  <div class="lp-today-v2-header__row">
-    <%= link_to settings_path, class: "lp-today-v2-header__avatar", aria: { label: t("nav.settings") } do %>
-      <%= companion_image_tag class: "lp-today-v2-header__avatar-img", alt: "" %>
-    <% end %>
-    <div class="lp-today-v2-header__who">
-      <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
+<div class="lp-today-group-card lp-today-group-card--goal">
+  <header class="lp-today-v2-header lp-today-v2-header--compact" aria-label="<%= t('dash.battlefield.progress_label') %>">
+    <div class="lp-today-v2-header__goal-line">
       <p class="lp-today-v2-header__name" title="<%= goal_title %>"><%= goal_title %></p>
-      <p class="lp-today-v2-header__meta" title="<%= current_user.display_name %>"><%= current_user.display_name %></p>
+      <div class="lp-today-v2-header__hp-block"<%= " hidden" unless show_hp_meta %>>
+        <span class="lp-today-v2-header__hp-num is-neutral" data-today-v2-target="hpNum"><%= health.done_count %></span>
+        <span class="lp-today-v2-header__hp-label"><%= t("dash.battlefield.progress_label") %></span>
+      </div>
     </div>
-    <div class="lp-today-v2-header__hp-block">
-      <span class="lp-today-v2-header__hp-num is-neutral" data-today-v2-target="hpNum"><%= health.done_count %></span>
-      <span class="lp-today-v2-header__hp-label"><%= t("dash.battlefield.progress_label") %></span>
+
+    <div class="lp-today-v2-hp-bar"
+         role="progressbar"
+         aria-valuemin="0"
+         aria-valuemax="<%= health.total_count %>"
+         aria-valuenow="<%= health.done_count %>"
+         aria-label="<%= t('dash.battlefield.count', done: health.done_count, total: health.total_count) %>"
+         data-today-v2-target="hpBar">
+      <span class="lp-today-v2-hp-bar__fill is-neutral"
+            style="width: <%= progress_pct %>%"
+            data-today-v2-target="hpFill"></span>
     </div>
-  </div>
 
-  <div class="lp-today-v2-hp-bar"
-       role="progressbar"
-       aria-valuemin="0"
-       aria-valuemax="<%= health.total_count %>"
-       aria-valuenow="<%= health.done_count %>"
-       aria-label="<%= t('dash.battlefield.count', done: health.done_count, total: health.total_count) %>"
-       data-today-v2-target="hpBar">
-    <span class="lp-today-v2-hp-bar__fill is-neutral"
-          style="width: <%= progress_pct %>%"
-          data-today-v2-target="hpFill"></span>
-  </div>
-
-  <p class="lp-today-v2-risk" data-today-v2-target="riskNote">
-    <% if health.risk_icon.present? %>
-      <span aria-hidden="true"><%= health.risk_icon %></span>
+    <% if show_risk_hint %>
+      <p class="lp-today-v2-risk" data-today-v2-target="riskNote">
+        <%= t("dash.battlefield.risk_before_first_win") %>
+      </p>
     <% end %>
-    <%= health.risk_note %>
-  </p>
-</header>
+  </header>
+</div>

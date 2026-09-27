@@ -123,12 +123,12 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-today-v2-header", count: 1
-    assert_select ".lp-today-v2-header__avatar-img[src*='fox']", count: 1
+    assert_select ".lp-today-v2-header--compact", count: 1
+    assert_select ".lp-today-v2-header__avatar-img", count: 0
     assert_select ".lp-today-v2-header__name", text: "Goal"
-    assert_select ".lp-today-v2-header__meta", text: "Alex Climber"
-    assert_select ".lp-today-v2-header__hp-num", minimum: 1
+    assert_select ".lp-today-v2-header__meta", count: 0
     assert_select ".lp-today-v2-hp-bar", count: 1
+    assert_select "img[src*='today_background']", count: 1
     assert_select ".lp-dash-header", count: 0
     assert_select ".lp-dash-hero", count: 0
   end

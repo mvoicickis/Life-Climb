@@ -1,0 +1,8 @@
+<%# locals: health %>
+<% health = local_assigns.fetch(:health) %>
+<span class="lp-today-v2-field__count"
+      id="today-battlefield-count"
+      data-today-v2-target="fieldCount"
+      <%= " hidden" if health.done_count.zero? %>>
+  <%= t("dash.battlefield.count", done: health.done_count, total: health.total_count) %>
+</span>
