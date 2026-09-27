@@ -193,6 +193,23 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal [], payload["actions"]
   end
 
+  test "evening kind sends empty actions and preserves copy" do
+    delivered = SendWebPushJob.perform_now(
+      @user.id,
+      {
+        "title" => "⛰ Get my driving license",
+        "body" => "One small step before bed.",
+        "kind" => "evening"
+      }
+    )
+
+    assert delivered
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "⛰ Get my driving license", payload["title"]
+    assert_equal "One small step before bed.", payload["body"]
+    assert_equal [], payload["actions"]
+  end
+
   test "morning kind preserves title and body" do
     delivered = SendWebPushJob.perform_now(
       @user.id,

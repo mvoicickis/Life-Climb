@@ -120,3 +120,5 @@ lv:
       weekday_thu: "Big goals fall to small steps. Take one." # TODO: translate
       weekday_fri: "This is why you started. Keep going." # TODO: translate
       weekday_sat: "Five minutes today moves you closer." # TODO: translate
+    evening_push:
+      body: "One small step before bed." # TODO: translate

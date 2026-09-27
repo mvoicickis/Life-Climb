@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     resource :mark_done, only: :create, controller: "mark_dones"
     resource :snooze, only: :create, controller: "snoozes"
     resource :morning_nudge, only: :create, controller: "morning_nudges"
+    resource :evening_nudge, only: :create, controller: "evening_nudges"
   end
   namespace :settings do
     resource :notifications, only: %i[ show update ], controller: "notifications"

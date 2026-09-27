@@ -120,3 +120,5 @@ en:
       weekday_thu: "Big goals fall to small steps. Take one."
       weekday_fri: "This is why you started. Keep going."
       weekday_sat: "Five minutes today moves you closer."
+    evening_push:
+      body: "One small step before bed."

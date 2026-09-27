@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_17_174842) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_27_180000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -346,6 +346,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_174842) do
     t.datetime "created_at", null: false
     t.string "frequency", default: "sometimes", null: false
     t.string "intensity", default: "normal", null: false
+    t.date "last_evening_nudge_sent_on"
     t.date "last_morning_nudge_sent_on"
     t.integer "quiet_hours_end"
     t.integer "quiet_hours_start"
