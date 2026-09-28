@@ -25,27 +25,13 @@ module Strategy
     def call
       created = 0
       ActiveRecord::Base.transaction do
-        one_time_goals.find_each do |goal|
-          date = surfacing_date_for(goal)
-          prune_stale_one_shot_feed!(goal) if pulled_forward?(goal)
+        DueDayBattles.entries(user: @user, life_area: @life_area, from: @from, to: @to).each do |entry|
+          goal = entry.goal
+          date = entry.on
+          if !goal.repeat_recurring? && DueDayBattles.pulled_forward?(goal)
+            prune_stale_one_shot_feed!(goal)
+          end
           created += 1 if upsert_todo!(goal, date)
-        end
-
-        daily_templates.find_each do |goal|
-          (@from..@to).each do |date|
-            next if goal.scheduled_on.present? && date < goal.scheduled_on
-
-            created += 1 if upsert_todo!(goal, date)
-          end
-        end
-
-        weekly_templates.find_each do |goal|
-          (@from..@to).each do |date|
-            next if goal.scheduled_on.present? && date < goal.scheduled_on
-            next unless goal.repeats_on?(date)
-
-            created += 1 if upsert_todo!(goal, date)
-          end
         end
       end
       created
@@ -61,40 +47,16 @@ module Strategy
           candidate = [ Date.current, goal.scheduled_on || Date.current ].max
           goal.repeats_on?(candidate) ? candidate : nil
         else
-          surfacing_date_for(goal)
+          DueDayBattles.surfacing_date_for(goal)
         end
       return nil if date.blank?
 
-      prune_stale_one_shot_feed!(goal) if !goal.repeat_recurring? && pulled_forward?(goal)
+      prune_stale_one_shot_feed!(goal) if !goal.repeat_recurring? && DueDayBattles.pulled_forward?(goal)
       upsert_todo!(goal, date)
       @user.daily_todos.for_day(date).find_by(strategy_goal_id: goal.id)
     end
 
     private
-
-    def one_time_goals
-      @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
-        .incomplete
-        .not_holding
-        .ordered
-    end
-
-    def daily_templates
-      @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
-        .incomplete
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
-        .ordered
-    end
-
-    def weekly_templates
-      @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
-        .incomplete
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
-        .ordered
-    end
 
     # Returns true when a new todo row was created.
     def upsert_todo!(goal, date)
@@ -122,16 +84,6 @@ module Strategy
 
     def display_title_for(goal)
       Strategy::EnsureFolderQuest.display_title_for(goal)
-    end
-
-    # One-shots land on scheduled_on when today or future; overdue battles surface today.
-    def surfacing_date_for(goal)
-      scheduled = goal.scheduled_on.presence || Date.current
-      scheduled < Date.current ? Date.current : scheduled
-    end
-
-    def pulled_forward?(goal)
-      goal.scheduled_on.present? && goal.scheduled_on < Date.current
     end
 
     # Avoid two open feed rows for the same battle after overdue pull-forward.

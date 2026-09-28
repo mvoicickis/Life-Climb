@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Notifications
-  # Title matches morning push; fixed evening body.
+  # Title matches morning push; evening body or today's battle.
   class EveningNudgeCopy
     Result = Struct.new(:title, :body, keyword_init: true)
 
@@ -20,7 +20,11 @@ module Notifications
       I18n.with_locale(@locale) do
         Result.new(
           title: morning.title,
-          body: I18n.t("notifications.evening_push.body")
+          body: NudgeBody.build(
+            user: @user,
+            date: @date,
+            fallback: I18n.t("notifications.evening_push.body")
+          )
         )
       end
     end

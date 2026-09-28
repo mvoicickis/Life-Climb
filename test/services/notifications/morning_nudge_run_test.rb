@@ -55,10 +55,11 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "morning", @last_payload["kind"]
-        assert_equal "⛰ Get my driving license", @last_payload["title"]
+        assert_equal "Get my driving license", @last_payload["title"]
         assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
         assert_equal "/dashboard", @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
+        assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
         expected_badge = Today::BattleOpenCount.for(user: @user, on: Date.new(2026, 8, 6))
         assert_equal expected_badge, @last_payload["badge"]
         assert expected_badge.positive?
@@ -80,8 +81,12 @@ module Notifications
     test "still sends weekday body when every battle today is done" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         seed_climb!(@user, title: "Get my driving license")
+        won_at = Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0)
         @user.daily_todos.for_day(Date.new(2026, 8, 6)).find_each do |todo|
-          todo.update!(completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
+          todo.update!(completed_at: won_at)
+        end
+        @user.strategy_goals.where(horizon: "day").find_each do |battle|
+          battle.update!(completed_at: won_at) unless battle.repeat_recurring?
         end
         journey = @user.reload.primary_focused_journey
         journey.missions.for_day(Date.new(2026, 8, 6)).primary.find_each do |mission|
@@ -90,7 +95,7 @@ module Notifications
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
-        assert_equal "⛰ Get my driving license", @last_payload["title"]
+        assert_equal "Get my driving license", @last_payload["title"]
         assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
         assert_equal 0, @last_payload["badge"]
       end
@@ -104,7 +109,7 @@ module Notifications
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
-        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal "Today: Already planned", @last_payload["body"]
       end
     end
 

@@ -45,10 +45,11 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "evening", @last_payload["kind"]
-        assert_equal "⛰ Get my driving license", @last_payload["title"]
-        assert_equal "One small step before bed.", @last_payload["body"]
+        assert_equal "Get my driving license", @last_payload["title"]
+        assert_equal "Today: Warm up", @last_payload["body"]
         assert_equal "/dashboard", @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
+        assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
         assert_equal [], @last_payload["actions"]
         assert_equal Date.new(2026, 8, 6), @pref.reload.last_evening_nudge_sent_on
       end

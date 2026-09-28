@@ -26,6 +26,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, "navigator.setAppBadge"
     assert_includes @source, "navigator.clearAppBadge"
     assert_includes @source, "if (data.tag) options.tag = data.tag"
+    assert_includes @source, "if (data.image) options.image = data.image"
   end
 
   test "notificationActions honors empty actions array for morning push" do
@@ -38,7 +39,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   end
 
   test "cache version bumped for offline page cache" do
-    assert_includes @source, 'CACHE_VERSION = "v10"'
+    assert_includes @source, 'CACHE_VERSION = "v11"'
     assert_includes @source, "PAGE_CACHE_NAME"
     assert_includes @source, "-pages"
   end

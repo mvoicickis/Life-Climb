@@ -197,15 +197,17 @@ class SendWebPushJobTest < ActiveJob::TestCase
     delivered = SendWebPushJob.perform_now(
       @user.id,
       {
-        "title" => "⛰ Get my driving license",
+        "title" => "Get my driving license",
         "body" => "One small step before bed.",
-        "kind" => "evening"
+        "kind" => "evening",
+        "image" => "https://lifeclimb.app/images/push_mountain.webp"
       }
     )
 
     assert delivered
     payload = JSON.parse(@last_kwargs[:message])
-    assert_equal "⛰ Get my driving license", payload["title"]
+    assert_equal "Get my driving license", payload["title"]
+    assert_equal "https://lifeclimb.app/images/push_mountain.webp", payload["image"]
     assert_equal "One small step before bed.", payload["body"]
     assert_equal [], payload["actions"]
   end
@@ -214,7 +216,7 @@ class SendWebPushJobTest < ActiveJob::TestCase
     delivered = SendWebPushJob.perform_now(
       @user.id,
       {
-        "title" => "⛰ Get my driving license",
+        "title" => "Get my driving license",
         "body" => "You wanted this. Go get it.",
         "kind" => "morning"
       }
@@ -222,7 +224,7 @@ class SendWebPushJobTest < ActiveJob::TestCase
 
     assert delivered
     payload = JSON.parse(@last_kwargs[:message])
-    assert_equal "⛰ Get my driving license", payload["title"]
+    assert_equal "Get my driving license", payload["title"]
     assert_equal "You wanted this. Go get it.", payload["body"]
     assert_equal [], payload["actions"]
   end

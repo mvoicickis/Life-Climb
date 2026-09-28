@@ -5,6 +5,7 @@ module Notifications
   class MorningNudgeRun
     MORNING_HOURS = (7..11).freeze
     KIND = "morning"
+    PUSH_IMAGE_PATH = "/images/push_mountain.webp"
 
     Result = Struct.new(:considered, :sent, :skipped, keyword_init: true)
 
@@ -63,7 +64,8 @@ module Notifications
           "url" => "/dashboard",
           "kind" => KIND,
           "badge" => badge,
-          "tag" => "daily-nudge"
+          "tag" => "daily-nudge",
+          "image" => PushAssetUrl.call(PUSH_IMAGE_PATH)
         }
       )
 
