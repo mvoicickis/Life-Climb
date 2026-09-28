@@ -131,6 +131,11 @@ module Notifications
     test "uses local date across UTC boundary for copy" do
       # 01:00 Berlin on Aug 7 is still Aug 6 23:00 UTC.
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 7, 8, 0, 0) do
+        seed_climb!(@user, title: "Get my driving license")
+        @user.strategy_goals.where(horizon: "day").find_each do |battle|
+          battle.update!(scheduled_on: Date.new(2026, 12, 1))
+        end
+        @user.daily_todos.delete_all
         @user.daily_todos.create!(
           title: "Berlin day battle",
           aspect_key: "career",
@@ -138,11 +143,6 @@ module Notifications
           position: 0,
           lp_reward: 10
         )
-
-        seed_climb!(@user, title: "Get my driving license")
-        @user.strategy_goals.where(horizon: "day").find_each do |battle|
-          battle.update!(scheduled_on: Date.new(2026, 12, 1))
-        end
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
