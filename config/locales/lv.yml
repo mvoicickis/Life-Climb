@@ -1186,7 +1186,7 @@ lv:
         open_mountain: "Open Mountain"
         open_today: "Open Today"
         plan_day: "Plan %{day}"
-    stats:
+    trackers:
       title: "Tavi stats"
       hint: "Trackeri pēc jomas — pēdējās 14 dienas Ceļojumā."
       chart_label: "%{name} — pēdējās 14 dienas"

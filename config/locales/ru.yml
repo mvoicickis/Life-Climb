@@ -960,7 +960,7 @@ ru:
         open_mountain: "Open Mountain"
         open_today: "Open Today"
         plan_day: "Plan %{day}"
-    stats:
+    trackers:
       title: "Твои stats"
       hint: "Трекеры по областям — последние 14 дней в Путешествии."
       chart_label: "%{name} — последние 14 дней"

@@ -585,7 +585,7 @@ en:
         open_mountain: "Open Mountain"
         open_today: "Open Today"
         plan_day: "Plan %{day}"
-    stats:
+    trackers:
       title: "Your stats"
       chart_label: "%{name} — last 14 days"
       empty_area: "No Trackers in this Area yet."

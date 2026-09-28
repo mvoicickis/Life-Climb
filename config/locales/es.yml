@@ -952,7 +952,7 @@ es:
         open_mountain: "Open Mountain"
         open_today: "Open Today"
         plan_day: "Plan %{day}"
-    stats:
+    trackers:
       title: "Tus stats"
       hint: "Trackers por Área — últimos 14 días en el Viaje."
       chart_label: "%{name} — últimos 14 días"
