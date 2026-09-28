@@ -23,7 +23,7 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_no_match(/>\s*Strategy Points\s*</i, response.body)
     assert_select ".lp-dash-cta", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
-    assert_select ".lp-dash-nav.is-today-v2", count: 1
+    assert_select "#today-dash-nav .lp-dash-nav.is-v4", count: 1
     assert_select ".lp-today-v2-header", count: 1
     assert_select ".lp-today-v2-field", count: 1
     assert_select ".lp-dash-project", count: 0

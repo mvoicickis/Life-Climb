@@ -28,6 +28,8 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-today-v2-eod-ack", count: 1
+    assert_select ".lp-today-v2-eod-ack .lp-today-v2-eod-card__primary", count: 0
+    assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 1
     assert_select ".lp-today-v2-eod-card__status", text: /All 1 battle won today/
     assert_select "#today-end-of-day", count: 0
     assert_select ".lp-dash-anytime.is-focus", count: 1
@@ -45,7 +47,9 @@ class TodayEndOfDayTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-step--win", count: 1
     assert_select ".lp-today-v2-eod-card__detail", text: "1 battle won"
     assert_select ".lp-today-v2-eod-card__primary", text: "Continue"
-    assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
+    assert_select "#today-dash-nav .lp-dash-nav.is-v4", count: 1
+    assert_select "#today-dash-root[data-controller*='today-notch']", count: 1
+    assert_select "[data-action*='today-notch#shareRecap']", minimum: 1
     assert_select ".lp-today-v2-eod-step--plan", count: 0
     assert_select ".lp-dash-anytime.is-focus", count: 0
   end

@@ -22,12 +22,12 @@ module TodayV2TestHelper
       assert_select ".lp-dash.is-today-v2", count: 1
       assert_select ".lp-today-v2-header", count: 1
       assert_select ".lp-today-v2-field", count: 1
-      assert_select ".lp-dash-nav.is-today-v2", count: 1
+      assert_select "#today-dash-nav .lp-dash-nav.is-v4", count: 1
     else
       assert_selector ".lp-dash.is-today-v2", count: 1
       assert_selector ".lp-today-v2-header", count: 1
       assert_selector ".lp-today-v2-field", count: 1
-      assert_selector ".lp-dash-nav.is-today-v2", count: 1
+      assert_selector "#today-dash-nav .lp-dash-nav.is-v4", count: 1
     end
   end
 

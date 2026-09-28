@@ -36,10 +36,10 @@ class HabitsMountainMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-nav.is-today-v2", wait: 5
+    assert_selector "#today-dash-nav .lp-dash-nav.is-v4", wait: 5
 
     assert_no_selector ".lp-dash-nav__link", text: /Habits/i
-    links = all(".lp-dash-nav.is-today-v2 .lp-dash-nav__link")
+    links = all("#today-dash-nav .lp-dash-nav.is-v4 .lp-dash-nav__link")
     assert_equal 4, links.size
     widths = links.map { |el| el.native.size.width }
     assert widths.all? { |w| w >= 48 }, "nav links should stay tappable without collapsing"

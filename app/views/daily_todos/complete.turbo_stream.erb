@@ -82,15 +82,10 @@
   <% end %>
 <% end %>
 
-<%= turbo_stream.replace "today-dash-nav" do %>
-  <%= render "shared/lp_dash_nav_today_v2",
-        active: :today,
-        notch: {
-          open_count: @battle_open_count,
-          day_ended: @battlefield_day_ended,
-          all_clear: @battlefield_health.all_clear?,
-          recap_share_text: @recap_share
-        } %>
+<%= turbo_stream.update "today-battlefield-end-day-host" do %>
+  <%= render "dashboard/dash_battlefield_end_day",
+        health: @battlefield_health,
+        day_ended: @battlefield_day_ended %>
 <% end %>
 
 <% unless @uncompleted %>

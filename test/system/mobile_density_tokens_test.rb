@@ -34,7 +34,7 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     assert_today_v2_shell!
     assert_no_legacy_today_shell!
 
-    nav_h = computed(".lp-dash-nav.is-today-v2 .lp-dash-nav__link", "min-height")
+    nav_h = computed("#today-dash-nav .lp-dash-nav.is-v4 .lp-dash-nav__link", "min-height")
     assert_in_delta 44.0, nav_h, 1.0, "Nav hit area must stay ≥44px"
     check_h = page.evaluate_script(<<~JS)
       document.querySelector('.lp-today-v2-row__check')?.getBoundingClientRect().height

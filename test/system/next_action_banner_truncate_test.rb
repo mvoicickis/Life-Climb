@@ -51,7 +51,7 @@ class NextActionBannerTruncateTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-nav.is-today-v2", wait: 5
+    assert_selector "#today-dash-nav .lp-dash-nav.is-v4", wait: 5
 
     visit dashboard_path
     assert_today_v2_shell!

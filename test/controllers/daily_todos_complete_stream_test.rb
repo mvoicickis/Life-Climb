@@ -54,6 +54,9 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
     assert_match "today-battlefield-won-shell", response.body
     assert_match "today-battlefield-count", response.body
     assert_match "battle-day-stream-bridge", response.body
+    assert_match %(action="update" target="today-battlefield-end-day-host"), response.body
+    assert_match "lp-today-battlefield-end-day__btn", response.body
+    assert_no_match %(action="replace" target="today-dash-nav"), response.body
     assert @todo.reload.completed?
   end
 
@@ -65,6 +68,8 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     assert_no_match "battle-day-stream-bridge", response.body
+    assert_match %(action="update" target="today-battlefield-end-day-host"), response.body
+    assert_no_match "lp-today-battlefield-end-day__btn", response.body
     refute @todo.reload.completed?
   end
 
