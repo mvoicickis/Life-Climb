@@ -68,8 +68,8 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_sheet)}"/, response.body)
     assert_includes response.body, "Add 10 reps"
     assert_includes response.body, "+10"
-    assert_match(/lp-dash-habit__chip is-on/, response.body)
     assert_includes response.body, "basic-sheet-log"
+    assert_includes response.body, 'data-basic-sheet-log-quick-value="10"'
   end
 
   test "HTML chip PATCH still persists and redirects to Today" do
