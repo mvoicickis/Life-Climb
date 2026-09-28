@@ -81,7 +81,10 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
 
   test "camps section omits zero-win camps and ellipsizes long names" do
     goal = @user.strategy_goals.for_kind("goal").roots.first
-    plan = goal.children.find(&:plan?)
+    plan = goal.children.find { |c| c.plan? && !c.holding? } ||
+           @user.strategy_goals.create!(
+             life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Path", position: 99
+           )
     long_title = "Wake up early before the house is loud and the street starts beeping"
     project = @user.strategy_goals.create!(
       life_area: @area,

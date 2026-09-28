@@ -10209,6 +10209,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 .lp-stats {
   padding: 0 var(--lp-space-2, 1rem) calc(5rem + env(safe-area-inset-bottom));
   box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
 }
 
 .lp-stats-hero {
@@ -10355,6 +10359,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   text-decoration: none;
   color: inherit;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .lp-stats-row:first-child {

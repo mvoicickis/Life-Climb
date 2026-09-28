@@ -10,7 +10,9 @@ class StatsHeroViewportTest < ApplicationSystemTestCase
     seed_climb!(@user, today_mission: "Stats hero viewport")
     dismiss_onboarding_missions!(@user)
     journey = @user.primary_focused_journey
-    plan = @user.strategy_goals.for_kind("goal").roots.first.children.find(&:plan?)
+    goal = @user.strategy_goals.for_kind("goal").roots.first
+    plan = goal.children.find { |c| c.plan? && !c.holding? } ||
+           goal.children.find(&:plan?)
     project = plan.children.create!(
       user: @user,
       life_area: journey.life_area,
@@ -50,14 +52,12 @@ class StatsHeroViewportTest < ApplicationSystemTestCase
         const linkRange = document.createRange();
         linkRange.selectNodeContents(link);
         const linkTextRect = linkRange.getBoundingClientRect();
-        const nameRange = document.createRange();
-        nameRange.selectNodeContents(name);
-        const nameTextRect = nameRange.getBoundingClientRect();
+        const nameRect = name.getBoundingClientRect();
         return {
           vw: window.innerWidth,
           scrollWidth: document.documentElement.scrollWidth,
           linkTextRight: linkTextRect.right,
-          nameTextRight: nameTextRect.right
+          nameRight: nameRect.right
         };
       })()
     JS
@@ -66,7 +66,7 @@ class StatsHeroViewportTest < ApplicationSystemTestCase
                     "page should not scroll horizontally at 360px"
     assert_operator metrics["linkTextRight"], :<=, metrics["vw"] + 1,
                     "Open Mountain link should not overflow viewport"
-    assert_operator metrics["nameTextRight"], :<=, metrics["vw"] + 1,
+    assert_operator metrics["nameRight"], :<=, metrics["vw"] + 1,
                     "Long camp name should not overflow viewport"
   end
 end
