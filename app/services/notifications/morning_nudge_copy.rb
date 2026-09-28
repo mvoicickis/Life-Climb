@@ -3,7 +3,6 @@
 module Notifications
   # Title/body for the daily morning push — focused goal title and weekday line.
   class MorningNudgeCopy
-    GOAL_PREFIX = "⛰ "
     WEEKDAY_KEYS = %w[sun mon tue wed thu fri sat].freeze
 
     Result = Struct.new(:title, :body, keyword_init: true)
@@ -20,7 +19,7 @@ module Notifications
 
     def call
       I18n.with_locale(@locale) do
-        Result.new(title: title, body: weekday_body)
+        Result.new(title: title, body: body)
       end
     end
 
@@ -29,15 +28,16 @@ module Notifications
     def title
       raw = focused_goal_name
       if raw.present?
-        "#{GOAL_PREFIX}#{PushGoalTitle.truncate(raw, limit: 40)}"
+        PushGoalTitle.truncate(raw, limit: 40)
       else
         I18n.t("notifications.morning_push.plan_title")
       end
     end
 
-    def weekday_body
+    def body
       key = WEEKDAY_KEYS[@date.wday]
-      I18n.t("notifications.morning_push.weekday_#{key}")
+      fallback = I18n.t("notifications.morning_push.weekday_#{key}")
+      NudgeBody.build(user: @user, date: @date, fallback: fallback)
     end
 
     def focused_goal_name

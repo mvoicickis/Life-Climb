@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Push Notification Look</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lp-paper: #f8fafc;
+    --lp-surface: #ffffff;
+    --lp-ink: #0f172a;
+    --lp-muted: #475569;
+    --lp-border: rgba(15, 23, 42, 0.1);
+    --lp-green: #57d35b;
+    --lp-green-deep: #3dbd48;
+    --lp-font-ui: "Nunito", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--lp-paper);
+    font-family: Roboto, "Segoe UI", system-ui, sans-serif;
+    color: var(--lp-ink);
+    padding: 24px 16px;
+  }
+  h1 {
+    font-family: var(--lp-font-ui);
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .intro {
+    color: var(--lp-muted);
+    font-size: 14px;
+    max-width: 760px;
+    margin-bottom: 20px;
+    line-height: 1.45;
+    font-family: var(--lp-font-ui);
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; }
+  .col { width: 360px; max-width: 100%; }
+  .label {
+    font-family: var(--lp-font-ui);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--lp-muted);
+    margin: 0 0 8px 4px;
+  }
+  .label.new { color: var(--lp-green-deep); }
+  /* phone shade (system UI, not our app) */
+  .shade {
+    width: 360px;
+    max-width: 100%;
+    border-radius: 22px;
+    padding: 14px 10px 18px;
+    background: linear-gradient(180deg, #8a8f96 0%, #b9a58f 45%, #6d5a4a 100%);
+  }
+  .shade .clock { color: #fff; font-size: 32px; font-weight: 300; margin: 4px 8px 10px; }
+  .n {
+    background: #fff;
+    border-radius: 20px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+  }
+  .head { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5f6368; }
+  .head .app { color: #202124; font-weight: 500; }
+  .dot { opacity: .7; }
+  .smallicon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex: none;
+    object-fit: cover;
+  }
+  .chev {
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f1f3f4;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: #5f6368;
+  }
+  .body { display: flex; gap: 10px; align-items: flex-start; margin-top: 6px; }
+  .text { flex: 1; min-width: 0; }
+  .title { font-size: 15px; font-weight: 600; color: #202124; line-height: 1.3; }
+  .title.one { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg { font-size: 14px; color: #3c4043; line-height: 1.35; margin-top: 2px; }
+  .msg.one { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bigicon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    flex: none;
+    object-fit: cover;
+  }
+  .img {
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 2 / 1;
+  }
+  .img img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .note {
+    font-family: var(--lp-font-ui);
+    font-size: 13px;
+    color: var(--lp-muted);
+    line-height: 1.45;
+    margin-top: 10px;
+  }
+  .cant {
+    margin-top: 24px;
+    max-width: 760px;
+    background: var(--lp-surface);
+    border: 1px solid var(--lp-border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--lp-muted);
+    font-family: var(--lp-font-ui);
+  }
+</style>
+</head>
+<body>
+  <h1>Push notification — Now vs New</h1>
+  <p class="intro">Android draws web push notifications itself. We control only: title, body, big icon (right), and a wide image when expanded. Font sizes and layout are fixed by the phone.</p>
+
+  <div class="row">
+    <div class="col">
+      <p class="label">Now (collapsed)</p>
+      <div class="shade">
+        <div class="clock">5:31</div>
+        <div class="n">
+          <div class="head">
+            <img class="smallicon" src="../../public/icon-192.png" width="18" height="18" alt="">
+            <span class="app">Life Climb</span><span class="dot">·</span><span>lifepoints.onr…</span><span class="dot">·</span><span>29m</span>
+            <span class="chev">⌄</span>
+          </div>
+          <div class="body">
+            <div class="text">
+              <div class="title one">⛰ Finish my Rails course</div>
+              <div class="msg one">One small step before bed.</div>
+            </div>
+            <img class="bigicon" src="../../public/icon-192.png" width="44" height="44" alt="">
+          </div>
+        </div>
+      </div>
+      <p class="note">Evening copy. Goal with ⛰ in the title, one line then ellipsis. No image.</p>
+    </div>
+
+    <div class="col">
+      <p class="label new">New (collapsed)</p>
+      <div class="shade">
+        <div class="clock">7:17</div>
+        <div class="n">
+          <div class="head">
+            <img class="smallicon" src="../../public/icon-192.png" width="18" height="18" alt="">
+            <span class="app">Life Climb</span><span class="dot">·</span><span>lifeclimb.app</span><span class="dot">·</span><span>now</span>
+            <span class="chev">⌄</span>
+          </div>
+          <div class="body">
+            <div class="text">
+              <div class="title one">Finish my Rails course</div>
+              <div class="msg one">New week. Make it count.</div>
+            </div>
+            <img class="bigicon" src="../../public/icon-192.png" width="44" height="44" alt="">
+          </div>
+        </div>
+      </div>
+      <p class="note">Morning copy. Goal only in the title — no ⛰ — so more fits on one line.</p>
+    </div>
+
+    <div class="col">
+      <p class="label new">New A (expanded)</p>
+      <div class="shade">
+        <div class="clock">7:17</div>
+        <div class="n">
+          <div class="head">
+            <img class="smallicon" src="../../public/icon-192.png" width="18" height="18" alt="">
+            <span class="app">Life Climb</span><span class="dot">·</span><span>lifeclimb.app</span><span class="dot">·</span><span>now</span>
+            <span class="chev">⌃</span>
+          </div>
+          <div class="body">
+            <div class="text">
+              <div class="title">Finish my Rails course</div>
+              <div class="msg">New week. Make it count.</div>
+            </div>
+          </div>
+          <div class="img">
+            <img src="../../public/images/push_mountain.webp" alt="" decoding="async">
+          </div>
+        </div>
+      </div>
+      <p class="note">Tap to expand: full goal wraps, body below, then the wide Mountain photo.</p>
+    </div>
+
+    <div class="col">
+      <p class="label new">New B (expanded)</p>
+      <div class="shade">
+        <div class="clock">7:17</div>
+        <div class="n">
+          <div class="head">
+            <img class="smallicon" src="../../public/icon-192.png" width="18" height="18" alt="">
+            <span class="app">Life Climb</span><span class="dot">·</span><span>lifeclimb.app</span><span class="dot">·</span><span>now</span>
+            <span class="chev">⌃</span>
+          </div>
+          <div class="body">
+            <div class="text">
+              <div class="title">Finish my Rails course</div>
+              <div class="msg">Today: Call my mum</div>
+            </div>
+          </div>
+          <div class="img">
+            <img src="../../public/images/push_mountain.webp" alt="" decoding="async">
+          </div>
+        </div>
+      </div>
+      <p class="note">Next step instead of a pep line.</p>
+    </div>
+  </div>
+
+  <p class="cant">Web push can't change fonts, colors or layout like Spotify; we control only title, body, icon and image.</p>
+</body>
+</html>

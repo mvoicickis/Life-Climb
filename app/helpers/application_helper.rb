@@ -58,7 +58,7 @@ module ApplicationHelper
     AreaCopy.for(area_key, key, **options)
   end
 
-  CANONICAL_HOST = "lifeclimb.app"
+  CANONICAL_HOST = CanonicalHost::CANONICAL_HOST
   LEGACY_RENDER_HOST_SUFFIX = ".onrender.com"
 
   def show_legacy_host_banner?
@@ -66,8 +66,7 @@ module ApplicationHelper
   end
 
   def canonical_base_url
-    host = ENV["APP_HOST"].presence || CANONICAL_HOST
-    "https://#{host}"
+    CanonicalHost.base_url
   end
 
   def social_meta_description

@@ -39,7 +39,7 @@ module Notifications
       WebPush.define_singleton_method(:payload_send, @original_payload_send)
     end
 
-    test "sends goal title and weekday body when incomplete todo exists on local day" do
+    test "sends battle body from strategy when ad-hoc todo exists on local day" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         seed_climb!(@user, title: "Get my driving license", today_mission: "Warm up")
         @user.daily_todos.delete_all
@@ -55,10 +55,11 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "morning", @last_payload["kind"]
-        assert_equal "⛰ Get my driving license", @last_payload["title"]
-        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal "Get my driving license", @last_payload["title"]
+        assert_equal "Today: Warm up", @last_payload["body"]
         assert_equal "/dashboard", @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
+        assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
         expected_badge = Today::BattleOpenCount.for(user: @user, on: Date.new(2026, 8, 6))
         assert_equal expected_badge, @last_payload["badge"]
         assert expected_badge.positive?
@@ -80,8 +81,12 @@ module Notifications
     test "still sends weekday body when every battle today is done" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         seed_climb!(@user, title: "Get my driving license")
+        won_at = Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0)
         @user.daily_todos.for_day(Date.new(2026, 8, 6)).find_each do |todo|
-          todo.update!(completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
+          todo.update!(completed_at: won_at)
+        end
+        @user.strategy_goals.where(horizon: "day").find_each do |battle|
+          battle.update!(completed_at: won_at) unless battle.repeat_recurring?
         end
         journey = @user.reload.primary_focused_journey
         journey.missions.for_day(Date.new(2026, 8, 6)).primary.find_each do |mission|
@@ -90,7 +95,7 @@ module Notifications
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
-        assert_equal "⛰ Get my driving license", @last_payload["title"]
+        assert_equal "Get my driving license", @last_payload["title"]
         assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
         assert_equal 0, @last_payload["badge"]
       end
@@ -104,7 +109,7 @@ module Notifications
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
-        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal "Today: Already planned", @last_payload["body"]
       end
     end
 
@@ -126,6 +131,11 @@ module Notifications
     test "uses local date across UTC boundary for copy" do
       # 01:00 Berlin on Aug 7 is still Aug 6 23:00 UTC.
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 7, 8, 0, 0) do
+        seed_climb!(@user, title: "Get my driving license")
+        @user.strategy_goals.where(horizon: "day").find_each do |battle|
+          battle.update!(scheduled_on: Date.new(2026, 12, 1))
+        end
+        @user.daily_todos.delete_all
         @user.daily_todos.create!(
           title: "Berlin day battle",
           aspect_key: "career",
@@ -133,8 +143,6 @@ module Notifications
           position: 0,
           lp_reward: 10
         )
-
-        seed_climb!(@user, title: "Get my driving license")
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
