@@ -102,8 +102,13 @@ module Stats
           life_journey_id: journey.id
         )
 
+        MoreCharts.call(user: @user, journey: journey)
+
         queries = 0
         callback = lambda do |_name, _start, _finish, _id, payload|
+          next if payload[:cached]
+          next if payload[:name] == "SCHEMA" || payload[:name] == "TRANSACTION"
+
           queries += 1 if payload[:sql].present?
         end
 
