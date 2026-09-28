@@ -18293,6 +18293,167 @@ button.lp-strategy-overflow {
   color: var(--lp-muted);
   text-align: center;
 }
+.lp-dash-habit__sheet--basic-log {
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  --lp-ink: var(--lp-ink);
+  --lp-muted: var(--lp-muted);
+  border: 1px solid var(--lp-border);
+  border-bottom: 0;
+  box-shadow: var(--lp-shadow-card);
+  padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+.lp-basic-sheet__inner {
+  min-width: 0;
+}
+.lp-basic-sheet__grab {
+  width: 2.5rem;
+  height: 0.25rem;
+  border-radius: var(--lp-radius-pill);
+  margin: 0 auto 0.85rem;
+  background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+}
+.lp-basic-sheet__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.lp-basic-sheet__total {
+  margin: 0.35rem 0 1rem;
+  font-size: clamp(1.65rem, 6vw, 1.85rem);
+  font-weight: 900;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.lp-basic-sheet__unit {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+}
+.lp-basic-sheet__total.is-zero .lp-basic-sheet__unit { display: none; }
+.lp-basic-sheet__stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  min-width: 0;
+}
+.lp-basic-sheet__pill {
+  flex: none;
+  min-width: var(--lp-tap);
+  max-width: 7.25rem;
+  min-height: var(--lp-tap);
+  padding: 0 0.65rem;
+  border-radius: var(--lp-radius-pill);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper);
+  color: var(--lp-ink);
+  font-family: var(--lp-font-ui);
+  font-size: clamp(0.9rem, 4vw, 1.35rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-basic-sheet__pill:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.lp-basic-sheet__num-wrap {
+  flex: 1;
+  min-width: 0;
+  max-width: 9rem;
+  text-align: center;
+}
+.lp-basic-sheet__num-btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.15rem 0.25rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--lp-font-ui);
+  font-size: clamp(2rem, 10vw, 2.35rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--lp-ink);
+  cursor: pointer;
+  line-height: 1.1;
+}
+.lp-basic-sheet__num-input {
+  width: 100%;
+  min-height: var(--lp-tap);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-paper);
+  text-align: center;
+  font-family: var(--lp-font-ui);
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--lp-ink);
+  box-sizing: border-box;
+}
+.lp-basic-sheet__num-input:focus {
+  outline: 2px solid var(--lp-green-deep);
+  outline-offset: 1px;
+}
+.lp-basic-sheet__save-notice {
+  display: block;
+  width: 100%;
+  margin: -0.35rem 0 0.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--lp-font-ui);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--lp-muted);
+  text-align: center;
+  cursor: pointer;
+}
+.lp-basic-sheet__save-notice[hidden] { display: none !important; }
+.lp-basic-sheet__done {
+  display: block;
+  width: 100%;
+  min-height: var(--lp-tap);
+  margin: 0 0 0.65rem;
+  border: 0;
+  border-radius: var(--lp-radius-field);
+  background: linear-gradient(180deg, var(--lp-green), var(--lp-green-deep));
+  color: var(--lp-ink);
+  font-family: var(--lp-font-ui);
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--lp-shadow-cta);
+}
+.lp-basic-sheet__edit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: var(--lp-tap);
+  padding: 0 0.85rem;
+  border-radius: var(--lp-radius-field);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper);
+  color: var(--lp-muted);
+  font-family: var(--lp-font-ui);
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-sizing: border-box;
+}
 .lp-dash-anytime__head {
   display: flex;
   flex-wrap: wrap;

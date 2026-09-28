@@ -25,7 +25,7 @@ class FormControlNormalizeTest < ActionDispatch::IntegrationTest
     enable_habits!
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-anytime input[type=number].lp-dash-tcard__amount", minimum: 1
+    assert_select ".lp-dash-anytime input[type=number].lp-basic-sheet__num-input", minimum: 1
     assert_select ".lp-dash-anytime", count: 1
   end
 

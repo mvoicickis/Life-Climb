@@ -1,1 +1,5 @@
-<%= render "life_journeys/mountain_battle_streams" %>
+<% if mountain_return? %>
+  <%= render "life_journeys/mountain_battle_streams" %>
+<% elsif today_return? %>
+  <%= render "daily_logs/today_streams", habit: @habit, home_habits: @home_habits %>
+<% end %>

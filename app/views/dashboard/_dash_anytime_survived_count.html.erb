@@ -1,0 +1,8 @@
+<%# locals: habits %>
+<% count = basics_survived_count(habits) %>
+<%= tag.em(
+      id: "basics_survived_count",
+      class: "lp-dash-anytime__count",
+      hidden: count[:done_n].zero?) do %>
+  <%= count[:done_n] %>/<%= count[:total] %>
+<% end %>

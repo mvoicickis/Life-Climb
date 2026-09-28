@@ -770,6 +770,11 @@ ru:
       amount_of_target: "%{amount} of %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
+      edit_basic: "Edit Basic"  # TODO: translate
+      done: "Done"  # TODO: translate
+      amount_today_unit: "%{unit} today"  # TODO: translate
+      step_add: "Add %{n}"  # TODO: translate
+      step_remove: "Remove %{n}"  # TODO: translate
     shield:
       ready_line: "Щит готов — сегодня закрывает одно пропущенное окно."
       tip_title: "Твой дневной щит"
