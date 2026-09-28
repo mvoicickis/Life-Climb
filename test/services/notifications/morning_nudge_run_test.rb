@@ -140,8 +140,9 @@ module Notifications
         )
 
         seed_climb!(@user, title: "Get my driving license")
-        battle = @user.strategy_goals.where(horizon: "day").order(:id).last
-        battle.update!(scheduled_on: Date.new(2026, 12, 1))
+        @user.strategy_goals.where(horizon: "day").find_each do |battle|
+          battle.update!(scheduled_on: Date.new(2026, 12, 1))
+        end
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
