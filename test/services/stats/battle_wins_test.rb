@@ -100,6 +100,7 @@ module Stats
         end
 
         stats = BattleWins.call(user: @user, journey: journey)
+        assert_operator stats.counts_by_date(from: Date.new(2026, 8, 1), to: Date.new(2026, 8, 31)).values.sum, :>=, 5
         assert_equal "Monday", stats.best_weekday
       end
     end

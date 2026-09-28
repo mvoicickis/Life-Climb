@@ -32,9 +32,9 @@ module Stats
     end
 
     def all_time_total
-      from = @user.created_at.in_time_zone(time_zone).to_date
       to = local_today
-      return 0 if to < from
+      from = @user.created_at.in_time_zone(time_zone).to_date
+      from = to if from > to
 
       counts_by_date(from: from, to: to).values.sum
     end
