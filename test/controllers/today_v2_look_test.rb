@@ -53,6 +53,54 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-risk", count: 0
   end
 
+  test "mountain add link uses add_on_mountain copy" do
+    get dashboard_path
+    assert_response :success
+
+    label = "#{I18n.t('dash.battlefield.add_on_mountain')} ›"
+    assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", text: label, minimum: 1
+  end
+
+  test "quantity basic hides unit meta at zero" do
+    enable_habits!
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "Study PDC",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      quantity_checkin: true
+    )
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#today_habit_#{habit.id}.is-quantity", count: 1
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /pages/, count: 0
+  end
+
+  test "quantity basic shows unit meta above zero" do
+    enable_habits!
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "Study PDC",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      quantity_checkin: true
+    )
+    habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 3)
+
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /3 pages/
+  end
+
   test "basics count hidden when none done" do
     enable_habits!
     @user.habits.destroy_all

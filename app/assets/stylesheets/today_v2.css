@@ -1625,7 +1625,7 @@ body:has(.lp-dash.is-today-v2.is-today-photo) {
 
 .lp-dash.is-today-v2.is-today-photo {
   --lp-gutter: 1rem;
-  --lp-card-surface-pct: 35%;
+  --lp-card-surface-pct: 85%;
   --lp-ink-soft: color-mix(in srgb, var(--lp-ink) 70%, transparent);
   --today-ink: var(--lp-ink);
   --today-muted: var(--lp-ink-soft);
@@ -1874,6 +1874,99 @@ body:has(.lp-dash.is-today-v2.is-today-photo) {
 
 .lp-dash.is-today-v2.is-today-photo #today-battlefield-rows .lp-today-v2-row:last-child {
   scroll-margin-bottom: calc(5.5rem + env(safe-area-inset-bottom) + 1rem);
+}
+
+/* Basics — light rows inside frosted card (Today photo) */
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__list > li + li {
+  border-top: 1px solid var(--lp-border);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-habit.is-compact.is-slot {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  min-height: var(--lp-tap);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--lp-ink);
+}
+
+/* Habit sheet opens past the card edge — without this it clips (#311 regression). */
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-habit.is-compact.is-slot:has(.lp-dash-habit__menu[open]) {
+  overflow: visible;
+  z-index: 8;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-habit.is-compact.is-slot::before {
+  content: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-habit.is-compact.is-slot.is-quantity .lp-dash-habit__sig {
+  display: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__nm {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__nm .lp-dash-tcard__title {
+  color: var(--lp-ink);
+  font-weight: 700;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__nm .lp-dash-tcard__meta {
+  color: var(--lp-ink-soft);
+  font-size: 0.65rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__nm .lp-habit-identity {
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__qb.is-big {
+  background: transparent;
+  border: 2px solid color-mix(in srgb, var(--lp-ink) 22%, transparent);
+  color: color-mix(in srgb, var(--lp-ink) 45%, transparent);
+  box-shadow: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__qb.is-big.is-pressed {
+  box-shadow: none;
+  filter: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-mountain-link.is-add-on-mountain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  margin: 0.35rem 1rem 0.85rem;
+  min-height: var(--lp-tap);
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--lp-muted);
+  white-space: nowrap;
 }
 
 /* End of day — photo mode (frosted card, light ink) */
