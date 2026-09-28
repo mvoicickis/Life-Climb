@@ -403,6 +403,38 @@ en:
   progress:
     title: "Stats"
     subtitle: "How far you've come — and what's moving."
+    stats:
+      hero_aria: "Your battle wins"
+      battles_won_label: "Battles won"
+      battles_won:
+        one: "1 battle won"
+        other: "%{count} battles won"
+      camps_finished:
+        one: "1 camp finished"
+        other: "%{count} camps finished"
+      open_mountain: "Open Mountain ›"
+      this_week: "This week"
+      week_battles:
+        one: "1 battle won"
+        other: "%{count} battles won"
+      best_day: "Your best day: %{weekday}"
+      camps_title: "Camps"
+      camp_wins:
+        one: "1 won"
+        other: "%{count} won"
+      milestones_title: "Milestones"
+      days_won_title: "Days you won"
+      calendar_prev: "Previous month"
+      calendar_next: "Next month"
+      calendar_summary:
+        one: "You won on 1 day in %{month}"
+        other: "You won on %{count} days in %{month}"
+      calendar_day_wins:
+        one: "1 battle on %{date}"
+        other: "%{count} battles on %{date}"
+      legend_one: "1 win"
+      legend_two_three: "2–3"
+      legend_four_plus: "4+"
     goal_label: "Your goal"
     hero_battle_strength: "Battle strength"
     hero_planning_power: "Planning power"
@@ -475,6 +507,12 @@ en:
       first_battle: "First Battle"
       first_battle_hint: "You completed your first daily battle."
       first_battle_locked_hint: "Complete your first daily battle."
+      battles_10: "10 battles won"
+      battles_10_hint: "You won ten battles."
+      battles_10_locked_hint: "Win 10 battles."
+      first_camp: "First camp finished"
+      first_camp_hint: "You finished your first camp."
+      first_camp_locked_hint: "Finish your first camp."
       lp_100: "First 100 Battle strength"
       lp_100_hint: "You crossed 100 Battle strength."
       lp_100_locked_hint: "Reach 100 Battle strength."

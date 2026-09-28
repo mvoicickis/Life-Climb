@@ -1,0 +1,23 @@
+<%# locals: milestones %>
+<% if milestones.present? %>
+<section class="lp-stats-block" aria-labelledby="stats-milestones-heading">
+  <h2 class="lp-stats-block__title" id="stats-milestones-heading"><%= t("progress.stats.milestones_title") %></h2>
+  <div class="lp-stats-milestones">
+    <% milestones.each do |badge| %>
+      <div class="lp-stats-ms <%= badge[:unlocked] ? "is-earned" : "is-locked" %>">
+        <span class="lp-stats-ms__icon" aria-hidden="true">
+          <% if badge[:unlocked] %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <% else %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
+          <% end %>
+        </span>
+        <p class="lp-stats-ms__title"><%= badge[:title] %></p>
+        <% unless badge[:unlocked] %>
+          <p class="lp-stats-ms__need"><%= badge[:locked_hint] %></p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>
+<% end %>

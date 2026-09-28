@@ -91,8 +91,8 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     get life_points_path
     assert_response :success
     assert_match(/55%/, response.body)
-    assert_select ".stats-hero"
-    assert_match(/Battle strength/i, response.body)
+    assert_select ".lp-stats-hero"
+    assert_no_match(/Battle strength/i, response.body)
   end
 
   test "countable target logs from home and updates journey closer" do
